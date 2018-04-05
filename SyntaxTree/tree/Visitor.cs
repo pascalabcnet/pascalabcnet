@@ -5,17 +5,17 @@ namespace PascalABCCompiler.SyntaxTree
 	public interface IVisitor
 	{
 		///<summary>
-		///Method to visit syntax_tree_node.
-		///</summary>
-		///<param name="_syntax_tree_node">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(syntax_tree_node _syntax_tree_node);
-		///<summary>
 		///Method to visit expression.
 		///</summary>
 		///<param name="_expression">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(expression _expression);
+		///<summary>
+		///Method to visit syntax_tree_node.
+		///</summary>
+		///<param name="_syntax_tree_node">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(syntax_tree_node _syntax_tree_node);
 		///<summary>
 		///Method to visit statement.
 		///</summary>
@@ -1336,6 +1336,24 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_double_question_node">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(double_question_node _double_question_node);
+		///<summary>
+		///Method to visit typeclass_restriction.
+		///</summary>
+		///<param name="_typeclass_restriction">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(typeclass_restriction _typeclass_restriction);
+		///<summary>
+		///Method to visit instance_definition.
+		///</summary>
+		///<param name="_instance_definition">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(instance_definition _instance_definition);
+		///<summary>
+		///Method to visit typeclass_definition.
+		///</summary>
+		///<param name="_typeclass_definition">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(typeclass_definition _typeclass_definition);
 	}
 
 

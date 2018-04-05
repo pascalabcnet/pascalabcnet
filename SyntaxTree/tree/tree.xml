@@ -2855,6 +2855,57 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="typeclass_restriction" BaseName="ident">
+      <Fields>
+        <SyntaxField Name="restriction_args" SyntaxType="template_param_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="instance_definition" BaseName="type_definition">
+      <Fields>
+        <SyntaxField Name="body" SyntaxType="class_body_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>4</TagIndex>
+          <TagIndex>9</TagIndex>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="typeclass_definition" BaseName="type_definition">
+      <Fields>
+        <SyntaxField Name="additional_restrictions" SyntaxType="named_type_reference_list" />
+        <SyntaxField Name="body" SyntaxType="class_body_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+          <TagIndex>4</TagIndex>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -2875,11 +2926,12 @@
         <Tag Name="Выражения" ReferenceCount="36" />
         <Tag Name="Константы" ReferenceCount="15" />
         <Tag Name="Списки" ReferenceCount="23" />
-        <Tag Name="Типы" ReferenceCount="12" />
-        <Tag Name="Описания" ReferenceCount="23" />
+        <Tag Name="Типы" ReferenceCount="14" />
+        <Tag Name="Описания" ReferenceCount="25" />
         <Tag Name="Важнейшие" ReferenceCount="207" />
         <Tag Name="Method_Procedure_Call" ReferenceCount="2" />
         <Tag Name="Yield" ReferenceCount="8" />
+        <Tag Name="Typeclasses" ReferenceCount="3" />
       </Tags>
     </FilterCategory>
   </TagCategories>
@@ -2895,9 +2947,11 @@
       <HelpData Key=".UnknownID" Value="" />
       <HelpData Key=".Vds" Value="" />
       <HelpData Key="._realType" Value="" />
+      <HelpData Key=".additional_restrictions" Value="" />
       <HelpData Key=".aloneparam" Value="" />
       <HelpData Key=".attr" Value="" />
       <HelpData Key=".attributes" Value="" />
+      <HelpData Key=".body" Value="" />
       <HelpData Key=".cconst" Value="Значение константы." />
       <HelpData Key=".char_num" Value="Номер символа." />
       <HelpData Key=".count" Value="" />
@@ -2927,6 +2981,7 @@
       <HelpData Key=".params" Value="" />
       <HelpData Key=".procdef" Value="" />
       <HelpData Key=".res" Value="" />
+      <HelpData Key=".restriction_args" Value="" />
       <HelpData Key=".right" Value="" />
       <HelpData Key=".sharp_consts" Value="Список символьных констант в строке вида #123#124#125" />
       <HelpData Key=".specificator" Value="" />
@@ -3463,6 +3518,8 @@
       <HelpData Key="initfinal_part.initfinal_part(statement_list init,statement_list fin,SourceContext sc)" Value="" />
       <HelpData Key="initfinal_part.initfinal_part(syntax_tree_node stn1, statement_list init, syntax_tree_node stn2, statement_list fin, syntax_tree_node stn3, SourceContext sc)" Value="" />
       <HelpData Key="initfinal_part.initialization_sect" Value="" />
+      <HelpData Key="instance_definition" Value="Определение того как конкретный тип удовлетворяет классу типов." />
+      <HelpData Key="instance_definition.body" Value="" />
       <HelpData Key="int32_const" Value="Целая константа" />
       <HelpData Key="int32_const." Value="" />
       <HelpData Key="int32_const.override string ToString()" Value="" />
@@ -4064,6 +4121,11 @@
       <HelpData Key="typecast_node.left" Value="" />
       <HelpData Key="typecast_node.right" Value="" />
       <HelpData Key="typecast_node.type_def" Value="" />
+      <HelpData Key="typeclass_definition" Value="Определение класса типов" />
+      <HelpData Key="typeclass_definition.additional_restrictions" Value="" />
+      <HelpData Key="typeclass_definition.body" Value="" />
+      <HelpData Key="typeclass_restriction" Value="Представляет конструкцию вида Typeclass[T], где Typleclass это ограничение, которое накладывается на тип T" />
+      <HelpData Key="typeclass_restriction.restriction_args" Value="" />
       <HelpData Key="typed_const_definition" Value="" />
       <HelpData Key="typed_const_definition.const_type" Value="" />
       <HelpData Key="typed_parameters" Value="" />

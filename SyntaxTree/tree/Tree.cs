@@ -6,6 +6,106 @@ using System.Collections.Generic;
 namespace PascalABCCompiler.SyntaxTree
 {
 	///<summary>
+	///Выражение
+	///</summary>
+	[Serializable]
+	public partial class expression : declaration
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public expression()
+		{
+
+		}
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			expression copy = new expression();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new expression TypedClone()
+		{
+			return Clone() as expression;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
 	///Базовый класс для всех классов синтаксического дерева
 	///</summary>
 	[Serializable]
@@ -126,106 +226,6 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="visitor">Объект-посетитель.</param>
 		///<returns>Return value is void</returns>
 		public virtual void visit(IVisitor visitor)
-		{
-			visitor.visit(this);
-		}
-
-	}
-
-
-	///<summary>
-	///Выражение
-	///</summary>
-	[Serializable]
-	public partial class expression : declaration
-	{
-
-		///<summary>
-		///Конструктор без параметров.
-		///</summary>
-		public expression()
-		{
-
-		}
-
-		/// <summary> Создает копию узла </summary>
-		public override syntax_tree_node Clone()
-		{
-			expression copy = new expression();
-			copy.Parent = this.Parent;
-			if (source_context != null)
-				copy.source_context = new SourceContext(source_context);
-			if (attributes != null)
-			{
-				copy.attributes = (attribute_list)attributes.Clone();
-				copy.attributes.Parent = copy;
-			}
-			return copy;
-		}
-
-		/// <summary> Получает копию данного узла корректного типа </summary>
-		public new expression TypedClone()
-		{
-			return Clone() as expression;
-		}
-
-		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
-		public override void FillParentsInDirectChilds()
-		{
-			if (attributes != null)
-				attributes.Parent = this;
-		}
-
-		///<summary> Заполняет поля Parent во всем поддереве </summary>
-		public override void FillParentsInAllChilds()
-		{
-			FillParentsInDirectChilds();
-			attributes?.FillParentsInAllChilds();
-		}
-
-		///<summary>
-		///Свойство для получения количества всех подузлов без элементов поля типа List
-		///</summary>
-		public override Int32 subnodes_without_list_elements_count
-		{
-			get
-			{
-				return 0;
-			}
-		}
-		///<summary>
-		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
-		///</summary>
-		public override Int32 subnodes_count
-		{
-			get
-			{
-				return 0;
-			}
-		}
-		///<summary>
-		///Индексатор для получения всех подузлов
-		///</summary>
-		public override syntax_tree_node this[Int32 ind]
-		{
-			get
-			{
-				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
-					throw new IndexOutOfRangeException();
-				return null;
-			}
-			set
-			{
-				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
-					throw new IndexOutOfRangeException();
-			}
-		}
-		///<summary>
-		///Метод для обхода дерева посетителем
-		///</summary>
-		///<param name="visitor">Объект-посетитель.</param>
-		///<returns>Return value is void</returns>
-		public override void visit(IVisitor visitor)
 		{
 			visitor.visit(this);
 		}
@@ -47387,6 +47387,594 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 					case 1:
 						right = (expression)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///Представляет конструкцию вида Typeclass[T], где Typleclass это ограничение, которое накладывается на тип T
+	///</summary>
+	[Serializable]
+	public partial class typeclass_restriction : ident
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public typeclass_restriction()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public typeclass_restriction(template_param_list _restriction_args)
+		{
+			this._restriction_args=_restriction_args;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public typeclass_restriction(template_param_list _restriction_args,SourceContext sc)
+		{
+			this._restriction_args=_restriction_args;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public typeclass_restriction(string _name,template_param_list _restriction_args)
+		{
+			this._name=_name;
+			this._restriction_args=_restriction_args;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public typeclass_restriction(string _name,template_param_list _restriction_args,SourceContext sc)
+		{
+			this._name=_name;
+			this._restriction_args=_restriction_args;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected template_param_list _restriction_args;
+
+		///<summary>
+		///
+		///</summary>
+		public template_param_list restriction_args
+		{
+			get
+			{
+				return _restriction_args;
+			}
+			set
+			{
+				_restriction_args=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			typeclass_restriction copy = new typeclass_restriction();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			copy.name = name;
+			if (restriction_args != null)
+			{
+				copy.restriction_args = (template_param_list)restriction_args.Clone();
+				copy.restriction_args.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new typeclass_restriction TypedClone()
+		{
+			return Clone() as typeclass_restriction;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (restriction_args != null)
+				restriction_args.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			restriction_args?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return restriction_args;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						restriction_args = (template_param_list)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///Определение того как конкретный тип удовлетворяет классу типов.
+	///</summary>
+	[Serializable]
+	public partial class instance_definition : type_definition
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public instance_definition()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public instance_definition(class_body_list _body)
+		{
+			this._body=_body;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public instance_definition(class_body_list _body,SourceContext sc)
+		{
+			this._body=_body;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public instance_definition(type_definition_attr_list _attr_list,class_body_list _body)
+		{
+			this._attr_list=_attr_list;
+			this._body=_body;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public instance_definition(type_definition_attr_list _attr_list,class_body_list _body,SourceContext sc)
+		{
+			this._attr_list=_attr_list;
+			this._body=_body;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected class_body_list _body;
+
+		///<summary>
+		///
+		///</summary>
+		public class_body_list body
+		{
+			get
+			{
+				return _body;
+			}
+			set
+			{
+				_body=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			instance_definition copy = new instance_definition();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (body != null)
+			{
+				copy.body = (class_body_list)body.Clone();
+				copy.body.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new instance_definition TypedClone()
+		{
+			return Clone() as instance_definition;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (body != null)
+				body.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			body?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return attr_list;
+					case 1:
+						return body;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						attr_list = (type_definition_attr_list)value;
+						break;
+					case 1:
+						body = (class_body_list)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///Определение класса типов
+	///</summary>
+	[Serializable]
+	public partial class typeclass_definition : type_definition
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public typeclass_definition()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public typeclass_definition(named_type_reference_list _additional_restrictions,class_body_list _body)
+		{
+			this._additional_restrictions=_additional_restrictions;
+			this._body=_body;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public typeclass_definition(named_type_reference_list _additional_restrictions,class_body_list _body,SourceContext sc)
+		{
+			this._additional_restrictions=_additional_restrictions;
+			this._body=_body;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public typeclass_definition(type_definition_attr_list _attr_list,named_type_reference_list _additional_restrictions,class_body_list _body)
+		{
+			this._attr_list=_attr_list;
+			this._additional_restrictions=_additional_restrictions;
+			this._body=_body;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public typeclass_definition(type_definition_attr_list _attr_list,named_type_reference_list _additional_restrictions,class_body_list _body,SourceContext sc)
+		{
+			this._attr_list=_attr_list;
+			this._additional_restrictions=_additional_restrictions;
+			this._body=_body;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected named_type_reference_list _additional_restrictions;
+		protected class_body_list _body;
+
+		///<summary>
+		///
+		///</summary>
+		public named_type_reference_list additional_restrictions
+		{
+			get
+			{
+				return _additional_restrictions;
+			}
+			set
+			{
+				_additional_restrictions=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public class_body_list body
+		{
+			get
+			{
+				return _body;
+			}
+			set
+			{
+				_body=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			typeclass_definition copy = new typeclass_definition();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (additional_restrictions != null)
+			{
+				copy.additional_restrictions = (named_type_reference_list)additional_restrictions.Clone();
+				copy.additional_restrictions.Parent = copy;
+			}
+			if (body != null)
+			{
+				copy.body = (class_body_list)body.Clone();
+				copy.body.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new typeclass_definition TypedClone()
+		{
+			return Clone() as typeclass_definition;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (additional_restrictions != null)
+				additional_restrictions.Parent = this;
+			if (body != null)
+				body.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			additional_restrictions?.FillParentsInAllChilds();
+			body?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return attr_list;
+					case 1:
+						return additional_restrictions;
+					case 2:
+						return body;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						attr_list = (type_definition_attr_list)value;
+						break;
+					case 1:
+						additional_restrictions = (named_type_reference_list)value;
+						break;
+					case 2:
+						body = (class_body_list)value;
 						break;
 				}
 			}

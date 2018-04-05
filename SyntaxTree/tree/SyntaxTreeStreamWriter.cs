@@ -16,9 +16,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public BinaryWriter bw;
 
 
-		public void visit(syntax_tree_node _syntax_tree_node)
+		public void visit(expression _expression)
 		{
 			bw.Write((Int16)0);
+			write_expression(_expression);
+		}
+
+		public void write_expression(expression _expression)
+		{
+			write_declaration(_expression);
+		}
+
+
+		public void visit(syntax_tree_node _syntax_tree_node)
+		{
+			bw.Write((Int16)1);
 			write_syntax_tree_node(_syntax_tree_node);
 		}
 
@@ -52,18 +64,6 @@ namespace PascalABCCompiler.SyntaxTree
 					bw.Write(_syntax_tree_node.source_context.end_position.column_num);
 				}
 			}
-		}
-
-
-		public void visit(expression _expression)
-		{
-			bw.Write((Int16)1);
-			write_expression(_expression);
-		}
-
-		public void write_expression(expression _expression)
-		{
-			write_declaration(_expression);
 		}
 
 
@@ -6136,6 +6136,78 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				bw.Write((byte)1);
 				_double_question_node.right.visit(this);
+			}
+		}
+
+
+		public void visit(typeclass_restriction _typeclass_restriction)
+		{
+			bw.Write((Int16)222);
+			write_typeclass_restriction(_typeclass_restriction);
+		}
+
+		public void write_typeclass_restriction(typeclass_restriction _typeclass_restriction)
+		{
+			write_ident(_typeclass_restriction);
+			if (_typeclass_restriction.restriction_args == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_typeclass_restriction.restriction_args.visit(this);
+			}
+		}
+
+
+		public void visit(instance_definition _instance_definition)
+		{
+			bw.Write((Int16)223);
+			write_instance_definition(_instance_definition);
+		}
+
+		public void write_instance_definition(instance_definition _instance_definition)
+		{
+			write_type_definition(_instance_definition);
+			if (_instance_definition.body == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_instance_definition.body.visit(this);
+			}
+		}
+
+
+		public void visit(typeclass_definition _typeclass_definition)
+		{
+			bw.Write((Int16)224);
+			write_typeclass_definition(_typeclass_definition);
+		}
+
+		public void write_typeclass_definition(typeclass_definition _typeclass_definition)
+		{
+			write_type_definition(_typeclass_definition);
+			if (_typeclass_definition.additional_restrictions == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_typeclass_definition.additional_restrictions.visit(this);
+			}
+			if (_typeclass_definition.body == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_typeclass_definition.body.visit(this);
 			}
 		}
 

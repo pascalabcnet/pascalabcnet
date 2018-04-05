@@ -5,19 +5,19 @@ namespace PascalABCCompiler.SyntaxTree
 	public class HierarchyVisitor: AbstractVisitor
 	{
 
-		public virtual void pre_do_visit(syntax_tree_node _syntax_tree_node)
-		{
-		}
-
-		public virtual void post_do_visit(syntax_tree_node _syntax_tree_node)
-		{
-		}
-
 		public virtual void pre_do_visit(expression _expression)
 		{
 		}
 
 		public virtual void post_do_visit(expression _expression)
+		{
+		}
+
+		public virtual void pre_do_visit(syntax_tree_node _syntax_tree_node)
+		{
+		}
+
+		public virtual void post_do_visit(syntax_tree_node _syntax_tree_node)
 		{
 		}
 
@@ -1781,11 +1781,28 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
-		public override void visit(syntax_tree_node _syntax_tree_node)
+		public virtual void pre_do_visit(typeclass_restriction _typeclass_restriction)
 		{
-			DefaultVisit(_syntax_tree_node);
-			pre_do_visit(_syntax_tree_node);
-			post_do_visit(_syntax_tree_node);
+		}
+
+		public virtual void post_do_visit(typeclass_restriction _typeclass_restriction)
+		{
+		}
+
+		public virtual void pre_do_visit(instance_definition _instance_definition)
+		{
+		}
+
+		public virtual void post_do_visit(instance_definition _instance_definition)
+		{
+		}
+
+		public virtual void pre_do_visit(typeclass_definition _typeclass_definition)
+		{
+		}
+
+		public virtual void post_do_visit(typeclass_definition _typeclass_definition)
+		{
 		}
 
 		public override void visit(expression _expression)
@@ -1793,6 +1810,13 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_expression);
 			pre_do_visit(_expression);
 			post_do_visit(_expression);
+		}
+
+		public override void visit(syntax_tree_node _syntax_tree_node)
+		{
+			DefaultVisit(_syntax_tree_node);
+			pre_do_visit(_syntax_tree_node);
+			post_do_visit(_syntax_tree_node);
 		}
 
 		public override void visit(statement _statement)
@@ -3682,6 +3706,31 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(double_question_node.left);
 			visit(double_question_node.right);
 			post_do_visit(_double_question_node);
+		}
+
+		public override void visit(typeclass_restriction _typeclass_restriction)
+		{
+			DefaultVisit(_typeclass_restriction);
+			pre_do_visit(_typeclass_restriction);
+			visit(typeclass_restriction.restriction_args);
+			post_do_visit(_typeclass_restriction);
+		}
+
+		public override void visit(instance_definition _instance_definition)
+		{
+			DefaultVisit(_instance_definition);
+			pre_do_visit(_instance_definition);
+			visit(instance_definition.body);
+			post_do_visit(_instance_definition);
+		}
+
+		public override void visit(typeclass_definition _typeclass_definition)
+		{
+			DefaultVisit(_typeclass_definition);
+			pre_do_visit(_typeclass_definition);
+			visit(typeclass_definition.additional_restrictions);
+			visit(typeclass_definition.body);
+			post_do_visit(_typeclass_definition);
 		}
 	}
 

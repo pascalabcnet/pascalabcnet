@@ -360,6 +360,8 @@ UNICODEARROW \x890
     case (int)Tokens.tkExternal:
     case (int)Tokens.tkYield:
     case (int)Tokens.tkSequence:
+	case (int)Tokens.tkTypeclass:
+	case (int)Tokens.tkInstance:
 		yylval = new Union();
         yylval.ti = new token_info(cur_yytext,currentLexLocation);
         break;

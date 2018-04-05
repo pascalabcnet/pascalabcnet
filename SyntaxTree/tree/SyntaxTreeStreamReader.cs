@@ -21,9 +21,9 @@ namespace PascalABCCompiler.SyntaxTree
 			switch(node_class_number)
 			{
 				case 0:
-					return new syntax_tree_node();
-				case 1:
 					return new expression();
+				case 1:
+					return new syntax_tree_node();
 				case 2:
 					return new statement();
 				case 3:
@@ -464,6 +464,12 @@ namespace PascalABCCompiler.SyntaxTree
 					return new sugared_addressed_value();
 				case 221:
 					return new double_question_node();
+				case 222:
+					return new typeclass_restriction();
+				case 223:
+					return new instance_definition();
+				case 224:
+					return new typeclass_definition();
 			}
 			return null;
 		}
@@ -480,6 +486,17 @@ namespace PascalABCCompiler.SyntaxTree
 				return null;
 			}
 		}
+
+		public void visit(expression _expression)
+		{
+			read_expression(_expression);
+		}
+
+		public void read_expression(expression _expression)
+		{
+			read_declaration(_expression);
+		}
+
 
 		public void visit(syntax_tree_node _syntax_tree_node)
 		{
@@ -506,17 +523,6 @@ namespace PascalABCCompiler.SyntaxTree
 				}
 				_syntax_tree_node.source_context = new SourceContext(ssyy_beg, ssyy_end);
 			}
-		}
-
-
-		public void visit(expression _expression)
-		{
-			read_expression(_expression);
-		}
-
-		public void read_expression(expression _expression)
-		{
-			read_declaration(_expression);
 		}
 
 
@@ -3918,6 +3924,43 @@ namespace PascalABCCompiler.SyntaxTree
 			read_addressed_value_funcname(_double_question_node);
 			_double_question_node.left = _read_node() as expression;
 			_double_question_node.right = _read_node() as expression;
+		}
+
+
+		public void visit(typeclass_restriction _typeclass_restriction)
+		{
+			read_typeclass_restriction(_typeclass_restriction);
+		}
+
+		public void read_typeclass_restriction(typeclass_restriction _typeclass_restriction)
+		{
+			read_ident(_typeclass_restriction);
+			_typeclass_restriction.restriction_args = _read_node() as template_param_list;
+		}
+
+
+		public void visit(instance_definition _instance_definition)
+		{
+			read_instance_definition(_instance_definition);
+		}
+
+		public void read_instance_definition(instance_definition _instance_definition)
+		{
+			read_type_definition(_instance_definition);
+			_instance_definition.body = _read_node() as class_body_list;
+		}
+
+
+		public void visit(typeclass_definition _typeclass_definition)
+		{
+			read_typeclass_definition(_typeclass_definition);
+		}
+
+		public void read_typeclass_definition(typeclass_definition _typeclass_definition)
+		{
+			read_type_definition(_typeclass_definition);
+			_typeclass_definition.additional_restrictions = _read_node() as named_type_reference_list;
+			_typeclass_definition.body = _read_node() as class_body_list;
 		}
 
 	}
