@@ -10399,7 +10399,9 @@ namespace PascalABCCompiler.NETGenerator
             il.Emit(OpCodes.Stloc, lb);
             il.Emit(OpCodes.Call, _monitor_enter);
             il.BeginExceptionBlock();
+            bool safe_block = EnterSafeBlock();
             ConvertStatement(value.Body);
+            LeaveSafeBlock(safe_block);
             il.BeginFinallyBlock();
             il.Emit(OpCodes.Ldloc, lb);
             il.Emit(OpCodes.Call, _monitor_exit);
