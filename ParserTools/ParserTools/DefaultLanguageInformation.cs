@@ -16,7 +16,7 @@ namespace PascalABCCompiler.Parsers
 		protected IParser parser;
 		protected string[] type_keywords_array;
 		protected string[] keywords_array;
-		protected Hashtable keywords = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
+		protected Dictionary<string, string> keywords = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
 		protected Hashtable ignored_keywords = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
 		protected Hashtable keyword_kinds = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
 		
@@ -78,8 +78,7 @@ namespace PascalABCCompiler.Parsers
             keywords.Add("virtual", "virtual"); keys.Add("virtual");
             keywords.Add("override", "override"); keys.Add("override");
             keywords.Add("reintroduce", "reintroduce"); keys.Add("reintroduce");
-            keywords.Add("static", "static"); keys.Add("static");
-
+            keywords.Add("sealed", "sealed"); keys.Add("sealed");
             keywords.Add("case", "case"); keys.Add("case");
             keywords.Add("var", "var"); keys.Add("var"); keyword_kinds.Add("var", KeywordKind.Var);
             keywords.Add("const", "const"); keys.Add("const"); keyword_kinds.Add("const", KeywordKind.Const);
@@ -97,7 +96,40 @@ namespace PascalABCCompiler.Parsers
             keywords.Add("sequence", "sequence"); keys.Add("sequence");
             keywords.Add("extensionmethod", "extensionmethod"); keys.Add("extensionmethod");
             keywords.Add("params", "params"); keys.Add("params");
-            keywords_array = keys.ToArray();
+            keywords.Add("implicit", "implicit"); keys.Add("implicit");
+            keywords.Add("explicit", "explicit"); keys.Add("explicit");
+            keywords.Add("forward", "forward"); keys.Add("forward");
+            keywords.Add("break", "break"); keys.Add("break");
+            keywords.Add("continue", "continue"); keys.Add("continue");
+            keywords.Add("default", "default"); keys.Add("default");
+            keywords.Add("label", "label"); keys.Add("label");
+            keywords.Add("property", "property"); keys.Add("property");
+            keywords.Add("auto", "auto"); keys.Add("auto");
+            keywords.Add("external", "external"); keys.Add("external");
+            keywords.Add("lock", "lock"); keys.Add("lock");
+            keywords.Add("where", "where"); keys.Add("where");
+            keywords.Add("library", "library"); keys.Add("library");
+            keywords.Add("div", "div"); keys.Add("div");
+            keywords.Add("mod", "mod"); keys.Add("mod");
+            keywords.Add("shl", "shl"); keys.Add("shl");
+            keywords.Add("shr", "shr"); keys.Add("shr");
+            keywords.Add("not", "not"); keys.Add("not");
+            keywords.Add("as", "as"); keys.Add("as");
+            keywords.Add("is", "is"); keys.Add("is");
+            keywords.Add("on", "on"); keys.Add("on");
+            keywords.Add("goto", "goto"); keys.Add("goto");
+            keywords.Add("overload", "overload"); keys.Add("overload");
+            keywords.Add("internal", "internal"); keys.Add("internal");
+            keywords.Add("template", "template"); keys.Add("template");
+            keywords.Add("namespace", "namespace"); keys.Add("namespace");
+            keywords.Add("exit", "exit"); keys.Add("exit");
+            keywords.Add("event", "event"); keys.Add("event");
+            //keywords.Add("typeof", "typeof"); //keys.Add("typeof");
+            //keywords.Add("sizeof", "sizeof"); //keys.Add("sizeof");
+            keywords_array = new string[keywords.Count + 2];
+            keywords_array[0] = "typeof";
+            keywords_array[1] = "sizeof";
+            keywords.Values.CopyTo(keywords_array, 2);
             type_keywords_array = type_keys.ToArray();
 		}
 
@@ -973,8 +1005,8 @@ namespace PascalABCCompiler.Parsers
 			{
 				case SymbolKind.Class : 
 					if (scope.TopScope != null && scope.TopScope.Name != "" && !scope.TopScope.Name.Contains("$"))
-						return (scope.IsFinal?"final ":"")+"class "+scope.TopScope.Name + "." +scope.Name+template_str;
-					else return (scope.IsFinal?"final ":"")+"class "+scope.Name+template_str;
+						return (scope.IsAbstract ? "abstract " : "") + (scope.IsFinal?"sealed ":"")+"class "+scope.TopScope.Name + "." +scope.Name+template_str;
+					else return (scope.IsAbstract ? "abstract " : "") + (scope.IsFinal?"sealed ":"")+"class "+scope.Name+template_str;
 				case SymbolKind.Interface :
 					if (scope.TopScope != null && scope.TopScope.Name != "" && !scope.TopScope.Name.Contains("$"))
 					return "interface "+scope.TopScope.Name + "." +scope.Name+template_str;
@@ -1031,7 +1063,7 @@ namespace PascalABCCompiler.Parsers
 			switch(scope.ElemKind)
 			{
 				case SymbolKind.Class : 					
-					return (scope.IsFinal?"final ":"")+"class "+s;
+					return (scope.IsAbstract ? "abstract " : "")+(scope.IsFinal?"sealed ":"")+"class "+s;
 				case SymbolKind.Interface :
 					return "interface "+s;
 				case SymbolKind.Enum :
@@ -1129,7 +1161,7 @@ namespace PascalABCCompiler.Parsers
                     sb.Append(parameters[0] + "->" + parameters[1]);
                 else if (parameters.Count == 1)
                 {
-                    if (t.Name == "Predicate`1")
+                    if (t.FullName == "System.Predicate`1" || t.Name == "Predicate`1")
                         sb.Append(parameters[0] + "->boolean");
                     else
                         sb.Append("()->" + parameters[0]);
@@ -1138,7 +1170,9 @@ namespace PascalABCCompiler.Parsers
             }
             else if (parameters.Count > 0)
             {
-                if (parameters.Count > 1)
+                if (t.FullName == "System.Predicate`1" || t.Name == "Predicate`1")
+                    sb.Append(parameters[0] + "->boolean");
+                else if (parameters.Count > 1)
                     sb.Append("(" + string.Join(",", parameters.ToArray()) + ")->()");
                 else
                     sb.Append(parameters[0] + "->()");
@@ -1658,12 +1692,15 @@ namespace PascalABCCompiler.Parsers
                 if (!pis[i].ParameterType.IsByRef)
                 {
                     sb.Append(GetFullTypeName(pis[i].ParameterType));
+                    if (pis[i].IsOptional)
+                        sb.Append(":=" + (pis[i].DefaultValue != null ? pis[i].DefaultValue.ToString() : "nil"));
                 }
                 else
                 {
                     Type t = pis[i].ParameterType.GetElementType();
                     sb.Append(GetFullTypeName(t));
                 }
+                
                 if (i < pis.Length - 1)
                     sb.Append("; ");
             }
@@ -1745,7 +1782,16 @@ namespace PascalABCCompiler.Parsers
                             if (!class_generic_table.ContainsKey(class_generic_args[i].Name))
                                 class_generic_table.Add(class_generic_args[i].Name, j);
                             if (scope.GenericArgs != null && scope.GenericArgs.Count > j)
-                                generic_param_args[class_generic_args[i].Name] = GetSimpleDescription(scope.DeclaringType.GenericInstances[0]);
+                            {
+                                if (scope.DeclaringType.GenericInstances.Length > 0)
+                                    generic_param_args[class_generic_args[i].Name] = GetSimpleDescription(scope.DeclaringType.GenericInstances[0]);
+                                else if (scope.DeclaringType is ICompiledTypeScope)
+                                {
+                                    Type ctn = (scope.DeclaringType as ICompiledTypeScope).CompiledType;
+                                    if (ctn.IsGenericType && !ctn.IsGenericTypeDefinition)
+                                        generic_param_args[class_generic_args[i].Name] = GetSimpleDescriptionForCompiledType((scope.DeclaringType as ICompiledTypeScope).GetCompiledGenericArguments()[0]);
+                                }
+                            }
                             else if (scope.DeclaringType.TemplateArguments != null && scope.DeclaringType.TemplateArguments.Length > j)
                                 generic_param_args[class_generic_args[i].Name] = scope.DeclaringType.TemplateArguments[j];
                         }
@@ -1772,9 +1818,22 @@ namespace PascalABCCompiler.Parsers
                         int ind = class_generic_table[tt[i].Name];
                         if (scope.GenericArgs != null && scope.GenericArgs.Count > ind)
                         {
-                            sb.Append(GetSimpleDescription(scope.DeclaringType.GenericInstances[ind]));
-                            if (!generic_param_args.ContainsKey(tt[i].Name))
-                                generic_param_args.Add(tt[i].Name, GetSimpleDescription(scope.DeclaringType.GenericInstances[ind]));
+                            if (scope.DeclaringType.GenericInstances.Length > ind)
+                            {
+                                sb.Append(GetSimpleDescription(scope.DeclaringType.GenericInstances[ind]));
+                                if (!generic_param_args.ContainsKey(tt[i].Name))
+                                    generic_param_args.Add(tt[i].Name, GetSimpleDescription(scope.DeclaringType.GenericInstances[ind]));
+                            }
+                            else if (scope.DeclaringType is ICompiledTypeScope)
+                            {
+                                Type ctn = (scope.DeclaringType as ICompiledTypeScope).CompiledType;
+                                if (ctn.IsGenericType && !ctn.IsGenericTypeDefinition)
+                                {
+                                    sb.Append(GetSimpleDescription((scope.DeclaringType as ICompiledTypeScope).GetCompiledGenericArguments()[ind]));
+                                    if (!generic_param_args.ContainsKey(tt[i].Name))
+                                        generic_param_args.Add(tt[i].Name, GetSimpleDescription((scope.DeclaringType as ICompiledTypeScope).GetCompiledGenericArguments()[ind]));
+                                }
+                            }
                         }
                     }
                     else
@@ -1806,6 +1865,8 @@ namespace PascalABCCompiler.Parsers
                         sb.Append(GetShortTypeName(pis[i].ParameterType, false));
                     else
                         sb.Append(inst_type);
+                    if (pis[i].IsOptional)
+                        sb.Append(":=" + (pis[i].DefaultValue != null ? pis[i].DefaultValue.ToString() : "nil"));
                 }
                 else
                 {
@@ -2623,7 +2684,8 @@ namespace PascalABCCompiler.Parsers
                     {
                         while (i >= 0 && Text[i] != '{')
                         {
-                            sb.Insert(0, Text[i]);
+                            if (Text[i] != '$')//skip {$
+                                sb.Insert(0, Text[i]);
                             i--;
                         }
                         if (i < 0)
@@ -3618,8 +3680,8 @@ namespace PascalABCCompiler.Parsers
 			{
 				case SymbolKind.Class : 
 					if (scope.TopScope != null && scope.TopScope.Name != "")
-						return (scope.IsFinal?"sealed ":"")+"class "+scope.TopScope.Name + "::" +scope.Name+template_str;
-					else return (scope.IsFinal?"sealed ":"")+"class "+scope.Name+template_str;
+						return (scope.IsAbstract ? "abstract " : "") + (scope.IsFinal?"sealed ":"")+"class "+scope.TopScope.Name + "::" +scope.Name+template_str;
+					else return (scope.IsAbstract ? "abstract " : "") + (scope.IsFinal?"sealed ":"")+"class "+scope.Name+template_str;
 				case SymbolKind.Interface :
 					if (scope.TopScope != null && scope.TopScope.Name != "")
 					return "interface class"+scope.TopScope.Name + "::" +scope.Name+template_str;

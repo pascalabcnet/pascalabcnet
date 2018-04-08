@@ -35,6 +35,7 @@ INTNUM {Digit}+
 FLOATNUM {INTNUM}\.{INTNUM}
 EXPNUM ({INTNUM}\.)?{INTNUM}[eE][+\-]?{INTNUM}
 STRINGNUM \'([^\'\n]|\'\')*\'
+FORMATSTRINGNUM \$\'([^\'\n]|\'\')*\'
 HEXNUM ${HexDigit}+
 SHARPCHARNUM #{Digit}+
 OLDDIRECTIVE #{ID}
@@ -109,6 +110,11 @@ UNICODEARROW \x890
 	{
 		if (!Defines.Contains(directiveparam))
 			Defines.Add(directiveparam);
+	}
+	else if (directivename == "UNDEF")
+	{
+		if (Defines.Contains(directiveparam))
+			Defines.Remove(directiveparam);
 	}
 }
 
@@ -198,6 +204,7 @@ UNICODEARROW \x890
 "+"             { yylval = new Union(); yylval.op = new op_type_node(Operators.Plus); return (int)Tokens.tkPlus; }
 "/"             { yylval = new Union(); yylval.op = new op_type_node(Operators.Division); return (int)Tokens.tkSlash; }
 "*"             { yylval = new Union(); yylval.op = new op_type_node(Operators.Multiplication); return (int)Tokens.tkStar; }
+"**"            { yylval = new Union(); yylval.op = new op_type_node(Operators.Power); return (int)Tokens.tkStarStar; }
 "="             { yylval = new Union(); yylval.op = new op_type_node(Operators.Equal); return (int)Tokens.tkEqual; }
 ">"             { yylval = new Union(); yylval.op = new op_type_node(Operators.Greater); return (int)Tokens.tkGreater; }
 ">="            { yylval = new Union(); yylval.op = new op_type_node(Operators.GreaterEqual); return (int)Tokens.tkGreaterEqual; }
@@ -441,6 +448,13 @@ UNICODEARROW \x890
   currentLexLocation = CurrentLexLocation;
   yylval.stn = parsertools.create_string_const(yytext,currentLexLocation); 
   return (int)Tokens.tkStringLiteral; 
+}
+
+{FORMATSTRINGNUM} { 
+  yylval = new Union();
+  currentLexLocation = CurrentLexLocation;
+  yylval.stn = parsertools.create_format_string_const(yytext,currentLexLocation); 
+  return (int)Tokens.tkFormatStringLiteral; 
 }
 
 {SHARPCHARNUM} {

@@ -11,6 +11,7 @@ using PascalABCCompiler;
 using PascalABCCompiler.TreeConverter;
 //using PascalABCCompiler.TreeRealization;
 using SymbolTable;
+using System.IO;
 using PascalABCCompiler.Parsers;
 
 namespace CodeCompletion
@@ -45,7 +46,9 @@ namespace CodeCompletion
             }
             catch (Exception e)
             {
-
+#if DEBUG
+                File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
             }
             return pos_list.ToArray();
         }
@@ -70,7 +73,8 @@ namespace CodeCompletion
             foreach (statement stmt in _statement_list.subnodes)
             {
                 IBaseScope tmp2 = cur_scope;
-                cur_scope = cur_scope.FindScopeByLocation(stmt.source_context.begin_position.line_num, stmt.source_context.begin_position.column_num);
+                if (stmt.source_context != null)
+                    cur_scope = cur_scope.FindScopeByLocation(stmt.source_context.begin_position.line_num, stmt.source_context.begin_position.column_num);
                 if (cur_scope == null)
                     cur_scope = tmp2;
                 stmt.visit(this);
@@ -853,6 +857,14 @@ namespace CodeCompletion
 
         public override void visit(enum_type_definition _enum_type_definition)
         {
+            IBaseScope scope = entry_scope.FindScopeByLocation(_enum_type_definition.source_context.begin_position.line_num, _enum_type_definition.source_context.begin_position.column_num);
+            if (!(scope is IEnumScope))
+            {
+                foreach (enumerator en in _enum_type_definition.enumerators.enumerators)
+                {
+                    en.name.visit(this);
+                }
+            }
             //throw new NotImplementedException();
         }
 
@@ -1533,6 +1545,8 @@ namespace CodeCompletion
             IBaseScope ss = entry_scope.FindScopeByLocation(_name_assign_expr.name.source_context.begin_position.line_num, _name_assign_expr.name.source_context.begin_position.column_num);
             if (ss != null && ss.IsEqual(founded_scope))
                 pos_list.Add(get_position(_name_assign_expr.name));
+            if (_name_assign_expr.expr == null)
+                _name_assign_expr.expr = new ident(_name_assign_expr.name.name, _name_assign_expr.name.source_context);
             _name_assign_expr.expr.visit(this);
         }
         public override void visit(name_assign_expr_list _name_assign_expr_list) // SSM 27.06.13
@@ -1569,6 +1583,7 @@ namespace CodeCompletion
             }
             else
             {
+                if (_modern_proc_type.el != null)
                 foreach (enumerator en in _modern_proc_type.el.enumerators)
                 {
                     en.name.visit(this); // Это исправил - SSM 15.1.16

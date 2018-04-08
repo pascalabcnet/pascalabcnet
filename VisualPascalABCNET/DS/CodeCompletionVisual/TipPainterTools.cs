@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="none" email=""/>
@@ -20,113 +20,126 @@ namespace ICSharpCode.TextEditor.Util
 		{
 			
 		}
-		public static Size GetDrawingSizeHelpTipFromCombinedDescription(Control control,
-		                                                      Graphics graphics,
-		                                                      Font font,
-		                                                      string countMessage,
-		                                                      string description,
-		                                                      int param_num, bool addit_info)
-		{
-			string basicDescription = null;
-			string documentation = null;
-			int bold_beg = -1;
-			int bold_len = 0;
-			if (IsVisibleText(description)) {
-	     		string[] splitDescription = description.Split(new char[] { '\n' }, 2);
-						
-				if (splitDescription.Length > 0) {
-					basicDescription = splitDescription[0];
-					if (param_num == 1)
-					{
-						bold_beg = basicDescription.IndexOf('(')+1;
-						if (bold_beg != 0)
-						{
-							int end = basicDescription.IndexOf(CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter);
-							int end_sk = basicDescription.IndexOf(')');
-							if (end > end_sk || end == -1) end = end_sk;
-							//if (end == -1) end = basicDescription.IndexOf(')');
-							if (end != -1) bold_len = end-bold_beg;
-						}
-					}
-					else
-					{
-						int i = 1; bold_beg=0;
-						while (i < param_num)
-						{
-							bold_beg = basicDescription.IndexOf(CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter,bold_beg)+1;
-							if (bold_beg == 0) break;
-							i++;
-						}
-						if (bold_beg != 0)
-						{
-							int end = basicDescription.IndexOf(CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter,bold_beg);
-							int end_sk = basicDescription.IndexOf(')',bold_beg);
-							if (end > end_sk || end == -1) end = end_sk;
-							if (end != -1) bold_len = end-bold_beg;
-						}
-					}
-					if (splitDescription.Length > 1) {
-						documentation = splitDescription[1].Trim();
-					}
-				}
-			}
+        public static Size GetDrawingSizeHelpTipFromCombinedDescription(Control control,
+                                                              Graphics graphics,
+                                                              Font font,
+                                                              string countMessage,
+                                                              string description,
+                                                              int param_num, bool addit_info)
+        {
+            string basicDescription = null;
+            string documentation = null;
+            int bold_beg = -1;
+            int bold_len = 0;
+            if (IsVisibleText(description))
+            {
+                string[] splitDescription = description.Split(new char[] { '\n' }, 2);
+
+                if (splitDescription.Length > 0)
+                {
+                    basicDescription = splitDescription[0];
+                    int extensionIndex = basicDescription.IndexOf("(расширение") + 1;
+                    if (param_num == 1)
+                    {
+                        bold_beg = basicDescription.IndexOf('(') + 1;
+                        if (bold_beg != 0 && bold_beg == extensionIndex)
+                            bold_beg = basicDescription.IndexOf('(', basicDescription.IndexOf(')') + 1) + 1;
+                        if (bold_beg != 0)
+                        {
+                            int end = basicDescription.IndexOf(CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter);
+                            int end_sk = basicDescription.IndexOf(')', bold_beg);
+                            if (end > end_sk || end == -1) end = end_sk;
+                            //if (end == -1) end = basicDescription.IndexOf(')');
+                            if (end != -1) bold_len = end - bold_beg;
+                        }
+                    }
+                    else
+                    {
+                        int i = 1; bold_beg = 0;
+                        while (i < param_num)
+                        {
+                            bold_beg = basicDescription.IndexOf(CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter, bold_beg) + 1;
+                            if (bold_beg == 0) break;
+                            i++;
+                        }
+                        if (bold_beg != 0)
+                        {
+                            int end = basicDescription.IndexOf(CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter, bold_beg);
+                            int end_sk = basicDescription.IndexOf(')', bold_beg);
+                            if (end > end_sk || end == -1) end = end_sk;
+                            if (end != -1) bold_len = end - bold_beg;
+                        }
+                    }
+                    if (splitDescription.Length > 1)
+                    {
+                        documentation = splitDescription[1].Trim();
+                    }
+                }
+            }
 
             return GetDrawingSizeDrawHelpTip(control, graphics, font, countMessage, basicDescription, documentation, bold_beg, bold_len, param_num, addit_info);
-		}
-		
-		public static Size DrawHelpTipFromCombinedDescription(Control control,
-		                                                      Graphics graphics,
-		                                                      Font font,
-		                                                      string countMessage,
-		                                                      string description, int param_num, bool addit_info)
-		{
-			string basicDescription = null;
-			string documentation = null;
-			int bold_beg = -1;
-			int bold_len = 0;
-			if (IsVisibleText(description)) {
-	     		string[] splitDescription = description.Split
-	     			(new char[] { '\n' }, 2);
-	     		
-				if (splitDescription.Length > 0) {
-					basicDescription = splitDescription[0];
-					if (param_num == 1)
-					{
-						bold_beg = basicDescription.IndexOf('(')+1;
-						if (bold_beg != 0)
-						{
-							int end = basicDescription.IndexOf(CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter);
-							int end_sk = basicDescription.IndexOf(')');
-							if (end > end_sk || end == -1) end = end_sk;
-							//if (end == -1) end = basicDescription.IndexOf(')');
-							if (end != -1) bold_len = end-bold_beg;
-						}
-					}
-					else
-					{
-						int i = 1; bold_beg=0;
-						while (i < param_num)
-						{
+        }
+
+        public static Size DrawHelpTipFromCombinedDescription(Control control,
+                                                              Graphics graphics,
+                                                              Font font,
+                                                              string countMessage,
+                                                              string description, int param_num, bool addit_info)
+        {
+            string basicDescription = null;
+            string documentation = null;
+            int bold_beg = -1;
+            int bold_len = 0;
+            
+            if (IsVisibleText(description))
+            {
+                string[] splitDescription = description.Split
+                    (new char[] { '\n' }, 2);
+
+                if (splitDescription.Length > 0)
+                {
+                    basicDescription = splitDescription[0];
+                    int extensionIndex = basicDescription.IndexOf("(расширение") + 1;
+                    if (param_num == 1)
+                    {
+                        bold_beg = basicDescription.IndexOf('(') + 1;
+                        if (bold_beg != 0 && bold_beg == extensionIndex)
+                            bold_beg = basicDescription.IndexOf('(', basicDescription.IndexOf(')') + 1) + 1;
+                        if (bold_beg != 0)
+                        {
+                            int end = basicDescription.IndexOf(CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter);
+                            int end_sk = basicDescription.IndexOf(')', bold_beg);
+                            if (end > end_sk || end == -1) end = end_sk;
+                            //if (end == -1) end = basicDescription.IndexOf(')');
+                            if (end != -1) bold_len = end - bold_beg;
+                        }
+                    }
+                    else
+                    {
+                        int i = 1; bold_beg = 0;
+                        while (i < param_num)
+                        {
                             bold_beg = basicDescription.IndexOf(CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter, bold_beg) + 1;
-							if (bold_beg == 0) break;
-							i++;
-						}
-						if (bold_beg != 0)
-						{
-							int end = basicDescription.IndexOf(CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter,bold_beg);
-							int end_sk = basicDescription.IndexOf(')',bold_beg);
-							if (end > end_sk || end == -1) end = end_sk;
-							if (end != -1) bold_len = end-bold_beg;
-						}
-					}
-					if (splitDescription.Length > 1) {
-						documentation = splitDescription[1].Trim();
-					}
-				}
-			}
-			return DrawHelpTip(control, graphics, font, countMessage,
-			            basicDescription, documentation,bold_beg,bold_len,param_num,addit_info);
- 		}
+                            if (bold_beg == 0) break;
+                            i++;
+                        }
+                        if (bold_beg != 0)
+                        {
+                            int end = basicDescription.IndexOf(CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.ParameterDelimiter, bold_beg);
+                            int end_sk = basicDescription.IndexOf(')', bold_beg);
+                            if (end > end_sk || end == -1) end = end_sk;
+                            if (end != -1) bold_len = end - bold_beg;
+                        }
+                    }
+                    if (splitDescription.Length > 1)
+                    {
+                        documentation = splitDescription[1].Trim();
+                    }
+                }
+            }
+            return DrawHelpTip(control, graphics, font, countMessage,
+                        basicDescription, documentation, bold_beg, bold_len, param_num, addit_info);
+        }
 		
 		// btw. I know it's ugly.
 		public static Rectangle DrawingRectangle1;

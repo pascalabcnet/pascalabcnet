@@ -74,10 +74,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             
             foreach (var id in varDefStmt.vars.idents)
             {
-                SymbolInfoUnit si = null;
-                var temp = _visitor.context.find(id.name);
-                if (temp != null)
-                    si = temp.First();
+                SymbolInfo si = _visitor.context.find_first(id.name);
                 _currentTreeNode.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(varDefStmt, si));
             }
 
@@ -136,10 +133,7 @@ namespace TreeConverter.LambdaExpressions.Closure
         {
             var idName = id.name.ToLower();
 
-            SymbolInfoUnit si = null;
-            var temp = _visitor.context.find(idName);
-            if (temp != null)
-                si = temp.First();
+            SymbolInfo si = _visitor.context.find_first(idName);
             
             if (si == null)
             {
@@ -163,7 +157,8 @@ namespace TreeConverter.LambdaExpressions.Closure
                 si.sym_info.semantic_node_type == semantic_node_type.basic_interface_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.common_unit_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.compiled_unit_node ||
-                si.sym_info.semantic_node_type == semantic_node_type.template_type)
+                si.sym_info.semantic_node_type == semantic_node_type.template_type ||
+                si.sym_info.semantic_node_type == semantic_node_type.basic_function_node && idName == "exit")
             {
                 return;
             }
@@ -171,7 +166,8 @@ namespace TreeConverter.LambdaExpressions.Closure
             var acceptableVarType = si.sym_info.semantic_node_type == semantic_node_type.local_variable ||
                                     si.sym_info.semantic_node_type == semantic_node_type.local_block_variable ||
                                     si.sym_info.semantic_node_type == semantic_node_type.common_parameter ||
-                                    si.sym_info.semantic_node_type == semantic_node_type.class_field;
+                                    si.sym_info.semantic_node_type == semantic_node_type.class_field
+                                    ;
 
             if (!(acceptableVarType) && InLambdaContext) 
             {
@@ -453,14 +449,11 @@ namespace TreeConverter.LambdaExpressions.Closure
 
                 _visitor.context.close_var_definition_list(tn, null);
 
-                _currentTreeNode.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(_foreach_stmt, _visitor.context.find(loopIdentName).First()));
+                _currentTreeNode.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(_foreach_stmt, _visitor.context.find_first(loopIdentName)));
             }
 
-            newTreeNode.SymbolInfoLoopVar = null;
-            var temp2 = _visitor.context.find(loopIdentName);
-            if (temp2 != null)
-                newTreeNode.SymbolInfoLoopVar = temp2.First();
-
+            newTreeNode.SymbolInfoLoopVar = _visitor.context.find_first(loopIdentName);
+            
             if (!(vdn.type is compiled_generic_instance_type_node))
                 _visitor.convertion_data_and_alghoritms.check_convert_type_with_inheritance(vdn.type, elemType, _visitor.get_location(_foreach_stmt.identifier));
 
@@ -532,15 +525,12 @@ namespace TreeConverter.LambdaExpressions.Closure
                                                           _visitor.get_location(_for_node.loop_variable), tn,
                                                           polymorphic_state.ps_common);
 
-                _currentTreeNode.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(_for_node, _visitor.context.find(loopIdentName).First()));
+                _currentTreeNode.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(_for_node, _visitor.context.find_first(loopIdentName)));
             }
 
 
-            newTreeNode.SymbolInfoLoopVar = null;
-            var temp2 =_visitor.context.find(loopIdentName);
-            if (tmp != null)
-                newTreeNode.SymbolInfoLoopVar = temp2.First();
-
+            newTreeNode.SymbolInfoLoopVar = _visitor.context.find_first(loopIdentName);
+            
             var fn = new PascalABCCompiler.TreeRealization.for_node(null, null, null, null, null, _visitor.get_location(_for_node));
             if (vdn.type == SystemLibrary.bool_type)
             {
@@ -657,10 +647,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             {
                 foreach (var id in tp.idents.idents)
                 {
-                    SymbolInfoUnit si = null;
-                    var temp = _visitor.context.find(id.name);
-                    if (temp != null)
-                        si = temp.First();
+                    SymbolInfo si = _visitor.context.find_first(id.name);
                     _currentTreeNode.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(tp, si));
                 }
             }

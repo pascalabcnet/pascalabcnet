@@ -142,7 +142,13 @@ namespace CodeCompletion
                     SymInfo[] syms = si.GetNamesAsInObject(ev);
                     SymInfo[] ext_syms = null;
                     if (si is ElementScope)
-                        ext_syms = visitor.cur_scope.GetSymInfosForExtensionMethods((si as ElementScope).sc as TypeScope);
+                    {
+                        SymScope root_scope = visitor.entry_scope;
+                        //if (root_scope is ImplementationUnitScope || root_scope is BlockScope)
+                        //    root_scope = root_scope.topScope;
+                        ext_syms = root_scope.GetSymInfosForExtensionMethods((si as ElementScope).sc as TypeScope);
+                    }
+                        
                     List<SymInfo> lst = new List<SymInfo>();
                     lst.AddRange(syms);
                     if (ext_syms != null)
@@ -444,6 +450,7 @@ namespace CodeCompletion
                 if (si == null)
                     si = visitor.cur_scope;
             }
+
             SymInfo[] elems = null;
             if (si == null) return null;
             if (pattern == null || pattern == "")
@@ -455,7 +462,7 @@ namespace CodeCompletion
             for (int i = 0; i < elems.Length; i++)
                 if (pattern == null || pattern == "")
                 {
-                    if (!elems[i].name.StartsWith("$"))
+                    if (!elems[i].name.StartsWith("$") && !elems[i].name.StartsWith("<"))
                         if (all_names)
                         {
                             if (elems[i].kind != SymbolKind.Namespace || nest_level == 0)
@@ -867,9 +874,9 @@ namespace CodeCompletion
                     ExpressionVisitor ev = new ExpressionVisitor(expr, ss, visitor);
                     ss = ev.GetScopeOfExpression();
                 }
-                while (ss != null && ss is ProcScope && (ss as ProcScope).proc_realization != null && (ss as ProcScope).proc_realization.loc != null)
+                while (ss != null && ss is ProcScope && (ss as ProcScope).procRealization != null && (ss as ProcScope).procRealization.loc != null)
                 {
-                    ProcRealization pr = (ss as ProcScope).proc_realization;
+                    ProcRealization pr = (ss as ProcScope).procRealization;
                     pos.line = pr.loc.begin_line_num;
                     pos.column = pr.loc.begin_column_num;
                     pos.file_name = pr.loc.doc.file_name;
@@ -1126,6 +1133,11 @@ namespace CodeCompletion
         {
             if (tmp_cur_used_assemblies != null)
                 PascalABCCompiler.NetHelper.NetHelper.cur_used_assemblies = tmp_cur_used_assemblies;
+        }
+
+        ~DomConverter()
+        {
+
         }
     }
 

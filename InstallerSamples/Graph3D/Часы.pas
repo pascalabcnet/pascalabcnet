@@ -1,10 +1,10 @@
-uses Graph3D;
+п»їuses Graph3D;
 
 begin
   View3D.ShowGridLines := False;
-  var Циферблат := Cylinder(0,0,-0.4,0.2,6,Colors.DeepPink);
-  var Сек := Arrow(0,0,0,0,-5.5,0,0.2,Colors.Yellow);
-  var Мин := Arrow(0,0,0,0,-6.0,0,0.3,Colors.Red);
+  var Р¦РёС„РµСЂР±Р»Р°С‚ := Cylinder(0,0,-0.4,0.2,6,Colors.DeepPink);
+  var РЎРµРє := Arrow(0,0,0,0,-5.5,0,0.2,Colors.Yellow);
+  var РњРёРЅ := Arrow(0,0,0,0,-6.0,0,0.3,Colors.Red);
   
   var a := 0;
   var r := 5.8;
@@ -17,7 +17,7 @@ begin
   while True do
   begin
     Sleep(10);
-    Сек.Rotate(v3D(0,0,1),-6);
-    Мин.Rotate(v3D(0,0,1),-6/60);
+    РЎРµРє.Rotate(v3D(0,0,1),-6);
+    РњРёРЅ.Rotate(v3D(0,0,1),-6/60);
   end;
 end.

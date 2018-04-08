@@ -231,6 +231,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 					return base.ProcessKeyEvent(ch);
 				case CompletionDataProviderKeyResult.NormalKey:
 					// just process normally
+                    
 					return base.ProcessKeyEvent(ch);
 				case CompletionDataProviderKeyResult.InsertionKey:
 					return InsertSelectedItem(ch);
@@ -252,12 +253,6 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 				}
 			}
 		}
-		
-        /*				int xpos = textArea.TextView.GetDrawingXPos(this.line, this.column);
-				return new Point(textArea.TextView.DrawingPosition.X + xpos,
-				                 textArea.TextView.DrawingPosition.Y
-				                 + (textArea.Document.GetVisibleLine(this.line)) * textArea.TextView.FontHeight
-				                 - textArea.TextView.TextArea.VirtualTop.Y);*/
 
         void fiexerrorTextAreaInvalidate()
         {

@@ -35,7 +35,7 @@ namespace SymbolTable
 
         private System.Collections.Generic.Dictionary<int, object> ht = new System.Collections.Generic.Dictionary<int, object>();*/
 
-        private Dictionary<string,HashTableNode> dict = new Dictionary<string, HashTableNode>();
+        public Dictionary<string,HashTableNode> dict = new Dictionary<string, HashTableNode>();
 
         /*private int GetHash(string s)
         {

@@ -9,6 +9,7 @@ using PascalABCCompiler.SyntaxTree;
 using PascalABCSavParser;
 using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.Errors;
+using System.Text.RegularExpressions;
 
 namespace GPPGParserScanner
 {
@@ -380,6 +381,83 @@ namespace GPPGParserScanner
 				return lcl.literals[0];
 			return lcl;
         }
+        
+        public expression ParseExpression(string Text, int line, int col)
+        {
+            PT parsertools = new PT(); // контекст сканера и парсера
+            parsertools.errors = new List<Error>();
+            parsertools.warnings = new List<CompilerWarning>();
+            parsertools.CurrentFileName = System.IO.Path.GetFullPath(this.parsertools.CurrentFileName);
+            parsertools.build_tree_for_format_strings = true;
+            Scanner scanner = new Scanner();
+            scanner.SetSource("<<expression>>"+Text, 0);
+            scanner.parsertools = parsertools;// передали parsertools в объект сканера
+            GPPGParser parser = new GPPGParser(scanner);
+            parsertools.build_tree_for_formatter = false;
+            parser.parsertools = parsertools;
+            if (!parser.Parse())
+                if (parsertools.errors.Count == 0)
+                    parsertools.AddError("Неопознанная синтаксическая ошибка!", null);
+            foreach (Error err in parsertools.errors)
+            {
+                this.parsertools.errors.Add(err);
+            }
+            return parser.root as expression;
+        }
+
+        public expression NewFormatString(string_const str)
+        {
+            try
+            {
+                method_call mc = new method_call();
+                mc.dereferencing_value = new dot_node(new ident("string", str.source_context), new ident("Format", str.source_context), str.source_context);
+                mc.parameters = new expression_list();
+                //string[] arr = Regex.Split(str.Value, @"\{[\w\d._]+\}");
+                //Match match = Regex.Match(str.Value, @"\{[\w\d._]+\}");
+                string[] arr = Regex.Split(str.Value, @"\{[^\}]+\}");
+                Match match = Regex.Match(str.Value, @"\{[^\}]+\}");
+                List<string> vars = new List<string>();
+                //Dictionary<string, int> var_offsets = new Dictionary<string, int>();
+                List<int> var_offsets = new List<int>();
+                while (match.Success)
+                {
+                    string s = match.Value.Replace("{", "").Replace("}", "");
+                    vars.Add(s);
+                    var_offsets.Add(match.Index);
+                    match = match.NextMatch();
+                }
+                if (vars.Count == 0)
+                {
+                    parsertools.errors.Add(new bad_format_string(parsertools.CurrentFileName, str.source_context, str));
+                    return str;
+                }
+                    
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    sb.Append(arr[i]);
+                    if (i < arr.Length - 1)
+                        sb.Append("{" + i + "}");
+                }
+                mc.parameters.Add(new string_const(sb.ToString(), str.source_context), str.source_context);
+                for (int i = 0; i < vars.Count; i++)
+                {
+                    string s = vars[i];
+                    var expr = ParseExpression(new string('\n', str.source_context.begin_position.line_num - 1) + new string(' ', str.source_context.begin_position.column_num + var_offsets[i] + 2) + s, str.source_context.begin_position.line_num, str.source_context.begin_position.column_num + var_offsets[i] + 2);
+                    expr.source_context.begin_position.line_num = str.source_context.begin_position.line_num;
+                    expr.source_context.end_position.line_num = str.source_context.end_position.line_num;
+                    mc.parameters.Add(expr);
+                }
+
+                mc.source_context = str.source_context;
+                return mc;
+            }
+            catch (Exception ex)
+            {
+                parsertools.errors.Add(new bad_format_string(parsertools.CurrentFileName, str.source_context, str));
+            }
+            return str;
+        }
 
         public var_def_statement NewVarOrIdentifier(ident identifier, named_type_reference fptype, LexLocation loc)
         {
@@ -400,7 +478,12 @@ namespace GPPGParserScanner
 			var op = new op_type_node(Operators.Assignment);
 			//_op_type_node.source_context = parsertools.GetTokenSourceContext();
 			var ass = new assign(id, expr_l1, op.type);
-			parsertools.create_source_context(ass, id, expr_l1);
+			parsertools.create_source_context(ass, id, expr_l1); // дурацкая функция - если хотя бы у одного sc=null, то возвращает null
+            if (ass.source_context == null)
+                if (expr_l1.source_context != null)
+                    ass.source_context = expr_l1.source_context;
+                else if (id.source_context != null)
+                    ass.source_context = id.source_context;
             sl.subnodes.Add(ass);
             sl.source_context = loc;
 			return sl;

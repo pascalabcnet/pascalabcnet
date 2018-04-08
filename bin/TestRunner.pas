@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 {$reference Compiler.dll}
 {$reference CodeCompletion.dll}
@@ -60,6 +60,8 @@ begin
       if comp.ErrorsList[0].GetType() = typeof(PascalABCCompiler.Errors.CompilerInternalError) then
         System.Windows.Forms.MessageBox.Show('Compilation of '+files[i]+' failed'+System.Environment.NewLine+comp.ErrorsList[0].ToString());
     end;
+    if i mod 20 = 0 then
+      System.GC.Collect();
   end;
   
 end;
@@ -91,6 +93,8 @@ begin
       System.Windows.Forms.MessageBox.Show('Compilation of '+files[i]+' failed'+System.Environment.NewLine+comp.ErrorsList[0].ToString());
       Halt();
     end;
+    if i mod 20 = 0 then
+      System.GC.Collect();
   end;
   
 end;
@@ -121,6 +125,8 @@ begin
       System.Windows.Forms.MessageBox.Show('Compilation of '+files[i]+' failed'+System.Environment.NewLine+comp.ErrorsList[0].ToString());
       Halt();
     end;
+    if i mod 20 = 0 then
+      System.GC.Collect();
   end;
   
 end;
@@ -149,7 +155,7 @@ begin
       Halt();
     end;
   end;
-  
+  System.GC.Collect;
 end;
 
 procedure CompileAllUsesUnits;
@@ -176,7 +182,7 @@ begin
       Halt();
     end;
   end;
-  
+  System.GC.Collect;
 end;
 
 procedure CopyPCUFiles;

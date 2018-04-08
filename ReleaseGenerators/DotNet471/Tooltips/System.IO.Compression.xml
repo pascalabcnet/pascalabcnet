@@ -1,0 +1,389 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <assembly>
+    <name>System.IO.Compression</name>
+  </assembly>
+  <members>
+    <member name="M:System.IO.Compression.ZipArchive.#ctor(System.IO.Stream)">
+      <summary>
+              Инициализирует новый экземпляр <see cref="T:System.IO.Compression.ZipArchive" /> класса из указанного потока.
+            </summary>
+      <param name="stream">
+                Поток, содержащий архив для чтения.
+              </param>
+      <exception cref="T:System.ArgumentException">
+                  Поток уже закрыт или не поддерживает чтение.
+                </exception>
+      <exception cref="T:System.ArgumentNullException">
+                  Свойство <paramref name="stream" /> имеет значение <see langword="null" />.
+                </exception>
+      <exception cref="T:System.IO.InvalidDataException">
+                  Содержимое потока не в формате zip архива.
+                </exception>
+    </member>
+    <member name="M:System.IO.Compression.ZipArchive.#ctor(System.IO.Stream,System.IO.Compression.ZipArchiveMode)">
+      <summary>
+              Инициализирует новый экземпляр <see cref="T:System.IO.Compression.ZipArchive" /> класс из указанного потока и с указанным режимом.
+            </summary>
+      <param name="stream">
+                Входной или выходной поток.
+              </param>
+      <param name="mode">
+                Одно из значений перечисления, указывающее, для чтения, создания или обновления записей используется ZIP-архив.
+              </param>
+      <exception cref="T:System.ArgumentException">
+                  Поток уже закрыт или возможности потока не совпадает с режимом.
+                </exception>
+      <exception cref="T:System.ArgumentNullException">
+                  Свойство <paramref name="stream" /> имеет значение <see langword="null" />.
+                </exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+                  <paramref name="mode" />не является допустимым значением.
+                </exception>
+      <exception cref="T:System.IO.InvalidDataException">
+                  Содержимое потока не может быть интерпретирован как ZIP-архиве.
+                
+                  -или-
+                
+                  <paramref name="mode" />— <see cref="F:System.IO.Compression.ZipArchiveMode.Update" /> и запись в архиве отсутствует или повреждена и не удается прочитать.
+                
+                  -или-
+                
+                  <paramref name="mode" />— <see cref="F:System.IO.Compression.ZipArchiveMode.Update" /> и запись слишком велик для размещения в памяти.
+                </exception>
+    </member>
+    <member name="M:System.IO.Compression.ZipArchive.#ctor(System.IO.Stream,System.IO.Compression.ZipArchiveMode,System.Boolean)">
+      <summary>
+              Инициализирует новый экземпляр <see cref="T:System.IO.Compression.ZipArchive" /> класса в указанный поток для указанного режима и при необходимости оставляет поток открытым.
+            </summary>
+      <param name="stream">
+                Входной или выходной поток.
+              </param>
+      <param name="mode">
+                Одно из значений перечисления, указывающее, для чтения, создания или обновления записей используется ZIP-архив.
+              </param>
+      <param name="leaveOpen">
+                Значение <see langword="true" />, чтобы оставить поток открытым после удаления объекта <see cref="T:System.IO.Compression.ZipArchive" />; в противном случае — значение <see langword="false" />.
+              </param>
+      <exception cref="T:System.ArgumentException">
+                  Поток уже закрыт или возможности потока не совпадает с режимом.
+                </exception>
+      <exception cref="T:System.ArgumentNullException">
+                  Свойство <paramref name="stream" /> имеет значение <see langword="null" />.
+                </exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+                  <paramref name="mode" />не является допустимым значением.
+                </exception>
+      <exception cref="T:System.IO.InvalidDataException">
+                  Содержимое потока не может быть интерпретирован как ZIP-архиве.
+                
+                  -или-
+                
+                  <paramref name="mode" />— <see cref="F:System.IO.Compression.ZipArchiveMode.Update" /> и запись в архиве отсутствует или повреждена и не удается прочитать.
+                
+                  -или-
+                
+                  <paramref name="mode" />— <see cref="F:System.IO.Compression.ZipArchiveMode.Update" /> и запись слишком велик для размещения в памяти.
+                </exception>
+    </member>
+    <member name="M:System.IO.Compression.ZipArchive.#ctor(System.IO.Stream,System.IO.Compression.ZipArchiveMode,System.Boolean,System.Text.Encoding)">
+      <summary>
+              Инициализирует новый экземпляр <see cref="T:System.IO.Compression.ZipArchive" /> класс в указанный поток для указанного режима использует указанную кодировку для имен записей и при необходимости оставляет поток открытым.
+            </summary>
+      <param name="stream">
+                Входной или выходной поток.
+              </param>
+      <param name="mode">
+                Одно из значений перечисления, указывающее, для чтения, создания или обновления записей используется ZIP-архив.
+              </param>
+      <param name="leaveOpen">
+                Значение <see langword="true" />, чтобы оставить поток открытым после удаления объекта <see cref="T:System.IO.Compression.ZipArchive" />; в противном случае — значение <see langword="false" />.
+              </param>
+      <param name="entryNameEncoding">
+                Кодирование, используемое при чтении или записи имен записей в этом архиве.
+                 Задайте значение для этого параметра, только если кодирование требуется для взаимодействия с инструментами и библиотеками ZIP-архива, которые не поддерживают кодирование UTF-8 для имен записей.
+              </param>
+      <exception cref="T:System.ArgumentException">
+                  Поток уже закрыт или возможности потока не совпадает с режимом.
+                </exception>
+      <exception cref="T:System.ArgumentNullException">
+                  Свойство <paramref name="stream" /> имеет значение <see langword="null" />.
+                </exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+                  <paramref name="mode" />не является допустимым значением.
+                </exception>
+      <exception cref="T:System.IO.InvalidDataException">
+                  Содержимое потока не может быть интерпретирован как ZIP-архиве.
+                
+                  -или-
+                
+                  <paramref name="mode" />— <see cref="F:System.IO.Compression.ZipArchiveMode.Update" /> и запись в архиве отсутствует или повреждена и не удается прочитать.
+                
+                  -или-
+                
+                  <paramref name="mode" />— <see cref="F:System.IO.Compression.ZipArchiveMode.Update" /> и запись слишком велик для размещения в памяти.
+                </exception>
+    </member>
+    <member name="M:System.IO.Compression.ZipArchive.CreateEntry(System.String)">
+      <summary>
+              Создает пустую запись, которая имеет указанные путь и имя записи в ZIP архиве.
+            </summary>
+      <param name="entryName">
+                Путь относительно корня архива, который указывает имя создаваемой записи.
+              </param>
+      <returns>
+              Пустая запись в ZIP-архиве.
+            </returns>
+      <exception cref="T:System.ArgumentException">
+                  Свойство <paramref name="entryName" /> имеет значение <see cref="F:System.String.Empty" />.
+                </exception>
+      <exception cref="T:System.ArgumentNullException">
+                  Свойство <paramref name="entryName" /> имеет значение <see langword="null" />.
+                </exception>
+      <exception cref="T:System.NotSupportedException">
+                  ZIP-архив не поддерживает запись.
+                </exception>
+      <exception cref="T:System.ObjectDisposedException">
+                  ZIP-архив был удален.
+                </exception>
+    </member>
+    <member name="M:System.IO.Compression.ZipArchive.CreateEntry(System.String,System.IO.Compression.CompressionLevel)">
+      <summary>
+              Создает пустую запись, которая имеет указанные имя и уровень сжатия ZIP записи в архиве.
+            </summary>
+      <param name="entryName">
+                Путь относительно корня архива, который указывает имя создаваемой записи.
+              </param>
+      <param name="compressionLevel">
+                Одно из значений перечисления, указывающее, акцентировать ли внимание на скорости или эффективности сжатия при создании записи.
+              </param>
+      <returns>
+              Пустая запись в ZIP-архиве.
+            </returns>
+      <exception cref="T:System.ArgumentException">
+                  Свойство <paramref name="entryName" /> имеет значение <see cref="F:System.String.Empty" />.
+                </exception>
+      <exception cref="T:System.ArgumentNullException">
+                  Свойство <paramref name="entryName" /> имеет значение <see langword="null" />.
+                </exception>
+      <exception cref="T:System.NotSupportedException">
+                  ZIP-архив не поддерживает запись.
+                </exception>
+      <exception cref="T:System.ObjectDisposedException">
+                  ZIP-архив был удален.
+                </exception>
+    </member>
+    <member name="M:System.IO.Compression.ZipArchive.Dispose">
+      <summary>
+              Освобождает ресурсы, используемые текущим экземпляром класса <see cref="T:System.IO.Compression.ZipArchive" />.
+            </summary>
+    </member>
+    <member name="M:System.IO.Compression.ZipArchive.Dispose(System.Boolean)">
+      <summary>
+              Вызывается методом <see cref="M:System.IO.Compression.ZipArchive.Dispose" /> и <see cref="M:System.Object.Finalize" /> методов, чтобы освободить неуправляемые ресурсы, используемые текущим экземпляром <see cref="T:System.IO.Compression.ZipArchive" /> класса и при необходимости завершения записи архива и освобождает управляемые ресурсы.
+            </summary>
+      <param name="disposing">
+                <see langword="true" /> для завершения записи архива и освобождения управляемых и неуправляемых ресурсов; <see langword="false" /> для освобождения только неуправляемых ресурсов.
+              </param>
+    </member>
+    <member name="M:System.IO.Compression.ZipArchive.GetEntry(System.String)">
+      <summary>
+              Извлекает оболочку для заданной записи в ZIP-архиве.
+            </summary>
+      <param name="entryName">
+                Путь относительно корня архива, который указывает запись для получения.
+              </param>
+      <returns>
+              Программа-оболочка для указанной записи в архиве; <see langword="null" /> Если запись не существует в архиве.
+            </returns>
+      <exception cref="T:System.ArgumentException">
+                  Свойство <paramref name="entryName" /> имеет значение <see cref="F:System.String.Empty" />.
+                </exception>
+      <exception cref="T:System.ArgumentNullException">
+                  Свойство <paramref name="entryName" /> имеет значение <see langword="null" />.
+                </exception>
+      <exception cref="T:System.NotSupportedException">
+                  ZIP-архив не поддерживает чтение.
+                </exception>
+      <exception cref="T:System.ObjectDisposedException">
+                  ZIP-архив был удален.
+                </exception>
+      <exception cref="T:System.IO.InvalidDataException">
+                  ZIP-архив поврежден, и его операции не удается получить.
+                </exception>
+    </member>
+    <member name="M:System.IO.Compression.ZipArchiveEntry.Delete">
+      <summary>
+              Удаляет запись из ZIP-архива.
+            </summary>
+      <exception cref="T:System.IO.IOException">
+                  Операция уже открыт для чтения или записи.
+                </exception>
+      <exception cref="T:System.NotSupportedException">
+                  Для этой записи ZIP-архив был открыт в режиме не <see cref="F:System.IO.Compression.ZipArchiveMode.Update" />.
+                </exception>
+      <exception cref="T:System.ObjectDisposedException">
+                  Для этой записи ZIP-архив был удален.
+                </exception>
+    </member>
+    <member name="M:System.IO.Compression.ZipArchiveEntry.Open">
+      <summary>
+              Открывает запись из ZIP-архива.
+            </summary>
+      <returns>
+              Поток, представляющий содержимое записи.
+            </returns>
+      <exception cref="T:System.IO.IOException">
+                  Запись в настоящее время открыт для записи.
+                
+                  -или-
+                
+                  Запись была удалена из архива.
+                
+                  -или-
+                
+                  Архив для этой операции была открыта с <see cref="F:System.IO.Compression.ZipArchiveMode.Create" /> режиме и эта запись уже записаны.
+                </exception>
+      <exception cref="T:System.IO.InvalidDataException">
+                  Операция является либо из архива отсутствует или повреждена и не удается прочитать.
+                
+                  -или-
+                
+                  Запись была сжата с использованием неподдерживаемого метода сжатия.
+                </exception>
+      <exception cref="T:System.ObjectDisposedException">
+                  Для этой записи ZIP-архив был удален.
+                </exception>
+    </member>
+    <member name="M:System.IO.Compression.ZipArchiveEntry.ToString">
+      <summary>
+              Извлекает относительный путь записи в ZIP-архиве.
+            </summary>
+      <returns>
+              Относительный путь записи, это значение хранится в <see cref="P:System.IO.Compression.ZipArchiveEntry.FullName" /> свойство.
+            </returns>
+    </member>
+    <member name="P:System.IO.Compression.ZipArchive.Entries">
+      <summary>
+              Получает коллекцию записей, которые находятся в ZIP-архиве в текущий момент.
+            </summary>
+      <returns>
+              Коллекция записей, которые находятся в ZIP-архиве в текущий момент.
+            </returns>
+      <exception cref="T:System.NotSupportedException">
+                  ZIP-архив не поддерживает чтение.
+                </exception>
+      <exception cref="T:System.ObjectDisposedException">
+                  ZIP-архив был удален.
+                </exception>
+      <exception cref="T:System.IO.InvalidDataException">
+                  ZIP-архив поврежден, и его операции не удается получить.
+                </exception>
+    </member>
+    <member name="P:System.IO.Compression.ZipArchive.Mode">
+      <summary>
+              Получает значение, которое описывает тип действий, которые ZIP-архив может выполнять над записями.
+            </summary>
+      <returns>
+              Одно из значений перечисления, описывающее тип действия (чтение, создание или обновление), которое ZIP-архив может выполнять над записями.
+            </returns>
+    </member>
+    <member name="P:System.IO.Compression.ZipArchiveEntry.Archive">
+      <summary>
+              Получает ZIP-архив, к которому принадлежит запись.
+            </summary>
+      <returns>
+              ZIP-архив, которому принадлежит запись, или <see langword="null" /> Если запись была удалена.
+            </returns>
+    </member>
+    <member name="P:System.IO.Compression.ZipArchiveEntry.CompressedLength">
+      <summary>
+              Получает сжатый размер записи в ZIP-архиве.
+            </summary>
+      <returns>
+              Сжатый размер записи в ZIP-архиве.
+            </returns>
+      <exception cref="T:System.InvalidOperationException">
+                  Значение свойства не доступен, поскольку операция была изменена.
+                </exception>
+    </member>
+    <member name="P:System.IO.Compression.ZipArchiveEntry.FullName">
+      <summary>
+              Получает относительный путь записи в ZIP-архиве.
+            </summary>
+      <returns>
+              Относительный путь записи в ZIP-архиве.
+            </returns>
+    </member>
+    <member name="P:System.IO.Compression.ZipArchiveEntry.LastWriteTime">
+      <summary>
+              Получает или задает время последнего изменения записи в ZIP-архиве.
+            </summary>
+      <returns>
+              Время последнего изменения записи в ZIP-архиве.
+            </returns>
+      <exception cref="T:System.NotSupportedException">
+                  Задайте для этого свойства не удалось, так как ZIP-архиве для записи в <see cref="F:System.IO.Compression.ZipArchiveMode.Read" /> режиме.
+                </exception>
+      <exception cref="T:System.IO.IOException">
+                  Режим архив <see cref="F:System.IO.Compression.ZipArchiveMode.Create" />.
+                
+                  -или-
+                
+                  Режим архив <see cref="F:System.IO.Compression.ZipArchiveMode.Update" /> и операция была открыта.
+                </exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+                  Предпринята попытка присвоить этому свойству значение, либо более ранних, чем 1980 1 января 0:00:00 (полночь) или более поздней версии, чем 31 декабря 2107 23:59:58 (одну секунду перед полночь).
+                </exception>
+    </member>
+    <member name="P:System.IO.Compression.ZipArchiveEntry.Length">
+      <summary>
+              Получает несжатый размер записи в ZIP-архиве.
+            </summary>
+      <returns>
+              Несжатый размер записи в ZIP-архиве.
+            </returns>
+      <exception cref="T:System.InvalidOperationException">
+                  Значение свойства не доступен, поскольку операция была изменена.
+                </exception>
+    </member>
+    <member name="P:System.IO.Compression.ZipArchiveEntry.Name">
+      <summary>
+              Получает имя файла записи в ZIP-архиве.
+            </summary>
+      <returns>
+              Имя файла записи в ZIP-архиве.
+            </returns>
+    </member>
+    <member name="T:System.IO.Compression.ZipArchive">
+      <summary>
+              Представляет пакет сжатых файлов в формате ZIP архива.
+            </summary>
+    </member>
+    <member name="T:System.IO.Compression.ZipArchiveEntry">
+      <summary>
+              Представляет сжатый файл внутри ZIP-архива.
+            </summary>
+    </member>
+    <member name="T:System.IO.Compression.ZipArchiveMode">
+      <summary>
+              Задает значения для взаимодействия с записями в ZIP-архиве.
+            </summary>
+    </member>
+    <member name="F:System.IO.Compression.ZipArchiveMode.Read">
+      <summary>
+              Разрешается только чтение записей архива.
+            </summary>
+    </member>
+    <member name="F:System.IO.Compression.ZipArchiveMode.Create">
+      <summary>
+              Допускается только создание новых записей в архиве.
+            </summary>
+    </member>
+    <member name="F:System.IO.Compression.ZipArchiveMode.Update">
+      <summary>
+              Чтения и записи архива разрешены операции записи.
+            </summary>
+    </member>
+  </members>
+</doc>

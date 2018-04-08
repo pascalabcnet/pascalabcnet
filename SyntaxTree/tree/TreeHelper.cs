@@ -34,6 +34,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class syntax_tree_node
     {
+
         public syntax_tree_node Parent;
         public int FindIndex(syntax_tree_node node, Desc d = Desc.All)
         {
@@ -291,6 +292,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class statement_list 
     {
+
         public statement_list(IEnumerable<statement> sts)
         {
             AddMany(sts);
@@ -405,7 +407,7 @@ namespace PascalABCCompiler.SyntaxTree
     {
         public override string ToString()
         {
-            return val.ToString();
+            return val.ToString(System.Globalization.CultureInfo.InvariantCulture);
         }
     }
 
@@ -769,8 +771,6 @@ namespace PascalABCCompiler.SyntaxTree
     public partial class procedure_definition
     {
         public bool has_yield = false;
-        
-
         public procedure_definition(procedure_header proc_header, proc_block proc_body, SourceContext sc)
         {
             this.proc_header = proc_header;
@@ -1730,6 +1730,12 @@ namespace PascalABCCompiler.SyntaxTree
     {
         public override string ToString() => "loop " + this.count.ToString() + " do \n" + this.stmt.ToString();
     }
+
+    public partial class lambda_inferred_type
+    {
+        public override string ToString() => "lam_inferred";
+    }
+
 
 }
 

@@ -4,6 +4,7 @@ using System;
 
 using PascalABCCompiler.TreeRealization;
 using System.Collections.Generic;
+using System.Collections;
 
 namespace PascalABCCompiler.TreeConverter
 {
@@ -57,7 +58,7 @@ namespace PascalABCCompiler.TreeConverter
 		nit_compiled_namespace
 	};*/
 
-    public class PCUSymbolInfo : SymbolInfoUnit
+    public class PCUSymbolInfo : SymbolInfo
     {
         private semantic_node_type _semantic_node_type;
 
@@ -451,61 +452,113 @@ namespace PascalABCCompiler.TreeConverter
     {
         //private readonly name_information_type _name_information_type;
 
-        public List<SymbolInfoUnit> InfoUnitList;
+        public List<SymbolInfo> list;
+        
 
         public SymbolInfoList()
         {
-            InfoUnitList = new List<SymbolInfoUnit>(SymbolTable.SymbolTableConstants.InfoList_StartSize);
+            list = new List<SymbolInfo>(SymbolTable.SymbolTableConstants.InfoList_StartSize);
         }
 
-        public SymbolInfoList(SymbolInfoUnit inf)
+        public SymbolInfoList(SymbolInfo inf)
         {
-            InfoUnitList = new List<SymbolInfoUnit>(SymbolTable.SymbolTableConstants.InfoList_StartSize);
-            InfoUnitList.Add(inf);
+            list = new List<SymbolInfo>(SymbolTable.SymbolTableConstants.InfoList_StartSize);
+            list.Add(inf);
+        }
+
+        public SymbolInfo this[int key]
+        {
+            get
+            {
+                return list[key];
+            }
+            set
+            {
+                list[key] = value;
+            }
         }
 
         public SymbolInfoList copy()
         {
-            SymbolInfoList si = new SymbolInfoList();
-            si.InfoUnitList = new List<SymbolInfoUnit>(this.InfoUnitList);
-            return si;
+            SymbolInfoList sil = new SymbolInfoList();
+            sil.list = new List<SymbolInfo>(this.list);
+            return sil;
         }
 
-        public void Add(SymbolInfoUnit value)
+        public void Add(SymbolInfo value)
         {
-            InfoUnitList.Add(value);
+            list.Add(value);
         }
         public void Add(SymbolInfoList value)
         {
             if(value != null)
-                InfoUnitList.AddRange(value.InfoUnitList);
+                list.AddRange(value.list);
         }
 
-        public SymbolInfoUnit First()
+        public SymbolInfo First()
         {
-            if (InfoUnitList.Count > 0)
-                return InfoUnitList[0];
+            if (Count() > 0)
+                return list[0];
             else
                 return null;
         }
 
-        public SymbolInfoUnit Last()
+        public SymbolInfo Last()
         {
-            if (InfoUnitList.Count > 0)
-                return InfoUnitList[InfoUnitList.Count - 1];
+            if (Count() > 0)
+                return list[list.Count - 1];
             else
                 return null;
         }
 
-        public int IndexOf(SymbolInfoUnit x)
+        public int IndexOf(SymbolInfo x)
         {
-            for (int i = 0; i < InfoUnitList.Count; ++i)
-                if (InfoUnitList[i] == x)
+            for (int i = 0; i < list.Count; ++i)
+                if (list[i] == x)
                     return i;
 
             return -1;
         }
 
+        public int Count()
+        {
+            if (list != null)
+                return list.Count;
+            return 0;
+        }
+
+        public bool HasOnlyExtensionMethods()
+        {
+            for (int i = 0; i < list.Count; ++i)
+                if (!(list[i].sym_info is function_node && (list[i].sym_info as function_node).is_extension_method))
+                    return false;
+            return true;
+        }
+
+        public void Insert(int index, SymbolInfo item)
+        {
+            if (list != null)
+                list.Insert(index, item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            if(list != null)
+                list.RemoveAt(index);
+        }
+
+        public void RemoveRange(int index, int count)
+        {
+            if (list != null)
+                list.RemoveRange(index, count);
+        }
+
+        public SymbolInfoList GetRange(int index, int count)
+        {
+            SymbolInfoList temp = new SymbolInfoList();
+            temp.list = list.GetRange(index, count);
+            return temp;
+        }
 
         public override bool Equals(System.Object obj)
         {
@@ -520,10 +573,10 @@ namespace PascalABCCompiler.TreeConverter
                 return false;
             }
 
-            if (p.InfoUnitList.Count != InfoUnitList.Count)
+            if (p.Count() != list.Count)
                 return false;
-            for (int i = 0; i < InfoUnitList.Count; ++i)
-                if (p.InfoUnitList[i] != InfoUnitList[i])
+            for (int i = 0; i < list.Count; ++i)
+                if (p.list[i] != list[i])
                     return false;
             return true;
         }
@@ -534,10 +587,10 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return false;
             }
-            if (p.InfoUnitList.Count != InfoUnitList.Count)
+            if (p.Count() != list.Count)
                 return false;
-            for (int i = 0; i < InfoUnitList.Count; ++i)
-                if (p.InfoUnitList[i] != InfoUnitList[i])
+            for (int i = 0; i < list.Count; ++i)
+                if (p.list[i] != list[i])
                     return false;
             return true;
         }
@@ -558,16 +611,40 @@ namespace PascalABCCompiler.TreeConverter
             return !(a == b);
         }
 
+        /*//IEnumerator
+         * int position = -1;
+        public bool MoveNext()
+        {
+            position++;
+            return (position < list.Count);
+        }
+
+        //IEnumerable
+        public void Reset()
+        { position = 0; }
+
+        //IEnumerable
+        public SymbolInfo Current
+        {
+            get { return list[position]; }
+        }
+
+        public IEnumerator GetEnumerator()
+        {
+            return (IEnumerator)this;
+        }*/
+
         public override int GetHashCode()
         {
             return base.GetHashCode();
         }
+
     }
 
 
-    public class SymbolInfoUnit
+    public class SymbolInfo
     {
-        public override string ToString() => "("+scope.ToString() + "," + sym_info.ToString()+")";
+        public override string ToString() => scope == null ? sym_info.ToString() : "(" + scope.ToString() + "," + sym_info.ToString()+")";
 
         //private readonly name_information_type _name_information_type;
         private definition_node _sym_info;
@@ -624,14 +701,14 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
-        public SymbolInfoUnit()
+        public SymbolInfo()
         {
             //reference = new SymbolInfo();
         }
 
-        public SymbolInfoUnit copy()
+        public SymbolInfo copy()
         {
-            SymbolInfoUnit si = new SymbolInfoUnit();
+            SymbolInfo si = new SymbolInfo();
             si._access_level = this.access_level;
             si._sym_info = this._sym_info;
             si._symbol_kind = this._symbol_kind;
@@ -690,7 +767,7 @@ namespace PascalABCCompiler.TreeConverter
             return al;
         }
 
-        public SymbolInfoUnit(template_class tc)
+        public SymbolInfo(template_class tc)
         {
             //reference = new SymbolInfo(tc);
             _sym_info = tc;
@@ -698,7 +775,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(label_node lab)
+        public SymbolInfo(label_node lab)
         {
             //reference = new SymbolInfo(lab);
             _sym_info = lab;
@@ -706,7 +783,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(compiled_event ce)
+        public SymbolInfo(compiled_event ce)
         {
             //reference = new SymbolInfo(ce);
             _sym_info = ce;
@@ -714,7 +791,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(compiled_type_node value)
+        public SymbolInfo(compiled_type_node value)
         {
             //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_compiled_type;
@@ -723,7 +800,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(common_event value)
+        public SymbolInfo(common_event value)
         {
             //reference = new SymbolInfo(value);
             _sym_info = value;
@@ -731,7 +808,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(common_namespace_event value)
+        public SymbolInfo(common_namespace_event value)
         {
             //reference = new SymbolInfo(value);
             _sym_info = value;
@@ -739,7 +816,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(function_node value)
+        public SymbolInfo(function_node value)
         {
             //reference = new SymbolInfo(value);
             _sym_info = value;
@@ -747,7 +824,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(compiled_function_node value)
+        public SymbolInfo(compiled_function_node value)
         {
             //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_compiled_function;
@@ -756,7 +833,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = get_function_kind(value);
         }
 
-        public SymbolInfoUnit(compiled_constructor_node value)
+        public SymbolInfo(compiled_constructor_node value)
         {
             //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_compiled_function;
@@ -765,7 +842,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = get_function_kind(value);
         }
 
-        public SymbolInfoUnit(compiled_property_node value)
+        public SymbolInfo(compiled_property_node value)
         {
             //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_compiled_property;
@@ -774,7 +851,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(compiled_variable_definition value)
+        public SymbolInfo(compiled_variable_definition value)
         {
             //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_compiled_variable;
@@ -783,7 +860,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(compiled_class_constant_definition value)
+        public SymbolInfo(compiled_class_constant_definition value)
         {
             //reference = new SymbolInfo(value);
             _sym_info = value;
@@ -791,7 +868,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(compiled_namespace_node value)
+        public SymbolInfo(compiled_namespace_node value)
         {
             //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_compiled_namespace;
@@ -800,7 +877,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(common_type_node value)
+        public SymbolInfo(common_type_node value)
         {
             //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_common_type;
@@ -809,7 +886,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(basic_function_node value)
+        public SymbolInfo(basic_function_node value)
         {
             //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_basic_function;
@@ -818,7 +895,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = get_function_kind(value);
         }
 
-        public SymbolInfoUnit(common_namespace_function_node value)
+        public SymbolInfo(common_namespace_function_node value)
         {
             //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_common_namespace_function;
@@ -827,7 +904,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = get_function_kind(value);
         }
 
-        public SymbolInfoUnit(common_in_function_function_node value)
+        public SymbolInfo(common_in_function_function_node value)
         {
             //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_common_in_function_function;
@@ -836,7 +913,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = get_function_kind(value);
         }
 
-        public SymbolInfoUnit(common_method_node value)
+        public SymbolInfo(common_method_node value)
         {
             //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_common_method;
@@ -845,7 +922,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = get_function_kind(value);
         }
 
-        public SymbolInfoUnit(common_namespace_node value)
+        public SymbolInfo(common_namespace_node value)
         {
             //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_common_namespace;
@@ -854,7 +931,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(unit_node value)
+        public SymbolInfo(unit_node value)
         {
             //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_unit;
@@ -863,7 +940,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(local_variable value)
+        public SymbolInfo(local_variable value)
         {
             //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_local_variable;
@@ -872,7 +949,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(local_block_variable value)
+        public SymbolInfo(local_block_variable value)
         {
             //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_local_variable;
@@ -881,7 +958,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(namespace_variable value)
+        public SymbolInfo(namespace_variable value)
         {
             //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_namespace_variable;
@@ -890,7 +967,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(class_field value)
+        public SymbolInfo(class_field value)
         {
             //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_class_field;
@@ -899,7 +976,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(common_parameter value)
+        public SymbolInfo(common_parameter value)
         {
             //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_common_parameter;
@@ -908,7 +985,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(basic_parameter value)
+        public SymbolInfo(basic_parameter value)
         {
             //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_basic_parameter;
@@ -917,7 +994,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(constant_definition_node value)
+        public SymbolInfo(constant_definition_node value)
         {
             //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_constant_defnition;
@@ -926,7 +1003,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(common_property_node value)
+        public SymbolInfo(common_property_node value)
         {
             //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_common_property;
@@ -935,7 +1012,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(type_node value)
+        public SymbolInfo(type_node value)
         {
             //reference = new SymbolInfo(value);
             _sym_info = value;
@@ -943,7 +1020,7 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = symbol_kind.sk_none;
         }
 
-        public SymbolInfoUnit(definition_node value, access_level alevel, symbol_kind skind)
+        public SymbolInfo(definition_node value, access_level alevel, symbol_kind skind)
         {
             //reference = new SymbolInfo(value, alevel, skind);
             _sym_info = value;

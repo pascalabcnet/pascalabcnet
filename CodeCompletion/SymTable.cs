@@ -179,20 +179,31 @@ namespace CodeCompletion
         public SymScope(SymInfo si, SymScope topScope)
         {
             this.si = si;
-            //si.describe = "unit "+si.name;
             si.IsUnitNamespace = true;
             this.topScope = topScope;
-            //this.ht = new Hashtable(CaseInsensitiveHashCodeProvider.Default,CaseInsensitiveComparer.Default);
             this.used_units = new List<SymScope>();
             members = new List<SymScope>();
         }
 
         public virtual void Clear()
         {
-            if (members != null) members.Clear();
-            if (symbol_table != null) symbol_table.Clear();
-            if (used_units != null) used_units.Clear();
-            
+            if (members != null)
+                members.Clear();
+            if (symbol_table != null)
+                symbol_table.Clear();
+            if (used_units != null)
+                used_units.Clear();
+            if (extension_methods != null)
+            {
+                foreach (TypeScope ts in extension_methods.Keys)
+                {
+                    List<ProcScope> meths = extension_methods[ts];
+                    foreach (ProcScope meth in meths)
+                        ts.RemoveExtensionMethod(ts, meth);
+                }
+                extension_methods.Clear();
+            }
+            UnitDocCache.RemoveItem(this);
             declaringUnit = null;
             topScope = null;
         }
@@ -317,6 +328,16 @@ namespace CodeCompletion
             meth_list.Add(meth);
         }
 
+        public void RemoveExtensionMethod(TypeScope ts, ProcScope meth)
+        {
+            List<ProcScope> meth_list = null;
+            if (extension_methods != null && extension_methods.TryGetValue(ts, out meth_list))
+            {
+                if (meth_list.Contains(meth))
+                    meth_list.Remove(meth);
+            }
+        }
+
         public SymInfo[] GetSymInfosForExtensionMethods(TypeScope ts)
         {
             /*if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr)
@@ -346,6 +367,8 @@ namespace CodeCompletion
 
         public List<ProcScope> GetExtensionMethods(TypeScope ts)
         {
+            if (ts is TypeSynonim)
+                return GetExtensionMethods((ts as TypeSynonim).actType);
             List<ProcScope> lst = new List<ProcScope>();
             List<ProcScope> meths = null;
             TypeScope tmp_ts = ts;
@@ -383,7 +406,7 @@ namespace CodeCompletion
                     else
                         tmp_ts = tmp_ts.baseScope;
                 }
-                if (ts.implemented_interfaces != null && !(ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr))
+                if (ts.implemented_interfaces != null && !(ts is ArrayScope && (!(ts as ArrayScope).is_dynamic_arr || (ts as ArrayScope).Rank > 1)))
                 {
                     List<TypeScope> implemented_interfaces = new List<TypeScope>();
                     implemented_interfaces.AddRange(ts.implemented_interfaces);
@@ -428,7 +451,9 @@ namespace CodeCompletion
         
         private bool hasUsesCycle(SymScope unit)
         {
-        	if (this.used_units != null)
+            if (this.Name == "PABCSystem")
+                return false;
+            if (this.used_units != null)
         		for (int i = 0; i < this.used_units.Count; i++)
                 {
                     if (this.used_units[i] == unit)
@@ -646,6 +671,9 @@ namespace CodeCompletion
             //if (loc != null && loc.begin_line_num <= line && loc.end_line_num >= line && loc.begin_column_num <= column && loc.end_column_num >= column)
             if (IsInScope(loc, line, column))
                 res = this;
+            TypeScope ts = this as TypeScope;
+            if (res == null && ts != null && ts.predef_loc != null && IsInScope(ts.predef_loc, line, column))
+                res = this;
             foreach (SymScope ss in members)
                 if (this != ss && ss.loc != null && (loc == null || loc != null && loc.doc != null && ss.loc.doc.file_name == loc.doc.file_name))
                 {
@@ -736,6 +764,7 @@ namespace CodeCompletion
             List<SymInfo> lst = new List<SymInfo>();
             foreach (SymScope ss in members)
             {
+                TypeScope ts = ss as TypeScope;
                 if (ss != this && !ss.si.name.StartsWith("$"))
                 {
                     if (ss.loc != null && loc != null)
@@ -743,6 +772,10 @@ namespace CodeCompletion
                         if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, true) == 0)
                         {
                             if (IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
+                            {
+                                lst.Add(ss.si);
+                            }
+                            else if (ts != null && ts.predef_loc != null && IsAfterDefinition(ts.predef_loc.begin_line_num, ts.predef_loc.begin_column_num))
                             {
                                 lst.Add(ss.si);
                             }
@@ -755,7 +788,8 @@ namespace CodeCompletion
                         UnitDocCache.AddDescribeToComplete(ss);
                 }
             }
-            if (topScope != null) lst.AddRange(topScope.GetNamesInAllTopScopes(all_names, ev, is_static));
+            if (topScope != null)
+                lst.AddRange(topScope.GetNamesInAllTopScopes(all_names, ev, is_static));
             if (used_units != null && all_names)
                 for (int i = 0; i < used_units.Count; i++)
                 {
@@ -804,6 +838,7 @@ namespace CodeCompletion
                         }
                     }
                 if (ss == null) return null;
+                TypeScope ts = ss as TypeScope;
                 if (CodeCompletionController.CurrentParser.LanguageInformation.CaseSensitive)
                     if (ss.si.name != name)
                         return null;
@@ -811,7 +846,8 @@ namespace CodeCompletion
                 {
                     if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, true) == 0 && this != ss)
                     {
-                        if (IsClassMember(ss) || IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
+                        if (IsClassMember(ss) || IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num) ||
+                            ts != null && ts.predef_loc != null && IsAfterDefinition(ts.predef_loc.begin_line_num, ts.predef_loc.begin_column_num))
                         {
                             return ss;
                         }
@@ -986,6 +1022,8 @@ namespace CodeCompletion
         }
     }
 
+    
+
     public class InterfaceUnitScope : SymScope, IInterfaceUnitScope
     {
         public ImplementationUnitScope impl_scope;
@@ -998,6 +1036,11 @@ namespace CodeCompletion
             UnitDocCache.AddDescribeToComplete(this);
             this.symbol_table = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
             si.description = this.ToString();
+        }
+
+        ~InterfaceUnitScope()
+        {
+
         }
 
         IImplementationUnitScope IInterfaceUnitScope.ImplementationUnitScope
@@ -1018,7 +1061,8 @@ namespace CodeCompletion
         public override void Clear()
         {
             base.Clear();
-            if (ref_assms != null) ref_assms.Clear();
+            if (ref_assms != null)
+                ref_assms.Clear();
         }
 
         public override bool IsAssembliesChanged()
@@ -1087,6 +1131,27 @@ namespace CodeCompletion
         public override string ToString()
         {
             return CodeCompletionController.CurrentParser.LanguageInformation.GetSimpleDescription(this);
+        }
+    }
+
+    public class NamespaceUnitScope : SymScope
+    {
+        public List<InterfaceUnitScope> units;
+
+        public NamespaceUnitScope(SymInfo si, SymScope topScope) : base(si, topScope)
+        {
+            units = new List<InterfaceUnitScope>();
+        }
+
+        public override SymScope FindName(string name)
+        {
+            foreach (InterfaceUnitScope unit in units)
+            {
+                SymScope ss = unit.FindName(name);
+                if (ss != null)
+                    return ss;
+            }
+            return null;
         }
     }
 
@@ -1376,6 +1441,11 @@ namespace CodeCompletion
             return sc.GetNamesAsInObject();
         }
 
+        public override SymInfo[] GetNamesInAllTopScopes(bool all_names, ExpressionVisitor ev, bool is_static)
+        {
+            return topScope.GetNamesInAllTopScopes(all_names, ev, is_static);
+        }
+
         public override bool IsEqual(SymScope ts)
         {
             /*ElementScope es = ts as ElementScope;
@@ -1403,6 +1473,7 @@ namespace CodeCompletion
         {
             this.def_proc = def_proc;
             this.top_mod_scope = top_mod_scope;
+            def_proc.procRealization = this;
             if (def_proc != null)
                 this.topScope = def_proc.topScope;
             this.si = new SymInfo(def_proc.si.name, def_proc.si.kind, def_proc.si.description);
@@ -1511,11 +1582,12 @@ namespace CodeCompletion
         public override SymScope FindName(string name)
         {
             //SymScope sc = ht[name] as SymScope;
-            SymScope sc = def_proc.FindNameOnlyInType(name);
+            /*SymScope sc = def_proc.FindNameOnlyInType(name);
             if (sc != null) return sc;
             if (top_mod_scope != null) 
                 return top_mod_scope.FindName(name);
-            return null;
+            return null;*/
+            return def_proc.FindName(name);
         }
 
         public override SymScope FindNameOnlyInType(string name)
@@ -1754,7 +1826,7 @@ namespace CodeCompletion
         public bool is_constructor;
         public bool is_forward = false;
         public bool already_defined = false;//sush. li realizacija
-        public ProcRealization proc_realization;//ssylka na realizaciju 
+        public ProcRealization procRealization;//ssylka na realizaciju 
         public List<string> template_parameters;
         public TypeScope declaringType;
         public bool is_extension = false;
@@ -1901,7 +1973,7 @@ namespace CodeCompletion
         {
             get
             {
-                return proc_realization;
+                return procRealization;
             }
         }
 
@@ -2011,8 +2083,8 @@ namespace CodeCompletion
             if (sc != null) return sc;
             if (topScope != null) sc = topScope.FindName(name);
             if (sc != null) return sc;
-            if (proc_realization != null && proc_realization.top_mod_scope != null)
-                return proc_realization.top_mod_scope.FindName(name);
+            if (procRealization != null && procRealization.top_mod_scope != null)
+                return procRealization.top_mod_scope.FindName(name);
             return null;
         }
 
@@ -2021,8 +2093,8 @@ namespace CodeCompletion
             List<SymScope> names = internal_find_overloads(name, true);
             if (topScope != null)
                 names.AddRange(topScope.FindOverloadNames(name));
-            if (proc_realization != null && proc_realization.top_mod_scope != null)
-                names.AddRange(proc_realization.top_mod_scope.FindOverloadNames(name));
+            if (procRealization != null && procRealization.top_mod_scope != null)
+                names.AddRange(procRealization.top_mod_scope.FindOverloadNames(name));
             return names;
         }
 
@@ -2061,11 +2133,6 @@ namespace CodeCompletion
         public override SymInfo[] GetNamesInAllTopScopes(bool all_names, ExpressionVisitor ev, bool is_static)
         {
             List<SymInfo> lst = new List<SymInfo>();
-            /*foreach (string s in ht.Keys)
-            {
-                SymScope sc = ht[s] as SymScope;
-                lst.Add(sc.si);
-            }*/
             foreach (SymScope ss in members)
                 if (ss != this && !ss.si.name.StartsWith("$"))
                 {
@@ -2085,7 +2152,10 @@ namespace CodeCompletion
                     if (!ss.si.has_doc)
                         UnitDocCache.AddDescribeToComplete(ss);
                 }
-            if (topScope != null) lst.AddRange(topScope.GetNamesInAllTopScopes(all_names, ev, this.is_static));
+            if (topScope != null)
+                lst.AddRange(topScope.GetNamesInAllTopScopes(all_names, ev, this.is_static));
+            if (procRealization != null)
+                lst.AddRange(procRealization.GetNamesInAllTopScopes(all_names, ev, this.is_static));
             //if (proc_realization != null && proc_realization.top_mod_scope != null) lst.AddRange(proc_realization.top_mod_scope.GetNamesInAllTopScopes(all_names,ev,is_static));
             return lst.ToArray();
         }
@@ -3146,6 +3216,8 @@ namespace CodeCompletion
         {
             if (ts is NullTypeScope && is_dynamic_arr)
                 return true;
+            if (ts is CompiledScope && (ts as CompiledScope).ctn == PascalABCCompiler.NetHelper.NetHelper.ArrayType)
+                return true;
             if (!is_dynamic_arr && !IsMultiDynArray)
                 return base.IsConvertable(ts);
             ArrayScope arrs = ts as ArrayScope;
@@ -3168,7 +3240,7 @@ namespace CodeCompletion
 
         public override bool IsEqual(SymScope ts)
         {
-            if (!is_dynamic_arr) return base.IsEqual(ts);
+            if (!is_dynamic_arr && !is_multi_dyn_arr) return base.IsEqual(ts);
             if (ts is NullTypeScope && is_dynamic_arr)
                 return true;
             ArrayScope arrs = ts as ArrayScope;
@@ -3176,11 +3248,20 @@ namespace CodeCompletion
             {
                 return this.elementType.IsEqual(ts.GetElementType());
             }
-            if (arrs == null || !arrs.is_dynamic_arr)
-                if (ts is TypeSynonim) return this.IsEqual((ts as TypeSynonim).actType);
-                else return false;
+            if (arrs == null || !arrs.is_dynamic_arr && !arrs.is_multi_dyn_arr)
+                if (ts is TypeSynonim)
+                    return this.IsEqual((ts as TypeSynonim).actType);
+                else
+                    return false;
             if (arrs.elementType == null) return true;
-            if (!this.elementType.IsEqual(arrs.elementType)) return false;
+            if (!this.elementType.IsEqual(arrs.elementType))
+                return false;
+            if (is_multi_dyn_arr && !arrs.is_multi_dyn_arr)
+                return false;
+            if (!is_multi_dyn_arr && arrs.is_multi_dyn_arr)
+                return false;
+            if (is_multi_dyn_arr && arrs.is_multi_dyn_arr)
+                return this.indexes.Length == arrs.indexes.Length;
             return true;
             
         }
@@ -3528,6 +3609,7 @@ namespace CodeCompletion
         public SymbolKind kind;
         public TypeScope baseScope;
         public location real_body_loc;
+        public location predef_loc;
         public string name;
         //public List<SymScope> members;
         public TypeScope elementType;
@@ -3651,6 +3733,14 @@ namespace CodeCompletion
             }
         }
 
+        public virtual bool IsAbstract
+        {
+            get
+            {
+                return is_abstract;
+            }
+        }
+
         public virtual ITypeScope[] GenericInstances
         {
             get
@@ -3749,6 +3839,16 @@ namespace CodeCompletion
             return procs;
         }
 
+        public virtual List<ProcScope> GetMethods()
+        {
+            List<ProcScope> procs = new List<ProcScope>();
+            if (members != null)
+                foreach (SymScope ss in members)
+                    if (ss is ProcScope)
+                        procs.Add(ss as ProcScope);
+            return procs;
+        }
+
         private TypeScope internalInstance(TypeScope ts, List<TypeScope> gen_args)
         {
             if (ts is TemplateParameterScope || ts is UnknownScope)
@@ -3810,11 +3910,31 @@ namespace CodeCompletion
             TypeScope ts = new TypeScope(this.kind, this.topScope, this.baseScope);
             ts.original_type = this;
             ts.loc = this.loc;
+            List<TypeScope> new_gen_args = new List<TypeScope>();
             for (int i = 0; i < gen_args.Count; i++)
             {
-                ts.AddGenericParameter(gen_args[i].si.name);
-                ts.AddGenericInstanciation(gen_args[i]);
+                TypeScope gen_arg = gen_args[i];
+                if (gen_arg.instances != null && gen_arg.original_type != null)
+                {
+                    if (gen_arg.original_type.generic_params != null && this.generic_params != null)
+                    for (int j=0; j < gen_arg.original_type.generic_params.Count; j++)
+                    {
+                        if (string.Compare(gen_arg.original_type.generic_params[j], this.generic_params[j], true) == 0)
+                        {
+                            new_gen_args.Add(gen_arg.instances[j]);
+                            ts.AddGenericParameter(gen_arg.instances[j].si.name);
+                            ts.AddGenericInstanciation(gen_arg.instances[j]);
+                        }
+                    }
+                }
+                else
+                {
+                    ts.AddGenericParameter(gen_args[i].si.name);
+                    ts.AddGenericInstanciation(gen_args[i]);
+                    new_gen_args.Add(gen_args[i]);
+                }
             }
+            gen_args = new_gen_args;
             ts.si.name = this.si.name;
             ts.documentation = this.documentation;
             ts.si.description = ts.GetDescription();
@@ -4305,9 +4425,11 @@ namespace CodeCompletion
         public override SymScope FindNameOnlyInType(string name)
         {
             SymScope sc = null;
-            if (original_type != null)
-                return original_type.FindNameOnlyInType(name);
-            if (name != null) sc = internal_find(name, false);//ht[name] as SymScope;
+            if (name != null)
+                sc = internal_find(name, false);
+            if (sc != null)
+                return sc;
+            
             if (sc == null && baseScope != null)
                 sc = baseScope.FindNameOnlyInType(name);
             if (sc == null && implemented_interfaces != null)
@@ -4317,6 +4439,8 @@ namespace CodeCompletion
                     if (sc != null)
                         break;
                 }
+            if (sc == null && original_type != null)
+                return original_type.FindNameOnlyInType(name);
             return sc;
         }
 
@@ -4431,6 +4555,15 @@ namespace CodeCompletion
             }
         }
 
+        private SymInfo convertToDefaultNETNames(Type t, SymInfo si)
+        {
+            if (!t.IsPrimitive)
+                return si;
+            SymInfo new_si = new SymInfo(si);
+            new_si.name = t.Name;
+            return new_si;
+        }
+
         public SymInfo[] GetNames(ExpressionVisitor ev, PascalABCCompiler.Parsers.KeywordKind keyword)
         {
             List<SymInfo> syms = new List<SymInfo>();
@@ -4450,7 +4583,7 @@ namespace CodeCompletion
                             else
                                 if (t.IsClass)
                                     //syms.Add(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Type, "class "+TypeUtility.GetTypeName(t)+ "\n" +AssemblyDocCache.GetDocumentation(t)));
-                                    syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Class, null), t).si);
+                                    syms.Add(convertToDefaultNETNames(t, TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Class, null), t).si));
                                 else if (t.IsInterface)
                                     //syms.Add(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Interface, "interface "+TypeUtility.GetTypeName(t)+ "\n" +AssemblyDocCache.GetDocumentation(t)));
                                     syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Interface, null), t).si);
@@ -4459,7 +4592,7 @@ namespace CodeCompletion
                                     syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Enum, null), t).si);
                                 else if (t.IsValueType)
                                     //syms.Add(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Struct, "record "+TypeUtility.GetTypeName(t)+ "\n" +AssemblyDocCache.GetDocumentation(t)));
-                                    syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Struct, null), t).si);
+                                    syms.Add(convertToDefaultNETNames(t, TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Struct, null), t).si));
                         }
                     }
 
@@ -4501,7 +4634,7 @@ namespace CodeCompletion
                 }
                 else
                 {
-                    PascalABCCompiler.TreeConverter.SymbolInfoList si = null;
+                    PascalABCCompiler.TreeConverter.SymbolInfoList sil = null;
                     if (entry_type != null)
                     {
                         t = PascalABCCompiler.NetHelper.NetHelper.FindType(entry_type.ctn.Namespace + "." + s);
@@ -4512,20 +4645,20 @@ namespace CodeCompletion
                             for (int j = 0; j < attrs.Length; j++)
                                 if (attrs[j].GetType().Name == "$GlobAttr")
                                 {
-                                    si = PascalABCCompiler.NetHelper.NetHelper.FindName(entry_type.ctn, s);
-                                    if (si != null) break;
+                                    sil = PascalABCCompiler.NetHelper.NetHelper.FindName(entry_type.ctn, s);
+                                    if (sil != null) break;
                                 }
                         }
                     }
-                    if (si != null)
-                        switch (si.First().sym_info.semantic_node_type)
+                    if (sil != null)
+                        switch (sil.First().sym_info.semantic_node_type)
                         {
                             case semantic_node_type.compiled_function_node:
                                 {
-                                    CompiledMethodScope cms = new CompiledMethodScope(new SymInfo(s, SymbolKind.Method, s), (si.First().sym_info as compiled_function_node).method_info, entry_type, true);
-                                    si.InfoUnitList.RemoveAt(0);
-                                    if (si.InfoUnitList.Count == 0)
-                                        si = null;
+                                    CompiledMethodScope cms = new CompiledMethodScope(new SymInfo(s, SymbolKind.Method, s), (sil.First().sym_info as compiled_function_node).method_info, entry_type, true);
+                                    sil.RemoveAt(0);
+                                    if (sil.Count() == 0)
+                                        sil = null;
                                     CompiledMethodScope tmp = cms;
                                     SortedDictionary<int, List<CompiledMethodScope>> meths = new SortedDictionary<int, List<CompiledMethodScope>>();
                                     if (cms.acc_mod != access_modifer.internal_modifer && cms.acc_mod != access_modifer.private_modifer)
@@ -4534,13 +4667,13 @@ namespace CodeCompletion
                                         meths[par_num] = new List<CompiledMethodScope>();
                                         meths[par_num].Add(cms);
                                     }
-                                    if (si != null)
+                                    if (sil != null)
                                     {
-                                        foreach(PascalABCCompiler.TreeConverter.SymbolInfoUnit si_unit in si.InfoUnitList)
+                                        foreach(var si in sil.list)
                                         {
-                                            if (si_unit.access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si_unit.access_level != PascalABCCompiler.TreeConverter.access_level.al_private && si_unit.sym_info.semantic_node_type == semantic_node_type.compiled_function_node)
+                                            if (si.access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si.access_level != PascalABCCompiler.TreeConverter.access_level.al_private && si.sym_info.semantic_node_type == semantic_node_type.compiled_function_node)
                                             {
-                                                tmp = new CompiledMethodScope(new SymInfo(s, SymbolKind.Method, s), (si_unit.sym_info as compiled_function_node).method_info, entry_type);
+                                                tmp = new CompiledMethodScope(new SymInfo(s, SymbolKind.Method, s), (si.sym_info as compiled_function_node).method_info, entry_type);
                                                 tmp.is_global = true;
                                                 //tmp.nextProc = cms;
                                                 //cms = tmp;
@@ -4574,16 +4707,16 @@ namespace CodeCompletion
                                     return cms;
                                 }
                             case semantic_node_type.compiled_variable_definition:
-                                if (si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_private)
+                                if (sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_private)
                                 {
-                                    CompiledFieldScope fld = new CompiledFieldScope(new SymInfo(s, SymbolKind.Field, s), (si.First().sym_info as compiled_variable_definition).compiled_field, entry_type, true);
+                                    CompiledFieldScope fld = new CompiledFieldScope(new SymInfo(s, SymbolKind.Field, s), (sil.First().sym_info as compiled_variable_definition).compiled_field, entry_type, true);
                                     return fld;
                                 }
                                 break;
                             case semantic_node_type.compiled_class_constant_definition:
-                                if (si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_private)
+                                if (sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_private)
                                 {
-                                    CompiledFieldScope fld = new CompiledFieldScope(new SymInfo(s, SymbolKind.Constant, s), (si.First().sym_info as compiled_class_constant_definition).field, entry_type, true);
+                                    CompiledFieldScope fld = new CompiledFieldScope(new SymInfo(s, SymbolKind.Constant, s), (sil.First().sym_info as compiled_class_constant_definition).field, entry_type, true);
                                     return fld;
                                 }
                                 break;
@@ -4715,7 +4848,15 @@ namespace CodeCompletion
             {
                 this.original_type = TypeTable.get_compiled_type(ctn.GetGenericTypeDefinition());
             }
-            
+
+            if (ctn.IsGenericType /*&& ctn.IsGenericTypeDefinition*/)
+            {
+                generic_params = new List<string>();
+                foreach (Type gen_t in ctn.GetGenericArguments())
+                {
+                    generic_params.Add(gen_t.Name);
+                }
+            }
             if (ctn.GetInterfaces().Length > 0)
             {
                 this.implemented_interfaces = new List<TypeScope>();
@@ -4726,6 +4867,14 @@ namespace CodeCompletion
             }
         }
 
+        public ICompiledTypeScope[] GetCompiledGenericArguments()
+        {
+            List<ICompiledTypeScope> types = new List<ICompiledTypeScope>();
+            foreach (Type t in ctn.GetGenericArguments())
+                types.Add(TypeTable.get_compiled_type(t));
+            return types.ToArray();
+        }
+       
         internal static TypeScope get_type_instance(Type t, List<TypeScope> generic_args)
         {
             if (t.IsGenericParameter)
@@ -4872,6 +5021,14 @@ namespace CodeCompletion
             }
         }
 
+        public override bool IsAbstract
+        {
+            get
+            {
+                return ctn.IsAbstract;
+            }
+        }
+
         public Type CompiledType
         {
             get
@@ -4914,7 +5071,7 @@ namespace CodeCompletion
                         List<TypeScope> lst = new List<TypeScope>();
                         lst.Add(gen_args[Math.Min(i, gen_args.Count - 1)]);
                         if (lst[0].instances != null && lst[0].instances.Count > 0)
-                            lst[0] = lst[0].instances[0];
+                            lst[0] = lst[0].instances[Math.Min(i, lst[0].instances.Count - 1)];
                         sc.instances.Add(this.instances[i].GetInstance(lst));
                         if (i < gen_args.Count)
                             sc.generic_params.Add(gen_args[i].si.name);
@@ -5909,9 +6066,15 @@ namespace CodeCompletion
         {
             if (!is_def_prop_searched)
                 get_default_property();
-            if (HasEnumerable() && instances.Count > 0)
+            if (elementType != null)
+                return elementType;
+            if (HasEnumerable())
             {
-                return instances[0];
+                if (instances.Count > 0)
+                    return instances[0];
+                else if (ctn.GetGenericArguments().Length > 0)
+                    return CompiledScope.get_type_instance(ctn.GetGenericArguments()[0], new List<TypeScope>());
+                return elementType;
             }
             return elementType;
         }
@@ -5919,15 +6082,15 @@ namespace CodeCompletion
         public override List<SymScope> FindOverloadNames(string name)
         {
             List<SymScope> names = new List<SymScope>();
-            PascalABCCompiler.TreeConverter.SymbolInfoList si = PascalABCCompiler.NetHelper.NetHelper.FindNameIncludeProtected(ctn, name);
+            PascalABCCompiler.TreeConverter.SymbolInfoList sil = PascalABCCompiler.NetHelper.NetHelper.FindNameIncludeProtected(ctn, name);
             //IEnumerable<MemberInfo> ext_meths = PascalABCCompiler.NetHelper.NetHelper.GetExtensionMethods(ctn);
             List<ProcScope> pascal_ext_meths = this.GetExtensionMethods(name, this);
 
-            if (si == null && names.Count == 0)
+            if (sil == null && names.Count == 0)
             {
                 if (string.Compare(name, "Create", true) == 0 && this.ctn != typeof(object))
-                    si = PascalABCCompiler.NetHelper.NetHelper.GetConstructor(ctn);
-                if (si == null)
+                    sil = PascalABCCompiler.NetHelper.NetHelper.GetConstructor(ctn);
+                if (sil == null)
                 {
                     if (pascal_ext_meths.Count > 0)
                     {
@@ -5943,15 +6106,15 @@ namespace CodeCompletion
                         return names;
                 }
             }
-            switch (si.First().sym_info.semantic_node_type)
+            switch (sil.First().sym_info.semantic_node_type)
             {
                 case semantic_node_type.compiled_function_node:
                     {
-                        CompiledMethodScope cms = new CompiledMethodScope(new SymInfo(name, SymbolKind.Method, name), (si.First().sym_info as compiled_function_node).method_info, this);
+                        CompiledMethodScope cms = new CompiledMethodScope(new SymInfo(name, SymbolKind.Method, name), (sil.First().sym_info as compiled_function_node).method_info, this);
                         names.Insert(0, cms);
-                        si.InfoUnitList.RemoveAt(0);
-                        if (si.InfoUnitList.Count == 0)
-                            si = null;
+                        sil.RemoveAt(0);
+                        if (sil.Count() == 0)
+                            sil = null;
                         CompiledMethodScope tmp = cms;
                         SortedDictionary<int, List<CompiledMethodScope>> meths = new SortedDictionary<int, List<CompiledMethodScope>>();
                         if (cms.acc_mod != access_modifer.internal_modifer && cms.acc_mod != access_modifer.private_modifer)
@@ -5960,12 +6123,12 @@ namespace CodeCompletion
                             meths[par_num] = new List<CompiledMethodScope>();
                             meths[par_num].Add(cms);
                         }
-                        if (si != null) {
-                            foreach (var si_unit in si.InfoUnitList)
+                        if (sil != null) {
+                            foreach (var si in sil.list)
                             {
-                                if (si_unit.access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si_unit.access_level != PascalABCCompiler.TreeConverter.access_level.al_private && si_unit.sym_info.semantic_node_type == semantic_node_type.compiled_function_node)
+                                if (si.access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si.access_level != PascalABCCompiler.TreeConverter.access_level.al_private && si.sym_info.semantic_node_type == semantic_node_type.compiled_function_node)
                                 {
-                                    tmp = new CompiledMethodScope(new SymInfo(name, SymbolKind.Method, name), (si_unit.sym_info as compiled_function_node).method_info, this);
+                                    tmp = new CompiledMethodScope(new SymInfo(name, SymbolKind.Method, name), (si.sym_info as compiled_function_node).method_info, this);
                                     names.Insert(0, tmp);
                                     //tmp.nextProc = cms;
                                     //cms = tmp;
@@ -5999,11 +6162,11 @@ namespace CodeCompletion
                     break;
                 case semantic_node_type.compiled_constructor_node:
                     {
-                        CompiledConstructorScope cms = new CompiledConstructorScope(new SymInfo("Create", SymbolKind.Method, "Create"), (si.First().sym_info as compiled_constructor_node).constructor_info, this);
+                        CompiledConstructorScope cms = new CompiledConstructorScope(new SymInfo("Create", SymbolKind.Method, "Create"), (sil.First().sym_info as compiled_constructor_node).constructor_info, this);
                         names.Insert(0, cms);
-						si.InfoUnitList.RemoveAt(0);
-                        if(si.InfoUnitList.Count == 0)
-                            si = null;
+						sil.RemoveAt(0);
+                        if(sil.Count() == 0)
+                            sil = null;
                         CompiledConstructorScope tmp = cms;
                         SortedDictionary<int, List<CompiledConstructorScope>> meths = new SortedDictionary<int, List<CompiledConstructorScope>>();
                         if (cms.acc_mod != access_modifer.internal_modifer && cms.acc_mod != access_modifer.private_modifer)
@@ -6012,13 +6175,13 @@ namespace CodeCompletion
                             meths[par_num] = new List<CompiledConstructorScope>();
                             meths[par_num].Add(cms);
                         }
-                        if (si != null)
+                        if (sil != null)
                         {
-                            foreach (var si_unit in si.InfoUnitList)
+                            foreach (var si in sil.list)
                             {
-                                if (si_unit.access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si_unit.access_level != PascalABCCompiler.TreeConverter.access_level.al_private && si_unit.sym_info.semantic_node_type == semantic_node_type.compiled_constructor_node)
+                                if (si.access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si.access_level != PascalABCCompiler.TreeConverter.access_level.al_private && si.sym_info.semantic_node_type == semantic_node_type.compiled_constructor_node)
                                 {
-                                    tmp = new CompiledConstructorScope(new SymInfo("Create", SymbolKind.Method, "Create"), (si_unit.sym_info as compiled_constructor_node).constructor_info, this);
+                                    tmp = new CompiledConstructorScope(new SymInfo("Create", SymbolKind.Method, "Create"), (si.sym_info as compiled_constructor_node).constructor_info, this);
                                     //tmp.nextProc = cms;
                                     //cms = tmp;
                                     names.Insert(0, tmp);
@@ -6051,20 +6214,20 @@ namespace CodeCompletion
                     }
                     break;
                 case semantic_node_type.compiled_variable_definition:
-                    if (si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_private)
-                        names.Add(new CompiledFieldScope(new SymInfo(name, SymbolKind.Field, name), (si.First().sym_info as compiled_variable_definition).compiled_field, this));
+                    if (sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_private)
+                        names.Add(new CompiledFieldScope(new SymInfo(name, SymbolKind.Field, name), (sil.First().sym_info as compiled_variable_definition).compiled_field, this));
                     break;
                 case semantic_node_type.basic_property_node:
-                    if (si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_private)
-                        names.Add(new CompiledPropertyScope(new SymInfo(name, SymbolKind.Property, name), (si.First().sym_info as compiled_property_node).property_info, this));
+                    if (sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_private)
+                        names.Add(new CompiledPropertyScope(new SymInfo(name, SymbolKind.Property, name), (sil.First().sym_info as compiled_property_node).property_info, this));
                     break;
                 case semantic_node_type.compiled_class_constant_definition:
-                    if (si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_private)
-                        names.Add(new CompiledFieldScope(new SymInfo(name, SymbolKind.Constant, name), (si.First().sym_info as compiled_class_constant_definition).field, this));
+                    if (sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_private)
+                        names.Add(new CompiledFieldScope(new SymInfo(name, SymbolKind.Constant, name), (sil.First().sym_info as compiled_class_constant_definition).field, this));
                     break;
                 case semantic_node_type.compiled_event:
-                    if (si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_private)
-                        names.Add(new CompiledEventScope(new SymInfo(name, SymbolKind.Constant, name), (si.First().sym_info as compiled_event).event_info, this));
+                    if (sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_private)
+                        names.Add(new CompiledEventScope(new SymInfo(name, SymbolKind.Constant, name), (sil.First().sym_info as compiled_event).event_info, this));
                     break;
                 //case semantic_node_type.compiled_event: return new CompiledScope(null,(si.sym_info as compiled_event).event_info.);
                 //case semantic_node_type.compiled_event: return new CompiledScope(null,(si.sym_info as compiled_event).
@@ -6075,26 +6238,26 @@ namespace CodeCompletion
 
         public override SymScope FindName(string name)
         {
-            PascalABCCompiler.TreeConverter.SymbolInfoList si = PascalABCCompiler.NetHelper.NetHelper.FindNameIncludeProtected(ctn, name);
+            PascalABCCompiler.TreeConverter.SymbolInfoList sil = PascalABCCompiler.NetHelper.NetHelper.FindNameIncludeProtected(ctn, name);
             if (!CodeCompletionController.CurrentParser.LanguageInformation.IncludeDotNetEntities)
                 return null;
-            if (si == null)
+            if (sil == null)
             {
                 if (string.Compare(name, "Create", true) == 0)
-                    si = PascalABCCompiler.NetHelper.NetHelper.GetConstructor(ctn);
-                if (si == null)
+                    sil = PascalABCCompiler.NetHelper.NetHelper.GetConstructor(ctn);
+                if (sil == null)
                 {
                     return null;
                 }  
             }
-            switch (si.First().sym_info.semantic_node_type)
+            switch (sil.First().sym_info.semantic_node_type)
             {
                 case semantic_node_type.compiled_function_node:
                     {
-                        CompiledMethodScope cms = new CompiledMethodScope(new SymInfo(name, SymbolKind.Method, name), (si.First().sym_info as compiled_function_node).method_info, this);
-                        si.InfoUnitList.RemoveAt(0);
-                        if (si.InfoUnitList.Count != 0)
-                            si = null;
+                        CompiledMethodScope cms = new CompiledMethodScope(new SymInfo(name, SymbolKind.Method, name), (sil.First().sym_info as compiled_function_node).method_info, this);
+                        sil.RemoveAt(0);
+                        if (sil.Count() == 0)
+                            sil = null;
                         CompiledMethodScope tmp = cms;
                         SortedDictionary<int, List<CompiledMethodScope>> meths = new SortedDictionary<int, List<CompiledMethodScope>>();
                         if (cms.acc_mod != access_modifer.internal_modifer && cms.acc_mod != access_modifer.private_modifer)
@@ -6103,22 +6266,22 @@ namespace CodeCompletion
                             meths[par_num] = new List<CompiledMethodScope>();
                             meths[par_num].Add(cms);
                         }
-                        if (si != null)
+                        if (sil != null)
                         {
-                            foreach (var si_unit in si.InfoUnitList)
+                            foreach (var si in sil.list)
                             {
-                                if (si_unit.access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si_unit.access_level != PascalABCCompiler.TreeConverter.access_level.al_private && si_unit.sym_info.semantic_node_type == semantic_node_type.compiled_function_node)
+                                if (si.access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si.access_level != PascalABCCompiler.TreeConverter.access_level.al_private && si.sym_info.semantic_node_type == semantic_node_type.compiled_function_node)
                                 {
-                                    tmp = new CompiledMethodScope(new SymInfo(name, SymbolKind.Method, name), (si_unit.sym_info as compiled_function_node).method_info, this);
+                                    tmp = new CompiledMethodScope(new SymInfo(name, SymbolKind.Method, name), (si.sym_info as compiled_function_node).method_info, this);
                                     //tmp.nextProc = cms;
                                     //cms = tmp;
                                     int par_num = tmp.mi.GetParameters().Length;
                                     if (!meths.ContainsKey(par_num)) meths[par_num] = new List<CompiledMethodScope>();
                                     meths[par_num].Add(tmp);
                                 }
-                                else if (si_unit.access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si_unit.access_level != PascalABCCompiler.TreeConverter.access_level.al_private && si_unit.sym_info is compiled_property_node)
+                                else if (si.access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si.access_level != PascalABCCompiler.TreeConverter.access_level.al_private && si.sym_info is compiled_property_node)
                                 {
-                                    return new CompiledPropertyScope(new SymInfo(name, SymbolKind.Property, name), (si_unit.sym_info as compiled_property_node).property_info, this);
+                                    return new CompiledPropertyScope(new SymInfo(name, SymbolKind.Property, name), (si.sym_info as compiled_property_node).property_info, this);
                                 }
                             }
                         }
@@ -6146,10 +6309,10 @@ namespace CodeCompletion
                     }
                 case semantic_node_type.compiled_constructor_node:
                     {
-                        CompiledConstructorScope cms = new CompiledConstructorScope(new SymInfo("Create", SymbolKind.Method, "Create"), (si.First().sym_info as compiled_constructor_node).constructor_info, this);
-                        si.InfoUnitList.RemoveAt(0);
-                        if (si.InfoUnitList.Count == 0)
-                            si = null;
+                        CompiledConstructorScope cms = new CompiledConstructorScope(new SymInfo("Create", SymbolKind.Method, "Create"), (sil.First().sym_info as compiled_constructor_node).constructor_info, this);
+                        sil.RemoveAt(0);
+                        if (sil.Count() == 0)
+                            sil = null;
                         CompiledConstructorScope tmp = cms;
                         SortedDictionary<int, List<CompiledConstructorScope>> meths = new SortedDictionary<int, List<CompiledConstructorScope>>();
                         if (cms.acc_mod != access_modifer.internal_modifer && cms.acc_mod != access_modifer.private_modifer)
@@ -6158,13 +6321,13 @@ namespace CodeCompletion
                             meths[par_num] = new List<CompiledConstructorScope>();
                             meths[par_num].Add(cms);
                         }
-                        if (si != null)
+                        if (sil != null)
                         {
-                            foreach (var si_unit in si.InfoUnitList)
+                            foreach (var si in sil.list)
                             {
-                                if (si_unit.access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si_unit.access_level != PascalABCCompiler.TreeConverter.access_level.al_private && si_unit.sym_info.semantic_node_type == semantic_node_type.compiled_constructor_node)
+                                if (si.access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si.access_level != PascalABCCompiler.TreeConverter.access_level.al_private && si.sym_info.semantic_node_type == semantic_node_type.compiled_constructor_node)
                                 {
-                                    tmp = new CompiledConstructorScope(new SymInfo("Create", SymbolKind.Method, "Create"), (si_unit.sym_info as compiled_constructor_node).constructor_info, this);
+                                    tmp = new CompiledConstructorScope(new SymInfo("Create", SymbolKind.Method, "Create"), (si.sym_info as compiled_constructor_node).constructor_info, this);
                                     //tmp.nextProc = cms;
                                     //cms = tmp;
                                     int par_num = tmp.mi.GetParameters().Length;
@@ -6196,24 +6359,24 @@ namespace CodeCompletion
                         return cms;
                     }
                 case semantic_node_type.compiled_variable_definition:
-                    if (si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_private)
-                        return new CompiledFieldScope(new SymInfo(name, SymbolKind.Field, name), (si.First().sym_info as compiled_variable_definition).compiled_field, this);
+                    if (sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_private)
+                        return new CompiledFieldScope(new SymInfo(name, SymbolKind.Field, name), (sil.First().sym_info as compiled_variable_definition).compiled_field, this);
                     break;
                 case semantic_node_type.basic_property_node:
-                    if (si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_private)
-                        return new CompiledPropertyScope(new SymInfo(name, SymbolKind.Property, name), (si.First().sym_info as compiled_property_node).property_info, this);
+                    if (sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_private)
+                        return new CompiledPropertyScope(new SymInfo(name, SymbolKind.Property, name), (sil.First().sym_info as compiled_property_node).property_info, this);
                     break;
                 case semantic_node_type.compiled_class_constant_definition:
-                    if (si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_private)
-                        return new CompiledFieldScope(new SymInfo(name, SymbolKind.Constant, name), (si.First().sym_info as compiled_class_constant_definition).field, this);
+                    if (sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_private)
+                        return new CompiledFieldScope(new SymInfo(name, SymbolKind.Constant, name), (sil.First().sym_info as compiled_class_constant_definition).field, this);
                     break;
                 case semantic_node_type.compiled_event:
-                    if (si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_private)
-                        return new CompiledEventScope(new SymInfo(name, SymbolKind.Constant, name), (si.First().sym_info as compiled_event).event_info, this);
+                    if (sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_private)
+                        return new CompiledEventScope(new SymInfo(name, SymbolKind.Constant, name), (sil.First().sym_info as compiled_event).event_info, this);
                     break;
                 case semantic_node_type.compiled_type_node:
-                    if (si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_private && si.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_protected)
-                        return TypeTable.get_compiled_type(new SymInfo(name, SymbolKind.Type, name), (si.First().sym_info as compiled_type_node).compiled_type);
+                    if (sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_internal && sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_private && sil.First().access_level != PascalABCCompiler.TreeConverter.access_level.al_protected)
+                        return TypeTable.get_compiled_type(new SymInfo(name, SymbolKind.Type, name), (sil.First().sym_info as compiled_type_node).compiled_type);
                     break;
                 //case semantic_node_type.compiled_event: return new CompiledScope(null,(si.sym_info as compiled_event).event_info.);
                 //case semantic_node_type.compiled_event: return new CompiledScope(null,(si.sym_info as compiled_event).
@@ -6574,6 +6737,8 @@ namespace CodeCompletion
                 this.param_kind = parametr_kind.var_parametr;
             else if (is_params(pi))
                 this.param_kind = parametr_kind.params_parametr;
+            if (pi.IsOptional)
+                this.cnst_val = pi.DefaultValue;
             //MakeDescription();
         }
 
@@ -7102,7 +7267,7 @@ namespace CodeCompletion
 
         public override bool IsEqual(SymScope ts)
         {
-            return string.Compare(this.si.name, ts.si.name, true) == 0;
+            return ts != null && string.Compare(this.si.name, ts.si.name, true) == 0;
         }
 
         public override SymScope FindName(string name)

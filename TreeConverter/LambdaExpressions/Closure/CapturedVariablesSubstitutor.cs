@@ -15,6 +15,7 @@ namespace TreeConverter.LambdaExpressions.Closure
 {
     internal class SubstitutionKey
     {
+        public override string ToString() => _variableName;
         private readonly string _variableName;
         private readonly syntax_tree_node _syntaxTreeNodeWhereVaribleIsDeclared;
         private readonly syntax_tree_node _syntaxTreeUnderSubstitution;
@@ -145,7 +146,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                         pn.internal_get_function = readFunction;
                         pn.internal_set_function = writeFunction;
 
-                        _visitor.context._ctn.Scope.AddSymbol(name, new SymbolInfoUnit(pn));
+                        _visitor.context._ctn.Scope.AddSymbol(name, new SymbolInfo(pn));
                         _visitor.context._ctn.properties.AddElement(pn);
                     }
                 }

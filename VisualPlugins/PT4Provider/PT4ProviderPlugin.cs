@@ -35,7 +35,7 @@ namespace VisualPascalABCPlugins
         {
             get
             {
-                return "Copyright © 2005-2017 by Ivan Bondarev, Stanislav Mihalkovich";
+                return "Copyright © 2005-2018 by Ivan Bondarev, Stanislav Mihalkovich";
             }
         }
 
@@ -131,6 +131,18 @@ namespace VisualPascalABCPlugins
             Results();
         }
 
+        public void ExecuteB_S()
+        {
+
+            string SystemDir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
+            var PT4Dir = SystemDir + "\\PT4";
+
+            var pt4setup = new System.Diagnostics.Process();
+            pt4setup.StartInfo.FileName = PT4Dir + "\\PT4Setup.exe";
+
+            if (System.IO.File.Exists(pt4setup.StartInfo.FileName))
+                pt4setup.Start();
+        }
         public void GetGUI(List<IPluginGUIItem> MenuItems, List<IPluginGUIItem> ToolBarItems)
         {
             // SSM 30.12.2010
@@ -146,6 +158,11 @@ namespace VisualPascalABCPlugins
             MenuItems.Add(Item); ToolBarItems.Add(Item);
             Item = new PluginGUIItem(StringsPrefix + "R_NAME", StringsPrefix + "R_DESCRIPTION", Images.pb_pt4r.Image, Images.pb_pt4r.BackColor, ExecuteB_R, Keys.Control | Keys.Shift | Keys.R, "Ctrl+Shift+R");
             MenuItems.Add(Item); ToolBarItems.Add(Item);
+
+            var PT4Dir = SystemDir + "\\PT4";
+            Item = new PluginGUIItem(StringsPrefix + "S_NAME", StringsPrefix + "PT4_Setup", null, Images.pb_pt4r.BackColor, ExecuteB_S, Keys.None, "");
+            MenuItems.Add(Item);
+
         }
 
         /*private void CheckAndCopyPT4Files(string FileName)

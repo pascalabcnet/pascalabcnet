@@ -163,7 +163,7 @@ M_COMPILEROPTIONS=Compiler Options
 M_VIEWOPTIONS=View
 
 MR_HELP=Help
-M_HELP=Contens
+M_HELP=Contents
 M_DOTNET_HELP=.NET Framework Help (MSDN)
 M_EXAMPLES=Examples
 M_MAINFEATURES=Main Features
@@ -334,6 +334,7 @@ PRJ_COPYRIGHT=Copyright
 PRJ_GENERATE_XML_DOC=Generate XML doc
 PRJ_NUGET=NuGet
 PRJ_NAMESPACE=Namespace
+PRJ_FILENAME_EXAMPLE=Unit1.pas, dir/Unit1.pas
 NUGET_PACKAGE=Package Id
 NUGET_INSTALL=Install package
 NUGET_LOG=Log
@@ -345,6 +346,9 @@ UPDATE_CHECK_ERROR=An error occurred while checking for updates
 UPDATE_CHECK=Checking for updates
 PABC_DOWNLOAD_PAGE=http://pascalabc.net/en/download
 M_CHECKUPDATES=Check for updates
+FRAMEWORK_DOWNLOAD_PAGE=https://www.microsoft.com/en-US/download/details.aspx?id=56116
+DOTNET_UPDATE_CHECK=Checking for updates of .NET Framework
+DOTNET_AVAILABLE=New version of .NET Framework is available(.NET Framework 4.7.1). Do you want to visit the download page?
 //Options
 %PREFIX%=VP_OC_VIEWOPTIONS_
 NAME=General

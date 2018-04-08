@@ -79,7 +79,7 @@ type
     procedure SetText(t: string) := b.Text := t;
   public 
     event Click: procedure;
-    constructor Create(text: string);
+    constructor Create(text: string := '');
     property Width: integer read GetW write SetW;
     property Text: string read GetText write SetText;
   end;

@@ -71,6 +71,11 @@ namespace PascalABCCompiler
             }
         }
 
+        private bool isUnused(VarInfo vi, var_definition_node vdn)
+        {
+            return vi.num_use == 0 && !vdn.is_special_name && !vdn.name.StartsWith("#");
+        }
+
         private void CollectInfoNamespaces(common_namespace_node cnn)
         {
             if (!cnn.from_pcu)
@@ -82,7 +87,7 @@ namespace PascalABCCompiler
                 	{
                 		namespace_variable vdn = vdn2 as namespace_variable;
                 		VarInfo vi = helper.GetVariable(vdn);
-                    	if (vi.num_use == 0 && !vdn.is_special_name) warns.Add(new UnusedVariable(vdn.name, vdn.loc));
+                    	if (isUnused(vi, vdn)) warns.Add(new UnusedVariable(vdn.name, vdn.loc));
                    	 	if (vi.num_ass > 0 && vi.act_num_use == 0) warns.Add(new AssignWithoutUsing(vdn.name, vi.last_ass_loc));
                     //if (vi.num_ass == 0 && vi.act_num_use > 0) helper.AddRealWarning(vdn, warns);
                 	}
@@ -90,7 +95,7 @@ namespace PascalABCCompiler
                 	{
                 		local_block_variable vdn = vdn2 as local_block_variable;
                 		VarInfo vi = helper.GetVariable(vdn);
-                    	if (vi.num_use == 0 && !vdn.is_special_name) warns.Add(new UnusedVariable(vdn.name, vdn.loc));
+                        if (isUnused(vi, vdn)) warns.Add(new UnusedVariable(vdn.name, vdn.loc));
                     	if (vi.num_ass > 0 && vi.act_num_use == 0) warns.Add(new AssignWithoutUsing(vdn.name, vi.last_ass_loc));
                 	}
                 }
@@ -144,7 +149,7 @@ namespace PascalABCCompiler
             	{
             		local_variable vdn = vdn2 as local_variable;
             		VarInfo vi = helper.GetVariable(vdn);
-                	if (vi.num_use == 0 && !vdn.is_special_name)
+                    if (isUnused(vi, vdn))
                         warns.Add(new UnusedVariable(vdn.name, vdn.loc));
                 	else if (vi.num_ass == 0 && 
                             vdn.is_ret_value && 
@@ -163,7 +168,7 @@ namespace PascalABCCompiler
             	{
             		local_block_variable vdn = vdn2 as local_block_variable;
             		VarInfo vi = helper.GetVariable(vdn);
-                	if (vi.num_use == 0 && !vdn.is_special_name)
+                    if (isUnused(vi, vdn))
                         warns.Add(new UnusedVariable(vdn.name, vdn.loc));
                     else if (vi.num_ass == 0 && 
                             vdn.is_ret_value && 
@@ -263,7 +268,7 @@ namespace PascalABCCompiler
             	{
             		local_variable vdn = vdn2 as local_variable;
             		VarInfo vi = helper.GetVariable(vdn);
-                	if (vi.num_use == 0 && !vdn.is_special_name)
+                    if (isUnused(vi, vdn))
                         warns.Add(new UnusedVariable(vdn.name, vdn.loc));
                     else if (vi.num_ass == 0 && 
                             vdn.is_ret_value && 
@@ -281,7 +286,7 @@ namespace PascalABCCompiler
             	{
             		local_block_variable vdn = vdn2 as local_block_variable;
             		VarInfo vi = helper.GetVariable(vdn);
-                	if (vi.num_use == 0 && !vdn.is_special_name)
+                    if (isUnused(vi, vdn))
                         warns.Add(new UnusedVariable(vdn.name, vdn.loc));
                     else if (vi.num_ass == 0 && 
                              vdn.is_ret_value && 
@@ -333,7 +338,7 @@ namespace PascalABCCompiler
             	{
             		local_variable vdn = vdn2 as local_variable;
             		VarInfo vi = helper.GetVariable(vdn);
-                	if (vi.num_use == 0 && !vdn.is_special_name)
+                    if (isUnused(vi, vdn))
                         warns.Add(new UnusedVariable(vdn.name, vdn.loc));
                     else if (vi.num_ass == 0 && 
                              vdn.is_ret_value && 
@@ -350,7 +355,7 @@ namespace PascalABCCompiler
             	{
             		local_block_variable vdn = vdn2 as local_block_variable;
             		VarInfo vi = helper.GetVariable(vdn);
-                	if (vi.num_use == 0 && !vdn.is_special_name)
+                    if (isUnused(vi, vdn))
                         warns.Add(new UnusedVariable(vdn.name, vdn.loc));
                     else if (vi.num_ass == 0 && 
                              vdn.is_ret_value && 
@@ -566,7 +571,8 @@ namespace PascalABCCompiler
             foreach (local_block_variable vdn in stmt.local_variables)
             {
             	VarInfo vi = helper.GetVariable(vdn);
-                if (vi.num_use == 0 && !vdn.is_special_name) warns.Add(new UnusedVariable(vdn.name, vdn.loc));
+                if (isUnused(vi, vdn))
+                    warns.Add(new UnusedVariable(vdn.name, vdn.loc));
                 	
                 if (vi.num_ass > 0 && vi.act_num_use == 0 && !vdn.is_special_name) 
                 	warns.Add(new AssignWithoutUsing(vdn.name, vi.last_ass_loc));
@@ -991,6 +997,9 @@ namespace PascalABCCompiler
         {
             VisitExpression(en.simple_arr_expr);
             VisitExpression(en.ind_expr);
+            if (en.expr_indices != null)
+                foreach (expression_node expr in en.expr_indices)
+                    VisitExpression(expr);
         }
 
         private void VisitNonStaticPropertyReference(non_static_property_reference en)

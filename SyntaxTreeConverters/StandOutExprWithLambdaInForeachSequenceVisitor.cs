@@ -33,7 +33,8 @@ namespace PascalABCCompiler.SyntaxTreeConverters
                 var ass = new var_statement(id, fe.in_what, fe.in_what.source_context);
                 fe.in_what = id;
                 var l = new List<statement> { ass, fe };
-                ReplaceStatement(fe, l);
+                //ReplaceStatement(fe, l);
+                ReplaceStatementUsingParent(fe, l);
             }
 
             base.visit(fe);

@@ -258,6 +258,11 @@ namespace PascalABCCompiler
             this.sourceLocation = new SourceLocation(sl.doc.file_name, sl.begin_line_num, sl.begin_column_num, sl.end_line_num,sl.end_column_num);
         }
 
+        public ResourceFileNotFound(string ResFileName)
+            : base(string.Format(StringResources.Get("COMPILATIONERROR_RESOURCEFILE_{0}_NOT_FOUND"), ResFileName), null)
+        {
+            //this.sourceLocation = new SourceLocation(sl.doc.file_name, sl.begin_line_num, sl.begin_column_num, sl.end_line_num, sl.end_column_num);
+        }
     }
 
     public class IncludeNamespaceInUnit: CompilerCompilationError
@@ -708,7 +713,9 @@ namespace PascalABCCompiler
         {
             get
             {
-                return RevisionClass.MainVersion;
+                if (RevisionClass.Build == "0")
+                    return RevisionClass.MainVersion;
+                else return RevisionClass.MainVersion + "." + RevisionClass.Build;
             }
         }
         public static DateTime VersionDateTime
@@ -1926,6 +1933,12 @@ namespace PascalABCCompiler
                     foreach (TreeRealization.compiler_directive cd in ResourceDirectives)
                         if (!File.Exists(cd.directive))
                         {
+                            if (cd.location.doc == null)
+                            {
+                                ErrorsList.Add(new ResourceFileNotFound(cd.directive));
+                                continue;
+                            }
+                                
                             string fileName = Path.Combine(cd.location.doc.file_name, cd.directive);
                             if (File.Exists(fileName))
                                 ResourceFiles.Add(fileName);
@@ -2511,7 +2524,7 @@ namespace PascalABCCompiler
 
             if (System.IO.File.Exists(FileName)) // для отладки с *.inc файлами
             {
-                return FileName;//.ToLower();//? а надо ли tolover?
+                return Path.Combine(Environment.CurrentDirectory, FileName);//.ToLower();//? а надо ли tolover?
             }
             else
             {
@@ -2846,6 +2859,18 @@ namespace PascalABCCompiler
                 directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.Numerics.dll", null));
                 directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.Windows.Forms.dll", null));
                 directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.Drawing.dll", null));
+                if (Unit.SyntaxTree is SyntaxTree.program_module && (Unit.SyntaxTree as SyntaxTree.program_module).used_units != null)
+                foreach (SyntaxTree.unit_or_namespace uui in (Unit.SyntaxTree as SyntaxTree.program_module).used_units.units)
+                {
+                    if (uui.name.ToString() == "Graph3D")
+                    {
+                        directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\PresentationFramework.dll", null));
+                        directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\WindowsBase.dll", null));
+                        directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\PresentationCore.dll", null));
+                        directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\HelixToolkit.Wpf.dll", null));
+                        directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\HelixToolkit.dll", null));
+                    }
+                }
             }
             foreach (TreeRealization.compiler_directive cd in directives)
             {

@@ -59,3 +59,4 @@ USING_UNLOCAL_FOR_VARIABLE=Параметр цикла for в PascalABC.NET до
 USING_UNLOCAL_FOREACH_VARIABLE=Параметр цикла foreach должен описываться в заголовке цикла
 OVERLOAD_IS_NOT_USED=overload не используется в PascalABC.NET
 ONLY_BASE_ASSIGNMENT_FOR_TUPLE=Для кортежа допустимо только обычное присваивание :=
+BAD_FORMAT_STRING=Встречена неправильная форматная строка

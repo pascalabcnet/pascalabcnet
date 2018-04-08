@@ -8,6 +8,9 @@
 
   ExecWait '"$INSTDIR\ExecHide.exe" "$INSTDIR\gacutil.exe" /u "HelixToolkit.Wpf"'
   ExecWait '"$INSTDIR\ExecHide.exe" "$INSTDIR\gacutil.exe" /i "$INSTDIR\Lib\HelixToolkit.Wpf.dll"'
+
+  ExecWait '"$INSTDIR\ExecHide.exe" "$INSTDIR\gacutil.exe" /u "HelixToolkit"'
+  ExecWait '"$INSTDIR\ExecHide.exe" "$INSTDIR\gacutil.exe" /i "$INSTDIR\Lib\HelixToolkit.dll"'
   ;\MikhailoMMX
   Delete "$INSTDIR\gacutil.exe"
   Delete "$INSTDIR\gacutil.exe.config"

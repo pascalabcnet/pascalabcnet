@@ -398,11 +398,18 @@ namespace VisualPascalABC
                 string expr = null;
                 bool ctrl_space = charTyped == '\0' || charTyped == '_';
                 bool shift_space = charTyped == '\0';
+                bool inside_dot_pattern = false;
                 bool new_space = keyw == PascalABCCompiler.Parsers.KeywordKind.New;
                 if (ctrl_space)
                 {
                     bool is_pattern = false;
                     pattern = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindPattern(off, Text, out is_pattern);
+                    if (is_pattern && Text[off - pattern.Length - 1] == '.')
+                    {
+                        inside_dot_pattern = true;
+                        expr = FindExpression(off - pattern.Length - 1, Text, line, col);
+                    }
+                        
                 }
                 else if (new_space)
                 {
@@ -412,7 +419,8 @@ namespace VisualPascalABC
                     if (!new_space && keyw != PascalABCCompiler.Parsers.KeywordKind.Uses)
                         if (charTyped != '$')
                             expr = FindExpression(off, Text, line, col);
-                        else expr = FindExpression(off - 1, Text, line, col);
+                        else
+                            expr = FindExpression(off - 1, Text, line, col);
                 List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
                 PascalABCCompiler.SyntaxTree.expression e = null;
                 if (ctrl_space && !shift_space && (pattern == null || pattern == ""))
@@ -424,7 +432,7 @@ namespace VisualPascalABC
                         resultList.Add(new UserDefaultCompletionData(key, null, ImagesProvider.IconNumberKeyword, false));
                     }
                 }
-                if (!ctrl_space && expr != null)
+                if ((!ctrl_space || inside_dot_pattern) && expr != null)
                 {
                     e = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetTypeAsExpression("test" + System.IO.Path.GetExtension(FileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
                     if (e == null)
@@ -457,20 +465,37 @@ namespace VisualPascalABC
                         else
                             mis = CodeCompletion.DomConverter.standard_units;
                     }
-                        
+
                     else
                         if (!ctrl_space)
+                    {
+                        CodeCompletion.SymScope dot_sc = null;
+                        mis = dconv.GetName(e, expr, line, col, keyword, ref dot_sc);
+                        if (dot_sc != null && VisualPABCSingleton.MainForm.UserOptions.EnableSmartIntellisense)
                         {
-                            CodeCompletion.SymScope dot_sc = null;
-                            mis = dconv.GetName(e, expr, line, col, keyword, ref dot_sc);
-                            if (dot_sc != null && VisualPABCSingleton.MainForm.UserOptions.EnableSmartIntellisense)
-                            {
-                                CompletionDataDispatcher.AddMemberBeforeDot(dot_sc);
-                                last_used_member = CompletionDataDispatcher.GetRecentUsedMember(dot_sc);
-                            }
+                            CompletionDataDispatcher.AddMemberBeforeDot(dot_sc);
+                            last_used_member = CompletionDataDispatcher.GetRecentUsedMember(dot_sc);
                         }
+                    }
+                    else
+                    {
+                        CodeCompletion.SymScope dot_sc = null;
+                        if (inside_dot_pattern)
+                        {
+                            List<SymInfo> si_list = new List<SymInfo>();
+                            SymInfo[] from_list = dconv.GetName(e, expr, line, col, keyword, ref dot_sc);
+                            for (int i = 0; i< from_list.Length; i++)
+                            {
+                                if (from_list[i].name.StartsWith(pattern))
+                                    si_list.Add(from_list[i]);
+                            }
+                            mis = si_list.ToArray();
+                        }
+                            
                         else
                             mis = dconv.GetNameByPattern(pattern, line, col, charTyped == '_', VisualPABCSingleton.MainForm.UserOptions.CodeCompletionNamespaceVisibleRange);
+                    }
+
                 }
                 Hashtable cache = null;
                 if (!CodeCompletion.CodeCompletionController.CurrentParser.CaseSensitive)

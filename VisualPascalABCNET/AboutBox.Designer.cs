@@ -175,7 +175,7 @@
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(410, 17);
             this.label12.TabIndex = 17;
-            this.label12.Text = "Copyright (c) 2005, 2017   Ivan Bondarev, Stanislav Mihalkovich";
+            this.label12.Text = "Copyright (c) 2005, 2018   Ivan Bondarev, Stanislav Mihalkovich";
             this.label12.Click += new System.EventHandler(this.label12_Click);
             // 
             // label9

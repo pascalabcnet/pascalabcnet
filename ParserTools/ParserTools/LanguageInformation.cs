@@ -358,6 +358,18 @@ namespace PascalABCCompiler.Parsers
             this.description = description;
         }
 
+        public SymInfo(SymInfo si)
+        {
+            this.name = si.name;
+            this.addit_name = si.addit_name;
+            this.description = si.description;
+            this.kind = si.kind;
+            this.IsUnitNamespace = si.IsUnitNamespace;
+            this.acc_mod = si.acc_mod;
+            this.has_doc = si.has_doc;
+            this.not_include = si.not_include;
+        }
+
         public string Name
         {
             get
@@ -642,8 +654,13 @@ namespace PascalABCCompiler.Parsers
     	{
     		get;
     	}
-    	
-    	string[] TemplateArguments
+
+        bool IsAbstract
+        {
+            get;
+        }
+
+        string[] TemplateArguments
     	{
     		get;
     	}
@@ -657,6 +674,8 @@ namespace PascalABCCompiler.Parsers
     	{
     		get;
     	}
+
+        ICompiledTypeScope[] GetCompiledGenericArguments();
     }
     
     public interface ICompiledMethodScope : IProcScope

@@ -1063,7 +1063,7 @@ namespace CodeCompletion
                 return sc;
             if (si == null)
                 si = new SymInfo(t.Name, SymbolKind.Type, t.FullName);
-            sc = new CompiledScope(si,t);
+            sc = new CompiledScope(si, t);
         	type_cache[t] = sc;
         	return sc;
         }

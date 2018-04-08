@@ -377,6 +377,7 @@ namespace VisualPascalABC
             if (PropertiesWindow == null)
             {
                 PropertiesWindow = new PropertiesForm();
+                Form1StringResources.SetTextForAllControls(PropertiesWindow);
                 Panel properties = FormsDesignerViewContent.PropertyPad.PropertyPadPanel;
                 properties.Dock = DockStyle.Fill;
                 properties.Parent = PropertiesWindow;

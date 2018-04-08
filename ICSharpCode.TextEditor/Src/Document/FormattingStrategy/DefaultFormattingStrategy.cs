@@ -138,7 +138,7 @@ namespace ICSharpCode.TextEditor.Document
                 {
 					break;
 				} else if (ch == '\'') {
-					break;
+					//break;
 				} else if (ch == '/' && i > 0) {
 					if (document.GetCharAt(i - 1) == '/') break;
 					if (document.GetCharAt(i - 1) == '*') break;
@@ -161,7 +161,7 @@ namespace ICSharpCode.TextEditor.Document
 				} else if (ch == '"') {
 					break;
 				} else if (ch == '\'') {
-					break;
+					//break;
 				} else if (ch == '/' && i > 0) {
 					if (document.GetCharAt(i - 1) == '/') break;
 				} else if (ch == '*' && i > 0) {

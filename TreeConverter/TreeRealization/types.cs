@@ -20,7 +20,7 @@ namespace PascalABCCompiler.TreeRealization
             //new System.Collections.Generic.Dictionary<type_node, type_intersection_node>();
         private List<type_node> generated_type_intersections = null;//new List<type_node>();
         private System.Collections.Generic.Dictionary<internal_interface_kind, internal_interface> internal_interfaces;
-            //new System.Collections.Generic.Dictionary<internal_interface_kind, internal_interface>();
+        //new System.Collections.Generic.Dictionary<internal_interface_kind, internal_interface>();
 
         //private System.Collections.Generic.Dictionary<type_node, type_conversion> explicit_type_conversions =
         //    new System.Collections.Generic.Dictionary<type_node, type_conversion>();
@@ -52,6 +52,8 @@ namespace PascalABCCompiler.TreeRealization
             return tc.convertion_method;
         }
         */
+        public override string ToString() => this.GetType().FullName.ToString();
+
         internal bool is_ref_inited;
         internal bool is_nullable_inited;
         private bool _is_nullable_type;
@@ -454,13 +456,18 @@ namespace PascalABCCompiler.TreeRealization
         {
             return find(name);
         }
-        public abstract SymbolInfoList find_in_type(string name, bool no_search_in_extension_methods = false);
+        public abstract SymbolInfo find_first_in_type(string name, bool no_search_in_extension_methods = false);
+        public virtual SymbolInfo find_first_in_type(string name, SymbolTable.Scope CurrentScope, bool no_search_in_extension_methods = false)
+        {
+            return find_first_in_type(name);
+        }
+        public abstract SymbolInfoList find_in_type(string name, bool no_search_in_extension_methods = false);   
         public virtual SymbolInfoList find_in_type(string name, SymbolTable.Scope CurrentScope, bool no_search_in_extension_methods = false)
         {
             return find_in_type(name);
         }
-        public abstract void add_name(string name, PascalABCCompiler.TreeConverter.SymbolInfoUnit si);
-        public abstract void add_generated_name(string name, PascalABCCompiler.TreeConverter.SymbolInfoUnit si);
+        public abstract void add_name(string name, PascalABCCompiler.TreeConverter.SymbolInfo si);
+        public abstract void add_generated_name(string name, PascalABCCompiler.TreeConverter.SymbolInfo si);
         public abstract void clear_generated_names();
         public abstract void SetName(string name);
 
@@ -615,7 +622,7 @@ namespace PascalABCCompiler.TreeRealization
             return null;
         }
 
-        public override void add_name(string name, SymbolInfoUnit si)
+        public override void add_name(string name, SymbolInfo si)
         {
 
         }
@@ -656,17 +663,17 @@ namespace PascalABCCompiler.TreeRealization
     {
         private string _name;
 
-        private System.Collections.Generic.Dictionary<string, List<SymbolInfoUnit>> additional_names =
-            new System.Collections.Generic.Dictionary<string, List<SymbolInfoUnit>>(SystemLibrary.SystemLibrary.string_comparer);
-        private System.Collections.Generic.Dictionary<SymbolInfoUnit, string> additional_generated_names =
-            new System.Collections.Generic.Dictionary<SymbolInfoUnit, string>();
+        private System.Collections.Generic.Dictionary<string, List<SymbolInfo>> additional_names =
+            new System.Collections.Generic.Dictionary<string, List<SymbolInfo>>(SystemLibrary.SystemLibrary.string_comparer);
+        private System.Collections.Generic.Dictionary<SymbolInfo, string> additional_generated_names =
+            new System.Collections.Generic.Dictionary<SymbolInfo, string>();
 
-        protected void add_additional_name(string name, PascalABCCompiler.TreeConverter.SymbolInfoUnit si, bool is_generated)
+        protected void add_additional_name(string name, PascalABCCompiler.TreeConverter.SymbolInfo si, bool is_generated)
         {
-            List<SymbolInfoUnit> sil;// = additional_names[name];
+            List<SymbolInfo> sil;// = additional_names[name];
             if (!(additional_names.TryGetValue(name,out sil)))
             {
-                sil = new List<SymbolInfoUnit>();
+                sil = new List<SymbolInfo>();
                 additional_names.Add(name, sil);
             }
             sil.Add(si);
@@ -676,7 +683,7 @@ namespace PascalABCCompiler.TreeRealization
 
         public override void clear_generated_names()
         {
-            foreach (SymbolInfoUnit si in additional_generated_names.Keys)
+            foreach (SymbolInfo si in additional_generated_names.Keys)
                 additional_names[additional_generated_names[si]].Remove(si);
             additional_generated_names.Clear();
             
@@ -689,7 +696,7 @@ namespace PascalABCCompiler.TreeRealization
 
         protected SymbolInfoList find_in_additional_names(string name)
         {
-            List<SymbolInfoUnit> sil;// = additional_names[name];
+            List<SymbolInfo> sil;// = additional_names[name];
             if (!(additional_names.TryGetValue(name, out sil)))
             {
                 return null;
@@ -714,7 +721,7 @@ namespace PascalABCCompiler.TreeRealization
                 else
                     new_sil.Add(sil[j]);
             }
-            if (new_sil.InfoUnitList.Count == 0)
+            if (new_sil.Count() == 0)
             {
                 return null;
             }
@@ -742,12 +749,12 @@ namespace PascalABCCompiler.TreeRealization
             _name = name;
         }
 
-        public override void add_name(string name, PascalABCCompiler.TreeConverter.SymbolInfoUnit si)
+        public override void add_name(string name, PascalABCCompiler.TreeConverter.SymbolInfo si)
         {
             add_additional_name(name, si, false);
         }
 
-        public override void add_generated_name(string name, PascalABCCompiler.TreeConverter.SymbolInfoUnit si)
+        public override void add_generated_name(string name, PascalABCCompiler.TreeConverter.SymbolInfo si)
         {
             add_additional_name(name, si, true);
         }
@@ -769,6 +776,11 @@ namespace PascalABCCompiler.TreeRealization
         }
 
         public override SymbolInfoList find(string name, bool no_search_in_extension_methods = false)
+        {
+            return null;
+        }
+
+        public override SymbolInfo find_first_in_type(string name, bool no_search_in_extension_methods = false)
         {
             return null;
         }
@@ -928,6 +940,14 @@ namespace PascalABCCompiler.TreeRealization
 		{
 			return find_in_additional_names(name);
 		}
+
+        public override SymbolInfo find_first_in_type(string name, bool no_search_in_extension_methods = false)
+        {
+            var temp = find_in_additional_names(name);
+            if (temp != null)
+                return temp.First();
+            return null;
+        }
 
         public override SymbolInfoList find_in_type(string name, bool no_search_in_extension_methods = false)
         {
@@ -1147,6 +1167,7 @@ namespace PascalABCCompiler.TreeRealization
 	[Serializable]
     public class common_type_node : wrapped_type, SemanticTree.ICommonTypeNode
 	{
+        public override string ToString() => "("+GetType().Name + " " + name + "," + scope + ")";
         /// <summary>
         /// Имя типа.
         /// </summary>
@@ -1564,9 +1585,9 @@ namespace PascalABCCompiler.TreeRealization
         	basic_function_node _int_and = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.and_name, this, SemanticTree.basic_function_type.iand);
             basic_function_node _int_or = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.or_name, this, SemanticTree.basic_function_type.ior);
             basic_function_node _int_xor = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.xor_name, this, SemanticTree.basic_function_type.ixor);
-            scope.AddSymbol(compiler_string_consts.and_name, new SymbolInfoUnit(_int_and));
-            scope.AddSymbol(compiler_string_consts.or_name, new SymbolInfoUnit(_int_or));
-            scope.AddSymbol(compiler_string_consts.xor_name, new SymbolInfoUnit(_int_xor));
+            scope.AddSymbol(compiler_string_consts.and_name, new SymbolInfo(_int_and));
+            scope.AddSymbol(compiler_string_consts.or_name, new SymbolInfo(_int_or));
+            scope.AddSymbol(compiler_string_consts.xor_name, new SymbolInfo(_int_xor));
         }
         
 		public common_property_node default_property
@@ -1903,6 +1924,14 @@ namespace PascalABCCompiler.TreeRealization
             return Scope.Find(name, CurrentScope);//int,:=
         }
 
+        public override SymbolInfo find_first_in_type(string name, bool no_search_in_extension_methods = false)
+        {
+            var temp = Scope.FindOnlyInType(name, null);//:=,create,x
+            if (temp != null)
+                return temp.First();
+            return null;
+        }
+
         public override SymbolInfoList find_in_type(string name, bool no_search_in_extension_methods = false)
         {
             return Scope.FindOnlyInType(name, null);//:=,create,x
@@ -1910,30 +1939,30 @@ namespace PascalABCCompiler.TreeRealization
 
         public override SymbolInfoList find_in_type(string name, SymbolTable.Scope CurrentScope, bool no_search_in_extension_methods = false)
         {
-            SymbolInfoList si = Scope.FindOnlyInType(name, CurrentScope);//:=,create,x
-            if (si == null && base_type is compiled_type_node && string.Compare(name, "create", true) != 0)
+            SymbolInfoList sil = Scope.FindOnlyInType(name, CurrentScope);//:=,create,x
+            if (sil == null && base_type is compiled_type_node && string.Compare(name, "create", true) != 0)
             {
-                si = (base_type as compiled_type_node).find_in_type(name, CurrentScope);
+                sil = (base_type as compiled_type_node).find_in_type(name, CurrentScope);
             }
-            if (this.is_generic_parameter && si != null)
+            if (this.is_generic_parameter && sil != null)
             {
                 //удаляем повторяющиеся символы
-                for (int i = 0; i < si.InfoUnitList.Count; ++i)
+                for (int i = 0; i < sil.Count(); ++i)
                 {
-                    for (int j = i + 1; j < si.InfoUnitList.Count; ++j)
+                    for (int j = i + 1; j < sil.Count(); ++j)
                     {
-                        if (si.InfoUnitList[i].sym_info == si.InfoUnitList[j].sym_info)
+                        if (sil[i].sym_info == sil[j].sym_info)
                         {
-                            si.InfoUnitList.RemoveAt(j);
+                            sil.RemoveAt(j);
                             --j;
                         }
                     }
                 }
                 //конвертируем
                 int index = 0;
-                while (index < si.InfoUnitList.Count)
+                while (index < sil.Count())
                 {
-                    SemanticTree.IClassMemberNode imn = si.First().sym_info as SemanticTree.IClassMemberNode;
+                    SemanticTree.IClassMemberNode imn = sil.First().sym_info as SemanticTree.IClassMemberNode;
                     if (imn != null && imn.comperehensive_type.IsInterface && imn.comperehensive_type.is_generic_type_definition)
                     {
                         SymbolInfoList start = new SymbolInfoList();
@@ -1944,43 +1973,56 @@ namespace PascalABCCompiler.TreeRealization
                                 continue;
                             if (interf.original_generic == imn.comperehensive_type)
                             {
-                                definition_node dn = gitn.ConvertMember(si.InfoUnitList[index].sym_info);
-                                SymbolInfoUnit new_si = new SymbolInfoUnit(dn, si.InfoUnitList[index].access_level, si.InfoUnitList[index].symbol_kind);
+                                definition_node dn = gitn.ConvertMember(sil[index].sym_info);
+                                SymbolInfo new_si = new SymbolInfo(dn, sil[index].access_level, sil[index].symbol_kind);
                                 start.Add(new_si);
                             }
                         }
-                        if (start.InfoUnitList.Count > 0)
+                        if (start.Count() > 0)
                         {
-                            si.InfoUnitList[index].sym_info = start.First().sym_info;
-                            if (start.InfoUnitList.Count > 1)
-                                si.InfoUnitList.Insert(index + 1, start.InfoUnitList[1]);
+                            sil[index].sym_info = start.First().sym_info;
+                            if (start.Count() > 1)
+                                sil.Insert(index + 1, start[1]);
                         }
                     }
                     ++index;
                 }
             }
-            if (this.base_generic_instance != null && si != null)
+            if (this.base_generic_instance != null && sil != null)
             {
-                return base_generic_instance.ConvertSymbolInfo(si);
+                return base_generic_instance.ConvertSymbolInfo(sil);
             }
             else //if (si == null)
             {
                 if (ImplementingInterfaces != null)
                 {
+                    Dictionary<definition_node, definition_node> cache = new Dictionary<definition_node, definition_node>();
+                    List<SymbolInfo> props = new List<SymbolInfo>();
                     foreach (type_node ii_tn in ImplementingInterfaces)
                     {
                         SymbolInfoList isi = ii_tn.find_in_type(name, CurrentScope);
                         if (isi != null)
                         {
-                            if (si == null)
-                                si = isi;
-                            else
-                                si.Add(isi);
+                            if (sil == null)
+                                sil = new SymbolInfoList();
+                            foreach (SymbolInfo si in isi.list)
+                            {
+                                if (!cache.ContainsKey(si.sym_info))
+                                {
+                                    if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method)
+                                        sil.Add(si);
+                                    cache.Add(si.sym_info, si.sym_info);
+                                }
+                            }
+
+
                         }
                     }
+                    if (sil != null && sil.Count() == 0)
+                        sil = null;
                 }
             }
-            return si;
+            return sil;
         }
 
         //(ssyy) Они нигде не используются
@@ -1995,11 +2037,11 @@ namespace PascalABCCompiler.TreeRealization
             return _scope.Find(name, CurrentScope);
         }*/
 
-        public override void add_name(string name, PascalABCCompiler.TreeConverter.SymbolInfoUnit si)
+        public override void add_name(string name, PascalABCCompiler.TreeConverter.SymbolInfo si)
         {
             scope.AddSymbol(name, si);
         }
-        public override void add_generated_name(string name, PascalABCCompiler.TreeConverter.SymbolInfoUnit si)
+        public override void add_generated_name(string name, PascalABCCompiler.TreeConverter.SymbolInfo si)
         {
             scope.AddSymbol(name, si);
         }
@@ -2141,13 +2183,13 @@ namespace PascalABCCompiler.TreeRealization
 
         public override function_node get_implicit_conversion_to(type_node ctn)
         {
-            SymbolInfoList si = this.find_in_type(compiler_string_consts.implicit_operator_name);
-        	if (si != null)
+            SymbolInfoList sil = this.find_in_type(compiler_string_consts.implicit_operator_name);
+        	if (sil != null)
         	{
         		function_node fn = null;
-        		foreach(var si_unit in si.InfoUnitList)
+        		foreach(var si in sil.list)
         		{
-        			fn = si_unit.sym_info as function_node;
+        			fn = si.sym_info as function_node;
                     if (fn != null && type_table.is_type_or_original_generics_equal(fn.return_value_type, ctn) && type_table.is_type_or_original_generics_equal(fn.parameters[0].type, this))
                     {
                         if (fn.is_generic_function)
@@ -2172,13 +2214,13 @@ namespace PascalABCCompiler.TreeRealization
 
         public override function_node get_implicit_conversion_from(type_node ctn)
         {
-        	SymbolInfoList si = this.find_in_type(compiler_string_consts.implicit_operator_name);
-        	if (si != null)
+        	SymbolInfoList sil = this.find_in_type(compiler_string_consts.implicit_operator_name);
+        	if (sil != null)
         	{
         		function_node fn = null;
-        		foreach(var si_unit in si.InfoUnitList)
+        		foreach(var si in sil.list)
         		{
-        			fn = si_unit.sym_info as function_node;
+        			fn = si.sym_info as function_node;
         			if (fn != null && fn.parameters.Count == 1 && type_table.is_type_or_original_generics_equal(fn.parameters[0].type, ctn) && type_table.is_type_or_original_generics_equal(fn.return_value_type, this))
                     {
                         if (fn.is_generic_function)
@@ -2202,13 +2244,13 @@ namespace PascalABCCompiler.TreeRealization
 
         public override function_node get_explicit_conversion_to(type_node ctn)
         {
-            SymbolInfoList si = this.find_in_type(compiler_string_consts.explicit_operator_name);
-        	if (si != null)
+            SymbolInfoList sil = this.find_in_type(compiler_string_consts.explicit_operator_name);
+        	if (sil != null)
         	{
         		function_node fn = null;
-        		foreach(var si_unit in si.InfoUnitList)
+        		foreach(var si in sil.list)
         		{
-        			fn = si_unit.sym_info as function_node;
+        			fn = si.sym_info as function_node;
         			if (fn != null && fn.return_value_type == ctn)
         				return fn;
         		}
@@ -2220,13 +2262,13 @@ namespace PascalABCCompiler.TreeRealization
 
         public override function_node get_explicit_conversion_from(type_node ctn)
         {
-            SymbolInfoList si = this.find_in_type(compiler_string_consts.explicit_operator_name);
-        	if (si != null)
+            SymbolInfoList sil = this.find_in_type(compiler_string_consts.explicit_operator_name);
+        	if (sil != null)
         	{
         		function_node fn = null;
-        		foreach(var si_unit in si.InfoUnitList)
+        		foreach(var si in sil.list)
         		{
-        			fn = si_unit.sym_info as function_node;
+        			fn = si.sym_info as function_node;
                     if (fn != null && fn.parameters.Count == 1 && fn.parameters[0].type == ctn)
                         return fn;
         		}
@@ -2403,14 +2445,24 @@ namespace PascalABCCompiler.TreeRealization
 			get { return name; }
 		}
         
-        public override void add_name(string name, SymbolInfoUnit si)
+        public override void add_name(string name, SymbolInfo si)
         {
             _scope.AddSymbol(name, si);
         }
 
-        public override void add_generated_name(string name, SymbolInfoUnit si)
+        public override void add_generated_name(string name, SymbolInfo si)
         {
             _scope.AddSymbol(name, si);
+        }
+
+        public override SymbolInfo find_first_in_type(string name, bool no_search_in_extension_methods = false)
+        {
+            if (name == compiler_string_consts.assign_name || name == compiler_string_consts.plusassign_name)
+            {
+                var temp = _scope.FindOnlyInType(name, null);
+                return temp?.First();
+            }
+            return SystemLibrary.SystemLibrary.string_type.find_first_in_type(name);
         }
 
         public override SymbolInfoList find_in_type(string name, bool no_search_in_extension_methods = false)
@@ -2489,7 +2541,7 @@ namespace PascalABCCompiler.TreeRealization
 	[Serializable]
 	public class compiled_type_node : wrapped_type, SemanticTree.ICompiledTypeNode , SemanticTree.ILocated
 	{
-        public override string ToString() => compiled_type.Name.ToString();
+        public override string ToString() => this.full_name.ToString();
 
         internal System.Type _compiled_type;
 		protected compiled_type_node _base_type;
@@ -2857,22 +2909,22 @@ namespace PascalABCCompiler.TreeRealization
             {
                 if (base_type == SystemLibrary.SystemLibrary.delegate_base_type)
                 {
-                    SymbolInfoList si_int = this.find_in_type(compiler_string_consts.invoke_method_name);
+                    SymbolInfo si_int = this.find_first_in_type(compiler_string_consts.invoke_method_name);
 #if DEBUG
                     if (si_int == null)
                     {
                         throw new CompilerInternalError("No invoke method in class derived from MulticastDelegate");
                     }
 #endif
-                    compiled_function_node invoke = si_int.First().sym_info as compiled_function_node;
+                    compiled_function_node invoke = si_int.sym_info as compiled_function_node;
 #if DEBUG
                     if (invoke == null)
                     {
                         throw new CompilerInternalError("No invoke method in class derived from MulticastDelegate");
                     }
 #endif
-                    SymbolInfoList si_cons = this.find_in_type(compiler_string_consts.net_constructor_name);
-                    compiled_constructor_node ctor = si_cons.First().sym_info as compiled_constructor_node;
+                    SymbolInfo si_cons = this.find_first_in_type(compiler_string_consts.net_constructor_name);
+                    compiled_constructor_node ctor = si_cons.sym_info as compiled_constructor_node;
 #if DEBUG
                     if (ctor == null)
                     {
@@ -2896,7 +2948,7 @@ namespace PascalABCCompiler.TreeRealization
             common_namespace_function_node cnfn = new common_namespace_function_node(name, this, null, null, null);
             cnfn.ConnectedToType = this;
             cnfn.compile_time_executor = executor;
-            add_name(name, new SymbolInfoUnit(cnfn));
+            add_name(name, new SymbolInfo(cnfn));
             common_parameter cp1 = new common_parameter(compiler_string_consts.left_param_name, this, SemanticTree.parameter_type.value,
                                                         cnfn, concrete_parameter_type.cpt_none, null, null);
             common_parameter cp2 = new common_parameter(compiler_string_consts.right_param_name, this, SemanticTree.parameter_type.value,
@@ -2924,7 +2976,7 @@ namespace PascalABCCompiler.TreeRealization
 				//if (ci.IsPrivate || ci.IsAssembly) 
 				//	continue;
 				compiled_constructor_node ccn=compiled_constructor_node.get_compiled_constructor(ci);
-				SymbolInfoUnit si=new SymbolInfoUnit(ccn);
+				SymbolInfo si=new SymbolInfo(ccn);
 				NetHelper.NetHelper.AddConstructor(ci, ccn);
 				//add_additional_name(compiler_string_consts.standart_constructor_name,si);
                 add_name(compiler_string_consts.default_constructor_name, si);
@@ -2955,9 +3007,9 @@ namespace PascalABCCompiler.TreeRealization
             basic_function_node _int_xor = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.xor_name, ctn, SemanticTree.basic_function_type.ixor);
             if (ctn.scope != null)
             {
-                ctn.scope.AddSymbol(compiler_string_consts.and_name, new SymbolInfoUnit(_int_and));
-                ctn.scope.AddSymbol(compiler_string_consts.or_name, new SymbolInfoUnit(_int_or));
-                ctn.scope.AddSymbol(compiler_string_consts.xor_name, new SymbolInfoUnit(_int_xor));
+                ctn.scope.AddSymbol(compiler_string_consts.and_name, new SymbolInfo(_int_and));
+                ctn.scope.AddSymbol(compiler_string_consts.or_name, new SymbolInfo(_int_or));
+                ctn.scope.AddSymbol(compiler_string_consts.xor_name, new SymbolInfo(_int_xor));
             }
         }
 
@@ -3170,9 +3222,14 @@ namespace PascalABCCompiler.TreeRealization
             {
                 SymbolInfoList old = to;
                 to = new SymbolInfoList();
-                to.InfoUnitList = old.InfoUnitList;
+                to.list = old.list;
             }
-            to.Add(from);
+            Dictionary<definition_node, definition_node> defs = new Dictionary<definition_node, definition_node>();
+            foreach (SymbolInfo si in to.list)
+                defs[si.sym_info] = si.sym_info;
+            foreach (SymbolInfo si in from.list)
+                if (!defs.ContainsKey(si.sym_info))
+                    to.Add(si);
             return to;
         }
 
@@ -3190,17 +3247,17 @@ namespace PascalABCCompiler.TreeRealization
                 this.init_scope();
             if (scope == null)
             {
-                SymbolInfoList si = compiled_find(name);
-                SymbolInfoList si2 = find_in_additional_names(name);
-                if (si == null && si2 == null && string.Compare(name,"Create",true) != 0)
+                SymbolInfoList sil = compiled_find(name);
+                SymbolInfoList sil2 = find_in_additional_names(name);
+                if (sil == null && sil2 == null && string.Compare(name,"Create",true) != 0)
                 {
                     compiled_type_node bas_type = base_type as compiled_type_node;
-                    while (si == null && bas_type != null && bas_type.scope != null)
+                    while (sil == null && bas_type != null && bas_type.scope != null)
                     {
-                        si = bas_type.scope.SymbolTable.Find(bas_type.scope, name);
+                        sil = bas_type.scope.SymbolTable.Find(bas_type.scope, name);
                         bas_type = bas_type.base_type as compiled_type_node;
                     }
-                    if (si == null)
+                    if (sil == null)
                     {
                         for (int i = 0; i < ImplementingInterfaces.Count; i++)
                         {
@@ -3209,21 +3266,21 @@ namespace PascalABCCompiler.TreeRealization
                                 ctn = ctn.original_generic as compiled_type_node;
                             if (ctn != null && ctn.scope != null)
                             {
-                                si = ctn.scope.SymbolTable.Find(ctn.scope, name);
+                                sil = ctn.scope.SymbolTable.Find(ctn.scope, name);
                             }
-                            if (si != null)
+                            if (sil != null)
                                 break;
                         }
                     }
 
                 }
-                return AddToSymbolInfo(si, si2);
+                return AddToSymbolInfo(sil, sil2);
             }
             else
             {
-                SymbolInfoList si = scope.SymbolTable.Find(scope, name);
-                SymbolInfoList si2 = find_in_additional_names(name);
-                SymbolInfoList si3 = compiled_find(name);
+                SymbolInfoList sil = scope.SymbolTable.Find(scope, name);
+                SymbolInfoList sil2 = find_in_additional_names(name);
+                SymbolInfoList sil3 = compiled_find(name);
                 bool clone = false;
                 if (!no_search_in_extension_methods || this._compiled_type.IsGenericType)
                 {
@@ -3233,10 +3290,10 @@ namespace PascalABCCompiler.TreeRealization
                         SymbolInfoList tmp_si = this.base_type.Scope.SymbolTable.Find(this.base_type.Scope, name);
                         if (tmp_si != null)
                         {
-                            if (si == null)
-                                si = tmp_si;
-                            else if (si.First().sym_info != tmp_si.First().sym_info)
-                                si = AddToSymbolInfo(tmp_si, si, true);
+                            if (sil == null)
+                                sil = tmp_si;
+                            else if (sil.First().sym_info != tmp_si.First().sym_info)
+                                sil = AddToSymbolInfo(tmp_si, sil, true);
                             clone = true;
                         }
                     }
@@ -3248,10 +3305,10 @@ namespace PascalABCCompiler.TreeRealization
                             SymbolInfoList tmp_si = ctn.scope.SymbolTable.Find(ctn.scope, name);
                             if (tmp_si != null && tmp_si.First().sym_info is function_node && (tmp_si.First().sym_info as function_node).is_extension_method)
                             {
-                                if (si == null)
-                                    si = tmp_si;
-                                else if (si.First().sym_info != tmp_si.First().sym_info)
-                                    si = AddToSymbolInfo(si, tmp_si, true);
+                                if (sil == null)
+                                    sil = tmp_si;
+                                else if (sil.First().sym_info != tmp_si.First().sym_info)
+                                    sil = AddToSymbolInfo(sil, tmp_si, true);
                                 clone = true;
                             }
                         }
@@ -3266,12 +3323,12 @@ namespace PascalABCCompiler.TreeRealization
                         SymbolInfoList tmp_si = bas_type.scope.SymbolTable.Find(bas_type.scope, name);
                         if (tmp_si != null && tmp_si.First().sym_info is function_node && (tmp_si.First().sym_info as function_node).is_extension_method)
                         {
-                            if (si == null)
-                                si = tmp_si;
+                            if (sil == null)
+                                sil = tmp_si;
                             else
                             {
-                                if (si.First().sym_info != tmp_si.First().sym_info)
-                                    si = AddToSymbolInfo(si, tmp_si, true);
+                                if (sil.First().sym_info != tmp_si.First().sym_info)
+                                    sil = AddToSymbolInfo(sil, tmp_si, true);
                             }
                             clone = true;
                         }
@@ -3287,32 +3344,40 @@ namespace PascalABCCompiler.TreeRealization
                             SymbolInfoList tmp_si = ctn.scope.SymbolTable.Find(ctn.scope, name);
                             if (tmp_si != null && tmp_si.First().sym_info is function_node && (tmp_si.First().sym_info as function_node).is_extension_method)
                             {
-                                if (si == null)
-                                    si = tmp_si;
+                                if (sil == null)
+                                    sil = tmp_si;
                                 else
                                 {
-                                    if (si.First().sym_info != tmp_si.First().sym_info)
-                                        si = AddToSymbolInfo(si, tmp_si, true);
+                                    if (sil.First().sym_info != tmp_si.First().sym_info)
+                                        sil = AddToSymbolInfo(sil, tmp_si, true);
                                 }
                                 clone = true;
                             }
                         }
                     }
                 }
-                if (si != null)
+                if (sil != null)
                 {
-                    si.Add(si3);
+                    sil = AddToSymbolInfo(sil, sil3, false);
                 }
-                else if (si3 != null)
-                    si = si3;
+                else if (sil3 != null)
+                    sil = sil3;
                 
-                if (si == null && si2 == null && this == SystemLibrary.SystemLibrary.string_type && SystemLibrary.SystemLibrary.syn_visitor.from_pabc_dll)
+                if (sil == null && sil2 == null && this == SystemLibrary.SystemLibrary.string_type && SystemLibrary.SystemLibrary.syn_visitor.from_pabc_dll)
                 {
-                    si = compiled_type_node.get_type_node(NetHelper.NetHelper.PABCSystemType).find_in_type(name);
+                    sil = compiled_type_node.get_type_node(NetHelper.NetHelper.PABCSystemType).find_in_type(name);
                 }
-                return AddToSymbolInfo(si, si2, clone);
+                return AddToSymbolInfo(sil, sil2, clone);
             }
 		}
+
+        public override SymbolInfo find_first_in_type(string name, bool no_search_in_extension_methods = false)
+        {
+            var temp = find(name, no_search_in_extension_methods);
+            if (temp != null)
+                return temp.First();
+            return null;
+        }
 
         public override SymbolInfoList find_in_type(string name, bool no_search_in_extension_methods = false)
         {
@@ -3330,23 +3395,20 @@ namespace PascalABCCompiler.TreeRealization
                 SymbolInfoList start = null;
                 if (ext != null)
                 {
-                    foreach (var ext_unit in ext.InfoUnitList)
+                    for(int cur_index = 0; cur_index < ext.Count(); cur_index++)
                     {
-                        SymbolInfoList tmp = new SymbolInfoList();
-                        int cur_index = ext.InfoUnitList.IndexOf(ext_unit);
-                        tmp.InfoUnitList = ext.InfoUnitList.GetRange(cur_index, ext.InfoUnitList.Count - cur_index); //!!!
                         if (ext == result)
                             continue;
-                        if (tmp.First().sym_info is wrapped_definition_node)
-                            BasePCUReader.RestoreSymbols(tmp, name);
-                        if (tmp.First().sym_info is common_namespace_function_node)
+                        if (ext[cur_index].sym_info is wrapped_definition_node)
+                            BasePCUReader.RestoreSymbols(ext, name, cur_index);
+                        if (ext[cur_index].sym_info is common_namespace_function_node)
                         {
                             if (start == null)
                             {
-                                start = tmp;
+                                start = ext.GetRange(cur_index, ext.Count() - cur_index);
                                 if (result != null)
                                 {
-                                    result.InfoUnitList.RemoveRange(1, result.InfoUnitList.Count - 1);
+                                    result.RemoveRange(1, result.Count() - 1);
                                     result.Add(start);
                                 }
                             }
@@ -3360,15 +3422,15 @@ namespace PascalABCCompiler.TreeRealization
                 }
                 else
                 {
-                    List<SymbolInfoUnit> si_lst = new List<SymbolInfoUnit>();
+                    List<SymbolInfo> si_lst = new List<SymbolInfo>();
                     List<definition_node> lst = new List<definition_node>();
-                    foreach (var current_unit in result.InfoUnitList)
+                    foreach (var current_unit in result.list)
                     {
                         lst.Add(current_unit.sym_info);
                         //si_lst.Add(current);
                     }
 
-                    foreach (var current_unit in result.InfoUnitList)
+                    foreach (var current_unit in result.list)
                     {
                         if (!lst.Contains(current_unit.sym_info))
                         {
@@ -3378,7 +3440,7 @@ namespace PascalABCCompiler.TreeRealization
                     }
                     if (si_lst.Count > 0)
                     {
-                        result.InfoUnitList.RemoveRange(1, result.InfoUnitList.Count - 1);
+                        result.RemoveRange(1, result.Count() - 1);
                         for (int i = 0; i < si_lst.Count; i++)
                         {
                             result.Add(si_lst[i]);
@@ -3983,7 +4045,7 @@ namespace PascalABCCompiler.TreeRealization
             return null;
         }
 		
-		public override void add_name(string name, SymbolInfoUnit si)
+		public override void add_name(string name, SymbolInfo si)
 		{
 			_scope.AddSymbol(name, si);
 		}
@@ -4002,7 +4064,7 @@ namespace PascalABCCompiler.TreeRealization
         {
             get
             {
-                return true;
+                return false;
             }
         }
         
@@ -4010,7 +4072,7 @@ namespace PascalABCCompiler.TreeRealization
         {
             get
             {
-                return false;
+                return true;
             }
             set
             {
@@ -4737,16 +4799,21 @@ namespace PascalABCCompiler.TreeRealization
             return null;
         }
 
+        public override SymbolInfo find_first_in_type(string name, bool no_search_in_extension_methods = false)
+        {
+            return null;
+        }
+
         public override SymbolInfoList find_in_type(string name, bool no_search_in_extension_methods = false)
         {
             return null;
         }
 
-        public override void add_name(string name, SymbolInfoUnit si)
+        public override void add_name(string name, SymbolInfo si)
         {
 
         }
-        public override void add_generated_name(string name, SymbolInfoUnit si)
+        public override void add_generated_name(string name, SymbolInfo si)
         {
 
         }
