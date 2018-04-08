@@ -658,9 +658,24 @@ namespace PascalABCCompiler.SyntaxTree
                     CompareInternal(left as function_lambda_definition, right as function_lambda_definition);
                 else if (left is tuple_node)
                     CompareInternal(left as tuple_node, right as tuple_node);
+                else if (left is slice_expr)
+                    CompareInternal(left as slice_expr, right as slice_expr);
                 else
                     throw new NotImplementedException(left.GetType().ToString());
 
+            }
+        }
+
+        public void CompareInternal(slice_expr left, slice_expr right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                CompareInternal(left.v, right.v);
+                CompareInternal(left.from, right.from);
+                CompareInternal(left.step, right.step);
+                CompareInternal(left.to, right.to);
             }
         }
 
