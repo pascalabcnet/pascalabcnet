@@ -369,6 +369,8 @@ namespace CodeCompletion
         {
             if (ts is TypeSynonim)
                 return GetExtensionMethods((ts as TypeSynonim).actType);
+            if (ts.original_type != null)
+                return GetExtensionMethods(ts.original_type);
             List<ProcScope> lst = new List<ProcScope>();
             List<ProcScope> meths = null;
             TypeScope tmp_ts = ts;
