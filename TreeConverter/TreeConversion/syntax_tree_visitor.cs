@@ -1120,7 +1120,7 @@ namespace PascalABCCompiler.TreeConverter
                         }
 #endif
                         
-                        function_node fn = ((function_node)(sic.sym_info));
+                        function_node fn = (function_node)sic.sym_info;
                         if (convertion_data_and_alghoritms.is_exist_eq_method_in_list(fn, funcs) == null)
                         {
                             //break;
@@ -1186,7 +1186,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 else
                 {
-                    if ((sil == null) && (sil2 != null))
+                    if (sil == null && sil2 != null)
                     {
                         sil = sil2;
                     }
