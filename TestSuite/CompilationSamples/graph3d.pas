@@ -35,6 +35,7 @@ type
   TupleReal3 = (real, real, real);
   Point3D = Point3D;
   Point = System.Windows.Point;
+  Ray3D = HelixToolkit.Wpf.Ray3D;
   
 var
   hvp: HelixViewport3D;
@@ -1044,6 +1045,7 @@ type
       end;
       
       da := AddDoubleAnimByName(sb, angle, seconds, ttname, AxisAngleRotation3D.AngleProperty, wait);
+      var (d1,d2) := (da.BeginTime,da.Duration);
     end;
   
   public 
@@ -2369,6 +2371,26 @@ begin
   foreach var obj in Object3DList do
     if obj.model = v then
       Result := obj
+end;
+
+function FindNearestPoint(x,y: real; var p: Point3D): boolean;
+begin
+  var p1 := hvp.FindNearestPoint(Pnt(x,y));
+  Result := p1.HasValue;
+  if p1.HasValue then
+    p := p1.Value
+  else p := P3D(0,0,0);
+end;
+
+function GetRay(x,y: real): Ray3D := hvp.Viewport.GetRay(Pnt(x,y));
+
+function PlaneIntersection(x,y: real; p: Point3D; v: Vector3D; var pr: Point3D): boolean;
+begin
+  var p1 := GetRay(x,y).PlaneIntersection(p,v);
+  Result := p1.HasValue;
+  if p1.HasValue then
+    pr := p1.Value
+  else pr := P3D(0,0,0);
 end;
 
 function DefaultMaterialColor := RandomColor;

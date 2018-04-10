@@ -1801,7 +1801,7 @@ namespace PascalABCCompiler.Parsers
                 if (extensionType == null)
                     sb.Append(GetShortTypeName(scope.CompiledMethod.GetParameters()[0].ParameterType));
             }
-            if (scope.Name != "Invoke")
+            //if (scope.Name != "Invoke")
             {
                 if (extensionType == null)
                     sb.Append(".");

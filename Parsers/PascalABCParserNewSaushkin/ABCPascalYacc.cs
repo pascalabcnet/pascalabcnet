@@ -5355,10 +5355,13 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         	if (el.Count==1 && el.expressions[0] is format_expr) 
         	{
         		var fe = el.expressions[0] as format_expr;
-        		if (fe.expr == null)
-        			fe.expr = new int32_const(int.MaxValue,LocationStack[LocationStack.Depth-2]);
-        		if (fe.format1 == null)
-        			fe.format1 = new int32_const(int.MaxValue,LocationStack[LocationStack.Depth-2]);
+                if (!parsertools.build_tree_for_formatter)
+                {
+                    if (fe.expr == null)
+                        fe.expr = new int32_const(int.MaxValue,LocationStack[LocationStack.Depth-2]);
+                    if (fe.format1 == null)
+                        fe.format1 = new int32_const(int.MaxValue,LocationStack[LocationStack.Depth-2]);
+                }
         		CurrentSemanticValue.ex = new slice_expr(ValueStack[ValueStack.Depth-4].ex as addressed_value,fe.expr,fe.format1,fe.format2,CurrentLocationSpan);
 			}   
 			else CurrentSemanticValue.ex = new indexer(ValueStack[ValueStack.Depth-4].ex as addressed_value,el, CurrentLocationSpan);
