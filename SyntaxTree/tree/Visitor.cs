@@ -1354,6 +1354,12 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_typeclass_definition">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(typeclass_definition _typeclass_definition);
+		///<summary>
+		///Method to visit where_typeclass_constraint.
+		///</summary>
+		///<param name="_where_typeclass_constraint">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(where_typeclass_constraint _where_typeclass_constraint);
 	}
 
 

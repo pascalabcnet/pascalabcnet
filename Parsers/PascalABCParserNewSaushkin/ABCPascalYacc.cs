@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  OBERON
-// DateTime: 4/5/2018 7:25:14 PM
+// DateTime: 4/10/2018 5:44:39 PM
 // UserName: voganesyan
 // Input file <ABCPascal.y>
 
@@ -3746,7 +3746,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 312: // where_part -> tkWhere, typeclass_restriction, tkSemiColon
 {
-			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-3].ti;
+			CurrentSemanticValue.stn = new where_typeclass_constraint(ValueStack[ValueStack.Depth-2].id as typeclass_restriction);
 		}
         break;
       case 313: // type_ref_and_secific_list -> type_ref_or_secific

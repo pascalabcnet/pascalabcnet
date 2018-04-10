@@ -1568,7 +1568,7 @@ where_part
 		}
 	| tkWhere typeclass_restriction tkSemiColon
 		{
-			$$ = $1;
+			$$ = new where_typeclass_constraint($2 as typeclass_restriction);
 		}
     ;
 

@@ -47992,6 +47992,202 @@ namespace PascalABCCompiler.SyntaxTree
 	}
 
 
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class where_typeclass_constraint : where_definition
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public where_typeclass_constraint()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public where_typeclass_constraint(typeclass_restriction _restriction)
+		{
+			this._restriction=_restriction;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public where_typeclass_constraint(typeclass_restriction _restriction,SourceContext sc)
+		{
+			this._restriction=_restriction;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public where_typeclass_constraint(ident_list _names,where_type_specificator_list _types,typeclass_restriction _restriction)
+		{
+			this._names=_names;
+			this._types=_types;
+			this._restriction=_restriction;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public where_typeclass_constraint(ident_list _names,where_type_specificator_list _types,typeclass_restriction _restriction,SourceContext sc)
+		{
+			this._names=_names;
+			this._types=_types;
+			this._restriction=_restriction;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected typeclass_restriction _restriction;
+
+		///<summary>
+		///
+		///</summary>
+		public typeclass_restriction restriction
+		{
+			get
+			{
+				return _restriction;
+			}
+			set
+			{
+				_restriction=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			where_typeclass_constraint copy = new where_typeclass_constraint();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (names != null)
+			{
+				copy.names = (ident_list)names.Clone();
+				copy.names.Parent = copy;
+			}
+			if (types != null)
+			{
+				copy.types = (where_type_specificator_list)types.Clone();
+				copy.types.Parent = copy;
+			}
+			if (restriction != null)
+			{
+				copy.restriction = (typeclass_restriction)restriction.Clone();
+				copy.restriction.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new where_typeclass_constraint TypedClone()
+		{
+			return Clone() as where_typeclass_constraint;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (names != null)
+				names.Parent = this;
+			if (types != null)
+				types.Parent = this;
+			if (restriction != null)
+				restriction.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			names?.FillParentsInAllChilds();
+			types?.FillParentsInAllChilds();
+			restriction?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return names;
+					case 1:
+						return types;
+					case 2:
+						return restriction;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						names = (ident_list)value;
+						break;
+					case 1:
+						types = (where_type_specificator_list)value;
+						break;
+					case 2:
+						restriction = (typeclass_restriction)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
 
 }
 

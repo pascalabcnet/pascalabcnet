@@ -2906,6 +2906,20 @@
         </TagIndices>
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="where_typeclass_constraint" BaseName="where_definition">
+      <Fields>
+        <SyntaxField Name="restriction" SyntaxType="typeclass_restriction" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -2931,7 +2945,7 @@
         <Tag Name="Важнейшие" ReferenceCount="207" />
         <Tag Name="Method_Procedure_Call" ReferenceCount="2" />
         <Tag Name="Yield" ReferenceCount="8" />
-        <Tag Name="Typeclasses" ReferenceCount="3" />
+        <Tag Name="Typeclasses" ReferenceCount="4" />
       </Tags>
     </FilterCategory>
   </TagCategories>
@@ -2981,6 +2995,7 @@
       <HelpData Key=".params" Value="" />
       <HelpData Key=".procdef" Value="" />
       <HelpData Key=".res" Value="" />
+      <HelpData Key=".restriction" Value="" />
       <HelpData Key=".restriction_args" Value="" />
       <HelpData Key=".right" Value="" />
       <HelpData Key=".sharp_consts" Value="Список символьных констант в строке вида #123#124#125" />
@@ -4312,6 +4327,8 @@
       <HelpData Key="where_definition_list.where_definition_list(where_definition _where_definition, SourceContext sc)" Value="" />
       <HelpData Key="where_type_specificator_list" Value="" />
       <HelpData Key="where_type_specificator_list.defs" Value="" />
+      <HelpData Key="where_typeclass_constraint" Value="" />
+      <HelpData Key="where_typeclass_constraint.restriction" Value="" />
       <HelpData Key="while_node" Value="Цикл ПОКА" />
       <HelpData Key="while_node." Value="" />
       <HelpData Key="while_node.CycleType" Value="Тип цикла ПОКА" />

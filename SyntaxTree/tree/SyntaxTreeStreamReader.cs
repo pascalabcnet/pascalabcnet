@@ -470,6 +470,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new instance_definition();
 				case 224:
 					return new typeclass_definition();
+				case 225:
+					return new where_typeclass_constraint();
 			}
 			return null;
 		}
@@ -3961,6 +3963,18 @@ namespace PascalABCCompiler.SyntaxTree
 			read_type_definition(_typeclass_definition);
 			_typeclass_definition.additional_restrictions = _read_node() as named_type_reference_list;
 			_typeclass_definition.body = _read_node() as class_body_list;
+		}
+
+
+		public void visit(where_typeclass_constraint _where_typeclass_constraint)
+		{
+			read_where_typeclass_constraint(_where_typeclass_constraint);
+		}
+
+		public void read_where_typeclass_constraint(where_typeclass_constraint _where_typeclass_constraint)
+		{
+			read_where_definition(_where_typeclass_constraint);
+			_where_typeclass_constraint.restriction = _read_node() as typeclass_restriction;
 		}
 
 	}

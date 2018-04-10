@@ -6211,6 +6211,27 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(where_typeclass_constraint _where_typeclass_constraint)
+		{
+			bw.Write((Int16)225);
+			write_where_typeclass_constraint(_where_typeclass_constraint);
+		}
+
+		public void write_where_typeclass_constraint(where_typeclass_constraint _where_typeclass_constraint)
+		{
+			write_where_definition(_where_typeclass_constraint);
+			if (_where_typeclass_constraint.restriction == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_where_typeclass_constraint.restriction.visit(this);
+			}
+		}
+
 	}
 
 
