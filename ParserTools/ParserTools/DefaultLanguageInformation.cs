@@ -2582,9 +2582,11 @@ namespace PascalABCCompiler.Parsers
             else keyword = KeywordKind.None;
         }
 		
-		private bool CheckForComment(string Text, int off)
+		private bool CheckForComment(string Text, int off, out int comment_position, out bool one_line_comment)
 		{
 			int i = off;
+            one_line_comment = false;
+            comment_position = -1;
 			Stack<char> kav = new Stack<char>();
 			bool is_comm = false;
 			while (i>=0 && !is_comm && Text[i] != '\n')
@@ -2596,7 +2598,11 @@ namespace PascalABCCompiler.Parsers
 				}
 				else if (Text[i] == '{')
 				{
-					if (kav.Count == 0) is_comm = true;
+					if (kav.Count == 0)
+                    {
+                        is_comm = true;
+                        comment_position = i;
+                    }  
 				}
 				else if (Text[i] == '}')
 				{
@@ -2604,7 +2610,12 @@ namespace PascalABCCompiler.Parsers
 				}
 				else if (Text[i] == '/')
 					if (i > 0 && Text[i-1] == '/' && kav.Count == 0)
-					is_comm = true;
+                    {
+                        is_comm = true;
+                        one_line_comment = true;
+                        comment_position = i - 1;
+                    }
+					
 				i--;
 			}
 			return is_comm;
@@ -2670,7 +2681,7 @@ namespace PascalABCCompiler.Parsers
                     }
                     else
                         if (ch == '\'')
-                            kav.Push('\'');
+                        kav.Push('\'');
                     sb.Insert(0, ch);//.Append(Text[i]);
                 }
                 else if (ch == '.' || ch == '^' || ch == '&')
@@ -2740,7 +2751,7 @@ namespace PascalABCCompiler.Parsers
                                 {
                                     if (!(kav.Count == 0 && tokens.Count == 0))
                                         sb.Insert(0, ch);
-                                }   
+                                }
                                 else
                                     end = true;
                             }
@@ -2819,18 +2830,33 @@ namespace PascalABCCompiler.Parsers
                                     if (ch == ',' && ugl_skobki.Count > 0)
                                         sb.Insert(0, ch);
                                     else
-                                    if (tokens.Count == 0) end = true;
-                                    else sb.Insert(0, ch);
+                                    if (tokens.Count == 0)
+                                        end = true;
+                                    else
+                                        sb.Insert(0, ch);
                                 }
-                                else sb.Insert(0, ch);
+                                else
+                                    sb.Insert(0, ch);
                             }
                             else
                             {
                                 if (Text[i] == '\n')
                                 {
-                                    if (CheckForComment(Text, i - 1))
-                                        end = true;
-                                    else sb.Insert(0, ch);
+                                    bool one_line_comment = false;
+                                    int comment_position = -1;
+                                    if (CheckForComment(Text, i - 1, out comment_position, out one_line_comment))
+                                    {
+                                        if (!one_line_comment)
+                                            end = true;
+                                        else
+                                        {
+                                            sb.Insert(0, ch);
+                                            i = comment_position;
+                                        }
+                                            
+                                    }    
+                                    else
+                                        sb.Insert(0, ch);
                                 }
                                 else
                                     sb.Insert(0, ch);
@@ -2841,7 +2867,9 @@ namespace PascalABCCompiler.Parsers
 
                 if (end)
                 {
-                    if (CheckForComment(Text, i))
+                    bool one_line_comment = false;
+                    int comment_position = -1;
+                    if (CheckForComment(Text, i, out comment_position, out one_line_comment))
                     {
                         int new_line_ind = sb.ToString().IndexOf('\n');
                         if (new_line_ind != -1) sb = sb.Remove(0, new_line_ind + 1);
@@ -3375,8 +3403,19 @@ namespace PascalABCCompiler.Parsers
                                 else
                                 if (Text[i] == '\n')
                                 {
-                                    if (CheckForComment(Text, i - 1)) //proverjaem, net li kommenta ne predydushej stroke
-                                        end = true;//esli est to finish
+                                    bool one_line_comment = false;
+                                    int comment_position = -1;
+                                    if (CheckForComment(Text, i - 1, out comment_position, out one_line_comment)) //proverjaem, net li kommenta ne predydushej stroke
+                                    {
+                                        if (!one_line_comment)
+                                            end = true;
+                                        else
+                                        {
+                                            sb.Insert(0, ch);
+                                            i = comment_position;
+                                        }
+                                            
+                                    }
                                     else
                                         sb.Insert(0, ch);//a inache vyrazhenie na neskolkih strokah
                                 }
@@ -3389,7 +3428,9 @@ namespace PascalABCCompiler.Parsers
                     {
                         if (comma_pressed && !on_brace)
                             return "";
-                        if (CheckForComment(Text, i))//proverka na kommentarii
+                        bool one_line_comment = false;
+                        int comment_position = -1;
+                        if (CheckForComment(Text, i, out comment_position, out one_line_comment))//proverka na kommentarii
                         {
                             int new_line_ind = sb.ToString().IndexOf('\n');
                             if (new_line_ind != -1) sb = sb.Remove(0, new_line_ind + 1);
