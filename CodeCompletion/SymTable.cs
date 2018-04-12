@@ -5080,7 +5080,7 @@ namespace CodeCompletion
                     }
                     else
                     {
-                        if (this.instances[i].instances != null && this.instances[i].instances.Count > 0 && gen_args[i].elementType != null)
+                        if (this.instances[i].instances != null && this.instances[i].instances.Count > 0 && i < gen_args.Count && gen_args[i].elementType != null)
                         {
                             List<TypeScope> lst = new List<TypeScope>();
                             lst.Add(gen_args[i].elementType);
