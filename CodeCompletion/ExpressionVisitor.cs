@@ -719,6 +719,7 @@ namespace CodeCompletion
             _dot_node.left.visit(this);
             search_all = tmp2;
             by_dot = tmp;
+            
             if (returned_scope != null && returned_scope is ElementScope && (returned_scope as ElementScope).sc is ProcScope)
             {
                 if (((returned_scope as ElementScope).sc as ProcScope).return_type != null)
@@ -728,6 +729,7 @@ namespace CodeCompletion
             }
             else if (returned_scope != null && returned_scope is ProcScope)
             {
+                
                 ProcScope ps = returned_scope as ProcScope;
                 if (ps.return_type == null)
                 {
@@ -1030,6 +1032,8 @@ namespace CodeCompletion
                         (_method_call.dereferencing_value as dot_node).left.visit(this);
                         if (returned_scope is ElementScope)
                             returned_scope = (returned_scope as ElementScope).sc;
+                        else if (returned_scope is ProcScope)
+                            returned_scope = (returned_scope as ProcScope).return_type;
                         obj = returned_scope as TypeScope;
                         by_dot = tmp;
                         if (obj != null && proc.parameters != null && proc.parameters.Count > 0 && !(proc.parameters[0].sc is TemplateParameterScope || proc.parameters[0].sc is UnknownScope))

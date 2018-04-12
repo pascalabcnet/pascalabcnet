@@ -2004,20 +2004,20 @@ namespace CodeCompletion
                     int ind = this.template_parameters.IndexOf((parameter.sc as TypeScope).Name);
                     ElementScope inst_param = null;
                     if (gen_args.Count > ind && ind != -1)
-                        inst_param = new ElementScope(parameter.si, gen_args[ind], parameter.topScope);
+                        inst_param = new ElementScope(new SymInfo(parameter.si.name, parameter.si.kind, parameter.si.description), gen_args[ind], parameter.topScope);
                     else
-                        inst_param = new ElementScope(parameter.si, parameter.sc, parameter.topScope);
+                        inst_param = new ElementScope(new SymInfo(parameter.si.name, parameter.si.kind, parameter.si.description), parameter.sc, parameter.topScope);
                     instance.parameters.Add(inst_param);
                 }
                 else
                 {
                     ElementScope inst_param = null;
                     if ((parameter.sc as TypeScope).IsGeneric)
-                        inst_param = new ElementScope(parameter.si, (parameter.sc as TypeScope).GetInstance(gen_args), parameter.topScope);
+                        inst_param = new ElementScope(new SymInfo(parameter.si.name, parameter.si.kind, parameter.si.description), (parameter.sc as TypeScope).GetInstance(gen_args), parameter.topScope);
                     else if ((parameter.sc as TypeScope).GetElementType() != null && (parameter.sc as TypeScope).GetElementType().IsGenericParameter)
-                        inst_param = new ElementScope(parameter.si, (parameter.sc as TypeScope).GetInstance(gen_args), parameter.topScope);
+                        inst_param = new ElementScope(new SymInfo(parameter.si.name, parameter.si.kind, parameter.si.description), (parameter.sc as TypeScope).GetInstance(gen_args), parameter.topScope);
                     else
-                        inst_param = new ElementScope(parameter.si, parameter.sc, parameter.topScope);
+                        inst_param = new ElementScope(new SymInfo(parameter.si.name, parameter.si.kind, parameter.si.description), parameter.sc, parameter.topScope);
                     instance.parameters.Add(inst_param);
                 }
                 if (parameter.param_kind == parametr_kind.params_parametr && i < gen_args.Count)
