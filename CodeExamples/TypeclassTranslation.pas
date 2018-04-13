@@ -6,13 +6,16 @@
    ExplicitModelAttribute = class(System.Attribute)
    end;
 
-
+(*
   [Concept] SumTC<T> = abstract class
   public
     constructor;
     begin
     end;
     function sum(v1, v2: T): T; abstract;
+  end;*)
+  SumTC[T] = typeclass
+    function sum(v1, v2: T): T;
   end;
 
    
@@ -27,7 +30,7 @@
       Result := v1 + v2;
     end;
   end;
-
+(*
   ConceptSingleton<T> = class where T: constructor;
     class _instance: T;
     class inited: boolean := false;
@@ -42,11 +45,11 @@
       
       Result := _instance;
     end;
-  end;
+  end;*)
 
 function Sum3<T, SumT>(v1, v2, v3: T): T; where SumT: SumTC<T>, constructor;
 begin
-  var s := ConceptSingleton&<SumT>.&Instance;
+  var s := __ConceptSingleton&<SumT>.&Instance;
   Result := s.sum(v1, s.sum(v2, v3));
 end;
 

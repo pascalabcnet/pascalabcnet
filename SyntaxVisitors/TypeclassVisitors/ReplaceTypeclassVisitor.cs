@@ -16,6 +16,14 @@ namespace SyntaxVisitors.TypeclassVisitors
 
         }
 
+        public static ReplaceTypeclassVisitor New
+        {
+            get
+            {
+                return new ReplaceTypeclassVisitor();
+            }
+        }
+
         bool VisitInstanceDeclaration(type_declaration instanceDeclaration)
         {
             var instanceDefinition = instanceDeclaration.type_def as instance_definition;
@@ -61,24 +69,39 @@ namespace SyntaxVisitors.TypeclassVisitors
             typeclassDefTranslated.attribute = class_attribute.Abstract;
             for (int i = 0; i < typeclassDefTranslated.body.class_def_blocks.Count; i++)
             {
-                var cm = typeclassDefTranslated.body.class_def_blocks[i];
+                var cm = typeclassDefTranslated.body.class_def_blocks[i].members;
 
                 for (int j = 0; j < cm.Count; j++)
                 {
-                    (cm[j] as function_header)?.proc_attributes.Add(new procedure_attribute("abstract", proc_attribute.attr_abstract));
+                    // TODO: or override if implementation exists
                     (cm[j] as procedure_header)?.proc_attributes.Add(new procedure_attribute("abstract", proc_attribute.attr_abstract));
                 }
             }
-            // TODO: add constructor
+
+            {
+                // TODO: add constructor
+                var cm = typeclassDefTranslated.body.class_def_blocks[0];
+                var def = new procedure_definition(
+                    new constructor(),
+                    new statement_list(new empty_statement()));
+                def.proc_body.Parent = def;
+                def.proc_header.proc_attributes = new procedure_attributes_list();
+
+                cm.Add(def);
+            }
+
+
 
             var templates = new ident_list();
             templates.source_context = typeclassName.restriction_args.source_context;
             for (int i = 0; i < typeclassName.restriction_args.Count; i++)
             {
-                templates.Add((typeclassName.restriction_args[i] as named_type_reference).names[0]);
+                templates.Add((typeclassName.restriction_args.params_list[i] as named_type_reference).names[0]);
             }
 
             var typeclassNameTanslated = new template_type_name(typeclassName.name, templates, typeclassName.source_context);
+
+            Replace(typeclassDeclaration, new type_declaration(typeclassNameTanslated, typeclassDefTranslated, typeclassDeclaration.source_context));
 
             /*
             if (typeclassInstanceDeclarations.ContainsKey(typeclassName.name))
