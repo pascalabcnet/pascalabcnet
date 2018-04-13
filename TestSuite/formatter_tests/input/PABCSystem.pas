@@ -1966,6 +1966,24 @@ type
     constructor(ptr: pointer);
   end;
 
+type
+  ///--
+  __ConceptSingleton<T> = class where T: constructor;
+    class _instance: T;
+    class inited: boolean := false;
+  public
+    class function &Instance: T;
+    begin
+      if inited = false then
+      begin
+        inited := true;
+        _instance := new T;
+      end;
+      
+      Result := _instance;
+    end;
+  end;
+
 // -----------------------------------------------------
 //                  Internal procedures for PABCRTL.dll
 // -----------------------------------------------------
