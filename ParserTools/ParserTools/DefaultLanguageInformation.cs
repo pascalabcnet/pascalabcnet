@@ -2151,22 +2151,26 @@ namespace PascalABCCompiler.Parsers
         		if ((scope as IElementScope).Indexers.Length == 0)
         		scope = (scope as IElementScope).Type;
         	if (scope is IProcScope) scope = (scope as IProcScope).ReturnType;
-			if (!(scope is IElementScope))
-        	{
-        		ITypeScope ts = scope as ITypeScope;
-        		if (ts == null) return null;
-        		if (tmp_si is ITypeScope) return null;
-        		ITypeScope[] indexers = ts.Indexers;
-        		if (indexers == null || indexers.Length == 0) return null;
-        		StringBuilder sb = new StringBuilder();
-        		sb.Append("this");
-        		sb.Append('[');
-        		for (int i=0; i<indexers.Length; i++)
-        		{
-        			sb.Append(GetSimpleDescriptionWithoutNamespace(indexers[i]));
-        			if (i < indexers.Length - 1)
-        				sb.Append(',');
-        		}
+            if (!(scope is IElementScope))
+            {
+                ITypeScope ts = scope as ITypeScope;
+                if (ts == null) return null;
+                if (tmp_si is ITypeScope) return null;
+                ITypeScope[] indexers = ts.Indexers;
+                if ((indexers == null || indexers.Length == 0) && !(ts is IArrayScope))
+                    return null;
+                StringBuilder sb = new StringBuilder();
+                sb.Append("this");
+                sb.Append('[');
+                if (indexers != null)
+                    for (int i = 0; i < indexers.Length; i++)
+                    {
+                        sb.Append(GetSimpleDescriptionWithoutNamespace(indexers[i]));
+                        if (i < indexers.Length - 1)
+                            sb.Append(',');
+                    }
+                else
+                    sb.Append("integer");
         		sb.Append("] : ");
         		sb.Append(GetSimpleDescriptionWithoutNamespace(ts.ElementType));
         		return new string[1]{sb.ToString()};
