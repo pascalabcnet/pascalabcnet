@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using PascalABCCompiler.TreeConverter;
+using System.Linq;
 
 namespace PascalABCCompiler.TreeRealization
 {
@@ -63,8 +64,8 @@ namespace PascalABCCompiler.TreeRealization
                     using_namespace_list new_unl = new using_namespace_list();
                     foreach (using_namespace un in unl)
                     {
-                        SymbolInfoList sil = netsc.FindOnlyInScope(un.namespace_name);
-                        if ((sil.First().sym_info as compiled_namespace_node) != null)
+                        List<SymbolInfo> sil = netsc.FindOnlyInScope(un.namespace_name);
+                        if ((sil.FirstOrDefault().sym_info as compiled_namespace_node) != null)
                         {
                             new_unl.AddElement(un);
                         }
@@ -484,13 +485,13 @@ namespace PascalABCCompiler.TreeRealization
             indefinite_definition_node idn = new indefinite_definition_node(name, this);
             return new SymbolInfo(idn, access_level.al_public, symbol_kind.sk_indefinite);
         }
-        public override SymbolInfoList find_in_type(string name, bool no_search_in_extension_methods = false)
+        public override List<SymbolInfo> find_in_type(string name, bool no_search_in_extension_methods = false)
         {
             indefinite_definition_node idn = new indefinite_definition_node(name, this);
-            return new SymbolInfoList(new SymbolInfo(idn, access_level.al_public, symbol_kind.sk_indefinite));
+            return new List<SymbolInfo> { new SymbolInfo(idn, access_level.al_public, symbol_kind.sk_indefinite) };
         }
 
-        public override SymbolInfoList find(string name, bool no_search_in_extension_methods = false)
+        public override List<SymbolInfo> find(string name, bool no_search_in_extension_methods = false)
         {
             return find_in_type(name);
         }

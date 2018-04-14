@@ -109,6 +109,7 @@
     <Compile Include="LambdaExpressions\LambdaProcessingState.cs" />
     <Compile Include="LambdaExpressions\LambdaResultTypeInferrer.cs" />
     <Compile Include="LambdaExpressions\LambdaSearcher.cs" />
+    <Compile Include="SymbolTable\DSST\SymbolTable2.cs" />
     <Compile Include="TreeConversion\LambdaHelper.cs" />
     <Compile Include="SymbolTable\DSST\AreaArrayTable.cs">
       <SubType>Code</SubType>

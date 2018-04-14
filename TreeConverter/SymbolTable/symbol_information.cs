@@ -6,6 +6,21 @@ using PascalABCCompiler.TreeRealization;
 using System.Collections.Generic;
 using System.Collections;
 
+namespace System.Collections.Generic
+{
+    using PascalABCCompiler.TreeConverter;
+    public static class SymbolInfoList
+    {
+        public static bool HasOnlyExtensionMethods(this List<SymbolInfo> list)
+        {
+            for (int i = 0; i < list.Count; ++i)
+                if (!(list[i].sym_info is function_node && (list[i].sym_info as function_node).is_extension_method))
+                    return false;
+            return true;
+        }
+    }
+}
+
 namespace PascalABCCompiler.TreeConverter
 {
 
@@ -15,7 +30,7 @@ namespace PascalABCCompiler.TreeConverter
 
 	public abstract class base_scope
 	{
-		public abstract SymbolInfoList find(string name);
+		public abstract List<SymbolInfo> find(string name);
 
 		public abstract base_scope top_scope
 		{
@@ -88,379 +103,21 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
     }
-
-    /*public class SymbolInfo
+    
+    /*public class SymbolInfoList
     {
-        //private readonly name_information_type _name_information_type;
-        private definition_node _sym_info;
-
-
-
-        private access_level _access_level;
-
-        private symbol_kind _symbol_kind;
-
-        public SymbolInfo Next;
-
-        public SymbolTable.Scope scope;
-
-
-        public access_level access_level
-        {
-            get
-            {
-                return _access_level;
-            }
-            set
-            {
-                _access_level = value;
-            }
-
-        }
-
-        public symbol_kind symbol_kind
-        {
-            get
-            {
-                return _symbol_kind;
-            }
-            set
-            {
-                _symbol_kind = value;
-            }
-        }
-
-        //public name_information_type name_information_type
-		//{
-		//	get
-		//	{
-		//		return _name_information_type;
-		//	}
-		//}
-
-        public definition_node sym_info
-        {
-            get
-            {
-                return _sym_info;
-            }
-            set
-            {
-                _sym_info = value;
-            }
-        }
-
-        public SymbolInfo()
-        {
-        }
-
-        public SymbolInfo copy()
-        {
-            SymbolInfo si = new SymbolInfo();
-            si._access_level = this.access_level;
-            si._sym_info = this._sym_info;
-            si._symbol_kind = this._symbol_kind;
-            si.scope = this.scope;
-            si.Next = this.Next;
-            return si;
-        }
-        private symbol_kind get_function_kind(function_node fn, bool is_overload)
-        {
-            symbol_kind sk;
-            if (is_overload)
-            {
-                if (fn.return_value_type == null)
-                {
-                    sk = symbol_kind.sk_overload_procedure;
-                }
-                else
-                {
-                    sk = symbol_kind.sk_overload_function;
-                }
-            }
-            else
-            {
-                sk = symbol_kind.sk_none;
-            }
-            return sk;
-        }
-
-        private symbol_kind get_function_kind(function_node fn)
-        {
-            common_function_node cfn = fn as common_function_node;
-            if (cfn != null)
-            {
-                return get_function_kind(cfn, cfn.is_overload);
-            }
-            basic_function_node bfn = fn as basic_function_node;
-            if (bfn != null)
-            {
-                return get_function_kind(bfn, bfn.is_overload);
-            }
-            return symbol_kind.sk_none;
-        }
-
-        private access_level get_class_member_access_level(SemanticTree.IClassMemberNode icmn)
-        {
-            access_level al;
-            switch (icmn.field_access_level)
-            {
-                case SemanticTree.field_access_level.fal_public: al = access_level.al_public; break;
-                case SemanticTree.field_access_level.fal_protected: al = access_level.al_protected; break;
-                case SemanticTree.field_access_level.fal_private: al = access_level.al_private; break;
-                case SemanticTree.field_access_level.fal_internal: al = access_level.al_internal; break;
-                default:
-                    al = access_level.al_private; break;
-            }
-            return al;
-        }
-
-        public SymbolInfo(template_class tc)
-        {
-            _sym_info = tc;
-            _access_level = access_level.al_public;
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-        public SymbolInfo(label_node lab)
-        {
-            _sym_info = lab;
-            _access_level = access_level.al_public;
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-        public SymbolInfo(compiled_event ce)
-        {
-            _sym_info = ce;
-            _access_level = access_level.al_public;
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-        public SymbolInfo(compiled_type_node value)
-        {
-            //_name_information_type=name_information_type.nit_compiled_type;
-            _sym_info = value;
-            _access_level = access_level.al_public;
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-        public SymbolInfo(common_event value)
-        {
-            _sym_info = value;
-            _access_level = get_class_member_access_level(value);
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-        public SymbolInfo(common_namespace_event value)
-        {
-            _sym_info = value;
-            _access_level = access_level.al_public;
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-        public SymbolInfo(function_node value)
-        {
-            _sym_info = value;
-            _access_level = access_level.al_public;
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-        public SymbolInfo(compiled_function_node value)
-        {
-            //_name_information_type=name_information_type.nit_compiled_function;
-            _sym_info = value;
-            _access_level = get_class_member_access_level(value);
-            _symbol_kind = get_function_kind(value);
-        }
-
-        public SymbolInfo(compiled_constructor_node value)
-        {
-            //_name_information_type=name_information_type.nit_compiled_function;
-            _sym_info = value;
-            _access_level = get_class_member_access_level(value);
-            _symbol_kind = get_function_kind(value);
-        }
-
-        public SymbolInfo(compiled_property_node value)
-        {
-            //_name_information_type=name_information_type.nit_compiled_property;
-            _sym_info = value;
-            _access_level = get_class_member_access_level(value);
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-        public SymbolInfo(compiled_variable_definition value)
-        {
-            //_name_information_type=name_information_type.nit_compiled_variable;
-            _sym_info = value;
-            _access_level = get_class_member_access_level(value);
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-        public SymbolInfo(compiled_class_constant_definition value)
-        {
-            _sym_info = value;
-            _access_level = get_class_member_access_level(value);
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-        public SymbolInfo(compiled_namespace_node value)
-        {
-            //_name_information_type=name_information_type.nit_compiled_namespace;
-            _sym_info = value;
-            _access_level = access_level.al_public;
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-        public SymbolInfo(common_type_node value)
-        {
-            //_name_information_type=name_information_type.nit_common_type;
-            _sym_info = value;
-            _access_level = access_level.al_public;
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-        public SymbolInfo(basic_function_node value)
-        {
-            //_name_information_type=name_information_type.nit_basic_function;
-            _sym_info = value;
-            _access_level = access_level.al_public;
-            _symbol_kind = get_function_kind(value);
-        }
-
-        public SymbolInfo(common_namespace_function_node value)
-        {
-            //_name_information_type=name_information_type.nit_common_namespace_function;
-            _sym_info = value;
-            _access_level = access_level.al_public;
-            _symbol_kind = get_function_kind(value);
-        }
-
-        public SymbolInfo(common_in_function_function_node value)
-        {
-            //_name_information_type=name_information_type.nit_common_in_function_function;
-            _sym_info = value;
-            _access_level = access_level.al_public;
-            _symbol_kind = get_function_kind(value);
-        }
-
-        public SymbolInfo(common_method_node value)
-        {
-            //_name_information_type=name_information_type.nit_common_method;
-            _sym_info = value;
-            _access_level = get_class_member_access_level(value);
-            _symbol_kind = get_function_kind(value);
-        }
-
-        public SymbolInfo(common_namespace_node value)
-        {
-            //_name_information_type=name_information_type.nit_common_namespace;
-            _sym_info = value;
-            _access_level = access_level.al_public;
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-        public SymbolInfo(unit_node value)
-        {
-            //_name_information_type=name_information_type.nit_unit;
-            _sym_info = value;
-            _access_level = access_level.al_public;
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-        public SymbolInfo(local_variable value)
-        {
-            //_name_information_type=name_information_type.nit_local_variable;
-            _sym_info = value;
-            _access_level = access_level.al_public;
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-        public SymbolInfo(local_block_variable value)
-        {
-            //_name_information_type=name_information_type.nit_local_variable;
-            _sym_info = value;
-            _access_level = access_level.al_public;
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-
-        public SymbolInfo(namespace_variable value)
-        {
-            //_name_information_type=name_information_type.nit_namespace_variable;
-            _sym_info = value;
-            _access_level = access_level.al_public;
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-        public SymbolInfo(class_field value)
-        {
-            //_name_information_type=name_information_type.nit_class_field;
-            _sym_info = value;
-            _access_level = get_class_member_access_level(value);
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-        public SymbolInfo(common_parameter value)
-        {
-            //_name_information_type=name_information_type.nit_common_parameter;
-            _sym_info = value;
-            _access_level = access_level.al_public;
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-        public SymbolInfo(basic_parameter value)
-        {
-            //_name_information_type=name_information_type.nit_basic_parameter;
-            _sym_info = value;
-            _access_level = access_level.al_public;
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-        public SymbolInfo(constant_definition_node value)
-        {
-            //_name_information_type=name_information_type.nit_constant_defnition;
-            _sym_info = value;
-            _access_level = access_level.al_public;
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-        public SymbolInfo(common_property_node value)
-        {
-            //_name_information_type=name_information_type.nit_common_property;
-            _sym_info = value;
-            _access_level = get_class_member_access_level(value);
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-        public SymbolInfo(type_node value)
-        {
-            _sym_info = value;
-            _access_level = access_level.al_public;
-            _symbol_kind = symbol_kind.sk_none;
-        }
-
-        public SymbolInfo(definition_node value, access_level alevel, symbol_kind skind)
-        {
-            _sym_info = value;
-            _access_level = alevel;
-            _symbol_kind = skind;
-        }
-
-   }*/
-    public class SymbolInfoList
-    {
+        
         //private readonly name_information_type _name_information_type;
 
         public List<SymbolInfo> list;
         
 
-        public SymbolInfoList()
+        public List<SymbolInfo>()
         {
             list = new List<SymbolInfo>(SymbolTable.SymbolTableConstants.InfoList_StartSize);
-        }
+        }   
 
-        public SymbolInfoList(SymbolInfo inf)
+        public List<SymbolInfo>(SymbolInfo inf)
         {
             list = new List<SymbolInfo>(SymbolTable.SymbolTableConstants.InfoList_StartSize);
             list.Add(inf);
@@ -478,9 +135,9 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
-        public SymbolInfoList copy()
+        public List<SymbolInfo> Copy()
         {
-            SymbolInfoList sil = new SymbolInfoList();
+            List<SymbolInfo> sil = new List<SymbolInfo>();
             sil.list = new List<SymbolInfo>(this.list);
             return sil;
         }
@@ -489,13 +146,13 @@ namespace PascalABCCompiler.TreeConverter
         {
             list.Add(value);
         }
-        public void Add(SymbolInfoList value)
+        public void AddRange(List<SymbolInfo> value)
         {
             if(value != null)
                 list.AddRange(value.list);
         }
 
-        public SymbolInfo First()
+        public SymbolInfo FirstOrDefault()
         {
             if (Count() > 0)
                 return list[0];
@@ -503,7 +160,7 @@ namespace PascalABCCompiler.TreeConverter
                 return null;
         }
 
-        public SymbolInfo Last()
+        public SymbolInfo LastOrDefault()
         {
             if (Count() > 0)
                 return list[list.Count - 1];
@@ -553,9 +210,9 @@ namespace PascalABCCompiler.TreeConverter
                 list.RemoveRange(index, count);
         }
 
-        public SymbolInfoList GetRange(int index, int count)
+        public List<SymbolInfo> GetRange(int index, int count)
         {
-            SymbolInfoList temp = new SymbolInfoList();
+            List<SymbolInfo> temp = new List<SymbolInfo>();
             temp.list = list.GetRange(index, count);
             return temp;
         }
@@ -567,7 +224,7 @@ namespace PascalABCCompiler.TreeConverter
                 return false;
             }
 
-            SymbolInfoList p = obj as SymbolInfoList;
+            List<SymbolInfo> p = obj as List<SymbolInfo>;
             if ((System.Object)p == null)
             {
                 return false;
@@ -581,7 +238,7 @@ namespace PascalABCCompiler.TreeConverter
             return true;
         }
 
-        public bool Equals(SymbolInfoList p)
+        public bool Equals(List<SymbolInfo> p)
         {
             if ((object)p == null)
             {
@@ -596,7 +253,7 @@ namespace PascalABCCompiler.TreeConverter
         }
 
 
-        public static bool operator ==(SymbolInfoList a, SymbolInfoList b)
+        public static bool operator ==(List<SymbolInfo> a, List<SymbolInfo> b)
         {
             if (object.ReferenceEquals(a, null))
             {
@@ -606,33 +263,11 @@ namespace PascalABCCompiler.TreeConverter
             return a.Equals(b);
         }
 
-        public static bool operator !=(SymbolInfoList a, SymbolInfoList b)
+        public static bool operator !=(List<SymbolInfo> a, List<SymbolInfo> b)
         {
             return !(a == b);
         }
 
-        /*//IEnumerator
-         * int position = -1;
-        public bool MoveNext()
-        {
-            position++;
-            return (position < list.Count);
-        }
-
-        //IEnumerable
-        public void Reset()
-        { position = 0; }
-
-        //IEnumerable
-        public SymbolInfo Current
-        {
-            get { return list[position]; }
-        }
-
-        public IEnumerator GetEnumerator()
-        {
-            return (IEnumerator)this;
-        }*/
 
         public override int GetHashCode()
         {
@@ -640,7 +275,7 @@ namespace PascalABCCompiler.TreeConverter
         }
 
     }
-
+    */
 
     public class SymbolInfo
     {

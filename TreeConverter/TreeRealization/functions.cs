@@ -786,7 +786,7 @@ namespace PascalABCCompiler.TreeRealization
         /// </summary>
         /// <param name="name">Имя символа.</param>
         /// <returns>Информация о найленном символе. null, если ни чего не найдено.</returns>
-        public PascalABCCompiler.TreeConverter.SymbolInfoList find(string name, SymbolTable.Scope CurrentScope)
+        public List<TreeConverter.SymbolInfo> find(string name, SymbolTable.Scope CurrentScope)
         {
             return _scope.Find(name, CurrentScope);
         }

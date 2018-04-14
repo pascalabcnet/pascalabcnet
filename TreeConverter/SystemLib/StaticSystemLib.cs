@@ -10,6 +10,8 @@ using PascalABCCompiler.TreeConverter;
 using System.Collections;
 using System.Collections.Generic;
 
+using System.Linq;
+
 namespace PascalABCCompiler.SystemLibrary
 {
         
@@ -959,14 +961,14 @@ namespace PascalABCCompiler.SystemLibrary
             SymbolInfo si = type.find_first_in_type(compiler_string_consts.greq_name);
             basic_function_node greq = (basic_function_node)si.sym_info;
         
-            si = type.find(compiler_string_consts.smeq_name).First();
+            si = type.find(compiler_string_consts.smeq_name).FirstOrDefault();
             basic_function_node loeq = (basic_function_node)si.sym_info;
             
 			
-            si = type.find(compiler_string_consts.sm_name).First();
+            si = type.find(compiler_string_consts.sm_name).FirstOrDefault();
             basic_function_node lo = (basic_function_node)si.sym_info;
             
-            si = type.find(compiler_string_consts.gr_name).First();
+            si = type.find(compiler_string_consts.gr_name).FirstOrDefault();
             basic_function_node gr = (basic_function_node)si.sym_info;
 
             ordinal_type_interface oti = new ordinal_type_interface(inc_value, dec_value, inc_var, dec_var,

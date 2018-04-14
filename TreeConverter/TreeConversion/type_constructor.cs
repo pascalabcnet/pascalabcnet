@@ -9,6 +9,7 @@ using System;
 
 using PascalABCCompiler.TreeRealization;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PascalABCCompiler.TreeConverter
 {
@@ -526,7 +527,7 @@ namespace PascalABCCompiler.TreeConverter
                 ctn.ImplementingInterfaces.Add(compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(compiler_string_consts.IEnumerableInterfaceName)));
                 common_method_node en_cmn = new common_method_node(compiler_string_consts.GetEnumeratorMethodName, compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(compiler_string_consts.IEnumeratorInterfaceName)), null, ctn, SemanticTree.polymorphic_state.ps_virtual, SemanticTree.field_access_level.fal_public, null);
 
-                compiled_function_node en_fnc = NetHelper.NetHelper.FindName(NetHelper.NetHelper.FindType(compiler_string_consts.IEnumerableInterfaceName), compiler_string_consts.GetEnumeratorMethodName).First().sym_info as compiled_function_node;
+                compiled_function_node en_fnc = NetHelper.NetHelper.FindName(NetHelper.NetHelper.FindType(compiler_string_consts.IEnumerableInterfaceName), compiler_string_consts.GetEnumeratorMethodName).FirstOrDefault().sym_info as compiled_function_node;
                 statements_list sl = new statements_list(null);
                 sl.statements.AddElement(new return_node(
                     new compiled_function_call(en_fnc, new class_field_reference(int_arr, new this_node(ctn, null), null), null), null));
@@ -543,10 +544,10 @@ namespace PascalABCCompiler.TreeConverter
 
                     en_cmn = new common_method_node(compiler_string_consts.GetEnumeratorMethodName, compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(compiler_string_consts.IGenericEnumeratorInterfaceName)).get_instance(generic_args), null, ctn, SemanticTree.polymorphic_state.ps_virtual, SemanticTree.field_access_level.fal_public, null);
                     //en_fnc = en_tn.find_in_type("GetEnumerator").sym_info as function_node;//NetHelper.NetHelper.FindName(NetHelper.NetHelper.FindType(compiler_string_consts.IGenericEnumerableInterfaceName), compiler_string_consts.GetEnumeratorMethodName).sym_info as compiled_function_node;
-                    SymbolInfoList en_sil = en_tn.find_in_type("GetEnumerator");
+                    List<SymbolInfo> en_sil = en_tn.find_in_type("GetEnumerator");
                     if (en_sil != null && en_sil.Count() > 1 && (en_sil[1].sym_info as function_node).return_value_type.is_generic_type_instance)
                         en_sil = en_sil.GetRange(1, en_sil.Count() - 1);
-                    function_node en_fnc_inst = en_sil.First().sym_info as function_node; ;//.get_instance(generic_args, true, loc);
+                    function_node en_fnc_inst = en_sil.FirstOrDefault().sym_info as function_node; ;//.get_instance(generic_args, true, loc);
                     sl = new statements_list(null);
                     if (en_fnc_inst is compiled_function_node)
                         sl.statements.AddElement(new return_node(
