@@ -34,8 +34,11 @@ type
   TupleInt3 = (integer, integer, integer);
   TupleReal3 = (real, real, real);
   Point3D = Point3D;
+  Vector3D = Vector3D;
   Point = System.Windows.Point;
   Ray3D = HelixToolkit.Wpf.Ray3D;
+  Line3D = class(Ray3D) end;
+  Plane3D = HelixToolkit.Wpf.Plane3D;
   
 var
   hvp: HelixViewport3D;
@@ -1045,7 +1048,6 @@ type
       end;
       
       da := AddDoubleAnimByName(sb, angle, seconds, ttname, AxisAngleRotation3D.AngleProperty, wait);
-      var (d1,d2) := (da.BeginTime,da.Duration);
     end;
   
   public 
@@ -2019,6 +2021,25 @@ type
     constructor(x, y, z, Length: real; m: GMaterial) := CreateBase(new OctahedronVisual3D(Length), x, y, z, m);
     function Clone := (inherited Clone) as OctahedronT;
   end;
+
+  TriangleVisual3D = class(MeshElement3D)
+  private 
+    p1,p2,p3: Point3D;
+  public 
+    constructor(pp1,pp2,pp3: Point3D);
+    begin
+      (p1, p2, p3) := (pp1,pp2,pp3);
+      Material := Colors.Red;
+      OnGeometryChanged;
+    end;
+    function Tessellate(): MeshGeometry3D; override;
+    begin
+      var pmb := new PanelModelBuilder();
+      pmb.AddPanel(p1.X, p1.Y, p1.Z, p2.X, p2.Y, p2.Z, p3.X, p3.Y, p3.Z, p1.X, p1.Y, p1.Z);
+      Result := pmb.ToMeshGeometry3D
+    end;
+  end;
+
   
   PrismVisual3D = class(MeshElement3D)
   private 
@@ -2364,7 +2385,7 @@ type
     end;
   end;
 
-function FindObject3D(x,y: real): Object3D;
+function FindNearestObject(x,y: real): Object3D;
 begin
   Result := nil;
   var v := hvp.FindNearestVisual(new Point(x,y));
@@ -2373,24 +2394,52 @@ begin
       Result := obj
 end;
 
-function FindNearestPoint(x,y: real; var p: Point3D): boolean;
+var BadPoint := P3D(real.MaxValue,real.MaxValue,real.MaxValue);
+
+function FindNearestObjectPoint(x,y: real): Point3D;
 begin
   var p1 := hvp.FindNearestPoint(Pnt(x,y));
-  Result := p1.HasValue;
   if p1.HasValue then
-    p := p1.Value
-  else p := P3D(0,0,0);
+    Result := p1.Value
+  else Result := BadPoint;
 end;
+
+function Plane(p: Point3D; normal: Vector3D): Plane3D := new Plane3D(p,normal);
+function Ray(p: Point3D; v: Vector3D): Ray3D := new Ray3D(p,v);
+function Line(p: Point3D; v: Vector3D): Line3D := new Line3D(p,v);
+function Line(p1,p2: Point3D): Line3D := new Line3D(p1,p2-p1);
+
+var
+  PlaneXY := Plane(Origin,OrtZ);
+  PlaneYZ := Plane(Origin,OrtX);
+  PlaneXZ := Plane(Origin,OrtY);
+  XAxis := Ray(Origin,OrtX);
+  YAxis := Ray(Origin,OrtY);
+  ZAxis := Ray(Origin,OrtZ);
 
 function GetRay(x,y: real): Ray3D := hvp.Viewport.GetRay(Pnt(x,y));
 
-function PlaneIntersection(x,y: real; p: Point3D; v: Vector3D; var pr: Point3D): boolean;
+function PointOnPlane(Self: Plane3D; x,y: real): Point3D; extensionmethod;
 begin
-  var p1 := GetRay(x,y).PlaneIntersection(p,v);
-  Result := p1.HasValue;
+  var r := GetRay(x,y);
+  //Println(r);
+  var p1 := r.PlaneIntersection(Self.Position,Self.Normal);
   if p1.HasValue then
-    pr := p1.Value
-  else pr := P3D(0,0,0);
+    Result := p1.Value
+  else Result := BadPoint;
+end;
+
+function NearestPointOnLine(Self: Ray3D; x,y: real): Point3D; extensionmethod;
+begin
+  var ray := GetRay(x,y);
+  var a := Self.Direction;
+  var b := ray.Direction;
+  var ab := Vector3D.CrossProduct(a,b);
+  var planeNormal := Vector3D.CrossProduct(b,ab);
+  var p := Self.PlaneIntersection(ray.Origin,planeNormal);
+  if p.HasValue then
+    Result := p.Value
+  else Result := BadPoint;
 end;
 
 function DefaultMaterialColor := RandomColor;
@@ -2504,10 +2553,13 @@ function Segment3D(p1, p2: Point3D; thickness: real := 1.2; c: Color := GrayColo
 function Torus(x, y, z, Diameter, TubeDiameter: real; m: Material := DefaultMaterial): TorusT := Inv(()->TorusT.Create(x,y,z,Diameter, TubeDiameter, m));
 function Torus(p: Point3D; Diameter, TubeDiameter: real; m: Material := DefaultMaterial): TorusT := Torus(p.x,p.y,p.z,Diameter,TubeDiameter,m);
 
+function Triangle(p1,p2,p3: Point3D): TriangleVisual3D := Inv(()->TriangleVisual3D.Create(p1,p2,p3));
+
 function MyH(x, y, z, Length: real; c: Color): MyAnyT := Inv(()->MyAnyT.Create(x, y, z, Length, c));
 function MyH(x, y, z, Length: real; c: Material): MyAnyT := Inv(()->MyAnyT.Create(x, y, z, Length, c));
 
 function Any(x, y, z: real; c: Color): AnyT := Inv(()->AnyT.Create(x, y, z, c));
+
 
 procedure ProbaP;
 begin

@@ -16815,15 +16815,26 @@ namespace PascalABCCompiler.TreeConverter
             return_value(new question_colon_expression(condition, left, right, get_location(node)));
         }
 
+        Dictionary<SyntaxTree.type_definition, type_node> delegate_cache = new Dictionary<type_definition, type_node>();
+
         public List<type_node> visit_type_list(List<SyntaxTree.type_definition> types)
         {
             List<type_node> tparams = new List<type_node>();
             foreach (SyntaxTree.type_definition id in types)
             {
-                type_node tn = convert_strong(id);
+                type_node tn = null;
+                if ((id is function_header || id is procedure_header) && delegate_cache.ContainsKey(id))
+                    tn = delegate_cache[id];
+                else
+                    tn = convert_strong(id);
+                
                 if (tn == null)
                 {
                     AddError(get_location(id), "TYPE_NAME_EXPECTED");
+                }
+                if ((id is function_header || id is procedure_header) && !delegate_cache.ContainsKey(id))
+                {
+                    delegate_cache[id] = tn;
                 }
                 tparams.Add(tn);
             }
