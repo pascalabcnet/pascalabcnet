@@ -9561,7 +9561,7 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 if (string.Compare(cl_def.template_args.idents[i].name, ttn.template_args.idents[i].name, true) != 0)
                                 {
-                                    AddError(get_location(ttn.template_args.idents[i]), "PARAMETER_{0}_MUST_BE_NAMED_{1}", cl_def.template_args.idents[i].name, i + 1);
+                                    AddError(get_location(ttn.template_args.idents[i]), "PARAMETER_{0}_MUST_BE_NAMED_{1}", i + 1, cl_def.template_args.idents[i].name);
                                 }
                             }
                             _method_name.class_name = new SyntaxTree.ident(ttn.name);
@@ -9583,7 +9583,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (string.Compare(tp.generic_params[i].name, ttn.template_args.idents[i].name, true) != 0)
                         {
-                            AddError(get_location(ttn.template_args.idents[i]), "PARAMETER_{0}_MUST_BE_NAMED_{1}", tp.generic_params[i].name, i+1);
+                            AddError(get_location(ttn.template_args.idents[i]), "PARAMETER_{0}_MUST_BE_NAMED_{1}", i + 1, tp.generic_params[i].name);
                         }
                     }
                 }
