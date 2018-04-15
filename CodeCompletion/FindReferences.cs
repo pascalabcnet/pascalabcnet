@@ -470,7 +470,7 @@ namespace CodeCompletion
                     {
                         if (with_body)
                         {
-                            if (cur_scope != null && cur_scope.IsEqual(founded_scope))
+                            if (cur_scope != null && (cur_scope.IsEqual(founded_scope) || founded_scope is IProcScope && (founded_scope as IProcScope).Realization != null && cur_scope.IsEqual((founded_scope as IProcScope).Realization)))
                                 pos_list.Add(get_position(_function_header.name.meth_name));
                         }
                         else
