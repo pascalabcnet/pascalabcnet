@@ -12608,6 +12608,14 @@ namespace PascalABCCompiler.TreeConverter
                 common_method_node cmnode = context.top_function as common_method_node;
                 context.set_virtual_abstract(cmnode);
             }
+            if (context.converted_type != null)
+            {
+                common_method_node cmnode = context.top_function as common_method_node;
+                if (cmnode != null && cmnode.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract && body_exists)
+                {
+                    AddError(new AbstractMethodWithBody(get_location(_function_header)));
+                }
+            }
             convertion_data_and_alghoritms.create_function_return_variable(context.top_function, si);
 
             if (!body_exists)
