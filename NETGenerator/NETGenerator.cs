@@ -157,6 +157,7 @@ namespace PascalABCCompiler.NETGenerator
         private int cur_line = 0;
         private ISymbolDocumentWriter new_doc;
         private List<LocalBuilder> pinned_variables = new List<LocalBuilder>();
+        private bool pabc_rtl_converted = false;
 
         private void CheckLocation(SemanticTree.ILocation Location)
         {
@@ -447,6 +448,7 @@ namespace PascalABCCompiler.NETGenerator
 
             if (name == "PABCRtl" || name == "PABCRtl32")
             {
+                pabc_rtl_converted = true;
                 an.Flags = AssemblyNameFlags.PublicKey;
                 an.VersionCompatibility = System.Configuration.Assemblies.AssemblyVersionCompatibility.SameProcess;
                 an.HashAlgorithm = System.Configuration.Assemblies.AssemblyHashAlgorithm.None;
@@ -4599,7 +4601,7 @@ namespace PascalABCCompiler.NETGenerator
             switch (fal)
             {
                 case field_access_level.fal_public: return MethodAttributes.Public;
-                case field_access_level.fal_internal: return comp_opt.target == TargetType.Dll ? MethodAttributes.Public : MethodAttributes.Assembly;
+                case field_access_level.fal_internal: return (comp_opt.target == TargetType.Dll && pabc_rtl_converted) ? MethodAttributes.Public : MethodAttributes.Assembly;
                 case field_access_level.fal_protected: return MethodAttributes.FamORAssem;
                 case field_access_level.fal_private: return MethodAttributes.Assembly;
             }
