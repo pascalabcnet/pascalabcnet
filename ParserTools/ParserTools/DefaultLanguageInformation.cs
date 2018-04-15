@@ -2719,6 +2719,8 @@ namespace PascalABCCompiler.Parsers
                 {
                     if (kav.Count == 0)
                     {
+                        if (keyw == KeywordKind.None)
+                            return sb.ToString();
                         sb.Insert(0, ch);
                         break;
                     }
@@ -3079,16 +3081,26 @@ namespace PascalABCCompiler.Parsers
                 j--;
             Stack<char> kav_stack = new Stack<char>();
             j++;
+            bool in_format_str = false;
             while (j <= i)
             {
                 if (Text[j] == '\'')
                 {
                     if (kav_stack.Count == 0 && !in_keyw)
-                        kav_stack.Push('\'');
+                    {
+                        if (j == 0 || Text[j - 1] != '$')
+                            kav_stack.Push('\'');
+                        else
+                        {
+                            in_keyw = false;
+                            in_format_str = true;
+                        }
+                            
+                    }   
                     else if (kav_stack.Count > 0)
                         kav_stack.Pop();
                 }
-                else if (Text[j] == '{' && kav_stack.Count == 0)
+                else if (Text[j] == '{' && kav_stack.Count == 0 && !in_format_str)
                     in_keyw = true;
                 else
                     if (Text[j] == '}')

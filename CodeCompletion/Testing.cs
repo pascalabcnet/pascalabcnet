@@ -380,6 +380,11 @@ namespace CodeCompletion
             s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
             assert(s.Trim('\n', ' ', '\t') == "Seq(0)\n.f1\n.Print");
 
+            test_str = "$'is {a}'";
+            off = test_str.Length-2;
+            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            assert(s.Trim('\n', ' ', '\t') == "a");
+
             int num_param = 0;
     		//testirovanie nazhatija skobki
     		test_str = "writeln";
