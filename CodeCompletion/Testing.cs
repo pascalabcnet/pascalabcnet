@@ -840,7 +840,14 @@ namespace CodeCompletion
                 CodeFormatters.CodeFormatter cf = new CodeFormatters.CodeFormatter(2);
                 string Text2 = cf.FormatTree(Text, cu, 1, 1);
                 if (Text != Text2)
-                    log.WriteLine("Inavlid formatting of File " + s);
+                    log.WriteLine("Invalid formatting of File " + s);
+                string shouldFileName = Path.Combine(test_dir + @"\should",Path.GetFileName(s));
+                if (File.Exists(shouldFileName))
+                {
+                    string shouldText = new StreamReader(s, System.Text.Encoding.GetEncoding(1251)).ReadToEnd();
+                    if (Text != shouldText)
+                        log.WriteLine("Invalid formatting of File " + s);
+                }
             }
             log.Close();
         }

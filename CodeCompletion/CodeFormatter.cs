@@ -350,13 +350,24 @@ namespace CodeFormatters
                         if (multi_line_nodes.Count > 0)
                         {
                             if (multi_line_nodes.Count == 1)
-                                lines[i] = new string(' ', addit_pos_for_multiline) + lines[i];
+                            {
+                                if (!(multi_line_nodes.Peek() is function_lambda_definition))
+                                    lines[i] = new string(' ', addit_pos_for_multiline) + lines[i];
+                                else
+                                    lines[i] = new string(' ', off) + lines[i].Trim();
+                            }
+                                
                             else
                             {
-                                if (off > lines[i].Length)
-                                    lines[i] = new string(' ', addit_pos_for_multiline + off) + lines[i];
+                                if (!(multi_line_nodes.Peek() is function_lambda_definition))
+                                {
+                                    if (off > lines[i].Length)
+                                        lines[i] = new string(' ', addit_pos_for_multiline + off) + lines[i];
+                                    else
+                                        lines[i] = new string(' ', addit_pos_for_multiline) + lines[i];
+                                }
                                 else
-                                    lines[i] = new string(' ', addit_pos_for_multiline) + lines[i];
+                                    lines[i] = new string(' ', off) + lines[i].Trim();
                             }
                                 
                         }
@@ -692,7 +703,8 @@ namespace CodeFormatters
                         || sn is lock_stmt || sn is loop_stmt || sn is simple_property || sn is read_accessor_name || sn is write_accessor_name
                         || sn is formal_parameters || sn is bracket_expr || sn is record_const || sn is array_const || sn is exception_handler
                         || sn is try_handler_finally || sn is try_handler_except || sn is external_directive || sn is where_definition
-                        || (sn is simple_const_definition && in_class && !in_procedure) || (sn is typed_const_definition && in_class && !in_procedure))
+                        || (sn is simple_const_definition && in_class && !in_procedure) || (sn is typed_const_definition && in_class && !in_procedure)
+                        )
                         read_from_beg_pos = true;
                 }
                 sn.visit(this);
