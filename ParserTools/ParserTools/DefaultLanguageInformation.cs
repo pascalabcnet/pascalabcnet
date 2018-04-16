@@ -2151,22 +2151,26 @@ namespace PascalABCCompiler.Parsers
         		if ((scope as IElementScope).Indexers.Length == 0)
         		scope = (scope as IElementScope).Type;
         	if (scope is IProcScope) scope = (scope as IProcScope).ReturnType;
-			if (!(scope is IElementScope))
-        	{
-        		ITypeScope ts = scope as ITypeScope;
-        		if (ts == null) return null;
-        		if (tmp_si is ITypeScope) return null;
-        		ITypeScope[] indexers = ts.Indexers;
-        		if (indexers == null || indexers.Length == 0) return null;
-        		StringBuilder sb = new StringBuilder();
-        		sb.Append("this");
-        		sb.Append('[');
-        		for (int i=0; i<indexers.Length; i++)
-        		{
-        			sb.Append(GetSimpleDescriptionWithoutNamespace(indexers[i]));
-        			if (i < indexers.Length - 1)
-        				sb.Append(',');
-        		}
+            if (!(scope is IElementScope))
+            {
+                ITypeScope ts = scope as ITypeScope;
+                if (ts == null) return null;
+                if (tmp_si is ITypeScope) return null;
+                ITypeScope[] indexers = ts.Indexers;
+                if ((indexers == null || indexers.Length == 0) && !(ts is IArrayScope))
+                    return null;
+                StringBuilder sb = new StringBuilder();
+                sb.Append("this");
+                sb.Append('[');
+                if (indexers != null)
+                    for (int i = 0; i < indexers.Length; i++)
+                    {
+                        sb.Append(GetSimpleDescriptionWithoutNamespace(indexers[i]));
+                        if (i < indexers.Length - 1)
+                            sb.Append(',');
+                    }
+                else
+                    sb.Append("integer");
         		sb.Append("] : ");
         		sb.Append(GetSimpleDescriptionWithoutNamespace(ts.ElementType));
         		return new string[1]{sb.ToString()};
@@ -2715,6 +2719,8 @@ namespace PascalABCCompiler.Parsers
                 {
                     if (kav.Count == 0)
                     {
+                        if (keyw == KeywordKind.None)
+                            return sb.ToString();
                         sb.Insert(0, ch);
                         break;
                     }
@@ -3075,16 +3081,26 @@ namespace PascalABCCompiler.Parsers
                 j--;
             Stack<char> kav_stack = new Stack<char>();
             j++;
+            bool in_format_str = false;
             while (j <= i)
             {
                 if (Text[j] == '\'')
                 {
                     if (kav_stack.Count == 0 && !in_keyw)
-                        kav_stack.Push('\'');
+                    {
+                        if (j == 0 || Text[j - 1] != '$')
+                            kav_stack.Push('\'');
+                        else
+                        {
+                            in_keyw = false;
+                            in_format_str = true;
+                        }
+                            
+                    }   
                     else if (kav_stack.Count > 0)
                         kav_stack.Pop();
                 }
-                else if (Text[j] == '{' && kav_stack.Count == 0)
+                else if (Text[j] == '{' && kav_stack.Count == 0 && !in_format_str)
                     in_keyw = true;
                 else
                     if (Text[j] == '}')
