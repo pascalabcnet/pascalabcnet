@@ -20,7 +20,7 @@ namespace System.Linq
 
 namespace SymbolTable
 {
-	public class AreaNodesList
+	/*public class AreaNodesList
 	{
         public override string ToString() => data.Take(Count).JoinIntoString();
 
@@ -53,10 +53,6 @@ namespace SymbolTable
 				return;
 				//throw new Exception("Ошибка при добавлении области видимости к идентефикатору: такая область уже существует");
 			}
-            /*int k=i;
-			for (i = Count;i >= k+1; i--) data[i]=data[i-1];
-			count++;
-            data[i]=node;*/
             data.Insert(i, node);
 		}
 
@@ -89,6 +85,6 @@ namespace SymbolTable
 			set{data[index]=value;	}
 		}
 
-	}
+	}*/
 	
 }

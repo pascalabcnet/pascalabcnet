@@ -103,180 +103,7 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
     }
-    
-    /*public class SymbolInfoList
-    {
-        
-        //private readonly name_information_type _name_information_type;
-
-        public List<SymbolInfo> list;
-        
-
-        public List<SymbolInfo>()
-        {
-            list = new List<SymbolInfo>(SymbolTable.SymbolTableConstants.InfoList_StartSize);
-        }   
-
-        public List<SymbolInfo>(SymbolInfo inf)
-        {
-            list = new List<SymbolInfo>(SymbolTable.SymbolTableConstants.InfoList_StartSize);
-            list.Add(inf);
-        }
-
-        public SymbolInfo this[int key]
-        {
-            get
-            {
-                return list[key];
-            }
-            set
-            {
-                list[key] = value;
-            }
-        }
-
-        public List<SymbolInfo> Copy()
-        {
-            List<SymbolInfo> sil = new List<SymbolInfo>();
-            sil.list = new List<SymbolInfo>(this.list);
-            return sil;
-        }
-
-        public void Add(SymbolInfo value)
-        {
-            list.Add(value);
-        }
-        public void AddRange(List<SymbolInfo> value)
-        {
-            if(value != null)
-                list.AddRange(value.list);
-        }
-
-        public SymbolInfo FirstOrDefault()
-        {
-            if (Count() > 0)
-                return list[0];
-            else
-                return null;
-        }
-
-        public SymbolInfo LastOrDefault()
-        {
-            if (Count() > 0)
-                return list[list.Count - 1];
-            else
-                return null;
-        }
-
-        public int IndexOf(SymbolInfo x)
-        {
-            for (int i = 0; i < list.Count; ++i)
-                if (list[i] == x)
-                    return i;
-
-            return -1;
-        }
-
-        public int Count()
-        {
-            if (list != null)
-                return list.Count;
-            return 0;
-        }
-
-        public bool HasOnlyExtensionMethods()
-        {
-            for (int i = 0; i < list.Count; ++i)
-                if (!(list[i].sym_info is function_node && (list[i].sym_info as function_node).is_extension_method))
-                    return false;
-            return true;
-        }
-
-        public void Insert(int index, SymbolInfo item)
-        {
-            if (list != null)
-                list.Insert(index, item);
-        }
-
-        public void RemoveAt(int index)
-        {
-            if(list != null)
-                list.RemoveAt(index);
-        }
-
-        public void RemoveRange(int index, int count)
-        {
-            if (list != null)
-                list.RemoveRange(index, count);
-        }
-
-        public List<SymbolInfo> GetRange(int index, int count)
-        {
-            List<SymbolInfo> temp = new List<SymbolInfo>();
-            temp.list = list.GetRange(index, count);
-            return temp;
-        }
-
-        public override bool Equals(System.Object obj)
-        {
-            if (obj == null)
-            {
-                return false;
-            }
-
-            List<SymbolInfo> p = obj as List<SymbolInfo>;
-            if ((System.Object)p == null)
-            {
-                return false;
-            }
-
-            if (p.Count() != list.Count)
-                return false;
-            for (int i = 0; i < list.Count; ++i)
-                if (p.list[i] != list[i])
-                    return false;
-            return true;
-        }
-
-        public bool Equals(List<SymbolInfo> p)
-        {
-            if ((object)p == null)
-            {
-                return false;
-            }
-            if (p.Count() != list.Count)
-                return false;
-            for (int i = 0; i < list.Count; ++i)
-                if (p.list[i] != list[i])
-                    return false;
-            return true;
-        }
-
-
-        public static bool operator ==(List<SymbolInfo> a, List<SymbolInfo> b)
-        {
-            if (object.ReferenceEquals(a, null))
-            {
-                return object.ReferenceEquals(b, null);
-            }
-
-            return a.Equals(b);
-        }
-
-        public static bool operator !=(List<SymbolInfo> a, List<SymbolInfo> b)
-        {
-            return !(a == b);
-        }
-
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
-    }
-    */
-
+  
     public class SymbolInfo
     {
         public override string ToString() => scope == null ? sym_info.ToString() : "(" + scope.ToString() + "," + sym_info.ToString()+")";
@@ -289,8 +116,6 @@ namespace PascalABCCompiler.TreeConverter
         private symbol_kind _symbol_kind;
 
         public SymbolTable.Scope scope;
-
-        //public SymbolInfo reference;
 
         public access_level access_level
         {
@@ -338,7 +163,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo()
         {
-            //reference = new SymbolInfo();
         }
 
         public SymbolInfo copy()
@@ -404,7 +228,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(template_class tc)
         {
-            //reference = new SymbolInfo(tc);
             _sym_info = tc;
             _access_level = access_level.al_public;
             _symbol_kind = symbol_kind.sk_none;
@@ -412,7 +235,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(label_node lab)
         {
-            //reference = new SymbolInfo(lab);
             _sym_info = lab;
             _access_level = access_level.al_public;
             _symbol_kind = symbol_kind.sk_none;
@@ -420,7 +242,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(compiled_event ce)
         {
-            //reference = new SymbolInfo(ce);
             _sym_info = ce;
             _access_level = access_level.al_public;
             _symbol_kind = symbol_kind.sk_none;
@@ -428,7 +249,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(compiled_type_node value)
         {
-            //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_compiled_type;
             _sym_info = value;
             _access_level = access_level.al_public;
@@ -437,7 +257,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(common_event value)
         {
-            //reference = new SymbolInfo(value);
             _sym_info = value;
             _access_level = get_class_member_access_level(value);
             _symbol_kind = symbol_kind.sk_none;
@@ -445,7 +264,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(common_namespace_event value)
         {
-            //reference = new SymbolInfo(value);
             _sym_info = value;
             _access_level = access_level.al_public;
             _symbol_kind = symbol_kind.sk_none;
@@ -453,7 +271,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(function_node value)
         {
-            //reference = new SymbolInfo(value);
             _sym_info = value;
             _access_level = access_level.al_public;
             _symbol_kind = symbol_kind.sk_none;
@@ -461,7 +278,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(compiled_function_node value)
         {
-            //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_compiled_function;
             _sym_info = value;
             _access_level = get_class_member_access_level(value);
@@ -470,7 +286,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(compiled_constructor_node value)
         {
-            //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_compiled_function;
             _sym_info = value;
             _access_level = get_class_member_access_level(value);
@@ -479,7 +294,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(compiled_property_node value)
         {
-            //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_compiled_property;
             _sym_info = value;
             _access_level = get_class_member_access_level(value);
@@ -488,7 +302,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(compiled_variable_definition value)
         {
-            //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_compiled_variable;
             _sym_info = value;
             _access_level = get_class_member_access_level(value);
@@ -497,7 +310,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(compiled_class_constant_definition value)
         {
-            //reference = new SymbolInfo(value);
             _sym_info = value;
             _access_level = get_class_member_access_level(value);
             _symbol_kind = symbol_kind.sk_none;
@@ -505,7 +317,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(compiled_namespace_node value)
         {
-            //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_compiled_namespace;
             _sym_info = value;
             _access_level = access_level.al_public;
@@ -514,7 +325,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(common_type_node value)
         {
-            //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_common_type;
             _sym_info = value;
             _access_level = access_level.al_public;
@@ -523,7 +333,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(basic_function_node value)
         {
-            //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_basic_function;
             _sym_info = value;
             _access_level = access_level.al_public;
@@ -532,7 +341,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(common_namespace_function_node value)
         {
-            //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_common_namespace_function;
             _sym_info = value;
             _access_level = access_level.al_public;
@@ -541,7 +349,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(common_in_function_function_node value)
         {
-            //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_common_in_function_function;
             _sym_info = value;
             _access_level = access_level.al_public;
@@ -550,7 +357,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(common_method_node value)
         {
-            //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_common_method;
             _sym_info = value;
             _access_level = get_class_member_access_level(value);
@@ -559,7 +365,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(common_namespace_node value)
         {
-            //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_common_namespace;
             _sym_info = value;
             _access_level = access_level.al_public;
@@ -568,7 +373,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(unit_node value)
         {
-            //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_unit;
             _sym_info = value;
             _access_level = access_level.al_public;
@@ -577,7 +381,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(local_variable value)
         {
-            //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_local_variable;
             _sym_info = value;
             _access_level = access_level.al_public;
@@ -586,7 +389,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(local_block_variable value)
         {
-            //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_local_variable;
             _sym_info = value;
             _access_level = access_level.al_public;
@@ -595,7 +397,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(namespace_variable value)
         {
-            //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_namespace_variable;
             _sym_info = value;
             _access_level = access_level.al_public;
@@ -604,7 +405,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(class_field value)
         {
-            //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_class_field;
             _sym_info = value;
             _access_level = get_class_member_access_level(value);
@@ -613,7 +413,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(common_parameter value)
         {
-            //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_common_parameter;
             _sym_info = value;
             _access_level = access_level.al_public;
@@ -622,7 +421,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(basic_parameter value)
         {
-            //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_basic_parameter;
             _sym_info = value;
             _access_level = access_level.al_public;
@@ -631,7 +429,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(constant_definition_node value)
         {
-            //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_constant_defnition;
             _sym_info = value;
             _access_level = access_level.al_public;
@@ -640,7 +437,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(common_property_node value)
         {
-            //reference = new SymbolInfo(value);
             //_name_information_type=name_information_type.nit_common_property;
             _sym_info = value;
             _access_level = get_class_member_access_level(value);
@@ -649,7 +445,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(type_node value)
         {
-            //reference = new SymbolInfo(value);
             _sym_info = value;
             _access_level = access_level.al_public;
             _symbol_kind = symbol_kind.sk_none;
@@ -657,7 +452,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfo(definition_node value, access_level alevel, symbol_kind skind)
         {
-            //reference = new SymbolInfo(value, alevel, skind);
             _sym_info = value;
             _access_level = alevel;
             _symbol_kind = skind;
