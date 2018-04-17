@@ -1798,6 +1798,12 @@ namespace PascalABCCompiler.TreeConverter
                         statement_node stm = convert_strong(eh.statements);
                         context.leave_code_block();
                         sl = convertion_data_and_alghoritms.statement_list_stack.pop();
+                        if (sl.statements.Count > 0 || sl.local_variables.Count > 0)
+                        {
+                            sl.statements.AddElement(stm);
+                            stm = sl;
+                        }
+                        
                         exception_filter ef = new exception_filter(filter_type, lvr, stm, get_location(eh));
                         efl.AddElement(ef);
                         current_catch_excep = null;

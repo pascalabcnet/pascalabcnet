@@ -903,7 +903,6 @@ namespace PascalABCCompiler.TreeConverter
                             vdn = syntax_tree_visitor.context.add_field(get_temp_arr_name(), loc, pr.type, polymorphic_state.ps_static);
                         else
                             vdn = syntax_tree_visitor.context.add_var_definition_in_entry_scope(get_temp_arr_name(), loc);
-                        
                     }
                     else if (syntax_tree_visitor.context.converted_type != null)
                         vdn = syntax_tree_visitor.context.add_field(get_temp_arr_name(), loc, pr.type, polymorphic_state.ps_static);
