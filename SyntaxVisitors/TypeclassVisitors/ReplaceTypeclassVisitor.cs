@@ -33,17 +33,49 @@ namespace SyntaxVisitors.TypeclassVisitors
             }
             var instanceName = instanceDeclaration.type_name as typeclass_restriction;
 
-            /*
-            var instances = typeclassInstanceDeclarations[instanceName.name];
-            var restrictedType = instanceName.restriction_args.params_list[0].ToString();
-            if (!instances.ContainsKey(restrictedType))
+            var parents = new named_type_reference_list(new template_type_reference(
+                instanceName.name, instanceName.restriction_args));
+            var instanceDefTranslated =
+                SyntaxTreeBuilder.BuildClassDefinition(
+                    parents,
+                    null, instanceDefinition.body.class_def_blocks.ToArray());
+
+
+            for (int i = 0; i < instanceDefTranslated.body.class_def_blocks.Count; i++)
             {
-                instances.Add(restrictedType, new List<declaration>());
+                var cm = instanceDefTranslated.body.class_def_blocks[i].members;
+
+                for (int j = 0; j < cm.Count; j++)
+                {
+                    // TODO: or override if implementation exists
+                    (cm[j] as procedure_header)?.proc_attributes.Add(new procedure_attribute("override", proc_attribute.attr_override));
+                    (cm[j] as procedure_definition)?.proc_header.proc_attributes.Add(new procedure_attribute("override", proc_attribute.attr_override));
+                }
             }
-            foreach (var defBlock in instanceDefinition.body.class_def_blocks)
+
             {
-                instances[restrictedType].AddRange(defBlock.members);
-            }*/
+                // Add constructor
+                var cm = instanceDefTranslated.body.class_def_blocks[0];
+                var def = new procedure_definition(
+                    new constructor(),
+                    new statement_list(new empty_statement()));
+                def.proc_body.Parent = def;
+                def.proc_header.proc_attributes = new procedure_attributes_list();
+
+                cm.Add(def);
+            }
+
+            string typeName = instanceName.name;
+            for (int i = 0; i < instanceName.restriction_args.Count; i++)
+            {
+                typeName += "_" + (instanceName.restriction_args.params_list[i] as named_type_reference).names[0];
+            }
+            
+            var typeclassNameTanslated = new ident(typeName);
+
+            var instanceDeclTranslated = new type_declaration(typeclassNameTanslated, instanceDefTranslated, instanceDeclaration.source_context);
+            Replace(instanceDeclaration, instanceDeclTranslated);
+            visit(instanceDeclTranslated);
 
             return true;
         }
@@ -79,7 +111,7 @@ namespace SyntaxVisitors.TypeclassVisitors
             }
 
             {
-                // TODO: add constructor
+                // Add constructor
                 var cm = typeclassDefTranslated.body.class_def_blocks[0];
                 var def = new procedure_definition(
                     new constructor(),
@@ -90,8 +122,19 @@ namespace SyntaxVisitors.TypeclassVisitors
                 cm.Add(def);
             }
 
+            ident_list templates = RestrictionsToIdentList(typeclassName);
 
+            var typeclassNameTanslated = new template_type_name(typeclassName.name, templates, typeclassName.source_context);
 
+            var typeclassDeclTranslated = new type_declaration(typeclassNameTanslated, typeclassDefTranslated, typeclassDeclaration.source_context);
+            Replace(typeclassDeclaration, typeclassDeclTranslated);
+            visit(typeclassDeclTranslated);
+
+            return true;
+        }
+
+        private static ident_list RestrictionsToIdentList(typeclass_restriction typeclassName)
+        {
             var templates = new ident_list();
             templates.source_context = typeclassName.restriction_args.source_context;
             for (int i = 0; i < typeclassName.restriction_args.Count; i++)
@@ -99,23 +142,8 @@ namespace SyntaxVisitors.TypeclassVisitors
                 templates.Add((typeclassName.restriction_args.params_list[i] as named_type_reference).names[0]);
             }
 
-            var typeclassNameTanslated = new template_type_name(typeclassName.name, templates, typeclassName.source_context);
-
-            Replace(typeclassDeclaration, new type_declaration(typeclassNameTanslated, typeclassDefTranslated, typeclassDeclaration.source_context));
-
-            /*
-            if (typeclassInstanceDeclarations.ContainsKey(typeclassName.name))
-            {
-                // AddError
-            }
-            else
-            {
-                typeclassInstanceDeclarations.Add(typeclassName.name, new Dictionary<string, List<declaration>>());
-            }*/
-
-            return true;
+            return templates;
         }
-
 
         public override void visit(type_declaration _type_declaration)
         {
