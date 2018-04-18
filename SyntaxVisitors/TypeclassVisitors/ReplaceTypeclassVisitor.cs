@@ -122,7 +122,7 @@ namespace SyntaxVisitors.TypeclassVisitors
                 cm.Add(def);
             }
 
-            ident_list templates = RestrictionsToIdentList(typeclassName);
+            ident_list templates = RestrictionsToIdentList(typeclassName.restriction_args);
 
             var typeclassNameTanslated = new template_type_name(typeclassName.name, templates, typeclassName.source_context);
 
@@ -133,13 +133,13 @@ namespace SyntaxVisitors.TypeclassVisitors
             return true;
         }
 
-        private static ident_list RestrictionsToIdentList(typeclass_restriction typeclassName)
+        private static ident_list RestrictionsToIdentList(template_param_list restrictions)
         {
             var templates = new ident_list();
-            templates.source_context = typeclassName.restriction_args.source_context;
-            for (int i = 0; i < typeclassName.restriction_args.Count; i++)
+            templates.source_context = restrictions.source_context;
+            for (int i = 0; i < restrictions.Count; i++)
             {
-                templates.Add((typeclassName.restriction_args.params_list[i] as named_type_reference).names[0]);
+                templates.Add((restrictions.params_list[i] as named_type_reference).names[0]);
             }
 
             return templates;
@@ -165,9 +165,34 @@ namespace SyntaxVisitors.TypeclassVisitors
                 _procedure_definition.proc_header.where_defs.defs.Any(x => x is where_typeclass_constraint);
             if (!isConstrainted)
                 return;
+            /*
+            var header = _procedure_definition.proc_header;
+            var headerTranslated = header.Clone() as procedure_header;
+            headerTranslated.where_defs = new where_definition_list();
+            for (int i = 0; i < header.where_defs.defs.Count; i++)
+            {
+                var where = header.where_defs.defs[i];
 
+                if (where is where_typeclass_constraint)
+                {
+                    var typeclassWhere = where as where_typeclass_constraint;
 
+                    // Create name for template that replaces typeclass(for ex. SumTC)
+                    headerTranslated.where_defs.defs.Add(new where_definition(
+                        new ident_list(typeclassWhere.restriction.name),
+                        new where_type_specificator_list(new List<type_definition> {
+                            new template_type_reference(new named_type_reference(), RestrictionsToIdentList(typeclass),
+                            new declaration_specificator(DeclarationSpecificator.WhereDefConstructor, "constructor")
+                        })));
+                }
+                else
+                {
+                    headerTranslated.where_defs.defs.Add(where);
+                }
+            }
 
+            var procedureDefTranslated = SyntaxTreeBuilder.BuildShortProcFuncDefinition(headerTranslated)
+                */
             foreach (var where in _procedure_definition.proc_header.where_defs.defs)
             {
                 var whereC = (where as where_typeclass_constraint).restriction;
