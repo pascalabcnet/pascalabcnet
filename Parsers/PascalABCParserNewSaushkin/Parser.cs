@@ -225,7 +225,7 @@ namespace PascalABCCompiler.PascalABCNewParser
             localparserhelper = new GPPGParserHelper(Errors, Warnings, FileName);
             // localparser.parsertools.LineCorrection = -1;
             syntax_tree_node root = localparserhelper.Parse(Text);
-            if (root == null && origText.Contains("<"))
+            if (root == null && origText != null && origText.Contains("<"))
             {
                 Errors.Clear();
                 root = localparserhelper.Parse(String.Concat("<<expression>>", Environment.NewLine, origText.Replace("<","&<")));
