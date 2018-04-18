@@ -6232,6 +6232,18 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(typeclass_param_list _typeclass_param_list)
+		{
+			bw.Write((Int16)226);
+			write_typeclass_param_list(_typeclass_param_list);
+		}
+
+		public void write_typeclass_param_list(typeclass_param_list _typeclass_param_list)
+		{
+			write_template_param_list(_typeclass_param_list);
+		}
+
 	}
 
 

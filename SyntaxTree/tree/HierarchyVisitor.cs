@@ -1813,6 +1813,14 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(typeclass_param_list _typeclass_param_list)
+		{
+		}
+
+		public virtual void post_do_visit(typeclass_param_list _typeclass_param_list)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -3747,6 +3755,13 @@ namespace PascalABCCompiler.SyntaxTree
 			pre_do_visit(_where_typeclass_constraint);
 			visit(where_typeclass_constraint.restriction);
 			post_do_visit(_where_typeclass_constraint);
+		}
+
+		public override void visit(typeclass_param_list _typeclass_param_list)
+		{
+			DefaultVisit(_typeclass_param_list);
+			pre_do_visit(_typeclass_param_list);
+			post_do_visit(_typeclass_param_list);
 		}
 	}
 

@@ -472,6 +472,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new typeclass_definition();
 				case 225:
 					return new where_typeclass_constraint();
+				case 226:
+					return new typeclass_param_list();
 			}
 			return null;
 		}
@@ -3975,6 +3977,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_where_definition(_where_typeclass_constraint);
 			_where_typeclass_constraint.restriction = _read_node() as typeclass_restriction;
+		}
+
+
+		public void visit(typeclass_param_list _typeclass_param_list)
+		{
+			read_typeclass_param_list(_typeclass_param_list);
+		}
+
+		public void read_typeclass_param_list(typeclass_param_list _typeclass_param_list)
+		{
+			read_template_param_list(_typeclass_param_list);
 		}
 
 	}

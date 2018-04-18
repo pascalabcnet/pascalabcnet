@@ -48188,6 +48188,191 @@ namespace PascalABCCompiler.SyntaxTree
 	}
 
 
+	///<summary>
+	///Список параметров тайпкласса
+	///</summary>
+	[Serializable]
+	public partial class typeclass_param_list : template_param_list
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public typeclass_param_list()
+		{
+
+		}
+
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public typeclass_param_list(addressed_value _dereferencing_value,List<type_definition> _params_list)
+		{
+			this._dereferencing_value=_dereferencing_value;
+			this._params_list=_params_list;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public typeclass_param_list(addressed_value _dereferencing_value,List<type_definition> _params_list,SourceContext sc)
+		{
+			this._dereferencing_value=_dereferencing_value;
+			this._params_list=_params_list;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		public typeclass_param_list(template_param_list _template_param_list): this(_template_param_list.dereferencing_value, _template_param_list.params_list, _template_param_list.source_context)
+		{
+		}
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			typeclass_param_list copy = new typeclass_param_list();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (dereferencing_value != null)
+			{
+				copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
+				copy.dereferencing_value.Parent = copy;
+			}
+			if (params_list != null)
+			{
+				foreach (type_definition elem in params_list)
+				{
+					if (elem != null)
+					{
+						copy.Add((type_definition)elem.Clone());
+						copy.Last().Parent = copy;
+					}
+					else
+						copy.Add(null);
+				}
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new typeclass_param_list TypedClone()
+		{
+			return Clone() as typeclass_param_list;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (dereferencing_value != null)
+				dereferencing_value.Parent = this;
+			if (params_list != null)
+			{
+				foreach (var child in params_list)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			dereferencing_value?.FillParentsInAllChilds();
+			if (params_list != null)
+			{
+				foreach (var child in params_list)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1 + (params_list == null ? 0 : params_list.Count);
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return dereferencing_value;
+				}
+				Int32 index_counter=ind - 1;
+				if(params_list != null)
+				{
+					if(index_counter < params_list.Count)
+					{
+						return params_list[index_counter];
+					}
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						dereferencing_value = (addressed_value)value;
+						break;
+				}
+				Int32 index_counter=ind - 1;
+				if(params_list != null)
+				{
+					if(index_counter < params_list.Count)
+					{
+						params_list[index_counter]= (type_definition)value;
+						return;
+					}
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
 
 }
 

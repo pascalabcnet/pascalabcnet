@@ -7,9 +7,11 @@
       <Tags>
         <CategoryIndices>
           <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
         </CategoryIndices>
         <TagIndices>
           <TagIndex>1</TagIndex>
+          <TagIndex>9</TagIndex>
         </TagIndices>
       </Tags>
     </SyntaxNode>
@@ -2920,6 +2922,24 @@
         </TagIndices>
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="typeclass_param_list" BaseName="template_param_list">
+      <Fields />
+      <Methods>
+        <Method>
+          <Text>public typeclass_param_list(template_param_list _template_param_list): this(_template_param_list.dereferencing_value, _template_param_list.params_list, _template_param_list.source_context)
+{
+}</Text>
+        </Method>
+      </Methods>
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -2945,7 +2965,7 @@
         <Tag Name="Важнейшие" ReferenceCount="207" />
         <Tag Name="Method_Procedure_Call" ReferenceCount="2" />
         <Tag Name="Yield" ReferenceCount="8" />
-        <Tag Name="Typeclasses" ReferenceCount="4" />
+        <Tag Name="Typeclasses" ReferenceCount="6" />
       </Tags>
     </FilterCategory>
   </TagCategories>
@@ -4139,6 +4159,9 @@
       <HelpData Key="typeclass_definition" Value="Определение класса типов" />
       <HelpData Key="typeclass_definition.additional_restrictions" Value="" />
       <HelpData Key="typeclass_definition.body" Value="" />
+      <HelpData Key="typeclass_param_list" Value="Список параметров тайпкласса" />
+      <HelpData Key="typeclass_param_list.public typeclass_param_list(template_param_list _template_param_list): this(_template_param_list._dereferencing_value, _template_param_list._params_list, _template_param_list.source_context)" Value="" />
+      <HelpData Key="typeclass_param_list.public typeclass_param_list(template_param_list _template_param_list): this(_template_param_list.dereferencing_value, _template_param_list.params_list, _template_param_list.source_context)" Value="" />
       <HelpData Key="typeclass_restriction" Value="Представляет конструкцию вида Typeclass[T], где Typleclass это ограничение, которое накладывается на тип T" />
       <HelpData Key="typeclass_restriction.restriction_args" Value="" />
       <HelpData Key="typed_const_definition" Value="" />

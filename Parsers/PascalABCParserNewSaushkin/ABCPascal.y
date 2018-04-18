@@ -154,7 +154,8 @@
 %type <ti> class_or_interface_keyword optional_tk_do keyword reserved_keyword  
 %type <ex> typeof_expr  
 %type <stn> simple_fp_sect   
-%type <stn> template_param_list template_type_params  
+%type <stn> template_param_list template_type_params
+%type <stn> template_type_or_typeclass_params typeclass_params  
 %type <td> template_type
 %type <stn> try_stmt  
 %type <stn> uses_clause used_units_list  
@@ -859,7 +860,7 @@ const_variable
         {
 			$$ = NewConstVariable($1, $2, @$);
         }
-    | const_variable tkAmpersend template_type_params                
+    | const_variable tkAmpersend template_type_or_typeclass_params                
         {
 			$$ = new ident_with_templateparams($1 as addressed_value, $3 as template_param_list, @$);
         }
@@ -1084,12 +1085,29 @@ simple_type_decl
     ;
 
 typeclass_restriction
-	: simple_type_identifier tkSquareOpen template_param_list tkSquareClose
+	: simple_type_identifier typeclass_params
 		{
-			$$ = new typeclass_restriction(($1 as named_type_reference).ToString(), $3 as template_param_list, @$);
+			$$ = new typeclass_restriction(($1 as named_type_reference).ToString(), $2 as template_param_list, @$);
 		}
 	;
 
+typeclass_params
+	: tkSquareOpen template_param_list tkSquareClose
+		{
+			$$ = new typeclass_param_list($2 as template_param_list);
+		}
+	;
+
+template_type_or_typeclass_params
+	: template_type_params
+		{
+			$$ = $1;
+		}
+	| typeclass_params
+		{
+			$$ = $1;
+		}
+	;
 type_decl_identifier
     : identifier
 		{ $$ = $1; }
@@ -2863,7 +2881,7 @@ simple_or_template_type_reference
         { 
 			$$ = new template_type_reference((named_type_reference)$1, (template_param_list)$2, @$); 
         }
-    | simple_type_identifier tkAmpersend template_type_params
+    | simple_type_identifier tkAmpersend template_type_or_typeclass_params
         { 
 			$$ = new template_type_reference((named_type_reference)$1, (template_param_list)$3, @$); 
         }
@@ -3294,7 +3312,7 @@ variable
         {
 			$$ = new roof_dereference($1 as addressed_value,@$);
         }
-    | variable tkAmpersend template_type_params                
+    | variable tkAmpersend template_type_or_typeclass_params                
         {
 			$$ = new ident_with_templateparams($1 as addressed_value, $3 as template_param_list, @$);
         }
