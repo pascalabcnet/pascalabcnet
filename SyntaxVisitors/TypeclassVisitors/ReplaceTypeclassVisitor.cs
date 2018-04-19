@@ -165,10 +165,13 @@ namespace SyntaxVisitors.TypeclassVisitors
                 _procedure_definition.proc_header.where_defs.defs.Any(x => x is where_typeclass_constraint);
             if (!isConstrainted)
                 return;
-            /*
+            
             var header = _procedure_definition.proc_header;
             var headerTranslated = header.Clone() as procedure_header;
             headerTranslated.where_defs = new where_definition_list();
+
+            var additionalTemplateArgs = new ident_list();
+
             for (int i = 0; i < header.where_defs.defs.Count; i++)
             {
                 var where = header.where_defs.defs[i];
@@ -177,12 +180,25 @@ namespace SyntaxVisitors.TypeclassVisitors
                 {
                     var typeclassWhere = where as where_typeclass_constraint;
 
+                    // Concatenate type constraint into new type name
+                    // For example:
+                    //      Constaint[T, C] => ConstraintTC
+                    var newName = RestrictionsToIdentList(typeclassWhere.restriction.restriction_args).idents.Aggregate(
+                        new ident(typeclassWhere.restriction.name), (x, y) => x.name + y.name);
+
+                    additionalTemplateArgs.Add(newName);
+
                     // Create name for template that replaces typeclass(for ex. SumTC)
-                    headerTranslated.where_defs.defs.Add(new where_definition(
-                        new ident_list(typeclassWhere.restriction.name),
-                        new where_type_specificator_list(new List<type_definition> {
-                            new template_type_reference(new named_type_reference(), RestrictionsToIdentList(typeclass),
-                            new declaration_specificator(DeclarationSpecificator.WhereDefConstructor, "constructor")
+                    headerTranslated.where_defs.defs.Add(
+                        // where
+                        new where_definition(
+                            //      ConstraintTC :
+                            new ident_list(newName),
+                            new where_type_specificator_list(new List<type_definition> {
+                                //                  Constraint<T, C>,
+                                new template_type_reference(new named_type_reference(typeclassWhere.restriction.name), typeclassWhere.restriction.restriction_args),
+                                //                                        constructor
+                                new declaration_specificator(DeclarationSpecificator.WhereDefConstructor, "constructor")
                         })));
                 }
                 else
@@ -191,37 +207,14 @@ namespace SyntaxVisitors.TypeclassVisitors
                 }
             }
 
-            var procedureDefTranslated = SyntaxTreeBuilder.BuildShortProcFuncDefinition(headerTranslated)
-                */
-            foreach (var where in _procedure_definition.proc_header.where_defs.defs)
-            {
-                var whereC = (where as where_typeclass_constraint).restriction;
+            // Add new templates devoted to constraints to template list
+            headerTranslated.template_args.idents.AddRange(additionalTemplateArgs.idents);
 
-                /*
-                var instances = typeclassInstanceDeclarations[whereC.name];
-                foreach (var instance in instances.Values)
-                {
-                    (_procedure_definition.proc_body as block).defs.defs.AddRange(instance);
-                }
+            var procedureDefTranslated = new procedure_definition(
+                headerTranslated, _procedure_definition.proc_body,
+                _procedure_definition.is_short_definition, _procedure_definition.source_context);
 
-                // substitution template type
-                var restricted = whereC.restriction_args.params_list[0].ToString();
-                var newType = instances.Keys.First();
-                foreach (var param in _procedure_definition.proc_header.parameters.params_list)
-                {
-                    var type = param.vars_type.ToString();
-                    if (type == restricted)
-                        param.vars_type = new named_type_reference(newType);
-                }
-
-                var func = _procedure_definition.proc_header as function_header;
-                if (func != null)
-                {
-                    var type = func.return_type.ToString();
-                    if (type == restricted)
-                        func.return_type = new named_type_reference(newType);
-                }*/
-            }
+            Replace(_procedure_definition, procedureDefTranslated);
         }
 
     }
