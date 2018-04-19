@@ -1836,6 +1836,7 @@ namespace PascalABCCompiler.Parsers
                             }
                         }
                     }
+                    
                     else
                         sb.Append(tt[i].Name);
                     if (i < tt.Length - 1) sb.Append(',');

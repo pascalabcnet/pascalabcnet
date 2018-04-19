@@ -6762,10 +6762,16 @@ namespace CodeCompletion
         //private CompiledScope ret_type;
         
 
-        public CompiledMethodScope(SymInfo si, MethodInfo mi, CompiledScope declaringType)
+        public CompiledMethodScope(SymInfo si, MethodInfo mi, TypeScope declaringType)
         {
             this.si = si;
             this.mi = mi;
+            if (declaringType == TypeTable.string_type && mi.GetParameters().Length >= 1 && mi.GetParameters()[0].ParameterType.Name == "IEnumerable`1")
+            {
+                List<TypeScope> type_list = new List<TypeScope>();
+                type_list.Add(TypeTable.char_type);
+                declaringType = TypeTable.get_compiled_type(mi.GetParameters()[0].ParameterType.GetGenericTypeDefinition()).GetInstance(type_list);
+            }
             string[] args = declaringType.TemplateArguments;
             this.declaringType = declaringType;
             if (args != null)
