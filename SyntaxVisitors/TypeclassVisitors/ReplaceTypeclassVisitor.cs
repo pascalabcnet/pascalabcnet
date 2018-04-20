@@ -223,6 +223,7 @@ namespace SyntaxVisitors.TypeclassVisitors
                 {
                     // TODO: Check tcr.name - typeclass from where
                     // TODO: Check - that there is such typeclass with such args at where
+                    // TODO: Ensure that we don't replace another constraint funciton call
                     var str = tcr.template_params.params_list
                         .Select(x => (x as named_type_reference).names[0].name)
                         .Aggregate((tcr.name as ident).name, (x, y) => x + y);
