@@ -221,11 +221,14 @@ namespace SyntaxVisitors.TypeclassVisitors
             {
                 if (tcr.template_params is typeclass_param_list)
                 {
-                    // TODO: Fix
-                    var id = new ident(additionalTemplateArgs.idents[0].name + "Instance");
+                    // TODO: Check tcr.name - typeclass from where
+                    // TODO: Check - that there is such typeclass with such args at where
+                    var str = tcr.template_params.params_list
+                        .Select(x => (x as named_type_reference).names[0].name)
+                        .Aggregate((tcr.name as ident).name, (x, y) => x + y);
+                    var id = new ident(str + "Instance");
                     var parent = tcr.Parent;
                     parent.ReplaceDescendant((addressed_value)tcr, (addressed_value)id, Desc.All);
-                    //parent.
                 }
                 //var id = new ident(TypeclassRestrctionToTemplateName(tcr) + "Instance");
                 
