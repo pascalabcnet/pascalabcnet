@@ -12,13 +12,13 @@
 
 function Sum3<T>(v1, v2, v3: T): T; where SumTC[T];
 begin
-  Result := sum(v1, sum(v2, v3));
+  Result := SumTC[T].sum(v1, SumTC[T].sum(v2, v3));
 end;
 
 begin
   var v1, v2, v3, res: integer;
   
-  res := Sum3&[integer](v1, v2, v3);
+  res := Sum3&<integer>(v1, v2, v3);
   
   Write(res);
 end.

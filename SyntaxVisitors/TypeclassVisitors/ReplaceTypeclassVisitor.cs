@@ -179,12 +179,7 @@ namespace SyntaxVisitors.TypeclassVisitors
                 if (where is where_typeclass_constraint)
                 {
                     var typeclassWhere = where as where_typeclass_constraint;
-
-                    // Concatenate type constraint into new type name
-                    // For example:
-                    //      Constaint[T, C] => ConstraintTC
-                    var newName = RestrictionsToIdentList(typeclassWhere.restriction.restriction_args).idents.Aggregate(
-                        new ident(typeclassWhere.restriction.name), (x, y) => x.name + y.name);
+                    var newName = TypeclassRestrctionToTemplateName(typeclassWhere.restriction);
 
                     additionalTemplateArgs.Add(newName);
 
@@ -210,6 +205,32 @@ namespace SyntaxVisitors.TypeclassVisitors
             // Add new templates devoted to constraints to template list
             headerTranslated.template_args.idents.AddRange(additionalTemplateArgs.idents);
 
+            var blockProc = (_procedure_definition.proc_body as block);
+            foreach (var arg in additionalTemplateArgs.idents)
+            {
+                blockProc.program_code.AddFirst(new var_statement(new var_def_statement(
+                    arg.name + "Instance",
+                    new dot_node(
+                        new ident_with_templateparams(new ident("__ConceptSingleton"), new template_param_list(new List<type_definition> { new named_type_reference((ident)arg.Clone()) })),
+                        new ident("Instance")
+                ))));
+            }
+
+            //var list = _procedure_definition.proc_body.DescendantNodes().OfType<typeclass_param_list>();
+            foreach (var tcr in _procedure_definition.proc_body.DescendantNodes().OfType<ident_with_templateparams>())
+            {
+                if (tcr.template_params is typeclass_param_list)
+                {
+                    // TODO: Fix
+                    var id = new ident(additionalTemplateArgs.idents[0].name + "Instance");
+                    var parent = tcr.Parent;
+                    parent.ReplaceDescendant((addressed_value)tcr, (addressed_value)id, Desc.All);
+                    //parent.
+                }
+                //var id = new ident(TypeclassRestrctionToTemplateName(tcr) + "Instance");
+                
+            }
+
             var procedureDefTranslated = new procedure_definition(
                 headerTranslated, _procedure_definition.proc_body,
                 _procedure_definition.is_short_definition, _procedure_definition.source_context);
@@ -217,6 +238,15 @@ namespace SyntaxVisitors.TypeclassVisitors
             Replace(_procedure_definition, procedureDefTranslated);
         }
 
+        private static ident TypeclassRestrctionToTemplateName(typeclass_restriction typeclassWhere)
+        {
+
+            // Concatenate type constraint into new type name
+            // For example:
+            //      Constaint[T, C] => ConstraintTC
+            return RestrictionsToIdentList(typeclassWhere.restriction_args).idents.Aggregate(
+                new ident(typeclassWhere.name), (x, y) => x.name + y.name);
+        }
     }
 
 

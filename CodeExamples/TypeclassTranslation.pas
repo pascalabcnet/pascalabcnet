@@ -56,8 +56,7 @@
 //function Sum3<T, SumTCT>(v1, v2, v3: T): T; where SumTCT: SumTC<T>, constructor;
 function Sum3<T>(v1, v2, v3: T): T; where SumTC[T];
 begin
-  var s := __ConceptSingleton&<SumTCT>.&Instance;
-  Result := Abs(v1);//, s.sum(v2, v3));
+  Result := SumTC&[T].sum(v1, SumTC&[T].sum(v2, v3));
 end;
 
 begin
