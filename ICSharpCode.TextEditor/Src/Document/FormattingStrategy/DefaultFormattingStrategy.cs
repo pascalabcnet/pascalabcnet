@@ -126,19 +126,22 @@ namespace ICSharpCode.TextEditor.Document
 		{
 			int brackets = -1;
 			// first try "quick find" - find the matching bracket if there is no string/comment in the way
+            bool kavs = false;
 			for (int i = offset; i >= 0; --i) {
 				char ch = document.GetCharAt(i);
 				if (ch == openBracket) {
+                    if (!kavs)
 					++brackets;
 					if (brackets == 0) return i;
 				} else if (ch == closingBracket) {
-					--brackets;
+                    if (!kavs)
+                        --brackets;
                 }
                 else if (ch == '"')
                 {
 					break;
 				} else if (ch == '\'') {
-					//break;
+					kavs = !kavs;
 				} else if (ch == '/' && i > 0) {
 					if (document.GetCharAt(i - 1) == '/') break;
 					if (document.GetCharAt(i - 1) == '*') break;
@@ -150,18 +153,21 @@ namespace ICSharpCode.TextEditor.Document
 		public virtual int SearchBracketForward(IDocument document, int offset, char openBracket, char closingBracket)
 		{
 			int brackets = 1;
+            bool kavs = false;
 			// try "quick find" - find the matching bracket if there is no string/comment in the way
 			for (int i = offset; i < document.TextLength; ++i) {
 				char ch = document.GetCharAt(i);
 				if (ch == openBracket) {
-					++brackets;
+                    if (!kavs)
+                        ++brackets;
 				} else if (ch == closingBracket) {
-					--brackets;
+                    if (!kavs)
+                        --brackets;
 					if (brackets == 0) return i;
 				} else if (ch == '"') {
 					break;
 				} else if (ch == '\'') {
-					//break;
+					kavs = !kavs;
 				} else if (ch == '/' && i > 0) {
 					if (document.GetCharAt(i - 1) == '/') break;
 				} else if (ch == '*' && i > 0) {

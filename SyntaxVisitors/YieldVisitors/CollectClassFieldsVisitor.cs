@@ -41,6 +41,8 @@ namespace SyntaxVisitors
                 return;
             }
 
+            if (cd.body == null)
+                return;
             var fields = cd.body.class_def_blocks.SelectMany(cm => cm.members.Where(decl => decl is var_def_statement)
                                                                 .Select(decl1 => (decl1 as var_def_statement).vars.idents)
                                                                 .SelectMany(ids => ids.Select(id => id)));

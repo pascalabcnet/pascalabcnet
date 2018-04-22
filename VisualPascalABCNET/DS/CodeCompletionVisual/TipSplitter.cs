@@ -114,7 +114,7 @@ namespace ICSharpCode.TextEditor.Util
 					availableArea.Height = Math.Max
 						(0, availableArea.Height - pixelsUsed);
 					
-					otherDim = Math.Max(otherDim, requiredArea.Width);
+					otherDim = Math.Max(otherDim, requiredArea.Width+8);
 				}
 			}
 			

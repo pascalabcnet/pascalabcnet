@@ -1206,14 +1206,14 @@ namespace PascalABCCompiler.TreeConverter
                     bfc = ((right as typed_expression).type as delegated_methods).proper_methods[0];
                     right = convertion_data_and_alghoritms.explicit_convert_type(right, CreateDelegate(bfc.simple_function_node));
                     sil2 = right.type.find_in_type(name);
-                    if (saved_sil != null)
+                    if (saved_sil != null && sil != null)
                     {
                         sil.RemoveRange(1, sil.Count() - 1);
                         sil.Add(saved_sil);
                     }
                     else
                         saved_sil = sil;
-                    if (saved_sil2 != null)
+                    if (saved_sil2 != null && sil2 != null)
                     {
                         sil2.RemoveRange(1, sil2.Count() - 1);
                         sil2.Add(saved_sil2);
@@ -1798,6 +1798,12 @@ namespace PascalABCCompiler.TreeConverter
                         statement_node stm = convert_strong(eh.statements);
                         context.leave_code_block();
                         sl = convertion_data_and_alghoritms.statement_list_stack.pop();
+                        if (sl.statements.Count > 0 || sl.local_variables.Count > 0)
+                        {
+                            sl.statements.AddElement(stm);
+                            stm = sl;
+                        }
+                        
                         exception_filter ef = new exception_filter(filter_type, lvr, stm, get_location(eh));
                         efl.AddElement(ef);
                         current_catch_excep = null;

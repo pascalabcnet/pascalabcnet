@@ -294,7 +294,7 @@ namespace ICSharpCode.TextEditor.Util
 					tipSize = Graphics.MeasureString
 						((param_desc?"    ":"   ")+tipText, tipFont, MaximumSize,
 					 GetInternalStringFormat());
-					
+                    
 				}
 				else
 				tipSize = Graphics.MeasureString
