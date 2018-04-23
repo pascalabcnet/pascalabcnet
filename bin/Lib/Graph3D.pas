@@ -241,13 +241,11 @@ type
     
     procedure SetD(d: real) := Invoke(SetDP, d);
     function GetD: real := InvokeReal(()->Cam.Position.DistanceTo(P3D(0, 0, 0)));
-    procedure LookAtT(p: Point3D; dist: real; time: real) := Cam.LookAt(p,dist,time);
   public 
     property Position: Point3D read GetP write SetP;
     property LookDirection: Vector3D read GetLD write SetLD;
     property UpDirection: Vector3D read GetUD write SetUD;
     property Distanse: real read GetD write SetD;
-    procedure LookAt(p: Point3D; dist: real; time: real) := Invoke(LookAtT,p,dist,time);
   end;
 
   ///!#
