@@ -242,6 +242,26 @@ namespace SyntaxVisitors.TypeclassVisitors
             Replace(_procedure_definition, procedureDefTranslated);
         }
 
+        public override void visit(method_call methodCall)
+        {
+            var methodName = methodCall.dereferencing_value as ident_with_templateparams;
+            if (methodName == null)
+                return;
+            var typeclassRestrictions = methodName.template_params as typeclass_param_list;
+            if (typeclassRestrictions == null)
+                return;
+
+            var paramList = new List<type_definition>();
+            paramList.AddRange(typeclassRestrictions.params_list);
+
+            // TODO: Add template types for typeclass instances
+
+            var methodCallTranslated = new method_call(
+                new ident_with_templateparams(methodName.name, new template_param_list(paramList), methodName.source_context),
+                methodCall.parameters,
+                methodCall.source_context);
+        }
+
         private static ident TypeclassRestrctionToTemplateName(typeclass_restriction typeclassWhere)
         {
 
