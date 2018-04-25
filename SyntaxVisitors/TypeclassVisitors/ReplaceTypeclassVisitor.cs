@@ -11,17 +11,16 @@ namespace SyntaxVisitors.TypeclassVisitors
 {
     public class ReplaceTypeclassVisitor: BaseChangeVisitor
     {
-        public ReplaceTypeclassVisitor()
-        {
+        FindInstancesAndRestrictedFunctionsVisitor instancesAndRestrictedFunctions;
 
+        public ReplaceTypeclassVisitor(FindInstancesAndRestrictedFunctionsVisitor instancesAndRestrictedFunctions)
+        {
+            this.instancesAndRestrictedFunctions = instancesAndRestrictedFunctions;
         }
 
-        public static ReplaceTypeclassVisitor New
+        public static ReplaceTypeclassVisitor New(FindInstancesAndRestrictedFunctionsVisitor instancesAndRestrictedFunctions)
         {
-            get
-            {
-                return new ReplaceTypeclassVisitor();
-            }
+            return new ReplaceTypeclassVisitor(instancesAndRestrictedFunctions);
         }
 
         bool VisitInstanceDeclaration(type_declaration instanceDeclaration)
@@ -65,12 +64,8 @@ namespace SyntaxVisitors.TypeclassVisitors
                 cm.Add(def);
             }
 
-            string typeName = instanceName.name;
-            for (int i = 0; i < instanceName.restriction_args.Count; i++)
-            {
-                typeName += "_" + (instanceName.restriction_args.params_list[i] as named_type_reference).names[0];
-            }
-            
+            var typeName = CreateInstanceName(instanceName.restriction_args as typeclass_param_list, instanceName.name);
+
             var typeclassNameTanslated = new ident(typeName);
 
             var instanceDeclTranslated = new type_declaration(typeclassNameTanslated, instanceDefTranslated, instanceDeclaration.source_context);
@@ -80,6 +75,15 @@ namespace SyntaxVisitors.TypeclassVisitors
             return true;
         }
 
+        private static string CreateInstanceName(typeclass_param_list restriction_args, string typeName)
+        {
+            for (int i = 0; i < restriction_args.Count; i++)
+            {
+                typeName += "_" + (restriction_args.params_list[i] as named_type_reference).names[0];
+            }
+
+            return typeName;
+        }
 
         bool VisitTypeclassDeclaration(type_declaration typeclassDeclaration)
         {
@@ -156,6 +160,8 @@ namespace SyntaxVisitors.TypeclassVisitors
             {
                 return;
             }
+
+            DefaultVisit(_type_declaration);
         }
 
 
@@ -164,7 +170,10 @@ namespace SyntaxVisitors.TypeclassVisitors
             bool isConstrainted = _procedure_definition.proc_header.where_defs != null &&
                 _procedure_definition.proc_header.where_defs.defs.Any(x => x is where_typeclass_constraint);
             if (!isConstrainted)
+            {
+                DefaultVisit(_procedure_definition);
                 return;
+            }
             
             var header = _procedure_definition.proc_header;
             var headerTranslated = header.Clone() as procedure_header;
@@ -246,20 +255,63 @@ namespace SyntaxVisitors.TypeclassVisitors
         {
             var methodName = methodCall.dereferencing_value as ident_with_templateparams;
             if (methodName == null)
+            {
+                DefaultVisit(methodCall);
                 return;
+            }
             var typeclassRestrictions = methodName.template_params as typeclass_param_list;
             if (typeclassRestrictions == null)
+            {
+                DefaultVisit(methodCall);
                 return;
+            }
 
             var paramList = new List<type_definition>();
             paramList.AddRange(typeclassRestrictions.params_list);
 
             // TODO: Add template types for typeclass instances
+            var methodStrName = (methodName.name as ident).name;
+            var typeclasses = instancesAndRestrictedFunctions.restrictedFunctions[methodStrName];
+            
+            var possibleOverloadingsForEachTypeclass = typeclasses.Select(x => 
+                new KeyValuePair<string, List<typeclass_param_list>>(x, instancesAndRestrictedFunctions.instances[x]));
+
+            // Find current overloading in possible
+            var newParams = new List<type_definition>();
+            foreach (var typeclassOverloadings in possibleOverloadingsForEachTypeclass)
+            {
+                foreach (var possibleParamList in typeclassOverloadings.Value)
+                {
+                    bool isEqual = true;
+                    for (int i = 0; i < possibleParamList.params_list.Count; i++)
+                    {
+                        if ((possibleParamList.params_list[i] as named_type_reference).names[0].name !=
+                            (paramList[i] as named_type_reference).names[0].name)
+                        {
+                            isEqual = false;
+                            break;
+                        }
+                    }
+                    
+                    // TODO: need many checks
+                    // Typeclass params and function restriction params are mixed up
+                    // Fix it as soon as it possible
+                    // Btw for 1 argument it's ok.
+                    if (isEqual)
+                    {
+                        newParams.Add(new named_type_reference(CreateInstanceName(possibleParamList, typeclassOverloadings.Key)));
+                    }
+
+                }
+            }
+
+            paramList.AddRange(newParams);
 
             var methodCallTranslated = new method_call(
                 new ident_with_templateparams(methodName.name, new template_param_list(paramList), methodName.source_context),
                 methodCall.parameters,
                 methodCall.source_context);
+            Replace(methodCall, methodCallTranslated);
         }
 
         private static ident TypeclassRestrctionToTemplateName(typeclass_restriction typeclassWhere)

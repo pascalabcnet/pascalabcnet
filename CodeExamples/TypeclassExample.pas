@@ -12,11 +12,14 @@
 
 function Sum3<T>(v1, v2, v3: T): T; where SumTC[T];
 begin
-  Result := SumTC[T].sum(v1, SumTC[T].sum(v2, v3));
+  Result := SumTC&[T].sum(v1, SumTC&[T].sum(v2, v3));
 end;
 
 begin
   var v1, v2, v3, res: integer;
+  v1 := 1;
+  v2 := 2;
+  v3 := 3;
   
   res := Sum3&[integer](v1, v2, v3);
   
