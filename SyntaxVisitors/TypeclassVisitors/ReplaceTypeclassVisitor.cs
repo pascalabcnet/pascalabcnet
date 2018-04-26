@@ -46,7 +46,6 @@ namespace SyntaxVisitors.TypeclassVisitors
 
                 for (int j = 0; j < cm.Count; j++)
                 {
-                    // TODO: or override if implementation exists
                     (cm[j] as procedure_header)?.proc_attributes.Add(new procedure_attribute("override", proc_attribute.attr_override));
                     (cm[j] as procedure_definition)?.proc_header.proc_attributes.Add(new procedure_attribute("override", proc_attribute.attr_override));
                 }
@@ -109,8 +108,8 @@ namespace SyntaxVisitors.TypeclassVisitors
 
                 for (int j = 0; j < cm.Count; j++)
                 {
-                    // TODO: or override if implementation exists
                     (cm[j] as procedure_header)?.proc_attributes.Add(new procedure_attribute("abstract", proc_attribute.attr_abstract));
+                    (cm[j] as procedure_definition)?.proc_header.proc_attributes.Add(new procedure_attribute("virtual", proc_attribute.attr_virtual));
                 }
             }
 
@@ -212,6 +211,7 @@ namespace SyntaxVisitors.TypeclassVisitors
             }
 
             // Add new templates devoted to constraints to template list
+            // TODO: template_args can be empty, if there is no <T> or smth, need to check
             headerTranslated.template_args.idents.AddRange(additionalTemplateArgs.idents);
 
             var blockProc = (_procedure_definition.proc_body as block);
