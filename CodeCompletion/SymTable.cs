@@ -2005,20 +2005,20 @@ namespace CodeCompletion
                     int ind = this.template_parameters.IndexOf((parameter.sc as TypeScope).Name);
                     ElementScope inst_param = null;
                     if (gen_args.Count > ind && ind != -1)
-                        inst_param = new ElementScope(parameter.si, gen_args[ind], parameter.topScope);
+                        inst_param = new ElementScope(new SymInfo(parameter.si.name, parameter.si.kind, parameter.si.description), gen_args[ind], parameter.topScope);
                     else
-                        inst_param = new ElementScope(parameter.si, parameter.sc, parameter.topScope);
+                        inst_param = new ElementScope(new SymInfo(parameter.si.name, parameter.si.kind, parameter.si.description), parameter.sc, parameter.topScope);
                     instance.parameters.Add(inst_param);
                 }
                 else
                 {
                     ElementScope inst_param = null;
                     if ((parameter.sc as TypeScope).IsGeneric)
-                        inst_param = new ElementScope(parameter.si, (parameter.sc as TypeScope).GetInstance(gen_args), parameter.topScope);
+                        inst_param = new ElementScope(new SymInfo(parameter.si.name, parameter.si.kind, parameter.si.description), (parameter.sc as TypeScope).GetInstance(gen_args), parameter.topScope);
                     else if ((parameter.sc as TypeScope).GetElementType() != null && (parameter.sc as TypeScope).GetElementType().IsGenericParameter)
-                        inst_param = new ElementScope(parameter.si, (parameter.sc as TypeScope).GetInstance(gen_args), parameter.topScope);
+                        inst_param = new ElementScope(new SymInfo(parameter.si.name, parameter.si.kind, parameter.si.description), (parameter.sc as TypeScope).GetInstance(gen_args), parameter.topScope);
                     else
-                        inst_param = new ElementScope(parameter.si, parameter.sc, parameter.topScope);
+                        inst_param = new ElementScope(new SymInfo(parameter.si.name, parameter.si.kind, parameter.si.description), parameter.sc, parameter.topScope);
                     instance.parameters.Add(inst_param);
                 }
                 if (parameter.param_kind == parametr_kind.params_parametr && i < gen_args.Count)
@@ -5081,7 +5081,7 @@ namespace CodeCompletion
                     }
                     else
                     {
-                        if (this.instances[i].instances != null && this.instances[i].instances.Count > 0 && gen_args[i].elementType != null)
+                        if (this.instances[i].instances != null && this.instances[i].instances.Count > 0 && i < gen_args.Count && gen_args[i].elementType != null)
                         {
                             List<TypeScope> lst = new List<TypeScope>();
                             lst.Add(gen_args[i].elementType);
@@ -6763,10 +6763,16 @@ namespace CodeCompletion
         //private CompiledScope ret_type;
         
 
-        public CompiledMethodScope(SymInfo si, MethodInfo mi, CompiledScope declaringType)
+        public CompiledMethodScope(SymInfo si, MethodInfo mi, TypeScope declaringType)
         {
             this.si = si;
             this.mi = mi;
+            if (declaringType == TypeTable.string_type && mi.GetParameters().Length >= 1 && mi.GetParameters()[0].ParameterType.Name == "IEnumerable`1")
+            {
+                List<TypeScope> type_list = new List<TypeScope>();
+                type_list.Add(TypeTable.char_type);
+                declaringType = TypeTable.get_compiled_type(mi.GetParameters()[0].ParameterType.GetGenericTypeDefinition()).GetInstance(type_list);
+            }
             string[] args = declaringType.TemplateArguments;
             this.declaringType = declaringType;
             if (args != null)

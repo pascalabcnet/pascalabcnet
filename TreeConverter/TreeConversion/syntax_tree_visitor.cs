@@ -1206,14 +1206,14 @@ namespace PascalABCCompiler.TreeConverter
                     bfc = ((right as typed_expression).type as delegated_methods).proper_methods[0];
                     right = convertion_data_and_alghoritms.explicit_convert_type(right, CreateDelegate(bfc.simple_function_node));
                     sil2 = right.type.find_in_type(name);
-                    if (saved_sil != null)
+                    if (saved_sil != null && sil != null)
                     {
                         sil.RemoveRange(1, sil.Count() - 1);
                         sil.AddRange(saved_sil);
                     }
                     else
                         saved_sil = sil;
-                    if (saved_sil2 != null)
+                    if (saved_sil2 != null && sil2 != null)
                     {
                         sil2.RemoveRange(1, sil2.Count() - 1);
                         sil2.AddRange(saved_sil2);
@@ -1798,6 +1798,12 @@ namespace PascalABCCompiler.TreeConverter
                         statement_node stm = convert_strong(eh.statements);
                         context.leave_code_block();
                         sl = convertion_data_and_alghoritms.statement_list_stack.pop();
+                        if (sl.statements.Count > 0 || sl.local_variables.Count > 0)
+                        {
+                            sl.statements.AddElement(stm);
+                            stm = sl;
+                        }
+                        
                         exception_filter ef = new exception_filter(filter_type, lvr, stm, get_location(eh));
                         efl.AddElement(ef);
                         current_catch_excep = null;
@@ -9561,7 +9567,7 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 if (string.Compare(cl_def.template_args.idents[i].name, ttn.template_args.idents[i].name, true) != 0)
                                 {
-                                    AddError(get_location(ttn.template_args.idents[i]), "PARAMETER_{0}_MUST_BE_NAMED_{1}", cl_def.template_args.idents[i].name, i + 1);
+                                    AddError(get_location(ttn.template_args.idents[i]), "PARAMETER_{0}_MUST_BE_NAMED_{1}", i + 1, cl_def.template_args.idents[i].name);
                                 }
                             }
                             _method_name.class_name = new SyntaxTree.ident(ttn.name);
@@ -9583,7 +9589,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (string.Compare(tp.generic_params[i].name, ttn.template_args.idents[i].name, true) != 0)
                         {
-                            AddError(get_location(ttn.template_args.idents[i]), "PARAMETER_{0}_MUST_BE_NAMED_{1}", tp.generic_params[i].name, i+1);
+                            AddError(get_location(ttn.template_args.idents[i]), "PARAMETER_{0}_MUST_BE_NAMED_{1}", i + 1, tp.generic_params[i].name);
                         }
                     }
                 }
@@ -12617,6 +12623,14 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 common_method_node cmnode = context.top_function as common_method_node;
                 context.set_virtual_abstract(cmnode);
+            }
+            if (context.converted_type != null)
+            {
+                common_method_node cmnode = context.top_function as common_method_node;
+                if (cmnode != null && cmnode.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract && body_exists)
+                {
+                    AddError(new AbstractMethodWithBody(get_location(_function_header)));
+                }
             }
             convertion_data_and_alghoritms.create_function_return_variable(context.top_function, si);
 
@@ -16817,15 +16831,26 @@ namespace PascalABCCompiler.TreeConverter
             return_value(new question_colon_expression(condition, left, right, get_location(node)));
         }
 
+        Dictionary<SyntaxTree.type_definition, type_node> delegate_cache = new Dictionary<type_definition, type_node>();
+
         public List<type_node> visit_type_list(List<SyntaxTree.type_definition> types)
         {
             List<type_node> tparams = new List<type_node>();
             foreach (SyntaxTree.type_definition id in types)
             {
-                type_node tn = convert_strong(id);
+                type_node tn = null;
+                if ((id is function_header || id is procedure_header) && delegate_cache.ContainsKey(id))
+                    tn = delegate_cache[id];
+                else
+                    tn = convert_strong(id);
+                
                 if (tn == null)
                 {
                     AddError(get_location(id), "TYPE_NAME_EXPECTED");
+                }
+                if ((id is function_header || id is procedure_header) && !delegate_cache.ContainsKey(id))
+                {
+                    delegate_cache[id] = tn;
                 }
                 tparams.Add(tn);
             }

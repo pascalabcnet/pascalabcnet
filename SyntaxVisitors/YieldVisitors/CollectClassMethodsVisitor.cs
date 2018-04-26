@@ -39,7 +39,8 @@ namespace SyntaxVisitors
                 // Yoda
                 return;
             }
-
+            if (cd.body == null)
+                return;
             var methods = cd.body.class_def_blocks.SelectMany(cm => cm.members.Select(decl1 => 
                 {
                     if (decl1 is procedure_header)

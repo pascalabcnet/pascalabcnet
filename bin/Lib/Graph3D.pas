@@ -63,7 +63,11 @@ function Sz3D(x, y, z: real) := new Size3D(x, y, z);
 function Pnt(x, y: real) := new Point(x, y);
 function Rect(x, y, w, h: real) := new System.Windows.Rect(x, y, w, h);
 
-function operator*(p: Point3D; r: real); extensionmethod := P3D(p.x*r,p.y*r,p.z*r);
+function operator*(p: Point3D; r: real): Point3D; extensionmethod := p.Multiply(r);
+
+function operator*(r: real; p: Point3D): Point3D; extensionmethod := p.Multiply(r);
+
+function operator+(p1,p2: Point3D): Point3D; extensionmethod := p3d(p1.X+p2.X,p1.Y+p2.Y,p1.Z+p2.Z);
 
 const
   OrtX = V3D(1, 0, 0);
@@ -214,7 +218,13 @@ type
   CameraType = class
   private 
     function Cam: GCamera := hvp.Camera;
-    procedure SetPP(p: Point3D) := begin Cam.Position := p;Cam.LookDirection := Cam.Position.Multiply(-1).ToVector3D; end;
+    procedure SetPP(p: Point3D);
+    begin 
+      Cam.Position := p; 
+      {if p<>(0,0,0) then
+        Cam.LookDirection := Cam.Position.Multiply(-1).ToVector3D
+      else Cam.LookDirection := V3D(1,0,0);}
+    end;
     procedure SetP(p: Point3D) := Invoke(SetPP, p);
     function GetP: Point3D := Invoke&<Point3D>(()->Cam.Position);
     procedure SetLDP(v: Vector3D) := Cam.LookDirection := v;
@@ -2022,25 +2032,6 @@ type
     function Clone := (inherited Clone) as OctahedronT;
   end;
 
-  TriangleVisual3D = class(MeshElement3D)
-  private 
-    p1,p2,p3: Point3D;
-  public 
-    constructor(pp1,pp2,pp3: Point3D);
-    begin
-      (p1, p2, p3) := (pp1,pp2,pp3);
-      Material := Colors.Red;
-      OnGeometryChanged;
-    end;
-    function Tessellate(): MeshGeometry3D; override;
-    begin
-      var pmb := new PanelModelBuilder();
-      pmb.AddPanel(p1.X, p1.Y, p1.Z, p2.X, p2.Y, p2.Z, p3.X, p3.Y, p3.Z, p1.X, p1.Y, p1.Z);
-      Result := pmb.ToMeshGeometry3D
-    end;
-  end;
-
-  
   PrismVisual3D = class(MeshElement3D)
   private 
     fn: integer;
@@ -2091,6 +2082,74 @@ type
       Result := pmb.ToMeshGeometry3D
     end;
   end;
+
+  TriangleVisual3D = class(MeshElement3D)
+  private 
+    pp1,pp2,pp3: Point3D;
+  protected
+    function Tessellate(): MeshGeometry3D; override;
+    begin
+      var m := new MeshBuilder(true);
+      m.AddTriangle(p1,p2,p3);
+      Result := m.ToMesh;
+    end;
+    procedure SetP1(p1: Point3D);
+    begin
+      pp1 := p1;
+      OnGeometryChanged;
+    end;
+    procedure SetP2(p1: Point3D);
+    begin
+      pp2 := p2;
+      OnGeometryChanged;
+    end;
+    procedure SetP3(p3: Point3D);
+    begin
+      pp3 := p3;
+      OnGeometryChanged;
+    end;
+  public 
+    constructor(ppp1,ppp2,ppp3: Point3D);
+    begin
+      (pp1, pp2, pp3) := (ppp1,ppp2,ppp3);
+      Material := Colors.Red;
+      OnGeometryChanged;
+    end;
+    property P1: Point3D read pp1 write SetP1;
+    property P2: Point3D read pp2 write SetP2;
+    property P3: Point3D read pp3 write SetP3;
+    procedure SetPoints(p1,p2,p3: Point3D);
+    begin
+      pp1 := p1;
+      pp2 := p2;
+      pp3 := p3;
+      OnGeometryChanged;
+    end;
+  end;
+
+  TriangleT = class(ObjectWithMaterial3D)
+  protected
+    function Model := inherited model as TriangleVisual3D;
+    procedure SetP1(p: Point3D) := Invoke(procedure(p: Point3D)->model.P1 := p, p);
+    function  GetP1: Point3D := Invoke&<Point3D>(()->model.P1);
+    procedure SetP2(p: Point3D) := Invoke(procedure(p: Point3D)->model.P2 := p, p);
+    function  GetP2: Point3D := Invoke&<Point3D>(()->model.P2);
+    procedure SetP3(p: Point3D) := Invoke(procedure(p: Point3D)->model.P3 := p, p);
+    function  GetP3: Point3D := Invoke&<Point3D>(()->model.P3);
+
+    function CreateObject: Object3D; override := new TriangleT(Model.p1, Model.p2, Model.p3, Material.Clone);
+  public 
+    constructor(p1,p2,p3: Point3D; m: Gmaterial);
+    begin
+      CreateBase(new TriangleVisual3D(p1,p2,p3), 0, 0, 0, m);
+      Model.BackMaterial := Model.Material;      
+    end;
+    property P1: Point3D read GetP1 write SetP1;
+    property P2: Point3D read GetP2 write SetP2;
+    property P3: Point3D read GetP3 write SetP3;
+    procedure SetPoints(p1,p2,p3: Point3D) := Invoke(procedure(p1,p2,p3: Point3D)->begin model.SetPoints(p1,p2,p3); end, p1,p2,p3);
+  end;
+
 
   PrismT = class(ObjectWithMaterial3D)
   private
@@ -2553,7 +2612,7 @@ function Segment3D(p1, p2: Point3D; thickness: real := 1.2; c: Color := GrayColo
 function Torus(x, y, z, Diameter, TubeDiameter: real; m: Material := DefaultMaterial): TorusT := Inv(()->TorusT.Create(x,y,z,Diameter, TubeDiameter, m));
 function Torus(p: Point3D; Diameter, TubeDiameter: real; m: Material := DefaultMaterial): TorusT := Torus(p.x,p.y,p.z,Diameter,TubeDiameter,m);
 
-function Triangle(p1,p2,p3: Point3D): TriangleVisual3D := Inv(()->TriangleVisual3D.Create(p1,p2,p3));
+function Triangle(p1,p2,p3: Point3D; m: Material := DefaultMaterial): TriangleT := Inv(()->TriangleT.Create(p1,p2,p3, m));
 
 function MyH(x, y, z, Length: real; c: Color): MyAnyT := Inv(()->MyAnyT.Create(x, y, z, Length, c));
 function MyH(x, y, z, Length: real; c: Material): MyAnyT := Inv(()->MyAnyT.Create(x, y, z, Length, c));

@@ -39,7 +39,8 @@ namespace SyntaxVisitors
                 // Yoda
                 return;
             }
-
+            if (cd.body == null)
+                return;
             var properties = cd.body.class_def_blocks.SelectMany(cm => cm.members.Select(decl => decl as simple_property)
                                                                               .Where(name => (object)name != null)
                                                                               .Select(sp => sp.property_name));

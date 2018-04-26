@@ -796,7 +796,13 @@ namespace PascalABCCompiler.TreeConverter
 
             int i = 0;
             if (si.sym_info == null)
-                AddError(new ExpectedType(loc));
+            {
+                if (name.ToLower() == "result")
+                    AddError(loc, "CAN_NOT_DEDUCE_TYPE_{0}", "Result");
+                else
+                    AddError(new ExpectedType(loc));
+            }
+                
             if (si.sym_info.semantic_node_type == semantic_node_type.wrap_def)
             {
                 BasePCUReader.RestoreSymbol(si, name);
