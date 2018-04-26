@@ -6786,7 +6786,7 @@ namespace PascalABCCompiler.TreeConverter
                                                     if (laminftypeK != null)
                                                         laminftypeK.real_type = realparamstype[k];
                                                 }
-
+                                                
                                                 fld.lambda_name = lambdaName; //lroman Восстанавливаем имена
                                                 fld.lambda_visit_mode = fl;
                                             }

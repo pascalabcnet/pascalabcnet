@@ -135,11 +135,6 @@ namespace SymbolTable
 	#region SymbolTableConstants набор констант определяющих поведение таблицы символов
 	public class SymbolTableConstants
 	{
-		//стартовый размер списка областей видимости
-		public const int AreaList_StartSize=8;
-		//во сколько раз расширять список областей видимости
-		public const int AreaList_ResizeParam=2;
-
 		//стартовый размер списка информаций о символах
 		public const int InfoList_StartSize=1;
 
@@ -490,8 +485,9 @@ namespace SymbolTable
     public class DSSymbolTable
 	{
 		public List<Scope> ScopeTable;
-
+        
         internal bool CaseSensitive;
+
         private Scope CurrentScope;
         private int ScopeIndex = -1;
 
@@ -637,7 +633,7 @@ namespace SymbolTable
         public void RemoveScope(Scope scope)
         {
 #if (DEBUG)
-            if (scope != null) throw new Exception("Ошибка при взятии верхней области видимости: область с номером " + scope + " не существует");
+            if (scope == null) throw new Exception("Ошибка при взятии верхней области видимости: область с номером " + scope + " не существует");
 #endif
             scope.ClearScope();
 
