@@ -8,17 +8,11 @@
 
   [Concept] SumTC<T> = abstract class
   public
-    constructor;
-    begin
-    end;
     function sum(v1, v2: T): T; abstract;
   end;
 
   SumTC_Integer = class(SumTC<integer>)
   public
-    constructor();
-    begin
-    end;
     
     function sum(v1, v2: Integer): Integer; override;
     begin

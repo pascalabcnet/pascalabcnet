@@ -1,8 +1,10 @@
 ﻿uses System;
 
-
 type
-  TMonthType = (January, February, March, April,May, June, July, August, September, October, November, December);
+  TMonthType = (January, February, March, April, May, June, July, August, September, October, November, December);
+  
+  
+  Ordering = (_EQ, _LT, _GL);
 
 
 type
@@ -29,8 +31,12 @@ type
   end;
   
   
+  Bounded[T] = typeclass
+    function minBound: T;
+    function maxBound: T;
+  end;
   
-  
+
   // ---Instances---
   
   
@@ -52,7 +58,13 @@ type
     end;
   end;
 
-
+  
+  Bounded[integer] = instance
+    function minBound: integer := integer.MinValue;
+    function maxBound: integer := integer.MaxValue;
+  end;
+  
+  
 // ---Functions---
 
 
