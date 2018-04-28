@@ -161,7 +161,7 @@ namespace SymbolTable
                 return "GLOBAL";
             return s;
         }
-        //public override string ToString() => ScopeNum + "->" + TopScopeNum + "," + ScopeName();
+        public override string ToString() => TopScope==null? ScopeName(): ScopeName() + "->" + TopScope;
         
         public SymbolsDictionary Symbols;
         public List<Scope> InternalScopes;
@@ -471,7 +471,10 @@ namespace SymbolTable
         }
         public override string ToString()
         {
-            return InfoList.ToString();
+            System.Text.StringBuilder str = new System.Text.StringBuilder();
+            foreach (var sym in InfoList)
+                str.Append(sym.ToString() + ";");
+            return str.ToString();
         }
     }
     #endregion

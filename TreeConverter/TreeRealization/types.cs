@@ -17,6 +17,7 @@ namespace PascalABCCompiler.TreeRealization
 	[Serializable]
 	public abstract class type_node : definition_node, SemanticTree.ITypeNode
 	{
+        public override string ToString() => PrintableName;
         private System.Collections.Generic.Dictionary<type_node, type_intersection_node> type_intersections;
             //new System.Collections.Generic.Dictionary<type_node, type_intersection_node>();
         private List<type_node> generated_type_intersections = null;//new List<type_node>();
@@ -1169,7 +1170,6 @@ namespace PascalABCCompiler.TreeRealization
 	[Serializable]
     public class common_type_node : wrapped_type, SemanticTree.ICommonTypeNode
 	{
-        public override string ToString() => "("+GetType().Name + " " + PrintableName + "," + scope + ")";
         /// <summary>
         /// Имя типа.
         /// </summary>
@@ -2543,8 +2543,6 @@ namespace PascalABCCompiler.TreeRealization
 	[Serializable]
 	public class compiled_type_node : wrapped_type, SemanticTree.ICompiledTypeNode , SemanticTree.ILocated
 	{
-        public override string ToString() => this.full_name.ToString();
-
         internal System.Type _compiled_type;
 		protected compiled_type_node _base_type;
 
