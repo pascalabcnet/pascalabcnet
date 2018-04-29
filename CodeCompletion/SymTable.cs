@@ -455,7 +455,7 @@ namespace CodeCompletion
         private bool hasUsesCycle(SymScope unit)
         {
             if (this.Name == "PABCSystem")
-                return false;
+                return true;
             if (this.used_units != null)
         		for (int i = 0; i < this.used_units.Count; i++)
                 {
