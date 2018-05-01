@@ -2809,7 +2809,8 @@ namespace CodeFormatters
             multiline_stack_push(_short_func_definition);
             
             add_space_after = true;
-            add_space_before = true;
+            if (_short_func_definition.Parent is class_members && (_short_func_definition.Parent as class_members).access_mod != null && (_short_func_definition.Parent as class_members).access_mod.source_context != null)
+                add_space_before = true;
             add_newline_after = false;
             visit_node(_short_func_definition.procdef.proc_header);
             bool tmp_in_procedure = in_procedure;
