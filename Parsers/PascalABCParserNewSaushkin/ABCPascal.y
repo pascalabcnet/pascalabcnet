@@ -32,7 +32,7 @@
 %start parse_goal
 
 %token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkQuestionPoint tkDoubleQuestion tkQuestionSquareOpen
-%token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction tkMatch
+%token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction tkMatch tkWhen
 %token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
 %token <ti> tkLoop 
@@ -173,7 +173,7 @@
 %type <stn> full_lambda_fp_list lambda_simple_fp_sect lambda_function_body lambda_procedure_body optional_full_lambda_fp_list
 %type <ob> field_in_unnamed_object list_fields_in_unnamed_object func_class_name_ident_list rem_lambda variable_list var_ident_list
 %type <ti> tkAssignOrEqual
-%type <stn> pattern match_with pattern_case pattern_cases
+%type <stn> pattern match_with pattern_case pattern_cases pattern_out_param_list pattern_out_param
 
 %%
 
@@ -2534,10 +2534,14 @@ pattern_cases
     ;
     
 pattern_case
-    : pattern tkColon unlabelled_stmt
+    : pattern tkWhen expr_l1 tkColon unlabelled_stmt
         {
-            $$ = new pattern_case($1 as pattern_node, $3 as statement);
+            $$ = new pattern_case($1 as pattern_node, $5 as statement, $3);
         }
+    | pattern tkColon unlabelled_stmt
+        {
+            $$ = new pattern_case($1 as pattern_node, $3 as statement, null);
+        }  
     ;
     
 case_stmt
@@ -2993,9 +2997,31 @@ relop_expr
     ;
     
 pattern
-    : simple_or_template_type_reference tkRoundOpen tkVar identifier tkRoundClose
+    : simple_or_template_type_reference tkRoundOpen pattern_out_param_list tkRoundClose
         { 
-            $$ = new type_pattern($4, $1); 
+            $$ = new deconstructor_pattern($3 as pattern_deconstructor_call_params, $1); 
+        }
+    ;
+    
+pattern_out_param_list
+    : pattern_out_param
+        {
+            $$ = new pattern_deconstructor_call_params($1 as pattern_deconstructor_parameter);
+        }
+    | pattern_out_param_list tkSemiColon pattern_out_param
+        {
+            $$ = ($1 as pattern_deconstructor_call_params).Add($3 as pattern_deconstructor_parameter);
+        }
+    ;
+   
+pattern_out_param
+    : tkVar identifier tkColon type_ref
+        {
+            $$ = new pattern_deconstructor_parameter($2, $4);
+        }
+    | tkVar identifier
+        {
+            $$ = new pattern_deconstructor_parameter($2, null);
         }
     ;
     

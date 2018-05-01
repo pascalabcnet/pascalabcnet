@@ -8,14 +8,14 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
-		public virtual void visit(syntax_tree_node _syntax_tree_node)
-		{
-			DefaultVisit(_syntax_tree_node);
-		}
-
 		public virtual void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
+		}
+
+		public virtual void visit(syntax_tree_node _syntax_tree_node)
+		{
+			DefaultVisit(_syntax_tree_node);
 		}
 
 		public virtual void visit(statement _statement)
@@ -1147,13 +1147,22 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_pattern_cases);
 		}
-	
 
-        public virtual void visit(base_syntax_namespace_node _syntax_namespace_node)
-        {
-            DefaultVisit(_syntax_namespace_node);
-        }
-    }
+		public virtual void visit(pattern_deconstructor_call_params _pattern_deconstructor_call_params)
+		{
+			DefaultVisit(_pattern_deconstructor_call_params);
+		}
+
+		public virtual void visit(deconstructor_pattern _deconstructor_pattern)
+		{
+			DefaultVisit(_deconstructor_pattern);
+		}
+
+		public virtual void visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		{
+			DefaultVisit(_pattern_deconstructor_parameter);
+		}
+	}
 
 
 }

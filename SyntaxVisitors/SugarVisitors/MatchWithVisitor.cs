@@ -26,8 +26,14 @@ namespace SyntaxVisitors.SugarVisitors
             {
                 if (patternCase.pattern is type_pattern)
                     DesugarTypePatternCase(matchWith.expr, patternCase);
+
+                if (patternCase.pattern is deconstructor_pattern)
+                    DesugarDeconstructorPatternCase(matchWith.expr, patternCase);
             }
-            
+
+            if (desugaredMatchWith == null)
+                return;
+
             // Замена выражения match with на новое несахарное поддерево и его обход
             ReplaceUsingParent(matchWith, desugaredMatchWith);
             visit(desugaredMatchWith);
@@ -37,18 +43,66 @@ namespace SyntaxVisitors.SugarVisitors
         {
             Debug.Assert(patternCase.pattern is type_pattern);
 
-            // создание фиктивной переменной необходимого типа
             var result = new statement_list();
+            // создание фиктивной переменной необходимого типа
             var pattern = (type_pattern) patternCase.pattern;
-            var generatedVariable = GenerateIdent();
-            result.Add(new var_statement(generatedVariable, pattern.type));
+            var matchResultVariableName = GenerateIdent();
+            result.Add(new var_statement(matchResultVariableName, pattern.type));
             // делегирование проверки паттерна функции IsTest
-            var isTest = SubtreeCreator.CreateSystemFunctionCall("IsTest", matchingExpression, generatedVariable);
+            var isTest = SubtreeCreator.CreateSystemFunctionCall("IsTest", matchingExpression, matchResultVariableName);
+
+            // Конструируем условие мэтчинга 
+            expression matchCondition = isTest;
+            if (patternCase.condition == null)
+                matchCondition = isTest;
+            else
+            // Если есть секция when - добавляем ее в условие
+            {
+                // Переименовываем идентификатор, т.к. мы сгенерировали внутреннее имя
+                patternCase.condition.RenameIdentifierInDescendants(pattern.identifier.name, matchResultVariableName.name);
+                matchCondition = new bin_expr(isTest, patternCase.condition, Operators.LogicalAND);
+            }
+
             // Создание узла if с объявлением переменной из паттерна и присвоение ей значения 
             // сгенерированной переменной
-            var patternVarDef = new var_statement(pattern.identifier, generatedVariable);
+            var patternVarDef = new var_statement(pattern.identifier, matchResultVariableName);
             // Создание тела if из объявления переменной и соттветствующего тела case
-            var ifCheck = SubtreeCreator.CreateIf(isTest, new statement_list(patternVarDef, patternCase.case_action));
+            var ifCheck = SubtreeCreator.CreateIf(matchCondition, new statement_list(patternVarDef, patternCase.case_action));
+            result.Add(ifCheck);
+
+            // Добавляем полученные statements в результат
+            AddDesugaredCaseToResult(result, ifCheck);
+        }
+
+        void DesugarDeconstructorPatternCase(expression matchingExpression, pattern_case patternCase)
+        {
+            Debug.Assert(patternCase.pattern is deconstructor_pattern);
+
+            var result = new statement_list();
+            // создание фиктивной переменной необходимого типа
+            var pattern = (deconstructor_pattern)patternCase.pattern;
+            var matchResultVariableName = GenerateIdent();
+            result.Add(new var_statement(matchResultVariableName, pattern.type));
+            // делегирование проверки паттерна функции IsTest
+            var isTest = SubtreeCreator.CreateSystemFunctionCall("IsTest", matchingExpression, matchResultVariableName);
+
+            // Конструируем условие мэтчинга 
+            expression matchCondition = isTest;
+            if (patternCase.condition == null)
+                matchCondition = isTest;
+            else
+            // Если есть секция when - добавляем ее в условие
+            {
+                // Переименовываем идентификатор, т.к. мы сгенерировали внутреннее имя
+                patternCase.condition.RenameIdentifierInDescendants(pattern.parameters.parameters[0].name.name, matchResultVariableName.name);
+                matchCondition = new bin_expr(isTest, patternCase.condition, Operators.LogicalAND);
+            }
+
+            // Создание узла if с объявлением переменной из паттерна и присвоение ей значения 
+            // сгенерированной переменной
+            var patternVarDef = new var_statement(pattern.parameters.parameters[0].name.name, matchResultVariableName);
+            // Создание тела if из объявления переменной и соттветствующего тела case
+            var ifCheck = SubtreeCreator.CreateIf(matchCondition, new statement_list(patternVarDef, patternCase.case_action));
             result.Add(ifCheck);
 
             // Добавляем полученные statements в результат
@@ -57,7 +111,7 @@ namespace SyntaxVisitors.SugarVisitors
 
         private ident GenerateIdent()
         {
-            return  new ident("gen" + _variableCounter++);
+            return  new ident("<>patternGenVar" + _variableCounter++);
         }
 
         private void AddDesugaredCaseToResult(statement_list statements, if_node newIf)

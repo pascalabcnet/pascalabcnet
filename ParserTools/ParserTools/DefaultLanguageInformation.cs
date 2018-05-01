@@ -124,6 +124,7 @@ namespace PascalABCCompiler.Parsers
             keywords.Add("namespace", "namespace"); keys.Add("namespace");
             keywords.Add("exit", "exit"); keys.Add("exit");
             keywords.Add("event", "event"); keys.Add("event");
+            keywords.Add("match", "match"); keys.Add("match");
             //keywords.Add("typeof", "typeof"); //keys.Add("typeof");
             //keywords.Add("sizeof", "sizeof"); //keys.Add("sizeof");
             keywords_array = new string[keywords.Count + 2];

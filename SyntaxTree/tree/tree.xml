@@ -2900,6 +2900,7 @@
       <Fields>
         <SyntaxField Name="pattern" SyntaxType="pattern_node" />
         <SyntaxField Name="case_action" SyntaxType="statement" />
+        <SyntaxField Name="condition" SyntaxType="expression" />
       </Fields>
       <Methods />
       <Tags>
@@ -2910,6 +2911,38 @@
     <SyntaxNode Name="pattern_cases" BaseName="statement">
       <Fields>
         <ExtendedField Name="elements" Type="List&lt;pattern_case&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="pattern_deconstructor_call_params" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="parameters" Type="List&lt;pattern_deconstructor_parameter&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="deconstructor_pattern" BaseName="pattern_node">
+      <Fields>
+        <SyntaxField Name="parameters" SyntaxType="pattern_deconstructor_call_params" />
+        <SyntaxField Name="type" SyntaxType="type_definition" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="pattern_deconstructor_parameter" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="name" SyntaxType="ident" />
+        <SyntaxField Name="type" SyntaxType="type_definition" />
       </Fields>
       <Methods />
       <Tags>
@@ -3242,6 +3275,9 @@
       <HelpData Key="declarations.void Add(declaration d, SourceContext sc)" Value="" />
       <HelpData Key="declarations_as_statement" Value="" />
       <HelpData Key="declarations_as_statement.defs" Value="" />
+      <HelpData Key="deconstructor_pattern" Value="" />
+      <HelpData Key="deconstructor_pattern.parameters" Value="Результат деконструирования" />
+      <HelpData Key="deconstructor_pattern.type" Value="Деконструируемый тип" />
       <HelpData Key="default_indexer_property_node" Value="" />
       <HelpData Key="default_operator" Value="" />
       <HelpData Key="default_operator." Value="" />
@@ -3760,9 +3796,15 @@
       <HelpData Key="pascal_set_constant.void Add(expression value)" Value="Добавляет во множество элемент" />
       <HelpData Key="pattern_case" Value="" />
       <HelpData Key="pattern_case.case_action" Value="" />
+      <HelpData Key="pattern_case.condition" Value="" />
       <HelpData Key="pattern_case.pattern" Value="" />
       <HelpData Key="pattern_cases" Value="" />
       <HelpData Key="pattern_cases.elements" Value="" />
+      <HelpData Key="pattern_deconstructor_call_params" Value="" />
+      <HelpData Key="pattern_deconstructor_call_params.parameters" Value="" />
+      <HelpData Key="pattern_deconstructor_parameter" Value="" />
+      <HelpData Key="pattern_deconstructor_parameter.name" Value="" />
+      <HelpData Key="pattern_deconstructor_parameter.type" Value="" />
       <HelpData Key="pattern_node" Value="" />
       <HelpData Key="proc_block" Value="" />
       <HelpData Key="procedure_attribute" Value="" />

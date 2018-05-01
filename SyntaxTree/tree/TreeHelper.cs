@@ -84,6 +84,17 @@ namespace PascalABCCompiler.SyntaxTree
         }
 
         /// <summary>
+        /// Переименовывает все идентификаторы с данным значением в поддереве
+        /// </summary>
+        /// <param name="from">Исходное значение</param>
+        /// <param name="to">Новое значение</param>
+        public void RenameIdentifierInDescendants(string from, string to)
+        {
+            foreach (var identifier in DescendantNodes().OfType<ident>().Where(x => x.name == from))
+                identifier.name = to;
+        }
+
+        /// <summary>
         /// Получает коллекцию предков текущего узла
         /// </summary>
         /// <param name="includeSelf">Включить в список текущий узел</param>

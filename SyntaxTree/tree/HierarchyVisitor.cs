@@ -5,19 +5,19 @@ namespace PascalABCCompiler.SyntaxTree
 	public class HierarchyVisitor: AbstractVisitor
 	{
 
-		public virtual void pre_do_visit(syntax_tree_node _syntax_tree_node)
-		{
-		}
-
-		public virtual void post_do_visit(syntax_tree_node _syntax_tree_node)
-		{
-		}
-
 		public virtual void pre_do_visit(expression _expression)
 		{
 		}
 
 		public virtual void post_do_visit(expression _expression)
+		{
+		}
+
+		public virtual void pre_do_visit(syntax_tree_node _syntax_tree_node)
+		{
+		}
+
+		public virtual void post_do_visit(syntax_tree_node _syntax_tree_node)
 		{
 		}
 
@@ -1829,11 +1829,28 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
-		public override void visit(syntax_tree_node _syntax_tree_node)
+		public virtual void pre_do_visit(pattern_deconstructor_call_params _pattern_deconstructor_call_params)
 		{
-			DefaultVisit(_syntax_tree_node);
-			pre_do_visit(_syntax_tree_node);
-			post_do_visit(_syntax_tree_node);
+		}
+
+		public virtual void post_do_visit(pattern_deconstructor_call_params _pattern_deconstructor_call_params)
+		{
+		}
+
+		public virtual void pre_do_visit(deconstructor_pattern _deconstructor_pattern)
+		{
+		}
+
+		public virtual void post_do_visit(deconstructor_pattern _deconstructor_pattern)
+		{
+		}
+
+		public virtual void pre_do_visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		{
+		}
+
+		public virtual void post_do_visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		{
 		}
 
 		public override void visit(expression _expression)
@@ -1841,6 +1858,13 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_expression);
 			pre_do_visit(_expression);
 			post_do_visit(_expression);
+		}
+
+		public override void visit(syntax_tree_node _syntax_tree_node)
+		{
+			DefaultVisit(_syntax_tree_node);
+			pre_do_visit(_syntax_tree_node);
+			post_do_visit(_syntax_tree_node);
 		}
 
 		public override void visit(statement _statement)
@@ -3772,6 +3796,7 @@ namespace PascalABCCompiler.SyntaxTree
 			pre_do_visit(_pattern_case);
 			visit(pattern_case.pattern);
 			visit(pattern_case.case_action);
+			visit(pattern_case.condition);
 			post_do_visit(_pattern_case);
 		}
 
@@ -3782,6 +3807,33 @@ namespace PascalABCCompiler.SyntaxTree
 			for (int i = 0; i < elements.Count; i++)
 				visit(pattern_cases.elements[i]);
 			post_do_visit(_pattern_cases);
+		}
+
+		public override void visit(pattern_deconstructor_call_params _pattern_deconstructor_call_params)
+		{
+			DefaultVisit(_pattern_deconstructor_call_params);
+			pre_do_visit(_pattern_deconstructor_call_params);
+			for (int i = 0; i < parameters.Count; i++)
+				visit(pattern_deconstructor_call_params.parameters[i]);
+			post_do_visit(_pattern_deconstructor_call_params);
+		}
+
+		public override void visit(deconstructor_pattern _deconstructor_pattern)
+		{
+			DefaultVisit(_deconstructor_pattern);
+			pre_do_visit(_deconstructor_pattern);
+			visit(deconstructor_pattern.parameters);
+			visit(deconstructor_pattern.type);
+			post_do_visit(_deconstructor_pattern);
+		}
+
+		public override void visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		{
+			DefaultVisit(_pattern_deconstructor_parameter);
+			pre_do_visit(_pattern_deconstructor_parameter);
+			visit(pattern_deconstructor_parameter.name);
+			visit(pattern_deconstructor_parameter.type);
+			post_do_visit(_pattern_deconstructor_parameter);
 		}
 	}
 

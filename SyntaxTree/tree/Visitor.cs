@@ -5,17 +5,17 @@ namespace PascalABCCompiler.SyntaxTree
 	public interface IVisitor
 	{
 		///<summary>
-		///Method to visit syntax_tree_node.
-		///</summary>
-		///<param name="_syntax_tree_node">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(syntax_tree_node _syntax_tree_node);
-		///<summary>
 		///Method to visit expression.
 		///</summary>
 		///<param name="_expression">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(expression _expression);
+		///<summary>
+		///Method to visit syntax_tree_node.
+		///</summary>
+		///<param name="_syntax_tree_node">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(syntax_tree_node _syntax_tree_node);
 		///<summary>
 		///Method to visit statement.
 		///</summary>
@@ -1372,6 +1372,24 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_pattern_cases">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(pattern_cases _pattern_cases);
+		///<summary>
+		///Method to visit pattern_deconstructor_call_params.
+		///</summary>
+		///<param name="_pattern_deconstructor_call_params">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(pattern_deconstructor_call_params _pattern_deconstructor_call_params);
+		///<summary>
+		///Method to visit deconstructor_pattern.
+		///</summary>
+		///<param name="_deconstructor_pattern">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(deconstructor_pattern _deconstructor_pattern);
+		///<summary>
+		///Method to visit pattern_deconstructor_parameter.
+		///</summary>
+		///<param name="_pattern_deconstructor_parameter">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter);
 	}
 
 

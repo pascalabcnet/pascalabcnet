@@ -21,9 +21,9 @@ namespace PascalABCCompiler.SyntaxTree
 			switch(node_class_number)
 			{
 				case 0:
-					return new syntax_tree_node();
-				case 1:
 					return new expression();
+				case 1:
+					return new syntax_tree_node();
 				case 2:
 					return new statement();
 				case 3:
@@ -476,6 +476,12 @@ namespace PascalABCCompiler.SyntaxTree
 					return new pattern_case();
 				case 227:
 					return new pattern_cases();
+				case 228:
+					return new pattern_deconstructor_call_params();
+				case 229:
+					return new deconstructor_pattern();
+				case 230:
+					return new pattern_deconstructor_parameter();
 			}
 			return null;
 		}
@@ -492,6 +498,17 @@ namespace PascalABCCompiler.SyntaxTree
 				return null;
 			}
 		}
+
+		public void visit(expression _expression)
+		{
+			read_expression(_expression);
+		}
+
+		public void read_expression(expression _expression)
+		{
+			read_declaration(_expression);
+		}
+
 
 		public void visit(syntax_tree_node _syntax_tree_node)
 		{
@@ -518,17 +535,6 @@ namespace PascalABCCompiler.SyntaxTree
 				}
 				_syntax_tree_node.source_context = new SourceContext(ssyy_beg, ssyy_end);
 			}
-		}
-
-
-		public void visit(expression _expression)
-		{
-			read_expression(_expression);
-		}
-
-		public void read_expression(expression _expression)
-		{
-			read_declaration(_expression);
 		}
 
 
@@ -3993,6 +3999,7 @@ namespace PascalABCCompiler.SyntaxTree
 			read_statement(_pattern_case);
 			_pattern_case.pattern = _read_node() as pattern_node;
 			_pattern_case.case_action = _read_node() as statement;
+			_pattern_case.condition = _read_node() as expression;
 		}
 
 
@@ -4017,6 +4024,56 @@ namespace PascalABCCompiler.SyntaxTree
 					_pattern_cases.elements.Add(_read_node() as pattern_case);
 				}
 			}
+		}
+
+
+		public void visit(pattern_deconstructor_call_params _pattern_deconstructor_call_params)
+		{
+			read_pattern_deconstructor_call_params(_pattern_deconstructor_call_params);
+		}
+
+		public void read_pattern_deconstructor_call_params(pattern_deconstructor_call_params _pattern_deconstructor_call_params)
+		{
+			read_syntax_tree_node(_pattern_deconstructor_call_params);
+			if (br.ReadByte() == 0)
+			{
+				_pattern_deconstructor_call_params.parameters = null;
+			}
+			else
+			{
+				_pattern_deconstructor_call_params.parameters = new List<pattern_deconstructor_parameter>();
+				Int32 ssyy_count = br.ReadInt32();
+				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
+				{
+					_pattern_deconstructor_call_params.parameters.Add(_read_node() as pattern_deconstructor_parameter);
+				}
+			}
+		}
+
+
+		public void visit(deconstructor_pattern _deconstructor_pattern)
+		{
+			read_deconstructor_pattern(_deconstructor_pattern);
+		}
+
+		public void read_deconstructor_pattern(deconstructor_pattern _deconstructor_pattern)
+		{
+			read_pattern_node(_deconstructor_pattern);
+			_deconstructor_pattern.parameters = _read_node() as pattern_deconstructor_call_params;
+			_deconstructor_pattern.type = _read_node() as type_definition;
+		}
+
+
+		public void visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		{
+			read_pattern_deconstructor_parameter(_pattern_deconstructor_parameter);
+		}
+
+		public void read_pattern_deconstructor_parameter(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		{
+			read_syntax_tree_node(_pattern_deconstructor_parameter);
+			_pattern_deconstructor_parameter.name = _read_node() as ident;
+			_pattern_deconstructor_parameter.type = _read_node() as type_definition;
 		}
 
 	}
