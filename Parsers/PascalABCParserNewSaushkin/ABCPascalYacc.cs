@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  ALEXANDER-PC
-// DateTime: 01.05.2018 19:10:11
+// DateTime: 01.05.2018 19:45:45
 // UserName: Alexander
 // Input file <ABCPascal.y>
 
@@ -153,7 +153,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       "lambda_procedure_body", "optional_full_lambda_fp_list", "field_in_unnamed_object", 
       "list_fields_in_unnamed_object", "func_class_name_ident_list", "rem_lambda", 
       "variable_list", "var_ident_list", "tkAssignOrEqual", "pattern", "match_with", 
-      "pattern_case", "pattern_cases", "pattern_out_param_list", "pattern_out_param", 
+      "pattern_case", "pattern_cases", "pattern_out_param", "pattern_out_param_list", 
       "$accept", };
 
   static GPPGParser() {
@@ -1000,10 +1000,10 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     states[840] = new State(new int[]{133,287,135,23,78,25,79,26,73,28,71,223,40,295,37,713,8,714,17,373,18,378,136,146,138,147,137,149,146,151,148,152,147,153,52,738,83,113,35,707,21,743,89,755,49,730,30,765,50,775,94,781,42,788,31,791,48,799,55,812,70,817,68,823,33,828,84,-464,10,-464},new int[]{-241,841,-3,119,-98,120,-112,281,-97,288,-127,293,-132,24,-133,27,-173,294,-237,372,-274,377,-13,734,-146,143,-148,144,-147,148,-14,150,-52,735,-100,388,-193,736,-113,737,-235,740,-134,741,-30,742,-227,754,-293,763,-104,764,-294,774,-141,779,-279,780,-228,787,-103,790,-289,798,-53,808,-156,809,-155,810,-150,811,-106,816,-107,821,-105,822,-314,827});
     states[841] = new State(-509);
     states[842] = new State(new int[]{8,843});
-    states[843] = new State(new int[]{48,848},new int[]{-317,844,-318,852});
+    states[843] = new State(new int[]{48,848},new int[]{-318,844,-317,852});
     states[844] = new State(new int[]{9,845,10,846});
     states[845] = new State(-590);
-    states[846] = new State(new int[]{48,848},new int[]{-318,847});
+    states[846] = new State(new int[]{48,848},new int[]{-317,847});
     states[847] = new State(-592);
     states[848] = new State(new int[]{135,23,78,25,79,26,73,28,71,29},new int[]{-127,849,-132,24,-133,27});
     states[849] = new State(new int[]{5,850,9,-594,10,-594});
@@ -2161,11 +2161,11 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     rules[587] = new Rule(-88, new int[]{-91});
     rules[588] = new Rule(-88, new int[]{-88,-178,-91});
     rules[589] = new Rule(-88, new int[]{-247,8,48,-127,9});
-    rules[590] = new Rule(-313, new int[]{-263,8,-317,9});
-    rules[591] = new Rule(-317, new int[]{-318});
-    rules[592] = new Rule(-317, new int[]{-317,10,-318});
-    rules[593] = new Rule(-318, new int[]{48,-127,5,-257});
-    rules[594] = new Rule(-318, new int[]{48,-127});
+    rules[590] = new Rule(-313, new int[]{-263,8,-318,9});
+    rules[591] = new Rule(-318, new int[]{-317});
+    rules[592] = new Rule(-318, new int[]{-318,10,-317});
+    rules[593] = new Rule(-317, new int[]{48,-127,5,-257});
+    rules[594] = new Rule(-317, new int[]{48,-127});
     rules[595] = new Rule(-99, new int[]{-91});
     rules[596] = new Rule(-99, new int[]{});
     rules[597] = new Rule(-102, new int[]{-91,5,-99});
@@ -5115,18 +5115,21 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 590: // pattern -> simple_or_template_type_reference, tkRoundOpen, 
                 //            pattern_out_param_list, tkRoundClose
 { 
-            CurrentSemanticValue.stn = new deconstructor_pattern(ValueStack[ValueStack.Depth-2].stn as pattern_deconstructor_call_params, ValueStack[ValueStack.Depth-4].td); 
+            CurrentSemanticValue.stn = new deconstructor_pattern(ValueStack[ValueStack.Depth-2].ob as List<pattern_deconstructor_parameter>, ValueStack[ValueStack.Depth-4].td); 
         }
         break;
       case 591: // pattern_out_param_list -> pattern_out_param
 {
-            CurrentSemanticValue.stn = new pattern_deconstructor_call_params(ValueStack[ValueStack.Depth-1].stn as pattern_deconstructor_parameter);
+            CurrentSemanticValue.ob = new List<pattern_deconstructor_parameter>();
+            (CurrentSemanticValue.ob as List<pattern_deconstructor_parameter>).Add(ValueStack[ValueStack.Depth-1].stn as pattern_deconstructor_parameter);
         }
         break;
       case 592: // pattern_out_param_list -> pattern_out_param_list, tkSemiColon, 
                 //                           pattern_out_param
 {
-            CurrentSemanticValue.stn = (ValueStack[ValueStack.Depth-3].stn as pattern_deconstructor_call_params).Add(ValueStack[ValueStack.Depth-1].stn as pattern_deconstructor_parameter);
+            var list = ValueStack[ValueStack.Depth-3].ob as List<pattern_deconstructor_parameter>;
+            list.Add(ValueStack[ValueStack.Depth-1].stn as pattern_deconstructor_parameter);
+            CurrentSemanticValue.ob = list;
         }
         break;
       case 593: // pattern_out_param -> tkVar, identifier, tkColon, type_ref

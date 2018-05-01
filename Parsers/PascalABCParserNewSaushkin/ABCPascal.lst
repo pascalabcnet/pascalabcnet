@@ -1,9 +1,20 @@
+
+// ==========================================================================
+//  GPPG error listing for yacc source file <ABCPascal.y>
+// ==========================================================================
+//  Version:  1.3.6
+//  Machine:  ALEXANDER-PC
+//  DateTime: 01.05.2018 17:32:27
+//  UserName: Alexander
+// ==========================================================================
+
+
 // Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-// SSM 21/11/16 Лямбда выражения вынесены на верхний уровень (п.ч. присваивания и параметры)
+// SSM 21/11/16 Г‹ГїГ¬ГЎГ¤Г  ГўГ»Г°Г Г¦ГҐГ­ГЁГї ГўГ»Г­ГҐГ±ГҐГ­Г» Г­Г  ГўГҐГ°ГµГ­ГЁГ© ГіГ°Г®ГўГҐГ­Гј (ГЇ.Г·. ГЇГ°ГЁГ±ГўГ ГЁГўГ Г­ГЁГї ГЁ ГЇГ Г°Г Г¬ГҐГІГ°Г»)
 %{
-// Эти объявления добавляются в класс GPPGParser, представляющий собой парсер, генерируемый системой gppg
-    public syntax_tree_node root; // Корневой узел синтаксического дерева 
+// ГќГІГЁ Г®ГЎГєГїГўГ«ГҐГ­ГЁГї Г¤Г®ГЎГ ГўГ«ГїГѕГІГ±Гї Гў ГЄГ«Г Г±Г± GPPGParser, ГЇГ°ГҐГ¤Г±ГІГ ГўГ«ГїГѕГ№ГЁГ© Г±Г®ГЎГ®Г© ГЇГ Г°Г±ГҐГ°, ГЈГҐГ­ГҐГ°ГЁГ°ГіГҐГ¬Г»Г© Г±ГЁГ±ГІГҐГ¬Г®Г© gppg
+    public syntax_tree_node root; // ГЉГ®Г°Г­ГҐГўГ®Г© ГіГ§ГҐГ« Г±ГЁГ­ГІГ ГЄГ±ГЁГ·ГҐГ±ГЄГ®ГЈГ® Г¤ГҐГ°ГҐГўГ  
 
     public List<Error> errors;
     public string current_file_name;
@@ -173,8 +184,8 @@
 %type <stn> full_lambda_fp_list lambda_simple_fp_sect lambda_function_body lambda_procedure_body optional_full_lambda_fp_list
 %type <ob> field_in_unnamed_object list_fields_in_unnamed_object func_class_name_ident_list rem_lambda variable_list var_ident_list
 %type <ti> tkAssignOrEqual
-%type <stn> pattern match_with pattern_case pattern_cases pattern_out_param
-%type <ob> pattern_out_param_list
+%type <stn> pattern match_with pattern_case pattern_cases pattern_out_param_list pattern_out_param
+
 %%
 
 parse_goal                
@@ -239,7 +250,7 @@ program_file
         }
 	;
 		
-optional_tk_point /* это нужно для intellisensа чтобы строилось дерево при отсутствии точки в конце */
+optional_tk_point /* ГЅГІГ® Г­ГіГ¦Г­Г® Г¤Г«Гї intellisensГ  Г·ГІГ®ГЎГ» Г±ГІГ°Г®ГЁГ«Г®Г±Гј Г¤ГҐГ°ГҐГўГ® ГЇГ°ГЁ Г®ГІГ±ГіГІГ±ГІГўГЁГЁ ГІГ®Г·ГЄГЁ Гў ГЄГ®Г­Г¶ГҐ */
     : tkPoint
         { $$ = $1; }
     | tkSemiColon
@@ -521,7 +532,7 @@ decl_sect
 		{ $$ = $1; }
     ;
 
-proc_func_constr_destr_decl /* SSM 2.1.13 упрощение грамматики */
+proc_func_constr_destr_decl /* SSM 2.1.13 ГіГЇГ°Г®Г№ГҐГ­ГЁГҐ ГЈГ°Г Г¬Г¬Г ГІГЁГЄГЁ */
 	: proc_func_decl              
 		{ $$ = $1; }
 	| constr_destr_decl 
@@ -1381,7 +1392,7 @@ proc_type_decl
         { 
 			$$ = new function_header($2 as formal_parameters, null, null, null, $4 as type_definition, @$);
         }
-	| simple_type_identifier tkArrow template_param // эти 2 правила нельзя объединять в одно template_param - будет конфликт
+	| simple_type_identifier tkArrow template_param // ГЅГІГЁ 2 ГЇГ°Г ГўГЁГ«Г  Г­ГҐГ«ГјГ§Гї Г®ГЎГєГҐГ¤ГЁГ­ГїГІГј Гў Г®Г¤Г­Г® template_param - ГЎГіГ¤ГҐГІ ГЄГ®Г­ГґГ«ГЁГЄГІ
     	{
     		$$ = new modern_proc_type($1,null,$3,@$);            
     	}
@@ -1397,7 +1408,7 @@ proc_type_decl
     	{
     		$$ = new modern_proc_type(null,$2 as enumerator_list,$5,@$);
     	}
-    | simple_type_identifier tkArrow tkRoundOpen tkRoundClose // эти 2 правила нельзя объединять в одно template_param - будет конфликт
+    | simple_type_identifier tkArrow tkRoundOpen tkRoundClose // ГЅГІГЁ 2 ГЇГ°Г ГўГЁГ«Г  Г­ГҐГ«ГјГ§Гї Г®ГЎГєГҐГ¤ГЁГ­ГїГІГј Гў Г®Г¤Г­Г® template_param - ГЎГіГ¤ГҐГІ ГЄГ®Г­ГґГ«ГЁГЄГІ
     	{
     		$$ = new modern_proc_type($1,null,null,@$);
     	}
@@ -1931,7 +1942,7 @@ var_decl_part
         { 
 			$$ = new var_def_statement($1 as ident_list, null, $3, definition_attribute.None, false, @$);		
 		}
-    | ident_list tkColon type_ref tkAssignOrEqual typed_var_init_expression // typed_const_plus уже давно не константа :) Но сюда не попали Tuples, поскольку они конкурируют с дурацкими старыми инициализаторами массивов 
+    | ident_list tkColon type_ref tkAssignOrEqual typed_var_init_expression // typed_const_plus ГіГ¦ГҐ Г¤Г ГўГ­Г® Г­ГҐ ГЄГ®Г­Г±ГІГ Г­ГІГ  :) ГЌГ® Г±ГѕГ¤Г  Г­ГҐ ГЇГ®ГЇГ Г«ГЁ Tuples, ГЇГ®Г±ГЄГ®Г«ГјГЄГі Г®Г­ГЁ ГЄГ®Г­ГЄГіГ°ГЁГ°ГіГѕГІ Г± Г¤ГіГ°Г Г¶ГЄГЁГ¬ГЁ Г±ГІГ Г°Г»Г¬ГЁ ГЁГ­ГЁГ¶ГЁГ Г«ГЁГ§Г ГІГ®Г°Г Г¬ГЁ Г¬Г Г±Г±ГЁГўГ®Гў 
         { 
 			$$ = new var_def_statement($1 as ident_list, $3, $5, definition_attribute.None, false, @$); 
 		}
@@ -2999,32 +3010,33 @@ relop_expr
 pattern
     : simple_or_template_type_reference tkRoundOpen pattern_out_param_list tkRoundClose
         { 
-            $$ = new deconstructor_pattern($3 as List<pattern_deconstructor_parameter>, $1); 
+            $$ = new deconstructor_pattern($4, $1); 
         }
     ;
     
 pattern_out_param_list
     : pattern_out_param
         {
-            $$ = new List<pattern_deconstructor_parameter>();
-            ($$ as List<pattern_deconstructor_parameter>).Add($1 as pattern_deconstructor_parameter);
+            $$ = new pattern_deconstructor_call_params();
+            $$.Add($1);
         }
-    | pattern_out_param_list tkSemiColon pattern_out_param
+    | pattern_out_param_list tkColon pattern_out_param
         {
-            var list = $1 as List<pattern_deconstructor_parameter>;
-            list.Add($3 as pattern_deconstructor_parameter);
-            $$ = list;
+            ($1 as pattern_deconstructor_call_params).Add($3);
         }
-    ;
    
 pattern_out_param
+//^^^^^^^^^^^^^^^
+// Error: Syntax error, unexpected anchoredSymbol
+// ----------------------------------------------
     : tkVar identifier tkColon type_ref
         {
-            $$ = new pattern_deconstructor_parameter($2, $4);
+            $$ = new var_def_statement($1, $3);
         }
     | tkVar identifier
         {
-            $$ = new pattern_deconstructor_parameter($2, null);
+            $$ = new var_def_statement();
+            $$.vars = new ident_list($1);
         }
     ;
     
@@ -3179,7 +3191,7 @@ default_expr
     ;
 
 tuple
-	 : tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose // lambda_type_ref optional_full_lambda_fp_list нужно оставить чтобы не было конфликтов с грамматикой лямбд 
+	 : tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose // lambda_type_ref optional_full_lambda_fp_list Г­ГіГ¦Г­Г® Г®Г±ГІГ ГўГЁГІГј Г·ГІГ®ГЎГ» Г­ГҐ ГЎГ»Г«Г® ГЄГ®Г­ГґГ«ГЁГЄГІГ®Гў Г± ГЈГ°Г Г¬Г¬Г ГІГЁГЄГ®Г© Г«ГїГ¬ГЎГ¤ 
 		{
 			/*if ($5 != null) 
 				parsertools.AddErrorFromResource("BAD_TUPLE",@5);
@@ -4056,4 +4068,5 @@ lambda_procedure_body
 		}
 	;
 
-%%
+%%// ==========================================================================
+

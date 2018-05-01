@@ -94,13 +94,13 @@ namespace SyntaxVisitors.SugarVisitors
             // Если есть секция when - добавляем ее в условие
             {
                 // Переименовываем идентификатор, т.к. мы сгенерировали внутреннее имя
-                patternCase.condition.RenameIdentifierInDescendants(pattern.parameters.parameters[0].name.name, matchResultVariableName.name);
+                patternCase.condition.RenameIdentifierInDescendants(pattern.parameters[0].identifier.name, matchResultVariableName.name);
                 matchCondition = new bin_expr(isTest, patternCase.condition, Operators.LogicalAND);
             }
 
             // Создание узла if с объявлением переменной из паттерна и присвоение ей значения 
             // сгенерированной переменной
-            var patternVarDef = new var_statement(pattern.parameters.parameters[0].name.name, matchResultVariableName);
+            var patternVarDef = new var_statement(pattern.parameters[0].identifier.name, matchResultVariableName);
             // Создание тела if из объявления переменной и соттветствующего тела case
             var ifCheck = SubtreeCreator.CreateIf(matchCondition, new statement_list(patternVarDef, patternCase.case_action));
             result.Add(ifCheck);

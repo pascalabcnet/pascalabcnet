@@ -1148,11 +1148,6 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_pattern_cases);
 		}
 
-		public virtual void visit(pattern_deconstructor_call_params _pattern_deconstructor_call_params)
-		{
-			DefaultVisit(_pattern_deconstructor_call_params);
-		}
-
 		public virtual void visit(deconstructor_pattern _deconstructor_pattern)
 		{
 			DefaultVisit(_deconstructor_pattern);

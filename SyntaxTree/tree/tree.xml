@@ -2918,19 +2918,9 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
-    <SyntaxNode Name="pattern_deconstructor_call_params" BaseName="syntax_tree_node">
-      <Fields>
-        <ExtendedField Name="parameters" Type="List&lt;pattern_deconstructor_parameter&gt;" CreateVariable="true" DeleteVariable="false" />
-      </Fields>
-      <Methods />
-      <Tags>
-        <CategoryIndices />
-        <TagIndices />
-      </Tags>
-    </SyntaxNode>
     <SyntaxNode Name="deconstructor_pattern" BaseName="pattern_node">
       <Fields>
-        <SyntaxField Name="parameters" SyntaxType="pattern_deconstructor_call_params" />
+        <ExtendedField Name="parameters" Type="List&lt;pattern_deconstructor_parameter&gt;" CreateVariable="true" DeleteVariable="false" />
         <SyntaxField Name="type" SyntaxType="type_definition" />
       </Fields>
       <Methods />
@@ -2941,7 +2931,7 @@
     </SyntaxNode>
     <SyntaxNode Name="pattern_deconstructor_parameter" BaseName="syntax_tree_node">
       <Fields>
-        <SyntaxField Name="name" SyntaxType="ident" />
+        <SyntaxField Name="identifier" SyntaxType="ident" />
         <SyntaxField Name="type" SyntaxType="type_definition" />
       </Fields>
       <Methods />
@@ -3803,6 +3793,7 @@
       <HelpData Key="pattern_deconstructor_call_params" Value="" />
       <HelpData Key="pattern_deconstructor_call_params.parameters" Value="" />
       <HelpData Key="pattern_deconstructor_parameter" Value="" />
+      <HelpData Key="pattern_deconstructor_parameter.identifier" Value="" />
       <HelpData Key="pattern_deconstructor_parameter.name" Value="" />
       <HelpData Key="pattern_deconstructor_parameter.type" Value="" />
       <HelpData Key="pattern_node" Value="" />

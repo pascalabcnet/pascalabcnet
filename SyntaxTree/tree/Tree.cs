@@ -48598,13 +48598,13 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public partial class pattern_deconstructor_call_params : syntax_tree_node
+	public partial class deconstructor_pattern : pattern_node
 	{
 
 		///<summary>
 		///Конструктор без параметров.
 		///</summary>
-		public pattern_deconstructor_call_params()
+		public deconstructor_pattern()
 		{
 
 		}
@@ -48612,31 +48612,34 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public pattern_deconstructor_call_params(List<pattern_deconstructor_parameter> _parameters)
+		public deconstructor_pattern(List<pattern_deconstructor_parameter> _parameters,type_definition _type)
 		{
 			this._parameters=_parameters;
+			this._type=_type;
 			FillParentsInDirectChilds();
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public pattern_deconstructor_call_params(List<pattern_deconstructor_parameter> _parameters,SourceContext sc)
+		public deconstructor_pattern(List<pattern_deconstructor_parameter> _parameters,type_definition _type,SourceContext sc)
 		{
 			this._parameters=_parameters;
+			this._type=_type;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
-		public pattern_deconstructor_call_params(pattern_deconstructor_parameter elem, SourceContext sc = null)
+		public deconstructor_pattern(pattern_deconstructor_parameter elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		    FillParentsInDirectChilds();
 		}
 		
 		protected List<pattern_deconstructor_parameter> _parameters=new List<pattern_deconstructor_parameter>();
+		protected type_definition _type;
 
 		///<summary>
-		///
+		///Результат деконструирования
 		///</summary>
 		public List<pattern_deconstructor_parameter> parameters
 		{
@@ -48650,8 +48653,23 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+		///<summary>
+		///Деконструируемый тип
+		///</summary>
+		public type_definition type
+		{
+			get
+			{
+				return _type;
+			}
+			set
+			{
+				_type=value;
+			}
+		}
 
-		public pattern_deconstructor_call_params Add(pattern_deconstructor_parameter elem, SourceContext sc = null)
+
+		public deconstructor_pattern Add(pattern_deconstructor_parameter elem, SourceContext sc = null)
 		{
 			parameters.Add(elem);
 			if (elem != null)
@@ -48802,7 +48820,7 @@ namespace PascalABCCompiler.SyntaxTree
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
-			pattern_deconstructor_call_params copy = new pattern_deconstructor_call_params();
+			deconstructor_pattern copy = new deconstructor_pattern();
 			copy.Parent = this.Parent;
 			if (source_context != null)
 				copy.source_context = new SourceContext(source_context);
@@ -48818,185 +48836,6 @@ namespace PascalABCCompiler.SyntaxTree
 					else
 						copy.Add(null);
 				}
-			}
-			return copy;
-		}
-
-		/// <summary> Получает копию данного узла корректного типа </summary>
-		public new pattern_deconstructor_call_params TypedClone()
-		{
-			return Clone() as pattern_deconstructor_call_params;
-		}
-
-		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
-		public override void FillParentsInDirectChilds()
-		{
-			if (parameters != null)
-			{
-				foreach (var child in parameters)
-					if (child != null)
-						child.Parent = this;
-			}
-		}
-
-		///<summary> Заполняет поля Parent во всем поддереве </summary>
-		public override void FillParentsInAllChilds()
-		{
-			FillParentsInDirectChilds();
-			if (parameters != null)
-			{
-				foreach (var child in parameters)
-					child?.FillParentsInAllChilds();
-			}
-		}
-
-		///<summary>
-		///Свойство для получения количества всех подузлов без элементов поля типа List
-		///</summary>
-		public override Int32 subnodes_without_list_elements_count
-		{
-			get
-			{
-				return 0;
-			}
-		}
-		///<summary>
-		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
-		///</summary>
-		public override Int32 subnodes_count
-		{
-			get
-			{
-				return 0 + (parameters == null ? 0 : parameters.Count);
-			}
-		}
-		///<summary>
-		///Индексатор для получения всех подузлов
-		///</summary>
-		public override syntax_tree_node this[Int32 ind]
-		{
-			get
-			{
-				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
-					throw new IndexOutOfRangeException();
-				Int32 index_counter=ind - 0;
-				if(parameters != null)
-				{
-					if(index_counter < parameters.Count)
-					{
-						return parameters[index_counter];
-					}
-				}
-				return null;
-			}
-			set
-			{
-				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
-					throw new IndexOutOfRangeException();
-				Int32 index_counter=ind - 0;
-				if(parameters != null)
-				{
-					if(index_counter < parameters.Count)
-					{
-						parameters[index_counter]= (pattern_deconstructor_parameter)value;
-						return;
-					}
-				}
-			}
-		}
-		///<summary>
-		///Метод для обхода дерева посетителем
-		///</summary>
-		///<param name="visitor">Объект-посетитель.</param>
-		///<returns>Return value is void</returns>
-		public override void visit(IVisitor visitor)
-		{
-			visitor.visit(this);
-		}
-
-	}
-
-
-	///<summary>
-	///
-	///</summary>
-	[Serializable]
-	public partial class deconstructor_pattern : pattern_node
-	{
-
-		///<summary>
-		///Конструктор без параметров.
-		///</summary>
-		public deconstructor_pattern()
-		{
-
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public deconstructor_pattern(pattern_deconstructor_call_params _parameters,type_definition _type)
-		{
-			this._parameters=_parameters;
-			this._type=_type;
-			FillParentsInDirectChilds();
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public deconstructor_pattern(pattern_deconstructor_call_params _parameters,type_definition _type,SourceContext sc)
-		{
-			this._parameters=_parameters;
-			this._type=_type;
-			source_context = sc;
-			FillParentsInDirectChilds();
-		}
-		protected pattern_deconstructor_call_params _parameters;
-		protected type_definition _type;
-
-		///<summary>
-		///Результат деконструирования
-		///</summary>
-		public pattern_deconstructor_call_params parameters
-		{
-			get
-			{
-				return _parameters;
-			}
-			set
-			{
-				_parameters=value;
-			}
-		}
-
-		///<summary>
-		///Деконструируемый тип
-		///</summary>
-		public type_definition type
-		{
-			get
-			{
-				return _type;
-			}
-			set
-			{
-				_type=value;
-			}
-		}
-
-
-		/// <summary> Создает копию узла </summary>
-		public override syntax_tree_node Clone()
-		{
-			deconstructor_pattern copy = new deconstructor_pattern();
-			copy.Parent = this.Parent;
-			if (source_context != null)
-				copy.source_context = new SourceContext(source_context);
-			if (parameters != null)
-			{
-				copy.parameters = (pattern_deconstructor_call_params)parameters.Clone();
-				copy.parameters.Parent = copy;
 			}
 			if (type != null)
 			{
@@ -49016,7 +48855,11 @@ namespace PascalABCCompiler.SyntaxTree
 		public override void FillParentsInDirectChilds()
 		{
 			if (parameters != null)
-				parameters.Parent = this;
+			{
+				foreach (var child in parameters)
+					if (child != null)
+						child.Parent = this;
+			}
 			if (type != null)
 				type.Parent = this;
 		}
@@ -49025,7 +48868,11 @@ namespace PascalABCCompiler.SyntaxTree
 		public override void FillParentsInAllChilds()
 		{
 			FillParentsInDirectChilds();
-			parameters?.FillParentsInAllChilds();
+			if (parameters != null)
+			{
+				foreach (var child in parameters)
+					child?.FillParentsInAllChilds();
+			}
 			type?.FillParentsInAllChilds();
 		}
 
@@ -49036,7 +48883,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 1;
 			}
 		}
 		///<summary>
@@ -49046,7 +48893,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 1 + (parameters == null ? 0 : parameters.Count);
 			}
 		}
 		///<summary>
@@ -49061,9 +48908,15 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						return parameters;
-					case 1:
 						return type;
+				}
+				Int32 index_counter=ind - 1;
+				if(parameters != null)
+				{
+					if(index_counter < parameters.Count)
+					{
+						return parameters[index_counter];
+					}
 				}
 				return null;
 			}
@@ -49074,11 +48927,17 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						parameters = (pattern_deconstructor_call_params)value;
-						break;
-					case 1:
 						type = (type_definition)value;
 						break;
+				}
+				Int32 index_counter=ind - 1;
+				if(parameters != null)
+				{
+					if(index_counter < parameters.Count)
+					{
+						parameters[index_counter]= (pattern_deconstructor_parameter)value;
+						return;
+					}
 				}
 			}
 		}
@@ -49113,9 +48972,9 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public pattern_deconstructor_parameter(ident _name,type_definition _type)
+		public pattern_deconstructor_parameter(ident _identifier,type_definition _type)
 		{
-			this._name=_name;
+			this._identifier=_identifier;
 			this._type=_type;
 			FillParentsInDirectChilds();
 		}
@@ -49123,28 +48982,28 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public pattern_deconstructor_parameter(ident _name,type_definition _type,SourceContext sc)
+		public pattern_deconstructor_parameter(ident _identifier,type_definition _type,SourceContext sc)
 		{
-			this._name=_name;
+			this._identifier=_identifier;
 			this._type=_type;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
-		protected ident _name;
+		protected ident _identifier;
 		protected type_definition _type;
 
 		///<summary>
 		///
 		///</summary>
-		public ident name
+		public ident identifier
 		{
 			get
 			{
-				return _name;
+				return _identifier;
 			}
 			set
 			{
-				_name=value;
+				_identifier=value;
 			}
 		}
 
@@ -49171,10 +49030,10 @@ namespace PascalABCCompiler.SyntaxTree
 			copy.Parent = this.Parent;
 			if (source_context != null)
 				copy.source_context = new SourceContext(source_context);
-			if (name != null)
+			if (identifier != null)
 			{
-				copy.name = (ident)name.Clone();
-				copy.name.Parent = copy;
+				copy.identifier = (ident)identifier.Clone();
+				copy.identifier.Parent = copy;
 			}
 			if (type != null)
 			{
@@ -49193,8 +49052,8 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
 		public override void FillParentsInDirectChilds()
 		{
-			if (name != null)
-				name.Parent = this;
+			if (identifier != null)
+				identifier.Parent = this;
 			if (type != null)
 				type.Parent = this;
 		}
@@ -49203,7 +49062,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public override void FillParentsInAllChilds()
 		{
 			FillParentsInDirectChilds();
-			name?.FillParentsInAllChilds();
+			identifier?.FillParentsInAllChilds();
 			type?.FillParentsInAllChilds();
 		}
 
@@ -49239,7 +49098,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						return name;
+						return identifier;
 					case 1:
 						return type;
 				}
@@ -49252,7 +49111,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						name = (ident)value;
+						identifier = (ident)value;
 						break;
 					case 1:
 						type = (type_definition)value;

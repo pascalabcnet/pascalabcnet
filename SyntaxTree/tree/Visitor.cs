@@ -1373,12 +1373,6 @@ namespace PascalABCCompiler.SyntaxTree
 		///<returns> Return value is void </returns>
 		void visit(pattern_cases _pattern_cases);
 		///<summary>
-		///Method to visit pattern_deconstructor_call_params.
-		///</summary>
-		///<param name="_pattern_deconstructor_call_params">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(pattern_deconstructor_call_params _pattern_deconstructor_call_params);
-		///<summary>
 		///Method to visit deconstructor_pattern.
 		///</summary>
 		///<param name="_deconstructor_pattern">Node to visit</param>

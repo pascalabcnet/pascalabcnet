@@ -6314,42 +6314,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(pattern_deconstructor_call_params _pattern_deconstructor_call_params)
-		{
-			bw.Write((Int16)228);
-			write_pattern_deconstructor_call_params(_pattern_deconstructor_call_params);
-		}
-
-		public void write_pattern_deconstructor_call_params(pattern_deconstructor_call_params _pattern_deconstructor_call_params)
-		{
-			write_syntax_tree_node(_pattern_deconstructor_call_params);
-			if (_pattern_deconstructor_call_params.parameters == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				bw.Write(_pattern_deconstructor_call_params.parameters.Count);
-				for(Int32 ssyy_i = 0; ssyy_i < _pattern_deconstructor_call_params.parameters.Count; ssyy_i++)
-				{
-					if (_pattern_deconstructor_call_params.parameters[ssyy_i] == null)
-					{
-						bw.Write((byte)0);
-					}
-					else
-					{
-						bw.Write((byte)1);
-						_pattern_deconstructor_call_params.parameters[ssyy_i].visit(this);
-					}
-				}
-			}
-		}
-
-
 		public void visit(deconstructor_pattern _deconstructor_pattern)
 		{
-			bw.Write((Int16)229);
+			bw.Write((Int16)228);
 			write_deconstructor_pattern(_deconstructor_pattern);
 		}
 
@@ -6363,7 +6330,19 @@ namespace PascalABCCompiler.SyntaxTree
 			else
 			{
 				bw.Write((byte)1);
-				_deconstructor_pattern.parameters.visit(this);
+				bw.Write(_deconstructor_pattern.parameters.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _deconstructor_pattern.parameters.Count; ssyy_i++)
+				{
+					if (_deconstructor_pattern.parameters[ssyy_i] == null)
+					{
+						bw.Write((byte)0);
+					}
+					else
+					{
+						bw.Write((byte)1);
+						_deconstructor_pattern.parameters[ssyy_i].visit(this);
+					}
+				}
 			}
 			if (_deconstructor_pattern.type == null)
 			{
@@ -6379,21 +6358,21 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
 		{
-			bw.Write((Int16)230);
+			bw.Write((Int16)229);
 			write_pattern_deconstructor_parameter(_pattern_deconstructor_parameter);
 		}
 
 		public void write_pattern_deconstructor_parameter(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
 		{
 			write_syntax_tree_node(_pattern_deconstructor_parameter);
-			if (_pattern_deconstructor_parameter.name == null)
+			if (_pattern_deconstructor_parameter.identifier == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				_pattern_deconstructor_parameter.name.visit(this);
+				_pattern_deconstructor_parameter.identifier.visit(this);
 			}
 			if (_pattern_deconstructor_parameter.type == null)
 			{
