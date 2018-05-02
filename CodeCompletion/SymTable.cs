@@ -5101,6 +5101,8 @@ namespace CodeCompletion
             else
                 for (int i = 0; i < gen_args.Count; i++)
                 {
+                    if (gen_args[i] == null)
+                        continue;
                     if (i < gen_args.Count)
                         sc.generic_params.Add(gen_args[i].si.name);
                     sc.instances.Add(gen_args[i]);
