@@ -311,17 +311,27 @@ uses_clause
    			if (parsertools.build_tree_for_formatter)
    			{
 	        	if ($1 == null)
-	        		$1 = new uses_closure($3 as uses_list,@$);
-	        	else ($1 as uses_closure).AddUsesList($3 as uses_list,@$);
-				$$ = $1;
+                {
+	        		$$ = new uses_closure($3 as uses_list,@$);
+                }
+	        	else {
+                    ($1 as uses_closure).AddUsesList($3 as uses_list,@$);
+                    $$ = $1;
+                }
    			}
    			else 
    			{
 	        	if ($1 == null)
-	        		$1 = $3;
-	        	else ($1 as uses_list).AddUsesList($3 as uses_list,@$);
-				$$ = $1;
-				$$.source_context = @$;
+                {
+                    $$ = $3;
+                    $$.source_context = @$;
+                }
+	        	else 
+                {
+                    ($1 as uses_list).AddUsesList($3 as uses_list,@$);
+                    $$ = $1;
+                    $$.source_context = @$;
+                }
 			}
 		}
     ;
@@ -1457,8 +1467,8 @@ class_attributes1
 		}
 	| class_attributes1 class_attribute
 		{
-			$1 = ((class_attribute)$1) | ((class_attribute)$2);
-			$$ = $1;
+			$$  = ((class_attribute)$1) | ((class_attribute)$2);
+			//$$ = $1;
 		}
 	;
 		
@@ -1712,6 +1722,8 @@ method_decl_withattr
     | attribute_declarations method_decl
         {  
 			($2 as declaration).attributes = $1 as attribute_list;
+            if ($2 is procedure_definition && ($2 as procedure_definition).proc_header != null)
+                ($2 as procedure_definition).proc_header.attributes = $1 as attribute_list;
 			$$ = $2;
      }
     ;
