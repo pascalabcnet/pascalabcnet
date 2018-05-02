@@ -219,7 +219,9 @@ namespace PascalABCCompiler.PascalABCNewParser
 
         public override syntax_tree_node BuildTreeInExprMode(string FileName, string Text)
         {
-            // LineCorrection = -1 не забыть
+            if (Text == string.Empty)
+                return null;
+                // LineCorrection = -1 не забыть
             string origText = Text;
             Text = String.Concat("<<expression>>", Environment.NewLine, Text);
             localparserhelper = new GPPGParserHelper(Errors, Warnings, FileName);

@@ -331,6 +331,8 @@ namespace PascalABCCompiler.TreeConverter
             */
            if (_from == null_type_node.get_type_node())
            	return StringResources.Get("NIL_WITH_VALUE_TYPES_NOT_ALLOWED");
+            if (_from is delegated_methods && (_from as delegated_methods).empty_param_method != null && (_from as delegated_methods).empty_param_method.simple_function_node.return_value_type is undefined_type)
+                return string.Format(StringResources.Get("RETURN_TYPE_UNDEFINED_{0}"), (_from as delegated_methods).empty_param_method.simple_function_node.name);
             return (string.Format(StringResources.Get("CAN_NOT_CONVERT_TYPES_FROM_{0}_TO_{1}"), _from.PrintableName, _to.PrintableName));
         }
 

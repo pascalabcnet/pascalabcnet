@@ -8872,7 +8872,7 @@ begin
     end;
 end;
 
-/// Возвращает индекс последнего минимального элемента
+/// Возвращает индекс последнего максимального элемента
 function LastIndexMax<T>(Self: IList<T>): integer; extensionmethod; where T: System.IComparable<T>;
 begin
   var max := Self[Self.Count-1];

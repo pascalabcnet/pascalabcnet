@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 using PascalABCCompiler.TreeConverter;
 using PascalABCCompiler.TreeRealization;
+using System.Linq;
 
 namespace PascalABCCompiler.TreeRealization
 {
@@ -27,7 +28,7 @@ namespace PascalABCCompiler.TreeRealization
         /// </summary>
         /// <param name="name">Имя элемента для поиска.</param>
         /// <returns>Информация о найденном символе. null, если ни чего не найдено.</returns>
-		public abstract SymbolInfoList find(string name);
+		public abstract List<SymbolInfo> find(string name);
 
         /// <summary>
         /// Имя пространства имен.
@@ -447,7 +448,7 @@ namespace PascalABCCompiler.TreeRealization
         /// </summary>
         /// <param name="name">Искомое имя.</param>
         /// <returns>Информация о найденом символе. null, если ни чего не найдена.</returns>
-		public override SymbolInfoList find(string name)
+		public override List<SymbolInfo> find(string name)
 		{
             return _scope.Find(name);//c,cc,c,cc
         }
@@ -456,7 +457,7 @@ namespace PascalABCCompiler.TreeRealization
             var temp = _scope.FindOnlyInScope(name);//c,cc,c,cc
             return temp?.First();
         }
-        public SymbolInfoList findOnlyInNamespace(string name)
+        public List<SymbolInfo> findOnlyInNamespace(string name)
         {
             return _scope.FindOnlyInScope(name);//c,cc,c,cc
         }
@@ -481,7 +482,7 @@ namespace PascalABCCompiler.TreeRealization
 			visitor.visit(this);
 		}
 
-		SemanticTree.ICommonNamespaceNode[] SemanticTree.ICommonNamespaceNode.nested_namespaces
+        SemanticTree.ICommonNamespaceNode[] SemanticTree.ICommonNamespaceNode.nested_namespaces
 		{
 			get
 			{
@@ -671,14 +672,14 @@ namespace PascalABCCompiler.TreeRealization
         /// </summary>
         /// <param name="name">Имя для поиска.</param>
         /// <returns>Первый элемент списка найденных имен. null если ни чего не найдено.</returns>
-		public override SymbolInfoList find(string name)
+		public override List<SymbolInfo> find(string name)
 		{
             bool is_ns = NetHelper.NetHelper.IsNetNamespace(_name + "." + name);
-            SymbolInfoList sil = null;
+            List<SymbolInfo> sil = null;
             if (is_ns)
             {
                 compiled_namespace_node cnn = compiled_namespace_node.get_compiled_namespace(_name + "." + name, _tcst);
-                sil = new SymbolInfoList(new SymbolInfo(cnn));
+                sil = new List<SymbolInfo> { new SymbolInfo(cnn) };
             }
             else
             {
@@ -693,7 +694,7 @@ namespace PascalABCCompiler.TreeRealization
                 Type t = NetHelper.NetHelper.FindType(_name + "." + name);
                 if (t != null)
                 {
-                    sil = new SymbolInfoList(new SymbolInfo(compiled_type_node.get_type_node(t,_tcst)));
+                    sil = new List<SymbolInfo> { new SymbolInfo(compiled_type_node.get_type_node(t, _tcst)) };
                 }
                 else
                 {
@@ -705,12 +706,12 @@ namespace PascalABCCompiler.TreeRealization
                         {
                             type_node tn = NetHelper.NetHelper.FindCompiledPascalType(_name + "." + name);
                             if (tn != null)
-                                sil = new SymbolInfoList(new SymbolInfo(tn));
+                                sil = new List<SymbolInfo> { new SymbolInfo(tn) };
                             else
                             {
                                 template_class tc = NetHelper.NetHelper.FindCompiledTemplateType(_name + "." + name);
                                 if (tc != null)
-                                    sil = new SymbolInfoList(new SymbolInfo(tc));
+                                    sil = new List<SymbolInfo> { new SymbolInfo(tc) };
                             }
                         }
                 	}

@@ -8,6 +8,7 @@ using TreeConverter;
 using SymbolTable;
 using PascalABCCompiler.TreeConverter;
 using PascalABCCompiler.TreeRealization;
+using System.Collections.Generic;
 
 namespace PascalABCCompiler.PCU
 {
@@ -36,11 +37,11 @@ namespace PascalABCCompiler.PCU
             this.pr = pr;
         }
 
-        public override SymbolInfoList Find(string name)
+        public override List<SymbolInfo> Find(string name)
         {
-            SymbolInfoList sil = SymbolTable.Find(this, name);
+            List<SymbolInfo> sil = SymbolTable.Find(this, name);
             if (sil == null) return null;
-            foreach(SymbolInfo tsi in sil.list)
+            foreach(SymbolInfo tsi in sil)
             {
                 if (tsi.sym_info.semantic_node_type == semantic_node_type.wrap_def)
                 {
@@ -54,12 +55,12 @@ namespace PascalABCCompiler.PCU
             return sil;
         }
 
-        public override SymbolInfoList FindOnlyInScope(string name)
+        public override List<SymbolInfo> FindOnlyInScope(string name)
         {
-            SymbolInfoList sil = SymbolTable.FindOnlyInScope(this, name, false);
+            List<SymbolInfo> sil = SymbolTable.FindOnlyInScope(this, name, false);
             
             if (sil == null) return sil;
-            foreach(SymbolInfo tsi in sil.list)
+            foreach(SymbolInfo tsi in sil)
             {
                 if (tsi.sym_info.semantic_node_type == semantic_node_type.wrap_def)
                 {
@@ -74,7 +75,7 @@ namespace PascalABCCompiler.PCU
         }
 
         //нужно для перегруженных методов
-        public SymbolInfoList FindWithoutCreation(string name)
+        public List<SymbolInfo> FindWithoutCreation(string name)
         {
             return SymbolTable.FindOnlyInType(this, name);
         }
@@ -91,11 +92,11 @@ namespace PascalABCCompiler.PCU
             this.pr = pr;
         }
 
-        public override SymbolInfoList Find(string name)
+        public override List<SymbolInfo> Find(string name)
         {
-            SymbolInfoList sil = SymbolTable.Find(this, name);
+            List<SymbolInfo> sil = SymbolTable.Find(this, name);
             if (sil == null) return null;
-            foreach(SymbolInfo tsi in sil.list)
+            foreach(SymbolInfo tsi in sil)
             {
                 if (tsi.sym_info.semantic_node_type == semantic_node_type.wrap_def)
                 {
@@ -109,12 +110,12 @@ namespace PascalABCCompiler.PCU
             return sil;
         }
 
-        public override SymbolInfoList FindOnlyInScope(string name)
+        public override List<SymbolInfo> FindOnlyInScope(string name)
         {
-            SymbolInfoList sil = SymbolTable.FindOnlyInScope(this, name, false);
+            List<SymbolInfo> sil = SymbolTable.FindOnlyInScope(this, name, false);
 
             if (sil == null) return sil;
-            foreach(SymbolInfo tsi in sil.list)
+            foreach(SymbolInfo tsi in sil)
             {
                 if (tsi.sym_info.semantic_node_type == semantic_node_type.wrap_def)
                 {
@@ -129,7 +130,7 @@ namespace PascalABCCompiler.PCU
         }
 
         //нужно для перегруженных методов
-        public SymbolInfoList FindWithoutCreation(string name)
+        public List<SymbolInfo> FindWithoutCreation(string name)
         {
             return SymbolTable.FindOnlyInType(this, name);
         }
@@ -147,19 +148,19 @@ namespace PascalABCCompiler.PCU
             this.pr = pr;
         }
 
-        public override SymbolInfoList Find(string name)
+        public override List<SymbolInfo> Find(string name)
         {
-            SymbolInfoList sil = SymbolTable.Find(this, name);
+            List<SymbolInfo> sil = SymbolTable.Find(this, name);
             if (PartialScope != null)
             {
                 if (sil == null)
                     sil = SymbolTable.Find(PartialScope, name);
                 else
-                    sil.Add(SymbolTable.Find(PartialScope, name));
+                    sil.AddRange(SymbolTable.Find(PartialScope, name));
             }
             if (sil == null) return sil;
             //если это заглушка, то разворачиваем сущность
-            foreach (SymbolInfo tsi in sil.list)
+            foreach (SymbolInfo tsi in sil)
             {
                 if (tsi.sym_info.semantic_node_type == semantic_node_type.wrap_def)
                 {
@@ -172,9 +173,9 @@ namespace PascalABCCompiler.PCU
 
         public void RestoreMembers(string name)
         {
-            SymbolInfoList sil = SymbolTable.FindOnlyInThisClass(this, name);
+            List<SymbolInfo> sil = SymbolTable.FindOnlyInThisClass(this, name);
             //если это заглушка, то разворачиваем сущность
-            foreach(SymbolInfo tsi in sil.list)
+            foreach(SymbolInfo tsi in sil)
             {
                 if (tsi.sym_info.semantic_node_type == semantic_node_type.wrap_def)
                 {
@@ -192,12 +193,12 @@ namespace PascalABCCompiler.PCU
             }
         }
 
-        public override SymbolInfoList Find(string name, Scope CurrentScope)
+        public override List<SymbolInfo> Find(string name, Scope CurrentScope)
         {
             return Find(name);
         }
 
-        public SymbolInfoList FindWithoutCreation(string name)
+        public List<SymbolInfo> FindWithoutCreation(string name)
         {
             return SymbolTable.FindOnlyInScope(this,name, false);
         }
@@ -306,13 +307,13 @@ namespace PascalABCCompiler.PCU
             this.offset = offset;
         }
 
-        public override SymbolInfoList find_in_type(string name, bool no_search_in_extension_methods = false)
+        public override List<SymbolInfo> find_in_type(string name, bool no_search_in_extension_methods = false)
         {
             return find_in_type(name, null, no_search_in_extension_methods);
         }
-        public override SymbolInfoList find_in_type(string name, Scope CurrentScope, bool no_search_in_extension_methods = false)
+        public override List<SymbolInfo> find_in_type(string name, Scope CurrentScope, bool no_search_in_extension_methods = false)
         {
-            SymbolInfoList sil = scope.FindOnlyInType(name, CurrentScope);
+            List<SymbolInfo> sil = scope.FindOnlyInType(name, CurrentScope);
             if (sil == null)
             {
                 if (base_type != null && base_type.IsDelegate)
@@ -320,7 +321,7 @@ namespace PascalABCCompiler.PCU
                 return sil;
             }
                 
-            foreach(SymbolInfo si in sil.list)
+            foreach(SymbolInfo si in sil)
             {
                 if (si.sym_info.semantic_node_type == semantic_node_type.wrap_def)
                 {

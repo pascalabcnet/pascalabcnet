@@ -9,7 +9,7 @@ namespace PascalABCCompiler.TreeRealization
     [Serializable]
     public abstract class unit_node : definition_node
     {
-        public abstract PascalABCCompiler.TreeConverter.SymbolInfoList find_only_in_namespace(string name);
+        public abstract List<TreeConverter.SymbolInfo> find_only_in_namespace(string name);
 
         public override general_node_type general_node_type
         {
@@ -29,7 +29,7 @@ namespace PascalABCCompiler.TreeRealization
         {
             this.namespace_name = namespace_name;
         }
-        public override PascalABCCompiler.TreeConverter.SymbolInfoList find_only_in_namespace(string name)
+        public override List<TreeConverter.SymbolInfo> find_only_in_namespace(string name)
         {
             throw new NotSupportedException();
         }
@@ -69,7 +69,7 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
-        public override PascalABCCompiler.TreeConverter.SymbolInfoList find_only_in_namespace(string name)
+        public override List<TreeConverter.SymbolInfo> find_only_in_namespace(string name)
         {
             return _dotNetScope.Find(name);
         }
@@ -235,7 +235,7 @@ namespace PascalABCCompiler.TreeRealization
 			}
 		}
 
-        public override PascalABCCompiler.TreeConverter.SymbolInfoList find_only_in_namespace(string name)
+        public override List<TreeConverter.SymbolInfo> find_only_in_namespace(string name)
 		{
 			return _scope.FindOnlyInScope(name);
 		}

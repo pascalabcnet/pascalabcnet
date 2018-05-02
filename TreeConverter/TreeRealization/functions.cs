@@ -593,7 +593,17 @@ namespace PascalABCCompiler.TreeRealization
 	[Serializable]
 	public abstract class common_function_node : function_node, SemanticTree.ICommonFunctionNode
 	{
-        public override string ToString() => "(" + GetType().Name + " " + name + "," + scope + ")";
+        public override string ToString()
+        {
+            System.Text.StringBuilder str = new System.Text.StringBuilder();
+            str.Append((return_variable != null ? "function " : "procedure ") + name + "(");
+            foreach (var par in parameters)
+                str.Append(par.ToString() + ";");
+            str.Append(")");
+            if (return_variable != null)
+                str.Append(": " + return_value_type);
+            return str.ToString();
+        }
 
         protected string _name;
 
@@ -786,7 +796,7 @@ namespace PascalABCCompiler.TreeRealization
         /// </summary>
         /// <param name="name">Имя символа.</param>
         /// <returns>Информация о найленном символе. null, если ни чего не найдено.</returns>
-        public PascalABCCompiler.TreeConverter.SymbolInfoList find(string name, SymbolTable.Scope CurrentScope)
+        public List<TreeConverter.SymbolInfo> find(string name, SymbolTable.Scope CurrentScope)
         {
             return _scope.Find(name, CurrentScope);
         }

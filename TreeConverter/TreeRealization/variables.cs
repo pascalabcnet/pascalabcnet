@@ -251,7 +251,7 @@ namespace PascalABCCompiler.TreeRealization
 			visitor.visit(this);
 		}
 
-		SemanticTree.ICommonFunctionNode SemanticTree.IFunctionMemberNode.function
+        SemanticTree.ICommonFunctionNode SemanticTree.IFunctionMemberNode.function
 		{
 			get
 			{
@@ -421,7 +421,7 @@ namespace PascalABCCompiler.TreeRealization
 			visitor.visit(this);
 		}
 
-		public SemanticTree.ICommonNamespaceNode comprehensive_namespace
+        public SemanticTree.ICommonNamespaceNode comprehensive_namespace
 		{
 			get
 			{
@@ -549,7 +549,7 @@ namespace PascalABCCompiler.TreeRealization
 			visitor.visit(this);
 		}
 
-		public SemanticTree.ICommonTypeNode common_comprehensive_type
+        public SemanticTree.ICommonTypeNode common_comprehensive_type
 		{
 			get
 			{
@@ -942,7 +942,7 @@ namespace PascalABCCompiler.TreeRealization
 			visitor.visit(this);
 		}
 
-		SemanticTree.ICommonFunctionNode SemanticTree.ICommonParameterNode.common_function
+        SemanticTree.ICommonFunctionNode SemanticTree.ICommonParameterNode.common_function
 		{
 			get
 			{
