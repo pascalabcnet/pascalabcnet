@@ -2584,6 +2584,7 @@ namespace PascalABCCompiler.Parsers
             {
                 keyword = KeywordKind.CommonKeyword;
             }
+
             else keyword = KeywordKind.None;
         }
 		
@@ -2680,6 +2681,12 @@ namespace PascalABCCompiler.Parsers
                         {
                             bound = i + 1;
                             TestForKeyword(Text, i, ref bound, punkt_sym, out keyw);
+                            for (int j = tmp; j > bound; j--)
+                            {
+                                sb.Insert(0, Text[j]);
+                            }
+                            i = bound;
+                            continue;
                         }
                         else if (i >= 0 && Text[i] == '\'') return "";
                         i = tmp;
