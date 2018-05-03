@@ -4068,6 +4068,9 @@ namespace CodeCompletion
                     return true;
                 else
                     tmp = tmp.baseScope;
+            SymScope ss = this.FindNameOnlyInType("operator implicit");
+            if (ss is ProcScope && (ss as ProcScope).return_type == ts)
+                return true;
             return false;
         }
 
