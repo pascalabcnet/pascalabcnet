@@ -1452,31 +1452,46 @@ namespace PascalABCCompiler.NETGenerator
         private void ConvertCommonGenericInstanceTypeMembers(ICommonGenericTypeInstance value)
         {
             Type t = helper.GetTypeReference(value).tp;
+            var genericInstances = new List<ICommonMethodNode>();
+            Func<ICommonMethodNode, bool> processInstances = (icmn) =>
+            {
+                if (icmn.is_constructor)
+                {
+                    MethInfo mi = helper.GetConstructor(icmn);
+                    if (mi != null)
+                    {
+                        ConstructorInfo cnstr = mi.cnstr;
+                        ConstructorInfo ci = TypeBuilder.GetConstructor(t, cnstr);
+                        helper.AddConstructor(value.used_members[icmn] as IFunctionNode, ci);
+                    }
+                    return true;
+                }
+                else
+                {
+                    var methtmp = helper.GetMethod(icmn);
+                    if (methtmp == null)
+                        return true;
+                    MethodInfo meth = methtmp.mi;
+                    if (meth.GetType().FullName == "System.Reflection.Emit.MethodOnTypeBuilderInstantiation")
+                        meth = meth.GetGenericMethodDefinition();
+                    MethodInfo mi = TypeBuilder.GetMethod(t, meth);
+                    helper.AddMethod(value.used_members[icmn] as IFunctionNode, mi);
+                    return true;
+                }
+            };
             foreach (IDefinitionNode dn in value.used_members.Keys)
             {
                 ICommonMethodNode icmn = dn as ICommonMethodNode;
                 if (icmn != null)
                 {
-                    if (icmn.is_constructor)
+                    if (icmn.comperehensive_type.is_generic_type_instance)
                     {
-                        MethInfo mi = helper.GetConstructor(icmn);
-                        if (mi != null)
-                        {
-                            ConstructorInfo cnstr = mi.cnstr;
-                            ConstructorInfo ci = TypeBuilder.GetConstructor(t, cnstr);
-                            helper.AddConstructor(value.used_members[dn] as IFunctionNode, ci);
-                        }
+                        genericInstances.Add(icmn);
                         continue;
                     }
-                    else
-                    {
-                        MethodInfo meth = helper.GetMethod(icmn).mi;
-                        if (meth.GetType().FullName == "System.Reflection.Emit.MethodOnTypeBuilderInstantiation")
-                            meth = meth.GetGenericMethodDefinition();
-                        MethodInfo mi = TypeBuilder.GetMethod(t, meth);
-                        helper.AddMethod(value.used_members[dn] as IFunctionNode, mi);
+
+                    if (processInstances(icmn))
                         continue;
-                    }
                 }
                 ICommonClassFieldNode icfn = dn as ICommonClassFieldNode;
                 if (icfn != null)
@@ -1497,6 +1512,11 @@ namespace PascalABCCompiler.NETGenerator
                     }
                     continue;
                 }
+            }
+
+            foreach (ICommonMethodNode icmn in genericInstances)
+            {
+                processInstances(icmn);
             }
         }
 
