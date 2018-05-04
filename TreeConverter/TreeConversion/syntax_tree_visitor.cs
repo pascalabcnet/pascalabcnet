@@ -12161,6 +12161,7 @@ namespace PascalABCCompiler.TreeConverter
                 if (_procedure_definition.proc_body != null)
                     if (!is_pinvoke(_procedure_definition.proc_body))
                         AddError(get_location(_procedure_definition.proc_body), "EXPECTED_EXTERNAL_STATEMENT");
+                must_visit_body = true;
             }
 
             if (contextChanger.IsActive())
@@ -12448,8 +12449,8 @@ namespace PascalABCCompiler.TreeConverter
             {
             	make_attributes_for_declaration(_function_header, context.top_function);
             }
-            if (context.converted_type != null && has_dll_import_attribute(context.top_function))
-                AddError(get_dll_import_attribute(context.top_function).location, "DLLIMPORT_ATTRIBUTE_CANNOT_BE_APPLIED_TO_METHOD");
+            //if (context.converted_type != null && has_dll_import_attribute(context.top_function))
+            //    AddError(get_dll_import_attribute(context.top_function).location, "DLLIMPORT_ATTRIBUTE_CANNOT_BE_APPLIED_TO_METHOD");
             if (_function_header.name.class_name != null) 
             	with_class_name = true;
             if (_function_header.class_keyword && !has_static_attr(_function_header.proc_attributes.proc_attributes))

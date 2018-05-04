@@ -4068,6 +4068,9 @@ namespace CodeCompletion
                     return true;
                 else
                     tmp = tmp.baseScope;
+            SymScope ss = this.FindNameOnlyInType("operator implicit");
+            if (ss is ProcScope && (ss as ProcScope).return_type == ts)
+                return true;
             return false;
         }
 
@@ -5101,6 +5104,8 @@ namespace CodeCompletion
             else
                 for (int i = 0; i < gen_args.Count; i++)
                 {
+                    if (gen_args[i] == null)
+                        continue;
                     if (i < gen_args.Count)
                         sc.generic_params.Add(gen_args[i].si.name);
                     sc.instances.Add(gen_args[i]);
