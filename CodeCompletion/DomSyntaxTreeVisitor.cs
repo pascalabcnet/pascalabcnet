@@ -1811,7 +1811,9 @@ namespace CodeCompletion
             }
             catch (Exception e)
             {
-
+#if DEBUG
+                File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
             }
             if (returned_scope != null /*&& cnst_val.prim_val != null*/)
             {
@@ -1840,7 +1842,9 @@ namespace CodeCompletion
             }
             catch (Exception e)
             {
-
+#if DEBUG
+                File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
             }
             ElementScope es = new ElementScope(new SymInfo(_typed_const_definition.const_name.name, SymbolKind.Constant, _typed_const_definition.const_name.name), cnst_type, cnst_val.prim_val != null?cnst_val.prim_val: _typed_const_definition.const_value.ToString(), cur_scope);
             cur_scope.AddName(_typed_const_definition.const_name.name, es);
@@ -1989,7 +1993,10 @@ namespace CodeCompletion
                 is_extensions_unit = true;
             }
             CodeCompletionController.comp_modules[_unit_module.file_name] = this.converter;
+            DateTime start_time = DateTime.Now;
+            System.Diagnostics.Debug.WriteLine("intellisense parsing interface started " + System.Convert.ToInt32((DateTime.Now - start_time).TotalMilliseconds));
             _unit_module.interface_part.visit(this);
+            System.Diagnostics.Debug.WriteLine("intellisense parsing interface ended " + System.Convert.ToInt32((DateTime.Now - start_time).TotalMilliseconds));
             foreach (string s in namespaces)
             {
             	if (!ns_cache.ContainsKey(s))
@@ -1999,8 +2006,11 @@ namespace CodeCompletion
                   ns_cache[s] = s;
             	}
             }
+            start_time = DateTime.Now;
+            System.Diagnostics.Debug.WriteLine("intellisense parsing implementation started "+ System.Convert.ToInt32((DateTime.Now - start_time).TotalMilliseconds));
             if (_unit_module.implementation_part != null)
                 _unit_module.implementation_part.visit(this);
+            System.Diagnostics.Debug.WriteLine("intellisense parsing implementation ended " + System.Convert.ToInt32((DateTime.Now - start_time).TotalMilliseconds));
             if (_unit_module.initialization_part != null)
             {
             	SymScope tmp = cur_scope;
@@ -3814,7 +3824,9 @@ namespace CodeCompletion
                             }
                             catch (Exception e)
                             {
-
+#if DEBUG
+                                File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
                             }
                         }
                         if (i == s.name.idents.Count - 1 && i > 0 /*&& PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(str)*/)
@@ -3843,7 +3855,9 @@ namespace CodeCompletion
                     }
                     catch (Exception e)
                     {
-
+#if DEBUG
+                        File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
                     }
                 }
 
@@ -4441,22 +4455,24 @@ namespace CodeCompletion
             //List<Scope> netScopes = new List<Scope>();
             //PascalABCCompiler.NetHelper.NetScope ns=new PascalABCCompiler.NetHelper.NetScope(unl,_as,tcst);
             if (_c_module.compiler_directives != null)
-            foreach (PascalABCCompiler.SyntaxTree.compiler_directive dir in _c_module.compiler_directives)
-            {
-                if (dir.Name.text == "reference")
+                foreach (PascalABCCompiler.SyntaxTree.compiler_directive dir in _c_module.compiler_directives)
                 {
-                    try
+                    if (dir.Name.text == "reference")
                     {
-                		//System.Reflection.Assembly assm = System.Reflection.Assembly.LoadFrom(get_assembly_path(dir.Directive.text,_c_module.file_name));
-                    	System.Reflection.Assembly assm = PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(get_assembly_path(dir.Directive.text,_c_module.file_name));
-                		PascalABCCompiler.NetHelper.NetHelper.init_namespaces(assm);
-                    }
-                    catch (Exception e)
-                    {
-                    	
+                        try
+                        {
+                            //System.Reflection.Assembly assm = System.Reflection.Assembly.LoadFrom(get_assembly_path(dir.Directive.text,_c_module.file_name));
+                            System.Reflection.Assembly assm = PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(get_assembly_path(dir.Directive.text, _c_module.file_name));
+                            PascalABCCompiler.NetHelper.NetHelper.init_namespaces(assm);
+                        }
+                        catch (Exception e)
+                        {
+#if DEBUG
+                            File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
+                        }
                     }
                 }
-            }
             cur_scope = new InterfaceUnitScope(new SymInfo("", SymbolKind.Block,"module"),null);
             doc = new document(_c_module.file_name);
             cur_scope.loc = get_location(_c_module);

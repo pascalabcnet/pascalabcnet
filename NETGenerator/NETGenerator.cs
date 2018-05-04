@@ -1452,31 +1452,46 @@ namespace PascalABCCompiler.NETGenerator
         private void ConvertCommonGenericInstanceTypeMembers(ICommonGenericTypeInstance value)
         {
             Type t = helper.GetTypeReference(value).tp;
+            var genericInstances = new List<ICommonMethodNode>();
+            Func<ICommonMethodNode, bool> processInstances = (icmn) =>
+            {
+                if (icmn.is_constructor)
+                {
+                    MethInfo mi = helper.GetConstructor(icmn);
+                    if (mi != null)
+                    {
+                        ConstructorInfo cnstr = mi.cnstr;
+                        ConstructorInfo ci = TypeBuilder.GetConstructor(t, cnstr);
+                        helper.AddConstructor(value.used_members[icmn] as IFunctionNode, ci);
+                    }
+                    return true;
+                }
+                else
+                {
+                    var methtmp = helper.GetMethod(icmn);
+                    if (methtmp == null)
+                        return true;
+                    MethodInfo meth = methtmp.mi;
+                    if (meth.GetType().FullName == "System.Reflection.Emit.MethodOnTypeBuilderInstantiation")
+                        meth = meth.GetGenericMethodDefinition();
+                    MethodInfo mi = TypeBuilder.GetMethod(t, meth);
+                    helper.AddMethod(value.used_members[icmn] as IFunctionNode, mi);
+                    return true;
+                }
+            };
             foreach (IDefinitionNode dn in value.used_members.Keys)
             {
                 ICommonMethodNode icmn = dn as ICommonMethodNode;
                 if (icmn != null)
                 {
-                    if (icmn.is_constructor)
+                    if (icmn.comperehensive_type.is_generic_type_instance)
                     {
-                        MethInfo mi = helper.GetConstructor(icmn);
-                        if (mi != null)
-                        {
-                            ConstructorInfo cnstr = mi.cnstr;
-                            ConstructorInfo ci = TypeBuilder.GetConstructor(t, cnstr);
-                            helper.AddConstructor(value.used_members[dn] as IFunctionNode, ci);
-                        }
+                        genericInstances.Add(icmn);
                         continue;
                     }
-                    else
-                    {
-                        MethodInfo meth = helper.GetMethod(icmn).mi;
-                        if (meth.GetType().FullName == "System.Reflection.Emit.MethodOnTypeBuilderInstantiation")
-                            meth = meth.GetGenericMethodDefinition();
-                        MethodInfo mi = TypeBuilder.GetMethod(t, meth);
-                        helper.AddMethod(value.used_members[dn] as IFunctionNode, mi);
+
+                    if (processInstances(icmn))
                         continue;
-                    }
                 }
                 ICommonClassFieldNode icfn = dn as ICommonClassFieldNode;
                 if (icfn != null)
@@ -1497,6 +1512,11 @@ namespace PascalABCCompiler.NETGenerator
                     }
                     continue;
                 }
+            }
+
+            foreach (ICommonMethodNode icmn in genericInstances)
+            {
+                processInstances(icmn);
             }
         }
 
@@ -5869,8 +5889,12 @@ namespace PascalABCCompiler.NETGenerator
             if (value.function_code is IStatementsListNode)
             {
                 IStatementNode[] statements = (value.function_code as IStatementsListNode).statements;
-                if (statements.Length > 0 && statements[0] is IExternalStatementNode)
+                if (statements.Length > 0 && (statements[0] is IExternalStatementNode || statements[0] is IPInvokeStatementNode))
+                {
+                    MakeAttribute(value);
                     return;
+                }
+                    
             }
             
             num_scope++;
@@ -6385,13 +6409,21 @@ namespace PascalABCCompiler.NETGenerator
             else
                 ret_type = helper.GetTypeReference(meth.return_value_type).tp;
             Type[] param_types = GetParamTypes(meth);//получаем параметры процедуры
-
-            IExternalStatementNode esn = (IExternalStatementNode)statements[0];
-            string module_name = Tools.ReplaceAllKeys(esn.module_name, StandartDirectories);
-            MethodBuilder methb = cur_type.DefinePInvokeMethod(meth.name, module_name, esn.name,
-                                                               MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.PinvokeImpl | MethodAttributes.HideBySig,
-                                                               CallingConventions.Standard, ret_type, param_types, CallingConvention.Winapi,
-                                                               CharSet.Ansi);//определяем PInvoke-метод
+            MethodBuilder methb = null;
+            if (statements[0] is IExternalStatementNode)
+            {
+                IExternalStatementNode esn = (IExternalStatementNode)statements[0];
+                string module_name = Tools.ReplaceAllKeys(esn.module_name, StandartDirectories);
+                methb = cur_type.DefinePInvokeMethod(meth.name, module_name, esn.name,
+                                                                   MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.PinvokeImpl | MethodAttributes.HideBySig,
+                                                                   CallingConventions.Standard, ret_type, param_types, CallingConvention.Winapi,
+                                                                   CharSet.Ansi);//определяем PInvoke-метод
+            }
+            else
+            {
+                methb = cur_type.DefineMethod(meth.name, MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.PinvokeImpl | MethodAttributes.HideBySig, ret_type, param_types);//определяем PInvoke-метод
+                methb.SetImplementationFlags(MethodImplAttributes.PreserveSig);
+            }
             methb.SetImplementationFlags(MethodImplAttributes.PreserveSig);
             helper.AddMethod(meth, methb);
             IParameterNode[] parameters = meth.parameters;
@@ -6420,7 +6452,7 @@ namespace PascalABCCompiler.NETGenerator
             {
                 IStatementsListNode sl = (IStatementsListNode)value.function_code;
                 IStatementNode[] statements = sl.statements;
-                if (statements.Length > 0 && statements[0] is IExternalStatementNode)
+                if (statements.Length > 0 && (statements[0] is IExternalStatementNode || statements[0] is IPInvokeStatementNode))
                 {
                     ConvertExternalMethod(value);
                     return;

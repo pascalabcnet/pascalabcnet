@@ -659,7 +659,8 @@ namespace CodeCompletion
             if (sc.topScope == null) return false;
             while (tmp != null)
             {
-                if (tmp == sc.topScope) return true;
+                if (tmp == sc.topScope || sc.topScope != null && sc.topScope.topScope == tmp)
+                    return true;
                 tmp = tmp.topScope;
             }
             return false;

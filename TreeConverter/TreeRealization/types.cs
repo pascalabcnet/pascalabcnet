@@ -2003,7 +2003,7 @@ namespace PascalABCCompiler.TreeRealization
             {
                 return base_generic_instance.ConvertSymbolInfo(sil);
             }
-            else //if (si == null)
+            else // if (sil == null)
             {
                 if (ImplementingInterfaces != null)
                 {
