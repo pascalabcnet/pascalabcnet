@@ -1942,6 +1942,15 @@ namespace PascalABCCompiler.TreeRealization
         public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, bool no_search_in_extension_methods = false)
         {
             List<SymbolInfo> sil = Scope.FindOnlyInType(name, CurrentScope);//:=,create,x
+
+            // SSM test!!!
+            /*if (base_type is compiled_generic_instance_type_node && name == "IndexOf")
+            {
+                sil = (base_type as compiled_generic_instance_type_node).original_generic.find_in_type(name, CurrentScope);
+                return sil;
+            }*/
+                
+
             if (sil == null && base_type is compiled_type_node && string.Compare(name, "create", true) != 0)
             {
                 sil = (base_type as compiled_type_node).find_in_type(name, CurrentScope);
