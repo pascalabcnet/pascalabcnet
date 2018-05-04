@@ -1511,6 +1511,10 @@ namespace PascalABCCompiler.TreeRealization
             {
                 cmn.return_value_type = generic_convertions.determine_type(cmn.return_value_type, meth_inst_pars, true);
             }
+            if (orig_fn is common_function_node)
+            {
+                cmn.return_variable = (orig_fn as common_function_node)?.return_variable;
+            }
             return cmn;
         }
 
