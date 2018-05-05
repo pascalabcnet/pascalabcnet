@@ -1669,22 +1669,27 @@ namespace PascalABCCompiler.TreeRealization
                                 (inst_type != cct && inst_type.original_generic != cct));
 
 
-                            MethodInfo[] meths = cct._compiled_type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
+                            /*MethodInfo[] meths = cct._compiled_type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
                                 BindingFlags.Static | BindingFlags.Instance);
                             int num = System.Array.IndexOf(meths, cfn.method_info);
-
-                            // Проба - ерунда SSM 30.04.18
-                            /*Type ct = ((compiled_type_node)inst_type)._compiled_type;
-                            var args = ct.GetGenericArguments();
-                            var mm = cfn.method_info.MakeGenericMethod(args);
-                            var res = compiled_function_node.get_compiled_method(mm);
-                            return res;*/
 
                             //!!! прикольно, но индексы в meths и instmeths не совпадают!!!
 
                             MethodInfo[] instmeths = ((compiled_type_node)inst_type)._compiled_type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
                                 BindingFlags.Static | BindingFlags.Instance);
-                            MethodInfo mi = instmeths[num];
+
+                            //var mt1 = meths.Select(m => m.MetadataToken).OrderBy(x => x);
+                            //var mt2 = instmeths.Select(m => m.MetadataToken).OrderBy(x => x);
+
+
+                            MethodInfo mi = instmeths[num];*/
+
+                            var mdtok = cfn.method_info.MetadataToken;
+                            MethodInfo[] instmeths = ((compiled_type_node)inst_type)._compiled_type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
+                                BindingFlags.Static | BindingFlags.Instance);
+
+                            MethodInfo mi = System.Array.Find(instmeths, m => m.MetadataToken == mdtok);
+
                             return compiled_function_node.get_compiled_method(mi);
                         }
                         else
