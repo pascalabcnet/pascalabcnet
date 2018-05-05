@@ -1166,7 +1166,7 @@ namespace CodeCompletion
         public ImplementationUnitScope(SymInfo si, SymScope topScope)
             : base(si, topScope)
         {
-            
+            //this.symbol_table = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
         }
 
         public override bool InUsesRange(int line, int column)
@@ -3641,7 +3641,7 @@ namespace CodeCompletion
                         case SymbolKind.Enum: this.baseScope = TypeTable.get_compiled_type(new SymInfo(typeof(Enum).Name, SymbolKind.Enum, typeof(Enum).FullName), typeof(Enum)); break;
                     }
             }
-
+            //this.symbol_table = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
             //this.ht = new Hashtable(CaseInsensitiveHashCodeProvider.Default,CaseInsensitiveComparer.Default);
             this.members = new List<SymScope>();
             this.indexers = new List<TypeScope>();
@@ -5094,7 +5094,7 @@ namespace CodeCompletion
                         }
                         else
                         {
-                            if (i < gen_args.Count)
+                            if (i < gen_args.Count && gen_args[i] != null)
                                 sc.generic_params.Add(gen_args[i].si.name);
                             sc.instances.Add(this.instances[i].GetInstance(gen_args));
                         }
