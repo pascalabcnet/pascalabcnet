@@ -88,9 +88,9 @@ namespace PascalABCCompiler.SyntaxTree
         /// </summary>
         /// <param name="from">Исходное значение</param>
         /// <param name="to">Новое значение</param>
-        public void RenameIdentifierInDescendants(string from, string to)
+        public void RenameIdentifierInDescendants(string from, string to, bool includingThis = true)
         {
-            foreach (var identifier in DescendantNodes().OfType<ident>().Where(x => x.name == from))
+            foreach (var identifier in DescendantNodes(TraversalType.PostOrder, null, includingThis).OfType<ident>().Where(x => x.name == from))
                 identifier.name = to;
         }
 
