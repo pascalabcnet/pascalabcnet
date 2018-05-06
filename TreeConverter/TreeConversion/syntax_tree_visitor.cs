@@ -3473,6 +3473,8 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.class_definition _class_definition)
         {
+            if (_class_definition.attribute != class_attribute.None && _class_definition.body == null)
+                ErrorsList.Add(new SimpleSemanticError(get_location(_class_definition), "CLASS_ATTRIBUTE_NOT_ALLOWED_IN_CLASS_PREDEFINTIONS"));
             if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Sealed) == SyntaxTree.class_attribute.Sealed)
             {
                 context.converted_type.SetIsSealed(true);
