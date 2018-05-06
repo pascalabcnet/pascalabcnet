@@ -563,7 +563,7 @@ namespace PascalABCCompiler
                 	is_break_stmt = false;
                 sn = stmt.statements[i];
                 VisitStatement(sn);
-                if (is_break_stmt  && !has_goto && i < stmt.statements.Count - 1 && stmt.statements[i + 1].semantic_node_type != semantic_node_type.empty_statement)
+                if (is_break_stmt  && !has_goto && i < stmt.statements.Count - 1 && stmt.statements[i + 1].semantic_node_type != semantic_node_type.empty_statement && stmt.statements[i + 1].location != null)
                     warns.Add(new UnreachableCodeDetected(stmt.statements[i + 1].location));
                 if (!(i < stmt.statements.Count - 1 && stmt.statements[i + 1].semantic_node_type == semantic_node_type.empty_statement))
                 	is_break_stmt = false;

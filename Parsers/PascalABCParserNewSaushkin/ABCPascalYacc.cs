@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  IVAN-PC
-// DateTime: 08.04.2018 15:51:57
+// DateTime: 02.05.2018 20:34:18
 // UserName: Ivan
 // Input file <ABCPascal.y>
 
@@ -2520,17 +2520,27 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
    			if (parsertools.build_tree_for_formatter)
    			{
 	        	if (ValueStack[ValueStack.Depth-4].stn == null)
-	        		ValueStack[ValueStack.Depth-4].stn = new uses_closure(ValueStack[ValueStack.Depth-2].stn as uses_list,CurrentLocationSpan);
-	        	else (ValueStack[ValueStack.Depth-4].stn as uses_closure).AddUsesList(ValueStack[ValueStack.Depth-2].stn as uses_list,CurrentLocationSpan);
-				CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-4].stn;
+                {
+	        		CurrentSemanticValue.stn = new uses_closure(ValueStack[ValueStack.Depth-2].stn as uses_list,CurrentLocationSpan);
+                }
+	        	else {
+                    (ValueStack[ValueStack.Depth-4].stn as uses_closure).AddUsesList(ValueStack[ValueStack.Depth-2].stn as uses_list,CurrentLocationSpan);
+                    CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-4].stn;
+                }
    			}
    			else 
    			{
 	        	if (ValueStack[ValueStack.Depth-4].stn == null)
-	        		ValueStack[ValueStack.Depth-4].stn = ValueStack[ValueStack.Depth-2].stn;
-	        	else (ValueStack[ValueStack.Depth-4].stn as uses_list).AddUsesList(ValueStack[ValueStack.Depth-2].stn as uses_list,CurrentLocationSpan);
-				CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-4].stn;
-				CurrentSemanticValue.stn.source_context = CurrentLocationSpan;
+                {
+                    CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-2].stn;
+                    CurrentSemanticValue.stn.source_context = CurrentLocationSpan;
+                }
+	        	else 
+                {
+                    (ValueStack[ValueStack.Depth-4].stn as uses_list).AddUsesList(ValueStack[ValueStack.Depth-2].stn as uses_list,CurrentLocationSpan);
+                    CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-4].stn;
+                    CurrentSemanticValue.stn.source_context = CurrentLocationSpan;
+                }
 			}
 		}
         break;
@@ -3618,8 +3628,8 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 288: // class_attributes1 -> class_attributes1, class_attribute
 {
-			ValueStack[ValueStack.Depth-2].ob = ((class_attribute)ValueStack[ValueStack.Depth-2].ob) | ((class_attribute)ValueStack[ValueStack.Depth-1].ob);
-			CurrentSemanticValue.ob = ValueStack[ValueStack.Depth-2].ob;
+			CurrentSemanticValue.ob  = ((class_attribute)ValueStack[ValueStack.Depth-2].ob) | ((class_attribute)ValueStack[ValueStack.Depth-1].ob);
+			//$$ = $1;
 		}
         break;
       case 289: // class_or_interface_keyword -> tkClass
@@ -3861,6 +3871,8 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 342: // method_decl_withattr -> attribute_declarations, method_decl
 {  
 			(ValueStack[ValueStack.Depth-1].stn as declaration).attributes = ValueStack[ValueStack.Depth-2].stn as attribute_list;
+            if (ValueStack[ValueStack.Depth-1].stn is procedure_definition && (ValueStack[ValueStack.Depth-1].stn as procedure_definition).proc_header != null)
+                (ValueStack[ValueStack.Depth-1].stn as procedure_definition).proc_header.attributes = ValueStack[ValueStack.Depth-2].stn as attribute_list;
 			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn;
      }
         break;

@@ -454,8 +454,8 @@ namespace CodeCompletion
         
         private bool hasUsesCycle(SymScope unit)
         {
-            if (this.Name == "PABCSystem")
-                return false;
+            if (unit.Name == "PABCSystem")
+                return true;
             if (this.used_units != null)
         		for (int i = 0; i < this.used_units.Count; i++)
                 {
@@ -1166,7 +1166,7 @@ namespace CodeCompletion
         public ImplementationUnitScope(SymInfo si, SymScope topScope)
             : base(si, topScope)
         {
-            
+            //this.symbol_table = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
         }
 
         public override bool InUsesRange(int line, int column)
@@ -3641,7 +3641,7 @@ namespace CodeCompletion
                         case SymbolKind.Enum: this.baseScope = TypeTable.get_compiled_type(new SymInfo(typeof(Enum).Name, SymbolKind.Enum, typeof(Enum).FullName), typeof(Enum)); break;
                     }
             }
-
+            //this.symbol_table = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
             //this.ht = new Hashtable(CaseInsensitiveHashCodeProvider.Default,CaseInsensitiveComparer.Default);
             this.members = new List<SymScope>();
             this.indexers = new List<TypeScope>();
@@ -4068,6 +4068,9 @@ namespace CodeCompletion
                     return true;
                 else
                     tmp = tmp.baseScope;
+            SymScope ss = this.FindNameOnlyInType("operator implicit");
+            if (ss is ProcScope && (ss as ProcScope).return_type == ts)
+                return true;
             return false;
         }
 
@@ -4236,7 +4239,21 @@ namespace CodeCompletion
         public override TypeScope GetElementType()
         {
             if (elementType != null) return elementType;
-            if (baseScope != null) return baseScope.GetElementType();
+            TypeScope elem_ts = null;
+            if (baseScope != null)
+            {
+                elem_ts = baseScope.GetElementType();
+                if (elem_ts != null)
+                    return elem_ts;
+            }
+                
+            if (implemented_interfaces != null)
+                foreach (TypeScope ts in implemented_interfaces)
+                {
+                    elem_ts = ts.GetElementType();
+                    if (elem_ts != null)
+                        return elem_ts;
+                }
             return null;
         }
 
@@ -5091,7 +5108,7 @@ namespace CodeCompletion
                         }
                         else
                         {
-                            if (i < gen_args.Count)
+                            if (i < gen_args.Count && gen_args[i] != null)
                                 sc.generic_params.Add(gen_args[i].si.name);
                             sc.instances.Add(this.instances[i].GetInstance(gen_args));
                         }
@@ -5101,6 +5118,8 @@ namespace CodeCompletion
             else
                 for (int i = 0; i < gen_args.Count; i++)
                 {
+                    if (gen_args[i] == null)
+                        continue;
                     if (i < gen_args.Count)
                         sc.generic_params.Add(gen_args[i].si.name);
                     sc.instances.Add(gen_args[i]);

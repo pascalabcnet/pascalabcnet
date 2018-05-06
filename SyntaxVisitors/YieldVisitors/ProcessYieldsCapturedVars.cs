@@ -561,6 +561,7 @@ namespace SyntaxVisitors
                     // Метод класса описан вне класса
 
                     var decls = UpperTo<declarations>();
+                    
                     var classMembers = decls.list
                         .Select(decl => decl as type_declarations)
                         .Where(tdecls => tdecls != null)
@@ -569,7 +570,18 @@ namespace SyntaxVisitors
                         .Select(td => td.type_def as class_definition)
                         .Where(_cd => _cd != null)
                         .SelectMany(_cd => _cd.body.class_def_blocks);
-
+                    implementation_node impl = UpperTo<implementation_node>();
+                    if (impl != null)
+                    {
+                        classMembers = classMembers.Union((impl.Parent as unit_module).interface_part.interface_definitions.list
+                        .Select(decl => decl as type_declarations)
+                        .Where(tdecls => tdecls != null)
+                        .SelectMany(tdecls => tdecls.types_decl)
+                        .Where(td => td.type_name.name == GetClassName(pd).name)
+                        .Select(td => td.type_def as class_definition)
+                        .Where(_cd => _cd != null)
+                        .SelectMany(_cd => _cd.body.class_def_blocks));
+                    }
 
                     // Вставляем предописание метода-хелпера 
                     var helperPredefHeader = ObjectCopier.Clone(helper.proc_header);
@@ -792,7 +804,12 @@ namespace SyntaxVisitors
         private bool IsExtensionMethod(procedure_definition pd)
         {
             var tdecls = UpperTo<declarations>().defs.OfType<type_declarations>().SelectMany(tds => tds.types_decl);
-
+            implementation_node impl = UpperTo<implementation_node>();
+            if (impl != null)
+            {
+                tdecls = tdecls.Union((impl.Parent as unit_module).interface_part.interface_definitions.defs.OfType<type_declarations>().SelectMany(tds => tds.types_decl));
+            }
+            
             var isExtension = pd.proc_header.proc_attributes.proc_attributes.Any(attr => attr.name == "extensionmethod");
 
             if (isExtension)

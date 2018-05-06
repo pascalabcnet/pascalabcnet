@@ -405,7 +405,7 @@ namespace CodeCompletion
                 foreach (ident s in _typed_parametres.idents.idents)
                 {
                     IBaseScope ss = entry_scope.FindScopeByLocation(s.source_context.begin_position.line_num, s.source_context.begin_position.column_num);
-                    if (ss != null && ss.IsEqual(founded_scope))
+                    if (ss != null && ss.IsEqual(founded_scope) && founded_scope.SymbolInfo.Name == s.name)
                         pos_list.Add(get_position(s));
                 }
             if (_typed_parametres.vars_type != null)

@@ -221,6 +221,7 @@ type
     procedure SetPP(p: Point3D);
     begin 
       Cam.Position := p; 
+      //Cam.Ani
       {if p<>(0,0,0) then
         Cam.LookDirection := Cam.Position.Multiply(-1).ToVector3D
       else Cam.LookDirection := V3D(1,0,0);}
@@ -1233,8 +1234,7 @@ type
   EllipsoidT = class(ObjectWithMaterial3D)
   private
     function Model := inherited model as EllipsoidVisual3D;
-    procedure SetRXP(r: real) := Model.RadiusX := r;
-    procedure SetRX(r: real) := Invoke(SetRXP, r);
+    procedure SetRX(r: real) := Invoke(procedure(r: real)->Model.RadiusX := r, r);
     function GetRX: real := InvokeReal(()->Model.RadiusX);
     procedure SetRYP(r: real) := Model.RadiusY := r;
     procedure SetRY(r: real) := Invoke(SetRYP, r);
@@ -1484,7 +1484,7 @@ type
     function GetT: string := InvokeString(()->model.Text);
     
     procedure SetFSP(r: real) := model.FontSize := r;
-    procedure SetFS(r: real) := Invoke(SetFS, r); 
+    procedure SetFS(r: real) := Invoke(SetFSP, r); 
     function GetFS: real := InvokeReal(()->model.FontSize);
   protected  
     function CreateObject: Object3D; override := new BillboardTextT(X, Y, Z, Text, FontSize);
