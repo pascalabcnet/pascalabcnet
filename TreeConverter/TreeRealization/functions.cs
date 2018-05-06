@@ -63,6 +63,18 @@ namespace PascalABCCompiler.TreeRealization
 	[Serializable]
 	public abstract class function_node : definition_node, SemanticTree.IFunctionNode
 	{
+        public override string ToString()
+        {
+            System.Text.StringBuilder str = new System.Text.StringBuilder();
+            str.Append((return_value_type != null ? "function " : "procedure ") + name + "(");
+            foreach (var par in parameters)
+                str.Append(par.ToString() + ";");
+            str.Append(")");
+            if (return_value_type != null)
+                str.Append(": " + return_value_type);
+            return str.ToString();
+        }
+
         private parameter_list _parameters = new parameter_list();
 
 		private type_node _ret_type;
@@ -593,18 +605,6 @@ namespace PascalABCCompiler.TreeRealization
 	[Serializable]
 	public abstract class common_function_node : function_node, SemanticTree.ICommonFunctionNode
 	{
-        public override string ToString()
-        {
-            System.Text.StringBuilder str = new System.Text.StringBuilder();
-            str.Append((return_variable != null ? "function " : "procedure ") + name + "(");
-            foreach (var par in parameters)
-                str.Append(par.ToString() + ";");
-            str.Append(")");
-            if (return_variable != null)
-                str.Append(": " + return_value_type);
-            return str.ToString();
-        }
-
         protected string _name;
 
         protected readonly local_variable_list _var_defs = new local_variable_list();

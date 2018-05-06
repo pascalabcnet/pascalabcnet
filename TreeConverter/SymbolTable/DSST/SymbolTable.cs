@@ -154,15 +154,9 @@ namespace SymbolTable
 	//при создании добавляет себя в vSymbolTable
 	public class Scope:BaseScope
 	{
-        public string ScopeName()
-        {
-            var s = GetType().Name;
-            if (s == "UnitInterfaceScope")
-                return "GLOBAL";
-            return s;
-        }
-        public override string ToString() => TopScope==null? ScopeName(): ScopeName() + "->" + TopScope;
-        
+        public string Name;
+        public override string ToString() => Name == ""? GetType().Name : Name;
+
         public SymbolsDictionary Symbols;
         public List<Scope> InternalScopes;
 
@@ -172,7 +166,7 @@ namespace SymbolTable
         public Scope TopScope;
 
 		public int ScopeNum;
-        public Scope(DSSymbolTable vSymbolTable, Scope TopScope)
+        public Scope(DSSymbolTable vSymbolTable, Scope TopScope, string Name)
 		{
 			SymbolTable=vSymbolTable;
             this.TopScope = null;
@@ -180,6 +174,8 @@ namespace SymbolTable
                 this.TopScope = TopScope;
                 TopScope.InternalScopes.Add(this);
             }
+
+            this.Name = Name;
 
             ScopeNum = SymbolTable.GetNewScopeNum();
             SymbolTable.ScopeTable.Add(this);
@@ -251,7 +247,7 @@ namespace SymbolTable
     public class BlockScope : Scope
     {
         public BlockScope(DSSymbolTable vSymbolTable, Scope TopScope)
-            : base(vSymbolTable, TopScope)
+            : base(vSymbolTable, TopScope, "")
 		{
         }
     }
@@ -259,7 +255,7 @@ namespace SymbolTable
 	public class LambdaScope : Scope  //lroman//
     {
         public LambdaScope(DSSymbolTable vSymbolTable, Scope TopScope)
-            : base(vSymbolTable, TopScope)
+            : base(vSymbolTable, TopScope, "")
         {
         }
     }
@@ -286,8 +282,8 @@ namespace SymbolTable
 	public class UnitPartScope:Scope
 	{
 		public Scope[] TopScopeArray;
-		public UnitPartScope(DSSymbolTable vSymbolTable,Scope TopScope,Scope[] vTopScopeArray):
-			base(vSymbolTable,TopScope)
+		public UnitPartScope(DSSymbolTable vSymbolTable,Scope TopScope,Scope[] vTopScopeArray, string Name):
+			base(vSymbolTable,TopScope, Name)
 		{
 			TopScopeArray=vTopScopeArray;
 		}
@@ -295,22 +291,22 @@ namespace SymbolTable
 	public class UnitInterfaceScope:UnitPartScope
 	{
         
-		public UnitInterfaceScope(DSSymbolTable vSymbolTable,Scope TopScope,Scope[] vTopScopeArray):
-			base(vSymbolTable,TopScope,vTopScopeArray)
+		public UnitInterfaceScope(DSSymbolTable vSymbolTable,Scope TopScope,Scope[] vTopScopeArray, string Name):
+			base(vSymbolTable, TopScope, vTopScopeArray, Name)
 		{
 		}
 	}
 	public class UnitImplementationScope:UnitPartScope
 	{
-        public UnitImplementationScope(DSSymbolTable vSymbolTable, Scope TopScope, Scope[] vTopScopeArray)
+        public UnitImplementationScope(DSSymbolTable vSymbolTable, Scope TopScope, Scope[] vTopScopeArray, string Name)
             :
-			base(vSymbolTable,TopScope,vTopScopeArray)
+			base(vSymbolTable, TopScope, vTopScopeArray, Name)
 		{}
 	}
     public class NamespaceScope: UnitInterfaceScope
     {
-        public NamespaceScope(DSSymbolTable vSymbolTable, Scope TopScope, Scope[] vTopScopeArray):
-			base(vSymbolTable,TopScope,vTopScopeArray)
+        public NamespaceScope(DSSymbolTable vSymbolTable, Scope TopScope, Scope[] vTopScopeArray, string Name):
+			base(vSymbolTable, TopScope, vTopScopeArray, Name)
 		{
         }
     }
@@ -319,9 +315,9 @@ namespace SymbolTable
         public ClassScope PartialScope;
 
         public Scope BaseClassScope;
-		
-		public ClassScope(DSSymbolTable vSymbolTable,Scope TopScope,Scope BaseClassScope):
-			base(vSymbolTable,TopScope)
+
+        public ClassScope(DSSymbolTable vSymbolTable,Scope TopScope,Scope BaseClassScope, string Name):
+			base(vSymbolTable,TopScope, Name)
 		{
             this.BaseClassScope = null;
 			if (BaseClassScope != null) 
@@ -429,16 +425,16 @@ namespace SymbolTable
             }
         }
 
-        public InterfaceScope(DSSymbolTable vSymbolTable, Scope TopScope, Scope[] vTopInterfaceScopeArray)
+        public InterfaceScope(DSSymbolTable vSymbolTable, Scope TopScope, Scope[] vTopInterfaceScopeArray, string Name)
             :
-            base(vSymbolTable, TopScope, null)
+            base(vSymbolTable, TopScope, null, Name)
         {
             _TopInterfaceScopeArray = vTopInterfaceScopeArray;
         }
 
-        public InterfaceScope(DSSymbolTable vSymbolTable, Scope TopScope, Scope BaseClassScope, Scope[] vTopInterfaceScopeArray)
+        public InterfaceScope(DSSymbolTable vSymbolTable, Scope TopScope, Scope BaseClassScope, Scope[] vTopInterfaceScopeArray, string Name)
             :
-            base(vSymbolTable, TopScope, BaseClassScope)
+            base(vSymbolTable, TopScope, BaseClassScope, Name)
         {
             _TopInterfaceScopeArray = vTopInterfaceScopeArray;
         }
@@ -449,9 +445,10 @@ namespace SymbolTable
 	{
         public Scope MyClass;
 
-		public ClassMethodScope(DSSymbolTable vSymbolTable,Scope TopScope,Scope MyClass):
-			base(vSymbolTable,TopScope)
+		public ClassMethodScope(DSSymbolTable vSymbolTable,Scope TopScope,Scope MyClass, string Name):
+			base(vSymbolTable,TopScope, Name)
 		{
+            this.Name = Name;
             this.MyClass = null;
 			if (MyClass != null) 
 				this.MyClass = MyClass;
@@ -555,50 +552,39 @@ namespace SymbolTable
         {
             return new LambdaScope(this, TopScope);
         }
-		public Scope CreateScope(Scope TopScope)
+		public Scope CreateScope(Scope TopScope, string Name = "")
 		{
-			return new Scope(this,TopScope);
+			return new Scope(this, TopScope, Name);
 		}
-		public ClassScope CreateClassScope(Scope TopScope,Scope BaseClass)
+		public ClassScope CreateClassScope(Scope TopScope,Scope BaseClass, string Name = "")
 		{
-            return new ClassScope(this, TopScope, BaseClass);	
+            return new ClassScope(this, TopScope, BaseClass, Name);	
 		}
         //ssyy
-        public InterfaceScope CreateInterfaceScope(Scope TopScope, Scope[] TopInterfaces)
+        public InterfaceScope CreateInterfaceScope(Scope TopScope, Scope[] TopInterfaces, string Name = "")
         {
-            return new InterfaceScope(this, TopScope, TopInterfaces);
+            return new InterfaceScope(this, TopScope, TopInterfaces, Name);
         }
-        public InterfaceScope CreateInterfaceScope(Scope TopScope, Scope BaseClass, Scope[] TopInterfaces)
+        public InterfaceScope CreateInterfaceScope(Scope TopScope, Scope BaseClass, Scope[] TopInterfaces, string Name = "")
         {
-            return new InterfaceScope(this, TopScope, BaseClass, TopInterfaces);
-        }
-        public ClassScope CreateInterfaceOrClassScope(bool is_interface)
-        {
-            if (is_interface)
-            {
-                return CreateInterfaceScope(null, null);
-            }
-            else
-            {
-                return CreateClassScope(null, null);
-            }
+            return new InterfaceScope(this, TopScope, BaseClass, TopInterfaces, Name);
         }
         //\ssyy
-        public UnitInterfaceScope CreateUnitInterfaceScope(Scope[] UsedUnits)
+        public UnitInterfaceScope CreateUnitInterfaceScope(Scope[] UsedUnits, string Name = "")
 		{
-			return new UnitInterfaceScope(this,null,UsedUnits);
+			return new UnitInterfaceScope(this, null, UsedUnits, Name);
 		}
-        public NamespaceScope CreateNamespaceScope(Scope[] UsedUnits, Scope TopScope)
+        public NamespaceScope CreateNamespaceScope(Scope[] UsedUnits, Scope TopScope, string Name = "")
         {
-            return new NamespaceScope(this, TopScope, UsedUnits);
+            return new NamespaceScope(this, TopScope, UsedUnits, Name);
         }
-        public UnitImplementationScope CreateUnitImplementationScope(Scope InterfaceScope,Scope[] UsedUnits)
+        public UnitImplementationScope CreateUnitImplementationScope(Scope InterfaceScope,Scope[] UsedUnits, string Name = "")
 		{
-			return new UnitImplementationScope(this,InterfaceScope,UsedUnits);
+			return new UnitImplementationScope(this, InterfaceScope, UsedUnits, Name);
 		}
-		public ClassMethodScope CreateClassMethodScope(Scope TopScope,Scope MyClass)
+		public ClassMethodScope CreateClassMethodScope(Scope TopScope,Scope MyClass, string Name = "")
 		{
-			return new ClassMethodScope(this,TopScope,MyClass);
+			return new ClassMethodScope(this, TopScope, MyClass, Name);
 		}
 		#endregion
 

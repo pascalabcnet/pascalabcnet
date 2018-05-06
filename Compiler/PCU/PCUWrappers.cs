@@ -32,9 +32,10 @@ namespace PascalABCCompiler.PCU
         protected PCUReader pr;
 
         public WrappedUnitInterfaceScope(PCUReader pr)
-            : base(PascalABCCompiler.SystemLibrary.SystemLibrary.symtab, null, new Scope[0] { })
+            : base(PascalABCCompiler.SystemLibrary.SystemLibrary.symtab, null, new Scope[0] { }, "")
         {
             this.pr = pr;
+            Name = Path.GetFileName(pr.FileName);
         }
 
         public override List<SymbolInfo> Find(string name)
@@ -87,7 +88,7 @@ namespace PascalABCCompiler.PCU
         protected PCUReader pr;
 
         public WrappedUnitImplementationScope(PCUReader pr, Scope TopScope)
-            : base(PascalABCCompiler.SystemLibrary.SystemLibrary.symtab, TopScope, new Scope[0] { })
+            : base(PascalABCCompiler.SystemLibrary.SystemLibrary.symtab, TopScope, new Scope[0] { }, "")
         {
             this.pr = pr;
         }
@@ -143,7 +144,7 @@ namespace PascalABCCompiler.PCU
         protected PCUReader pr;
         
         public WrappedClassScope(PCUReader pr, Scope top_scope, Scope up_scope)
-            : base(PascalABCCompiler.SystemLibrary.SystemLibrary.symtab, top_scope, up_scope)
+            : base(SystemLibrary.SystemLibrary.symtab, top_scope, up_scope, "")
         {
             this.pr = pr;
         }

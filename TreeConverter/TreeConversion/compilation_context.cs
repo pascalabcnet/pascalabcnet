@@ -736,7 +736,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
-                scope = convertion_data_and_alghoritms.symbol_table.CreateScope(comprehensive_namespace.scope);
+                scope = convertion_data_and_alghoritms.symbol_table.CreateScope(comprehensive_namespace.scope, "namespace " + namespace_name);
             }
             _cmn = new common_namespace_node(comprehensive_namespace, cont_unit, namespace_name, scope, loc);
 			cont_unit.namespaces.AddElement(_cmn);
@@ -1022,7 +1022,7 @@ namespace PascalABCCompiler.TreeConverter
         	SymbolInfo si = _ctn.find_first_in_type(compiler_string_consts.noteq_name);
         	if (si.sym_info is common_method_node)
         		return;
-        	SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope,_ctn.scope);
+        	SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope,_ctn.scope, si.ToString());
         	common_method_node cmn = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.noteq_name),SystemLibrary.SystemLibrary.bool_type,null,_ctn,
         	                                                SemanticTree.polymorphic_state.ps_static,SemanticTree.field_access_level.fal_public,scope);
         	cmn.IsOperator = true;
@@ -1054,7 +1054,7 @@ namespace PascalABCCompiler.TreeConverter
         	SymbolInfo si = _ctn.find_first_in_type(compiler_string_consts.eq_name);
         	if (si.sym_info is common_method_node)
         		return;
-        	SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope,_ctn.scope);
+        	SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope,_ctn.scope, si.ToString());
         	common_method_node cmn = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.eq_name),SystemLibrary.SystemLibrary.bool_type,null,_ctn,
         	                                                SemanticTree.polymorphic_state.ps_static,SemanticTree.field_access_level.fal_public,scope);
         	cmn.IsOperator = true;
@@ -1171,7 +1171,7 @@ namespace PascalABCCompiler.TreeConverter
             if (_ctn != null)
             {
                 common_method_node cmmn;
-                SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(topScope, _ctn.Scope);
+                SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(topScope, _ctn.Scope, "lambda " + name);
                 //TODO:сделать static и virtual.
                 //TODO: interface and implementation scopes.
                 cmmn = new common_method_node(name, def_loc, _ctn, SemanticTree.polymorphic_state.ps_common, _fal, scope);
@@ -1186,7 +1186,7 @@ namespace PascalABCCompiler.TreeConverter
             else
             {
                 common_namespace_function_node cnfnn;
-                SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateScope(topScope);
+                SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateScope(topScope, "lambda " + name);
                 cnfnn = new common_namespace_function_node(name, def_loc, _cmn, scope);
                 _cmn.functions.AddElement(cnfnn);
                 _last_created_function = new SymbolInfo(cnfnn);
@@ -1217,7 +1217,7 @@ namespace PascalABCCompiler.TreeConverter
 				case block_type.function_block:
 				{
                     common_function_node top_func = _func_stack.top();
-                    SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateScope(top_func.scope);
+                    SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateScope(top_func.scope, "function " + name);
 					common_in_function_function_node ciffn =new common_in_function_function_node(name,def_loc,top_func,scope);
 					top_func.functions_nodes_list.AddElement(ciffn);
                     _last_created_function = new SymbolInfo(ciffn);
@@ -1231,7 +1231,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (!extension_method)
                     {
                         common_method_node cmmn;
-                        SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope, _ctn.Scope);
+                        SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope, _ctn.Scope, name=="create"? "constructor " + _ctn.Scope : "method " + name + " from " + _ctn.Scope);
                         //TODO:сделать static и virtual.
                         //TODO: interface and implementation scopes.
                         cmmn = new common_method_node(name, def_loc, _ctn, SemanticTree.polymorphic_state.ps_common, _fal, scope);
@@ -1246,7 +1246,7 @@ namespace PascalABCCompiler.TreeConverter
                     else
                     {
                         common_namespace_function_node cnfnn;
-                        SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope, _ctn.scope);
+                        SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope, _ctn.scope, name);
                         cnfnn = new common_namespace_function_node(name, def_loc, _cmn, scope);
                         //_cmn.functions.AddElement(cnfnn);
                         syntax_tree_visitor.compiled_unit.namespaces[0].functions.AddElement(cnfnn);
@@ -1262,7 +1262,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     //string cname = compiler_string_consts.GetConnectedFunctionName(_compiled_tn.name, name);
                     common_namespace_function_node cnfnn;
-                    SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope, _compiled_tn.scope);
+                    SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope, _compiled_tn.scope, name);
                     cnfnn = new common_namespace_function_node(name, def_loc, _cmn, scope);
                     //_cmn.functions.AddElement(cnfnn);
                     syntax_tree_visitor.compiled_unit.namespaces[0].functions.AddElement(cnfnn);
@@ -1279,7 +1279,7 @@ namespace PascalABCCompiler.TreeConverter
 				case block_type.namespace_block:
 				{
 					common_namespace_function_node cnfnn;
-                    SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateScope(_cmn.scope);
+                    SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateScope(_cmn.scope, name);
 					cnfnn=new common_namespace_function_node(name,def_loc,_cmn,scope);
 					_cmn.functions.AddElement(cnfnn);
 					_last_created_function= new SymbolInfo(cnfnn);
@@ -1312,11 +1312,11 @@ namespace PascalABCCompiler.TreeConverter
             //(ssyy) Если создаётся интерфейс, то создаём ему специальный вид области видимости
             if (type_is_interface)
             {
-                scope = convertion_data_and_alghoritms.symbol_table.CreateInterfaceScope(_cmn.scope, null);
+                scope = convertion_data_and_alghoritms.symbol_table.CreateInterfaceScope(_cmn.scope, null, "interface " + name);
             }
             else
             {
-                scope = convertion_data_and_alghoritms.symbol_table.CreateClassScope(_cmn.scope, null);
+                scope = convertion_data_and_alghoritms.symbol_table.CreateClassScope(_cmn.scope, null, "class " + name);
             }
 			common_type_node tctn=new common_type_node(name,SemanticTree.type_access_level.tal_public,_cmn,
                 scope,def_loc);
@@ -1342,7 +1342,7 @@ namespace PascalABCCompiler.TreeConverter
             while (_cmn.scope.Find(string.Format(nameTemplate, n)) != null)
                 n++;
             string name = string.Format(nameTemplate, n);
-            SymbolTable.ClassScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassScope(_cmn.scope, null);
+            SymbolTable.ClassScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassScope(_cmn.scope, null, name);
             common_type_node tctn = new common_type_node(name, SemanticTree.type_access_level.tal_internal, _cmn,
                 scope, def_loc);
             _cmn.scope.AddSymbol(name, new SymbolInfo(tctn));
@@ -1378,7 +1378,7 @@ namespace PascalABCCompiler.TreeConverter
             string name = compiler_string_consts.GetTypedFileTypeName(elem_type.name);
             type_node base_type = SystemLibrary.SystemLibInitializer.TypedFileType.sym_info as type_node;
             //check_name_free(name, def_loc);
-            SymbolTable.ClassScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassScope(_cmn.scope, null);
+            SymbolTable.ClassScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassScope(_cmn.scope, null, name);
             common_type_node tctn = new common_type_node(name, SemanticTree.type_access_level.tal_public, _cmn,
                 scope, def_loc);
             set_field_access_level(SemanticTree.field_access_level.fal_public);
@@ -1402,7 +1402,7 @@ namespace PascalABCCompiler.TreeConverter
             string name = compiler_string_consts.GetSetTypeName(elem_type.name);
             type_node base_type = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node;
             //check_name_free(name, def_loc);
-            SymbolTable.ClassScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassScope(_cmn.scope, null);
+            SymbolTable.ClassScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassScope(_cmn.scope, null, "set_type " + name);
             common_type_node tctn = new common_type_node(name, SemanticTree.type_access_level.tal_public, _cmn,
                 scope, def_loc);
             set_field_access_level(SemanticTree.field_access_level.fal_public);
@@ -1488,7 +1488,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (ShortStringTypes.ContainsKey(length))
                 return ShortStringTypes[length];
-            SymbolTable.ClassScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassScope(null, SystemLibrary.SystemLibrary.string_type.Scope);
+            SymbolTable.ClassScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassScope(null, SystemLibrary.SystemLibrary.string_type.Scope, "short_string_type");
             short_string_type_node tctn = new short_string_type_node(//SemanticTree.type_access_level.tal_public, _cmn,
                 scope, def_loc, length);
             tctn.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(tctn,PascalABCCompiler.SemanticTree.basic_function_type.objassign)));
@@ -1506,9 +1506,9 @@ namespace PascalABCCompiler.TreeConverter
 
         public common_type_node create_record_type(location def_loc, string name)
         {
-            SymbolTable.ClassScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassScope(_cmn.scope, null);
             if (name == null)
                 name = "$record$" + rec_num++;
+            SymbolTable.ClassScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassScope(_cmn.scope, null, "record " + name);
             common_type_node tctn = new common_type_node(name, SemanticTree.type_access_level.tal_public, _cmn,
                 scope, def_loc);
             if (top_function != null)
@@ -1970,9 +1970,9 @@ namespace PascalABCCompiler.TreeConverter
 		
         public common_type_node create_enum_type(string name, location def_loc)
         {
-            SymbolTable.ClassScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassScope(_cmn.scope, null);
             if (name == null)
                 name = "$enum$" + rec_num++;
+            SymbolTable.ClassScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassScope(_cmn.scope, null, "enum_type " + name);
             common_type_node tctn = new common_type_node(name, SemanticTree.type_access_level.tal_public, _cmn,
                 scope, def_loc);
             if (top_function != null)
