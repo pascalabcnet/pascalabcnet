@@ -480,6 +480,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new deconstructor_pattern();
 				case 229:
 					return new pattern_deconstructor_parameter();
+				case 230:
+					return new desugared_deconstruction();
 			}
 			return null;
 		}
@@ -4060,6 +4062,31 @@ namespace PascalABCCompiler.SyntaxTree
 			read_syntax_tree_node(_pattern_deconstructor_parameter);
 			_pattern_deconstructor_parameter.identifier = _read_node() as ident;
 			_pattern_deconstructor_parameter.type = _read_node() as type_definition;
+		}
+
+
+		public void visit(desugared_deconstruction _desugared_deconstruction)
+		{
+			read_desugared_deconstruction(_desugared_deconstruction);
+		}
+
+		public void read_desugared_deconstruction(desugared_deconstruction _desugared_deconstruction)
+		{
+			read_statement(_desugared_deconstruction);
+			if (br.ReadByte() == 0)
+			{
+				_desugared_deconstruction.definitions = null;
+			}
+			else
+			{
+				_desugared_deconstruction.definitions = new List<var_def_statement>();
+				Int32 ssyy_count = br.ReadInt32();
+				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
+				{
+					_desugared_deconstruction.definitions.Add(_read_node() as var_def_statement);
+				}
+			}
+			_desugared_deconstruction.deconstruction_target = (object)br.ReadByte();
 		}
 
 	}

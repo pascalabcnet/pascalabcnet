@@ -49132,6 +49132,356 @@ namespace PascalABCCompiler.SyntaxTree
 	}
 
 
+	///<summary>
+	///Представляет объединение объявлений пременных, порожденных деконструкцией. Деконструируемое выражение необходимо хранить для выведения типа на этапе семантики, однако оно не должно входить в обход дерева.
+	///</summary>
+	[Serializable]
+	public partial class desugared_deconstruction : statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public desugared_deconstruction()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public desugared_deconstruction(List<var_def_statement> _definitions,object _deconstruction_target)
+		{
+			this._definitions=_definitions;
+			this._deconstruction_target=_deconstruction_target;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public desugared_deconstruction(List<var_def_statement> _definitions,object _deconstruction_target,SourceContext sc)
+		{
+			this._definitions=_definitions;
+			this._deconstruction_target=_deconstruction_target;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		public desugared_deconstruction(var_def_statement elem, SourceContext sc = null)
+		{
+			Add(elem, sc);
+		    FillParentsInDirectChilds();
+		}
+		
+		protected List<var_def_statement> _definitions=new List<var_def_statement>();
+		protected object _deconstruction_target;
+
+		///<summary>
+		///Объявления порожденных переменных
+		///</summary>
+		public List<var_def_statement> definitions
+		{
+			get
+			{
+				return _definitions;
+			}
+			set
+			{
+				_definitions=value;
+			}
+		}
+
+		///<summary>
+		///Деконструируемое выражение
+		///</summary>
+		public object deconstruction_target
+		{
+			get
+			{
+				return _deconstruction_target;
+			}
+			set
+			{
+				_deconstruction_target=value;
+			}
+		}
+
+
+		public desugared_deconstruction Add(var_def_statement elem, SourceContext sc = null)
+		{
+			definitions.Add(elem);
+			if (elem != null)
+				elem.Parent = this;
+			if (sc != null)
+				source_context = sc;
+			return this;
+		}
+		
+		public void AddFirst(var_def_statement el)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			definitions.Insert(0, el);
+			FillParentsInDirectChilds();
+		}
+		
+		public void AddFirst(IEnumerable<var_def_statement> els)
+		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
+			definitions.InsertRange(0, els);
+			foreach (var el in els)
+				if (el != null)
+					el.Parent = this;
+		}
+		
+		public void AddMany(params var_def_statement[] els)
+		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
+			definitions.AddRange(els);
+			foreach (var el in els)
+				if (el != null)
+					el.Parent = this;
+		}
+		
+		private int FindIndexInList(var_def_statement el)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			var ind = definitions.FindIndex(x => x == el);
+			if (ind == -1)
+				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
+			return ind;
+		}
+		
+		public void InsertAfter(var_def_statement el, var_def_statement newel)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
+			definitions.Insert(FindIndexInList(el) + 1, newel);
+			newel.Parent = this;
+		}
+		
+		public void InsertAfter(var_def_statement el, IEnumerable<var_def_statement> newels)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
+			definitions.InsertRange(FindIndexInList(el) + 1, newels);
+			foreach (var newel in newels)
+				if (newel != null)
+					newel.Parent = this;
+		}
+		
+		public void InsertBefore(var_def_statement el, var_def_statement newel)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
+			definitions.Insert(FindIndexInList(el), newel);
+			newel.Parent = this;
+		}
+		
+		public void InsertBefore(var_def_statement el, IEnumerable<var_def_statement> newels)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
+			definitions.InsertRange(FindIndexInList(el), newels);
+			foreach (var newel in newels)
+				if (newel != null)
+					newel.Parent = this;
+		}
+		
+		public bool Remove(var_def_statement el)
+		{
+			return definitions.Remove(el);
+		}
+		
+		public void ReplaceInList(var_def_statement el, var_def_statement newel)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
+			definitions[FindIndexInList(el)] = newel;
+			newel.Parent = this;
+		}
+		
+		public void ReplaceInList(var_def_statement el, IEnumerable<var_def_statement> newels)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
+			var ind = FindIndexInList(el);
+			definitions.RemoveAt(ind);
+			definitions.InsertRange(ind, newels);
+		    foreach (var newel in newels)
+				if (newel != null)
+					newel.Parent = this;
+		}
+		
+		public int RemoveAll(Predicate<var_def_statement> match)
+		{
+			return definitions.RemoveAll(match);
+		}
+		
+		public var_def_statement Last()
+		{
+			if (definitions.Count > 0)
+		        return definitions[definitions.Count - 1];
+			throw new InvalidOperationException("Список пуст");
+		}
+		
+		public int Count
+		{
+		    get { return definitions.Count; }
+		}
+		
+		public void Insert(int pos, var_def_statement el)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			definitions.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
+		}
+		
+		
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			desugared_deconstruction copy = new desugared_deconstruction();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (definitions != null)
+			{
+				foreach (var_def_statement elem in definitions)
+				{
+					if (elem != null)
+					{
+						copy.Add((var_def_statement)elem.Clone());
+						copy.Last().Parent = copy;
+					}
+					else
+						copy.Add(null);
+				}
+			}
+			copy.deconstruction_target = deconstruction_target;
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new desugared_deconstruction TypedClone()
+		{
+			return Clone() as desugared_deconstruction;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (definitions != null)
+			{
+				foreach (var child in definitions)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			if (definitions != null)
+			{
+				foreach (var child in definitions)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 0 + (definitions == null ? 0 : definitions.Count);
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				Int32 index_counter=ind - 0;
+				if(definitions != null)
+				{
+					if(index_counter < definitions.Count)
+					{
+						return definitions[index_counter];
+					}
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				Int32 index_counter=ind - 0;
+				if(definitions != null)
+				{
+					if(index_counter < definitions.Count)
+					{
+						definitions[index_counter]= (var_def_statement)value;
+						return;
+					}
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
 
 }
 

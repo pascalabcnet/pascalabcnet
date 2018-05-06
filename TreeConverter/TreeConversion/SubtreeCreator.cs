@@ -107,11 +107,7 @@ namespace PascalABCCompiler.TreeConversion
 
         private static SyntaxTree.if_node CreateIfElse(expression condition, statement thenBody, statement elseBody)
         {
-            SyntaxTree.if_node res = new SyntaxTree.if_node();
-            res.condition = condition;
-            res.then_body = thenBody;
-            res.else_body = elseBody;
-            return res;
+            return new SyntaxTree.if_node(condition, thenBody, elseBody);
         }
 
         /// <summary>
@@ -194,8 +190,13 @@ namespace PascalABCCompiler.TreeConversion
         /// <returns></returns>
         public static method_call CreateSystemFunctionCall(string funcName, params expression[] exprList)
         {
+            return CreateMethodCall(funcName, "PABCSystem", exprList);
+        }
+
+        public static method_call CreateMethodCall(string funcName, string qualifier, params expression[] exprList)
+        {
             var methodCall = CreateMethodCall(funcName, exprList);
-            methodCall.dereferencing_value = new dot_node(new ident("PABCSystem"), new ident(funcName));
+            methodCall.dereferencing_value = new dot_node(new ident(qualifier), new ident(funcName));
             return methodCall;
         }
 

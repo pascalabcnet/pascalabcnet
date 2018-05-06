@@ -2859,8 +2859,12 @@
       <Fields />
       <Methods />
       <Tags>
-        <CategoryIndices />
-        <TagIndices />
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+        </TagIndices>
       </Tags>
     </SyntaxNode>
     <SyntaxNode Name="type_pattern" BaseName="pattern_node">
@@ -2870,8 +2874,12 @@
       </Fields>
       <Methods />
       <Tags>
-        <CategoryIndices />
-        <TagIndices />
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+        </TagIndices>
       </Tags>
     </SyntaxNode>
     <SyntaxNode Name="is_pattern_expr" BaseName="expression">
@@ -2881,8 +2889,12 @@
       </Fields>
       <Methods />
       <Tags>
-        <CategoryIndices />
-        <TagIndices />
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+        </TagIndices>
       </Tags>
     </SyntaxNode>
     <SyntaxNode Name="match_with" BaseName="statement">
@@ -2892,8 +2904,12 @@
       </Fields>
       <Methods />
       <Tags>
-        <CategoryIndices />
-        <TagIndices />
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+        </TagIndices>
       </Tags>
     </SyntaxNode>
     <SyntaxNode Name="pattern_case" BaseName="statement">
@@ -2904,8 +2920,12 @@
       </Fields>
       <Methods />
       <Tags>
-        <CategoryIndices />
-        <TagIndices />
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+        </TagIndices>
       </Tags>
     </SyntaxNode>
     <SyntaxNode Name="pattern_cases" BaseName="statement">
@@ -2914,8 +2934,12 @@
       </Fields>
       <Methods />
       <Tags>
-        <CategoryIndices />
-        <TagIndices />
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+        </TagIndices>
       </Tags>
     </SyntaxNode>
     <SyntaxNode Name="deconstructor_pattern" BaseName="pattern_node">
@@ -2925,8 +2949,12 @@
       </Fields>
       <Methods />
       <Tags>
-        <CategoryIndices />
-        <TagIndices />
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+        </TagIndices>
       </Tags>
     </SyntaxNode>
     <SyntaxNode Name="pattern_deconstructor_parameter" BaseName="syntax_tree_node">
@@ -2936,8 +2964,27 @@
       </Fields>
       <Methods />
       <Tags>
-        <CategoryIndices />
-        <TagIndices />
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="desugared_deconstruction" BaseName="statement">
+      <Fields>
+        <ExtendedField Name="definitions" Type="List&lt;var_def_statement&gt;" CreateVariable="true" DeleteVariable="false" />
+        <ExtendedField Name="deconstruction_target" Type="object" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+        </TagIndices>
       </Tags>
     </SyntaxNode>
   </SyntaxNodes>
@@ -2965,6 +3012,7 @@
         <Tag Name="Важнейшие" ReferenceCount="207" />
         <Tag Name="Method_Procedure_Call" ReferenceCount="2" />
         <Tag Name="Yield" ReferenceCount="8" />
+        <Tag Name="Patterns" ReferenceCount="9" />
       </Tags>
     </FilterCategory>
   </TagCategories>
@@ -3280,6 +3328,12 @@
       <HelpData Key="dereference.dereferencing_value" Value="" />
       <HelpData Key="dereference.override string ToString()" Value="" />
       <HelpData Key="destructor" Value="" />
+      <HelpData Key="desugared_deconstruction" Value="Представляет объединение объявлений пременных, порожденных деконструкцией. Деконструируемое выражение необходимо хранить для выведения типа на этапе семантики, однако оно не должно входить в обход дерева." />
+      <HelpData Key="desugared_deconstruction.deconstruct_call" Value="Вызов метода Deconstruct" />
+      <HelpData Key="desugared_deconstruction.deconstruction_target" Value="Деконструируемое выражение" />
+      <HelpData Key="desugared_deconstruction.definitions" Value="Объявления порожденных переменных" />
+      <HelpData Key="desugared_deconstruction.destruct_call" Value="" />
+      <HelpData Key="desugared_deconstruction.expressionVariableName" Value="Деконструируемое выражение" />
       <HelpData Key="diap_expr" Value="" />
       <HelpData Key="diap_expr." Value="" />
       <HelpData Key="diap_expr.left" Value="" />
@@ -4235,6 +4289,8 @@
       <HelpData Key="unknown_ident" Value="" />
       <HelpData Key="unknown_ident.ClassName" Value="" />
       <HelpData Key="unknown_ident.UnknownID" Value="" />
+      <HelpData Key="unknown_type" Value="" />
+      <HelpData Key="unknown_type.context" Value="" />
       <HelpData Key="unnamed_type_object" Value="Это - сахарная конструкция.&#xD;&#xA;/// Объект безымянного класса. Например: new class(Name := 'Иванов'; Age := 25);&#xD;&#xA;/// ne - это узел для генерации кода, основной узел предназначен для форматирования" />
       <HelpData Key="unnamed_type_object.is_class" Value="" />
       <HelpData Key="unnamed_type_object.ne" Value="" />

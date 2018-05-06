@@ -2,6 +2,7 @@
 using System.Text;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace PascalABCCompiler.SyntaxTree
 {
@@ -324,6 +325,9 @@ namespace PascalABCCompiler.SyntaxTree
         public void AddMany(IEnumerable<statement> els)
         {
             list.AddRange(els);
+            foreach (var elem in els)
+                if (elem != null)
+                    elem.Parent = this;
         }
 
         public static statement_list Empty
@@ -1273,40 +1277,32 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class var_statement
     {
-        public var_statement(ident_list vars, type_definition type, expression iv)
+        public var_statement(ident_list vars, type_definition type, expression iv) : this(new var_def_statement(vars, type, iv))
         {
-            var_def = new var_def_statement(vars, type, iv);
         }
 
-        public var_statement(ident_list vars, type_definition type)
+        public var_statement(ident_list vars, type_definition type): this(new var_def_statement(vars, type))
         {
-            var_def = new var_def_statement(vars, type);
         }
 
-        public var_statement(ident id, type_definition type, expression iv)
+        public var_statement(ident id, type_definition type, expression iv) : this(new var_def_statement(new ident_list(id), type, iv))
         {
-            var_def = new var_def_statement(new ident_list(id), type, iv);
         }
 
-        public var_statement(ident id, type_definition type)
+        public var_statement(ident id, type_definition type) : this(new var_def_statement(new ident_list(id), type))
         {
-            var_def = new var_def_statement(new ident_list(id), type);
         }
 
-        public var_statement(ident id, string type)
+        public var_statement(ident id, string type) : this(new var_def_statement(new ident_list(id), new named_type_reference(type)))
         {
-            var_def = new var_def_statement(new ident_list(id), new named_type_reference(type));
         }
 
-        public var_statement(ident id, expression iv)
+        public var_statement(ident id, expression iv) :this(new var_def_statement(new ident_list(id), null, iv))
         {
-            var_def = new var_def_statement(new ident_list(id), null, iv);
         }
 
-        public var_statement(ident id, expression iv,SourceContext sc)
+        public var_statement(ident id, expression iv,SourceContext sc) : this(new var_def_statement(new ident_list(id), null, iv, sc))
         {
-            var_def = new var_def_statement(new ident_list(id), null, iv);
-            var_def.source_context = sc;
         }
 
         public override string ToString()
@@ -1747,6 +1743,23 @@ namespace PascalABCCompiler.SyntaxTree
         public override string ToString() => "lam_inferred";
     }
 
+    public partial class desugared_deconstruction
+    {
+        public bool HasAllExplicitTypes => definitions.All(x => x.vars_type != null);
 
+        public var_statement[] WithTypes(type_definition[] types)
+        {
+            var_statement[] result = new var_statement[types.Length]; 
+            Debug.Assert(types.Length == definitions.Count, "Inconsistent types count");
+
+            for (int i = 0; i < definitions.Count; i++)
+            {
+                definitions[i].vars_type = types[i];
+                result[i] = new var_statement(definitions[i]);
+            }
+
+            return result;
+        }
+    }
 }
 

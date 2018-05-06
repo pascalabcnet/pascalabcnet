@@ -1845,6 +1845,14 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(desugared_deconstruction _desugared_deconstruction)
+		{
+		}
+
+		public virtual void post_do_visit(desugared_deconstruction _desugared_deconstruction)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -3818,6 +3826,15 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(pattern_deconstructor_parameter.identifier);
 			visit(pattern_deconstructor_parameter.type);
 			post_do_visit(_pattern_deconstructor_parameter);
+		}
+
+		public override void visit(desugared_deconstruction _desugared_deconstruction)
+		{
+			DefaultVisit(_desugared_deconstruction);
+			pre_do_visit(_desugared_deconstruction);
+			for (int i = 0; i < definitions.Count; i++)
+				visit(desugared_deconstruction.definitions[i]);
+			post_do_visit(_desugared_deconstruction);
 		}
 	}
 

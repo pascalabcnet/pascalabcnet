@@ -6385,6 +6385,40 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(desugared_deconstruction _desugared_deconstruction)
+		{
+			bw.Write((Int16)230);
+			write_desugared_deconstruction(_desugared_deconstruction);
+		}
+
+		public void write_desugared_deconstruction(desugared_deconstruction _desugared_deconstruction)
+		{
+			write_statement(_desugared_deconstruction);
+			if (_desugared_deconstruction.definitions == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				bw.Write(_desugared_deconstruction.definitions.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _desugared_deconstruction.definitions.Count; ssyy_i++)
+				{
+					if (_desugared_deconstruction.definitions[ssyy_i] == null)
+					{
+						bw.Write((byte)0);
+					}
+					else
+					{
+						bw.Write((byte)1);
+						_desugared_deconstruction.definitions[ssyy_i].visit(this);
+					}
+				}
+			}
+			bw.Write((byte)_desugared_deconstruction.deconstruction_target);
+		}
+
 	}
 
 
