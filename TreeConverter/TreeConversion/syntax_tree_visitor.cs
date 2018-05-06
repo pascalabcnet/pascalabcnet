@@ -3612,8 +3612,12 @@ namespace PascalABCCompiler.TreeConverter
 
                         weak_node_test_and_visit(_class_definition.body);
                         
+
                     }
+                    common_type_node converted_type = context.converted_type;
                     context.leave_block();
+                    if (converted_type.IsSealed && converted_type.IsAbstract)
+                        AddError(get_location(_class_definition), "ABSTRACT_CLASS_CANNOT_BE_SEALED");
                     return;
                 case PascalABCCompiler.SyntaxTree.class_keyword.Record:
                     common_type_node ctn;
@@ -3677,6 +3681,8 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         context.converted_type.ForwardDeclarationOnly = false;
                         weak_node_test_and_visit(_class_definition.body);
+                        
+
                     }
                     /*if (_class_definition.body != null)
                         hard_node_test_and_visit(_class_definition.body);
