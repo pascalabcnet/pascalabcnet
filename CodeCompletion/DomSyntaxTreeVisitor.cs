@@ -4225,6 +4225,8 @@ namespace CodeCompletion
                     _foreach_stmt.in_what.visit(this);
                     if (returned_scope != null)
                         returned_scope = returned_scope.GetElementType();
+                    if (returned_scope == null)
+                        returned_scope = TypeTable.obj_type;
                 }
                 else
                 {

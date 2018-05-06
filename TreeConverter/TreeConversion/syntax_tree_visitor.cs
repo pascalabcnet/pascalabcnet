@@ -5401,7 +5401,7 @@ namespace PascalABCCompiler.TreeConverter
                                             sil = nsn.find(id_right.name);
                                             if (templ_args_count != 0)
                                             {
-                                                SymbolInfo conv = ConvertTypeToInstance(sil.FirstOrDefault(), iwt.template_params.params_list, get_location(id_right));
+                                                SymbolInfo conv = ConvertTypeToInstance(sil?.FirstOrDefault(), iwt.template_params.params_list, get_location(id_right));
                                                 if (conv != null)
                                                 {
                                                     sil = new List<SymbolInfo> { conv };

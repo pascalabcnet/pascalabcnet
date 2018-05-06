@@ -4239,7 +4239,21 @@ namespace CodeCompletion
         public override TypeScope GetElementType()
         {
             if (elementType != null) return elementType;
-            if (baseScope != null) return baseScope.GetElementType();
+            TypeScope elem_ts = null;
+            if (baseScope != null)
+            {
+                elem_ts = baseScope.GetElementType();
+                if (elem_ts != null)
+                    return elem_ts;
+            }
+                
+            if (implemented_interfaces != null)
+                foreach (TypeScope ts in implemented_interfaces)
+                {
+                    elem_ts = ts.GetElementType();
+                    if (elem_ts != null)
+                        return elem_ts;
+                }
             return null;
         }
 
