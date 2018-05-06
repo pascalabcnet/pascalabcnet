@@ -9060,8 +9060,14 @@ namespace PascalABCCompiler.TreeConverter
 
         private expression_node expression_value_reciving(SyntaxTree.ident id_right, List<SymbolInfo> sil, expression_node en, bool expected_delegate)
         {
-            definition_node dn = context.check_name_node_type(id_right.name, sil?.FirstOrDefault(), get_location(id_right), general_node_type.variable_node,
-                general_node_type.function_node, general_node_type.property_node, general_node_type.constant_definition);
+            general_node_type[] node_types;
+            if (en is this_node)
+                node_types = new general_node_type[] { general_node_type.variable_node,
+                general_node_type.function_node, general_node_type.property_node, general_node_type.constant_definition, general_node_type.event_node};
+            else
+                node_types = new general_node_type[] { general_node_type.variable_node,
+                general_node_type.function_node, general_node_type.property_node, general_node_type.constant_definition};
+            definition_node dn = context.check_name_node_type(id_right.name, sil?.FirstOrDefault(), get_location(id_right), node_types);
             switch (dn.general_node_type)
             {
                 /*case general_node_type.constant_defenition:
@@ -9151,6 +9157,30 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         //throw new ConstMemberCannotBeAccessedWithAnInstanceReference((class_constant_definition)dn, get_location(id_right));
                         return ((constant_definition_node)dn).const_value;
+                    }
+                case general_node_type.event_node:
+                    {
+                        if (dn.semantic_node_type == semantic_node_type.compiled_event)
+                        {
+                            compiled_event ce = (compiled_event)dn;
+                            if (ce.is_static)
+                            {
+                                //throw new NonStaticAndStaticEvevnt();
+                            }
+                            nonstatic_event_reference ser = new nonstatic_event_reference(en, ce, get_location(id_right));
+                            return ser;
+                        }
+                        else if (dn.semantic_node_type == semantic_node_type.common_event)
+                        {
+                            common_event ce = (common_event)dn;
+                            if (ce.is_static)
+                            {
+                                //throw new NonStaticAndStaticEvevnt();
+                            }
+                            nonstatic_event_reference ser = new nonstatic_event_reference(en, ce, get_location(id_right));
+                            return ser;
+                        }
+                        break;
                     }
             }
             throw new CompilerInternalError("Invalid class member");
