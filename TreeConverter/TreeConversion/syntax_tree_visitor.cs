@@ -5401,12 +5401,18 @@ namespace PascalABCCompiler.TreeConverter
                                             sil = nsn.find(id_right.name);
                                             if (templ_args_count != 0)
                                             {
-                                                SymbolInfo conv = ConvertTypeToInstance(sil?.FirstOrDefault(), iwt.template_params.params_list, get_location(id_right));
+                                                sil = nsn.find(id_right.name + compiler_string_consts.generic_params_infix + templ_args_count.ToString());
+                                                if (sil != null)
+                                                {
+                                                    sil = new List<SymbolInfo> { new SymbolInfo(get_generic_instance(sil?.FirstOrDefault(), iwt.template_params.params_list)) };
+                                                    iwt = null;
+                                                }
+                                                /*SymbolInfo conv = ConvertTypeToInstance(sil?.FirstOrDefault(), iwt.template_params.params_list, get_location(id_right));
                                                 if (conv != null)
                                                 {
                                                     sil = new List<SymbolInfo> { conv };
                                                     iwt = null;
-                                                }
+                                                }*/
                                             }
                                         }
                                     }
