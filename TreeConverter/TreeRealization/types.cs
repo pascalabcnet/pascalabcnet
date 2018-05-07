@@ -3965,7 +3965,7 @@ namespace PascalABCCompiler.TreeRealization
 		
         private null_type_node()
         {
-        	_scope = compilation_context.instance.convertion_data_and_alghoritms.symbol_table.CreateClassScope(null, null);
+        	_scope = compilation_context.instance.convertion_data_and_alghoritms.symbol_table.CreateClassScope(null, null, name);
         }
 
         public static type_node get_type_node()
