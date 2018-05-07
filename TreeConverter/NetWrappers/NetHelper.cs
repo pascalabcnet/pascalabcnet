@@ -1480,6 +1480,8 @@ namespace PascalABCCompiler.NetHelper
                     {
                         case MemberTypes.Method:
                             temp = new SymbolInfo(compiled_function_node.get_compiled_method(mi as MethodInfo));
+                            // SSM 2018.05.05
+                            //temp.symbol_kind = symbol_kind.sk_overload_function;
                             break;
                         case MemberTypes.Constructor:
                             temp = new SymbolInfo(compiled_constructor_node.get_compiled_constructor(mi as ConstructorInfo));

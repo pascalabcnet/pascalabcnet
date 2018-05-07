@@ -1796,7 +1796,7 @@ namespace CodeCompletion
             _function_lambda_definition.proc_body.visit(this);
             if (returned_scope is ElementScope)
                 returned_scope = (returned_scope as ElementScope).sc;
-            ps.return_type = returned_scope as TypeScope;
+            ps.return_type = new UnknownScope(new SymInfo("",SymbolKind.Class,""));// returned_scope as TypeScope;
             returned_scope = new ProcType(ps);
         }
         public override void visit(function_lambda_call _function_lambda_call)

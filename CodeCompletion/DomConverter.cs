@@ -122,7 +122,7 @@ namespace CodeCompletion
             if (visitor.cur_scope == null) return null;
             if (col + 1 > str.Length)
                 col -= str.Length;
-            SymScope si = visitor.FindScopeByLocation(line + 1, col + 1);//stv.cur_scope;
+            SymScope si = visitor.FindScopeByLocation(line + 1, col);//stv.cur_scope;
             if (si == null)
             {
                 si = visitor.FindScopeByLocation(line, col + 1);

@@ -3473,6 +3473,8 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.class_definition _class_definition)
         {
+            if (_class_definition.attribute != class_attribute.None && _class_definition.body == null)
+                ErrorsList.Add(new SimpleSemanticError(get_location(_class_definition), "CLASS_ATTRIBUTE_NOT_ALLOWED_IN_CLASS_PREDEFINTIONS"));
             if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Sealed) == SyntaxTree.class_attribute.Sealed)
             {
                 context.converted_type.SetIsSealed(true);
@@ -3610,8 +3612,12 @@ namespace PascalABCCompiler.TreeConverter
 
                         weak_node_test_and_visit(_class_definition.body);
                         
+
                     }
+                    common_type_node converted_type = context.converted_type;
                     context.leave_block();
+                    if (converted_type.IsSealed && converted_type.IsAbstract)
+                        AddError(get_location(_class_definition), "ABSTRACT_CLASS_CANNOT_BE_SEALED");
                     return;
                 case PascalABCCompiler.SyntaxTree.class_keyword.Record:
                     common_type_node ctn;
@@ -3675,6 +3681,8 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         context.converted_type.ForwardDeclarationOnly = false;
                         weak_node_test_and_visit(_class_definition.body);
+                        
+
                     }
                     /*if (_class_definition.body != null)
                         hard_node_test_and_visit(_class_definition.body);
@@ -5401,12 +5409,18 @@ namespace PascalABCCompiler.TreeConverter
                                             sil = nsn.find(id_right.name);
                                             if (templ_args_count != 0)
                                             {
-                                                SymbolInfo conv = ConvertTypeToInstance(sil.FirstOrDefault(), iwt.template_params.params_list, get_location(id_right));
+                                                sil = nsn.find(id_right.name + compiler_string_consts.generic_params_infix + templ_args_count.ToString());
+                                                if (sil != null)
+                                                {
+                                                    sil = new List<SymbolInfo> { new SymbolInfo(get_generic_instance(sil?.FirstOrDefault(), iwt.template_params.params_list)) };
+                                                    iwt = null;
+                                                }
+                                                /*SymbolInfo conv = ConvertTypeToInstance(sil?.FirstOrDefault(), iwt.template_params.params_list, get_location(id_right));
                                                 if (conv != null)
                                                 {
                                                     sil = new List<SymbolInfo> { conv };
                                                     iwt = null;
-                                                }
+                                                }*/
                                             }
                                         }
                                     }
@@ -9060,8 +9074,14 @@ namespace PascalABCCompiler.TreeConverter
 
         private expression_node expression_value_reciving(SyntaxTree.ident id_right, List<SymbolInfo> sil, expression_node en, bool expected_delegate)
         {
-            definition_node dn = context.check_name_node_type(id_right.name, sil?.FirstOrDefault(), get_location(id_right), general_node_type.variable_node,
-                general_node_type.function_node, general_node_type.property_node, general_node_type.constant_definition);
+            general_node_type[] node_types;
+            if (en is this_node)
+                node_types = new general_node_type[] { general_node_type.variable_node,
+                general_node_type.function_node, general_node_type.property_node, general_node_type.constant_definition, general_node_type.event_node};
+            else
+                node_types = new general_node_type[] { general_node_type.variable_node,
+                general_node_type.function_node, general_node_type.property_node, general_node_type.constant_definition};
+            definition_node dn = context.check_name_node_type(id_right.name, sil?.FirstOrDefault(), get_location(id_right), node_types);
             switch (dn.general_node_type)
             {
                 /*case general_node_type.constant_defenition:
@@ -9151,6 +9171,30 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         //throw new ConstMemberCannotBeAccessedWithAnInstanceReference((class_constant_definition)dn, get_location(id_right));
                         return ((constant_definition_node)dn).const_value;
+                    }
+                case general_node_type.event_node:
+                    {
+                        if (dn.semantic_node_type == semantic_node_type.compiled_event)
+                        {
+                            compiled_event ce = (compiled_event)dn;
+                            if (ce.is_static)
+                            {
+                                //throw new NonStaticAndStaticEvevnt();
+                            }
+                            nonstatic_event_reference ser = new nonstatic_event_reference(en, ce, get_location(id_right));
+                            return ser;
+                        }
+                        else if (dn.semantic_node_type == semantic_node_type.common_event)
+                        {
+                            common_event ce = (common_event)dn;
+                            if (ce.is_static)
+                            {
+                                //throw new NonStaticAndStaticEvevnt();
+                            }
+                            nonstatic_event_reference ser = new nonstatic_event_reference(en, ce, get_location(id_right));
+                            return ser;
+                        }
+                        break;
                     }
             }
             throw new CompilerInternalError("Invalid class member");
@@ -12399,7 +12443,7 @@ namespace PascalABCCompiler.TreeConverter
         internal void CheckOverrideOrReintroduceExpectedWarning(location loc)
         {
             common_method_node cmn = context.top_function as common_method_node;
-            if (!current_converted_method_not_in_class_defined && cmn != null && !cmn.IsReintroduce && cmn.polymorphic_state == SemanticTree.polymorphic_state.ps_common)
+            if (!current_converted_method_not_in_class_defined && cmn != null && !cmn.IsReintroduce && (cmn.polymorphic_state == SemanticTree.polymorphic_state.ps_common || cmn.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual))
                 if (context.FindMethodToOverride(cmn) != null)
                 {
                     WarningsList.Add(new OverrideOrReintroduceExpected(loc));

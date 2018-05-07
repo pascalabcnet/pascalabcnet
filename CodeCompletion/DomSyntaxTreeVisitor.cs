@@ -1665,7 +1665,7 @@ namespace CodeCompletion
                 	{
                 		_procedure_definition.proc_body.visit(this);
                 	}
-                	catch
+                	catch (Exception ex)
                 	{
                 		
                 	}
@@ -2887,7 +2887,7 @@ namespace CodeCompletion
                     if (e is function_lambda_definition)
                     {
                         TypeScope tmp_awaitedProcType = awaitedProcType;
-                        if (ps.parameters != null && ps.parameters.Count > i)
+                        if (ps.parameters != null && ps.parameters.Count > i + (ps.IsExtension ? 1 : 0))
                             awaitedProcType = ps.parameters[i + (ps.IsExtension ? 1 : 0)].sc as TypeScope;
                         e.visit(this);
                         awaitedProcType = tmp_awaitedProcType;
@@ -4225,6 +4225,8 @@ namespace CodeCompletion
                     _foreach_stmt.in_what.visit(this);
                     if (returned_scope != null)
                         returned_scope = returned_scope.GetElementType();
+                    if (returned_scope == null)
+                        returned_scope = TypeTable.obj_type;
                 }
                 else
                 {
@@ -4702,7 +4704,7 @@ namespace CodeCompletion
                             if ((awaitedProcType as ProcType).target.parameters.Count > 0)
                                 param_type = (awaitedProcType as ProcType).target.parameters[i].sc as TypeScope;
                         }
-                        else if (awaitedProcType.IsDelegate && awaitedProcType.instances != null && awaitedProcType.instances.Count > 0)
+                        else if (awaitedProcType.IsDelegate && awaitedProcType.instances != null && awaitedProcType.instances.Count > i)
                         {
                             param_type = awaitedProcType.instances[i];
                         }
@@ -4744,7 +4746,7 @@ namespace CodeCompletion
             }
                 
             cur_scope = tmp;
-            ps.return_type = returned_scope as TypeScope;
+            ps.return_type = new UnknownScope(new SymInfo("",SymbolKind.Class,""));// returned_scope as TypeScope;
             returned_scope = new ProcType(ps);
         }
 
