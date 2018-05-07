@@ -1711,7 +1711,7 @@ namespace PascalABCCompiler.Parsers
                 sb.Append(": " + GetFullTypeName(mi.ReturnType));
             }
             //if (scope.CompiledMethod.IsStatic) sb.Append("; static");
-            if (mi.IsVirtual) sb.Append("; virtual");
+            if (mi.IsVirtual && !mi.IsFinal) sb.Append("; virtual");
             else if (mi.IsAbstract) sb.Append("; abstract");
             //else if (scope.CompiledMethod.IsHideBySig) sb.Append("; reintroduce");
             sb.Append(';');
@@ -1903,8 +1903,8 @@ namespace PascalABCCompiler.Parsers
                     sb.Append(": " + ret_inst_type);
             }
             //if (scope.CompiledMethod.IsStatic) sb.Append("; static");
-            if (scope.CompiledMethod.IsVirtual) sb.Append("; virtual");
-            else if (scope.CompiledMethod.IsAbstract) sb.Append("; abstract");
+            if (scope.IsVirtual) sb.Append("; virtual");
+            else if (scope.IsAbstract) sb.Append("; abstract");
             //else if (scope.CompiledMethod.IsHideBySig) sb.Append("; reintroduce");
             sb.Append(';');
             return sb.ToString();

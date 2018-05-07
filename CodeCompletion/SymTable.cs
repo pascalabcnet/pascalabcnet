@@ -6937,7 +6937,7 @@ namespace CodeCompletion
 
         public override bool IsVirtual
         {
-            get { return mi.IsVirtual; }
+            get { return mi.IsVirtual && !mi.IsFinal; }
         }
 
         public override bool IsConstructor()
