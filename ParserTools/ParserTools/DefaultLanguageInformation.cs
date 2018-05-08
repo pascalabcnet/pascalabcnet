@@ -1395,53 +1395,55 @@ namespace PascalABCCompiler.Parsers
 			//if (scope.IsStatic) sb.Append("; static");
 			if (scope.IsReintroduce) sb.Append("; reintroduce");
 		}
-		
-		protected virtual string GetDescriptionForElementScope(IElementScope scope)
-		{
-			string type_name=null;
-			StringBuilder sb = new StringBuilder();
-			if (scope.Type == null) type_name = "";
-			else
-				type_name = GetSimpleDescription(scope.Type);
-			if (type_name.StartsWith("$")) 
-				type_name = type_name.Substring(1,type_name.Length-1);
-			switch (scope.ElemKind)
-			{
-				case SymbolKind.Variable : sb.Append("var "+ GetTopScopeName(scope.TopScope)+scope.Name + ": "+type_name);  break;
-				case SymbolKind.Parameter : sb.Append(kind_of_param(scope) + "parameter "+scope.Name + ": "+type_name+(scope.ConstantValue!=null?(":="+scope.ConstantValue.ToString()):"")); break;
-				case SymbolKind.Constant : 
-				{
-					if (scope.ConstantValue == null)
-						sb.Append("const "+ GetTopScopeName(scope.TopScope)+scope.Name + ": "+type_name);
-					else sb.Append("const "+GetTopScopeName(scope.TopScope)+scope.Name+ ": "+ type_name + " = "+scope.ConstantValue.ToString());
-				}
-				break;
-				case SymbolKind.Event :
-					if (scope.IsStatic) sb.Append("class ");
-					sb.Append("event "+ GetTopScopeName(scope.TopScope)+scope.Name + ": "+type_name);
-					append_modifiers(sb,scope);
-					break;
-				case SymbolKind.Field :
-					if (scope.IsStatic)
-						sb.Append("class ");
-					else
-						sb.Append("var ");
-					sb.Append(GetTopScopeName(scope.TopScope)+scope.Name + ": "+type_name);
-					append_modifiers(sb,scope);
-					//if (scope.IsStatic) sb.Append("; static");
-					if (scope.IsReadOnly) sb.Append("; readonly");
-					break;
-				case SymbolKind.Property :
-					if (scope.IsStatic)
-						sb.Append("class ");
-					sb.Append("property "+ GetTopScopeName(scope.TopScope)+scope.Name + get_index_description(scope) + ": "+type_name); 
-					append_modifiers(sb,scope);
-					break;
-					
-			}
-			sb.Append(';');
-			return sb.ToString();
-		}
+
+        protected virtual string GetDescriptionForElementScope(IElementScope scope)
+        {
+            string type_name = null;
+            StringBuilder sb = new StringBuilder();
+            if (scope.Type == null) type_name = "";
+            else
+                type_name = GetSimpleDescription(scope.Type);
+            if (type_name.StartsWith("$"))
+                type_name = type_name.Substring(1, type_name.Length - 1);
+            switch (scope.ElemKind)
+            {
+                case SymbolKind.Variable: sb.Append("var " + GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name); break;
+                case SymbolKind.Parameter: sb.Append(kind_of_param(scope) + "parameter " + scope.Name + ": " + type_name + (scope.ConstantValue != null ? (":=" + scope.ConstantValue.ToString()) : "")); break;
+                case SymbolKind.Constant:
+                    {
+                        if (scope.ConstantValue == null)
+                            sb.Append("const " + GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name);
+                        else sb.Append("const " + GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name + " = " + scope.ConstantValue.ToString());
+                    }
+                    break;
+                case SymbolKind.Event:
+                    if (scope.IsStatic) sb.Append("class ");
+                    sb.Append("event " + GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name);
+                    append_modifiers(sb, scope);
+                    break;
+                case SymbolKind.Field:
+                    if (scope.IsStatic)
+                        sb.Append("class ");
+                    else
+                        sb.Append("var ");
+                    sb.Append(GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name);
+                    append_modifiers(sb, scope);
+                    //if (scope.IsStatic) sb.Append("; static");
+                    if (scope.IsReadOnly) sb.Append("; readonly");
+                    break;
+                case SymbolKind.Property:
+                    if (scope.IsStatic)
+                        sb.Append("class ");
+                    sb.Append("property " + GetTopScopeName(scope.TopScope) + scope.Name + get_index_description(scope) + ": " + type_name);
+                    if (scope.IsReadOnly)
+                        sb.Append("; readonly");
+                    append_modifiers(sb, scope);
+                    break;
+
+            }
+            sb.Append(';');
+            return sb.ToString();
+        }
 		
 		protected virtual string GetSimpleDescriptionForElementScope(IElementScope scope)
 		{
@@ -1536,10 +1538,8 @@ namespace PascalABCCompiler.Parsers
                 sb.Append(']');
             }
             sb.Append(" : " + GetFullTypeName(pi.PropertyType));
-            if (get_meth != null)
-                sb.Append(" read");
-            if (set_meth != null)
-                sb.Append(" write");
+            if (set_meth == null)
+                sb.Append("; readonly");
             sb.Append(";");
             return sb.ToString();
         }

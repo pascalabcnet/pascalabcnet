@@ -1236,6 +1236,7 @@ namespace CodeCompletion
         public object cnst_val;
         public List<TypeScope> indexers;
         public TypeScope elementType;
+        public bool is_readonly;
 
         public ElementScope() { }
         public ElementScope(SymInfo si, SymScope sc, SymScope topScope)
@@ -1243,6 +1244,7 @@ namespace CodeCompletion
             this.si = si;
             this.sc = sc;
             this.topScope = topScope;
+            
             MakeDescription();
             //UnitDocCache.AddDescribeToComplete(this);
             //if (sc is ProcScope) si.kind = SymbolKind.Delegate;
@@ -1277,7 +1279,7 @@ namespace CodeCompletion
         {
             get
             {
-                return false;
+                return is_readonly;
             }
         }
 

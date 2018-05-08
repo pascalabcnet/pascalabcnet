@@ -3038,6 +3038,12 @@ namespace CodeCompletion
                 es.is_static = true;
             es.acc_mod = cur_access_mod;
             es.si.acc_mod = cur_access_mod;
+            if (_simple_property.accessors != null && _simple_property.accessors.write_accessor == null)
+            {
+                es.is_readonly = true;
+                es.MakeDescription();
+            }
+                
             cur_scope.AddName(_simple_property.property_name.name, es);
 
         }
