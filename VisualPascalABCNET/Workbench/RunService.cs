@@ -190,6 +190,7 @@ namespace VisualPascalABC
                         return true;
                 }
             }
+            RunActiveTabPage = false;
             return false;
         }
 
