@@ -3677,9 +3677,9 @@ procedure BigInteger.operator*=(var p: BigInteger; q: BigInteger) := p := p * q;
 
 procedure BigInteger.operator-=(var p: BigInteger; q: BigInteger) := p := p - q;
 
-function BigInteger.operator div(p,q: BigInteger) := BigInteger.Divide(p,q);
+//function BigInteger.operator div(p,q: BigInteger) := BigInteger.Divide(p,q);
 
-function BigInteger.operator mod(p,q: BigInteger) := BigInteger.Remainder(p,q);
+//function BigInteger.operator mod(p,q: BigInteger) := BigInteger.Remainder(p,q);
 
 function BigInteger.operator-(p: BigInteger) := BigInteger.Negate(p);
 
