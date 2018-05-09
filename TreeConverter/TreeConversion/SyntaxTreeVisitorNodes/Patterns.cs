@@ -22,13 +22,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(desugared_deconstruction deconstruction)
         {
-            if (deconstruction.HasAllExplicitTypes)
-            {
-                foreach (var def in deconstruction.definitions.Select(x => new var_statement(x)))
-                    def.visit(this);
-                return;
-            }
-
             var invokationTarget = convert_strong(deconstruction.deconstruction_target as expression);
             var types = InferAndCheckPatternVariableTypes(deconstruction.definitions, invokationTarget, deconstruction);
             if (types == null)
@@ -38,52 +31,21 @@ namespace PascalABCCompiler.TreeConverter
                 definition.visit(this);
         }
 
-        private type_node[] InferAndCheckPatternVariableTypes(List<var_def_statement> variableDefinitions, expression_node targetExpression, desugared_deconstruction deconstruction)
+        private type_node[] InferAndCheckPatternVariableTypes(List<var_def_statement> variableDefinitions, expression_node patternInstance, desugared_deconstruction deconstruction)
         {
-            /*
-            var castType = targetExpression.type as common_type_node;
-            var candidates = castType.methods.Where(x => x.name.ToLower() == "deconstruct").ToList();
-            
-            var deconstructParametersCount = variableDefinitions.Count;
-            parameter_list deconstructionParameters = null;
-
-            int suitableCandidates = 0;
-            foreach (var candidate in candidates)
-            {
-                if (candidate.parameters.Count != deconstructParametersCount)
-                    continue;
-
-                
-            }
-
-            type_node[] result = null;
-            if (suitableCandidates == 0)
-            {
-                if (deconstructParametersCount > 1)
-                    AddError(get_location(deconstruction), "NO_SUITABLE_DECONSTRUCT_FOUND");
-                else
-                    result = new[] { targetExpression.type };
-            }
-            else
-            {
-                if (suitableCandidates > 1)
-                    AddError(get_location(deconstruction), "DECONSTRUCTOR_METHOD_AMBIGUITY");
-                else
-                    result = deconstructionParameters.Select(x => x.type).ToArray();
-            }
-            return result;
-            */
-
             var parameterTypes = variableDefinitions.Select(x => x.vars_type == null ? null : convert_strong(x.vars_type)).ToArray();
             List<function_node> candidates = new List<function_node>();
+            List<type_node[]> deducedParametersList = new List<type_node[]>();
 
-            var allDeconstructs = targetExpression.type.find_in_type("deconstruct", context.CurrentScope);
+            var allDeconstructs = patternInstance.type.find_in_type("deconstruct", context.CurrentScope);
             foreach (var canditateSymbol in allDeconstructs.list)
             {
+                var deducedParameters = new type_node[parameterTypes.Length];
                 var possibleCandidate = canditateSymbol.sym_info as function_node;
-                if (!IsSuitableFunction(possibleCandidate, parameterTypes))
+                if (!IsSuitableFunction(possibleCandidate, parameterTypes, patternInstance, get_location(deconstruction), out deducedParameters))
                     continue;
 
+                deducedParametersList.Add(deducedParameters);
                 candidates.Add(possibleCandidate);
             }
 
@@ -96,52 +58,75 @@ namespace PascalABCCompiler.TreeConverter
             if (candidates.Count > 1)
             {
                 RemoveDefaultDeconstruct(candidates);
-                if (candidates.Count > 1)
+                if (candidates.Count > 1 && !CheckIfParameterListElementsAreTheSame(deducedParametersList))
                 {
                     AddError(get_location(deconstruction), "DECONSTRUCTOR_METHOD_AMBIGUITY");
                     return null;
                 }
             }
 
-            // Единственный подхдящий кандидат найден
-            Debug.Assert(candidates.Count == 1, "Candidate ambiguity");
-            var chosenDeconstruct = candidates[0];
-            type_node[] deducedGenerics = new type_node[chosenDeconstruct.generic_parameters_count];
-            var nils = new List<int>();
-
-            if (chosenDeconstruct.is_generic_function && chosenDeconstruct.is_extension_method)
+            // Единственный подхдящий кандидат найден, либо их несколько, с одинаковыми выходными параметрами
+            var chosenFunction = candidates.First();
+            if (chosenFunction.is_extension_method)
             {
-                var deduceSucceded = generic_convertions.DeduceInstanceTypes(chosenDeconstruct.parameters[0].type, targetExpression.type, deducedGenerics, nils);
-                if (!deduceSucceded || deducedGenerics.Contains(null))
-                {
-                    AddError(get_location(deconstruction), "COULDNT_DECUCE_DECONSTRUCT_GENERIC_TYPE");
-                    return null;
-                }
-            }
+                if (chosenFunction.is_generic_function)
+                    chosenFunction = generic_convertions.get_function_instance(chosenFunction, deducedParametersList.First().ToList());
 
-            return GetVariableTypesFromDestructionCall(chosenDeconstruct, deducedGenerics);
+                return chosenFunction.parameters.Where(x => !IsSelfParameter(x)).Select(x => x.type).ToArray();
+            }
+            else
+                return chosenFunction.parameters.Select(x => x.type).ToArray();//deducedParametersList[0];
         }
 
         /// <summary>
         /// Проверяет, подходит ли фаункция для вызова с указанными параметрами
         /// </summary>
         /// <param name="candidate"></param>
-        /// <param name="parameterTypes">Типы параметров, указанные пользователем</param>
+        /// <param name="givenParameterTypes">Типы параметров, указанные пользователем</param>
         /// <returns></returns>
-        private bool IsSuitableFunction(function_node candidate, type_node[] parameterTypes)
+        private bool IsSuitableFunction(
+            function_node candidate,
+            type_node[] givenParameterTypes,
+            expression_node patternInstance,
+            location deconstructionLocation,
+            out type_node[] parameterTypes)
         {
+            parameterTypes = new type_node[givenParameterTypes.Length];
+            var selfParameter = candidate.is_extension_method ? candidate.parameters.First(IsSelfParameter) : null;
+            Debug.Assert(!candidate.is_extension_method || selfParameter != null, "Couldn't find self in extension method");
             var candidateParameterTypes =
                 candidate.is_extension_method ?
                 candidate.parameters.Where(x => !IsSelfParameter(x)).ToArray() :
                 candidate.parameters.ToArray();
 
-            if (candidateParameterTypes.Length != parameterTypes.Length)
+            if (candidateParameterTypes.Length != givenParameterTypes.Length)
                 return false;
 
-            for (int i = 0; i < parameterTypes.Length; i++)
+            var genericDeduceNeeded = candidate.is_extension_method && candidate.is_generic_function;
+            type_node[] deducedGenerics = new type_node[candidate.generic_parameters_count];
+            if (genericDeduceNeeded)
             {
-                if (parameterTypes[i] != null && !AreTheSameTypes(candidateParameterTypes[i].type, parameterTypes[i]))
+                // Выводим дженерики по self
+                var nils = new List<int>();
+                var deduceSucceded = generic_convertions.DeduceInstanceTypes(selfParameter.type, patternInstance.type, deducedGenerics, nils);
+                if (!deduceSucceded || deducedGenerics.Contains(null))
+                {
+                    AddError(deconstructionLocation, "COULDNT_DEDUCE_DECONSTRUCT_GENERIC_TYPE");
                     return false;
+                }
+            }
+
+            for (int i = 0; i < givenParameterTypes.Length; i++)
+            {
+                var givenParameter = givenParameterTypes[i];
+                var candidateParameter = candidateParameterTypes[i].type;
+                if (genericDeduceNeeded && (candidateParameter.is_generic_parameter || candidateParameter.is_generic_type_instance))
+                    candidateParameter = InstantiateParameter(candidateParameter, deducedGenerics);//candidateParameter.get_instance(deducedGenerics.ToList());
+
+                if (givenParameter != null && !AreTheSameTypes(candidateParameter, givenParameter))
+                    return false;
+
+                parameterTypes[i] = candidateParameter;
             }
 
             return true;
@@ -149,7 +134,7 @@ namespace PascalABCCompiler.TreeConverter
 
         private bool AreTheSameTypes(type_node type1, type_node type2)
         {
-            return type1.full_name == type2.full_name;
+            return convertion_data_and_alghoritms.possible_equal_types(type1, type2);
         }
 
         private bool IsSelfParameter(parameter parameter) => parameter.name.ToLower() == compiler_string_consts.self_word;
@@ -161,8 +146,9 @@ namespace PascalABCCompiler.TreeConverter
                 candidates.RemoveAt(index);
         }
 
-        private bool  IsDefaultDeconstruct(function_node function)
+        private bool IsDefaultDeconstruct(function_node function)
         {
+            // TODO: fix
             return
                 function.generic_parameters_count == 1 &&
                 function.parameters.Count == 2 &&
@@ -171,12 +157,42 @@ namespace PascalABCCompiler.TreeConverter
                 AreTheSameTypes(function.parameters[0].type, function.parameters[1].type);
         }
 
-        private type_node[] GetVariableTypesFromDestructionCall(function_node deconstruct, type_node[] generics)
+        private bool CheckIfParameterListElementsAreTheSame(List<type_node[]> parametersList)
         {
-            return deconstruct.parameters
-                .Where(parameter => !IsSelfParameter(parameter))
-                .Select(x => x.type.is_generic_parameter ? generics[x.type.generic_param_index] : x.type)
-                .ToArray();
+            var first = parametersList.First();
+            for (int i = 1; i < parametersList.Count; i++)
+            {
+                if (first.Length != parametersList[i].Length)
+                    return false;
+
+                for (int j = 0; j < first.Length; j++)
+                    if (!AreTheSameTypes(first[j], parametersList[i][j]))
+                        return false;
+            }
+
+            return true;
+        }
+
+        private type_node InstantiateParameter(SemanticTree.ITypeNode genericType, type_node[] instances)
+        {
+            if (genericType.is_generic_parameter)
+                return instances[(genericType as type_node).generic_param_index];
+            else
+            {
+                var genericNode = (genericType as generic_instance_type_node);
+                if (genericNode != null)
+                {
+                    //var genericParameters = genericNode.instance_params;
+
+                    //for (int i = 0; i < genericParameters.Count; i++)
+                    //    genericParameters[i] = InstantiateParameter(genericParameters[i], instances);
+
+                    var parameters = genericNode.instance_params.Select(x => InstantiateParameter(x, instances)).ToList();
+                    genericNode.instance_params = parameters;
+                }
+
+                return genericNode as type_node;
+            }
         }
     }
 }
