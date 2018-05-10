@@ -82,7 +82,6 @@
 		<Key word = "until" />	
 		<Key word = "uses" />	
 		<Key word = "var" />
-		<Key word = "out" />
 		<Key word = "event" />	
 		<Key word = "while" />	
 		<Key word = "params" />	
