@@ -8,6 +8,8 @@ using PascalABCCompiler.TreeConversion;
 
 namespace SyntaxVisitors.SugarVisitors
 {
+    // Patterns
+
     public class DeconstructionDesugaringResult
     {
         /// <summary>
@@ -57,8 +59,8 @@ namespace SyntaxVisitors.SugarVisitors
             // Преобразование из сахара в известную конструкцию каждого case
             foreach (var patternCase in matchWith.case_list.elements)
             {
-                if (patternCase.pattern is type_pattern)
-                    DesugarTypePatternCase(matchWith.expr, patternCase);
+                if (patternCase == null)
+                    continue;
 
                 if (patternCase.pattern is deconstructor_pattern)
                     // TODO: introduce a variable for expression and cache it
@@ -122,11 +124,11 @@ namespace SyntaxVisitors.SugarVisitors
 
             // Создание тела if из объявлений переменных, вызова Deconstruct и соответствующего тела case
             var ifBody = new statement_list();
-            ifBody.Add(new desugared_deconstruction(desugaredPattern.DeconstructionVariables, desugaredPattern.CastVariable));
+            ifBody.Add(new desugared_deconstruction(desugaredPattern.DeconstructionVariables, desugaredPattern.CastVariable, patternCase.pattern.source_context));
             ifBody.Add(desugaredPattern.DeconstructCall);
             ifBody.Add(patternCase.case_action);
             var ifCheck = SubtreeCreator.CreateIf(desugaredPattern.TypeCastCheck, ifBody);
-            
+
             result.Add(ifCheck);
 
             // Добавляем полученные statements в результат
@@ -135,7 +137,7 @@ namespace SyntaxVisitors.SugarVisitors
 
         private ident GenerateIdent()
         {
-            return  new ident("<>patternGenVar" + _variableCounter++);
+            return new ident("<>patternGenVar" + _variableCounter++);
         }
 
         private void AddDesugaredCaseToResult(statement_list statements, if_node newIf)
@@ -155,7 +157,7 @@ namespace SyntaxVisitors.SugarVisitors
             var desugarResult = new DeconstructionDesugaringResult();
             var castVariableName = GenerateIdent();
             desugarResult.CastVariableDefinition = new var_statement(castVariableName, pattern.type);
-            
+
             // делегирование проверки паттерна функции IsTest
             desugarResult.TypeCastCheck = SubtreeCreator.CreateSystemFunctionCall("IsTest", matchingExpression, castVariableName);
 
@@ -171,3 +173,4 @@ namespace SyntaxVisitors.SugarVisitors
         }
     }
 }
+

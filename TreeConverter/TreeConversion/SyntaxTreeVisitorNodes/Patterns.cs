@@ -8,6 +8,7 @@ using PascalABCCompiler.TreeRealization;
 
 namespace PascalABCCompiler.TreeConverter
 {
+    // Patterns
     public partial class syntax_tree_visitor
     {
         private void CheckWhenExpression(SyntaxTree.expression when)

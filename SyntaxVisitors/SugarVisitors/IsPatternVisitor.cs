@@ -8,6 +8,7 @@ using System.Text;
 
 namespace SyntaxVisitors.SugarVisitors
 {
+    // Patterns
     public class IsPatternVisitor : BaseChangeVisitor
     {
         public static IsPatternVisitor New => new IsPatternVisitor();

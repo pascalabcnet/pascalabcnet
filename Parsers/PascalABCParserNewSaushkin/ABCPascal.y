@@ -2534,7 +2534,9 @@ pattern_cases
     ;
     
 pattern_case
-    : pattern tkWhen expr_l1 tkColon unlabelled_stmt
+    : 
+        { $$ = new empty_statement(); }
+    | pattern tkWhen expr_l1 tkColon unlabelled_stmt
         {
             $$ = new pattern_case($1 as pattern_node, $5 as statement, $3);
         }
@@ -2999,7 +3001,7 @@ relop_expr
 pattern
     : simple_or_template_type_reference tkRoundOpen pattern_out_param_list tkRoundClose
         { 
-            $$ = new deconstructor_pattern($3 as List<pattern_deconstructor_parameter>, $1); 
+            $$ = new deconstructor_pattern($3 as List<pattern_deconstructor_parameter>, $1, @$); 
         }
     ;
     
@@ -3018,13 +3020,13 @@ pattern_out_param_list
     ;
    
 pattern_out_param
-    : tkVar identifier tkColon type_ref
+    : identifier tkColon type_ref
         {
-            $$ = new pattern_deconstructor_parameter($2, $4);
+            $$ = new pattern_deconstructor_parameter($1, $3, @$);
         }
-    | tkVar identifier
+    | identifier
         {
-            $$ = new pattern_deconstructor_parameter($2, null);
+            $$ = new pattern_deconstructor_parameter($1, null, @$);
         }
     ;
     
