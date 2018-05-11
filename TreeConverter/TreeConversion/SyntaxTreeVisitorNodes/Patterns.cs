@@ -39,7 +39,7 @@ namespace PascalABCCompiler.TreeConverter
             List<type_node[]> deducedParametersList = new List<type_node[]>();
 
             var allDeconstructs = patternInstance.type.find_in_type("deconstruct", context.CurrentScope);
-            foreach (var canditateSymbol in allDeconstructs.list)
+            foreach (var canditateSymbol in allDeconstructs)
             {
                 var deducedParameters = new type_node[parameterTypes.Length];
                 var possibleCandidate = canditateSymbol.sym_info as function_node;
