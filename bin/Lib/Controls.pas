@@ -221,6 +221,7 @@ type
     begin
       element := new Slider;
       sl.ValueChanged += procedure(o,e) -> ValueChangedP;
+      sl.TickPlacement := System.Windows.Controls.Primitives.TickPlacement.BottomRight;
       sl.Minimum := min;
       sl.Maximum := max;
       sl.Value := val;

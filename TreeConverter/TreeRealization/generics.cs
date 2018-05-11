@@ -1255,10 +1255,10 @@ namespace PascalABCCompiler.TreeRealization
 
         public static bool type_has_default_ctor(type_node tn, bool find_protected_ctors)
         {
-            SymbolInfoList sil = tn.find_in_type(compiler_string_consts.default_constructor_name, tn.Scope);
+            List<SymbolInfo> sil = tn.find_in_type(compiler_string_consts.default_constructor_name, tn.Scope);
             if (sil != null)
             {
-                foreach (SymbolInfo si in sil.list)
+                foreach (SymbolInfo si in sil)
                 {
                     function_node fn = si.sym_info as function_node;
                     if (find_protected_ctors ||
@@ -1511,6 +1511,10 @@ namespace PascalABCCompiler.TreeRealization
             {
                 cmn.return_value_type = generic_convertions.determine_type(cmn.return_value_type, meth_inst_pars, true);
             }
+            if (orig_fn is common_function_node)
+            {
+                cmn.return_variable = (orig_fn as common_function_node)?.return_variable;
+            }
             return cmn;
         }
 
@@ -1665,12 +1669,29 @@ namespace PascalABCCompiler.TreeRealization
                                 (inst_type != cct && inst_type.original_generic != cct));
 
 
-                            MethodInfo[] meths = cct._compiled_type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
+                            /*MethodInfo[] meths = cct._compiled_type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
                                 BindingFlags.Static | BindingFlags.Instance);
                             int num = System.Array.IndexOf(meths, cfn.method_info);
 
-                            MethodInfo mi = ((compiled_type_node)inst_type)._compiled_type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
-                                BindingFlags.Static | BindingFlags.Instance)[num];
+                            //!!! прикольно, но индексы в meths и instmeths не совпадают!!!
+
+                            MethodInfo[] instmeths = ((compiled_type_node)inst_type)._compiled_type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
+                                BindingFlags.Static | BindingFlags.Instance);
+
+                            //var mt1 = meths.Select(m => m.MetadataToken).OrderBy(x => x);
+                            //var mt2 = instmeths.Select(m => m.MetadataToken).OrderBy(x => x);
+
+
+                            MethodInfo mi = instmeths[num];*/
+
+                            // SSM 2018.05.05 bug fix #664 
+                            var mdtok = cfn.method_info.MetadataToken;
+                            MethodInfo[] instmeths = ((compiled_type_node)inst_type)._compiled_type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
+                                BindingFlags.Static | BindingFlags.Instance);
+
+                            MethodInfo mi = System.Array.Find(instmeths, m => m.MetadataToken == mdtok);
+                            // SSM 2018.05.05 end bug fix #664 
+
                             return compiled_function_node.get_compiled_method(mi);
                         }
                         else
@@ -1678,6 +1699,15 @@ namespace PascalABCCompiler.TreeRealization
                     }
                     else if (orig_member.comperehensive_type.is_generic_type_instance)
                     {
+                        /*
+                        // SSM 29/04/18 - проба - как достать IndexOf из MyList<integer> - наследника List<integer> 
+                        // Это поздно - надо как-то раньше
+                          if (tn is compiled_type_node)
+                          tn = generic_convertions.determine_type((tn as compiled_type_node).compiled_type, instance_params,false);
+
+                        var tn1 = tn as compiled_type_node;
+                        var ff = tn1.find_in_type("IndexOf");*/
+
                         generic_instance_type_node compr_type = find_instance_type_from(tn);
                         if (compr_type == null)
                         {
@@ -1749,20 +1779,20 @@ namespace PascalABCCompiler.TreeRealization
             return rez_node;
         }
 
-        public SymbolInfoList ConvertSymbolInfo(SymbolInfoList start)
+        public List<SymbolInfo> ConvertSymbolInfo(List<SymbolInfo> start)
         {
-            SymbolInfoList rez_start = null;
+            List<SymbolInfo> rez_start = null;
             SymbolInfo rez_si = null;
             if (start != null)
             {
-                foreach (SymbolInfo si in start.list)
+                foreach (SymbolInfo si in start)
                 {
                     definition_node dnode = ConvertMember(si.sym_info);
                     rez_si = new SymbolInfo(dnode, si.access_level, si.symbol_kind);
                     //Дополняем список SymbolInfo преобразованным значением
                     if (rez_start == null)
                     {
-                        rez_start = new SymbolInfoList();
+                        rez_start = new List<SymbolInfo>();
                         rez_start.Add(rez_si);
                     }
                     else
@@ -1774,22 +1804,34 @@ namespace PascalABCCompiler.TreeRealization
             return rez_start;
         }
 
-        public override SymbolInfoList find(string name, bool no_search_in_extension_methods = false)
+        public override List<SymbolInfo> find(string name, bool no_search_in_extension_methods = false)
         {
-            SymbolInfoList si = _original_generic.find(name);
+            List<SymbolInfo> si = _original_generic.find(name);
             return ConvertSymbolInfo(si);//delete
         }
 
-        public override SymbolInfoList find_in_type(string name, bool no_search_in_extension_methods = false)
+        public override List<SymbolInfo> find_in_type(string name, bool no_search_in_extension_methods = false)
         {
-            SymbolInfoList sil = _original_generic.find_in_type(name);
+            List<SymbolInfo> sil = _original_generic.find_in_type(name);
             sil = ConvertSymbolInfo(sil);
             return sil;
         }
 
-        public override SymbolInfoList find_in_type(string name, SymbolTable.Scope CurrentScope, bool no_search_in_extension_methods = false)
+        public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, bool no_search_in_extension_methods = false)
         {
-            SymbolInfoList sil = _original_generic.find_in_type(name, CurrentScope);
+            //var or = generic_convertions.determine_type(_original_generic,this.instance_params,false); // циклится
+            List<SymbolInfo> sil = null;
+            /*var ctn = base_type as compiled_type_node;
+            if (ctn != null && ctn.is_generic_type_instance)
+            {
+                sil = ctn.find_in_type(name, CurrentScope, no_search_in_extension_methods);
+                var sil1 = _original_generic.find_in_type(name, CurrentScope);
+                sil1 = ConvertSymbolInfo(sil1);
+                if (sil!=null)
+                    sil1.InsertRange(0,sil);
+                return sil1;
+            }*/
+            sil = _original_generic.find_in_type(name, CurrentScope);
             sil = ConvertSymbolInfo(sil);
             return sil;
         }

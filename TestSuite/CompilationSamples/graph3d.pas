@@ -34,7 +34,11 @@ type
   TupleInt3 = (integer, integer, integer);
   TupleReal3 = (real, real, real);
   Point3D = Point3D;
+  Vector3D = Vector3D;
   Point = System.Windows.Point;
+  Ray3D = HelixToolkit.Wpf.Ray3D;
+  Line3D = class(Ray3D) end;
+  Plane3D = HelixToolkit.Wpf.Plane3D;
   
 var
   hvp: HelixViewport3D;
@@ -59,7 +63,11 @@ function Sz3D(x, y, z: real) := new Size3D(x, y, z);
 function Pnt(x, y: real) := new Point(x, y);
 function Rect(x, y, w, h: real) := new System.Windows.Rect(x, y, w, h);
 
-function operator*(p: Point3D; r: real); extensionmethod := P3D(p.x*r,p.y*r,p.z*r);
+function operator*(p: Point3D; r: real): Point3D; extensionmethod := p.Multiply(r);
+
+function operator*(r: real; p: Point3D): Point3D; extensionmethod := p.Multiply(r);
+
+function operator+(p1,p2: Point3D): Point3D; extensionmethod := p3d(p1.X+p2.X,p1.Y+p2.Y,p1.Z+p2.Z);
 
 const
   OrtX = V3D(1, 0, 0);
@@ -210,7 +218,14 @@ type
   CameraType = class
   private 
     function Cam: GCamera := hvp.Camera;
-    procedure SetPP(p: Point3D) := begin Cam.Position := p;Cam.LookDirection := Cam.Position.Multiply(-1).ToVector3D; end;
+    procedure SetPP(p: Point3D);
+    begin 
+      Cam.Position := p; 
+      //Cam.Ani
+      {if p<>(0,0,0) then
+        Cam.LookDirection := Cam.Position.Multiply(-1).ToVector3D
+      else Cam.LookDirection := V3D(1,0,0);}
+    end;
     procedure SetP(p: Point3D) := Invoke(SetPP, p);
     function GetP: Point3D := Invoke&<Point3D>(()->Cam.Position);
     procedure SetLDP(v: Vector3D) := Cam.LookDirection := v;
@@ -1219,8 +1234,7 @@ type
   EllipsoidT = class(ObjectWithMaterial3D)
   private
     function Model := inherited model as EllipsoidVisual3D;
-    procedure SetRXP(r: real) := Model.RadiusX := r;
-    procedure SetRX(r: real) := Invoke(SetRXP, r);
+    procedure SetRX(r: real) := Invoke(procedure(r: real)->Model.RadiusX := r, r);
     function GetRX: real := InvokeReal(()->Model.RadiusX);
     procedure SetRYP(r: real) := Model.RadiusY := r;
     procedure SetRY(r: real) := Invoke(SetRYP, r);
@@ -1470,7 +1484,7 @@ type
     function GetT: string := InvokeString(()->model.Text);
     
     procedure SetFSP(r: real) := model.FontSize := r;
-    procedure SetFS(r: real) := Invoke(SetFS, r); 
+    procedure SetFS(r: real) := Invoke(SetFSP, r); 
     function GetFS: real := InvokeReal(()->model.FontSize);
   protected  
     function CreateObject: Object3D; override := new BillboardTextT(X, Y, Z, Text, FontSize);
@@ -2017,7 +2031,7 @@ type
     constructor(x, y, z, Length: real; m: GMaterial) := CreateBase(new OctahedronVisual3D(Length), x, y, z, m);
     function Clone := (inherited Clone) as OctahedronT;
   end;
-  
+
   PrismVisual3D = class(MeshElement3D)
   private 
     fn: integer;
@@ -2068,6 +2082,74 @@ type
       Result := pmb.ToMeshGeometry3D
     end;
   end;
+
+  TriangleVisual3D = class(MeshElement3D)
+  private 
+    pp1,pp2,pp3: Point3D;
+  protected
+    function Tessellate(): MeshGeometry3D; override;
+    begin
+      var m := new MeshBuilder(true);
+      m.AddTriangle(p1,p2,p3);
+      Result := m.ToMesh;
+    end;
+    procedure SetP1(p1: Point3D);
+    begin
+      pp1 := p1;
+      OnGeometryChanged;
+    end;
+    procedure SetP2(p1: Point3D);
+    begin
+      pp2 := p2;
+      OnGeometryChanged;
+    end;
+    procedure SetP3(p3: Point3D);
+    begin
+      pp3 := p3;
+      OnGeometryChanged;
+    end;
+  public 
+    constructor(ppp1,ppp2,ppp3: Point3D);
+    begin
+      (pp1, pp2, pp3) := (ppp1,ppp2,ppp3);
+      Material := Colors.Red;
+      OnGeometryChanged;
+    end;
+    property P1: Point3D read pp1 write SetP1;
+    property P2: Point3D read pp2 write SetP2;
+    property P3: Point3D read pp3 write SetP3;
+    procedure SetPoints(p1,p2,p3: Point3D);
+    begin
+      pp1 := p1;
+      pp2 := p2;
+      pp3 := p3;
+      OnGeometryChanged;
+    end;
+  end;
+
+  TriangleT = class(ObjectWithMaterial3D)
+  protected
+    function Model := inherited model as TriangleVisual3D;
+    procedure SetP1(p: Point3D) := Invoke(procedure(p: Point3D)->model.P1 := p, p);
+    function  GetP1: Point3D := Invoke&<Point3D>(()->model.P1);
+    procedure SetP2(p: Point3D) := Invoke(procedure(p: Point3D)->model.P2 := p, p);
+    function  GetP2: Point3D := Invoke&<Point3D>(()->model.P2);
+    procedure SetP3(p: Point3D) := Invoke(procedure(p: Point3D)->model.P3 := p, p);
+    function  GetP3: Point3D := Invoke&<Point3D>(()->model.P3);
+
+    function CreateObject: Object3D; override := new TriangleT(Model.p1, Model.p2, Model.p3, Material.Clone);
+  public 
+    constructor(p1,p2,p3: Point3D; m: Gmaterial);
+    begin
+      CreateBase(new TriangleVisual3D(p1,p2,p3), 0, 0, 0, m);
+      Model.BackMaterial := Model.Material;      
+    end;
+    property P1: Point3D read GetP1 write SetP1;
+    property P2: Point3D read GetP2 write SetP2;
+    property P3: Point3D read GetP3 write SetP3;
+    procedure SetPoints(p1,p2,p3: Point3D) := Invoke(procedure(p1,p2,p3: Point3D)->begin model.SetPoints(p1,p2,p3); end, p1,p2,p3);
+  end;
+
 
   PrismT = class(ObjectWithMaterial3D)
   private
@@ -2362,13 +2444,61 @@ type
     end;
   end;
 
-function FindObject3D(x,y: real): Object3D;
+function FindNearestObject(x,y: real): Object3D;
 begin
   Result := nil;
   var v := hvp.FindNearestVisual(new Point(x,y));
   foreach var obj in Object3DList do
     if obj.model = v then
       Result := obj
+end;
+
+var BadPoint := P3D(real.MaxValue,real.MaxValue,real.MaxValue);
+
+function FindNearestObjectPoint(x,y: real): Point3D;
+begin
+  var p1 := hvp.FindNearestPoint(Pnt(x,y));
+  if p1.HasValue then
+    Result := p1.Value
+  else Result := BadPoint;
+end;
+
+function Plane(p: Point3D; normal: Vector3D): Plane3D := new Plane3D(p,normal);
+function Ray(p: Point3D; v: Vector3D): Ray3D := new Ray3D(p,v);
+function Line(p: Point3D; v: Vector3D): Line3D := new Line3D(p,v);
+function Line(p1,p2: Point3D): Line3D := new Line3D(p1,p2-p1);
+
+var
+  PlaneXY := Plane(Origin,OrtZ);
+  PlaneYZ := Plane(Origin,OrtX);
+  PlaneXZ := Plane(Origin,OrtY);
+  XAxis := Ray(Origin,OrtX);
+  YAxis := Ray(Origin,OrtY);
+  ZAxis := Ray(Origin,OrtZ);
+
+function GetRay(x,y: real): Ray3D := hvp.Viewport.GetRay(Pnt(x,y));
+
+function PointOnPlane(Self: Plane3D; x,y: real): Point3D; extensionmethod;
+begin
+  var r := GetRay(x,y);
+  //Println(r);
+  var p1 := r.PlaneIntersection(Self.Position,Self.Normal);
+  if p1.HasValue then
+    Result := p1.Value
+  else Result := BadPoint;
+end;
+
+function NearestPointOnLine(Self: Ray3D; x,y: real): Point3D; extensionmethod;
+begin
+  var ray := GetRay(x,y);
+  var a := Self.Direction;
+  var b := ray.Direction;
+  var ab := Vector3D.CrossProduct(a,b);
+  var planeNormal := Vector3D.CrossProduct(b,ab);
+  var p := Self.PlaneIntersection(ray.Origin,planeNormal);
+  if p.HasValue then
+    Result := p.Value
+  else Result := BadPoint;
 end;
 
 function DefaultMaterialColor := RandomColor;
@@ -2482,10 +2612,13 @@ function Segment3D(p1, p2: Point3D; thickness: real := 1.2; c: Color := GrayColo
 function Torus(x, y, z, Diameter, TubeDiameter: real; m: Material := DefaultMaterial): TorusT := Inv(()->TorusT.Create(x,y,z,Diameter, TubeDiameter, m));
 function Torus(p: Point3D; Diameter, TubeDiameter: real; m: Material := DefaultMaterial): TorusT := Torus(p.x,p.y,p.z,Diameter,TubeDiameter,m);
 
+function Triangle(p1,p2,p3: Point3D; m: Material := DefaultMaterial): TriangleT := Inv(()->TriangleT.Create(p1,p2,p3, m));
+
 function MyH(x, y, z, Length: real; c: Color): MyAnyT := Inv(()->MyAnyT.Create(x, y, z, Length, c));
 function MyH(x, y, z, Length: real; c: Material): MyAnyT := Inv(()->MyAnyT.Create(x, y, z, Length, c));
 
 function Any(x, y, z: real; c: Color): AnyT := Inv(()->AnyT.Create(x, y, z, c));
+
 
 procedure ProbaP;
 begin

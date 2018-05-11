@@ -1,4 +1,4 @@
-uses Graph3D;
+﻿uses Graph3D, GraphWPFBase;
 procedure p(f:complex->real);
 begin
   

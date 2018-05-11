@@ -414,8 +414,9 @@ namespace GPPGParserScanner
                 mc.parameters = new expression_list();
                 //string[] arr = Regex.Split(str.Value, @"\{[\w\d._]+\}");
                 //Match match = Regex.Match(str.Value, @"\{[\w\d._]+\}");
-                string[] arr = Regex.Split(str.Value, @"\{[^\}]+\}");
-                Match match = Regex.Match(str.Value, @"\{[^\}]+\}");
+                string val = str.Value.Replace("{{","![&").Replace("}}}","}&]!").Replace("}}", "&]!");
+                string[] arr = Regex.Split(val, @"\{[^\}]+\}");
+                Match match = Regex.Match(val, @"\{[^\}]+\}");
                 List<string> vars = new List<string>();
                 //Dictionary<string, int> var_offsets = new Dictionary<string, int>();
                 List<int> var_offsets = new List<int>();
@@ -435,7 +436,7 @@ namespace GPPGParserScanner
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < arr.Length; i++)
                 {
-                    sb.Append(arr[i]);
+                    sb.Append(arr[i].Replace("![&", "{{").Replace("&]!", "}}"));
                     if (i < arr.Length - 1)
                         sb.Append("{" + i + "}");
                 }

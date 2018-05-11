@@ -9,6 +9,7 @@ using System;
 
 using PascalABCCompiler.TreeRealization;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PascalABCCompiler.TreeConverter
 {
@@ -243,7 +244,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             common_type_node ctn = new common_type_node(SystemLibrary.SystemLibrary.delegate_base_type, name,
                                                         SemanticTree.type_access_level.tal_public, cmn,
-                                                        convertion_data_and_alghoritms.symbol_table.CreateClassScope(top_scope, SystemLibrary.SystemLibrary.delegate_base_type.Scope),
+                                                        convertion_data_and_alghoritms.symbol_table.CreateClassScope(top_scope, SystemLibrary.SystemLibrary.delegate_base_type.Scope, "delegate " + name),
                                                         loc);
             ctn.IsDelegate = true;
             return ctn;
@@ -405,7 +406,7 @@ namespace PascalABCCompiler.TreeConverter
 			//if (_cmn.namespace_name != null)
 			//    name = _cmn.namespace_name + name;
 			common_type_node ctn = new common_type_node(null, name, SemanticTree.type_access_level.tal_public,
-			                                            _cmn, convertion_data_and_alghoritms.symbol_table.CreateClassScope(top_scope, null), loc);
+			                                            _cmn, convertion_data_and_alghoritms.symbol_table.CreateClassScope(top_scope, null, "array_type " + name), loc);
 
 			ctn.SetBaseType(SystemLibrary.SystemLibrary.object_type);
 			//DarkStar Add
@@ -434,7 +435,7 @@ namespace PascalABCCompiler.TreeConverter
 
 			common_method_node get_func = new common_method_node(compiler_string_consts.get_val_pascal_array_name,
 			                                                     element_type, /*loc*/new location(0xFFFFFF, 0, 0xFFFFFF, 0, loc.doc), ctn, SemanticTree.polymorphic_state.ps_common, SemanticTree.field_access_level.fal_private,
-			                                                     convertion_data_and_alghoritms.symbol_table.CreateScope(ctn.scope));
+			                                                     convertion_data_and_alghoritms.symbol_table.CreateScope(ctn.scope, "get " + name));
 			common_parameter get_param = new common_parameter(compiler_string_consts.unary_param_name,
 			                                                  oti_indexer.lower_value.type, SemanticTree.parameter_type.value, get_func, concrete_parameter_type.cpt_none,
 			                                                  null, loc);
@@ -459,7 +460,7 @@ namespace PascalABCCompiler.TreeConverter
 
 			common_method_node set_func = new common_method_node(compiler_string_consts.set_val_pascal_array_name,
 			                                                     null, /*loc*/new location(0xFFFFFF, 0, 0xFFFFFF, 0, loc.doc), ctn, SemanticTree.polymorphic_state.ps_common, SemanticTree.field_access_level.fal_private,
-			                                                     convertion_data_and_alghoritms.symbol_table.CreateScope(ctn.scope));
+			                                                     convertion_data_and_alghoritms.symbol_table.CreateScope(ctn.scope, "set " + name));
 			common_parameter set_ind = new common_parameter(compiler_string_consts.left_param_name,
 			                                                oti_indexer.lower_value.type, SemanticTree.parameter_type.value, set_func, concrete_parameter_type.cpt_none,
 			                                                null, loc);
@@ -526,7 +527,7 @@ namespace PascalABCCompiler.TreeConverter
                 ctn.ImplementingInterfaces.Add(compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(compiler_string_consts.IEnumerableInterfaceName)));
                 common_method_node en_cmn = new common_method_node(compiler_string_consts.GetEnumeratorMethodName, compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(compiler_string_consts.IEnumeratorInterfaceName)), null, ctn, SemanticTree.polymorphic_state.ps_virtual, SemanticTree.field_access_level.fal_public, null);
 
-                compiled_function_node en_fnc = NetHelper.NetHelper.FindName(NetHelper.NetHelper.FindType(compiler_string_consts.IEnumerableInterfaceName), compiler_string_consts.GetEnumeratorMethodName).First().sym_info as compiled_function_node;
+                compiled_function_node en_fnc = NetHelper.NetHelper.FindName(NetHelper.NetHelper.FindType(compiler_string_consts.IEnumerableInterfaceName), compiler_string_consts.GetEnumeratorMethodName).FirstOrDefault().sym_info as compiled_function_node;
                 statements_list sl = new statements_list(null);
                 sl.statements.AddElement(new return_node(
                     new compiled_function_call(en_fnc, new class_field_reference(int_arr, new this_node(ctn, null), null), null), null));
@@ -543,10 +544,10 @@ namespace PascalABCCompiler.TreeConverter
 
                     en_cmn = new common_method_node(compiler_string_consts.GetEnumeratorMethodName, compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(compiler_string_consts.IGenericEnumeratorInterfaceName)).get_instance(generic_args), null, ctn, SemanticTree.polymorphic_state.ps_virtual, SemanticTree.field_access_level.fal_public, null);
                     //en_fnc = en_tn.find_in_type("GetEnumerator").sym_info as function_node;//NetHelper.NetHelper.FindName(NetHelper.NetHelper.FindType(compiler_string_consts.IGenericEnumerableInterfaceName), compiler_string_consts.GetEnumeratorMethodName).sym_info as compiled_function_node;
-                    SymbolInfoList en_sil = en_tn.find_in_type("GetEnumerator");
+                    List<SymbolInfo> en_sil = en_tn.find_in_type("GetEnumerator");
                     if (en_sil != null && en_sil.Count() > 1 && (en_sil[1].sym_info as function_node).return_value_type.is_generic_type_instance)
                         en_sil = en_sil.GetRange(1, en_sil.Count() - 1);
-                    function_node en_fnc_inst = en_sil.First().sym_info as function_node; ;//.get_instance(generic_args, true, loc);
+                    function_node en_fnc_inst = en_sil.FirstOrDefault().sym_info as function_node; ;//.get_instance(generic_args, true, loc);
                     sl = new statements_list(null);
                     if (en_fnc_inst is compiled_function_node)
                         sl.statements.AddElement(new return_node(
@@ -561,7 +562,7 @@ namespace PascalABCCompiler.TreeConverter
             }
 			
 			//= operation
-			SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope,ctn.scope);
+			SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope,ctn.scope, "= operator from " + ctn.scope);
         	common_method_node cmn_eq = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.eq_name),SystemLibrary.SystemLibrary.bool_type,null,ctn,
         	                                                SemanticTree.polymorphic_state.ps_static,SemanticTree.field_access_level.fal_public,scope);
         	cmn_eq.IsOperator = true;
@@ -596,7 +597,7 @@ namespace PascalABCCompiler.TreeConverter
         	ctn.Scope.AddSymbol(compiler_string_consts.eq_name,new SymbolInfo(cmn_eq));
         	
         	//<> operation
-			scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope,ctn.scope);
+			scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope,ctn.scope, "<> operator from " + ctn.scope);
         	common_method_node cmn_noteq = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.noteq_name),SystemLibrary.SystemLibrary.bool_type,null,ctn,
         	                                                SemanticTree.polymorphic_state.ps_static,SemanticTree.field_access_level.fal_public,scope);
         	cmn_noteq.IsOperator = true;
@@ -1162,7 +1163,7 @@ namespace PascalABCCompiler.TreeConverter
 			}
 			//basic_type_node btn=new basic_type_node(element_type.name+"_diap");
 			common_type_node ctn = new common_type_node(element_type, get_diap_type_name(lower_value, upper_value, element_type.name), SemanticTree.type_access_level.tal_internal,
-			                                            _cmn, convertion_data_and_alghoritms.symbol_table.CreateClassScope(top_scope, null), null);
+			                                            _cmn, convertion_data_and_alghoritms.symbol_table.CreateClassScope(top_scope, null, "diap_type " + element_type), null);
 			ctn.type_special_kind = PascalABCCompiler.SemanticTree.type_special_kind.diap_type;
 			ctn.internal_is_value = true;
 			internal_interface ii = element_type.get_internal_interface(internal_interface_kind.ordinal_interface);

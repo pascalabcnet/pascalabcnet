@@ -3686,9 +3686,9 @@ procedure BigInteger.operator*=(var p: BigInteger; q: BigInteger) := p := p * q;
 
 procedure BigInteger.operator-=(var p: BigInteger; q: BigInteger) := p := p - q;
 
-function BigInteger.operator div(p,q: BigInteger) := BigInteger.Divide(p,q);
+//function BigInteger.operator div(p,q: BigInteger) := BigInteger.Divide(p,q);
 
-function BigInteger.operator mod(p,q: BigInteger) := BigInteger.Remainder(p,q);
+//function BigInteger.operator mod(p,q: BigInteger) := BigInteger.Remainder(p,q);
 
 function BigInteger.operator-(p: BigInteger) := BigInteger.Negate(p);
 
@@ -8918,7 +8918,7 @@ begin
     end;
 end;
 
-/// Возвращает индекс последнего минимального элемента
+/// Возвращает индекс последнего максимального элемента
 function LastIndexMax<T>(Self: IList<T>): integer; extensionmethod;where T: System.IComparable<T>;
 begin
   var max := Self[Self.Count - 1];

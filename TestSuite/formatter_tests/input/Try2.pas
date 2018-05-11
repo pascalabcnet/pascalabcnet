@@ -1,4 +1,4 @@
-// Обработка нескольких исключений
+﻿// Обработка нескольких исключений
 var x: integer;
 
 begin
@@ -8,8 +8,8 @@ begin
     x := 10 div (x-1);
   except
     on System.FormatException do
-      writeln('Ошибка ввода');
+writeln('Ошибка ввода');
     on System.DivideByZeroException do
-      writeln('Деление на 0');  
+writeln('Деление на 0');  
   end;
 end.

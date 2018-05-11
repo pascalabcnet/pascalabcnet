@@ -405,7 +405,7 @@ namespace CodeCompletion
                 foreach (ident s in _typed_parametres.idents.idents)
                 {
                     IBaseScope ss = entry_scope.FindScopeByLocation(s.source_context.begin_position.line_num, s.source_context.begin_position.column_num);
-                    if (ss != null && ss.IsEqual(founded_scope))
+                    if (ss != null && ss.IsEqual(founded_scope) && founded_scope.SymbolInfo.Name == s.name)
                         pos_list.Add(get_position(s));
                 }
             if (_typed_parametres.vars_type != null)
@@ -434,7 +434,7 @@ namespace CodeCompletion
                     {
                         if (with_body)
                         {
-                            if (cur_scope != null && cur_scope.IsEqual(founded_scope))
+                            if (cur_scope != null && (cur_scope.IsEqual(founded_scope) || founded_scope is IProcScope && (founded_scope as IProcScope).Realization != null && cur_scope.IsEqual((founded_scope as IProcScope).Realization)))
                                 pos_list.Add(get_position(_procedure_header.name.meth_name));
                         }
                         else
@@ -447,6 +447,7 @@ namespace CodeCompletion
                     if (_procedure_header.name.class_name != null)
                     {
                         sc = cur_scope.FindNameInAnyOrder(_procedure_header.name.class_name.name);
+
                         if (sc != null && sc.IsEqual(founded_scope))
                             pos_list.Add(get_position(_procedure_header.name.class_name));
                     }
@@ -469,7 +470,7 @@ namespace CodeCompletion
                     {
                         if (with_body)
                         {
-                            if (cur_scope != null && cur_scope.IsEqual(founded_scope))
+                            if (cur_scope != null && (cur_scope.IsEqual(founded_scope) || founded_scope is IProcScope && (founded_scope as IProcScope).Realization != null && cur_scope.IsEqual((founded_scope as IProcScope).Realization)))
                                 pos_list.Add(get_position(_function_header.name.meth_name));
                         }
                         else
@@ -1572,6 +1573,42 @@ namespace CodeCompletion
         public override void visit(yield_node _yield_node)
         {
             _yield_node.ex.visit(this);
+        }
+        public override void visit(slice_expr _slice_expr)
+        {
+            _slice_expr.v.visit(this);
+            if (_slice_expr.from != null)
+                _slice_expr.from.visit(this);
+            if (_slice_expr.to != null)
+                _slice_expr.to.visit(this);
+            if (_slice_expr.step != null)
+                _slice_expr.step.visit(this);
+        }
+        public override void visit(slice_expr_question _slice_expr_question)
+        {
+            _slice_expr_question.v.visit(this);
+            if (_slice_expr_question.from != null)
+                _slice_expr_question.from.visit(this);
+            if (_slice_expr_question.to != null)
+                _slice_expr_question.to.visit(this);
+            if (_slice_expr_question.step != null)
+                _slice_expr_question.step.visit(this);
+        }
+        public override void visit(yield_sequence_node _yield_sequence_node)
+        {
+            _yield_sequence_node.ex.visit(this);
+        }
+        public override void visit(tuple_node _tuple_node)
+        {
+            _tuple_node.el.visit(this);
+        }
+        public override void visit(assign_var_tuple _assign_var_tuple)
+        {
+            for (int i = 0; i < _assign_var_tuple.idents.idents.Count; i++)
+            {
+                _assign_var_tuple.idents.idents[i].visit(this);
+            }
+            _assign_var_tuple.expr.visit(this);
         }
         public override void visit(modern_proc_type _modern_proc_type)
         {

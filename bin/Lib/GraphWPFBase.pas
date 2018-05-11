@@ -58,6 +58,7 @@ var
   MainWindow: GMainWindow;
 
 procedure Invoke(d: System.Delegate; params args: array of object) := app.Dispatcher.Invoke(d, args);
+procedure InvokeP(p: procedure(r: real); r: real) := Invoke(p,r); 
 
 procedure Invoke(d: ()->()) := app.Dispatcher.Invoke(d);
 

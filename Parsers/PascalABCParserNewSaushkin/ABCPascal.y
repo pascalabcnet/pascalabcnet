@@ -312,17 +312,27 @@ uses_clause
    			if (parsertools.build_tree_for_formatter)
    			{
 	        	if ($1 == null)
-	        		$1 = new uses_closure($3 as uses_list,@$);
-	        	else ($1 as uses_closure).AddUsesList($3 as uses_list,@$);
-				$$ = $1;
+                {
+	        		$$ = new uses_closure($3 as uses_list,@$);
+                }
+	        	else {
+                    ($1 as uses_closure).AddUsesList($3 as uses_list,@$);
+                    $$ = $1;
+                }
    			}
    			else 
    			{
 	        	if ($1 == null)
-	        		$1 = $3;
-	        	else ($1 as uses_list).AddUsesList($3 as uses_list,@$);
-				$$ = $1;
-				$$.source_context = @$;
+                {
+                    $$ = $3;
+                    $$.source_context = @$;
+                }
+	        	else 
+                {
+                    ($1 as uses_list).AddUsesList($3 as uses_list,@$);
+                    $$ = $1;
+                    $$.source_context = @$;
+                }
 			}
 		}
     ;
@@ -855,6 +865,15 @@ const_variable
 		{ $$ = $1; }
     | typeof_expr
 		{ $$ = $1; }
+    | tkRoundOpen const_expr tkRoundClose 
+        { 
+            if (!parsertools.build_tree_for_formatter) 
+            {
+                $2.source_context = @$;
+                $$ = $2;
+            } 
+			else $$ = new bracket_expr($2, @$); 
+        }
     | const_variable const_variable_2        
         {
 			$$ = NewConstVariable($1, $2, @$);
@@ -1458,8 +1477,8 @@ class_attributes1
 		}
 	| class_attributes1 class_attribute
 		{
-			$1 = ((class_attribute)$1) | ((class_attribute)$2);
-			$$ = $1;
+			$$  = ((class_attribute)$1) | ((class_attribute)$2);
+			//$$ = $1;
 		}
 	;
 		
@@ -1713,6 +1732,8 @@ method_decl_withattr
     | attribute_declarations method_decl
         {  
 			($2 as declaration).attributes = $1 as attribute_list;
+            if ($2 is procedure_definition && ($2 as procedure_definition).proc_header != null)
+                ($2 as procedure_definition).proc_header.attributes = $1 as attribute_list;
 			$$ = $2;
      }
     ;
@@ -3321,10 +3342,13 @@ variable
         	if (el.Count==1 && el.expressions[0] is format_expr) 
         	{
         		var fe = el.expressions[0] as format_expr;
-        		if (fe.expr == null)
-        			fe.expr = new int32_const(int.MaxValue,@3);
-        		if (fe.format1 == null)
-        			fe.format1 = new int32_const(int.MaxValue,@3);
+                if (!parsertools.build_tree_for_formatter)
+                {
+                    if (fe.expr == null)
+                        fe.expr = new int32_const(int.MaxValue,@3);
+                    if (fe.format1 == null)
+                        fe.format1 = new int32_const(int.MaxValue,@3);
+                }
         		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
 			}   
 			else $$ = new indexer($1 as addressed_value,el, @$);

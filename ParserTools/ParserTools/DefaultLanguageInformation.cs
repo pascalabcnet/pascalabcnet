@@ -1396,53 +1396,55 @@ namespace PascalABCCompiler.Parsers
 			//if (scope.IsStatic) sb.Append("; static");
 			if (scope.IsReintroduce) sb.Append("; reintroduce");
 		}
-		
-		protected virtual string GetDescriptionForElementScope(IElementScope scope)
-		{
-			string type_name=null;
-			StringBuilder sb = new StringBuilder();
-			if (scope.Type == null) type_name = "";
-			else
-				type_name = GetSimpleDescription(scope.Type);
-			if (type_name.StartsWith("$")) 
-				type_name = type_name.Substring(1,type_name.Length-1);
-			switch (scope.ElemKind)
-			{
-				case SymbolKind.Variable : sb.Append("var "+ GetTopScopeName(scope.TopScope)+scope.Name + ": "+type_name);  break;
-				case SymbolKind.Parameter : sb.Append(kind_of_param(scope) + "parameter "+scope.Name + ": "+type_name+(scope.ConstantValue!=null?(":="+scope.ConstantValue.ToString()):"")); break;
-				case SymbolKind.Constant : 
-				{
-					if (scope.ConstantValue == null)
-						sb.Append("const "+ GetTopScopeName(scope.TopScope)+scope.Name + ": "+type_name);
-					else sb.Append("const "+GetTopScopeName(scope.TopScope)+scope.Name+ ": "+ type_name + " = "+scope.ConstantValue.ToString());
-				}
-				break;
-				case SymbolKind.Event :
-					if (scope.IsStatic) sb.Append("class ");
-					sb.Append("event "+ GetTopScopeName(scope.TopScope)+scope.Name + ": "+type_name);
-					append_modifiers(sb,scope);
-					break;
-				case SymbolKind.Field :
-					if (scope.IsStatic)
-						sb.Append("class ");
-					else
-						sb.Append("var ");
-					sb.Append(GetTopScopeName(scope.TopScope)+scope.Name + ": "+type_name);
-					append_modifiers(sb,scope);
-					//if (scope.IsStatic) sb.Append("; static");
-					if (scope.IsReadOnly) sb.Append("; readonly");
-					break;
-				case SymbolKind.Property :
-					if (scope.IsStatic)
-						sb.Append("class ");
-					sb.Append("property "+ GetTopScopeName(scope.TopScope)+scope.Name + get_index_description(scope) + ": "+type_name); 
-					append_modifiers(sb,scope);
-					break;
-					
-			}
-			sb.Append(';');
-			return sb.ToString();
-		}
+
+        protected virtual string GetDescriptionForElementScope(IElementScope scope)
+        {
+            string type_name = null;
+            StringBuilder sb = new StringBuilder();
+            if (scope.Type == null) type_name = "";
+            else
+                type_name = GetSimpleDescription(scope.Type);
+            if (type_name.StartsWith("$"))
+                type_name = type_name.Substring(1, type_name.Length - 1);
+            switch (scope.ElemKind)
+            {
+                case SymbolKind.Variable: sb.Append("var " + GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name); break;
+                case SymbolKind.Parameter: sb.Append(kind_of_param(scope) + "parameter " + scope.Name + ": " + type_name + (scope.ConstantValue != null ? (":=" + scope.ConstantValue.ToString()) : "")); break;
+                case SymbolKind.Constant:
+                    {
+                        if (scope.ConstantValue == null)
+                            sb.Append("const " + GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name);
+                        else sb.Append("const " + GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name + " = " + scope.ConstantValue.ToString());
+                    }
+                    break;
+                case SymbolKind.Event:
+                    if (scope.IsStatic) sb.Append("class ");
+                    sb.Append("event " + GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name);
+                    append_modifiers(sb, scope);
+                    break;
+                case SymbolKind.Field:
+                    if (scope.IsStatic)
+                        sb.Append("class ");
+                    else
+                        sb.Append("var ");
+                    sb.Append(GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name);
+                    append_modifiers(sb, scope);
+                    //if (scope.IsStatic) sb.Append("; static");
+                    if (scope.IsReadOnly) sb.Append("; readonly");
+                    break;
+                case SymbolKind.Property:
+                    if (scope.IsStatic)
+                        sb.Append("class ");
+                    sb.Append("property " + GetTopScopeName(scope.TopScope) + scope.Name + get_index_description(scope) + ": " + type_name);
+                    if (scope.IsReadOnly)
+                        sb.Append("; readonly");
+                    append_modifiers(sb, scope);
+                    break;
+
+            }
+            sb.Append(';');
+            return sb.ToString();
+        }
 		
 		protected virtual string GetSimpleDescriptionForElementScope(IElementScope scope)
 		{
@@ -1537,10 +1539,8 @@ namespace PascalABCCompiler.Parsers
                 sb.Append(']');
             }
             sb.Append(" : " + GetFullTypeName(pi.PropertyType));
-            if (get_meth != null)
-                sb.Append(" read");
-            if (set_meth != null)
-                sb.Append(" write");
+            if (set_meth == null)
+                sb.Append("; readonly");
             sb.Append(";");
             return sb.ToString();
         }
@@ -1712,7 +1712,7 @@ namespace PascalABCCompiler.Parsers
                 sb.Append(": " + GetFullTypeName(mi.ReturnType));
             }
             //if (scope.CompiledMethod.IsStatic) sb.Append("; static");
-            if (mi.IsVirtual) sb.Append("; virtual");
+            if (mi.IsVirtual && !mi.IsFinal) sb.Append("; virtual");
             else if (mi.IsAbstract) sb.Append("; abstract");
             //else if (scope.CompiledMethod.IsHideBySig) sb.Append("; reintroduce");
             sb.Append(';');
@@ -1802,7 +1802,7 @@ namespace PascalABCCompiler.Parsers
                 if (extensionType == null)
                     sb.Append(GetShortTypeName(scope.CompiledMethod.GetParameters()[0].ParameterType));
             }
-            if (scope.Name != "Invoke")
+            //if (scope.Name != "Invoke")
             {
                 if (extensionType == null)
                     sb.Append(".");
@@ -1837,6 +1837,7 @@ namespace PascalABCCompiler.Parsers
                             }
                         }
                     }
+                    
                     else
                         sb.Append(tt[i].Name);
                     if (i < tt.Length - 1) sb.Append(',');
@@ -1903,8 +1904,8 @@ namespace PascalABCCompiler.Parsers
                     sb.Append(": " + ret_inst_type);
             }
             //if (scope.CompiledMethod.IsStatic) sb.Append("; static");
-            if (scope.CompiledMethod.IsVirtual) sb.Append("; virtual");
-            else if (scope.CompiledMethod.IsAbstract) sb.Append("; abstract");
+            if (scope.IsVirtual) sb.Append("; virtual");
+            else if (scope.IsAbstract) sb.Append("; abstract");
             //else if (scope.CompiledMethod.IsHideBySig) sb.Append("; reintroduce");
             sb.Append(';');
             return sb.ToString();
@@ -2152,22 +2153,26 @@ namespace PascalABCCompiler.Parsers
         		if ((scope as IElementScope).Indexers.Length == 0)
         		scope = (scope as IElementScope).Type;
         	if (scope is IProcScope) scope = (scope as IProcScope).ReturnType;
-			if (!(scope is IElementScope))
-        	{
-        		ITypeScope ts = scope as ITypeScope;
-        		if (ts == null) return null;
-        		if (tmp_si is ITypeScope) return null;
-        		ITypeScope[] indexers = ts.Indexers;
-        		if (indexers == null || indexers.Length == 0) return null;
-        		StringBuilder sb = new StringBuilder();
-        		sb.Append("this");
-        		sb.Append('[');
-        		for (int i=0; i<indexers.Length; i++)
-        		{
-        			sb.Append(GetSimpleDescriptionWithoutNamespace(indexers[i]));
-        			if (i < indexers.Length - 1)
-        				sb.Append(',');
-        		}
+            if (!(scope is IElementScope))
+            {
+                ITypeScope ts = scope as ITypeScope;
+                if (ts == null) return null;
+                if (tmp_si is ITypeScope) return null;
+                ITypeScope[] indexers = ts.Indexers;
+                if ((indexers == null || indexers.Length == 0) && !(ts is IArrayScope))
+                    return null;
+                StringBuilder sb = new StringBuilder();
+                sb.Append("this");
+                sb.Append('[');
+                if (indexers != null)
+                    for (int i = 0; i < indexers.Length; i++)
+                    {
+                        sb.Append(GetSimpleDescriptionWithoutNamespace(indexers[i]));
+                        if (i < indexers.Length - 1)
+                            sb.Append(',');
+                    }
+                else
+                    sb.Append("integer");
         		sb.Append("] : ");
         		sb.Append(GetSimpleDescriptionWithoutNamespace(ts.ElementType));
         		return new string[1]{sb.ToString()};
@@ -2580,12 +2585,15 @@ namespace PascalABCCompiler.Parsers
             {
                 keyword = KeywordKind.CommonKeyword;
             }
+
             else keyword = KeywordKind.None;
         }
 		
-		private bool CheckForComment(string Text, int off)
+		private bool CheckForComment(string Text, int off, out int comment_position, out bool one_line_comment)
 		{
 			int i = off;
+            one_line_comment = false;
+            comment_position = -1;
 			Stack<char> kav = new Stack<char>();
 			bool is_comm = false;
 			while (i>=0 && !is_comm && Text[i] != '\n')
@@ -2597,7 +2605,11 @@ namespace PascalABCCompiler.Parsers
 				}
 				else if (Text[i] == '{')
 				{
-					if (kav.Count == 0) is_comm = true;
+					if (kav.Count == 0)
+                    {
+                        is_comm = true;
+                        comment_position = i;
+                    }  
 				}
 				else if (Text[i] == '}')
 				{
@@ -2605,7 +2617,12 @@ namespace PascalABCCompiler.Parsers
 				}
 				else if (Text[i] == '/')
 					if (i > 0 && Text[i-1] == '/' && kav.Count == 0)
-					is_comm = true;
+                    {
+                        is_comm = true;
+                        one_line_comment = true;
+                        comment_position = i - 1;
+                    }
+					
 				i--;
 			}
 			return is_comm;
@@ -2665,13 +2682,19 @@ namespace PascalABCCompiler.Parsers
                         {
                             bound = i + 1;
                             TestForKeyword(Text, i, ref bound, punkt_sym, out keyw);
+                            for (int j = tmp; j > bound; j--)
+                            {
+                                sb.Insert(0, Text[j]);
+                            }
+                            i = bound;
+                            continue;
                         }
                         else if (i >= 0 && Text[i] == '\'') return "";
                         i = tmp;
                     }
                     else
                         if (ch == '\'')
-                            kav.Push('\'');
+                        kav.Push('\'');
                     sb.Insert(0, ch);//.Append(Text[i]);
                 }
                 else if (ch == '.' || ch == '^' || ch == '&')
@@ -2705,6 +2728,8 @@ namespace PascalABCCompiler.Parsers
                 {
                     if (kav.Count == 0)
                     {
+                        if (keyw == KeywordKind.None)
+                            return sb.ToString();
                         sb.Insert(0, ch);
                         break;
                     }
@@ -2741,7 +2766,7 @@ namespace PascalABCCompiler.Parsers
                                 {
                                     if (!(kav.Count == 0 && tokens.Count == 0))
                                         sb.Insert(0, ch);
-                                }   
+                                }
                                 else
                                     end = true;
                             }
@@ -2820,18 +2845,33 @@ namespace PascalABCCompiler.Parsers
                                     if (ch == ',' && ugl_skobki.Count > 0)
                                         sb.Insert(0, ch);
                                     else
-                                    if (tokens.Count == 0) end = true;
-                                    else sb.Insert(0, ch);
+                                    if (tokens.Count == 0)
+                                        end = true;
+                                    else
+                                        sb.Insert(0, ch);
                                 }
-                                else sb.Insert(0, ch);
+                                else
+                                    sb.Insert(0, ch);
                             }
                             else
                             {
                                 if (Text[i] == '\n')
                                 {
-                                    if (CheckForComment(Text, i - 1))
-                                        end = true;
-                                    else sb.Insert(0, ch);
+                                    bool one_line_comment = false;
+                                    int comment_position = -1;
+                                    if (CheckForComment(Text, i - 1, out comment_position, out one_line_comment))
+                                    {
+                                        if (!one_line_comment)
+                                            end = true;
+                                        else
+                                        {
+                                            sb.Insert(0, ch);
+                                            i = comment_position;
+                                        }
+                                            
+                                    }    
+                                    else
+                                        sb.Insert(0, ch);
                                 }
                                 else
                                     sb.Insert(0, ch);
@@ -2842,7 +2882,9 @@ namespace PascalABCCompiler.Parsers
 
                 if (end)
                 {
-                    if (CheckForComment(Text, i))
+                    bool one_line_comment = false;
+                    int comment_position = -1;
+                    if (CheckForComment(Text, i, out comment_position, out one_line_comment))
                     {
                         int new_line_ind = sb.ToString().IndexOf('\n');
                         if (new_line_ind != -1) sb = sb.Remove(0, new_line_ind + 1);
@@ -3048,16 +3090,26 @@ namespace PascalABCCompiler.Parsers
                 j--;
             Stack<char> kav_stack = new Stack<char>();
             j++;
+            bool in_format_str = false;
             while (j <= i)
             {
                 if (Text[j] == '\'')
                 {
                     if (kav_stack.Count == 0 && !in_keyw)
-                        kav_stack.Push('\'');
+                    {
+                        if (j == 0 || Text[j - 1] != '$')
+                            kav_stack.Push('\'');
+                        else
+                        {
+                            in_keyw = false;
+                            in_format_str = true;
+                        }
+                            
+                    }   
                     else if (kav_stack.Count > 0)
                         kav_stack.Pop();
                 }
-                else if (Text[j] == '{' && kav_stack.Count == 0)
+                else if (Text[j] == '{' && kav_stack.Count == 0 && !in_format_str)
                     in_keyw = true;
                 else
                     if (Text[j] == '}')
@@ -3376,8 +3428,19 @@ namespace PascalABCCompiler.Parsers
                                 else
                                 if (Text[i] == '\n')
                                 {
-                                    if (CheckForComment(Text, i - 1)) //proverjaem, net li kommenta ne predydushej stroke
-                                        end = true;//esli est to finish
+                                    bool one_line_comment = false;
+                                    int comment_position = -1;
+                                    if (CheckForComment(Text, i - 1, out comment_position, out one_line_comment)) //proverjaem, net li kommenta ne predydushej stroke
+                                    {
+                                        if (!one_line_comment)
+                                            end = true;
+                                        else
+                                        {
+                                            sb.Insert(0, ch);
+                                            i = comment_position;
+                                        }
+                                            
+                                    }
                                     else
                                         sb.Insert(0, ch);//a inache vyrazhenie na neskolkih strokah
                                 }
@@ -3390,7 +3453,9 @@ namespace PascalABCCompiler.Parsers
                     {
                         if (comma_pressed && !on_brace)
                             return "";
-                        if (CheckForComment(Text, i))//proverka na kommentarii
+                        bool one_line_comment = false;
+                        int comment_position = -1;
+                        if (CheckForComment(Text, i, out comment_position, out one_line_comment))//proverka na kommentarii
                         {
                             int new_line_ind = sb.ToString().IndexOf('\n');
                             if (new_line_ind != -1) sb = sb.Remove(0, new_line_ind + 1);

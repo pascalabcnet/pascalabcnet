@@ -400,7 +400,7 @@ namespace PascalABCCompiler.TreeConverter
         /// <param name="top_function">Функция в которой мы находимся.</param>
         /// <param name="allow_procedure">Может ли это быть вызов процедуры. false если вызов стоит в выражении или правой части опреатора присваивания.</param>
         /// <returns>Возвращает узел вызова метода.</returns>
-		public expression_node create_full_function_call(expressions_list exprs, SymbolInfoList si, location loc,
+		public expression_node create_full_function_call(expressions_list exprs, List<SymbolInfo> si, location loc,
             common_type_node converted_type, common_function_node top_function, bool allow_procedure)
         {
             function_node fn = select_function(exprs, si, loc);
@@ -681,7 +681,7 @@ namespace PascalABCCompiler.TreeConverter
                 return ret;
             }
 
-            if ((type_table.is_derived(from.type, to)) || (type_table.is_derived(to, from.type)) || from.type.IsInterface || to.IsInterface)
+            if ((type_table.is_derived(from.type, to)) || (type_table.is_derived(to, from.type)) || from.type.IsInterface || to.IsInterface && !(from.type is delegated_methods))
             {
                 if (from.type.IsSealed && to.IsInterface && !from.type.ImplementingInterfaces.Contains(to) ||
                     from.type.IsInterface && to.IsSealed && !to.ImplementingInterfaces.Contains(from.type))
@@ -903,7 +903,6 @@ namespace PascalABCCompiler.TreeConverter
                             vdn = syntax_tree_visitor.context.add_field(get_temp_arr_name(), loc, pr.type, polymorphic_state.ps_static);
                         else
                             vdn = syntax_tree_visitor.context.add_var_definition_in_entry_scope(get_temp_arr_name(), loc);
-                        
                     }
                     else if (syntax_tree_visitor.context.converted_type != null)
                         vdn = syntax_tree_visitor.context.add_field(get_temp_arr_name(), loc, pr.type, polymorphic_state.ps_static);
@@ -1720,7 +1719,7 @@ namespace PascalABCCompiler.TreeConverter
         }
 
         //Первый параметр - выходной. Он содержит выражения с необходимыми преобразованиями типов.
-        public function_node select_function(expressions_list parameters, SymbolInfoList functions, location loc, List<SyntaxTree.expression> syntax_nodes_parameters = null)
+        public function_node select_function(expressions_list parameters, List<SymbolInfo> functions, location loc, List<SyntaxTree.expression> syntax_nodes_parameters = null)
         {
             if (functions == null)
             {
@@ -1730,13 +1729,13 @@ namespace PascalABCCompiler.TreeConverter
             function_node_list set_of_possible_functions = new function_node_list();
 
             bool is_alone_method_defined = (functions.Count() == 1);
-            function_node first_function = functions.First().sym_info as function_node;
+            function_node first_function = functions.FirstOrDefault().sym_info as function_node;
             bool _is_assigment = first_function.name == compiler_string_consts.assign_name;
-            basic_function_node _tmp_bfn = functions.First().sym_info as basic_function_node;
+            basic_function_node _tmp_bfn = functions.FirstOrDefault().sym_info as basic_function_node;
 
             List<function_node> indefinits = new List<function_node>();
 
-            foreach (SymbolInfo function in functions.list)
+            foreach (SymbolInfo function in functions)
             {
 #if (DEBUG)
                 if (function.sym_info.general_node_type != general_node_type.function_node && function.sym_info.general_node_type != general_node_type.property_node)
