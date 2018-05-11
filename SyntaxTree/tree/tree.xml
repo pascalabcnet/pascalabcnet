@@ -2901,6 +2901,7 @@
       <Fields>
         <SyntaxField Name="expr" SyntaxType="expression" />
         <SyntaxField Name="case_list" SyntaxType="pattern_cases" />
+        <SyntaxField Name="defaultAction" SyntaxType="statement" />
       </Fields>
       <Methods />
       <Tags>
@@ -3680,6 +3681,7 @@
       <HelpData Key="loop_stmt.stmt" Value="" />
       <HelpData Key="match_with" Value="" />
       <HelpData Key="match_with.case_list" Value="" />
+      <HelpData Key="match_with.defaultAction" Value="" />
       <HelpData Key="match_with.expr" Value="" />
       <HelpData Key="matching_expression" Value="" />
       <HelpData Key="matching_expression.left" Value="" />
@@ -3841,6 +3843,7 @@
       <HelpData Key="pattern_case" Value="" />
       <HelpData Key="pattern_case.case_action" Value="" />
       <HelpData Key="pattern_case.condition" Value="" />
+      <HelpData Key="pattern_case.isDefault" Value="" />
       <HelpData Key="pattern_case.pattern" Value="" />
       <HelpData Key="pattern_cases" Value="" />
       <HelpData Key="pattern_cases.elements" Value="" />

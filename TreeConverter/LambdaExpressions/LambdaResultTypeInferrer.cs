@@ -69,6 +69,14 @@ namespace TreeConverter.LambdaExpressions
             syntaxTreeVisitor.visit(varStmt);
         }
 
+        // Patterns
+        public override void visit(desugared_deconstruction _desugared_deconstruction)
+        {
+            // позволяем вывести типы объявленных переменных
+            syntaxTreeVisitor.visit(_desugared_deconstruction);
+        }
+        // !Patterns
+
         public override void visit(assign assignment)
         {
             var to = assignment.to as ident;

@@ -382,6 +382,11 @@ namespace PascalABCCompiler.SyntaxTree
             return new bin_expr(left, right, Operators.Less);
         }
 
+        public static bin_expr LogicalAnd(expression left, expression right)
+        {
+            return new bin_expr(left, right, Operators.LogicalAND);
+        }
+
         public override string ToString()
         {
             return string.Format("{0} {2} {1}", left, right, OperatorServices.ToString(operation_type, LanguageId.PascalABCNET));

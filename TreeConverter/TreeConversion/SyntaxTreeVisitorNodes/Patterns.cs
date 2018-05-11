@@ -11,16 +11,6 @@ namespace PascalABCCompiler.TreeConverter
     // Patterns
     public partial class syntax_tree_visitor
     {
-        private void CheckWhenExpression(SyntaxTree.expression when)
-        {
-            if (when == null)
-                return;
-
-            var convertedWhen = convert_strong(when);
-            if (!convertion_data_and_alghoritms.can_convert_type(convertedWhen, SystemLibrary.SystemLibrary.bool_type))
-                AddError(get_location(when), "WHEN_EXPRESSION_SHOULD_HAVE_BOOL_TYPE");
-        }
-
         public override void visit(desugared_deconstruction deconstruction)
         {
             var invokationTarget = convert_strong(deconstruction.deconstruction_target as expression);
@@ -94,7 +84,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             parameterTypes = new type_node[givenParameterTypes.Length];
             var selfParameter = candidate.is_extension_method ? candidate.parameters.First(IsSelfParameter) : null;
-            Debug.Assert(!candidate.is_extension_method || selfParameter != null, "Couldn't find self in extension method");
+            Debug.Assert(!candidate.is_extension_method || selfParameter != null, "Couldn't find self parameter in extension method");
             var candidateParameterTypes =
                 candidate.is_extension_method ?
                 candidate.parameters.Where(x => !IsSelfParameter(x)).ToArray() :
@@ -111,10 +101,11 @@ namespace PascalABCCompiler.TreeConverter
                 var nils = new List<int>();
                 var deduceSucceded = generic_convertions.DeduceInstanceTypes(selfParameter.type, patternInstance.type, deducedGenerics, nils);
                 if (!deduceSucceded || deducedGenerics.Contains(null))
-                {
-                    AddError(deconstructionLocation, "COULDNT_DEDUCE_DECONSTRUCT_GENERIC_TYPE");
+                    // Проверка на то, что в Deconstruct все дженерики выводятся по self делается в другом месте
+                    // TODO: сделать проверку
+                    // TODO: запретить дженерик методы в классах. Можно использовать только дженерик-типы самого класса в качестве параметров
+                    //AddError(deconstructionLocation, "COULDNT_DEDUCE_DECONSTRUCT_GENERIC_TYPE");
                     return false;
-                }
             }
 
             for (int i = 0; i < givenParameterTypes.Length; i++)
@@ -122,7 +113,7 @@ namespace PascalABCCompiler.TreeConverter
                 var givenParameter = givenParameterTypes[i];
                 var candidateParameter = candidateParameterTypes[i].type;
                 if (genericDeduceNeeded && (candidateParameter.is_generic_parameter || candidateParameter.is_generic_type_instance))
-                    candidateParameter = InstantiateParameter(candidateParameter, deducedGenerics);//candidateParameter.get_instance(deducedGenerics.ToList());
+                    candidateParameter = InstantiateParameter(candidateParameter, deducedGenerics);
 
                 if (givenParameter != null && !AreTheSameTypes(candidateParameter, givenParameter))
                     return false;
@@ -183,11 +174,6 @@ namespace PascalABCCompiler.TreeConverter
                 var genericNode = (genericType as generic_instance_type_node);
                 if (genericNode != null)
                 {
-                    //var genericParameters = genericNode.instance_params;
-
-                    //for (int i = 0; i < genericParameters.Count; i++)
-                    //    genericParameters[i] = InstantiateParameter(genericParameters[i], instances);
-
                     var parameters = genericNode.instance_params.Select(x => InstantiateParameter(x, instances)).ToList();
                     genericNode.instance_params = parameters;
                 }

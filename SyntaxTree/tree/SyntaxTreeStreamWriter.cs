@@ -6239,6 +6239,15 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_match_with.case_list.visit(this);
 			}
+			if (_match_with.defaultAction == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_match_with.defaultAction.visit(this);
+			}
 		}
 
 

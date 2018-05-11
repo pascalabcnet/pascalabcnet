@@ -3986,6 +3986,7 @@ namespace PascalABCCompiler.SyntaxTree
 			read_statement(_match_with);
 			_match_with.expr = _read_node() as expression;
 			_match_with.case_list = _read_node() as pattern_cases;
+			_match_with.defaultAction = _read_node() as statement;
 		}
 
 

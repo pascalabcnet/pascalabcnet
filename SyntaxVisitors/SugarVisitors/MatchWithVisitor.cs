@@ -47,7 +47,7 @@ namespace SyntaxVisitors.SugarVisitors
 
         private int _variableCounter = 0;
         private if_node _previousIf;
-        private statement_list desugaredMatchWith;
+        private statement desugaredMatchWith;
 
         public static MatchWithVisitor New => new MatchWithVisitor();
 
@@ -67,8 +67,11 @@ namespace SyntaxVisitors.SugarVisitors
                     DesugarDeconstructorPatternCase(matchWith.expr, patternCase);
             }
 
+            if (matchWith.defaultAction != null)
+                AddDefaultCase(matchWith.defaultAction as statement_list);
+
             if (desugaredMatchWith == null)
-                return;
+                desugaredMatchWith = new empty_statement();
 
             // Замена выражения match with на новое несахарное поддерево и его обход
             ReplaceUsingParent(matchWith, desugaredMatchWith);
@@ -116,18 +119,23 @@ namespace SyntaxVisitors.SugarVisitors
             var desugaredPattern = DesugarPattern(pattern, matchingExpression);
             result.Add(desugaredPattern.CastVariableDefinition);
 
-            if (patternCase.condition != null)
-            // Если есть секция when - добавляем ее в условие
-            {
-                // TODO: generate check for 'when'
-            }
+            
 
             // Создание тела if из объявлений переменных, вызова Deconstruct и соответствующего тела case
             var ifBody = new statement_list();
             ifBody.Add(new desugared_deconstruction(desugaredPattern.DeconstructionVariables, desugaredPattern.CastVariable, patternCase.pattern.source_context));
             ifBody.Add(desugaredPattern.DeconstructCall);
-            ifBody.Add(patternCase.case_action);
-            var ifCheck = SubtreeCreator.CreateIf(desugaredPattern.TypeCastCheck, ifBody);
+
+            if (patternCase.condition != null)
+            {
+                // Выполняем тело, если выполняется условие when
+                ifBody.Add(SubtreeCreator.CreateIf(patternCase.condition, patternCase.case_action));
+            }
+            else
+                ifBody.Add(patternCase.case_action);
+
+            var ifCondition = desugaredPattern.TypeCastCheck;
+            var ifCheck = SubtreeCreator.CreateIf(ifCondition, ifBody);
 
             result.Add(ifCheck);
 
@@ -140,13 +148,21 @@ namespace SyntaxVisitors.SugarVisitors
             return new ident("<>patternGenVar" + _variableCounter++);
         }
 
+        private void AddDefaultCase(statement_list statements)
+        {
+            AddDesugaredCaseToResult(statements, _previousIf);
+        }
+
         private void AddDesugaredCaseToResult(statement_list statements, if_node newIf)
         {
             // Если результат пустой, значит это первый case
             if (desugaredMatchWith == null)
                 desugaredMatchWith = statements;
             else
+            {
                 _previousIf.else_body = statements;
+                _previousIf.FillParentsInDirectChilds();
+            }
 
             // Запоминаем только что сгенерированный if
             _previousIf = newIf;

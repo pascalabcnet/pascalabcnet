@@ -3787,6 +3787,7 @@ namespace PascalABCCompiler.SyntaxTree
 			pre_do_visit(_match_with);
 			visit(match_with.expr);
 			visit(match_with.case_list);
+			visit(match_with.defaultAction);
 			post_do_visit(_match_with);
 		}
 

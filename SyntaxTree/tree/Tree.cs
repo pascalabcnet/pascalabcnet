@@ -47878,25 +47878,28 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public match_with(expression _expr,pattern_cases _case_list)
+		public match_with(expression _expr,pattern_cases _case_list,statement _defaultAction)
 		{
 			this._expr=_expr;
 			this._case_list=_case_list;
+			this._defaultAction=_defaultAction;
 			FillParentsInDirectChilds();
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public match_with(expression _expr,pattern_cases _case_list,SourceContext sc)
+		public match_with(expression _expr,pattern_cases _case_list,statement _defaultAction,SourceContext sc)
 		{
 			this._expr=_expr;
 			this._case_list=_case_list;
+			this._defaultAction=_defaultAction;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
 		protected expression _expr;
 		protected pattern_cases _case_list;
+		protected statement _defaultAction;
 
 		///<summary>
 		///
@@ -47928,6 +47931,21 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+		///<summary>
+		///
+		///</summary>
+		public statement defaultAction
+		{
+			get
+			{
+				return _defaultAction;
+			}
+			set
+			{
+				_defaultAction=value;
+			}
+		}
+
 
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -47951,6 +47969,11 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.case_list = (pattern_cases)case_list.Clone();
 				copy.case_list.Parent = copy;
 			}
+			if (defaultAction != null)
+			{
+				copy.defaultAction = (statement)defaultAction.Clone();
+				copy.defaultAction.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -47969,6 +47992,8 @@ namespace PascalABCCompiler.SyntaxTree
 				expr.Parent = this;
 			if (case_list != null)
 				case_list.Parent = this;
+			if (defaultAction != null)
+				defaultAction.Parent = this;
 		}
 
 		///<summary> Заполняет поля Parent во всем поддереве </summary>
@@ -47978,6 +48003,7 @@ namespace PascalABCCompiler.SyntaxTree
 			attributes?.FillParentsInAllChilds();
 			expr?.FillParentsInAllChilds();
 			case_list?.FillParentsInAllChilds();
+			defaultAction?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -47987,7 +48013,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 3;
 			}
 		}
 		///<summary>
@@ -47997,7 +48023,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 3;
 			}
 		}
 		///<summary>
@@ -48015,6 +48041,8 @@ namespace PascalABCCompiler.SyntaxTree
 						return expr;
 					case 1:
 						return case_list;
+					case 2:
+						return defaultAction;
 				}
 				return null;
 			}
@@ -48029,6 +48057,9 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 					case 1:
 						case_list = (pattern_cases)value;
+						break;
+					case 2:
+						defaultAction = (statement)value;
 						break;
 				}
 			}

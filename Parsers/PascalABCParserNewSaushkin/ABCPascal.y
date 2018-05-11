@@ -2537,9 +2537,9 @@ if_stmt
     ;
 
 match_with
-    : tkMatch expr_l1 tkWith pattern_cases tkEnd
+    : tkMatch expr_l1 tkWith pattern_cases else_case tkEnd
         { 
-            $$ = new match_with($2, $4 as pattern_cases);
+            $$ = new match_with($2, $4 as pattern_cases, $5 as statement, @$);
         }
     ;
     
@@ -2559,11 +2559,11 @@ pattern_case
         { $$ = new empty_statement(); }
     | pattern tkWhen expr_l1 tkColon unlabelled_stmt
         {
-            $$ = new pattern_case($1 as pattern_node, $5 as statement, $3);
+            $$ = new pattern_case($1 as pattern_node, $5 as statement, $3, @$);
         }
     | pattern tkColon unlabelled_stmt
         {
-            $$ = new pattern_case($1 as pattern_node, $3 as statement, null);
+            $$ = new pattern_case($1 as pattern_node, $3 as statement, null, @$);
         }  
     ;
     
