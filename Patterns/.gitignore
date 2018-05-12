@@ -1,0 +1,3 @@
+// Ignore PascalABC.NET compiler output
+*.pdb
+*.exe
