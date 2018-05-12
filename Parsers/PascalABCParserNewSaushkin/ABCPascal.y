@@ -3716,6 +3716,10 @@ keyword
 		{ $$ = $1; }
 	| tkYield	
 		{ $$ = $1; }
+    | tkMatch
+        { $$ = $1; }
+    | tkWhen
+        { $$ = $1; }
     ;
 
 reserved_keyword
