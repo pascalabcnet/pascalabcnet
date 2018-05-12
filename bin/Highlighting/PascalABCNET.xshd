@@ -93,6 +93,8 @@
 		<Key word = "initialization" />	
 		<Key word = "finalization" />
 		<Key word = "where" />
+		<Key word = "match" />
+		<Key word = "when" />
 	 </KeyWords> 
 
 	 
