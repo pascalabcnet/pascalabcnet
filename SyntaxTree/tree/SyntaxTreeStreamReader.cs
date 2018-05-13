@@ -482,6 +482,10 @@ namespace PascalABCCompiler.SyntaxTree
 					return new pattern_deconstructor_parameter();
 				case 230:
 					return new desugared_deconstruction();
+				case 231:
+					return new var_deconstructor_parameter();
+				case 232:
+					return new recursive_deconstructor_parameter();
 			}
 			return null;
 		}
@@ -4061,8 +4065,6 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_pattern_deconstructor_parameter(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
 		{
 			read_syntax_tree_node(_pattern_deconstructor_parameter);
-			_pattern_deconstructor_parameter.identifier = _read_node() as ident;
-			_pattern_deconstructor_parameter.type = _read_node() as type_definition;
 		}
 
 
@@ -4088,6 +4090,31 @@ namespace PascalABCCompiler.SyntaxTree
 				}
 			}
 			_desugared_deconstruction.deconstruction_target = (object)br.ReadByte();
+		}
+
+
+		public void visit(var_deconstructor_parameter _var_deconstructor_parameter)
+		{
+			read_var_deconstructor_parameter(_var_deconstructor_parameter);
+		}
+
+		public void read_var_deconstructor_parameter(var_deconstructor_parameter _var_deconstructor_parameter)
+		{
+			read_pattern_deconstructor_parameter(_var_deconstructor_parameter);
+			_var_deconstructor_parameter.identifier = _read_node() as ident;
+			_var_deconstructor_parameter.type = _read_node() as type_definition;
+		}
+
+
+		public void visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
+		{
+			read_recursive_deconstructor_parameter(_recursive_deconstructor_parameter);
+		}
+
+		public void read_recursive_deconstructor_parameter(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
+		{
+			read_pattern_deconstructor_parameter(_recursive_deconstructor_parameter);
+			_recursive_deconstructor_parameter.pattern = _read_node() as pattern_node;
 		}
 
 	}

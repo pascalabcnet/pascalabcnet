@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.TreeConversion;
+using PascalABCCompiler.TreeConverter;
 
 namespace SyntaxVisitors.SugarVisitors
 {
@@ -41,15 +42,15 @@ namespace SyntaxVisitors.SugarVisitors
         }
     }
 
-    public class MatchWithVisitor : BaseChangeVisitor
+    public class PatternsDesugaringVisitor : BaseChangeVisitor
     {
-        private const string DeconstructMethodName = "Deconstruct";
+        private const string DeconstructMethodName = compiler_string_consts.deconstruct_method_name;
 
         private int _variableCounter = 0;
         private if_node _previousIf;
         private statement desugaredMatchWith;
 
-        public static MatchWithVisitor New => new MatchWithVisitor();
+        public static PatternsDesugaringVisitor New => new PatternsDesugaringVisitor();
 
         public override void visit(match_with matchWith)
         {
@@ -63,7 +64,7 @@ namespace SyntaxVisitors.SugarVisitors
                     continue;
 
                 if (patternCase.pattern is deconstructor_pattern)
-                    // TODO: introduce a variable for expression and cache it
+                    // TODO Patterns: introduce a variable for expression and cache it
                     DesugarDeconstructorPatternCase(matchWith.expr, patternCase);
             }
 
@@ -76,6 +77,12 @@ namespace SyntaxVisitors.SugarVisitors
             // Замена выражения match with на новое несахарное поддерево и его обход
             ReplaceUsingParent(matchWith, desugaredMatchWith);
             visit(desugaredMatchWith);
+        }
+
+        public override void visit(is_pattern_expr isPatternExpr)
+        {
+            if (isPatternExpr.right is type_pattern)
+                DesugarTypePattern(isPatternExpr);
         }
 
         void DesugarTypePatternCase(expression matchingExpression, pattern_case patternCase)
@@ -170,22 +177,44 @@ namespace SyntaxVisitors.SugarVisitors
 
         private DeconstructionDesugaringResult DesugarPattern(deconstructor_pattern pattern, expression matchingExpression)
         {
-            var desugarResult = new DeconstructionDesugaringResult();
-            var castVariableName = GenerateIdent();
-            desugarResult.CastVariableDefinition = new var_statement(castVariableName, pattern.type);
+            //var desugarResult = new DeconstructionDesugaringResult();
+            //var castVariableName = GenerateIdent();
+            //desugarResult.CastVariableDefinition = new var_statement(castVariableName, pattern.type);
 
-            // делегирование проверки паттерна функции IsTest
-            desugarResult.TypeCastCheck = SubtreeCreator.CreateSystemFunctionCall("IsTest", matchingExpression, castVariableName);
+            //// делегирование проверки паттерна функции IsTest
+            //desugarResult.TypeCastCheck = SubtreeCreator.CreateSystemFunctionCall("IsTest", matchingExpression, castVariableName);
 
-            foreach (var deconstructedVariable in pattern.parameters)
-                desugarResult.DeconstructionVariables.Add(
-                    new var_def_statement(deconstructedVariable.identifier, deconstructedVariable.type));
+            //foreach (var deconstructedVariable in pattern.parameters)
+            //    desugarResult.DeconstructionVariables.Add(
+            //        new var_def_statement(deconstructedVariable.identifier, deconstructedVariable.type));
 
-            var deconstructCall = new procedure_call();
-            deconstructCall.func_name = SubtreeCreator.CreateMethodCall(DeconstructMethodName, castVariableName.name, pattern.parameters.Select(x => x.identifier).ToArray());
-            desugarResult.DeconstructCall = deconstructCall;
+            //var deconstructCall = new procedure_call();
+            //deconstructCall.func_name = SubtreeCreator.CreateMethodCall(DeconstructMethodName, castVariableName.name, pattern.parameters.Select(x => x.identifier).ToArray());
+            //desugarResult.DeconstructCall = deconstructCall;
 
-            return desugarResult;
+            //return desugarResult;
+
+            return null;
+        }
+
+        private void DesugarTypePattern(is_pattern_expr isPatternExpr)
+        {
+            Debug.Assert(isPatternExpr.right is type_pattern);
+
+            // Замена is_pattern на вызов вспомогательной функции PABCSystem.IsTest 
+            expression expression = isPatternExpr.left;
+            type_pattern pattern = (type_pattern)isPatternExpr.right;
+            var isTestFunc = SubtreeCreator.CreateSystemFunctionCall("IsTest", expression, pattern.identifier);
+            ReplaceUsingParent(isPatternExpr, isTestFunc);
+
+            // Объявление переменной в ближайшем statement_list
+            for (int i = listNodes.Count - 1; i >= 0; i--)
+            {
+                var statements = listNodes[i] as statement_list;
+                statements?.InsertBefore(
+                    listNodes[i + 1] as statement,
+                    new var_statement(pattern.identifier, pattern.type));
+            }
         }
     }
 }

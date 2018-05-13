@@ -28,7 +28,7 @@ namespace PascalABCCompiler.TreeConverter
             List<function_node> candidates = new List<function_node>();
             List<type_node[]> deducedParametersList = new List<type_node[]>();
 
-            var allDeconstructs = patternInstance.type.find_in_type("deconstruct", context.CurrentScope);
+            var allDeconstructs = patternInstance.type.find_in_type(compiler_string_consts.deconstruct_method_name, context.CurrentScope);
             foreach (var canditateSymbol in allDeconstructs)
             {
                 var deducedParameters = new type_node[parameterTypes.Length];
@@ -102,8 +102,8 @@ namespace PascalABCCompiler.TreeConverter
                 var deduceSucceded = generic_convertions.DeduceInstanceTypes(selfParameter.type, patternInstance.type, deducedGenerics, nils);
                 if (!deduceSucceded || deducedGenerics.Contains(null))
                     // Проверка на то, что в Deconstruct все дженерики выводятся по self делается в другом месте
-                    // TODO: сделать проверку
-                    // TODO: запретить дженерик методы в классах. Можно использовать только дженерик-типы самого класса в качестве параметров
+                    // TODO Patterns: сделать проверку
+                    // TODO Patterns: запретить дженерик методы в классах. Можно использовать только дженерик-типы самого класса в качестве параметров
                     //AddError(deconstructionLocation, "COULDNT_DEDUCE_DECONSTRUCT_GENERIC_TYPE");
                     return false;
             }
@@ -140,7 +140,7 @@ namespace PascalABCCompiler.TreeConverter
 
         private bool IsDefaultDeconstruct(function_node function)
         {
-            // TODO: fix
+            // TODO Patterns: check if it declared in PABCSystem
             return
                 function.generic_parameters_count == 1 &&
                 function.parameters.Count == 2 &&

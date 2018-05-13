@@ -3008,13 +3008,14 @@ namespace CodeFormatters
 
         public override void visit(deconstructor_pattern _deconstructor_pattern)
         {
-            visit_node(_deconstructor_pattern.type);
-            foreach (var parameter in _deconstructor_pattern.parameters)
-            {
-                visit_node(parameter.identifier);
-                if (parameter.type != null)
-                    visit_node(parameter.type);
-            }
+            // TODO Patterns: format
+            //visit_node(_deconstructor_pattern.type);
+            //foreach (var parameter in _deconstructor_pattern.parameters)
+            //{
+            //    visit_node(parameter.identifier);
+            //    if (parameter.type != null)
+            //        visit_node(parameter.type);
+            //}
         }
 
         #endregion

@@ -369,6 +369,7 @@ namespace PascalABCCompiler.TreeConverter
         public static string ienumerable_auto_type_name = "IEnumerableAutoType"; // SSM 05.07.16 - тип, который определяется на этапе компиляции при первом присваивании
         public static string recort_printable_name_template = "record{0}end";
         public static string set_name = "TypedSet";
+        public const string deconstruct_method_name = "deconstruct";
 
         public static string bounded_array_printable_name_template = "array [{0}..{1}] of {2}";
         public static string array_printable_name_template = "array of {0}";

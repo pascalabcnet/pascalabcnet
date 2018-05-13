@@ -6374,24 +6374,6 @@ namespace PascalABCCompiler.SyntaxTree
 		public void write_pattern_deconstructor_parameter(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
 		{
 			write_syntax_tree_node(_pattern_deconstructor_parameter);
-			if (_pattern_deconstructor_parameter.identifier == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_pattern_deconstructor_parameter.identifier.visit(this);
-			}
-			if (_pattern_deconstructor_parameter.type == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_pattern_deconstructor_parameter.type.visit(this);
-			}
 		}
 
 
@@ -6426,6 +6408,57 @@ namespace PascalABCCompiler.SyntaxTree
 				}
 			}
 			bw.Write((byte)_desugared_deconstruction.deconstruction_target);
+		}
+
+
+		public void visit(var_deconstructor_parameter _var_deconstructor_parameter)
+		{
+			bw.Write((Int16)231);
+			write_var_deconstructor_parameter(_var_deconstructor_parameter);
+		}
+
+		public void write_var_deconstructor_parameter(var_deconstructor_parameter _var_deconstructor_parameter)
+		{
+			write_pattern_deconstructor_parameter(_var_deconstructor_parameter);
+			if (_var_deconstructor_parameter.identifier == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_var_deconstructor_parameter.identifier.visit(this);
+			}
+			if (_var_deconstructor_parameter.type == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_var_deconstructor_parameter.type.visit(this);
+			}
+		}
+
+
+		public void visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
+		{
+			bw.Write((Int16)232);
+			write_recursive_deconstructor_parameter(_recursive_deconstructor_parameter);
+		}
+
+		public void write_recursive_deconstructor_parameter(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
+		{
+			write_pattern_deconstructor_parameter(_recursive_deconstructor_parameter);
+			if (_recursive_deconstructor_parameter.pattern == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_recursive_deconstructor_parameter.pattern.visit(this);
+			}
 		}
 
 	}

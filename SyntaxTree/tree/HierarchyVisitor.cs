@@ -1853,6 +1853,22 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(var_deconstructor_parameter _var_deconstructor_parameter)
+		{
+		}
+
+		public virtual void post_do_visit(var_deconstructor_parameter _var_deconstructor_parameter)
+		{
+		}
+
+		public virtual void pre_do_visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
+		{
+		}
+
+		public virtual void post_do_visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -3824,8 +3840,6 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_pattern_deconstructor_parameter);
 			pre_do_visit(_pattern_deconstructor_parameter);
-			visit(pattern_deconstructor_parameter.identifier);
-			visit(pattern_deconstructor_parameter.type);
 			post_do_visit(_pattern_deconstructor_parameter);
 		}
 
@@ -3836,6 +3850,23 @@ namespace PascalABCCompiler.SyntaxTree
 			for (int i = 0; i < definitions.Count; i++)
 				visit(desugared_deconstruction.definitions[i]);
 			post_do_visit(_desugared_deconstruction);
+		}
+
+		public override void visit(var_deconstructor_parameter _var_deconstructor_parameter)
+		{
+			DefaultVisit(_var_deconstructor_parameter);
+			pre_do_visit(_var_deconstructor_parameter);
+			visit(var_deconstructor_parameter.identifier);
+			visit(var_deconstructor_parameter.type);
+			post_do_visit(_var_deconstructor_parameter);
+		}
+
+		public override void visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
+		{
+			DefaultVisit(_recursive_deconstructor_parameter);
+			pre_do_visit(_recursive_deconstructor_parameter);
+			visit(recursive_deconstructor_parameter.pattern);
+			post_do_visit(_recursive_deconstructor_parameter);
 		}
 	}
 

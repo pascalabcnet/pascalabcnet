@@ -43,8 +43,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             DoubleQuestionDesugarVisitor.New.ProcessNode(root);
 
             // Patterns
-            MatchWithVisitor.New.ProcessNode(root);
-            //IsPatternVisitor.New.ProcessNode(root);
+            PatternsDesugaringVisitor.New.ProcessNode(root);
 
             // Всё, связанное с yield
             MarkMethodHasYieldAndCheckSomeErrorsVisitor.New.ProcessNode(root);
