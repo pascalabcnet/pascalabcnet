@@ -12443,7 +12443,7 @@ namespace PascalABCCompiler.TreeConverter
         internal void CheckOverrideOrReintroduceExpectedWarning(location loc)
         {
             common_method_node cmn = context.top_function as common_method_node;
-            if (!current_converted_method_not_in_class_defined && cmn != null && !cmn.IsReintroduce && (cmn.polymorphic_state == SemanticTree.polymorphic_state.ps_common || cmn.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual))
+            if (!current_converted_method_not_in_class_defined && cmn != null && !cmn.IsReintroduce && cmn.polymorphic_state == SemanticTree.polymorphic_state.ps_common)
                 if (context.FindMethodToOverride(cmn) != null)
                 {
                     WarningsList.Add(new OverrideOrReintroduceExpected(loc));
