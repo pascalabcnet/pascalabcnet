@@ -6,6 +6,106 @@ using System.Collections.Generic;
 namespace PascalABCCompiler.SyntaxTree
 {
 	///<summary>
+	///Выражение
+	///</summary>
+	[Serializable]
+	public partial class expression : declaration
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public expression()
+		{
+
+		}
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			expression copy = new expression();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new expression TypedClone()
+		{
+			return Clone() as expression;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
 	///Базовый класс для всех классов синтаксического дерева
 	///</summary>
 	[Serializable]
@@ -126,106 +226,6 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="visitor">Объект-посетитель.</param>
 		///<returns>Return value is void</returns>
 		public virtual void visit(IVisitor visitor)
-		{
-			visitor.visit(this);
-		}
-
-	}
-
-
-	///<summary>
-	///Выражение
-	///</summary>
-	[Serializable]
-	public partial class expression : declaration
-	{
-
-		///<summary>
-		///Конструктор без параметров.
-		///</summary>
-		public expression()
-		{
-
-		}
-
-		/// <summary> Создает копию узла </summary>
-		public override syntax_tree_node Clone()
-		{
-			expression copy = new expression();
-			copy.Parent = this.Parent;
-			if (source_context != null)
-				copy.source_context = new SourceContext(source_context);
-			if (attributes != null)
-			{
-				copy.attributes = (attribute_list)attributes.Clone();
-				copy.attributes.Parent = copy;
-			}
-			return copy;
-		}
-
-		/// <summary> Получает копию данного узла корректного типа </summary>
-		public new expression TypedClone()
-		{
-			return Clone() as expression;
-		}
-
-		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
-		public override void FillParentsInDirectChilds()
-		{
-			if (attributes != null)
-				attributes.Parent = this;
-		}
-
-		///<summary> Заполняет поля Parent во всем поддереве </summary>
-		public override void FillParentsInAllChilds()
-		{
-			FillParentsInDirectChilds();
-			attributes?.FillParentsInAllChilds();
-		}
-
-		///<summary>
-		///Свойство для получения количества всех подузлов без элементов поля типа List
-		///</summary>
-		public override Int32 subnodes_without_list_elements_count
-		{
-			get
-			{
-				return 0;
-			}
-		}
-		///<summary>
-		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
-		///</summary>
-		public override Int32 subnodes_count
-		{
-			get
-			{
-				return 0;
-			}
-		}
-		///<summary>
-		///Индексатор для получения всех подузлов
-		///</summary>
-		public override syntax_tree_node this[Int32 ind]
-		{
-			get
-			{
-				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
-					throw new IndexOutOfRangeException();
-				return null;
-			}
-			set
-			{
-				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
-					throw new IndexOutOfRangeException();
-			}
-		}
-		///<summary>
-		///Метод для обхода дерева посетителем
-		///</summary>
-		///<param name="visitor">Объект-посетитель.</param>
-		///<returns>Return value is void</returns>
-		public override void visit(IVisitor visitor)
 		{
 			visitor.visit(this);
 		}
@@ -47388,6 +47388,2115 @@ namespace PascalABCCompiler.SyntaxTree
 					case 1:
 						right = (expression)value;
 						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class pattern_node : syntax_tree_node
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public pattern_node()
+		{
+
+		}
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			pattern_node copy = new pattern_node();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new pattern_node TypedClone()
+		{
+			return Clone() as pattern_node;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class type_pattern : pattern_node
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public type_pattern()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public type_pattern(ident _identifier,type_definition _type)
+		{
+			this._identifier=_identifier;
+			this._type=_type;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public type_pattern(ident _identifier,type_definition _type,SourceContext sc)
+		{
+			this._identifier=_identifier;
+			this._type=_type;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected ident _identifier;
+		protected type_definition _type;
+
+		///<summary>
+		///
+		///</summary>
+		public ident identifier
+		{
+			get
+			{
+				return _identifier;
+			}
+			set
+			{
+				_identifier=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public type_definition type
+		{
+			get
+			{
+				return _type;
+			}
+			set
+			{
+				_type=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			type_pattern copy = new type_pattern();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (identifier != null)
+			{
+				copy.identifier = (ident)identifier.Clone();
+				copy.identifier.Parent = copy;
+			}
+			if (type != null)
+			{
+				copy.type = (type_definition)type.Clone();
+				copy.type.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new type_pattern TypedClone()
+		{
+			return Clone() as type_pattern;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (identifier != null)
+				identifier.Parent = this;
+			if (type != null)
+				type.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			identifier?.FillParentsInAllChilds();
+			type?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return identifier;
+					case 1:
+						return type;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						identifier = (ident)value;
+						break;
+					case 1:
+						type = (type_definition)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class is_pattern_expr : expression
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public is_pattern_expr()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public is_pattern_expr(expression _left,pattern_node _right)
+		{
+			this._left=_left;
+			this._right=_right;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public is_pattern_expr(expression _left,pattern_node _right,SourceContext sc)
+		{
+			this._left=_left;
+			this._right=_right;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected expression _left;
+		protected pattern_node _right;
+
+		///<summary>
+		///
+		///</summary>
+		public expression left
+		{
+			get
+			{
+				return _left;
+			}
+			set
+			{
+				_left=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public pattern_node right
+		{
+			get
+			{
+				return _right;
+			}
+			set
+			{
+				_right=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			is_pattern_expr copy = new is_pattern_expr();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (left != null)
+			{
+				copy.left = (expression)left.Clone();
+				copy.left.Parent = copy;
+			}
+			if (right != null)
+			{
+				copy.right = (pattern_node)right.Clone();
+				copy.right.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new is_pattern_expr TypedClone()
+		{
+			return Clone() as is_pattern_expr;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (left != null)
+				left.Parent = this;
+			if (right != null)
+				right.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			left?.FillParentsInAllChilds();
+			right?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return left;
+					case 1:
+						return right;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						left = (expression)value;
+						break;
+					case 1:
+						right = (pattern_node)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class match_with : statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public match_with()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public match_with(expression _expr,pattern_cases _case_list,statement _defaultAction)
+		{
+			this._expr=_expr;
+			this._case_list=_case_list;
+			this._defaultAction=_defaultAction;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public match_with(expression _expr,pattern_cases _case_list,statement _defaultAction,SourceContext sc)
+		{
+			this._expr=_expr;
+			this._case_list=_case_list;
+			this._defaultAction=_defaultAction;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected expression _expr;
+		protected pattern_cases _case_list;
+		protected statement _defaultAction;
+
+		///<summary>
+		///
+		///</summary>
+		public expression expr
+		{
+			get
+			{
+				return _expr;
+			}
+			set
+			{
+				_expr=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public pattern_cases case_list
+		{
+			get
+			{
+				return _case_list;
+			}
+			set
+			{
+				_case_list=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public statement defaultAction
+		{
+			get
+			{
+				return _defaultAction;
+			}
+			set
+			{
+				_defaultAction=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			match_with copy = new match_with();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (expr != null)
+			{
+				copy.expr = (expression)expr.Clone();
+				copy.expr.Parent = copy;
+			}
+			if (case_list != null)
+			{
+				copy.case_list = (pattern_cases)case_list.Clone();
+				copy.case_list.Parent = copy;
+			}
+			if (defaultAction != null)
+			{
+				copy.defaultAction = (statement)defaultAction.Clone();
+				copy.defaultAction.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new match_with TypedClone()
+		{
+			return Clone() as match_with;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (expr != null)
+				expr.Parent = this;
+			if (case_list != null)
+				case_list.Parent = this;
+			if (defaultAction != null)
+				defaultAction.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			expr?.FillParentsInAllChilds();
+			case_list?.FillParentsInAllChilds();
+			defaultAction?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return expr;
+					case 1:
+						return case_list;
+					case 2:
+						return defaultAction;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						expr = (expression)value;
+						break;
+					case 1:
+						case_list = (pattern_cases)value;
+						break;
+					case 2:
+						defaultAction = (statement)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class pattern_case : statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public pattern_case()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public pattern_case(pattern_node _pattern,statement _case_action,expression _condition)
+		{
+			this._pattern=_pattern;
+			this._case_action=_case_action;
+			this._condition=_condition;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public pattern_case(pattern_node _pattern,statement _case_action,expression _condition,SourceContext sc)
+		{
+			this._pattern=_pattern;
+			this._case_action=_case_action;
+			this._condition=_condition;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected pattern_node _pattern;
+		protected statement _case_action;
+		protected expression _condition;
+
+		///<summary>
+		///
+		///</summary>
+		public pattern_node pattern
+		{
+			get
+			{
+				return _pattern;
+			}
+			set
+			{
+				_pattern=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public statement case_action
+		{
+			get
+			{
+				return _case_action;
+			}
+			set
+			{
+				_case_action=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public expression condition
+		{
+			get
+			{
+				return _condition;
+			}
+			set
+			{
+				_condition=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			pattern_case copy = new pattern_case();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (pattern != null)
+			{
+				copy.pattern = (pattern_node)pattern.Clone();
+				copy.pattern.Parent = copy;
+			}
+			if (case_action != null)
+			{
+				copy.case_action = (statement)case_action.Clone();
+				copy.case_action.Parent = copy;
+			}
+			if (condition != null)
+			{
+				copy.condition = (expression)condition.Clone();
+				copy.condition.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new pattern_case TypedClone()
+		{
+			return Clone() as pattern_case;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (pattern != null)
+				pattern.Parent = this;
+			if (case_action != null)
+				case_action.Parent = this;
+			if (condition != null)
+				condition.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			pattern?.FillParentsInAllChilds();
+			case_action?.FillParentsInAllChilds();
+			condition?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return pattern;
+					case 1:
+						return case_action;
+					case 2:
+						return condition;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						pattern = (pattern_node)value;
+						break;
+					case 1:
+						case_action = (statement)value;
+						break;
+					case 2:
+						condition = (expression)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class pattern_cases : statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public pattern_cases()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public pattern_cases(List<pattern_case> _elements)
+		{
+			this._elements=_elements;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public pattern_cases(List<pattern_case> _elements,SourceContext sc)
+		{
+			this._elements=_elements;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		public pattern_cases(pattern_case elem, SourceContext sc = null)
+		{
+			Add(elem, sc);
+		    FillParentsInDirectChilds();
+		}
+		
+		protected List<pattern_case> _elements=new List<pattern_case>();
+
+		///<summary>
+		///
+		///</summary>
+		public List<pattern_case> elements
+		{
+			get
+			{
+				return _elements;
+			}
+			set
+			{
+				_elements=value;
+			}
+		}
+
+
+		public pattern_cases Add(pattern_case elem, SourceContext sc = null)
+		{
+			elements.Add(elem);
+			if (elem != null)
+				elem.Parent = this;
+			if (sc != null)
+				source_context = sc;
+			return this;
+		}
+		
+		public void AddFirst(pattern_case el)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			elements.Insert(0, el);
+			FillParentsInDirectChilds();
+		}
+		
+		public void AddFirst(IEnumerable<pattern_case> els)
+		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
+			elements.InsertRange(0, els);
+			foreach (var el in els)
+				if (el != null)
+					el.Parent = this;
+		}
+		
+		public void AddMany(params pattern_case[] els)
+		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
+			elements.AddRange(els);
+			foreach (var el in els)
+				if (el != null)
+					el.Parent = this;
+		}
+		
+		private int FindIndexInList(pattern_case el)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			var ind = elements.FindIndex(x => x == el);
+			if (ind == -1)
+				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
+			return ind;
+		}
+		
+		public void InsertAfter(pattern_case el, pattern_case newel)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
+			elements.Insert(FindIndexInList(el) + 1, newel);
+			newel.Parent = this;
+		}
+		
+		public void InsertAfter(pattern_case el, IEnumerable<pattern_case> newels)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
+			elements.InsertRange(FindIndexInList(el) + 1, newels);
+			foreach (var newel in newels)
+				if (newel != null)
+					newel.Parent = this;
+		}
+		
+		public void InsertBefore(pattern_case el, pattern_case newel)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
+			elements.Insert(FindIndexInList(el), newel);
+			newel.Parent = this;
+		}
+		
+		public void InsertBefore(pattern_case el, IEnumerable<pattern_case> newels)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
+			elements.InsertRange(FindIndexInList(el), newels);
+			foreach (var newel in newels)
+				if (newel != null)
+					newel.Parent = this;
+		}
+		
+		public bool Remove(pattern_case el)
+		{
+			return elements.Remove(el);
+		}
+		
+		public void ReplaceInList(pattern_case el, pattern_case newel)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
+			elements[FindIndexInList(el)] = newel;
+			newel.Parent = this;
+		}
+		
+		public void ReplaceInList(pattern_case el, IEnumerable<pattern_case> newels)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
+			var ind = FindIndexInList(el);
+			elements.RemoveAt(ind);
+			elements.InsertRange(ind, newels);
+		    foreach (var newel in newels)
+				if (newel != null)
+					newel.Parent = this;
+		}
+		
+		public int RemoveAll(Predicate<pattern_case> match)
+		{
+			return elements.RemoveAll(match);
+		}
+		
+		public pattern_case Last()
+		{
+			if (elements.Count > 0)
+		        return elements[elements.Count - 1];
+			throw new InvalidOperationException("Список пуст");
+		}
+		
+		public int Count
+		{
+		    get { return elements.Count; }
+		}
+		
+		public void Insert(int pos, pattern_case el)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			elements.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
+		}
+		
+		
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			pattern_cases copy = new pattern_cases();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (elements != null)
+			{
+				foreach (pattern_case elem in elements)
+				{
+					if (elem != null)
+					{
+						copy.Add((pattern_case)elem.Clone());
+						copy.Last().Parent = copy;
+					}
+					else
+						copy.Add(null);
+				}
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new pattern_cases TypedClone()
+		{
+			return Clone() as pattern_cases;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (elements != null)
+			{
+				foreach (var child in elements)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			if (elements != null)
+			{
+				foreach (var child in elements)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 0 + (elements == null ? 0 : elements.Count);
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				Int32 index_counter=ind - 0;
+				if(elements != null)
+				{
+					if(index_counter < elements.Count)
+					{
+						return elements[index_counter];
+					}
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				Int32 index_counter=ind - 0;
+				if(elements != null)
+				{
+					if(index_counter < elements.Count)
+					{
+						elements[index_counter]= (pattern_case)value;
+						return;
+					}
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class deconstructor_pattern : pattern_node
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public deconstructor_pattern()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public deconstructor_pattern(List<pattern_deconstructor_parameter> _parameters,type_definition _type)
+		{
+			this._parameters=_parameters;
+			this._type=_type;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public deconstructor_pattern(List<pattern_deconstructor_parameter> _parameters,type_definition _type,SourceContext sc)
+		{
+			this._parameters=_parameters;
+			this._type=_type;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		public deconstructor_pattern(pattern_deconstructor_parameter elem, SourceContext sc = null)
+		{
+			Add(elem, sc);
+		    FillParentsInDirectChilds();
+		}
+		
+		protected List<pattern_deconstructor_parameter> _parameters=new List<pattern_deconstructor_parameter>();
+		protected type_definition _type;
+
+		///<summary>
+		///Результат деконструирования
+		///</summary>
+		public List<pattern_deconstructor_parameter> parameters
+		{
+			get
+			{
+				return _parameters;
+			}
+			set
+			{
+				_parameters=value;
+			}
+		}
+
+		///<summary>
+		///Деконструируемый тип
+		///</summary>
+		public type_definition type
+		{
+			get
+			{
+				return _type;
+			}
+			set
+			{
+				_type=value;
+			}
+		}
+
+
+		public deconstructor_pattern Add(pattern_deconstructor_parameter elem, SourceContext sc = null)
+		{
+			parameters.Add(elem);
+			if (elem != null)
+				elem.Parent = this;
+			if (sc != null)
+				source_context = sc;
+			return this;
+		}
+		
+		public void AddFirst(pattern_deconstructor_parameter el)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			parameters.Insert(0, el);
+			FillParentsInDirectChilds();
+		}
+		
+		public void AddFirst(IEnumerable<pattern_deconstructor_parameter> els)
+		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
+			parameters.InsertRange(0, els);
+			foreach (var el in els)
+				if (el != null)
+					el.Parent = this;
+		}
+		
+		public void AddMany(params pattern_deconstructor_parameter[] els)
+		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
+			parameters.AddRange(els);
+			foreach (var el in els)
+				if (el != null)
+					el.Parent = this;
+		}
+		
+		private int FindIndexInList(pattern_deconstructor_parameter el)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			var ind = parameters.FindIndex(x => x == el);
+			if (ind == -1)
+				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
+			return ind;
+		}
+		
+		public void InsertAfter(pattern_deconstructor_parameter el, pattern_deconstructor_parameter newel)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
+			parameters.Insert(FindIndexInList(el) + 1, newel);
+			newel.Parent = this;
+		}
+		
+		public void InsertAfter(pattern_deconstructor_parameter el, IEnumerable<pattern_deconstructor_parameter> newels)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
+			parameters.InsertRange(FindIndexInList(el) + 1, newels);
+			foreach (var newel in newels)
+				if (newel != null)
+					newel.Parent = this;
+		}
+		
+		public void InsertBefore(pattern_deconstructor_parameter el, pattern_deconstructor_parameter newel)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
+			parameters.Insert(FindIndexInList(el), newel);
+			newel.Parent = this;
+		}
+		
+		public void InsertBefore(pattern_deconstructor_parameter el, IEnumerable<pattern_deconstructor_parameter> newels)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
+			parameters.InsertRange(FindIndexInList(el), newels);
+			foreach (var newel in newels)
+				if (newel != null)
+					newel.Parent = this;
+		}
+		
+		public bool Remove(pattern_deconstructor_parameter el)
+		{
+			return parameters.Remove(el);
+		}
+		
+		public void ReplaceInList(pattern_deconstructor_parameter el, pattern_deconstructor_parameter newel)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
+			parameters[FindIndexInList(el)] = newel;
+			newel.Parent = this;
+		}
+		
+		public void ReplaceInList(pattern_deconstructor_parameter el, IEnumerable<pattern_deconstructor_parameter> newels)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
+			var ind = FindIndexInList(el);
+			parameters.RemoveAt(ind);
+			parameters.InsertRange(ind, newels);
+		    foreach (var newel in newels)
+				if (newel != null)
+					newel.Parent = this;
+		}
+		
+		public int RemoveAll(Predicate<pattern_deconstructor_parameter> match)
+		{
+			return parameters.RemoveAll(match);
+		}
+		
+		public pattern_deconstructor_parameter Last()
+		{
+			if (parameters.Count > 0)
+		        return parameters[parameters.Count - 1];
+			throw new InvalidOperationException("Список пуст");
+		}
+		
+		public int Count
+		{
+		    get { return parameters.Count; }
+		}
+		
+		public void Insert(int pos, pattern_deconstructor_parameter el)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			parameters.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
+		}
+		
+		
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			deconstructor_pattern copy = new deconstructor_pattern();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (parameters != null)
+			{
+				foreach (pattern_deconstructor_parameter elem in parameters)
+				{
+					if (elem != null)
+					{
+						copy.Add((pattern_deconstructor_parameter)elem.Clone());
+						copy.Last().Parent = copy;
+					}
+					else
+						copy.Add(null);
+				}
+			}
+			if (type != null)
+			{
+				copy.type = (type_definition)type.Clone();
+				copy.type.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new deconstructor_pattern TypedClone()
+		{
+			return Clone() as deconstructor_pattern;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (parameters != null)
+			{
+				foreach (var child in parameters)
+					if (child != null)
+						child.Parent = this;
+			}
+			if (type != null)
+				type.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (parameters != null)
+			{
+				foreach (var child in parameters)
+					child?.FillParentsInAllChilds();
+			}
+			type?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1 + (parameters == null ? 0 : parameters.Count);
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return type;
+				}
+				Int32 index_counter=ind - 1;
+				if(parameters != null)
+				{
+					if(index_counter < parameters.Count)
+					{
+						return parameters[index_counter];
+					}
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						type = (type_definition)value;
+						break;
+				}
+				Int32 index_counter=ind - 1;
+				if(parameters != null)
+				{
+					if(index_counter < parameters.Count)
+					{
+						parameters[index_counter]= (pattern_deconstructor_parameter)value;
+						return;
+					}
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class pattern_deconstructor_parameter : syntax_tree_node
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public pattern_deconstructor_parameter()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public pattern_deconstructor_parameter(ident _identifier,type_definition _type)
+		{
+			this._identifier=_identifier;
+			this._type=_type;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public pattern_deconstructor_parameter(ident _identifier,type_definition _type,SourceContext sc)
+		{
+			this._identifier=_identifier;
+			this._type=_type;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected ident _identifier;
+		protected type_definition _type;
+
+		///<summary>
+		///
+		///</summary>
+		public ident identifier
+		{
+			get
+			{
+				return _identifier;
+			}
+			set
+			{
+				_identifier=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public type_definition type
+		{
+			get
+			{
+				return _type;
+			}
+			set
+			{
+				_type=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			pattern_deconstructor_parameter copy = new pattern_deconstructor_parameter();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (identifier != null)
+			{
+				copy.identifier = (ident)identifier.Clone();
+				copy.identifier.Parent = copy;
+			}
+			if (type != null)
+			{
+				copy.type = (type_definition)type.Clone();
+				copy.type.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new pattern_deconstructor_parameter TypedClone()
+		{
+			return Clone() as pattern_deconstructor_parameter;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (identifier != null)
+				identifier.Parent = this;
+			if (type != null)
+				type.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			identifier?.FillParentsInAllChilds();
+			type?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return identifier;
+					case 1:
+						return type;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						identifier = (ident)value;
+						break;
+					case 1:
+						type = (type_definition)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///Представляет объединение объявлений пременных, порожденных деконструкцией. Деконструируемое выражение необходимо хранить для выведения типа на этапе семантики, однако оно не должно входить в обход дерева.
+	///</summary>
+	[Serializable]
+	public partial class desugared_deconstruction : statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public desugared_deconstruction()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public desugared_deconstruction(List<var_def_statement> _definitions,object _deconstruction_target)
+		{
+			this._definitions=_definitions;
+			this._deconstruction_target=_deconstruction_target;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public desugared_deconstruction(List<var_def_statement> _definitions,object _deconstruction_target,SourceContext sc)
+		{
+			this._definitions=_definitions;
+			this._deconstruction_target=_deconstruction_target;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		public desugared_deconstruction(var_def_statement elem, SourceContext sc = null)
+		{
+			Add(elem, sc);
+		    FillParentsInDirectChilds();
+		}
+		
+		protected List<var_def_statement> _definitions=new List<var_def_statement>();
+		protected object _deconstruction_target;
+
+		///<summary>
+		///Объявления порожденных переменных
+		///</summary>
+		public List<var_def_statement> definitions
+		{
+			get
+			{
+				return _definitions;
+			}
+			set
+			{
+				_definitions=value;
+			}
+		}
+
+		///<summary>
+		///Деконструируемое выражение
+		///</summary>
+		public object deconstruction_target
+		{
+			get
+			{
+				return _deconstruction_target;
+			}
+			set
+			{
+				_deconstruction_target=value;
+			}
+		}
+
+
+		public desugared_deconstruction Add(var_def_statement elem, SourceContext sc = null)
+		{
+			definitions.Add(elem);
+			if (elem != null)
+				elem.Parent = this;
+			if (sc != null)
+				source_context = sc;
+			return this;
+		}
+		
+		public void AddFirst(var_def_statement el)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			definitions.Insert(0, el);
+			FillParentsInDirectChilds();
+		}
+		
+		public void AddFirst(IEnumerable<var_def_statement> els)
+		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
+			definitions.InsertRange(0, els);
+			foreach (var el in els)
+				if (el != null)
+					el.Parent = this;
+		}
+		
+		public void AddMany(params var_def_statement[] els)
+		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
+			definitions.AddRange(els);
+			foreach (var el in els)
+				if (el != null)
+					el.Parent = this;
+		}
+		
+		private int FindIndexInList(var_def_statement el)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			var ind = definitions.FindIndex(x => x == el);
+			if (ind == -1)
+				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
+			return ind;
+		}
+		
+		public void InsertAfter(var_def_statement el, var_def_statement newel)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
+			definitions.Insert(FindIndexInList(el) + 1, newel);
+			newel.Parent = this;
+		}
+		
+		public void InsertAfter(var_def_statement el, IEnumerable<var_def_statement> newels)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
+			definitions.InsertRange(FindIndexInList(el) + 1, newels);
+			foreach (var newel in newels)
+				if (newel != null)
+					newel.Parent = this;
+		}
+		
+		public void InsertBefore(var_def_statement el, var_def_statement newel)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
+			definitions.Insert(FindIndexInList(el), newel);
+			newel.Parent = this;
+		}
+		
+		public void InsertBefore(var_def_statement el, IEnumerable<var_def_statement> newels)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
+			definitions.InsertRange(FindIndexInList(el), newels);
+			foreach (var newel in newels)
+				if (newel != null)
+					newel.Parent = this;
+		}
+		
+		public bool Remove(var_def_statement el)
+		{
+			return definitions.Remove(el);
+		}
+		
+		public void ReplaceInList(var_def_statement el, var_def_statement newel)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
+			definitions[FindIndexInList(el)] = newel;
+			newel.Parent = this;
+		}
+		
+		public void ReplaceInList(var_def_statement el, IEnumerable<var_def_statement> newels)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
+			var ind = FindIndexInList(el);
+			definitions.RemoveAt(ind);
+			definitions.InsertRange(ind, newels);
+		    foreach (var newel in newels)
+				if (newel != null)
+					newel.Parent = this;
+		}
+		
+		public int RemoveAll(Predicate<var_def_statement> match)
+		{
+			return definitions.RemoveAll(match);
+		}
+		
+		public var_def_statement Last()
+		{
+			if (definitions.Count > 0)
+		        return definitions[definitions.Count - 1];
+			throw new InvalidOperationException("Список пуст");
+		}
+		
+		public int Count
+		{
+		    get { return definitions.Count; }
+		}
+		
+		public void Insert(int pos, var_def_statement el)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			definitions.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
+		}
+		
+		
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			desugared_deconstruction copy = new desugared_deconstruction();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (definitions != null)
+			{
+				foreach (var_def_statement elem in definitions)
+				{
+					if (elem != null)
+					{
+						copy.Add((var_def_statement)elem.Clone());
+						copy.Last().Parent = copy;
+					}
+					else
+						copy.Add(null);
+				}
+			}
+			copy.deconstruction_target = deconstruction_target;
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new desugared_deconstruction TypedClone()
+		{
+			return Clone() as desugared_deconstruction;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (definitions != null)
+			{
+				foreach (var child in definitions)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			if (definitions != null)
+			{
+				foreach (var child in definitions)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 0 + (definitions == null ? 0 : definitions.Count);
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				Int32 index_counter=ind - 0;
+				if(definitions != null)
+				{
+					if(index_counter < definitions.Count)
+					{
+						return definitions[index_counter];
+					}
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				Int32 index_counter=ind - 0;
+				if(definitions != null)
+				{
+					if(index_counter < definitions.Count)
+					{
+						definitions[index_counter]= (var_def_statement)value;
+						return;
+					}
 				}
 			}
 		}

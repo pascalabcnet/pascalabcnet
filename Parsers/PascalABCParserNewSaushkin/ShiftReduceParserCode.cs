@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Diagnostics.CodeAnalysis;
 using PascalABCCompiler.SyntaxTree;
+using System.IO;
 
 namespace QUT.Gppg
 {
@@ -140,7 +141,7 @@ namespace QUT.Gppg
         /// <param name="names">Non-terminal symbol names</param>
         protected void InitNonTerminals(string[] names) { nonTerminals = names; }
 
-        #region YYAbort, YYAccept etcetera.
+#region YYAbort, YYAccept etcetera.
         [Serializable]
         [SuppressMessage("Microsoft.Design", "CA1064:ExceptionsShouldBePublic")]
         // Reason for FxCop message suppression -
@@ -194,7 +195,7 @@ namespace QUT.Gppg
         /// Check if parser in error recovery state.
         /// </summary>
         protected bool YYRecovering { get { return recovering; } }
-        #endregion
+#endregion
 
         /// <summary>
         /// Abstract base method. ShiftReduceParser calls this
@@ -488,7 +489,7 @@ namespace QUT.Gppg
                     {
 #if TRACE_ACTIONS
                             Console.Error.Write("Reading a token: ");
-#endif                       
+#endif
                         NextToken = scanner.yylex();
                     }
 

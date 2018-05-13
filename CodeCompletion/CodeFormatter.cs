@@ -2958,6 +2958,69 @@ namespace CodeFormatters
                 visit_node(_slice_expr_question.step);
         }
 
+        public override void visit(is_pattern_expr _is_pattern_expr)
+        {
+            if (_is_pattern_expr.left != null)
+            {
+                add_space_after = true;
+                visit_node(_is_pattern_expr.left);
+            }
+            if (_is_pattern_expr.right != null)
+            {
+                add_space_before = true;
+                visit_node(_is_pattern_expr.right);
+            }
+        }
+
+        public override void visit(type_pattern _type_pattern)
+        {
+            if (_type_pattern.type != null)
+                visit_node(_type_pattern.type);
+            //if (_type_pattern.identifier != null)
+            //    visit_node(_type_pattern.identifier);
+        }
+
+        public override void visit(match_with _match_with)
+        {
+            visit_node(_match_with.expr);
+            IncOffset();
+            add_space_before = true;
+            visit_node(_match_with.case_list);
+            //add_space_before = false;
+            DecOffset();
+        }
+
+        public override void visit(pattern_cases _pattern_cases)
+        {
+            foreach (var patternCase in _pattern_cases.elements)
+                visit_node(patternCase);
+        }
+
+        public override void visit(pattern_case _pattern_case)
+        {
+            visit_node(_pattern_case.pattern);
+
+            if (_pattern_case.condition != null)
+            {
+                add_space_before = true;
+                visit_node(_pattern_case.condition);
+            }
+
+            add_space_before = true;
+            visit_node(_pattern_case.case_action);
+        }
+
+        public override void visit(deconstructor_pattern _deconstructor_pattern)
+        {
+            visit_node(_deconstructor_pattern.type);
+            foreach (var parameter in _deconstructor_pattern.parameters)
+            {
+                visit_node(parameter.identifier);
+                if (parameter.type != null)
+                    visit_node(parameter.type);
+            }
+        }
+
         #endregion
     }
 }
