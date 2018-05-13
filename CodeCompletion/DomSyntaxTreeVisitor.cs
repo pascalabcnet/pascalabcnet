@@ -4292,7 +4292,7 @@ namespace CodeCompletion
             		
             	}
             	if (gen_args.Count > 0)
-            		ts = ts.GetInstance(gen_args);
+            		ts = ts.GetInstance(gen_args, true);
             	//ts.MakeInstance();
             	//ret_tn = ts.GetGenericInstance(gen_args);
             	//ts.si.describe = ts.ToString();
