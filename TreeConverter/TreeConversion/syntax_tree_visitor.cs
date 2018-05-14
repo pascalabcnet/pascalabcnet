@@ -10301,7 +10301,7 @@ namespace PascalABCCompiler.TreeConverter
 
             SymbolTable.Scope[] used_units = build_referenced_units(referenced_units,true);
 
-            _compiled_unit.scope = convertion_data_and_alghoritms.symbol_table.CreateUnitInterfaceScope(used_units);
+            _compiled_unit.scope = convertion_data_and_alghoritms.symbol_table.CreateUnitInterfaceScope(used_units, namespace_name == ""? System.IO.Path.GetFileName(CurrentDocument.file_name) : namespace_name);
 
             common_namespace_node cnsn = context.create_namespace(namespace_name, _compiled_unit, _compiled_unit.scope, loc);
             cnsn.is_main = true;
@@ -10384,7 +10384,7 @@ namespace PascalABCCompiler.TreeConverter
 
             SymbolTable.Scope[] used_units = build_referenced_units(referenced_units,true);
 
-            _compiled_unit.scope = convertion_data_and_alghoritms.symbol_table.CreateUnitInterfaceScope(used_units);
+            _compiled_unit.scope = convertion_data_and_alghoritms.symbol_table.CreateUnitInterfaceScope(used_units, "unit " + namespace_name);
 
             common_namespace_node cnsn = context.create_namespace(namespace_name, _compiled_unit, _compiled_unit.scope, loc);
 
@@ -18068,7 +18068,7 @@ namespace PascalABCCompiler.TreeConverter
 
             SymbolTable.Scope[] used_units = build_referenced_units(referenced_units,true);
 
-            _compiled_unit.scope = convertion_data_and_alghoritms.symbol_table.CreateUnitInterfaceScope(used_units);
+            _compiled_unit.scope = convertion_data_and_alghoritms.symbol_table.CreateUnitInterfaceScope(used_units, namespace_name);
 
             common_namespace_node cnsn = context.create_namespace(namespace_name, _compiled_unit, _compiled_unit.scope, loc);
             cnsn.is_main = true;

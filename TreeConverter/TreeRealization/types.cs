@@ -1943,8 +1943,8 @@ namespace PascalABCCompiler.TreeRealization
         {
             List<SymbolInfo> sil = Scope.FindOnlyInType(name, CurrentScope);//:=,create,x
 
-            // SSM test!!!
-            if (base_type is compiled_generic_instance_type_node /*&& name == "IndexOf"*/)
+            // SSM 2018.04.05 
+            if (base_type is compiled_generic_instance_type_node)
             {
                 //sil = (base_type as compiled_generic_instance_type_node).original_generic.find_in_type(name, CurrentScope);
                 return sil;
@@ -3965,7 +3965,7 @@ namespace PascalABCCompiler.TreeRealization
 		
         private null_type_node()
         {
-        	_scope = compilation_context.instance.convertion_data_and_alghoritms.symbol_table.CreateClassScope(null, null);
+        	_scope = compilation_context.instance.convertion_data_and_alghoritms.symbol_table.CreateClassScope(null, null, name);
         }
 
         public static type_node get_type_node()

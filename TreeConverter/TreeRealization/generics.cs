@@ -1684,11 +1684,13 @@ namespace PascalABCCompiler.TreeRealization
 
                             MethodInfo mi = instmeths[num];*/
 
+                            // SSM 2018.05.05 bug fix #664 
                             var mdtok = cfn.method_info.MetadataToken;
                             MethodInfo[] instmeths = ((compiled_type_node)inst_type)._compiled_type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
                                 BindingFlags.Static | BindingFlags.Instance);
 
                             MethodInfo mi = System.Array.Find(instmeths, m => m.MetadataToken == mdtok);
+                            // SSM 2018.05.05 end bug fix #664 
 
                             return compiled_function_node.get_compiled_method(mi);
                         }

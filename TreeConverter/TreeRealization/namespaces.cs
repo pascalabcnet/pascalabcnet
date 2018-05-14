@@ -66,6 +66,15 @@ namespace PascalABCCompiler.TreeRealization
 	[Serializable]
 	public class common_namespace_node : namespace_node, SemanticTree.ICommonNamespaceNode
 	{
+        public override string ToString()
+        {
+            if(is_main)
+                return "main function " + loc.doc.file_name;
+
+            if (namespace_full_name == "")
+                return GetType().Name;
+            return namespace_full_name;
+        }
         /// <summary>
         /// Список типов, вложенных в пространство имен.
         /// </summary>

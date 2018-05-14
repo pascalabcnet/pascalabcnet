@@ -1,4 +1,4 @@
-type TRec = record
+﻿type TRec = record
 end;
 
 type 
@@ -14,7 +14,7 @@ type
 begin
   var l: mylst;
   var a: myarr;
-  l.Add{@procedure List<>.Add(item: integer); virtual;@}(2);
+  l.Add{@procedure List<>.Add(item: integer);@}(2);
   foreach var el{@var el: char;@} in myset do
   begin
     
