@@ -48225,8 +48225,8 @@ namespace PascalABCCompiler.SyntaxTree
 			FillParentsInDirectChilds();
 		}
 		public typeclass_param_list(template_param_list _template_param_list): this(_template_param_list.dereferencing_value, _template_param_list.params_list, _template_param_list.source_context)
-		{
-		}
+{
+}
 
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -48355,6 +48355,238 @@ namespace PascalABCCompiler.SyntaxTree
 					if(index_counter < params_list.Count)
 					{
 						params_list[index_counter]= (type_definition)value;
+						return;
+					}
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class typeclass_reference : named_type_reference
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public typeclass_reference()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public typeclass_reference(template_param_list _restriction_args)
+		{
+			this._restriction_args=_restriction_args;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public typeclass_reference(template_param_list _restriction_args,SourceContext sc)
+		{
+			this._restriction_args=_restriction_args;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public typeclass_reference(type_definition_attr_list _attr_list,List<ident> _names,template_param_list _restriction_args)
+		{
+			this._attr_list=_attr_list;
+			this._names=_names;
+			this._restriction_args=_restriction_args;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public typeclass_reference(type_definition_attr_list _attr_list,List<ident> _names,template_param_list _restriction_args,SourceContext sc)
+		{
+			this._attr_list=_attr_list;
+			this._names=_names;
+			this._restriction_args=_restriction_args;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected template_param_list _restriction_args;
+
+		///<summary>
+		///
+		///</summary>
+		public template_param_list restriction_args
+		{
+			get
+			{
+				return _restriction_args;
+			}
+			set
+			{
+				_restriction_args=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			typeclass_reference copy = new typeclass_reference();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (names != null)
+			{
+				foreach (ident elem in names)
+				{
+					if (elem != null)
+					{
+						copy.Add((ident)elem.Clone());
+						copy.Last().Parent = copy;
+					}
+					else
+						copy.Add(null);
+				}
+			}
+			if (restriction_args != null)
+			{
+				copy.restriction_args = (template_param_list)restriction_args.Clone();
+				copy.restriction_args.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new typeclass_reference TypedClone()
+		{
+			return Clone() as typeclass_reference;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (names != null)
+			{
+				foreach (var child in names)
+					if (child != null)
+						child.Parent = this;
+			}
+			if (restriction_args != null)
+				restriction_args.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			if (names != null)
+			{
+				foreach (var child in names)
+					child?.FillParentsInAllChilds();
+			}
+			restriction_args?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2 + (names == null ? 0 : names.Count);
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return attr_list;
+					case 1:
+						return restriction_args;
+				}
+				Int32 index_counter=ind - 2;
+				if(names != null)
+				{
+					if(index_counter < names.Count)
+					{
+						return names[index_counter];
+					}
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						attr_list = (type_definition_attr_list)value;
+						break;
+					case 1:
+						restriction_args = (template_param_list)value;
+						break;
+				}
+				Int32 index_counter=ind - 2;
+				if(names != null)
+				{
+					if(index_counter < names.Count)
+					{
+						names[index_counter]= (ident)value;
 						return;
 					}
 				}

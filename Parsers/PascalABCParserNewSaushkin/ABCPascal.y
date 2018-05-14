@@ -1561,6 +1561,11 @@ base_class_name
 		{ $$ = $1; }
     | template_type
 		{ $$ = $1; }
+	| typeclass_restriction
+		{
+			var names = new List<ident>();
+			names.Add(($1 as typeclass_restriction).name);
+			$$ = new typeclass_reference(null, names, ($1 as typeclass_restriction).restriction_args); }
     ;
 
 template_arguments

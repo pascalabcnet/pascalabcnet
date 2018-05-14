@@ -39,8 +39,7 @@
     
     function compare(x, y: T): Ordering; virtual;
     begin
-      var eqInst := __ConceptSingleton&<EqT>.&Instance;
-      if eqInst.eequal(x, y) then
+      if eequal(x, y) then
         Result := _EQ
       else if less(x, y) then
         Result := _LT
@@ -108,7 +107,7 @@
     
     function compare(x, y: integer): Ordering; override;
     begin
-      if self.eequal(x, y) then
+      if eequal(x, y) then
         Result := _EQ
       else if x < y then
         Result := _LT
@@ -116,6 +115,19 @@
         Result := _GT;
     end;
   end;
+
+
+function ArrayEq<T, EqT>(l1, l2: array of T): boolean; where EqT: IEq<T>, constructor;
+begin
+  var eqtinstance := __ConceptSingleton&<EqT>.&Instance;
+  Result := true;
+  for var i :=0 to l1.Length - 1 do
+    if eqtinstance.notEqual(l1[i], l2[i]) then
+    begin
+      Result := false;
+      break;
+    end;
+end;
 
 
 function Max3<T, OrdT>(v1, v2, v3: T): T;

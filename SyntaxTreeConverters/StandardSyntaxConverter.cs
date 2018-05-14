@@ -31,6 +31,8 @@ namespace PascalABCCompiler.SyntaxTreeConverters
                 instancesAndRestrictedFunctions.ProcessNode(root);
                 SyntaxVisitors.TypeclassVisitors.ReplaceTypeclassVisitor.New(instancesAndRestrictedFunctions).ProcessNode(root);
             }
+            root.FillParentsInAllChilds();
+            new SimplePrettyPrinterVisitor("E:/projs/out.txt").ProcessNode(root);
             // loop
             LoopDesugarVisitor.New.ProcessNode(root);
 

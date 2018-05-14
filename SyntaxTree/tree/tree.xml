@@ -2940,6 +2940,22 @@
         </TagIndices>
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="typeclass_reference" BaseName="named_type_reference">
+      <Fields>
+        <SyntaxField Name="restriction_args" SyntaxType="template_param_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+          <TagIndex>4</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -2960,12 +2976,12 @@
         <Tag Name="Выражения" ReferenceCount="36" />
         <Tag Name="Константы" ReferenceCount="15" />
         <Tag Name="Списки" ReferenceCount="23" />
-        <Tag Name="Типы" ReferenceCount="14" />
+        <Tag Name="Типы" ReferenceCount="15" />
         <Tag Name="Описания" ReferenceCount="25" />
         <Tag Name="Важнейшие" ReferenceCount="207" />
         <Tag Name="Method_Procedure_Call" ReferenceCount="2" />
         <Tag Name="Yield" ReferenceCount="8" />
-        <Tag Name="Typeclasses" ReferenceCount="6" />
+        <Tag Name="Typeclasses" ReferenceCount="7" />
       </Tags>
     </FilterCategory>
   </TagCategories>
@@ -4162,6 +4178,9 @@
       <HelpData Key="typeclass_param_list" Value="Список параметров тайпкласса" />
       <HelpData Key="typeclass_param_list.public typeclass_param_list(template_param_list _template_param_list): this(_template_param_list._dereferencing_value, _template_param_list._params_list, _template_param_list.source_context)" Value="" />
       <HelpData Key="typeclass_param_list.public typeclass_param_list(template_param_list _template_param_list): this(_template_param_list.dereferencing_value, _template_param_list.params_list, _template_param_list.source_context)" Value="" />
+      <HelpData Key="typeclass_param_list.public typeclass_param_list(template_param_list _template_param_list): this(_template_param_list.dereferencing_value, _template_param_list.params_list, _template_param_list.source_context)&#xA;{&#xA;}" Value="" />
+      <HelpData Key="typeclass_reference" Value="" />
+      <HelpData Key="typeclass_reference.restriction_args" Value="" />
       <HelpData Key="typeclass_restriction" Value="Представляет конструкцию вида Typeclass[T], где Typleclass это ограничение, которое накладывается на тип T" />
       <HelpData Key="typeclass_restriction.restriction_args" Value="" />
       <HelpData Key="typed_const_definition" Value="" />

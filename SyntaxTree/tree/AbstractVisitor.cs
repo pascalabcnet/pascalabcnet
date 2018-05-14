@@ -1142,6 +1142,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_typeclass_param_list);
 		}
+
+		public virtual void visit(typeclass_reference _typeclass_reference)
+		{
+			DefaultVisit(_typeclass_reference);
+		}
 	}
 
 

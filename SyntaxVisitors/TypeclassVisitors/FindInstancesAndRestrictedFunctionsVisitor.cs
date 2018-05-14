@@ -13,13 +13,13 @@ namespace SyntaxVisitors.TypeclassVisitors
     {
 
         // (Typeclass name) -> (Type arguments count)
-        public Dictionary<string, int> typeclasses;
+        public Dictionary<string, type_declaration> typeclasses;
         // (Typeclass name) -> [Instances]
         public Dictionary<string, List<typeclass_param_list>> instances = new Dictionary<string, List<typeclass_param_list>>();
         public Dictionary<string, List<string>> restrictedFunctions = new Dictionary<string, List<string>>();
 
 
-        public FindInstancesAndRestrictedFunctionsVisitor(Dictionary<string, int> typeclasses)
+        public FindInstancesAndRestrictedFunctionsVisitor(Dictionary<string, type_declaration> typeclasses)
         {
             this.typeclasses = typeclasses;
 
@@ -30,7 +30,7 @@ namespace SyntaxVisitors.TypeclassVisitors
         }
 
 
-        public static FindInstancesAndRestrictedFunctionsVisitor New(Dictionary<string, int> typeclasses)
+        public static FindInstancesAndRestrictedFunctionsVisitor New(Dictionary<string, type_declaration> typeclasses)
         {
             return new FindInstancesAndRestrictedFunctionsVisitor(typeclasses);
         }

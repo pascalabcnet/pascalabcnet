@@ -4,7 +4,7 @@ type
   TMonthType = (January, February, March, April, May, June, July, August, September, October, November, December);
   
   
-  Ordering = (_EQ, _LT, _GL);
+  Ordering = (_EQ, _LT, _GT);
 
 
 type
@@ -17,9 +17,55 @@ type
       Result := not notEqual(x, y);
     end;
     
-    function notEqual(x, y: T) := not equal(x, y);
+    function notEqual(x, y: T): boolean;
+    begin
+      Result := not equal(x, y);
+    end;
   end;
   
+  
+  Ord[T] = typeclass(Eq[T])
+    function compare(x, y: T): Ordering;
+    begin
+      if equal(x, y) then
+        Result := _EQ
+      else if less(x, y) then
+        Result := _LT
+      else
+        Result := _GT;
+    end;
+    
+    function less(x, y: T): boolean;
+    begin
+      Result := compare(x, y) = _LT;
+    end;
+    
+    function lessEqual(x, y: T): boolean;
+    begin
+      Result := compare(x, y) <> _GT;
+    end;
+    
+    function greater(x, y: T): boolean;
+    begin
+      Result := compare(x, y) = _GT;
+    end;
+    
+    function greaterEqual(x, y: T): boolean;
+    begin
+      Result := compare(x, y) <> _LT;
+    end;
+    
+    function min(x, y: T): T;
+    begin
+      Result := lessEqual(x, y) ? x : y;
+    end;
+    
+    function max(x, y: T): T;
+    begin
+      Result := lessEqual(x, y) ? y : x;
+    end;
+  end;
+
   
   Show[T] = typeclass
     function show(x: T): string;
@@ -43,6 +89,20 @@ type
   Eq[integer] = instance
     function equal(x, y: integer):boolean := x = y;
   end;
+  
+(*  
+  Ord[integer] = instance
+    function compare(x, y: integer): Ordering;
+    begin
+      if equal(x, y) then
+        Result := _EQ
+      else if x < y then
+        Result := _LT
+      else
+        Result := _GT;
+    end;
+  end;
+*)    
   
   
   Show[boolean] = instance
@@ -96,6 +156,26 @@ begin
   end;
 end;
 
+(*
+procedure MySort<T>(var a: array of T); where Ord[T];
+begin
+  for var i := 1 to a.Length - 1 do
+  begin
+    var sorted := true;
+    for var j := 0 to a.Length - 1 - i do
+    begin
+      if Ord&[T].greater(a[i - 1], a[i]) then
+      begin
+        swap(a[i - 1], a[i]);
+        sorted := false;
+      end;
+    end;
+    
+    if sorted then
+      break;
+  end;
+end;
+*)
 
 // ---Test Functions---
 
@@ -147,11 +227,26 @@ begin
   writeln(isCorrect);
 end;
 
+(*
+procedure TestOrd();
+begin
+  var a := Arr(3, 1, 4, 2, 5, 0);
+  var res := Arr(a);
+  
+  Sort(res);  
+  MySort&[integer](a);
+  
+  var isCorrect := a.SequenceEqual(res);
 
+  writeln(isCorrect);  
+  
+end;
+*)
 begin
 
   TestEq();
   TestShow();
   TestRead();
+ // TestOrd();
   
 end.

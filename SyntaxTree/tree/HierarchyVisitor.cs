@@ -1821,6 +1821,14 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(typeclass_reference _typeclass_reference)
+		{
+		}
+
+		public virtual void post_do_visit(typeclass_reference _typeclass_reference)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -3762,6 +3770,14 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_typeclass_param_list);
 			pre_do_visit(_typeclass_param_list);
 			post_do_visit(_typeclass_param_list);
+		}
+
+		public override void visit(typeclass_reference _typeclass_reference)
+		{
+			DefaultVisit(_typeclass_reference);
+			pre_do_visit(_typeclass_reference);
+			visit(typeclass_reference.restriction_args);
+			post_do_visit(_typeclass_reference);
 		}
 	}
 

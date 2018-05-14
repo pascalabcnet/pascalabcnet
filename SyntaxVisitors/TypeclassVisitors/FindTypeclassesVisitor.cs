@@ -14,7 +14,7 @@ namespace SyntaxVisitors.TypeclassVisitors
         //TODO: add searching typeclasses at libraries
 
         // (Typeclass name) -> (Type arguments count)
-        public Dictionary<string, int> typeclasses = new Dictionary<string, int>();
+        public Dictionary<string, type_declaration> typeclasses = new Dictionary<string, type_declaration>();
 
 
         public FindTypeclassesVisitor()
@@ -42,7 +42,7 @@ namespace SyntaxVisitors.TypeclassVisitors
 
             var typeclassName = typeclassDeclaration.type_name as typeclass_restriction;
 
-            typeclasses.Add(typeclassName.name, typeclassName.restriction_args.params_list.Count);
+            typeclasses.Add(typeclassName.name, typeclassDeclaration);
         }
     }
 }

@@ -1366,6 +1366,12 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_typeclass_param_list">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(typeclass_param_list _typeclass_param_list);
+		///<summary>
+		///Method to visit typeclass_reference.
+		///</summary>
+		///<param name="_typeclass_reference">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(typeclass_reference _typeclass_reference);
 	}
 
 
