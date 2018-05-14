@@ -1236,6 +1236,7 @@ namespace CodeCompletion
         public object cnst_val;
         public List<TypeScope> indexers;
         public TypeScope elementType;
+        public bool is_readonly;
 
         public ElementScope() { }
         public ElementScope(SymInfo si, SymScope sc, SymScope topScope)
@@ -1243,6 +1244,7 @@ namespace CodeCompletion
             this.si = si;
             this.sc = sc;
             this.topScope = topScope;
+            
             MakeDescription();
             //UnitDocCache.AddDescribeToComplete(this);
             //if (sc is ProcScope) si.kind = SymbolKind.Delegate;
@@ -1277,7 +1279,7 @@ namespace CodeCompletion
         {
             get
             {
-                return false;
+                return is_readonly;
             }
         }
 
@@ -4179,8 +4181,8 @@ namespace CodeCompletion
             List<SymInfo> lst = new List<SymInfo>();
             foreach (SymScope ss in members)
             {
-                if (ss is ProcScope && (ss as ProcScope).IsConstructor())
-                    continue;
+                //if (ss is ProcScope && (ss as ProcScope).IsConstructor())
+                //    continue;
                 if (!ss.si.name.StartsWith("$"))
                 {
                     if (ss.si.acc_mod == access_modifer.private_modifer)
@@ -5836,6 +5838,14 @@ namespace CodeCompletion
                                     si2 = new CompiledEventScope(si2, mi as EventInfo, this).si;
                                     syms.Add(si2);
                                     //syms.Add(new SymInfo(mi.Name,SymbolKind.Event,mi.Name));
+                                }
+                                break;
+                            case MemberTypes.Constructor:
+                                if (((mi as ConstructorInfo).IsPublic || (mi as ConstructorInfo).IsFamily))
+                                {
+                                    SymInfo si2 = new SymInfo(null, SymbolKind.Method, null);
+                                    si2 = new CompiledConstructorScope(si2, mi as ConstructorInfo, this).si;
+                                    syms.Add(si2);
                                 }
                                 break;
                         }
