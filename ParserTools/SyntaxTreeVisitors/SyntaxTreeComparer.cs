@@ -118,6 +118,43 @@ namespace PascalABCCompiler.SyntaxTree
             }
         }
 
+        public void CompareInternal(addressed_value_list left, addressed_value_list right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                if (left.variables.Count != right.variables.Count)
+                    throw_not_equal(left, right);
+                for (int i = 0; i < left.variables.Count; i++)
+                {
+                    CompareInternal(left.variables[i], right.variables[i]);
+                }
+            }
+        }
+
+        public void CompareInternal(assign_tuple left, assign_tuple right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                CompareInternal(left.vars, right.vars);
+                CompareInternal(left.expr, right.expr);
+            }
+        }
+
+        public void CompareInternal(loop_stmt left, loop_stmt right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                CompareInternal(left.count, right.count);
+                CompareInternal(left.stmt, right.stmt);
+            }
+        }
+
         public void CompareInternal(attribute left, attribute right)
         {
             if (left == null && right != null || left != null && right == null)
@@ -1649,6 +1686,10 @@ namespace PascalABCCompiler.SyntaxTree
                     CompareInternal(left as assign, right as assign);
                 else if (left is yield_node)
                     CompareInternal(left as yield_node, right as yield_node);
+                else if (left is loop_stmt)
+                    CompareInternal(left as loop_stmt, right as loop_stmt);
+                else if (left is assign_tuple)
+                    CompareInternal(left as assign_tuple, right as assign_tuple);
                 //else if (left is expression) // SSM 12/06/15
                 //    CompareInternal(left as expression, right as expression);
 

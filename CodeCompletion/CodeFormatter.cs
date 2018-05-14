@@ -1416,12 +1416,16 @@ namespace CodeFormatters
                 sb.Append("unit");
                 SetKeywordOffset("unit");
             }
-            else
+            else if (_unit_name.HeaderKeyword == UnitHeaderKeyword.Library)
             {
                 sb.Append("library");
                 SetKeywordOffset("library");
             }
-            
+            else if (_unit_name.HeaderKeyword == UnitHeaderKeyword.Namespace)
+            {
+                sb.Append("namespace");
+                SetKeywordOffset("namespace");
+            }
             visit_node(_unit_name.idunit_name);
             //sb.AppendLine(";");
         }

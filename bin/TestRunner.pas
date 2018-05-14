@@ -91,7 +91,7 @@ begin
     if comp.ErrorsList.Count > 0 then
     begin
       System.Windows.Forms.MessageBox.Show('Compilation of '+files[i]+' failed'+System.Environment.NewLine+comp.ErrorsList[0].ToString());
-      //Halt();
+      Halt();
     end;
     if i mod 20 = 0 then
     begin
