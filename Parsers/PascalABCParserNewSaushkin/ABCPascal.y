@@ -866,6 +866,15 @@ const_variable
 		{ $$ = $1; }
     | typeof_expr
 		{ $$ = $1; }
+    | tkRoundOpen const_expr tkRoundClose 
+        { 
+            if (!parsertools.build_tree_for_formatter) 
+            {
+                $2.source_context = @$;
+                $$ = $2;
+            } 
+			else $$ = new bracket_expr($2, @$); 
+        }
     | const_variable const_variable_2        
         {
 			$$ = NewConstVariable($1, $2, @$);
