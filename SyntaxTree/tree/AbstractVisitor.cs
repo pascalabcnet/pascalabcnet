@@ -1147,6 +1147,51 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_typeclass_reference);
 		}
+
+		public virtual void visit(pattern_node _pattern_node)
+		{
+			DefaultVisit(_pattern_node);
+		}
+
+		public virtual void visit(type_pattern _type_pattern)
+		{
+			DefaultVisit(_type_pattern);
+		}
+
+		public virtual void visit(is_pattern_expr _is_pattern_expr)
+		{
+			DefaultVisit(_is_pattern_expr);
+		}
+
+		public virtual void visit(match_with _match_with)
+		{
+			DefaultVisit(_match_with);
+		}
+
+		public virtual void visit(pattern_case _pattern_case)
+		{
+			DefaultVisit(_pattern_case);
+		}
+
+		public virtual void visit(pattern_cases _pattern_cases)
+		{
+			DefaultVisit(_pattern_cases);
+		}
+
+		public virtual void visit(deconstructor_pattern _deconstructor_pattern)
+		{
+			DefaultVisit(_deconstructor_pattern);
+		}
+
+		public virtual void visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		{
+			DefaultVisit(_pattern_deconstructor_parameter);
+		}
+
+		public virtual void visit(desugared_deconstruction _desugared_deconstruction)
+		{
+			DefaultVisit(_desugared_deconstruction);
+		}
 	}
 
 

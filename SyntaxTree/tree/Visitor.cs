@@ -1372,6 +1372,60 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_typeclass_reference">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(typeclass_reference _typeclass_reference);
+		///<summary>
+		///Method to visit pattern_node.
+		///</summary>
+		///<param name="_pattern_node">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(pattern_node _pattern_node);
+		///<summary>
+		///Method to visit type_pattern.
+		///</summary>
+		///<param name="_type_pattern">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(type_pattern _type_pattern);
+		///<summary>
+		///Method to visit is_pattern_expr.
+		///</summary>
+		///<param name="_is_pattern_expr">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(is_pattern_expr _is_pattern_expr);
+		///<summary>
+		///Method to visit match_with.
+		///</summary>
+		///<param name="_match_with">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(match_with _match_with);
+		///<summary>
+		///Method to visit pattern_case.
+		///</summary>
+		///<param name="_pattern_case">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(pattern_case _pattern_case);
+		///<summary>
+		///Method to visit pattern_cases.
+		///</summary>
+		///<param name="_pattern_cases">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(pattern_cases _pattern_cases);
+		///<summary>
+		///Method to visit deconstructor_pattern.
+		///</summary>
+		///<param name="_deconstructor_pattern">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(deconstructor_pattern _deconstructor_pattern);
+		///<summary>
+		///Method to visit pattern_deconstructor_parameter.
+		///</summary>
+		///<param name="_pattern_deconstructor_parameter">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter);
+		///<summary>
+		///Method to visit desugared_deconstruction.
+		///</summary>
+		///<param name="_desugared_deconstruction">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(desugared_deconstruction _desugared_deconstruction);
 	}
 
 

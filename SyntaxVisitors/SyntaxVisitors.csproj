@@ -55,6 +55,8 @@
     <Compile Include="SugarVisitors\DoubleQuestionDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\LoopDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\QuestionPointDesugarVisitor.cs" />
+    <Compile Include="SugarVisitors\IsPatternVisitor.cs" />
+    <Compile Include="SugarVisitors\MatchWithVisitor.cs" />
     <Compile Include="SugarVisitors\SliceDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\TupleVisitor.cs" />
     <Compile Include="TypeclassVisitors\FindInstancesAndRestrictedFunctionsVisitor.cs" />
@@ -103,6 +105,10 @@
     <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj">
       <Project>{c2cac65a-b2ae-4ccc-b067-e6b8e75df73a}</Project>
       <Name>SyntaxTree</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TreeConverter\TreeConverter.csproj">
+      <Project>{1C9C945A-586D-42A2-A06B-65D84FA7FF78}</Project>
+      <Name>TreeConverter</Name>
     </ProjectReference>
     <ProjectReference Include="..\Yield\YieldHelpers\YieldHelpers.csproj">
       <Project>{ce5c55c2-a11c-4e94-a9fa-3fc6ca3e4c09}</Project>

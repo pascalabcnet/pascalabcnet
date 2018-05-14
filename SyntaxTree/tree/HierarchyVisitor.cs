@@ -1829,6 +1829,78 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(pattern_node _pattern_node)
+		{
+		}
+
+		public virtual void post_do_visit(pattern_node _pattern_node)
+		{
+		}
+
+		public virtual void pre_do_visit(type_pattern _type_pattern)
+		{
+		}
+
+		public virtual void post_do_visit(type_pattern _type_pattern)
+		{
+		}
+
+		public virtual void pre_do_visit(is_pattern_expr _is_pattern_expr)
+		{
+		}
+
+		public virtual void post_do_visit(is_pattern_expr _is_pattern_expr)
+		{
+		}
+
+		public virtual void pre_do_visit(match_with _match_with)
+		{
+		}
+
+		public virtual void post_do_visit(match_with _match_with)
+		{
+		}
+
+		public virtual void pre_do_visit(pattern_case _pattern_case)
+		{
+		}
+
+		public virtual void post_do_visit(pattern_case _pattern_case)
+		{
+		}
+
+		public virtual void pre_do_visit(pattern_cases _pattern_cases)
+		{
+		}
+
+		public virtual void post_do_visit(pattern_cases _pattern_cases)
+		{
+		}
+
+		public virtual void pre_do_visit(deconstructor_pattern _deconstructor_pattern)
+		{
+		}
+
+		public virtual void post_do_visit(deconstructor_pattern _deconstructor_pattern)
+		{
+		}
+
+		public virtual void pre_do_visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		{
+		}
+
+		public virtual void post_do_visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		{
+		}
+
+		public virtual void pre_do_visit(desugared_deconstruction _desugared_deconstruction)
+		{
+		}
+
+		public virtual void post_do_visit(desugared_deconstruction _desugared_deconstruction)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -3778,6 +3850,88 @@ namespace PascalABCCompiler.SyntaxTree
 			pre_do_visit(_typeclass_reference);
 			visit(typeclass_reference.restriction_args);
 			post_do_visit(_typeclass_reference);
+		}
+
+		public override void visit(pattern_node _pattern_node)
+		{
+			DefaultVisit(_pattern_node);
+			pre_do_visit(_pattern_node);
+			post_do_visit(_pattern_node);
+		}
+
+		public override void visit(type_pattern _type_pattern)
+		{
+			DefaultVisit(_type_pattern);
+			pre_do_visit(_type_pattern);
+			visit(type_pattern.identifier);
+			visit(type_pattern.type);
+			post_do_visit(_type_pattern);
+		}
+
+		public override void visit(is_pattern_expr _is_pattern_expr)
+		{
+			DefaultVisit(_is_pattern_expr);
+			pre_do_visit(_is_pattern_expr);
+			visit(is_pattern_expr.left);
+			visit(is_pattern_expr.right);
+			post_do_visit(_is_pattern_expr);
+		}
+
+		public override void visit(match_with _match_with)
+		{
+			DefaultVisit(_match_with);
+			pre_do_visit(_match_with);
+			visit(match_with.expr);
+			visit(match_with.case_list);
+			visit(match_with.defaultAction);
+			post_do_visit(_match_with);
+		}
+
+		public override void visit(pattern_case _pattern_case)
+		{
+			DefaultVisit(_pattern_case);
+			pre_do_visit(_pattern_case);
+			visit(pattern_case.pattern);
+			visit(pattern_case.case_action);
+			visit(pattern_case.condition);
+			post_do_visit(_pattern_case);
+		}
+
+		public override void visit(pattern_cases _pattern_cases)
+		{
+			DefaultVisit(_pattern_cases);
+			pre_do_visit(_pattern_cases);
+			for (int i = 0; i < elements.Count; i++)
+				visit(pattern_cases.elements[i]);
+			post_do_visit(_pattern_cases);
+		}
+
+		public override void visit(deconstructor_pattern _deconstructor_pattern)
+		{
+			DefaultVisit(_deconstructor_pattern);
+			pre_do_visit(_deconstructor_pattern);
+			for (int i = 0; i < parameters.Count; i++)
+				visit(deconstructor_pattern.parameters[i]);
+			visit(deconstructor_pattern.type);
+			post_do_visit(_deconstructor_pattern);
+		}
+
+		public override void visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		{
+			DefaultVisit(_pattern_deconstructor_parameter);
+			pre_do_visit(_pattern_deconstructor_parameter);
+			visit(pattern_deconstructor_parameter.identifier);
+			visit(pattern_deconstructor_parameter.type);
+			post_do_visit(_pattern_deconstructor_parameter);
+		}
+
+		public override void visit(desugared_deconstruction _desugared_deconstruction)
+		{
+			DefaultVisit(_desugared_deconstruction);
+			pre_do_visit(_desugared_deconstruction);
+			for (int i = 0; i < definitions.Count; i++)
+				visit(desugared_deconstruction.definitions[i]);
+			post_do_visit(_desugared_deconstruction);
 		}
 	}
 
