@@ -54,19 +54,30 @@ end;
 
 if e is P1(s) and s is P2(t) then
     <ACTION>
+else 
+    <ACTION_ELSE>
 end;
 
 // ----
-begin
+
+var <>success := false;
 var <>genVar1: P1;
-var s: ?;
+var <>genVar_s: ?;
+var <>genVar_t: ?;
+    
 if IsTest(e, <>genVar1) then
-    <>genVar1.Deconstruct(s);
+    <>genVar1.Deconstruct(<>genVar_s);
     
     var <>genVar2: P2;
-    var t: ?;
-    if IsTest(s, <>genVar2) then
-        <>genVar2.Deconstruct(t);
+    if IsTest(<>genVar_s, <>genVar2) then
+        <>genVar2.Deconstruct(<>genVar_t);
+        success := true;
+        //<SUCCESS ACTION: result:=true / execute then body of if> // success action
+        //goto end_if_label;
 
-        <SUCCESS ACTION: result:=true / execute then body of if>
-end;
+if (<>success)
+    var s := <>genVar_s;
+    var t := <>genVar_t;
+    <ACTION>
+else
+    <ACTION_ELSE>
