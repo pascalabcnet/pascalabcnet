@@ -459,6 +459,8 @@ namespace PascalABCCompiler.SyntaxTree
         {
             get { return names[0]; }
         }
+
+        public static named_type_reference Boolean => new named_type_reference("boolean");
     }
 
     public partial class template_type_reference
@@ -1765,6 +1767,11 @@ namespace PascalABCCompiler.SyntaxTree
 
             return result;
         }
+    }
+
+    public partial class deconstructor_pattern
+    {
+        public bool IsRecursive => parameters.Any(x => x is recursive_deconstructor_parameter);
     }
 }
 

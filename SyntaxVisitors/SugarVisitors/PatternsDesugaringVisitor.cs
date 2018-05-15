@@ -19,9 +19,20 @@ namespace SyntaxVisitors.SugarVisitors
         public var_statement CastVariableDefinition { get; set; }
 
         /// <summary>
+        /// Переменная, в которую сохраняется результат мэтчинга
+        /// </summary>
+        public var_statement SuccessVariableDefinition { get; set; }
+
+        /// <summary>
         /// Переменные, полученные в результате деконструкции
         /// </summary>
         public List<var_def_statement> DeconstructionVariables { get; private set; } = new List<var_def_statement>();
+
+        /// <summary>
+        /// Список объявлений, которые должны быть включены внутрь особых конструкций, для ограничения области видимости.
+        /// Например внутрь тела then, если паттерн объявлен в условии if.
+        /// </summary>
+        public List<var_statement> InternalAssignments { get; private set; } = new List<var_statement>();
 
         /// <summary>
         /// Проверка соответствия типа выражения типу паттерна
@@ -33,18 +44,35 @@ namespace SyntaxVisitors.SugarVisitors
         /// </summary>
         public statement DeconstructCall { get; set; }
 
-        public ident CastVariable
+        public ident CastVariable => CastVariableDefinition.var_def.vars.list.First();
+
+        public ident SuccessVariable => SuccessVariableDefinition.var_def.vars.list.First();
+
+        public List<statement> GetDeconstructionDefinitions(SourceContext patternContext)
         {
-            get
-            {
-                return CastVariableDefinition.var_def.vars.list[0];
-            }
+            var result = DeconstructionVariables
+                  .Select(x => new desugared_deconstruction(DeconstructionVariables, CastVariable, patternContext))
+                  .ToList<statement>();
+            result.Add(SuccessVariableDefinition);
+
+            return result;
+        }
+
+        public if_node GetPatternCheckWithDeconstrunctorCall()
+        {
+            return SubtreeCreator.CreateIf(
+                TypeCastCheck,
+                new statement_list(new assign(SuccessVariable.name, true), DeconstructCall));
         }
     }
 
     public class PatternsDesugaringVisitor : BaseChangeVisitor
     {
+        private enum PatternLocation { Unknown, IfCondition, Assign }
+
         private const string DeconstructMethodName = compiler_string_consts.deconstruct_method_name;
+        private const string IsTestMethodName = compiler_string_consts.is_test_function_name;
+        private const string GeneratedPatternNamePrefix = "<>pattern";
 
         private int _variableCounter = 0;
         private if_node _previousIf;
@@ -82,78 +110,54 @@ namespace SyntaxVisitors.SugarVisitors
         public override void visit(is_pattern_expr isPatternExpr)
         {
             if (isPatternExpr.right is type_pattern)
-                DesugarTypePattern(isPatternExpr);
-        }
-
-        void DesugarTypePatternCase(expression matchingExpression, pattern_case patternCase)
-        {
-            Debug.Assert(patternCase.pattern is type_pattern);
-
-            //var result = new statement_list();
-            //// создание фиктивной переменной необходимого типа
-            //var pattern = (type_pattern) patternCase.pattern;
-
-            //// Конструируем условие мэтчинга 
-            //expression matchCondition = isTest;
-            //if (patternCase.condition == null)
-            //    matchCondition = isTest;
-            //else
-            //// Если есть секция when - добавляем ее в условие
-            //{
-            //    // Переименовываем идентификатор, т.к. мы сгенерировали внутреннее имя
-            //    patternCase.condition.RenameIdentifierInDescendants(pattern.identifier.name, matchResultVariableName.name);
-            //    matchCondition = new bin_expr(isTest, patternCase.condition, Operators.LogicalAND);
-            //}
-
-            //// Создание узла if с объявлением переменной из паттерна и присвоение ей значения 
-            //// сгенерированной переменной
-            //var patternVarDef = new var_statement(pattern.identifier, matchResultVariableName);
-            //// Создание тела if из объявления переменной и соттветствующего тела case
-            //var ifCheck = SubtreeCreator.CreateIf(matchCondition, new statement_list(patternVarDef, patternCase.case_action));
-            //result.Add(ifCheck);
-
-            //// Добавляем полученные statements в результат
-            //AddDesugaredCaseToResult(result, ifCheck);
+                DesugarIsExpression(isPatternExpr);
         }
 
         void DesugarDeconstructorPatternCase(expression matchingExpression, pattern_case patternCase)
         {
             Debug.Assert(patternCase.pattern is deconstructor_pattern);
 
-            var result = new statement_list();
-            var pattern = patternCase.pattern as deconstructor_pattern;
-            // создание фиктивной переменной необходимого типа
-            var desugaredPattern = DesugarPattern(pattern, matchingExpression);
-            result.Add(desugaredPattern.CastVariableDefinition);
+            //var result = new statement_list();
+            //var pattern = patternCase.pattern as deconstructor_pattern;
+            //// создание фиктивной переменной необходимого типа
+            //var desugaredPattern = DesugarPattern(pattern, matchingExpression);
+            //result.Add(desugaredPattern.CastVariableDefinition);
 
             
 
-            // Создание тела if из объявлений переменных, вызова Deconstruct и соответствующего тела case
-            var ifBody = new statement_list();
-            ifBody.Add(new desugared_deconstruction(desugaredPattern.DeconstructionVariables, desugaredPattern.CastVariable, patternCase.pattern.source_context));
-            ifBody.Add(desugaredPattern.DeconstructCall);
+            //// Создание тела if из объявлений переменных, вызова Deconstruct и соответствующего тела case
+            //var ifBody = new statement_list();
+            //ifBody.Add(new desugared_deconstruction(desugaredPattern.DeconstructionVariables, desugaredPattern.CastVariable, patternCase.pattern.source_context));
+            //ifBody.Add(desugaredPattern.DeconstructCall);
 
-            if (patternCase.condition != null)
-            {
-                // Выполняем тело, если выполняется условие when
-                ifBody.Add(SubtreeCreator.CreateIf(patternCase.condition, patternCase.case_action));
-            }
-            else
-                ifBody.Add(patternCase.case_action);
+            //if (patternCase.condition != null)
+            //{
+            //    // Выполняем тело, если выполняется условие when
+            //    ifBody.Add(SubtreeCreator.CreateIf(patternCase.condition, patternCase.case_action));
+            //}
+            //else
+            //    ifBody.Add(patternCase.case_action);
 
-            var ifCondition = desugaredPattern.TypeCastCheck;
-            var ifCheck = SubtreeCreator.CreateIf(ifCondition, ifBody);
+            //var ifCondition = desugaredPattern.TypeCastCheck;
+            //var ifCheck = SubtreeCreator.CreateIf(ifCondition, ifBody);
 
-            result.Add(ifCheck);
+            //result.Add(ifCheck);
 
-            // Добавляем полученные statements в результат
-            AddDesugaredCaseToResult(result, ifCheck);
+            //// Добавляем полученные statements в результат
+            //AddDesugaredCaseToResult(result, ifCheck);
         }
 
-        private ident GenerateIdent()
+        private ident NewGeneralName()
         {
-            return new ident("<>patternGenVar" + _variableCounter++);
+            return new ident(GeneratedPatternNamePrefix + "GenVar" + _variableCounter++);
         }
+
+        private ident NewSuccessName()
+        {
+            return new ident(GeneratedPatternNamePrefix + "Success" + _variableCounter++);
+        }
+
+        private bool IsGenerated(string name) => name.StartsWith(GeneratedPatternNamePrefix);
 
         private void AddDefaultCase(statement_list statements)
         {
@@ -177,44 +181,96 @@ namespace SyntaxVisitors.SugarVisitors
 
         private DeconstructionDesugaringResult DesugarPattern(deconstructor_pattern pattern, expression matchingExpression)
         {
-            //var desugarResult = new DeconstructionDesugaringResult();
-            //var castVariableName = GenerateIdent();
-            //desugarResult.CastVariableDefinition = new var_statement(castVariableName, pattern.type);
+            Debug.Assert(!pattern.IsRecursive, "All recursive patterns should be desugared into simple patterns at this point");
 
-            //// делегирование проверки паттерна функции IsTest
-            //desugarResult.TypeCastCheck = SubtreeCreator.CreateSystemFunctionCall("IsTest", matchingExpression, castVariableName);
+            var desugarResult = new DeconstructionDesugaringResult();
+            var castVariableName = NewGeneralName();
+            desugarResult.CastVariableDefinition = new var_statement(castVariableName, pattern.type);
 
-            //foreach (var deconstructedVariable in pattern.parameters)
-            //    desugarResult.DeconstructionVariables.Add(
-            //        new var_def_statement(deconstructedVariable.identifier, deconstructedVariable.type));
+            var successVariableName = NewSuccessName();
+            desugarResult.SuccessVariableDefinition = new var_statement(successVariableName, named_type_reference.Boolean);
 
-            //var deconstructCall = new procedure_call();
-            //deconstructCall.func_name = SubtreeCreator.CreateMethodCall(DeconstructMethodName, castVariableName.name, pattern.parameters.Select(x => x.identifier).ToArray());
-            //desugarResult.DeconstructCall = deconstructCall;
+            // делегирование проверки паттерна функции IsTest
+            desugarResult.TypeCastCheck = SubtreeCreator.CreateSystemFunctionCall(IsTestMethodName, matchingExpression, castVariableName);
 
-            //return desugarResult;
+            var parameters = pattern.parameters.Cast<var_deconstructor_parameter>();
+            foreach (var deconstructedVariable in parameters)
+            {
+                if (IsGenerated(deconstructedVariable.identifier.name))
+                    desugarResult.DeconstructionVariables.Add(
+                        new var_def_statement(deconstructedVariable.identifier, deconstructedVariable.type));
+                else
+                {
+                    var newVariable = NewGeneralName();
+                    desugarResult.DeconstructionVariables.Add(
+                        new var_def_statement(newVariable, deconstructedVariable.type));
+                    desugarResult.InternalAssignments.Add(
+                        new var_statement(deconstructedVariable.identifier, newVariable));
+                }
+            }
 
-            return null;
+            var deconstructCall = new procedure_call();
+            deconstructCall.func_name = SubtreeCreator.CreateMethodCall(DeconstructMethodName, castVariableName.name, parameters.Select(x => x.identifier).ToArray());
+            desugarResult.DeconstructCall = deconstructCall;
+
+            return desugarResult;
         }
 
-        private void DesugarTypePattern(is_pattern_expr isPatternExpr)
+        private void DesugarIsExpression(is_pattern_expr isPatternExpr)
         {
-            Debug.Assert(isPatternExpr.right is type_pattern);
+            Debug.Assert(isPatternExpr.right is deconstructor_pattern);
 
-            // Замена is_pattern на вызов вспомогательной функции PABCSystem.IsTest 
-            expression expression = isPatternExpr.left;
-            type_pattern pattern = (type_pattern)isPatternExpr.right;
-            var isTestFunc = SubtreeCreator.CreateSystemFunctionCall("IsTest", expression, pattern.identifier);
-            ReplaceUsingParent(isPatternExpr, isTestFunc);
+            var pattern = isPatternExpr.right as deconstructor_pattern;
+
+            var desugaringResult = DesugarPattern(pattern, isPatternExpr.left);
+
+            var statementsToAdd = desugaringResult.GetDeconstructionDefinitions(pattern.source_context);
+            statementsToAdd.Add(desugaringResult.GetPatternCheckWithDeconstrunctorCall());
+            AddDefinitionsInUpperStatementList(statementsToAdd);
+
+            ReplaceUsingParent(isPatternExpr, desugaringResult.SuccessVariable);
+
+            
+        }
+
+        private void AddDefinitionsInUpperStatementList(IEnumerable<statement> statementsToAdd)
+        {
+            var definitionsAdded = false;
 
             // Объявление переменной в ближайшем statement_list
             for (int i = listNodes.Count - 1; i >= 0; i--)
             {
                 var statements = listNodes[i] as statement_list;
-                statements?.InsertBefore(
-                    listNodes[i + 1] as statement,
-                    new var_statement(pattern.identifier, pattern.type));
+                if (statements != null)
+                {
+                    statements.InsertBefore(
+                        listNodes[i + 1] as statement,
+                        statementsToAdd);
+                    
+                    definitionsAdded = true;
+                    break;
+                }
             }
+
+            // TODO Patterns: convert to compilation error
+            Debug.Assert(definitionsAdded, "Couldn't add definitions");
+        }
+
+        private PatternLocation GetCurrentLocation()
+        {
+            var firstStatement = GetAscendant<statement>();
+        }
+
+        private T GetAscendant<T>()
+            where T : syntax_tree_node
+        {
+            for (int i = listNodes.Count - 1; i >= 0; i--)
+            {
+                if (listNodes[i] is T)
+                    return (T)listNodes[i];
+            }
+
+            return null;
         }
     }
 }
