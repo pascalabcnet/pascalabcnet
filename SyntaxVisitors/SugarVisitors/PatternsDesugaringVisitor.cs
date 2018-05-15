@@ -29,12 +29,6 @@ namespace SyntaxVisitors.SugarVisitors
         public List<var_def_statement> DeconstructionVariables { get; private set; } = new List<var_def_statement>();
 
         /// <summary>
-        /// Список объявлений, которые должны быть включены внутрь особых конструкций, для ограничения области видимости.
-        /// Например внутрь тела then, если паттерн объявлен в условии if.
-        /// </summary>
-        public List<var_statement> InternalAssignments { get; private set; } = new List<var_statement>();
-
-        /// <summary>
         /// Проверка соответствия типа выражения типу паттерна
         /// </summary>
         public expression TypeCastCheck { get; set; }
@@ -50,9 +44,10 @@ namespace SyntaxVisitors.SugarVisitors
 
         public List<statement> GetDeconstructionDefinitions(SourceContext patternContext)
         {
-            var result = DeconstructionVariables
-                  .Select(x => new desugared_deconstruction(DeconstructionVariables, CastVariable, patternContext))
-                  .ToList<statement>();
+            var result = new List<statement>();
+            result.Add(CastVariableDefinition);
+            result.AddRange(DeconstructionVariables
+                  .Select(x => new desugared_deconstruction(DeconstructionVariables, CastVariable, patternContext))); 
             result.Add(SuccessVariableDefinition);
 
             return result;
@@ -77,6 +72,8 @@ namespace SyntaxVisitors.SugarVisitors
         private int _variableCounter = 0;
         private if_node _previousIf;
         private statement desugaredMatchWith;
+
+        private List<if_node> processedIfNodes = new List<if_node>();
 
         public static PatternsDesugaringVisitor New => new PatternsDesugaringVisitor();
 
@@ -109,8 +106,10 @@ namespace SyntaxVisitors.SugarVisitors
 
         public override void visit(is_pattern_expr isPatternExpr)
         {
-            if (isPatternExpr.right is type_pattern)
-                DesugarIsExpression(isPatternExpr);
+            Debug.Assert(GetCurrentLocation() != PatternLocation.Unknown, "Is-pattern expression is in an unknown context");
+            Debug.Assert(GetAscendant<statement_list>() != null, "Couldn't find statement list in upper nodes");
+
+            DesugarIsExpression(isPatternExpr);
         }
 
         void DesugarDeconstructorPatternCase(expression matchingExpression, pattern_case patternCase)
@@ -147,15 +146,11 @@ namespace SyntaxVisitors.SugarVisitors
             //AddDesugaredCaseToResult(result, ifCheck);
         }
 
-        private ident NewGeneralName()
-        {
-            return new ident(GeneratedPatternNamePrefix + "GenVar" + _variableCounter++);
-        }
+        private ident NewGeneralName() => new ident(GeneratedPatternNamePrefix + "GenVar" + _variableCounter++);
 
-        private ident NewSuccessName()
-        {
-            return new ident(GeneratedPatternNamePrefix + "Success" + _variableCounter++);
-        }
+        private ident NewSuccessName() => new ident(GeneratedPatternNamePrefix + "Success" + _variableCounter++);
+
+        private ident NewEndIfName() => new ident(GeneratedPatternNamePrefix + "EndIf" + _variableCounter++);
 
         private bool IsGenerated(string name) => name.StartsWith(GeneratedPatternNamePrefix);
 
@@ -196,17 +191,8 @@ namespace SyntaxVisitors.SugarVisitors
             var parameters = pattern.parameters.Cast<var_deconstructor_parameter>();
             foreach (var deconstructedVariable in parameters)
             {
-                if (IsGenerated(deconstructedVariable.identifier.name))
-                    desugarResult.DeconstructionVariables.Add(
-                        new var_def_statement(deconstructedVariable.identifier, deconstructedVariable.type));
-                else
-                {
-                    var newVariable = NewGeneralName();
-                    desugarResult.DeconstructionVariables.Add(
-                        new var_def_statement(newVariable, deconstructedVariable.type));
-                    desugarResult.InternalAssignments.Add(
-                        new var_statement(deconstructedVariable.identifier, newVariable));
-                }
+                desugarResult.DeconstructionVariables.Add(
+                    new var_def_statement(deconstructedVariable.identifier, deconstructedVariable.type));
             }
 
             var deconstructCall = new procedure_call();
@@ -220,17 +206,114 @@ namespace SyntaxVisitors.SugarVisitors
         {
             Debug.Assert(isPatternExpr.right is deconstructor_pattern);
 
-            var pattern = isPatternExpr.right as deconstructor_pattern;
+            var patternLocation = GetCurrentLocation();
 
-            var desugaringResult = DesugarPattern(pattern, isPatternExpr.left);
+            switch (patternLocation)
+            {
+                case PatternLocation.IfCondition: DesugarIsExpressionInIfCondition(isPatternExpr); break;
+                case PatternLocation.Assign: DesugarIsExpressionInAssignment(isPatternExpr); break;
+            }
+        }
+
+        private void DesugarIsExpressionInAssignment(is_pattern_expr isExpression)
+        {
+            var pattern = isExpression.right as deconstructor_pattern;
+            var desugaringResult = DesugarPattern(pattern, isExpression.left);
+            ReplaceUsingParent(isExpression, desugaringResult.SuccessVariable);
 
             var statementsToAdd = desugaringResult.GetDeconstructionDefinitions(pattern.source_context);
             statementsToAdd.Add(desugaringResult.GetPatternCheckWithDeconstrunctorCall());
+
             AddDefinitionsInUpperStatementList(statementsToAdd);
+        }
 
-            ReplaceUsingParent(isPatternExpr, desugaringResult.SuccessVariable);
+        private void DesugarIsExpressionInIfCondition(is_pattern_expr isExpression)
+        {
+            var pattern = isExpression.right as deconstructor_pattern;
+            var desugaringResult = DesugarPattern(pattern, isExpression.left);
+            ReplaceUsingParent(isExpression, desugaringResult.SuccessVariable);
 
-            
+            var statementsToAdd = desugaringResult.GetDeconstructionDefinitions(pattern.source_context);
+            statementsToAdd.Add(desugaringResult.GetPatternCheckWithDeconstrunctorCall());
+
+            var enclosingIf = GetAscendant<if_node>();
+            // Если уже обрабатывался ранее (второй встретившийся в том же условии is), то не изменяем if
+            if (processedIfNodes.Contains(enclosingIf))
+                AddDefinitionsInUpperStatementList(statementsToAdd);
+            // Иначе помещаем определения и if-then в отдельный блок, а else после этого блока
+            else
+                ReplaceUsingParent(enclosingIf, ConvertIfNode(enclosingIf, statementsToAdd));
+        }
+
+        private statement_list ConvertIfNode(if_node ifNode, List<statement> statementsBeforeIf)
+        {
+            // if e then <then> else <else>
+            //
+            // переводим в
+            //
+            // begin
+            //   statementsBeforeIf
+            //   if e then begin <then>; goto end_if end;
+            // end
+            // <else>
+            // end_if: empty_statement
+
+            // if e then <then>
+            // 
+            // переводим в
+            //
+            // begin
+            //   statementsBeforeIf
+            //   if e then <then>
+            // end
+
+            ifNode = ifNode.TypedClone();
+
+            // Добавляем, чтобы на конвертировать еще раз, если потребуется
+            processedIfNodes.Add(ifNode);
+
+            var statementsBeforeAndIf = new statement_list();
+            statementsBeforeAndIf.AddMany(statementsBeforeIf);
+            statementsBeforeAndIf.Add(ifNode);
+
+            if (ifNode.else_body == null)
+                return statementsBeforeAndIf;
+            else
+            {
+                var result = new statement_list();
+                result.Add(statementsBeforeAndIf);
+                var endIfLabel = NewEndIfName();
+                // добавляем метку
+                if (!(ifNode.then_body is statement_list))
+                {
+                    ifNode.then_body = new statement_list(ifNode.then_body, ifNode.then_body.source_context);
+                    ifNode.then_body.Parent = ifNode;
+                }
+
+                var thenBody = ifNode.then_body as statement_list;
+                thenBody.Add(new goto_statement(endIfLabel));
+                // добавляем else и метку за ним
+                result.Add(ifNode.else_body);
+                result.Add(new labeled_statement(endIfLabel));
+                // удаляем else из if
+                ifNode.else_body = null;
+                // перепрошиваем Parent
+                result.FillParentsInDirectChilds();
+                // Добавляем метку
+                AddLabel(endIfLabel);
+
+                return result;
+            }
+        }
+
+        private void AddLabel(ident label)
+        {
+            var block = GetAscendant<program_module>().program_block;
+
+            if (block.defs == null)
+                block.defs = new declarations();
+
+            block.defs.Add(new label_definitions(label));
         }
 
         private void AddDefinitionsInUpperStatementList(IEnumerable<statement> statementsToAdd)
@@ -259,6 +342,13 @@ namespace SyntaxVisitors.SugarVisitors
         private PatternLocation GetCurrentLocation()
         {
             var firstStatement = GetAscendant<statement>();
+            
+            switch (firstStatement)
+            {
+                case if_node _: return PatternLocation.IfCondition;
+                case assign _:  return PatternLocation.Assign;
+                default: return PatternLocation.Unknown;
+            }
         }
 
         private T GetAscendant<T>()

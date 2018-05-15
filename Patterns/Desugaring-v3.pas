@@ -60,24 +60,24 @@ end;
 
 // ----
 
+begin
 var <>genVar1: P1;
-var <>genVar_s: ?;
+var s: ?;
 var <>success1 := false;
-
 if IsTest(e, <>genVar1) then
+    <>genVar1.Deconstruct(s);
     <>success1 := true;
-    <>genVar1.Deconstruct(<>genVar_s);
     
 var <>genVar2: P2;
-var <>genVar_t: ?;
+var t: ?;
 var <>success2 := false;
-if IsTest(<>genVar_s, <>genVar2) then
-    <>genVar2.Deconstruct(<>genVar_t);
+if IsTest(t, <>genVar2) then
+    <>genVar2.Deconstruct(t);
     <>success2 := true;
 
 if (<>success and <>success2)
-    var s := <>genVar_s;
-    var t := <>genVar_t;
     <ACTION>
-else
-    <ACTION_ELSE>
+    goto empty_statement;
+end
+<ACTION_ELSE>
+end_if_label: empty_statement
