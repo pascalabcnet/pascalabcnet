@@ -62,7 +62,7 @@ procedure InvokeP(p: procedure(r: real); r: real) := Invoke(p,r);
 
 procedure Invoke(d: ()->()) := app.Dispatcher.Invoke(d);
 
-function Invoke<T>(d: Func0<T>): T := app.Dispatcher.Invoke&<T>(d);
+function Invoke<T>(d: Func0<T>): T := T(app.Dispatcher.Invoke(d));
 function InvokeReal(f: ()->real): real := Invoke&<Real>(f);
 function InvokeString(f: ()->string): string := Invoke&<string>(f);
 function InvokeBoolean(d: Func0<boolean>): boolean := Invoke&<boolean>(d);

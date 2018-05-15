@@ -1,5 +1,6 @@
 ﻿// Copyright (©) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+/// Модуль трёхмерной графики
 unit Graph3D;
 
 {$reference System.Xml.dll}
@@ -39,7 +40,7 @@ type
   Ray3D = HelixToolkit.Wpf.Ray3D;
   Line3D = class(Ray3D) end;
   Plane3D = HelixToolkit.Wpf.Plane3D;
-  
+
 var
   hvp: HelixViewport3D;
   LightsGroup: Model3DGroup;
@@ -54,27 +55,33 @@ var
   OnKeyDown: procedure(k: Key);
   /// Событие отжатия клавиши
   OnKeyUp: procedure(k: Key);
-  
+
 function RGB(r, g, b: byte) := Color.Fromrgb(r, g, b);
+
 function ARGB(a, r, g, b: byte) := Color.FromArgb(a, r, g, b);
+
 function P3D(x, y, z: real) := new Point3D(x, y, z);
+
 function V3D(x, y, z: real) := new Vector3D(x, y, z);
+
 function Sz3D(x, y, z: real) := new Size3D(x, y, z);
+
 function Pnt(x, y: real) := new Point(x, y);
+
 function Rect(x, y, w, h: real) := new System.Windows.Rect(x, y, w, h);
 
 function operator*(p: Point3D; r: real): Point3D; extensionmethod := p.Multiply(r);
 
 function operator*(r: real; p: Point3D): Point3D; extensionmethod := p.Multiply(r);
 
-function operator+(p1,p2: Point3D): Point3D; extensionmethod := p3d(p1.X+p2.X,p1.Y+p2.Y,p1.Z+p2.Z);
+function operator+(p1, p2: Point3D): Point3D; extensionmethod := p3d(p1.X + p2.X, p1.Y + p2.Y, p1.Z + p2.Z);
 
 const
   OrtX = V3D(1, 0, 0);
   OrtY = V3D(0, 1, 0);
   OrtZ = V3D(0, 0, 1);
   Origin: Point3D = P3D(0, 0, 0);
-  EmptyColor = ARGB(0,0,0,0);
+  EmptyColor = ARGB(0, 0, 0, 0);
 
 function ChangeOpacity(Self: GColor; value: integer); extensionmethod := ARGB(value, Self.R, Self.G, Self.B);
 
@@ -97,6 +104,7 @@ function operator implicit(ar: array of Point3D): Point3DCollection; extensionme
 function operator implicit(ar: List<Point3D>): Point3DCollection; extensionmethod := new Point3DCollection(ar);
 
 function RandomColor := RGB(Random(256), Random(256), Random(256));
+
 function GrayColor(b: byte) := RGB(b, b, b);
 
 function RandomSolidBrush := new SolidColorBrush(RandomColor);
@@ -108,17 +116,17 @@ function hplus := SystemParameters.WindowCaptionHeight + SystemParameters.Window
 type
   IMHelper = auto class
     fname: string;
-    M,N: real;
+    M, N: real;
     function ImageMaterial: Material;
     begin
       //Result := MaterialHelper.CreateImageMaterial(fname)
       var bi := new System.Windows.Media.Imaging.BitmapImage();
-   	  bi.BeginInit();
-	    bi.UriSource := new System.Uri(fname,System.UriKind.Relative); 
-	    bi.EndInit();
+      bi.BeginInit();
+      bi.UriSource := new System.Uri(fname, System.UriKind.Relative); 
+      bi.EndInit();
       var b := new ImageBrush(bi);
-      b.Viewport := Rect(0,0,M,N);
-      if (M<>1) or (N<>1) then
+      b.Viewport := Rect(0, 0, M, N);
+      if (M <> 1) or (N <> 1) then
         b.TileMode := TileMode.Tile;
       Result := new DiffuseMaterial(b);
     end;  
@@ -131,29 +139,34 @@ type
   SpMHelper = auto class
     c: Color;
     specularpower: real;
-    function SpecularMaterial := new System.Windows.Media.Media3D.SpecularMaterial(new SolidColorBrush(c),specularpower);
+    function SpecularMaterial := new System.Windows.Media.Media3D.SpecularMaterial(new SolidColorBrush(c), specularpower);
   end;
-  
-function ImageMaterial(fname: string; M: real := 1; N: real := 1): Material := Invoke&<Material>(IMHelper.Create(fname,M,N).ImageMaterial);
+
+function ImageMaterial(fname: string; M: real := 1; N: real := 1): Material := Invoke&<Material>(IMHelper.Create(fname, M, N).ImageMaterial);
+
 function DiffuseMaterial(c: Color): Material := Invoke&<Material>(DEMHelper.Create(c).Diffuse);
-function SpecularMaterial(specularBrightness: byte; specularpower: real := 100): Material := Invoke&<Material>(SpMHelper.Create(RGB(specularBrightness,specularBrightness,specularBrightness),specularpower).SpecularMaterial);
-function SpecularMaterial(c: Color; specularpower: real := 100): Material := Invoke&<Material>(SpMHelper.Create(c,specularpower).SpecularMaterial);
+
+function SpecularMaterial(specularBrightness: byte; specularpower: real := 100): Material := Invoke&<Material>(SpMHelper.Create(RGB(specularBrightness, specularBrightness, specularBrightness), specularpower).SpecularMaterial);
+
+function SpecularMaterial(c: Color; specularpower: real := 100): Material := Invoke&<Material>(SpMHelper.Create(c, specularpower).SpecularMaterial);
+
 function EmissiveMaterial(c: Color): Material := Invoke&<Material>(DEMHelper.Create(c).Emissive);
+
 function RainbowMaterial: Material := Materials.Rainbow;
 
 type
   ///!#
   Materials = class
     class function Diffuse(c: Color) := DiffuseMaterial(c);
-    class function Specular(specularBrightness: byte := 255; specularpower: real := 100) := SpecularMaterial(specularBrightness,specularpower);
-    class function Specular(c: Color; specularpower: real := 100) := SpecularMaterial(c,specularpower);
+    class function Specular(specularBrightness: byte := 255; specularpower: real := 100) := SpecularMaterial(specularBrightness, specularpower);
+    class function Specular(c: Color; specularpower: real := 100) := SpecularMaterial(c, specularpower);
     class function Emissive(c: Color) := EmissiveMaterial(c);
     class function Rainbow := RainbowMaterial;
   end;
   
   GMHelper = auto class
-    a,b: Material;
-    function GroupMaterial: Material; 
+    a, b: Material;
+    function GroupMaterial: Material;
     begin
       var g := new MaterialGroup();
       g.Children.Add(a);
@@ -163,7 +176,7 @@ type
   end;
 
 
-function operator+(a,b: Material): Material; extensionmethod := Invoke&<Material>(GMHelper.Create(a,b).GroupMaterial);
+function operator+(a, b: Material): Material; extensionmethod := Invoke&<Material>(GMHelper.Create(a, b).GroupMaterial);
 
 type
   ///!#
@@ -219,13 +232,14 @@ type
   private 
     function Cam: GCamera := hvp.Camera;
     procedure SetPP(p: Point3D);
-    begin 
+    begin
       Cam.Position := p; 
       //Cam.Ani
       {if p<>(0,0,0) then
-        Cam.LookDirection := Cam.Position.Multiply(-1).ToVector3D
+      Cam.LookDirection := Cam.Position.Multiply(-1).ToVector3D
       else Cam.LookDirection := V3D(1,0,0);}
     end;
+    
     procedure SetP(p: Point3D) := Invoke(SetPP, p);
     function GetP: Point3D := Invoke&<Point3D>(()->Cam.Position);
     procedure SetLDP(v: Vector3D) := Cam.LookDirection := v;
@@ -248,7 +262,7 @@ type
     property UpDirection: Vector3D read GetUD write SetUD;
     property Distanse: real read GetD write SetD;
   end;
-
+  
   ///!#
   LightsType = class
   private 
@@ -259,17 +273,17 @@ type
   public 
     property Count: integer read GetC;
     procedure AddDirectionalLight(c: Color; v: Vector3D) := Invoke(()->LightsGroup.Children.Add(new DirectionalLight(c, v)));
-    procedure AddSpotLight(c: Color; p: Point3D; v: Vector3D; outerconeangle,innerconeangle: real) := Invoke(()->LightsGroup.Children.Add(new SpotLight(c,p,v,outerconeangle,innerconeangle)));
-    procedure AddPointLight(c: Color; p: Point3D) := Invoke(()->LightsGroup.Children.Add(new PointLight(c,p)));
+    procedure AddSpotLight(c: Color; p: Point3D; v: Vector3D; outerconeangle, innerconeangle: real) := Invoke(()->LightsGroup.Children.Add(new SpotLight(c, p, v, outerconeangle, innerconeangle)));
+    procedure AddPointLight(c: Color; p: Point3D) := Invoke(()->LightsGroup.Children.Add(new PointLight(c, p)));
     procedure RemoveLight(i: integer) := Invoke(()->LightsGroup.Children.RemoveAt(i));
     procedure Proba();
     begin
-      var p := new PointLight(Colors.Gray,P3D(2,2,2));
+      var p := new PointLight(Colors.Gray, P3D(2, 2, 2));
       p.Color := Colors.Gray;
-      p.Position := P3D(3,3,3);
+      p.Position := P3D(3, 3, 3);
     end;
   end;
-
+  
   ///!#
   GridLinesType = class
   private 
@@ -296,8 +310,8 @@ var
   Window: WindowType;
   Camera: CameraType;
   Lights: LightsType;
-  GridLines: GridLinesType; 
-  
+  GridLines: GridLinesType;
+
 function operator implicit(c: GColor): GMaterial; extensionmethod := Materialhelper.CreateMaterial(c);
 
 type
@@ -314,7 +328,7 @@ type
     rotatetransform_anim := new RotateTransform3D;
     scaletransform := new ScaleTransform3D;
     transltransform: TranslateTransform3D;
-    
+
     procedure AddToObject3DList;
     procedure DeleteFromObject3DList;
     
@@ -346,12 +360,13 @@ type
       if model = v then
         Result := Self
     end;
-    function GetColor: GColor := EmptyColor;
-    procedure SetColor(c: GColor); 
-    begin end;
     
+    function GetColor: GColor := EmptyColor;
+    procedure SetColor(c: GColor);
+    begin end;
+  
   protected 
-    function CreateObject: Object3D; virtual; // нужно для клонирования
+    function CreateObject: Object3D; virtual;// нужно для клонирования
     begin
       Result := nil;
     end;
@@ -359,7 +374,7 @@ type
     procedure CloneChildren(from: Object3D); virtual;
     begin
     end;
-
+    
     function CloneT: Object3D; virtual;
     begin
       Result := CreateObject;
@@ -375,18 +390,18 @@ type
     begin
       CreateBase0(model, 0, 0, 0);
     end;
-
+    
     property X: real read GetX write SetX;
     property Y: real read GetY write SetY;
     property Z: real read GetZ write SetZ;
     
     function MoveTo(xx, yy, zz: real): Object3D := 
     Invoke&<Object3D>(()->begin
-        transltransform.OffsetX := xx;
-        transltransform.OffsetY := yy;
-        transltransform.OffsetZ := zz;
-        Result := Self;
-      end);
+      transltransform.OffsetX := xx;
+      transltransform.OffsetY := yy;
+      transltransform.OffsetZ := zz;
+      Result := Self;
+    end);
     function MoveTo(p: Point3D) := MoveTo(p.X, p.y, p.z);
     function MoveOn(dx, dy, dz: real) := MoveTo(x + dx, y + dy, z + dz);
     function MoveOn(v: Vector3D) := MoveOn(v.X, v.Y, v.Z);
@@ -422,42 +437,42 @@ type
     
     function Scale(f: real): Object3D := 
     Invoke&<Object3D>(()->begin
-        scaletransform.ScaleX *= f;
-        scaletransform.ScaleY *= f;
-        scaletransform.ScaleZ *= f;
-        Result := Self;
-      end);
+      scaletransform.ScaleX *= f;
+      scaletransform.ScaleY *= f;
+      scaletransform.ScaleZ *= f;
+      Result := Self;
+    end);
     function ScaleX(f: real): Object3D := 
     Invoke&<Object3D>(()->begin
-        scaletransform.ScaleX *= f;
-        Result := Self;
-      end);
+      scaletransform.ScaleX *= f;
+      Result := Self;
+    end);
     function ScaleY(f: real): Object3D := 
     Invoke&<Object3D>(()->begin
-        scaletransform.ScaleY *= f;
-        Result := Self;
-      end);
+      scaletransform.ScaleY *= f;
+      Result := Self;
+    end);
     function ScaleZ(f: real): Object3D := 
     Invoke&<Object3D>(()->begin
-        scaletransform.ScaleZ *= f;
-        Result := Self;
-      end);
+      scaletransform.ScaleZ *= f;
+      Result := Self;
+    end);
     /// Поворот на угол angle вокруг оси axis
     function Rotate(axis: Vector3D; angle: real): Object3D := 
     Invoke&<Object3D>(()->begin
-        var m := transfgroup.Children[0].Value; 
-        m.Rotate(new Quaternion(axis, angle));
-        transfgroup.Children[0] := new MatrixTransform3D(m);
-        Result := Self;
-      end);
+      var m := transfgroup.Children[0].Value; 
+      m.Rotate(new Quaternion(axis, angle));
+      transfgroup.Children[0] := new MatrixTransform3D(m);
+      Result := Self;
+    end);
     /// Поворот на угол angle вокруг оси axis относительно точки center
     function RotateAt(axis: Vector3D; angle: real; center: Point3D): Object3D :=
     Invoke&<Object3D>(()->begin
-        var m := transfgroup.Children[0].Value;    
-        m.RotateAt(new Quaternion(axis, angle), center);
-        transfgroup.Children[0] := new MatrixTransform3D(m);
-        Result := Self;
-      end);
+      var m := transfgroup.Children[0].Value;    
+      m.RotateAt(new Quaternion(axis, angle), center);
+      transfgroup.Children[0] := new MatrixTransform3D(m);
+      Result := Self;
+    end);
     function AnimMoveTo(x, y, z: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
     function AnimMoveTo(p: Point3D; seconds: real := 1; Completed: procedure := nil) := AnimMoveTo(p.x, p.y, p.z, seconds, Completed);
     function AnimMoveTrajectory(a: sequence of Point3D; seconds: real := 1; Completed: procedure := nil): MyAnimation;
@@ -479,14 +494,15 @@ type
     procedure SaveP(fname: string);
     begin
       var f := new System.IO.StreamWriter(fname);
-      XamlWriter.Save(Model,f);
+      XamlWriter.Save(Model, f);
       f.Close()
     end;
-    procedure Save(fname: string); virtual := Invoke(SaveP,fname); // надо её сделать виртуальной!
+    
+    procedure Save(fname: string); virtual := Invoke(SaveP, fname); // надо её сделать виртуальной!
     class function Load(fname: string): Object3D := Invoke&<Object3D>(()->begin
-        var m := XamlReader.Load(new System.IO.FileStream(fname,System.IO.FileMode.Open)) as Visual3D;
-        Result := new Object3D(m);
-      end);
+      var m := XamlReader.Load(new System.IO.FileStream(fname, System.IO.FileMode.Open)) as Visual3D;
+      Result := new Object3D(m);
+    end);
     procedure Destroy(); virtual;
     begin
       DeleteFromObject3DList;
@@ -494,13 +510,14 @@ type
   end;
   
   ObjectWithChildren3D = class(Object3D) // model is ModelVisual3D
-  private
+  private 
     l := new List<Object3D>;
     
     procedure DestroyT;
     begin
       
     end;
+    
     procedure AddT(obj: Object3D);
     begin
       var p := Self;
@@ -512,7 +529,7 @@ type
       end;
       if obj.Parent = Self then
         exit;
-        
+      
       if obj.Parent = nil then
         hvp.Children.Remove(obj.model)
       else 
@@ -535,6 +552,7 @@ type
       hvp.Children.Add(obj.model);
       obj.Parent := nil;
     end;
+    
     function GetObj(i: integer): Object3D := l[i];
     function CountT: integer := (model as ModelVisual3D).Children.Count;
     function FindVisual(v: Visual3D): Object3D; override;
@@ -546,11 +564,12 @@ type
         foreach var x in l do
         begin
           Result := x.FindVisual(v);
-          if Result<>nil then
+          if Result <> nil then
             exit;
         end;
     end;
-  protected  
+  
+  protected 
     procedure CloneChildren(from: Object3D); override;
     begin
       var ll := (from as ObjectWithChildren3D).l;
@@ -558,10 +577,11 @@ type
       foreach var xx in ll do
         AddChild(xx.Clone);
     end;
+  
   public  
     procedure AddChild(obj: Object3D) := Invoke(AddT, obj);
     property Items[i: integer]: Object3D read GetObj; default;
-
+    
     function Count: integer := Invoke&<integer>(CountT);
     
     procedure DestroyP;
@@ -576,6 +596,7 @@ type
       end;
       model := nil;
     end;
+    
     procedure Destroy; override;
     begin
       inherited Destroy;
@@ -598,13 +619,14 @@ type
     begin
       Result := EmptyColor;
       var g := Material as System.Windows.Media.Media3D.MaterialGroup;
-      if g=nil then exit;      
+      if g = nil then exit;      
       var t := g.Children[0] as System.Windows.Media.Media3D.DiffuseMaterial;
-      if t=nil then exit;
+      if t = nil then exit;
       var v := t.Brush as System.Windows.Media.SolidColorBrush;
-      if v=nil then exit;
+      if v = nil then exit;
       Result := v.Color; 
     end;
+    
     function GetColor: GColor := Invoke&<GColor>(GetColorP);
     procedure SetColorP(c: GColor) := (model as MeshElement3D).Material := MaterialHelper.CreateMaterial(c);
     procedure SetColor(c: GColor) := Invoke(SetColorP, c); 
@@ -637,6 +659,7 @@ type
       foreach var xx in lst do
         AddChild(xx);
     end;
+    
     function Clone := (inherited Clone) as GroupT;
   end;
   
@@ -662,7 +685,7 @@ type
     begin
     end;
   
-  private
+  private 
     class function AddDoubleAnimRemainderHelper(d: DoubleAnimationBase; sb: StoryBoard; seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
     begin
       d.Duration := new System.Windows.Duration(System.TimeSpan.FromSeconds(seconds));
@@ -680,14 +703,14 @@ type
     begin
       var d := new DoubleAnimation();
       d.To := toValue;
-      Result := AddDoubleAnimRemainderHelper(d,sb,seconds,ttname,prop,waittime);
+      Result := AddDoubleAnimRemainderHelper(d, sb, seconds, ttname, prop, waittime);
     end;
     
     class function AddDoubleAnimOnByName(sb: StoryBoard; toValue, seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
     begin
       var d := new DoubleAnimation();
       d.By := toValue;
-      Result := AddDoubleAnimRemainderHelper(d,sb,seconds,ttname,prop,waittime);
+      Result := AddDoubleAnimRemainderHelper(d, sb, seconds, ttname, prop, waittime);
     end;
     
     class function AddDoubleAnimByNameUsingKeyframes(sb: StoryBoard; a: sequence of real; seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
@@ -696,7 +719,7 @@ type
       d.KeyFrames := new DoubleKeyFrameCollection;
       foreach var x in a do
         d.KeyFrames.Add(new LinearDoubleKeyFrame(x)); // не указываем keytime - надеемся, что по секунде
-      Result := AddDoubleAnimRemainderHelper(d,sb,seconds,ttname,prop,waittime);
+      Result := AddDoubleAnimRemainderHelper(d, sb, seconds, ttname, prop, waittime);
     end;
     
     {class function AddDoubleAnimByNameUsingTrajectory(sb: StoryBoard; a: sequence of real; seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
@@ -740,7 +763,7 @@ type
         if an <> nil then
           an;
       end;
-
+      
       Result := sb;
     end;
   
@@ -748,16 +771,16 @@ type
     constructor(e: Object3D; sec: real; Completed: procedure := nil);
     begin
       Self.Completed := Completed;
-      (Element,Seconds) := (e,sec);
-    end;  
+      (Element, Seconds) := (e, sec);
+    end;
     
     function WhenCompleted(act: procedure): MyAnimation;
     begin
       Self.AnimationCompleted := act;
       Result := Self;
     end;
-    
-  private
+  
+  private 
     procedure BeginT;
     begin
       sb := CreateStoryboard;
@@ -767,6 +790,7 @@ type
       sb.Completed += procedure (o, e) -> begin sb.Children.Clear; end;
       sb.Begin;
     end;
+    
     procedure RemoveT := begin
       sb.Pause;
       sb := new Storyboard;
@@ -777,13 +801,14 @@ type
       foreach var d in a.sb.Children do
         sb.Children.Add(d);
     end;
+  
   public 
     procedure &Begin; virtual := Invoke(BeginT);
     procedure Remove := Invoke(RemoveT);
-    procedure Change(a: MyAnimation) := Invoke(ChangeT,a);
-    procedure Pause := if sb<>nil then sb.Pause;
-    procedure Resume := if sb<>nil then sb.Resume;
-
+    procedure Change(a: MyAnimation) := Invoke(ChangeT, a);
+    procedure Pause := if sb <> nil then sb.Pause;
+    procedure Resume := if sb <> nil then sb.Resume;
+    
     function Duration: real; virtual := seconds;
     function &Then(second: MyAnimation): MyAnimation;
     function Forever: MyAnimation; virtual := Self;
@@ -792,11 +817,12 @@ type
   end;
   
   EmptyAnimation = class(MyAnimation)
-  public
+  public 
     constructor(wait: real);
     begin
       Self.Seconds := wait;
     end;
+    
     procedure InitAnim(sb: StoryBoard); virtual := InitAnimWait(sb, Seconds);
   end;
   
@@ -805,12 +831,13 @@ type
   private 
     v: real;
     da: DoubleAnimationBase;
-  public  
+  public 
     constructor(e: Object3D; sec: real; value: real; Completed: procedure := nil);
     begin
       inherited Create(e, sec, Completed);
       v := value;
     end;
+    
     function AutoReverse: MyAnimation; override;
     begin
       ApplyDecorators.Add(()-> begin
@@ -818,6 +845,7 @@ type
       end);  
       Result := Self;
     end;
+    
     function Forever: MyAnimation; override;
     begin
       ApplyDecorators.Add(()-> begin
@@ -825,15 +853,16 @@ type
       end);  
       Result := Self;
     end;
+    
     function AccelerationRatio(acceleration: real; deceleration: real := 0): MyAnimation; override;
     begin
-      if acceleration<0 then acceleration := 0;
-      if acceleration>1 then acceleration := 1;
-      if deceleration<0 then deceleration := 0;
-      if deceleration>1 then deceleration := 1;
-      if acceleration+deceleration>1 then
+      if acceleration < 0 then acceleration := 0;
+      if acceleration > 1 then acceleration := 1;
+      if deceleration < 0 then deceleration := 0;
+      if deceleration > 1 then deceleration := 1;
+      if acceleration + deceleration > 1 then
       begin
-        acceleration /= acceleration+deceleration;
+        acceleration /= acceleration + deceleration;
         deceleration := 1 - acceleration;
       end;
       ApplyDecorators.Add(()-> begin
@@ -843,17 +872,18 @@ type
       Result := Self;
     end;
   end;
-
+  
   Double3AnimationBase = class(MyAnimation)
   private 
     x, y, z: real;
-    dax,day,daz: DoubleAnimationBase;
-  public  
+    dax, day, daz: DoubleAnimationBase;
+  public 
     constructor(e: Object3D; sec: real; xx, yy, zz: real; Completed: procedure := nil);
     begin
       inherited Create(e, sec, Completed);
       (x, y, z) := (xx, yy, zz);
     end;
+    
     function AutoReverse: MyAnimation; override;
     begin
       ApplyDecorators.Add(()-> begin
@@ -863,6 +893,7 @@ type
       end);  
       Result := Self;
     end;
+    
     function Forever: MyAnimation; override;
     begin
       ApplyDecorators.Add(()-> begin
@@ -872,15 +903,16 @@ type
       end);  
       Result := Self;
     end;
+    
     function AccelerationRatio(acceleration: real; deceleration: real := 0): MyAnimation; override;
     begin
-      if acceleration<0 then acceleration := 0;
-      if acceleration>1 then acceleration := 1;
-      if deceleration<0 then deceleration := 0;
-      if deceleration>1 then deceleration := 1;
-      if acceleration+deceleration>1 then
+      if acceleration < 0 then acceleration := 0;
+      if acceleration > 1 then acceleration := 1;
+      if deceleration < 0 then deceleration := 0;
+      if deceleration > 1 then deceleration := 1;
+      if acceleration + deceleration > 1 then
       begin
-        acceleration /= acceleration+deceleration;
+        acceleration /= acceleration + deceleration;
         deceleration := 1 - acceleration;
       end;
       ApplyDecorators.Add(()-> begin
@@ -905,7 +937,7 @@ type
       dax := AddDoubleAnimByName(sb, x, seconds, ttname, TranslateTransform3D.OffsetXProperty, waittime);
       day := AddDoubleAnimByName(sb, y, seconds, ttname, TranslateTransform3D.OffsetYProperty, waittime);
       daz := AddDoubleAnimByName(sb, z, seconds, ttname, TranslateTransform3D.OffsetZProperty, waittime);
-      daz.Completed += (o,e) -> if Completed<>nil then Completed(); // только на последнюю! Надо выполнить один раз!
+      daz.Completed += (o, e) -> if Completed <> nil then Completed(); // только на последнюю! Надо выполнить один раз!
     end;
   end;
   
@@ -919,8 +951,9 @@ type
       dax := AddDoubleAnimOnByName(sb, x, seconds, ttname, TranslateTransform3D.OffsetXProperty, waittime);
       day := AddDoubleAnimOnByName(sb, y, seconds, ttname, TranslateTransform3D.OffsetYProperty, waittime);
       daz := AddDoubleAnimOnByName(sb, z, seconds, ttname, TranslateTransform3D.OffsetZProperty, waittime);
-      daz.Completed += (o,e) -> if Completed<>nil then Completed(); // только на первую! Надо выполнить один раз!
+      daz.Completed += (o, e) -> if Completed <> nil then Completed(); // только на первую! Надо выполнить один раз!
     end;
+  
   public 
   end;
   
@@ -936,6 +969,7 @@ type
       day := AddDoubleAnimByNameUsingKeyframes(sb, a.Select(p -> p.y), seconds, ttname, TranslateTransform3D.OffsetYProperty, waittime);
       daz := AddDoubleAnimByNameUsingKeyframes(sb, a.Select(p -> p.z), seconds, ttname, TranslateTransform3D.OffsetZProperty, waittime);
     end;
+  
   public 
     constructor(e: Object3D; sec: real; aa: sequence of Point3D; Completed: procedure := nil);
     begin
@@ -964,7 +998,7 @@ type
       scale := sc;
     end;
   end;
-
+  
   ScaleXAnimation = class(Double1AnimationBase)
   private 
     scale: real;
@@ -975,6 +1009,7 @@ type
       if not RegisterName(sb, sctransform, ttname) then;
       da := AddDoubleAnimByName(sb, scale, seconds, ttname, ScaleTransform3D.ScaleXProperty, wait);
     end;
+  
   public 
     constructor(e: Object3D; sec: real; sc: real; Completed: procedure := nil);
     begin
@@ -991,6 +1026,7 @@ type
       if not RegisterName(sb, sctransform, ttname) then;
       da := AddDoubleAnimByName(sb, scale, seconds, ttname, ScaleTransform3D.ScaleYProperty, wait);
     end;
+  
   public 
   end;
   ScaleZAnimation = class(ScaleXAnimation)
@@ -1002,6 +1038,7 @@ type
       if not RegisterName(sb, sctransform, ttname) then;
       da := AddDoubleAnimByName(sb, scale, seconds, ttname, ScaleTransform3D.ScaleZProperty, wait);
     end;
+  
   public 
   end;
   
@@ -1014,16 +1051,16 @@ type
       var rot := rottransform.Rotation as AxisAngleRotation3D;
       var ttname := 'r' + rot.GetHashCode;
       if not RegisterName(sb, rot, ttname) then;
-      
+  
       rot.Angle := 0; //?
       rot.Axis := V3D(vx, vy, vz); //?
-      
+  
       var el: Object3D := Element;
       sb.Completed += (o, e) -> begin
         rottransform.Rotation := new AxisAngleRotation3D();
         el.Rotate(rot.Axis, angle); // переходит в основную матрицу
       end;
-      
+  
       da := AddDoubleAnimByName(sb, angle, seconds, ttname, AxisAngleRotation3D.AngleProperty, wait);
     end;
   
@@ -1048,7 +1085,7 @@ type
       var rot := rottransform.Rotation as AxisAngleRotation3D;
       var ttname := 'r' + rot.GetHashCode;
       if not RegisterName(sb, rot, ttname) then;
-
+      
       rot.Angle := 0; //?
       rot.Axis := V3D(vx, vy, vz); //?
       
@@ -1077,7 +1114,7 @@ type
       foreach var l in ll do
         l.ApplyAllDecorators;
     end;
-
+    
     procedure InitAnimWait(sb: StoryBoard; wait: real); override;
     begin
       foreach var l in ll do
@@ -1111,6 +1148,7 @@ type
       ll += b;
       Result := Self;
     end;
+    
     class function operator +=(a: GroupAnimation; b: MyAnimation): GroupAnimation;
     begin
       a.ll += b;
@@ -1130,23 +1168,25 @@ type
         w += l.Duration
       end;
     end;
+    
     procedure ApplyAllDecorators; override;
     begin
       foreach var l in ll do
         l.ApplyAllDecorators;
     end;
+  
   public 
     constructor(params l: array of MyAnimation) := ll := Lst(l);
     constructor(l: List<MyAnimation>) := ll := l;
     
     function Duration: real; override := ll.Sum(l -> l.Duration);
-
+    
     function Add(b: MyAnimation): SequenceAnimation;
     begin
       ll += b;
       Result := Self;
     end;
-
+    
     class function operator +=(a: SequenceAnimation; b: MyAnimation): SequenceAnimation;
     begin
       a.ll += b;
@@ -1161,19 +1201,23 @@ function Object3D.AnimMoveTrajectory(a: sequence of Point3D; seconds: real; Comp
 function Object3D.AnimMoveOn(dx, dy, dz, seconds: real; Completed: procedure) := new OffsetAnimationOn(Self, seconds, dx, dy, dz, Completed);
 
 function Object3D.AnimScale(sc, seconds: real; Completed: procedure) := new ScaleAnimation(Self, seconds, sc, Completed);
+
 function Object3D.AnimScaleX(sc, seconds: real; Completed: procedure) := new ScaleXAnimation(Self, seconds, sc, Completed);
+
 function Object3D.AnimScaleY(sc, seconds: real; Completed: procedure) := new ScaleYAnimation(Self, seconds, sc, Completed);
+
 function Object3D.AnimScaleZ(sc, seconds: real; Completed: procedure) := new ScaleZAnimation(Self, seconds, sc, Completed);
 
-function Object3D.AnimRotate(vx, vy, vz, angle, seconds: real; Completed: procedure) := new RotateAtAnimation(Self, seconds, vx, vy, vz, angle, P3D(0,0,0), Completed);
+function Object3D.AnimRotate(vx, vy, vz, angle, seconds: real; Completed: procedure) := new RotateAtAnimation(Self, seconds, vx, vy, vz, angle, P3D(0, 0, 0), Completed);
 
 function Object3D.AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real; Completed: procedure) := new RotateAtAnimation(Self, seconds, axis.X, axis.y, axis.z, angle, center, Completed);
 
-var Object3DList := new List<Object3D>;
+var
+  Object3DList := new List<Object3D>;
 
 procedure Object3D.AddToObject3DList;
 begin
-  Object3DList.Add(Self)  
+  Object3DList.Add(Self)
 end;
 
 procedure Object3D.DeleteFromObject3DList;
@@ -1181,7 +1225,7 @@ begin
   var oc := Self as ObjectWithChildren3D;
   foreach var c in oc.l do
     c.DeleteFromObject3DList;
-  Object3DList.Remove(Self)  
+  Object3DList.Remove(Self)
 end;
 
 type
@@ -1212,7 +1256,7 @@ type
   private 
     function Model := inherited model as SphereVisual3D;
     procedure SetRP(r: real) := Model.Radius := r;
-    procedure SetR(r: real) := Invoke(SetRP,r);
+    procedure SetR(r: real) := Invoke(SetRP, r);
     function GetR: real := InvokeReal(()->Model.Radius);
     function NewVisualObject(r: real): SphereVisual3D;
     begin
@@ -1221,6 +1265,7 @@ type
       sph.Radius := r;
       Result := sph;
     end;
+  
   protected 
     function CreateObject: Object3D; override := new SphereT(X, Y, Z, Radius, Material.Clone);
   public 
@@ -1251,6 +1296,7 @@ type
       ell.RadiusZ := rz;
       Result := ell;
     end;
+  
   protected
     function CreateObject: Object3D; override := new EllipsoidT(X, Y, Z, RadiusX, RadiusY, RadiusZ, Material.Clone);
   public 
@@ -1276,6 +1322,7 @@ type
       bx.SideLength := w;
       Result := bx;
     end;
+  
   protected  
     function CreateObject: Object3D; override := new CubeT(X, Y, Z, SideLength, Material.Clone);
   public 
@@ -1284,7 +1331,7 @@ type
     property SideLength: real read GetW write SetW;
     function Clone := (inherited Clone) as CubeT;
   end;
-
+  
   BoxT = class(ObjectWithMaterial3D)
   private
     function model := inherited model as BoxVisual3D;
@@ -1311,6 +1358,7 @@ type
       (bx.Width, bx.Height, bx.Length) := (w, h, l);
       Result := bx;
     end;
+  
   protected  
     function CreateObject: Object3D; override := new BoxT(X, Y, Z, Length, Width, Height, Material.Clone);
   public 
@@ -1347,6 +1395,7 @@ type
       a.Origin := Origin;
       Result := a;
     end;
+  
   protected  
     function CreateObject: Object3D; override := new ArrowT(X, Y, Z, Direction.X, Direction.Y, Direction.Z, Diameter, HeadLength, Material.Clone);
   public 
@@ -1366,7 +1415,7 @@ type
   TruncatedConeT = class(ObjectWithMaterial3D)
   private
     function model := inherited model as TruncatedConeVisual3D;
-
+    
     procedure SetH(r: real) := Invoke(procedure(r: real)->model.Height := r, r); 
     function GetH: real := InvokeReal(()->model.Height);
     
@@ -1412,12 +1461,13 @@ type
   end;
   
   CylinderT = class(TruncatedConeT)
-  private
+  private 
     procedure SetR(r: real);
     begin
       BaseRadius := r;
       TopRadius := r;
     end;
+    
     function GetR: real := BaseRadius;
   protected  
     function CreateObject: Object3D; override := new CylinderT(X, Y, Z, Height, Radius, (model as TruncatedConeVisual3D).ThetaDiv - 1, Topcap, Material.Clone);
@@ -1427,6 +1477,7 @@ type
       var a := NewVisualObject(h, r, r, ThetaDiv, topcap);
       CreateBase(a, x, y, z, m);
     end;
+    
     function Clone := (inherited Clone) as CylinderT;
     property Radius: real read GetR write SetR;
   end;
@@ -1478,7 +1529,7 @@ type
   BillboardTextT = class(ObjectWithChildren3D)
   private
     function model := inherited model as BillboardTextVisual3D;
-
+    
     procedure SetTP(r: string) := model.Text := r;
     procedure SetT(r: string) := Invoke(SetTP, r); 
     function GetT: string := InvokeString(()->model.Text);
@@ -1507,7 +1558,7 @@ type
   private 
     fontname: string;
     function model := inherited model as TextVisual3D;
-  
+    
     procedure SetTP(r: string) := model.Text := r;
     procedure SetT(r: string) := Invoke(SetTP, r); 
     function GetT: string := InvokeString(()->model.Text);
@@ -1519,7 +1570,7 @@ type
     procedure SetUP(v: Vector3D) := model.UpDirection := v;
     procedure SetU(v: Vector3D) := Invoke(SetUP, v); 
     function GetU: Vector3D := Invoke&<Vector3D>(()->model.UpDirection);
-
+    
     procedure SetNP(fontname: string) := model.FontFamily := new FontFamily(fontname);
     procedure SetN(fontname: string) := Invoke(SetTP, fontname); 
     function GetN: string := InvokeString(()->fontname);
@@ -1591,15 +1642,15 @@ type
   end;
   
   FileModelT = class(ObjectWithChildren3D)
-  private
+  private 
     fn: string;
     procedure SetMP(mat: GMaterial) := (model as FileModelVisual3D).DefaultMaterial := mat;
     procedure SetMaterial(mat: GMaterial) := Invoke(SetMP, mat);
     function GetMaterial: GMaterial := Invoke&<GMaterial>(()->(model as FileModelVisual3D).DefaultMaterial);
   public 
     //property Color: GColor write SetColor;
-    property Material: GMaterial read GetMaterial write SetMaterial; // не работает почему-то на запись
-
+    property Material: GMaterial read GetMaterial write SetMaterial;// не работает почему-то на запись
+  
     {procedure SetVP(v: boolean) := (model as FileModelVisual3D).Visibility := v;
     procedure SetV(v: boolean) := Invoke(SetVP, v);
     function GetV: boolean := Invoke&<boolean>(()->(model as FileModelVisual3D).Visibility);}
@@ -1608,43 +1659,43 @@ type
   public 
     constructor(x, y, z: real; fname: string; mat: GMaterial);
     begin
-      {model := new MeshVisual3D();
-    
-      var fs := System.IO.File.OpenRead(fname);
-      fn := fname;
-
-    	var ext := System.IO.Path.GetExtension(fname);
-      ext := ext?.ToLower;
+        {model := new MeshVisual3D();
       
-      var r: ModelReader;
+        var fs := System.IO.File.OpenRead(fname);
+        fn := fname;
       
-      case ext of
-    '.off': begin
-        r := new offreader(nil);
-        (model as MeshVisual3D).FaceMaterial := mat;
-        (model as MeshVisual3D).EdgeDiameter := 0;
-        (model as MeshVisual3D).VertexRadius := 0;
-      end;
-    '.3ds': r := new studioreader(nil);
-    '.lwo': r := new lworeader(nil);
-    '.stl': r := new stlreader(nil);
-    '.obj','.objx': r := new objreader(nil);
-      end;
-
-      r.DefaultMaterial := mat;
-      //r.DefaultMaterial := Colors.Gray;
-      if ext = '.off' then
-      begin
-        (r as offreader).Load(fs);
-        (model as MeshVisual3D).Mesh := (r as offreader).CreateMesh;
-      end
-      else 
-      begin
-        var md := r.Read(fs);
-        (model as MeshVisual3D).Content := md;
-      end;
+      	var ext := System.IO.Path.GetExtension(fname);
+        ext := ext?.ToLower;
       
-      fs.Close;}
+        var r: ModelReader;
+      
+        case ext of
+      '.off': begin
+          r := new offreader(nil);
+          (model as MeshVisual3D).FaceMaterial := mat;
+          (model as MeshVisual3D).EdgeDiameter := 0;
+          (model as MeshVisual3D).VertexRadius := 0;
+        end;
+      '.3ds': r := new studioreader(nil);
+      '.lwo': r := new lworeader(nil);
+      '.stl': r := new stlreader(nil);
+      '.obj','.objx': r := new objreader(nil);
+        end;
+      
+        r.DefaultMaterial := mat;
+        //r.DefaultMaterial := Colors.Gray;
+        if ext = '.off' then
+        begin
+          (r as offreader).Load(fs);
+          (model as MeshVisual3D).Mesh := (r as offreader).CreateMesh;
+        end
+        else 
+        begin
+          var md := r.Read(fs);
+          (model as MeshVisual3D).Content := md;
+        end;
+      
+        fs.Close;}
       
       var a := new FileModelVisual3D;
       a.DefaultMaterial := mat;
@@ -1893,7 +1944,7 @@ begin
       end;
     IcosahedronType:
       begin
-        a /= Sqrt(5)-1;
+        a /= Sqrt(5) - 1;
         var phi := (1 + Sqrt(5)) / 2;
         var b := 1.0 / (2 * phi) * 2 * a;
         pmb.AddPanel(0, b, -a, b, a, 0, -b, a, 0);
@@ -1920,7 +1971,7 @@ begin
     DodecahedronType:
       begin
         var phi := (1 + Sqrt(5)) / 2;
-        a /= 2*(2-phi);
+        a /= 2 * (2 - phi);
         var b := 1 / phi * a;
         var c := (2 - phi) * a;
         pmb.AddPanel(c, 0, a, -c, 0, a, -b, b, b, 0, a, c, b, b, b);
@@ -1965,7 +2016,8 @@ type
   PlatonicAbstractVisual3D = abstract class(MeshElement3D)
   private 
     fa: real;
-    procedure SetA(value: real); begin fa := value; OnGeometryChanged; end;
+    procedure SetA(value: real);begin fa := value; OnGeometryChanged; end;
+  
   public 
     constructor(Length: real);
     begin
@@ -2031,14 +2083,17 @@ type
     constructor(x, y, z, Length: real; m: GMaterial) := CreateBase(new OctahedronVisual3D(Length), x, y, z, m);
     function Clone := (inherited Clone) as OctahedronT;
   end;
-
+  
   PrismVisual3D = class(MeshElement3D)
   private 
     fn: integer;
     fh, fr: real;
-    procedure SetR(value: real); begin fr := value; OnGeometryChanged; end;
-    procedure SetH(value: real); begin fh := value; OnGeometryChanged; end;
-    procedure SetN(value: integer); begin fn := value; OnGeometryChanged; end;
+    procedure SetR(value: real);begin fr := value; OnGeometryChanged; end;
+    
+    procedure SetH(value: real);begin fh := value; OnGeometryChanged; end;
+    
+    procedure SetN(value: integer);begin fn := value; OnGeometryChanged; end;
+  
   public 
     constructor(N: integer; Radius, Height: real);
     begin
@@ -2049,7 +2104,7 @@ type
     property Height: real read fh write SetH;
     property Radius: real read fr write SetR;
     property N: integer read fn write SetN;
-  protected
+  protected 
     function Tessellate(): MeshGeometry3D; override;
     begin
       var pmb := new PanelModelBuilder();
@@ -2067,14 +2122,14 @@ type
   end;
   
   PyramidVisual3D = class(PrismVisual3D)
-  protected
+  protected 
     function Tessellate(): MeshGeometry3D; override;
     begin
       var pmb := new PanelModelBuilder();
       if N > 0 then
       begin
         var a := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
-        var top := P3D(0,0,fh);
+        var top := P3D(0, 0, fh);
         for var i := 0 to fn - 1 do
           pmb.AddPanel(a[i + 1].X, a[i + 1].Y, a[i + 1].Z, a[i].X, a[i].Y, a[i].Z, top.X, top.Y, top.Z);
         pmb.AddPanel(a.Reverse.ToArray);
@@ -2082,43 +2137,48 @@ type
       Result := pmb.ToMeshGeometry3D
     end;
   end;
-
+  
   TriangleVisual3D = class(MeshElement3D)
   private 
-    pp1,pp2,pp3: Point3D;
-  protected
+    pp1, pp2, pp3: Point3D;
+  protected 
     function Tessellate(): MeshGeometry3D; override;
     begin
       var m := new MeshBuilder(true);
-      m.AddTriangle(p1,p2,p3);
+      m.AddTriangle(p1, p2, p3);
       Result := m.ToMesh;
     end;
+    
     procedure SetP1(p1: Point3D);
     begin
       pp1 := p1;
       OnGeometryChanged;
     end;
+    
     procedure SetP2(p1: Point3D);
     begin
       pp2 := p2;
       OnGeometryChanged;
     end;
+    
     procedure SetP3(p3: Point3D);
     begin
       pp3 := p3;
       OnGeometryChanged;
     end;
+  
   public 
-    constructor(ppp1,ppp2,ppp3: Point3D);
+    constructor(ppp1, ppp2, ppp3: Point3D);
     begin
-      (pp1, pp2, pp3) := (ppp1,ppp2,ppp3);
+      (pp1, pp2, pp3) := (ppp1, ppp2, ppp3);
       Material := Colors.Red;
       OnGeometryChanged;
     end;
+    
     property P1: Point3D read pp1 write SetP1;
     property P2: Point3D read pp2 write SetP2;
     property P3: Point3D read pp3 write SetP3;
-    procedure SetPoints(p1,p2,p3: Point3D);
+    procedure SetPoints(p1, p2, p3: Point3D);
     begin
       pp1 := p1;
       pp2 := p2;
@@ -2126,7 +2186,7 @@ type
       OnGeometryChanged;
     end;
   end;
-
+  
   TriangleT = class(ObjectWithMaterial3D)
   protected
     function Model := inherited model as TriangleVisual3D;
@@ -2136,21 +2196,22 @@ type
     function  GetP2: Point3D := Invoke&<Point3D>(()->model.P2);
     procedure SetP3(p: Point3D) := Invoke(procedure(p: Point3D)->model.P3 := p, p);
     function  GetP3: Point3D := Invoke&<Point3D>(()->model.P3);
-
+    
     function CreateObject: Object3D; override := new TriangleT(Model.p1, Model.p2, Model.p3, Material.Clone);
   public 
-    constructor(p1,p2,p3: Point3D; m: Gmaterial);
+    constructor(p1, p2, p3: Point3D; m: Gmaterial);
     begin
-      CreateBase(new TriangleVisual3D(p1,p2,p3), 0, 0, 0, m);
+      CreateBase(new TriangleVisual3D(p1, p2, p3), 0, 0, 0, m);
       Model.BackMaterial := Model.Material;      
     end;
+    
     property P1: Point3D read GetP1 write SetP1;
     property P2: Point3D read GetP2 write SetP2;
     property P3: Point3D read GetP3 write SetP3;
-    procedure SetPoints(p1,p2,p3: Point3D) := Invoke(procedure(p1,p2,p3: Point3D)->begin model.SetPoints(p1,p2,p3); end, p1,p2,p3);
+    procedure SetPoints(p1, p2, p3: Point3D) := Invoke(procedure(p1, p2, p3: Point3D)->begin model.SetPoints(p1, p2, p3); end, p1, p2, p3);
   end;
-
-
+  
+  
   PrismT = class(ObjectWithMaterial3D)
   private
     function Model := inherited model as PrismVisual3D;
@@ -2169,7 +2230,7 @@ type
     property N: integer read GetN write SetN;
     function Clone := (inherited Clone) as PrismT;
   end;
-
+  
   PyramidT = class(PrismT)
   private
   protected
@@ -2191,31 +2252,34 @@ type
     procedure SetTP(th: real) := Model.Thickness := th;
     procedure SetT(th: real) := Invoke(SetTP, th);
     function GetT: real := InvokeReal(()->Model.Thickness);
-
-    procedure SetRP(value: real); 
-    begin 
+    
+    procedure SetRP(value: real);
+    begin
       if fr = value then 
         exit;
       fr := value;
       model.Points := CreatePoints;
     end;
-    procedure SetR(value: real) := Invoke(SetRP,value);
-    procedure SetHP(value: real); 
-    begin 
+    
+    procedure SetR(value: real) := Invoke(SetRP, value);
+    procedure SetHP(value: real);
+    begin
       if fh = value then 
         exit;
       fh := value;
       model.Points := CreatePoints;
     end;
-    procedure SetH(value: real) := Invoke(SetHP,value);
-    procedure SetNP(value: integer); 
-    begin 
+    
+    procedure SetH(value: real) := Invoke(SetHP, value);
+    procedure SetNP(value: integer);
+    begin
       if fN = value then 
         exit;
       fN := value;
       model.Points := CreatePoints;
     end;
-    procedure SetN(value: integer) := Invoke(SetNP,value);
+    
+    procedure SetN(value: integer) := Invoke(SetNP, value);
     
     function CreatePoints: Point3DCollection; virtual;
     begin
@@ -2223,20 +2287,20 @@ type
       
       var a := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
       var b := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), fh)).ToArray;
-      for var i:=0 to a.High-1 do
+      for var i := 0 to a.High - 1 do
       begin
         pc.Add(a[i]);
         pc.Add(b[i]);
       end;
-      for var i:=0 to a.High-1 do
+      for var i := 0 to a.High - 1 do
       begin
         pc.Add(a[i]);
-        pc.Add(a[i+1]);
+        pc.Add(a[i + 1]);
       end;
-      for var i:=0 to a.High-1 do
+      for var i := 0 to a.High - 1 do
       begin
         pc.Add(b[i]);
-        pc.Add(b[i+1]);
+        pc.Add(b[i + 1]);
       end;
       
       Result := pc;
@@ -2251,7 +2315,7 @@ type
       ls.Points := CreatePoints;
       Result := ls;
     end;
-    
+  
   protected
     function CreateObject: Object3D; override := new PrismTWireframe(X, Y, Z, N, Radius, Height, (model as LinesVisual3D).Thickness, (model as LinesVisual3D).Color);
   public 
@@ -2259,13 +2323,13 @@ type
     begin
       var a := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).SkipLast;
       var b := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), fh)).SkipLast;
-      var pc := new Point3DCollection(a+b);
-
+      var pc := new Point3DCollection(a + b);
+      
       Result := pc;
     end;
-
+    
     constructor(x, y, z: real; N: integer; Radius, Height: real; Thickness: real; c: GColor) := 
-      CreateBase0(NewVisualObject(N,Radius,Height,Thickness,c), x, y, z);
+    CreateBase0(NewVisualObject(N, Radius, Height, Thickness, c), x, y, z);
     
     property Height: real read fh write SetH;
     property Radius: real read fr write SetR;
@@ -2277,27 +2341,27 @@ type
   PyramidTWireframe = class(PrismTWireframe)
   protected
     function CreateObject: Object3D; override := new PyramidTWireframe(X, Y, Z, N, Radius, Height, (model as LinesVisual3D).Thickness, (model as LinesVisual3D).Color);
-  private
+  private 
     function CreatePoints: Point3DCollection; override;
     begin
       var pc := new Point3DCollection;
       
       var a := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
       var b := P3D(0, 0, fh);
-      for var i:=0 to a.High-1 do
+      for var i := 0 to a.High - 1 do
       begin
         pc.Add(a[i]);
         pc.Add(b);
       end;
-      for var i:=0 to a.High-1 do
+      for var i := 0 to a.High - 1 do
       begin
         pc.Add(a[i]);
-        pc.Add(a[i+1]);
+        pc.Add(a[i + 1]);
       end;
       Result := pc;
     end;
   end;
-
+  
   P3DArray = array of Point3D;
   //P3DList = List<Point3D>;
   SegmentsT = class(ObjectWithChildren3D)
@@ -2308,11 +2372,11 @@ type
     procedure SetT(t: real) := Invoke(procedure(t: real)->Model.Thickness := t, t);
     function GetCP: GColor := Model.Color;
     function GetC: GColor := Invoke&<GColor>(GetCP);
-    procedure SetC(t: GColor) := Invoke(procedure(t: GColor)->Model.Color := t,t);
+    procedure SetC(t: GColor) := Invoke(procedure(t: GColor)->Model.Color := t, t);
     function GetPP: array of Point3D := Model.Points.ToArray;
     function GetP: array of Point3D; virtual := Invoke&<array of Point3D>(GetPP);
     procedure SetPP(pp: array of Point3D) := Model.Points := new Point3DCollection(pp);
-    procedure SetP(pp: array of Point3D) := Invoke(SetPP,pp);
+    procedure SetP(pp: array of Point3D) := Invoke(SetPP, pp);
   protected
     function CreateObject: Object3D; override := new SegmentsT(Points, Thickness, Color);
   public 
@@ -2348,6 +2412,7 @@ type
       t.TubeDiameter := TubeDiameter;
       CreateBase(t, x, y, z, m);
     end;
+    
     property Diameter: real read GetD write SetD;
     property TubeDiameter: real read GetTD write SetTD;
     function Clone := (inherited Clone) as PrismT;
@@ -2378,16 +2443,16 @@ type
       Result := P3D(u, v, 0.2 * u * u + sin(u * v) + 2);
     end;
   end;
-
+  
   My13D = class(MeshElement3D)
     public function Tessellate(): MeshGeometry3D; override;
     begin
       var tm := new MeshBuilder(false, false);
-      tm.AddRevolvedGeometry(Arr(Pnt(0,0),Pnt(0,1),Pnt(0.3,1),Pnt(0.5,0.3),Pnt(2,1),Pnt(3,0)),nil,Origin,OrtZ,80);
+      tm.AddRevolvedGeometry(Arr(Pnt(0, 0), Pnt(0, 1), Pnt(0.3, 1), Pnt(0.5, 0.3), Pnt(2, 1), Pnt(3, 0)), nil, Origin, OrtZ, 80);
       Result := tm.ToMesh(false);
     end;
   end;
-  
+
 
 
 type
@@ -2444,177 +2509,231 @@ type
     end;
   end;
 
-function FindNearestObject(x,y: real): Object3D;
+function FindNearestObject(x, y: real): Object3D;
 begin
   Result := nil;
-  var v := hvp.FindNearestVisual(new Point(x,y));
+  var v := hvp.FindNearestVisual(new Point(x, y));
   foreach var obj in Object3DList do
     if obj.model = v then
       Result := obj
 end;
 
-var BadPoint := P3D(real.MaxValue,real.MaxValue,real.MaxValue);
+var
+  BadPoint := P3D(real.MaxValue, real.MaxValue, real.MaxValue);
 
-function FindNearestObjectPoint(x,y: real): Point3D;
+function FindNearestObjectPoint(x, y: real): Point3D;
 begin
-  var p1 := hvp.FindNearestPoint(Pnt(x,y));
+  var p1 := hvp.FindNearestPoint(Pnt(x, y));
   if p1.HasValue then
     Result := p1.Value
   else Result := BadPoint;
 end;
 
-function Plane(p: Point3D; normal: Vector3D): Plane3D := new Plane3D(p,normal);
-function Ray(p: Point3D; v: Vector3D): Ray3D := new Ray3D(p,v);
-function Line(p: Point3D; v: Vector3D): Line3D := new Line3D(p,v);
-function Line(p1,p2: Point3D): Line3D := new Line3D(p1,p2-p1);
+function Plane(p: Point3D; normal: Vector3D): Plane3D := new Plane3D(p, normal);
+
+function Ray(p: Point3D; v: Vector3D): Ray3D := new Ray3D(p, v);
+
+function Line(p: Point3D; v: Vector3D): Line3D := new Line3D(p, v);
+
+function Line(p1, p2: Point3D): Line3D := new Line3D(p1, p2 - p1);
 
 var
-  PlaneXY := Plane(Origin,OrtZ);
-  PlaneYZ := Plane(Origin,OrtX);
-  PlaneXZ := Plane(Origin,OrtY);
-  XAxis := Ray(Origin,OrtX);
-  YAxis := Ray(Origin,OrtY);
-  ZAxis := Ray(Origin,OrtZ);
+  PlaneXY := Plane(Origin, OrtZ);
+  PlaneYZ := Plane(Origin, OrtX);
+  PlaneXZ := Plane(Origin, OrtY);
+  XAxis := Ray(Origin, OrtX);
+  YAxis := Ray(Origin, OrtY);
+  ZAxis := Ray(Origin, OrtZ);
 
-function GetRay(x,y: real): Ray3D := hvp.Viewport.GetRay(Pnt(x,y));
+function GetRay(x, y: real): Ray3D := hvp.Viewport.GetRay(Pnt(x, y));
 
-function PointOnPlane(Self: Plane3D; x,y: real): Point3D; extensionmethod;
+function PointOnPlane(Self: Plane3D; x, y: real): Point3D; extensionmethod;
 begin
-  var r := GetRay(x,y);
+  var r := GetRay(x, y);
   //Println(r);
-  var p1 := r.PlaneIntersection(Self.Position,Self.Normal);
+  var p1 := r.PlaneIntersection(Self.Position, Self.Normal);
   if p1.HasValue then
     Result := p1.Value
   else Result := BadPoint;
 end;
 
-function NearestPointOnLine(Self: Ray3D; x,y: real): Point3D; extensionmethod;
+function NearestPointOnLine(Self: Ray3D; x, y: real): Point3D; extensionmethod;
 begin
-  var ray := GetRay(x,y);
+  var ray := GetRay(x, y);
   var a := Self.Direction;
   var b := ray.Direction;
-  var ab := Vector3D.CrossProduct(a,b);
-  var planeNormal := Vector3D.CrossProduct(b,ab);
-  var p := Self.PlaneIntersection(ray.Origin,planeNormal);
+  var ab := Vector3D.CrossProduct(a, b);
+  var planeNormal := Vector3D.CrossProduct(b, ab);
+  var p := Self.PlaneIntersection(ray.Origin, planeNormal);
   if p.HasValue then
     Result := p.Value
   else Result := BadPoint;
 end;
 
 function DefaultMaterialColor := RandomColor;
+
 function DefaultMaterial := MaterialHelper.CreateMaterial(DefaultMaterialColor);
 
 function Group(x, y, z: integer): GroupT := Inv(()->GroupT.Create(x, y, z));
+
 function Group(p: Point3D): GroupT := Inv(()->GroupT.Create(p.x, p.y, p.z));
+
 function Group: GroupT := Inv(()->GroupT.Create(0, 0, 0));
+
 function Group(params lst: array of Object3D): GroupT := Inv(()->GroupT.Create(0, 0, 0, lst));
+
 function Group(en: sequence of Object3D): GroupT := Inv(()->GroupT.Create(0, 0, 0, en));
 
 function Sphere(x, y, z, Radius: real; m: Material := DefaultMaterial): SphereT := Inv(()->SphereT.Create(x, y, z, Radius, m));
+
 function Sphere(center: Point3D; Radius: real; m: Material := DefaultMaterial) := Sphere(center.x, center.y, center.z, Radius, m);
 
 function Ellipsoid(x, y, z, RadiusX, RadiusY, RadiusZ: real; m: Material := DefaultMaterial): EllipsoidT := Inv(()->EllipsoidT.Create(x, y, z, RadiusX, RadiusY, RadiusZ, m));
+
 function Ellipsoid(center: Point3D; RadiusX, RadiusY, RadiusZ: real; m: Material := DefaultMaterial) := Ellipsoid(center.x, center.y, center.z, RadiusX, RadiusY, RadiusZ, m);
 
 function Cube(x, y, z, SideLength: real; m: Material := DefaultMaterial): CubeT := Inv(()->CubeT.Create(x, y, z, SideLength, m));
+
 function Cube(center: Point3D; SideLength: real; m: Material := DefaultMaterial): CubeT := Cube(center.x, center.y, center.z, SideLength, m);
 
 function Box(x, y, z, SizeX, SizeY, SizeZ: real; m: Material := DefaultMaterial): BoxT := Inv(()->BoxT.Create(x, y, z, SizeX, SizeY, SizeZ, m));
+
 function Box(center: Point3D; sz: Size3D; m: Material := DefaultMaterial): BoxT := Inv(()->BoxT.Create(center.x, center.y, center.z, sz.X, sz.Y, sz.z, m));
 
-const arhl = 3; ard = 0.2;
+const
+  arhl = 3; ard = 0.2;
 
 function Arrow(x, y, z, vx, vy, vz, diameter, hl: real; m: Material := DefaultMaterial): ArrowT := Inv(()->ArrowT.Create(x, y, z, vx, vy, vz, diameter, hl, m));
+
 function Arrow(x, y, z, vx, vy, vz, diameter: real; m: Material := DefaultMaterial) := Arrow(x, y, z, vx, vy, vz, diameter, arhl, m);
+
 function Arrow(x, y, z, vx, vy, vz: real; m: Material := DefaultMaterial) := Arrow(x, y, z, vx, vy, vz, ard, arhl, m);
+
 function Arrow(p: Point3D; v: Vector3D; diameter, hl: real; m: Material := DefaultMaterial) := Arrow(p.x, p.y, p.z, v.X, v.Y, v.Z, diameter, hl, m);
+
 function Arrow(p: Point3D; v: Vector3D; diameter: real; m: Material := DefaultMaterial) := Arrow(p.x, p.y, p.z, v.X, v.Y, v.Z, diameter, arhl, m);
+
 function Arrow(p: Point3D; v: Vector3D; m: Material := DefaultMaterial) := Arrow(p.x, p.y, p.z, v.X, v.Y, v.Z, ard, arhl, m);
 
 function TruncatedConeAux(x, y, z, Height, Radius, TopRadius: real; sides: integer; topcap: boolean; c: Material) := Inv(()->TruncatedConeT.Create(x, y, z, Height, Radius, TopRadius, sides, topcap, c));
 
-const maxsides = 37;
+const
+  maxsides = 37;
 
 ///--
 function TruncatedCone(x, y, z, Height, Radius, TopRadius: real; topcap: boolean; m: Material := DefaultMaterial): TruncatedConeT := TruncatedConeAux(x, y, z, Height, Radius, TopRadius, maxsides, topcap, m); 
+
 function TruncatedCone(x, y, z, Height, Radius, TopRadius: real; m: Material := DefaultMaterial) := TruncatedCone(x, y, z, Height, Radius, TopRadius, True, m);
 ///--
 function TruncatedCone(p: Point3D; Height, Radius, TopRadius: real; topcap: boolean; m: Material := DefaultMaterial) := TruncatedCone(p.x, p.y, p.z, Height, Radius, TopRadius, topcap, m);
+
 function TruncatedCone(p: Point3D; Height, Radius, TopRadius: real; m: Material := DefaultMaterial) := TruncatedCone(p.x, p.y, p.z, Height, Radius, TopRadius, True, m);
 
 ///--
 function Cylinder(x, y, z, Height, Radius: real; topcap: boolean; m: Material := DefaultMaterial): CylinderT := Inv(()->CylinderT.Create(x, y, z, Height, Radius, maxsides, topcap, m));
+
 function Cylinder(x, y, z, Height, Radius: real; m: Material := DefaultMaterial) := Cylinder(x, y, z, Height, Radius, True, m);
 ///--
 function Cylinder(p: Point3D; Height, Radius: real; topcap: boolean; m: Material := DefaultMaterial) := Cylinder(p.x, p.y, p.z, Height, Radius, topcap, m);
+
 function Cylinder(p: Point3D; Height, Radius: real; m: Material := DefaultMaterial) := Cylinder(p.x, p.y, p.z, Height, Radius, True, m);
 
 function Tube(x, y, z, Height, Radius, InnerRadius: real; m: Material := DefaultMaterial): PipeT := Inv(()->PipeT.Create(x, y, z, Height, Radius, InnerRadius, m));
+
 function Tube(p: Point3D; Height, Radius, InnerRadius: real; m: Material := DefaultMaterial) := Tube(p.x, p.y, p.z, Height, Radius, InnerRadius, m);
 
 function Cone(x, y, z, Height, Radius: real; m: Material := DefaultMaterial): TruncatedConeT := TruncatedCone(x, y, z, Height, Radius, 0, True, m);
+
 function Cone(p: Point3D; Height, Radius: real; m: Material := DefaultMaterial) := TruncatedCone(p.x, p.y, p.z, Height, Radius, 0, True, m);
 
 function Teapot(x, y, z: real; c: Material := DefaultMaterial): TeapotT := Inv(()->TeapotT.Create(x, y, z, c));
+
 function Teapot(p: Point3D; c: Material := DefaultMaterial) := Teapot(p.x, p.y, p.z, c);
 
 function BillboardText(x, y, z: real; Text: string; Fontsize: real := 12): BillboardTextT := Inv(()->BillboardTextT.Create(x, y, z, text, fontsize));
+
 function BillboardText(p: Point3D; Text: string; Fontsize: real := 12) := BillboardText(P.x, p.y, p.z, text, fontsize);
 
 function CoordinateSystem(ArrowsLength, Diameter: real): CoordinateSystemT := Inv(()->CoordinateSystemT.Create(0, 0, 0, arrowslength, diameter));
+
 function CoordinateSystem(ArrowsLength: real) := CoordinateSystem(arrowslength, arrowslength / 10);
 
 function Text3D(x, y, z: real; Text: string; Height: real; fontname: string := 'Arial'; c: Color := Colors.Black): TextT := Inv(()->TextT.Create(x, y, z, text, height, fontname, c));
+
 function Text3D(p: Point3D; Text: string; Height: real; fontname: string := 'Arial'; c: Color := Colors.Black) := Text3D(P.x, p.y, p.z, text, height, fontname, c);
+
 function Text3D(x, y, z: real; Text: string; Height: real; c: Color) := Text3D(x, y, z, text, height, 'Arial', c);
+
 function Text3D(p: Point3D; Text: string; Height: real; c: Color) := Text3D(p.x, p.y, p.z, text, height, 'Arial', c);
 
 
 function Rectangle3D(x, y, z, Length, Width: real; Normal, LengthDirection: Vector3D; m: Material := DefaultMaterial): RectangleT := Inv(()->RectangleT.Create(x, y, z, Length, Width, normal, LengthDirection, m));
+
 function Rectangle3D(p: Point3D; Length, Width: real; Normal, LengthDirection: Vector3D; m: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, Length, Width, Normal, LengthDirection, m);
+
 function Rectangle3D(x, y, z, Length, Width: real; Normal: Vector3D; m: Material := DefaultMaterial): RectangleT := Rectangle3D(x, y, z, Length, Width, Normal, OrtX, m); 
+
 function Rectangle3D(x, y, z, Length, Width: real; m: Material := DefaultMaterial): RectangleT := Rectangle3D(x, y, z, Length, Width, OrtZ, OrtX, m); 
+
 function Rectangle3D(p: Point3D; Length, Width: real; Normal: Vector3D; m: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, Length, Width, Normal, OrtX, m); 
+
 function Rectangle3D(p: Point3D; Length, Width: real; m: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, Length, Width, OrtZ, OrtX, m); 
 
 /// Загружает модель из файла .obj, .3ds, .lwo, .objz, .stl, .off
 function FileModel3D(x, y, z: real; fname: string; m: Material): FileModelT := Inv(()->FileModelT.Create(x, y, z, fname, m));
+
 function FileModel3D(p: Point3D; fname: string; m: Material): FileModelT := FileModel3D(p.x, p.y, p.z, fname, m);
 
 function Prism(x, y, z: real; Sides: integer; Height, Radius: real; m: Material := DefaultMaterial): PrismT := Inv(()->PrismT.Create(x, y, z, Sides, Radius, Height, m));
+
 function Prism(p: Point3D; Sides: integer; Height, Radius: real; m: Material := DefaultMaterial): PrismT := Prism(p.X, p.Y, p.Z, Sides, Radius, Height, m);
 
 function PrismWireFrame(x, y, z: real; Sides: integer; Height, Radius: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PrismTWireFrame := Inv(()->PrismTWireFrame.Create(x, y, z, Sides, Radius, Height, thickness, c));
+
 function PrismWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PrismTWireFrame := PrismWireFrame(p.x, p.y, p.z, Sides, Radius, Height, thickness, c);
 
 function Pyramid(x, y, z: real; Sides: integer; Height, Radius: real; m: Material := DefaultMaterial): PyramidT := Inv(()->PyramidT.Create(x, y, z, Sides, Radius, Height, m));
+
 function Pyramid(p: Point3D; Sides: integer; Height, Radius: real; m: Material := DefaultMaterial): PyramidT := Pyramid(p.X, p.Y, p.Z, Sides, Radius, Height, m);
 
 function PyramidWireFrame(x, y, z: real; Sides: integer; Height, Radius: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PyramidTWireFrame := Inv(()->PyramidTWireFrame.Create(x, y, z, Sides, Radius, Height, thickness, c));
+
 function PyramidWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PyramidTWireFrame := PyramidWireFrame(p.x, p.y, p.z, Sides, Radius, Height, thickness, c);
 
 function Lego(x, y, z: real; Rows, Columns, Height: integer; m: Material := DefaultMaterial): LegoT := Inv(()->LegoT.Create(x, y, z, Rows, Columns, Height, m));
 
-function Icosahedron(x, y, z, r: real; m: Material := DefaultMaterial): IcosahedronT := Inv(()->IcosahedronT.Create(x, y, z, 4*R/Sqrt(2)/Sqrt(5+Sqrt(5)), m));
-function Dodecahedron(x, y, z, r: real; m: Material := DefaultMaterial): DodecahedronT := Inv(()->DodecahedronT.Create(x, y, z, R*4/Sqrt(3)/(1+Sqrt(5)), m));
-function Tetrahedron(x, y, z, r: real; m: Material := DefaultMaterial): TetrahedronT := Inv(()->TetrahedronT.Create(x, y, z, 4*R/Sqrt(6), m));
-function Octahedron(x, y, z, r: real; m: Material := DefaultMaterial): OctahedronT := Inv(()->OctahedronT.Create(x, y, z, R*Sqrt(2), m));
-function Icosahedron(p: Point3D; r: real; m: Material := DefaultMaterial): IcosahedronT := Icosahedron(p.X,p.Y,p.Z,R,m);
-function Dodecahedron(p: Point3D; r: real; m: Material := DefaultMaterial): DodecahedronT := Dodecahedron(p.X,p.Y,p.Z,R,m);
-function Tetrahedron(p: Point3D; r: real; m: Material := DefaultMaterial): TetrahedronT := Tetrahedron(p.X,p.Y,p.Z,R,m);
-function Octahedron(p: Point3D; r: real; m: Material := DefaultMaterial): OctahedronT := Octahedron(p.X,p.Y,p.Z,R,m);
+function Icosahedron(x, y, z, r: real; m: Material := DefaultMaterial): IcosahedronT := Inv(()->IcosahedronT.Create(x, y, z, 4 * R / Sqrt(2) / Sqrt(5 + Sqrt(5)), m));
+
+function Dodecahedron(x, y, z, r: real; m: Material := DefaultMaterial): DodecahedronT := Inv(()->DodecahedronT.Create(x, y, z, R * 4 / Sqrt(3) / (1 + Sqrt(5)), m));
+
+function Tetrahedron(x, y, z, r: real; m: Material := DefaultMaterial): TetrahedronT := Inv(()->TetrahedronT.Create(x, y, z, 4 * R / Sqrt(6), m));
+
+function Octahedron(x, y, z, r: real; m: Material := DefaultMaterial): OctahedronT := Inv(()->OctahedronT.Create(x, y, z, R * Sqrt(2), m));
+
+function Icosahedron(p: Point3D; r: real; m: Material := DefaultMaterial): IcosahedronT := Icosahedron(p.X, p.Y, p.Z, R, m);
+
+function Dodecahedron(p: Point3D; r: real; m: Material := DefaultMaterial): DodecahedronT := Dodecahedron(p.X, p.Y, p.Z, R, m);
+
+function Tetrahedron(p: Point3D; r: real; m: Material := DefaultMaterial): TetrahedronT := Tetrahedron(p.X, p.Y, p.Z, R, m);
+
+function Octahedron(p: Point3D; r: real; m: Material := DefaultMaterial): OctahedronT := Octahedron(p.X, p.Y, p.Z, R, m);
 
 function Segments3D(points: sequence of Point3D; thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT := Inv(()->SegmentsT.Create(points, thickness, c));
-function Polyline3D(points: sequence of Point3D; thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT := Inv(()->SegmentsT.Create(points.Pairwise.SelectMany(x->Seq(x[0],x[1])), thickness, c));
-function Polygon3D(points: sequence of Point3D; thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT := Inv(()->SegmentsT.Create((points+points.First).Pairwise.SelectMany(x->Seq(x[0],x[1])), thickness, c));
-function Segment3D(p1, p2: Point3D; thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT := Inv(()->SegmentsT.Create(Seq(p1,p2), thickness, c));
 
-function Torus(x, y, z, Diameter, TubeDiameter: real; m: Material := DefaultMaterial): TorusT := Inv(()->TorusT.Create(x,y,z,Diameter, TubeDiameter, m));
-function Torus(p: Point3D; Diameter, TubeDiameter: real; m: Material := DefaultMaterial): TorusT := Torus(p.x,p.y,p.z,Diameter,TubeDiameter,m);
+function Polyline3D(points: sequence of Point3D; thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT := Inv(()->SegmentsT.Create(points.Pairwise.SelectMany(x -> Seq(x[0], x[1])), thickness, c));
 
-function Triangle(p1,p2,p3: Point3D; m: Material := DefaultMaterial): TriangleT := Inv(()->TriangleT.Create(p1,p2,p3, m));
+function Polygon3D(points: sequence of Point3D; thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT := Inv(()->SegmentsT.Create((points + points.First).Pairwise.SelectMany(x -> Seq(x[0], x[1])), thickness, c));
+
+function Segment3D(p1, p2: Point3D; thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT := Inv(()->SegmentsT.Create(Seq(p1, p2), thickness, c));
+
+function Torus(x, y, z, Diameter, TubeDiameter: real; m: Material := DefaultMaterial): TorusT := Inv(()->TorusT.Create(x, y, z, Diameter, TubeDiameter, m));
+
+function Torus(p: Point3D; Diameter, TubeDiameter: real; m: Material := DefaultMaterial): TorusT := Torus(p.x, p.y, p.z, Diameter, TubeDiameter, m);
+
+function Triangle(p1, p2, p3: Point3D; m: Material := DefaultMaterial): TriangleT := Inv(()->TriangleT.Create(p1, p2, p3, m));
 
 function MyH(x, y, z, Length: real; c: Color): MyAnyT := Inv(()->MyAnyT.Create(x, y, z, Length, c));
+
 function MyH(x, y, z, Length: real; c: Material): MyAnyT := Inv(()->MyAnyT.Create(x, y, z, Length, c));
 
 function Any(x, y, z: real; c: Color): AnyT := Inv(()->AnyT.Create(x, y, z, c));
@@ -2631,21 +2750,22 @@ begin
   //b.Viewport := Rect(0,0,0.2,0.3);
   //b.TileMode := System.Windows.Media.TileMode.Tile;
   //Cube(6,-4,0,4,MaterialHelper.CreateMaterial(b));
-  Sphere(2,-4,0,2,MaterialHelper.CreateMaterial(Brushes.Green,0.4,100,255));
-  Sphere(-2,-4,0,2,MaterialHelper.CreateMaterial(Brushes.Green,0.6,100,255));
-  Sphere(-6,-4,0,2,MaterialHelper.CreateMaterial(Brushes.Green,0.8,100,0));
-
-  Sphere(6,0,0,2,MaterialHelper.CreateMaterial(Brushes.Green,0.5,100,255));
-  Sphere(2,0,0,2,MaterialHelper.CreateMaterial(Brushes.Green,0.5,70,255));
-  Sphere(-2,0,0,2,MaterialHelper.CreateMaterial(Brushes.Green,0.5,40,255));
-  Sphere(-6,0,0,2,MaterialHelper.CreateMaterial(Brushes.Green,0.5,20,255));
-
-  Sphere(6,4,0,2,MaterialHelper.CreateMaterial(Brushes.Green,Brushes.Gray,nil,1));
+  Sphere(2, -4, 0, 2, MaterialHelper.CreateMaterial(Brushes.Green, 0.4, 100, 255));
+  Sphere(-2, -4, 0, 2, MaterialHelper.CreateMaterial(Brushes.Green, 0.6, 100, 255));
+  Sphere(-6, -4, 0, 2, MaterialHelper.CreateMaterial(Brushes.Green, 0.8, 100, 0));
+  
+  Sphere(6, 0, 0, 2, MaterialHelper.CreateMaterial(Brushes.Green, 0.5, 100, 255));
+  Sphere(2, 0, 0, 2, MaterialHelper.CreateMaterial(Brushes.Green, 0.5, 70, 255));
+  Sphere(-2, 0, 0, 2, MaterialHelper.CreateMaterial(Brushes.Green, 0.5, 40, 255));
+  Sphere(-6, 0, 0, 2, MaterialHelper.CreateMaterial(Brushes.Green, 0.5, 20, 255));
+  
+  Sphere(6, 4, 0, 2, MaterialHelper.CreateMaterial(Brushes.Green, Brushes.Gray, nil, 1));
   //Sphere(2,4,0,2,MaterialHelper.CreateMaterial((Brushes.Green,new SolidColorBrush(RGB(0,64,0)),new SolidColorBrush(Rgb(128, 128, 128)), 100));
-  Sphere(-2,4,0,2,MaterialHelper.CreateMaterial(Brushes.Green,0.5,40,255));
+  Sphere(-2, 4, 0, 2, MaterialHelper.CreateMaterial(Brushes.Green, 0.5, 40, 255));
   //Cube(-6,4,0,4,Materials.Rainbow);
   //var g := hvp.Children[1] as DefaultLights;
 end;
+
 procedure Proba := Invoke(ProbaP);
 
 procedure ProbaP2;
@@ -2672,7 +2792,7 @@ begin
   m1.VertexRadius := 0;
   m1.Mesh := off.CreateMesh;
   hvp.Children.Add(m1);}
-
+  
   {var ex := new ExtrudedVisual3D();
   ex.BackMaterial := Colors.Green;
   ex.Diameters := new DoubleCollection(Arr(1.0,1.5,1.2));
@@ -2688,18 +2808,18 @@ begin
   //t.Offset := v3D(2,3,4);
   t.Length := 2;
   t.Diameter := 0.15;
-  t.Direction := V3D(1,2,0);
+  t.Direction := V3D(1, 2, 0);
   t.Value := 5;
   
   var b := new System.Windows.Data.Binding('Transform');
   b.Source := m;
-
+  
   var b1 := new System.Windows.Data.Binding('Transform');
   b1.Source := m;
   
   System.Windows.Data.BindingOperations.SetBinding(t, Manipulator.TargetTransformProperty, b);
-	System.Windows.Data.BindingOperations.SetBinding(t, Manipulator.TransformProperty, b);  
-	
+  System.Windows.Data.BindingOperations.SetBinding(t, Manipulator.TransformProperty, b);  
+  
   //t.Bind(m);
   hvp.Children.Add(t);
   
@@ -2714,120 +2834,121 @@ procedure Proba2 := Invoke(ProbaP2);
 
 
 
-type 
-Graph3DWindow = class(GMainWindow)
-public
-  procedure InitMainGraphControl; override;
-  begin
-    var g := Content as DockPanel;
-    hvp := new HelixViewport3D();
-    g.Children.Add(hvp);
-
-    hvp.ZoomExtentsWhenLoaded := True;
-    hvp.ShowCoordinateSystem := True;
+type
+  Graph3DWindow = class(GMainWindow)
+  public 
+    procedure InitMainGraphControl; override;
+    begin
+      var g := Content as DockPanel;
+      hvp := new HelixViewport3D();
+      g.Children.Add(hvp);
+      
+      hvp.ZoomExtentsWhenLoaded := True;
+      hvp.ShowCoordinateSystem := True;
+      
+      hvp.Children.Add(new DefaultLights);
+      
+      var mv := new ModelVisual3D;
+      LightsGroup := new Model3DGroup;
+      mv.Content := LightsGroup;
+      hvp.Children.Add(mv);
+      
+      gvl := new GridLinesVisual3D();
+      gvl.Width := 12;
+      gvl.Length := 12;
+      gvl.Normal := OrtZ;
+      gvl.MinorDistance := 1;
+      gvl.MajorDistance := 1;
+      gvl.Thickness := 0.02;
+      hvp.Children.Add(gvl);
+    end;
     
-    hvp.Children.Add(new DefaultLights);
-
-    var mv := new ModelVisual3D;
-    LightsGroup := new Model3DGroup;
-    mv.Content := LightsGroup;
-    hvp.Children.Add(mv);
+    procedure InitWindowProperties; override;
+    begin
+      (Width, Height) := (800, 600);
+      Title := '3D графика';
+      WindowStartupLocation := System.Windows.WindowStartupLocation.CenterScreen;
+    end;
     
-    gvl := new GridLinesVisual3D();
-    gvl.Width := 12;
-    gvl.Length := 12;
-    gvl.Normal := OrtZ;
-    gvl.MinorDistance := 1;
-    gvl.MajorDistance := 1;
-    gvl.Thickness := 0.02;
-    hvp.Children.Add(gvl);
-  end;
-
-  procedure InitWindowProperties; override;
-  begin
-    (Width,Height) := (800,600);
-    Title := '3D графика';
-    WindowStartupLocation := System.Windows.WindowStartupLocation.CenterScreen;
-  end;
-
-  procedure InitGlobals; override;
-  begin
-    Window := new WindowType;
-    Camera := new CameraType;
-    Lights := new LightsType;
-    GridLines := new GridLinesType;
-    View3D := new View3DT;
-
-    NameScope.SetNameScope(Self, new NameScope());
-  end;
-
-  /// --- SystemKeyEvents
-  procedure SystemOnKeyDown(sender: Object; e: System.Windows.Input.KeyEventArgs);
-  begin
-    if Graph3D.OnKeyDown <> nil then
-      Graph3D.OnKeyDown(e.Key);
-    e.Handled := True;
-  end;
-  
-  procedure SystemOnKeyUp(sender: Object; e: System.Windows.Input.KeyEventArgs) := 
-  begin
-    if Graph3D.OnKeyUp <> nil then
-      Graph3D.OnKeyUp(e.Key);
-    e.Handled := True;
-  end;    
-  
-  /// --- SystemMouseEvents
-  procedure SystemOnMouseDown(sender: Object; e: System.Windows.Input.MouseButtonEventArgs);
-  begin
-    var mb := 0;
-    var p := e.GetPosition(hvp);
-    if e.LeftButton = MouseButtonState.Pressed then
-      mb := 1
-    else if e.RightButton = MouseButtonState.Pressed then
-      mb := 2;
-    if Graph3D.OnMouseDown <> nil then  
-     Graph3D.OnMouseDown(p.x, p.y, mb);
-  end;
-  
-  procedure SystemOnMouseUp(sender: Object; e: MouseButtonEventArgs);
-  begin
-    var mb := 0;
-    var p := e.GetPosition(hvp);
-    if e.LeftButton = MouseButtonState.Pressed then
-      mb := 1
-    else if e.RightButton = MouseButtonState.Pressed then
-      mb := 2;
-    if Graph3D.OnMouseUp <> nil then  
-      Graph3D.OnMouseUp(p.x, p.y, mb);
-  end;
-  
-  procedure SystemOnMouseMove(sender: Object; e: MouseEventArgs);
-  begin
-    var mb := 0;
-    var p := e.GetPosition(hvp);
-    if e.LeftButton = MouseButtonState.Pressed then
-      mb := 1
-    else if e.RightButton = MouseButtonState.Pressed then
-      mb := 2;
-    if Graph3D.OnMouseMove <> nil then  
-      Graph3D.OnMouseMove(p.x, p.y, mb);
-  end;
-  
-  procedure InitHandlers; override;
-  begin
-    hvp.PreviewMouseDown += (o,e) -> SystemOnMouseDown(o,e);  
-    hvp.PreviewMouseUp += (o,e) -> SystemOnMouseUp(o,e);  
-    hvp.PreviewMouseMove += (o,e) -> SystemOnMouseMove(o,e);  
-  
-    hvp.PreviewKeyDown += (o,e)-> SystemOnKeyDown(o,e);
-    hvp.PreviewKeyUp += (o,e)-> SystemOnKeyUp(o,e);
+    procedure InitGlobals; override;
+    begin
+      Window := new WindowType;
+      Camera := new CameraType;
+      Lights := new LightsType;
+      GridLines := new GridLinesType;
+      View3D := new View3DT;
+      
+      NameScope.SetNameScope(Self, new NameScope());
+    end;
     
-    hvp.Focus();
-    Closed += procedure(sender, e) -> begin Halt; end;
+    /// --- SystemKeyEvents
+    procedure SystemOnKeyDown(sender: Object; e: System.Windows.Input.KeyEventArgs);
+    begin
+      if Graph3D.OnKeyDown <> nil then
+        Graph3D.OnKeyDown(e.Key);
+      e.Handled := True;
+    end;
+    
+    procedure SystemOnKeyUp(sender: Object; e: System.Windows.Input.KeyEventArgs) := 
+    begin
+      if Graph3D.OnKeyUp <> nil then
+        Graph3D.OnKeyUp(e.Key);
+      e.Handled := True;
+    end;    
+    
+    /// --- SystemMouseEvents
+    procedure SystemOnMouseDown(sender: Object; e: System.Windows.Input.MouseButtonEventArgs);
+    begin
+      var mb := 0;
+      var p := e.GetPosition(hvp);
+      if e.LeftButton = MouseButtonState.Pressed then
+        mb := 1
+      else if e.RightButton = MouseButtonState.Pressed then
+        mb := 2;
+      if Graph3D.OnMouseDown <> nil then  
+        Graph3D.OnMouseDown(p.x, p.y, mb);
+    end;
+    
+    procedure SystemOnMouseUp(sender: Object; e: MouseButtonEventArgs);
+    begin
+      var mb := 0;
+      var p := e.GetPosition(hvp);
+      if e.LeftButton = MouseButtonState.Pressed then
+        mb := 1
+      else if e.RightButton = MouseButtonState.Pressed then
+        mb := 2;
+      if Graph3D.OnMouseUp <> nil then  
+        Graph3D.OnMouseUp(p.x, p.y, mb);
+    end;
+    
+    procedure SystemOnMouseMove(sender: Object; e: MouseEventArgs);
+    begin
+      var mb := 0;
+      var p := e.GetPosition(hvp);
+      if e.LeftButton = MouseButtonState.Pressed then
+        mb := 1
+      else if e.RightButton = MouseButtonState.Pressed then
+        mb := 2;
+      if Graph3D.OnMouseMove <> nil then  
+        Graph3D.OnMouseMove(p.x, p.y, mb);
+    end;
+    
+    procedure InitHandlers; override;
+    begin
+      hvp.PreviewMouseDown += (o, e) -> SystemOnMouseDown(o, e);  
+      hvp.PreviewMouseUp += (o, e) -> SystemOnMouseUp(o, e);  
+      hvp.PreviewMouseMove += (o, e) -> SystemOnMouseMove(o, e);  
+      
+      hvp.PreviewKeyDown += (o, e)-> SystemOnKeyDown(o, e);
+      hvp.PreviewKeyUp += (o, e)-> SystemOnKeyUp(o, e);
+      
+      hvp.Focus();
+      Closed += procedure(sender, e) -> begin Halt; end;
+    end;
   end;
-end;
 
-var mre := new ManualResetEvent(false);
+var
+  mre := new ManualResetEvent(false);
 
 procedure InitApp;
 begin
@@ -2835,14 +2956,14 @@ begin
   
   app.Dispatcher.UnhandledException += (o, e) -> begin
     Println(e.Exception.Message); 
-    if e.Exception.InnerException<>nil then
+    if e.Exception.InnerException <> nil then
       Println(e.Exception.InnerException.Message); 
     halt; 
   end;
   
   MainWindow := new Graph3DWindow;
   //MainWindow.MainPanel;
-
+  
   mre.Set();
   
   app.Run(MainWindow);
