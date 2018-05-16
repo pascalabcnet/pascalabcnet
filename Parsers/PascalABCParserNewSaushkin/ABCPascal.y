@@ -3037,6 +3037,12 @@ pattern_out_param_list
             list.Add($3 as pattern_deconstructor_parameter);
             $$ = list;
         }
+    | pattern_out_param_list tkComma pattern_out_param
+        {
+            var list = $1 as List<pattern_deconstructor_parameter>;
+            list.Add($3 as pattern_deconstructor_parameter);
+            $$ = list;
+        }
     ;
    
 pattern_out_param
