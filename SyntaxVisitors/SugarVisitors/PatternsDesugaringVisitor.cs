@@ -114,35 +114,13 @@ namespace SyntaxVisitors.SugarVisitors
         void DesugarDeconstructorPatternCase(expression matchingExpression, pattern_case patternCase)
         {
             Debug.Assert(patternCase.pattern is deconstructor_pattern);
-
-            //var result = new statement_list();
-            //var pattern = patternCase.pattern as deconstructor_pattern;
-            //// создание фиктивной переменной необходимого типа
-            //var desugaredPattern = DesugarPattern(pattern, matchingExpression);
-            //result.Add(desugaredPattern.CastVariableDefinition);
-
             
+            var isExpression = new is_pattern_expr(matchingExpression, patternCase.pattern);
+            var ifCondition = patternCase.condition == null ? (expression)isExpression : bin_expr.LogicalAnd(isExpression, patternCase.condition);
+            var ifCheck = SubtreeCreator.CreateIf(ifCondition, patternCase.case_action);
 
-            //// Создание тела if из объявлений переменных, вызова Deconstruct и соответствующего тела case
-            //var ifBody = new statement_list();
-            //ifBody.Add(new desugared_deconstruction(desugaredPattern.DeconstructionVariables, desugaredPattern.CastVariable, patternCase.pattern.source_context));
-            //ifBody.Add(desugaredPattern.DeconstructCall);
-
-            //if (patternCase.condition != null)
-            //{
-            //    // Выполняем тело, если выполняется условие when
-            //    ifBody.Add(SubtreeCreator.CreateIf(patternCase.condition, patternCase.case_action));
-            //}
-            //else
-            //    ifBody.Add(patternCase.case_action);
-
-            //var ifCondition = desugaredPattern.TypeCastCheck;
-            //var ifCheck = SubtreeCreator.CreateIf(ifCondition, ifBody);
-
-            //result.Add(ifCheck);
-
-            //// Добавляем полученные statements в результат
-            //AddDesugaredCaseToResult(result, ifCheck);
+            // Добавляем полученные statements в результат
+            AddDesugaredCaseToResult(ifCheck, ifCheck);
         }
 
         private ident NewGeneralName() => new ident(GeneratedPatternNamePrefix + "GenVar" + _variableCounter++);
@@ -158,14 +136,14 @@ namespace SyntaxVisitors.SugarVisitors
             AddDesugaredCaseToResult(statements, _previousIf);
         }
 
-        private void AddDesugaredCaseToResult(statement_list statements, if_node newIf)
+        private void AddDesugaredCaseToResult(statement desugaredCase, if_node newIf)
         {
             // Если результат пустой, значит это первый case
             if (desugaredMatchWith == null)
-                desugaredMatchWith = statements;
+                desugaredMatchWith = desugaredCase;
             else
             {
-                _previousIf.else_body = statements;
+                _previousIf.else_body = desugaredCase;
                 _previousIf.FillParentsInDirectChilds();
             }
 
@@ -271,7 +249,7 @@ namespace SyntaxVisitors.SugarVisitors
             // Иначе помещаем определения и if-then в отдельный блок, а else после этого блока
             else
             {
-                // Сохраняем родителя, так как он может поменяться при вызове ConvertIfNode
+                // Сохраняем родителя, так как он поменяется при вызове ConvertIfNode
                 var ifParent = enclosingIf.Parent;
                 statement elseBody;
                 var convertedIf = ConvertIfNode(enclosingIf, statementsToAdd, out elseBody);
