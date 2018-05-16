@@ -273,13 +273,16 @@ namespace SyntaxVisitors.SugarVisitors
             {
                 // Сохраняем родителя, так как он может поменяться при вызове ConvertIfNode
                 var ifParent = enclosingIf.Parent;
-                var convertedIf = ConvertIfNode(enclosingIf, statementsToAdd);
+                statement elseBody;
+                var convertedIf = ConvertIfNode(enclosingIf, statementsToAdd, out elseBody);
                 ifParent.ReplaceDescendantUnsafe(enclosingIf, convertedIf);
                 convertedIf.Parent = ifParent;
+
+                elseBody?.visit(this);
             }
         }
 
-        private statement_list ConvertIfNode(if_node ifNode, List<statement> statementsBeforeIf)
+        private statement_list ConvertIfNode(if_node ifNode, List<statement> statementsBeforeIf, out statement elseBody)
         {
             // if e then <then> else <else>
             //
@@ -311,7 +314,10 @@ namespace SyntaxVisitors.SugarVisitors
             statementsBeforeAndIf.Add(ifNode);
 
             if (ifNode.else_body == null)
+            {
+                elseBody = null;
                 return statementsBeforeAndIf;
+            }
             else
             {
                 var result = new statement_list();
@@ -329,6 +335,8 @@ namespace SyntaxVisitors.SugarVisitors
                 // добавляем else и метку за ним
                 result.Add(ifNode.else_body);
                 result.Add(new labeled_statement(endIfLabel));
+                // Возвращаем else для обхода, т.к. он уже не входит в if
+                elseBody = ifNode.else_body;
                 // удаляем else из if
                 ifNode.else_body = null;
                 // Добавляем метку
