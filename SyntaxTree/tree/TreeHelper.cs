@@ -1774,11 +1774,30 @@ namespace PascalABCCompiler.SyntaxTree
 
             return result;
         }
+
+        public override string ToString() => $"var {string.Join(", ", definitions)}";
+    }
+
+    public partial class is_pattern_expr
+    {
+        public override string ToString() => $"{left} is {right}";
     }
 
     public partial class deconstructor_pattern
     {
         public bool IsRecursive => parameters.Any(x => x is recursive_deconstructor_parameter);
+
+        public override string ToString() => $"{type}({string.Join(", ", parameters.Select(x => x.ToString()))})";
+    }
+
+    public partial class var_deconstructor_parameter
+    {
+        public override string ToString() => identifier.ToString() + (type == null ? "" : $": {type}");
+    }
+
+    public partial class recursive_deconstructor_parameter
+    {
+        public override string ToString() => pattern.ToString();
     }
 }
 

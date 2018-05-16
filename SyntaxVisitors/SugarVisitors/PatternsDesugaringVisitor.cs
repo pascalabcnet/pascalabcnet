@@ -46,8 +46,7 @@ namespace SyntaxVisitors.SugarVisitors
         {
             var result = new List<statement>();
             result.Add(CastVariableDefinition);
-            result.AddRange(DeconstructionVariables
-                  .Select(x => new desugared_deconstruction(DeconstructionVariables, CastVariable, patternContext))); 
+            result.Add(new desugared_deconstruction(DeconstructionVariables, CastVariable, patternContext)); 
             result.Add(SuccessVariableDefinition);
 
             return result;
@@ -108,7 +107,7 @@ namespace SyntaxVisitors.SugarVisitors
         {
             Debug.Assert(GetLocation(isPatternExpr) != PatternLocation.Unknown, "Is-pattern expression is in an unknown context");
             Debug.Assert(GetAscendant<statement_list>(isPatternExpr) != null, "Couldn't find statement list in upper nodes");
-
+            
             DesugarIsExpression(isPatternExpr);
         }
 
@@ -207,12 +206,41 @@ namespace SyntaxVisitors.SugarVisitors
             Debug.Assert(isPatternExpr.right is deconstructor_pattern);
 
             var patternLocation = GetLocation(isPatternExpr);
+            
+            var pattern = isPatternExpr.right as deconstructor_pattern;
+            if (pattern.IsRecursive)
+            {
+                var desugaredRecursiveIs = DesugarRecursiveDeconstructor(isPatternExpr.left, pattern);
+                ReplaceUsingParent(isPatternExpr, desugaredRecursiveIs);
+                desugaredRecursiveIs.visit(this);
+                return;
+            }
 
             switch (patternLocation)
             {
                 case PatternLocation.IfCondition: DesugarIsExpressionInIfCondition(isPatternExpr); break;
                 case PatternLocation.Assign: DesugarIsExpressionInAssignment(isPatternExpr); break;
             }
+        }
+
+        private expression DesugarRecursiveDeconstructor(expression expression, deconstructor_pattern pattern)
+        {
+            List<pattern_deconstructor_parameter> parameters = pattern.parameters;
+            expression conjunction = new is_pattern_expr(expression, pattern);
+            for (int i = 0; i < parameters.Count; i++)
+            {
+                if (parameters[i] is recursive_deconstructor_parameter parameter)
+                {
+                    var parameterType = (parameter.pattern as deconstructor_pattern).type;
+                    var newName = NewGeneralName();
+                    var varParameter = new var_deconstructor_parameter(newName, parameterType);
+                    parameters[i] = varParameter;
+                    varParameter.Parent = parameters[i];
+                    conjunction = bin_expr.LogicalAnd(conjunction, DesugarRecursiveDeconstructor(newName, parameter.pattern as deconstructor_pattern));
+                }
+            }
+
+            return conjunction;
         }
 
         private void DesugarIsExpressionInAssignment(is_pattern_expr isExpression)
