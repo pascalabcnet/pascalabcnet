@@ -68,6 +68,13 @@ namespace PascalABCCompiler.SyntaxTree
             to.Parent = from.Parent;
         }
 
+        public void ReplaceDescendantUnsafe(syntax_tree_node from, syntax_tree_node to, Desc d = Desc.All)
+        {
+            var ind = FindIndex(from, d);
+            this[ind] = to;
+            to.Parent = from.Parent;
+        }
+
         /// <summary>
         /// Находит последнего потомка, удовлетворяющего условию. Возвращает null, если такой не найден.
         /// </summary>

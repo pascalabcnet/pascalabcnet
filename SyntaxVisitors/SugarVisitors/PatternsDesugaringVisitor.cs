@@ -106,8 +106,8 @@ namespace SyntaxVisitors.SugarVisitors
 
         public override void visit(is_pattern_expr isPatternExpr)
         {
-            Debug.Assert(GetCurrentLocation() != PatternLocation.Unknown, "Is-pattern expression is in an unknown context");
-            Debug.Assert(GetAscendant<statement_list>() != null, "Couldn't find statement list in upper nodes");
+            Debug.Assert(GetLocation(isPatternExpr) != PatternLocation.Unknown, "Is-pattern expression is in an unknown context");
+            Debug.Assert(GetAscendant<statement_list>(isPatternExpr) != null, "Couldn't find statement list in upper nodes");
 
             DesugarIsExpression(isPatternExpr);
         }
@@ -206,7 +206,7 @@ namespace SyntaxVisitors.SugarVisitors
         {
             Debug.Assert(isPatternExpr.right is deconstructor_pattern);
 
-            var patternLocation = GetCurrentLocation();
+            var patternLocation = GetLocation(isPatternExpr);
 
             switch (patternLocation)
             {
@@ -224,7 +224,7 @@ namespace SyntaxVisitors.SugarVisitors
             var statementsToAdd = desugaringResult.GetDeconstructionDefinitions(pattern.source_context);
             statementsToAdd.Add(desugaringResult.GetPatternCheckWithDeconstrunctorCall());
 
-            AddDefinitionsInUpperStatementList(statementsToAdd);
+            AddDefinitionsInUpperStatementList(isExpression, statementsToAdd);
         }
 
         private void DesugarIsExpressionInIfCondition(is_pattern_expr isExpression)
@@ -236,13 +236,19 @@ namespace SyntaxVisitors.SugarVisitors
             var statementsToAdd = desugaringResult.GetDeconstructionDefinitions(pattern.source_context);
             statementsToAdd.Add(desugaringResult.GetPatternCheckWithDeconstrunctorCall());
 
-            var enclosingIf = GetAscendant<if_node>();
+            var enclosingIf = GetAscendant<if_node>(isExpression);
             // Если уже обрабатывался ранее (второй встретившийся в том же условии is), то не изменяем if
             if (processedIfNodes.Contains(enclosingIf))
-                AddDefinitionsInUpperStatementList(statementsToAdd);
+                AddDefinitionsInUpperStatementList(isExpression, statementsToAdd);
             // Иначе помещаем определения и if-then в отдельный блок, а else после этого блока
             else
-                ReplaceUsingParent(enclosingIf, ConvertIfNode(enclosingIf, statementsToAdd));
+            {
+                // Сохраняем родителя, так как он может поменяться при вызове ConvertIfNode
+                var ifParent = enclosingIf.Parent;
+                var convertedIf = ConvertIfNode(enclosingIf, statementsToAdd);
+                ifParent.ReplaceDescendantUnsafe(enclosingIf, convertedIf);
+                convertedIf.Parent = ifParent;
+            }
         }
 
         private statement_list ConvertIfNode(if_node ifNode, List<statement> statementsBeforeIf)
@@ -267,7 +273,7 @@ namespace SyntaxVisitors.SugarVisitors
             //   if e then <then>
             // end
 
-            ifNode = ifNode.TypedClone();
+            //ifNode = ifNode.TypedClone();
 
             // Добавляем, чтобы на конвертировать еще раз, если потребуется
             processedIfNodes.Add(ifNode);
@@ -297,8 +303,6 @@ namespace SyntaxVisitors.SugarVisitors
                 result.Add(new labeled_statement(endIfLabel));
                 // удаляем else из if
                 ifNode.else_body = null;
-                // перепрошиваем Parent
-                result.FillParentsInDirectChilds();
                 // Добавляем метку
                 AddLabel(endIfLabel);
 
@@ -308,7 +312,9 @@ namespace SyntaxVisitors.SugarVisitors
 
         private void AddLabel(ident label)
         {
-            var block = GetAscendant<program_module>().program_block;
+            var module = listNodes.First() as program_module;
+            Debug.Assert(module != null, "Can't find root");
+            var block = module.program_block;
 
             if (block.defs == null)
                 block.defs = new declarations();
@@ -316,20 +322,20 @@ namespace SyntaxVisitors.SugarVisitors
             block.defs.Add(new label_definitions(label));
         }
 
-        private void AddDefinitionsInUpperStatementList(IEnumerable<statement> statementsToAdd)
+        private void AddDefinitionsInUpperStatementList(syntax_tree_node currentNode, IEnumerable<statement> statementsToAdd)
         {
             var definitionsAdded = false;
+            var ascendants = currentNode.AscendantNodes().ToArray();
 
             // Объявление переменной в ближайшем statement_list
-            for (int i = listNodes.Count - 1; i >= 0; i--)
+            for (int i = 0; i < ascendants.Length; i++)
             {
-                var statements = listNodes[i] as statement_list;
-                if (statements != null)
+                if (ascendants[i] is statement_list statements)
                 {
                     statements.InsertBefore(
-                        listNodes[i + 1] as statement,
+                        ascendants[i - 1] as statement,
                         statementsToAdd);
-                    
+
                     definitionsAdded = true;
                     break;
                 }
@@ -339,9 +345,9 @@ namespace SyntaxVisitors.SugarVisitors
             Debug.Assert(definitionsAdded, "Couldn't add definitions");
         }
 
-        private PatternLocation GetCurrentLocation()
+        private PatternLocation GetLocation(syntax_tree_node node)
         {
-            var firstStatement = GetAscendant<statement>();
+            var firstStatement = GetAscendant<statement>(node);
             
             switch (firstStatement)
             {
@@ -351,13 +357,16 @@ namespace SyntaxVisitors.SugarVisitors
             }
         }
 
-        private T GetAscendant<T>()
+        private T GetAscendant<T>(syntax_tree_node node)
             where T : syntax_tree_node
         {
-            for (int i = listNodes.Count - 1; i >= 0; i--)
+            var current = node.Parent;
+            while (current != null)
             {
-                if (listNodes[i] is T)
-                    return (T)listNodes[i];
+                if (current is T res)
+                    return res;
+
+                current = current.Parent;
             }
 
             return null;
