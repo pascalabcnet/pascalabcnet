@@ -508,6 +508,9 @@ namespace PascalABCCompiler.SyntaxTree
 
         public override string ToString()
         {
+            if (idents.Count == 0)
+                return "";
+
             var sb = new System.Text.StringBuilder();
             sb.Append(idents[0].ToString());
             for (int i = 1; i < idents.Count; i++)

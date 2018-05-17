@@ -326,14 +326,12 @@ namespace SyntaxVisitors.SugarVisitors
 
         private void AddLabel(ident label)
         {
-            var module = listNodes.First() as program_module;
-            Debug.Assert(module != null, "Can't find root");
-            var block = module.program_block;
+            var block = listNodes.OfType<block>().Last();
 
             if (block.defs == null)
                 block.defs = new declarations();
 
-            block.defs.Add(new label_definitions(label));
+            block.defs.AddFirst(new label_definitions(label));
         }
 
         private void AddDefinitionsInUpperStatementList(syntax_tree_node currentNode, IEnumerable<statement> statementsToAdd)

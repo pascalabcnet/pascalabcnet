@@ -45,8 +45,8 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // Patterns
             PatternsDesugaringVisitor.New.ProcessNode(root);
 
-            var printer = new SimplePrettyPrinterVisitor("G:\\Tree.txt");
-            printer.ProcessNode(root);
+
+            new SimplePrettyPrinterVisitor("G:\\Tree.txt").ProcessNode(root);
 
             // Всё, связанное с yield
             MarkMethodHasYieldAndCheckSomeErrorsVisitor.New.ProcessNode(root);
