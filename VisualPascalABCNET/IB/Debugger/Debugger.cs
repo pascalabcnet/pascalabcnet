@@ -1110,18 +1110,18 @@ namespace VisualPascalABC
             string expressionResult = FindFullExpression(textContent, seg.Offset + logicPos.X,doc, out start_off, out end_off);
             return expressionResult;
         }
-		
+
         private string FindFullExpression(string text, int offset, IDocument doc, out int start_off, out int end_off)
         {
             int i = offset;
-            int beg_line=1;
-            int off=0;
+            int beg_line = 1;
+            int off = 0;
             start_off = 0;
             end_off = 0;
             if (debuggedProcess != null)
             {
-            	beg_line = (int)debuggedProcess.SelectedFunction.symMethod.SequencePoints[0].Line;
-            	off = doc.LineSegmentCollection[beg_line - 1].Offset;
+                beg_line = (int)debuggedProcess.SelectedFunction.symMethod.SequencePoints[0].Line;
+                off = doc.LineSegmentCollection[beg_line - 1].Offset;
             }
             //int lll = doc.GetLineNumberForOffset(offset) - 1;
             int cur_str_off = doc.LineSegmentCollection[doc.GetLineNumberForOffset(offset)].Offset;
@@ -1130,14 +1130,18 @@ namespace VisualPascalABC
             int cur_sk = 0;
             //while (i >= 0 && text[i] != '\n')
             //int len = text.Length;
+            bool format_str = false;
+            bool var_in_format_str = false;
             while (text[i] != '\n')
                 if (text[i] == '\'')
                 {
                     if (i == offset) return null;
+                    if (i > 0 && text[i - 1] == '$')
+                        format_str = true;
                     cur_sk = (cur_sk == 0) ? 1 : 0;
                     i++;
                 }
-                else if (i == offset && cur_sk == 1) return null;
+                //else if (i == offset && cur_sk == 1) return null;
                 else i++;
             i = offset;
             bool new_line = false;
@@ -1145,12 +1149,25 @@ namespace VisualPascalABC
                 if (text[i] == '\n') { new_line = true; i--; }
                 else
                     if (text[i] == '/' && i > 0 && text[i - 1] == '/') if (!new_line) return null; else i--;
-                    else if (text[i] == '}') break;
-                    else if (text[i] == '{') return null;
-                    else i--;
+                else if (text[i] == '}') break;
+                else if (text[i] == '{')
+                {
+                    if (!format_str)
+                        return null;
+                    else
+                    {
+                        var_in_format_str = true;
+                        i--;
+                    }
+                        
+                }
+                    
+                else i--;
             i = offset;
+            if (format_str && !var_in_format_str)
+                return null;
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
-			
+
             if (i >= 0 && !(Char.IsLetterOrDigit(text[i]) || text[i] == '_')) i--;
             while (i >= 0 && (Char.IsLetterOrDigit(text[i]) || text[i] == '_'))
                 i--;
@@ -1160,11 +1177,11 @@ namespace VisualPascalABC
                 if (text[i] == '.') is_dot = true;
                 int j = i + 1;
                 while (j < text.Length && (Char.IsLetterOrDigit(text[j]) || text[j] == '_'))
-                      sb.Append(text[j++]);
+                    sb.Append(text[j++]);
                 if (j < text.Length && text[j] == '(')
-                       return null;
-                 end_off = j-1;
-                 start_off = i+1;
+                    return null;
+                end_off = j - 1;
+                start_off = i + 1;
             }
             else
             {
@@ -1173,35 +1190,28 @@ namespace VisualPascalABC
                     sb.Append(text[j++]);
                 if (j < text.Length && text[j] == '(')
                     return null;
-                end_off = j-1;
-                start_off = i+1;
+                end_off = j - 1;
+                start_off = i + 1;
             }
-            
+
             if (is_dot)
             {
-            	/*StringBuilder new_sb = new StringBuilder();
-            	new_sb.Insert(0,text[i]);
-            	int j = i-1;
-            	while (j >= 0)
-            	{
-            		if (text[j])
-            	}*/
-            	sb.Insert(0,'.');
-            	PascalABCCompiler.Parsers.KeywordKind keyw=PascalABCCompiler.Parsers.KeywordKind.None;
-            	string s = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.
-            		FindExpression(i,text,0,0,out keyw);
-            	if (s != null)
-            	{
-            		sb.Insert(0,s);
-            		string tmp = s.TrimStart(' ','\n','\t','\r');
-            		start_off = i-tmp.Length;
-            	}
+                sb.Insert(0, '.');
+                PascalABCCompiler.Parsers.KeywordKind keyw = PascalABCCompiler.Parsers.KeywordKind.None;
+                string s = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.
+                    FindExpression(i, text, 0, 0, out keyw);
+                if (s != null)
+                {
+                    sb.Insert(0, s);
+                    string tmp = s.TrimStart(' ', '\n', '\t', '\r');
+                    start_off = i - tmp.Length;
+                }
             }
             else
             {
-            	string s = sb.ToString().Trim(' ','\n','\t','\r');
-            	if (string.Compare(s,"array",true)==0)
-            		return "";
+                string s = sb.ToString().Trim(' ', '\n', '\t', '\r');
+                if (string.Compare(s, "array", true) == 0)
+                    return "";
             }
             return sb.ToString();
         }
