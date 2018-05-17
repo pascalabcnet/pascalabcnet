@@ -90,7 +90,7 @@ type
     function equal(x, y: integer):boolean := x = y;
   end;
   
-(*  
+  
   Ord[integer] = instance
     function compare(x, y: integer): Ordering;
     begin
@@ -101,8 +101,7 @@ type
       else
         Result := _GT;
     end;
-  end;
-*)    
+  end;   
   
   
   Show[boolean] = instance
@@ -156,7 +155,7 @@ begin
   end;
 end;
 
-(*
+
 procedure MySort<T>(var a: array of T); where Ord[T];
 begin
   for var i := 1 to a.Length - 1 do
@@ -164,9 +163,9 @@ begin
     var sorted := true;
     for var j := 0 to a.Length - 1 - i do
     begin
-      if Ord&[T].greater(a[i - 1], a[i]) then
+      if Ord&[T].greater(a[j], a[j + 1]) then
       begin
-        swap(a[i - 1], a[i]);
+        swap(a[j], a[j + 1]);
         sorted := false;
       end;
     end;
@@ -175,7 +174,7 @@ begin
       break;
   end;
 end;
-*)
+
 
 // ---Test Functions---
 
@@ -227,7 +226,7 @@ begin
   writeln(isCorrect);
 end;
 
-(*
+
 procedure TestOrd();
 begin
   var a := Arr(3, 1, 4, 2, 5, 0);
@@ -241,12 +240,12 @@ begin
   writeln(isCorrect);  
   
 end;
-*)
+
 begin
 
   TestEq();
   TestShow();
   TestRead();
- // TestOrd();
+  TestOrd();
   
 end.
