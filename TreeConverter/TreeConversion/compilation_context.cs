@@ -1033,7 +1033,9 @@ namespace PascalABCCompiler.TreeConverter
         	statements_list body = new statements_list(null);
         	foreach (class_field cf in _ctn.fields)
         	{
-        		expression_node left = new class_field_reference(cf,new common_parameter_reference(prm1,0,null),null);
+                if (cf.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
+                    continue;
+                expression_node left = new class_field_reference(cf,new common_parameter_reference(prm1,0,null),null);
         		expression_node right = new class_field_reference(cf,new common_parameter_reference(prm2,0,null),null);
         		expression_node cond = SystemLibrary.SystemLibrary.syn_visitor.find_operator(compiler_string_consts.noteq_name,
         		                                                                            left,right,null);
@@ -1065,6 +1067,8 @@ namespace PascalABCCompiler.TreeConverter
         	statements_list body = new statements_list(null);
         	foreach (class_field cf in _ctn.fields)
         	{
+                if (cf.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
+                    continue;
         		expression_node left = new class_field_reference(cf,new common_parameter_reference(prm1,0,null),null);
         		expression_node right = new class_field_reference(cf,new common_parameter_reference(prm2,0,null),null);
         		expression_node cond = SystemLibrary.SystemLibrary.syn_visitor.find_operator(compiler_string_consts.eq_name,
