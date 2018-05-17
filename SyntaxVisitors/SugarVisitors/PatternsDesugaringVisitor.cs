@@ -84,6 +84,10 @@ namespace SyntaxVisitors.SugarVisitors
             desugaredMatchWith = null;
             _previousIf = null;
 
+            // Кэшируем выражение для однократного вычисления
+            var cachedExpression = NewGeneralName();
+            AddDefinitionsInUpperStatementList(matchWith, new[] { new var_statement(cachedExpression, matchWith.expr) });
+
             // Преобразование из сахара в известную конструкцию каждого case
             foreach (var patternCase in matchWith.case_list.elements)
             {
@@ -91,8 +95,7 @@ namespace SyntaxVisitors.SugarVisitors
                     continue;
 
                 if (patternCase.pattern is deconstructor_pattern)
-                    // TODO Patterns: introduce a variable for expression and cache it
-                    DesugarDeconstructorPatternCase(matchWith.expr, patternCase);
+                    DesugarDeconstructorPatternCase(cachedExpression, patternCase);
             }
 
             if (matchWith.defaultAction != null)
@@ -128,9 +131,9 @@ namespace SyntaxVisitors.SugarVisitors
 
         private ident NewGeneralName() => new ident(GeneratedPatternNamePrefix + "GenVar" + generalVariableCounter++);
 
-        private ident NewSuccessName() => new ident(GeneratedPatternNamePrefix + "Success" + generalVariableCounter++);
+        private ident NewSuccessName() => new ident(GeneratedPatternNamePrefix + "Success" + successVariableCounter++);
 
-        private ident NewEndIfName() => new ident(GeneratedPatternNamePrefix + "EndIf" + generalVariableCounter++);
+        private ident NewEndIfName() => new ident(GeneratedPatternNamePrefix + "EndIf" + labelVariableCounter++);
 
         private bool IsGenerated(string name) => name.StartsWith(GeneratedPatternNamePrefix);
 
@@ -338,7 +341,7 @@ namespace SyntaxVisitors.SugarVisitors
         private void AddDefinitionsInUpperStatementList(syntax_tree_node currentNode, IEnumerable<statement> statementsToAdd)
         {
             var definitionsAdded = false;
-            var ascendants = currentNode.AscendantNodes().ToArray();
+            var ascendants = currentNode.AscendantNodes(true).ToArray();
 
             // Объявление переменной в ближайшем statement_list
             for (int i = 0; i < ascendants.Length; i++)
@@ -365,7 +368,8 @@ namespace SyntaxVisitors.SugarVisitors
             switch (firstStatement)
             {
                 case if_node _: return PatternLocation.IfCondition;
-                case assign _:  return PatternLocation.Assign;
+                case var_statement _: return PatternLocation.Assign;
+                case assign _ : return PatternLocation.Assign;
                 default: return PatternLocation.Unknown;
             }
         }

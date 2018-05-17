@@ -2961,32 +2961,27 @@ namespace CodeFormatters
         public override void visit(is_pattern_expr _is_pattern_expr)
         {
             if (_is_pattern_expr.left != null)
-            {
-                add_space_after = true;
                 visit_node(_is_pattern_expr.left);
-            }
+
+            sb.Append(" is ");
+
             if (_is_pattern_expr.right != null)
-            {
-                add_space_before = true;
                 visit_node(_is_pattern_expr.right);
-            }
         }
 
         public override void visit(type_pattern _type_pattern)
         {
             if (_type_pattern.type != null)
                 visit_node(_type_pattern.type);
-            //if (_type_pattern.identifier != null)
-            //    visit_node(_type_pattern.identifier);
         }
 
         public override void visit(match_with _match_with)
         {
+            sb.Append("match ");
             visit_node(_match_with.expr);
             IncOffset();
             add_space_before = true;
             visit_node(_match_with.case_list);
-            //add_space_before = false;
             DecOffset();
         }
 
@@ -3006,20 +3001,29 @@ namespace CodeFormatters
                 visit_node(_pattern_case.condition);
             }
 
-            add_space_before = true;
+            add_space_after = true;
+            IncOffset();
             visit_node(_pattern_case.case_action);
+            DecOffset();
         }
 
         public override void visit(deconstructor_pattern _deconstructor_pattern)
         {
-            // TODO Patterns: format
-            //visit_node(_deconstructor_pattern.type);
-            //foreach (var parameter in _deconstructor_pattern.parameters)
-            //{
-            //    visit_node(parameter.identifier);
-            //    if (parameter.type != null)
-            //        visit_node(parameter.type);
-            //}
+            visit_node(_deconstructor_pattern.type);
+            foreach (var parameter in _deconstructor_pattern.parameters)
+                visit_node(parameter);
+        }
+
+        public override void visit(var_deconstructor_parameter _var_deconstructor_parameter)
+        {
+            visit_node(_var_deconstructor_parameter.identifier);
+            if (_var_deconstructor_parameter.type != null)
+                visit_node(_var_deconstructor_parameter.type);
+        }
+
+        public override void visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
+        {
+            visit_node(_recursive_deconstructor_parameter.pattern);
         }
 
         #endregion
