@@ -1957,6 +1957,7 @@ namespace PascalABCCompiler.TreeRealization
             }
             if (this.is_generic_parameter && sil != null)
             {
+                sil = sil?.Select(x => x.copy()).ToList();
                 //удаляем повторяющиеся символы
                 for (int i = 0; i < sil.Count; ++i)
                 {
