@@ -486,6 +486,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new var_deconstructor_parameter();
 				case 232:
 					return new recursive_deconstructor_parameter();
+				case 233:
+					return new deconstruction_variables_definition();
 			}
 			return null;
 		}
@@ -4076,20 +4078,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_desugared_deconstruction(desugared_deconstruction _desugared_deconstruction)
 		{
 			read_statement(_desugared_deconstruction);
-			if (br.ReadByte() == 0)
-			{
-				_desugared_deconstruction.definitions = null;
-			}
-			else
-			{
-				_desugared_deconstruction.definitions = new List<var_def_statement>();
-				Int32 ssyy_count = br.ReadInt32();
-				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
-				{
-					_desugared_deconstruction.definitions.Add(_read_node() as var_def_statement);
-				}
-			}
-			_desugared_deconstruction.deconstruction_target = (object)br.ReadByte();
+			_desugared_deconstruction.variables = _read_node() as deconstruction_variables_definition;
+			_desugared_deconstruction.deconstruction_target = _read_node() as expression;
 		}
 
 
@@ -4115,6 +4105,30 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_pattern_deconstructor_parameter(_recursive_deconstructor_parameter);
 			_recursive_deconstructor_parameter.pattern = _read_node() as pattern_node;
+		}
+
+
+		public void visit(deconstruction_variables_definition _deconstruction_variables_definition)
+		{
+			read_deconstruction_variables_definition(_deconstruction_variables_definition);
+		}
+
+		public void read_deconstruction_variables_definition(deconstruction_variables_definition _deconstruction_variables_definition)
+		{
+			read_declaration(_deconstruction_variables_definition);
+			if (br.ReadByte() == 0)
+			{
+				_deconstruction_variables_definition.definitions = null;
+			}
+			else
+			{
+				_deconstruction_variables_definition.definitions = new List<var_def_statement>();
+				Int32 ssyy_count = br.ReadInt32();
+				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
+				{
+					_deconstruction_variables_definition.definitions.Add(_read_node() as var_def_statement);
+				}
+			}
 		}
 
 	}

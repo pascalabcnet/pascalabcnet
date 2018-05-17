@@ -1402,6 +1402,12 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_recursive_deconstructor_parameter">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter);
+		///<summary>
+		///Method to visit deconstruction_variables_definition.
+		///</summary>
+		///<param name="_deconstruction_variables_definition">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(deconstruction_variables_definition _deconstruction_variables_definition);
 	}
 
 

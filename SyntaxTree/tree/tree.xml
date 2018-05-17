@@ -2972,8 +2972,8 @@
     </SyntaxNode>
     <SyntaxNode Name="desugared_deconstruction" BaseName="statement">
       <Fields>
-        <ExtendedField Name="definitions" Type="List&lt;var_def_statement&gt;" CreateVariable="true" DeleteVariable="false" />
-        <ExtendedField Name="deconstruction_target" Type="object" CreateVariable="false" DeleteVariable="false" />
+        <SyntaxField Name="variables" SyntaxType="deconstruction_variables_definition" />
+        <SyntaxField Name="deconstruction_target" SyntaxType="expression" />
       </Fields>
       <Methods />
       <Tags>
@@ -3014,6 +3014,20 @@
         </TagIndices>
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="deconstruction_variables_definition" BaseName="declaration">
+      <Fields>
+        <ExtendedField Name="definitions" Type="List&lt;var_def_statement&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3039,7 +3053,7 @@
         <Tag Name="Важнейшие" ReferenceCount="207" />
         <Tag Name="Method_Procedure_Call" ReferenceCount="2" />
         <Tag Name="Yield" ReferenceCount="8" />
-        <Tag Name="Patterns" ReferenceCount="11" />
+        <Tag Name="Patterns" ReferenceCount="12" />
       </Tags>
     </FilterCategory>
   </TagCategories>
@@ -3062,6 +3076,7 @@
       <HelpData Key=".char_num" Value="Номер символа." />
       <HelpData Key=".count" Value="" />
       <HelpData Key=".def" Value="" />
+      <HelpData Key=".definitions" Value="" />
       <HelpData Key=".defs" Value="" />
       <HelpData Key=".directives" Value="" />
       <HelpData Key=".el" Value="" />
@@ -3341,6 +3356,8 @@
       <HelpData Key="declarations.void Add(declaration d, SourceContext sc)" Value="" />
       <HelpData Key="declarations_as_statement" Value="" />
       <HelpData Key="declarations_as_statement.defs" Value="" />
+      <HelpData Key="deconstruction_variables_definition" Value="Список объявлений для deconstructor pattern" />
+      <HelpData Key="deconstruction_variables_definition.definitions" Value="" />
       <HelpData Key="deconstructor_pattern" Value="" />
       <HelpData Key="deconstructor_pattern.parameters" Value="Результат деконструирования" />
       <HelpData Key="deconstructor_pattern.type" Value="Деконструируемый тип" />
@@ -3356,12 +3373,13 @@
       <HelpData Key="dereference.dereferencing_value" Value="" />
       <HelpData Key="dereference.override string ToString()" Value="" />
       <HelpData Key="destructor" Value="" />
-      <HelpData Key="desugared_deconstruction" Value="Представляет объединение объявлений пременных, порожденных деконструкцией. Деконструируемое выражение необходимо хранить для выведения типа на этапе семантики, однако оно не должно входить в обход дерева." />
+      <HelpData Key="desugared_deconstruction" Value="Представляет объединение объявлений пременных, порожденных деконструкцией. Деконструируемое выражение необходимо хранить для выведения типа на этапе семантики." />
       <HelpData Key="desugared_deconstruction.deconstruct_call" Value="Вызов метода Deconstruct" />
       <HelpData Key="desugared_deconstruction.deconstruction_target" Value="Деконструируемое выражение" />
       <HelpData Key="desugared_deconstruction.definitions" Value="Объявления порожденных переменных" />
       <HelpData Key="desugared_deconstruction.destruct_call" Value="" />
       <HelpData Key="desugared_deconstruction.expressionVariableName" Value="Деконструируемое выражение" />
+      <HelpData Key="desugared_deconstruction.variables" Value="Объявления порожденных переменных" />
       <HelpData Key="diap_expr" Value="" />
       <HelpData Key="diap_expr." Value="" />
       <HelpData Key="diap_expr.left" Value="" />

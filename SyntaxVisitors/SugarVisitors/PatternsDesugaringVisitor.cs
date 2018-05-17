@@ -68,7 +68,10 @@ namespace SyntaxVisitors.SugarVisitors
         private const string IsTestMethodName = compiler_string_consts.is_test_function_name;
         private const string GeneratedPatternNamePrefix = "<>pattern";
 
-        private int _variableCounter = 0;
+        private int generalVariableCounter = 0;
+        private int successVariableCounter = 0;
+        private int labelVariableCounter = 0;
+
         private if_node _previousIf;
         private statement desugaredMatchWith;
 
@@ -123,11 +126,11 @@ namespace SyntaxVisitors.SugarVisitors
             AddDesugaredCaseToResult(ifCheck, ifCheck);
         }
 
-        private ident NewGeneralName() => new ident(GeneratedPatternNamePrefix + "GenVar" + _variableCounter++);
+        private ident NewGeneralName() => new ident(GeneratedPatternNamePrefix + "GenVar" + generalVariableCounter++);
 
-        private ident NewSuccessName() => new ident(GeneratedPatternNamePrefix + "Success" + _variableCounter++);
+        private ident NewSuccessName() => new ident(GeneratedPatternNamePrefix + "Success" + generalVariableCounter++);
 
-        private ident NewEndIfName() => new ident(GeneratedPatternNamePrefix + "EndIf" + _variableCounter++);
+        private ident NewEndIfName() => new ident(GeneratedPatternNamePrefix + "EndIf" + generalVariableCounter++);
 
         private bool IsGenerated(string name) => name.StartsWith(GeneratedPatternNamePrefix);
 
@@ -281,8 +284,6 @@ namespace SyntaxVisitors.SugarVisitors
             //   statementsBeforeIf
             //   if e then <then>
             // end
-
-            //ifNode = ifNode.TypedClone();
 
             // Добавляем, чтобы на конвертировать еще раз, если потребуется
             processedIfNodes.Add(ifNode);

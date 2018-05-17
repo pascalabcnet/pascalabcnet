@@ -6386,28 +6386,24 @@ namespace PascalABCCompiler.SyntaxTree
 		public void write_desugared_deconstruction(desugared_deconstruction _desugared_deconstruction)
 		{
 			write_statement(_desugared_deconstruction);
-			if (_desugared_deconstruction.definitions == null)
+			if (_desugared_deconstruction.variables == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				bw.Write(_desugared_deconstruction.definitions.Count);
-				for(Int32 ssyy_i = 0; ssyy_i < _desugared_deconstruction.definitions.Count; ssyy_i++)
-				{
-					if (_desugared_deconstruction.definitions[ssyy_i] == null)
-					{
-						bw.Write((byte)0);
-					}
-					else
-					{
-						bw.Write((byte)1);
-						_desugared_deconstruction.definitions[ssyy_i].visit(this);
-					}
-				}
+				_desugared_deconstruction.variables.visit(this);
 			}
-			bw.Write((byte)_desugared_deconstruction.deconstruction_target);
+			if (_desugared_deconstruction.deconstruction_target == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_desugared_deconstruction.deconstruction_target.visit(this);
+			}
 		}
 
 
@@ -6458,6 +6454,39 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				bw.Write((byte)1);
 				_recursive_deconstructor_parameter.pattern.visit(this);
+			}
+		}
+
+
+		public void visit(deconstruction_variables_definition _deconstruction_variables_definition)
+		{
+			bw.Write((Int16)233);
+			write_deconstruction_variables_definition(_deconstruction_variables_definition);
+		}
+
+		public void write_deconstruction_variables_definition(deconstruction_variables_definition _deconstruction_variables_definition)
+		{
+			write_declaration(_deconstruction_variables_definition);
+			if (_deconstruction_variables_definition.definitions == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				bw.Write(_deconstruction_variables_definition.definitions.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _deconstruction_variables_definition.definitions.Count; ssyy_i++)
+				{
+					if (_deconstruction_variables_definition.definitions[ssyy_i] == null)
+					{
+						bw.Write((byte)0);
+					}
+					else
+					{
+						bw.Write((byte)1);
+						_deconstruction_variables_definition.definitions[ssyy_i].visit(this);
+					}
+				}
 			}
 		}
 

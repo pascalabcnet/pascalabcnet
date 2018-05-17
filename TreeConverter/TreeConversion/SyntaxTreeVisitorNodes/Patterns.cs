@@ -14,7 +14,7 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(desugared_deconstruction deconstruction)
         {
             var invokationTarget = convert_strong(deconstruction.deconstruction_target as expression);
-            var types = InferAndCheckPatternVariableTypes(deconstruction.definitions, invokationTarget, deconstruction);
+            var types = InferAndCheckPatternVariableTypes(deconstruction.variables.definitions, invokationTarget, deconstruction);
             if (types == null)
                 return;
 

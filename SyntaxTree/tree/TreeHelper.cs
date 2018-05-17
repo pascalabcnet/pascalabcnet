@@ -92,17 +92,6 @@ namespace PascalABCCompiler.SyntaxTree
         }
 
         /// <summary>
-        /// Переименовывает все идентификаторы с данным значением в поддереве
-        /// </summary>
-        /// <param name="from">Исходное значение</param>
-        /// <param name="to">Новое значение</param>
-        public void RenameIdentifierInDescendants(string from, string to, bool includingThis = true)
-        {
-            foreach (var identifier in DescendantNodes(TraversalType.PostOrder, null, includingThis).OfType<ident>().Where(x => x.name == from))
-                identifier.name = to;
-        }
-
-        /// <summary>
         /// Получает коллекцию предков текущего узла
         /// </summary>
         /// <param name="includeSelf">Включить в список текущий узел</param>
@@ -1762,23 +1751,27 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class desugared_deconstruction
     {
-        public bool HasAllExplicitTypes => definitions.All(x => x.vars_type != null);
+        public bool HasAllExplicitTypes => variables.definitions.All(x => x.vars_type != null);
+
+        public desugared_deconstruction(List<var_def_statement> variables, expression target, SourceContext context = null) 
+            : this(new deconstruction_variables_definition(variables), target, context)
+        { }
 
         public var_statement[] WithTypes(type_definition[] types)
         {
             var_statement[] result = new var_statement[types.Length]; 
-            Debug.Assert(types.Length == definitions.Count, "Inconsistent types count");
+            Debug.Assert(types.Length == variables.definitions.Count, "Inconsistent types count");
 
-            for (int i = 0; i < definitions.Count; i++)
+            for (int i = 0; i < variables.definitions.Count; i++)
             {
-                definitions[i].vars_type = types[i];
-                result[i] = new var_statement(definitions[i]);
+                variables.definitions[i].vars_type = types[i];
+                result[i] = new var_statement(variables.definitions[i]);
             }
 
             return result;
         }
 
-        public override string ToString() => $"var {string.Join(", ", definitions)}";
+        public override string ToString() => $"var {string.Join(", ", variables.definitions)}";
     }
 
     public partial class is_pattern_expr
