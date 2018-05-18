@@ -1426,6 +1426,24 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_desugared_deconstruction">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(desugared_deconstruction _desugared_deconstruction);
+		///<summary>
+		///Method to visit var_deconstructor_parameter.
+		///</summary>
+		///<param name="_var_deconstructor_parameter">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(var_deconstructor_parameter _var_deconstructor_parameter);
+		///<summary>
+		///Method to visit recursive_deconstructor_parameter.
+		///</summary>
+		///<param name="_recursive_deconstructor_parameter">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter);
+		///<summary>
+		///Method to visit deconstruction_variables_definition.
+		///</summary>
+		///<param name="_deconstruction_variables_definition">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(deconstruction_variables_definition _deconstruction_variables_definition);
 	}
 
 

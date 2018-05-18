@@ -494,6 +494,12 @@ namespace PascalABCCompiler.SyntaxTree
 					return new pattern_deconstructor_parameter();
 				case 236:
 					return new desugared_deconstruction();
+				case 237:
+					return new var_deconstructor_parameter();
+				case 238:
+					return new recursive_deconstructor_parameter();
+				case 239:
+					return new deconstruction_variables_definition();
 			}
 			return null;
 		}
@@ -4145,8 +4151,6 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_pattern_deconstructor_parameter(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
 		{
 			read_syntax_tree_node(_pattern_deconstructor_parameter);
-			_pattern_deconstructor_parameter.identifier = _read_node() as ident;
-			_pattern_deconstructor_parameter.type = _read_node() as type_definition;
 		}
 
 
@@ -4158,20 +4162,57 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_desugared_deconstruction(desugared_deconstruction _desugared_deconstruction)
 		{
 			read_statement(_desugared_deconstruction);
+			_desugared_deconstruction.variables = _read_node() as deconstruction_variables_definition;
+			_desugared_deconstruction.deconstruction_target = _read_node() as expression;
+		}
+
+
+		public void visit(var_deconstructor_parameter _var_deconstructor_parameter)
+		{
+			read_var_deconstructor_parameter(_var_deconstructor_parameter);
+		}
+
+		public void read_var_deconstructor_parameter(var_deconstructor_parameter _var_deconstructor_parameter)
+		{
+			read_pattern_deconstructor_parameter(_var_deconstructor_parameter);
+			_var_deconstructor_parameter.identifier = _read_node() as ident;
+			_var_deconstructor_parameter.type = _read_node() as type_definition;
+		}
+
+
+		public void visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
+		{
+			read_recursive_deconstructor_parameter(_recursive_deconstructor_parameter);
+		}
+
+		public void read_recursive_deconstructor_parameter(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
+		{
+			read_pattern_deconstructor_parameter(_recursive_deconstructor_parameter);
+			_recursive_deconstructor_parameter.pattern = _read_node() as pattern_node;
+		}
+
+
+		public void visit(deconstruction_variables_definition _deconstruction_variables_definition)
+		{
+			read_deconstruction_variables_definition(_deconstruction_variables_definition);
+		}
+
+		public void read_deconstruction_variables_definition(deconstruction_variables_definition _deconstruction_variables_definition)
+		{
+			read_declaration(_deconstruction_variables_definition);
 			if (br.ReadByte() == 0)
 			{
-				_desugared_deconstruction.definitions = null;
+				_deconstruction_variables_definition.definitions = null;
 			}
 			else
 			{
-				_desugared_deconstruction.definitions = new List<var_def_statement>();
+				_deconstruction_variables_definition.definitions = new List<var_def_statement>();
 				Int32 ssyy_count = br.ReadInt32();
 				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
 				{
-					_desugared_deconstruction.definitions.Add(_read_node() as var_def_statement);
+					_deconstruction_variables_definition.definitions.Add(_read_node() as var_def_statement);
 				}
 			}
-			_desugared_deconstruction.deconstruction_target = (object)br.ReadByte();
 		}
 
 	}

@@ -55,8 +55,7 @@
     <Compile Include="SugarVisitors\DoubleQuestionDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\LoopDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\QuestionPointDesugarVisitor.cs" />
-    <Compile Include="SugarVisitors\IsPatternVisitor.cs" />
-    <Compile Include="SugarVisitors\MatchWithVisitor.cs" />
+    <Compile Include="SugarVisitors\PatternsDesugaringVisitor.cs" />
     <Compile Include="SugarVisitors\SliceDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\TupleVisitor.cs" />
     <Compile Include="TypeclassVisitors\FindInstancesAndRestrictedFunctionsVisitor.cs" />

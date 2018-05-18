@@ -68,6 +68,13 @@ namespace PascalABCCompiler.SyntaxTree
             to.Parent = from.Parent;
         }
 
+        public void ReplaceDescendantUnsafe(syntax_tree_node from, syntax_tree_node to, Desc d = Desc.All)
+        {
+            var ind = FindIndex(from, d);
+            this[ind] = to;
+            to.Parent = from.Parent;
+        }
+
         /// <summary>
         /// Находит последнего потомка, удовлетворяющего условию. Возвращает null, если такой не найден.
         /// </summary>
@@ -82,17 +89,6 @@ namespace PascalABCCompiler.SyntaxTree
             }
 
             return null;
-        }
-
-        /// <summary>
-        /// Переименовывает все идентификаторы с данным значением в поддереве
-        /// </summary>
-        /// <param name="from">Исходное значение</param>
-        /// <param name="to">Новое значение</param>
-        public void RenameIdentifierInDescendants(string from, string to, bool includingThis = true)
-        {
-            foreach (var identifier in DescendantNodes(TraversalType.PostOrder, null, includingThis).OfType<ident>().Where(x => x.name == from))
-                identifier.name = to;
         }
 
         /// <summary>
@@ -459,6 +455,8 @@ namespace PascalABCCompiler.SyntaxTree
         {
             get { return names[0]; }
         }
+
+        public static named_type_reference Boolean => new named_type_reference("boolean");
     }
 
     public partial class template_type_reference
@@ -499,6 +497,9 @@ namespace PascalABCCompiler.SyntaxTree
 
         public override string ToString()
         {
+            if (idents.Count == 0)
+                return "";
+
             var sb = new System.Text.StringBuilder();
             sb.Append(idents[0].ToString());
             for (int i = 1; i < idents.Count; i++)
@@ -1750,21 +1751,49 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class desugared_deconstruction
     {
-        public bool HasAllExplicitTypes => definitions.All(x => x.vars_type != null);
+        public bool HasAllExplicitTypes => variables.definitions.All(x => x.vars_type != null);
+
+        public desugared_deconstruction(List<var_def_statement> variables, expression target, SourceContext context = null) 
+            : this(new deconstruction_variables_definition(variables), target, context)
+        { }
 
         public var_statement[] WithTypes(type_definition[] types)
         {
             var_statement[] result = new var_statement[types.Length]; 
-            Debug.Assert(types.Length == definitions.Count, "Inconsistent types count");
+            Debug.Assert(types.Length == variables.definitions.Count, "Inconsistent types count");
 
-            for (int i = 0; i < definitions.Count; i++)
+            for (int i = 0; i < variables.definitions.Count; i++)
             {
-                definitions[i].vars_type = types[i];
-                result[i] = new var_statement(definitions[i]);
+                variables.definitions[i].vars_type = types[i];
+                result[i] = new var_statement(variables.definitions[i]);
             }
 
             return result;
         }
+
+        public override string ToString() => $"var {string.Join(", ", variables.definitions)}";
+    }
+
+    public partial class is_pattern_expr
+    {
+        public override string ToString() => $"{left} is {right}";
+    }
+
+    public partial class deconstructor_pattern
+    {
+        public bool IsRecursive => parameters.Any(x => x is recursive_deconstructor_parameter);
+
+        public override string ToString() => $"{type}({string.Join(", ", parameters.Select(x => x.ToString()))})";
+    }
+
+    public partial class var_deconstructor_parameter
+    {
+        public override string ToString() => identifier.ToString() + (type == null ? "" : $": {type}");
+    }
+
+    public partial class recursive_deconstructor_parameter
+    {
+        public override string ToString() => pattern.ToString();
     }
 }
 

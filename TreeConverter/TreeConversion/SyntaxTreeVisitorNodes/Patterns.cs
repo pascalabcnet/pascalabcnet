@@ -14,7 +14,7 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(desugared_deconstruction deconstruction)
         {
             var invokationTarget = convert_strong(deconstruction.deconstruction_target as expression);
-            var types = InferAndCheckPatternVariableTypes(deconstruction.definitions, invokationTarget, deconstruction);
+            var types = InferAndCheckPatternVariableTypes(deconstruction.variables.definitions, invokationTarget, deconstruction);
             if (types == null)
                 return;
 
@@ -28,7 +28,7 @@ namespace PascalABCCompiler.TreeConverter
             List<function_node> candidates = new List<function_node>();
             List<type_node[]> deducedParametersList = new List<type_node[]>();
 
-            var allDeconstructs = patternInstance.type.find_in_type("deconstruct", context.CurrentScope);
+            var allDeconstructs = patternInstance.type.find_in_type(compiler_string_consts.deconstruct_method_name, context.CurrentScope);
             foreach (var canditateSymbol in allDeconstructs)
             {
                 var deducedParameters = new type_node[parameterTypes.Length];
@@ -102,8 +102,8 @@ namespace PascalABCCompiler.TreeConverter
                 var deduceSucceded = generic_convertions.DeduceInstanceTypes(selfParameter.type, patternInstance.type, deducedGenerics, nils);
                 if (!deduceSucceded || deducedGenerics.Contains(null))
                     // Проверка на то, что в Deconstruct все дженерики выводятся по self делается в другом месте
-                    // TODO: сделать проверку
-                    // TODO: запретить дженерик методы в классах. Можно использовать только дженерик-типы самого класса в качестве параметров
+                    // TODO Patterns: сделать проверку из коммента выше
+                    // TODO Patterns: запретить дженерик методы в классах. Можно использовать только дженерик-типы самого класса в качестве параметров
                     //AddError(deconstructionLocation, "COULDNT_DEDUCE_DECONSTRUCT_GENERIC_TYPE");
                     return false;
             }
@@ -115,7 +115,7 @@ namespace PascalABCCompiler.TreeConverter
                 if (genericDeduceNeeded && (candidateParameter.is_generic_parameter || candidateParameter.is_generic_type_instance))
                     candidateParameter = InstantiateParameter(candidateParameter, deducedGenerics);
 
-                if (givenParameter != null && !AreTheSameTypes(candidateParameter, givenParameter))
+                if (givenParameter != null && !AreTheSameType(candidateParameter, givenParameter))
                     return false;
 
                 parameterTypes[i] = candidateParameter;
@@ -124,7 +124,7 @@ namespace PascalABCCompiler.TreeConverter
             return true;
         }
 
-        private bool AreTheSameTypes(type_node type1, type_node type2)
+        private bool AreTheSameType(type_node type1, type_node type2)
         {
             return convertion_data_and_alghoritms.possible_equal_types(type1, type2);
         }
@@ -140,13 +140,13 @@ namespace PascalABCCompiler.TreeConverter
 
         private bool IsDefaultDeconstruct(function_node function)
         {
-            // TODO: fix
+            // TODO Patterns: check if it declared in PABCSystem
             return
                 function.generic_parameters_count == 1 &&
                 function.parameters.Count == 2 &&
                 function.parameters[0].type.is_generic_parameter &&
                 function.parameters[1].type.is_generic_parameter &&
-                AreTheSameTypes(function.parameters[0].type, function.parameters[1].type);
+                AreTheSameType(function.parameters[0].type, function.parameters[1].type);
         }
 
         private bool CheckIfParameterListElementsAreTheSame(List<type_node[]> parametersList)
@@ -158,7 +158,7 @@ namespace PascalABCCompiler.TreeConverter
                     return false;
 
                 for (int j = 0; j < first.Length; j++)
-                    if (!AreTheSameTypes(first[j], parametersList[i][j]))
+                    if (!AreTheSameType(first[j], parametersList[i][j]))
                         return false;
             }
 
@@ -180,6 +180,37 @@ namespace PascalABCCompiler.TreeConverter
 
                 return genericNode as type_node;
             }
+        }
+
+        private IEnumerable<int> GenericParameterIndices(SemanticTree.ITypeNode node)
+        {
+            if (node.is_generic_parameter)
+                yield return (node as type_node).generic_param_index;
+
+            if (node is generic_instance_type_node genericNode)
+                foreach (var index in genericNode.instance_params.Aggregate(
+                    Enumerable.Empty<int>(), 
+                    (indices, nextNode) => indices.Concat(GenericParameterIndices(nextNode)))
+                    .Distinct())
+                    yield return index;
+
+            yield break;
+        }
+
+        private parameter GetSelfParameter(function_node node) => node.parameters.FirstOrDefault(x => IsSelfParameter(x));
+
+        /// <summary>
+        /// Проводит проверки, общие для экземплярных деконструкторов и расширений
+        /// </summary>
+        /// <param name="deconstructor"></param>
+        private void ExecuteCommonChecks(common_function_node deconstructor)
+        {
+            if (deconstructor.return_value_type != null)
+                AddError(deconstructor.loc, "DECONSTRUCTOR_SOULD_BE_A_PROCEDURE");
+
+            foreach (var parameter in deconstructor.parameters.Where(x => !IsSelfParameter(x)))
+                if (parameter.parameter_type != SemanticTree.parameter_type.var && parameter is common_parameter p)
+                    AddError(p.loc, "DECONSTRUCTION_PARAMETERS_SHOULD_HAVE_VAR_MODIFIER");
         }
     }
 }

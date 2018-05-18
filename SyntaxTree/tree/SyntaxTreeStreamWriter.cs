@@ -6500,24 +6500,6 @@ namespace PascalABCCompiler.SyntaxTree
 		public void write_pattern_deconstructor_parameter(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
 		{
 			write_syntax_tree_node(_pattern_deconstructor_parameter);
-			if (_pattern_deconstructor_parameter.identifier == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_pattern_deconstructor_parameter.identifier.visit(this);
-			}
-			if (_pattern_deconstructor_parameter.type == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_pattern_deconstructor_parameter.type.visit(this);
-			}
 		}
 
 
@@ -6530,28 +6512,108 @@ namespace PascalABCCompiler.SyntaxTree
 		public void write_desugared_deconstruction(desugared_deconstruction _desugared_deconstruction)
 		{
 			write_statement(_desugared_deconstruction);
-			if (_desugared_deconstruction.definitions == null)
+			if (_desugared_deconstruction.variables == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				bw.Write(_desugared_deconstruction.definitions.Count);
-				for(Int32 ssyy_i = 0; ssyy_i < _desugared_deconstruction.definitions.Count; ssyy_i++)
+				_desugared_deconstruction.variables.visit(this);
+			}
+			if (_desugared_deconstruction.deconstruction_target == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_desugared_deconstruction.deconstruction_target.visit(this);
+			}
+		}
+
+
+		public void visit(var_deconstructor_parameter _var_deconstructor_parameter)
+		{
+			bw.Write((Int16)237);
+			write_var_deconstructor_parameter(_var_deconstructor_parameter);
+		}
+
+		public void write_var_deconstructor_parameter(var_deconstructor_parameter _var_deconstructor_parameter)
+		{
+			write_pattern_deconstructor_parameter(_var_deconstructor_parameter);
+			if (_var_deconstructor_parameter.identifier == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_var_deconstructor_parameter.identifier.visit(this);
+			}
+			if (_var_deconstructor_parameter.type == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_var_deconstructor_parameter.type.visit(this);
+			}
+		}
+
+
+		public void visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
+		{
+			bw.Write((Int16)238);
+			write_recursive_deconstructor_parameter(_recursive_deconstructor_parameter);
+		}
+
+		public void write_recursive_deconstructor_parameter(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
+		{
+			write_pattern_deconstructor_parameter(_recursive_deconstructor_parameter);
+			if (_recursive_deconstructor_parameter.pattern == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_recursive_deconstructor_parameter.pattern.visit(this);
+			}
+		}
+
+
+		public void visit(deconstruction_variables_definition _deconstruction_variables_definition)
+		{
+			bw.Write((Int16)239);
+			write_deconstruction_variables_definition(_deconstruction_variables_definition);
+		}
+
+		public void write_deconstruction_variables_definition(deconstruction_variables_definition _deconstruction_variables_definition)
+		{
+			write_declaration(_deconstruction_variables_definition);
+			if (_deconstruction_variables_definition.definitions == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				bw.Write(_deconstruction_variables_definition.definitions.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _deconstruction_variables_definition.definitions.Count; ssyy_i++)
 				{
-					if (_desugared_deconstruction.definitions[ssyy_i] == null)
+					if (_deconstruction_variables_definition.definitions[ssyy_i] == null)
 					{
 						bw.Write((byte)0);
 					}
 					else
 					{
 						bw.Write((byte)1);
-						_desugared_deconstruction.definitions[ssyy_i].visit(this);
+						_deconstruction_variables_definition.definitions[ssyy_i].visit(this);
 					}
 				}
 			}
-			bw.Write((byte)_desugared_deconstruction.deconstruction_target);
 		}
 
 	}

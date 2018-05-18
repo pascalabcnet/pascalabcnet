@@ -3042,6 +3042,33 @@
       </Tags>
     </SyntaxNode>
     <SyntaxNode Name="pattern_deconstructor_parameter" BaseName="syntax_tree_node">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="desugared_deconstruction" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="variables" SyntaxType="deconstruction_variables_definition" />
+        <SyntaxField Name="deconstruction_target" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="var_deconstructor_parameter" BaseName="pattern_deconstructor_parameter">
       <Fields>
         <SyntaxField Name="identifier" SyntaxType="ident" />
         <SyntaxField Name="type" SyntaxType="type_definition" />
@@ -3056,10 +3083,23 @@
         </TagIndices>
       </Tags>
     </SyntaxNode>
-    <SyntaxNode Name="desugared_deconstruction" BaseName="statement">
+    <SyntaxNode Name="recursive_deconstructor_parameter" BaseName="pattern_deconstructor_parameter">
+      <Fields>
+        <SyntaxField Name="pattern" SyntaxType="pattern_node" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="deconstruction_variables_definition" BaseName="declaration">
       <Fields>
         <ExtendedField Name="definitions" Type="List&lt;var_def_statement&gt;" CreateVariable="true" DeleteVariable="false" />
-        <ExtendedField Name="deconstruction_target" Type="object" CreateVariable="false" DeleteVariable="false" />
       </Fields>
       <Methods />
       <Tags>
@@ -3096,7 +3136,7 @@
         <Tag Name="Важнейшие" ReferenceCount="207" />
         <Tag Name="Method_Procedure_Call" ReferenceCount="2" />
         <Tag Name="Yield" ReferenceCount="8" />
-        <Tag Name="Patterns" ReferenceCount="9" />
+        <Tag Name="Patterns" ReferenceCount="12" />
         <Tag Name="Typeclasses" ReferenceCount="7" />
       </Tags>
     </FilterCategory>
@@ -3122,6 +3162,7 @@
       <HelpData Key=".char_num" Value="Номер символа." />
       <HelpData Key=".count" Value="" />
       <HelpData Key=".def" Value="" />
+      <HelpData Key=".definitions" Value="" />
       <HelpData Key=".defs" Value="" />
       <HelpData Key=".directives" Value="" />
       <HelpData Key=".el" Value="" />
@@ -3145,6 +3186,7 @@
       <HelpData Key=".override string ToString()" Value="" />
       <HelpData Key=".parameters" Value="" />
       <HelpData Key=".params" Value="" />
+      <HelpData Key=".pattern" Value="" />
       <HelpData Key=".procdef" Value="" />
       <HelpData Key=".res" Value="" />
       <HelpData Key=".restriction" Value="" />
@@ -3402,6 +3444,8 @@
       <HelpData Key="declarations.void Add(declaration d, SourceContext sc)" Value="" />
       <HelpData Key="declarations_as_statement" Value="" />
       <HelpData Key="declarations_as_statement.defs" Value="" />
+      <HelpData Key="deconstruction_variables_definition" Value="Список объявлений для deconstructor pattern" />
+      <HelpData Key="deconstruction_variables_definition.definitions" Value="" />
       <HelpData Key="deconstructor_pattern" Value="" />
       <HelpData Key="deconstructor_pattern.parameters" Value="Результат деконструирования" />
       <HelpData Key="deconstructor_pattern.type" Value="Деконструируемый тип" />
@@ -3417,12 +3461,13 @@
       <HelpData Key="dereference.dereferencing_value" Value="" />
       <HelpData Key="dereference.override string ToString()" Value="" />
       <HelpData Key="destructor" Value="" />
-      <HelpData Key="desugared_deconstruction" Value="Представляет объединение объявлений пременных, порожденных деконструкцией. Деконструируемое выражение необходимо хранить для выведения типа на этапе семантики, однако оно не должно входить в обход дерева." />
+      <HelpData Key="desugared_deconstruction" Value="Представляет объединение объявлений пременных, порожденных деконструкцией. Деконструируемое выражение необходимо хранить для выведения типа на этапе семантики." />
       <HelpData Key="desugared_deconstruction.deconstruct_call" Value="Вызов метода Deconstruct" />
       <HelpData Key="desugared_deconstruction.deconstruction_target" Value="Деконструируемое выражение" />
       <HelpData Key="desugared_deconstruction.definitions" Value="Объявления порожденных переменных" />
       <HelpData Key="desugared_deconstruction.destruct_call" Value="" />
       <HelpData Key="desugared_deconstruction.expressionVariableName" Value="Деконструируемое выражение" />
+      <HelpData Key="desugared_deconstruction.variables" Value="Объявления порожденных переменных" />
       <HelpData Key="diap_expr" Value="" />
       <HelpData Key="diap_expr." Value="" />
       <HelpData Key="diap_expr.left" Value="" />
@@ -3939,8 +3984,9 @@
       <HelpData Key="pattern_cases.elements" Value="" />
       <HelpData Key="pattern_deconstructor_call_params" Value="" />
       <HelpData Key="pattern_deconstructor_call_params.parameters" Value="" />
-      <HelpData Key="pattern_deconstructor_parameter" Value="" />
+      <HelpData Key="pattern_deconstructor_parameter" Value="Базовый класс параметра deconstruct" />
       <HelpData Key="pattern_deconstructor_parameter.identifier" Value="" />
+      <HelpData Key="pattern_deconstructor_parameter.isDeconstruct" Value="Флаг, показывающий, что этот параметр - рекурсивный паттерн" />
       <HelpData Key="pattern_deconstructor_parameter.name" Value="" />
       <HelpData Key="pattern_deconstructor_parameter.type" Value="" />
       <HelpData Key="pattern_node" Value="" />
@@ -4082,6 +4128,8 @@
       <HelpData Key="record_type_parts" Value="" />
       <HelpData Key="record_type_parts.fixed_part" Value="" />
       <HelpData Key="record_type_parts.variant_part" Value="" />
+      <HelpData Key="recursive_deconstructor_parameter" Value="Параметр-паттерн. Часть рекурсивного паттерна." />
+      <HelpData Key="recursive_deconstructor_parameter.pattern" Value="" />
       <HelpData Key="ref_type" Value="" />
       <HelpData Key="ref_type.pointed_to" Value="" />
       <HelpData Key="repeat_node" Value="Цикл с постусловием (repeat)" />
@@ -4438,6 +4486,9 @@
       <HelpData Key="using_namespaces.usings" Value="" />
       <HelpData Key="var_attribute_node" Value="" />
       <HelpData Key="var_attribute_node.var_attr" Value="" />
+      <HelpData Key="var_deconstructor_parameter" Value="Параметр-объявление переменной (возможно без типа)" />
+      <HelpData Key="var_deconstructor_parameter.identifier" Value="" />
+      <HelpData Key="var_deconstructor_parameter.type" Value="" />
       <HelpData Key="var_def_list" Value="" />
       <HelpData Key="var_def_list.var_def_list Add(var_def_statement _var_def_statement)" Value="" />
       <HelpData Key="var_def_list.var_def_list Add(var_def_statement _var_def_statement, SourceContext sc)" Value="" />

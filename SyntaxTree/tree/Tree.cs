@@ -50187,7 +50187,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///
+	///Базовый класс параметра deconstruct
 	///</summary>
 	[Serializable]
 	public partial class pattern_deconstructor_parameter : syntax_tree_node
@@ -50201,10 +50201,288 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			pattern_deconstructor_parameter copy = new pattern_deconstructor_parameter();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new pattern_deconstructor_parameter TypedClone()
+		{
+			return Clone() as pattern_deconstructor_parameter;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///Представляет объединение объявлений пременных, порожденных деконструкцией. Деконструируемое выражение необходимо хранить для выведения типа на этапе семантики.
+	///</summary>
+	[Serializable]
+	public partial class desugared_deconstruction : statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public desugared_deconstruction()
+		{
+
+		}
+
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public pattern_deconstructor_parameter(ident _identifier,type_definition _type)
+		public desugared_deconstruction(deconstruction_variables_definition _variables,expression _deconstruction_target)
+		{
+			this._variables=_variables;
+			this._deconstruction_target=_deconstruction_target;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public desugared_deconstruction(deconstruction_variables_definition _variables,expression _deconstruction_target,SourceContext sc)
+		{
+			this._variables=_variables;
+			this._deconstruction_target=_deconstruction_target;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected deconstruction_variables_definition _variables;
+		protected expression _deconstruction_target;
+
+		///<summary>
+		///Объявления порожденных переменных
+		///</summary>
+		public deconstruction_variables_definition variables
+		{
+			get
+			{
+				return _variables;
+			}
+			set
+			{
+				_variables=value;
+			}
+		}
+
+		///<summary>
+		///Деконструируемое выражение
+		///</summary>
+		public expression deconstruction_target
+		{
+			get
+			{
+				return _deconstruction_target;
+			}
+			set
+			{
+				_deconstruction_target=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			desugared_deconstruction copy = new desugared_deconstruction();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (variables != null)
+			{
+				copy.variables = (deconstruction_variables_definition)variables.Clone();
+				copy.variables.Parent = copy;
+			}
+			if (deconstruction_target != null)
+			{
+				copy.deconstruction_target = (expression)deconstruction_target.Clone();
+				copy.deconstruction_target.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new desugared_deconstruction TypedClone()
+		{
+			return Clone() as desugared_deconstruction;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (variables != null)
+				variables.Parent = this;
+			if (deconstruction_target != null)
+				deconstruction_target.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			variables?.FillParentsInAllChilds();
+			deconstruction_target?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return variables;
+					case 1:
+						return deconstruction_target;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						variables = (deconstruction_variables_definition)value;
+						break;
+					case 1:
+						deconstruction_target = (expression)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///Параметр-объявление переменной (возможно без типа)
+	///</summary>
+	[Serializable]
+	public partial class var_deconstructor_parameter : pattern_deconstructor_parameter
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public var_deconstructor_parameter()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public var_deconstructor_parameter(ident _identifier,type_definition _type)
 		{
 			this._identifier=_identifier;
 			this._type=_type;
@@ -50214,7 +50492,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public pattern_deconstructor_parameter(ident _identifier,type_definition _type,SourceContext sc)
+		public var_deconstructor_parameter(ident _identifier,type_definition _type,SourceContext sc)
 		{
 			this._identifier=_identifier;
 			this._type=_type;
@@ -50258,7 +50536,7 @@ namespace PascalABCCompiler.SyntaxTree
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
-			pattern_deconstructor_parameter copy = new pattern_deconstructor_parameter();
+			var_deconstructor_parameter copy = new var_deconstructor_parameter();
 			copy.Parent = this.Parent;
 			if (source_context != null)
 				copy.source_context = new SourceContext(source_context);
@@ -50276,9 +50554,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		/// <summary> Получает копию данного узла корректного типа </summary>
-		public new pattern_deconstructor_parameter TypedClone()
+		public new var_deconstructor_parameter TypedClone()
 		{
-			return Clone() as pattern_deconstructor_parameter;
+			return Clone() as var_deconstructor_parameter;
 		}
 
 		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
@@ -50365,16 +50643,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///Представляет объединение объявлений пременных, порожденных деконструкцией. Деконструируемое выражение необходимо хранить для выведения типа на этапе семантики, однако оно не должно входить в обход дерева.
+	///Параметр-паттерн. Часть рекурсивного паттерна.
 	///</summary>
 	[Serializable]
-	public partial class desugared_deconstruction : statement
+	public partial class recursive_deconstructor_parameter : pattern_deconstructor_parameter
 	{
 
 		///<summary>
 		///Конструктор без параметров.
 		///</summary>
-		public desugared_deconstruction()
+		public recursive_deconstructor_parameter()
 		{
 
 		}
@@ -50382,34 +50660,178 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public desugared_deconstruction(List<var_def_statement> _definitions,object _deconstruction_target)
+		public recursive_deconstructor_parameter(pattern_node _pattern)
 		{
-			this._definitions=_definitions;
-			this._deconstruction_target=_deconstruction_target;
+			this._pattern=_pattern;
 			FillParentsInDirectChilds();
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public desugared_deconstruction(List<var_def_statement> _definitions,object _deconstruction_target,SourceContext sc)
+		public recursive_deconstructor_parameter(pattern_node _pattern,SourceContext sc)
 		{
-			this._definitions=_definitions;
-			this._deconstruction_target=_deconstruction_target;
+			this._pattern=_pattern;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
-		public desugared_deconstruction(var_def_statement elem, SourceContext sc = null)
+		protected pattern_node _pattern;
+
+		///<summary>
+		///
+		///</summary>
+		public pattern_node pattern
+		{
+			get
+			{
+				return _pattern;
+			}
+			set
+			{
+				_pattern=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			recursive_deconstructor_parameter copy = new recursive_deconstructor_parameter();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (pattern != null)
+			{
+				copy.pattern = (pattern_node)pattern.Clone();
+				copy.pattern.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new recursive_deconstructor_parameter TypedClone()
+		{
+			return Clone() as recursive_deconstructor_parameter;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (pattern != null)
+				pattern.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			pattern?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return pattern;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						pattern = (pattern_node)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///Список объявлений для deconstructor pattern
+	///</summary>
+	[Serializable]
+	public partial class deconstruction_variables_definition : declaration
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public deconstruction_variables_definition()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public deconstruction_variables_definition(List<var_def_statement> _definitions)
+		{
+			this._definitions=_definitions;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public deconstruction_variables_definition(List<var_def_statement> _definitions,SourceContext sc)
+		{
+			this._definitions=_definitions;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		public deconstruction_variables_definition(var_def_statement elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		    FillParentsInDirectChilds();
 		}
 		
 		protected List<var_def_statement> _definitions=new List<var_def_statement>();
-		protected object _deconstruction_target;
 
 		///<summary>
-		///Объявления порожденных переменных
+		///
 		///</summary>
 		public List<var_def_statement> definitions
 		{
@@ -50423,23 +50845,8 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-		///<summary>
-		///Деконструируемое выражение
-		///</summary>
-		public object deconstruction_target
-		{
-			get
-			{
-				return _deconstruction_target;
-			}
-			set
-			{
-				_deconstruction_target=value;
-			}
-		}
 
-
-		public desugared_deconstruction Add(var_def_statement elem, SourceContext sc = null)
+		public deconstruction_variables_definition Add(var_def_statement elem, SourceContext sc = null)
 		{
 			definitions.Add(elem);
 			if (elem != null)
@@ -50590,7 +50997,7 @@ namespace PascalABCCompiler.SyntaxTree
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
-			desugared_deconstruction copy = new desugared_deconstruction();
+			deconstruction_variables_definition copy = new deconstruction_variables_definition();
 			copy.Parent = this.Parent;
 			if (source_context != null)
 				copy.source_context = new SourceContext(source_context);
@@ -50612,14 +51019,13 @@ namespace PascalABCCompiler.SyntaxTree
 						copy.Add(null);
 				}
 			}
-			copy.deconstruction_target = deconstruction_target;
 			return copy;
 		}
 
 		/// <summary> Получает копию данного узла корректного типа </summary>
-		public new desugared_deconstruction TypedClone()
+		public new deconstruction_variables_definition TypedClone()
 		{
-			return Clone() as desugared_deconstruction;
+			return Clone() as deconstruction_variables_definition;
 		}
 
 		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>

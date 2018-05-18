@@ -1192,6 +1192,21 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_desugared_deconstruction);
 		}
+
+		public virtual void visit(var_deconstructor_parameter _var_deconstructor_parameter)
+		{
+			DefaultVisit(_var_deconstructor_parameter);
+		}
+
+		public virtual void visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
+		{
+			DefaultVisit(_recursive_deconstructor_parameter);
+		}
+
+		public virtual void visit(deconstruction_variables_definition _deconstruction_variables_definition)
+		{
+			DefaultVisit(_deconstruction_variables_definition);
+		}
 	}
 
 
