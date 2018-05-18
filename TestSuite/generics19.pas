@@ -16,7 +16,7 @@
 
 function equal<T, EqT>(v1, v2: T): boolean; where EqT: IEq<T>, constructor;
 begin
-  var eqtinstance := __ConceptSingleton&<EqT>.&Instance;
+  var eqtinstance := new EqT;
   Result := eqtinstance.equal(v1, v2);
 end;
 
