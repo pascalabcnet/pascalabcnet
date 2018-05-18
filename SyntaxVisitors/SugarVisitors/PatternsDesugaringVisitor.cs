@@ -85,8 +85,8 @@ namespace SyntaxVisitors.SugarVisitors
             _previousIf = null;
 
             // Кэшируем выражение для однократного вычисления
-            var cachedExpression = NewGeneralName();
-            AddDefinitionsInUpperStatementList(matchWith, new[] { new var_statement(cachedExpression, matchWith.expr) });
+            //var cachedExpression = NewGeneralName();
+            //AddDefinitionsInUpperStatementList(matchWith, new[] { new var_statement(cachedExpression, matchWith.expr) });
 
             // Преобразование из сахара в известную конструкцию каждого case
             foreach (var patternCase in matchWith.case_list.elements)
@@ -95,7 +95,7 @@ namespace SyntaxVisitors.SugarVisitors
                     continue;
 
                 if (patternCase.pattern is deconstructor_pattern)
-                    DesugarDeconstructorPatternCase(cachedExpression, patternCase);
+                    DesugarDeconstructorPatternCase(matchWith.expr, patternCase);
             }
 
             if (matchWith.defaultAction != null)
