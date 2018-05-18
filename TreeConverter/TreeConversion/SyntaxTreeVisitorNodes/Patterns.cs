@@ -115,7 +115,7 @@ namespace PascalABCCompiler.TreeConverter
                 if (genericDeduceNeeded && (candidateParameter.is_generic_parameter || candidateParameter.is_generic_type_instance))
                     candidateParameter = InstantiateParameter(candidateParameter, deducedGenerics);
 
-                if (givenParameter != null && !AreTheSameTypes(candidateParameter, givenParameter))
+                if (givenParameter != null && !AreTheSameType(candidateParameter, givenParameter))
                     return false;
 
                 parameterTypes[i] = candidateParameter;
@@ -124,7 +124,7 @@ namespace PascalABCCompiler.TreeConverter
             return true;
         }
 
-        private bool AreTheSameTypes(type_node type1, type_node type2)
+        private bool AreTheSameType(type_node type1, type_node type2)
         {
             return convertion_data_and_alghoritms.possible_equal_types(type1, type2);
         }
@@ -146,7 +146,7 @@ namespace PascalABCCompiler.TreeConverter
                 function.parameters.Count == 2 &&
                 function.parameters[0].type.is_generic_parameter &&
                 function.parameters[1].type.is_generic_parameter &&
-                AreTheSameTypes(function.parameters[0].type, function.parameters[1].type);
+                AreTheSameType(function.parameters[0].type, function.parameters[1].type);
         }
 
         private bool CheckIfParameterListElementsAreTheSame(List<type_node[]> parametersList)
@@ -158,7 +158,7 @@ namespace PascalABCCompiler.TreeConverter
                     return false;
 
                 for (int j = 0; j < first.Length; j++)
-                    if (!AreTheSameTypes(first[j], parametersList[i][j]))
+                    if (!AreTheSameType(first[j], parametersList[i][j]))
                         return false;
             }
 
@@ -180,6 +180,37 @@ namespace PascalABCCompiler.TreeConverter
 
                 return genericNode as type_node;
             }
+        }
+
+        private IEnumerable<int> GenericParameterIndices(SemanticTree.ITypeNode node)
+        {
+            if (node.is_generic_parameter)
+                yield return (node as type_node).generic_param_index;
+
+            if (node is generic_instance_type_node genericNode)
+                foreach (var index in genericNode.instance_params.Aggregate(
+                    Enumerable.Empty<int>(), 
+                    (indices, nextNode) => indices.Concat(GenericParameterIndices(nextNode)))
+                    .Distinct())
+                    yield return index;
+
+            yield break;
+        }
+
+        private parameter GetSelfParameter(function_node node) => node.parameters.FirstOrDefault(x => IsSelfParameter(x));
+
+        /// <summary>
+        /// Проводит проверки, общие для экземплярных деконструкторов и расширений
+        /// </summary>
+        /// <param name="deconstructor"></param>
+        private void ExecuteCommonChecks(common_function_node deconstructor)
+        {
+            if (deconstructor.return_value_type != null)
+                AddError(deconstructor.loc, "DECONSTRUCTOR_SOULD_BE_A_PROCEDURE");
+
+            foreach (var parameter in deconstructor.parameters.Where(x => !IsSelfParameter(x)))
+                if (parameter.parameter_type != SemanticTree.parameter_type.var && parameter is common_parameter p)
+                    AddError(p.loc, "DECONSTRUCTION_PARAMETERS_SHOULD_HAVE_VAR_MODIFIER");
         }
     }
 }

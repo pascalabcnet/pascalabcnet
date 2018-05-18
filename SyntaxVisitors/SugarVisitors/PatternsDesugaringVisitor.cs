@@ -111,6 +111,7 @@ namespace SyntaxVisitors.SugarVisitors
 
         public override void visit(is_pattern_expr isPatternExpr)
         {
+            // TODO Patterns: convert to compilation error
             Debug.Assert(GetLocation(isPatternExpr) != PatternLocation.Unknown, "Is-pattern expression is in an unknown context");
             Debug.Assert(GetAscendant<statement_list>(isPatternExpr) != null, "Couldn't find statement list in upper nodes");
             
@@ -357,7 +358,6 @@ namespace SyntaxVisitors.SugarVisitors
                 }
             }
 
-            // TODO Patterns: convert to compilation error
             Debug.Assert(definitionsAdded, "Couldn't add definitions");
         }
 
