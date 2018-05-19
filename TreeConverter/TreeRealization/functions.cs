@@ -1884,7 +1884,7 @@ namespace PascalABCCompiler.TreeRealization
 				{
 					return SemanticTree.polymorphic_state.ps_static;
 				}
-				if (_mi.IsVirtual)
+				if (_mi.IsVirtual && !_mi.IsFinal)
 				{
 					return SemanticTree.polymorphic_state.ps_virtual;
 				}

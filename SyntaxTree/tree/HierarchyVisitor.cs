@@ -5,19 +5,19 @@ namespace PascalABCCompiler.SyntaxTree
 	public class HierarchyVisitor: AbstractVisitor
 	{
 
-		public virtual void pre_do_visit(syntax_tree_node _syntax_tree_node)
-		{
-		}
-
-		public virtual void post_do_visit(syntax_tree_node _syntax_tree_node)
-		{
-		}
-
 		public virtual void pre_do_visit(expression _expression)
 		{
 		}
 
 		public virtual void post_do_visit(expression _expression)
+		{
+		}
+
+		public virtual void pre_do_visit(syntax_tree_node _syntax_tree_node)
+		{
+		}
+
+		public virtual void post_do_visit(syntax_tree_node _syntax_tree_node)
 		{
 		}
 
@@ -1781,11 +1781,100 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
-		public override void visit(syntax_tree_node _syntax_tree_node)
+		public virtual void pre_do_visit(pattern_node _pattern_node)
 		{
-			DefaultVisit(_syntax_tree_node);
-			pre_do_visit(_syntax_tree_node);
-			post_do_visit(_syntax_tree_node);
+		}
+
+		public virtual void post_do_visit(pattern_node _pattern_node)
+		{
+		}
+
+		public virtual void pre_do_visit(type_pattern _type_pattern)
+		{
+		}
+
+		public virtual void post_do_visit(type_pattern _type_pattern)
+		{
+		}
+
+		public virtual void pre_do_visit(is_pattern_expr _is_pattern_expr)
+		{
+		}
+
+		public virtual void post_do_visit(is_pattern_expr _is_pattern_expr)
+		{
+		}
+
+		public virtual void pre_do_visit(match_with _match_with)
+		{
+		}
+
+		public virtual void post_do_visit(match_with _match_with)
+		{
+		}
+
+		public virtual void pre_do_visit(pattern_case _pattern_case)
+		{
+		}
+
+		public virtual void post_do_visit(pattern_case _pattern_case)
+		{
+		}
+
+		public virtual void pre_do_visit(pattern_cases _pattern_cases)
+		{
+		}
+
+		public virtual void post_do_visit(pattern_cases _pattern_cases)
+		{
+		}
+
+		public virtual void pre_do_visit(deconstructor_pattern _deconstructor_pattern)
+		{
+		}
+
+		public virtual void post_do_visit(deconstructor_pattern _deconstructor_pattern)
+		{
+		}
+
+		public virtual void pre_do_visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		{
+		}
+
+		public virtual void post_do_visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		{
+		}
+
+		public virtual void pre_do_visit(desugared_deconstruction _desugared_deconstruction)
+		{
+		}
+
+		public virtual void post_do_visit(desugared_deconstruction _desugared_deconstruction)
+		{
+		}
+
+		public virtual void pre_do_visit(var_deconstructor_parameter _var_deconstructor_parameter)
+		{
+		}
+
+		public virtual void post_do_visit(var_deconstructor_parameter _var_deconstructor_parameter)
+		{
+		}
+
+		public virtual void pre_do_visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
+		{
+		}
+
+		public virtual void post_do_visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
+		{
+		}
+
+		public virtual void pre_do_visit(deconstruction_variables_definition _deconstruction_variables_definition)
+		{
+		}
+
+		public virtual void post_do_visit(deconstruction_variables_definition _deconstruction_variables_definition)
+		{
 		}
 
 		public override void visit(expression _expression)
@@ -1793,6 +1882,13 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_expression);
 			pre_do_visit(_expression);
 			post_do_visit(_expression);
+		}
+
+		public override void visit(syntax_tree_node _syntax_tree_node)
+		{
+			DefaultVisit(_syntax_tree_node);
+			pre_do_visit(_syntax_tree_node);
+			post_do_visit(_syntax_tree_node);
 		}
 
 		public override void visit(statement _statement)
@@ -3682,6 +3778,112 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(double_question_node.left);
 			visit(double_question_node.right);
 			post_do_visit(_double_question_node);
+		}
+
+		public override void visit(pattern_node _pattern_node)
+		{
+			DefaultVisit(_pattern_node);
+			pre_do_visit(_pattern_node);
+			post_do_visit(_pattern_node);
+		}
+
+		public override void visit(type_pattern _type_pattern)
+		{
+			DefaultVisit(_type_pattern);
+			pre_do_visit(_type_pattern);
+			visit(type_pattern.identifier);
+			visit(type_pattern.type);
+			post_do_visit(_type_pattern);
+		}
+
+		public override void visit(is_pattern_expr _is_pattern_expr)
+		{
+			DefaultVisit(_is_pattern_expr);
+			pre_do_visit(_is_pattern_expr);
+			visit(is_pattern_expr.left);
+			visit(is_pattern_expr.right);
+			post_do_visit(_is_pattern_expr);
+		}
+
+		public override void visit(match_with _match_with)
+		{
+			DefaultVisit(_match_with);
+			pre_do_visit(_match_with);
+			visit(match_with.expr);
+			visit(match_with.case_list);
+			visit(match_with.defaultAction);
+			post_do_visit(_match_with);
+		}
+
+		public override void visit(pattern_case _pattern_case)
+		{
+			DefaultVisit(_pattern_case);
+			pre_do_visit(_pattern_case);
+			visit(pattern_case.pattern);
+			visit(pattern_case.case_action);
+			visit(pattern_case.condition);
+			post_do_visit(_pattern_case);
+		}
+
+		public override void visit(pattern_cases _pattern_cases)
+		{
+			DefaultVisit(_pattern_cases);
+			pre_do_visit(_pattern_cases);
+			for (int i = 0; i < elements.Count; i++)
+				visit(pattern_cases.elements[i]);
+			post_do_visit(_pattern_cases);
+		}
+
+		public override void visit(deconstructor_pattern _deconstructor_pattern)
+		{
+			DefaultVisit(_deconstructor_pattern);
+			pre_do_visit(_deconstructor_pattern);
+			for (int i = 0; i < parameters.Count; i++)
+				visit(deconstructor_pattern.parameters[i]);
+			visit(deconstructor_pattern.type);
+			post_do_visit(_deconstructor_pattern);
+		}
+
+		public override void visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		{
+			DefaultVisit(_pattern_deconstructor_parameter);
+			pre_do_visit(_pattern_deconstructor_parameter);
+			post_do_visit(_pattern_deconstructor_parameter);
+		}
+
+		public override void visit(desugared_deconstruction _desugared_deconstruction)
+		{
+			DefaultVisit(_desugared_deconstruction);
+			pre_do_visit(_desugared_deconstruction);
+			visit(desugared_deconstruction.variables);
+			visit(desugared_deconstruction.deconstruction_target);
+			post_do_visit(_desugared_deconstruction);
+		}
+
+		public override void visit(var_deconstructor_parameter _var_deconstructor_parameter)
+		{
+			DefaultVisit(_var_deconstructor_parameter);
+			pre_do_visit(_var_deconstructor_parameter);
+			visit(var_deconstructor_parameter.identifier);
+			visit(var_deconstructor_parameter.type);
+			post_do_visit(_var_deconstructor_parameter);
+		}
+
+		public override void visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
+		{
+			DefaultVisit(_recursive_deconstructor_parameter);
+			pre_do_visit(_recursive_deconstructor_parameter);
+			visit(recursive_deconstructor_parameter.pattern);
+			post_do_visit(_recursive_deconstructor_parameter);
+		}
+
+		public override void visit(deconstruction_variables_definition _deconstruction_variables_definition)
+		{
+			DefaultVisit(_deconstruction_variables_definition);
+			pre_do_visit(_deconstruction_variables_definition);
+			for (int i = 0; i < definitions.Count; i++)
+				visit(deconstruction_variables_definition.definitions[i]);
+			post_do_visit(_deconstruction_variables_definition);
 		}
 	}
 

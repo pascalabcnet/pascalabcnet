@@ -3038,6 +3038,12 @@ namespace CodeCompletion
                 es.is_static = true;
             es.acc_mod = cur_access_mod;
             es.si.acc_mod = cur_access_mod;
+            if (_simple_property.accessors != null && _simple_property.accessors.write_accessor == null)
+            {
+                es.is_readonly = true;
+                es.MakeDescription();
+            }
+                
             cur_scope.AddName(_simple_property.property_name.name, es);
 
         }
@@ -4286,7 +4292,7 @@ namespace CodeCompletion
             		
             	}
             	if (gen_args.Count > 0)
-            		ts = ts.GetInstance(gen_args);
+            		ts = ts.GetInstance(gen_args, true);
             	//ts.MakeInstance();
             	//ret_tn = ts.GetGenericInstance(gen_args);
             	//ts.si.describe = ts.ToString();

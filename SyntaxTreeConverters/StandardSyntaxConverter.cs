@@ -42,10 +42,18 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // double_question_desugar_visitor
             DoubleQuestionDesugarVisitor.New.ProcessNode(root);
 
+            // Patterns
+            PatternsDesugaringVisitor.New.ProcessNode(root);
+
+
+
 
             // Всё, связанное с yield
             MarkMethodHasYieldAndCheckSomeErrorsVisitor.New.ProcessNode(root);
             ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
+
+            new SimplePrettyPrinterVisitor("G:\\Tree.txt").ProcessNode(root);
+            FillParentNodeVisitor.New.ProcessNode(root);
 
 #if DEBUG
             

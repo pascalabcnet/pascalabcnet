@@ -1416,12 +1416,16 @@ namespace CodeFormatters
                 sb.Append("unit");
                 SetKeywordOffset("unit");
             }
-            else
+            else if (_unit_name.HeaderKeyword == UnitHeaderKeyword.Library)
             {
                 sb.Append("library");
                 SetKeywordOffset("library");
             }
-            
+            else if (_unit_name.HeaderKeyword == UnitHeaderKeyword.Namespace)
+            {
+                sb.Append("namespace");
+                SetKeywordOffset("namespace");
+            }
             visit_node(_unit_name.idunit_name);
             //sb.AppendLine(";");
         }
@@ -2952,6 +2956,74 @@ namespace CodeFormatters
                 visit_node(_slice_expr_question.to);
             if (_slice_expr_question.step != null)
                 visit_node(_slice_expr_question.step);
+        }
+
+        public override void visit(is_pattern_expr _is_pattern_expr)
+        {
+            if (_is_pattern_expr.left != null)
+                visit_node(_is_pattern_expr.left);
+
+            sb.Append(" is ");
+
+            if (_is_pattern_expr.right != null)
+                visit_node(_is_pattern_expr.right);
+        }
+
+        public override void visit(type_pattern _type_pattern)
+        {
+            if (_type_pattern.type != null)
+                visit_node(_type_pattern.type);
+        }
+
+        public override void visit(match_with _match_with)
+        {
+            sb.Append("match ");
+            visit_node(_match_with.expr);
+            IncOffset();
+            add_space_before = true;
+            visit_node(_match_with.case_list);
+            DecOffset();
+        }
+
+        public override void visit(pattern_cases _pattern_cases)
+        {
+            foreach (var patternCase in _pattern_cases.elements)
+                visit_node(patternCase);
+        }
+
+        public override void visit(pattern_case _pattern_case)
+        {
+            visit_node(_pattern_case.pattern);
+
+            if (_pattern_case.condition != null)
+            {
+                add_space_before = true;
+                visit_node(_pattern_case.condition);
+            }
+
+            add_space_after = true;
+            IncOffset();
+            visit_node(_pattern_case.case_action);
+            DecOffset();
+        }
+
+        public override void visit(deconstructor_pattern _deconstructor_pattern)
+        {
+            visit_node(_deconstructor_pattern.type);
+            foreach (var parameter in _deconstructor_pattern.parameters)
+                visit_node(parameter);
+        }
+
+        public override void visit(var_deconstructor_parameter _var_deconstructor_parameter)
+        {
+            visit_node(_var_deconstructor_parameter.identifier);
+            if (_var_deconstructor_parameter.type != null)
+                visit_node(_var_deconstructor_parameter.type);
+        }
+
+        public override void visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
+        {
+            visit_node(_recursive_deconstructor_parameter.pattern);
         }
 
         #endregion

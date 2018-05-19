@@ -681,7 +681,7 @@ namespace PascalABCCompiler.TreeConverter
                 return ret;
             }
 
-            if ((type_table.is_derived(from.type, to)) || (type_table.is_derived(to, from.type)) || from.type.IsInterface || to.IsInterface)
+            if ((type_table.is_derived(from.type, to)) || (type_table.is_derived(to, from.type)) || from.type.IsInterface || to.IsInterface && !(from.type is delegated_methods))
             {
                 if (from.type.IsSealed && to.IsInterface && !from.type.ImplementingInterfaces.Contains(to) ||
                     from.type.IsInterface && to.IsSealed && !to.ImplementingInterfaces.Contains(from.type))

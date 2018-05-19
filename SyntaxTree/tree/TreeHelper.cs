@@ -2,6 +2,7 @@
 using System.Text;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace PascalABCCompiler.SyntaxTree
 {
@@ -67,6 +68,13 @@ namespace PascalABCCompiler.SyntaxTree
             to.Parent = from.Parent;
         }
 
+        public void ReplaceDescendantUnsafe(syntax_tree_node from, syntax_tree_node to, Desc d = Desc.All)
+        {
+            var ind = FindIndex(from, d);
+            this[ind] = to;
+            to.Parent = from.Parent;
+        }
+
         /// <summary>
         /// Находит последнего потомка, удовлетворяющего условию. Возвращает null, если такой не найден.
         /// </summary>
@@ -81,6 +89,24 @@ namespace PascalABCCompiler.SyntaxTree
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Получает коллекцию предков текущего узла
+        /// </summary>
+        /// <param name="includeSelf">Включить в список текущий узел</param>
+        /// <returns>Коллекция предков узла</returns>
+        public IEnumerable<syntax_tree_node> AscendantNodes(bool includeSelf = false)
+        {
+            if (includeSelf)
+                yield return this;
+
+            var parentNode = Parent;
+            while (parentNode != null)
+            {
+                yield return parentNode;
+                parentNode = parentNode.Parent;
+            }
         }
 
         /// <summary>
@@ -295,6 +321,9 @@ namespace PascalABCCompiler.SyntaxTree
         public void AddMany(IEnumerable<statement> els)
         {
             list.AddRange(els);
+            foreach (var elem in els)
+                if (elem != null)
+                    elem.Parent = this;
         }
 
         public static statement_list Empty
@@ -347,6 +376,11 @@ namespace PascalABCCompiler.SyntaxTree
         public static bin_expr Less(expression left, expression right)
         {
             return new bin_expr(left, right, Operators.Less);
+        }
+
+        public static bin_expr LogicalAnd(expression left, expression right)
+        {
+            return new bin_expr(left, right, Operators.LogicalAND);
         }
 
         public override string ToString()
@@ -421,6 +455,8 @@ namespace PascalABCCompiler.SyntaxTree
         {
             get { return names[0]; }
         }
+
+        public static named_type_reference Boolean => new named_type_reference("boolean");
     }
 
     public partial class template_type_reference
@@ -461,6 +497,9 @@ namespace PascalABCCompiler.SyntaxTree
 
         public override string ToString()
         {
+            if (idents.Count == 0)
+                return "";
+
             var sb = new System.Text.StringBuilder();
             sb.Append(idents[0].ToString());
             for (int i = 1; i < idents.Count; i++)
@@ -1244,40 +1283,32 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class var_statement
     {
-        public var_statement(ident_list vars, type_definition type, expression iv)
+        public var_statement(ident_list vars, type_definition type, expression iv) : this(new var_def_statement(vars, type, iv))
         {
-            var_def = new var_def_statement(vars, type, iv);
         }
 
-        public var_statement(ident_list vars, type_definition type)
+        public var_statement(ident_list vars, type_definition type): this(new var_def_statement(vars, type))
         {
-            var_def = new var_def_statement(vars, type);
         }
 
-        public var_statement(ident id, type_definition type, expression iv)
+        public var_statement(ident id, type_definition type, expression iv) : this(new var_def_statement(new ident_list(id), type, iv))
         {
-            var_def = new var_def_statement(new ident_list(id), type, iv);
         }
 
-        public var_statement(ident id, type_definition type)
+        public var_statement(ident id, type_definition type) : this(new var_def_statement(new ident_list(id), type))
         {
-            var_def = new var_def_statement(new ident_list(id), type);
         }
 
-        public var_statement(ident id, string type)
+        public var_statement(ident id, string type) : this(new var_def_statement(new ident_list(id), new named_type_reference(type)))
         {
-            var_def = new var_def_statement(new ident_list(id), new named_type_reference(type));
         }
 
-        public var_statement(ident id, expression iv)
+        public var_statement(ident id, expression iv) :this(new var_def_statement(new ident_list(id), null, iv))
         {
-            var_def = new var_def_statement(new ident_list(id), null, iv);
         }
 
-        public var_statement(ident id, expression iv,SourceContext sc)
+        public var_statement(ident id, expression iv,SourceContext sc) : this(new var_def_statement(new ident_list(id), null, iv, sc))
         {
-            var_def = new var_def_statement(new ident_list(id), null, iv);
-            var_def.source_context = sc;
         }
 
         public override string ToString()
@@ -1718,6 +1749,51 @@ namespace PascalABCCompiler.SyntaxTree
         public override string ToString() => "lam_inferred";
     }
 
+    public partial class desugared_deconstruction
+    {
+        public bool HasAllExplicitTypes => variables.definitions.All(x => x.vars_type != null);
 
+        public desugared_deconstruction(List<var_def_statement> variables, expression target, SourceContext context = null) 
+            : this(new deconstruction_variables_definition(variables), target, context)
+        { }
+
+        public var_statement[] WithTypes(type_definition[] types)
+        {
+            var_statement[] result = new var_statement[types.Length]; 
+            Debug.Assert(types.Length == variables.definitions.Count, "Inconsistent types count");
+
+            for (int i = 0; i < variables.definitions.Count; i++)
+            {
+                variables.definitions[i].vars_type = types[i];
+                result[i] = new var_statement(variables.definitions[i]);
+            }
+
+            return result;
+        }
+
+        public override string ToString() => $"var {string.Join(", ", variables.definitions)}";
+    }
+
+    public partial class is_pattern_expr
+    {
+        public override string ToString() => $"{left} is {right}";
+    }
+
+    public partial class deconstructor_pattern
+    {
+        public bool IsRecursive => parameters.Any(x => x is recursive_deconstructor_parameter);
+
+        public override string ToString() => $"{type}({string.Join(", ", parameters.Select(x => x.ToString()))})";
+    }
+
+    public partial class var_deconstructor_parameter
+    {
+        public override string ToString() => identifier.ToString() + (type == null ? "" : $": {type}");
+    }
+
+    public partial class recursive_deconstructor_parameter
+    {
+        public override string ToString() => pattern.ToString();
+    }
 }
 

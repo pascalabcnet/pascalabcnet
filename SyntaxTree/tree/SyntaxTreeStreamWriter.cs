@@ -16,9 +16,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public BinaryWriter bw;
 
 
-		public void visit(syntax_tree_node _syntax_tree_node)
+		public void visit(expression _expression)
 		{
 			bw.Write((Int16)0);
+			write_expression(_expression);
+		}
+
+		public void write_expression(expression _expression)
+		{
+			write_declaration(_expression);
+		}
+
+
+		public void visit(syntax_tree_node _syntax_tree_node)
+		{
+			bw.Write((Int16)1);
 			write_syntax_tree_node(_syntax_tree_node);
 		}
 
@@ -52,18 +64,6 @@ namespace PascalABCCompiler.SyntaxTree
 					bw.Write(_syntax_tree_node.source_context.end_position.column_num);
 				}
 			}
-		}
-
-
-		public void visit(expression _expression)
-		{
-			bw.Write((Int16)1);
-			write_expression(_expression);
-		}
-
-		public void write_expression(expression _expression)
-		{
-			write_declaration(_expression);
 		}
 
 
@@ -6136,6 +6136,357 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				bw.Write((byte)1);
 				_double_question_node.right.visit(this);
+			}
+		}
+
+
+		public void visit(pattern_node _pattern_node)
+		{
+			bw.Write((Int16)222);
+			write_pattern_node(_pattern_node);
+		}
+
+		public void write_pattern_node(pattern_node _pattern_node)
+		{
+			write_syntax_tree_node(_pattern_node);
+		}
+
+
+		public void visit(type_pattern _type_pattern)
+		{
+			bw.Write((Int16)223);
+			write_type_pattern(_type_pattern);
+		}
+
+		public void write_type_pattern(type_pattern _type_pattern)
+		{
+			write_pattern_node(_type_pattern);
+			if (_type_pattern.identifier == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_type_pattern.identifier.visit(this);
+			}
+			if (_type_pattern.type == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_type_pattern.type.visit(this);
+			}
+		}
+
+
+		public void visit(is_pattern_expr _is_pattern_expr)
+		{
+			bw.Write((Int16)224);
+			write_is_pattern_expr(_is_pattern_expr);
+		}
+
+		public void write_is_pattern_expr(is_pattern_expr _is_pattern_expr)
+		{
+			write_expression(_is_pattern_expr);
+			if (_is_pattern_expr.left == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_is_pattern_expr.left.visit(this);
+			}
+			if (_is_pattern_expr.right == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_is_pattern_expr.right.visit(this);
+			}
+		}
+
+
+		public void visit(match_with _match_with)
+		{
+			bw.Write((Int16)225);
+			write_match_with(_match_with);
+		}
+
+		public void write_match_with(match_with _match_with)
+		{
+			write_statement(_match_with);
+			if (_match_with.expr == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_match_with.expr.visit(this);
+			}
+			if (_match_with.case_list == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_match_with.case_list.visit(this);
+			}
+			if (_match_with.defaultAction == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_match_with.defaultAction.visit(this);
+			}
+		}
+
+
+		public void visit(pattern_case _pattern_case)
+		{
+			bw.Write((Int16)226);
+			write_pattern_case(_pattern_case);
+		}
+
+		public void write_pattern_case(pattern_case _pattern_case)
+		{
+			write_statement(_pattern_case);
+			if (_pattern_case.pattern == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_pattern_case.pattern.visit(this);
+			}
+			if (_pattern_case.case_action == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_pattern_case.case_action.visit(this);
+			}
+			if (_pattern_case.condition == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_pattern_case.condition.visit(this);
+			}
+		}
+
+
+		public void visit(pattern_cases _pattern_cases)
+		{
+			bw.Write((Int16)227);
+			write_pattern_cases(_pattern_cases);
+		}
+
+		public void write_pattern_cases(pattern_cases _pattern_cases)
+		{
+			write_statement(_pattern_cases);
+			if (_pattern_cases.elements == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				bw.Write(_pattern_cases.elements.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _pattern_cases.elements.Count; ssyy_i++)
+				{
+					if (_pattern_cases.elements[ssyy_i] == null)
+					{
+						bw.Write((byte)0);
+					}
+					else
+					{
+						bw.Write((byte)1);
+						_pattern_cases.elements[ssyy_i].visit(this);
+					}
+				}
+			}
+		}
+
+
+		public void visit(deconstructor_pattern _deconstructor_pattern)
+		{
+			bw.Write((Int16)228);
+			write_deconstructor_pattern(_deconstructor_pattern);
+		}
+
+		public void write_deconstructor_pattern(deconstructor_pattern _deconstructor_pattern)
+		{
+			write_pattern_node(_deconstructor_pattern);
+			if (_deconstructor_pattern.parameters == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				bw.Write(_deconstructor_pattern.parameters.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _deconstructor_pattern.parameters.Count; ssyy_i++)
+				{
+					if (_deconstructor_pattern.parameters[ssyy_i] == null)
+					{
+						bw.Write((byte)0);
+					}
+					else
+					{
+						bw.Write((byte)1);
+						_deconstructor_pattern.parameters[ssyy_i].visit(this);
+					}
+				}
+			}
+			if (_deconstructor_pattern.type == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_deconstructor_pattern.type.visit(this);
+			}
+		}
+
+
+		public void visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		{
+			bw.Write((Int16)229);
+			write_pattern_deconstructor_parameter(_pattern_deconstructor_parameter);
+		}
+
+		public void write_pattern_deconstructor_parameter(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		{
+			write_syntax_tree_node(_pattern_deconstructor_parameter);
+		}
+
+
+		public void visit(desugared_deconstruction _desugared_deconstruction)
+		{
+			bw.Write((Int16)230);
+			write_desugared_deconstruction(_desugared_deconstruction);
+		}
+
+		public void write_desugared_deconstruction(desugared_deconstruction _desugared_deconstruction)
+		{
+			write_statement(_desugared_deconstruction);
+			if (_desugared_deconstruction.variables == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_desugared_deconstruction.variables.visit(this);
+			}
+			if (_desugared_deconstruction.deconstruction_target == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_desugared_deconstruction.deconstruction_target.visit(this);
+			}
+		}
+
+
+		public void visit(var_deconstructor_parameter _var_deconstructor_parameter)
+		{
+			bw.Write((Int16)231);
+			write_var_deconstructor_parameter(_var_deconstructor_parameter);
+		}
+
+		public void write_var_deconstructor_parameter(var_deconstructor_parameter _var_deconstructor_parameter)
+		{
+			write_pattern_deconstructor_parameter(_var_deconstructor_parameter);
+			if (_var_deconstructor_parameter.identifier == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_var_deconstructor_parameter.identifier.visit(this);
+			}
+			if (_var_deconstructor_parameter.type == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_var_deconstructor_parameter.type.visit(this);
+			}
+		}
+
+
+		public void visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
+		{
+			bw.Write((Int16)232);
+			write_recursive_deconstructor_parameter(_recursive_deconstructor_parameter);
+		}
+
+		public void write_recursive_deconstructor_parameter(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
+		{
+			write_pattern_deconstructor_parameter(_recursive_deconstructor_parameter);
+			if (_recursive_deconstructor_parameter.pattern == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_recursive_deconstructor_parameter.pattern.visit(this);
+			}
+		}
+
+
+		public void visit(deconstruction_variables_definition _deconstruction_variables_definition)
+		{
+			bw.Write((Int16)233);
+			write_deconstruction_variables_definition(_deconstruction_variables_definition);
+		}
+
+		public void write_deconstruction_variables_definition(deconstruction_variables_definition _deconstruction_variables_definition)
+		{
+			write_declaration(_deconstruction_variables_definition);
+			if (_deconstruction_variables_definition.definitions == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				bw.Write(_deconstruction_variables_definition.definitions.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _deconstruction_variables_definition.definitions.Count; ssyy_i++)
+				{
+					if (_deconstruction_variables_definition.definitions[ssyy_i] == null)
+					{
+						bw.Write((byte)0);
+					}
+					else
+					{
+						bw.Write((byte)1);
+						_deconstruction_variables_definition.definitions[ssyy_i].visit(this);
+					}
+				}
 			}
 		}
 

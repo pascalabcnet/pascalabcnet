@@ -1236,6 +1236,7 @@ namespace CodeCompletion
         public object cnst_val;
         public List<TypeScope> indexers;
         public TypeScope elementType;
+        public bool is_readonly;
 
         public ElementScope() { }
         public ElementScope(SymInfo si, SymScope sc, SymScope topScope)
@@ -1243,6 +1244,7 @@ namespace CodeCompletion
             this.si = si;
             this.sc = sc;
             this.topScope = topScope;
+            
             MakeDescription();
             //UnitDocCache.AddDescribeToComplete(this);
             //if (sc is ProcScope) si.kind = SymbolKind.Delegate;
@@ -1277,7 +1279,7 @@ namespace CodeCompletion
         {
             get
             {
-                return false;
+                return is_readonly;
             }
         }
 
@@ -1726,7 +1728,7 @@ namespace CodeCompletion
             }
         }
 
-        public override TypeScope GetInstance(List<TypeScope> gen_args)
+        public override TypeScope GetInstance(List<TypeScope> gen_args, bool exact = false)
         {
             return this;
         }
@@ -2306,7 +2308,7 @@ namespace CodeCompletion
             }
         }
 
-        public override TypeScope GetInstance(List<TypeScope> gen_args)
+        public override TypeScope GetInstance(List<TypeScope> gen_args, bool exact = false)
         {
             return this;
         }
@@ -2394,7 +2396,7 @@ namespace CodeCompletion
             return this.ToString();
         }
 
-        public override TypeScope GetInstance(List<TypeScope> gen_args)
+        public override TypeScope GetInstance(List<TypeScope> gen_args, bool exact = false)
         {
             return this;
         }
@@ -2591,7 +2593,7 @@ namespace CodeCompletion
             return null;
         }
 
-        public override TypeScope GetInstance(List<TypeScope> gen_args)
+        public override TypeScope GetInstance(List<TypeScope> gen_args, bool exact = false)
         {
             return new FileScope(gen_args[0], this.topScope);
         }
@@ -2663,7 +2665,7 @@ namespace CodeCompletion
             si.description = name + " in " + declScope.si.name;
         }
 
-        public override TypeScope GetInstance(List<TypeScope> gen_args)
+        public override TypeScope GetInstance(List<TypeScope> gen_args, bool exact = false)
         {
             if (gen_args.Count > 0)
                 return gen_args[0];
@@ -2764,12 +2766,12 @@ namespace CodeCompletion
             return actType.GetIndexers();
         }
 
-        public override TypeScope GetInstance(List<TypeScope> gen_args)
+        public override TypeScope GetInstance(List<TypeScope> gen_args, bool exact = false)
         {
             TypeScope original_type = actType;
             if (actType.original_type != null)
                 original_type = actType.original_type;
-            TypeScope ts = original_type.GetInstance(gen_args);
+            TypeScope ts = original_type.GetInstance(gen_args, exact);
             ts.aliased = true;
             return ts;
         }
@@ -2893,7 +2895,7 @@ namespace CodeCompletion
             get { return actType.ElementType; }
         }
 
-        public override TypeScope GetInstance(List<TypeScope> gen_args)
+        public override TypeScope GetInstance(List<TypeScope> gen_args, bool exact = false)
         {
             return this;
         }
@@ -3112,7 +3114,7 @@ namespace CodeCompletion
             return this.ToString();
         }
 
-        public override TypeScope GetInstance(List<TypeScope> gen_args)
+        public override TypeScope GetInstance(List<TypeScope> gen_args, bool exact = false)
         {
             if ((elementType is UnknownScope || elementType is TemplateParameterScope) && gen_args.Count > 0)
                return new ArrayScope(gen_args[gen_args.Count-1], Rank > 1?indexes:null);
@@ -3327,7 +3329,7 @@ namespace CodeCompletion
             }
         }
 
-        public override TypeScope GetInstance(List<TypeScope> gen_args)
+        public override TypeScope GetInstance(List<TypeScope> gen_args, bool exact = false)
         {
             return this;
         }
@@ -3509,7 +3511,7 @@ namespace CodeCompletion
             }
         }
 
-        public override TypeScope GetInstance(List<TypeScope> gen_args)
+        public override TypeScope GetInstance(List<TypeScope> gen_args, bool exact = false)
         {
             return this;
         }
@@ -3908,7 +3910,7 @@ namespace CodeCompletion
             return ts;
         }
 
-        public virtual TypeScope GetInstance(List<TypeScope> gen_args)
+        public virtual TypeScope GetInstance(List<TypeScope> gen_args, bool exact = false)
         {
             TypeScope ts = new TypeScope(this.kind, this.topScope, this.baseScope);
             ts.original_type = this;
@@ -3917,18 +3919,18 @@ namespace CodeCompletion
             for (int i = 0; i < gen_args.Count; i++)
             {
                 TypeScope gen_arg = gen_args[i];
-                if (gen_arg.instances != null && gen_arg.original_type != null)
+                if (gen_arg.instances != null && gen_arg.original_type != null && !exact)
                 {
                     if (gen_arg.original_type.generic_params != null && this.generic_params != null)
-                    for (int j=0; j < gen_arg.original_type.generic_params.Count; j++)
-                    {
-                        if (string.Compare(gen_arg.original_type.generic_params[j], this.generic_params[j], true) == 0)
+                        for (int j = 0; j < gen_arg.original_type.generic_params.Count; j++)
                         {
-                            new_gen_args.Add(gen_arg.instances[j]);
-                            ts.AddGenericParameter(gen_arg.instances[j].si.name);
-                            ts.AddGenericInstanciation(gen_arg.instances[j]);
+                            if (string.Compare(gen_arg.original_type.generic_params[j], this.generic_params[j], true) == 0)
+                            {
+                                new_gen_args.Add(gen_arg.instances[j]);
+                                ts.AddGenericParameter(gen_arg.instances[j].si.name);
+                                ts.AddGenericInstanciation(gen_arg.instances[j]);
+                            }
                         }
-                    }
                 }
                 else
                 {
@@ -4179,8 +4181,8 @@ namespace CodeCompletion
             List<SymInfo> lst = new List<SymInfo>();
             foreach (SymScope ss in members)
             {
-                if (ss is ProcScope && (ss as ProcScope).IsConstructor())
-                    continue;
+                //if (ss is ProcScope && (ss as ProcScope).IsConstructor())
+                //    continue;
                 if (!ss.si.name.StartsWith("$"))
                 {
                     if (ss.si.acc_mod == access_modifer.private_modifer)
@@ -5057,7 +5059,7 @@ namespace CodeCompletion
             }
         }
 
-        public override TypeScope GetInstance(List<TypeScope> gen_args)
+        public override TypeScope GetInstance(List<TypeScope> gen_args, bool exact = false)
         {
             Type t = this.ctn;
             if (!ctn.IsGenericType)
@@ -5083,7 +5085,7 @@ namespace CodeCompletion
             sc.generic_params = new List<string>();
             sc.instances = new List<TypeScope>();
             sc.original_type = this;
-            if (this.instances != null && this.instances.Count > 0)
+            if (this.instances != null && this.instances.Count > 0 && !exact)
                 for (int i = 0; i < this.instances.Count; i++)
                 {
                     if (this.instances[i] is UnknownScope || this.instances[i] is TemplateParameterScope)
@@ -5836,6 +5838,14 @@ namespace CodeCompletion
                                     si2 = new CompiledEventScope(si2, mi as EventInfo, this).si;
                                     syms.Add(si2);
                                     //syms.Add(new SymInfo(mi.Name,SymbolKind.Event,mi.Name));
+                                }
+                                break;
+                            case MemberTypes.Constructor:
+                                if (((mi as ConstructorInfo).IsPublic || (mi as ConstructorInfo).IsFamily))
+                                {
+                                    SymInfo si2 = new SymInfo(null, SymbolKind.Method, null);
+                                    si2 = new CompiledConstructorScope(si2, mi as ConstructorInfo, this).si;
+                                    syms.Add(si2);
                                 }
                                 break;
                         }
@@ -6937,7 +6947,7 @@ namespace CodeCompletion
 
         public override bool IsVirtual
         {
-            get { return mi.IsVirtual; }
+            get { return mi.IsVirtual && !mi.IsFinal; }
         }
 
         public override bool IsConstructor()
@@ -7308,7 +7318,7 @@ namespace CodeCompletion
             return new List<SymScope>(0);
         }
 
-        public override TypeScope GetInstance(List<TypeScope> gen_args)
+        public override TypeScope GetInstance(List<TypeScope> gen_args, bool exact = false)
         {
             if (gen_args.Count > 0)
                 return gen_args[0];

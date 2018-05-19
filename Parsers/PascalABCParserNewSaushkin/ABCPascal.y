@@ -32,7 +32,7 @@
 %start parse_goal
 
 %token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkQuestionPoint tkDoubleQuestion tkQuestionSquareOpen
-%token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction 
+%token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction tkMatch tkWhen
 %token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
 %token <ti> tkLoop 
@@ -144,7 +144,7 @@
 %type <stn> simple_prim_property_definition simple_property_definition
 %type <stn> stmt_or_expression unlabelled_stmt stmt case_item
 %type <td> set_type  
-%type <ex> as_is_expr as_is_constexpr power_expr power_constexpr
+%type <ex> as_is_expr as_is_constexpr is_expr as_expr power_expr power_constexpr
 %type <td> unsized_array_type simple_type_or_ simple_type array_name_for_new_expr foreach_stmt_ident_dype_opt fptype type_ref fptype_noproctype array_type 
 %type <td> template_param structured_type unpacked_structured_type simple_or_template_type_reference type_ref_or_secific for_stmt_decl_or_assign type_decl_type
 %type <stn> type_ref_and_secific_list  
@@ -173,7 +173,8 @@
 %type <stn> full_lambda_fp_list lambda_simple_fp_sect lambda_function_body lambda_procedure_body optional_full_lambda_fp_list
 %type <ob> field_in_unnamed_object list_fields_in_unnamed_object func_class_name_ident_list rem_lambda variable_list var_ident_list
 %type <ti> tkAssignOrEqual
-
+%type <stn> pattern match_with pattern_case pattern_cases pattern_out_param
+%type <ob> pattern_out_param_list
 %%
 
 parse_goal                
@@ -864,6 +865,15 @@ const_variable
 		{ $$ = $1; }
     | typeof_expr
 		{ $$ = $1; }
+/*    | tkRoundOpen const_expr tkRoundClose 
+        { 
+            if (!parsertools.build_tree_for_formatter) 
+            {
+                $2.source_context = @$;
+                $$ = $2;
+            } 
+			else $$ = new bracket_expr($2, @$); 
+        }*/
     | const_variable const_variable_2        
         {
 			$$ = NewConstVariable($1, $2, @$);
@@ -2395,6 +2405,8 @@ unlabelled_stmt
 		{ $$ = $1; }
 	| loop_stmt	
 		{ $$ = $1; }
+    | match_with
+        { $$ = $1; }
     ;
     
 loop_stmt
@@ -2524,6 +2536,37 @@ if_stmt
         }
     ;
 
+match_with
+    : tkMatch expr_l1 tkWith pattern_cases else_case tkEnd
+        { 
+            $$ = new match_with($2, $4 as pattern_cases, $5 as statement, @$);
+        }
+    ;
+    
+pattern_cases
+    : pattern_case
+        {
+            $$ = new pattern_cases($1 as pattern_case);
+        }
+    | pattern_cases tkSemiColon pattern_case
+        {
+            $$ = ($1 as pattern_cases).Add($3 as pattern_case);
+        }
+    ;
+    
+pattern_case
+    : 
+        { $$ = new empty_statement(); }
+    | pattern tkWhen expr_l1 tkColon unlabelled_stmt
+        {
+            $$ = new pattern_case($1 as pattern_node, $5 as statement, $3, @$);
+        }
+    | pattern tkColon unlabelled_stmt
+        {
+            $$ = new pattern_case($1 as pattern_node, $3 as statement, null, @$);
+        }  
+    ;
+    
 case_stmt
     : tkCase expr_l1 tkOf case_list else_case tkEnd 
         { 
@@ -2532,7 +2575,7 @@ case_stmt
     ;
 
 case_list
-    : case_item                                
+    : case_item
         {
 			if ($1 is empty_statement) 
 				$$ = NewCaseItem($1, null);
@@ -2967,8 +3010,56 @@ relop_expr
         { 
 			$$ = new bin_expr($1, $3, $2.type, @$); 
 		}
+    | is_expr tkRoundOpen pattern_out_param_list tkRoundClose
+        {
+            var isTypeCheck = $1 as typecast_node;
+            var deconstructorPattern = new deconstructor_pattern($3 as List<pattern_deconstructor_parameter>, isTypeCheck.type_def, @$); 
+            $$ = new is_pattern_expr(isTypeCheck.expr, deconstructorPattern, @$);
+        }
     ;
-
+    
+pattern
+    : simple_or_template_type_reference tkRoundOpen pattern_out_param_list tkRoundClose
+        { 
+            $$ = new deconstructor_pattern($3 as List<pattern_deconstructor_parameter>, $1, @$); 
+        }
+    ;
+    
+pattern_out_param_list
+    : pattern_out_param
+        {
+            $$ = new List<pattern_deconstructor_parameter>();
+            ($$ as List<pattern_deconstructor_parameter>).Add($1 as pattern_deconstructor_parameter);
+        }
+    | pattern_out_param_list tkSemiColon pattern_out_param
+        {
+            var list = $1 as List<pattern_deconstructor_parameter>;
+            list.Add($3 as pattern_deconstructor_parameter);
+            $$ = list;
+        }
+    | pattern_out_param_list tkComma pattern_out_param
+        {
+            var list = $1 as List<pattern_deconstructor_parameter>;
+            list.Add($3 as pattern_deconstructor_parameter);
+            $$ = list;
+        }
+    ;
+   
+pattern_out_param
+    : identifier tkColon type_ref
+        {
+            $$ = new var_deconstructor_parameter($1, $3, @$);
+        }
+    | identifier
+        {
+            $$ = new var_deconstructor_parameter($1, null, @$);
+        }
+    | pattern 
+        {
+            $$ = new recursive_deconstructor_parameter($1 as pattern_node, @$);
+        }
+    ;
+    
 simple_expr_or_nothing
 	: simple_expr 
 	{
@@ -3050,12 +3141,26 @@ typecast_op
     ;
 
 as_is_expr
-    : term typecast_op simple_or_template_type_reference     
-        { 
-			$$ = NewAsIsExpr($1, (op_typecast)$2, $3, @$);
-        }
+    : is_expr   
+        { $$ = $1; }
+    | as_expr
+        { $$ = $1; }
 	;
 
+as_expr
+    : term tkAs simple_or_template_type_reference
+        {
+            $$ = NewAsIsExpr($1, op_typecast.as_op, $3, @$);
+        }
+    ;
+    
+is_expr
+    : term tkIs simple_or_template_type_reference
+        {
+            $$ = NewAsIsExpr($1, op_typecast.is_op, $3, @$);
+        }
+    ;
+    
 simple_term
     : factor
 		{ $$ = $1; }
@@ -3620,6 +3725,10 @@ keyword
 		{ $$ = $1; }
 	| tkYield	
 		{ $$ = $1; }
+    | tkMatch
+        { $$ = $1; }
+    | tkWhen
+        { $$ = $1; }
     ;
 
 reserved_keyword

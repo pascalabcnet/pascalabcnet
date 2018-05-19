@@ -94,9 +94,12 @@ begin
       Halt();
     end;
     if i mod 20 = 0 then
+    begin
+      Print(i);
       System.GC.Collect();
+    end;  
   end;
-  
+  Println;
 end;
 
 procedure CompileAllCompilationTests(dir: string; withdll: boolean);

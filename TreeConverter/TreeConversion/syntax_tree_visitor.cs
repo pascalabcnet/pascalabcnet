@@ -12177,7 +12177,44 @@ namespace PascalABCCompiler.TreeConverter
                 hard_node_test_and_visit(_procedure_definition.proc_header);
             }
             //\lroman//
-            
+
+
+            // Patterns
+
+            if (context.top_function != null &&
+                context.top_function is common_namespace_function_node commonNode &&
+                commonNode.name.ToLower() == compiler_string_consts.deconstruct_method_name)
+            {
+                var deconstructor = commonNode;
+
+                // TODO Patterns: add warning for non-extension deconstruct
+                if (!deconstructor.is_extension_method)
+                {
+                    //AddWarning();
+                }
+                else
+                {
+                    if (deconstructor.is_generic_function &&
+                        deconstructor.generic_parameters_count != GenericParameterIndices(GetSelfParameter(deconstructor).type).Count())
+                        AddError(get_location(_procedure_definition), "DECONSTRUCTOR_GENERIC_PARAMETERS_SHOULD_BE_DEFINED_BY_SELF_PARAMETER");
+
+                    ExecuteCommonChecks(deconstructor);
+                }
+            }
+
+            if (context.top_function != null &&
+                context.top_function is common_method_node methodNode &&
+                methodNode.name.ToLower() == compiler_string_consts.deconstruct_method_name)
+            {
+                var deconstructor = methodNode;
+
+                if (deconstructor.is_generic_function)
+                    AddError(get_location(_procedure_definition), "INSTANCE_DECONSTRUCTORS_CANNOT_BE_GENERIC");
+
+                ExecuteCommonChecks(deconstructor);
+            }
+
+            // !Patterns
 
             //ssyy
             if (context.converted_template_type != null)
@@ -12449,7 +12486,7 @@ namespace PascalABCCompiler.TreeConverter
         internal void CheckOverrideOrReintroduceExpectedWarning(location loc)
         {
             common_method_node cmn = context.top_function as common_method_node;
-            if (!current_converted_method_not_in_class_defined && cmn != null && !cmn.IsReintroduce && (cmn.polymorphic_state == SemanticTree.polymorphic_state.ps_common || cmn.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual))
+            if (!current_converted_method_not_in_class_defined && cmn != null && !cmn.IsReintroduce && cmn.polymorphic_state == SemanticTree.polymorphic_state.ps_common)
                 if (context.FindMethodToOverride(cmn) != null)
                 {
                     WarningsList.Add(new OverrideOrReintroduceExpected(loc));
@@ -12771,7 +12808,6 @@ namespace PascalABCCompiler.TreeConverter
                 pa.source_context = _procedure_header.source_context;
                 _procedure_header.proc_attributes.proc_attributes.Add(pa);
             }
-            
             weak_node_test_and_visit(_procedure_header.proc_attributes);
 			with_class_name = false;
             CheckOverrideOrReintroduceExpectedWarning(get_location(_procedure_header));
@@ -12971,7 +13007,7 @@ namespace PascalABCCompiler.TreeConverter
                             }
                             if (is_override)
                             {
-                            	AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "USING_MODIFIERS{0}_{1}_TOGETHER_NOT_ALLOWED", cmn,_procedure_attributes_list.proc_attributes[i].name,override_proc_attr);
+                            	AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "USING_MODIFIERS{0}_{1}_TOGETHER_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name,override_proc_attr);
                             }
                             if (!context.converted_type.IsAbstract || true)
                             {
@@ -13013,7 +13049,7 @@ namespace PascalABCCompiler.TreeConverter
                             }
                             if (_procedure_attributes_list.proc_attributes[i].attribute_type == SyntaxTree.proc_attribute.attr_override && is_virtual)
                 			{
-                            	AddError(get_location(_procedure_attributes_list.proc_attributes[i]),"USING_MODIFIERS{0}_{1}_TOGETHER_NOT_ALLOWED", cmn,_procedure_attributes_list.proc_attributes[i].name,virtual_proc_attr);
+                            	AddError(get_location(_procedure_attributes_list.proc_attributes[i]),"USING_MODIFIERS{0}_{1}_TOGETHER_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name,virtual_proc_attr);
                             }
                             if (_procedure_attributes_list.proc_attributes[i].attribute_type == SyntaxTree.proc_attribute.attr_override)
                 			{
