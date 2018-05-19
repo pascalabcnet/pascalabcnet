@@ -476,6 +476,90 @@ namespace SymbolTable
     }
     #endregion
 
+    #region Для отображения таблицы символов в отладке
+    public class LightSymbolnfo
+    {
+        public PrimaryScope inner_scope
+        {
+            get
+            {
+                if (information.sym_info is PascalABCCompiler.TreeRealization.common_function_node)
+                {
+                    var temp = information.sym_info as PascalABCCompiler.TreeRealization.common_function_node;
+                    if (temp.scope != null)
+                        return new PrimaryScope(temp.scope);
+                }
+                else if (information.sym_info is PascalABCCompiler.TreeRealization.type_node)
+                {
+                    var temp = information.sym_info as PascalABCCompiler.TreeRealization.type_node;
+                    if (temp.Scope != null)
+                        return new PrimaryScope(temp.Scope);
+                }
+                return null;
+            }
+        }
+        public SymbolInfo information;
+
+        public override string ToString() => information.ToString();
+
+        public LightSymbolnfo(SymbolInfo si)
+        {
+            information = si;
+        }
+    }
+
+    public class LightScopeNode
+    {
+        public List<LightSymbolnfo> Overloads = new List<LightSymbolnfo>();
+
+        public override string ToString()
+        {
+            System.Text.StringBuilder str = new System.Text.StringBuilder();
+            foreach (var sym in Overloads)
+                str.Append(sym.ToString() + ";");
+            return str.ToString();
+        }
+    }
+
+    public class PrimaryScope
+    {
+        public List<PrimaryScope> SubScopes
+        {
+            get
+            {
+                var subScopes = new List<PrimaryScope>();
+                foreach (var sub_sc in real_scope.InternalScopes)
+                    subScopes.Add(new PrimaryScope(sub_sc));
+                return subScopes;
+            }
+        }
+        public List<LightScopeNode> Symbols
+        {
+            get
+            {
+                var symbols = new List<LightScopeNode>();
+                foreach (var sy in real_scope.Symbols.dict)
+                {
+                    LightScopeNode res = new LightScopeNode();
+                    foreach (var sy_overload in sy.Value.InfoList)
+                        res.Overloads.Add(new LightSymbolnfo(sy_overload));
+                    symbols.Add(res);
+                }
+                return symbols;
+            }
+        }
+
+        public string ScopeName;
+        public override string ToString() => ScopeName == "" ? GetType().Name : ScopeName;
+        private Scope real_scope;
+        public PrimaryScope(Scope sc)
+        {
+            ScopeName = sc.Name;
+            real_scope = sc;
+        }
+    }
+    #endregion
+
     // Определения
     // ОВ - область видимости
     // ООВ - особая область видимости в стиле delphi.это:
@@ -485,7 +569,7 @@ namespace SymbolTable
     public class DSSymbolTable
 	{
 		public List<Scope> ScopeTable;
-        
+
         internal bool CaseSensitive;
 
         private Scope CurrentScope;
@@ -629,6 +713,9 @@ namespace SymbolTable
             foreach (var in_scope in scope.InternalScopes)
                 ScopeTable.Remove(in_scope);
             ScopeTable.Remove(scope);
+
+            if (scope.TopScope != null)
+                scope.TopScope.InternalScopes.Remove(scope);
         }
 
         //Этот метод ищет ТОЛЬКО В УКАЗАННОЙ ОВ, и не смотрит есть ли имя выше.

@@ -69,7 +69,7 @@ namespace PascalABCCompiler.TreeRealization
         public override string ToString()
         {
             if(is_main)
-                return "main function " + loc.doc.file_name;
+                return "main";
 
             if (namespace_full_name == "")
                 return GetType().Name;

@@ -17,7 +17,17 @@ namespace PascalABCCompiler.TreeRealization
 	[Serializable]
 	public abstract class type_node : definition_node, SemanticTree.ITypeNode
 	{
-        public override string ToString() => PrintableName;
+        public override string ToString()
+        {
+            if (type_special_kind == SemanticTree.type_special_kind.record)
+                return "record " + PrintableName;
+            if (IsInterface)
+                return "interface " + PrintableName;
+            if (is_class)
+                return "class " + PrintableName;
+            
+            return PrintableName;
+        }
         private System.Collections.Generic.Dictionary<type_node, type_intersection_node> type_intersections;
             //new System.Collections.Generic.Dictionary<type_node, type_intersection_node>();
         private List<type_node> generated_type_intersections = null;//new List<type_node>();
