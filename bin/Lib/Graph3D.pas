@@ -474,21 +474,48 @@ type
       Result := Self;
     end);
     function AnimMoveTo(x, y, z: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
+    function AnimMoveTo(x, y, z: real; seconds: real := 1): MyAnimation := AnimMoveTo(x,y,z,seconds,nil);
+    
     function AnimMoveTo(p: Point3D; seconds: real := 1; Completed: procedure := nil) := AnimMoveTo(p.x, p.y, p.z, seconds, Completed);
+    function AnimMoveTo(p: Point3D; seconds: real := 1) := AnimMoveTo(p.x, p.y, p.z, seconds, nil);
+    
     function AnimMoveTrajectory(a: sequence of Point3D; seconds: real := 1; Completed: procedure := nil): MyAnimation;
+    function AnimMoveTrajectory(a: sequence of Point3D; seconds: real := 1): MyAnimation := AnimMoveTrajectory(a,seconds,nil);
+
     //function AnimMoveToP3D(x,y,z: real; seconds: real := 1): MyAnimation; - не получилось! Свойство не анимируется!
     function AnimMoveOn(dx, dy, dz: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
+    function AnimMoveOn(dx, dy, dz: real; seconds: real := 1): MyAnimation := AnimMoveOn(dx,dy,dz,seconds,nil);
+
     function AnimMoveOn(v: Vector3D; seconds: real := 1; Completed: procedure := nil) := AnimMoveOn(v.x, v.y, v.z, seconds, Completed);
-    function AnimMoveOnX(dx: real; seconds: real := 1; Completed: procedure := nil) := AnimMoveOn(dx, 0, 0, seconds, Completed);
-    function AnimMoveOnY(dy: real; seconds: real := 1; Completed: procedure := nil) := AnimMoveOn(0, dy, 0, seconds, Completed);
-    function AnimMoveOnZ(dz: real; seconds: real := 1; Completed: procedure := nil) := AnimMoveOn(0, 0, dz, seconds, Completed);
+    function AnimMoveOn(v: Vector3D; seconds: real := 1) := AnimMoveOn(v.x, v.y, v.z, seconds, nil);
+
+    // Что-то одна версия с параметрами по умолчанию не на всех компьютерах срабатывает, поэтому сделал без параметров по умолчанию
+    function AnimMoveOnX(dx: real; seconds: real; Completed: procedure) := AnimMoveOn(dx, 0, 0, seconds, Completed);
+    function AnimMoveOnX(dx: real; seconds: real) := AnimMoveOnX(dx, seconds, nil);
+    function AnimMoveOnX(dx: real) := AnimMoveOnX(dx, 1, nil);
+
+    function AnimMoveOnY(dy: real; seconds: real; Completed: procedure) := AnimMoveOn(0, dy, 0, seconds, Completed);
+    function AnimMoveOnY(dy: real; seconds: real) := AnimMoveOnY(dy, seconds, nil);
+    function AnimMoveOnY(dy: real) := AnimMoveOnY(dy, 1, nil);
+
+    function AnimMoveOnZ(dz: real; seconds: real; Completed: procedure) := AnimMoveOn(0, 0, dz, seconds, Completed);
+    function AnimMoveOnZ(dz: real; seconds: real) := AnimMoveOnZ(dz, seconds, nil);
+    function AnimMoveOnZ(dz: real) := AnimMoveOnZ(dz, 1, nil);
+
     function AnimScale(sc: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
     function AnimScaleX(sc: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
     function AnimScaleY(sc: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
     function AnimScaleZ(sc: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
-    function AnimRotate(vx, vy, vz, angle: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
-    function AnimRotate(v: Vector3D; angle: real; seconds: real := 1; Completed: procedure := nil) := AnimRotate(v.x, v.y, v.z, angle, seconds, Completed);
+
+    function AnimRotate(vx, vy, vz, angle: real; seconds: real; Completed: procedure): MyAnimation;
+    function AnimRotate(vx, vy, vz, angle: real; seconds: real := 1): MyAnimation := AnimRotate(vx,vy,vz,angle,seconds,nil);
+
+    function AnimRotate(v: Vector3D; angle: real; seconds: real; Completed: procedure) := AnimRotate(v.x, v.y, v.z, angle, seconds, Completed);
+    function AnimRotate(v: Vector3D; angle: real; seconds: real := 1) := AnimRotate(v.x, v.y, v.z, angle, seconds, nil);
+    
     function AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real := 1; Completed: procedure := nil): MyAnimation;
+    function AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real := 1): MyAnimation := AnimRotateAt(axis,angle,center,seconds,nil);
+
     function Clone: Object3D := Invoke&<Object3D>(CloneT);
     
     procedure SaveP(fname: string);
@@ -503,10 +530,7 @@ type
       var m := XamlReader.Load(new System.IO.FileStream(fname, System.IO.FileMode.Open)) as Visual3D;
       Result := new Object3D(m);
     end);
-    procedure Destroy(); virtual;
-    begin
-      DeleteFromObject3DList;
-    end;
+    procedure Destroy(); virtual := DeleteFromObject3DList;
   end;
   
   ObjectWithChildren3D = class(Object3D) // model is ModelVisual3D
@@ -793,6 +817,7 @@ type
     
     procedure RemoveT := begin
       sb.Pause;
+      sb.Remove;
       sb := new Storyboard;
     end;
     procedure ChangeT(a: MyAnimation);
