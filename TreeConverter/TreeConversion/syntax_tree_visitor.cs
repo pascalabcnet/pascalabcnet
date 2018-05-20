@@ -43,6 +43,15 @@ namespace PascalABCCompiler.TreeConverter
     // SSM 02.01.17 Использование ReplaceStatement из BaseChangeVisitor плохо изучено - что-то не работает
     // Поэтому используется явный Parent и ReplaceStatement из узла statement_list
     {
+        public SymbolTable.PrimaryScope MainScope
+        {
+            get
+            {
+                var a = SymbolTable.ScopeTable.Where(s => (s.GetType() == typeof(SymbolTable.UnitInterfaceScope))).Skip(1);
+                return new SymbolTable.PrimaryScope(a.Last());
+            }
+        }
+
         public convertion_data_and_alghoritms convertion_data_and_alghoritms;
 
         internal returner ret;
@@ -195,7 +204,6 @@ namespace PascalABCCompiler.TreeConverter
         public syntax_tree_visitor()
         {
             convertion_data_and_alghoritms = new convertion_data_and_alghoritms(this);
-            
             ret = new returner(this);
             context = new compilation_context(convertion_data_and_alghoritms, this);
 			contextChanger = new ContextChanger(context);
@@ -2693,9 +2701,9 @@ namespace PascalABCCompiler.TreeConverter
                     lambdaProcessingState = LambdaProcessingState.FinishPhase;
 
                     context.code = visit_program_code(_block.program_code);
-
+                    
                     lambdaProcessingState = LambdaProcessingState.None;
-                                }
+                }
                 else
                 {
                     context.code = visit_program_code(_block.program_code);
@@ -10329,12 +10337,11 @@ namespace PascalABCCompiler.TreeConverter
             cnsn.functions.AddElement(main_function);
 
             context.leave_block();
-
 #if DEBUG
-           /*var fname = "C:\\st1.txt";
-            if (System.IO.File.Exists(fname))
-                System.IO.File.Delete(fname);
-            System.IO.File.AppendAllText(fname, SymbolTable.ToString());*/
+            /*var fname = "C:\\st1.txt";
+             if (System.IO.File.Exists(fname))
+                 System.IO.File.Delete(fname);
+             System.IO.File.AppendAllText(fname, SymbolTable.ToString());*/
 #endif
 
             _compiled_unit.main_function = main_function;
@@ -10406,16 +10413,15 @@ namespace PascalABCCompiler.TreeConverter
                 make_attributes_for_declaration(_unit_module, _compiled_unit);
             context.leave_interface_part();
             _is_interface_part = false;
-
-/*#if DEBUG
-            var fname = "C:\\st1.txt";
-            if (System.IO.File.Exists(fname))
-                System.IO.File.Delete(fname);
-            SymbolTable.ToString();
-            System.IO.File.AppendAllText(fname, SymbolTable.Print());
-            //var st = new SymbolTableVisitor("C:\\st1.txt", SymbolTable);
-            //st.PrintProgam(true);
-#endif*/
+            /*#if DEBUG
+                        var fname = "C:\\st1.txt";
+                        if (System.IO.File.Exists(fname))
+                            System.IO.File.Delete(fname);
+                        SymbolTable.ToString();
+                        System.IO.File.AppendAllText(fname, SymbolTable.Print());
+                        //var st = new SymbolTableVisitor("C:\\st1.txt", SymbolTable);
+                        //st.PrintProgam(true);
+            #endif*/
 
         }
 

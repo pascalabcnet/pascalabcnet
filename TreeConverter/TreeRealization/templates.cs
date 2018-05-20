@@ -29,7 +29,7 @@ namespace PascalABCCompiler.TreeRealization
 
     public class template_class : definition_node, PascalABCCompiler.SemanticTree.ITemplateClass
     {
-        public override string ToString() => type_dec.type_def.ToString();
+        public override string ToString() => type_dec.type_name + "=" + type_dec.type_def.ToString();
 
         public static bool check_template_definitions = true;
 

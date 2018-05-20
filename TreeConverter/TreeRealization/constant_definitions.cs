@@ -10,7 +10,7 @@ namespace PascalABCCompiler.TreeRealization
     [Serializable]
     public abstract class constant_definition_node : definition_node, SemanticTree.IConstantDefinitionNode
     {
-        public override string ToString() => name + " : " + type;
+        public override string ToString() => "const " + name + " : " + type;
         /// <summary>
         /// Имя константы.
         /// </summary>
