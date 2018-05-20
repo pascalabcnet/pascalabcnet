@@ -1068,7 +1068,7 @@ namespace CodeFormatters
                 add_space_before = true;
                 if (_if_node.else_body is statement_list)
                     need_off = false;
-                else if (!(_if_node.else_body is if_node))
+                else if (!(_if_node.else_body is if_node) && !(_if_node.else_body is empty_statement))
                     add_new_line_else_specific = true;
                 else
                     need_off = false;
