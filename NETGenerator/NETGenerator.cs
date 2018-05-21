@@ -7908,7 +7908,7 @@ namespace PascalABCCompiler.NETGenerator
             if (value.indices == null)
             {
                 value.index.visit(this);
-                if (from is IBasicFunctionCallNode && (from as IBasicFunctionCallNode).real_parameters[0] == to)
+                if (from is IBasicFunctionCallNode && (from as IBasicFunctionCallNode).real_parameters[0] == to && current_index_lb == null)
                 {
                     index_lb = il.DeclareLocal(helper.GetTypeReference(value.index.type).tp);
                     il.Emit(OpCodes.Stloc, index_lb);
@@ -9029,7 +9029,10 @@ namespace PascalABCCompiler.NETGenerator
             is_addr = false;
             is_dot_expr = false;
             TypeInfo ti = helper.GetTypeReference(value.array.type);
+            LocalBuilder tmp_current_index_lb = current_index_lb;
+            current_index_lb = null;
             value.array.visit(this);
+            current_index_lb = tmp_current_index_lb;
             bool string_getter = temp_is_addr && ti.tp == TypeFactory.StringType;
             LocalBuilder pin_lb = null;
             var indices = value.indices;
