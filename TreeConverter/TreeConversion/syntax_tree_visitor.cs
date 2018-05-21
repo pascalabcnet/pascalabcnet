@@ -4908,8 +4908,30 @@ namespace PascalABCCompiler.TreeConverter
                             }
                         }
                     }
+
+                    // Typeclasses voloshinbogdan 2018.21.05 - search methods at typeclasses
+                    if (sil == null)
+                    {
+                        var testTopFunctionForTypeclassRestriction = context.func_stack.top()?.attributes?.Any(x => x.AttributeType.name == "__TypeclassRestrictedFunctionAttribute");
+                        if (testTopFunctionForTypeclassRestriction.HasValue && testTopFunctionForTypeclassRestriction.Value && sil == null)
+                        {
+                            var func = context.func_stack.top();
+                            var typeclasses = func.generic_params.Where(x => x.Attributes != null && x.Attributes.Any(attr => attr.AttributeType.name == "__TypeclassGenericParameterAttribute"));
+                            foreach (var item in typeclasses)
+                            {
+                                var args = item.Attributes.First(x => x.AttributeType.name == "__TypeclassGenericParameterAttribute").Arguments;
+                                var silTmp = (item as type_node)?.find_in_type(id.name, context.CurrentScope);
+                                if (silTmp != null)
+                                {
+                                    deref_value = new dot_node((args.First() as string_const_node).constant_value, id);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    // ! Typeclasses
                 }
-                else
+                if (sil == null)
                 {
                     SyntaxTree.dot_node _dot_node = deref_value as SyntaxTree.dot_node;
                     if (_dot_node != null)
@@ -10996,6 +11018,8 @@ namespace PascalABCCompiler.TreeConverter
                     id.name, SemanticTree.type_access_level.tal_public, context.converted_namespace,
                     convertion_data_and_alghoritms.symbol_table.CreateInterfaceScope(null, SystemLibrary.SystemLibrary.object_type.Scope, null),
                     get_location(id));
+                // voloshinbogdan 2018.05.21 Fix missing attributes translation for generic parameters
+                make_attributes_for_declaration(id, par);
                 SystemLibrary.SystemLibrary.init_reference_type(par);
                 par.SetBaseType(SystemLibrary.SystemLibrary.object_type);
                 par.generic_function_container = cfn;

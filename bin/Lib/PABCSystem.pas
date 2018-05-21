@@ -2073,6 +2073,25 @@ type
     end;
   end;
 
+
+type
+  ///--
+  __TypeclassRestrictedFunctionAttribute = class(Attribute)
+  public
+    constructor;
+    begin
+    end;
+  end;
+  
+  
+  ///--
+  __TypeclassGenericParameterAttribute = class(Attribute)
+  public
+    constructor(instanceName: string);
+    begin
+    end;
+  end;
+
 // -----------------------------------------------------
 //                  Internal procedures for PABCRTL.dll
 // -----------------------------------------------------

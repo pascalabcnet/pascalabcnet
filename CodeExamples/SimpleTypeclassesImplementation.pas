@@ -1,4 +1,4 @@
-﻿uses System;
+﻿uses System, PABCSystem;
 
 type
   TMonthType = (January, February, March, April, May, June, July, August, September, October, November, December);
@@ -131,7 +131,7 @@ function ArrayEq<T>(l1, l2: array of T): boolean; where Eq[T];
 begin
   Result := true;
   for var i :=0 to l1.Length - 1 do
-    if Eq&[T].notEqual(l1[i], l2[i]) then
+    if notEqual(l1[i], l2[i]) then
     begin
       Result := false;
       break;
@@ -163,7 +163,7 @@ begin
     var sorted := true;
     for var j := 0 to a.Length - 1 - i do
     begin
-      if Ord&[T].greater(a[j], a[j + 1]) then
+      if greater(a[j], a[j + 1]) then
       begin
         swap(a[j], a[j + 1]);
         sorted := false;

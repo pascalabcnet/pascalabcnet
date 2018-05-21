@@ -276,7 +276,7 @@ namespace SyntaxVisitors.TypeclassVisitors
                             var procDef = new procedure_definition(
                                 memberHeaderNew,
                                 new statement_list(
-                                        GetInstanceSingleton(templateName),
+                                        GetInstanceSingletonVarStatement(templateName),
                                         exec));
                             cdbNew.Add(procDef);
                         }
@@ -355,7 +355,9 @@ namespace SyntaxVisitors.TypeclassVisitors
                 {
                     var typeclassWhere = where as where_typeclass_constraint;
                     var newName = TypeclassRestrctionToTemplateName(typeclassWhere.restriction.name, typeclassWhere.restriction.restriction_args);
-
+                    newName.attributes = new attribute_list(new simple_attribute_list(new attribute(null,
+                        new named_type_reference("__TypeclassGenericParameter"),
+                        new expression_list(new string_const(GetInstanceSingletonName(newName.name))))));
                     additionalTemplateArgs.Add(newName);
 
                     // Create name for template that replaces typeclass(for ex. SumTC)
@@ -377,7 +379,7 @@ namespace SyntaxVisitors.TypeclassVisitors
             var blockProc = (_procedure_definition.proc_body as block);
             foreach (var arg in additionalTemplateArgs.idents)
             {
-                blockProc.program_code.AddFirst(GetInstanceSingleton(arg.name));
+                blockProc.program_code.AddFirst(GetInstanceSingletonVarStatement(arg.name));
             }
 
             //var list = _procedure_definition.proc_body.DescendantNodes().OfType<typeclass_param_list>();
@@ -402,18 +404,28 @@ namespace SyntaxVisitors.TypeclassVisitors
             var procedureDefTranslated = new procedure_definition(
                 headerTranslated, _procedure_definition.proc_body,
                 _procedure_definition.is_short_definition, _procedure_definition.source_context);
-
+            procedureDefTranslated.proc_header.attributes = _procedure_definition.proc_header.attributes;
+            if (procedureDefTranslated.proc_header.attributes == null)
+            {
+                procedureDefTranslated.proc_header.attributes = new attribute_list();
+            }
+            procedureDefTranslated.proc_header.attributes.Add(new simple_attribute_list(new attribute(null, new named_type_reference("__TypeclassRestrictedFunctionAttribute"), new expression_list())));
             Replace(_procedure_definition, procedureDefTranslated);
         }
 
-        private static var_statement GetInstanceSingleton(string typeName)
+        private static var_statement GetInstanceSingletonVarStatement(string typeName)
         {
             return new var_statement(new var_def_statement(
-                                typeName + "Instance",
+                                GetInstanceSingletonName(typeName),
                                 new dot_node(
                                     new ident_with_templateparams(new ident("__ConceptSingleton"), new template_param_list(new List<type_definition> { new named_type_reference(typeName) })),
                                     new ident("Instance")
                             )));
+        }
+
+        private static string GetInstanceSingletonName(string typeName)
+        {
+            return typeName + "Instance";
         }
 
         private static where_definition GetWhereRestriction(type_definition restriction, ident templateName)
