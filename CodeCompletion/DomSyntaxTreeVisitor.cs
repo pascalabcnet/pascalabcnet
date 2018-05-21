@@ -1619,12 +1619,16 @@ namespace CodeCompletion
             //throw new Exception("The method or operation is not implemented.");
             SymScope tmp = cur_scope;
             cur_loc = get_location(_procedure_definition);
-            is_proc_realization = true;
-            _procedure_definition.proc_header.visit(this);
-            is_proc_realization = false;
+            if (!parse_only_method_body)
+            {
+                is_proc_realization = true;
+                _procedure_definition.proc_header.visit(this);
+                is_proc_realization = false;
+            }
+            
             if (_procedure_definition.proc_body != null)
             {
-                if (_procedure_definition.proc_header is function_header && (_procedure_definition.proc_header as function_header).return_type == null)
+                if (!parse_only_method_body && _procedure_definition.proc_header is function_header && (_procedure_definition.proc_header as function_header).return_type == null)
                 {
                     var fh = (_procedure_definition.proc_header as function_header);
                     if (fh != null && fh.return_type == null && !(returned_scope is ProcScope && (returned_scope as ProcScope).procRealization != null && !(returned_scope as ProcScope).is_extension))
@@ -1654,12 +1658,13 @@ namespace CodeCompletion
                         }
                     }
                 }
-                cur_scope = returned_scope;
+                if (!parse_only_method_body)
+                    cur_scope = returned_scope;
             	/*if ((ret_tn as ProcScope).return_type != null)
             	{
             		ret_tn.AddName("Result",new ElementScope(new SymInfo("Result", SymbolKind.Variable,"Result"),(ret_tn as ProcScope).return_type,cur_scope));
             	}*/
-                if (!parse_only_interface)
+                if (!parse_only_interface && !parse_only_method_header)
                 {
                 	try
                 	{
@@ -3079,26 +3084,59 @@ namespace CodeCompletion
         }
 		
         private access_modifer cur_access_mod = access_modifer.none;
+        private bool parse_only_method_header = false;
+        private bool parse_only_method_body = false;
+
         public override void visit(class_body_list _class_body)
         {
             //throw new Exception("The method or operation is not implemented.");
+            parse_only_method_header = true;
+            Dictionary<declaration, SymScope> scopes = new Dictionary<declaration, SymScope>();
             foreach (class_members mems in _class_body.class_def_blocks)
             {
             	if (mems.access_mod != null)
             		cur_access_mod = mems.access_mod.access_level;
-            	foreach (declaration decl in mems.members)
+               
+                foreach (declaration decl in mems.members)
             	{
             		try
-            		{
-            			decl.visit(this);
+            		{      
+                        decl.visit(this);
+                        scopes.Add(decl, returned_scope);
             		}
             		catch(Exception e)
             		{
             			
             		}
             	}
+                
             	cur_access_mod = access_modifer.none;
             }
+            parse_only_method_header = false;
+            parse_only_method_body = true;
+            foreach (class_members mems in _class_body.class_def_blocks)
+            {
+                if (mems.access_mod != null)
+                    cur_access_mod = mems.access_mod.access_level;
+                foreach (declaration decl in mems.members)
+                {
+                    try
+                    {
+                        if (decl is procedure_definition)
+                        {
+                            cur_scope = scopes[decl];
+                            decl.visit(this);
+                        }
+                            
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
+                }
+                cur_access_mod = access_modifer.none;
+            }
+            parse_only_method_body = false;
         }
 		
         private bool has_cyclic_inheritance(TypeScope ts)
