@@ -698,7 +698,7 @@ namespace CodeFormatters
                         || sn is foreach_stmt || sn is var_statement || sn is try_stmt || sn is goto_statement
                         || sn is with_statement || sn is case_node || sn is function_header || sn is procedure_header
                         || sn is constructor || sn is destructor || sn is type_declarations || sn is consts_definitions_list
-                        || sn is label_definitions || sn is class_definition || sn is uses_list || sn is uses_closure || sn is unit_or_namespace || sn is unit_name || sn is program_name ||
+                        || sn is label_definitions || sn is class_definition || sn is uses_list || sn is uses_closure || sn is unit_name || sn is program_name ||
                         sn is new_expr || sn is raise_stmt || sn is interface_node || sn is implementation_node
                         || sn is lock_stmt || sn is loop_stmt || sn is simple_property || sn is read_accessor_name || sn is write_accessor_name
                         || sn is formal_parameters || sn is bracket_expr || sn is record_const || sn is array_const || sn is exception_handler
@@ -1451,9 +1451,7 @@ namespace CodeFormatters
         public override void visit(uses_list _uses_list)
         {
             //sb.Append("uses");
-            IncOffset();
-            if (options.AggressiveMode == 1)
-                insert_newline_after_prev = true;
+            IncOffset(tab + "uses".Length - 1);
             for (int i = 0; i < _uses_list.units.Count; i++)
             {
                 if (i > 0)
@@ -1461,7 +1459,7 @@ namespace CodeFormatters
                 visit_node(_uses_list.units[i]);
             }
             insert_newline_after_prev = true;
-            DecOffset();
+            DecOffset(tab + "uses".Length - 1);
         }
 
         public override void visit(unit_module _unit_module)
