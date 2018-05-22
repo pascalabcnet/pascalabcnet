@@ -441,17 +441,18 @@ namespace SymbolTable
     }
     //\ssyy owns
 
-	public class ClassMethodScope:Scope
+    //В ClassMethodScope TopScope должен быть классом
+    public class ClassMethodScope:Scope
 	{
-        public Scope MyClass;
+        public Scope DefScope;
 
-		public ClassMethodScope(DSSymbolTable vSymbolTable,Scope TopScope,Scope MyClass, string Name):
+		public ClassMethodScope(DSSymbolTable vSymbolTable, Scope TopScope, Scope DefScope, string Name):
 			base(vSymbolTable,TopScope, Name)
 		{
             this.Name = Name;
-            this.MyClass = null;
-			if (MyClass != null) 
-				this.MyClass = MyClass;
+            this.DefScope = null;
+            if (DefScope != null)
+                this.DefScope = DefScope;
 		}
 	}
 	#endregion
@@ -554,8 +555,21 @@ namespace SymbolTable
         private Scope real_scope;
         public PrimaryScope(Scope sc)
         {
-            ScopeName = sc.Name;
             real_scope = sc;
+            if(real_scope is BlockScope)
+            {
+                int deep = -1;
+                Scope Top = real_scope.TopScope;
+                while(Top != null && !(Top is BlockScope))
+                {
+                    deep++;
+                    Top = Top.TopScope;
+                }
+                ScopeName = "Begin—End;(Deep = " + deep + ")";
+            }
+            else
+                ScopeName = sc.Name;
+            
         }
     }
     #endregion
@@ -666,9 +680,9 @@ namespace SymbolTable
 		{
 			return new UnitImplementationScope(this, InterfaceScope, UsedUnits, Name);
 		}
-		public ClassMethodScope CreateClassMethodScope(Scope TopScope,Scope MyClass, string Name = "")
+		public ClassMethodScope CreateClassMethodScope(Scope TopScope, Scope DefScope, string Name = "")
 		{
-			return new ClassMethodScope(this, TopScope, MyClass, Name);
+			return new ClassMethodScope(this, TopScope, DefScope, Name);
 		}
 		#endregion
 
@@ -828,7 +842,7 @@ namespace SymbolTable
         {
             while (scope != null && !(scope is ClassScope))
                 if(scope is ClassMethodScope)
-                    scope = ((ClassMethodScope)scope).MyClass;
+                    scope = scope.TopScope;
                 else
                     scope = scope.TopScope;
             return scope;
@@ -1076,10 +1090,12 @@ namespace SymbolTable
                         }
                         if (CurrentArea is ClassMethodScope)//мы очутились в методе класса
                         {
-                            FindAllInClass(Name, (CurrentArea as ClassMethodScope).MyClass, OnlyInThisClass, Result);//надо сделать поиск по его классу
+                            FindAllInClass(Name, (CurrentArea as ClassMethodScope).TopScope, OnlyInThisClass, Result);//надо сделать поиск по его классу
 
                             if (Result.Count > 0) //если что-то нашли то заканчиваем
                                 return Result;
+                            CurrentArea = (CurrentArea as ClassMethodScope).DefScope;
+                            continue;
                         }
                     }
                     CurrentArea = CurrentArea.TopScope;//Пошли вверх
@@ -1174,9 +1190,9 @@ namespace SymbolTable
                 if (an is ClassMethodScope)
                 {
                     //ssyy
-                    NextUnitArea = an.TopScope;
+                    NextUnitArea = (an as ClassMethodScope).DefScope;
                     //\ssyy
-                    Area = (an as ClassMethodScope).MyClass;
+                    Area = an.TopScope;
                 }
                 else
                     Area = Area.TopScope;
