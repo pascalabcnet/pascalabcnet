@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
 using System.Text;
 
 using PascalABCCompiler;
@@ -78,8 +79,17 @@ namespace SyntaxVisitors.TypeclassVisitors
 
                 for (int j = 0; j < cm.Count; j++)
                 {
-                    (cm[j] as procedure_header)?.proc_attributes.Add(new procedure_attribute("override", proc_attribute.attr_override));
-                    (cm[j] as procedure_definition)?.proc_header.proc_attributes.Add(new procedure_attribute("override", proc_attribute.attr_override));
+                    procedure_header header = null;
+                    if (cm[j] is procedure_header ph)
+                    {
+                        cm[j] = ph;
+                    }
+                    else if (cm[j] is procedure_definition pd)
+                    {
+                        header = pd.proc_header;
+                    }
+                    header.proc_attributes.Add(new procedure_attribute("override", proc_attribute.attr_override));
+                    ConvertOperatorNameIdent(header);
                 }
             }
             /*
@@ -95,9 +105,12 @@ namespace SyntaxVisitors.TypeclassVisitors
                 cm.Add(def);
             }
             */
-            var typeName = CreateInstanceName(instanceName.restriction_args as typeclass_param_list, instanceName.name);
+            var typeName = new ident(CreateInstanceName(instanceName.restriction_args as typeclass_param_list, instanceName.name));
 
-            var instanceDeclTranslated = new type_declaration(new ident(typeName), instanceDefTranslated, instanceDeclaration.source_context);
+            var instanceDeclTranslated = new type_declaration(typeName, instanceDefTranslated, instanceDeclaration.source_context);
+            instanceDeclTranslated.attributes = instanceDeclaration.attributes;
+            AddAttribute(instanceDeclTranslated, "__TypeclassAttribute");
+
             Replace(instanceDeclaration, instanceDeclTranslated);
             visit(instanceDeclTranslated);
 
@@ -139,11 +152,16 @@ namespace SyntaxVisitors.TypeclassVisitors
                     var member = cmNew.members[i];
                     if (member is function_header || member is procedure_header)
                     {
-                        continue;
+                        cmNew.members[i] = member;
                     }
                     else if (member is procedure_definition procDef)
                     {
                         cmNew.members[i] = procDef.proc_header;
+                    }
+                    AddAttribute(cmNew.members[i], "__TypeclassMemberAttribute");
+                    if (cmNew.members[i] is procedure_header ph)
+                    {
+                        ConvertOperatorNameIdent(ph);
                     }
                 }
 
@@ -169,10 +187,12 @@ namespace SyntaxVisitors.TypeclassVisitors
                 SyntaxTreeBuilder.BuildClassDefinition(
                     interfaceInheritance,
                     null, interfaceMembers.ToArray());
-            typeclassInterfaceDef.keyword = class_keyword.Interface; 
+            typeclassInterfaceDef.keyword = class_keyword.Interface;
             var typeclassInterfaceName = new template_type_name("I" + typeclassName.name, RestrictionsToIdentList(typeclassName.restriction_args));
             var typeclassInterfaceDecl = new type_declaration(typeclassInterfaceName, typeclassInterfaceDef);
-            
+            typeclassInterfaceDecl.attributes = typeclassDeclaration.attributes;
+            AddAttribute(typeclassInterfaceDecl, "__TypeclassAttribute");
+
 
             // Creating class
 
@@ -188,8 +208,19 @@ namespace SyntaxVisitors.TypeclassVisitors
 
                 for (int j = 0; j < cm.Count; j++)
                 {
-                    (cm[j] as procedure_header)?.proc_attributes.Add(new procedure_attribute("abstract", proc_attribute.attr_abstract));
-                    (cm[j] as procedure_definition)?.proc_header.proc_attributes.Add(new procedure_attribute("virtual", proc_attribute.attr_virtual));
+                    procedure_header header = null;
+                    if (cm[j] is procedure_header ph)
+                    {
+                        header = ph;
+                        header.proc_attributes.Add(new procedure_attribute("abstract", proc_attribute.attr_abstract));
+                    }
+                    else if (cm[j] is procedure_definition pd)
+                    {
+                        header = pd.proc_header;
+                        header.proc_attributes.Add(new procedure_attribute("virtual", proc_attribute.attr_virtual));
+                    }
+
+                    ConvertOperatorNameIdent(header);
                 }
             }
             /*
@@ -222,7 +253,7 @@ namespace SyntaxVisitors.TypeclassVisitors
                     {
                         throw new NotImplementedException("SyntaxError");
                     }
-                    
+
                     // Add template parameter
                     templates.Add(templateName);
 
@@ -262,8 +293,16 @@ namespace SyntaxVisitors.TypeclassVisitors
 
                             var variableName = templateName + "Instance";
                             var parameters = memberHeaderNew.parameters.params_list.Aggregate(new expression_list(), (x, y) => new expression_list(x.expressions.Concat(y.idents.idents).ToList()));
+
+                            expression methodCall = null;
+                            if (memberHeaderNew.name.meth_name is operator_name_ident oni)
+                            {
+                                ConvertOperatorNameIdent(memberHeaderNew);
+                                Debug.Assert(parameters.expressions.Count == 2, "Parameters count for operation should be equal to 2");
+                                //methodCall = new bin_expr(parameters.expressions[0], parameters.expressions[1], oni.operator_type);
+                            }
                             var callName = new dot_node(variableName, memberHeaderNew.name.meth_name.name);
-                            var methodCall = new method_call(callName, parameters);
+                            methodCall = new method_call(callName, parameters);
                             statement exec = null;
                             if (memberHeaderNew is function_header)
                             {
@@ -271,7 +310,7 @@ namespace SyntaxVisitors.TypeclassVisitors
                             }
                             else if (memberHeaderNew is procedure_header)
                             {
-                                exec = new procedure_call(methodCall);
+                                exec = new procedure_call(methodCall as method_call);
                             }
                             var procDef = new procedure_definition(
                                 memberHeaderNew,
@@ -288,13 +327,37 @@ namespace SyntaxVisitors.TypeclassVisitors
             var typeclassNameTanslated = new template_type_name(typeclassName.name, templates, typeclassName.source_context);
 
             var typeclassDeclTranslated = new type_declaration(typeclassNameTanslated, typeclassDefTranslated, typeclassDeclaration.source_context);
-            
+            typeclassDeclTranslated.attributes = typeclassDeclaration.attributes;
+            AddAttribute(typeclassDeclTranslated, "__TypeclassAttribute");
+
             Replace(typeclassDeclaration, typeclassDeclTranslated);
             UpperNodeAs<type_declarations>().InsertBefore(typeclassDeclTranslated, typeclassInterfaceDecl);
             visit(typeclassInterfaceDecl);
             visit(typeclassDeclTranslated);
 
             return true;
+        }
+
+        private static void ConvertOperatorNameIdent(procedure_header ph)
+        {
+            if (ph.name.meth_name is operator_name_ident oni)
+            {
+                var methName = "$typeclass" + PascalABCCompiler.TreeConverter.name_reflector.get_name(oni.operator_type);
+                ph.name.meth_name = methName;
+            }
+        }
+
+        private static void AddAttribute(declaration typeclassInterfaceDecl, string newAttribute, expression_list expressionList = null)
+        {
+            if (expressionList == null)
+            {
+                expressionList = new expression_list();
+            }
+            if (typeclassInterfaceDecl.attributes == null)
+            {
+                typeclassInterfaceDecl.attributes = new attribute_list();
+            }
+            typeclassInterfaceDecl.attributes.Add(new simple_attribute_list(new attribute(null, new named_type_reference(newAttribute), expressionList)));
         }
 
         private static template_type_reference TypeclassReferenceToInterfaceName(string name, template_param_list restriction_args)
@@ -355,9 +418,9 @@ namespace SyntaxVisitors.TypeclassVisitors
                 {
                     var typeclassWhere = where as where_typeclass_constraint;
                     var newName = TypeclassRestrctionToTemplateName(typeclassWhere.restriction.name, typeclassWhere.restriction.restriction_args);
-                    newName.attributes = new attribute_list(new simple_attribute_list(new attribute(null,
-                        new named_type_reference("__TypeclassGenericParameter"),
-                        new expression_list(new string_const(GetInstanceSingletonName(newName.name))))));
+                    AddAttribute(
+                        newName, "__TypeclassGenericParameter",
+                        new expression_list(new string_const(GetInstanceSingletonName(newName.name))));
                     additionalTemplateArgs.Add(newName);
 
                     // Create name for template that replaces typeclass(for ex. SumTC)
@@ -405,12 +468,9 @@ namespace SyntaxVisitors.TypeclassVisitors
                 headerTranslated, _procedure_definition.proc_body,
                 _procedure_definition.is_short_definition, _procedure_definition.source_context);
             procedureDefTranslated.proc_header.attributes = _procedure_definition.proc_header.attributes;
-            if (procedureDefTranslated.proc_header.attributes == null)
-            {
-                procedureDefTranslated.proc_header.attributes = new attribute_list();
-            }
-            procedureDefTranslated.proc_header.attributes.Add(new simple_attribute_list(new attribute(null, new named_type_reference("__TypeclassRestrictedFunctionAttribute"), new expression_list())));
+            AddAttribute(procedureDefTranslated.proc_header, "__TypeclassRestrictedFunctionAttribute");
             Replace(_procedure_definition, procedureDefTranslated);
+            visit(procedureDefTranslated);
         }
 
         private static var_statement GetInstanceSingletonVarStatement(string typeName)

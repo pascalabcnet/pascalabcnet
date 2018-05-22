@@ -12,14 +12,14 @@ type
   
   
   Eq[T] = typeclass
-    function equal(x, y: T): boolean;
+    function operator=(x, y: T): boolean;
     begin
-      Result := not notEqual(x, y);
+      Result := not (x <> y);
     end;
     
-    function notEqual(x, y: T): boolean;
+    function operator<>(x, y: T): boolean;
     begin
-      Result := not equal(x, y);
+      Result := not (x = y);
     end;
   end;
   
@@ -27,7 +27,7 @@ type
   Ord[T] = typeclass(Eq[T])
     function compare(x, y: T): Ordering;
     begin
-      if equal(x, y) then
+      if x = y then
         Result := _EQ
       else if less(x, y) then
         Result := _LT
@@ -45,7 +45,7 @@ type
       Result := compare(x, y) <> _GT;
     end;
     
-    function greater(x, y: T): boolean;
+    function operator>(x, y: T): boolean;
     begin
       Result := compare(x, y) = _GT;
     end;
@@ -87,14 +87,14 @@ type
   
   
   Eq[integer] = instance
-    function equal(x, y: integer):boolean := x = y;
+    function operator=(x, y: integer):boolean := integer.Equals(x, y);
   end;
   
   
   Ord[integer] = instance
     function compare(x, y: integer): Ordering;
     begin
-      if equal(x, y) then
+      if x = y then
         Result := _EQ
       else if x < y then
         Result := _LT
@@ -131,7 +131,7 @@ function ArrayEq<T>(l1, l2: array of T): boolean; where Eq[T];
 begin
   Result := true;
   for var i :=0 to l1.Length - 1 do
-    if notEqual(l1[i], l2[i]) then
+    if l1[i] <> l2[i] then
     begin
       Result := false;
       break;
@@ -163,7 +163,7 @@ begin
     var sorted := true;
     for var j := 0 to a.Length - 1 - i do
     begin
-      if greater(a[j], a[j + 1]) then
+      if a[j] > a[j + 1] then
       begin
         swap(a[j], a[j + 1]);
         sorted := false;
@@ -229,6 +229,8 @@ end;
 
 procedure TestOrd();
 begin
+
+  writeln('TestOrd');
   var a := Arr(3, 1, 4, 2, 5, 0);
   var res := Arr(a);
   
