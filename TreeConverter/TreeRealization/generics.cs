@@ -1183,9 +1183,19 @@ namespace PascalABCCompiler.TreeRealization
                 type_node fact_type_converted; //Сюда будет записан фактический тип или интерфейс, к которому он приводится
                 if (!fact_type.is_generic_type_instance || formal_type.original_generic != fact_type.original_generic)
                 {
-                    if (!formal_type.IsInterface) goto eq_cmp;
+                    //if (!formal_type.IsInterface) goto eq_cmp;
                     fact_type_converted = null;
-                    if (fact_type.ImplementingInterfaces != null)
+                    type_node base_type = fact_type.base_type;
+                    while (base_type != null)
+                    {
+                        if (base_type.original_generic == formal_type.original_generic)
+                        {
+                            fact_type_converted = base_type;
+                            break;
+                        }
+                        base_type = base_type.base_type;
+                    }
+                    if (fact_type.ImplementingInterfaces != null && fact_type_converted == null)
                     foreach (type_node ti in fact_type.ImplementingInterfaces)
                     {
                         if (ti.original_generic == formal_type.original_generic)

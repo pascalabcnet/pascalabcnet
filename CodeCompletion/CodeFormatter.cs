@@ -698,7 +698,7 @@ namespace CodeFormatters
                         || sn is foreach_stmt || sn is var_statement || sn is try_stmt || sn is goto_statement
                         || sn is with_statement || sn is case_node || sn is function_header || sn is procedure_header
                         || sn is constructor || sn is destructor || sn is type_declarations || sn is consts_definitions_list
-                        || sn is label_definitions || sn is class_definition || sn is uses_list || sn is uses_closure  || sn is unit_name || sn is program_name ||
+                        || sn is label_definitions || sn is class_definition || sn is uses_list || sn is uses_closure || sn is unit_name || sn is program_name ||
                         sn is new_expr || sn is raise_stmt || sn is interface_node || sn is implementation_node
                         || sn is lock_stmt || sn is loop_stmt || sn is simple_property || sn is read_accessor_name || sn is write_accessor_name
                         || sn is formal_parameters || sn is bracket_expr || sn is record_const || sn is array_const || sn is exception_handler
@@ -1068,7 +1068,7 @@ namespace CodeFormatters
                 add_space_before = true;
                 if (_if_node.else_body is statement_list)
                     need_off = false;
-                else if (!(_if_node.else_body is if_node))
+                else if (!(_if_node.else_body is if_node) && !(_if_node.else_body is empty_statement))
                     add_new_line_else_specific = true;
                 else
                     need_off = false;
