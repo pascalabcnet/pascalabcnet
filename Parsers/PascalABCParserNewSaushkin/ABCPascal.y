@@ -173,8 +173,8 @@
 %type <stn> full_lambda_fp_list lambda_simple_fp_sect lambda_function_body lambda_procedure_body optional_full_lambda_fp_list
 %type <ob> field_in_unnamed_object list_fields_in_unnamed_object func_class_name_ident_list rem_lambda variable_list var_ident_list
 %type <ti> tkAssignOrEqual
-%type <stn> pattern match_with pattern_case pattern_cases pattern_out_param
-%type <ob> pattern_out_param_list
+%type <stn> pattern pattern_optional_var match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var 
+%type <ob> pattern_out_param_list pattern_out_param_list_optional_var
 %%
 
 parse_goal                
@@ -2575,11 +2575,11 @@ pattern_cases
 pattern_case
     : 
         { $$ = new empty_statement(); }
-    | pattern tkWhen expr_l1 tkColon unlabelled_stmt
+    | pattern_optional_var tkWhen expr_l1 tkColon unlabelled_stmt
         {
             $$ = new pattern_case($1 as pattern_node, $5 as statement, $3, @$);
         }
-    | pattern tkColon unlabelled_stmt
+    | pattern_optional_var tkColon unlabelled_stmt
         {
             $$ = new pattern_case($1 as pattern_node, $3 as statement, null, @$);
         }  
@@ -3042,7 +3042,34 @@ pattern
             $$ = new deconstructor_pattern($3 as List<pattern_deconstructor_parameter>, $1, @$); 
         }
     ;
+
+pattern_optional_var
+    : simple_or_template_type_reference tkRoundOpen pattern_out_param_list_optional_var tkRoundClose
+        { 
+            $$ = new deconstructor_pattern($3 as List<pattern_deconstructor_parameter>, $1, @$); 
+        }
+    ;    
     
+pattern_out_param_list_optional_var
+    : pattern_out_param_optional_var
+        {
+            $$ = new List<pattern_deconstructor_parameter>();
+            ($$ as List<pattern_deconstructor_parameter>).Add($1 as pattern_deconstructor_parameter);
+        }
+    | pattern_out_param_list_optional_var tkSemiColon pattern_out_param_optional_var
+        {
+            var list = $1 as List<pattern_deconstructor_parameter>;
+            list.Add($3 as pattern_deconstructor_parameter);
+            $$ = list;
+        }
+    | pattern_out_param_list_optional_var tkComma pattern_out_param_optional_var
+        {
+            var list = $1 as List<pattern_deconstructor_parameter>;
+            list.Add($3 as pattern_deconstructor_parameter);
+            $$ = list;
+        }
+    ;
+
 pattern_out_param_list
     : pattern_out_param
         {
@@ -3061,9 +3088,24 @@ pattern_out_param_list
             list.Add($3 as pattern_deconstructor_parameter);
             $$ = list;
         }
-    ;
-   
+    ;    
+    
 pattern_out_param
+    : tkVar identifier tkColon type_ref
+        {
+            $$ = new var_deconstructor_parameter($2, $4, @$);
+        }
+    | tkVar identifier
+        {
+            $$ = new var_deconstructor_parameter($2, null, @$);
+        }
+    | pattern 
+        {
+            $$ = new recursive_deconstructor_parameter($1 as pattern_node, @$);
+        }
+    ;    
+    
+pattern_out_param_optional_var
     : identifier tkColon type_ref
         {
             $$ = new var_deconstructor_parameter($1, $3, @$);
@@ -3072,7 +3114,15 @@ pattern_out_param
         {
             $$ = new var_deconstructor_parameter($1, null, @$);
         }
-    | pattern 
+    | tkVar identifier tkColon type_ref
+        {
+            $$ = new var_deconstructor_parameter($2, $4, @$);
+        }
+    | tkVar identifier
+        {
+            $$ = new var_deconstructor_parameter($2, null, @$);
+        }
+    | pattern_optional_var
         {
             $$ = new recursive_deconstructor_parameter($1 as pattern_node, @$);
         }
