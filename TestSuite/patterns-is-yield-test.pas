@@ -1,6 +1,6 @@
 ﻿function Y1(): sequence of integer;
 begin
-  if 1 is integer(i) then 
+  if 1 is integer(var i) then 
     yield i;
 end;
 
