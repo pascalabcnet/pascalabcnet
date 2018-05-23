@@ -1387,7 +1387,13 @@ namespace CodeCompletion
 
         public override void visit(inherited_ident _inherited_ident)
         {
-            throw new NotImplementedException();
+            var tmp_scope = entry_scope;
+            if (entry_scope.topScope is TypeScope)
+            {
+                entry_scope = (entry_scope.topScope as TypeScope).baseScope;
+            }
+            new ident(_inherited_ident.name).visit(this);
+            entry_scope = tmp_scope;
         }
 
         public override void visit(format_expr _format_expr)

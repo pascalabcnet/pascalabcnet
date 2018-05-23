@@ -2575,6 +2575,7 @@ namespace PascalABCCompiler.Parsers
             }
             else if (s == "inherited")
             {
+                bound = i + 1;
                 keyword = KeywordKind.Inherited;
             }
             else if (s == "raise")
