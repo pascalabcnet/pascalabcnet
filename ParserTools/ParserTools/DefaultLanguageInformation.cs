@@ -2513,7 +2513,7 @@ namespace PascalABCCompiler.Parsers
                 string op = Text.Substring(i - 2, 3).ToLower().Trim();
                 if (op == "and" || op == "div" || op == "mod" || op == "xor")
                 {
-                    if (!char.IsLetterOrDigit(Text[i - 3]) && Text[i - 3] != '_' && Text[i - 3] != '&')
+                    if (!char.IsLetterOrDigit(Text[i - 3]) && Text[i - 3] != '_' && Text[i - 3] != '&' && !(i + 1 < Text.Length && char.IsLetterOrDigit(Text[i + 1])))
                     {
                         next = i - 3;
                         return true;
