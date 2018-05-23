@@ -101,10 +101,6 @@ namespace PascalABCCompiler.TreeConverter
                 var nils = new List<int>();
                 var deduceSucceded = generic_convertions.DeduceInstanceTypes(selfParameter.type, patternInstance.type, deducedGenerics, nils);
                 if (!deduceSucceded || deducedGenerics.Contains(null))
-                    // Проверка на то, что в Deconstruct все дженерики выводятся по self делается в другом месте
-                    // TODO Patterns: сделать проверку из коммента выше
-                    // TODO Patterns: запретить дженерик методы в классах. Можно использовать только дженерик-типы самого класса в качестве параметров
-                    //AddError(deconstructionLocation, "COULDNT_DEDUCE_DECONSTRUCT_GENERIC_TYPE");
                     return false;
             }
 
