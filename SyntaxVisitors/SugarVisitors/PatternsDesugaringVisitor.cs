@@ -167,7 +167,7 @@ namespace SyntaxVisitors.SugarVisitors
             desugarResult.CastVariableDefinition = new var_statement(castVariableName, pattern.type);
 
             var successVariableName = NewSuccessName();
-            desugarResult.SuccessVariableDefinition = new var_statement(successVariableName, named_type_reference.Boolean);
+            desugarResult.SuccessVariableDefinition = new var_statement(successVariableName, new ident("false"));
 
             // делегирование проверки паттерна функции IsTest
             desugarResult.TypeCastCheck = SubtreeCreator.CreateSystemFunctionCall(IsTestMethodName, matchingExpression, castVariableName);
