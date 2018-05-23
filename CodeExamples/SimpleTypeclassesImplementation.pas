@@ -186,7 +186,7 @@ begin
     var l1 := Arr(1,3,5,7,8); 
     var l2 := Arr(1,3,5,7,8); 
   
-    writeln(ArrayEq&[integer](l1, l2));
+    writeln(ArrayEq(l1, l2));
   end;
   
   begin

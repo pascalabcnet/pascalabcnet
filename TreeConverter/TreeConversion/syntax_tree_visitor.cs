@@ -1384,7 +1384,7 @@ namespace PascalABCCompiler.TreeConverter
                                 function_node inst = null;
                                 try
                                 {
-                                    inst = generic_convertions.DeduceFunction(cmfn, parameters, true, loc);
+                                    inst = generic_convertions.DeduceFunction(cmfn, parameters, true, context, loc);
                                 }
                                 catch
                                 {
@@ -1473,7 +1473,7 @@ namespace PascalABCCompiler.TreeConverter
                                         function_node inst = null;
                                         try
                                         {
-                                            inst = generic_convertions.DeduceFunction(cfn, parameters, true, loc);
+                                            inst = generic_convertions.DeduceFunction(cfn, parameters, true, context, loc);
                                         }
                                         catch
                                         {
