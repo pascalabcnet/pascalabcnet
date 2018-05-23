@@ -51,6 +51,7 @@
     <Compile Include="LightSymInfoVisitors\LightScopeHelperClasses.cs" />
     <Compile Include="LightSymInfoVisitors\SymInfoCollect1.cs" />
     <Compile Include="LightSymInfoVisitors\SymInfoCollect1Helper.cs" />
+    <Compile Include="PatternsVisitors\SingleDeconstructChecker.cs" />
     <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\DoubleQuestionDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\LoopDesugarVisitor.cs" />
