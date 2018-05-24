@@ -2744,7 +2744,7 @@ namespace PascalABCCompiler.Parsers
                             if (kav.Count == 0)
                             {
                                 string tmps = sb.ToString().Trim(' ', '\r', '\t', '\n');
-                                if (tmps.Length >= 1 && (char.IsLetter(tmps[0]) || tmps[0] == '_' || tmps[0] == '&'))
+                                if (tmps.Length >= 1 && (char.IsLetter(tmps[0]) || tmps[0] == '_' || tmps[0] == '&') && tokens.Count == 0)
                                     end = true;
                                 else
                                     tokens.Push(ch);
@@ -2830,7 +2830,8 @@ namespace PascalABCCompiler.Parsers
                                         i = tmp;
                                     }
                                 }
-                                else end = true;
+                                else
+                                    end = true;
                             }
                             else sb.Insert(0, ch); punkt_sym = true;
                             break;
@@ -3350,7 +3351,7 @@ namespace PascalABCCompiler.Parsers
                                                 if (keyw == KeywordKind.New)
                                                     bound = 0;
                                                 else
-                                                if (keyw != KeywordKind.None)
+                                                if (keyw != KeywordKind.None && tokens.Count == 0)
                                                     end = true;
                                                 else
                                                     bound = 0;
