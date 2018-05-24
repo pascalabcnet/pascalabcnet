@@ -193,7 +193,7 @@ begin
     var l1 := Arr(1,3,5,7,8); 
     var l2 := Arr(1,3,5,1,8); 
   
-    writeln(ArrayEq&[integer](l1, l2));
+    writeln(ArrayEq(l1, l2));
   end;
   
 end;
@@ -202,8 +202,8 @@ end;
 procedure TestShow();
 begin
   writeln('TestShow');
-  ShowNTimes&[boolean](false, 2);
-  ShowNTimes&[boolean](true, 4);
+  ShowNTimes(false, 2);
+  ShowNTimes(true, 4);
 end;
 
 
@@ -235,7 +235,7 @@ begin
   var res := Arr(a);
   
   Sort(res);  
-  MySort&[integer](a);
+  MySort(a);
   
   var isCorrect := a.SequenceEqual(res);
 

@@ -2107,6 +2107,15 @@ type
     begin
     end;
   end;
+  
+  ///--
+  __TypeclassInstanceAttribute = class(Attribute)
+  public
+    constructor;
+    begin
+    end;
+  end;
+  
 // -----------------------------------------------------
 //                  Internal procedures for PABCRTL.dll
 // -----------------------------------------------------

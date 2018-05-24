@@ -200,6 +200,8 @@ namespace PascalABCCompiler.TreeConverter
         internal List<var_definition_node> var_defs =
             new List<var_definition_node>();
 
+        public List<type_node> typeclassInstances = new List<type_node>();
+
         internal Stack<System.Collections.Generic.List<var_definition_node>> var_defs_stack =
             new Stack<System.Collections.Generic.List<var_definition_node>>();
 
@@ -331,6 +333,7 @@ namespace PascalABCCompiler.TreeConverter
             in_parameters_block = false;
             is_order_independed_method_description = false;
             _has_nested_functions = false;
+            typeclassInstances.Clear();
         }
         
         public void clear_type_prededinitions()

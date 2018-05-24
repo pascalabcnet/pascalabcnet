@@ -836,7 +836,7 @@ namespace PascalABCCompiler.TreeRealization
 
             var testIsTypeclassRestricted = func.Attributes?.Any(x => x.AttributeType.name == "__TypeclassRestrictedFunctionAttribute");
             var isTypeclassRestricted = testIsTypeclassRestricted.HasValue && testIsTypeclassRestricted.Value;
-            var typeclasses = func.get_generic_params_list().Where(t => t.Attributes != null && t.Attributes.Any(a => a.AttributeType != null && a.AttributeType.name == "__TypeclassGenericParameter"));
+            var typeclasses = func.get_generic_params_list().Where(t => t.Attributes != null && t.Attributes.Any(a => a.AttributeType != null && a.AttributeType.name == "__TypeclassGenericParameterAttribute"));
             while (continue_trying_to_infer_types) //Продолжаем пытаться вычислить типы до тех пор пока состояние о выведенных типах не будет отличаться от состояния на предыдущей итерации
             {
                 var previous_deduce_state = deduced // Текущее состояние выведенных на данный момент типов. Простой список индексов с уже выведенными типами из массива deduced
@@ -922,7 +922,28 @@ namespace PascalABCCompiler.TreeRealization
 
                 if (isTypeclassRestricted)
                 {
-                    //context.CurrentScope.SymbolTable
+                    //func.wh
+                    foreach (var tc in typeclasses)
+                    {
+                        var instances = context.typeclassInstances.Where(ti =>
+                            (ti.ImplementingInterfaces[0] as common_generic_instance_type_node).original_generic ==
+                            (tc.ImplementingInterfaces[0] as common_generic_instance_type_node).original_generic);
+                        
+                        var appropriateInstances = instances.Where(ti =>
+                            (ti.ImplementingInterfaces[0] as common_generic_instance_type_node).instance_params.SequenceEqual(
+                                (tc.ImplementingInterfaces[0] as common_generic_instance_type_node).instance_params.Select(ip => deduced[ip.generic_param_index])));
+
+                        if (appropriateInstances.Count() == 1)
+                        {
+                            var foundInstance = appropriateInstances.First() as common_type_node;
+                            if (foundInstance.generic_params.Count > 0)
+                            {
+                                throw new NotImplementedException("Can't deduce type for typeclass inheritance");
+                            }
+                            deduced[tc.generic_param_index] = appropriateInstances.First();
+                        }
+                    }
+                    //context.typeclassInstances.Where(ti => ti.ImplementingInterfaces[0].)
                 }
 
                 var current_deduce_state = deduced               //текущее состояние выведенных типов

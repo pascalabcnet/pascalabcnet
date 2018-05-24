@@ -109,6 +109,7 @@ namespace SyntaxVisitors.TypeclassVisitors
 
             var instanceDeclTranslated = new type_declaration(typeName, instanceDefTranslated, instanceDeclaration.source_context);
             instanceDeclTranslated.attributes = instanceDeclaration.attributes;
+            AddAttribute(instanceDeclTranslated, "__TypeclassInstanceAttribute");
             AddAttribute(instanceDeclTranslated, "__TypeclassAttribute");
 
             Replace(instanceDeclaration, instanceDeclTranslated);

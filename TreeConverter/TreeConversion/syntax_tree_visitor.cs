@@ -3520,6 +3520,12 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.class_definition _class_definition)
         {
+            var testIsTypeclassInstance = context._ctn?.Attributes?.Any(a => a.AttributeType.name == "__TypeclassInstanceAttribute");
+            if (testIsTypeclassInstance.HasValue && testIsTypeclassInstance.Value)
+            {
+                context.typeclassInstances.Add(context._ctn);
+            }
+
             if (_class_definition.attribute != class_attribute.None && _class_definition.body == null)
                 ErrorsList.Add(new SimpleSemanticError(get_location(_class_definition), "CLASS_ATTRIBUTE_NOT_ALLOWED_IN_CLASS_PREDEFINTIONS"));
             if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Sealed) == SyntaxTree.class_attribute.Sealed)
@@ -11072,6 +11078,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             //bool is_template_synonym = false;
             //SyntaxTree.array_type at=_type_declaration.type_def as SyntaxTree.array_type;
+            
             template_class tc = null;
             SyntaxTree.template_type_name ttn = _type_declaration.type_name as SyntaxTree.template_type_name;
             SyntaxTree.class_definition cl_def = _type_declaration.type_def as SyntaxTree.class_definition;
