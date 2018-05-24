@@ -2329,6 +2329,7 @@ namespace CodeFormatters
                 visit_node(_try_stmt.handler);
                 if (hndlr.except_block.stmt_list != null && hndlr.except_block.stmt_list.subnodes.Count == 1 && hndlr.except_block.stmt_list.subnodes[0] is empty_statement)
                 {
+                    add_space_before = true;
                     WriteNode(_try_stmt.handler, "except".Length);
                     read_from_beg_pos = false;
                     add_space_before = false;
