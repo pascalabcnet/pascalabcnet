@@ -1116,6 +1116,11 @@ namespace CodeCompletion
 
         private bool equal_params(ProcScope ps, List<ProcScope> procs)
         {
+            foreach (ProcScope proc in procs)
+            {
+                if ((ps.IsOverride || proc.IsOverride) && ps.IsParamsEquals(proc))
+                    return true;
+            }
             return false;
         }
 

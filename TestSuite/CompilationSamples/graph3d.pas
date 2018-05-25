@@ -473,20 +473,20 @@ type
       transfgroup.Children[0] := new MatrixTransform3D(m);
       Result := Self;
     end);
-    function AnimMoveTo(x, y, z: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
+    function AnimMoveTo(x, y, z: real; seconds: real; Completed: procedure): MyAnimation;
     function AnimMoveTo(x, y, z: real; seconds: real := 1): MyAnimation := AnimMoveTo(x,y,z,seconds,nil);
     
-    function AnimMoveTo(p: Point3D; seconds: real := 1; Completed: procedure := nil) := AnimMoveTo(p.x, p.y, p.z, seconds, Completed);
+    function AnimMoveTo(p: Point3D; seconds: real; Completed: procedure) := AnimMoveTo(p.x, p.y, p.z, seconds, Completed);
     function AnimMoveTo(p: Point3D; seconds: real := 1) := AnimMoveTo(p.x, p.y, p.z, seconds, nil);
     
-    function AnimMoveTrajectory(a: sequence of Point3D; seconds: real := 1; Completed: procedure := nil): MyAnimation;
+    function AnimMoveTrajectory(a: sequence of Point3D; seconds: real; Completed: procedure): MyAnimation;
     function AnimMoveTrajectory(a: sequence of Point3D; seconds: real := 1): MyAnimation := AnimMoveTrajectory(a,seconds,nil);
 
     //function AnimMoveToP3D(x,y,z: real; seconds: real := 1): MyAnimation; - не получилось! Свойство не анимируется!
-    function AnimMoveOn(dx, dy, dz: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
+    function AnimMoveOn(dx, dy, dz: real; seconds: real; Completed: procedure): MyAnimation;
     function AnimMoveOn(dx, dy, dz: real; seconds: real := 1): MyAnimation := AnimMoveOn(dx,dy,dz,seconds,nil);
 
-    function AnimMoveOn(v: Vector3D; seconds: real := 1; Completed: procedure := nil) := AnimMoveOn(v.x, v.y, v.z, seconds, Completed);
+    function AnimMoveOn(v: Vector3D; seconds: real; Completed: procedure) := AnimMoveOn(v.x, v.y, v.z, seconds, Completed);
     function AnimMoveOn(v: Vector3D; seconds: real := 1) := AnimMoveOn(v.x, v.y, v.z, seconds, nil);
 
     // Что-то одна версия с параметрами по умолчанию не на всех компьютерах срабатывает, поэтому сделал без параметров по умолчанию
@@ -513,7 +513,7 @@ type
     function AnimRotate(v: Vector3D; angle: real; seconds: real; Completed: procedure) := AnimRotate(v.x, v.y, v.z, angle, seconds, Completed);
     function AnimRotate(v: Vector3D; angle: real; seconds: real := 1) := AnimRotate(v.x, v.y, v.z, angle, seconds, nil);
     
-    function AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real := 1; Completed: procedure := nil): MyAnimation;
+    function AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real; Completed: procedure): MyAnimation;
     function AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real := 1): MyAnimation := AnimRotateAt(axis,angle,center,seconds,nil);
 
     function Clone: Object3D := Invoke&<Object3D>(CloneT);

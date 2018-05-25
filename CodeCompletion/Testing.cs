@@ -385,6 +385,11 @@ namespace CodeCompletion
             s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
             assert(s.Trim('\n', ' ', '\t') == "a");
 
+            test_str = "seq1.Where(i ->(i = 1) or (i = 2)).JoinIntoString";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            assert(s.Trim('\n', ' ', '\t') == "seq1.Where(i ->(i = 1) or (i = 2)).JoinIntoString");
+
             int num_param = 0;
     		//testirovanie nazhatija skobki
     		test_str = "writeln";
@@ -546,8 +551,29 @@ namespace CodeCompletion
     		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s.Trim(' ','\n','\t') == "Console.WriteLine");
     		assert(num_param==0);
-    		
-    		test_str = "&var.&uses.&procedure";
+
+            test_str = "System.Math.DivRem";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            assert(s.Trim(' ', '\n', '\t') == "System.Math.DivRem");
+            assert(num_param == 0);
+
+            test_str = "seq1.Where(i ->(i = 1) or (i = 2)).JoinIntoString";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            assert(s.Trim('\n', ' ', '\t') == "seq1.Where(i ->(i = 1) or (i = 2)).JoinIntoString");
+
+            test_str = "f1&<array of byte>";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            assert(s.Trim('\n', ' ', '\t') == "f1&<array of byte>");
+
+            test_str = "f1&<sequence of byte>";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            assert(s.Trim('\n', ' ', '\t') == "f1&<sequence of byte>");
+
+            test_str = "&var.&uses.&procedure";
     		off = test_str.Length;
     		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s == test_str);
@@ -681,6 +707,8 @@ namespace CodeCompletion
             s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, ',', ref num_param);
             assert(s.Trim(' ', '\n', '\t') == "Power");
             assert(num_param == 2);
+
+            
 
             string str = null;
     		//mouse hover
