@@ -17,7 +17,10 @@ namespace SyntaxVisitors
         public override void Enter(syntax_tree_node st)
         {
             if (st is class_definition)
+            {
                 isInClass = true;
+                deconstructCount = 0;
+            }
         }
 
         public override void Exit(syntax_tree_node st)
