@@ -93,6 +93,10 @@ namespace PascalABCCompiler.TreeConverter
             if (candidateParameterTypes.Length != givenParameterTypes.Length)
                 return false;
 
+            // Разрешаем только deconstruct текущего класса, родительские в расчет не берем
+            if (candidate is common_method_node commonMethod && !AreTheSameType(patternInstance.type, commonMethod.cont_type))
+                return false;
+
             var genericDeduceNeeded = candidate.is_extension_method && candidate.is_generic_function;
             type_node[] deducedGenerics = new type_node[candidate.generic_parameters_count];
             if (genericDeduceNeeded)
@@ -120,10 +124,20 @@ namespace PascalABCCompiler.TreeConverter
             return true;
         }
 
-        private bool AreTheSameType(type_node type1, type_node type2)
+        private type_node GetDeconstructorOwner(function_node deconstructor)
         {
-            return convertion_data_and_alghoritms.possible_equal_types(type1, type2);
+            switch (deconstructor)
+            {
+                case common_method_node commonMethod: return commonMethod.cont_type;
+                case common_namespace_function_node commonNamespaseFunction: return GetSelfParameter(commonNamespaseFunction).type;
+                default: return null;
+            }
         }
+
+        private bool AreTheSameType(type_node type1, type_node type2) => 
+            type1 != null && 
+            type2 != null && 
+            convertion_data_and_alghoritms.possible_equal_types(type1, type2);
 
         private bool IsSelfParameter(parameter parameter) => parameter.name.ToLower() == compiler_string_consts.self_word;
 
