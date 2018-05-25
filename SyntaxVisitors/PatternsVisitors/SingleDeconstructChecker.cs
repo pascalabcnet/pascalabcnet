@@ -34,7 +34,7 @@ namespace SyntaxVisitors
             if (!isInClass)
                 return;
 
-            if (_method_name.meth_name.name.ToLower() == compiler_string_consts.deconstruct_method_name)
+            if (_method_name?.meth_name?.name?.ToLower() == compiler_string_consts.deconstruct_method_name)
                 deconstructCount++;
 
             if (deconstructCount > 1)
