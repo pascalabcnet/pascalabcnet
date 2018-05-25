@@ -410,6 +410,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_left_logical_bracket=value;
+				if (_left_logical_bracket != null)
+					_left_logical_bracket.Parent = this;
 			}
 		}
 
@@ -425,6 +427,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_right_logical_bracket=value;
+				if (_right_logical_bracket != null)
+					_right_logical_bracket.Parent = this;
 			}
 		}
 
@@ -941,6 +945,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_to=value;
+				if (_to != null)
+					_to.Parent = this;
 			}
 		}
 
@@ -956,6 +962,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_from=value;
+				if (_from != null)
+					_from.Parent = this;
 			}
 		}
 
@@ -1146,6 +1154,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_left=value;
+				if (_left != null)
+					_left.Parent = this;
 			}
 		}
 
@@ -1161,6 +1171,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_right=value;
+				if (_right != null)
+					_right.Parent = this;
 			}
 		}
 
@@ -1348,6 +1360,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_subnode=value;
+				if (_subnode != null)
+					_subnode.Parent = this;
 			}
 		}
 
@@ -2033,6 +2047,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_subprogram_code=value;
+				if (_subprogram_code != null)
+					_subprogram_code.Parent = this;
 			}
 		}
 
@@ -2048,6 +2064,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_subprogram_defs=value;
+				if (_subprogram_defs != null)
+					_subprogram_defs.Parent = this;
 			}
 		}
 
@@ -2308,6 +2326,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_attr_list=value;
+				if (_attr_list != null)
+					_attr_list.Parent = this;
 			}
 		}
 
@@ -3639,6 +3659,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_vars=value;
+				if (_vars != null)
+					_vars.Parent = this;
 			}
 		}
 
@@ -3654,6 +3676,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_vars_type=value;
+				if (_vars_type != null)
+					_vars_type.Parent = this;
 			}
 		}
 
@@ -3669,6 +3693,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_inital_value=value;
+				if (_inital_value != null)
+					_inital_value.Parent = this;
 			}
 		}
 
@@ -3882,6 +3908,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_attributes=value;
+				if (_attributes != null)
+					_attributes.Parent = this;
 			}
 		}
 
@@ -4675,6 +4703,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_prog_name=value;
+				if (_prog_name != null)
+					_prog_name.Parent = this;
 			}
 		}
 
@@ -5282,6 +5312,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_dereferencing_value=value;
+				if (_dereferencing_value != null)
+					_dereferencing_value.Parent = this;
 			}
 		}
 
@@ -5458,6 +5490,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_indexes=value;
+				if (_indexes != null)
+					_indexes.Parent = this;
 			}
 		}
 
@@ -5647,6 +5681,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_loop_variable=value;
+				if (_loop_variable != null)
+					_loop_variable.Parent = this;
 			}
 		}
 
@@ -5662,6 +5698,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_initial_value=value;
+				if (_initial_value != null)
+					_initial_value.Parent = this;
 			}
 		}
 
@@ -5677,6 +5715,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_finish_value=value;
+				if (_finish_value != null)
+					_finish_value.Parent = this;
 			}
 		}
 
@@ -5692,6 +5732,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_statements=value;
+				if (_statements != null)
+					_statements.Parent = this;
 			}
 		}
 
@@ -5722,6 +5764,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_increment_value=value;
+				if (_increment_value != null)
+					_increment_value.Parent = this;
 			}
 		}
 
@@ -5737,6 +5781,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_type_name=value;
+				if (_type_name != null)
+					_type_name.Parent = this;
 			}
 		}
 
@@ -5977,6 +6023,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_statements=value;
+				if (_statements != null)
+					_statements.Parent = this;
 			}
 		}
 
@@ -5992,6 +6040,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_expr=value;
+				if (_expr != null)
+					_expr.Parent = this;
 			}
 		}
 
@@ -6166,6 +6216,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_expr=value;
+				if (_expr != null)
+					_expr.Parent = this;
 			}
 		}
 
@@ -6181,6 +6233,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_statements=value;
+				if (_statements != null)
+					_statements.Parent = this;
 			}
 		}
 
@@ -6371,6 +6425,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_condition=value;
+				if (_condition != null)
+					_condition.Parent = this;
 			}
 		}
 
@@ -6386,6 +6442,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_then_body=value;
+				if (_then_body != null)
+					_then_body.Parent = this;
 			}
 		}
 
@@ -6401,6 +6459,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_else_body=value;
+				if (_else_body != null)
+					_else_body.Parent = this;
 			}
 		}
 
@@ -6603,6 +6663,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_pointed_to=value;
+				if (_pointed_to != null)
+					_pointed_to.Parent = this;
 			}
 		}
 
@@ -6797,6 +6859,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_left=value;
+				if (_left != null)
+					_left.Parent = this;
 			}
 		}
 
@@ -6812,6 +6876,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_right=value;
+				if (_right != null)
+					_right.Parent = this;
 			}
 		}
 
@@ -7390,6 +7456,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_indexers=value;
+				if (_indexers != null)
+					_indexers.Parent = this;
 			}
 		}
 
@@ -7405,6 +7473,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_elements_type=value;
+				if (_elements_type != null)
+					_elements_type.Parent = this;
 			}
 		}
 
@@ -7586,6 +7656,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_labels=value;
+				if (_labels != null)
+					_labels.Parent = this;
 			}
 		}
 
@@ -7909,6 +7981,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_idents=value;
+				if (_idents != null)
+					_idents.Parent = this;
 			}
 		}
 
@@ -7924,6 +7998,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_vars_type=value;
+				if (_vars_type != null)
+					_vars_type.Parent = this;
 			}
 		}
 
@@ -7954,6 +8030,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_inital_value=value;
+				if (_inital_value != null)
+					_inital_value.Parent = this;
 			}
 		}
 
@@ -8833,6 +8911,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_parameters=value;
+				if (_parameters != null)
+					_parameters.Parent = this;
 			}
 		}
 
@@ -8848,6 +8928,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_proc_attributes=value;
+				if (_proc_attributes != null)
+					_proc_attributes.Parent = this;
 			}
 		}
 
@@ -8863,6 +8945,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_name=value;
+				if (_name != null)
+					_name.Parent = this;
 			}
 		}
 
@@ -8908,6 +8992,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_template_args=value;
+				if (_template_args != null)
+					_template_args.Parent = this;
 			}
 		}
 
@@ -8923,6 +9009,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_where_defs=value;
+				if (_where_defs != null)
+					_where_defs.Parent = this;
 			}
 		}
 
@@ -9180,6 +9268,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_return_type=value;
+				if (_return_type != null)
+					_return_type.Parent = this;
 			}
 		}
 
@@ -9421,6 +9511,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_proc_header=value;
+				if (_proc_header != null)
+					_proc_header.Parent = this;
 			}
 		}
 
@@ -9436,6 +9528,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_proc_body=value;
+				if (_proc_body != null)
+					_proc_body.Parent = this;
 			}
 		}
 
@@ -9623,6 +9717,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_type_name=value;
+				if (_type_name != null)
+					_type_name.Parent = this;
 			}
 		}
 
@@ -9638,6 +9734,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_type_def=value;
+				if (_type_def != null)
+					_type_def.Parent = this;
 			}
 		}
 
@@ -10313,6 +10411,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_const_type=value;
+				if (_const_type != null)
+					_const_type.Parent = this;
 			}
 		}
 
@@ -10497,6 +10597,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_const_name=value;
+				if (_const_name != null)
+					_const_name.Parent = this;
 			}
 		}
 
@@ -10512,6 +10614,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_const_value=value;
+				if (_const_value != null)
+					_const_value.Parent = this;
 			}
 		}
 
@@ -11014,6 +11118,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_idunit_name=value;
+				if (_idunit_name != null)
+					_idunit_name.Parent = this;
 			}
 		}
 
@@ -11177,6 +11283,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_name=value;
+				if (_name != null)
+					_name.Parent = this;
 			}
 		}
 
@@ -11345,6 +11453,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_in_file=value;
+				if (_in_file != null)
+					_in_file.Parent = this;
 			}
 		}
 
@@ -11837,6 +11947,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_used_units=value;
+				if (_used_units != null)
+					_used_units.Parent = this;
 			}
 		}
 
@@ -11852,6 +11964,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_program_definitions=value;
+				if (_program_definitions != null)
+					_program_definitions.Parent = this;
 			}
 		}
 
@@ -11867,6 +11981,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_program_code=value;
+				if (_program_code != null)
+					_program_code.Parent = this;
 			}
 		}
 
@@ -11882,6 +11998,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_using_list=value;
+				if (_using_list != null)
+					_using_list.Parent = this;
 			}
 		}
 
@@ -12479,6 +12597,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_unit_name=value;
+				if (_unit_name != null)
+					_unit_name.Parent = this;
 			}
 		}
 
@@ -12494,6 +12614,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_interface_part=value;
+				if (_interface_part != null)
+					_interface_part.Parent = this;
 			}
 		}
 
@@ -12509,6 +12631,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_implementation_part=value;
+				if (_implementation_part != null)
+					_implementation_part.Parent = this;
 			}
 		}
 
@@ -12524,6 +12648,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_initialization_part=value;
+				if (_initialization_part != null)
+					_initialization_part.Parent = this;
 			}
 		}
 
@@ -12539,6 +12665,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_finalization_part=value;
+				if (_finalization_part != null)
+					_finalization_part.Parent = this;
 			}
 		}
 
@@ -12554,6 +12682,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_attributes=value;
+				if (_attributes != null)
+					_attributes.Parent = this;
 			}
 		}
 
@@ -12849,6 +12979,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_program_name=value;
+				if (_program_name != null)
+					_program_name.Parent = this;
 			}
 		}
 
@@ -12864,6 +12996,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_used_units=value;
+				if (_used_units != null)
+					_used_units.Parent = this;
 			}
 		}
 
@@ -12879,6 +13013,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_program_block=value;
+				if (_program_block != null)
+					_program_block.Parent = this;
 			}
 		}
 
@@ -12894,6 +13030,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_using_namespaces=value;
+				if (_using_namespaces != null)
+					_using_namespaces.Parent = this;
 			}
 		}
 
@@ -13243,6 +13381,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_address_of=value;
+				if (_address_of != null)
+					_address_of.Parent = this;
 			}
 		}
 
@@ -13401,6 +13541,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_conditions=value;
+				if (_conditions != null)
+					_conditions.Parent = this;
 			}
 		}
 
@@ -13416,6 +13558,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_exec_if_true=value;
+				if (_exec_if_true != null)
+					_exec_if_true.Parent = this;
 			}
 		}
 
@@ -13590,6 +13734,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_param=value;
+				if (_param != null)
+					_param.Parent = this;
 			}
 		}
 
@@ -13605,6 +13751,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_conditions=value;
+				if (_conditions != null)
+					_conditions.Parent = this;
 			}
 		}
 
@@ -13620,6 +13768,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_else_statement=value;
+				if (_else_statement != null)
+					_else_statement.Parent = this;
 			}
 		}
 
@@ -13831,6 +13981,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_class_name=value;
+				if (_class_name != null)
+					_class_name.Parent = this;
 			}
 		}
 
@@ -13846,6 +13998,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_meth_name=value;
+				if (_meth_name != null)
+					_meth_name.Parent = this;
 			}
 		}
 
@@ -13861,6 +14015,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_explicit_interface_name=value;
+				if (_explicit_interface_name != null)
+					_explicit_interface_name.Parent = this;
 			}
 		}
 
@@ -14226,6 +14382,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_left=value;
+				if (_left != null)
+					_left.Parent = this;
 			}
 		}
 
@@ -14241,6 +14399,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_right=value;
+				if (_right != null)
+					_right.Parent = this;
 			}
 		}
 
@@ -14509,6 +14669,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_label=value;
+				if (_label != null)
+					_label.Parent = this;
 			}
 		}
 
@@ -14667,6 +14829,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_label_name=value;
+				if (_label_name != null)
+					_label_name.Parent = this;
 			}
 		}
 
@@ -14682,6 +14846,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_to_statement=value;
+				if (_to_statement != null)
+					_to_statement.Parent = this;
 			}
 		}
 
@@ -14853,6 +15019,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_what_do=value;
+				if (_what_do != null)
+					_what_do.Parent = this;
 			}
 		}
 
@@ -14868,6 +15036,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_do_with=value;
+				if (_do_with != null)
+					_do_with.Parent = this;
 			}
 		}
 
@@ -15057,6 +15227,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_parameters=value;
+				if (_parameters != null)
+					_parameters.Parent = this;
 			}
 		}
 
@@ -15225,6 +15397,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_values=value;
+				if (_values != null)
+					_values.Parent = this;
 			}
 		}
 
@@ -15380,6 +15554,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_elements=value;
+				if (_elements != null)
+					_elements.Parent = this;
 			}
 		}
 
@@ -15535,6 +15711,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_accessor_name=value;
+				if (_accessor_name != null)
+					_accessor_name.Parent = this;
 			}
 		}
 
@@ -15682,6 +15860,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_accessor_name=value;
+				if (_accessor_name != null)
+					_accessor_name.Parent = this;
 			}
 		}
 
@@ -15832,6 +16012,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_read_accessor=value;
+				if (_read_accessor != null)
+					_read_accessor.Parent = this;
 			}
 		}
 
@@ -15847,6 +16029,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_write_accessor=value;
+				if (_write_accessor != null)
+					_write_accessor.Parent = this;
 			}
 		}
 
@@ -16028,6 +16212,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_property_name=value;
+				if (_property_name != null)
+					_property_name.Parent = this;
 			}
 		}
 
@@ -16043,6 +16229,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_property_type=value;
+				if (_property_type != null)
+					_property_type.Parent = this;
 			}
 		}
 
@@ -16058,6 +16246,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_index_expression=value;
+				if (_index_expression != null)
+					_index_expression.Parent = this;
 			}
 		}
 
@@ -16073,6 +16263,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_accessors=value;
+				if (_accessors != null)
+					_accessors.Parent = this;
 			}
 		}
 
@@ -16088,6 +16280,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_array_default=value;
+				if (_array_default != null)
+					_array_default.Parent = this;
 			}
 		}
 
@@ -16103,6 +16297,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_parameter_list=value;
+				if (_parameter_list != null)
+					_parameter_list.Parent = this;
 			}
 		}
 
@@ -16395,6 +16591,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_property_parametres=value;
+				if (_property_parametres != null)
+					_property_parametres.Parent = this;
 			}
 		}
 
@@ -16410,6 +16608,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_is_default=value;
+				if (_is_default != null)
+					_is_default.Parent = this;
 			}
 		}
 
@@ -16682,6 +16882,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_access_mod=value;
+				if (_access_mod != null)
+					_access_mod.Parent = this;
 			}
 		}
 
@@ -17521,6 +17723,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_class_parents=value;
+				if (_class_parents != null)
+					_class_parents.Parent = this;
 			}
 		}
 
@@ -17536,6 +17740,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_body=value;
+				if (_body != null)
+					_body.Parent = this;
 			}
 		}
 
@@ -17566,6 +17772,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_template_args=value;
+				if (_template_args != null)
+					_template_args.Parent = this;
 			}
 		}
 
@@ -17581,6 +17789,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_where_section=value;
+				if (_where_section != null)
+					_where_section.Parent = this;
 			}
 		}
 
@@ -17954,6 +18164,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_unit_name=value;
+				if (_unit_name != null)
+					_unit_name.Parent = this;
 			}
 		}
 
@@ -18144,6 +18356,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_of_type=value;
+				if (_of_type != null)
+					_of_type.Parent = this;
 			}
 		}
 
@@ -18315,6 +18529,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_name=value;
+				if (_name != null)
+					_name.Parent = this;
 			}
 		}
 
@@ -18330,6 +18546,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_val=value;
+				if (_val != null)
+					_val.Parent = this;
 			}
 		}
 
@@ -18855,6 +19073,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_parts=value;
+				if (_parts != null)
+					_parts.Parent = this;
 			}
 		}
 
@@ -18870,6 +19090,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_base_type=value;
+				if (_base_type != null)
+					_base_type.Parent = this;
 			}
 		}
 
@@ -19072,6 +19294,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_enumerators=value;
+				if (_enumerators != null)
+					_enumerators.Parent = this;
 			}
 		}
 
@@ -19377,6 +19601,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_excep=value;
+				if (_excep != null)
+					_excep.Parent = this;
 			}
 		}
 
@@ -20026,6 +20252,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_num_of_symbols=value;
+				if (_num_of_symbols != null)
+					_num_of_symbols.Parent = this;
 			}
 		}
 
@@ -20041,6 +20269,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_name=value;
+				if (_name != null)
+					_name.Parent = this;
 			}
 		}
 
@@ -20225,6 +20455,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_vars=value;
+				if (_vars != null)
+					_vars.Parent = this;
 			}
 		}
 
@@ -20240,6 +20472,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_vars_type=value;
+				if (_vars_type != null)
+					_vars_type.Parent = this;
 			}
 		}
 
@@ -20726,6 +20960,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_case_exprs=value;
+				if (_case_exprs != null)
+					_case_exprs.Parent = this;
 			}
 		}
 
@@ -20741,6 +20977,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_parts=value;
+				if (_parts != null)
+					_parts.Parent = this;
 			}
 		}
 
@@ -21230,6 +21468,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_var_name=value;
+				if (_var_name != null)
+					_var_name.Parent = this;
 			}
 		}
 
@@ -21245,6 +21485,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_var_type=value;
+				if (_var_type != null)
+					_var_type.Parent = this;
 			}
 		}
 
@@ -21260,6 +21502,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_vars=value;
+				if (_vars != null)
+					_vars.Parent = this;
 			}
 		}
 
@@ -21433,6 +21677,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_func_name=value;
+				if (_func_name != null)
+					_func_name.Parent = this;
 			}
 		}
 
@@ -21611,6 +21857,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_class_name=value;
+				if (_class_name != null)
+					_class_name.Parent = this;
 			}
 		}
 
@@ -21913,6 +22161,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_elem_type=value;
+				if (_elem_type != null)
+					_elem_type.Parent = this;
 			}
 		}
 
@@ -22522,6 +22772,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_method_name=value;
+				if (_method_name != null)
+					_method_name.Parent = this;
 			}
 		}
 
@@ -22537,6 +22789,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_exprs=value;
+				if (_exprs != null)
+					_exprs.Parent = this;
 			}
 		}
 
@@ -22711,6 +22965,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_expr=value;
+				if (_expr != null)
+					_expr.Parent = this;
 			}
 		}
 
@@ -22726,6 +22982,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_type_def=value;
+				if (_type_def != null)
+					_type_def.Parent = this;
 			}
 		}
 
@@ -22916,6 +23174,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_interface_definitions=value;
+				if (_interface_definitions != null)
+					_interface_definitions.Parent = this;
 			}
 		}
 
@@ -22931,6 +23191,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_uses_modules=value;
+				if (_uses_modules != null)
+					_uses_modules.Parent = this;
 			}
 		}
 
@@ -22946,6 +23208,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_using_namespaces=value;
+				if (_using_namespaces != null)
+					_using_namespaces.Parent = this;
 			}
 		}
 
@@ -23125,6 +23389,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_uses_modules=value;
+				if (_uses_modules != null)
+					_uses_modules.Parent = this;
 			}
 		}
 
@@ -23140,6 +23406,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_implementation_definitions=value;
+				if (_implementation_definitions != null)
+					_implementation_definitions.Parent = this;
 			}
 		}
 
@@ -23155,6 +23423,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_using_namespaces=value;
+				if (_using_namespaces != null)
+					_using_namespaces.Parent = this;
 			}
 		}
 
@@ -23331,6 +23601,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_left=value;
+				if (_left != null)
+					_left.Parent = this;
 			}
 		}
 
@@ -23346,6 +23618,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_right=value;
+				if (_right != null)
+					_right.Parent = this;
 			}
 		}
 
@@ -23517,6 +23791,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_defs=value;
+				if (_defs != null)
+					_defs.Parent = this;
 			}
 		}
 
@@ -23532,6 +23808,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_program_code=value;
+				if (_program_code != null)
+					_program_code.Parent = this;
 			}
 		}
 
@@ -23805,6 +24083,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_type_name=value;
+				if (_type_name != null)
+					_type_name.Parent = this;
 			}
 		}
 
@@ -24537,6 +24817,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_left=value;
+				if (_left != null)
+					_left.Parent = this;
 			}
 		}
 
@@ -24552,6 +24834,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_right=value;
+				if (_right != null)
+					_right.Parent = this;
 			}
 		}
 
@@ -25046,6 +25330,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_fixed_part=value;
+				if (_fixed_part != null)
+					_fixed_part.Parent = this;
 			}
 		}
 
@@ -25061,6 +25347,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_variant_part=value;
+				if (_variant_part != null)
+					_variant_part.Parent = this;
 			}
 		}
 
@@ -25319,6 +25607,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_parameter_list=value;
+				if (_parameter_list != null)
+					_parameter_list.Parent = this;
 			}
 		}
 
@@ -25334,6 +25624,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_property_type=value;
+				if (_property_type != null)
+					_property_type.Parent = this;
 			}
 		}
 
@@ -25349,6 +25641,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_index_expression=value;
+				if (_index_expression != null)
+					_index_expression.Parent = this;
 			}
 		}
 
@@ -25525,6 +25819,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_names=value;
+				if (_names != null)
+					_names.Parent = this;
 			}
 		}
 
@@ -25540,6 +25836,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_type=value;
+				if (_type != null)
+					_type.Parent = this;
 			}
 		}
 
@@ -26149,6 +26447,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_expr=value;
+				if (_expr != null)
+					_expr.Parent = this;
 			}
 		}
 
@@ -26164,6 +26464,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_format1=value;
+				if (_format1 != null)
+					_format1.Parent = this;
 			}
 		}
 
@@ -26179,6 +26481,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_format2=value;
+				if (_format2 != null)
+					_format2.Parent = this;
 			}
 		}
 
@@ -26363,6 +26667,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_initialization_sect=value;
+				if (_initialization_sect != null)
+					_initialization_sect.Parent = this;
 			}
 		}
 
@@ -26378,6 +26684,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_finalization_sect=value;
+				if (_finalization_sect != null)
+					_finalization_sect.Parent = this;
 			}
 		}
 
@@ -26670,6 +26978,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_expr=value;
+				if (_expr != null)
+					_expr.Parent = this;
 			}
 		}
 
@@ -26685,6 +26995,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_address=value;
+				if (_address != null)
+					_address.Parent = this;
 			}
 		}
 
@@ -27025,6 +27337,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_file_of_type=value;
+				if (_file_of_type != null)
+					_file_of_type.Parent = this;
 			}
 		}
 
@@ -27358,6 +27672,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_variable=value;
+				if (_variable != null)
+					_variable.Parent = this;
 			}
 		}
 
@@ -27373,6 +27689,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_type_name=value;
+				if (_type_name != null)
+					_type_name.Parent = this;
 			}
 		}
 
@@ -27388,6 +27706,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_statements=value;
+				if (_statements != null)
+					_statements.Parent = this;
 			}
 		}
 
@@ -27564,6 +27884,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_variable=value;
+				if (_variable != null)
+					_variable.Parent = this;
 			}
 		}
 
@@ -27579,6 +27901,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_type_name=value;
+				if (_type_name != null)
+					_type_name.Parent = this;
 			}
 		}
 
@@ -28068,6 +28392,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_stmt_list=value;
+				if (_stmt_list != null)
+					_stmt_list.Parent = this;
 			}
 		}
 
@@ -28083,6 +28409,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_handlers=value;
+				if (_handlers != null)
+					_handlers.Parent = this;
 			}
 		}
 
@@ -28098,6 +28426,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_else_stmt_list=value;
+				if (_else_stmt_list != null)
+					_else_stmt_list.Parent = this;
 			}
 		}
 
@@ -28363,6 +28693,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_stmt_list=value;
+				if (_stmt_list != null)
+					_stmt_list.Parent = this;
 			}
 		}
 
@@ -28510,6 +28842,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_except_block=value;
+				if (_except_block != null)
+					_except_block.Parent = this;
 			}
 		}
 
@@ -28660,6 +28994,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_stmt_list=value;
+				if (_stmt_list != null)
+					_stmt_list.Parent = this;
 			}
 		}
 
@@ -28675,6 +29011,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_handler=value;
+				if (_handler != null)
+					_handler.Parent = this;
 			}
 		}
 
@@ -28946,6 +29284,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_modulename=value;
+				if (_modulename != null)
+					_modulename.Parent = this;
 			}
 		}
 
@@ -28961,6 +29301,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_name=value;
+				if (_name != null)
+					_name.Parent = this;
 			}
 		}
 
@@ -29447,6 +29789,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_expr=value;
+				if (_expr != null)
+					_expr.Parent = this;
 			}
 		}
 
@@ -29621,6 +29965,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_count=value;
+				if (_count != null)
+					_count.Parent = this;
 			}
 		}
 
@@ -29636,6 +29982,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_stmt=value;
+				if (_stmt != null)
+					_stmt.Parent = this;
 			}
 		}
 
@@ -29813,6 +30161,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_identifier=value;
+				if (_identifier != null)
+					_identifier.Parent = this;
 			}
 		}
 
@@ -29828,6 +30178,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_type_name=value;
+				if (_type_name != null)
+					_type_name.Parent = this;
 			}
 		}
 
@@ -29843,6 +30195,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_in_what=value;
+				if (_in_what != null)
+					_in_what.Parent = this;
 			}
 		}
 
@@ -29858,6 +30212,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_stmt=value;
+				if (_stmt != null)
+					_stmt.Parent = this;
 			}
 		}
 
@@ -30874,6 +31230,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_name=value;
+				if (_name != null)
+					_name.Parent = this;
 			}
 		}
 
@@ -30889,6 +31247,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_params_list=value;
+				if (_params_list != null)
+					_params_list.Parent = this;
 			}
 		}
 
@@ -31394,6 +31754,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_type=value;
+				if (_type != null)
+					_type.Parent = this;
 			}
 		}
 
@@ -31409,6 +31771,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_params_list=value;
+				if (_params_list != null)
+					_params_list.Parent = this;
 			}
 		}
 
@@ -31439,6 +31803,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_array_init_expr=value;
+				if (_array_init_expr != null)
+					_array_init_expr.Parent = this;
 			}
 		}
 
@@ -31947,6 +32313,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_names=value;
+				if (_names != null)
+					_names.Parent = this;
 			}
 		}
 
@@ -31962,6 +32330,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_types=value;
+				if (_types != null)
+					_types.Parent = this;
 			}
 		}
 
@@ -32448,6 +32818,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_type_def=value;
+				if (_type_def != null)
+					_type_def.Parent = this;
 			}
 		}
 
@@ -32463,6 +32835,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_expr=value;
+				if (_expr != null)
+					_expr.Parent = this;
 			}
 		}
 
@@ -32631,6 +33005,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_type_name=value;
+				if (_type_name != null)
+					_type_name.Parent = this;
 			}
 		}
 
@@ -32789,6 +33165,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_Name=value;
+				if (_Name != null)
+					_Name.Parent = this;
 			}
 		}
 
@@ -32804,6 +33182,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_Directive=value;
+				if (_Directive != null)
+					_Directive.Parent = this;
 			}
 		}
 
@@ -33123,6 +33503,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_var_def=value;
+				if (_var_def != null)
+					_var_def.Parent = this;
 			}
 		}
 
@@ -33284,6 +33666,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_condition=value;
+				if (_condition != null)
+					_condition.Parent = this;
 			}
 		}
 
@@ -33299,6 +33683,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_ret_if_true=value;
+				if (_ret_if_true != null)
+					_ret_if_true.Parent = this;
 			}
 		}
 
@@ -33314,6 +33700,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_ret_if_false=value;
+				if (_ret_if_false != null)
+					_ret_if_false.Parent = this;
 			}
 		}
 
@@ -33495,6 +33883,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_expr=value;
+				if (_expr != null)
+					_expr.Parent = this;
 			}
 		}
 
@@ -33878,6 +34268,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_defs=value;
+				if (_defs != null)
+					_defs.Parent = this;
 			}
 		}
 
@@ -33893,6 +34285,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_used_units=value;
+				if (_used_units != null)
+					_used_units.Parent = this;
 			}
 		}
 
@@ -34096,6 +34490,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_defs=value;
+				if (_defs != null)
+					_defs.Parent = this;
 			}
 		}
 
@@ -34272,6 +34668,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_max_value=value;
+				if (_max_value != null)
+					_max_value.Parent = this;
 			}
 		}
 
@@ -34443,6 +34841,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_name=value;
+				if (_name != null)
+					_name.Parent = this;
 			}
 		}
 
@@ -34458,6 +34858,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_value=value;
+				if (_value != null)
+					_value.Parent = this;
 			}
 		}
 
@@ -34950,6 +35352,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_expr1=value;
+				if (_expr1 != null)
+					_expr1.Parent = this;
 			}
 		}
 
@@ -34965,6 +35369,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_expr2=value;
+				if (_expr2 != null)
+					_expr2.Parent = this;
 			}
 		}
 
@@ -34980,6 +35386,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_expr3=value;
+				if (_expr3 != null)
+					_expr3.Parent = this;
 			}
 		}
 
@@ -34995,6 +35403,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_stmt=value;
+				if (_stmt != null)
+					_stmt.Parent = this;
 			}
 		}
 
@@ -35195,6 +35605,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_condition=value;
+				if (_condition != null)
+					_condition.Parent = this;
 			}
 		}
 
@@ -35210,6 +35622,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_stmt=value;
+				if (_stmt != null)
+					_stmt.Parent = this;
 			}
 		}
 
@@ -35897,6 +36311,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_lock_object=value;
+				if (_lock_object != null)
+					_lock_object.Parent = this;
 			}
 		}
 
@@ -35912,6 +36328,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_stmt=value;
+				if (_stmt != null)
+					_stmt.Parent = this;
 			}
 		}
 
@@ -36486,6 +36904,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_if_part=value;
+				if (_if_part != null)
+					_if_part.Parent = this;
 			}
 		}
 
@@ -36501,6 +36921,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_elseif_part=value;
+				if (_elseif_part != null)
+					_elseif_part.Parent = this;
 			}
 		}
 
@@ -38213,6 +38635,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_name=value;
+				if (_name != null)
+					_name.Parent = this;
 			}
 		}
 
@@ -38228,6 +38652,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_template_params=value;
+				if (_template_params != null)
+					_template_params.Parent = this;
 			}
 		}
 
@@ -38417,6 +38843,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_template_args=value;
+				if (_template_args != null)
+					_template_args.Parent = this;
 			}
 		}
 
@@ -38573,6 +39001,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_type_name=value;
+				if (_type_name != null)
+					_type_name.Parent = this;
 			}
 		}
 
@@ -38728,6 +39158,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_expr=value;
+				if (_expr != null)
+					_expr.Parent = this;
 			}
 		}
 
@@ -38889,6 +39321,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_qualifier=value;
+				if (_qualifier != null)
+					_qualifier.Parent = this;
 			}
 		}
 
@@ -38904,6 +39338,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_type=value;
+				if (_type != null)
+					_type.Parent = this;
 			}
 		}
 
@@ -38919,6 +39355,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_arguments=value;
+				if (_arguments != null)
+					_arguments.Parent = this;
 			}
 		}
 
@@ -39774,6 +40212,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_ident_list=value;
+				if (_ident_list != null)
+					_ident_list.Parent = this;
 			}
 		}
 
@@ -39789,6 +40229,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_return_type=value;
+				if (_return_type != null)
+					_return_type.Parent = this;
 			}
 		}
 
@@ -39804,6 +40246,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_formal_parameters=value;
+				if (_formal_parameters != null)
+					_formal_parameters.Parent = this;
 			}
 		}
 
@@ -39819,6 +40263,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_proc_body=value;
+				if (_proc_body != null)
+					_proc_body.Parent = this;
 			}
 		}
 
@@ -39834,6 +40280,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_proc_definition=value;
+				if (_proc_definition != null)
+					_proc_definition.Parent = this;
 			}
 		}
 
@@ -39849,6 +40297,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_parameters=value;
+				if (_parameters != null)
+					_parameters.Parent = this;
 			}
 		}
 
@@ -39909,6 +40359,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_substituting_node=value;
+				if (_substituting_node != null)
+					_substituting_node.Parent = this;
 			}
 		}
 
@@ -40352,6 +40804,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_f_lambda_def=value;
+				if (_f_lambda_def != null)
+					_f_lambda_def.Parent = this;
 			}
 		}
 
@@ -40367,6 +40821,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_parameters=value;
+				if (_parameters != null)
+					_parameters.Parent = this;
 			}
 		}
 
@@ -41102,6 +41558,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_ex=value;
+				if (_ex != null)
+					_ex.Parent = this;
 			}
 		}
 
@@ -41273,6 +41731,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_name=value;
+				if (_name != null)
+					_name.Parent = this;
 			}
 		}
 
@@ -41288,6 +41748,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_expr=value;
+				if (_expr != null)
+					_expr.Parent = this;
 			}
 		}
 
@@ -41779,6 +42241,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_ne_list=value;
+				if (_ne_list != null)
+					_ne_list.Parent = this;
 			}
 		}
 
@@ -41809,6 +42273,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_new_ex=value;
+				if (_new_ex != null)
+					_new_ex.Parent = this;
 			}
 		}
 
@@ -42180,6 +42646,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_procdef=value;
+				if (_procdef != null)
+					_procdef.Parent = this;
 			}
 		}
 
@@ -42503,6 +42971,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_left=value;
+				if (_left != null)
+					_left.Parent = this;
 			}
 		}
 
@@ -42518,6 +42988,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_right=value;
+				if (_right != null)
+					_right.Parent = this;
 			}
 		}
 
@@ -42707,6 +43179,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_substitution=value;
+				if (_substitution != null)
+					_substitution.Parent = this;
 			}
 		}
 
@@ -42884,6 +43358,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_elements_type=value;
+				if (_elements_type != null)
+					_elements_type.Parent = this;
 			}
 		}
 
@@ -43083,6 +43559,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_aloneparam=value;
+				if (_aloneparam != null)
+					_aloneparam.Parent = this;
 			}
 		}
 
@@ -43098,6 +43576,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_el=value;
+				if (_el != null)
+					_el.Parent = this;
 			}
 		}
 
@@ -43113,6 +43593,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_res=value;
+				if (_res != null)
+					_res.Parent = this;
 			}
 		}
 
@@ -43307,6 +43789,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_ex=value;
+				if (_ex != null)
+					_ex.Parent = this;
 			}
 		}
 
@@ -43485,6 +43969,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_opname=value;
+				if (_opname != null)
+					_opname.Parent = this;
 			}
 		}
 
@@ -43794,6 +44280,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_tn=value;
+				if (_tn != null)
+					_tn.Parent = this;
 			}
 		}
 
@@ -43809,6 +44297,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_exprs=value;
+				if (_exprs != null)
+					_exprs.Parent = this;
 			}
 		}
 
@@ -43972,6 +44462,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_vars=value;
+				if (_vars != null)
+					_vars.Parent = this;
 			}
 		}
 
@@ -43987,6 +44479,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_expr=value;
+				if (_expr != null)
+					_expr.Parent = this;
 			}
 		}
 
@@ -44478,6 +44972,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_el=value;
+				if (_el != null)
+					_el.Parent = this;
 			}
 		}
 
@@ -45023,6 +45519,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_left=value;
+				if (_left != null)
+					_left.Parent = this;
 			}
 		}
 
@@ -45038,6 +45536,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_right=value;
+				if (_right != null)
+					_right.Parent = this;
 			}
 		}
 
@@ -45242,6 +45742,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_v=value;
+				if (_v != null)
+					_v.Parent = this;
 			}
 		}
 
@@ -45257,6 +45759,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_from=value;
+				if (_from != null)
+					_from.Parent = this;
 			}
 		}
 
@@ -45272,6 +45776,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_to=value;
+				if (_to != null)
+					_to.Parent = this;
 			}
 		}
 
@@ -45287,6 +45793,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_step=value;
+				if (_step != null)
+					_step.Parent = this;
 			}
 		}
 
@@ -46028,6 +46536,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_ex=value;
+				if (_ex != null)
+					_ex.Parent = this;
 			}
 		}
 
@@ -46186,6 +46696,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_idents=value;
+				if (_idents != null)
+					_idents.Parent = this;
 			}
 		}
 
@@ -46201,6 +46713,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_expr=value;
+				if (_expr != null)
+					_expr.Parent = this;
 			}
 		}
 
@@ -46935,6 +47449,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_new_expr=value;
+				if (_new_expr != null)
+					_new_expr.Parent = this;
 			}
 		}
 
@@ -47109,6 +47625,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_new_addr_value=value;
+				if (_new_addr_value != null)
+					_new_addr_value.Parent = this;
 			}
 		}
 
@@ -47268,6 +47786,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_left=value;
+				if (_left != null)
+					_left.Parent = this;
 			}
 		}
 
@@ -47283,6 +47803,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_right=value;
+				if (_right != null)
+					_right.Parent = this;
 			}
 		}
 
@@ -47546,6 +48068,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_identifier=value;
+				if (_identifier != null)
+					_identifier.Parent = this;
 			}
 		}
 
@@ -47561,6 +48085,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_type=value;
+				if (_type != null)
+					_type.Parent = this;
 			}
 		}
 
@@ -47724,6 +48250,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_left=value;
+				if (_left != null)
+					_left.Parent = this;
 			}
 		}
 
@@ -47739,6 +48267,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_right=value;
+				if (_right != null)
+					_right.Parent = this;
 			}
 		}
 
@@ -47913,6 +48443,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_expr=value;
+				if (_expr != null)
+					_expr.Parent = this;
 			}
 		}
 
@@ -47928,6 +48460,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_case_list=value;
+				if (_case_list != null)
+					_case_list.Parent = this;
 			}
 		}
 
@@ -47943,6 +48477,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_defaultAction=value;
+				if (_defaultAction != null)
+					_defaultAction.Parent = this;
 			}
 		}
 
@@ -48130,6 +48666,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_pattern=value;
+				if (_pattern != null)
+					_pattern.Parent = this;
 			}
 		}
 
@@ -48145,6 +48683,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_case_action=value;
+				if (_case_action != null)
+					_case_action.Parent = this;
 			}
 		}
 
@@ -48160,6 +48700,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_condition=value;
+				if (_condition != null)
+					_condition.Parent = this;
 			}
 		}
 
@@ -48696,6 +49238,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_type=value;
+				if (_type != null)
+					_type.Parent = this;
 			}
 		}
 
@@ -49127,6 +49671,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_variables=value;
+				if (_variables != null)
+					_variables.Parent = this;
 			}
 		}
 
@@ -49142,6 +49688,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_deconstruction_target=value;
+				if (_deconstruction_target != null)
+					_deconstruction_target.Parent = this;
 			}
 		}
 
@@ -49313,6 +49861,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_identifier=value;
+				if (_identifier != null)
+					_identifier.Parent = this;
 			}
 		}
 
@@ -49328,6 +49878,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_type=value;
+				if (_type != null)
+					_type.Parent = this;
 			}
 		}
 
@@ -49488,6 +50040,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_pattern=value;
+				if (_pattern != null)
+					_pattern.Parent = this;
 			}
 		}
 

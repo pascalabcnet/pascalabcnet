@@ -232,7 +232,26 @@ namespace NodeGenerator
 		}
 ";
 
-		public static readonly string field_template=
+        public static readonly string syntax_prop_template =
+@"		///<summary>
+		///help_context
+		///</summary>
+		public property_type property_name
+		{
+			get
+			{
+				return field_name;
+			}
+			set
+			{
+				field_name=value;
+				if (field_name != null)
+					field_name.Parent = this;
+			}
+		}
+";
+
+        public static readonly string field_template=
 @"		protected field_type field_name;";
 
 		
@@ -268,7 +287,17 @@ namespace NodeGenerator
 
         public static string create_property(string property_type,string property_name,string field_name,string help_context)
 		{
-            var w = change_words(prop_template, new string_repl("property_type", property_type),
+            return CreatePropertyFromTemplate(prop_template, property_type, property_name, field_name, help_context);
+		}
+
+        public static string create_property_for_syntax_node_field(string property_type, string property_name, string field_name, string help_context)
+        {
+            return CreatePropertyFromTemplate(syntax_prop_template, property_type, property_name, field_name, help_context);
+        }
+
+        private static string CreatePropertyFromTemplate(string template, string property_type, string property_name, string field_name, string help_context)
+        {
+            var w = change_words(template, new string_repl("property_type", property_type),
                 new string_repl("property_name", property_name), new string_repl("field_name", field_name),
                 new string_repl("help_context", help_context));
             /*if (property_type.ToLower().StartsWith("list<"))
@@ -276,7 +305,7 @@ namespace NodeGenerator
                 w = change_words(w, new string_repl("get", "protected get"));
             }*/
             return w;
-		}
+        }
 
 		public static string create_field(string field_type,string field_name)
 		{
@@ -568,9 +597,9 @@ namespace NodeGenerator
 			}
 		}
 
-		public void generate_code_property(StreamWriter sw,node_info ni,HelpStorage hst)
+		public virtual void generate_code_property(StreamWriter sw,node_info ni,HelpStorage hst)
 		{
-			string prop=text_consts.create_property(field_type_name,property_name,field_code_name,
+			string prop=text_consts.create_property_for_syntax_node_field(field_type_name,property_name,field_code_name,
 				hst.get_help_context(ni.node_name+"."+field_name).help_context);
 			//sw.WriteLine();
 			sw.WriteLine(prop);
@@ -874,6 +903,14 @@ namespace NodeGenerator
 				_create_var=value;
 			}
 		}
+
+        public override void generate_code_property(StreamWriter sw, node_info ni, HelpStorage hst)
+        {
+            string prop = text_consts.create_property(field_type_name, property_name, field_code_name,
+                   hst.get_help_context(ni.node_name + "." + field_name).help_context);
+
+            sw.WriteLine(prop);
+        }
 
         public override void generate_clone_code(NodeWriter writer, string variableName)
         {
