@@ -45,8 +45,8 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // Patterns
             PatternsDesugaringVisitor.New.ProcessNode(root);
 
-
-
+            // Auto classes
+            AutoClassDesugaringVisitor.New.ProcessNode(root);
 
             // Всё, связанное с yield
             MarkMethodHasYieldAndCheckSomeErrorsVisitor.New.ProcessNode(root);
