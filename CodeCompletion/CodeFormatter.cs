@@ -68,6 +68,7 @@ namespace CodeFormatters
         private bool use_strong_formatting = false;
         private bool skip_spaces_before = false;
         private bool skip_spaces_after = false;
+        private bool force_tab = false;
         private int addit_pos_for_multiline = 0;
         private Stack<syntax_tree_node> multi_line_nodes = new Stack<syntax_tree_node>();
         private FormatterOptions options;
@@ -498,6 +499,9 @@ namespace CodeFormatters
                     sb.AppendLine();
                     insert_newline_after_prev = false;
                 }
+                if (force_tab && sb[sb.Length-1] == '\n')
+                    sb.Append(new string(' ', off));
+                force_tab = false;
             }
             skip_spaces_after = false;
             skip_spaces_before = false;
@@ -1451,7 +1455,9 @@ namespace CodeFormatters
         public override void visit(uses_list _uses_list)
         {
             //sb.Append("uses");
-            IncOffset(tab + "uses".Length - 1);
+            IncOffset(tab);
+            //if (!in_one_row(_uses_list))
+                force_tab = true;
             for (int i = 0; i < _uses_list.units.Count; i++)
             {
                 if (i > 0)
@@ -1459,7 +1465,7 @@ namespace CodeFormatters
                 visit_node(_uses_list.units[i]);
             }
             insert_newline_after_prev = true;
-            DecOffset(tab + "uses".Length - 1);
+            DecOffset(tab);
         }
 
         public override void visit(unit_module _unit_module)
@@ -2323,6 +2329,7 @@ namespace CodeFormatters
                 visit_node(_try_stmt.handler);
                 if (hndlr.except_block.stmt_list != null && hndlr.except_block.stmt_list.subnodes.Count == 1 && hndlr.except_block.stmt_list.subnodes[0] is empty_statement)
                 {
+                    add_space_before = true;
                     WriteNode(_try_stmt.handler, "except".Length);
                     read_from_beg_pos = false;
                     add_space_before = false;

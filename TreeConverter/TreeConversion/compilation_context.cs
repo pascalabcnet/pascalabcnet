@@ -3634,7 +3634,12 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     pn = si.sym_info as property_node;
                     //(ssyy) Сверяем как параметры функций, так и типы возвращаемых значений
-                    if (convertion_data_and_alghoritms.function_eq_params_and_result(cpn.get_function, pn.get_function))
+                    if (cpn.get_function == null && pn.get_function == null && pn.property_type == cpn.property_type)
+                    {
+                        find_property = si;
+                        break;
+                    }
+                    else if (cpn.get_function != null && pn.get_function != null && convertion_data_and_alghoritms.function_eq_params_and_result(cpn.get_function, pn.get_function))
                     {
                         find_property = si;
                         break;

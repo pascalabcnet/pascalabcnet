@@ -167,7 +167,7 @@ namespace SyntaxVisitors.SugarVisitors
             desugarResult.CastVariableDefinition = new var_statement(castVariableName, pattern.type);
 
             var successVariableName = NewSuccessName();
-            desugarResult.SuccessVariableDefinition = new var_statement(successVariableName, named_type_reference.Boolean);
+            desugarResult.SuccessVariableDefinition = new var_statement(successVariableName, new ident("false"));
 
             // делегирование проверки паттерна функции IsTest
             desugarResult.TypeCastCheck = SubtreeCreator.CreateSystemFunctionCall(IsTestMethodName, matchingExpression, castVariableName);
@@ -216,9 +216,9 @@ namespace SyntaxVisitors.SugarVisitors
             {
                 if (parameters[i] is recursive_deconstructor_parameter parameter)
                 {
-                    var parameterType = (parameter.pattern as deconstructor_pattern).type;
+                    //var parameterType = (parameter.pattern as deconstructor_pattern).type;
                     var newName = NewGeneralName();
-                    var varParameter = new var_deconstructor_parameter(newName, parameterType);
+                    var varParameter = new var_deconstructor_parameter(newName, null);
                     parameters[i] = varParameter;
                     varParameter.Parent = parameters[i];
                     conjunction = bin_expr.LogicalAnd(conjunction, DesugarRecursiveDeconstructor(newName, parameter.pattern as deconstructor_pattern));

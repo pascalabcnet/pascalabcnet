@@ -13,7 +13,7 @@ begin
   var p := new Pair<integer, string>;
   p._a := 1;
   p._b := 'asd';
-  if p is Pair<integer, string>(integer(a), string(b)) then
+  if p is Pair<integer, string>(integer(var a), string(var b)) then
     Assert((a = 1) and (b = 'asd'))
   else
     Assert(false);
