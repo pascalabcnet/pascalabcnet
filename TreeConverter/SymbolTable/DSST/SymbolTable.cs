@@ -558,9 +558,9 @@ namespace SymbolTable
             real_scope = sc;
             if(real_scope is BlockScope)
             {
-                int deep = -1;
+                int deep = 0;
                 Scope Top = real_scope.TopScope;
-                while(Top != null && !(Top is BlockScope))
+                while(Top != null && (Top is BlockScope))
                 {
                     deep++;
                     Top = Top.TopScope;
