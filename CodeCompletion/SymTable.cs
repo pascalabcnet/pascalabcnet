@@ -478,7 +478,7 @@ namespace CodeCompletion
 
         public void AddUsedUnit(SymScope unit)
         {
-            if (this.si.name != "PABCSystem")
+            if (this.si.name != "PABCSystem" || unit is NamespaceScope)
                 used_units.Add(unit);
         }
 

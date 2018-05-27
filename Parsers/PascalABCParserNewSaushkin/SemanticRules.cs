@@ -394,6 +394,7 @@ namespace GPPGParserScanner
             scanner.parsertools = parsertools;// передали parsertools в объект сканера
             GPPGParser parser = new GPPGParser(scanner);
             parsertools.build_tree_for_formatter = false;
+            parser.lambdaHelper = this.lambdaHelper;
             parser.parsertools = parsertools;
             if (!parser.Parse())
                 if (parsertools.errors.Count == 0)
