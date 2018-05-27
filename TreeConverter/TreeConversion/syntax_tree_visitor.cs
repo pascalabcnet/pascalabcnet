@@ -15644,7 +15644,9 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             //self variable
                             if ((lv.function as common_method_node).self_variable == lv)
+                            {
                                 AddError(lloc, "VARIABLE_{0}_READONLY", lv.name);
+                            }
                         }
                         return create_variable_reference(dn, lloc);
                     }
