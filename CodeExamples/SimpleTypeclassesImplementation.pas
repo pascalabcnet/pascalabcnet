@@ -83,6 +83,21 @@ type
   end;
   
 
+  Num[T] = typeclass(Eq[T], Show[T])
+    function operator+(x, y: T): T;
+    function operator-(x, y: T): T;
+    begin
+      Result := x + negate(y);
+    end;
+    function operator*(x, y: T): T;
+    function negate(x: T): T;
+    begin
+      Result := fromInteger(0) - x;
+    end;
+    function abs(x: T): T;
+    function sign(x: T): T;
+    function fromInteger(x: integer): T;
+  end;
   // ---Instances---
   
   
@@ -124,6 +139,36 @@ type
   end;
   
   
+  Num[integer] = instance
+    function operator+(x, y: integer): integer;
+    begin
+      Result := x + y;
+    end;
+    function operator-(x, y: integer): integer;
+    begin
+      Result := x - y;
+    end;
+    function operator*(x, y: integer): integer;
+    begin
+      Result := x * y;
+    end;
+    function negate(x: integer): integer;
+    begin
+      Result := -x;
+    end;
+    function abs(x: integer): integer;
+    begin
+      Result := abs(x);
+    end;
+    function sign(x: integer): integer;
+    begin
+      Result := Sign(x);
+    end;
+    function fromInteger(x: integer): integer;
+    begin
+      Result := x;
+    end;
+  end;
 // ---Functions---
 
 
