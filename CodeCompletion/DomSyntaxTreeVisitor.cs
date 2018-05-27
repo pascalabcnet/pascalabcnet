@@ -578,7 +578,18 @@ namespace CodeCompletion
         }
 		
         public document doc;
-        
+
+        public location get_location(SourceContext sc)
+        {
+            if (sc == null)
+            {
+                return null;
+            }
+            return new location(sc.begin_position.line_num, sc.begin_position.column_num,
+                sc.end_position.line_num, sc.end_position.column_num, doc);
+        }
+
+
         public location get_location(syntax_tree_node tn)
 		{
 			if (tn.source_context==null)
@@ -2021,7 +2032,7 @@ namespace CodeCompletion
             	SymScope tmp = cur_scope;
             	SymScope stmt_scope = new BlockScope(cur_scope);
         		cur_scope.AddName("$block_scope",stmt_scope);
-        		stmt_scope.loc = get_location(_unit_module.initialization_part);
+        		stmt_scope.loc = get_location(_unit_module.initialization_part.left_logical_bracket.source_context.Merge(_unit_module.initialization_part.right_logical_bracket.source_context));
         		cur_scope = stmt_scope;
             	_unit_module.initialization_part.visit(this);
             	cur_scope = tmp;
@@ -2031,8 +2042,8 @@ namespace CodeCompletion
             	SymScope tmp = cur_scope;
             	SymScope stmt_scope = new BlockScope(cur_scope);
         		cur_scope.AddName("$block_scope",stmt_scope);
-        		stmt_scope.loc = get_location(_unit_module.finalization_part);
-        		cur_scope = stmt_scope;
+        		stmt_scope.loc = get_location(_unit_module.finalization_part.left_logical_bracket.source_context.Merge(_unit_module.finalization_part.right_logical_bracket.source_context));
+                cur_scope = stmt_scope;
             	_unit_module.finalization_part.visit(this);
             	cur_scope = tmp;
             }
