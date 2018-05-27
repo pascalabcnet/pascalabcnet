@@ -922,13 +922,12 @@ namespace PascalABCCompiler.TreeRealization
 
                 if (isTypeclassRestricted)
                 {
-                    //func.wh
                     foreach (var tc in typeclasses)
                     {
                         var instances = context.typeclassInstances.Where(ti =>
                             (ti.ImplementingInterfaces[0] as common_generic_instance_type_node).original_generic ==
                             (tc.ImplementingInterfaces[0] as common_generic_instance_type_node).original_generic);
-                        
+
                         var appropriateInstances = instances.Where(ti =>
                             (ti.ImplementingInterfaces[0] as common_generic_instance_type_node).instance_params.SequenceEqual(
                                 (tc.ImplementingInterfaces[0] as common_generic_instance_type_node).instance_params.Select(ip => deduced[ip.generic_param_index])));
@@ -936,14 +935,19 @@ namespace PascalABCCompiler.TreeRealization
                         if (appropriateInstances.Count() == 1)
                         {
                             var foundInstance = appropriateInstances.First() as common_type_node;
-                            if (foundInstance.generic_params.Count > 0)
+                            if (foundInstance.generic_params?.Count > 0 is true)
                             {
-                                throw new NotImplementedException("Can't deduce type for typeclass inheritance");
+                                type_node[] deducedInstances = new type_node[foundInstance.generic_params.Count];
+                                DeduceTypeclassInstances(context, deducedInstances, foundInstance.generic_params.OfType<type_node>());
+
+                                deduced[tc.generic_param_index] = foundInstance.get_instance(deducedInstances.ToList());
                             }
-                            deduced[tc.generic_param_index] = appropriateInstances.First();
+                            else
+                            {
+                                deduced[tc.generic_param_index] = appropriateInstances.First();
+                            }
                         }
                     }
-                    //context.typeclassInstances.Where(ti => ti.ImplementingInterfaces[0].)
                 }
 
                 var current_deduce_state = deduced               //текущее состояние выведенных типов
@@ -1011,6 +1015,34 @@ namespace PascalABCCompiler.TreeRealization
             List<type_node> deduced_list = new List<type_node>(generic_type_params_count);
             deduced_list.AddRange(deduced);
             return func.get_instance(deduced_list, alone, loc);
+        }
+
+        private static void DeduceTypeclassInstances(compilation_context context, type_node[] deduced, IEnumerable<type_node> typeclasses)
+        {
+            foreach (var tc in typeclasses)
+            {
+                var instances = context.typeclassInstances.Where(ti =>
+                    (ti.ImplementingInterfaces[0] as common_generic_instance_type_node).original_generic ==
+                    (tc.ImplementingInterfaces[0] as common_generic_instance_type_node).original_generic);
+
+                var appropriateInstances = instances.Where(ti =>
+                    (ti.ImplementingInterfaces[0] as common_generic_instance_type_node).instance_params.SequenceEqual(
+                        (tc.ImplementingInterfaces[0] as common_generic_instance_type_node).instance_params));
+
+                if (appropriateInstances.Count() == 1)
+                {
+                    var foundInstance = appropriateInstances.First() as common_type_node;
+                    if (foundInstance.generic_params?.Count > 0 is true)
+                    {
+                        List<type_node> instanceTypes = null;
+                        deduced[tc.generic_param_index] = foundInstance.get_instance(instanceTypes);
+                    }
+                    else
+                    {
+                        deduced[tc.generic_param_index] = appropriateInstances.First();
+                    }
+                }
+            }
         }
 
         //Выведение типов
