@@ -52,6 +52,16 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
+        public SymbolTable.PrimaryScope CurrentScope
+        {
+            get
+            {
+                if(context.CurrentScope != null)
+                    return new SymbolTable.PrimaryScope(context.CurrentScope);
+                return null;
+            }
+        }
+
         public convertion_data_and_alghoritms convertion_data_and_alghoritms;
 
         internal returner ret;
