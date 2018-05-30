@@ -3286,7 +3286,7 @@ tuple
 			if ($6 != null) 
 				parsertools.AddErrorFromResource("BAD_TUPLE",@6);*/
 
-			if (($4 as expression_list).Count>7) 
+			if (($4 as expression_list).Count>6) 
 				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",@$);
             ($4 as expression_list).Insert(0,$2);
 			$$ = new tuple_node($4 as expression_list,@$);

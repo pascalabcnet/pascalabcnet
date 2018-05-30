@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-A6LT9RI
-// DateTime: 22.05.2018 22:30:38
+// DateTime: 31.05.2018 0:33:46
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -5453,7 +5453,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 			if ($6 != null) 
 				parsertools.AddErrorFromResource("BAD_TUPLE",@6);*/
 
-			if ((ValueStack[ValueStack.Depth-4].stn as expression_list).Count>7) 
+			if ((ValueStack[ValueStack.Depth-4].stn as expression_list).Count>6) 
 				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",CurrentLocationSpan);
             (ValueStack[ValueStack.Depth-4].stn as expression_list).Insert(0,ValueStack[ValueStack.Depth-6].ex);
 			CurrentSemanticValue.ex = new tuple_node(ValueStack[ValueStack.Depth-4].stn as expression_list,CurrentLocationSpan);
