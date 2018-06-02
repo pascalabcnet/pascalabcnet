@@ -2905,7 +2905,10 @@ namespace CodeCompletion
                         TypeScope tmp_awaitedProcType = awaitedProcType;
                         if (ps.parameters != null && ps.parameters.Count > i + (ps.IsExtension ? 1 : 0))
                             awaitedProcType = ps.parameters[i + (ps.IsExtension ? 1 : 0)].sc as TypeScope;
+                        bool tmp_disable_lambda_compilation = disable_lambda_compilation;
+                        disable_lambda_compilation = false;
                         e.visit(this);
+                        disable_lambda_compilation = tmp_disable_lambda_compilation;
                         awaitedProcType = tmp_awaitedProcType;
                     }
                 }
