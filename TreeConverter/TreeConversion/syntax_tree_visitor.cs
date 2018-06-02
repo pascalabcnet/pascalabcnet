@@ -10530,8 +10530,10 @@ namespace PascalABCCompiler.TreeConverter
                                 class_definition cl_def = td.type_def as class_definition;
                                 if (cl_def.body == null)
                                     AddError(get_location(cl_def), "TYPE_PREDEFINITION_NOT_ALLOWED");
-                                common_type_node ctn = context.advanced_create_type(td.type_name.name, get_location(td.type_name), false, false);
+                                common_type_node ctn = context.advanced_create_type(td.type_name.name, get_location(td.type_name), (td.type_def as class_definition).keyword == class_keyword.Interface, false);
                                 ctn.ForwardDeclarationOnly = true;
+                                if ((td.type_def as class_definition).keyword == class_keyword.Interface)
+                                    ctn.IsInterface = true;
                                 context.converted_type = null;
                                 context.add_type_header(td, ctn);
                             }
