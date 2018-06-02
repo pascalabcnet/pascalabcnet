@@ -479,7 +479,7 @@ namespace VisualPascalABC
                             SymInfo[] from_list = dconv.GetName(e, expr, line, col, keyword, ref dot_sc);
                             for (int i = 0; i< from_list.Length; i++)
                             {
-                                if (from_list[i].name.StartsWith(pattern))
+                                if (from_list[i].name.StartsWith(pattern, StringComparison.OrdinalIgnoreCase))
                                     si_list.Add(from_list[i]);
                             }
                             mis = si_list.ToArray();
