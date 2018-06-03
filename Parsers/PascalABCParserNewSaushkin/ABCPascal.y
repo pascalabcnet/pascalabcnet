@@ -861,6 +861,10 @@ sign
 const_variable
     : identifier
 		{ $$ = $1; }
+    | tkInherited identifier            
+        { 
+			$$ = new inherited_ident($2.name, @$);
+		}
     | sizeof_expr
 		{ $$ = $1; }
     | typeof_expr

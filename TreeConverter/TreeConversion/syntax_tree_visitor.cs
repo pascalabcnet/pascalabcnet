@@ -8890,7 +8890,11 @@ namespace PascalABCCompiler.TreeConverter
                 case general_node_type.property_node:
                 case general_node_type.variable_node:
                     {
-                        expression_node ex_nd = ident_value_reciving(si_left, id_left);
+                        expression_node ex_nd = null;
+                        if (id_left is inherited_ident)
+                            ex_nd = inherited_ident_value_reciving(id_left as inherited_ident);
+                        else
+                            ex_nd = ident_value_reciving(si_left, id_left);
                         dot_node_as_expression_dot_ident(ex_nd, id_right, mot, id_left);
                         return;
                     }
@@ -9506,7 +9510,10 @@ namespace PascalABCCompiler.TreeConverter
                     dot_node_as_ident_dot_template_ident(id_left, _dot_node.right as ident_with_templateparams, mot);
                     return;
                 }
+                if (id_left is inherited_ident)
+                    inherited_ident_processing = true;
                 dot_node_as_ident_dot_ident(id_left, id_right, mot);
+                inherited_ident_processing = false;
                 return;
             }
             else
