@@ -33,11 +33,7 @@ ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 
 cd ..\bin
 REM MPGORunner.exe
-TestRunner.exe 1
-TestRunner.exe 2
-TestRunner.exe 3
-TestRunner.exe 4
-TestRunner.exe 5
+TestRunner.exe
 cd ..
 GOTO EXIT
 
