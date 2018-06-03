@@ -172,7 +172,10 @@ namespace TreeConverter.LambdaExpressions.Closure
             var varName = ((IVAriableDefinitionNode)symbolInfo.SymbolInfo.sym_info).name.ToLower();
             var ff = symbolInfo.SymbolInfo.sym_info.GetType();
             var isSelfWordInClass = scope is CapturedVariablesTreeNodeClassScope && varName == compiler_string_consts.self_word;
-
+            SourceContext sourceCtxt = null;
+            if (symbolInfo.SymbolInfo.sym_info.location != null)
+                sourceCtxt = new SourceContext(symbolInfo.SymbolInfo.sym_info.location.begin_line_num, symbolInfo.SymbolInfo.sym_info.location.begin_column_num,
+                    symbolInfo.SymbolInfo.sym_info.location.end_line_num, symbolInfo.SymbolInfo.sym_info.location.end_column_num);
             foreach (var referencingLambda in symbolInfo.ReferencingLambdas.OrderByDescending(rl => rl.ScopeIndex))
             {
                 if (scope != referencingLambda.ParentNode)
@@ -211,7 +214,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                                            new dot_node(
                                                new ident(
                                                    _capturedVarsClassDefs[upperScopeWhereVarsAreCaptured.ScopeIndex]
-                                                       .GeneratedSubstitutingFieldName), new ident(varName)));
+                                                       .GeneratedSubstitutingFieldName, sourceCtxt), new ident(varName, sourceCtxt), sourceCtxt));
                     }
 
                     while (upperScopesStack.Count != 0)
@@ -246,10 +249,10 @@ namespace TreeConverter.LambdaExpressions.Closure
                                         new dot_node(
                                             new ident(
                                                 _capturedVarsClassDefs[upperScopeWhereVarsAreCaptured.ScopeIndex]
-                                                    .GeneratedSubstitutingFieldName),
+                                                    .GeneratedSubstitutingFieldName, sourceCtxt),
                                             new ident(
                                                 _capturedVarsClassDefs[upperScopeWhereVarsAreCaptured.ScopeIndex]
-                                                    .GeneratedUpperClassFieldName));
+                                                    .GeneratedUpperClassFieldName, sourceCtxt), sourceCtxt);
 
                                     var nodeForDotNodeCalc = upperScopeWhereVarsAreCaptured.ParentNode;
                                     while (nodeForDotNodeCalc != scope)
@@ -269,7 +272,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                                     }
                                     if (!isSelfWordInClass)
                                     {
-                                        dotnode = new dot_node(dotnode, new ident(varName));
+                                        dotnode = new dot_node(dotnode, new ident(varName, sourceCtxt), sourceCtxt);
                                     }
                                 }
                                 else
@@ -277,8 +280,8 @@ namespace TreeConverter.LambdaExpressions.Closure
                                     dotnode = new dot_node(new ident(
                                                                _capturedVarsClassDefs[
                                                                    upperScopeWhereVarsAreCaptured.ScopeIndex]
-                                                                   .GeneratedSubstitutingFieldName),
-                                                           new ident(varName));
+                                                                   .GeneratedSubstitutingFieldName, sourceCtxt),
+                                                           new ident(varName, sourceCtxt), sourceCtxt);
                                 }
 
                                 if (!_substitutions.ContainsKey(substKey))
@@ -319,7 +322,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                                             {
                                                 new ident(
                                             _capturedVarsClassDefs[nextNodeWhereVarsAreCaptured.ScopeIndex]
-                                                .GeneratedUpperClassFieldName)
+                                                .GeneratedUpperClassFieldName, sourceCtxt)
                                             },
                                         new List<type_definition> {fieldType});
 
@@ -331,13 +334,14 @@ namespace TreeConverter.LambdaExpressions.Closure
                                         new dot_node(
                                             new ident(
                                                 _capturedVarsClassDefs[nextNodeWhereVarsAreCaptured.ScopeIndex]
-                                                    .GeneratedSubstitutingFieldName),
+                                                    .GeneratedSubstitutingFieldName, sourceCtxt),
                                             new ident(
                                                 _capturedVarsClassDefs[nextNodeWhereVarsAreCaptured.ScopeIndex]
-                                                    .GeneratedUpperClassFieldName)),
+                                                    .GeneratedUpperClassFieldName), sourceCtxt),
                                         new ident(
                                             _capturedVarsClassDefs[upperScopeWhereVarsAreCaptured.ScopeIndex]
-                                                .GeneratedSubstitutingFieldName));
+                                                .GeneratedSubstitutingFieldName, sourceCtxt), 
+                                                sourceCtxt);
                             }
 
                             substKey = new SubstitutionKey(varName, symbolInfo.SyntaxTreeNodeWithVarDeclaration,
@@ -362,7 +366,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                                     dot = new dot_node(dot,
                                                        new ident(
                                                            _capturedVarsClassDefs[nodeForDotNodeCalculation.ScopeIndex]
-                                                               .GeneratedUpperClassFieldName));
+                                                               .GeneratedUpperClassFieldName, sourceCtxt), sourceCtxt);
                                 }
 
                                 nodeForDotNodeCalculation = nodeForDotNodeCalculation.ParentNode;
@@ -370,13 +374,13 @@ namespace TreeConverter.LambdaExpressions.Closure
 
                             if (!isSelfWordInClass)
                             {
-                                dot = new dot_node(dot, new ident(varName));
+                                dot = new dot_node(dot, new ident(varName, sourceCtxt), sourceCtxt);
                             }
 
                             if (!_substitutions.ContainsKey(substKey))
                             {
                                 if (ClassField != null && ClassField.IsStatic)
-                                    _substitutions.Add(substKey, new dot_node(ClassName, new ident(varName)));// sc не заполнен, что плохо!
+                                    _substitutions.Add(substKey, new dot_node(ClassName, new ident(varName, sourceCtxt), sourceCtxt));// sc не заполнен, что плохо!
                                 else
                                     _substitutions.Add(substKey, dot);
                             }
@@ -397,10 +401,10 @@ namespace TreeConverter.LambdaExpressions.Closure
                                 dotnode1 = new dot_node(ClassName, new ident(varName));
                             else
                                 dotnode1 = new dot_node(
-                                new ident(compiler_string_consts.self_word),
+                                new ident(compiler_string_consts.self_word, sourceCtxt),
                                 new ident(
                                     _capturedVarsClassDefs[upperScopeWhereVarsAreCaptured.ScopeIndex]
-                                        .GeneratedUpperClassFieldName));
+                                        .GeneratedUpperClassFieldName, sourceCtxt), sourceCtxt);
 
                             if (upperScopeWhereVarsAreCaptured != scope)
                             {
@@ -414,7 +418,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                                         dotnode1 = new dot_node(dotnode1,
                                                                 new ident(
                                                                     _capturedVarsClassDefs[nodeForDotNodeCalc.ScopeIndex]
-                                                                        .GeneratedUpperClassFieldName));
+                                                                        .GeneratedUpperClassFieldName, sourceCtxt), sourceCtxt);
                                     }
 
                                     nodeForDotNodeCalc = nodeForDotNodeCalc.ParentNode;
@@ -429,17 +433,17 @@ namespace TreeConverter.LambdaExpressions.Closure
                                     Tuple<string, class_field, semantic_node> publicProperty;
                                     if (classScope.NonPublicMembersNamesMapping.TryGetValue(varName, out publicProperty))
                                     {
-                                        dotnode1 = new dot_node(dotnode1, new ident(publicProperty.Item1));
+                                        dotnode1 = new dot_node(dotnode1, new ident(publicProperty.Item1, sourceCtxt), sourceCtxt);
                                     }
                                     else
                                     {
                                         if (!(ClassField != null && ClassField.IsStatic))
-                                            dotnode1 = new dot_node(dotnode1, new ident(varName));
+                                            dotnode1 = new dot_node(dotnode1, new ident(varName, sourceCtxt), sourceCtxt);
                                     }
                                 }
                                 else
                                 {
-                                    dotnode1 = new dot_node(dotnode1, new ident(varName));
+                                    dotnode1 = new dot_node(dotnode1, new ident(varName, sourceCtxt), sourceCtxt);
                                 }
                             }
                             _lambdaIdReferences.Add(new LambdaReferencesSubstitutionInfo
@@ -453,8 +457,8 @@ namespace TreeConverter.LambdaExpressions.Closure
                         else
                         {
                             var dotnode1 = new dot_node(
-                                new ident(compiler_string_consts.self_word),
-                                new ident(varName));
+                                new ident(compiler_string_consts.self_word, sourceCtxt),
+                                new ident(varName, sourceCtxt), sourceCtxt);
 
                             _lambdaIdReferences.Add(new LambdaReferencesSubstitutionInfo
                             {
@@ -508,13 +512,13 @@ namespace TreeConverter.LambdaExpressions.Closure
                                                new dot_node(
                                                    new ident(
                                                        _capturedVarsClassDefs[scope.ScopeIndex]
-                                                           .GeneratedSubstitutingFieldName), new ident(propertyName ?? varName)));
+                                                           .GeneratedSubstitutingFieldName, sourceCtxt), new ident(propertyName ?? varName, sourceCtxt), sourceCtxt));
                         }
                     }
 
                     var dotnode1 = new dot_node(
-                                new ident(compiler_string_consts.self_word),
-                                new ident(varName));
+                                new ident(compiler_string_consts.self_word, sourceCtxt),
+                                new ident(varName, sourceCtxt), sourceCtxt);
 
                     _lambdaIdReferences.Add(new LambdaReferencesSubstitutionInfo
                     {

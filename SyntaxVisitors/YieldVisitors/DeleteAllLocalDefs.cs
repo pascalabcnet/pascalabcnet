@@ -59,7 +59,7 @@ namespace SyntaxVisitors
             else
             {
                 // Нескольких переменных тут всё равно не будет - это ошибка
-                ReplaceStatement(vs, SeqStatements(vs.var_def.vars.idents.Select(id => new assign(id, vs.var_def.inital_value)).ToArray()));
+                ReplaceStatement(vs, SeqStatements(vs.var_def.vars.idents.Select(id => new assign(id, vs.var_def.inital_value, vs.source_context)).ToArray()));
             }
 
             LocalDeletedDefsNames.UnionWith(vs.var_def.vars.idents.Select(id => id.name));
