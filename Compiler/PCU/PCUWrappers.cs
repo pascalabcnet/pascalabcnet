@@ -319,6 +319,8 @@ namespace PascalABCCompiler.PCU
             {
                 if (base_type != null && base_type.IsDelegate)
                     return base_type.find_in_type(name, CurrentScope, no_search_in_extension_methods);
+                else if (name == compiler_string_consts.deconstruct_method_name)
+                    return SystemLibrary.SystemLibrary.object_type.find_in_type(name, CurrentScope, no_search_in_extension_methods);
                 return sil;
             }
                 

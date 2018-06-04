@@ -139,6 +139,14 @@ namespace CodeCompletion
                         return true;
                 }
             }
+            else if (node is PascalABCCompiler.SyntaxTree.question_colon_expression)
+            {
+                PascalABCCompiler.SyntaxTree.question_colon_expression expr = node as PascalABCCompiler.SyntaxTree.question_colon_expression;
+                if (has_lambdas(expr.ret_if_true))
+                    return true;
+                if (has_lambdas(expr.ret_if_false))
+                    return true;
+            }
             return false;
         }
 
@@ -2905,7 +2913,10 @@ namespace CodeCompletion
                         TypeScope tmp_awaitedProcType = awaitedProcType;
                         if (ps.parameters != null && ps.parameters.Count > i + (ps.IsExtension ? 1 : 0))
                             awaitedProcType = ps.parameters[i + (ps.IsExtension ? 1 : 0)].sc as TypeScope;
+                        bool tmp_disable_lambda_compilation = disable_lambda_compilation;
+                        disable_lambda_compilation = false;
                         e.visit(this);
+                        disable_lambda_compilation = tmp_disable_lambda_compilation;
                         awaitedProcType = tmp_awaitedProcType;
                     }
                 }
@@ -4474,7 +4485,9 @@ namespace CodeCompletion
 
         public override void visit(PascalABCCompiler.SyntaxTree.question_colon_expression _question_colon_expression)
         {
-        	_question_colon_expression.ret_if_true.visit(this);
+            if (has_lambdas(_question_colon_expression.ret_if_false))
+                _question_colon_expression.ret_if_false.visit(this);
+            _question_colon_expression.ret_if_true.visit(this);
         }
 
         public override void visit(expression_as_statement _expression_as_statement)

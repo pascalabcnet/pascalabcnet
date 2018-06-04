@@ -386,10 +386,7 @@ type
     end;
   
   public 
-    constructor(model: Visual3D);
-    begin
-      CreateBase0(model, 0, 0, 0);
-    end;
+    constructor(model: Visual3D) := CreateBase0(model, 0, 0, 0);
     
     property X: real read GetX write SetX;
     property Y: real read GetY write SetY;

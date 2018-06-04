@@ -27,7 +27,6 @@ namespace PascalABCCompiler.TreeConverter
             var parameterTypes = variableDefinitions.Select(x => x.vars_type == null ? null : convert_strong(x.vars_type)).ToArray();
             List<function_node> candidates = new List<function_node>();
             List<type_node[]> deducedParametersList = new List<type_node[]>();
-
             var allDeconstructs = patternInstance.type.find_in_type(compiler_string_consts.deconstruct_method_name, context.CurrentScope);
             foreach (var canditateSymbol in allDeconstructs)
             {

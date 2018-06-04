@@ -3494,7 +3494,7 @@ begin
   Result := Self;
 end;
 
-function operator=<T>(x,y: HashSet<T>): boolean; extensionmethod;
+function InternalEqual<T>(x,y: HashSet<T>): boolean;
 begin
   var xn := Object.ReferenceEquals(x,nil);
   var yn := Object.ReferenceEquals(y,nil);
@@ -3505,7 +3505,9 @@ begin
   else Result := x.SetEquals(y);
 end;   
 
-function operator<><T>(x,y: HashSet<T>); extensionmethod := not (x=y);
+function operator=<T>(x,y: HashSet<T>): boolean; extensionmethod := InternalEqual(x,y);
+
+function operator<><T>(x,y: HashSet<T>); extensionmethod := not InternalEqual(x,y);
 
 function operator-<T>(x, y: HashSet<T>): HashSet<T>; extensionmethod;
 begin
@@ -3579,7 +3581,7 @@ begin
   Result := Self;
 end;
 
-function operator=<T>(x,y: SortedSet<T>): boolean; extensionmethod;
+function InternalEqual<T>(x,y: SortedSet<T>): boolean; 
 begin
   var xn := Object.ReferenceEquals(x,nil);
   var yn := Object.ReferenceEquals(y,nil);
@@ -3590,7 +3592,9 @@ begin
   else Result := x.SetEquals(y);
 end;   
 
-function operator<><T>(x, y: SortedSet<T>); extensionmethod := not x.SetEquals(y);
+function operator=<T>(x,y: SortedSet<T>): boolean; extensionmethod := InternalEqual(x,y);
+
+function operator<><T>(x, y: SortedSet<T>); extensionmethod := not InternalEqual(x,y);
 
 function operator-<T>(x, y: SortedSet<T>): SortedSet<T>; extensionmethod;
 begin
@@ -10358,9 +10362,21 @@ begin
 end;
 
 ///--
-function operator=<T1, T2> (Self: (T1,T2); v: (T1,T2)); extensionmethod := Object.ReferenceEquals(Self,nil) ? Object.ReferenceEquals(v,nil): Self.Equals(v);
+function InternalEqual<T1, T2> (x: (T1,T2); y: (T1,T2)): boolean; 
+begin
+  var xn := Object.ReferenceEquals(x,nil);
+  var yn := Object.ReferenceEquals(y,nil);
+  if xn then
+    Result := yn
+  else if yn then 
+    Result := xn
+  else Result := x.Equals(y);
+end;
+
 ///--
-function operator<><T1, T2> (Self: (T1,T2); v: (T1,T2)); extensionmethod := not (Self = v);
+function operator=<T1, T2> (x: (T1,T2); y: (T1,T2)): boolean; extensionmethod := InternalEqual(x,y);
+///--
+function operator<><T1, T2> (x: (T1,T2); y: (T1,T2)): boolean; extensionmethod := not InternalEqual(x,y);
 ///--
 function CompareToTup2<T1, T2>(v1: (T1, T2); v2: (T1, T2)) := (v1 as System.IComparable).CompareTo(v2);
 ///--
@@ -10373,9 +10389,20 @@ function operator><T1, T2>(Self: (T1, T2); v: (T1, T2)); extensionmethod := Comp
 function operator>=<T1, T2>(Self: (T1, T2); v: (T1, T2)); extensionmethod := CompareToTup2(Self, v) >= 0;
 
 ///--
-function operator=<T1, T2, T3> (Self: (T1,T2,T3); v: (T1,T2,T3)); extensionmethod := Object.ReferenceEquals(Self,nil) ? Object.ReferenceEquals(v,nil): Self.Equals(v);
+function InternalEqual<T1, T2, T3> (x: (T1,T2,T3); y: (T1,T2,T3)): boolean; 
+begin
+  var xn := Object.ReferenceEquals(x,nil);
+  var yn := Object.ReferenceEquals(y,nil);
+  if xn then
+    Result := yn
+  else if yn then 
+    Result := xn
+  else Result := x.Equals(y);
+end;
 ///--
-function operator<><T1, T2, T3> (Self: (T1,T2,T3); v: (T1,T2,T3)); extensionmethod := not (Self = v);
+function operator=<T1, T2, T3> (x: (T1,T2,T3); y: (T1,T2,T3)); extensionmethod := InternalEqual(x,y);
+///--
+function operator<><T1, T2, T3> (x: (T1,T2,T3); y: (T1,T2,T3)); extensionmethod := not InternalEqual(x,y);
 ///--
 function CompareToTup3<T1, T2, T3>(v1: (T1, T2, T3); v2: (T1, T2, T3)) := (v1 as System.IComparable).CompareTo(v2);
 ///--
@@ -10388,9 +10415,20 @@ function operator><T1,T2,T3>(Self: (T1, T2, T3); v: (T1, T2, T3)); extensionmeth
 function operator>=<T1,T2,T3>(Self: (T1, T2, T3); v: (T1, T2, T3)); extensionmethod := CompareToTup3(Self, v) >= 0;
 
 ///--
-function operator=<T1, T2, T3, T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extensionmethod := Object.ReferenceEquals(Self,nil) ? Object.ReferenceEquals(v,nil): Self.Equals(v);
+function InternalEqual<T1, T2, T3, T4> (x: (T1,T2,T3,T4); y: (T1,T2,T3,T4)): boolean; 
+begin
+  var xn := Object.ReferenceEquals(x,nil);
+  var yn := Object.ReferenceEquals(y,nil);
+  if xn then
+    Result := yn
+  else if yn then 
+    Result := xn
+  else Result := x.Equals(y);
+end;
 ///--
-function operator<><T1, T2, T3, T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extensionmethod := not (Self = v);
+function operator=<T1, T2, T3, T4> (x: (T1,T2,T3,T4); y: (T1,T2,T3,T4)); extensionmethod := InternalEqual(x,y);
+///--
+function operator<><T1, T2, T3, T4> (x: (T1,T2,T3,T4); y: (T1,T2,T3,T4)); extensionmethod := not InternalEqual(x,y);
 ///--
 function CompareToTup4<T1, T2, T3, T4>(v1: (T1, T2, T3, T4); v2: (T1, T2, T3, T4)) := (v1 as System.IComparable).CompareTo(v2);
 ///--
@@ -10402,7 +10440,83 @@ function operator><T1,T2,T3,T4>(Self: (T1, T2, T3, T4); v: (T1, T2, T3, T4)); ex
 ///--
 function operator>=<T1,T2,T3,T4>(Self: (T1, T2, T3, T4); v: (T1, T2, T3, T4)); extensionmethod := CompareToTup4(Self, v) >= 0;
 
+///--
+function InternalEqual<T1, T2, T3, T4, T5> (x: (T1,T2,T3,T4,T5); y: (T1,T2,T3,T4,T5)): boolean; 
+begin
+  var xn := Object.ReferenceEquals(x,nil);
+  var yn := Object.ReferenceEquals(y,nil);
+  if xn then
+    Result := yn
+  else if yn then 
+    Result := xn
+  else Result := x.Equals(y);
+end;
+///--
+function operator=<T1, T2, T3, T4,T5> (x: (T1,T2,T3,T4,T5); y: (T1,T2,T3,T4,T5)); extensionmethod := InternalEqual(x,y);
+///--
+function operator<><T1, T2, T3, T4,T5> (x: (T1,T2,T3,T4,T5); y: (T1,T2,T3,T4,T5)); extensionmethod := not InternalEqual(x,y);
+///--
+function CompareToTup5<T1, T2, T3, T4,T5>(v1: (T1, T2, T3, T4,T5); v2: (T1, T2, T3, T4,T5)) := (v1 as System.IComparable).CompareTo(v2);
+///--
+function operator<<T1,T2,T3,T4,T5>(Self: (T1, T2, T3, T4,T5); v: (T1, T2, T3, T4,T5)); extensionmethod := CompareToTup5(Self, v) < 0;
+///--
+function operator<=<T1,T2,T3,T4,T5>(Self: (T1, T2, T3, T4,T5); v: (T1, T2, T3, T4,T5)); extensionmethod := CompareToTup5(Self, v) <= 0;
+///--
+function operator><T1,T2,T3,T4,T5>(Self: (T1, T2, T3, T4,T5); v: (T1, T2, T3, T4,T5)); extensionmethod := CompareToTup5(Self, v) > 0;
+///--
+function operator>=<T1,T2,T3,T4,T5>(Self: (T1, T2, T3, T4,T5); v: (T1, T2, T3, T4,T5)); extensionmethod := CompareToTup5(Self, v) >= 0;
 
+///--
+function InternalEqual<T1, T2, T3, T4, T5, T6> (x: (T1,T2,T3,T4,T5,T6); y: (T1,T2,T3,T4,T5,T6)): boolean; 
+begin
+  var xn := Object.ReferenceEquals(x,nil);
+  var yn := Object.ReferenceEquals(y,nil);
+  if xn then
+    Result := yn
+  else if yn then 
+    Result := xn
+  else Result := x.Equals(y);
+end;
+///--
+function operator=<T1, T2, T3, T4,T5,T6> (x: (T1,T2,T3,T4,T5,T6); y: (T1,T2,T3,T4,T5,T6)); extensionmethod := InternalEqual(x,y);
+///--
+function operator<><T1, T2, T3, T4,T5,T6> (x: (T1,T2,T3,T4,T5,T6); y: (T1,T2,T3,T4,T5,T6)); extensionmethod := not InternalEqual(x,y);
+///--
+function CompareToTup5<T1, T2, T3, T4,T5,T6>(v1: (T1, T2, T3, T4,T5,T6); v2: (T1, T2, T3, T4,T5,T6)) := (v1 as System.IComparable).CompareTo(v2);
+///--
+function operator<<T1,T2,T3,T4,T5,T6>(Self: (T1, T2, T3, T4,T5,T6); v: (T1, T2, T3, T4,T5,T6)); extensionmethod := CompareToTup5(Self, v) < 0;
+///--
+function operator<=<T1,T2,T3,T4,T5,T6>(Self: (T1, T2, T3, T4,T5,T6); v: (T1, T2, T3, T4,T5,T6)); extensionmethod := CompareToTup5(Self, v) <= 0;
+///--
+function operator><T1,T2,T3,T4,T5,T6>(Self: (T1, T2, T3, T4,T5,T6); v: (T1, T2, T3, T4,T5,T6)); extensionmethod := CompareToTup5(Self, v) > 0;
+///--
+function operator>=<T1,T2,T3,T4,T5,T6>(Self: (T1, T2, T3, T4,T5,T6); v: (T1, T2, T3, T4,T5,T6)); extensionmethod := CompareToTup5(Self, v) >= 0;
+
+///--
+function InternalEqual<T1, T2, T3, T4, T5, T6, T7> (x: (T1,T2,T3,T4,T5,T6,T7); y: (T1,T2,T3,T4,T5,T6,T7)): boolean; 
+begin
+  var xn := Object.ReferenceEquals(x,nil);
+  var yn := Object.ReferenceEquals(y,nil);
+  if xn then
+    Result := yn
+  else if yn then 
+    Result := xn
+  else Result := x.Equals(y);
+end;
+///--
+function operator=<T1, T2, T3, T4,T5,T6,T7> (x: (T1,T2,T3,T4,T5,T6,T7); y: (T1,T2,T3,T4,T5,T6,T7)); extensionmethod := InternalEqual(x,y);
+///--
+function operator<><T1, T2, T3, T4,T5,T6,T7> (x: (T1,T2,T3,T4,T5,T6,T7); y: (T1,T2,T3,T4,T5,T6,T7)); extensionmethod := not InternalEqual(x,y);
+///--
+function CompareToTup5<T1, T2, T3, T4,T5,T6,T7>(v1: (T1, T2, T3, T4,T5,T6,T7); v2: (T1, T2, T3, T4,T5,T6,T7)) := (v1 as System.IComparable).CompareTo(v2);
+///--
+function operator<<T1,T2,T3,T4,T5,T6,T7>(Self: (T1, T2, T3, T4,T5,T6,T7); v: (T1, T2, T3, T4,T5,T6,T7)); extensionmethod := CompareToTup5(Self, v) < 0;
+///--
+function operator<=<T1,T2,T3,T4,T5,T6,T7>(Self: (T1, T2, T3, T4,T5,T6,T7); v: (T1, T2, T3, T4,T5,T6,T7)); extensionmethod := CompareToTup5(Self, v) <= 0;
+///--
+function operator><T1,T2,T3,T4,T5,T6,T7>(Self: (T1, T2, T3, T4,T5,T6,T7); v: (T1, T2, T3, T4,T5,T6,T7)); extensionmethod := CompareToTup5(Self, v) > 0;
+///--
+function operator>=<T1,T2,T3,T4,T5,T6,T7>(Self: (T1, T2, T3, T4,T5,T6,T7); v: (T1, T2, T3, T4,T5,T6,T7)); extensionmethod := CompareToTup5(Self, v) >= 0;
 // --------------------------------------------
 //      Методы расширения типа Tuple # Extension methods for Tuple
 // -------------------------------------------

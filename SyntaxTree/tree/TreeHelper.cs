@@ -798,6 +798,7 @@ namespace PascalABCCompiler.SyntaxTree
             this.proc_body = proc_body;
             source_context = sc;
             is_short_definition = false;
+            FillParentsInDirectChilds();
         }
         public procedure_definition(procedure_header proc_header, proc_block proc_body)
         {
@@ -805,6 +806,7 @@ namespace PascalABCCompiler.SyntaxTree
             this.proc_body = proc_body;
             source_context = null;
             is_short_definition = false;
+            FillParentsInDirectChilds();
         }
 
         public static procedure_definition EmptyDefaultConstructor

@@ -8958,7 +8958,11 @@ namespace PascalABCCompiler.TreeConverter
                 case general_node_type.property_node:
                 case general_node_type.variable_node:
                     {
-                        expression_node ex_nd = ident_value_reciving(si_left, id_left);
+                        expression_node ex_nd = null;
+                        if (id_left is inherited_ident)
+                            ex_nd = inherited_ident_value_reciving(id_left as inherited_ident);
+                        else
+                            ex_nd = ident_value_reciving(si_left, id_left);
                         dot_node_as_expression_dot_ident(ex_nd, id_right, mot, id_left);
                         return;
                     }
@@ -9574,7 +9578,10 @@ namespace PascalABCCompiler.TreeConverter
                     dot_node_as_ident_dot_template_ident(id_left, _dot_node.right as ident_with_templateparams, mot);
                     return;
                 }
+                if (id_left is inherited_ident)
+                    inherited_ident_processing = true;
                 dot_node_as_ident_dot_ident(id_left, id_right, mot);
+                inherited_ident_processing = false;
                 return;
             }
             else
@@ -10598,8 +10605,10 @@ namespace PascalABCCompiler.TreeConverter
                                 class_definition cl_def = td.type_def as class_definition;
                                 if (cl_def.body == null)
                                     AddError(get_location(cl_def), "TYPE_PREDEFINITION_NOT_ALLOWED");
-                                common_type_node ctn = context.advanced_create_type(td.type_name.name, get_location(td.type_name), false, false);
+                                common_type_node ctn = context.advanced_create_type(td.type_name.name, get_location(td.type_name), (td.type_def as class_definition).keyword == class_keyword.Interface, false);
                                 ctn.ForwardDeclarationOnly = true;
+                                if ((td.type_def as class_definition).keyword == class_keyword.Interface)
+                                    ctn.IsInterface = true;
                                 context.converted_type = null;
                                 context.add_type_header(td, ctn);
                             }
@@ -15728,7 +15737,9 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             //self variable
                             if ((lv.function as common_method_node).self_variable == lv)
+                            {
                                 AddError(lloc, "VARIABLE_{0}_READONLY", lv.name);
+                            }
                         }
                         return create_variable_reference(dn, lloc);
                     }

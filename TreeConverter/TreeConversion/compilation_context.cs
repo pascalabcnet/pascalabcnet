@@ -2144,8 +2144,8 @@ namespace PascalABCCompiler.TreeConverter
             	}
             	else
             	{
-            		type_node tn = converted_type.ImplementingInterfaces.Find(x=>(x as type_node).full_name.StartsWith("System.Collections.Generic.IEnumerable")) as type_node;
-            		return new List<SymbolInfo> { new SymbolInfo(tn.instance_params[0]) };
+            		type_node tn = converted_type.ImplementingInterfaces.Find(x=>(x as type_node).BaseFullName.StartsWith("System.Collections.Generic.IEnumerable")) as type_node;
+                    return new List<SymbolInfo> { new SymbolInfo(tn.instance_params[0]) };
             	}
             }
             

@@ -861,7 +861,15 @@ namespace PascalABCCompiler.TreeRealization
             set { _loc = value; }
         }
 
-		public ref_type_node(type_node pointed_type)
+        public override location location
+        {
+            get
+            {
+                return _loc;
+            }
+        }
+
+        public ref_type_node(type_node pointed_type)
 		{
 			_pointed_type = pointed_type;
 			SystemLibrary.SystemLibrary.init_reference_type(this);
@@ -1114,6 +1122,14 @@ namespace PascalABCCompiler.TreeRealization
             _name = v_name;
             _original_type = v_original_type;
             _loc = loc;
+        }
+
+        public override location location
+        {
+            get
+            {
+                return _loc;
+            }
         }
 
         public string name
@@ -1659,7 +1675,15 @@ namespace PascalABCCompiler.TreeRealization
             }
 		}
 
-		public SemanticTree.ILocation Location
+        public override location location
+        {
+            get
+            {
+                return _loc;
+            }
+        }
+
+        public SemanticTree.ILocation Location
 		{
 			get
 			{
@@ -2373,7 +2397,14 @@ namespace PascalABCCompiler.TreeRealization
             get { return _loc; }
             set { _loc = value; }
         }
-        
+
+        public override location location
+        {
+            get
+            {
+                return _loc;
+            }
+        }
         /*public short_string_type_node(SemanticTree.type_access_level type_access_level,
             common_namespace_node comprehensive_namespace, SymbolTable.ClassScope cs, location loc, int length)
         :base(null,type_access_level,comprehensive_namespace,cs,loc)
@@ -2381,7 +2412,7 @@ namespace PascalABCCompiler.TreeRealization
             this.length = length;
             this.type_special_kind = SemanticTree.type_special_kind.short_string;
         }*/
-        
+
         public short_string_type_node(SymbolTable.ClassScope cs, location loc, int length)
         {
         	this._scope = cs;
