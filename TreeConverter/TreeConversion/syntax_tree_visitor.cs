@@ -1102,7 +1102,8 @@ namespace PascalABCCompiler.TreeConverter
             }
 
             var testIsTypeclass = context._ctn?.Attributes?.Any(x => x.AttributeType.name == "__TypeclassAttribute");
-            if (testIsTypeclass.HasValue && testIsTypeclass.Value)
+            var testIsInstance = context._ctn?.Attributes?.Any(x => x.AttributeType.name == "__TypeclassInstanceAttribute");
+            if (testIsTypeclass.HasValue && testIsTypeclass.Value && !(testIsInstance.HasValue && testIsInstance.Value))
             {
                 var type = context._ctn;
 

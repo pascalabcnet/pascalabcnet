@@ -94,8 +94,8 @@ type
     begin
       Result := fromInteger(0) - x;
     end;
-    function abs(x: T): T;
-    function sign(x: T): T;
+    function myabs(x: T): T;
+    function mysign(x: T): T;
     function fromInteger(x: integer): T;
   end;
   // ---Instances---
@@ -139,6 +139,11 @@ type
   end;
   
   
+  Show[integer] = instance
+    function show(x: integer): string := x.ToString();
+  end;
+  
+  
   Num[integer] = instance
     function operator+(x, y: integer): integer;
     begin
@@ -156,11 +161,11 @@ type
     begin
       Result := -x;
     end;
-    function abs(x: integer): integer;
+    function myabs(x: integer): integer;
     begin
       Result := abs(x);
     end;
-    function sign(x: integer): integer;
+    function mysign(x: integer): integer;
     begin
       Result := Sign(x);
     end;
@@ -221,6 +226,10 @@ begin
 end;
 
 
+function NormL2<T>(a, b: T): T; where Num[T];
+begin
+  Result := myabs(a * a + b * b);
+end;
 // ---Test Functions---
 
 
@@ -288,11 +297,24 @@ begin
   
 end;
 
+
+procedure TestNum();
+begin
+
+  writeln('TestNum');
+  var a := -3;
+  var b := -4;
+  var res := NormL2(a, b);
+  writeln(res = 25);
+end;
+
+
 begin
 
   TestEq();
   TestShow();
   TestRead();
   TestOrd();
+  TestNum();
   
 end.

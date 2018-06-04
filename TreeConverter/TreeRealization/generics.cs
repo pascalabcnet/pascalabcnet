@@ -1042,6 +1042,10 @@ namespace PascalABCCompiler.TreeRealization
                         deduced[tc.generic_param_index] = appropriateInstances.First();
                     }
                 }
+                else
+                {
+                    // TODO: typeclasses add error message 
+                }
             }
         }
 
