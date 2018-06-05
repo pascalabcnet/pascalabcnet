@@ -5085,7 +5085,7 @@ namespace CodeCompletion
             sc.generic_params = new List<string>();
             sc.instances = new List<TypeScope>();
             sc.original_type = this;
-            if (this.instances != null && this.instances.Count > 0 && !exact)
+            if (this.instances != null && this.instances.Count > 0)
                 for (int i = 0; i < this.instances.Count; i++)
                 {
                     if (this.instances[i] is UnknownScope || this.instances[i] is TemplateParameterScope)
@@ -5112,7 +5112,16 @@ namespace CodeCompletion
                         {
                             if (i < gen_args.Count && gen_args[i] != null)
                                 sc.generic_params.Add(gen_args[i].si.name);
-                            sc.instances.Add(this.instances[i].GetInstance(gen_args));
+                            if (this.instances[i].original_type == null && !(this.instances[i].elementType is TemplateParameterScope))
+                            {
+                                if (exact)
+                                    sc.instances.Add(gen_args[i]);
+                                else
+                                    sc.instances.Add(this.instances[i]);
+                            }
+                                
+                            else
+                                sc.instances.Add(this.instances[i].GetInstance(gen_args));
                         }
 
                     }

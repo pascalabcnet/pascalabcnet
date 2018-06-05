@@ -4731,7 +4731,7 @@ namespace CodeCompletion
                         return;
                     }
                 }
-                returned_scope = ts.GetInstance(template_params);
+                returned_scope = ts.GetInstance(template_params, true);
             }
         }
 		public override void visit(bracket_expr _bracket_expr)
