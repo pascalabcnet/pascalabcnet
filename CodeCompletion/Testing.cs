@@ -577,9 +577,15 @@ namespace CodeCompletion
     		off = test_str.Length;
     		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s == test_str);
-    		
-    		//testirovanie nazhatija zapjatoj
-    		test_str = ";test(3,aa.bb";
+
+            test_str = "s.OrderBy";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            assert(s == test_str);
+            
+
+            //testirovanie nazhatija zapjatoj
+            test_str = ";test(3,aa.bb";
     		off = test_str.Length;
     		num_param = 1;
     		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);

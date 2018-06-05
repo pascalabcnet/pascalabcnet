@@ -2526,7 +2526,7 @@ namespace PascalABCCompiler.Parsers
                 string op = Text.Substring(i - 1, 2).ToLower().Trim();
                 if (op == "or")
                 {
-                    if (!char.IsLetterOrDigit(Text[i - 2]) && Text[i - 2] != '_' && Text[i - 2] != '&')
+                    if (!char.IsLetterOrDigit(Text[i - 2]) && Text[i - 2] != '_' && Text[i - 2] != '&' && !(i + 1 < Text.Length && char.IsLetterOrDigit(Text[i + 1])))
                     {
                         next = i - 2;
                         return true;
