@@ -421,12 +421,22 @@ namespace GPPGParserScanner
                 List<string> vars = new List<string>();
                 //Dictionary<string, int> var_offsets = new Dictionary<string, int>();
                 List<int> var_offsets = new List<int>();
+                Dictionary<int, string> var_formats = new Dictionary<int, string>();
+                int ind = 0;
                 while (match.Success)
                 {
                     string s = match.Value.Replace("{", "").Replace("}", "");
+                    int colon_pos = s.IndexOf(':');
+                    if (colon_pos != -1)
+                    {
+                        var_formats.Add(ind, s.Substring(colon_pos));
+                        s = s.Substring(0, colon_pos);
+                        
+                    }  
                     vars.Add(s);
                     var_offsets.Add(match.Index);
                     match = match.NextMatch();
+                    ind++;
                 }
                 if (vars.Count == 0)
                 {
@@ -439,7 +449,16 @@ namespace GPPGParserScanner
                 {
                     sb.Append(arr[i].Replace("![&", "{{").Replace("&]!", "}}"));
                     if (i < arr.Length - 1)
-                        sb.Append("{" + i + "}");
+                    {
+                        sb.Append("{" + i);
+                        string fmt;
+                        if (var_formats.TryGetValue(i, out fmt))
+                        {
+                            sb.Append(fmt);
+                        }
+                        sb.Append("}");
+                    }
+                        
                 }
                 mc.parameters.Add(new string_const(sb.ToString(), str.source_context), str.source_context);
                 for (int i = 0; i < vars.Count; i++)
