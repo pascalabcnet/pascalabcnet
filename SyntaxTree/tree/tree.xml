@@ -2863,8 +2863,12 @@
       </Fields>
       <Methods />
       <Tags>
-        <CategoryIndices />
-        <TagIndices />
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>10</TagIndex>
+        </TagIndices>
       </Tags>
     </SyntaxNode>
     <SyntaxNode Name="instance_definition" BaseName="type_definition">
@@ -2876,10 +2880,12 @@
         <CategoryIndices>
           <CategoryIndex>0</CategoryIndex>
           <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
         </CategoryIndices>
         <TagIndices>
           <TagIndex>4</TagIndex>
           <TagIndex>5</TagIndex>
+          <TagIndex>10</TagIndex>
         </TagIndices>
       </Tags>
     </SyntaxNode>
@@ -2893,10 +2899,12 @@
         <CategoryIndices>
           <CategoryIndex>0</CategoryIndex>
           <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
         </CategoryIndices>
         <TagIndices>
           <TagIndex>4</TagIndex>
           <TagIndex>5</TagIndex>
+          <TagIndex>10</TagIndex>
         </TagIndices>
       </Tags>
     </SyntaxNode>
@@ -2906,8 +2914,12 @@
       </Fields>
       <Methods />
       <Tags>
-        <CategoryIndices />
-        <TagIndices />
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>10</TagIndex>
+        </TagIndices>
       </Tags>
     </SyntaxNode>
     <SyntaxNode Name="typeclass_param_list" BaseName="template_param_list">
@@ -2920,8 +2932,12 @@
         </Method>
       </Methods>
       <Tags>
-        <CategoryIndices />
-        <TagIndices />
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>10</TagIndex>
+        </TagIndices>
       </Tags>
     </SyntaxNode>
     <SyntaxNode Name="typeclass_reference" BaseName="named_type_reference">
@@ -2932,9 +2948,11 @@
       <Tags>
         <CategoryIndices>
           <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
         </CategoryIndices>
         <TagIndices>
           <TagIndex>4</TagIndex>
+          <TagIndex>10</TagIndex>
         </TagIndices>
       </Tags>
     </SyntaxNode>
@@ -3137,7 +3155,7 @@
         <Tag Name="Method_Procedure_Call" ReferenceCount="2" />
         <Tag Name="Yield" ReferenceCount="8" />
         <Tag Name="Patterns" ReferenceCount="12" />
-        <Tag Name="Typeclasses" ReferenceCount="7" />
+        <Tag Name="Typeclasses" ReferenceCount="13" />
       </Tags>
     </FilterCategory>
   </TagCategories>
