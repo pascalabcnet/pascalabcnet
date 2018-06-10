@@ -2073,6 +2073,49 @@ type
     end;
   end;
 
+
+type
+  ///--
+  __TypeclassRestrictedFunctionAttribute = class(Attribute)
+  public
+    constructor;
+    begin
+    end;
+  end;
+  
+  
+  ///--
+  __TypeclassGenericParameterAttribute = class(Attribute)
+  public
+    constructor(instanceName: string);
+    begin
+    end;
+  end;
+  
+  ///--
+  __TypeclassAttribute = class(Attribute)
+  public
+    constructor;
+    begin
+    end;
+  end;
+
+  ///--
+  __TypeclassMemberAttribute = class(Attribute)
+  public
+    constructor;
+    begin
+    end;
+  end;
+  
+  ///--
+  __TypeclassInstanceAttribute = class(Attribute)
+  public
+    constructor;
+    begin
+    end;
+  end;
+  
 // -----------------------------------------------------
 //                  Internal procedures for PABCRTL.dll
 // -----------------------------------------------------
@@ -6598,14 +6641,14 @@ begin
     else if not cond then
     begin
       var err := 'Сбой подтверждения: ' + message + Environment.NewLine + 'Файл ' + sourceFile + ', строка ' + line.ToString();
-      writeln(err);
+      Writeln(err);
       System.Threading.Thread.Sleep(500);
       raise new Exception();
     end;
   end
   else
     //System.Diagnostics.Debug.Assert(cond, message);
-    System.Diagnostics.Contracts.Contract.Assert(cond,'Файл '+sourceFile+', строка '+line.ToString())
+    System.Diagnostics.Contracts.Contract.Assert(cond,'Файл '+sourceFile+', строка '+line.ToString() + ': ' + message)
 end;
 
 function DiskFree(diskname: string): int64;

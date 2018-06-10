@@ -15,7 +15,7 @@ begin
   begin
     var c1 := c.Clone.MoveTo(p);
     c1.Rotate(OrtZ,3);
-    (c1 as BoxT).Color := RandomColor;
+    (c1 as CubeT).Color := RandomColor;
     c := c1;
   end;
 end;
