@@ -11,4 +11,5 @@ begin
   var g := Group(s,s1);
   var g1 := g.Clone;
   g.MoveOnY(-4);
+  s1.AnimRotateAt(OrtZ,360,P3D(-2,0,0)).Begin;
 end.

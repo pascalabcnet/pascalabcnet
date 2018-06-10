@@ -6,7 +6,7 @@ begin
   var t := Text3D(-5,0,1,'GraphABC',2);
   OnMouseDown += procedure (x,y,mb) -> begin
     if mb<>1 then exit;
-    var v := FindObject3D(x,y);
+    var v := FindNearestObject(x,y);
     if v<>nil then
       v.Color := RandomColor;
   end;

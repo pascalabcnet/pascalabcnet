@@ -6641,14 +6641,14 @@ begin
     else if not cond then
     begin
       var err := 'Сбой подтверждения: ' + message + Environment.NewLine + 'Файл ' + sourceFile + ', строка ' + line.ToString();
-      writeln(err);
+      Writeln(err);
       System.Threading.Thread.Sleep(500);
       raise new Exception();
     end;
   end
   else
     //System.Diagnostics.Debug.Assert(cond, message);
-    System.Diagnostics.Contracts.Contract.Assert(cond,'Файл '+sourceFile+', строка '+line.ToString())
+    System.Diagnostics.Contracts.Contract.Assert(cond,'Файл '+sourceFile+', строка '+line.ToString() + ': ' + message)
 end;
 
 function DiskFree(diskname: string): int64;
