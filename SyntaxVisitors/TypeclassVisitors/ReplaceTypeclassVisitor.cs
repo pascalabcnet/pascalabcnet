@@ -37,7 +37,8 @@ namespace SyntaxVisitors.TypeclassVisitors
             // If it is instance of derived typelass than it should have template parameters
             var templateArgs = new ident_list();
             where_definition_list whereSection = null;
-            var typeclassParents = (instancesAndRestrictedFunctions.typeclasses[instanceName.name].type_def as typeclass_definition).additional_restrictions;
+            var originalTypeclass = instancesAndRestrictedFunctions.typeclasses[instanceName.name].type_def as typeclass_definition;
+            var typeclassParents = originalTypeclass.additional_restrictions;
             if (typeclassParents != null && typeclassParents.Count > 0)
             {
                 whereSection = new where_definition_list();
@@ -72,6 +73,7 @@ namespace SyntaxVisitors.TypeclassVisitors
                     null, instanceDefinition.body.class_def_blocks.ToArray());
             instanceDefTranslated.template_args = templateArgs;
             instanceDefTranslated.where_section = whereSection;
+            instanceDefTranslated.source_context = instanceDefinition.source_context;
 
             for (int i = 0; i < instanceDefTranslated.body.class_def_blocks.Count; i++)
             {
@@ -105,17 +107,26 @@ namespace SyntaxVisitors.TypeclassVisitors
                 cm.Add(def);
             }
             */
-            var typeName = new ident(CreateInstanceName(instanceName.restriction_args as typeclass_param_list, instanceName.name));
+            var typeName = new ident(CreateInstanceName(instanceName.restriction_args as typeclass_param_list, instanceName.name), instanceName.source_context);
 
             var instanceDeclTranslated = new type_declaration(typeName, instanceDefTranslated, instanceDeclaration.source_context);
             instanceDeclTranslated.attributes = instanceDeclaration.attributes;
-            AddAttribute(instanceDeclTranslated, "__TypeclassInstanceAttribute");
-            AddAttribute(instanceDeclTranslated, "__TypeclassAttribute");
+            AddAttribute(
+                instanceDeclTranslated, "__TypeclassInstanceAttribute",
+                new expression_list(new string_const(TypeclassRestrictionToString(instanceName))));
+            AddAttribute(instanceDeclTranslated, "__TypeclassAttribute",
+                new expression_list(new string_const(TypeclassRestrictionToString(
+                    (originalTypeclass.Parent as type_declaration).type_name as typeclass_restriction))));
 
             Replace(instanceDeclaration, instanceDeclTranslated);
             visit(instanceDeclTranslated);
 
             return true;
+        }
+
+        private static string TypeclassRestrictionToString(typeclass_restriction instanceName)
+        {
+            return instanceName.name + "[" + string.Join(",", instanceName.restriction_args.params_list) + "]";
         }
 
         private static string CreateInstanceName(typeclass_param_list restriction_args, string typeName)
@@ -124,7 +135,7 @@ namespace SyntaxVisitors.TypeclassVisitors
             {
                 typeName += "_" + (restriction_args.params_list[i] as named_type_reference).names[0];
             }
-
+ 
             return typeName;
         }
 
@@ -192,7 +203,9 @@ namespace SyntaxVisitors.TypeclassVisitors
             var typeclassInterfaceName = new template_type_name("I" + typeclassName.name, RestrictionsToIdentList(typeclassName.restriction_args));
             var typeclassInterfaceDecl = new type_declaration(typeclassInterfaceName, typeclassInterfaceDef);
             typeclassInterfaceDecl.attributes = typeclassDeclaration.attributes;
-            AddAttribute(typeclassInterfaceDecl, "__TypeclassAttribute");
+            AddAttribute(
+                typeclassInterfaceDecl, "__TypeclassAttribute",
+                new expression_list(new string_const(TypeclassRestrictionToString(typeclassName))));
 
 
             // Creating class
@@ -329,7 +342,9 @@ namespace SyntaxVisitors.TypeclassVisitors
 
             var typeclassDeclTranslated = new type_declaration(typeclassNameTanslated, typeclassDefTranslated, typeclassDeclaration.source_context);
             typeclassDeclTranslated.attributes = typeclassDeclaration.attributes;
-            AddAttribute(typeclassDeclTranslated, "__TypeclassAttribute");
+            AddAttribute(
+                typeclassDeclTranslated, "__TypeclassAttribute",
+                new expression_list(new string_const(TypeclassRestrictionToString(typeclassName))));
 
             Replace(typeclassDeclaration, typeclassDeclTranslated);
             UpperNodeAs<type_declarations>().InsertBefore(typeclassDeclTranslated, typeclassInterfaceDecl);

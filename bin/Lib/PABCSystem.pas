@@ -2095,7 +2095,7 @@ type
   ///--
   __TypeclassAttribute = class(Attribute)
   public
-    constructor;
+    constructor(typeclassName: string);
     begin
     end;
   end;
@@ -2111,7 +2111,7 @@ type
   ///--
   __TypeclassInstanceAttribute = class(Attribute)
   public
-    constructor;
+    constructor(instanceName: string);
     begin
     end;
   end;

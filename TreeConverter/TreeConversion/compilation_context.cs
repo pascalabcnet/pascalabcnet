@@ -2723,11 +2723,25 @@ namespace PascalABCCompiler.TreeConverter
                     //Переходим к следующей функции-кандидату
                 }
             }
+
+            var testIsInstance = _ctn?.Attributes?.Any(x => x.AttributeType.name == "__TypeclassInstanceAttribute");
+            if (testIsInstance is true)
+            {
+                if (find_method == null || (find_method.sym_info as function_node).polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)
+                {
+                    var instanceName = _ctn.Attributes.First(x => x.AttributeType.name == "__TypeclassInstanceAttribute").Arguments[0].value;
+                    var typeclassName = _ctn.Attributes.First(x => x.AttributeType.name == "__TypeclassAttribute").Arguments[0].value;
+                    AddError(_ctn.location, "INSTANCE_{0}_DOES_NOT_IMPLEMENT_REQUIREMENT_{1}_OF_TYPECLASS_{2}",
+                        instanceName.ToString(), Tools.GetFullMethodHeaderString(meth), typeclassName.ToString());
+                }
+            }
+
             if (find_method == null)
             {
                 //Нет функции с таким именем, набором параметров и возвращаемым значением
                 AddError(new InterfaceMemberNotImplemented(cnode.PrintableName, interf.PrintableName, Tools.GetFullMethodHeaderString(meth), cnode.is_value_type, cnode.loc));
             }
+
             //Теперь проверяем на public и non-static
             bool bad = false;
             common_method_node commn = find_method.sym_info as common_method_node;
