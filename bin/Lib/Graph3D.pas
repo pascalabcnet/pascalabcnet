@@ -2923,7 +2923,12 @@ end;
 
 procedure Proba2 := Invoke(ProbaP2);
 
+procedure ProbaP3(x,y,z: real);
+begin
+  hvp.CameraController.AddMoveForce(x,y,z);
+end;
 
+procedure Proba3(x,y,z: real) := Invoke(ProbaP3,x,y,z);
 
 type
   Graph3DWindow = class(GMainWindow)

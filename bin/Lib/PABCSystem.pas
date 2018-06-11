@@ -4285,6 +4285,7 @@ begin
   end;
 end;
 
+///--
 procedure Deconstruct<T>(self: T; var res: T); extensionmethod;
 begin
   res := self;
