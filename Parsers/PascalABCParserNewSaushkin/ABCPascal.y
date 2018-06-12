@@ -2950,6 +2950,8 @@ typeof_expr
 question_expr
     : expr_l1 tkQuestion expr_l1 tkColon expr_l1 
         { 
+            if ($3 is nil_const && $5 is nil_const)
+            	parsertools.AddErrorFromResource("TWO_NILS_IN_QUESTION_EXPR",@3);
 			$$ = new question_colon_expression($1, $3, $5, @$);  
 		}
     ;

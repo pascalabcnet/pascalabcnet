@@ -61,3 +61,4 @@ OVERLOAD_IS_NOT_USED=overload не используется в PascalABC.NET
 ONLY_BASE_ASSIGNMENT_FOR_TUPLE=Для кортежа допустимо только обычное присваивание :=
 BAD_FORMAT_STRING=Встречена неправильная форматная строка
 TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7=Количество элементов кортежа не должно быть больше 7 
+TWO_NILS_IN_QUESTION_EXPR=Условное выражение не может содержать константы nil по обеим веткам
