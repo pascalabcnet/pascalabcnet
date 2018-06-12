@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-A6LT9RI
-// DateTime: 12.06.2018 21:27:14
+// DateTime: 12.06.2018 22:19:30
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -4370,6 +4370,9 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                           optional_method_modificators1, tkAssign, expr_l1, 
                 //                           tkSemiColon
 {
+			if (ValueStack[ValueStack.Depth-2].ex is dot_question_node)
+				parsertools.AddErrorFromResource("DOT_QUECTION_IN_SHORT_FUN",LocationStack[LocationStack.Depth-2]);
+	
 			CurrentSemanticValue.stn = SyntaxTreeBuilder.BuildShortFuncDefinition(ValueStack[ValueStack.Depth-5].stn as formal_parameters, ValueStack[ValueStack.Depth-4].stn as procedure_attributes_list, ValueStack[ValueStack.Depth-6].stn as method_name, null, ValueStack[ValueStack.Depth-2].ex, LocationStack[LocationStack.Depth-7].Merge(LocationStack[LocationStack.Depth-4]));
 		}
         break;
