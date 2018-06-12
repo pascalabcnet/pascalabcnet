@@ -1847,6 +1847,7 @@ namespace PascalABCCompiler.SystemLibrary
             make_function_comparison(_real_smeq, _float_smeq, function_compare.greater);
             make_function_comparison(_real_eq, _float_eq, function_compare.greater);
             make_function_comparison(_real_noteq, _float_noteq, function_compare.greater);
+            make_function_comparison(_real_div, _float_div, function_compare.greater);
 
             //char type.
             //Assign.
