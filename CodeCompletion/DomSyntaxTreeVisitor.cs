@@ -4485,9 +4485,27 @@ namespace CodeCompletion
 
         public override void visit(PascalABCCompiler.SyntaxTree.question_colon_expression _question_colon_expression)
         {
-            if (has_lambdas(_question_colon_expression.ret_if_false))
-                _question_colon_expression.ret_if_false.visit(this);
             _question_colon_expression.ret_if_true.visit(this);
+            TypeScope type1 = returned_scope as TypeScope;
+            _question_colon_expression.ret_if_false.visit(this);
+            TypeScope type2 = returned_scope as TypeScope;
+            if (type1 == null)
+            {
+                returned_scope = type2;
+                return;
+            }   
+            if (type2 == null)
+            {
+                returned_scope = type1;
+                return;
+            }
+                
+            if (type1.IsConvertable(type2))
+            {
+                returned_scope = type2;
+                return;
+            }
+            returned_scope = type1;
         }
 
         public override void visit(expression_as_statement _expression_as_statement)
