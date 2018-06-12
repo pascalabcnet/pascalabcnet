@@ -1844,7 +1844,7 @@ function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 //>>     Вспомогательные функции для pattern matching
 // -----------------------------------------------------
 
-function IsTest<T>(obj: object; var res: T): boolean;
+function __TypeCheckAndAssignForIsMatch<T>(obj: object; var res: T): boolean;
 
 //{{{--doc: Конец секции интерфейса для документации }}} 
 
@@ -4271,7 +4271,7 @@ begin
   Result := new KeyValuePair<TKey, TVal>(key, value);
 end;
 
-function IsTest<T>(obj: object; var res: T): boolean;
+function __TypeCheckAndAssignForIsMatch<T>(obj: object; var res: T): boolean;
 begin
   if obj is T then
   begin
