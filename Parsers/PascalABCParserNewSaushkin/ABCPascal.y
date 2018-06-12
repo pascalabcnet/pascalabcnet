@@ -2128,6 +2128,9 @@ proc_func_decl_noclass
 		}
 	| tkFunction func_name fp_list optional_method_modificators1 tkAssign expr_l1 tkSemiColon
 		{
+			if ($6 is dot_question_node)
+				parsertools.AddErrorFromResource("DOT_QUECTION_IN_SHORT_FUN",@6);
+	
 			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, null, $6, @1.Merge(@4));
 		}
 	| tkFunction func_name fp_list tkColon fptype optional_method_modificators1 tkAssign func_decl_lambda tkSemiColon
