@@ -3220,7 +3220,14 @@ namespace CodeCompletion
                     cur_scope.AddName(cur_type_name, ss);
             }
             else
+            {
                 ss.baseScope = returned_scope as TypeScope;
+                if ((_class_definition.attribute & class_attribute.Sealed) == class_attribute.Sealed)
+                    ss.is_final = true;
+                if ((_class_definition.attribute & class_attribute.Abstract) == class_attribute.Abstract)
+                    ss.is_abstract = true;
+            }
+                
             int num = 0;
             if (_class_definition.keyword != class_keyword.Interface)
                 num = 1;
