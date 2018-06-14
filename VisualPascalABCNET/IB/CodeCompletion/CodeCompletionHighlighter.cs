@@ -118,8 +118,18 @@ namespace VisualPascalABC
             if (CheckForCommentOrKav(textArea.Document.TextContent, beg_off))
                 return false;
             char c = textArea.Document.TextContent[off];
-            while (char.IsWhiteSpace(c))
+            while (char.IsWhiteSpace(c) || c == '}')
             {
+                if (c == '}')
+                {
+                    while (c != '{')
+                    {
+                        off--;
+                        if (off < 0)
+                            break;
+                        c = textArea.Document.TextContent[off];
+                    }
+                }
                 off--;
                 if (off < 0)
                     return false;
@@ -130,6 +140,8 @@ namespace VisualPascalABC
             {
                 return true;
             }
+            
+                
             if (c == 't' || c == 'd' || c == 'o')
             {
                 StringBuilder keyword = new StringBuilder();
@@ -389,6 +401,8 @@ namespace VisualPascalABC
             i = off;
             while (i < Text.Length && !is_comm && Text[i] != '\n')
             {
+                if (Text[i] == '{')
+                    return false;
                 if (Text[i] == '}')
                 {
                     return true;
