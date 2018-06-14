@@ -517,6 +517,8 @@ namespace CodeCompletion
         {
             //SymScope ss = entry_scope.FindScopeByLocation(_type_declaration.source_context.begin_position.line_num,_type_declaration.source_context.begin_position.column_num);
             IBaseScope ss = entry_scope.FindNameInAnyOrder(_type_declaration.type_name.name);
+            if (ss == null && entry_scope is IInterfaceUnitScope && (entry_scope as IInterfaceUnitScope).ImplementationUnitScope != null)
+                ss = (entry_scope as IInterfaceUnitScope).ImplementationUnitScope.FindNameInAnyOrder(_type_declaration.type_name.name);
             if (for_refactoring && ss != null && ss.IsEqual(founded_scope) && string.Compare(ss.SymbolInfo.name, _type_declaration.type_name.name, true) == 0)
             {
                 pos_list.Add(get_position(_type_declaration.type_name));
