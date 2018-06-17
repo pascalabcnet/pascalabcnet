@@ -111,8 +111,9 @@ namespace SyntaxVisitors.SugarVisitors
 
         public override void visit(is_pattern_expr isPatternExpr)
         {
-            // TODO Patterns: convert to compilation error
-            Debug.Assert(GetLocation(isPatternExpr) != PatternLocation.Unknown, "Is-pattern expression is in an unknown context");
+            if (GetLocation(isPatternExpr) == PatternLocation.Unknown)
+                throw new SyntaxVisitorError("PATTERN_MATHING_IS_NOT_SUPPORTED_IN_THIS_CONTEXT", isPatternExpr.source_context);
+
             Debug.Assert(GetAscendant<statement_list>(isPatternExpr) != null, "Couldn't find statement list in upper nodes");
             
             DesugarIsExpression(isPatternExpr);
@@ -235,6 +236,7 @@ namespace SyntaxVisitors.SugarVisitors
             ReplaceUsingParent(isExpression, desugaringResult.SuccessVariable);
 
             var statementsToAdd = desugaringResult.GetDeconstructionDefinitions(pattern.source_context);
+            statementsToAdd.Add(GetMatchedExpressionCheck(isExpression.left));
             statementsToAdd.Add(desugaringResult.GetPatternCheckWithDeconstrunctorCall());
 
             AddDefinitionsInUpperStatementList(isExpression, statementsToAdd);
@@ -247,11 +249,12 @@ namespace SyntaxVisitors.SugarVisitors
             ReplaceUsingParent(isExpression, desugaringResult.SuccessVariable);
 
             var statementsToAdd = desugaringResult.GetDeconstructionDefinitions(pattern.source_context);
+            statementsToAdd.Add(GetMatchedExpressionCheck(isExpression.left));
             statementsToAdd.Add(desugaringResult.GetPatternCheckWithDeconstrunctorCall());
 
             var enclosingIf = GetAscendant<if_node>(isExpression);
             // Если уже обрабатывался ранее (второй встретившийся в том же условии is), то не изменяем if
-            if (processedIfNodes.Contains(enclosingIf))
+            if (processedIfNodes.Contains(enclosingIf)) 
                 AddDefinitionsInUpperStatementList(isExpression, statementsToAdd);
             // Иначе помещаем определения и if-then в отдельный блок, а else после этого блока
             else
@@ -266,6 +269,9 @@ namespace SyntaxVisitors.SugarVisitors
                 elseBody?.visit(this);
             }
         }
+
+        private semantic_check_sugared_statement_node GetMatchedExpressionCheck(expression matchedExpression)
+        => new semantic_check_sugared_statement_node(SugaredExpressionType.MatchedExpression, new List<syntax_tree_node>() { matchedExpression });
 
         private statement_list ConvertIfNode(if_node ifNode, List<statement> statementsBeforeIf, out statement elseBody)
         {

@@ -211,5 +211,16 @@ namespace PascalABCCompiler.TreeConverter
                 if (parameter.parameter_type != SemanticTree.parameter_type.var && parameter is common_parameter p)
                     AddError(p.loc, "DECONSTRUCTION_PARAMETERS_SHOULD_HAVE_VAR_MODIFIER");
         }
+
+        /// <summary>
+        /// Проверяет выражение, сопоставляемое с образцом
+        /// </summary>
+        /// <param name="matchedExpression"></param>
+        private void CheckMatchedExpression(expression matchedExpression)
+        {
+            var convertedExpression = convert_strong(matchedExpression);
+            if (convertedExpression.type.IsPointer)
+                AddError(get_location(matchedExpression), "PATTERN_MATCHING_DOESNT_SUPPORT_POINTERS");
+        }
     }
 }

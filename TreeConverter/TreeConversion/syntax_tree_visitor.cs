@@ -12276,8 +12276,7 @@ namespace PascalABCCompiler.TreeConverter
                 commonNode.name.ToLower() == compiler_string_consts.deconstruct_method_name)
             {
                 var deconstructor = commonNode;
-
-                // TODO Patterns: add warning for non-extension deconstruct
+                
                 if (!deconstructor.is_extension_method)
                 {
                     //AddWarning();
@@ -19413,6 +19412,13 @@ namespace PascalABCCompiler.TreeConverter
                 var expr = st.lst[0] as SyntaxTree.expression;
                 semantic_check_loop_stmt(expr);
             }
+            // Patterns
+            else if (st.typ is SugaredExpressionType.MatchedExpression)
+            {
+                var expr = st.lst[0] as expression;
+                CheckMatchedExpression(expr);
+            }
+            // !Patterns
             else
             {
                 AddError(get_location(st), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", (st.typ as System.Type)?.Name??"Unknown");
