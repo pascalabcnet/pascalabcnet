@@ -40,6 +40,7 @@ type
   Ray3D = HelixToolkit.Wpf.Ray3D;
   Line3D = class(Ray3D) end;
   Plane3D = HelixToolkit.Wpf.Plane3D;
+  Matrix3D = System.Windows.Media.Media3D.Matrix3D;
 
 var
   hvp: HelixViewport3D;
@@ -75,6 +76,9 @@ function operator*(p: Point3D; r: real): Point3D; extensionmethod := p.Multiply(
 function operator*(r: real; p: Point3D): Point3D; extensionmethod := p.Multiply(r);
 
 function operator+(p1, p2: Point3D): Point3D; extensionmethod := p3d(p1.X + p2.X, p1.Y + p2.Y, p1.Z + p2.Z);
+
+function operator-(v: Vector3D): Vector3D; extensionmethod := v3d(-v.x,-v.y,-v.z);
+
 
 const
   OrtX = V3D(1, 0, 0);
@@ -233,11 +237,7 @@ type
     function Cam: GCamera := hvp.Camera;
     procedure SetPP(p: Point3D);
     begin
-      Cam.Position := p; 
-      //Cam.Ani
-      {if p<>(0,0,0) then
-      Cam.LookDirection := Cam.Position.Multiply(-1).ToVector3D
-      else Cam.LookDirection := V3D(1,0,0);}
+      Cam.Position := p;
     end;
     
     procedure SetP(p: Point3D) := Invoke(SetPP, p);
@@ -256,11 +256,51 @@ type
     
     procedure SetD(d: real) := Invoke(SetDP, d);
     function GetD: real := InvokeReal(()->Cam.Position.DistanceTo(P3D(0, 0, 0)));
+    procedure MoveOnP(x,y,z: real);
+    begin
+      Cam.Position += V3D(x,y,z)//:= P3D(Cam.Position.
+    end;
+    procedure MoveOnPV(v: Vector3D);
+    begin
+      Cam.Position += v;
+    end;
+    procedure AddMoveForceP(x,y,z: real);
+    begin
+      hvp.CameraController.ShowCameraTarget := True;
+      hvp.CameraController.AddMoveForce(x,y,z);
+    end;
+    procedure AddRotateForceP(x,y: real);
+    begin
+      hvp.CameraController.AddRotateForce(x,y);
+    end;
+    procedure RotateP(axis: Vector3D; angle: real);
+    begin
+      var look := Cam.LookDirection;
+      var q := new Quaternion(axis, angle);
+      var qConjugate := q;
+      qConjugate.Conjugate();
+      
+      var p := new Quaternion(look.X, look.Y, look.Z, 0);
+      var qRotatedPoint := q * p * qConjugate;
+      Cam.LookDirection := V3D(qRotatedPoint.X, qRotatedPoint.Y, qRotatedPoint.Z);
+    end;
+    
   public 
     property Position: Point3D read GetP write SetP;
     property LookDirection: Vector3D read GetLD write SetLD;
     property UpDirection: Vector3D read GetUD write SetUD;
     property Distanse: real read GetD write SetD;
+    procedure MoveOn(x,y,z: real) := Invoke(MoveOnP,x,y,z);
+    procedure MoveOn(v: Vector3D) := Invoke(MoveOnPV,v);
+    procedure AddMoveForce(ForwardForce,RightForce,UpForce: real) := Invoke(AddMoveForceP,RightForce,UpForce,ForwardForce);
+    procedure AddForwardForce(Force: real := 0.2) := AddMoveForce(Force,0,0);
+    procedure AddBackwardForce(Force: real := 0.2) := AddMoveForce(-Force,0,0);
+    procedure AddRightForce(Force: real := 0.2) := AddMoveForce(0,Force,0);
+    procedure AddLeftForce(Force: real := 0.2) := AddMoveForce(0,-Force,0);
+    procedure AddUpForce(Force: real := 0.2) := AddMoveForce(0,0,Force);
+    procedure AddDownForce(Force: real := 0.2) := AddMoveForce(0,0,-Force);
+    procedure AddRotateForce(RightForce,UpForce: real) := Invoke(AddRotateForceP,RightForce,UpForce);
+    procedure Rotate(axis: Vector3D; angle: real) := Invoke(RotateP,axis,angle);
   end;
   
   ///!#
