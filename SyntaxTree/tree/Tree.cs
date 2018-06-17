@@ -47994,6 +47994,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_restriction_args=value;
+				if (_restriction_args != null)
+					_restriction_args.Parent = this;
 			}
 		}
 
@@ -48171,6 +48173,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_body=value;
+				if (_body != null)
+					_body.Parent = this;
 			}
 		}
 
@@ -48365,6 +48369,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_additional_restrictions=value;
+				if (_additional_restrictions != null)
+					_additional_restrictions.Parent = this;
 			}
 		}
 
@@ -48380,6 +48386,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_body=value;
+				if (_body != null)
+					_body.Parent = this;
 			}
 		}
 
@@ -48584,6 +48592,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_restriction=value;
+				if (_restriction != null)
+					_restriction.Parent = this;
 			}
 		}
 
@@ -48965,6 +48975,8 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_restriction_args=value;
+				if (_restriction_args != null)
+					_restriction_args.Parent = this;
 			}
 		}
 
