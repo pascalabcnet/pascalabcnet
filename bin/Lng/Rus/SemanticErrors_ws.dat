@@ -1,0 +1,8 @@
+﻿%PREFIX%=SEMANTICERROR_
+DECONSTRUCTOR_GENERIC_PARAMETERS_SHOULD_BE_DEFINED_BY_SELF_PARAMETER=Тип параметра 'Self' должен включать в себя все обобщенные параметры
+INSTANCE_DECONSTRUCTORS_CANNOT_BE_GENERIC=Экземплярные деконструкторы не могут быть обобщенными
+NO_SUITABLE_DECONSTRUCT_FOUND=Не удалось найти подходящий деконструктор
+DECONSTRUCTOR_METHOD_AMBIGUITY=Неоднозначный вызов деконструктора
+DECONSTRUCTOR_SOULD_BE_A_PROCEDURE=Деконструктор должен быть процедурой
+DECONSTRUCTION_PARAMETERS_SHOULD_HAVE_VAR_MODIFIER=Параметры деконструктора должны иметь модификатор 'var'
+PATTERN_MATCHING_DOESNT_SUPPORT_POINTERS=Сопоставление с образцом не поддерживает указатели в данной версии компилятора

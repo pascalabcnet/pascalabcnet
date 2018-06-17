@@ -1,0 +1,8 @@
+﻿%PREFIX%=SEMANTICERROR_
+DECONSTRUCTOR_GENERIC_PARAMETERS_SHOULD_BE_DEFINED_BY_SELF_PARAMETER=Self parameter's type should include all generic parameters
+INSTANCE_DECONSTRUCTORS_CANNOT_BE_GENERIC=Instance deconstructors cannot be generic
+NO_SUITABLE_DECONSTRUCT_FOUND=Couldn't find suitable deconstructor for given parameters
+DECONSTRUCTOR_METHOD_AMBIGUITY=Ambiguity between deconstructor methods
+DECONSTRUCTOR_SOULD_BE_A_PROCEDURE=Deconstruct should be a procedure
+DECONSTRUCTION_PARAMETERS_SHOULD_HAVE_VAR_MODIFIER=Deconstructor's parameters should have 'var' modifier
+PATTERN_MATCHING_DOESNT_SUPPORT_POINTERS=Pattern matching doesn't support pointers in current compiler version
