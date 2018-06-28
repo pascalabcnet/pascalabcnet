@@ -22,7 +22,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // Выносим выражения с лямбдами из заголовка foreach
             StandOutExprWithLambdaInForeachSequenceVisitor.New.ProcessNode(root);
 
-            //--- Обработка синтаксически сахарных узлов
+            // type classes
 
             {
                 var typeclasses = SyntaxVisitors.TypeclassVisitors.FindTypeclassesVisitor.New;
@@ -32,7 +32,9 @@ namespace PascalABCCompiler.SyntaxTreeConverters
                 SyntaxVisitors.TypeclassVisitors.ReplaceTypeclassVisitor.New(instancesAndRestrictedFunctions).ProcessNode(root);
             }
             root.FillParentsInAllChilds();
+#if DEBUG
             //new SimplePrettyPrinterVisitor("E:/projs/out.txt").ProcessNode(root);
+#endif
             // loop
             LoopDesugarVisitor.New.ProcessNode(root);
 

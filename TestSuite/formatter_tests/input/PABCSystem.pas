@@ -1220,6 +1220,8 @@ function Power(x: BigInteger; y: integer): BigInteger;
 /// Возвращает x, округленное до ближайшего целого. Если вещественное находится посередине между двумя целыми, 
 ///то округление осуществляется к ближайшему четному (банковское округление): Round(2.5)=2, Round(3.5)=4
 function Round(x: real): integer;
+/// Возвращает x, округленное до ближайшего вещественного с digits знаками после десятичной точки
+function Round(x: real; digits: integer): real;
 /// Возвращает x, округленное до ближайшего длинного целого
 function RoundBigInteger(x: real): BigInteger;
 /// Возвращает целую часть вещественного числа x
@@ -2073,6 +2075,49 @@ type
     end;
   end;
 
+
+type
+  ///--
+  __TypeclassRestrictedFunctionAttribute = class(Attribute)
+  public
+    constructor;
+    begin
+    end;
+  end;
+  
+  
+  ///--
+  __TypeclassGenericParameterAttribute = class(Attribute)
+  public
+    constructor(instanceName: string);
+    begin
+    end;
+  end;
+  
+  ///--
+  __TypeclassAttribute = class(Attribute)
+  public
+    constructor(typeclassName: string);
+    begin
+    end;
+  end;
+
+  ///--
+  __TypeclassMemberAttribute = class(Attribute)
+  public
+    constructor;
+    begin
+    end;
+  end;
+  
+  ///--
+  __TypeclassInstanceAttribute = class(Attribute)
+  public
+    constructor(instanceName: string);
+    begin
+    end;
+  end;
+  
 // -----------------------------------------------------
 //                  Internal procedures for PABCRTL.dll
 // -----------------------------------------------------
@@ -3494,7 +3539,7 @@ begin
   Result := Self;
 end;
 
-function operator=<T>(x,y: HashSet<T>): boolean; extensionmethod;
+function InternalEqual<T>(x,y: HashSet<T>): boolean;
 begin
   var xn := Object.ReferenceEquals(x,nil);
   var yn := Object.ReferenceEquals(y,nil);
@@ -3505,7 +3550,9 @@ begin
   else Result := x.SetEquals(y);
 end;   
 
-function operator<><T>(x,y: HashSet<T>); extensionmethod := not (x=y);
+function operator=<T>(x,y: HashSet<T>): boolean; extensionmethod := InternalEqual(x,y);
+
+function operator<><T>(x,y: HashSet<T>); extensionmethod := not InternalEqual(x,y);
 
 function operator-<T>(x, y: HashSet<T>): HashSet<T>; extensionmethod;
 begin
@@ -3579,7 +3626,7 @@ begin
   Result := Self;
 end;
 
-function operator=<T>(x,y: SortedSet<T>): boolean; extensionmethod;
+function InternalEqual<T>(x,y: SortedSet<T>): boolean; 
 begin
   var xn := Object.ReferenceEquals(x,nil);
   var yn := Object.ReferenceEquals(y,nil);
@@ -3590,7 +3637,9 @@ begin
   else Result := x.SetEquals(y);
 end;   
 
-function operator<><T>(x, y: SortedSet<T>); extensionmethod := not x.SetEquals(y);
+function operator=<T>(x,y: SortedSet<T>): boolean; extensionmethod := InternalEqual(x,y);
+
+function operator<><T>(x, y: SortedSet<T>); extensionmethod := not InternalEqual(x,y);
 
 function operator-<T>(x, y: SortedSet<T>): SortedSet<T>; extensionmethod;
 begin
@@ -4238,6 +4287,7 @@ begin
   end;
 end;
 
+///--
 procedure Deconstruct<T>(self: T; var res: T); extensionmethod;
 begin
   res := self;
@@ -6594,14 +6644,14 @@ begin
     else if not cond then
     begin
       var err := 'Сбой подтверждения: ' + message + Environment.NewLine + 'Файл ' + sourceFile + ', строка ' + line.ToString();
-      writeln(err);
+      Writeln(err);
       System.Threading.Thread.Sleep(500);
       raise new Exception();
     end;
   end
   else
     //System.Diagnostics.Debug.Assert(cond, message);
-    System.Diagnostics.Contracts.Contract.Assert(cond,'Файл '+sourceFile+', строка '+line.ToString())
+    System.Diagnostics.Contracts.Contract.Assert(cond,'Файл '+sourceFile+', строка '+line.ToString() + ': ' + message)
 end;
 
 function DiskFree(diskname: string): int64;
@@ -6962,6 +7012,8 @@ end;
 function Power(x: BigInteger; y: integer) := BigInteger.Pow(x, y);
 
 function Round(x: real) := Convert.ToInt32(Math.Round(x));
+
+function Round(x: real; digits: integer) := Math.Round(x,digits);
 
 function RoundBigInteger(x: real) := BigInteger.Create(Math.Round(x));
 
@@ -7403,17 +7455,12 @@ end;
 
 function Pos(subs, s: string; from: integer): integer;
 begin
-  if (subs = nil) or (subs.Length = 0) then
+  if (subs = nil) or (subs.Length = 0) or (from > s.Length) then
     Result := 0
   else Result := s.IndexOf(subs, from - 1, System.StringComparison.Ordinal) + 1;
 end;
 
-function PosEx(subs, s: string; from: integer): integer;
-begin
-  if (subs = nil) or (subs.Length = 0) then
-    Result := 0
-  else Result := s.IndexOf(subs, from - 1, System.StringComparison.Ordinal) + 1;
-end;
+function PosEx(subs, s: string; from: integer) := Pos(subs,s,from);
 
 function LastPos(subs, s: string): integer;
 begin
@@ -7424,20 +7471,19 @@ end;
 
 function LastPos(subs, s: string; from: integer): integer;
 begin
-  if (subs = nil) or (subs.Length = 0) then
+  if (subs = nil) or (subs.Length = 0) or (from > s.Length) then
     Result := 0
   else Result := s.LastIndexOf(subs, from - 1, System.StringComparison.Ordinal) + 1;
 end;
 
-function Pos(c: char; s: string; from: integer): integer;
+{function Pos(c: char; s: string; from: integer): integer;
 begin
+  if from > s.Length then
+    Result := 0;
   Result := s.IndexOf(c, from - 1, System.StringComparison.Ordinal) + 1;
 end;
 
-function PosEx(c: char; s: string; from: integer): integer;
-begin
-  Result := s.IndexOf(c, from - 1, System.StringComparison.Ordinal) + 1;
-end;
+function PosEx(c: char; s: string; from: integer) := Pos(c,s,from);
 
 function LastPos(c: char; s: string): integer;
 begin
@@ -7446,8 +7492,10 @@ end;
 
 function LastPos(c: char; s: string; from: integer): integer;
 begin
+  if from > s.Length then
+    Result := 0;
   Result := s.LastIndexOf(c, from - 1, System.StringComparison.Ordinal) + 1;
-end;
+end;}
 
 function Length(s: string): integer;
 begin
@@ -7478,7 +7526,7 @@ begin
     s := s.Substring(0, n)
   else if s.Length < n then
     if n <= sz then
-      s += new string(' ', n - s.Length )
+      s += new string(' ', n - s.Length)
     else 
       s += new String(' ', sz - s.Length)
 end;
@@ -7491,12 +7539,6 @@ begin
   if index > s.Length + 1 then
     index := s.Length + 1;
   s := s.Insert(index - 1, source);
-  {  try
-  s := s.Insert(index - 1, source);
-  except 
-  on e: System.Exception do
-  s := s.Insert(s.Length, source);
-  end;}
 end;
 
 procedure InsertInShortString(source: string; var s: string; index, n: integer);
@@ -7537,14 +7579,6 @@ begin
   if index + count - 1 > s.Length then
     count := s.Length - index + 1;
   Result := s.SubString(index - 1, count);
-  {  try
-  if index - 1 >= s.Length then 
-  Result := ''
-  else Result := s.SubString(index - 1, count);
-  except 
-  on e: System.Exception do
-  Result := s.Substring(index - 1, s.Length - index + 1);
-  end;}
 end;
 
 function Concat(s1, s2: string): string;
@@ -9952,6 +9986,12 @@ begin
   Result := Round(Self);
 end;
 
+/// Возвращает x, округленное до ближайшего вещественного с digits знаками после десятичной точки
+function Round(Self: real; digits: integer): real; extensionmethod;
+begin
+  Result := Round(Self,digits);
+end;
+
 /// Возвращает число, округленное до ближайшего длинного целого
 function RoundBigInteger(Self: real): BigInteger; extensionmethod;
 begin
@@ -10358,9 +10398,21 @@ begin
 end;
 
 ///--
-function operator=<T1, T2> (Self: (T1,T2); v: (T1,T2)); extensionmethod := Object.ReferenceEquals(Self,nil) ? Object.ReferenceEquals(v,nil): Self.Equals(v);
+function InternalEqual<T1, T2> (x: (T1,T2); y: (T1,T2)): boolean; 
+begin
+  var xn := Object.ReferenceEquals(x,nil);
+  var yn := Object.ReferenceEquals(y,nil);
+  if xn then
+    Result := yn
+  else if yn then 
+    Result := xn
+  else Result := x.Equals(y);
+end;
+
 ///--
-function operator<><T1, T2> (Self: (T1,T2); v: (T1,T2)); extensionmethod := not (Self = v);
+function operator=<T1, T2> (x: (T1,T2); y: (T1,T2)): boolean; extensionmethod := InternalEqual(x,y);
+///--
+function operator<><T1, T2> (x: (T1,T2); y: (T1,T2)): boolean; extensionmethod := not InternalEqual(x,y);
 ///--
 function CompareToTup2<T1, T2>(v1: (T1, T2); v2: (T1, T2)) := (v1 as System.IComparable).CompareTo(v2);
 ///--
@@ -10373,9 +10425,20 @@ function operator><T1, T2>(Self: (T1, T2); v: (T1, T2)); extensionmethod := Comp
 function operator>=<T1, T2>(Self: (T1, T2); v: (T1, T2)); extensionmethod := CompareToTup2(Self, v) >= 0;
 
 ///--
-function operator=<T1, T2, T3> (Self: (T1,T2,T3); v: (T1,T2,T3)); extensionmethod := Object.ReferenceEquals(Self,nil) ? Object.ReferenceEquals(v,nil): Self.Equals(v);
+function InternalEqual<T1, T2, T3> (x: (T1,T2,T3); y: (T1,T2,T3)): boolean; 
+begin
+  var xn := Object.ReferenceEquals(x,nil);
+  var yn := Object.ReferenceEquals(y,nil);
+  if xn then
+    Result := yn
+  else if yn then 
+    Result := xn
+  else Result := x.Equals(y);
+end;
 ///--
-function operator<><T1, T2, T3> (Self: (T1,T2,T3); v: (T1,T2,T3)); extensionmethod := not (Self = v);
+function operator=<T1, T2, T3> (x: (T1,T2,T3); y: (T1,T2,T3)); extensionmethod := InternalEqual(x,y);
+///--
+function operator<><T1, T2, T3> (x: (T1,T2,T3); y: (T1,T2,T3)); extensionmethod := not InternalEqual(x,y);
 ///--
 function CompareToTup3<T1, T2, T3>(v1: (T1, T2, T3); v2: (T1, T2, T3)) := (v1 as System.IComparable).CompareTo(v2);
 ///--
@@ -10388,9 +10451,20 @@ function operator><T1,T2,T3>(Self: (T1, T2, T3); v: (T1, T2, T3)); extensionmeth
 function operator>=<T1,T2,T3>(Self: (T1, T2, T3); v: (T1, T2, T3)); extensionmethod := CompareToTup3(Self, v) >= 0;
 
 ///--
-function operator=<T1, T2, T3, T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extensionmethod := Object.ReferenceEquals(Self,nil) ? Object.ReferenceEquals(v,nil): Self.Equals(v);
+function InternalEqual<T1, T2, T3, T4> (x: (T1,T2,T3,T4); y: (T1,T2,T3,T4)): boolean; 
+begin
+  var xn := Object.ReferenceEquals(x,nil);
+  var yn := Object.ReferenceEquals(y,nil);
+  if xn then
+    Result := yn
+  else if yn then 
+    Result := xn
+  else Result := x.Equals(y);
+end;
 ///--
-function operator<><T1, T2, T3, T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extensionmethod := not (Self = v);
+function operator=<T1, T2, T3, T4> (x: (T1,T2,T3,T4); y: (T1,T2,T3,T4)); extensionmethod := InternalEqual(x,y);
+///--
+function operator<><T1, T2, T3, T4> (x: (T1,T2,T3,T4); y: (T1,T2,T3,T4)); extensionmethod := not InternalEqual(x,y);
 ///--
 function CompareToTup4<T1, T2, T3, T4>(v1: (T1, T2, T3, T4); v2: (T1, T2, T3, T4)) := (v1 as System.IComparable).CompareTo(v2);
 ///--
@@ -10402,7 +10476,83 @@ function operator><T1,T2,T3,T4>(Self: (T1, T2, T3, T4); v: (T1, T2, T3, T4)); ex
 ///--
 function operator>=<T1,T2,T3,T4>(Self: (T1, T2, T3, T4); v: (T1, T2, T3, T4)); extensionmethod := CompareToTup4(Self, v) >= 0;
 
+///--
+function InternalEqual<T1, T2, T3, T4, T5> (x: (T1,T2,T3,T4,T5); y: (T1,T2,T3,T4,T5)): boolean; 
+begin
+  var xn := Object.ReferenceEquals(x,nil);
+  var yn := Object.ReferenceEquals(y,nil);
+  if xn then
+    Result := yn
+  else if yn then 
+    Result := xn
+  else Result := x.Equals(y);
+end;
+///--
+function operator=<T1, T2, T3, T4,T5> (x: (T1,T2,T3,T4,T5); y: (T1,T2,T3,T4,T5)); extensionmethod := InternalEqual(x,y);
+///--
+function operator<><T1, T2, T3, T4,T5> (x: (T1,T2,T3,T4,T5); y: (T1,T2,T3,T4,T5)); extensionmethod := not InternalEqual(x,y);
+///--
+function CompareToTup5<T1, T2, T3, T4,T5>(v1: (T1, T2, T3, T4,T5); v2: (T1, T2, T3, T4,T5)) := (v1 as System.IComparable).CompareTo(v2);
+///--
+function operator<<T1,T2,T3,T4,T5>(Self: (T1, T2, T3, T4,T5); v: (T1, T2, T3, T4,T5)); extensionmethod := CompareToTup5(Self, v) < 0;
+///--
+function operator<=<T1,T2,T3,T4,T5>(Self: (T1, T2, T3, T4,T5); v: (T1, T2, T3, T4,T5)); extensionmethod := CompareToTup5(Self, v) <= 0;
+///--
+function operator><T1,T2,T3,T4,T5>(Self: (T1, T2, T3, T4,T5); v: (T1, T2, T3, T4,T5)); extensionmethod := CompareToTup5(Self, v) > 0;
+///--
+function operator>=<T1,T2,T3,T4,T5>(Self: (T1, T2, T3, T4,T5); v: (T1, T2, T3, T4,T5)); extensionmethod := CompareToTup5(Self, v) >= 0;
 
+///--
+function InternalEqual<T1, T2, T3, T4, T5, T6> (x: (T1,T2,T3,T4,T5,T6); y: (T1,T2,T3,T4,T5,T6)): boolean; 
+begin
+  var xn := Object.ReferenceEquals(x,nil);
+  var yn := Object.ReferenceEquals(y,nil);
+  if xn then
+    Result := yn
+  else if yn then 
+    Result := xn
+  else Result := x.Equals(y);
+end;
+///--
+function operator=<T1, T2, T3, T4,T5,T6> (x: (T1,T2,T3,T4,T5,T6); y: (T1,T2,T3,T4,T5,T6)); extensionmethod := InternalEqual(x,y);
+///--
+function operator<><T1, T2, T3, T4,T5,T6> (x: (T1,T2,T3,T4,T5,T6); y: (T1,T2,T3,T4,T5,T6)); extensionmethod := not InternalEqual(x,y);
+///--
+function CompareToTup5<T1, T2, T3, T4,T5,T6>(v1: (T1, T2, T3, T4,T5,T6); v2: (T1, T2, T3, T4,T5,T6)) := (v1 as System.IComparable).CompareTo(v2);
+///--
+function operator<<T1,T2,T3,T4,T5,T6>(Self: (T1, T2, T3, T4,T5,T6); v: (T1, T2, T3, T4,T5,T6)); extensionmethod := CompareToTup5(Self, v) < 0;
+///--
+function operator<=<T1,T2,T3,T4,T5,T6>(Self: (T1, T2, T3, T4,T5,T6); v: (T1, T2, T3, T4,T5,T6)); extensionmethod := CompareToTup5(Self, v) <= 0;
+///--
+function operator><T1,T2,T3,T4,T5,T6>(Self: (T1, T2, T3, T4,T5,T6); v: (T1, T2, T3, T4,T5,T6)); extensionmethod := CompareToTup5(Self, v) > 0;
+///--
+function operator>=<T1,T2,T3,T4,T5,T6>(Self: (T1, T2, T3, T4,T5,T6); v: (T1, T2, T3, T4,T5,T6)); extensionmethod := CompareToTup5(Self, v) >= 0;
+
+///--
+function InternalEqual<T1, T2, T3, T4, T5, T6, T7> (x: (T1,T2,T3,T4,T5,T6,T7); y: (T1,T2,T3,T4,T5,T6,T7)): boolean; 
+begin
+  var xn := Object.ReferenceEquals(x,nil);
+  var yn := Object.ReferenceEquals(y,nil);
+  if xn then
+    Result := yn
+  else if yn then 
+    Result := xn
+  else Result := x.Equals(y);
+end;
+///--
+function operator=<T1, T2, T3, T4,T5,T6,T7> (x: (T1,T2,T3,T4,T5,T6,T7); y: (T1,T2,T3,T4,T5,T6,T7)); extensionmethod := InternalEqual(x,y);
+///--
+function operator<><T1, T2, T3, T4,T5,T6,T7> (x: (T1,T2,T3,T4,T5,T6,T7); y: (T1,T2,T3,T4,T5,T6,T7)); extensionmethod := not InternalEqual(x,y);
+///--
+function CompareToTup5<T1, T2, T3, T4,T5,T6,T7>(v1: (T1, T2, T3, T4,T5,T6,T7); v2: (T1, T2, T3, T4,T5,T6,T7)) := (v1 as System.IComparable).CompareTo(v2);
+///--
+function operator<<T1,T2,T3,T4,T5,T6,T7>(Self: (T1, T2, T3, T4,T5,T6,T7); v: (T1, T2, T3, T4,T5,T6,T7)); extensionmethod := CompareToTup5(Self, v) < 0;
+///--
+function operator<=<T1,T2,T3,T4,T5,T6,T7>(Self: (T1, T2, T3, T4,T5,T6,T7); v: (T1, T2, T3, T4,T5,T6,T7)); extensionmethod := CompareToTup5(Self, v) <= 0;
+///--
+function operator><T1,T2,T3,T4,T5,T6,T7>(Self: (T1, T2, T3, T4,T5,T6,T7); v: (T1, T2, T3, T4,T5,T6,T7)); extensionmethod := CompareToTup5(Self, v) > 0;
+///--
+function operator>=<T1,T2,T3,T4,T5,T6,T7>(Self: (T1, T2, T3, T4,T5,T6,T7); v: (T1, T2, T3, T4,T5,T6,T7)); extensionmethod := CompareToTup5(Self, v) >= 0;
 // --------------------------------------------
 //      Методы расширения типа Tuple # Extension methods for Tuple
 // -------------------------------------------

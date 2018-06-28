@@ -836,6 +836,28 @@ const_factor
 		}
     | sign const_factor                              
         { 
+		    // ручная коррекция целых констант
+			if ($1.type == Operators.Minus)
+			{
+			    var i64 = $2 as int64_const;
+				if (i64 != null && i64.val == (Int64)Int32.MaxValue + 1)
+				{
+					$$ = new int32_const(Int32.MinValue);
+					break;
+				}
+				var ui64 = $2 as uint64_const;
+				if (ui64 != null && ui64.val == (UInt64)Int64.MaxValue + 1)
+				{
+					$$ = new int64_const(Int64.MinValue);
+					break;
+				}
+				if (ui64 != null && ui64.val > (UInt64)Int64.MaxValue + 1)
+				{
+					parsertools.AddErrorFromResource("BAD_INT2",@$);
+					break;
+				}
+			    // можно сделать вычисление константы с вмонтированным минусом
+			}
 			$$ = new un_expr($2, $1.type, @$); 
 		}
     | new_expr
@@ -3364,7 +3386,29 @@ factor
 			$$ = new un_expr($2, $1.type, @$); 
 		}
     | sign factor             
-        { 
+        {
+			if ($1.type == Operators.Minus)
+			{
+			    var i64 = $2 as int64_const;
+				if (i64 != null && i64.val == (Int64)Int32.MaxValue + 1)
+				{
+					$$ = new int32_const(Int32.MinValue);
+					break;
+				}
+				var ui64 = $2 as uint64_const;
+				if (ui64 != null && ui64.val == (UInt64)Int64.MaxValue + 1)
+				{
+					$$ = new int64_const(Int64.MinValue);
+					break;
+				}
+				if (ui64 != null && ui64.val > (UInt64)Int64.MaxValue + 1)
+				{
+					parsertools.AddErrorFromResource("BAD_INT2",@$);
+					break;
+				}
+			    // можно сделать вычисление константы с вмонтированным минусом
+			}
+		
 			$$ = new un_expr($2, $1.type, @$); 
 		}
     | tkDeref factor                

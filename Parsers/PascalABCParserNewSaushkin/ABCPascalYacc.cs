@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-A6LT9RI
-// DateTime: 12.06.2018 22:19:30
+// DateTime: 28.06.2018 21:28:15
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -3163,6 +3163,28 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 151: // const_factor -> sign, const_factor
 { 
+		    // ������ ��������� ����� ��������
+			if (ValueStack[ValueStack.Depth-2].op.type == Operators.Minus)
+			{
+			    var i64 = ValueStack[ValueStack.Depth-1].ex as int64_const;
+				if (i64 != null && i64.val == (Int64)Int32.MaxValue + 1)
+				{
+					CurrentSemanticValue.ex = new int32_const(Int32.MinValue);
+					break;
+				}
+				var ui64 = ValueStack[ValueStack.Depth-1].ex as uint64_const;
+				if (ui64 != null && ui64.val == (UInt64)Int64.MaxValue + 1)
+				{
+					CurrentSemanticValue.ex = new int64_const(Int64.MinValue);
+					break;
+				}
+				if (ui64 != null && ui64.val > (UInt64)Int64.MaxValue + 1)
+				{
+					parsertools.AddErrorFromResource("BAD_INT2",CurrentLocationSpan);
+					break;
+				}
+			    // ����� ������� ���������� ��������� � �������������� �������
+			}
 			CurrentSemanticValue.ex = new un_expr(ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
 		}
         break;
@@ -5569,7 +5591,29 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 		}
         break;
       case 666: // factor -> sign, factor
-{ 
+{
+			if (ValueStack[ValueStack.Depth-2].op.type == Operators.Minus)
+			{
+			    var i64 = ValueStack[ValueStack.Depth-1].ex as int64_const;
+				if (i64 != null && i64.val == (Int64)Int32.MaxValue + 1)
+				{
+					CurrentSemanticValue.ex = new int32_const(Int32.MinValue);
+					break;
+				}
+				var ui64 = ValueStack[ValueStack.Depth-1].ex as uint64_const;
+				if (ui64 != null && ui64.val == (UInt64)Int64.MaxValue + 1)
+				{
+					CurrentSemanticValue.ex = new int64_const(Int64.MinValue);
+					break;
+				}
+				if (ui64 != null && ui64.val > (UInt64)Int64.MaxValue + 1)
+				{
+					parsertools.AddErrorFromResource("BAD_INT2",CurrentLocationSpan);
+					break;
+				}
+			    // ����� ������� ���������� ��������� � �������������� �������
+			}
+		
 			CurrentSemanticValue.ex = new un_expr(ValueStack[ValueStack.Depth-1].ex, ValueStack[ValueStack.Depth-2].op.type, CurrentLocationSpan); 
 		}
         break;
