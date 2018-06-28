@@ -1220,6 +1220,8 @@ function Power(x: BigInteger; y: integer): BigInteger;
 /// Возвращает x, округленное до ближайшего целого. Если вещественное находится посередине между двумя целыми, 
 ///то округление осуществляется к ближайшему четному (банковское округление): Round(2.5)=2, Round(3.5)=4
 function Round(x: real): integer;
+/// Возвращает x, округленное до ближайшего вещественного с digits знаками после десятичной точки
+function Round(x: real; digits: integer): real;
 /// Возвращает x, округленное до ближайшего длинного целого
 function RoundBigInteger(x: real): BigInteger;
 /// Возвращает целую часть вещественного числа x
@@ -7011,6 +7013,8 @@ function Power(x: BigInteger; y: integer) := BigInteger.Pow(x, y);
 
 function Round(x: real) := Convert.ToInt32(Math.Round(x));
 
+function Round(x: real; digits: integer) := Math.Round(x,digits);
+
 function RoundBigInteger(x: real) := BigInteger.Create(Math.Round(x));
 
 function Trunc(x: real) := Convert.ToInt32(Math.Truncate(x));
@@ -9998,6 +10002,12 @@ end;
 function Round(Self: real): integer; extensionmethod;
 begin
   Result := Round(Self);
+end;
+
+/// Возвращает x, округленное до ближайшего вещественного с digits знаками после десятичной точки
+function Round(Self: real; digits: integer): real; extensionmethod;
+begin
+  Result := Round(Self,digits);
 end;
 
 /// Возвращает число, округленное до ближайшего длинного целого

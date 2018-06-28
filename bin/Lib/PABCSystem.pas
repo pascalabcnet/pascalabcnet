@@ -7455,17 +7455,12 @@ end;
 
 function Pos(subs, s: string; from: integer): integer;
 begin
-  if (subs = nil) or (subs.Length = 0) then
+  if (subs = nil) or (subs.Length = 0) or (from > s.Length) then
     Result := 0
   else Result := s.IndexOf(subs, from - 1, System.StringComparison.Ordinal) + 1;
 end;
 
-function PosEx(subs, s: string; from: integer): integer;
-begin
-  if (subs = nil) or (subs.Length = 0) then
-    Result := 0
-  else Result := s.IndexOf(subs, from - 1, System.StringComparison.Ordinal) + 1;
-end;
+function PosEx(subs, s: string; from: integer) := Pos(subs,s,from);
 
 function LastPos(subs, s: string): integer;
 begin
@@ -7476,20 +7471,19 @@ end;
 
 function LastPos(subs, s: string; from: integer): integer;
 begin
-  if (subs = nil) or (subs.Length = 0) then
+  if (subs = nil) or (subs.Length = 0) or (from > s.Length) then
     Result := 0
   else Result := s.LastIndexOf(subs, from - 1, System.StringComparison.Ordinal) + 1;
 end;
 
-function Pos(c: char; s: string; from: integer): integer;
+{function Pos(c: char; s: string; from: integer): integer;
 begin
+  if from > s.Length then
+    Result := 0;
   Result := s.IndexOf(c, from - 1, System.StringComparison.Ordinal) + 1;
 end;
 
-function PosEx(c: char; s: string; from: integer): integer;
-begin
-  Result := s.IndexOf(c, from - 1, System.StringComparison.Ordinal) + 1;
-end;
+function PosEx(c: char; s: string; from: integer) := Pos(c,s,from);
 
 function LastPos(c: char; s: string): integer;
 begin
@@ -7498,8 +7492,10 @@ end;
 
 function LastPos(c: char; s: string; from: integer): integer;
 begin
+  if from > s.Length then
+    Result := 0;
   Result := s.LastIndexOf(c, from - 1, System.StringComparison.Ordinal) + 1;
-end;
+end;}
 
 function Length(s: string): integer;
 begin
@@ -7530,7 +7526,7 @@ begin
     s := s.Substring(0, n)
   else if s.Length < n then
     if n <= sz then
-      s += new string(' ', n - s.Length )
+      s += new string(' ', n - s.Length)
     else 
       s += new String(' ', sz - s.Length)
 end;
@@ -7543,12 +7539,6 @@ begin
   if index > s.Length + 1 then
     index := s.Length + 1;
   s := s.Insert(index - 1, source);
-  {  try
-  s := s.Insert(index - 1, source);
-  except 
-  on e: System.Exception do
-  s := s.Insert(s.Length, source);
-  end;}
 end;
 
 procedure InsertInShortString(source: string; var s: string; index, n: integer);
@@ -7589,14 +7579,6 @@ begin
   if index + count - 1 > s.Length then
     count := s.Length - index + 1;
   Result := s.SubString(index - 1, count);
-  {  try
-  if index - 1 >= s.Length then 
-  Result := ''
-  else Result := s.SubString(index - 1, count);
-  except 
-  on e: System.Exception do
-  Result := s.Substring(index - 1, s.Length - index + 1);
-  end;}
 end;
 
 function Concat(s1, s2: string): string;
