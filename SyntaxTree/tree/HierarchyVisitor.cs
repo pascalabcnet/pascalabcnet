@@ -2545,6 +2545,7 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_write_accessor_name);
 			pre_do_visit(_write_accessor_name);
 			visit(write_accessor_name.accessor_name);
+			visit(write_accessor_name.pr);
 			post_do_visit(_write_accessor_name);
 		}
 
@@ -2553,6 +2554,7 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_read_accessor_name);
 			pre_do_visit(_read_accessor_name);
 			visit(read_accessor_name.accessor_name);
+			visit(read_accessor_name.pr);
 			post_do_visit(_read_accessor_name);
 		}
 

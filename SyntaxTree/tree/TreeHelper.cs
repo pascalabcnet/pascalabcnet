@@ -1063,7 +1063,7 @@ namespace PascalABCCompiler.SyntaxTree
     public partial class property_accessors
     {
         public property_accessors(ident read_accessor, ident write_accessor, SourceContext sc = null) 
-            : this(new read_accessor_name(read_accessor), new write_accessor_name(write_accessor),sc)
+            : this(new read_accessor_name(read_accessor, null), new write_accessor_name(write_accessor, null),sc)
         { }
     }
 
@@ -1134,6 +1134,8 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class procedure_call
     {
+        public procedure_call(addressed_value _func_name, SourceContext sc=null) : this(_func_name, false, sc) { }
+
         public procedure_call(ident name)
         {
             this._func_name = name;

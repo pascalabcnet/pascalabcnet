@@ -81,7 +81,7 @@
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
 %type <ex> const_simple_expr term simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 simple_expr range_term range_factor 
-%type <ex> external_directive_ident init_const_expr case_label variable var_reference simple_expr_or_nothing var_question_point
+%type <ex> external_directive_ident init_const_expr case_label variable var_reference /*optional_write_expr*/ optional_read_expr simple_expr_or_nothing var_question_point
 %type <ob> for_cycle_type  
 %type <ex> format_expr  
 %type <stn> foreach_stmt  
@@ -91,7 +91,7 @@
 %type <stn> var_address  
 %type <stn> goto_stmt 
 %type <id> func_name_ident param_name const_field_name func_name_with_template_args identifier_or_keyword unit_name exception_variable const_name func_meth_name_ident label_name type_decl_identifier template_identifier_with_equal 
-%type <id> program_param identifier identifier_keyword_operatorname func_class_name_ident optional_identifier visibility_specifier 
+%type <id> program_param identifier identifier_keyword_operatorname func_class_name_ident /*optional_identifier*/ visibility_specifier 
 %type <id> property_specifier_directives non_reserved 
 %type <id> typeclass_restriction
 %type <stn> if_stmt   
@@ -1498,6 +1498,27 @@ object_type
     : class_attributes class_or_interface_keyword optional_base_classes optional_where_section optional_component_list_seq_end
         { 
 			$$ = NewObjectType((class_attribute)$1, $2, $3 as named_type_reference_list, $4 as where_definition_list, $5 as class_body_list, @$);
+            class_definition cd = $$ as class_definition;
+            if (cd == null || cd.body == null)
+                break;
+            var ccnt = cd.body.DescendantNodes().OfType<simple_property>().ToArray();
+            var cm = new class_members(access_modifer.private_modifer);
+            foreach (var prop in ccnt)
+            {
+                var td = prop.property_type;
+                if (prop.accessors.read_accessor != null && prop.accessors.read_accessor.pr != null)
+                {
+                    (prop.accessors.read_accessor.pr.proc_header as function_header).return_type = td;
+                    cm.Add(prop.accessors.read_accessor.pr);
+                }
+                if (prop.accessors.write_accessor != null && prop.accessors.write_accessor.pr != null)
+                {
+                    prop.accessors.write_accessor.pr.proc_header.parameters.params_list[0].vars_type = td;
+                    cm.Add(prop.accessors.write_accessor.pr);
+                }
+            }
+            if (cm.Count>0)
+                cd.body.Insert(0, cm);
 		}
     ;
 
@@ -1953,8 +1974,22 @@ parameter_decl
 		}
     ;
 
-optional_identifier
+/*optional_identifier
     : identifier
+		{ $$ = $1; }
+    |
+		{ $$ = null; }
+    ;
+    
+optional_write_expr    
+    : var_reference
+		{ $$ = $1; }
+    |
+		{ $$ = null; }
+    ;*/
+    
+optional_read_expr    
+    : expr_with_func_decl_lambda
 		{ $$ = $1; }
     |
 		{ $$ = null; }
@@ -1962,28 +1997,75 @@ optional_identifier
 
 property_specifiers
     :
-    | tkRead optional_identifier write_property_specifiers   
+    | tkRead optional_read_expr write_property_specifiers   
         { 
-			$$ = NewPropertySpecifiersRead($1, $2, $3 as property_accessors, @$);
+        	if ($2 == null || $2 is ident)
+        	{
+        		$$ = NewPropertySpecifiersRead($1, $2 as ident, null, $3 as property_accessors, @$);
+        	}
+        	else 
+        	{
+				var id = NewId("#GetGen");
+				var pr = CreateAndAddToClassReadFunc($2,id,@2);
+				$$ = NewPropertySpecifiersRead($1, id, pr, $3 as property_accessors, @$);
+			}
         }
-    | tkWrite optional_identifier read_property_specifiers     
+    | tkWrite unlabelled_stmt read_property_specifiers     
         { 
-			$$ = NewPropertySpecifiersWrite($1, $2, $3 as property_accessors, @$);
+        	if ($2 is empty_statement)
+        	{
+        	
+        		$$ = NewPropertySpecifiersWrite($1, null, null, $3 as property_accessors, @$);
+        	}
+        	else if ($2 is procedure_call && ($2 as procedure_call).is_ident)
+        	{
+        	
+        		$$ = NewPropertySpecifiersWrite($1, ($2 as procedure_call).func_name as ident, null, $3 as property_accessors, @$);  // старые свойства - с идентификатором
+        	}
+        	else 
+        	{
+				var id = NewId("#SetGen");
+				var pr = CreateAndAddToClassWriteProc($2 as statement,id,@2);
+				$$ = NewPropertySpecifiersWrite($1, id, pr, $3 as property_accessors, @$);
+			}
         }
     ;
 write_property_specifiers
     :
-    |  tkWrite optional_identifier     
+    |  tkWrite unlabelled_stmt     
        { 
-			$$ = NewPropertySpecifiersWrite($1, $2, null, @$);
+        	if ($2 is empty_statement)
+        	{
+        	
+        		$$ = NewPropertySpecifiersWrite($1, null, null, null, @$);
+        	}
+        	else if ($2 is procedure_call && ($2 as procedure_call).is_ident)
+        	{
+        		$$ = NewPropertySpecifiersWrite($1, ($2 as procedure_call).func_name as ident, null, null, @$); // старые свойства - с идентификатором
+        	}
+        	else 
+        	{
+				var id = NewId("#SetGen");
+				var pr = CreateAndAddToClassWriteProc($2 as statement,id,@2);
+				$$ = NewPropertySpecifiersWrite($1, id, pr, null, @$);
+			}
        }
     ;
     
 read_property_specifiers
     :
-    |  tkRead optional_identifier     
+    |  tkRead optional_read_expr
        { 
-			$$ = NewPropertySpecifiersRead($1, $2, null, @$);
+        	if ($2 == null || $2 is ident)
+        	{
+        		$$ = NewPropertySpecifiersRead($1, $2 as ident, null, null, @$);
+        	}
+        	else 
+        	{
+				var id = NewId("#GetGen");
+				var pr = CreateAndAddToClassReadFunc($2,id,@2);
+				$$ = NewPropertySpecifiersRead($1, id, pr, null, @$);
+			}
        }      
     ;
     
@@ -2583,7 +2665,7 @@ var_ident_list
 proc_call
     : var_reference                                    
         { 
-			$$ = new procedure_call($1 as addressed_value, @$); 
+			$$ = new procedure_call($1 as addressed_value, $1 is ident, @$); 
 		}
     ;
 

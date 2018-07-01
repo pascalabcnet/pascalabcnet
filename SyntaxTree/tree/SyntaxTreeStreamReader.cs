@@ -1650,6 +1650,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_syntax_tree_node(_write_accessor_name);
 			_write_accessor_name.accessor_name = _read_node() as ident;
+			_write_accessor_name.pr = _read_node() as procedure_definition;
 		}
 
 
@@ -1662,6 +1663,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_syntax_tree_node(_read_accessor_name);
 			_read_accessor_name.accessor_name = _read_node() as ident;
+			_read_accessor_name.pr = _read_node() as procedure_definition;
 		}
 
 
@@ -2057,6 +2059,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_statement(_procedure_call);
 			_procedure_call.func_name = _read_node() as addressed_value;
+			_procedure_call.is_ident = br.ReadBoolean();
 		}
 
 

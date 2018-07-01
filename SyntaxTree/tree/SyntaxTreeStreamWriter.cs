@@ -2066,6 +2066,15 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_write_accessor_name.accessor_name.visit(this);
 			}
+			if (_write_accessor_name.pr == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_write_accessor_name.pr.visit(this);
+			}
 		}
 
 
@@ -2086,6 +2095,15 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				bw.Write((byte)1);
 				_read_accessor_name.accessor_name.visit(this);
+			}
+			if (_read_accessor_name.pr == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_read_accessor_name.pr.visit(this);
 			}
 		}
 
@@ -2819,6 +2837,7 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_procedure_call.func_name.visit(this);
 			}
+			bw.Write(_procedure_call.is_ident);
 		}
 
 

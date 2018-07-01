@@ -220,7 +220,6 @@
     <name value="template_identifier_with_equal" />
     <name value="simple_type_identifier" />
     <name value="qualified_identifier" />
-    <name value="optional_identifier" />
     <name value="proc_name" />
     <name value="func_name" />
     <name value="func_class_name_ident" />

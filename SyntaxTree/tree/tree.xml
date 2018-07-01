@@ -846,7 +846,7 @@
     </SyntaxNode>
     <SyntaxNode Name="method_name" BaseName="syntax_tree_node">
       <Fields>
-        <ExtendedField Name="ln" Type="List&lt;ident&gt;" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="ln" Type="List&lt;ident&gt;" CreateVariable="true" DeleteVariable="false" />
         <SyntaxField Name="class_name" SyntaxType="ident" />
         <SyntaxField Name="meth_name" SyntaxType="ident" />
         <SyntaxField Name="explicit_interface_name" SyntaxType="ident" />
@@ -979,6 +979,7 @@
     <SyntaxNode Name="write_accessor_name" BaseName="syntax_tree_node">
       <Fields>
         <SyntaxField Name="accessor_name" SyntaxType="ident" />
+        <SyntaxField Name="pr" SyntaxType="procedure_definition" />
       </Fields>
       <Methods />
       <Tags>
@@ -989,6 +990,7 @@
     <SyntaxNode Name="read_accessor_name" BaseName="syntax_tree_node">
       <Fields>
         <SyntaxField Name="accessor_name" SyntaxType="ident" />
+        <SyntaxField Name="pr" SyntaxType="procedure_definition" />
       </Fields>
       <Methods />
       <Tags>
@@ -1327,6 +1329,7 @@
     <SyntaxNode Name="procedure_call" BaseName="statement">
       <Fields>
         <SyntaxField Name="func_name" SyntaxType="addressed_value" />
+        <ExtendedField Name="is_ident" Type="bool" CreateVariable="false" DeleteVariable="false" />
       </Fields>
       <Methods />
       <Tags>
@@ -4020,9 +4023,10 @@
       <HelpData Key="procedure_attributes_list.procedure_attributes_list(proc_attribute attr, SourceContext sc): this(new procedure_attribute(attr),sc)" Value="" />
       <HelpData Key="procedure_attributes_list.procedure_attributes_list(procedure_attribute _procedure_attribute)" Value="" />
       <HelpData Key="procedure_attributes_list.procedure_attributes_list(procedure_attribute _procedure_attribute, SourceContext sc)" Value="" />
-      <HelpData Key="procedure_call" Value="" />
+      <HelpData Key="procedure_call" Value="bool is_ident; // является ли вызов процедуры идентификатором. Нужно исключительно для секции write свойств" />
       <HelpData Key="procedure_call." Value="" />
       <HelpData Key="procedure_call.func_name" Value="" />
+      <HelpData Key="procedure_call.is_ident" Value="" />
       <HelpData Key="procedure_call.override string ToString()" Value="" />
       <HelpData Key="procedure_call.parametres" Value="" />
       <HelpData Key="procedure_definition" Value="" />
@@ -4117,8 +4121,9 @@
       <HelpData Key="raise_stmt.address" Value="" />
       <HelpData Key="raise_stmt.expr" Value="" />
       <HelpData Key="raise_stmt.object" Value="" />
-      <HelpData Key="read_accessor_name" Value="" />
+      <HelpData Key="read_accessor_name" Value="procedure_definition pr != null если метод сгенерирован по выражению" />
       <HelpData Key="read_accessor_name.accessor_name" Value="" />
+      <HelpData Key="read_accessor_name.pr" Value="" />
       <HelpData Key="record_const" Value="" />
       <HelpData Key="record_const." Value="" />
       <HelpData Key="record_const.rec_consts" Value="" />
@@ -4603,8 +4608,9 @@
       <HelpData Key="with_statement." Value="" />
       <HelpData Key="with_statement.do_with" Value="Список объектов, с которыми производить действия." />
       <HelpData Key="with_statement.what_do" Value="Что делать." />
-      <HelpData Key="write_accessor_name" Value="" />
+      <HelpData Key="write_accessor_name" Value="procedure_definition pr != null если метод сгенерирован по выражению" />
       <HelpData Key="write_accessor_name.accessor_name" Value="" />
+      <HelpData Key="write_accessor_name.pr" Value="" />
       <HelpData Key="yield_node" Value="" />
       <HelpData Key="yield_node.ex" Value="" />
       <HelpData Key="yield_node.override string ToString()" Value="" />

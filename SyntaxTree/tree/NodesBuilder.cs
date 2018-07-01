@@ -86,7 +86,7 @@ namespace PascalABCCompiler.SyntaxTree
 
         public static simple_property BuildSimpleReadWriteProperty(ident name, ident field, type_definition type)
         {
-            return new simple_property(name, type, new property_accessors(new read_accessor_name(field), new write_accessor_name(field)));
+            return new simple_property(name, type, new property_accessors(new read_accessor_name(field,null), new write_accessor_name(field, null)));
         }
 
         public static class_members BuildSimpleReadPropertiesSection(List<ident> names, List<ident> fields, List<type_definition> types)

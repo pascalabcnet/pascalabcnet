@@ -13949,7 +13949,7 @@ namespace PascalABCCompiler.SyntaxTree
 		    FillParentsInDirectChilds();
 		}
 		
-		protected List<ident> _ln;
+		protected List<ident> _ln=new List<ident>();
 		protected ident _class_name;
 		protected ident _meth_name;
 		protected ident _explicit_interface_name;
@@ -15665,7 +15665,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///
+	///procedure_definition pr != null если метод сгенерирован по выражению
 	///</summary>
 	[Serializable]
 	public partial class write_accessor_name : syntax_tree_node
@@ -15682,22 +15682,25 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public write_accessor_name(ident _accessor_name)
+		public write_accessor_name(ident _accessor_name,procedure_definition _pr)
 		{
 			this._accessor_name=_accessor_name;
+			this._pr=_pr;
 			FillParentsInDirectChilds();
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public write_accessor_name(ident _accessor_name,SourceContext sc)
+		public write_accessor_name(ident _accessor_name,procedure_definition _pr,SourceContext sc)
 		{
 			this._accessor_name=_accessor_name;
+			this._pr=_pr;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
 		protected ident _accessor_name;
+		protected procedure_definition _pr;
 
 		///<summary>
 		///
@@ -15716,6 +15719,23 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+		///<summary>
+		///
+		///</summary>
+		public procedure_definition pr
+		{
+			get
+			{
+				return _pr;
+			}
+			set
+			{
+				_pr=value;
+				if (_pr != null)
+					_pr.Parent = this;
+			}
+		}
+
 
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -15728,6 +15748,11 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				copy.accessor_name = (ident)accessor_name.Clone();
 				copy.accessor_name.Parent = copy;
+			}
+			if (pr != null)
+			{
+				copy.pr = (procedure_definition)pr.Clone();
+				copy.pr.Parent = copy;
 			}
 			return copy;
 		}
@@ -15743,6 +15768,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			if (accessor_name != null)
 				accessor_name.Parent = this;
+			if (pr != null)
+				pr.Parent = this;
 		}
 
 		///<summary> Заполняет поля Parent во всем поддереве </summary>
@@ -15750,6 +15777,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			FillParentsInDirectChilds();
 			accessor_name?.FillParentsInAllChilds();
+			pr?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -15759,7 +15787,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 2;
 			}
 		}
 		///<summary>
@@ -15769,7 +15797,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 2;
 			}
 		}
 		///<summary>
@@ -15785,6 +15813,8 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						return accessor_name;
+					case 1:
+						return pr;
 				}
 				return null;
 			}
@@ -15796,6 +15826,9 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						accessor_name = (ident)value;
+						break;
+					case 1:
+						pr = (procedure_definition)value;
 						break;
 				}
 			}
@@ -15814,7 +15847,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///
+	///procedure_definition pr != null если метод сгенерирован по выражению
 	///</summary>
 	[Serializable]
 	public partial class read_accessor_name : syntax_tree_node
@@ -15831,22 +15864,25 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public read_accessor_name(ident _accessor_name)
+		public read_accessor_name(ident _accessor_name,procedure_definition _pr)
 		{
 			this._accessor_name=_accessor_name;
+			this._pr=_pr;
 			FillParentsInDirectChilds();
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public read_accessor_name(ident _accessor_name,SourceContext sc)
+		public read_accessor_name(ident _accessor_name,procedure_definition _pr,SourceContext sc)
 		{
 			this._accessor_name=_accessor_name;
+			this._pr=_pr;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
 		protected ident _accessor_name;
+		protected procedure_definition _pr;
 
 		///<summary>
 		///
@@ -15865,6 +15901,23 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+		///<summary>
+		///
+		///</summary>
+		public procedure_definition pr
+		{
+			get
+			{
+				return _pr;
+			}
+			set
+			{
+				_pr=value;
+				if (_pr != null)
+					_pr.Parent = this;
+			}
+		}
+
 
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -15877,6 +15930,11 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				copy.accessor_name = (ident)accessor_name.Clone();
 				copy.accessor_name.Parent = copy;
+			}
+			if (pr != null)
+			{
+				copy.pr = (procedure_definition)pr.Clone();
+				copy.pr.Parent = copy;
 			}
 			return copy;
 		}
@@ -15892,6 +15950,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			if (accessor_name != null)
 				accessor_name.Parent = this;
+			if (pr != null)
+				pr.Parent = this;
 		}
 
 		///<summary> Заполняет поля Parent во всем поддереве </summary>
@@ -15899,6 +15959,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			FillParentsInDirectChilds();
 			accessor_name?.FillParentsInAllChilds();
+			pr?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -15908,7 +15969,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 2;
 			}
 		}
 		///<summary>
@@ -15918,7 +15979,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 2;
 			}
 		}
 		///<summary>
@@ -15934,6 +15995,8 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						return accessor_name;
+					case 1:
+						return pr;
 				}
 				return null;
 			}
@@ -15945,6 +16008,9 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						accessor_name = (ident)value;
+						break;
+					case 1:
+						pr = (procedure_definition)value;
 						break;
 				}
 			}
@@ -21631,7 +21697,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///
+	///bool is_ident; // является ли вызов процедуры идентификатором. Нужно исключительно для секции write свойств
 	///</summary>
 	[Serializable]
 	public partial class procedure_call : statement
@@ -21648,22 +21714,25 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public procedure_call(addressed_value _func_name)
+		public procedure_call(addressed_value _func_name,bool _is_ident)
 		{
 			this._func_name=_func_name;
+			this._is_ident=_is_ident;
 			FillParentsInDirectChilds();
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public procedure_call(addressed_value _func_name,SourceContext sc)
+		public procedure_call(addressed_value _func_name,bool _is_ident,SourceContext sc)
 		{
 			this._func_name=_func_name;
+			this._is_ident=_is_ident;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
 		protected addressed_value _func_name;
+		protected bool _is_ident;
 
 		///<summary>
 		///
@@ -21679,6 +21748,21 @@ namespace PascalABCCompiler.SyntaxTree
 				_func_name=value;
 				if (_func_name != null)
 					_func_name.Parent = this;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public bool is_ident
+		{
+			get
+			{
+				return _is_ident;
+			}
+			set
+			{
+				_is_ident=value;
 			}
 		}
 
@@ -21700,6 +21784,7 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.func_name = (addressed_value)func_name.Clone();
 				copy.func_name.Parent = copy;
 			}
+			copy.is_ident = is_ident;
 			return copy;
 		}
 
