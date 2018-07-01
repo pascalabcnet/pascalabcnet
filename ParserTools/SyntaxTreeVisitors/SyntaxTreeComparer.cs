@@ -697,6 +697,8 @@ namespace PascalABCCompiler.SyntaxTree
                     CompareInternal(left as tuple_node, right as tuple_node);
                 else if (left is slice_expr)
                     CompareInternal(left as slice_expr, right as slice_expr);
+                else if (left is is_pattern_expr)
+                    CompareInternal(left as is_pattern_expr, right as is_pattern_expr);
                 else
                     throw new NotImplementedException(left.GetType().ToString());
 
@@ -2255,6 +2257,82 @@ namespace PascalABCCompiler.SyntaxTree
             if (left != null && right != null)
             {
                 CompareInternal(left.el, right.el);
+            }
+        }
+
+        public void CompareInternal(is_pattern_expr left, is_pattern_expr right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                CompareInternal(left.left, right.left);
+                CompareInternal(left.right, right.right);
+            }
+        }
+
+        public void CompareInternal(pattern_node left, pattern_node right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                if (left.GetType() != right.GetType())
+                    throw_not_equal(left, right);
+                if (left is deconstructor_pattern)
+                    CompareInternal(left as deconstructor_pattern, right as deconstructor_pattern);
+            }
+        }
+
+        public void CompareInternal(deconstructor_pattern left, deconstructor_pattern right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                CompareInternal(left.type, right.type);
+                if (left.parameters.Count != right.parameters.Count)
+                    throw_not_equal(left, right);
+                for (int i = 0; i < left.Count; i++)
+                {
+                    CompareInternal(left.parameters[i], right.parameters[i]);
+                }
+            }
+        }
+
+        public void CompareInternal(pattern_deconstructor_parameter left, pattern_deconstructor_parameter right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                if (left.GetType() != right.GetType())
+                    throw_not_equal(left, right);
+                if (left is var_deconstructor_parameter)
+                    CompareInternal(left as var_deconstructor_parameter, right as var_deconstructor_parameter);
+                if (left is recursive_deconstructor_parameter)
+                    CompareInternal(left as recursive_deconstructor_parameter, right as recursive_deconstructor_parameter);
+            }
+        }
+
+        public void CompareInternal(var_deconstructor_parameter left, var_deconstructor_parameter right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                CompareInternal(left.identifier, right.identifier);
+                CompareInternal(left.type, right.type);
+            }
+        }
+
+        public void CompareInternal(recursive_deconstructor_parameter left, recursive_deconstructor_parameter right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                CompareInternal(left.pattern, right.pattern);
             }
         }
     }

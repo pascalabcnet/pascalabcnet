@@ -466,7 +466,7 @@ namespace CodeFormatters
                     prev_pos = GetPosition(prev_sn.source_context.begin_position.line_num, prev_sn.source_context.begin_position.column_num) + keyword_offset;
                 }
                 else
-                    prev_pos = GetPosition(prev_sn.source_context.end_position.line_num, prev_sn.source_context.end_position.column_num)+1;
+                    prev_pos = GetPosition(prev_sn.source_context.end_position.line_num, prev_sn.source_context.end_position.column_num) + 1;
             if (prev_pos < pos)
             {
                 string comm = Text.Substring(prev_pos, pos - prev_pos);
@@ -499,7 +499,7 @@ namespace CodeFormatters
                     sb.AppendLine();
                     insert_newline_after_prev = false;
                 }
-                if (force_tab && sb[sb.Length-1] == '\n')
+                if (force_tab && sb[sb.Length - 1] == '\n')
                     sb.Append(new string(' ', off));
                 force_tab = false;
             }
@@ -2984,7 +2984,7 @@ namespace CodeFormatters
 
         public override void visit(match_with _match_with)
         {
-            sb.Append("match ");
+            sb.Append("match");
             visit_node(_match_with.expr);
             IncOffset();
             add_space_before = true;
@@ -3018,11 +3018,18 @@ namespace CodeFormatters
         {
             visit_node(_deconstructor_pattern.type);
             foreach (var parameter in _deconstructor_pattern.parameters)
+            {
                 visit_node(parameter);
+                add_space_after = true;
+            }
+            add_space_after = false; 
         }
 
         public override void visit(var_deconstructor_parameter _var_deconstructor_parameter)
         {
+            sb.Append("var");
+            SetKeywordOffset("var");
+            read_from_beg_pos = true;
             visit_node(_var_deconstructor_parameter.identifier);
             if (_var_deconstructor_parameter.type != null)
                 visit_node(_var_deconstructor_parameter.type);

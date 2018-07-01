@@ -744,14 +744,33 @@ namespace CodeCompletion
         public override void visit(deconstructor_pattern _deconstructor_pattern)
         {
             _deconstructor_pattern.type.visit(this);
-            foreach (pattern_deconstructor_parameter pdp in _deconstructor_pattern.parameters)
+            if (_deconstructor_pattern.parameters.Count == 1)
             {
+                var pdp = _deconstructor_pattern.parameters[0];
                 if (pdp is var_deconstructor_parameter)
                 {
                     var_deconstructor_parameter vdp = pdp as var_deconstructor_parameter;
                     pending_is_pattern_vars.Add(new var_def_statement(vdp.identifier, _deconstructor_pattern.type, _deconstructor_pattern.source_context));
                 }
             }
+            else
+            {
+                foreach (pattern_deconstructor_parameter pdp in _deconstructor_pattern.parameters)
+                {
+                    if (pdp is var_deconstructor_parameter)
+                    {
+                        var_deconstructor_parameter vdp = pdp as var_deconstructor_parameter;
+                        SymScope ss = returned_scope.FindName(vdp.identifier.name);
+                        if (ss is ElementScope)
+                        {
+                            TypeScope ts = (ss as ElementScope).sc as TypeScope;
+                            pending_is_pattern_vars.Add(new var_def_statement(vdp.identifier, new named_type_reference(new ident(ts.si.name)), _deconstructor_pattern.source_context));
+                        }
+                            
+                    }
+                }
+            }
+            
         }
 
         public override void visit(match_with _match_with)
