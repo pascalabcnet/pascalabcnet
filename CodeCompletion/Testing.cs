@@ -874,7 +874,22 @@ namespace CodeCompletion
                 CodeFormatters.CodeFormatter cf = new CodeFormatters.CodeFormatter(2);
                 string Text2 = cf.FormatTree(Text, cu, 1, 1);
                 if (Text != Text2)
-                    log.WriteLine("Invalid formatting of File " + s);
+                {
+                    int line = 1;
+                    for (int i = 0; i < Math.Min(Text.Length, Text2.Length); i++)
+                    {
+                        if (Text[i] != Text2[i])
+                        {
+                            log.WriteLine("Invalid formatting of File " + s + ", line "+line);
+                            break;
+                        }
+                        else if (Text[i] == '\n')
+                        {
+                            line++;
+                        }
+                    }  
+                }
+                    
                 string shouldFileName = Path.Combine(test_dir + @"\should",Path.GetFileName(s));
                 if (File.Exists(shouldFileName))
                 {

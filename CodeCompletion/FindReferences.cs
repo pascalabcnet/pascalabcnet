@@ -1612,6 +1612,69 @@ namespace CodeCompletion
             }
             _assign_var_tuple.expr.visit(this);
         }
+        public override void visit(is_pattern_expr _is_pattern_expr)
+        {
+            if (_is_pattern_expr.left != null)
+                _is_pattern_expr.left.visit(this);
+            if (_is_pattern_expr.right != null)
+                _is_pattern_expr.right.visit(this);
+        }
+        public override void visit(type_pattern _type_pattern)
+        {
+            if (_type_pattern.type != null)
+                _type_pattern.type.visit(this);
+            if (_type_pattern.identifier != null)
+                _type_pattern.identifier.visit(this);
+        }
+        public override void visit(dot_question_node _dot_question_node)
+        {
+            _dot_question_node.left.visit(this);
+            _dot_question_node.right.visit(this);
+        }
+        public override void visit(double_question_node _double_question_node)
+        {
+            _double_question_node.left.visit(this);
+            _double_question_node.right.visit(this);
+        }
+        public override void visit(pattern_cases _pattern_cases)
+        {
+            foreach (pattern_case pc in _pattern_cases.elements)
+                pc.visit(this);
+        }
+        public override void visit(pattern_case _pattern_case)
+        {
+            if (_pattern_case.condition != null)
+                _pattern_case.condition.visit(this);
+            if (_pattern_case.pattern != null)
+                _pattern_case.pattern.visit(this);
+            if (_pattern_case.case_action != null)
+                _pattern_case.case_action.visit(this);
+        }
+        public override void visit(match_with _match_with)
+        {
+            if (_match_with.defaultAction != null)
+                _match_with.defaultAction.visit(this);
+            if (_match_with.expr != null)
+                _match_with.expr.visit(this);
+            if (_match_with.case_list != null)
+                _match_with.case_list.visit(this);
+        }
+        public override void visit(matching_expression _matching_expression)
+        {
+            _matching_expression.left.visit(this);
+            _matching_expression.right.visit(this);
+        }
+        public override void visit(deconstructor_pattern _deconstructor_pattern)
+        {
+            _deconstructor_pattern.type.visit(this);
+            foreach (pattern_deconstructor_parameter pdp in _deconstructor_pattern.parameters)
+                pdp.visit(this);
+        }
+        public override void visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
+        {
+            _recursive_deconstructor_parameter.pattern.visit(this);
+        }
+        
         public override void visit(modern_proc_type _modern_proc_type)
         {
             if (_modern_proc_type.aloneparam != null)
