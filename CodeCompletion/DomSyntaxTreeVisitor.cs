@@ -38,8 +38,9 @@ namespace CodeCompletion
 		private bool search_all = false;//flag, iskat vse peregruzki ili tolko odnu. sdelal dlja effektivnosti. true zadaetsja tolko v visit(method_call)
         internal bool parse_only_interface = false;
         private template_type_reference converted_template_type = null;
+        private List<var_def_statement> pending_is_pattern_vars = new List<var_def_statement>();
 
-		public SemanticOptions semantic_options = new SemanticOptions();
+        public SemanticOptions semantic_options = new SemanticOptions();
 		
 		public DomSyntaxTreeVisitor(DomConverter converter)
 		{
@@ -165,7 +166,7 @@ namespace CodeCompletion
         		cur_scope.AddName("$block_scope",stmt_scope);
         		stmt_scope.loc = get_location(_statement_list);
         		cur_scope = stmt_scope;
-        	}
+            }
         	//try
         	{
         		foreach (statement stmt in _statement_list.subnodes)
@@ -688,59 +689,131 @@ namespace CodeCompletion
             SymScope tmp = cur_scope;
             //if (_for_node.type_name != null)
             {
-            	SymScope stmt_scope = new BlockScope(cur_scope);
-        		cur_scope.AddName("$block_scope",stmt_scope);
-        		stmt_scope.loc = get_location(_for_node);
-        		returned_scope = null;
-        		if (_for_node.type_name != null)
-        		_for_node.type_name.visit(this);
-        		if (returned_scope != null)
-        		{
-        			cur_scope = stmt_scope;
-        			ElementScope es = new ElementScope(new SymInfo(_for_node.loop_variable.name, SymbolKind.Variable,_for_node.loop_variable.name),returned_scope,cur_scope);
-        			stmt_scope.AddName(_for_node.loop_variable.name,es);
-        			es.loc = get_location(_for_node.loop_variable);
-        			returned_scope = null;
-        		}
-        		else
-        		{
-        			_for_node.initial_value.visit(this);
-        			if (returned_scope != null)
-        			{
-        				cur_scope = stmt_scope;
-        				if (_for_node.create_loop_variable)
-        				{
-        					ElementScope es = new ElementScope(new SymInfo(_for_node.loop_variable.name, SymbolKind.Variable,_for_node.loop_variable.name),returned_scope,cur_scope);
-        					stmt_scope.AddName(_for_node.loop_variable.name,es);
-        					es.loc = get_location(_for_node.loop_variable);
-        				}
-        				returned_scope = null;
-        			}
-        		}
+                SymScope stmt_scope = new BlockScope(cur_scope);
+                cur_scope.AddName("$block_scope", stmt_scope);
+                stmt_scope.loc = get_location(_for_node);
+                returned_scope = null;
+                if (_for_node.type_name != null)
+                    _for_node.type_name.visit(this);
+                if (returned_scope != null)
+                {
+                    cur_scope = stmt_scope;
+                    ElementScope es = new ElementScope(new SymInfo(_for_node.loop_variable.name, SymbolKind.Variable, _for_node.loop_variable.name), returned_scope, cur_scope);
+                    stmt_scope.AddName(_for_node.loop_variable.name, es);
+                    es.loc = get_location(_for_node.loop_variable);
+                    returned_scope = null;
+                }
+                else
+                {
+                    _for_node.initial_value.visit(this);
+                    if (returned_scope != null)
+                    {
+                        cur_scope = stmt_scope;
+                        if (_for_node.create_loop_variable)
+                        {
+                            ElementScope es = new ElementScope(new SymInfo(_for_node.loop_variable.name, SymbolKind.Variable, _for_node.loop_variable.name), returned_scope, cur_scope);
+                            stmt_scope.AddName(_for_node.loop_variable.name, es);
+                            es.loc = get_location(_for_node.loop_variable);
+                        }
+                        returned_scope = null;
+                    }
+                }
             }
             if (_for_node.statements != null)
-            _for_node.statements.visit(this);
+                _for_node.statements.visit(this);
             cur_scope = tmp;
         }
 
         public override void visit(PascalABCCompiler.SyntaxTree.repeat_node _repeat_node)
         {
-        	if (_repeat_node.statements != null)
-        	_repeat_node.statements.visit(this);
+            if (_repeat_node.statements != null)
+                _repeat_node.statements.visit(this);
         }
 
         public override void visit(PascalABCCompiler.SyntaxTree.while_node _while_node)
         {
             if (_while_node.statements != null)
-        	_while_node.statements.visit(this);
+                _while_node.statements.visit(this);
+        }
+
+        public override void visit(is_pattern_expr _is_pattern_expr)
+        {
+            _is_pattern_expr.right.visit(this);
+        }
+
+        public override void visit(deconstructor_pattern _deconstructor_pattern)
+        {
+            _deconstructor_pattern.type.visit(this);
+            foreach (pattern_deconstructor_parameter pdp in _deconstructor_pattern.parameters)
+            {
+                if (pdp is var_deconstructor_parameter)
+                {
+                    var_deconstructor_parameter vdp = pdp as var_deconstructor_parameter;
+                    pending_is_pattern_vars.Add(new var_def_statement(vdp.identifier, _deconstructor_pattern.type, _deconstructor_pattern.source_context));
+                }
+            }
+        }
+
+        public override void visit(match_with _match_with)
+        {
+            if (_match_with.case_list != null)
+            {
+                foreach (pattern_case pc in _match_with.case_list.elements)
+                    pc.visit(this);
+            }
+           
+        }
+
+        public override void visit(pattern_case _pattern_case)
+        {
+            _pattern_case.pattern.visit(this);
+            statement stmt = merge_with_is_variables(_pattern_case.case_action);
+            stmt.visit(this);
+        }
+
+        public void visit_is_patterns(expression expr)
+        {
+            if (expr is bin_expr)
+            {
+                bin_expr bexpr = expr as bin_expr;
+                visit_is_patterns(bexpr.left);
+                visit_is_patterns(bexpr.right);
+            }
+            else if (expr is is_pattern_expr)
+                expr.visit(this);
+        }
+
+        public statement merge_with_is_variables(statement stmt)
+        {
+            if (pending_is_pattern_vars.Count > 0)
+            {
+                if (stmt is statement_list)
+                {
+                    foreach (var_def_statement vds in pending_is_pattern_vars)
+                        (stmt as statement_list).Insert(0, new var_statement(vds, vds.source_context));
+                }
+                else
+                {
+                    statement_list slist = new statement_list();
+                    slist.source_context = stmt.source_context;
+                    foreach (var_def_statement vds in pending_is_pattern_vars)
+                        slist.Insert(0, new var_statement(vds, vds.source_context));
+                    slist.Add(stmt);
+                    stmt = slist;
+                }
+                pending_is_pattern_vars.Clear();
+            }
+            return stmt;
         }
 
         public override void visit(PascalABCCompiler.SyntaxTree.if_node _if_node)
         {
-            if (_if_node.then_body != null)
-        	_if_node.then_body.visit(this);
+            visit_is_patterns(_if_node.condition);
+            statement then_stmt = merge_with_is_variables(_if_node.then_body);
+            if (then_stmt != null)
+                then_stmt.visit(this);
             if (_if_node.else_body != null)
-        	_if_node.else_body.visit(this);
+                _if_node.else_body.visit(this);
         }
 
         public override void visit(ref_type _ref_type)
