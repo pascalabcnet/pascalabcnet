@@ -2459,7 +2459,7 @@
         <SyntaxField Name="proc_definition" SyntaxType="procedure_definition" />
         <SyntaxField Name="parameters" SyntaxType="expression_list" />
         <ExtendedField Name="lambda_name" Type="string" CreateVariable="false" DeleteVariable="false" />
-        <ExtendedField Name="defs" Type="List&lt;declaration&gt;" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="defs" Type="List&lt;declaration&gt;" CreateVariable="true" DeleteVariable="false" />
         <ExtendedField Name="lambda_visit_mode" Type="LambdaVisitMode" CreateVariable="false" DeleteVariable="false" />
         <SyntaxField Name="substituting_node" SyntaxType="syntax_tree_node" />
         <ExtendedField Name="usedkeyword" Type="int" CreateVariable="false" DeleteVariable="false" />
