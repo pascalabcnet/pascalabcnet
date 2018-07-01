@@ -13949,7 +13949,7 @@ namespace PascalABCCompiler.SyntaxTree
 		    FillParentsInDirectChilds();
 		}
 		
-		protected List<ident> _ln;
+		protected List<ident> _ln=new List<ident>();
 		protected ident _class_name;
 		protected ident _meth_name;
 		protected ident _explicit_interface_name;
@@ -40195,7 +40195,7 @@ namespace PascalABCCompiler.SyntaxTree
 		protected procedure_definition _proc_definition;
 		protected expression_list _parameters;
 		protected string _lambda_name;
-		protected List<declaration> _defs;
+		protected List<declaration> _defs=new List<declaration>();
 		protected LambdaVisitMode _lambda_visit_mode;
 		protected syntax_tree_node _substituting_node;
 		protected int _usedkeyword;
