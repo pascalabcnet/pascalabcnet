@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-A6LT9RI
-// DateTime: 03.07.2018 13:20:56
+// DateTime: 03.07.2018 16:35:18
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -3168,13 +3168,13 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 			    var i64 = ValueStack[ValueStack.Depth-1].ex as int64_const;
 				if (i64 != null && i64.val == (Int64)Int32.MaxValue + 1)
 				{
-					CurrentSemanticValue.ex = new int32_const(Int32.MinValue);
+					CurrentSemanticValue.ex = new int32_const(Int32.MinValue,CurrentLocationSpan);
 					break;
 				}
 				var ui64 = ValueStack[ValueStack.Depth-1].ex as uint64_const;
 				if (ui64 != null && ui64.val == (UInt64)Int64.MaxValue + 1)
 				{
-					CurrentSemanticValue.ex = new int64_const(Int64.MinValue);
+					CurrentSemanticValue.ex = new int64_const(Int64.MinValue,CurrentLocationSpan);
 					break;
 				}
 				if (ui64 != null && ui64.val > (UInt64)Int64.MaxValue + 1)
@@ -3792,15 +3792,31 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
             foreach (var prop in ccnt)
             {
                 var td = prop.property_type;
-                if (prop.accessors.read_accessor != null && prop.accessors.read_accessor.pr != null)
+                var ra = prop.accessors.read_accessor;
+                if (ra != null && ra.pr != null)
                 {
-                    (prop.accessors.read_accessor.pr.proc_header as function_header).return_type = td;
-                    cm.Add(prop.accessors.read_accessor.pr);
+                    (ra.pr.proc_header as function_header).return_type = td;
+                    cm.Add(ra.pr);
+                    if (prop.attr == definition_attribute.Static)
+                    {
+                        ra.pr.proc_header.class_keyword = true;
+                        procedure_attribute pa = new procedure_attribute(proc_attribute.attr_static);
+                        pa.source_context = ra.pr.proc_header.source_context;
+                        ra.pr.proc_header.proc_attributes = new procedure_attributes_list(pa);
+                    }
                 }
-                if (prop.accessors.write_accessor != null && prop.accessors.write_accessor.pr != null)
+                var wa = prop.accessors.write_accessor;
+                if (wa != null && wa.pr != null)
                 {
-                    prop.accessors.write_accessor.pr.proc_header.parameters.params_list[0].vars_type = td;
-                    cm.Add(prop.accessors.write_accessor.pr);
+                    wa.pr.proc_header.parameters.params_list[0].vars_type = td;
+                    cm.Add(wa.pr);
+                    if (prop.attr == definition_attribute.Static)
+                    {
+                        wa.pr.proc_header.class_keyword = true;
+                        procedure_attribute pa = new procedure_attribute(proc_attribute.attr_static);
+                        pa.source_context = wa.pr.proc_header.source_context;
+                        wa.pr.proc_header.proc_attributes = new procedure_attributes_list(pa);
+                    }
                 }
             }
             if (cm.Count>0)
@@ -5661,13 +5677,13 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 			    var i64 = ValueStack[ValueStack.Depth-1].ex as int64_const;
 				if (i64 != null && i64.val == (Int64)Int32.MaxValue + 1)
 				{
-					CurrentSemanticValue.ex = new int32_const(Int32.MinValue);
+					CurrentSemanticValue.ex = new int32_const(Int32.MinValue,CurrentLocationSpan);
 					break;
 				}
 				var ui64 = ValueStack[ValueStack.Depth-1].ex as uint64_const;
 				if (ui64 != null && ui64.val == (UInt64)Int64.MaxValue + 1)
 				{
-					CurrentSemanticValue.ex = new int64_const(Int64.MinValue);
+					CurrentSemanticValue.ex = new int64_const(Int64.MinValue,CurrentLocationSpan);
 					break;
 				}
 				if (ui64 != null && ui64.val > (UInt64)Int64.MaxValue + 1)

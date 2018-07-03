@@ -842,13 +842,13 @@ const_factor
 			    var i64 = $2 as int64_const;
 				if (i64 != null && i64.val == (Int64)Int32.MaxValue + 1)
 				{
-					$$ = new int32_const(Int32.MinValue);
+					$$ = new int32_const(Int32.MinValue,@$);
 					break;
 				}
 				var ui64 = $2 as uint64_const;
 				if (ui64 != null && ui64.val == (UInt64)Int64.MaxValue + 1)
 				{
-					$$ = new int64_const(Int64.MinValue);
+					$$ = new int64_const(Int64.MinValue,@$);
 					break;
 				}
 				if (ui64 != null && ui64.val > (UInt64)Int64.MaxValue + 1)
@@ -1506,15 +1506,31 @@ object_type
             foreach (var prop in ccnt)
             {
                 var td = prop.property_type;
-                if (prop.accessors.read_accessor != null && prop.accessors.read_accessor.pr != null)
+                var ra = prop.accessors.read_accessor;
+                if (ra != null && ra.pr != null)
                 {
-                    (prop.accessors.read_accessor.pr.proc_header as function_header).return_type = td;
-                    cm.Add(prop.accessors.read_accessor.pr);
+                    (ra.pr.proc_header as function_header).return_type = td;
+                    cm.Add(ra.pr);
+                    if (prop.attr == definition_attribute.Static)
+                    {
+                        ra.pr.proc_header.class_keyword = true;
+                        procedure_attribute pa = new procedure_attribute(proc_attribute.attr_static);
+                        pa.source_context = ra.pr.proc_header.source_context;
+                        ra.pr.proc_header.proc_attributes = new procedure_attributes_list(pa);
+                    }
                 }
-                if (prop.accessors.write_accessor != null && prop.accessors.write_accessor.pr != null)
+                var wa = prop.accessors.write_accessor;
+                if (wa != null && wa.pr != null)
                 {
-                    prop.accessors.write_accessor.pr.proc_header.parameters.params_list[0].vars_type = td;
-                    cm.Add(prop.accessors.write_accessor.pr);
+                    wa.pr.proc_header.parameters.params_list[0].vars_type = td;
+                    cm.Add(wa.pr);
+                    if (prop.attr == definition_attribute.Static)
+                    {
+                        wa.pr.proc_header.class_keyword = true;
+                        procedure_attribute pa = new procedure_attribute(proc_attribute.attr_static);
+                        pa.source_context = wa.pr.proc_header.source_context;
+                        wa.pr.proc_header.proc_attributes = new procedure_attributes_list(pa);
+                    }
                 }
             }
             if (cm.Count>0)
@@ -3474,13 +3490,13 @@ factor
 			    var i64 = $2 as int64_const;
 				if (i64 != null && i64.val == (Int64)Int32.MaxValue + 1)
 				{
-					$$ = new int32_const(Int32.MinValue);
+					$$ = new int32_const(Int32.MinValue,@$);
 					break;
 				}
 				var ui64 = $2 as uint64_const;
 				if (ui64 != null && ui64.val == (UInt64)Int64.MaxValue + 1)
 				{
-					$$ = new int64_const(Int64.MinValue);
+					$$ = new int64_const(Int64.MinValue,@$);
 					break;
 				}
 				if (ui64 != null && ui64.val > (UInt64)Int64.MaxValue + 1)
