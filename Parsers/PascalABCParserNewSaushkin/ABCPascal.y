@@ -1941,9 +1941,9 @@ array_defaultproperty
     ;
 
 property_interface
-    :  
+    :/*  
 		{ $$ = null; }
-    | property_parameter_list tkColon fptype 
+    |*/ property_parameter_list tkColon fptype 
         { 
 			$$ = new property_interface($1 as property_parameter_list, $3, null, @$);
         }
