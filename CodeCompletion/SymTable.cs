@@ -548,7 +548,8 @@ namespace CodeCompletion
 
         bool IBaseScope.IsEqual(IBaseScope scope)
         {
-            return this == scope;
+            return this.IsEqual(scope as SymScope);
+            //return this == scope;
         }
 
         public virtual bool IsEqual(SymScope ts)
@@ -4746,6 +4747,13 @@ namespace CodeCompletion
                 }
                 return null;
             }
+        }
+
+        public override bool IsEqual(SymScope ts)
+        {
+            if (ts is NamespaceScope)
+                return string.Compare(this.name, (ts as NamespaceScope).name, true) == 0;
+            return false;
         }
 
         public override SymScope FindNameOnlyInType(string name)

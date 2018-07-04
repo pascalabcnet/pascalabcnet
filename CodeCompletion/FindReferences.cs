@@ -1641,6 +1641,13 @@ namespace CodeCompletion
             foreach (pattern_case pc in _pattern_cases.elements)
                 pc.visit(this);
         }
+        public override void visit(var_deconstructor_parameter _var_deconstructor_parameter)
+        {
+            ident s = _var_deconstructor_parameter.identifier;
+            IBaseScope ss = entry_scope.FindScopeByLocation(s.source_context.begin_position.line_num, s.source_context.begin_position.column_num);
+            if (ss != null && ss.IsEqual(founded_scope))
+                pos_list.Add(get_position(s));
+        }
         public override void visit(pattern_case _pattern_case)
         {
             if (_pattern_case.condition != null)
@@ -1648,7 +1655,13 @@ namespace CodeCompletion
             if (_pattern_case.pattern != null)
                 _pattern_case.pattern.visit(this);
             if (_pattern_case.case_action != null)
-                _pattern_case.case_action.visit(this);
+            {
+                if (!(_pattern_case.case_action is statement_list))
+                    new statement_list(_pattern_case.case_action, _pattern_case.source_context).visit(this);
+                else
+                    _pattern_case.case_action.visit(this);
+            }
+                
         }
         public override void visit(match_with _match_with)
         {
