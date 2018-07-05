@@ -3594,7 +3594,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     fn = si.sym_info as function_node;
                     //(ssyy) Сверяем как параметры функций, так и типы возвращаемых значений
-                    if (convertion_data_and_alghoritms.function_eq_params_and_result(cmn, fn))
+                    if (convertion_data_and_alghoritms.function_eq_params_and_result(cmn, fn, true))
                     {
                         find_method = si;
                         break;
