@@ -4351,6 +4351,10 @@ lambda_procedure_body
 		{
 			$$ = new statement_list($1 as statement, @$);
 		}
+	| raise_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
 	| assignment
 		{
 			$$ = new statement_list($1 as statement, @$);
