@@ -4472,6 +4472,11 @@ namespace CodeCompletion
             List<SymScope> names = internal_find_overloads(name, false);
             if (baseScope != null)
                 names.AddRange(baseScope.FindOverloadNamesOnlyInType(name));
+            if (implemented_interfaces != null)
+                foreach (TypeScope ts in implemented_interfaces)
+                {
+                    names.AddRange(ts.FindOverloadNamesOnlyInType(name));
+                }
             return names;
         }
 

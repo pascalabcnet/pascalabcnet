@@ -1308,7 +1308,7 @@ namespace CodeCompletion
             ps.declaringUnit = entry_scope;
             if (_procedure_header.template_args != null && !ps.IsGeneric())
             {
-                Dictionary<string, TypeScope> where_types = new Dictionary<string, TypeScope>();
+                Dictionary<string, List<TypeScope>> where_types = new Dictionary<string, List<TypeScope>>();
                 if (_procedure_header.where_defs != null)
                 {
                     foreach (where_definition wd in _procedure_header.where_defs.defs)
@@ -1316,21 +1316,36 @@ namespace CodeCompletion
                         for (int i = 0; i < wd.names.idents.Count; i++)
                         {
                             string name = wd.names.idents[i].name;
-                            wd.types.defs[i].visit(this);
-                            where_types[name] = returned_scope as TypeScope;
+                            for (int j = 0; j < wd.types.defs.Count; j++)
+                            {
+                                wd.types.defs[j].visit(this);
+                                if (!where_types.ContainsKey(name))
+                                    where_types[name] = new List<TypeScope>();
+                                where_types[name].Add(returned_scope as TypeScope);
+                            }
                         }
                     }
                 }
                 foreach (ident s in _procedure_header.template_args.idents)
                 {
                     ps.AddTemplateParameter(s.name);
-                    TypeScope where_ts = null;
-                    where_types.TryGetValue(s.name, out where_ts);
-                    if (where_ts == null)
-                        where_ts = TypeTable.obj_type;
-                    TemplateParameterScope tps = new TemplateParameterScope(s.name, where_ts, ps);
+                    List<TypeScope> where_ts_list = null;
+                    where_types.TryGetValue(s.name, out where_ts_list);
+                    TypeScope base_ts = TypeTable.obj_type;
+                    if (where_ts_list != null)
+                        foreach (TypeScope ts in where_ts_list)
+                        {
+                            TypeScope where_ts = ts;
+                            if (where_ts == null)
+                                where_ts = TypeTable.obj_type;
+                            base_ts = new TypeScope(where_ts.si.kind, where_ts.topScope, base_ts);
+                            base_ts.AddImplementedInterface(where_ts);
+
+                        }
+                    TemplateParameterScope tps = new TemplateParameterScope(s.name, base_ts, ps);
                     tps.loc = get_location(s);
                     ps.AddName(s.name, tps);
+
                 }
             }
             SetAttributes(ps, _procedure_header.proc_attributes);
@@ -1615,7 +1630,7 @@ namespace CodeCompletion
             SymScope tmp = cur_scope;
             if (_function_header.template_args != null && !ps.IsGeneric())
             {
-                Dictionary<string, TypeScope> where_types = new Dictionary<string, TypeScope>();
+                Dictionary<string, List<TypeScope>> where_types = new Dictionary<string, List<TypeScope>>();
                 if (_function_header.where_defs != null)
                 {
                     foreach (where_definition wd in _function_header.where_defs.defs)
@@ -1623,22 +1638,36 @@ namespace CodeCompletion
                         for (int i = 0; i < wd.names.idents.Count; i++)
                         {
                             string name = wd.names.idents[i].name;
-                            wd.types.defs[i].visit(this);
-                            where_types[name] = returned_scope as TypeScope;
+                            for (int j = 0; j < wd.types.defs.Count; j++)
+                            {
+                                wd.types.defs[j].visit(this);
+                                if (!where_types.ContainsKey(name))
+                                    where_types[name] = new List<TypeScope>();
+                                where_types[name].Add(returned_scope as TypeScope);
+                            }
                         }
                     }
                 }
                 foreach (ident s in _function_header.template_args.idents)
                 {
                     ps.AddTemplateParameter(s.name);
-                    TypeScope where_ts = null;
-                    where_types.TryGetValue(s.name, out where_ts);
-                    if (where_ts == null)
-                        where_ts = TypeTable.obj_type;
-                    TemplateParameterScope tps = new TemplateParameterScope(s.name, where_ts, ps);
+                    List<TypeScope> where_ts_list = null;
+                    where_types.TryGetValue(s.name, out where_ts_list);
+                    TypeScope base_ts = TypeTable.obj_type;
+                    if (where_ts_list != null)
+                        foreach (TypeScope ts in where_ts_list)
+                        {
+                            TypeScope where_ts = ts;
+                            if (where_ts == null)
+                                where_ts = TypeTable.obj_type;
+                            base_ts = new TypeScope(where_ts.si.kind, where_ts.topScope, base_ts);
+                            base_ts.AddImplementedInterface(where_ts);
 
+                        }
+                    TemplateParameterScope tps = new TemplateParameterScope(s.name, base_ts, ps);
                     tps.loc = get_location(s);
                     ps.AddName(s.name, tps);
+
                 }
                 if (ps.return_type == null)
                 {
