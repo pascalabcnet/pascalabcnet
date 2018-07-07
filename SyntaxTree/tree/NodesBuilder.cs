@@ -184,7 +184,7 @@ namespace PascalABCCompiler.SyntaxTree
             {
                 var fnames = names.Select(x => new ident("f" + x.name)).ToList();    
                 var cm = BuildSimpleConstructorSection(names, fnames, types);
-                cb.Add(cm);
+                cb.Insert(0,cm);
                 //cb.class_def_blocks.Insert(0, cm);
             }
 

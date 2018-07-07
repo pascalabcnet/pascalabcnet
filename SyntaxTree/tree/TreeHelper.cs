@@ -1110,6 +1110,11 @@ namespace PascalABCCompiler.SyntaxTree
         public class_definition(class_body_list body, SourceContext sc = null) : this(null, body, sc)
         { is_auto = false; }
 
+        public bool IsAutoClass()
+        {
+            return (attribute & class_attribute.Auto) == class_attribute.Auto;
+        }
+
     }
 
     public partial class record_const
