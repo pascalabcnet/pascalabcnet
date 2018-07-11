@@ -8399,6 +8399,13 @@ begin
   Result := Self
 end;
 
+/// Выводит последовательность, каждый элемент отображается с помощью функции map и выводится на новой строке
+function PrintLines<T,T1>(Self: sequence of T; map: T->T1): sequence of T; extensionmethod;
+begin
+  Self.Select(map).Println(NewLine);
+  Result := Self
+end;
+
 /// Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя delim в качестве разделителя
 function JoinIntoString<T>(Self: sequence of T; delim: string): string; extensionmethod;
 begin
@@ -8445,6 +8452,18 @@ end;
 
 /// Возвращает отсортированную по убыванию последовательность
 function SortedDescending<T>(Self: sequence of T): sequence of T; extensionmethod;
+begin
+  Result := Self.OrderByDescending(x -> x);
+end;
+
+/// Возвращает отсортированную по возрастанию последовательность
+function Order<T>(Self: sequence of T): sequence of T; extensionmethod;
+begin
+  Result := Self.OrderBy(x -> x);
+end;
+
+/// Возвращает отсортированную по убыванию последовательность
+function OrderDescending<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
   Result := Self.OrderByDescending(x -> x);
 end;
