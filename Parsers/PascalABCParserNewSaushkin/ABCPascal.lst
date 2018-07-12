@@ -4,7 +4,7 @@
 // ==========================================================================
 //  Version:  1.3.6
 //  Machine:  DESKTOP-A6LT9RI
-//  DateTime: 01.07.2018 10:55:30
+//  DateTime: 11.07.2018 23:15:18
 //  UserName: Станислав
 // ==========================================================================
 
@@ -154,7 +154,7 @@
 %type <td> string_type  
 %type <ex> sizeof_expr  
 %type <stn> simple_prim_property_definition simple_property_definition
-%type <stn> stmt_or_expression unlabelled_stmt optional_unlabelled_stmt stmt case_item
+%type <stn> stmt_or_expression unlabelled_stmt stmt case_item
 %type <td> set_type  
 %type <ex> as_is_expr as_is_constexpr is_expr as_expr power_expr power_constexpr
 %type <td> unsized_array_type simple_type_or_ simple_type array_name_for_new_expr foreach_stmt_ident_dype_opt fptype type_ref fptype_noproctype array_type 
@@ -189,13 +189,8 @@
 %type <stn> pattern pattern_optional_var match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var 
 %type <ob> pattern_out_param_list pattern_out_param_list_optional_var
 %%
-// Warning: NonTerminal symbol "optional_unlabelled_stmt" is unreachable
-// Error: NonTerminal symbol "optional_unlabelled_stmt" has no productions
-// Error: There are 1 non-terminating NonTerminal Symbols
-   //  {optional_unlabelled_stmt}
-// Warning: Terminating optional_unlabelled_stmt fixes the following size-1 NonTerminal set
-   // {optional_unlabelled_stmt}
-// ----------------------------------------------------------------------------------------
+// Warning: NonTerminal symbol "typed_var_init_expression" is unreachable
+// ----------------------------------------------------------------------
 
 parse_goal                
     : program_file 
@@ -860,13 +855,13 @@ const_factor
 			    var i64 = $2 as int64_const;
 				if (i64 != null && i64.val == (Int64)Int32.MaxValue + 1)
 				{
-					$$ = new int32_const(Int32.MinValue);
+					$$ = new int32_const(Int32.MinValue,@$);
 					break;
 				}
 				var ui64 = $2 as uint64_const;
 				if (ui64 != null && ui64.val == (UInt64)Int64.MaxValue + 1)
 				{
-					$$ = new int64_const(Int64.MinValue);
+					$$ = new int64_const(Int64.MinValue,@$);
 					break;
 				}
 				if (ui64 != null && ui64.val > (UInt64)Int64.MaxValue + 1)
@@ -1517,20 +1512,38 @@ object_type
         { 
 			$$ = NewObjectType((class_attribute)$1, $2, $3 as named_type_reference_list, $4 as where_definition_list, $5 as class_body_list, @$);
             class_definition cd = $$ as class_definition;
+            if (cd == null || cd.body == null)
+                break;
             var ccnt = cd.body.DescendantNodes().OfType<simple_property>().ToArray();
             var cm = new class_members(access_modifer.private_modifer);
             foreach (var prop in ccnt)
             {
                 var td = prop.property_type;
-                if (prop.accessors.read_accessor != null && prop.accessors.read_accessor.pr != null)
+                var ra = prop.accessors.read_accessor;
+                if (ra != null && ra.pr != null)
                 {
-                    (prop.accessors.read_accessor.pr.proc_header as function_header).return_type = td;
-                    cm.Add(prop.accessors.read_accessor.pr);
+                    (ra.pr.proc_header as function_header).return_type = td;
+                    cm.Add(ra.pr);
+                    if (prop.attr == definition_attribute.Static)
+                    {
+                        ra.pr.proc_header.class_keyword = true;
+                        procedure_attribute pa = new procedure_attribute(proc_attribute.attr_static);
+                        pa.source_context = ra.pr.proc_header.source_context;
+                        ra.pr.proc_header.proc_attributes = new procedure_attributes_list(pa);
+                    }
                 }
-                if (prop.accessors.write_accessor != null && prop.accessors.write_accessor.pr != null)
+                var wa = prop.accessors.write_accessor;
+                if (wa != null && wa.pr != null)
                 {
-                    prop.accessors.write_accessor.pr.proc_header.parameters.params_list[0].vars_type = td;
-                    cm.Add(prop.accessors.write_accessor.pr);
+                    wa.pr.proc_header.parameters.params_list[0].vars_type = td;
+                    cm.Add(wa.pr);
+                    if (prop.attr == definition_attribute.Static)
+                    {
+                        wa.pr.proc_header.class_keyword = true;
+                        procedure_attribute pa = new procedure_attribute(proc_attribute.attr_static);
+                        pa.source_context = wa.pr.proc_header.source_context;
+                        wa.pr.proc_header.proc_attributes = new procedure_attributes_list(pa);
+                    }
                 }
             }
             if (cm.Count>0)
@@ -1957,9 +1970,9 @@ array_defaultproperty
     ;
 
 property_interface
-    :  
+    :/*  
 		{ $$ = null; }
-    | property_parameter_list tkColon fptype 
+    |*/ property_parameter_list tkColon fptype 
         { 
 			$$ = new property_interface($1 as property_parameter_list, $3, null, @$);
         }
@@ -2004,13 +2017,6 @@ optional_write_expr
 		{ $$ = null; }
     ;*/
     
-/*optional_unlabelled_stmt    
-    : unlabelled_stmt
-		{ $$ = $1; }
-    |
-		{ $$ = null; }
-    ;*/    
-
 optional_read_expr    
     : expr_with_func_decl_lambda
 		{ $$ = $1; }
@@ -2040,16 +2046,16 @@ property_specifiers
         	
         		$$ = NewPropertySpecifiersWrite($1, null, null, $3 as property_accessors, @$);
         	}
-        	else if ($2 is procedure_call && ($2 as procedure_call).func_name.is_ident)
+        	else if ($2 is procedure_call && ($2 as procedure_call).is_ident)
         	{
         	
-        		$$ = NewPropertySpecifiersWrite($1, ($2 as procedure_call).func_name as ident, null, $3 as property_accessors, @$);
+        		$$ = NewPropertySpecifiersWrite($1, ($2 as procedure_call).func_name as ident, null, $3 as property_accessors, @$);  // ñòàðûå ñâîéñòâà - ñ èäåíòèôèêàòîðîì
         	}
         	else 
         	{
 				var id = NewId("#SetGen");
-				//var pr = CreateAndAddToClassWriteProc($2,id,@2);
-				$$ = NewPropertySpecifiersWrite($1, id, null, $3 as property_accessors, @$);
+				var pr = CreateAndAddToClassWriteProc($2 as statement,id,@2);
+				$$ = NewPropertySpecifiersWrite($1, id, pr, $3 as property_accessors, @$);
 			}
         }
     ;
@@ -2062,15 +2068,15 @@ write_property_specifiers
         	
         		$$ = NewPropertySpecifiersWrite($1, null, null, null, @$);
         	}
-        	else if ($2 is procedure_call && ($2 as procedure_call).func_name.is_ident)
+        	else if ($2 is procedure_call && ($2 as procedure_call).is_ident)
         	{
-        		$$ = NewPropertySpecifiersWrite($1, ($2 as procedure_call).func_name as ident, null, null, @$);
+        		$$ = NewPropertySpecifiersWrite($1, ($2 as procedure_call).func_name as ident, null, null, @$); // ñòàðûå ñâîéñòâà - ñ èäåíòèôèêàòîðîì
         	}
         	else 
         	{
 				var id = NewId("#SetGen");
-				//var pr = CreateAndAddToClassWriteProc($2,id,@2);
-				$$ = NewPropertySpecifiersWrite($1, id, null, null, @$);
+				var pr = CreateAndAddToClassWriteProc($2 as statement,id,@2);
+				$$ = NewPropertySpecifiersWrite($1, id, pr, null, @$);
 			}
        }
     ;
@@ -2126,7 +2132,7 @@ var_decl_part
         { 
 			$$ = new var_def_statement($1 as ident_list, null, $3, definition_attribute.None, false, @$);		
 		}
-    | ident_list tkColon type_ref tkAssignOrEqual typed_var_init_expression // typed_const_plus óæå äàâíî íå êîíñòàíòà :) Íî ñþäà íå ïîïàëè Tuples, ïîñêîëüêó îíè êîíêóðèðóþò ñ äóðàöêèìè ñòàðûìè èíèöèàëèçàòîðàìè ìàññèâîâ 
+    | ident_list tkColon type_ref tkAssignOrEqual expr_l1 // typed_const_plus óæå äàâíî íå êîíñòàíòà :) Íî ñþäà íå ïîïàëè Tuples, ïîñêîëüêó îíè êîíêóðèðóþò ñ äóðàöêèìè ñòàðûìè èíèöèàëèçàòîðàìè ìàññèâîâ 
         { 
 			$$ = new var_def_statement($1 as ident_list, $3, $5, definition_attribute.None, false, @$); 
 		}
@@ -3497,13 +3503,13 @@ factor
 			    var i64 = $2 as int64_const;
 				if (i64 != null && i64.val == (Int64)Int32.MaxValue + 1)
 				{
-					$$ = new int32_const(Int32.MinValue);
+					$$ = new int32_const(Int32.MinValue,@$);
 					break;
 				}
 				var ui64 = $2 as uint64_const;
 				if (ui64 != null && ui64.val == (UInt64)Int64.MaxValue + 1)
 				{
-					$$ = new int64_const(Int64.MinValue);
+					$$ = new int64_const(Int64.MinValue,@$);
 					break;
 				}
 				if (ui64 != null && ui64.val > (UInt64)Int64.MaxValue + 1)
@@ -4355,6 +4361,10 @@ lambda_procedure_body
 			$$ = new statement_list($1 as statement, @$);
 		}
 	| yield_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| raise_stmt
 		{
 			$$ = new statement_list($1 as statement, @$);
 		}

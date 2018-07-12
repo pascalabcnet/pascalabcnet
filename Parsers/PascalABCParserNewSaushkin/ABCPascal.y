@@ -3991,6 +3991,8 @@ keyword
         { $$ = $1; }
     | tkWhen
         { $$ = $1; }
+    | tkInstance
+        { $$ = $1; }
     ;
 
 reserved_keyword
