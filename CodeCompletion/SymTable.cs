@@ -3441,6 +3441,8 @@ namespace CodeCompletion
 
         public override bool IsConvertable(TypeScope ts)
         {
+            if (ts is NullTypeScope)
+                return false;
             return ts.IsConvertable(this);
         }
 

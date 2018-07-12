@@ -1962,7 +1962,7 @@ namespace CodeCompletion
             }
             if (returned_scope != null /*&& cnst_val.prim_val != null*/)
             {
-                ElementScope es = new ElementScope(new SymInfo(_simple_const_definition.const_name.name, SymbolKind.Constant, _simple_const_definition.const_name.name), returned_scope, cnst_val.prim_val != null? cnst_val.prim_val:_simple_const_definition.const_value.ToString(), cur_scope);
+                ElementScope es = new ElementScope(new SymInfo(_simple_const_definition.const_name.name, SymbolKind.Constant, _simple_const_definition.const_name.name), returned_scope, cnst_val.prim_val != null? cnst_val.prim_val: get_constant_as_string(_simple_const_definition.const_value), cur_scope);
                 es.is_static = true;
                 cur_scope.AddName(_simple_const_definition.const_name.name, es);
                 es.loc = get_location(_simple_const_definition.const_name);
@@ -1972,6 +1972,50 @@ namespace CodeCompletion
             }
             returned_scope = null;
             cnst_val.prim_val = null;
+        }
+
+        private string get_constant_as_string(expression e)
+        {
+            if (e is pascal_set_constant || e is PascalABCCompiler.SyntaxTree.array_const)
+            {
+                List<string> elems = new List<string>();
+                pascal_set_constant set = e as pascal_set_constant;
+                PascalABCCompiler.SyntaxTree.array_const arr = e as PascalABCCompiler.SyntaxTree.array_const;
+                expression_list values = null;
+                if (set != null)
+                    values = set.values;
+                else
+                    values = arr.elements;
+                if (values == null)
+                    return "[]";
+                if (values.Count > 10)//dlinnye konstanty ne pokazyvaem
+                    return null;//prosto const c: <type>
+                foreach (expression elem in values.expressions)
+                {
+                    if (elem is ident || elem is int32_const || elem is char_const || elem is string_const)
+                        elems.Add(get_constant_as_string(elem));//tolko primitivy
+                    else
+                        return null;
+                }
+                //govnostudia ne daet podkluchit Core.dll i ne mogu vyzvat Join. urody
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < elems.Count; i++)
+                {
+                    sb.Append(elems[i]);
+                    if (i < elems.Count - 1)
+                        sb.Append(", ");
+                }
+                if (set != null)
+                    return "[" + sb.ToString() + "]";
+                else
+                    return "(" + sb.ToString() + ")";
+            }
+            else if (e is char_const)
+                return "'" + (e as char_const).cconst + "'";
+            else if (e.ToString().Contains("PascalABCCompiler.SyntaxTree"))
+                return null;
+            else
+                return e.ToString();
         }
 
         public override void visit(typed_const_definition _typed_const_definition)
@@ -1991,7 +2035,7 @@ namespace CodeCompletion
                 File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
 #endif
             }
-            ElementScope es = new ElementScope(new SymInfo(_typed_const_definition.const_name.name, SymbolKind.Constant, _typed_const_definition.const_name.name), cnst_type, cnst_val.prim_val != null?cnst_val.prim_val: _typed_const_definition.const_value.ToString(), cur_scope);
+            ElementScope es = new ElementScope(new SymInfo(_typed_const_definition.const_name.name, SymbolKind.Constant, _typed_const_definition.const_name.name), cnst_type, cnst_val.prim_val != null?cnst_val.prim_val: get_constant_as_string(_typed_const_definition.const_value), cur_scope);
             cur_scope.AddName(_typed_const_definition.const_name.name, es);
             es.loc = get_location(_typed_const_definition);
             es.is_static = true;
