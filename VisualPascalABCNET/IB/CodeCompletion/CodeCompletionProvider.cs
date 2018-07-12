@@ -89,7 +89,8 @@ namespace VisualPascalABC
             if (!(data as UserDefaultCompletionData).IsOnOverrideWindow)
             {
                 int ind = data.Text.IndexOf('<');
-                if (ind != -1 && data.Text.Length > ind + 1 && data.Text[ind + 1] == '>') data.Text = data.Text.Substring(0, ind);
+                if (ind != -1 && data.Text.Length > ind + 1 && data.Text[ind + 1] == '>')
+                    data.Text = data.Text.Substring(0, ind);
             }
             else
                 data.Text = data.Description;
@@ -106,9 +107,17 @@ namespace VisualPascalABC
             List<PascalABCCompiler.Parsers.Position> loc = null;
             if (VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.compilerLoaded)
                 e = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
-            if (e == null /*|| Errors.Count > 0*/) return loc;
+            if (e is PascalABCCompiler.SyntaxTree.bin_expr && expr.Contains("<"))
+            {
+                expr = expr.Replace("<","&<");
+                Errors.Clear();
+                e = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+            }
+            if (e == null)
+                return loc;
             CodeCompletion.DomConverter dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[fileName];
-            if (dconv == null) return loc;
+            if (dconv == null)
+                return loc;
             loc = dconv.GetDefinition(e, line, column, keyword, only_check);
             return loc;
         }
