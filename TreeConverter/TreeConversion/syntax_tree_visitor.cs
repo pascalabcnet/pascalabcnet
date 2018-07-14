@@ -16865,7 +16865,22 @@ namespace PascalABCCompiler.TreeConverter
                             if (ct.ToString().StartsWith(IGrTstring))
                                 elem_type = ip[1];
                             else
-                                elem_type = ip[0];
+                            {
+                                var ln = tn.ImplementingInterfaces;
+                                elem_type = null;
+                                foreach (var x in ln)
+                                {
+                                    var xctn = x as compiled_generic_instance_type_node;
+                                    if (xctn != null && xctn.name.StartsWith("IEnumerable<")) // Немного грубовато. 
+                                    {
+                                        elem_type = xctn.instance_params[0];
+                                        break;
+                                    }
+                                }
+                                if (elem_type == null)
+                                    elem_type = ip[0];
+                            }
+                                
                             //var Tname = ip[0].name;
                             //elem_type = convert_strong(new SyntaxTree.named_type_reference(Tname, _foreach_stmt.in_what.source_context));
                         }

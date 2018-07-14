@@ -1781,6 +1781,8 @@ function ReadArrString(prompt: string; n: integer): array of string;
 // -----------------------------------------------------
 //>>     Подпрограммы для матриц # Subroutines for matrixes 
 // -----------------------------------------------------
+/// Возвращает двумерный массив размера m x n, заполненный указанными значениями по строкам
+function Matr<T>(m,n: integer; params data: array of T): array [,] of T;
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
@@ -2166,6 +2168,7 @@ const
   PARAMETER_FROM_OUT_OF_RANGE = 'Параметр from за пределами диапазона!!The from parameter out of bounds';
   PARAMETER_TO_OUT_OF_RANGE = 'Параметр to за пределами диапазона!!The to parameter out of bounds';
   ARR_LENGTH_MUST_BE_MATCH_TO_MATR_SIZE = 'Размер одномерного массива не согласован с размером двумерного массива!!The 1-dim array length does not match 2-dim array size';
+  INITELEM_COUNT_MUST_BE_EQUAL_TO_MATRIX_ELEMS_COUNT = 'Количество инициализирующих элементов не совпадает с количеством элементов матрицы!!The number of elements in init list must be equal to the number of elements in matrix';
 
 // -----------------------------------------------------
 //                  WINAPI
@@ -9434,6 +9437,21 @@ end;
 // -----------------------------------------------------
 //>>     Фиктивная секция YYY - не удалять! # YYY
 // -----------------------------------------------------
+
+function Matr<T>(m,n: integer; params data: array of T): array [,] of T;
+begin
+  if data.Length<>m*n then
+    raise new System.ArgumentException(GetTranslation(INITELEM_COUNT_MUST_BE_EQUAL_TO_MATRIX_ELEMS_COUNT));
+  
+  Result := new T[m, n];
+  var k := 0;
+  for var i:=0 to Result.RowCount-1 do
+  for var j:=0 to Result.ColCount-1 do
+  begin
+    Result[i,j] := data[k];
+    k += 1;
+  end;
+end;
 
 // Реализация операций с матрицами - только после введения RowCount и ColCount
 function MatrRandom(m: integer; n: integer; a, b: integer): array [,] of integer;
