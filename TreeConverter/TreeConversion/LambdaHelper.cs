@@ -122,7 +122,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public static type_definition ConvertSemanticTypeToSyntaxType(type_node semType)
         {
-            return OpenMP.ConvertToSyntaxType(semType);
+            return OpenMP.ConvertToSyntaxType(semType); // Это же надо! Пользоваться для этого хреновиной из OpenMP!!!
         }
 
         public static int processingLambdaParametersForTypeInference = 0; // Счетчик для подсчета лямбд

@@ -14536,13 +14536,14 @@ namespace PascalABCCompiler.TreeConverter
             condition = convertion_data_and_alghoritms.convert_type(condition, SystemLibrary.SystemLibrary.bool_type);
 
             // SSM 29/08/16
-            var cc = condition as bool_const_node;
+            /*var cc = condition as bool_const_node;
             if (cc != null && cc.constant_value == false && _if_node.else_body == null)
             {
                 // недостижимый код - ничего не генерировать
                 return_value(new empty_statement(get_location(_if_node)));
+                // перед этим надо обходить then_body
                 return;
-            }
+            }*/
 
             CheckToEmbeddedStatementCannotBeADeclaration(_if_node.then_body);
             CheckToEmbeddedStatementCannotBeADeclaration(_if_node.else_body);
