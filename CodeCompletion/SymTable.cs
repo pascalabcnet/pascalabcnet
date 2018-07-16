@@ -1396,7 +1396,7 @@ namespace CodeCompletion
         {
             if (string.Compare(si.name, s, true) == 0)
                 return this;
-            return sc.FindNameOnlyInType(s);
+            return topScope.FindNameOnlyInType(s);
         }
 
         public override List<SymScope> FindOverloadNames(string name)
