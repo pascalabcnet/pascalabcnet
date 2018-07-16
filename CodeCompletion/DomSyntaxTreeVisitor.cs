@@ -2831,6 +2831,14 @@ namespace CodeCompletion
                         else
                             return false;
                     }
+                    if (parameter.param_kind == parametr_kind.var_parametr || parameter.param_kind == parametr_kind.const_parametr)
+                    {
+                        TypeScope param_ts = parameter.sc as TypeScope;
+                        if (param_ts is CompiledScope && ps is CompiledMethodScope)
+                            param_ts = param_ts.GetElementType();
+                        if (param_ts == null || !ts.IsEqual(param_ts))
+                            return false;
+                    }
                 }
                 return true;
             }

@@ -5353,7 +5353,8 @@ namespace CodeCompletion
                 }
             if (this.ctn == cs.ctn)
                 return true;
-
+            if (cs.ctn.IsByRef && this.ctn == cs.ctn.GetElementType())
+                return true;
             if (this.ctn.IsSubclassOf(cs.ctn))
                 return true;
             if (implemented_interfaces != null)
