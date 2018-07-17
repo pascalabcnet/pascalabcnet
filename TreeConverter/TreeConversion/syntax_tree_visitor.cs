@@ -13774,7 +13774,11 @@ namespace PascalABCCompiler.TreeConverter
                     AddError(loc, "NIL_WITH_VALUE_TYPES_NOT_ALLOWED");
             	return null_const_node.get_const_node_with_type(tn, expr as null_const_node);
             }
-            if (expr is compiled_static_method_call)
+            if (expr is base_function_call)
+            {
+                AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
+            }
+            else if (expr is compiled_static_method_call)
             {
                 compiled_static_method_call csmc = expr as compiled_static_method_call;
 
