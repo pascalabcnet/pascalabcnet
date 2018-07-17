@@ -9376,6 +9376,9 @@ begin
     Self[k, j] := a[j]
 end;
 
+/// Меняет строку k двумерного массива на другую строку
+procedure SetRow<T>(Self: array [,] of T; k: integer; a: sequence of T); extensionmethod := Self.SetRow(k,a.ToArray);
+
 /// Меняет столбец k двумерного массива на другой столбец
 procedure SetCol<T>(Self: array [,] of T; k: integer; a: array of T); extensionmethod;
 begin
@@ -9384,6 +9387,9 @@ begin
   for var i := 0 to Self.RowCount - 1 do
     Self[i, k] := a[i]
 end;
+
+/// Меняет столбец k двумерного массива на другой столбец
+procedure SetCol<T>(Self: array [,] of T; k: integer; a: sequence of T); extensionmethod := Self.SetCol(k,a.ToArray);
 
 /// Возвращает по заданному двумерному массиву последовательность (a[i,j],i,j)
 function ElementsWithIndexes<T>(Self: array [,] of T): sequence of (T, integer, integer); extensionmethod;
