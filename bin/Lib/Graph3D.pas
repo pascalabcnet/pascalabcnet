@@ -80,12 +80,12 @@ function operator+(p1, p2: Point3D): Point3D; extensionmethod := p3d(p1.X + p2.X
 function operator-(v: Vector3D): Vector3D; extensionmethod := v3d(-v.x,-v.y,-v.z);
 
 
-const
-  OrtX = V3D(1, 0, 0);
-  OrtY = V3D(0, 1, 0);
-  OrtZ = V3D(0, 0, 1);
-  Origin: Point3D = P3D(0, 0, 0);
-  EmptyColor = ARGB(0, 0, 0, 0);
+var
+  OrtX := V3D(1, 0, 0);
+  OrtY := V3D(0, 1, 0);
+  OrtZ := V3D(0, 0, 1);
+  Origin: Point3D := P3D(0, 0, 0);
+  EmptyColor := ARGB(0, 0, 0, 0);
 
 function ChangeOpacity(Self: GColor; value: integer); extensionmethod := ARGB(value, Self.R, Self.G, Self.B);
 
@@ -546,10 +546,15 @@ type
     function AnimMoveOnZ(dz: real; seconds: real) := AnimMoveOnZ(dz, seconds, nil);
     function AnimMoveOnZ(dz: real) := AnimMoveOnZ(dz, 1, nil);
 
-    function AnimScale(sc: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
-    function AnimScaleX(sc: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
-    function AnimScaleY(sc: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
-    function AnimScaleZ(sc: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
+    function AnimScale(sc: real; seconds: real; Completed: procedure): MyAnimation;
+    function AnimScaleX(sc: real; seconds: real; Completed: procedure): MyAnimation;
+    function AnimScaleY(sc: real; seconds: real; Completed: procedure): MyAnimation;
+    function AnimScaleZ(sc: real; seconds: real; Completed: procedure): MyAnimation;
+
+    function AnimScale(sc: real; seconds: real := 1): MyAnimation := AnimScale(sc,seconds,nil);
+    function AnimScaleX(sc: real; seconds: real := 1): MyAnimation := AnimScale(sc,seconds,nil);
+    function AnimScaleY(sc: real; seconds: real := 1): MyAnimation := AnimScale(sc,seconds,nil);
+    function AnimScaleZ(sc: real; seconds: real := 1): MyAnimation := AnimScale(sc,seconds,nil);
 
     function AnimRotate(vx, vy, vz, angle: real; seconds: real; Completed: procedure): MyAnimation;
     function AnimRotate(vx, vy, vz, angle: real; seconds: real := 1): MyAnimation := AnimRotate(vx,vy,vz,angle,seconds,nil);
