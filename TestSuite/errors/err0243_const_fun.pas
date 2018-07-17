@@ -1,4 +1,6 @@
-﻿const a = Sin(0);
+﻿function f := 666;
+
+const a = f();
 
 begin
 end.

@@ -13628,7 +13628,15 @@ namespace PascalABCCompiler.TreeConverter
         private constant_node convert_strong_to_constant_node(SyntaxTree.expression expr)
         {
             expression_node exp = convert_strong(expr);
-            return convert_strong_to_constant_node(exp, exp.type);
+            var is_const_section = (expr.Parent != null && (expr.Parent is const_definition));
+
+            var is_userdefined = false;
+            var cnf = exp as common_namespace_function_call;
+            if (cnf != null)
+            {
+                is_userdefined = ! (cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem") || cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem_implementation______"));
+            }
+            return convert_strong_to_constant_node(exp, exp.type, is_const_section && is_userdefined);
         }
 
         public expression_node convert_strong_to_constant_or_function_call_for_varinit(expression_node exp)
@@ -13737,7 +13745,17 @@ namespace PascalABCCompiler.TreeConverter
 
         private constant_node convert_strong_to_constant_node(SyntaxTree.expression expr, type_node tn)
         {
-        	return convert_strong_to_constant_node(convert_strong(expr), tn);
+            var exp = convert_strong(expr);
+            var is_const_section = (expr.Parent != null && (expr.Parent is const_definition));
+
+            var is_userdefined = false;
+            var cnf = exp as common_namespace_function_call;
+            if (cnf != null)
+            {
+                is_userdefined = !(cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem") || cnf.function_node.namespace_node.namespace_name.Equals("PABCSystem_implementation______"));
+            }
+
+            return convert_strong_to_constant_node(exp, tn, is_const_section && is_userdefined);
         }
 
         private void check_set_for_constant(common_namespace_function_call cnfc)
@@ -13763,7 +13781,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (!(en is constant_node /*|| en is statements_expression_node*/)) AddError(en.location, "CONSTANT_EXPRESSION_EXPECTED");
         }
 
-        private constant_node convert_strong_to_constant_node(expression_node expr, type_node tn)
+        private constant_node convert_strong_to_constant_node(expression_node expr, type_node tn, bool is_const_section_and_userfuncall = false)
         {
             location loc = expr.location;
             constant_node constant = null;
@@ -13798,13 +13816,15 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 constant = new common_namespace_function_call_as_constant(cnfc, loc);
             }
-            /*else if (expr is basic_function_call || expr is common_namespace_function_call) // Ниже вроде есть закомментированный код, делающий это
+            else if (is_const_section_and_userfuncall && (expr is basic_function_call || expr is common_namespace_function_call)) // только в разделе const
             {
                 AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
-            }*/
+            }
             else if (expr is common_namespace_function_call) 
             {
                 common_namespace_function_call cnfc=expr as common_namespace_function_call;
+                foreach (expression_node el in cnfc.parameters)
+                    convert_strong_to_constant_node(el, el.type);
                 //if (cnfc.function_node.namespace_node == context.converted_namespace)
                 //    AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
                 //  throw new ConstantExpressionExpected(loc);

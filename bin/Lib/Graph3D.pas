@@ -80,12 +80,12 @@ function operator+(p1, p2: Point3D): Point3D; extensionmethod := p3d(p1.X + p2.X
 function operator-(v: Vector3D): Vector3D; extensionmethod := v3d(-v.x,-v.y,-v.z);
 
 
-const
-  OrtX = V3D(1, 0, 0);
-  OrtY = V3D(0, 1, 0);
-  OrtZ = V3D(0, 0, 1);
-  Origin: Point3D = P3D(0, 0, 0);
-  EmptyColor = ARGB(0, 0, 0, 0);
+var
+  OrtX := V3D(1, 0, 0);
+  OrtY := V3D(0, 1, 0);
+  OrtZ := V3D(0, 0, 1);
+  Origin: Point3D := P3D(0, 0, 0);
+  EmptyColor := ARGB(0, 0, 0, 0);
 
 function ChangeOpacity(Self: GColor; value: integer); extensionmethod := ARGB(value, Self.R, Self.G, Self.B);
 
