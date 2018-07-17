@@ -546,10 +546,15 @@ type
     function AnimMoveOnZ(dz: real; seconds: real) := AnimMoveOnZ(dz, seconds, nil);
     function AnimMoveOnZ(dz: real) := AnimMoveOnZ(dz, 1, nil);
 
-    function AnimScale(sc: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
-    function AnimScaleX(sc: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
-    function AnimScaleY(sc: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
-    function AnimScaleZ(sc: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
+    function AnimScale(sc: real; seconds: real; Completed: procedure): MyAnimation;
+    function AnimScaleX(sc: real; seconds: real; Completed: procedure): MyAnimation;
+    function AnimScaleY(sc: real; seconds: real; Completed: procedure): MyAnimation;
+    function AnimScaleZ(sc: real; seconds: real; Completed: procedure): MyAnimation;
+
+    function AnimScale(sc: real; seconds: real := 1): MyAnimation := AnimScale(sc,seconds,nil);
+    function AnimScaleX(sc: real; seconds: real := 1): MyAnimation := AnimScale(sc,seconds,nil);
+    function AnimScaleY(sc: real; seconds: real := 1): MyAnimation := AnimScale(sc,seconds,nil);
+    function AnimScaleZ(sc: real; seconds: real := 1): MyAnimation := AnimScale(sc,seconds,nil);
 
     function AnimRotate(vx, vy, vz, angle: real; seconds: real; Completed: procedure): MyAnimation;
     function AnimRotate(vx, vy, vz, angle: real; seconds: real := 1): MyAnimation := AnimRotate(vx,vy,vz,angle,seconds,nil);

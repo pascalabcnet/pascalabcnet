@@ -17,3 +17,4 @@ PATTERN_MATHING_IS_NOT_SUPPORTED_IN_THIS_CONTEXT=Pattern matching is not support
 
 Var_{0}_is_already_defined=Variable {0} is already defined
 
+?._CANNOT_BE_IN_THIS_CONTEXT=Operator ?. cannot be in this context
