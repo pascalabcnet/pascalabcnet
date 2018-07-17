@@ -3027,6 +3027,7 @@ namespace CodeCompletion
         public override void visit(method_call _method_call)
         {
             search_all = true;
+            returned_scope = null;
             _method_call.dereferencing_value.visit(this);
             search_all = false;
             this.cnst_val.prim_val = null;
@@ -4881,9 +4882,10 @@ namespace CodeCompletion
         public override void visit(ident_with_templateparams node)
         {
             node.name.visit(this);
-            if ((search_all || returned_scope == null) && returned_scopes.Count > 0 && returned_scopes[0] is ProcScope)
+            if ((search_all || returned_scope == null) && returned_scopes.Count > 0)
             {
                 ProcScope ps = returned_scopes[0] as ProcScope;
+                TypeScope ts = returned_scopes[0] as TypeScope;
                 List<TypeScope> template_params = new List<TypeScope>();
                 foreach (type_definition td in node.template_params.params_list)
                 {
@@ -4895,11 +4897,14 @@ namespace CodeCompletion
                         return;
                     }
                 }
-                returned_scopes[0] = ps.GetInstance(template_params);
+                if (ps != null)
+                    returned_scopes[0] = ps.GetInstance(template_params);
+                else
+                    returned_scopes[0] = ts.GetInstance(template_params);
             }
             else if (returned_scope is ProcScope)
             {
-            	ProcScope ps = returned_scope as ProcScope;
+                ProcScope ps = returned_scope as ProcScope;
                 List<TypeScope> template_params = new List<TypeScope>();
                 foreach (type_definition td in node.template_params.params_list)
                 {
@@ -4908,7 +4913,7 @@ namespace CodeCompletion
                         template_params.Add(returned_scope as TypeScope);
                     else
                     {
-                    	returned_scope = ps;
+                        returned_scope = ps;
                         return;
                     }
                 }
