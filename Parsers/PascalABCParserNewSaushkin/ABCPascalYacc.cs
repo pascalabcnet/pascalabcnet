@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-A6LT9RI
-// DateTime: 17.07.2018 15:09:39
+// DateTime: 18.07.2018 12:07:05
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -3796,9 +3796,14 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
             foreach (var prop in ccnt)
             {
                 var td = prop.property_type;
-                var ra = prop.accessors.read_accessor;
+                var ra = prop.accessors?.read_accessor;
+                if (ValueStack[ValueStack.Depth-4].ti.text.ToLower() == "interface" && ra != null && (ra.pr != null || ra.accessor_name != null))
+				    parsertools.AddErrorFromResource("INVALID_INTERFACE_MEMBER",ra.source_context);
+
                 if (ra != null && ra.pr != null)
                 {
+                    if (prop.parameter_list != null)
+                        parsertools.AddErrorFromResource("EXTENDED_INDEXED_PROPERTIES",ra.source_context);
                     (ra.pr.proc_header as function_header).return_type = td;
                     cm.Add(ra.pr);
                     if (prop.attr == definition_attribute.Static)
@@ -3809,9 +3814,14 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                         ra.pr.proc_header.proc_attributes = new procedure_attributes_list(pa);
                     }
                 }
-                var wa = prop.accessors.write_accessor;
+                var wa = prop.accessors?.write_accessor;
+                if (ValueStack[ValueStack.Depth-4].ti.text.ToLower() == "interface" && wa != null && (wa.pr != null || wa.accessor_name != null))
+				    parsertools.AddErrorFromResource("INVALID_INTERFACE_MEMBER",wa.source_context);
+
                 if (wa != null && wa.pr != null)
                 {
+                    if (prop.parameter_list != null)
+                        parsertools.AddErrorFromResource("EXTENDED_INDEXED_PROPERTIES",ra.source_context);
                     wa.pr.proc_header.parameters.params_list[0].vars_type = td;
                     cm.Add(wa.pr);
                     if (prop.attr == definition_attribute.Static)
@@ -3831,6 +3841,50 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                member_list_section, tkEnd
 { 
 			CurrentSemanticValue.td = NewRecordType(ValueStack[ValueStack.Depth-4].stn as named_type_reference_list, ValueStack[ValueStack.Depth-3].stn as where_definition_list, ValueStack[ValueStack.Depth-2].stn as class_body_list, CurrentLocationSpan);
+            class_definition cd = CurrentSemanticValue.td as class_definition;
+            if (cd == null || cd.body == null)
+                break;
+            var ccnt = cd.body.DescendantNodes().OfType<simple_property>().ToArray();
+            var cm = new class_members(access_modifer.private_modifer);
+            foreach (var prop in ccnt)
+            {
+                var td = prop.property_type;
+                var ra = prop.accessors?.read_accessor;
+
+                if (ra != null && ra.pr != null)
+                {
+                    if (prop.parameter_list != null)
+                        parsertools.AddErrorFromResource("EXTENDED_INDEXED_PROPERTIES",ra.source_context);
+                
+                    (ra.pr.proc_header as function_header).return_type = td;
+                    cm.Add(ra.pr);
+                    if (prop.attr == definition_attribute.Static)
+                    {
+                        ra.pr.proc_header.class_keyword = true;
+                        procedure_attribute pa = new procedure_attribute(proc_attribute.attr_static);
+                        pa.source_context = ra.pr.proc_header.source_context;
+                        ra.pr.proc_header.proc_attributes = new procedure_attributes_list(pa);
+                    }
+                }
+                var wa = prop.accessors?.write_accessor;
+
+                if (wa != null && wa.pr != null && prop.parameter_list == null)
+                {
+                    if (prop.parameter_list != null)
+                        parsertools.AddErrorFromResource("EXTENDED_INDEXED_PROPERTIES",ra.source_context);
+                    wa.pr.proc_header.parameters.params_list[0].vars_type = td;
+                    cm.Add(wa.pr);
+                    if (prop.attr == definition_attribute.Static)
+                    {
+                        wa.pr.proc_header.class_keyword = true;
+                        procedure_attribute pa = new procedure_attribute(proc_attribute.attr_static);
+                        pa.source_context = wa.pr.proc_header.source_context;
+                        wa.pr.proc_header.proc_attributes = new procedure_attributes_list(pa);
+                    }
+                }
+            }
+            if (cm.Count>0)
+                cd.body.Insert(0, cm);
 		}
         break;
       case 288: // class_attribute -> tkSealed

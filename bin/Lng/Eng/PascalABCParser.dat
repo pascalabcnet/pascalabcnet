@@ -65,3 +65,5 @@ TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7=Count of Tuple elements must be <=7
 TWO_NILS_IN_QUESTION_EXPR=The conditional expression cannot contain nil constants on both branches
 DOT_QUECTION_IN_SHORT_FUN=Expression with ?. cannot appear in a short function definition without a return value 
 BAD_INT2=Too small int64
+INVALID_INTERFACE_MEMBER=Interface members cannot have definitions
+EXTENDED_INDEXED_PROPERTIES=Extended indexed properties are not realized
