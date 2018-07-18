@@ -632,8 +632,9 @@ namespace PascalABCCompiler
             {
                 if(stmt.filters[i].exception_var!=null)
                    IncreaseNumUseVar(stmt.filters[i].exception_var);
-                VisitStatement(stmt.finally_statements);
+                VisitStatement(stmt.filters[i].exception_handler);
             }
+            VisitStatement(stmt.finally_statements);
         }
 
         private void VisitLabeledStatement(labeled_statement stmt)
