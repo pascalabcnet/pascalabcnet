@@ -6853,9 +6853,9 @@ namespace PascalABCCompiler.NETGenerator
             il.EmitCall(OpCodes.Call, mi, null);
             if (tmp_dot)
             {
-                if (mi.ReturnType.IsValueType && !NETGeneratorTools.IsPointer(mi.ReturnType))
+                if (value.type.is_value_type && !NETGeneratorTools.IsPointer(mi.ReturnType))
                 {
-                    LocalBuilder lb = il.DeclareLocal(mi.ReturnType);
+                    LocalBuilder lb = il.DeclareLocal(helper.GetTypeReference(value.type).tp);
                     il.Emit(OpCodes.Stloc, lb);
                     il.Emit(OpCodes.Ldloca, lb);
                 }

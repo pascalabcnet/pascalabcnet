@@ -4881,11 +4881,10 @@ namespace CodeCompletion
         }
         public override void visit(ident_with_templateparams node)
         {
+            bool tmp_search_all = search_all;
             node.name.visit(this);
-            if ((search_all || returned_scope == null) && returned_scopes.Count > 0)
+            if ((tmp_search_all || returned_scope == null) && returned_scopes.Count > 0)
             {
-                ProcScope ps = returned_scopes[0] as ProcScope;
-                TypeScope ts = returned_scopes[0] as TypeScope;
                 List<TypeScope> template_params = new List<TypeScope>();
                 foreach (type_definition td in node.template_params.params_list)
                 {
@@ -4897,10 +4896,17 @@ namespace CodeCompletion
                         return;
                     }
                 }
-                if (ps != null)
-                    returned_scopes[0] = ps.GetInstance(template_params);
-                else
-                    returned_scopes[0] = ts.GetInstance(template_params);
+                for (int i = 0; i < returned_scopes.Count; i++)
+                {
+                    ProcScope ps = returned_scopes[i] as ProcScope;
+                    TypeScope ts = returned_scopes[i] as TypeScope;
+
+                    if (ps != null)
+                        returned_scopes[i] = ps.GetInstance(template_params);
+                    else
+                        returned_scopes[i] = ts.GetInstance(template_params);
+                }
+                
             }
             else if (returned_scope is ProcScope)
             {
