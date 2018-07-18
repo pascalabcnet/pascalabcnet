@@ -3274,20 +3274,23 @@ namespace PascalABCCompiler
             if (InternalDebug.SemanticAnalysis)
 #endif
             {
-                OnChangeCompilerState(this, CompilerState.CompileInterface, UnitName);
-                PascalABCCompiler.TreeConverter.SemanticRules.SymbolTableCaseSensitive = CurrentUnit.CaseSensitive;
-                CurrentUnit.SemanticTree = SyntaxTreeToSemanticTreeConverter.CompileInterface(
-                    CurrentUnit.SyntaxTree,
-                    CurrentUnit.InterfaceUsedUnits,
-                    ErrorsList, Warnings,
-                    CurrentUnit.syntax_error,
-                    BadNodesInSyntaxTree,
-                    CurrentUnit.InterfaceUsingNamespaceList,
-                    docs,
-                    CompilerOptions.Debug,
-                    CompilerOptions.ForDebugging
-                    );
-                CheckErrors();
+                if (CurrentUnit.State != UnitState.InterfaceCompiled)
+                {
+                    OnChangeCompilerState(this, CompilerState.CompileInterface, UnitName);
+                    PascalABCCompiler.TreeConverter.SemanticRules.SymbolTableCaseSensitive = CurrentUnit.CaseSensitive;
+                    CurrentUnit.SemanticTree = SyntaxTreeToSemanticTreeConverter.CompileInterface(
+                        CurrentUnit.SyntaxTree,
+                        CurrentUnit.InterfaceUsedUnits,
+                        ErrorsList, Warnings,
+                        CurrentUnit.syntax_error,
+                        BadNodesInSyntaxTree,
+                        CurrentUnit.InterfaceUsingNamespaceList,
+                        docs,
+                        CompilerOptions.Debug,
+                        CompilerOptions.ForDebugging
+                        );
+                    CheckErrors();
+                }
             }
             TreeRealization.common_unit_node cun = CurrentUnit.SemanticTree as TreeRealization.common_unit_node;
             /*if (cun != null)
