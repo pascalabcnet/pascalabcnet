@@ -413,8 +413,8 @@ namespace GPPGParserScanner
                 method_call mc = new method_call();
                 mc.dereferencing_value = new dot_node(new ident("string", str.source_context), new ident("Format", str.source_context), str.source_context);
                 mc.parameters = new expression_list();
-                //string[] arr = Regex.Split(str.Value, @"\{[\w\d._]+\}");
-                //Match match = Regex.Match(str.Value, @"\{[\w\d._]+\}");
+                if (!str.Value.Contains("{"))
+                    return str;
                 string val = str.Value.Replace("{{","![&").Replace("}}}","}&]!").Replace("}}", "&]!");
                 string[] arr = Regex.Split(val, @"\{[^\}]+\}");
                 Match match = Regex.Match(val, @"\{[^\}]+\}");
