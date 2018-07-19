@@ -3411,12 +3411,12 @@ namespace PascalABCCompiler.TreeConverter
                 }
 
                 var l = new List<ident>();
-                l.Add(new ident("?System"));
+                l.Add(new ident("?System")); // System не должно быть найдено в пользовательском коде
                 l.Add(new ident("Tuple"));
 
                 var tp = new template_param_list(lt);
                 // значит, это Tuple - создать его, обойти и выйти
-                var ttr = new SyntaxTree.template_type_reference(new named_type_reference(l), tp);
+                var ttr = new SyntaxTree.template_type_reference(new named_type_reference(l), tp, _enum_type_definition.source_context);
                 visit(ttr);
                 return;
             }

@@ -1005,15 +1005,38 @@ namespace SymbolTable
 
             if (!scope.CaseSensitive)
                 Name = Name.ToLower();
-            CurrentScope = FromScope; //глобальные переменные могут привести к ошибкам при поиске и поторном вызове!
+            CurrentScope = FromScope; //глобальные переменные могут привести к ошибкам при поиске и повторном вызове!
 
             List<SymbolInfo> Result = new List<SymbolInfo>();
+
+            // Находим имена с ? в стандартных местах. Это прежде всего ?System. Потом будет ?PABCSystem.
+
+            if (Name.Equals("?system"))
+            {
+                Name = Name.Substring(1);
+                // Нет. Как-то найти глобальное ПИ модуля 
+                while (scope != null && !(scope is UnitInterfaceScope))
+                {
+                    if (scope is ClassMethodScope)
+                        scope = (scope as ClassMethodScope).DefScope;
+                    else scope = scope.TopScope;
+                }
+                if (scope != null)
+                {
+                    var a = (scope as UnitInterfaceScope).TopScopeArray.Where(x => x is PascalABCCompiler.NetHelper.NetScope).ToArray();
+                    FindAllInAreaList(Name, a, true, Result);
+                }
+
+                if (Result.Count > 0)
+                    return Result;
+                else return null;
+            }
 
             Scope Area = scope;
             Scope[] used_units = null;
 
             HashTableNode tn = null;
-            if (!(scope is DotNETScope) && !Name.StartsWith("?"))
+            if (!(scope is DotNETScope))
             {
                 Scope CurrentArea = Area;
                 while (CurrentArea != null)
@@ -1105,11 +1128,6 @@ namespace SymbolTable
 
             //если нет такого ищем в областях .NET
 
-            // SSM 21.01.16
-            if (Name.StartsWith("?"))     // это значит, надо искать в областях .NET
-                Name = Name.Substring(1); // съели ? и ищем т.к. tn<0
-            // end SSM 
-
             //ssyy
             Scope NextUnitArea = null;
             //\ssyy
@@ -1198,6 +1216,7 @@ namespace SymbolTable
                 else
                     Area = Area.TopScope;
                 //Area = Area.TopScope;
+
             }
             return null;                //если такого нет то поиск окончен
         }
