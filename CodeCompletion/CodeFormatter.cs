@@ -771,7 +771,10 @@ namespace CodeFormatters
                         continue;
                     }
                 }
+                if (!(stmt is empty_statement))
+                    add_space_after = true;
                 visit_node(stmt);
+                
             }
             DecOffset();
             if (!tmp_init_part)

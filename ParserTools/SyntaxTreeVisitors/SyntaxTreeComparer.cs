@@ -143,7 +143,18 @@ namespace PascalABCCompiler.SyntaxTree
                 CompareInternal(left.expr, right.expr);
             }
         }
-
+        
+        public void CompareInternal(assign_var_tuple left, assign_var_tuple right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                CompareInternal(left.idents, right.idents);
+                CompareInternal(left.expr, right.expr);
+            }
+        }
+        
         public void CompareInternal(loop_stmt left, loop_stmt right)
         {
             if (left == null && right != null || left != null && right == null)
@@ -1692,6 +1703,8 @@ namespace PascalABCCompiler.SyntaxTree
                     CompareInternal(left as loop_stmt, right as loop_stmt);
                 else if (left is assign_tuple)
                     CompareInternal(left as assign_tuple, right as assign_tuple);
+                else if (left is assign_var_tuple)
+                    CompareInternal(left as assign_var_tuple, right as assign_var_tuple);
                 //else if (left is expression) // SSM 12/06/15
                 //    CompareInternal(left as expression, right as expression);
 
