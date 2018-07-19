@@ -9738,7 +9738,14 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     if (tc != null)
                     {
-                        AddError(get_location(_method_name.class_name), "TYPE_{0}_HAS_{1}_GENERIC_PARAMETERS", tc.name, (tc.type_dec.type_def as SyntaxTree.class_definition).template_args.idents.Count);
+                        var td = tc.type_dec.type_def as SyntaxTree.class_definition;
+                        var cnt = 0;
+                        if (td != null)
+                            cnt = td.template_args.idents.Count;
+                        var td1 = tc.type_dec.type_def as SyntaxTree.template_type_reference;
+                        if (td1 != null)
+                            cnt = td1.params_list.Count;
+                        AddError(get_location(_method_name.class_name), "TYPE_{0}_HAS_{1}_GENERIC_PARAMETERS", tc.name, cnt);
                     }
                 }
                 //(ds)проверяем на компилированный тип
