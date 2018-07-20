@@ -1677,7 +1677,9 @@ namespace CodeFormatters
         {
             sb.Append("write");
             SetKeywordOffset("write");
-            if (_write_accessor_name.accessor_name != null)
+            if (_write_accessor_name.statment_for_formatting != null)
+                visit_node(_write_accessor_name.statment_for_formatting);
+            else if (_write_accessor_name.accessor_name != null)
                 visit_node(_write_accessor_name.accessor_name);
             else
                 read_from_beg_pos = false;
@@ -1687,7 +1689,9 @@ namespace CodeFormatters
         {
             sb.Append("read");
             SetKeywordOffset("read");
-            if (_read_accessor_name.accessor_name != null)
+            if (_read_accessor_name.expression_for_formatting != null)
+                visit_node(_read_accessor_name.expression_for_formatting);
+            else if (_read_accessor_name.accessor_name != null)
                 visit_node(_read_accessor_name.accessor_name);
             else
                 read_from_beg_pos = false;
