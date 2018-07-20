@@ -17067,6 +17067,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     var rtl = type_table.get_convertions(right.type, left.type);
                     var ltr = type_table.get_convertions(left.type, right.type);
+                    
                     if (ltr.first != null && rtl.first == null)
                     {
                         left = convertion_data_and_alghoritms.convert_type(left, right.type);
@@ -17077,7 +17078,31 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     else
                     {
-                        right = convertion_data_and_alghoritms.convert_type(right, left.type);
+                        // если оба типа - целые
+                        if (convertion_data_and_alghoritms.is_value_int_type(left.type) && convertion_data_and_alghoritms.is_value_int_type(right.type))
+                        {
+                            var lub = convertion_data_and_alghoritms.least_upper_bound_value_int_type(left.type, right.type);
+                            if (lub == left.type)
+                                right = convertion_data_and_alghoritms.convert_type(right, left.type);
+                            else if (lub == right.type)
+                                left = convertion_data_and_alghoritms.convert_type(left, right.type);
+                            else
+                            {
+                                right = convertion_data_and_alghoritms.convert_type(right, lub);
+                                left = convertion_data_and_alghoritms.convert_type(right, lub);
+                            }
+                        }
+                        else if (left.type == SystemLibrary.SystemLibrary.float_type && right.type == SystemLibrary.SystemLibrary.double_type)
+                            left = convertion_data_and_alghoritms.convert_type(left, right.type);
+                        else if (right.type == SystemLibrary.SystemLibrary.float_type && left.type == SystemLibrary.SystemLibrary.double_type)
+                            right = convertion_data_and_alghoritms.convert_type(right, left.type);
+                        else if (left.type == right.type)
+                        { }
+                        else // Это было - для совместимости. Что-то может не учтено
+                        {
+                            right = convertion_data_and_alghoritms.convert_type(right, left.type);
+                        }
+                            
                     }
                         
                 }
