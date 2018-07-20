@@ -15682,25 +15682,28 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public write_accessor_name(ident _accessor_name,procedure_definition _pr)
+		public write_accessor_name(ident _accessor_name,procedure_definition _pr,statement _statment_for_formatting)
 		{
 			this._accessor_name=_accessor_name;
 			this._pr=_pr;
+			this._statment_for_formatting=_statment_for_formatting;
 			FillParentsInDirectChilds();
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public write_accessor_name(ident _accessor_name,procedure_definition _pr,SourceContext sc)
+		public write_accessor_name(ident _accessor_name,procedure_definition _pr,statement _statment_for_formatting,SourceContext sc)
 		{
 			this._accessor_name=_accessor_name;
 			this._pr=_pr;
+			this._statment_for_formatting=_statment_for_formatting;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
 		protected ident _accessor_name;
 		protected procedure_definition _pr;
+		protected statement _statment_for_formatting;
 
 		///<summary>
 		///
@@ -15736,6 +15739,23 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+		///<summary>
+		///
+		///</summary>
+		public statement statment_for_formatting
+		{
+			get
+			{
+				return _statment_for_formatting;
+			}
+			set
+			{
+				_statment_for_formatting=value;
+				if (_statment_for_formatting != null)
+					_statment_for_formatting.Parent = this;
+			}
+		}
+
 
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -15754,6 +15774,11 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.pr = (procedure_definition)pr.Clone();
 				copy.pr.Parent = copy;
 			}
+			if (statment_for_formatting != null)
+			{
+				copy.statment_for_formatting = (statement)statment_for_formatting.Clone();
+				copy.statment_for_formatting.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -15770,6 +15795,8 @@ namespace PascalABCCompiler.SyntaxTree
 				accessor_name.Parent = this;
 			if (pr != null)
 				pr.Parent = this;
+			if (statment_for_formatting != null)
+				statment_for_formatting.Parent = this;
 		}
 
 		///<summary> Заполняет поля Parent во всем поддереве </summary>
@@ -15778,6 +15805,7 @@ namespace PascalABCCompiler.SyntaxTree
 			FillParentsInDirectChilds();
 			accessor_name?.FillParentsInAllChilds();
 			pr?.FillParentsInAllChilds();
+			statment_for_formatting?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -15787,7 +15815,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 3;
 			}
 		}
 		///<summary>
@@ -15797,7 +15825,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 3;
 			}
 		}
 		///<summary>
@@ -15815,6 +15843,8 @@ namespace PascalABCCompiler.SyntaxTree
 						return accessor_name;
 					case 1:
 						return pr;
+					case 2:
+						return statment_for_formatting;
 				}
 				return null;
 			}
@@ -15829,6 +15859,9 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 					case 1:
 						pr = (procedure_definition)value;
+						break;
+					case 2:
+						statment_for_formatting = (statement)value;
 						break;
 				}
 			}
@@ -15864,25 +15897,28 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public read_accessor_name(ident _accessor_name,procedure_definition _pr)
+		public read_accessor_name(ident _accessor_name,procedure_definition _pr,expression _expression_for_formatting)
 		{
 			this._accessor_name=_accessor_name;
 			this._pr=_pr;
+			this._expression_for_formatting=_expression_for_formatting;
 			FillParentsInDirectChilds();
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public read_accessor_name(ident _accessor_name,procedure_definition _pr,SourceContext sc)
+		public read_accessor_name(ident _accessor_name,procedure_definition _pr,expression _expression_for_formatting,SourceContext sc)
 		{
 			this._accessor_name=_accessor_name;
 			this._pr=_pr;
+			this._expression_for_formatting=_expression_for_formatting;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
 		protected ident _accessor_name;
 		protected procedure_definition _pr;
+		protected expression _expression_for_formatting;
 
 		///<summary>
 		///
@@ -15918,6 +15954,23 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+		///<summary>
+		///
+		///</summary>
+		public expression expression_for_formatting
+		{
+			get
+			{
+				return _expression_for_formatting;
+			}
+			set
+			{
+				_expression_for_formatting=value;
+				if (_expression_for_formatting != null)
+					_expression_for_formatting.Parent = this;
+			}
+		}
+
 
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -15936,6 +15989,11 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.pr = (procedure_definition)pr.Clone();
 				copy.pr.Parent = copy;
 			}
+			if (expression_for_formatting != null)
+			{
+				copy.expression_for_formatting = (expression)expression_for_formatting.Clone();
+				copy.expression_for_formatting.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -15952,6 +16010,8 @@ namespace PascalABCCompiler.SyntaxTree
 				accessor_name.Parent = this;
 			if (pr != null)
 				pr.Parent = this;
+			if (expression_for_formatting != null)
+				expression_for_formatting.Parent = this;
 		}
 
 		///<summary> Заполняет поля Parent во всем поддереве </summary>
@@ -15960,6 +16020,7 @@ namespace PascalABCCompiler.SyntaxTree
 			FillParentsInDirectChilds();
 			accessor_name?.FillParentsInAllChilds();
 			pr?.FillParentsInAllChilds();
+			expression_for_formatting?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -15969,7 +16030,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 3;
 			}
 		}
 		///<summary>
@@ -15979,7 +16040,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 3;
 			}
 		}
 		///<summary>
@@ -15997,6 +16058,8 @@ namespace PascalABCCompiler.SyntaxTree
 						return accessor_name;
 					case 1:
 						return pr;
+					case 2:
+						return expression_for_formatting;
 				}
 				return null;
 			}
@@ -16011,6 +16074,9 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 					case 1:
 						pr = (procedure_definition)value;
+						break;
+					case 2:
+						expression_for_formatting = (expression)value;
 						break;
 				}
 			}

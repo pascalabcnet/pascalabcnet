@@ -2069,15 +2069,15 @@ property_specifiers
     :
     | tkRead optional_read_expr write_property_specifiers   
         { 
-        	if ($2 == null || $2 is ident)
+        	if ($2 == null || $2 is ident) // стандартные свойства
         	{
-        		$$ = NewPropertySpecifiersRead($1, $2 as ident, null, $3 as property_accessors, @$);
+        		$$ = NewPropertySpecifiersRead($1, $2 as ident, null, null, $3 as property_accessors, @$);
         	}
-        	else 
+        	else // расширенные свойства
         	{
 				var id = NewId("#GetGen");
 				var pr = CreateAndAddToClassReadFunc($2,id,@2);
-				$$ = NewPropertySpecifiersRead($1, id, pr, $3 as property_accessors, @$);
+				$$ = NewPropertySpecifiersRead($1, id, pr, $2, $3 as property_accessors, @$); // $2 передаётся для форматирования 
 			}
         }
     | tkWrite unlabelled_stmt read_property_specifiers     
@@ -2085,18 +2085,18 @@ property_specifiers
         	if ($2 is empty_statement)
         	{
         	
-        		$$ = NewPropertySpecifiersWrite($1, null, null, $3 as property_accessors, @$);
+        		$$ = NewPropertySpecifiersWrite($1, null, null, null, $3 as property_accessors, @$);
         	}
-        	else if ($2 is procedure_call && ($2 as procedure_call).is_ident)
+        	else if ($2 is procedure_call && ($2 as procedure_call).is_ident) // стандартные свойства
         	{
         	
-        		$$ = NewPropertySpecifiersWrite($1, ($2 as procedure_call).func_name as ident, null, $3 as property_accessors, @$);  // старые свойства - с идентификатором
+        		$$ = NewPropertySpecifiersWrite($1, ($2 as procedure_call).func_name as ident, null, null, $3 as property_accessors, @$);  // старые свойства - с идентификатором
         	}
-        	else 
+        	else // расширенные свойства
         	{
 				var id = NewId("#SetGen");
 				var pr = CreateAndAddToClassWriteProc($2 as statement,id,@2);
-				$$ = NewPropertySpecifiersWrite($1, id, pr, $3 as property_accessors, @$);
+				$$ = NewPropertySpecifiersWrite($1, id, pr, $2 as statement, $3 as property_accessors, @$); // $2 передаётся для форматирования
 			}
         }
     ;
@@ -2107,17 +2107,17 @@ write_property_specifiers
         	if ($2 is empty_statement)
         	{
         	
-        		$$ = NewPropertySpecifiersWrite($1, null, null, null, @$);
+        		$$ = NewPropertySpecifiersWrite($1, null, null, null, null, @$);
         	}
         	else if ($2 is procedure_call && ($2 as procedure_call).is_ident)
         	{
-        		$$ = NewPropertySpecifiersWrite($1, ($2 as procedure_call).func_name as ident, null, null, @$); // старые свойства - с идентификатором
+        		$$ = NewPropertySpecifiersWrite($1, ($2 as procedure_call).func_name as ident, null, null, null, @$); // старые свойства - с идентификатором
         	}
         	else 
         	{
 				var id = NewId("#SetGen");
 				var pr = CreateAndAddToClassWriteProc($2 as statement,id,@2);
-				$$ = NewPropertySpecifiersWrite($1, id, pr, null, @$);
+				$$ = NewPropertySpecifiersWrite($1, id, pr, $2 as statement, null, @$);
 			}
        }
     ;
@@ -2128,13 +2128,13 @@ read_property_specifiers
        { 
         	if ($2 == null || $2 is ident)
         	{
-        		$$ = NewPropertySpecifiersRead($1, $2 as ident, null, null, @$);
+        		$$ = NewPropertySpecifiersRead($1, $2 as ident, null, null, null, @$);
         	}
         	else 
         	{
 				var id = NewId("#GetGen");
 				var pr = CreateAndAddToClassReadFunc($2,id,@2);
-				$$ = NewPropertySpecifiersRead($1, id, pr, null, @$);
+				$$ = NewPropertySpecifiersRead($1, id, pr, $2, null, @$);
 			}
        }      
     ;

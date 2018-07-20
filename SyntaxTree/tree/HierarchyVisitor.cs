@@ -2546,6 +2546,7 @@ namespace PascalABCCompiler.SyntaxTree
 			pre_do_visit(_write_accessor_name);
 			visit(write_accessor_name.accessor_name);
 			visit(write_accessor_name.pr);
+			visit(write_accessor_name.statment_for_formatting);
 			post_do_visit(_write_accessor_name);
 		}
 
@@ -2555,6 +2556,7 @@ namespace PascalABCCompiler.SyntaxTree
 			pre_do_visit(_read_accessor_name);
 			visit(read_accessor_name.accessor_name);
 			visit(read_accessor_name.pr);
+			visit(read_accessor_name.expression_for_formatting);
 			post_do_visit(_read_accessor_name);
 		}
 

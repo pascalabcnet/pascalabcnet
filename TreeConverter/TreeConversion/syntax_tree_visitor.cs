@@ -17064,7 +17064,24 @@ namespace PascalABCCompiler.TreeConverter
                     left = convertion_data_and_alghoritms.explicit_convert_type(left, del);
                 }
                 else
-                    right = convertion_data_and_alghoritms.convert_type(right, left.type);
+                {
+                    var rtl = type_table.get_convertions(right.type, left.type);
+                    var ltr = type_table.get_convertions(left.type, right.type);
+                    if (ltr.first != null && rtl.first == null)
+                    {
+                        left = convertion_data_and_alghoritms.convert_type(left, right.type);
+                    }
+                    else if (ltr.first == null && rtl.first != null)
+                    {
+                        right = convertion_data_and_alghoritms.convert_type(right, left.type);
+                    }
+                    else
+                    {
+                        right = convertion_data_and_alghoritms.convert_type(right, left.type);
+                    }
+                        
+                }
+                    
             }
                 
 

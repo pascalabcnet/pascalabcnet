@@ -1063,7 +1063,7 @@ namespace PascalABCCompiler.SyntaxTree
     public partial class property_accessors
     {
         public property_accessors(ident read_accessor, ident write_accessor, SourceContext sc = null) 
-            : this(new read_accessor_name(read_accessor, null), new write_accessor_name(write_accessor, null),sc)
+            : this(new read_accessor_name(read_accessor, null, null), new write_accessor_name(write_accessor, null, null),sc)
         { }
     }
 
