@@ -1475,6 +1475,8 @@ function StrToInt(s: string): integer;
 function StrToInt64(s: string): int64;
 /// Преобразует строковое представление вещественного числа к числовому значению
 function StrToFloat(s: string): real;
+/// Преобразует строковое представление вещественного числа к числовому значению
+function StrToReal(s: string): real;
 /// Преобразует строковое представление s целого числа к числовому значению и записывает его в value. 
 ///При невозможности преобразования возвращается False
 function TryStrToInt(s: string; var value: integer): boolean;
@@ -1487,6 +1489,12 @@ function TryStrToFloat(s: string; var value: real): boolean;
 /// Преобразует строковое представление s вещественного числа к числовому значению и записывает его в value. 
 ///При невозможности преобразования возвращается False
 function TryStrToFloat(s: string; var value: single): boolean;
+/// Преобразует строковое представление s вещественного числа к числовому значению и записывает его в value. 
+///При невозможности преобразования возвращается False
+function TryStrToReal(s: string; var value: real): boolean;
+/// Преобразует строковое представление s вещественного числа к числовому значению и записывает его в value. 
+///При невозможности преобразования возвращается False
+function TryStrToSingle(s: string; var value: single): boolean;
 /// Считывает целое из строки начиная с позиции from и устанавливает from за считанным значением
 function ReadIntegerFromString(s: string; var from: integer): integer;
 /// Считывает вещественное из строки начиная с позиции from и устанавливает from за считанным значением
@@ -7789,6 +7797,8 @@ begin
   Result := Convert.ToDouble(s, nfi);
 end;
 
+function StrToReal(s: string) := StrToFloat(s);
+
 function TryStrToInt64(s: string; var value: int64): boolean;
 begin
   Result := int64.TryParse(s, value);
@@ -7815,6 +7825,9 @@ begin
     Result := False;
   end;
 end;
+
+function TryStrToReal(s: string; var value: real) := TryStrToFloat(s, value);
+function TryStrToSingle(s: string; var value: single) := TryStrToFloat(s, value);
 
 function ReadIntegerFromString(s: string; var from: integer): integer;
 begin

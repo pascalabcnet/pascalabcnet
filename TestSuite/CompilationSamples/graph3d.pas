@@ -1295,7 +1295,7 @@ type
   
   SequenceAnimation = class(CompositeAnimation)
   public 
-    function Duration: real; override := ll.Sum(l -> l.Duration);
+    function Duration: real; override := ll.Select(l -> l.Duration).Sum;
     function Add(b: MyAnimation): SequenceAnimation;
     begin
       ll += b;
