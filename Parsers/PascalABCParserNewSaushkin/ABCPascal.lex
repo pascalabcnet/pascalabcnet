@@ -359,9 +359,9 @@ UNICODEARROW \x890
     case (int)Tokens.tkLibrary:
     case (int)Tokens.tkExternal:
     case (int)Tokens.tkYield:
-    case (int)Tokens.tkSequence:
+    case (int)Tokens.tkSequence:/*
 	case (int)Tokens.tkTypeclass:
-	case (int)Tokens.tkInstance:
+	case (int)Tokens.tkInstance:*/
     case (int)Tokens.tkMatch:
     case (int)Tokens.tkWhen:
 		yylval = new Union();
