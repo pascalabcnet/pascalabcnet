@@ -1471,7 +1471,7 @@ public
 
 
   /// --- SystemKeyEvents
-  procedure SystemOnKeyDown(sender: Object; e: System.Windows.Input.KeyEventArgs);
+  (*procedure SystemOnKeyDown(sender: Object; e: System.Windows.Input.KeyEventArgs);
   begin
     if GraphWPF.OnKeyDown <> nil then
       GraphWPF.OnKeyDown(e.Key);
@@ -1520,7 +1520,7 @@ public
       mb := 2;
     if GraphWPF.OnMouseMove <> nil then  
       GraphWPF.OnMouseMove(p.x, p.y, mb);
-  end;
+  end;*)
   
 end;
 

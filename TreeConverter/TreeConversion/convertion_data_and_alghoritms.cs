@@ -2417,6 +2417,105 @@ namespace PascalABCCompiler.TreeConverter
             }
             return ret_type;
         }
-	}
+
+
+        public enum int_types { sbyte_type = 0, byte_type = 1, short_type = 2, ushort_type = 3, integer_type = 4, uint_type = 5, int64_type = 6, uint64_type = 7};
+        public bool is_value_int_type(type_node tn)
+        {
+            return 
+                tn == SystemLibrary.SystemLibrary.sbyte_type ||
+                tn == SystemLibrary.SystemLibrary.byte_type ||
+                tn == SystemLibrary.SystemLibrary.short_type ||
+                tn == SystemLibrary.SystemLibrary.ushort_type ||
+                tn == SystemLibrary.SystemLibrary.integer_type ||
+                tn == SystemLibrary.SystemLibrary.uint_type ||
+                tn == SystemLibrary.SystemLibrary.int64_type ||
+                tn == SystemLibrary.SystemLibrary.uint64_type
+                ;
+        }
+        public bool is_value_real_type(type_node tn)
+        {
+            return tn == SystemLibrary.SystemLibrary.double_type ||
+                tn == SystemLibrary.SystemLibrary.float_type 
+                ;
+        }
+        public bool is_value_num_type(type_node tn)
+        {
+            return is_value_int_type(tn) || is_value_real_type(tn);
+        }
+
+        public type_node int_type_to_type_node(int_types it)
+        {
+            switch (it)
+            {
+                case int_types.sbyte_type: return SystemLibrary.SystemLibrary.sbyte_type;
+                case int_types.byte_type: return SystemLibrary.SystemLibrary.byte_type;
+                case int_types.short_type: return SystemLibrary.SystemLibrary.short_type;
+                case int_types.ushort_type: return SystemLibrary.SystemLibrary.ushort_type;
+                case int_types.integer_type: return SystemLibrary.SystemLibrary.integer_type;
+                case int_types.uint_type: return SystemLibrary.SystemLibrary.uint_type;
+                case int_types.int64_type: return SystemLibrary.SystemLibrary.int64_type;
+                case int_types.uint64_type: return SystemLibrary.SystemLibrary.uint64_type;
+            }
+            return null; // это вхолостую
+        }
+        public int_types type_node_to_int_type(type_node tn)
+        {
+            if (tn == SystemLibrary.SystemLibrary.sbyte_type) // shortint
+                return int_types.sbyte_type;
+            else if (tn == SystemLibrary.SystemLibrary.byte_type)
+                return int_types.byte_type;
+            else if (tn == SystemLibrary.SystemLibrary.short_type) // smallint
+                return int_types.short_type;
+            else if (tn == SystemLibrary.SystemLibrary.ushort_type) // word
+                return int_types.ushort_type;
+            else if (tn == SystemLibrary.SystemLibrary.integer_type)
+                return int_types.integer_type;
+            else if (tn == SystemLibrary.SystemLibrary.uint_type) // longword
+                return int_types.uint_type;
+            else if (tn == SystemLibrary.SystemLibrary.int64_type)
+                return int_types.int64_type;
+            else if (tn == SystemLibrary.SystemLibrary.uint64_type)
+                return int_types.uint64_type;
+            return int_types.uint64_type; // это вхолостую
+        }
+
+        public type_node least_upper_bound_value_int_type(type_node tn1, type_node tn2) // для вещественных: real > single. decimal > всех, но его нельзя присвоить другим
+        {
+            var n1 = type_node_to_int_type(tn1);
+            var n2 = type_node_to_int_type(tn2);
+            if ((int)n1 > (int)n2)
+            {
+                var v = n1;
+                n1 = n2;
+                n2 = v;
+                var t = tn1;
+                tn1 = tn2;
+                tn2 = t;
+            }
+            // Первый тип  - меньше или равен
+            if ((int)n1 <= (int)int_types.integer_type && (int)n2 <= (int)int_types.integer_type) return SystemLibrary.SystemLibrary.integer_type;
+            if (n1 == n2) return tn1;
+            // Первый тип  - меньше
+            if ((int)n2 == (int)int_types.uint64_type)
+                return SystemLibrary.SystemLibrary.uint64_type;
+            if ((int)n2 == (int)int_types.int64_type)
+            {
+                if ((int)n1 <= (int)int_types.integer_type)
+                    return SystemLibrary.SystemLibrary.int64_type;
+                else return SystemLibrary.SystemLibrary.uint64_type;
+            }
+            if ((int)n2 == (int)int_types.uint_type) // longword
+            {
+                if ((int)n1 == 0 || (int)n1 == 2 || (int)n1 == 4)
+                    return SystemLibrary.SystemLibrary.int64_type;
+                if ((int)n1 == 1 || (int)n1 == 3)
+                    return SystemLibrary.SystemLibrary.uint_type; // longword
+                // n1 = 6 или 7
+                return SystemLibrary.SystemLibrary.uint64_type;
+            }
+            return null; // это вхолостую
+        }
+    }
 
 }

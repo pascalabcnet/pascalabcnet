@@ -980,6 +980,7 @@
       <Fields>
         <SyntaxField Name="accessor_name" SyntaxType="ident" />
         <SyntaxField Name="pr" SyntaxType="procedure_definition" />
+        <SyntaxField Name="statment_for_formatting" SyntaxType="statement" />
       </Fields>
       <Methods />
       <Tags>
@@ -991,6 +992,7 @@
       <Fields>
         <SyntaxField Name="accessor_name" SyntaxType="ident" />
         <SyntaxField Name="pr" SyntaxType="procedure_definition" />
+        <SyntaxField Name="expression_for_formatting" SyntaxType="expression" />
       </Fields>
       <Methods />
       <Tags>
@@ -4123,6 +4125,8 @@
       <HelpData Key="raise_stmt.object" Value="" />
       <HelpData Key="read_accessor_name" Value="procedure_definition pr != null если метод сгенерирован по выражению" />
       <HelpData Key="read_accessor_name.accessor_name" Value="" />
+      <HelpData Key="read_accessor_name.expr_for_formatting" Value="" />
+      <HelpData Key="read_accessor_name.expression_for_formatting" Value="" />
       <HelpData Key="read_accessor_name.pr" Value="" />
       <HelpData Key="record_const" Value="" />
       <HelpData Key="record_const." Value="" />
@@ -4611,6 +4615,7 @@
       <HelpData Key="write_accessor_name" Value="procedure_definition pr != null если метод сгенерирован по выражению" />
       <HelpData Key="write_accessor_name.accessor_name" Value="" />
       <HelpData Key="write_accessor_name.pr" Value="" />
+      <HelpData Key="write_accessor_name.statment_for_formatting" Value="" />
       <HelpData Key="yield_node" Value="" />
       <HelpData Key="yield_node.ex" Value="" />
       <HelpData Key="yield_node.override string ToString()" Value="" />

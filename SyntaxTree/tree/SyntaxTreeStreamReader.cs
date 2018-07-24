@@ -1651,6 +1651,7 @@ namespace PascalABCCompiler.SyntaxTree
 			read_syntax_tree_node(_write_accessor_name);
 			_write_accessor_name.accessor_name = _read_node() as ident;
 			_write_accessor_name.pr = _read_node() as procedure_definition;
+			_write_accessor_name.statment_for_formatting = _read_node() as statement;
 		}
 
 
@@ -1664,6 +1665,7 @@ namespace PascalABCCompiler.SyntaxTree
 			read_syntax_tree_node(_read_accessor_name);
 			_read_accessor_name.accessor_name = _read_node() as ident;
 			_read_accessor_name.pr = _read_node() as procedure_definition;
+			_read_accessor_name.expression_for_formatting = _read_node() as expression;
 		}
 
 

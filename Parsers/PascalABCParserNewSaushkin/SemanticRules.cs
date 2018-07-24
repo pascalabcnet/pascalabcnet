@@ -216,7 +216,7 @@ namespace GPPGParserScanner
             return nnspd;
         }
 
-        public property_accessors NewPropertySpecifiersRead(ident tkRead, ident opt_identifier, procedure_definition pr, property_accessors property_specifiers, LexLocation loc)
+        public property_accessors NewPropertySpecifiersRead(ident tkRead, ident opt_identifier, procedure_definition pr, expression ex, property_accessors property_specifiers, LexLocation loc)
         {
             var nnps = property_specifiers;
 			if (nnps == null) 
@@ -225,23 +225,23 @@ namespace GPPGParserScanner
 			}
             if (opt_identifier != null && opt_identifier.name.ToLower() == "write")
             {
-                nnps.read_accessor = new read_accessor_name(null, null);
-                nnps.write_accessor = new write_accessor_name(null, null);
+                nnps.read_accessor = new read_accessor_name(null, null, null);
+                nnps.write_accessor = new write_accessor_name(null, null, null);
                 nnps.read_accessor.source_context = tkRead.source_context;
                 nnps.write_accessor.source_context = opt_identifier.source_context;
             }
             else
             {
                 if (opt_identifier != null)
-                    nnps.read_accessor = new read_accessor_name(opt_identifier, pr, tkRead.source_context.Merge(opt_identifier.source_context));
-                else nnps.read_accessor = new read_accessor_name(opt_identifier, pr, tkRead.source_context);
+                    nnps.read_accessor = new read_accessor_name(opt_identifier, pr, ex, tkRead.source_context.Merge(opt_identifier.source_context));
+                else nnps.read_accessor = new read_accessor_name(opt_identifier, pr, ex, tkRead.source_context);
 
             }
 			nnps.source_context = loc;
             return nnps;
         }
 
-        public property_accessors NewPropertySpecifiersWrite(ident tkWrite, ident opt_identifier, procedure_definition pr, property_accessors property_specifiers, LexLocation loc)
+        public property_accessors NewPropertySpecifiersWrite(ident tkWrite, ident opt_identifier, procedure_definition pr, statement st, property_accessors property_specifiers, LexLocation loc)
         {
             var nnpsw = property_specifiers;
 			if (nnpsw == null) 
@@ -249,8 +249,8 @@ namespace GPPGParserScanner
 				nnpsw = new property_accessors();
 			}
             if (opt_identifier != null)
-			    nnpsw.write_accessor = new write_accessor_name(opt_identifier,pr,tkWrite.source_context.Merge(opt_identifier.source_context));
-            else nnpsw.write_accessor = new write_accessor_name(opt_identifier,pr,tkWrite.source_context);
+			    nnpsw.write_accessor = new write_accessor_name(opt_identifier,pr,st,tkWrite.source_context.Merge(opt_identifier.source_context));
+            else nnpsw.write_accessor = new write_accessor_name(opt_identifier,pr,st,tkWrite.source_context);
 			nnpsw.source_context = loc;
             return nnpsw;
         }

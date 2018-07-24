@@ -2075,6 +2075,15 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_write_accessor_name.pr.visit(this);
 			}
+			if (_write_accessor_name.statment_for_formatting == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_write_accessor_name.statment_for_formatting.visit(this);
+			}
 		}
 
 
@@ -2104,6 +2113,15 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				bw.Write((byte)1);
 				_read_accessor_name.pr.visit(this);
+			}
+			if (_read_accessor_name.expression_for_formatting == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_read_accessor_name.expression_for_formatting.visit(this);
 			}
 		}
 
