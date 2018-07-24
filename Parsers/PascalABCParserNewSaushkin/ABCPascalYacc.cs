@@ -1,9 +1,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-7B4K9VB
-// DateTime: 23.07.2018 1:42:03
-// UserName: Bogdan
+// Machine:  IVAN-PC
+// DateTime: 24.07.2018 21:27:52
+// UserName: Ivan
 // Input file <ABCPascal.y>
 
 // options: no-lines gplex
@@ -4250,7 +4250,9 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         	else // ����������� ��������
         	{
 				var id = NewId("#GetGen");
-				var pr = CreateAndAddToClassReadFunc(ValueStack[ValueStack.Depth-2].ex,id,LocationStack[LocationStack.Depth-2]);
+                procedure_definition pr = null;
+                if (!parsertools.build_tree_for_formatter)
+                    pr = CreateAndAddToClassReadFunc(ValueStack[ValueStack.Depth-2].ex, id, LocationStack[LocationStack.Depth-2]);
 				CurrentSemanticValue.stn = NewPropertySpecifiersRead(ValueStack[ValueStack.Depth-3].id, id, pr, ValueStack[ValueStack.Depth-2].ex, ValueStack[ValueStack.Depth-1].stn as property_accessors, CurrentLocationSpan); // $2 ��������� ��� �������������� 
 			}
         }
@@ -4270,7 +4272,9 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         	else // ����������� ��������
         	{
 				var id = NewId("#SetGen");
-				var pr = CreateAndAddToClassWriteProc(ValueStack[ValueStack.Depth-2].stn as statement,id,LocationStack[LocationStack.Depth-2]);
+                procedure_definition pr = null;
+                if (!parsertools.build_tree_for_formatter)
+                    pr = CreateAndAddToClassWriteProc(ValueStack[ValueStack.Depth-2].stn as statement,id,LocationStack[LocationStack.Depth-2]);
 				CurrentSemanticValue.stn = NewPropertySpecifiersWrite(ValueStack[ValueStack.Depth-3].id, id, pr, ValueStack[ValueStack.Depth-2].stn as statement, ValueStack[ValueStack.Depth-1].stn as property_accessors, CurrentLocationSpan); // $2 ��������� ��� ��������������
 			}
         }
@@ -4289,7 +4293,9 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         	else 
         	{
 				var id = NewId("#SetGen");
-				var pr = CreateAndAddToClassWriteProc(ValueStack[ValueStack.Depth-1].stn as statement,id,LocationStack[LocationStack.Depth-1]);
+                procedure_definition pr = null;
+                if (!parsertools.build_tree_for_formatter)
+                    pr = CreateAndAddToClassWriteProc(ValueStack[ValueStack.Depth-1].stn as statement,id,LocationStack[LocationStack.Depth-1]);
 				CurrentSemanticValue.stn = NewPropertySpecifiersWrite(ValueStack[ValueStack.Depth-2].id, id, pr, ValueStack[ValueStack.Depth-1].stn as statement, null, CurrentLocationSpan);
 			}
        }
@@ -4303,7 +4309,9 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         	else 
         	{
 				var id = NewId("#GetGen");
-				var pr = CreateAndAddToClassReadFunc(ValueStack[ValueStack.Depth-1].ex,id,LocationStack[LocationStack.Depth-1]);
+                procedure_definition pr = null;
+                if (!parsertools.build_tree_for_formatter)
+                    pr = CreateAndAddToClassReadFunc(ValueStack[ValueStack.Depth-1].ex,id,LocationStack[LocationStack.Depth-1]);
 				CurrentSemanticValue.stn = NewPropertySpecifiersRead(ValueStack[ValueStack.Depth-2].id, id, pr, ValueStack[ValueStack.Depth-1].ex, null, CurrentLocationSpan);
 			}
        }

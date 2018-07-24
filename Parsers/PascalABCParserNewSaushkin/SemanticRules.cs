@@ -232,7 +232,9 @@ namespace GPPGParserScanner
             }
             else
             {
-                if (opt_identifier != null)
+                if (ex != null)
+                    nnps.read_accessor = new read_accessor_name(opt_identifier, pr, ex, tkRead.source_context.Merge(ex.source_context));
+                else if (opt_identifier != null)
                     nnps.read_accessor = new read_accessor_name(opt_identifier, pr, ex, tkRead.source_context.Merge(opt_identifier.source_context));
                 else nnps.read_accessor = new read_accessor_name(opt_identifier, pr, ex, tkRead.source_context);
 
@@ -248,9 +250,12 @@ namespace GPPGParserScanner
 			{
 				nnpsw = new property_accessors();
 			}
-            if (opt_identifier != null)
+            if (st != null)
+                nnpsw.write_accessor = new write_accessor_name(opt_identifier, pr, st, tkWrite.source_context.Merge(st.source_context));
+            else if (opt_identifier != null)
 			    nnpsw.write_accessor = new write_accessor_name(opt_identifier,pr,st,tkWrite.source_context.Merge(opt_identifier.source_context));
-            else nnpsw.write_accessor = new write_accessor_name(opt_identifier,pr,st,tkWrite.source_context);
+            else
+                nnpsw.write_accessor = new write_accessor_name(opt_identifier,pr,st,tkWrite.source_context);
 			nnpsw.source_context = loc;
             return nnpsw;
         }

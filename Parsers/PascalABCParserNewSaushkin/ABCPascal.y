@@ -2077,7 +2077,9 @@ property_specifiers
         	else // расширенные свойства
         	{
 				var id = NewId("#GetGen");
-				var pr = CreateAndAddToClassReadFunc($2,id,@2);
+                procedure_definition pr = null;
+                if (!parsertools.build_tree_for_formatter)
+                    pr = CreateAndAddToClassReadFunc($2, id, @2);
 				$$ = NewPropertySpecifiersRead($1, id, pr, $2, $3 as property_accessors, @$); // $2 передаётся для форматирования 
 			}
         }
@@ -2096,7 +2098,9 @@ property_specifiers
         	else // расширенные свойства
         	{
 				var id = NewId("#SetGen");
-				var pr = CreateAndAddToClassWriteProc($2 as statement,id,@2);
+                procedure_definition pr = null;
+                if (!parsertools.build_tree_for_formatter)
+                    pr = CreateAndAddToClassWriteProc($2 as statement,id,@2);
 				$$ = NewPropertySpecifiersWrite($1, id, pr, $2 as statement, $3 as property_accessors, @$); // $2 передаётся для форматирования
 			}
         }
@@ -2117,7 +2121,9 @@ write_property_specifiers
         	else 
         	{
 				var id = NewId("#SetGen");
-				var pr = CreateAndAddToClassWriteProc($2 as statement,id,@2);
+                procedure_definition pr = null;
+                if (!parsertools.build_tree_for_formatter)
+                    pr = CreateAndAddToClassWriteProc($2 as statement,id,@2);
 				$$ = NewPropertySpecifiersWrite($1, id, pr, $2 as statement, null, @$);
 			}
        }
@@ -2134,7 +2140,9 @@ read_property_specifiers
         	else 
         	{
 				var id = NewId("#GetGen");
-				var pr = CreateAndAddToClassReadFunc($2,id,@2);
+                procedure_definition pr = null;
+                if (!parsertools.build_tree_for_formatter)
+                    pr = CreateAndAddToClassReadFunc($2,id,@2);
 				$$ = NewPropertySpecifiersRead($1, id, pr, $2, null, @$);
 			}
        }      
