@@ -816,7 +816,11 @@ namespace CodeCompletion
                     statement_list slist = new statement_list();
                     slist.source_context = stmt.source_context;
                     foreach (var_def_statement vds in pending_is_pattern_vars)
+                    {
                         slist.Insert(0, new var_statement(vds, vds.source_context));
+                        if (slist.source_context == null)
+                            slist.source_context = vds.source_context;
+                    }   
                     slist.Add(stmt);
                     stmt = slist;
                 }
