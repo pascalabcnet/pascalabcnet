@@ -210,7 +210,7 @@ namespace PascalABCCompiler.TreeConverter
             else
             {
                 Kind = DirectiveKind.Unknown;
-                PutError(DirText.Length, dir.Directive.source_context, "OMPERROR_UNKNOWN_DIRECTIVE");
+                PutError(DirText.Length, dir.Directive.source_context != null ? dir.Directive.source_context : dir.source_context, "OMPERROR_UNKNOWN_DIRECTIVE");
             }
         }
         //DirSC - SC текста директивы
@@ -719,7 +719,7 @@ namespace PascalABCCompiler.TreeConverter
                         LocksFound = true;
                     else 
                     {
-                        visitor.AddWarning(new Errors.CommonWarning(PascalABCCompiler.StringResources.Get(dirInf.ErrorName), dir.Directive.source_context.FileName, dirInf.SC.begin_position.line_num, dirInf.SC.begin_position.column_num));
+                        visitor.AddWarning(new Errors.CommonWarning(PascalABCCompiler.StringResources.Get(dirInf.ErrorName), dir.source_context.FileName, dirInf.SC.begin_position.line_num, dirInf.SC.begin_position.column_num));
                     }
                 }
             }
