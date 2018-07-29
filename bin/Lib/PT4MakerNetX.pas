@@ -1,5 +1,5 @@
 ﻿/// Конструктор учебных заданий для задачника Programming Taskbook.
-/// Версия 1.5 от 27.03.2017 (©) М. Э. Абрамян, 2016-2017.
+/// Версия 1.6 от 28.07.2018 (С) М. Э. Абрамян, 2016-2018.
 /// Все компоненты конструктора могут вызываться либо как классовые методы класса pt, 
 /// либо как обычные константы и процедуры.
 unit PT4MakerNetX;
@@ -1220,6 +1220,11 @@ begin
     '(имена процедур с заданиями должны начинаться с текста "Task").');
     exit;
   end;
+  if tasks.Count > 999 then
+  begin
+    Show('Группа ' + GroupName + ' содержит более 999 заданий.');
+    exit;
+  end;  
   if Options and OptionUseAddition = OptionUseAddition then
     GroupKey := GroupKey + '#UseAddition#';
   if Options and OptionHideExamples = OptionHideExamples then

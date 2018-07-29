@@ -1,13 +1,13 @@
-﻿/// Конструктор для электронного задачника Programming Taskbook 4.11
+﻿/// Конструктор для электронного задачника Programming Taskbook 4.14
 unit PT4TaskMakerNET;
 
 //------------------------------------------------------------------------------
-// Конструктор для электронного задачника Programming Taskbook 4.11
+// Конструктор для электронного задачника Programming Taskbook 4.14
 //------------------------------------------------------------------------------
 // Модуль для создания NET-библиотек с группами заданий в системе PascalABC.NET
 //
-// Copyright (©) 2013 М.Э.Абрамян
-// Электронный задачник Programming Taskbook Copyright (c) М.Э.Абрамян,1998-2013
+// Copyright (c) 2013-2015 М.Э.Абрамян
+// Электронный задачник Programming Taskbook Copyright (c) М.Э.Абрамян,1998-2015
 //------------------------------------------------------------------------------
 
 
@@ -22,20 +22,25 @@ const
   SampleError = '#ERROR?';
   MaxLineCount = 50;
 
-  lgPascal = $0001;
-  lgVB = $0002;
-  lgCPP = $0004;
-  lg1C = $0040;
-  lgPython = $0080; // добавлено в версии 4.10
-  lgCS = $0100;
-  lgVBNET = $0200;
-  lgPascalNET = $0400;
-  lgJava = $10000;  // добавлено в версии 4.11
-  lgAll = $FFFFFF;  // изменено в версии 4.10
-  lgNET = $FF00;
-  lgWithPointers = $003D;
-  lgWithObjects = $FFF80; // добавлено в версии 4.11
-  lgPascalABCNET = $0401;
+  lgPascal       = $0000001; 
+  lgPascalABCNET = $0000401; 
+  lgPascalNET    = $0000400;
+  lgPascalABCNET_flag 
+                 = $0000400; // добавлено в версии 4.14
+  lgVB           = $0000002;
+  lgCPP          = $0000004;
+  lg1C           = $0000040;
+  lgPython       = $0000080; 
+  lgPython3      = $1000080; // добавлено в версии 4.14
+  lgPython3_flag = $1000000; // добавлено в версии 4.14
+  lgCS           = $0000100;
+  lgVBNET        = $0000200;
+  lgJava         = $0010000; // добавлено в версии 4.11
+  lgRuby         = $0020000; // добавлено в версии 4.12
+  lgWithPointers = $000003D;
+  lgWithObjects  = $00FFF80; // добавлено в версии 4.11
+  lgNET          = $000FF00;
+  lgAll          = $0FFFFFF; // изменено в версии 4.10
 
 type
 
@@ -63,18 +68,18 @@ procedure CreateGroup(GroupName, GroupDescription, GroupAuthor, GroupKey: string
 procedure UseTask(GroupName: string; TaskNumber: integer);
 
 /// Должна указываться первой при определении нового задания
-procedure CreateTask(SubgroupName: string); 
+procedure CreateTask(SubgroupName: string); overload;
 
 /// Должна указываться первой при определении нового задания
-procedure CreateTask; 
-
-/// Должна указываться первой при определении нового задания
-/// (вариант для параллельного режима задачника)
-procedure CreateTask(SubgroupName: string; var ProcessCount: integer); 
+procedure CreateTask; overload;
 
 /// Должна указываться первой при определении нового задания
 /// (вариант для параллельного режима задачника)
-procedure CreateTask(var ProcessCount: integer); 
+procedure CreateTask(SubgroupName: string; var ProcessCount: integer); overload;
+
+/// Должна указываться первой при определении нового задания
+/// (вариант для параллельного режима задачника)
+procedure CreateTask(var ProcessCount: integer); overload;
 
 /// Позволяет определить текущий язык программирования, выбранный для задачника
 /// Возвращает значения, связанные с константами lgXXX
@@ -383,10 +388,10 @@ procedure CommentText(S: string);
 
 /// Добавляет комментарий из другой группы заданий (или ее подгруппы,
 /// если ее второй параметр не является пустой строкой)
-procedure UseComment(GroupName, SubgroupName: string); 
+procedure UseComment(GroupName, SubgroupName: string); overload;
 
 /// Добавляет комментарий из другой группы заданий
-procedure UseComment(GroupName: string); 
+procedure UseComment(GroupName: string); overload;
 
 /// Устанавливает режим добавления комментария к подгруппе заданий
 procedure Subgroup(SubgroupName: string);
