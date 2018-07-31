@@ -10,7 +10,8 @@ unit PT4;
 // Copyright (©) 2015 М.Э.Абрамян, дополнения к версии 4.14
 // Copyright (©) 2016 М.Э.Абрамян, дополнения к версии 4.15
 // Copyright (©) 2017 М.Э.Абрамян, дополнения к версии 4.17
-// Электронный задачник Programming Taskbook Copyright (c)М.Э.Абрамян, 1998-2017
+// Copyright (©) 2018 М.Э.Абрамян, дополнения к версии 4.18
+// Электронный задачник Programming Taskbook Copyright (c)М.Э.Абрамян, 1998-2018
 //------------------------------------------------------------------------------
 
 {$apptype windows}
@@ -385,8 +386,9 @@ procedure Println(params args: array of object);
 
 procedure Print(s: string);
 procedure Println(s: string);
-procedure Print(c: char);
-procedure Println(c: char);
+
+procedure Print(s: char);
+procedure Println(s: char);
 
 // == Версия 4.15. Конец дополнений ==
 
@@ -616,6 +618,14 @@ procedure PrintMatr<T>(a: List<List<T>>);
 // == Конец дополнений 2016.07
 
 // == Конец дополнений к версии 4.14 ==
+
+
+// == Версия 4.18. Дополнения ==
+type IPT4Printable = interface
+end;
+// == Версия 4.18. Конец дополнений ==
+
+
 
 implementation
 
@@ -1723,10 +1733,25 @@ end;
 
 // == Версия 4.15. Дополнения ==
 
-procedure Print(s: string) := Write(s);
-procedure Println(s: string) := Write(s);
-procedure Print(c: char) := Write(c);
-procedure Println(c: char) := Write(c);
+procedure Print(s: string);
+begin
+  write(s);
+end;
+
+procedure Println(s: string);
+begin
+  write(s);
+end;
+
+procedure Print(s: char);
+begin
+  write(s);
+end;
+
+procedure Println(s: char);
+begin
+  write(s);
+end;
 
 // == Версия 4.15. Конец дополнений ==
 
@@ -1777,6 +1802,10 @@ begin
           InternalWrite(Arr(e.Current));
     end      
 // == Версия 4.17. Конец дополнений ==
+// == Версия 4.18. Дополнения ==
+    else if args[i] is IPT4Printable then
+          PutString(args[i].ToString)
+// == Версия 4.18. Конец дополнений ==
         else GenerateNotSupportedWriteTypeException(args[i].GetType.ToString);
 end;
 

@@ -1044,7 +1044,7 @@ begin
     inc(i);
     if i > wmax then
     begin
-      inc(yd);
+      inc(yr);
       i := 1;
     end;
     Res('', e, Center(i, n, w, 2), yr, w);
@@ -1069,7 +1069,7 @@ begin
     inc(i);
     if i > wmax then
     begin
-      inc(yd);
+      inc(yr);
       i := 1;
     end;
     Res('', e, Center(i, n, w, 2), yr, w);
@@ -1094,7 +1094,7 @@ begin
     inc(i);
     if i > wmax then
     begin
-      inc(yd);
+      inc(yr);
       i := 1;
     end;
     Res('', e, Center(i, n, w, 2), yr, w);
@@ -1117,7 +1117,7 @@ begin
     inc(i);
     if i > wmax then
     begin
-      inc(yd);
+      inc(yr);
       i := 1;
     end;
     Res('', e, Center(i, n, w, 2), yr, w);
@@ -1140,7 +1140,7 @@ begin
     inc(i);
     if i > wmax then
     begin
-      inc(yd);
+      inc(yr);
       i := 1;
     end;
     Res('', e, Center(i, n, w, 2), yr, w);

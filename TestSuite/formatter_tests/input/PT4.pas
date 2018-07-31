@@ -4,12 +4,14 @@ unit PT4;
 //------------------------------------------------------------------------------
 // Модуль для подключения задачника Programming Taskbook
 // Версия 4.15
-// Copyright (c) 2006-2008 DarkStar, SSM
-// Copyright (c) 2010 М.Э.Абрамян, дополнения к версии 1.3
-// Copyright (c) 2014-2015 М.Э.Абрамян, дополнения к версии 4.13
-// Copyright (c) 2015 М.Э.Абрамян, дополнения к версии 4.14
-// Copyright (c) 2016 М.Э.Абрамян, дополнения к версии 4.15
-// Электронный задачник Programming Taskbook Copyright (c)М.Э.Абрамян, 1998-2016
+// Copyright (©) 2006-2008 DarkStar, SSM
+// Copyright (©) 2010 М.Э.Абрамян, дополнения к версии 1.3
+// Copyright (©) 2014-2015 М.Э.Абрамян, дополнения к версии 4.13
+// Copyright (©) 2015 М.Э.Абрамян, дополнения к версии 4.14
+// Copyright (©) 2016 М.Э.Абрамян, дополнения к версии 4.15
+// Copyright (©) 2017 М.Э.Абрамян, дополнения к версии 4.17
+// Copyright (©) 2018 М.Э.Абрамян, дополнения к версии 4.18
+// Электронный задачник Programming Taskbook Copyright (c)М.Э.Абрамян, 1998-2018
 //------------------------------------------------------------------------------
 
 {$apptype windows}
@@ -181,6 +183,140 @@ function ReadlnNode(prompt: string): Node;
 
 // == Версия 4.15. Конец дополнений ==
 
+// == Версия 4.17. Дополнения ==
+
+/// Возвращает кортеж из двух введенных значений типа integer
+function ReadInteger2: (integer, integer);
+/// Возвращает кортеж из двух введенных значений типа real
+function ReadReal2: (real, real);
+/// Возвращает кортеж из двух введенных значений типа char
+function ReadChar2: (char, char);
+/// Возвращает кортеж из двух введенных значений типа string
+function ReadString2: (string, string);
+/// Возвращает кортеж из двух введенных значений типа boolean
+function ReadBoolean2: (boolean, boolean);
+/// Возвращает кортеж из двух введенных значений типа Node
+function ReadNode2: (Node, Node);
+
+/// Возвращает кортеж из двух введенных значений типа integer
+function ReadlnInteger2: (integer, integer);
+/// Возвращает кортеж из двух введенных значений типа real
+function ReadlnReal2: (real, real);
+/// Возвращает кортеж из двух введенных значений типа char
+function ReadlnChar2: (char, char);
+/// Возвращает кортеж из двух введенных значений типа string
+function ReadlnString2: (string, string);
+/// Возвращает кортеж из двух введенных значений типа boolean
+function ReadlnBoolean2: (boolean, boolean);
+/// Возвращает кортеж из двух введенных значений типа Node
+function ReadlnNode2: (Node, Node);
+
+/// Возвращает кортеж из трех введенных значений типа integer
+function ReadInteger3: (integer, integer, integer);
+/// Возвращает кортеж из трех введенных значений типа real
+function ReadReal3: (real, real, real);
+/// Возвращает кортеж из трех введенных значений типа char
+function ReadChar3: (char, char, char);
+/// Возвращает кортеж из трех введенных значений типа string
+function ReadString3: (string, string, string);
+/// Возвращает кортеж из трех введенных значений типа boolean
+function ReadBoolean3: (boolean, boolean, boolean);
+/// Возвращает кортеж из трех введенных значений типа Node
+function ReadNode3: (Node, Node, Node);
+
+/// Возвращает кортеж из трех введенных значений типа integer
+function ReadlnInteger3: (integer, integer, integer);
+/// Возвращает кортеж из трех введенных значений типа real
+function ReadlnReal3: (real, real, real);
+/// Возвращает кортеж из трех введенных значений типа char
+function ReadlnChar3: (char, char, char);
+/// Возвращает кортеж из трех введенных значений типа string
+function ReadlnString3: (string, string, string);
+/// Возвращает кортеж из трех введенных значений типа boolean
+function ReadlnBoolean3: (boolean, boolean, boolean);
+/// Возвращает кортеж из трех введенных значений типа Node
+function ReadlnNode3: (Node, Node, Node);
+
+/// Возвращает кортеж из двух введенных значений типа integer.
+/// Строковое приглашение prompt игнорируется
+function ReadInteger2(prompt: string): (integer, integer);
+/// Возвращает кортеж из двух введенных значений типа real.
+/// Строковое приглашение prompt игнорируется
+function ReadReal2(prompt: string): (real, real);
+/// Возвращает кортеж из двух введенных значений типа char.
+/// Строковое приглашение prompt игнорируется
+function ReadChar2(prompt: string): (char, char);
+/// Возвращает кортеж из двух введенных значений типа string.
+/// Строковое приглашение prompt игнорируется
+function ReadString2(prompt: string): (string, string);
+/// Возвращает кортеж из двух введенных значений типа boolean.
+/// Строковое приглашение prompt игнорируется
+function ReadBoolean2(prompt: string): (boolean, boolean);
+/// Возвращает кортеж из двух введенных значений типа Node.
+/// Строковое приглашение prompt игнорируется
+function ReadNode2(prompt: string): (Node, Node);
+
+/// Возвращает кортеж из двух введенных значений типа integer.
+/// Строковое приглашение prompt игнорируется
+function ReadlnInteger2(prompt: string): (integer, integer);
+/// Возвращает кортеж из двух введенных значений типа real.
+/// Строковое приглашение prompt игнорируется
+function ReadlnReal2(prompt: string): (real, real);
+/// Возвращает кортеж из двух введенных значений типа char.
+/// Строковое приглашение prompt игнорируется
+function ReadlnChar2(prompt: string): (char, char);
+/// Возвращает кортеж из двух введенных значений типа string.
+/// Строковое приглашение prompt игнорируется
+function ReadlnString2(prompt: string): (string, string);
+/// Возвращает кортеж из двух введенных значений типа boolean.
+/// Строковое приглашение prompt игнорируется
+function ReadlnBoolean2(prompt: string): (boolean, boolean);
+/// Возвращает кортеж из двух введенных значений типа Node.
+/// Строковое приглашение prompt игнорируется
+function ReadlnNode2(prompt: string): (Node, Node);
+
+/// Возвращает кортеж из трех введенных значений типа integer.
+/// Строковое приглашение prompt игнорируется
+function ReadInteger3(prompt: string): (integer, integer, integer);
+/// Возвращает кортеж из трех введенных значений типа real.
+/// Строковое приглашение prompt игнорируется
+function ReadReal3(prompt: string): (real, real, real);
+/// Возвращает кортеж из трех введенных значений типа char.
+/// Строковое приглашение prompt игнорируется
+function ReadChar3(prompt: string): (char, char, char);
+/// Возвращает кортеж из трех введенных значений типа string.
+/// Строковое приглашение prompt игнорируется
+function ReadString3(prompt: string): (string, string, string);
+/// Возвращает кортеж из трех введенных значений типа boolean.
+/// Строковое приглашение prompt игнорируется
+function ReadBoolean3(prompt: string): (boolean, boolean, boolean);
+/// Возвращает кортеж из трех введенных значений типа Node.
+/// Строковое приглашение prompt игнорируется
+function ReadNode3(prompt: string): (Node, Node, Node);
+
+/// Возвращает кортеж из трех введенных значений типа integer.
+/// Строковое приглашение prompt игнорируется
+function ReadlnInteger3(prompt: string): (integer, integer, integer);
+/// Возвращает кортеж из трех введенных значений типа real.
+/// Строковое приглашение prompt игнорируется
+function ReadlnReal3(prompt: string): (real, real, real);
+/// Возвращает кортеж из трех введенных значений типа char.
+/// Строковое приглашение prompt игнорируется
+function ReadlnChar3(prompt: string): (char, char, char);
+/// Возвращает кортеж из трех введенных значений типа string.
+/// Строковое приглашение prompt игнорируется
+function ReadlnString3(prompt: string): (string, string, string);
+/// Возвращает кортеж из трех введенных значений типа boolean.
+/// Строковое приглашение prompt игнорируется
+function ReadlnBoolean3(prompt: string): (boolean, boolean, boolean);
+/// Возвращает кортеж из трех введенных значений типа Node.
+/// Строковое приглашение prompt игнорируется
+function ReadlnNode3(prompt: string): (Node, Node, Node);
+
+
+// == Версия 4.17. Конец дополнений ==
+
+
 procedure GetR(var param: real);
 procedure GetN(var param: integer);
 procedure GetC(var param: char);
@@ -251,7 +387,11 @@ procedure Println(params args: array of object);
 procedure Print(s: string);
 procedure Println(s: string);
 
+procedure Print(s: char);
+procedure Println(s: char);
+
 // == Версия 4.15. Конец дополнений ==
+
 
 /// Освобождает память, выделенную динамически, на которую указывает p
 procedure Dispose(p: pointer);
@@ -478,6 +618,14 @@ procedure PrintMatr<T>(a: List<List<T>>);
 // == Конец дополнений 2016.07
 
 // == Конец дополнений к версии 4.14 ==
+
+
+// == Версия 4.18. Дополнения ==
+type IPT4Printable = interface
+end;
+// == Версия 4.18. Конец дополнений ==
+
+
 
 implementation
 
@@ -1163,6 +1311,251 @@ end;
 
 // == Версия 4.15. Конец дополнений ==
 
+// == Версия 4.17. Дополнения ==
+
+function ReadInteger2: (integer, integer);
+begin
+  Result := (GetInt, GetInt);
+end;
+
+function ReadReal2: (real, real);
+begin
+  Result := (GetReal, GetReal);
+end;
+
+function ReadChar2: (char, char);
+begin
+  Result := (GetChar, GetChar);
+end;
+
+function ReadString2: (string, string);
+begin
+  Result := (GetString, GetString);
+end;
+
+function ReadBoolean2: (boolean, boolean);
+begin
+  Result := (GetBool, GetBool);
+end;
+
+function ReadNode2: (Node, Node);
+begin
+  Result := (GetNode, GetNode);
+end;
+
+function ReadlnInteger2: (integer, integer);
+begin
+  Result := (GetInt, GetInt);
+end;
+
+function ReadlnReal2: (real, real);
+begin
+  Result := (GetReal, GetReal);
+end;
+
+function ReadlnChar2: (char, char);
+begin
+  Result := (GetChar, GetChar);
+end;
+
+function ReadlnString2: (string, string);
+begin
+  Result := (GetString, GetString);
+end;
+
+function ReadlnBoolean2: (boolean, boolean);
+begin
+  Result := (GetBool, GetBool);
+end;
+
+function ReadlnNode2: (Node, Node);
+begin
+  Result := (GetNode, GetNode);
+end;
+
+function ReadInteger2(prompt: string): (integer, integer);
+begin
+  Result := (GetInt, GetInt);
+end;
+
+function ReadReal2(prompt: string): (real, real);
+begin
+  Result := (GetReal, GetReal);
+end;
+
+function ReadChar2(prompt: string): (char, char);
+begin
+  Result := (GetChar, GetChar);
+end;
+
+function ReadString2(prompt: string): (string, string);
+begin
+  Result := (GetString, GetString);
+end;
+
+function ReadBoolean2(prompt: string): (boolean, boolean);
+begin
+  Result := (GetBool, GetBool);
+end;
+
+function ReadNode2(prompt: string): (Node, Node);
+begin
+  Result := (GetNode, GetNode);
+end;
+
+function ReadlnInteger2(prompt: string): (integer, integer);
+begin
+  Result := (GetInt, GetInt);
+end;
+
+function ReadlnReal2(prompt: string): (real, real);
+begin
+  Result := (GetReal, GetReal);
+end;
+
+function ReadlnChar2(prompt: string): (char, char);
+begin
+  Result := (GetChar, GetChar);
+end;
+
+function ReadlnString2(prompt: string): (string, string);
+begin
+  Result := (GetString, GetString);
+end;
+
+function ReadlnBoolean2(prompt: string): (boolean, boolean);
+begin
+  Result := (GetBool, GetBool);
+end;
+
+function ReadlnNode2(prompt: string): (Node, Node);
+begin
+  Result := (GetNode, GetNode);
+end;
+
+function ReadInteger3: (integer, integer, integer);
+begin
+  Result := (GetInt, GetInt, GetInt);
+end;
+
+function ReadReal3: (real, real, real);
+begin
+  Result := (GetReal, GetReal, GetReal);
+end;
+
+function ReadChar3: (char, char, char);
+begin
+  Result := (GetChar, GetChar, GetChar);
+end;
+
+function ReadString3: (string, string, string);
+begin
+  Result := (GetString, GetString, GetString);
+end;
+
+function ReadBoolean3: (boolean, boolean, boolean);
+begin
+  Result := (GetBool, GetBool, GetBool);
+end;
+
+function ReadNode3: (Node, Node, Node);
+begin
+  Result := (GetNode, GetNode, GetNode);
+end;
+
+function ReadlnInteger3: (integer, integer, integer);
+begin
+  Result := (GetInt, GetInt, GetInt);
+end;
+
+function ReadlnReal3: (real, real, real);
+begin
+  Result := (GetReal, GetReal, GetReal);
+end;
+
+function ReadlnChar3: (char, char, char);
+begin
+  Result := (GetChar, GetChar, GetChar);
+end;
+
+function ReadlnString3: (string, string, string);
+begin
+  Result := (GetString, GetString, GetString);
+end;
+
+function ReadlnBoolean3: (boolean, boolean, boolean);
+begin
+  Result := (GetBool, GetBool, GetBool);
+end;
+
+function ReadlnNode3: (Node, Node, Node);
+begin
+  Result := (GetNode, GetNode, GetNode);
+end;
+
+function ReadInteger3(prompt: string): (integer, integer, integer);
+begin
+  Result := (GetInt, GetInt, GetInt);
+end;
+
+function ReadReal3(prompt: string): (real, real, real);
+begin
+  Result := (GetReal, GetReal, GetReal);
+end;
+
+function ReadChar3(prompt: string): (char, char, char);
+begin
+  Result := (GetChar, GetChar, GetChar);
+end;
+
+function ReadString3(prompt: string): (string, string, string);
+begin
+  Result := (GetString, GetString, GetString);
+end;
+
+function ReadBoolean3(prompt: string): (boolean, boolean, boolean);
+begin
+  Result := (GetBool, GetBool, GetBool);
+end;
+
+function ReadNode3(prompt: string): (Node, Node, Node);
+begin
+  Result := (GetNode, GetNode, GetNode);
+end;
+
+function ReadlnInteger3(prompt: string): (integer, integer, integer);
+begin
+  Result := (GetInt, GetInt, GetInt);
+end;
+
+function ReadlnReal3(prompt: string): (real, real, real);
+begin
+  Result := (GetReal, GetReal, GetReal);
+end;
+
+function ReadlnChar3(prompt: string): (char, char, char);
+begin
+  Result := (GetChar, GetChar, GetChar);
+end;
+
+function ReadlnString3(prompt: string): (string, string, string);
+begin
+  Result := (GetString, GetString, GetString);
+end;
+
+function ReadlnBoolean3(prompt: string): (boolean, boolean, boolean);
+begin
+  Result := (GetBool, GetBool, GetBool);
+end;
+
+function ReadlnNode3(prompt: string): (Node, Node, Node);
+begin
+  Result := (GetNode, GetNode, GetNode);
+end;
+
+// == Версия 4.17. Конец дополнений ==
+
+
 // -----------------------------------------------------
 //                      Процедуры Put
 // -----------------------------------------------------
@@ -1350,6 +1743,16 @@ begin
   write(s);
 end;
 
+procedure Print(s: char);
+begin
+  write(s);
+end;
+
+procedure Println(s: char);
+begin
+  write(s);
+end;
+
 // == Версия 4.15. Конец дополнений ==
 
 {procedure write;
@@ -1388,6 +1791,21 @@ begin
           var ip := IntPtr(PointerOutput(args[i]).p);
           _PutP(ip);
         end  
+// == Версия 4.17. Дополнения ==
+    else if args[i].GetType.FullName.StartsWith('System.Tuple') then
+       foreach var e in args[i].GetType.GetProperties do
+          InternalWrite(Arr(e.GetValue(args[i],nil)))
+    else if args[i] is IEnumerable then
+    begin
+       var e := (args[i] as IEnumerable).GetEnumerator;
+       while e.MoveNext do
+          InternalWrite(Arr(e.Current));
+    end      
+// == Версия 4.17. Конец дополнений ==
+// == Версия 4.18. Дополнения ==
+    else if args[i] is IPT4Printable then
+          PutString(args[i].ToString)
+// == Версия 4.18. Конец дополнений ==
         else GenerateNotSupportedWriteTypeException(args[i].GetType.ToString);
 end;
 
@@ -1432,6 +1850,15 @@ begin
   var prg := asm.GetType(nm+'.Program');
   var solveproc := prg.GetMethod('$Main');
   var initproc := prg.GetMethod('$_InitVariables_');
+  if (solveproc = nil) or (initproc = nil) then
+    foreach var prg0 in asm.GetTypes() do
+    begin
+      prg := prg0;
+      solveproc := prg0.GetMethod('$Main');
+      initproc := prg0.GetMethod('$_InitVariables_');
+      if (solveproc <> nil) and (initproc <> nil) then
+        break;
+  end;
   var examunit := asm.GetType('PT4Exam.PT4Exam');
   var finexamproc: System.Reflection.MethodInfo := nil;
   if examunit <> nil then
@@ -1441,14 +1868,16 @@ begin
   begin
     StartPT(512);    
     try
-      foreach var f in prg.GetFields do
+      foreach var f in prg.GetFields() do
         if not f.Name.StartsWith('$') then 
         try
           f.SetValue(nil, nil);
         except
         end;
       if initproc <> nil then
+      begin
         initproc.Invoke(nil,nil);
+      end;  
       solveproc.Invoke(nil,nil);
     except
       on e: Exception do
