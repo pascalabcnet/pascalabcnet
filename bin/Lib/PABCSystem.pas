@@ -1455,6 +1455,10 @@ function UpperCase(s: string): string;
 function StringOfChar(ch: char; count: integer): string;
 /// Возвращает инвертированную строку
 function ReverseString(s: string): string;
+/// Возвращает инвертированную строку
+function Reverse(s: string): string;
+/// Возвращает инвертированную строку в диапазоне длины length начиная с индекса index
+function Reverse(s: string; index,length: integer): string;
 /// Сравнивает строки. Возвращает значение < 0 если s1<s2, > 0 если s1>s2 и = 0 если s1=s2
 function CompareStr(s1, s2: string): integer;
 /// Возвращает первые count символов строки s
@@ -7620,12 +7624,21 @@ begin
   Result := new string(ch, count);
 end;
 
-function ReverseString(s: string): string;
+function Reverse(s: string): string;
 begin
   var ca := s.ToCharArray;
   &Array.Reverse(ca);
   Result := new string(ca);
 end;
+
+function Reverse(s: string; index,length: integer): string;
+begin
+  var ca := s.ToCharArray;
+  &Array.Reverse(ca,index,length);
+  Result := new string(ca);
+end;
+
+function ReverseString(s: string): string := Reverse(s);
 
 function CompareStr(s1, s2: string): Integer;
 begin
