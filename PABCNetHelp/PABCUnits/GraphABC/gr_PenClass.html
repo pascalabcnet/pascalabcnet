@@ -1,0 +1,94 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="GraphABCPen">
+<param name="Keyword" value="NETPen">
+<param name="Keyword" value="Color">
+<param name="Keyword" value="Width">
+<param name="Keyword" value="Style">
+<param name="Keyword" value="Mode">
+<param name="Keyword" value="Pen">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Текущее перо Pen</H1>
+<p>Объект текущего пера возвращается функцией <code>Pen</code> и имеет тип
+<code>
+  GraphABCPen</code>:</p>
+<blockquote>
+	<p><code><b>function</b> Pen: GraphABCPen;</code></p>
+</blockquote>
+<p>Класс <code>GraphABCPen</code> имеет следующий интерфейс: </p>
+<blockquote>
+	<p><code><b>type</b> <br>
+&nbsp;
+  GraphABCPen = <b>class</b><br>
+	&nbsp;&nbsp;&nbsp; <b>property </b>NETPen: System.Drawing.Pen;<br>
+&nbsp;&nbsp;&nbsp; <b>property</b> Color: GraphABC.Color;<br>
+	&nbsp;&nbsp;&nbsp; <b>property</b> Width: integer;
+	<br>
+	&nbsp;&nbsp;&nbsp; <b>property</b> Style: 
+	<a href="gr_PenDashStyle.html">DashStyle</a>;<br>
+	&nbsp;&nbsp;&nbsp; <b>property</b> Mode: integer;<br>
+	&nbsp;&nbsp;&nbsp; <b>property</b> 
+	X: integer;<br>
+	&nbsp;&nbsp;&nbsp; <b>property</b> 
+	Y: integer;<br>
+	&nbsp; <b>end</b>;</code></p>
+</blockquote>
+<p>Свойства класса <code>GraphABCPen</code> 
+описаны в следующей таблице:</p>
+<table border=0 CELLPADDING=5>
+<tr><td>
+<code>
+    <b>property</b> 
+    NETPen: System.Drawing.Pen;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Текущее перо .NET. Служит для 
+более тонкой настройки свойств пера
+</td></tr>
+<tr><td>
+<code>
+    <b>property</b> Color: GraphABC.Color;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет пера
+</td></tr>
+<tr><td>
+<code>
+    <b>property</b> Width: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ширина пера
+</td></tr>
+<tr><td>
+<code>
+    <b>property</b> Style: <a href="gr_PenDashStyle.html">DashStyle</a>;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Стиль пера. 
+Константы стилей пера приведены <a href="gr_PenDashStyle.html">здесь</a>&nbsp;
+</td></tr>
+<tr><td>
+<code>
+    <b>property</b> Mode: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Режим пера
+</td></tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> X: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Координата X пера (только чтение)</td>
+</tr>
+<tr><td>
+<code>
+    <b>property</b> Y: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Координата Y пера (только чтение)</td></tr>
+</table>
+<p><b>Пример.</b></p>
+<blockquote>
+	<p><code>Pen.Color := clRed;<br>
+	Pen.Style := psDot;</code></p>
+</blockquote>
+<p>Кроме этого, можно изменять свойства текущего пера, используя 
+соответствующие <a href="gr_Pen.html">процедуры и функции.</a> </p>
+</body></html>

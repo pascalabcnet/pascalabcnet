@@ -1,0 +1,45 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="forward">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+
+<H1>Опережающее объявление</H1>
+<p>В некоторых ситуациях возникает необходимость вызвать 
+подпрограмму, описанную далее по тексту программы. Например, такая необходимость 
+возникает при косвенной рекурсии (подпрограмма <code>A</code> 
+вызывает подпрограмму <code>B</code>, а та в свою очередь 
+вызывает подпрограмму <code>A</code>). В этом случае 
+используется опережающее объявление подпрограммы, состоящее из ее заголовка, за 
+которым следует ключевое слово <b><code>forward</code></b>. 
+Например:</p>
+<blockquote>
+<pre>
+<code><b>procedure</b> B(i: integer); <b>forward</b>;
+<b>procedure</b> A(i: integer);
+<b>begin</b>
+  ...
+  B(i-1);
+<b>end</b>;<b>
+procedure</b> B(i: integer);
+<b>begin</b>
+  ...
+  A(i <b>div</b> 2);
+<b>end</b>;</code>
+</pre>
+</blockquote>
+<p>Запрещено делать опережающее объявление 
+для уже описанной подпрограммы.</p>
+<p>Для методов ключевое слово <b><code>forward</code></b> запрещено. В нем нет 
+необходимости, потому что можно вызывать методы, определенные в теле класса 
+позднее. </p>
+</body>
+
+</html>

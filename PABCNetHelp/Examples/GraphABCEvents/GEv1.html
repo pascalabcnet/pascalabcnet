@@ -1,0 +1,37 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+
+<H1>Рисование мышью в графическом окне</H1>
+Данная программа осуществляет рисование мышью в графическом окне:
+<blockquote>
+<pre>
+<code><b>uses</b> GraphABC;<b>
+<span style="font-size: 4pt">
+</span>procedure</b> MouseDown(x,y,mb: integer);
+<b>begin</b>
+  MoveTo(x,y);
+<b>end</b>;
+<b><span style="font-size: 4pt">
+</span>procedure</b> MouseMove(x,y,mb: integer);
+<b>begin</b>
+  <b>if</b> mb=1 <b>then</b> LineTo(x,y);
+<b>end</b>;
+<b><span style="font-size: 4pt">
+</span>begin
+</b>  // Привязка обработчиков к событиям
+  <a href="../../PABCUnits/GraphABC/gr_events.html">OnMouseDown</a> := MouseDown;
+  <a href="../../PABCUnits/GraphABC/gr_events.html">OnMouseMove</a> := MouseMove
+<b>end</b>.</code>
+</pre>
+</blockquote>
+
+</body>
+
+</html>

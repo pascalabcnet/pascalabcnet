@@ -5,6 +5,12 @@ unit PABCExtensions;
 
 uses PABCSystem;
 
+//{{{doc: Начало секции подпрограмм для типизированных файлов для документации }}} 
+
+// -----------------------------------------------------
+//>>     Подпрограммы для работы с типизированными файлами # Subroutines for typed files
+// -----------------------------------------------------
+
 /// Открывает типизированный файл и возвращает значение для инициализации файловой переменной
 function OpenBinary<T>(fname: string): file of T;
 begin
@@ -52,6 +58,19 @@ function CreateFileReal(fname: string): file of real;
 begin
   Result := CreateFile&<real>(fname);
 end;
+
+/// Открывает типизированный файл, возвращает последовательность его элементов и закрывает его
+procedure WriteElements<T>(fname: string; ss: sequence of T);
+begin
+  var f := CreateBinary&<T>(fname);
+  foreach var x in ss do
+    f.Write(x);
+  f.Close
+end;
+
+// -----------------------------------------------------
+//>>     Методы расширения типизированных файлов # Extension methods for typed files
+// -----------------------------------------------------
 
 /// Устанавливает текущую позицию файлового указателя в типизированном файле на элемент с номером n
 function Seek<T>(Self: file of T; n: int64): file of T; extensionmethod;
@@ -107,21 +126,14 @@ begin
   f.Close
 end;
 
-/// Открывает типизированный файл, возвращает последовательность его элементов и закрывает его
-procedure WriteElements<T>(fname: string; ss: sequence of T);
-begin
-  var f := CreateBinary&<T>(fname);
-  foreach var x in ss do
-    f.Write(x);
-  f.Close
-end;
-
 /// Записывает данные в типизированный файл
 procedure Write<T>(Self: file of T; params vals: array of T); extensionmethod;
 begin
   foreach var x in vals do
     PABCSystem.Write(Self, x);
 end;
+
+//{{{--doc: Конец секции подпрограмм для типизированных файлов для документации }}} 
 
 
 //------------------------------------------------------------------------------

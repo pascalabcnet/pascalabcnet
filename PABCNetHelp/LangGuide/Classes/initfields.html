@@ -1,0 +1,47 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Инициализаторы полей</H1>
+<p>При создании объекта <i><b> его поля инициализируются 
+автоматически 
+нулевыми значениями</b></i> если они не инициализированы явно. Их 
+инициализация может проводиться как в конструкторе, так и непосредственно при 
+описании. Инициализация поля при описании приводит к тому, что код инициализации 
+вставляется в начало ВСЕХ конструкторов.</p>
+<p>Например:</p>
+<blockquote>
+	<p><code><b>type</b> <br>
+&nbsp; A =<b> class<br>
+&nbsp; private</b><br>
+&nbsp;&nbsp;&nbsp; x: integer<b> </b>
+	:= 1; <br>
+&nbsp;&nbsp;&nbsp; y: integer;<br>&nbsp;&nbsp;&nbsp; l := new List&lt;integer&gt;;<br>
+	<b>&nbsp; public</b><br>
+	&nbsp;&nbsp;&nbsp; <b>constructor</b> Create(xx,yy: 
+	integer);<br>
+&nbsp;&nbsp;&nbsp;
+	<b>begin</b><br>
+&nbsp;&nbsp;&nbsp;
+&nbsp; x := xx;<br>
+	&nbsp;&nbsp;&nbsp;
+	&nbsp; y := yy;<br>
+	<b>&nbsp;&nbsp;&nbsp; end</b>;<br>
+	&nbsp;&nbsp;&nbsp; <b>constructor</b> Create;<br>
+&nbsp;&nbsp;&nbsp;
+	<b>begin</b><br>
+	<b>&nbsp;&nbsp;&nbsp; end</b>;<br>
+&nbsp; <b>end</b>;</code></p>
+</blockquote>
+<p>В данном примере код <code>x:=1; l := new List&lt;integer&gt;</code>&nbsp; вставляется 
+в начало каждого конструктора.</p>
+</body>
+
+</html>

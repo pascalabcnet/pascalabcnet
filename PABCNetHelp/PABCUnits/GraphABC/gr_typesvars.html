@@ -1,0 +1,50 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Color">
+<param name="Keyword" value="GraphABCException">
+<param name="Keyword" value="Point">
+<param name="Keyword" value="RedrawProc">
+<param name="Keyword" value="DrawInBuffer">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Типы и переменные модуля GraphABC</H1>
+<table border=0 CELLPADDING=5>
+<tr><td>
+<code>
+  Color = System.Drawing.Color;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Тип цвета
+</td></tr>
+<tr>
+	<td>
+<code>
+  Point = System.Drawing.Point;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Тип точки
+</td>
+</tr>
+<tr><td>
+<code>
+  GraphABCException = <b>class</b>(Exception) <b>end</b>;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Тип исключения GraphABC
+</td></tr>
+<tr>
+	<td>
+<code>
+  RedrawProc: <b>procedure</b>;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Процедурная переменная перерисовки графического окна. Если равна nil, то используется стандартная перерисовка
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+  DrawInBuffer: boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Следует ли рисовать во внеэкранном буфере
+</td>
+</tr>
+</table>
+</body></html>

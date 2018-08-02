@@ -1,0 +1,25 @@
+<html><head><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="ThenBy">
+<param name="Keyword" value="ThenByDescending">
+</object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
+<body>
+<H1>Методы ThenBy,ThenByDescending</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<tr><td>
+<code><b>function </b>ThenBy&lt;Key&gt;(keySelector: T-&gt;Key): System.Linq.IOrderedEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет дополнительное упорядочение элементов последовательности в порядке возрастания ключа и возвращает отсортированнную последовательность. keySelector - функция, проектирующая элемент на ключ.
+</td></tr>
+<tr><td>
+<code><b>function </b>ThenBy&lt;Key&gt;(keySelector: T-&gt;Key; comparer: IComparer&lt;Key&gt;): System.Linq.IOrderedEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет дополнительное упорядочение элементов последовательности в порядке возрастания с использованием компаратора comparer и возвращает отсортированнную последовательность. keySelector - функция, проектирующая элемент на ключ.
+</td></tr>
+<tr><td>
+<code><b>function </b>ThenByDescending&lt;Key&gt;(keySelector: T-&gt;Key): System.Linq.IOrderedEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет дополнительное упорядочение элементов последовательности в порядке убывания ключа и возвращает отсортированнную последовательность. keySelector - функция, проектирующая элемент на ключ.
+</td></tr>
+<tr><td>
+<code><b>function </b>ThenByDescending&lt;Key&gt;(keySelector: T-&gt;Key; comparer: IComparer&lt;Key&gt;): System.Linq.IOrderedEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет дополнительное упорядочение элементов последовательности в порядке убывания с использованием компаратора comparer и возвращает отсортированнную последовательность. keySelector - функция, проектирующая элемент на ключ.
+</td></tr>
+</table>
+<h2>Пример </h2><blockquote><code></code></blockquote>
+</body>

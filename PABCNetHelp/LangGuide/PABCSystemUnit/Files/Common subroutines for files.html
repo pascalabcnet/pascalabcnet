@@ -1,0 +1,25 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Assign">
+<param name="Keyword" value="AssignFile">
+<param name="Keyword" value="Close">
+<param name="Keyword" value="CloseFile">
+<param name="Keyword" value="Eof">
+<param name="Keyword" value="Erase">
+<param name="Keyword" value="Rename"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Общие подпрограммы для работы с файлами</H1>
+<table cellpadding=3><tr><td><code><b>procedure</b> Assign(f: файл; name: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную с файлом на диске</td></tr>
+<tr><td><code><b>procedure</b> AssignFile(f: файл; name: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную с файлом на диске</td></tr>
+<tr><td><code><b>procedure</b> Close(f: файл);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Закрывает файл</td></tr>
+<tr><td><code><b>procedure</b> CloseFile(f: файл);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Закрывает файл</td></tr>
+<tr><td><code><b>function</b> Eof(f: файл): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если достигнут конец файла</td></tr>
+<tr><td><code><b>procedure</b> Erase(f: файл);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет файл, связанный с файловой переменной</td></tr>
+<tr><td><code><b>procedure</b> Rename(f: файл; newname: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переименовывает файл, связаный с файловой переменной, давая ему имя newname.</td></tr>
+</table></body></HTML>

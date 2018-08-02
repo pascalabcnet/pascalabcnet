@@ -1,0 +1,59 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="begin">
+<param name="Keyword" value="end">
+<param name="Keyword" value="Составной оператор">
+<param name="Keyword" value="Блок">
+<param name="Keyword" value="Операторные скобки">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Составной оператор (блок)</H1>
+Составной оператор предназначен для объединения нескольких 
+операторов в один. Он имеет вид:<blockquote>
+	<p><b><code>begin<br>
+&nbsp; </code></b> <code class="codeit">операторы</code><b><code><br>
+	end </code></b> </p>
+</blockquote>
+В <b>PascalABC.NET</b> составной оператор также 
+называется <i><b><font color="#FF0000">блоком</font></b></i>. (традиционно в 
+Паскале блоком называется раздел описаний, после которого идет составной 
+оператор; в <b>PascalABC.NET</b>
+принято другое решение, поскольку можно описывать переменные 
+непосредственно внутри составного оператора).<p>Операторы отделяются один от другого символом &quot;<code>;</code>&quot;. 
+Ключевые слова <b><code>begin</code></b> и <b>
+<code>end</code></b>, окаймляющие операторы, 
+называются <i><b><font color="#FF0000">операторными скобками</font></b></i>.
+</p>
+<p>Например:</p>
+<blockquote>
+	<p><code>s := 0; <br>p := 1;<br>
+	<b>for</b> <strong>var </strong>i:=1 <b>to</b> 10 <b>do</b><br>
+	<b>begin<br>
+&nbsp; </b>p := p * i;<br>
+&nbsp; s := s + p</code><b><code><br>
+	end </code></b> </p>
+</blockquote>
+<p>Перед <b><code>end</code></b> также может ставиться &quot;<code>;</code>&quot;. 
+В этом случае считается, что последним оператором перед <b><code>end</code></b> 
+является <a href="emptyop.html">пустой оператор</a>, не выполняющий никаких действий.</p>
+<p>Помимо операторов, в блоке могут быть <a href="../_ProgrStruct_Defs/vardef.html#intblockvars">внутриблочные описания 
+переменных</a>:</p>
+<blockquote>
+	<code><b>begin<br>
+	</b>
+	<b>&nbsp; var</b> a,b: integer;<br>
+&nbsp; <b>var</b> r: real;<br>
+	&nbsp; readln(a,b);<br>
+	&nbsp; x := a/b;<br>
+	&nbsp; writeln(x);<br>
+	<b>end.</b></code></blockquote>
+</body>
+
+</html>

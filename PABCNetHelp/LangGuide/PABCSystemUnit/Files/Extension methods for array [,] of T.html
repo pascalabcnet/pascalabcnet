@@ -1,0 +1,72 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Col">
+<param name="Keyword" value="ColCount">
+<param name="Keyword" value="Cols">
+<param name="Keyword" value="ColSeq">
+<param name="Keyword" value="ConvertAll">
+<param name="Keyword" value="ElementsByCol">
+<param name="Keyword" value="ElementsByRow">
+<param name="Keyword" value="ElementsWithIndexes">
+<param name="Keyword" value="Fill">
+<param name="Keyword" value="Print">
+<param name="Keyword" value="Println">
+<param name="Keyword" value="Row">
+<param name="Keyword" value="RowCount">
+<param name="Keyword" value="Rows">
+<param name="Keyword" value="RowSeq">
+<param name="Keyword" value="SetCol">
+<param name="Keyword" value="SetRow">
+<param name="Keyword" value="SwapCols">
+<param name="Keyword" value="SwapRows">
+<param name="Keyword" value="Transform"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Методы расширения типа array [,] of T</H1>
+<table cellpadding=3><tr><td><code><b>function</b> Col&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k: integer): <b>array</b>  <b>of</b> T; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k-тый столбец двумерного массива</td></tr>
+<tr><td><code><b>function</b> ColCount&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): integer; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Количество столбцов в двумерном массиве</td></tr>
+<tr><td><code><b>function</b> Cols&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>sequence </b>  <b>of</b> <b>sequence </b>  <b>of</b> T; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность столбцов двумерного массива</td></tr>
+<tr><td><code><b>function</b> ColSeq&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k: integer): <b>sequence </b>  <b>of</b> T; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k-тый столбец двумерного массива как последовательность</td></tr>
+<tr><td><code><b>function</b> ConvertAll&lt;T, T1&gt;(Self: <b>array</b> [,]  <b>of</b> T; converter: T-&gt;T1): <b>array</b> [,]  <b>of</b> T1; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы двумерного массива и возвращает преобразованный массив</td></tr>
+<tr><td><code><b>function</b> ElementsByCol&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>sequence </b>  <b>of</b> T; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает по заданному двумерному массиву последовательность его элементов по столбцам</td></tr>
+<tr><td><code><b>function</b> ElementsByRow&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>sequence </b>  <b>of</b> T; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает по заданному двумерному массиву последовательность его элементов по строкам</td></tr>
+<tr><td><code><b>function</b> ElementsWithIndexes&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>sequence </b>  <b>of</b> (T, integer, integer); <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает по заданному двумерному массиву последовательность (a[i,j],i,j)</td></tr>
+<tr><td><code><b>procedure</b> Fill&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; f: (integer,integer) -&gt;T); <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет элементы двумерного массива значениями, вычисляемыми по некоторому правилу</td></tr>
+<tr><td><code><b>function</b> Print&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; w: integer := 4): <b>array</b> [,]  <b>of</b> T; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вывод двумерного массива, w - ширина поля вывода</td></tr>
+<tr><td><code><b>function</b> Print(Self: <b>array</b> [,]  <b>of</b> real; w: integer := 7; f: integer := 2): <b>array</b> [,]  <b>of</b> real; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вывод двумерного вещественного массива по формату :w:f</td></tr>
+<tr><td><code><b>function</b> Println&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; w: integer := 4): <b>array</b> [,]  <b>of</b> T; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вывод двумерного массива и переход на следующую строку, w - ширина поля вывода</td></tr>
+<tr><td><code><b>function</b> Println(Self: <b>array</b> [,]  <b>of</b> real; w: integer := 7; f: integer := 2): <b>array</b> [,]  <b>of</b> real; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вывод двумерного вещественного массива по формату :w:f и переход на следующую строку</td></tr>
+<tr><td><code><b>function</b> Row&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k: integer): <b>array</b>  <b>of</b> T; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k-тая строка двумерного массива</td></tr>
+<tr><td><code><b>function</b> RowCount&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): integer; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Количество строк в двумерном массиве</td></tr>
+<tr><td><code><b>function</b> Rows&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>sequence </b>  <b>of</b> <b>sequence </b>  <b>of</b> T; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность строк двумерного массива</td></tr>
+<tr><td><code><b>function</b> RowSeq&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k: integer): <b>sequence </b>  <b>of</b> T; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k-тая строка двумерного массива как последовательность</td></tr>
+<tr><td><code><b>procedure</b> SetCol&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k: integer; a: <b>array</b>  <b>of</b> T); <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет столбец k двумерного массива на другой столбец</td></tr>
+<tr><td><code><b>procedure</b> SetCol&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k: integer; a: <b>sequence </b>  <b>of</b> T); <b>extensionmethod</b> := Self.SetCol(k,a.ToArray);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет столбец k двумерного массива на другой столбец</td></tr>
+<tr><td><code><b>procedure</b> SetRow&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k: integer; a: <b>array</b>  <b>of</b> T); <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет строку k двумерного массива на другую строку</td></tr>
+<tr><td><code><b>procedure</b> SetRow&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k: integer; a: <b>sequence </b>  <b>of</b> T); <b>extensionmethod</b> := Self.SetRow(k,a.ToArray);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет строку k двумерного массива на другую строку</td></tr>
+<tr><td><code><b>procedure</b> SwapCols&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k1, k2: integer); <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет местами два столбца двумерного массива с номерами k1 и k2</td></tr>
+<tr><td><code><b>procedure</b> SwapRows&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k1, k2: integer); <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет местами две строки двумерного массива с номерами k1 и k2</td></tr>
+<tr><td><code><b>procedure</b> Transform&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; f: T-&gt;T); <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы двумерного массива по заданному правилу</td></tr>
+</table></body></HTML>

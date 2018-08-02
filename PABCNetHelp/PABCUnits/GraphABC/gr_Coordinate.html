@@ -1,0 +1,35 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="SetCoordinateOrigin">
+<param name="Keyword" value="SetCoordinateScale">
+<param name="Keyword" value="SetCoordinateAngle">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Подпрограммы для работы с <span lang="ru">координатами </span>графическ<span lang="ru">ого</span> 
+окн<span lang="ru">а</span></H1>
+<p>Доступ к свойствам <span lang="ru">координат </span>графического окна можно осуществлять как в 
+процедурном, так и в объектно-ориентированном стиле.</p>
+<p>Процедуры и функции для <span lang="ru">изменения системы координат</span> окна 
+<span lang="ru">приведены ниже:</span></p>
+<table border=0 CELLPADDING=5>
+<tr><td>
+<code>
+<b>procedure</b> SetCoordinateOrigin(x0,y0: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Устанавливает начало координат в точку (x0,y0)</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> SetCoordinateScale(sx,sy: real);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Устанавливает масштаб системы координат</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> SetCoordinateAngle(a: real);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Устанавливает поворот системы координат</td></tr>
+</table>
+<br>
+Можно также изменять свойства <span lang="ru">системы координат </span>графического окна через
+<a href="gr_CoordinateClass.html">объект Coordinate</a></code>.
+</body></html>

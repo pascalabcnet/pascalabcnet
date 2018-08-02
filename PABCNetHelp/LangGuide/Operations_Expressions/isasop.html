@@ -1,0 +1,73 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="is">
+<param name="Keyword" value="as">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css"></head>
+<body><H1>Операции is и as</H1>
+<p>Операция <code><b>is</b></code> предназначена для проверки того, имеет ли 
+классовая переменная указанный динамический тип. 
+Операция <code><b>as</b></code> позволяет безопасно преобразовать переменную 
+одного классового типа к другому классовому типу (в отличие от
+<a href="../Classes/classcast.html">явного приведения классового типа</a>).</p>
+<p>Операция
+<code><b>is</b></code> имеет вид:</p>
+<blockquote>
+	<p><code>a <b>is</b> </code><i>ClassType</i></p>
+</blockquote>
+<p>и возвращает <code>True</code> если
+<code>a</code> принадлежит к классу <i>ClassType</i>
+или одному из его потомков. </p>
+<p>Например, если <code>Base</code>
+и <code>Derived</code> - классы, причем,
+<code>Derived</code> - потомок <code>Base</code>, 
+переменные b и d имеют соответственно типы <code>Base</code>
+и <code>Derived</code>, то выражения
+<code>b <b>is</b> Base</code> и <code>d <b>is</b> 
+Base</code> возвращают <code>True</code>, 
+а <code>b <b>is</b> Derived</code> - <code>False</code>.</p>
+<p>Операция
+<code><b>as</b></code> имеет вид:</p>
+<blockquote>
+	<p><code>a <b>as</b> </code><i>ClassType</i></p>
+</blockquote>
+<p>и возвращает ссылку на объект типа
+<i>ClassType</i> если преобразование возможно, в 
+противном случае возвращает <code><b>nil</b></code>.</p>
+<p>Например, в программе</p>
+<blockquote>
+	<p><code><b>type</b> <br>
+	&nbsp; Base = <b>class</b> <b><br>
+&nbsp; end</b>;<br>
+	&nbsp; Derived = <b>class</b>(Base) <b><br>
+&nbsp;&nbsp;&nbsp; procedure</b> p;<b><br>
+&nbsp;&nbsp;&nbsp; begin<br>
+&nbsp;&nbsp;&nbsp; end</b>;<b><br>
+&nbsp; end</b>;</code></p>
+	<p><code><b>var</b> b: Base;</code></p>
+	<p><code><b>begin</b><br>
+	&nbsp; b := new Base;<br>
+	&nbsp; writeln(b <b>i</b><b>s</b> Derived);<br>
+	&nbsp; b := new Derived;<br>
+	&nbsp; writeln(b <b>i</b><b>s</b> Derived);<br>
+	<b>end</b>. </code></p>
+</blockquote>
+<p>первый раз выводится <code>False</code>, 
+второй - <code>True</code>.</p>
+<p>Операции <code><b>is</b></code> и
+<code><b>as</b></code> используются для работы с 
+переменной базового класса, содержащей объект производного класса.</p>
+<p><b>1 способ.</b></p>
+<blockquote>
+	<p><code><b>if</b> b <b>is</b> Derived then <br>
+&nbsp; Derived(b).p;</code></p>
+</blockquote>
+<p><b>2 способ.</b></p>
+<blockquote>
+	<p><code><b>var</b> d: Derived := b <b>as</b> Derived;<br>
+	d.p;</code></p>
+</blockquote>
+
+</body></html>

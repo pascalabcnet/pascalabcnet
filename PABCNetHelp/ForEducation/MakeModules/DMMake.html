@@ -1,0 +1,108 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="TaskProcType">
+<param name="Keyword" value="DrawmanField">
+<param name="Keyword" value="DoToPoint">
+<param name="Keyword" value="DoOnVector">
+<param name="Keyword" value="DoPenUp">
+<param name="Keyword" value="DoPenDown">
+<param name="Keyword" value="TaskText">
+<param name="Keyword" value="RegisterTask">
+<param name="Keyword" value="RegisterGroup">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Модуль </span>DMTaskMaker</H1>
+<hr>
+<table border="0" width="100%" id="table3" style="border-width: 0px" cellpadding="8">
+	<tr height=20pt>
+		<td style="border-style:none; border-width:medium; background-color: #99CCFF">
+		<b><font size="2" color="#800080"><span lang="ru">Типы</span> модуля </font></b>
+		<font size="2" color="#800080"><b>DMTaskMaker</b></font></td>
+	</tr>
+</table>
+
+<blockquote>
+	<p><code><b>type</b> TaskProcType<span lang="ru"> </span>=<b><span lang="ru">
+	</span>procedure</b>;</code></p>
+</blockquote>
+<p>Тип процедуры, генерирующей конкретное задание.
+Каждое задание реализуется в виде отдельной процедуры; для связывания этой процедуры
+с именем задания необходимо использовать процедуру <code>RegisterTask</code>, описываемую ниже.
+</p>
+<table border="0" width="100%" id="table4" style="border-width: 0px" cellpadding="8">
+	<tr height=20pt>
+		<td style="border-style:none; border-width:medium; background-color: #99CCFF">
+		<b><font size="2" color="#800080">Процедуры модуля </font></b>
+		<font size="2" color="#800080"><b>DMTaskMaker</b></font></td>
+	</tr>
+</table>
+
+<blockquote>
+	<p><code><b>procedure</b> Field(szx,szy: integer); </code></p>
+</blockquote>
+<p><span lang="ru">Задает поле Чертежника размера </span><code>szx</code>
+<span lang="ru">на </span><code>szy</code> <span lang="ru">клеток</span>.</p>
+
+<blockquote>
+	<p><code><b>procedure</b> DoToPoint(x,y: integer); </code></p>
+</blockquote>
+<p><span lang="ru">Перемещает перо Чертежника-постановщика заданий в точку с 
+координатами </span> <code>(x</code>,<span lang="ru"> </span><code>y)</code><span lang="ru">.</span></p>
+
+<blockquote>
+	<p><code><b>procedure</b> DoOnVector(dx,dy: integer); </code></p>
+</blockquote>
+<p><span lang="ru">Перемещает перо Чертежника-постановщика заданий в точку с 
+координатами </span> <code>(x</code>,<span lang="ru"> </span><code>y)</code><span lang="ru">.</span></p>
+
+<blockquote>
+	<p><code><b>procedure</b> DoPenUp; </code></p>
+</blockquote>
+<p><span lang="ru">Поднимает перо Чертежника-постановщика заданий.</span></p>
+
+<blockquote>
+	<p><code><b>procedure</b> DoPenDown; </code></p>
+</blockquote>
+<p><span lang="ru">Опускает перо Чертежника-постановщика заданий.</span></p>
+
+<blockquote>
+	<p><code><b>procedure</b> TaskText(s: string); </code></p>
+</blockquote>
+<p><span lang="ru">Задает имя и формулировку задания в строке </span><code>s</code><span lang="ru">.
+</span></p>
+
+<blockquote>
+<p><code><b>procedure</b> RegisterGroup(name,description,unitname: string; count: integer); </code></p>
+</blockquote>
+<p>Обеспечивает автоматическую регистрацию новой группы заданий в программном модуле <b>PT4Load</b>.
+В результате имя данной группы будет отображаться в окне модуля <b>PT4Load</b> в списке групп, связанных с исполнителем
+Чертежник,
+что позволит создать программу-заготовку для выполнения любого задания этой группы.
+В качестве параметров процедуры указывается имя группы <code>name</code>,
+краткое описание группы <code>description</code>,
+имя модуля <code>unitname</code>, в котором описана группа, и количество заданий <code>count</code>.
+Имя группы заданий должно содержать не более 7 символов (цифр и латинских букв) и не должно оканчиваться цифрой,
+количество заданий не должно превышать 999.
+Процедура <code>RegisterGroup</code> должна
+вызываться в секции инициализации модуля, содержащего реализацию новой группы заданий для Чертежника.
+</p>
+<blockquote>
+<p><code><b>procedure</b> RegisterTask(name: string; p: TaskProcType);</code>
+</blockquote>
+<p>Связывает имя задания <code>name</code> с процедурой <code>p</code>, в которой реализовано данное задание.
+Данную процедуру следует вызывать для <i>каждого</i> задания.
+Подобно описанной выше процедуре <code>RegisterGroup</code>, процедура <code>RegisterTask</code> должна вызываться в секции инициализации
+модуля, содержащего реализацию новой группы заданий для Чертежника. Порядок вызова этих процедур может быть произвольным.
+</p>
+
+
+</body>
+
+</html>

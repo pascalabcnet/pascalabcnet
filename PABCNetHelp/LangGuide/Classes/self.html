@@ -1,0 +1,36 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Self">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Переменная Self</H1>
+<p>Внутри каждого нестатического метода неявно определяется переменная 
+<code>Self</code>, ссылающаяся на объект, вызвавший этот метод. 
+</p>
+<p>Например:</p>
+<blockquote>
+	<p><code><b>type</b> <br>
+&nbsp; A =<b> class</b><br>
+&nbsp;&nbsp;&nbsp; i: integer;<br>
+	&nbsp;&nbsp;&nbsp; <b>constructor</b> Create(i: integer);<br>
+&nbsp;&nbsp;&nbsp; <b>begin<br>
+	</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Self.i := i;<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp; <b>end</b>;</code></p>
+</blockquote>
+<p>В момент вызова конструктора <code>Create</code>
+объект будет уже создан. Конструкция <code>Self.i</code> 
+ссылается на поле <code>i</code> этого объекта, а не на 
+параметр <code>i</code> функции <code>Create</code>. Фактически в любом 
+нестатическом методе перед именем любого поля и методу этого класса неявно 
+присутствует <code>Self.</code></p>
+</body>
+
+</html>

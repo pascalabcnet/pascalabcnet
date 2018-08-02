@@ -1,0 +1,136 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="procedure">
+<param name="Keyword" value="function">
+<param name="Keyword" value="Result">
+<param name="Keyword" value="Процедура">
+<param name="Keyword" value="Функция">
+<param name="Keyword" value="Подпрограмма">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+
+<H1>Процедуры и функции: обзор</H1>
+<h2>Что такое процедуры и функции</h2>
+<p>Процедура или функция представляет собой последовательность 
+операторов, которая имеет имя, список параметров и может быть вызвана из 
+различных частей программы. Функции, в отличие от процедур, в результате своего 
+выполнения возвращают значение, которое может быть использовано 
+в выражении. Для единообразия функции и процедуры называются
+<i>подпрограммами</i>.</p>
+<h2>Описание процедур и функций</h2>
+<p>Любая используемая в программе процедура или функция должна быть 
+предварительно описана в разделе описаний.</p>
+<p>Описание процедуры имеет вид:</p>
+<blockquote>
+	<p><code><b>procedure</b> </code><code class="codeit">имя</code><code>(</code><code class="codeit">список 
+	формальных параметров</code><code>);<br>
+	</code><code class="codeit">раздел описаний </code><code><br>
+	<b>begin</b><br>
+	&nbsp; </code><code class="codeit">операторы </code><code><br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p>Описание функции имеет вид:</p>
+<blockquote>
+	<p><code><b>function</b> </code><code class="codeit">имя</code><code>(</code><code class="codeit">список 
+	формальных параметров</code><code>):
+	</code><code class="codeit">тип возвращаемого значения</code><code>;<br>
+	</code><code class="codeit">раздел описаний </code><code><br>
+	<b>begin</b><br>
+	&nbsp; </code><code class="codeit">операторы </code><code><br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p> Операторы подпрограммы, окаймленные 
+операторными скобками <code><b>begin</b></code>/<code><b>end</b></code>,
+называются <i>телом</i> этой подпрограммы.</p>
+<p class="ptprogramup">Список формальных параметров вместе с 
+окружающими скобками может отсутствовать. Он состоит из одной или нескольких 
+секций, разделенных символом &quot;<code>;</code>&quot;. 
+Каждая секция состоит из списка переменных, перечисляемых через запятую, после 
+которого следуют двоеточие и тип. Каждая секция может предваряться ключевым 
+словом <code><b>var</b></code> или <code><b>const</b></code>, что указывает на то, что параметры 
+передаются по ссылке (см.п. <a href="params.html">Параметры процедур и функций</a>). 
+Тип формального параметра должен быть либо именем, либо динамическим массивом, 
+либо множеством, либо процедурной переменной (для последних трех типов имеет 
+место <a href="../Types/typecompatibility.html">структурная эквивалентность типов</a>).</p>
+<p>Раздел описаний процедуры
+или функции устроен так же, как и <a href="../_ProgrStruct_Defs/index_progrstruct.html">раздел описаний</a> основной 
+программы. Здесь описываются так называемые
+<b><font color="#FF0000">
+<i>локальные</i></font></b> переменные и константы, типы (за исключением классов - классы 
+можно описывать только глобально) 
+а также 
+вложенные процедуры и функции. Все такие локальные объекты доступны лишь внутри 
+данной подпрограммы и не видны извне.</p>
+<p >В разделе описаний подпрограммы можно описывать другие 
+подпрограммы. Исключение составляют методы класса, описываемые непосредственно в 
+теле класса: в них нельзя описывать вложенные подпрограммы ввиду синтаксической 
+неоднозначности.</p>
+<p>Например:</p>
+<blockquote>
+	<p><code><b>procedure</b> DoAdd(a,b: real; <b>var</b> res: real);<br>
+	<b>begin<br>
+	</b>&nbsp; res := a + b;<br>
+	<b>end</b>;</code></p>
+</blockquote>
+<h2>Вызов подпрограммы</h2>
+<p>Подпрограмма один раз описывается и может быть многократно вызвана. Для 
+вызова процедуры используется <a href="../Operators/proccall.html">оператор 
+вызова процедуры</a>:</p>
+<blockquote>
+	<p><code>
+	<b>begin<br>
+	</b>&nbsp; <strong>var</strong> x := ReadInteger;<br>&nbsp; <strong>var</strong> 
+	y := ReadInteger;<br>&nbsp; var res: integer;<br>&nbsp; DoAdd(x,y,res);<br>&nbsp; 
+	Print(res);&nbsp; <br>&nbsp; DoAdd(2*x,y,res);<br>&nbsp; Print(res);&nbsp;
+	<br><b>end</b>;</code></p>
+</blockquote>
+<p>&nbsp;Для вызова функции используется
+<a href="../Operations_Expressions/funccall.html">выражение вызова функции</a>.</p>
+<h2>Переменная Result</h2>
+<p>Внутри тела любой функции определена специальная переменная с именем <code>Result</code>, 
+которая хранит результат вычисления функции. Ее тип совпадает с типом 
+возвращаемого значения функции. Например:</p>
+<blockquote>
+	<p ><code><b>function </b>Sum(a,b: real): real;<br>
+	<b>begin<br>
+&nbsp; </b>Result := a + b;<br>
+	<b>end;</b></code></p>
+	<p ><code><b>function</b> MinElement(a: <b>
+	array of</b> real): real;<br>
+	<b>begin</b><br>
+&nbsp; Result := real.MaxValue;<br>
+&nbsp; <b>foreach</b> <strong>var </strong>x <b>in</b>
+	a <b>do</b><br>
+&nbsp;&nbsp;&nbsp; <b>if</b> x &lt; Result <b>then</b> 
+	<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result := x;<br>
+	<b>end</b>;</code></p>
+	<p ><code><strong>begin</strong><br>&nbsp; var a := Seq(1,5,3);<br>&nbsp; 
+	writeln(MinElement(a) + Sum(2,3));<br><strong>end</strong>.</code></p>
+</blockquote>
+<p >Если внутри функции не присвоить переменной <code>Result</code> некоторое 
+значение, то функция вернет в результате своего вызова непредсказуемое значение.</p>
+<h2 >Упрощенный синтаксис описания подпрограмм</h2>
+<p >В <span lang="en-us">PascalABC.NET </span>имеется упрощенный синтаксис 
+описания однооператорных процедур: </p>
+<blockquote>
+	<p><code><b>procedure</b> <span lang="en-us">WriteStar := write('*');</span></code></p>
+</blockquote>
+<p >Аналогичный синтаксис имеется для функций, вычисляющих одно выражение:</p>
+<blockquote>
+	<p ><code><b>function</b> Add(a,b: real): real<span lang="en-us"> := </span>a + b;</code></p>
+</blockquote>
+<p >При этом в ряде случаев для возвращаемого значения функции возможен автовывод типов:</p>
+<blockquote>
+	<p ><code><b>function</b> Add(a,b: real)<span lang="en-us"> := </span>a + b;</code></p>
+</blockquote>
+</body>
+
+</html>

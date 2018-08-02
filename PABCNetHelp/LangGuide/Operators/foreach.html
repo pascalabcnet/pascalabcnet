@@ -1,0 +1,78 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="foreach">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Оператор цикла foreach</H1>
+<p>Оператор цикла <code><b>foreach</b></code> имеет одну из следующих 
+форм:</p>
+<blockquote>
+	<p><code><b>foreach</b> </code><code class="codeit">переменная</code><code>
+	<b>in</b> </code><code class="codeit">контейнер</code><code> <b>do</b><br>
+	&nbsp; </code><code class="codeit">оператор</code></p>
+</blockquote>
+<p>или</p>
+<blockquote>
+	<p><code><b>foreach</b> </code><code class="codeit">переменная</code><code>:</code><code class="codeit"> 
+	тип</code><code> <b>in</b> </code><code class="codeit">контейнер</code><code>
+	<b>do</b><br>
+	&nbsp; </code><code class="codeit">оператор</code></p>
+</blockquote>
+<p>или</p>
+<blockquote>
+	<p><code><b>foreach</b> <strong>var</strong> </code><code class="codeit">переменная</code><code> <b>in</b> </code><code class="codeit">контейнер</code><code>
+	<b>do</b><br>
+	&nbsp; </code><code class="codeit">оператор</code></p>
+</blockquote>
+<p>В качестве контейнера может фигурировать динамический массив, 
+строка, множество, а также любой контейнер, удовлетворяющий интерфейсу 
+<code>IEnumerable</code> или 
+<code>IEnumerable&lt;T&gt;</code>(например, <code>List&lt;T&gt;</code>,
+<code>Dictionary&lt;Key,Value&gt;</code> и т.д.). Переменная цикла 
+должна иметь тип, <strong>совпадающий</strong> с типом элементов контейнера 
+(если контейнер удовлетворяет интерфейсу 
+<code>IEnumerable</code>, то это тип <code>object</code>). В последней форме
+<code>foreach</code> тип переменной цикла автовыводится по типу элементов 
+контейнера.</p>
+<p>Переменная цикла пробегает все 
+значения элементов контейнера и для каждого значения переменной 
+цикла выполняется тело цикла. Изменение переменной цикла 
+внутри тела цикла не меняет элементы контейнера, т.е. они доступны только на 
+чтение.</p>
+<p>Например:</p>
+<blockquote>
+	<p><code><b>var</b> <br>
+&nbsp; ss: <b>set of</b> string := ['Иванов','Петров','Сидоров'];<b><br>
+	</b>&nbsp; a: <b>array of</b> integer := (3,4,5);<br>
+&nbsp; b: <b>array</b> [1..5] <b>of</b> integer := (1,3,5,7,9);<br>
+&nbsp; l := new List&lt;real&gt;;<br>
+	<b>begin<br>
+	&nbsp;
+	foreach</b> s: string <b>in</b> ss <b>do</b><br>
+&nbsp;&nbsp;&nbsp; write(s,' ');<br>
+&nbsp; writeln;<br>
+	<b>&nbsp;
+	foreach</b> x: integer <b>in</b> a <b>do</b><br>
+&nbsp;&nbsp;&nbsp; write(x,' ');<br>
+	&nbsp; writeln;<br>
+	<b>&nbsp;
+	foreach</b> <strong>var </strong>x <b>in</b> b <b>do</b><br>
+&nbsp;&nbsp;&nbsp; write(x,' ');<br>
+	&nbsp; writeln;<br>
+	<b>&nbsp;
+	foreach</b> <strong>var</strong> r <b>in</b> l <b>do</b><br>
+&nbsp;&nbsp;&nbsp; write(r,' ');<br>
+	<b>end</b>.<br>
+&nbsp;</code></p>
+</blockquote>
+<p>&nbsp;</p>
+</body>
+
+</html>

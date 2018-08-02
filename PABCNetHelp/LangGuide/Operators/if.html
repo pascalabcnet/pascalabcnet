@@ -1,0 +1,68 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="if">
+<param name="Keyword" value="then">
+<param name="Keyword" value="else">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Условный оператор</H1>
+<p>Условный оператор имеет <i>полную</i> и <i>краткую</i> формы.
+</p>
+<p><i>Полная форма условного оператора</i> выглядит следующим 
+образом:</p>
+<blockquote>
+	<p><b><code>if</code></b> <code class="codeit">условие</code> <code><b>then</b></code> <code class="codeit">
+	оператор1</code><br>
+	<code><b>else</b></code> <code class="codeit">оператор2</code> </p>
+</blockquote>
+В качестве условия указывается некоторое логическое выражение. Если условие оказывается 
+истинным, то выполняется <code class="codeit">оператор1</code>, в противном 
+случае выполняется <code class="codeit">оператор2</code>.<p><i>
+Краткая</i> форма условного оператора имеет вид:</p>
+<blockquote>
+	<p><b><code>if</code></b> <code class="codeit">условие</code> <code><b>then</b></code> <code class="codeit">
+	оператор</code></p>
+</blockquote>
+<p>Если условие оказывается истинным, то выполняется <code class="codeit">
+оператор</code>, в противном случае происходит переход к следующему оператору 
+программы.</p>
+<p>В случае конструкции вида</p>
+<blockquote>
+	<p><b><code>if</code></b> <code class="codeit">условие1</code>
+	<code><b>then</b></code> <b><code><br>
+	&nbsp; </span>if</code></b> <code class="codeit">условие2</code>
+	<code><b>then</b></code> <code class="codeit">оператор1</code><br>
+	<code><b>&nbsp; else</b></code> <code class="codeit">
+	оператор2</code> </p>
+</blockquote>
+<p><code><b>else</b></code> всегда относится к ближайшему 
+предыдущему оператору <code><b>if</b></code>, для которого ветка <code><b>else</b></code> 
+еще не указана. Если в предыдущем примере требуется, чтобы
+<code><b>else</b></code> относилась к первому оператору
+<code><b>if</b></code>, то необходимо использовать 
+составной оператор:</p>
+<blockquote>
+	<p><b><code>if</code></b> <code class="codeit">условие1</code>
+	<code><b>then<br>
+	begin</b></code> <b><code><br>
+	&nbsp; if</code></b> <code class="codeit">условие2</code>
+	<code><b>then</b></code> <code class="codeit">оператор1<br>
+	</code><code><b>end</b></code><br>
+	<code><b>else</b></code> <code class="codeit">оператор2</code> </p>
+</blockquote>
+<p>Например:</p>
+<blockquote>
+	<p><code><b>if</b> a&lt;b <b>then</b><br>
+&nbsp; min := a<br>
+	<b>else</b> min := b;</code></p>
+</blockquote>
+</body>
+
+</html>

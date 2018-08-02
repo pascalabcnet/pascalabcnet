@@ -1,0 +1,26 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="FilePos">
+<param name="Keyword" value="FileSize">
+<param name="Keyword" value="Reset">
+<param name="Keyword" value="Rewrite">
+<param name="Keyword" value="Seek">
+<param name="Keyword" value="Truncate"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Подпрограммы для работы с двоичными файлами</H1>
+<table cellpadding=3><tr><td><code><b>function</b> FilePos(f: двоичный файл): int64;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текущую позицию файлового указателя в двоичном файле</td></tr>
+<tr><td><code><b>function</b> FileSize(f: двоичный файл): int64;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество элементов в двоичном файле</td></tr>
+<tr><td><code><b>procedure</b> Reset(f: двоичный файл);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает двоичный файл на чтение и запись.Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file</td></tr>
+<tr><td><code><b>procedure</b> Reset(f: двоичный файл; name: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с файлом name на диске и открывает двоичный файл на чтение и запись.Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file</td></tr>
+<tr><td><code><b>procedure</b> Rewrite(f: двоичный файл);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает двоичный файл на чтение и запись, при этом обнуляя его содержимое. Если файл существовал, он обнуляется.Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file</td></tr>
+<tr><td><code><b>procedure</b> Rewrite(f: двоичный файл; name: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Связывает файловую переменную f с файлом name на диске и открывает двоичный файл на чтение и запись, при этом обнуляя его содержимое.Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file</td></tr>
+<tr><td><code><b>procedure</b> Seek(f: двоичный файл; n: int64);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает текущую позицию файлового указателя в двоичном файле на элемент с данным номером</td></tr>
+<tr><td><code><b>procedure</b> Truncate(f: двоичный файл);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Усекает двоичный файл, отбрасывая все элементы с позиции файлового указателя.Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file</td></tr>
+</table></body></HTML>

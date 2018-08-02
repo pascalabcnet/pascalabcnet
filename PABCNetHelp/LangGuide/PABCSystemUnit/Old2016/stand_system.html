@@ -1,0 +1,261 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="ReadLines">
+<param name="Keyword" value="ReadAllLines">
+<param name="Keyword" value="ReadAllText">
+<param name="Keyword" value="WriteLines">
+<param name="Keyword" value="WriteAllLines">
+<param name="Keyword" value="WriteAllText">
+<param name="Keyword" value="GetDir">
+<param name="Keyword" value="ChDir">
+<param name="Keyword" value="MkDir">
+<param name="Keyword" value="RmDir">
+<param name="Keyword" value="CreateDir">
+<param name="Keyword" value="DeleteFile">
+<param name="Keyword" value="GetCurrentDir">
+<param name="Keyword" value="RemoveDir">
+<param name="Keyword" value="RenameFile">
+<param name="Keyword" value="SetCurrentDir">
+<param name="Keyword" value="ChangeFileNameExtension">
+<param name="Keyword" value="FileExists">
+<param name="Keyword" value="DiskFree">
+<param name="Keyword" value="DiskSize">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Подпрограммы для работы с файлами, каталогами и дисками</H1>
+<table border=0 CELLPADDING=5>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadLines(path: string): <strong>
+		sequence of</strong> string; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает строки из файла и превращает их в последовательность 
+		строк
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadLines(path: string; en: Encoding):
+		<strong>sequence of</strong> string; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает строки из файла с кодировкой en и превращает их в 
+		последовательность строк
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadAllLines(path: string): <strong>
+		array of</strong> string; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает строки из файла в массив строк
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadAllLines(path: string; en: 
+		Encoding): <strong>array of</strong> string; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает строки из файла с кодировкой en в массив строк
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadAllText(path: string): string;
+		</code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает содержимое файла в строку
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadAllText(path: string; en: Encoding): 
+		string; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает содержимое файла с кодировкой en в строку</td>
+	</tr>
+	<tr>
+		<td>
+		<code>
+		<strong>procedure</strong> WriteLines(path: string; ss: <strong>sequence 
+		of</strong> string);
+</code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает новый файл, записывает в него строки из 
+		последовательности
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code>
+		<strong>procedure</strong> WriteLines(path: string; ss: <strong>sequence 
+		of</strong> string; en: Encoding);
+</code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает новый файл с кодировкой en, записывает в него строки из 
+		последовательности
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code>
+		<strong>procedure</strong> WriteAllLines(path: string; ss: <strong>array 
+		of</strong> string);
+</code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает новый файл, записывает в него строки из массива
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code>
+		<strong>procedure</strong> WriteAllLines(path: string; ss: <strong>array 
+		of</strong> string; en: Encoding);
+</code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает новый файл с кодировкой en, записывает в него строки из 
+		массива
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code>
+		<strong>procedure</strong> WriteAllText(path: string; s: string);
+</code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает новый файл, записывает в него содержимое строки
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code>
+		<strong>procedure</strong> WriteAllText(path: string; s: string; en: 
+		Encoding);
+</code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает новый файл с кодировкой en, записывает в него содержимое 
+		строки
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> EnumerateFiles(path: string; 
+		searchPattern: string := '*.*'): <strong>sequence of</strong> string;
+		</code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность имен файлов по заданному пути, 
+		соответствующих шаблону поиска
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> EnumerateAllFiles(path: string; 
+		searchPattern: string := '*.*'): <strong>sequence of</strong> string;
+		</code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность имен файлов по заданному пути, 
+		соответствующих шаблону поиска, включая подкаталоги
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> EnumerateDirectories(path: string):
+		<strong>sequence of</strong> string; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность имен каталогов по заданному пути
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> EnumerateAllDirectories(path: string):
+		<strong>sequence of</strong> string; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность имен каталогов по заданному пути, 
+		включая подкаталоги&nbsp;
+</td>
+	</tr>
+<tr><td>
+<code>
+<b>function</b> GetDir: string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текущий каталог
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> ChDir(s: string);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет текущий каталог
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> MkDir(s: string);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает каталог
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> RmDir(s: string);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет каталог
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> CreateDir(s: string): boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает каталог. Возвращает True, если каталог успешно создан
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> DeleteFile(s: string): boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет файл. Если файл не может быть удален, то возвращает False
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> GetCurrentDir: string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текущий каталог
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> RemoveDir(s: string): boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет каталог. Возвращает True, если каталог успешно удален
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> RenameFile(name, newname: string): boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переименовывает файл name, давая ему новое имя newname. Возвращает True, если файл успешно переименован
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> SetCurrentDir(s: string): boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавивает текущий каталог. Возвращает True, 
+если каталог успешно <span lang="ru">установлен</span>
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> ChangeFileNameExtension(name,newext: string): string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет расширение файла с именем name на newext
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> FileExists(name: string): boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если файл с именем name существует
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> DiskFree(diskname: string): int64;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает свободное место в байтах на диске с именем diskname
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> DiskSize(diskname: string): int64;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает размер в байтах на диске с именем diskname
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> DiskFree(disk: integer): int64;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает свободное место в байтах на диске disk. disk=0 - текущий диск, disk=1 - диск A: , disk=2 - диск B: и т.д.
+</td></tr>
+<tr>
+	<td>
+<code>
+<b>function</b> DiskSize(disk: integer): int64;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает размер в байтах на диске disk. disk=0 - текущий диск, disk=1 - диск A: , disk=2 - диск B: и т.д.
+</td>
+</tr>
+</table>
+</body></html>

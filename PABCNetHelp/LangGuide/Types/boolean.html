@@ -1,0 +1,41 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="boolean">
+<param name="Keyword" value="True">
+<param name="Keyword" value="False">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Логический тип</H1>
+<p>Значения логического типа 
+<code>boolean</code> занимают 1 байт и принимают одно из двух значений, задаваемых предопределенными 
+константами <code>True</code> (истина)
+и <code>False</code> (ложь). </p>
+<p>Для логического типа определены статические методы:</p>
+<blockquote>
+	<p><code>boolean.Parse(s)</code> - 
+	функция, конвертирующая строковое представление числа в значение типа <code>
+	boolean</code>. Если преобразование невозможно, то 
+	генерируется исключение;&nbsp; </p>
+	<p><code>boolean.TryParse(s,res)</code> - 
+	функция, конвертирующая строковое представление числа в значение типа <code>
+	boolean</code> и записывающая его в переменную <code>
+	res</code>. Если преобразование возможно, то возвращается 
+	значение <code>True</code>, в противном случае -
+	<code>False</code>.</p>
+</blockquote>
+<p>Кроме этого, определена экземплярная 
+функция <code>ToString</code>, возвращающая строковое 
+представление переменной типа <code>boolean</code>.</p>
+<p>Логический тип является <a href="index_types.html">порядковым</a>. В частности,
+<code>False</code>&lt;<code>True</code>, <code>Ord(False)</code>=0, <code>Ord(True)</code>=1.</p>
+<p>&nbsp;</p>
+</body>
+
+</html>

@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>ABCObjects: быстрое введение</H1>
+<hr>
+<p>Основными типами графических объектов, определенными в модуле
+<code>ABCObjects</code>, являются <code>RectangleABC</code>, <code>SquareABC</code>,
+<code>EllipseABC</code>, <code>CircleABC</code>, <code>TextABC</code>, <code>RegularPolygonABC</code>,
+<code>StarABC</code>, <code>PictureABC</code>, <code>MultiPictureABC</code>, <code>BoardABC</code> и <code>ContainerABC</code>. </p>
+<p>Типы графических объектов представляют собой классы, 
+состоящие из методов и свойств, а также нуждающиеся в конструировании перед 
+первым использованием. Изменение свойств влияет на внешний вид и поведение 
+графических объектов. Например, при изменении свойств <code>Width</code> и <code>Height</code> меняются 
+размеры графического объекта, при изменении свойства
+<code>Color</code> - цвет графического 
+объекта и т.д. Вызов методов 
+графического объекта возвращает или меняет его 
+характеристики. Например, при вызове метода <code>ToFront</code> 
+графический объект перемещается на передний план, а вызов метода <code>Intersect(g)</code> 
+возвращает, пересекается ли текущий объект с объектом <code>g</code>.</p>
+<p>Все графические объекты являются разновидностями класса
+<code>ObjectABC</code>, который содержит общие для всех 
+свойства и методы. </p>
+<p>Создадим два перекрывающихся графических объекта:</p>
+<blockquote>
+	<p><code><b>uses</b> ABCObjects,GraphABC;</code></p>
+	<p><code><b>var</b> <br>
+	&nbsp; r: RectangleABC; <br>
+	&nbsp; c: CircleABC;</code></p>
+	<p><code><b>begin</b> <br>
+&nbsp; r := <b>new</b> RectangleABC(70,50,200,100,clMoneyGreen); <br>
+&nbsp; c := <b>new </b>CircleABC(120,80,110,clBlue); <br>
+	<b>end</b>.</code></p>
+</blockquote>
+<p>После запуска программы увидим на экране следующее:</p>
+<blockquote>
+	<p><img border="0" src="images/ABC1.PNG" width="328" height="252"></p>
+</blockquote>
+<p>Поменяем некоторые свойства графических объектов и вызовем 
+метод MoveOn для окружности, дописав в 
+конец программы следующие строки:</p>
+<blockquote>
+	<p><code>r.Width := 150;<br>
+	c.Color := clRed;<br>
+	c.MoveOn(30,30);</code></p>
+</blockquote>
+<p>После запуска программы:</p>
+<blockquote>
+	<p><img border="0" src="images/ABC2.PNG" width="328" height="252"></p>
+</blockquote>
+<p>Добавим в конец программы следующие строки:</p>
+<blockquote>
+	<p><code>c.Number := 8;<br>
+	r.Text := 'Hello';<br>
+	r.ToFront;</code></p>
+</blockquote>
+<p>После запуска программы:</p>
+<blockquote>
+	<p><img border="0" src="images/ABC3.PNG" width="328" height="252"></p>
+</blockquote>
+</body>
+
+</html>

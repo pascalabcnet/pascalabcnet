@@ -1,0 +1,16 @@
+<html><head><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Join">
+</object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
+<body>
+<H1>Метод Join</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<tr><td>
+<code><b>function </b>Join&lt;TInner,Key,Res&gt;(inner: <b>sequence of</b> TInner; outerKeySelector: T-&gt;Key; innerKeySelector: TInner-&gt;TKey; resultSelector: (T,TInner)-&gt;Res): <b>sequence of</b> Res;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет две последовательности на основе сопоставления ключей в третью последовательность. Функция resultSelector задаёт проекцию элементов двух последовательностей с одинаковыми значениями ключа в элемент третьей последовательности.
+</td></tr>
+<tr><td>
+<code><b>function </b>Join&lt;TInner,Key,Res&gt;(inner: <b>sequence of</b> TInner; outerKeySelector: T-&gt;Key; innerKeySelector: TInner-&gt;TKey; resultSelector: (T,TInner)-&gt;Res; comparer: System.Collections.Generic.IEqualityComparer&lt;Key&gt;): <b>sequence of</b> Res;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет две последовательности на основе сопоставления ключей в третью последовательность. Функция resultSelector задаёт проекцию элементов двух последовательностей с одинаковыми значениями ключа в элемент третьей последовательности. Для сравнения ключей используется компаратор comparer.
+</td></tr>
+</table>
+<h2>Пример </h2><blockquote><code></code></blockquote>
+</body>

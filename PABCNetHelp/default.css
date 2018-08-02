@@ -1,0 +1,88 @@
+BODY,
+TABLE,
+TD {
+        font-family: Arial;
+        background-color: #ffffff;
+        font-size: 9pt;
+}
+
+BLOCKQUOTE {
+        margin-top: 6pt;
+        margin-bottom: 6pt;
+        margin-left: 20pt;
+}
+
+dfn {
+        color: #006000;
+        font-weight:bold;
+}
+
+code {
+        color: #000080;
+        font-size: 10pt;
+}
+
+code.codeit {
+        color: #000000;
+        font-family: Times;
+        font-style: italic;
+        font-size: 10pt;
+}
+
+H1 {
+        font-family: Arial;
+        font-weight: bold;
+        margin-top: 12pt;
+        margin-bottom: 6pt;
+        font-size: 12pt;
+        color: #000080;
+}
+
+H2 {
+        font-family: Arial;
+        font-weight: normal;
+        margin-bottom: 2pt;
+        margin-top: 6pt;
+        font-size: 11pt;
+        color: #0000A0;
+}
+
+H3 {
+        font-weight: bold;
+        margin-bottom: 2pt;
+        margin-top: 6pt;
+        font-size: 10pt;
+        color: #000000;
+}
+
+H4 {
+        font-weight: bold;
+        color: #000080;
+        margin-top: 6pt;
+        margin-bottom: 2pt;
+        font-size: 10pt;
+}
+
+H5 {
+        font-size: 10.0pt;
+}
+
+H6 {
+        font-size: 10.0pt;
+}
+
+P {
+        font-family: Arial;
+        margin-top: 6pt;
+        margin-bottom: 0pt;
+        font-family: Arial, sans-serif;
+        font-size: 9pt;
+}
+
+OL,
+UL {
+        margin-top: 3pt;
+        margin-bottom: 0pt;
+        font-size: 9pt;
+        font-family: Arial, sans-serif;
+}

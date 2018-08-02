@@ -1,0 +1,40 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Пустой оператор">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Пустой оператор</H1>
+Пустой оператор не включает никаких символов, не выполняет 
+никаких действий и используется в двух случаях:
+<p>1. Для 
+использования символа &quot;;&quot; после последнего оператора в 
+блоке:</p>
+<blockquote>
+	<p><b><code>begin<br>
+	&nbsp; </b>a := 1;<b><br>
+	</b>&nbsp; b := a;<b><br>
+	end </b> </code> </p>
+</blockquote>
+Поскольку в языке Паскаль символ &quot;;&quot; 
+разделяет операторы, то в приведенном выше коде считается, что после последней
+&quot;;&quot; находится пустой оператор. Таким образом, &quot;;&quot; 
+перед end в блоке можно либо ставить, либо нет.
+<p>2. Для пометки места, следующего за последним оператором в блоке:</p>
+<blockquote>
+	<p><code><b>label</b> a;<br>
+	<b>begin<br>
+&nbsp; goto</b> a;<b><br>
+	</b>&nbsp; x := 1;<b><br>
+	</b>a:<b><br>
+	end </b> </code> </p>
+</blockquote>
+</body>
+
+</html>

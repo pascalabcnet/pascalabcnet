@@ -1,0 +1,29 @@
+<html><head><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Sum">
+<param name="Keyword" value="Average">
+</object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
+<body>
+<H1>Методы Sum, Average</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<tr><td>
+<code><b>function </b>Sum(): число;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вычисляет сумму последовательности значений числового типа.
+</td></tr>
+<tr><td>
+<code><b>function </b>Sum(selector: T-&gt;число): число;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вычисляет сумму последовательности значений числового типа, получаемой в результате применения функции преобразования к каждому элементу входной последовательности.
+</td></tr>
+<tr><td>
+<code><b>function </b>Average(): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вычисляет среднее для последовательности значений числового типа.
+</td></tr>
+<tr><td>
+<code><b>function </b>Average(selector: T-&gt;число): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вычисляет среднее для последовательности значений числового типа, получаемой в результате применения функции преобразования к каждому элементу входной последовательности.
+</td></tr>
+</table>
+<h2>Пример </h2><blockquote><code><strong>begin</strong><br>&nbsp; <strong>var</strong> 
+	a := Lst(1,3,5,6);<br>&nbsp; Println(a.Sum); <br>&nbsp; <strong>var</strong> 
+	b := 
+	Arr(('Иванов',20),('Попов',21),('Авилов',28));<br>&nbsp; Println(b.Average(x 
+	-&gt; x[1]));&nbsp;&nbsp; <br><strong>end</strong>.</code></blockquote>
+</body>

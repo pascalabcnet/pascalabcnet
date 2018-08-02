@@ -1,0 +1,75 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Partition">
+<param name="Keyword" value="Range">
+<param name="Keyword" value="ReadSeqInteger">
+<param name="Keyword" value="ReadSeqIntegerWhile">
+<param name="Keyword" value="ReadSeqReal">
+<param name="Keyword" value="ReadSeqRealWhile">
+<param name="Keyword" value="ReadSeqString">
+<param name="Keyword" value="ReadSeqStringWhile">
+<param name="Keyword" value="Seq">
+<param name="Keyword" value="SeqFill">
+<param name="Keyword" value="SeqGen">
+<param name="Keyword" value="SeqRandom">
+<param name="Keyword" value="SeqRandomInteger">
+<param name="Keyword" value="SeqRandomReal">
+<param name="Keyword" value="SeqWhile"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Подпрограммы для генерации последовательностей</H1>
+<table cellpadding=3><tr><td><code><b>function</b> Partition(a, b: real; n: integer): <b>sequence </b>  <b>of</b> real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей</td></tr>
+<tr><td><code><b>function</b> Range(a, b: integer): <b>sequence </b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность целых от a до b</td></tr>
+<tr><td><code><b>function</b> Range(c1, c2: char): <b>sequence </b>  <b>of</b> char;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность символов от c1 до c2</td></tr>
+<tr><td><code><b>function</b> Range(a, b: real; n: integer): <b>sequence </b>  <b>of</b> real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей (Используйте Partition)</td></tr>
+<tr><td><code><b>function</b> Range(a, b, step: integer): <b>sequence </b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность целых от a до b с шагом step</td></tr>
+<tr><td><code><b>function</b> ReadSeqInteger(n: integer): <b>sequence </b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n целых, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadSeqInteger(prompt: string; n: integer): <b>sequence </b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает последовательность из n целых, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadSeqIntegerWhile(cond: integer-&gt;boolean): <b>sequence </b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность целых, вводимых с клавиатуры пока выполняется определенное условие</td></tr>
+<tr><td><code><b>function</b> ReadSeqIntegerWhile(prompt: string; cond: integer-&gt;boolean): <b>sequence </b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает последовательность целых, вводимых с клавиатуры пока выполняется определенное условие</td></tr>
+<tr><td><code><b>function</b> ReadSeqReal(n: integer): <b>sequence </b>  <b>of</b> real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n вещественных, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadSeqReal(prompt: string; n: integer): <b>sequence </b>  <b>of</b> real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает последовательность из n вещественных, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadSeqRealWhile(cond: real-&gt;boolean): <b>sequence </b>  <b>of</b> real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность вещественных, вводимых с клавиатуры пока выполняется определенное условие</td></tr>
+<tr><td><code><b>function</b> ReadSeqRealWhile(prompt: string; cond: real-&gt;boolean): <b>sequence </b>  <b>of</b> real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает последовательность вещественных, вводимых с клавиатуры пока выполняется определенное условие</td></tr>
+<tr><td><code><b>function</b> ReadSeqString(n: integer): <b>sequence </b>  <b>of</b> string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n строк, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadSeqString(prompt: string; n: integer): <b>sequence </b>  <b>of</b> string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает последовательность из n строк, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadSeqStringWhile(cond: string-&gt;boolean): <b>sequence </b>  <b>of</b> string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность строк, вводимых с клавиатуры пока выполняется определенное условие</td></tr>
+<tr><td><code><b>function</b> ReadSeqStringWhile(prompt: string; cond: string-&gt;boolean): <b>sequence </b>  <b>of</b> string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает последовательность строк, вводимых с клавиатуры пока выполняется определенное условие</td></tr>
+<tr><td><code><b>function</b> Seq&lt;T&gt;(<b>params</b> a: <b>array</b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность указанных элементов</td></tr>
+<tr><td><code><b>function</b> SeqFill&lt;T&gt;(count: integer; x: T): <b>sequence </b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов x</td></tr>
+<tr><td><code><b>function</b> SeqGen&lt;T&gt;(count: integer; f: integer-&gt;T): <b>sequence </b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов, заполненных значениями f(i)</td></tr>
+<tr><td><code><b>function</b> SeqGen&lt;T&gt;(count: integer; f: integer-&gt;T; from: integer): <b>sequence </b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов, заполненных значениями f(i), начиная с i=from</td></tr>
+<tr><td><code><b>function</b> SeqGen&lt;T&gt;(count: integer; first: T; next: T-&gt;T): <b>sequence </b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов, начинающуюся с first, с функцией next перехода от предыдущего к следующему</td></tr>
+<tr><td><code><b>function</b> SeqGen&lt;T&gt;(count: integer; first, second: T; next: (T,T) -&gt;T): <b>sequence </b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов, начинающуюся с first и second,с функцией next перехода от двух предыдущих к следующему</td></tr>
+<tr><td><code><b>function</b> SeqRandom(n: integer := 10; a: integer := 0; b: integer := 100): <b>sequence </b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n случайных целых элементов</td></tr>
+<tr><td><code><b>function</b> SeqRandomInteger(n: integer := 10; a: integer := 0; b: integer := 100): <b>sequence </b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n случайных целых элементов</td></tr>
+<tr><td><code><b>function</b> SeqRandomReal(n: integer := 10; a: real := 0; b: real := 10): <b>sequence </b>  <b>of</b> real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n случайных вещественных элементов</td></tr>
+<tr><td><code><b>function</b> SeqWhile&lt;T&gt;(first: T; next: T-&gt;T; pred: T-&gt;boolean): <b>sequence </b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность элементов с начальным значением first,функцией next перехода от предыдущего к следующему и условием pred продолжения последовательности</td></tr>
+<tr><td><code><b>function</b> SeqWhile&lt;T&gt;(first, second: T; next: (T,T) -&gt;T; pred: T-&gt;boolean): <b>sequence </b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность элементов, начинающуюся с first и second,с функцией next перехода от двух предыдущих к следующему и условием pred продолжения последовательности</td></tr>
+</table></body></HTML>

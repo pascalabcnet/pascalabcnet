@@ -1,0 +1,50 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Chr">
+<param name="Keyword" value="ChrAnsi">
+<param name="Keyword" value="ChrUnicode">
+<param name="Keyword" value="Dec">
+<param name="Keyword" value="Inc">
+<param name="Keyword" value="LowCase">
+<param name="Keyword" value="LowerCase">
+<param name="Keyword" value="Ord">
+<param name="Keyword" value="OrdAnsi">
+<param name="Keyword" value="OrdUnicode">
+<param name="Keyword" value="Pred">
+<param name="Keyword" value="Succ">
+<param name="Keyword" value="UpCase">
+<param name="Keyword" value="UpperCase"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Подпрограммы для работы с символами</H1>
+<table cellpadding=3><tr><td><code><b>function</b> Chr(a: word): char;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует код в символ в кодировке Unicode</td></tr>
+<tr><td><code><b>function</b> ChrAnsi(a: byte): char;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует код в символ в кодировке Windows</td></tr>
+<tr><td><code><b>function</b> ChrUnicode(a: word): char;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует код в символ в кодировке Unicode</td></tr>
+<tr><td><code><b>procedure</b> Dec(<b>var</b> c: char);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Уменьшает код символа c на 1</td></tr>
+<tr><td><code><b>procedure</b> Dec(<b>var</b> c: char; n: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Уменьшает код символа c на n</td></tr>
+<tr><td><code><b>procedure</b> Inc(<b>var</b> c: char);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Увеличивает код символа c на 1</td></tr>
+<tr><td><code><b>procedure</b> Inc(<b>var</b> c: char; n: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Увеличивает код символа c на n</td></tr>
+<tr><td><code><b>function</b> LowCase(ch: char): char;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует символ в нижний регистр</td></tr>
+<tr><td><code><b>function</b> LowerCase(ch: char): char;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует символ в нижний регистр</td></tr>
+<tr><td><code><b>function</b> Ord(a: char): word;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует символ в код в кодировке Unicode</td></tr>
+<tr><td><code><b>function</b> OrdAnsi(a: char): byte;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует символ в код в кодировке Windows</td></tr>
+<tr><td><code><b>function</b> OrdUnicode(a: char): word;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует символ в код в кодировке Unicode</td></tr>
+<tr><td><code><b>function</b> Pred(x: char): char;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает предшествующий x символ</td></tr>
+<tr><td><code><b>function</b> Succ(x: char): char;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующий за x символ</td></tr>
+<tr><td><code><b>function</b> UpCase(ch: char): char;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует символ в верхний регистр</td></tr>
+<tr><td><code><b>function</b> UpperCase(ch: char): char;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует символ в верхний регистр</td></tr>
+</table></body></HTML>

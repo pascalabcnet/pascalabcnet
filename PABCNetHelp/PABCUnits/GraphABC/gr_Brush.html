@@ -1,0 +1,96 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="SetBrushColor">
+<param name="Keyword" value="BrushColor">
+<param name="Keyword" value="SetBrushStyle">
+<param name="Keyword" value="BrushStyle">
+<param name="Keyword" value="SetBrushHatch">
+<param name="Keyword" value="BrushHatch">
+<param name="Keyword" value="SetHatchBrushBackgroundColor">
+<param name="Keyword" value="HatchBrushBackgroundColor">
+<param name="Keyword" value="SetGradientBrushSecondColor">
+<param name="Keyword" value="GradientBrushSecondColor">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Подпрограммы для работы с кистью</H1>
+<p>Рисование внутренностей замкнутых областей осуществляется текущей 
+кистью. Доступ к 
+свойствам текущей кисти можно осуществлять как в процедурном, так и в 
+объектно-ориентированном стиле.</p>
+<p>Процедуры и функции для доступа к свойствам кисти 
+сгруппированы парами: если <code>Prop</code> - имя 
+свойства кисти, то функция <code>PenProp</code> 
+возвращает значение этого свойства, а процедура <code>SetPenProp(p)</code> 
+устанавливает это свойство:</p>
+<table border=0 CELLPADDING=5>
+<tr><td>
+<code>
+<b>procedure</b> SetBrushColor(c: Color);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает цвет текущей кисти
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> BrushColor: Color;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цвет текущей кисти
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> SetBrushStyle(bs: <a href="gr_BrushStyle.html">BrushStyleType</a>);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает стиль текущей кисти.
+Константы стилей кисти приведены
+<a href="gr_BrushStyle.html">здесь</a></td></tr>
+<tr><td>
+<code>
+<b>function</b> BrushStyle: <a href="gr_BrushStyle.html">BrushStyleType</a>;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает стиль текущей кисти.
+Константы стилей кисти приведены
+<a href="gr_BrushStyle.html">здесь</a>
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> SetBrushHatch(bh: <a href="gr_BrushHatchStyle.html">HatchStyle</a>);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает штриховку текущей кисти.
+Константы стилей штриховки кисти приведены
+<a href="gr_BrushHatchStyle.html">здесь</a></td></tr>
+<tr><td>
+<code>
+<b>function</b> BrushHatch: <a href="gr_BrushHatchStyle.html">HatchStyle</a>;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает штриховку текущей кисти.
+Константы стилей штриховки кисти приведены
+<a href="gr_BrushHatchStyle.html">здесь</a>
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> SetHatchBrushBackgroundColor(c: Color);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает цвет заднего плана текущей штриховой кисти
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> HatchBrushBackgroundColor: Color;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цвет заднего плана текущей штриховой кисти
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> SetGradientBrushSecondColor(c: Color);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает второй цвет текущей градиентной кисти
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> GradientBrushSecondColor: Color;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает второй цвет текущей градиентной кисти
+</td></tr>
+</table>
+<p>Кроме этого, можно изменять свойства текущей кисти через
+<a href="gr_BrushClass.html">объект Brush</code></a>.</p>
+</body></html>

@@ -1,0 +1,75 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+<style type="text/css">
+.auto-style1 {
+	color: #000080;
+}
+</style>
+</head>
+
+<body>
+<H1>Перечислимый и диапазонный типы</H1>
+<p><i><b><font color="#FF0000">Перечислимый</font></b></i> тип определяется упорядоченным набором идентификаторов.</p>
+<blockquote>
+	<p><code><b>type</b> typeName = (value1, value2, ..., valuen);</code></p>
+</blockquote>
+<p>Значения перечислимого типа занимают 4 байта. Каждое значение <code>value</code> 
+представляет собой константу типа <code>typeName</code>, попадающую в текущее 
+пространство имен.</p>
+<p>Например: </p><blockquote>
+	<p><code><b>type <br>
+&nbsp; </b>Season = (Winter,Spring,Summer,Autumn);<br>
+&nbsp; DayOfWeek = (Mon,Tue,Wed,Thi,Thr,Sat,Sun); </code></p>
+</blockquote>
+<p>К константе перечислимого типа можно обращаться непосредственно по имени, а 
+можно использовать запись <code>typeName.value</code>, в которой имя константы 
+уточняется именем перечислимого типа, к которому она принадлежит:</p>
+<blockquote>
+	<p><code><b>var</b> a: DayOfWeek;<br>
+	a := Mon;<br>
+	a := DayOfWeek.Wed;</code></p>
+</blockquote>
+<p>Значения перечислимого типа можно сравнивать на &lt;:</p>
+<blockquote>
+	<p><code>DayOfWeek.Wed &lt; DayOfWeek.Sat</code></p>
+</blockquote>
+<p>Для значений перечислимого типа можно использовать функции <code>Ord</code>,
+<code>Pred</code> и <code>Succ</code>, а также процедуры <code>Inc</code> и
+<code>Dec</code>. Функция <code>Ord</code> возвращает порядковый номер значения в списке 
+констант соответствующего перечислимого типа, нумерация при этом начинается с 
+нуля.</p>
+<p>Для перечислимого типа определена экземплярная 
+функция <code>ToString</code>, возвращающая строковое представление переменной 
+перечислимого типа. При выводе значения перечислимого типа с помощью процедуры <code>write</code> также выводится строковое представление значения перечислимого типа.</p>
+<p>Например:</p>
+<blockquote>
+	<p><code><b>type </b>Season = (Winter,Spring,Summer,Autumn);<br>
+	<b>var</b> s: Season;<br>
+	<b>begin</b><br>
+&nbsp; s := Summer;<br>
+&nbsp; writeln(s.ToString); // Summer<br>
+&nbsp; writeln(s); // Summer&nbsp; <br>
+	<b>end</b>.</code></p>
+</blockquote>
+<p><i><b><font color="#FF0000">Диапазонный</font></b></i> тип представляет собой подмножество значений целого, символьного 
+или перечислимого типа и описывается в виде <code>a..b</code>, где <code>a</code> 
+- нижняя, <code>b</code> - верхняя граница 
+интервального типа, <code>a</code>&lt;<code>b</code>:</p>
+<blockquote>
+	<p><code><b>var <br>
+&nbsp; </b>intI: 0..10;<br>
+&nbsp; intC: 'a'..'z';<br>
+&nbsp; intE: Mon..Thr;&nbsp; </code></p>
+</blockquote>
+<p>Тип, на основе которого строится диапазонный тип, называется <i>базовым</i> 
+для этого диапазонного типа. Значения диапазонного типа занимают в памяти 
+столько же, сколько и значения соответствующего базового типа.</p>
+</body>
+
+</html>

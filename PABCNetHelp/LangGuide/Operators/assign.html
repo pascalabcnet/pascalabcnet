@@ -1,0 +1,64 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Оператор присваивания">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Оператор присваивания</H1>
+Оператор присваивания имеет вид:
+<blockquote>
+	<p><code class="codeit">переменная</code> <code>:=</code> <code class="codeit">выражение</code></p>
+</blockquote>
+<p>В качестве переменной может быть простая переменная, разыменованный 
+указатель, переменная с индексами или компонент переменной типа запись. 
+Символ <code>:=</code> называется значком присваивания. Выражение должно быть <a href="../Types/typecompatibility.html">совместимо по 
+присваиванию</a> с переменной.</p>
+<p>Оператор присваивания&nbsp;заменяет текущее значение переменной значением 
+выражения.</p>
+<p>Например:</p>
+<blockquote>
+	<p><code>i := i + 1; // увеличивает значение переменной i на 1</code></p>
+</blockquote>
+<p>В <b>PascalABC.NET</b> определены также операторы 
+присваивания со значками 
+<code>+=</code>, <code>-=</code>,
+<code>*=</code>, <code>/=</code>. Для 
+числовых типов действие данных операторов описано
+<a href="../Operations_Expressions/arithmop.html">здесь</a>. Кроме того, 
+использование операторов <code>+=</code> и&nbsp; <code>*=</code> для строк описано
+<a href="../Operations_Expressions/stringop.html">здесь</a> <span lang="ru">и операторов </span><code>
++=</code><span lang="ru">, </span><code>-=</code><span lang="ru"> и </span>
+<code>*=</code><span lang="ru"> для множеств -
+<a href="../Operations_Expressions/setop.html">здесь</a>. </span>Их действие для 
+процедурных переменных описано <a href="plusequal.html">здесь</a>. </p>
+<p>Операторы  
+<code>+=</code>, <code>-=</code>,
+<code>*=</code>, <code>/=</code> имеют 
+следующий смысл: <code>a #= b</code> означает 
+<code>a := a # b</code>, где <code>#</code> -
+знак операции  
+<code>+</code>, <code>-</code>,
+<code>*</code>, <code>/</code>. </p>
+<p>Например:</p>
+<blockquote>
+	<p><code>a += 3; // увеличить a на 3<br>
+	b *= 2; // увеличить b в 2 раза</code></p>
+</blockquote>
+<p>Опертор <code>/=</code> неприменим, 
+если выражение слева - целое.</p>
+
+<p>Операторы  
+<code>+=</code>, <code>-=</code>,
+<code>*=</code>, <code>/=</code> могут также использоваться со 
+<a href="../Classes/properties.html">свойствами 
+классов</a> соответствующих типов в левой части.</p>
+
+</body>
+
+</html>

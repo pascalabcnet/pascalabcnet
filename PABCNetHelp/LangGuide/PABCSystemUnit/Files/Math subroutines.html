@@ -1,0 +1,135 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Abs">
+<param name="Keyword" value="ArcCos">
+<param name="Keyword" value="ArcSin">
+<param name="Keyword" value="ArcTan">
+<param name="Keyword" value="Ceil">
+<param name="Keyword" value="Cos">
+<param name="Keyword" value="Cosh">
+<param name="Keyword" value="DegToRad">
+<param name="Keyword" value="Exp">
+<param name="Keyword" value="Floor">
+<param name="Keyword" value="Frac">
+<param name="Keyword" value="Int">
+<param name="Keyword" value="Ln">
+<param name="Keyword" value="Log">
+<param name="Keyword" value="Log10">
+<param name="Keyword" value="Log2">
+<param name="Keyword" value="LogN">
+<param name="Keyword" value="Max">
+<param name="Keyword" value="Min">
+<param name="Keyword" value="Odd">
+<param name="Keyword" value="Power">
+<param name="Keyword" value="RadToDeg">
+<param name="Keyword" value="Random">
+<param name="Keyword" value="Random2">
+<param name="Keyword" value="Random3">
+<param name="Keyword" value="Randomize">
+<param name="Keyword" value="Round">
+<param name="Keyword" value="RoundBigInteger">
+<param name="Keyword" value="Sign">
+<param name="Keyword" value="Sin">
+<param name="Keyword" value="Sinh">
+<param name="Keyword" value="Sqr">
+<param name="Keyword" value="Sqrt">
+<param name="Keyword" value="Tan">
+<param name="Keyword" value="Tanh">
+<param name="Keyword" value="Trunc">
+<param name="Keyword" value="TruncBigInteger"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Математические подпрограммы</H1>
+<table cellpadding=3><tr><td><code><b>function</b> Abs(x: число): число;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает модуль числа x</td></tr>
+<tr><td><code><b>function</b> ArcCos(x: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает арккосинус числа x</td></tr>
+<tr><td><code><b>function</b> ArcSin(x: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает арксинус числа x</td></tr>
+<tr><td><code><b>function</b> ArcTan(x: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает арктангенс числа x</td></tr>
+<tr><td><code><b>function</b> Ceil(x: real): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает наименьшее целое &gt;= x</td></tr>
+<tr><td><code><b>function</b> Cos(x: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает косинус числа x</td></tr>
+<tr><td><code><b>function</b> Cosh(x: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает гиперболический косинус числа x</td></tr>
+<tr><td><code><b>function</b> DegToRad(x: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переводит градусы в радианы</td></tr>
+<tr><td><code><b>function</b> Exp(x: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает экспоненту числа x</td></tr>
+<tr><td><code><b>function</b> Floor(x: real): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает наибольшее целое &lt;= x</td></tr>
+<tr><td><code><b>function</b> Frac(x: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает дробную часть числа x</td></tr>
+<tr><td><code><b>function</b> Int(x: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает целую часть числа x</td></tr>
+<tr><td><code><b>function</b> Ln(x: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает натуральный логарифм числа x</td></tr>
+<tr><td><code><b>function</b> Log(x: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает натуральный логарифм числа x</td></tr>
+<tr><td><code><b>function</b> Log10(x: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает десятичный логарифм числа x</td></tr>
+<tr><td><code><b>function</b> Log2(x: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает логарифм числа x по основанию 2</td></tr>
+<tr><td><code><b>function</b> LogN(base, x: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает логарифм числа x по основанию base</td></tr>
+<tr><td><code><b>function</b> Max(a: число, b: число): число;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает максимальное из чисел a,b</td></tr>
+<tr><td><code><b>function</b> Min(a: число, b: число): число;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает минимальное из чисел a,b</td></tr>
+<tr><td><code><b>function</b> Odd(i: целое): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если i нечетно, и False в противном случае</td></tr>
+<tr><td><code><b>function</b> Power(x, y: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает x в степени y</td></tr>
+<tr><td><code><b>function</b> Power(x: real; n: integer): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает x в целой степени n</td></tr>
+<tr><td><code><b>function</b> Power(x: BigInteger; y: integer): BigInteger;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает x в степени y</td></tr>
+<tr><td><code><b>function</b> RadToDeg(x: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переводит радианы в градусы</td></tr>
+<tr><td><code><b>function</b> Random(maxValue: integer): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайное целое в диапазоне от 0 до maxValue-1</td></tr>
+<tr><td><code><b>function</b> Random(a, b: integer): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайное целое в диапазоне от a до b</td></tr>
+<tr><td><code><b>function</b> Random: real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайное вещественное в диапазоне [0..1)</td></tr>
+<tr><td><code><b>function</b> Random2(maxValue: integer): (integer, integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух случайных целых в диапазоне от 0 до maxValue-1</td></tr>
+<tr><td><code><b>function</b> Random2(a, b: integer): (integer, integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух случайных целых в диапазоне от a до b</td></tr>
+<tr><td><code><b>function</b> Random2: (real, real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух случайных вещественных в диапазоне [0..1)</td></tr>
+<tr><td><code><b>function</b> Random3(maxValue: integer): (integer, integer, integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трех случайных целых в диапазоне от 0 до maxValue-1</td></tr>
+<tr><td><code><b>function</b> Random3(a, b: integer): (integer, integer, integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трех случайных целых в диапазоне от a до b</td></tr>
+<tr><td><code><b>function</b> Random3: (real, real, real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трех случайных вещественных в диапазоне [0..1)</td></tr>
+<tr><td><code><b>procedure</b> Randomize(seed: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Инициализирует датчик псевдослучайных чисел, используя значение seed. При одном и том же seed генерируются одинаковые псевдослучайные последовательности</td></tr>
+<tr><td><code><b>procedure</b> Randomize;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Инициализирует датчик псевдослучайных чисел</td></tr>
+<tr><td><code><b>function</b> Round(x: real): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает x, округленное до ближайшего целого. Если вещественное находится посередине между двумя целыми,то округление осуществляется к ближайшему четному (банковское округление): Round(2.5)=2, Round(3.5)=4</td></tr>
+<tr><td><code><b>function</b> Round(x: real; digits: integer): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает x, округленное до ближайшего вещественного с digits знаками после десятичной точки</td></tr>
+<tr><td><code><b>function</b> RoundBigInteger(x: real): BigInteger;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает x, округленное до ближайшего длинного целого</td></tr>
+<tr><td><code><b>function</b> Sign(x: число): число;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает знак числа x</td></tr>
+<tr><td><code><b>function</b> Sin(x: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает синус числа x</td></tr>
+<tr><td><code><b>function</b> Sinh(x: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает гиперболический синус числа x</td></tr>
+<tr><td><code><b>function</b> Sqr(x: число): число;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает квадрат числа x</td></tr>
+<tr><td><code><b>function</b> Sqrt(x: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает квадратный корень числа x</td></tr>
+<tr><td><code><b>function</b> Tan(x: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает тангенс числа x</td></tr>
+<tr><td><code><b>function</b> Tanh(x: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает гиперболический тангенс числа x</td></tr>
+<tr><td><code><b>function</b> Trunc(x: real): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает целую часть вещественного числа x</td></tr>
+<tr><td><code><b>function</b> TruncBigInteger(x: real): BigInteger;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает целую часть вещественного числа x как длинное целое</td></tr>
+</table></body></HTML>

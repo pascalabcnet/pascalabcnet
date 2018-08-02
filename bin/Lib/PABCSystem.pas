@@ -249,7 +249,7 @@ type
   /// Представляет тип короткой строки фиксированной длины 255 символов
   ShortString = string[255];
   
-  //{{{--doc: Конец секции стандартных типов для документации }}} 
+//{{{--doc: Конец секции стандартных типов для документации }}} 
   
   //------------------------------------------------------------------------------
   //Pointers
@@ -1854,14 +1854,13 @@ function Dict<TKey, TVal>(params pairs: array of (TKey, TVal)): Dictionary<TKey,
 /// Возвращает пару элементов (ключ, значение)
 function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 
+//{{{--doc: Конец секции интерфейса для документации }}} 
+
 // -----------------------------------------------------
-//>>     Вспомогательные функции для pattern matching
+//>>     Вспомогательные функции для pattern matching # 
 // -----------------------------------------------------
 
 function __TypeCheckAndAssignForIsMatch<T>(obj: object; var res: T): boolean;
-
-//{{{--doc: Конец секции интерфейса для документации }}} 
-
 
 // -----------------------------------------------------
 //     Стандартные классы исключений
@@ -10028,6 +10027,7 @@ begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
 
+/// Возвращает True если значение находится между двумя другими
 function InRange(Self: real; a,b: real): boolean; extensionmethod;
 begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);

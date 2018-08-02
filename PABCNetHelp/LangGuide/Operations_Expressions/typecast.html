@@ -1,0 +1,52 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+
+<OBJECT id=exam type="application/x-oleobject" classid="clsid:adb880a6-d8ff-11cf-9377-00aa003b7a11" style="position:absolute; top:-100; left:-100;">
+  <param name="Command" value="TCard">
+  <param name="Text" value="">
+</OBJECT>
+
+<H1>Операция явного приведения типов</H1>
+<p>Операция явного приведения типов имеет вид</p>
+<blockquote>
+	<p><i>ИмяТипа</i><code>(</code><i>выражение</i><code>)</code></p>
+</blockquote>
+<p>и позволяет преобразовать выражение к типу <i>ИмяТипа</i>. 
+Тип выражения и тип с именем <i>ИмяТипа</i> должны оба принадлежать либо к 
+порядковому типу, либо к типу указателя, либо один тип должен быть наследником 
+другого, либо тип выражения должен поддерживать интерфейс с именем <i>ИмяТипа</i>. В случае 
+указателей запрещено 
+преобразовывать типизированный указатель к типу указателя на другой тип.</p>
+<p><b>Пример.</b></p>
+<blockquote>
+	<p><code><b>type</b> <br>
+&nbsp; pinteger = ^integer;<b><br>
+&nbsp; </b>Season = (Winter,Spring,Summer,Autumn);<b><br>
+	var</b> i: integer;<br>
+	<b>&nbsp;&nbsp; </b>&nbsp;b: byte;<br>
+	<b>&nbsp;&nbsp; </b>&nbsp;p: pointer := @i;<br>
+	&nbsp;&nbsp;&nbsp; s: Season;<br>
+	<b>begin</b><br>
+&nbsp; i := integer('z');<br>
+&nbsp; b := byte(i);<br>
+&nbsp; i := pinteger(p);<br>
+	&nbsp; s := Season(1);<br>
+	<b>end</b>.&nbsp;</code></p>
+</blockquote>
+<p>При приведении размерных типов к типу Object происходит упаковка.</p>
+<p><b>Пример.</b></p>
+<blockquote>
+	<p><code><b>var</b> i: integer := 5;<br>
+	<b>begin<br>&nbsp; </b><strong>var</strong> o: Object := Object(i);<br>
+	<b>end</b>.&nbsp;</code></p>
+</blockquote>
+</body>
+
+</html>

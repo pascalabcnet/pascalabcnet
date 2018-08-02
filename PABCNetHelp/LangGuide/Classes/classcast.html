@@ -1,0 +1,56 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Приведение типов объектов</H1>
+<p>Объект производного класса неявно преобразуется к типу 
+базового класса. Обратное преобразование от типа базового класса 
+к типу производного класса может быть выполнено только явно с помощью
+<a href="../Operations_Expressions/typecast.html">операции приведения типа</a>.</p>
+<p>Например:</p>
+<blockquote>
+	<p><code><b>type</b><br>
+&nbsp; Person =<b> class<br>
+	&nbsp; ...<br>
+	</b>&nbsp; <b>end</b>;<br>
+&nbsp; Student =<b> class</b>(Person)<br>
+	<b> &nbsp; &nbsp; ...<br>
+	</b>&nbsp;&nbsp;&nbsp; <b>procedure</b> IncCourse; <br>
+&nbsp; <b>end</b>;<br>
+	...<br>
+	<b>var <br>
+&nbsp; </b>p: Person;<br>
+&nbsp; s: Student;<br>
+	<b>begin</b><br>
+&nbsp; p := new Student('Иванов',20,3,1); //
+	неявное преобразование к типу базового класса<br>
+&nbsp; s := Student(p); // явное 
+	приведение к типу производного класса <br>
+	<b>end</b>.</code></p>
+</blockquote>
+<p>При выполнении приведения к производному классу может 
+возникнуть исключение (если приведение невозможно; 
+например, если в переменной <code>p</code> на момент 
+выполнения операции будет храниться объект типа <code>Person</code>).
+</p>
+<p>После приведения к типу производного класса можно обращаться 
+к любым полям, свойствам и методам производного класса:</p>
+<blockquote>
+	<p><code>s.IncCourse;</code></p>
+</blockquote>
+<p>или без присваивания промежуточной переменной:</p>
+<blockquote>
+	<p><code>Student(p)</code><code>.IncCourse;</code></p>
+</blockquote>
+<p>Проверка на возможность приведения к типу производного класса 
+осуществляется с помощью <a href="../Operations_Expressions/isasop.html">операций
+</a><a href="../Operations_Expressions/isasop.html"><b><code>is</code></b>
+и <code><b>as</b></code></a>.</p>
+</body>
+
+</html>

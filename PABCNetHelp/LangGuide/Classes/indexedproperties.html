@@ -1,0 +1,90 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="property">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Индексные свойства</H1>
+<p>Индексные свойства ведут себя аналогично полям-массивам и 
+используются, как правило, для доступа к элементам контейнеров. 
+Как и при использовании обычных свойств, при использовании индексных свойств 
+могут попутно выполняться некоторые действия. 
+</p>
+<p>Индексное свойство описывается в классе следующим 
+образом:</p>
+<blockquote>
+	<p><code><b>property</b> Prop[<code class="codeit">описание индексов</code>]: <code class="codeit">тип</code> <b>read</b>
+	<code class="codeit">имя функции чтения</code> <b>
+	write</b> <code class="codeit">имя процедуры записи</code>;</code></p>
+</blockquote>
+<p>В простейшем случае одного индекса описание индексного свойства выглядит так:</p>
+<blockquote>
+	<p><code><b>property</b> Prop[ind: <code class="codeit">
+	тип индекса</code>]: <code class="codeit">тип</code> <b>read</b>
+	<code class="codeit">имя функции чтения</code> <b>
+	write</b> <code class="codeit">имя процедуры записи</code>;</code></p>
+</blockquote>
+<p>В этом случае функция чтения и 
+процедура записи должны быть методами этого класса и иметь следующий вид:</p>
+<blockquote>
+	<p><code><b>function</b> GetProp(ind: <code class="codeit">
+	тип индекса</code>): <code class="codeit">
+	тип</code>;<b><br>
+	procedure</b> SetProp(ind: <code class="codeit">тип индекса</code>; v: <code class="codeit">тип</code>);</code></p>
+</blockquote>
+<p>Всякий раз, когда мы для объекта <code>a</code>, содержащего свойство <code>
+Prop</code>, выполняем присваивание <code>a.Prop[ind] := value</code>, 
+вызывается процедура <code>SetProp(ind,value)</code>, а 
+когда считываем значение
+<code>a.Prop[ind]</code>, вызывается функция 
+<code>GetProp(ind)</code>.</p>
+<p>Индексное свойство, после которого добавлено ключевое слово <b><code>default</code></b> с последующей <code>;</code>, называется <i><b><font color="#FF0000">ин</font></b><font color="#FF0000"><b>дексным 
+свойством по умолчанию</b></font></i> и позволяет пользоваться объектами класса как массивами, т.е. 
+использовать запись <code>a[ind]</code> <i>вместо </i> <code>a.Prop[ind]</code>. </p>
+<p>Принципиальное отличие индексных свойств от полей-массивов 
+состоит в том, что тип индекса может быть произвольным (в частности, строковым).&nbsp;Это 
+позволяет легко реализовать так называемые ассоциативные массивы, элементы 
+которых индексируются строками. </p>
+<p>В следующем примере индексное свойство используется для закрашивания/стирания 
+клеток шахматной доски в графическом режиме.</p>
+<blockquote>
+	<p><code><b>uses</b> GraphABC;<br>
+	<b>const</b> <br>
+&nbsp; n = 8;<br>
+&nbsp; sz = 50;<br>
+	<b>type</b> ChessBoard = <b>class</b><br>
+	<b>private</b><br>
+&nbsp; a: <b>array</b> [1..n,1..n] <b>of</b> boolean;<br>
+&nbsp; <b>procedure</b> setCell(x,y: integer; value: boolean);<br>
+&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp; <b>if</b> value <b>then</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Brush.Color := clWhite<br>
+&nbsp;&nbsp;&nbsp; <b>else</b> Brush.Color := clBlack;<br>
+&nbsp;&nbsp;&nbsp; Fillrect((x-1)*sz+1,(y-1)*sz+1,x*sz,y*sz);<br>
+&nbsp;&nbsp;&nbsp; a[x,y] := value;<br>
+&nbsp; <b>end</b>;<br>
+&nbsp; <b>function</b> getCell(x,y: integer): boolean;<br>
+&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp; Result := a[x,y];<br>
+&nbsp; <b>end</b>;<br>
+	<b>public</b><br>
+&nbsp; <b>property</b> Cells[x,y: integer]: boolean <b>read</b> getCell <b>write</b> 
+	setCell; <b>default</b>;<br>
+	<b>end</b>;</code></p>
+	<p><code><b>var</b> c: ChessBoard := new ChessBoard;</code></p>
+	<p><code><b>begin</b><br>
+&nbsp; var x,y: integer;<br>
+&nbsp; <b>for</b> x:=1 <b>to</b> n <b>do</b><br>
+&nbsp; <b>for</b> y:=1 <b>to</b> n <b>do</b><br>
+&nbsp;&nbsp;&nbsp; c[x,y] := Odd(x+y); <br>
+	<b>end</b>.</code></p>
+</blockquote>
+</body>
+
+</html>

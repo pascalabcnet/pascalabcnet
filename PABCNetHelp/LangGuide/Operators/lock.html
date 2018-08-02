@@ -1,0 +1,43 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+        <param name="Keyword" value="lock">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Оператор lock</H1>
+Оператор lock имеет вид:<blockquote>
+	<p><code><b>lock</b> </code><i>объект</i><code> <b>do</b><br>
+&nbsp; </code><i>оператор</i></p>
+</blockquote>
+<p><i>Объект</i> обязательно принадлежит к ссылочному типу.</p>
+<p>Оператор <code><b>lock</b></code> гарантирует, что <i>оператор</i> будет 
+выполняться только одним потоком. <i>Объект</i> здесь хранит блокировку, а <i>
+оператор</i>, представляющий собой тело оператора <code><b>lock</b></code>, 
+называется блоком синхронизации. После того как первый поток заходит в блок 
+синхронизации, он блокирует <i>объект</i>, при выходе из блока синхронизации - 
+разблокирует. Если <i>объект</i> заблокирован, то никакой другой поток не может 
+зайти в блок синхронизации и приостанавливается до разблокировки <i>объекта</i>.</p>
+<p>Оператор</p>
+<blockquote>
+	<p><code><b>lock</b> obj <b>do</b><br>
+&nbsp; oper;</code></p>
+</blockquote>
+<p>полностью эквивалентен следующему участку кода:</p>
+<blockquote>
+	<p><code>Monitor.Enter(obj);<br>
+	<b>try</b><br>
+&nbsp; oper;<br>
+	<b>finally</b><br>
+&nbsp; Monitor.Exit(obj);<br>
+	<b>end</b>;</code></p>
+</blockquote>
+
+</body>
+
+</html>

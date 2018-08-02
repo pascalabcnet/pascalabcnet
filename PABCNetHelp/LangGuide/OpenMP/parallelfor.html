@@ -1,0 +1,145 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="parallel">
+<param name="Keyword" value="private">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+<style>
+<!--
+span.a
+	{color:#4F81BD;
+	font-weight:bold;
+	font-style:italic}
+-->
+</style>
+</head>
+
+<body>
+<H1><span lang="ru">Директива </span>parallel for</H1>
+
+
+<p>Директива <code>parallel for</code> обеспечивает распараллеливание следующего 
+за ней цикла.</p>
+<blockquote>
+	<p><code><font color="#666666">{$omp parallel for}<br>
+	</font>
+	<b>for</b> <b>var</b> i: integer:=1 <b>to</b><b> </b>10 <b>do</b><br>
+	&nbsp; тело цикла</code></p>
+</blockquote>
+<p>Здесь будет создано несколько потоков и разные итерации цикла будут 
+распределены по этим потокам. Количество потоков, как правило, совпадает с 
+количеством ядер процессора, но в некоторых случаях могут быть отличия, 
+например, если поток ожидает ввод данных от пользователя, могут создаваться 
+дополнительные потоки, чтобы по возможности задействовать все доступные ядра.</p>
+<p>Все переменные, описанные вне параллельного цикла, будут разделяемыми, то 
+есть, если в теле цикла есть обращение к таким переменным, все потоки будут 
+обращаться к одной и той же ячейке памяти. Все переменные, объявленные внутри 
+цикла, будут частными, то есть у каждого потока будет своя копия этой 
+переменной.</p>
+<p>Опция <code>private</code> позволяет переменные, описанные вне цикла, сделать 
+частными. Опция записывается так:</p>
+<blockquote>
+	<p><code><font color="#666666">{$omp parallel for private(список переменных)}</font></code></p>
+</blockquote>
+<p>Список переменных – одна или несколько переменных через запятую.</p>
+<blockquote>
+	<p><code><b>var</b> a,b: integer;<br>
+	<font color="#666666">{$omp parallel for private(a, b)}<br>
+	</font>
+	<b>for</b> <b>var</b> i: integer:=1 <b>to</b> 10 <b>do</b><br>
+	&nbsp; a := ...</code></p>
+</blockquote>
+<p>В этом случае переменные a и b будут частными, и присваивание этим переменным 
+в одном потоке не будет влиять на другие потоки.</p>
+<p>Ограничение: счетчики распараллеливаемого цикла и вложенных циклов должны 
+быть объявлены в заголовке цикла.</p>
+<p>Не все циклы можно распараллеливать. Если на разных итерациях происходит 
+обращение к одной и той же переменной и при этом ее значение меняется – 
+распараллеливание такого цикла приведет к ошибкам, при разных запусках могут 
+получаться разные результаты в зависимости от того, в каком порядке происходили 
+обращения к этой переменной.</p>
+<blockquote>
+	<p><code><font color="#666666">{$omp parallel for}<br>
+	</font>
+	<b>for</b> <b>var</b> i:=1 <b>to</b> 2 <b>do</b><br>
+	&nbsp; a[i] := a[i+1];</code></p>
+</blockquote>
+<p>Здесь на первой итерации происходит чтение второго элемента массива, а на 
+второй итерации – запись этого же элемента. Если первая итерация выполнится 
+раньше второй – в первый элемент массива запишется значение из второго, а если 
+позже – то из третьего элемента массива.</p>
+<blockquote>
+	<p><code><b>var</b> a:integer;<br>
+	<font color="#666666">{$omp parallel for}<br>
+	</font>
+	<b>for</b> <b>var</b> i:=1 <b>to</b> 10 <b>do</b><br>
+	<b>begin</b><br>
+	&nbsp; a := i;<br>
+	&nbsp; ... := a;&nbsp; //к этому моменту a может быть изменено другим потоком<br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p>Значение переменной a после этого цикла может быть любым в диапазоне от 1 до 
+10.</p>
+<p>Наиболее эффективно распараллеливаются циклы, каждая итерация которых 
+выполняется достаточно долго. Если тело цикла состоит из небольшого количества 
+простых операторов, затраты на создание потоков и распределение нагрузки между 
+ними могут превысить выигрыш от параллельного выполнения цикла.</p>
+<p><b>Пример<span lang="ru"> параллельного перемножения матриц</span></b></p>
+<p><span lang="ru">Перемножение матриц - классический пример иллюстрации 
+параллельности. Вычисление различных элементов матрицы происходит независимо, 
+поэтому не надо предусматривать никаких средств синхронизации.</span></p>
+<blockquote>
+	<p><code><b>uses</b> Arrays;<br>
+	<br>
+	<b>procedure</b> ParallelMult(a,b,c: <b>array</b> [,] <b>of</b> real; n: 
+	integer);<br>
+	<b>begin</b><br>
+	<font color="#666666"><span lang="ru">&nbsp; </span>{$omp parallel for }<br>
+	</font><span lang="ru">&nbsp; </span><b>for</b> <b>var</b> i:=0 <b>to</b> 
+	n-1 <b>do</b><br>
+	<span lang="ru">&nbsp; </span><b>for</b> <b>var</b> j:=0 <b>to</b> n-1 <b>do</b><br>
+	<span lang="ru">&nbsp; </span><b>begin</b> <br>
+	<span lang="ru">&nbsp;&nbsp;&nbsp; </span>c[i,j]:=0;<br>
+	<span lang="ru">&nbsp;&nbsp;&nbsp; </span><b>for</b> <b>var</b> l:=0 <b>to</b> 
+	n-1 <b>do</b><br>
+	<span lang="ru">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>c[i,j]:=c[i,j]+a[i,l]*b[l,j];<br>
+	<span lang="ru">&nbsp; </span><b>end</b>;<br>
+	<b>end</b>;<br>
+	<br>
+	<b>procedure</b> Mult(a,b,c: <b>array</b> [,] <b>of</b> real; n: integer);<br>
+	<b>begin</b><br>
+	<span lang="ru">&nbsp; </span><b>for</b> <b>var</b> i:=0 <b>to</b> 
+	n-1 <b>do</b><br>
+	<span lang="ru">&nbsp; </span><b>for</b> <b>var</b> j:=0 <b>to</b> n-1 <b>do</b><br>
+	<span lang="ru">&nbsp; </span><b>begin</b> <br>
+	<span lang="ru">&nbsp;&nbsp;&nbsp; </span>c[i,j]:=0;<br>
+	<span lang="ru">&nbsp;&nbsp;&nbsp; </span><b>for</b> <b>var</b> l:=0 <b>to</b> 
+	n-1 <b>do</b><br>
+	<span lang="ru">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>c[i,j]:=c[i,j]+a[i,l]*b[l,j];<br>
+	<span lang="ru">&nbsp; </span><b>end</b>;<br>
+	<b>end</b>;<br>
+	<br>
+	<b>const</b> n = 400;<br>
+	<br>
+	<b>begin</b><br>
+	<b><span lang="ru">&nbsp; </span>var</b> a := 
+	Arrays.CreateRandomRealMatrix(n,n);<br>
+	<b><span lang="ru">&nbsp; </span>var</b> b := 
+	Arrays.CreateRandomRealMatrix(n,n);<br>
+	<b><span lang="ru">&nbsp; </span>var</b> c := new real[n,n];<br>
+	<span lang="ru">&nbsp; </span>ParallelMult(a,b,c,n);<br>
+	<span lang="ru">&nbsp; </span>writeln('Параллельное перемножение матриц: 
+	',Milliseconds,' миллисекунд');<br>
+	<b><span lang="ru">&nbsp; </span>var</b> d := Milliseconds;<br>
+	<span lang="ru">&nbsp; </span>Mult(a,b,c,n);<br>
+	<span lang="ru">&nbsp; </span>writeln('Непараллельное перемножение матриц: 
+	',Milliseconds-d,' миллисекунд');<br>
+	<b>end</b>.</code></p>
+</blockquote>
+</body>
+
+</html>

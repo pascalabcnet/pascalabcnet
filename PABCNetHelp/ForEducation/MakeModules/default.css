@@ -1,0 +1,241 @@
+BODY,
+TABLE,
+TD {
+        font-family: Arial, sans-serif;
+        background-color: #ffffff;
+        font-size: small;
+}
+
+
+code {
+        color: #000080;
+        font-size: small;
+        text-align: left
+}
+
+
+pre {
+        color: #000080;
+        font-size: small;
+        text-align: left
+        text-indent: 30pt;
+        margin-left: 30pt;
+        margin-top: 3pt;
+        margin-bottom: 0pt;
+}
+
+
+
+
+code.codeit {
+        color: #000000;
+        font-family: Times;
+        font-style: italic;
+        font-size: small;
+        text-align: left
+}
+
+H1 {
+        font-family: Arial, sans-serif;
+        font-weight: bold;
+        margin-top: 6pt;
+        margin-bottom: 6pt;
+        font-size: large;
+        color: #000080;
+        text-align: left
+}
+
+H2 {
+        font-family: Arial, sans-serif;
+        font-weight: bold;
+        font-style: italic;
+        margin-bottom: 2pt;
+        margin-top: 6pt;
+        font-size: medium;
+        color: #000080;
+        text-align: left
+}
+
+H3 {
+        font-family: Arial, sans-serif;
+        margin-bottom: 2pt;
+        margin-top: 6pt;
+        font-size: medium;
+        color: #000080;
+        text-align: left
+}
+
+H4 {
+        font-weight: bold;
+        margin-top: 6pt;
+        margin-bottom: 2pt;
+        font-size: small;
+        text-align: left
+}
+
+H5 {
+        font-size: 10.0pt;
+}
+
+H6 {
+        font-size: 10.0pt;
+}
+
+P {
+        margin-top: 3pt;
+        margin-bottom: 0pt;
+        font-family: Arial, sans-serif;
+        font-size: small;
+        text-indent: 30pt;
+        text-align: justify
+}
+
+P.task {
+        margin-top: 3pt;
+        margin-bottom: 0pt;
+        margin-left: 0pt;
+        margin-right: 0pt;
+        font-family: Arial, sans-serif;
+        font-size: small;
+        text-indent: 30pt;
+        text-align: justify;
+        border-style: solid;
+        border-width: 1pt;
+}
+
+P.remark {
+        margin-top: 3pt;
+        margin-bottom: 0pt;
+        margin-left: 30pt;
+        margin-right: 0pt;
+        font-family: Arial, sans-serif;
+        font-size: small;
+        text-indent: 0pt;
+        text-align: justify;
+}
+
+
+
+P.ris {
+        font-family: Arial;
+        margin-top: 3pt;
+        margin-bottom: 0pt;
+        font-family: Arial, sans-serif;
+        font-size: small;
+        color: #000080;
+        text-indent: 0pt;
+        text-align: center
+}
+
+
+
+H1.part {
+        color: #000000;
+        margin-top: 20pt;
+        margin-bottom: 20pt;
+        text-align: center
+
+}
+
+H1.part1 {
+        color: #000000;
+        margin-top: 80pt;
+        margin-bottom: 20pt;
+        text-align: center
+
+}
+
+H1.part2{
+        color: #000000;
+        font-size: medium;
+        margin-top: 0pt;
+        margin-bottom: 20pt;
+        text-align: center
+}
+
+
+
+H3.tit {
+        color: #000000;
+        margin-top: 10pt;
+        margin-bottom: 10pt;
+        text-align: center
+}
+
+H2.subpart {
+        color: #000000;
+        margin-bottom: 80pt;
+        margin-top: 20pt;
+        text-align: center
+}
+
+P.author {
+        margin-top: 0pt;
+        margin-bottom: 0pt;
+        font-family: Arial, sans-serif;
+        font-size: 9pt;
+        color: #000000;
+        text-indent: 0pt;
+        text-align: right
+}
+
+P.refs {
+        margin-top: 0pt;
+        margin-bottom: 3pt;
+        font-family: Arial, sans-serif;
+        font-size: 10pt;
+        color: #000000;
+        text-indent: 0pt;
+        text-align: center
+}
+
+P.foot {
+        margin-top: 0pt;
+        margin-bottom: 0pt;
+        font-family: Arial, sans-serif;
+        font-size: 9pt;
+        font-style: italic;
+        color: #000000;
+        text-indent: 0pt;
+        text-align: right
+}
+
+
+
+OL,
+UL {
+        margin-top: 3pt;
+        margin-bottom: 0pt;
+        font-size: small;
+        font-family: Arial, sans-serif;
+        text-align: justify
+}
+
+
+SPAN.tsktitle 
+{
+        font-family: Arial, sans-serif;
+        font-weight: bold;
+        font-size: small;
+
+}
+
+
+
+P.tsk{text-align:justify;text-indent:-50;margin-top:5; margin-left:60;}
+P.hnt{text-align:justify;margin-left:60;}
+P.hntc{text-align:justify;margin-left:60;text-indent:0;margin-top:0;}
+P.hntq{text-align:justify;margin-left: 60;margin-top:0;}
+P.cmt{text-align:justify;margin-top:5;}
+P.ttt{text-align:left;}
+P.cnt{text-align:center;}
+P.qte{
+        color: #000080;
+        font-size: small;
+        text-indent:0;
+text-align:left;margin-left:120;margin-top:0;margin-bottom:0;}
+blockquote{font-family: Arial, sans-serif;text-align:justify;margin-left:100;margin-top:0; margin-bottom:0;}
+P.cmtc{text-align:justify;}
+P.cmtq{text-align:justify;}
+SUB{font-family: Arial, sans-serif;;font-size:x-small;}
+SUP{font-family: Arial, sans-serif;;font-size:x-small;}

@@ -1,0 +1,85 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="RGB">
+<param name="Keyword" value="ARGB">
+<param name="Keyword" value="RedColor">
+<param name="Keyword" value="GreenColor">
+<param name="Keyword" value="BlueColor">
+<param name="Keyword" value="clRandom">
+<param name="Keyword" value="GetRed">
+<param name="Keyword" value="GetGreen">
+<param name="Keyword" value="GetBlue">
+<param name="Keyword" value="GetAlpha">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Функции для работы с цветом</H1>
+<p>Тип цвета <code>Color</code> является синонимом
+<code>System.Drawing.Color</code>.<br>
+&nbsp;</p>
+<table border=0 CELLPADDING=5>
+<tr><td>
+<code>
+<b>function</b> RGB(r,g,b: byte): Color;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цвет, который содержит красную (r), зеленую (g) и синюю (b) составляющие (r,g и b - в диапазоне от 0 до 255)
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> ARGB(a,r,g,b: byte): Color;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цвет, который содержит красную (r), зеленую (g) и синюю (b) составляющие и прозрачность (a) (a,r,g,b - в диапазоне от 0 до 255)
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> RedColor(r: byte): Color;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает красный цвет с интенсивностью r (r - в диапазоне от 0 до 255)
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> GreenColor(g: byte): Color;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает зеленый цвет с интенсивностью g (g - в диапазоне от 0 до 255)
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> BlueColor(b: byte): Color;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает синий цвет с интенсивностью b (b - в диапазоне от 0 до 255)
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> clRandom: Color;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайный цвет
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> GetRed(c: Color): integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает красную составляющую цвета
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> GetGreen(c: Color): integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает зеленую составляющую цвета
+</td></tr>
+<tr>
+	<td>
+<code>
+<b>function</b> GetBlue(c: Color): integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает синюю составляющую цвета
+</td>
+</tr>
+<tr><td>
+<code>
+<b>function</b> GetAlpha(c: Color): integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает составляющую 
+<span lang="ru">прозрачности </span>цвета
+</td></tr>
+</table>
+</body></html>

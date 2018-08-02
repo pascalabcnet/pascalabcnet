@@ -1,0 +1,431 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Picture">
+<param name="Keyword" value="Load">
+<param name="Keyword" value="Save">
+<param name="Keyword" value="SetSize">
+<param name="Keyword" value="Width">
+<param name="Keyword" value="Height">
+<param name="Keyword" value="Transparent">
+<param name="Keyword" value="TransparentColor">
+<param name="Keyword" value="Intersect">
+<param name="Keyword" value="Draw">
+<param name="Keyword" value="CopyRect">
+<param name="Keyword" value="FlipHorizontal">
+<param name="Keyword" value="FlipVertical">
+<param name="Keyword" value="Clear">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Класс Picture графического рисунка</H1>
+<p>Класс <code>Picture</code> 
+представляет собой графический рисунок модуля GraphABC и 
+является надстройкой над типом <code>System.Drawing.Bitmap</code>. Он 
+имеет свойство прозрачности, которое можно включать/выключать, 
+а также возможность непосредственного рисования на себе всех графических 
+примитивов. </p>
+<table border=0 CELLPADDING=5>
+<tr>
+	<td height="12"></td>
+</tr>
+<tr><td style="border-style:solid; border-width:1px; border-color: #808080;  background-color: #E7E7F7">
+<font style="font-size: 11pt">Конструкторы класса 
+Picture</font></td></tr>
+<tr><td>
+<code>
+    <b>constructor</b> Create(w,h: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает рисунок размера <code>w</code> на 
+<code>h</code> пикселей
+</td></tr>
+<tr><td>
+<code>
+    <b>constructor</b> Create(fname: string);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает рисунок из файла с именем 
+<code>fname</code>
+</td></tr>
+<tr>
+	<td>
+<code>
+    <b>constructor</b> Create(r: System.Drawing.Rectangle);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает рисунок из прямоугольника 
+<code>r</code> графического окна
+</td>
+</tr>
+<tr><td height="8"></td></tr>
+<tr>
+	<td style="border:1px solid #808080; background-color: #E7E7F7">
+<font style="font-size: 11pt">Свойства класса 
+Picture</font></td>
+</tr>
+<tr><td>
+<code>
+    <b>property</b> Width: integer;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ширина рисунка в пикселах
+</td></tr>
+<tr><td>
+<code>
+    <b>property</b> Height: integer;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Высота рисунка в пикселах
+</td></tr>
+<tr><td>
+<code>
+    <b>property</b> Transparent: boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Прозрачность рисунка; прозрачный цвет задается свойством 
+<code>TransparentColor</code>
+</td></tr>
+<tr><td>
+<code>
+    <b>property</b> TransparentColor: Color;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Прозрачный цвет рисунка. Должна быть установлена прозрачность 
+<code>Transparent</code> = <code>True</code>
+</td></tr>
+<tr>
+	<td height="8"></td>
+</tr>
+<tr>
+	<td style="border:1px solid #808080; background-color: #E7E7F7">
+<font style="font-size: 11pt">Методы класса 
+Picture</font></td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>procedure</b> Load(fname: string);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Загружает рисунок из файла с именем 
+<code>fname</code>
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>procedure</b> Save(fname: string);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сохраняет рисунок в файл с именем 
+<code>fname</code>
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>procedure</b> SetSize(w,h: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает размер рисунка 
+<code>w</code> на <code>h</code> пикселей
+</td>
+</tr>
+<tr><td>
+<code>
+    <b>function</b> Intersect(p: Picture): boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает <code>True</code>, если изображение данного рисунка 
+пересекается с изображением рисунка <code>p</code>, и <code>False</code> в 
+противном случае. Для проверки пересечения оба объекта рисуются 
+на белом фоне, и прямоугольник пересечения попиксельно проверяется на 
+пересечение. К сожалению, при таком алгоритме любые белые пиксели считаются не 
+принадлежащими объекту. Поэтому для корректной работы этого метода не 
+следует использовать белый цвет для внутренности объекта.
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Draw(x,y: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит рисунок в позиции (x,y)
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Draw(x,y: integer; g: Graphics);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит рисунок в позиции (x,y) на поверхность рисования 
+<code>g</code>
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Draw(x,y,w,h: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит рисунок в позиции (x,y), масштабируя его к размеру (w,h)
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Draw(x,y,w,h: integer; g: Graphics);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит рисунок в позиции (x,y), масштабируя его к размеру (w,h), на поверхность рисования 
+<code>g</code>
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Draw(x,y: integer; r: System.Drawing.Rectangle); // r - part <b>of</b> Picture
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит часть рисунка, заключенную в прямоугольнике 
+<code>r</code>, в позиции (x,y)
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Draw(x,y: integer; r: System.Drawing.Rectangle; g: Graphics);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит часть рисунка, заключенную в прямоугольнике 
+<code>r</code>, в позиции (x,y) на поверхность рисования g
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Draw(x,y,w,h: integer; r: System.Drawing.Rectangle); // r - part <b>of</b> Picture
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит часть рисунка, заключенную в прямоугольнике 
+<code>r</code>, в позиции (x,y), масштабируя его к размеру (w,h)
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Draw(x,y,w,h: integer; r: System.Drawing.Rectangle; g: Graphics);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит часть рисунка, заключенную в прямоугольнике 
+<code>r</code>, в позиции (x,y), масштабируя его к размеру (w,h), на поверхность рисования g
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> CopyRect(dst: System.Drawing.Rectangle; p: Picture; src: System.Drawing.Rectangle);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Копирует прямоугольник <code>src</code> рисунка 
+<code>p</code> в прямоугольник <code>dst</code> текущего рисунка
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> CopyRect(dst: System.Drawing.Rectangle; bmp: Bitmap; src: System.Drawing.Rectangle);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Копирует прямоугольник <code>src</code> битового образа 
+<code>bmp</code> в прямоугольник <code>dst</code> текущего рисунка
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> FlipHorizontal;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Зеркально отображает рисунок относительно горизонтальной оси симметрии
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> FlipVertical;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Зеркально отображает рисунок относительно вертикальной оси симметрии
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> SetPixel(x,y: integer; c: Color);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Закрашивает пиксел (x,y) рисунка цветом 
+<code>c</code>
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> PutPixel(x,y: integer; c: Color);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Закрашивает пиксел (x,y) рисунка цветом 
+<code>c</code>
+</td></tr>
+<tr><td>
+<code>
+    <b>function</b> GetPixel(x,y: integer): Color;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цвет пиксела (x,y) рисунка
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Line(x1,y1,x2,y2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке отрезок от точки (x1,y1) до точки (x2,y2)
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Line(x1,y1,x2,y2: integer; c: Color);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке отрезок от точки (x1,y1) до точки (x2,y2) цветом 
+<code>c</code>
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> FillCircle(x,y,r: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет на рисунке внутренность окружности с центром (x,y) и радиусом 
+<code>r</code>
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> DrawCircle(x,y,r: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке окружность с центром (x,y) и радиусом 
+<code>r</code>
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> FillEllipse(x1,y1,x2,y2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет на рисунке внутренность эллипса, ограниченного прямоугольником, заданным координатами противоположных вершин (x1,y1) и (x2,y2)
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> DrawEllipse(x1,y1,x2,y2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке границу эллипса, ограниченного прямоугольником, заданным координатами противоположных вершин (x1,y1) и (x2,y2)
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> FillRectangle(x1,y1,x2,y2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет на рисунке внутренность прямоугольника, заданного координатами противоположных вершин (x1,y1) и (x2,y2)
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> FillRect(x1,y1,x2,y2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет на рисунке внутренность прямоугольника, заданного координатами противоположных вершин (x1,y1) и (x2,y2)
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> DrawRectangle(x1,y1,x2,y2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке границу ы прямоугольника, заданного координатами противоположных вершин (x1,y1) и (x2,y2)
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Circle(x,y,r: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке заполненную окружность с центром (x,y) и радиусом 
+<code>r</code>
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Ellipse(x1,y1,x2,y2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке заполненный эллипс, ограниченный прямоугольником, заданным координатами противоположных вершин (x1,y1) и (x2,y2)
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Rectangle(x1,y1,x2,y2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке заполненный прямоугольник, заданный координатами противоположных вершин (x1,y1) и (x2,y2)
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> RoundRect(x1,y1,x2,y2,w,h: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке заполненный прямоугольник со скругленными краями; (x1,y1) и (x2,y2) задают пару противоположных вершин, а 
+<code>w</code> и <code>h</code> – ширину и высоту эллипса, используемого для скругления краев
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Arc(x,y,r,a1,a2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке дугу окружности с центром в точке (x,y) и радиусом 
+<code>r</code>, заключенной между двумя лучами, образующими углы <code>a1</code> и 
+<code>a2</code> с осью OX (<code>a1</code> и <code>a2</code> – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> FillPie(x,y,r,a1,a2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет на рисунке внутренность сектора окружности, ограниченного дугой с центром в точке (x,y) и радиусом 
+<code>r</code>, заключенной между двумя лучами, образующими углы <code>a1</code> и 
+<code>a2</code> с осью OX (<code>a1</code> и <code>a2</code> – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> DrawPie(x,y,r,a1,a2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке сектор окружности, ограниченный дугой с центром в точке (x,y) и радиусом 
+<code>r</code>, заключенной между двумя лучами, образующими углы <code>a1</code> и 
+<code>a2</code> с осью OX (<code>a1</code> и <code>a2</code> – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Pie(x,y,r,a1,a2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке заполненный сектор окружности, ограниченный дугой с центром в точке (x,y) и радиусом 
+<code>r</code>, заключенной между двумя лучами, образующими углы <code>a1</code> и 
+<code>a2</code> с осью OX (<code>a1</code> и <code>a2</code> – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> DrawPolygon(points: <b>array</b> <b>of</b> Point);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке замкнутую ломаную по точкам, координаты которых заданы в массиве 
+<code>points</code>
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> FillPolygon(points: <b>array</b> <b>of</b> Point);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет на рисунке многоугольник, координаты вершин которого заданы в массиве 
+<code>points</code>
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Polygon(points: <b>array</b> <b>of</b> Point);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке заполненный многоугольник, координаты вершин которого заданы в массиве 
+<code>points</code>
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Polyline(points: <b>array</b> <b>of</b> Point);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке ломаную по точкам, координаты которых заданы в массиве 
+<code>points</code>
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Curve(points: <b>array</b> <b>of</b> Point);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке кривую по точкам, координаты которых заданы в массиве 
+<code>points</code>
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> DrawClosedCurve(points: <b>array</b> <b>of</b> Point);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке замкнутую кривую по точкам, координаты которых заданы в массиве 
+<code>points</code>
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> FillClosedCurve(points: <b>array</b> <b>of</b> Point);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет на рисунке замкнутую кривую по точкам, координаты которых заданы в массиве 
+<code>points</code>
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> ClosedCurve(points: <b>array</b> <b>of</b> Point);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке заполненную замкнутую кривую по точкам, координаты которых заданы в массиве 
+<code>points</code>
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> TextOut(x,y: integer; s: string); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит на рисунке строку <code>s</code> в прямоугольник к координатами левого верхнего угла (x,y)
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> FloodFill(x,y: integer; c: Color);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заливает на рисунке область одного цвета цветом 
+<code>c</code>, начиная с точки (x,y).
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Clear;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Очищает рисунок белым цветом
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Clear(c: Color);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Очищает рисунок цветом <code>c</code>
+</td></tr>
+</table>
+</body></html>

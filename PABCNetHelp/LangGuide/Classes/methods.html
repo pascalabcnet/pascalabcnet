@@ -1,0 +1,79 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Методы</H1>
+<p>Методы представляют собой процедуры и функции, объявленные внутри класса или 
+записи. Особыми разновидностями методов являются конструкторы, деструкторы и 
+перегруженные операции.</p>
+<p>Определение методов можно давать как внутри класса (стиль 
+Java, C#, C++), так и вне класса (стиль
+Delphi, C++). При определении метода вне интерфейса 
+класса его имя предваряется именем класса с последующей точкой. Например:</p>
+<blockquote>
+	<p><code><b>type</b> <br>
+&nbsp; Rectangle =<b> class</b><br>
+&nbsp;&nbsp;&nbsp; x1,y1,x2,y2: integer;<br>
+	&nbsp;&nbsp;&nbsp; <b>constructor</b> Create(xx1,yy1,xx2,yy2: integer);<br>
+&nbsp;&nbsp;&nbsp; <b>begin<br>
+	</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x1 := xx1; 
+	x2 := xx2;<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; y1 := yy1; 
+	y2 := yy2;<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+	&nbsp;&nbsp;&nbsp; <b>function</b> Square: integer;<br>
+&nbsp; <b>end</b>;</code></p>
+	<p><code><b>function</b> Rectangle.Square: integer;<br>
+	<b>begin</b><br>
+&nbsp; Result := abs(x2-x1) * abs(y2-y1);<br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p>Обычно когда класс определяется в интерфейсной части модуля, то в интерфейсе 
+класса производят лишь объявление методов, реализацию же методов класса дают в 
+секции реализации модуля.</p>
+<p>Методы делятся на <i> <span lang="ru">классовые</span></i> и <i>экземплярные</i>. 
+<span lang="ru">Классовые методы в </span>.NET <span lang="ru">называются 
+<i>статическими</i>. О</span>бъявлени<span lang="ru">е</span> <span lang="ru">классов</span>ого метода 
+<span lang="ru">начинается с ключевого слова </span><code><b>class</b></code>. Экземплярные методы 
+можно вызывать только через переменную-объект класса. <span lang="ru">Классовые</span> же методы не 
+связаны с конкретным экземпляром класса; их следует 
+вызывать в виде: </p>
+<blockquote>
+	<p><i>имя класса</i><code>.</code><i>имя метода</i><code>(</code><i>параметры</i><code>)</code>
+	</p>
+</blockquote>
+<p>Внутри <span lang="ru">классов</span>ого метода не может быть обращения к полям класса, а может 
+быть только обращение к другим <span lang="ru">классовы</span>м методам. Напротив, экземплярный метод 
+может вызывать <span lang="ru">классовый</span>.</p>
+<p>Например:</p>
+<blockquote>
+	<p><code><b>type</b> <br>&nbsp; Rectangle =<b> class<br>
+&nbsp; &nbsp; </b>...<br>
+&nbsp;&nbsp;&nbsp;&nbsp; <b>class procedure</b> Move(<b>var</b> 
+	r: Rectangle; dx,dy: integer);<br>
+&nbsp;&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r.x1 += dx; r.x2 += dx;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; r.y1 += dy; r.y2 += dy;<br>
+&nbsp;&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp; <b>end</b>;<br>
+	...<br>
+	<b>var</b> r := <b>new</b> Rectangle(10,10,100,100);<br>
+	Rectangle.Move(r,5,5);</code></p>
+</blockquote>
+<p>По существу, <span lang="ru">классовые</span> методы являются разновидностью 
+глобальных<span lang="ru"> подпрограмм</span>, но находятся внутри класса, что подчеркивает, что они осуществляют 
+действия, связанные именно с этим классом. Класс в этом случае выступает только 
+в роли пространства имен.</p>
+<p>Нередко создаются классы, целиком состоящие из <span lang="ru">классовых
+</span>методов. Таков, например, класс <code>System.Math</code>, 
+содержащий определения математических подпрограмм.</p>
+</body>
+
+</html>

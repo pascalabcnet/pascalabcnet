@@ -1,0 +1,194 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Length">
+<param name="Keyword" value="SetLength">
+<param name="Keyword" value="Low">
+<param name="Keyword" value="High">
+<param name="Keyword" value="Copy">
+<param name="Keyword" value="Sort">
+<param name="Keyword" value="Reverse">
+<param name="Keyword" value="Arr">
+<param name="Keyword" value="ArrFill">
+<param name="Keyword" value="ArrGen">
+<param name="Keyword" value="ArrRandom">
+<param name="Keyword" value="ArrRandomInteger">
+<param name="Keyword" value="ArrRandomReal">
+<param name="Keyword" value="ReadArrInteger">
+<param name="Keyword" value="ReadArrReal">
+<param name="Keyword" value="ReadArrString">
+<param name="Keyword" value="MatrixRandom">
+<param name="Keyword" value="MatrixRandomReal">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Подпрограммы для работы с динамическими массивами</H1>
+<table border=0 CELLPADDING=5>
+<tr>
+	<td>
+<code><b>function</b><b> </b>Length(a: 
+System.Array): integer; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает длину динамического массива</td>
+</tr>
+<tr>
+	<td>
+<code><b>function</b><b> </b>Length(a: 
+System.Array; m: integer): integer; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает длину 
+m-той размерности динамического массива (размерности нумеруются 
+с нуля)</td>
+</tr>
+<tr>
+	<td>
+<code><b>procedure </b>SetLength(<b>var</b> a: 
+System.Array; n: integer); </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает длину одномерного динамического массива. 
+Старое содержимое сохраняется<span lang="ru">. Ссылка </span>a <span lang="ru">
+на массив может измениться.</span></td>
+</tr>
+<tr>
+	<td>
+<code><b>procedure </b>SetLength(<b>var</b> a: 
+System.Array; n1,n2,...: integer); </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает 
+размер n-мерного динамического массива. Старое содержимое 
+сохраняется<span lang="ru">. Ссылка </span>a <span lang="ru">на массив может 
+измениться.</span></td>
+</tr>
+	<tr>
+	<td>
+<code>
+<b>function</b> Copy(a: 
+System.Array): System.Array;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает копию динамического массива</td>
+	</tr>
+	<tr>
+	<td>
+	<code><strong>function</strong> Low(a: System.Array): integer; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает нижнюю границу размерности массива (для динамических - 0)</td>
+	</tr>
+<tr>
+	<td>
+	<code><strong>function</strong> High(a: System.Array): integer; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает верхнюю границу размерности массива (для динамических - 
+	0)</td>
+</tr>
+<tr>
+	<td>
+	<code><strong>procedure</strong> Sort&lt;T&gt;(a: <strong>array of</strong> T);
+	</code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по возрастанию
+</td>
+</tr>
+<tr>
+	<td>
+	<code><strong>procedure</strong> Reverse&lt;T&gt;(a: <strong>array of</strong> T);
+	</code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет порядок элементов в динамическом массиве на противоположный
+</td>
+</tr>
+<tr><td>
+	<code><strong>procedure</strong> Reverse&lt;T&gt;(a: <strong>array of</strong> T; 
+	index,length: integer); </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет порядок элементов на противоположный в диапазоне 
+	динамического массива длины length начиная с индекса index
+</td></tr>
+	<tr>
+		<td>
+	<code><strong>function</strong> Arr&lt;T&gt;(<strong>params</strong> a: <strong>
+	array of</strong> T): <strong>array of</strong> T; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив, заполненный указанными элементами</td>
+	</tr>
+	<tr>
+		<td>
+	<code><strong>function</strong> ArrGen&lt;T&gt;(count: integer; first: T; next: T-&gt;T): <strong>array of</strong> T; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив из count элементов, начинающихся с first, с 
+		функцией next перехода от предыдущего к следующему</td>
+	</tr>
+<tr><td>
+	<code><strong>function</strong> ArrGen&lt;T&gt;(count: integer; first,second: T; next: 
+	(T,T)-&gt;T): <strong>array of</strong> T; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив из count элементов, начинающихся с first и second, 
+	с функцией next перехода от двух предыдущих к следующему</td></tr>
+<tr><td>
+	<code><strong>function</strong>  ArrGen&lt;T&gt;(count: integer; f: 
+	integer-&gt;T): <strong>array of</strong> T; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив из count элементов, заполненных значениями f(i) </td></tr>
+<tr><td>
+	<code><strong>function</strong> ArrFill&lt;T&gt;(count: integer; x: T): <strong>
+	array of</strong> T; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив из count элементов x </td></tr>
+	<tr>
+		<td>
+	<code><strong>function</strong>  ArrRandom(n: integer := 10; a: integer := 0; 
+	b: integer := 100): <strong>array of</strong> integer; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив размера n, заполненный случайными целыми 
+	значениями </td>
+	</tr>
+<tr><td>
+	<code><strong>function</strong>  ArrRandomInteger(n: integer := 10; a: integer := 0; 
+	b: integer := 100): <strong>array of</strong> integer; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив размера n, заполненный случайными целыми 
+	значениями </td></tr>
+<tr>
+	<td>
+	<code><strong>function</strong>  ArrRandomReal(n: integer := 10; a: real := 
+	0; b: real := 10): <strong>array of</strong> real; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив размера n, заполненный случайными вещественными 
+	значениями</td>
+</tr>
+<tr>
+	<td>
+	<code><strong>function</strong>  MatrixRandom(m: integer := 5; n: integer := 
+	5; a: integer := 0; b: integer := 100): <strong>array</strong> [,] <strong>
+	of</strong> integer; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает матрицу размера m x n, заполненную случайными целыми 
+	значениями </td>
+</tr>
+<tr>
+	<td>
+	<code><strong>function</strong>  MatrixRandomReal(m: integer := 5; n: integer 
+	:= 5; a: integer := 0; b: integer := 10): <strong>array</strong> [,] <strong>
+	of</strong> real; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает матрицу размера m x n, заполненную случайными 
+	вещественными значениями </td>
+</tr>
+<tr>
+	<td>
+	<code><strong>function</strong>  ReadArrInteger(n: integer): <strong>array of
+	</strong>integer; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив из n целых, введенных с клавиатуры</td>
+</tr>
+	<tr>
+	<td>
+	<code><strong>function</strong> ReadArrInteger(<strong>const</strong>  
+	prompt: string; n: integer): <strong>array of</strong> integer; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает массив из n целых, 
+	введенных с клавиатуры </td>
+	</tr>
+	<tr>
+	<td>
+	<code><strong>function</strong> ReadArrReal(n: integer): <strong>array of</strong> 
+	real; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив из n вещественных, введенных с клавиатуры </td>
+	</tr>
+	<tr>
+	<td>
+	<code><strong>function</strong> ReadArrReal(<strong>const</strong> prompt: string; n: 
+	integer): <strong>array of</strong> real; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает массив из n вещественных, 
+	введенных с клавиатуры </td>
+	</tr>
+<tr>
+	<td>
+	<code><strong>function</strong> ReadArrString(n: integer): <strong>array of</strong> 
+	string; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив из n строк, введенных с клавиатуры </td>
+</tr>
+<tr><td>
+	<code><strong>function</strong>  ReadArrString(<strong>const</strong>  prompt: 
+	string; n: integer): <strong>array of</strong> string; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает массив из n строк, 
+	введенных с клавиатуры</td></tr>
+</table>
+</body></html>

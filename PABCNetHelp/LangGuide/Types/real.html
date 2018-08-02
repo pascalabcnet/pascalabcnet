@@ -1,0 +1,137 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Экспоненциальная форма вещественного числа">
+<param name="Keyword" value="real">
+<param name="Keyword" value="double">
+<param name="Keyword" value="single">
+<param name="Keyword" value="MinValue">
+<param name="Keyword" value="MaxValue">
+<param name="Keyword" value="Epsilon">
+<param name="Keyword" value="NaN">
+<param name="Keyword" value="NegativeInfinity">
+<param name="Keyword" value="PositiveInfinity">
+<param name="Keyword" value="IsNaN">
+<param name="Keyword" value="IsNegativeInfinity">
+<param name="Keyword" value="IsPositiveInfinity">
+<param name="Keyword" value="IsInfinity">
+<param name="Keyword" value="Parse">
+<param name="Keyword" value="TryParse">
+<param name="Keyword" value="ToString">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Вещественные типы</H1>
+<p>Ниже приводится таблица вещественных типов, содержащая их размер, количество 
+значащих цифр и диапазон допустимых значений:</p>
+<table border="0" width="81%" id="table1">
+	<tr>
+		<td width="183">Тип</td>
+		<td width="183">Размер, байт</td>
+		<td width="168">Количество <br>
+		значащих цифр</td>
+		<td width="346">Диапазон значений</td>
+	</tr>
+	<tr>
+		<td width="183"><code>real </code></td>
+		<td width="183">8</td>
+		<td width="168">15-16</td>
+		<td width="346">-1.8&#8729;10<sup>308 </sup>.. 1.8&#8729;10<sup>308</sup></td>
+	</tr>
+	<tr>
+		<td width="183"><code>double </code></td>
+		<td width="183">8</td>
+		<td width="168">15-16</td>
+		<td width="346">-1.8&#8729;10<sup>308 </sup>.. 1.8&#8729;10<sup>308</sup></td>
+	</tr>
+	<tr>
+		<td width="183"><code>single </code></td>
+		<td width="183">4</td>
+		<td width="168">7-8</td>
+		<td width="346">-3.4&#8729;10<sup>38 </sup>.. 3.4&#8729;10<sup>38</sup></td>
+	</tr>
+	<tr>
+		<td width="183"><code>decimal</code></td>
+		<td width="183">16</td>
+		<td width="168">28-29</td>
+		<td width="346">-79228162514264337593543950335<sup> </sup>.. 
+		79228162514264337593543950335</td>
+	</tr>
+	</table>
+<p>Типы <code>real</code> и <code>double</code> являются синонимами. Самое маленькое положительное число типа <code>real</code> приблизительно равно 5.0&#8729;10<sup>-324</sup>, для типа <code>single</code> оно составляет приблизительно 1.4&#8729;10<sup>-45</sup>.</p>
+<p>Максимальные значения для каждого вещественного типа определены как внешние 
+<a href="../PABCSystemUnit/Files/Standard%20constants.html">стандартные константы</a><span lang="en-us">:</span>
+<span lang="en-us">MaxReal</span>, <span lang="en-us">MaxDouble </span>и
+<span lang="en-us">MaxSingle</span>.</p>
+<p>Для каждого вещественного типа <code>R</code> 
+кроме <code>decimal</code> 
+определены также следующие константы как статические члены класса:</p>
+<blockquote>
+	<p><code>R.MinValue</code> - константа, представляющая 
+	минимальное значение типа <code>R</code>;</p>
+	<p><code>R.MaxValue</code> - константа, представляющая 
+	максимальное значение типа <code>R</code>;</p>
+	<p><code>R.Epsilon</code> - константа, 
+	представляющая самое маленькое положительное число типа <code>
+	R</code>;</p>
+	<p><code>R.NaN</code> - константа, представляющая не число (возникает, например, 
+	при делении 0/0);</p>
+	<p><code>R.NegativeInfinity</code> - константа, 
+	представляющая отрицательную 
+	бесконечность (возникает, например, при делении -2/0);</p>
+	<p><code>R.PositiveInfinity</code> - константа, 
+	представляющая положительную 
+	бесконечность (возникает, например, при делении 2/0).</p>
+</blockquote>
+<p>Для каждого вещественного типа <code>R</code> кроме <code>decimal</code> определены 
+следующие статические функции:</p>
+<blockquote>
+	<p><code>R.IsNaN(r)</code> - возвращает <code>True</code>, 
+	если в <code>r</code> хранится значение <code>R.NaN</code>, и <code>False</code> 
+	в противном случае;</p>
+	<p><code>R.IsInfinity(r)</code> - возвращает 
+	<code>True</code>, если в <code>r</code>
+	хранится значение <code>R.PositiveInfinity</code>
+	или <code>R.NegativeInfinity</code>, 
+	и <code>False</code> в противном случае;</p>
+	<p><code>R.IsPositiveInfinity(r)</code> - возвращает
+	<code>True</code>, если в <code>r</code>
+	хранится значение <code>R.PositiveInfinity</code>, 
+	и <code>False</code> в противном случае;</p>
+	<p><code>R.IsNegativeInfinity(r)</code> - возвращает
+	<code>True</code>, если в <code>r</code>
+	хранится значение <code>R.NegativeInfinity</code>, 
+	и <code>False</code> в противном случае;</p>
+</blockquote>
+<p>Для каждого вещественного типа <code>R</code> определены 
+следующие статические функции:</p>
+<blockquote>
+	<p><code>R.Parse(s)</code> - 
+	функция, конвертирующая строковое представление числа в значение типа 
+	<code>R</code>. Если преобразование невозможно, то 
+	генерируется исключение;&nbsp; </p>
+	<p><code>R.TryParse(s,res)</code> 
+	функция, конвертирующая строковое представление числа в значение типа 
+	<code>R</code> и записывающая его в переменную <code>
+	res</code>. Если преобразование возможно, то возвращается 
+	значение <code>True</code>, в противном случае -
+	<code>False</code>.</p>
+</blockquote>
+<p>Кроме того, определена экземплярная 
+функция <code>ToString</code>, возвращающая строковое 
+представление переменной типа <code>R</code>.</p>
+<p>Вещественные константы можно записывать как в форме с плавающей точкой, так и в экспоненциальной 
+форме: </p>
+<blockquote>
+	<p><code>1.7</code>&nbsp;&nbsp;&nbsp; <code>0.013</code>&nbsp;&nbsp;&nbsp; <code>2.5e3</code> 
+	(2500)&nbsp;&nbsp;&nbsp; <code>1.4e-1</code> 
+	(0.14)</p>
+</blockquote>
+</body>
+
+</html>

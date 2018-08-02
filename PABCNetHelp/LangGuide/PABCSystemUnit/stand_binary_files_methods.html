@@ -1,0 +1,41 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="FilePos">
+<param name="Keyword" value="FileSize">
+<param name="Keyword" value="Seek">
+<param name="Keyword" value="Truncate">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+<body>
+<H1>Методы двоичных файлов</H1>
+<p>Для 
+двоичных файлов (типы <code><strong>file</strong></code>, <code><strong>file of</strong> T</code>) 
+определены следующие методы:</p>
+&nbsp;<table border=0 CELLPADDING=5>
+	<tr>
+		<td>
+		<code><strong>function</strong> FilePos: int64; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текущую позицию файлового указателя в двоичном файле
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> FileSize: int64; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество элементов в двоичном файле</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>procedure</strong> Seek(n: int64); </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает текущую позицию файлового указателя в двоичном 
+		файле на элемент с номером n</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>procedure</strong> Truncate; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Усекает двоичный файл, отбрасывая все элементы с позиции 
+		файлового указателя</tr>
+	</table>
+</body></html>

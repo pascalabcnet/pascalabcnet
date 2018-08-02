@@ -1,0 +1,46 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Dec">
+<param name="Keyword" value="Eof">
+<param name="Keyword" value="Eoln">
+<param name="Keyword" value="Inc">
+<param name="Keyword" value="Ord">
+<param name="Keyword" value="Pred">
+<param name="Keyword" value="Succ">
+<param name="Keyword" value="Swap"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Общие подпрограммы</H1>
+<table cellpadding=3><tr><td><code><b>procedure</b> Dec(<b>var</b> i: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Уменьшает значение переменной i на 1</td></tr>
+<tr><td><code><b>procedure</b> Dec(<b>var</b> i: integer; n: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Уменьшает значение переменной i на n</td></tr>
+<tr><td><code><b>procedure</b> Dec(<b>var</b> e: перечислимый тип);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Уменьшает значение перечислимого типа на 1</td></tr>
+<tr><td><code><b>procedure</b> Dec(<b>var</b> e: перечислимый тип; n: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Уменьшает значение перечислимого типа на n</td></tr>
+<tr><td><code><b>function</b> Eof: boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если достигнут конец потока ввода</td></tr>
+<tr><td><code><b>function</b> Eoln: boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если достигнут конец строки</td></tr>
+<tr><td><code><b>procedure</b> Inc(<b>var</b> i: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Увеличивает значение переменной i на 1</td></tr>
+<tr><td><code><b>procedure</b> Inc(<b>var</b> i: integer; n: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Увеличивает значение переменной i на n</td></tr>
+<tr><td><code><b>procedure</b> Inc(<b>var</b> e: перечислимый тип);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Увеличивает значение перечислимого типа на 1</td></tr>
+<tr><td><code><b>procedure</b> Inc(<b>var</b> e: перечислимый тип; n: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Увеличивает значение перечислимого типа на n</td></tr>
+<tr><td><code><b>function</b> Ord(a: целое): целое;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает порядковый номер значения a</td></tr>
+<tr><td><code><b>function</b> Ord(a: перечислимый тип): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает порядковый номер значения a</td></tr>
+<tr><td><code><b>function</b> Pred(x: целое): целое;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает предшествующее x значение</td></tr>
+<tr><td><code><b>function</b> Pred(x: перечислимый тип): перечислимый тип;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает предшествующее x значение</td></tr>
+<tr><td><code><b>function</b> Succ(x: целое): целое;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующее за x значение</td></tr>
+<tr><td><code><b>function</b> Succ(x: перечислимый тип): перечислимый тип;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующее за x значение</td></tr>
+<tr><td><code><b>procedure</b> Swap&lt;T&gt;(<b>var</b> a, b: T);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет местами значения двух переменных</td></tr>
+</table></body></HTML>

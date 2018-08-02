@@ -1,0 +1,101 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+<body>
+<H1>Задание a1 для исполнителя Робот</H1>
+<hr>
+<p>Задание a1 относится к вводным заданиям, посвященным
+знакомству с основными командами исполнителя Робот.
+Приведем формулировку этого задания.
+</p>
+
+<p><b>a1</b>. Закрасить помеченные клетки.</p>
+<blockquote>
+<img border="0" src="gif/RBa1-1.png">
+</blockquote>
+
+
+
+<p>Опишем сценарий решения задания.</p>
+<hr>
+<p><font color="#0000FF"><b><i>Шаг 1.</i> </b></font>Подключим
+к программе модуль <code>Robot</code> и вызовем в 
+начале программы процедуру <code>Task</code>, передав ей в 
+качестве параметра имя задания:</p>
+<blockquote>
+	<code><b>uses</b> Robot;<br><b>begin</b><br>&nbsp;&nbsp;Task('a1');<br>
+	<br><b>end</b>.</code>
+</blockquote>
+<p>Чтобы не набирать указанный текст, нажмем кнопку 
+<img border="0" src="../PT4/gif/load.gif" width="16" height="17"> и 
+в появившемся окне наберем имя задания <code>RBa1</code> (префикс <code>RB</code>
+означает, что решается задача для Робота). Запустим программу (нажав клавишу <b>F9</b>), чтобы увидеть окно Робота с
+графическим изображением задания:</p>
+<blockquote>
+<img border="0" src="gif/RBa1-2.png">
+</blockquote>
+<hr>
+<p><font color="#0000FF"><b><i>Шаг 2.</i> </b></font>
+Наберем несколько команд Робота: </p>
+<blockquote>
+	<code><b>uses</b> Robot;<br><b>begin</b><br>&nbsp;&nbsp;Task('a1');<br>
+	&nbsp; Right;Right;Right;Right;<br><b>end</b>.</code>
+</blockquote>
+<p>Запустим программу, после чего нажмем <b>Enter</b> или кнопку
+«Пуск» чтобы Робот начал выполнять 
+заложенную в него программу:</p>
+<blockquote>
+<img border="0" src="gif/RBa1-3.png">
+</blockquote>
+<p>После окончания движения Робота осуществляется проверка, все
+ли помеченные клетки закрашены и находится ли Робот в конечной клетке.
+Если проверка дает отрицательный ответ, то задание не считается выполненным.</p>
+<hr>
+<p><font color="#0000FF"><b><i>Шаг 3.</i> </b></font>
+Выполним неверную команду, в результате которой Робот врежется в 
+стенку:</p>
+<blockquote>
+	<code><b>uses</b> Robot;<br><b>begin</b><br>&nbsp;&nbsp;Task('a1');<br>
+	&nbsp; Right;Right;Right;Right;<br>
+	&nbsp; Up;Up;Left;<br><b>end</b>.</code>
+</blockquote>
+<p>После запуска программы и нажатия <b>Enter</b>
+получим следующее окно:</p>
+<blockquote>
+<img border="0" src="gif/RBa1-4.png">
+</blockquote>
+<p>Заметим, что квадратный индикатор состояния Робота окрасился в красный цвет, а
+последняя команда <code>Left</code> не выполнилась, так как
+после фатальной ошибки Робот прекратил выполнение задания.</p>
+<hr>
+<p><font color="#0000FF"><b><i>Шаг 4.</i> </b></font>
+Исправим ошибку и выполним задание до конца:</p>
+
+<blockquote>
+	<code><b>uses</b> Robot;<br><b>begin</b><br>&nbsp;&nbsp;Task('a1');<br>
+	&nbsp; Right;Right;Right;Right;<br>
+	&nbsp; Up;<br>
+ &nbsp; Left;Paint;<br>
+ &nbsp; Left;Paint;<br>
+ &nbsp; Left;Paint;<br>
+ &nbsp; Left;Paint;<br>
+ &nbsp; Left;<br>
+ <b>end</b>.</code>
+</blockquote>
+
+<blockquote>
+<img border="0" src="gif/RBa1-5.png">
+</blockquote>
+<p>Последний рисунок не нуждается в комментариях.</p>
+<p>Заметим, что сведения о выполненных заданиях
+можно просмотреть, нажав кнопку
+<img border="0" src="../PT4/gif/results.gif" width="16" height="17">.</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

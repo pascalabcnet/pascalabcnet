@@ -1,0 +1,134 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Обработка исключений: обзор</H1>
+<p>Когда во время выполнения программы происходит ошибка, 
+генерируется так называемое <i>исключение</i>, которое можно <i>перехватить</i> 
+и <i>обработать</i>. Исключение представляет собой объект класса, производного от 
+класса <code>Exception</code>, создающийся при 
+возникновении исключительной ситуации.</p>
+<p>Имеется 
+ряд <a href="StandardExceptions.html">стандартных типов исключений</a>. Можно также 
+определять <a href="userExceptions.html">пользовательские типы исключений</a>.</p>
+<p>Если исключение не обработать, то программа завершится с 
+ошибкой. Для обработки исключений используется оператор 
+<a href="../Operators/try_except.html"><code><b>try</b></code> 
+... <code><b>except</b></code></a>. </p>
+<p>Обычно исключения возбуждаются в подпрограммах, поскольку 
+разработчик подпрограммы, как правило, не знает, как обработать ошибочную 
+ситуацию. В месте вызова подпрограммы уже, как правило, известно, каким образом 
+следует обрабатывать исключение. Например, пусть разработана 
+следующая функция:</p>
+<blockquote>
+	<p><code><b>function</b> mymod(a,b: integer): integer;<br>
+	<b>begin</b><br>
+&nbsp; Result := a - (a <b>div</b> b) * b;<br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p>Если вызвать <code>mymod(1,0)</code>, то 
+будет возбуждено исключение <code>System.DivideByZeroException</code> 
+целочисленного деления на 0. </p>
+<p>Рассмотрим наивную попытку обработать ошибочную ситуацию 
+внутри функции <code>mymod</code>:</p>
+<blockquote>
+	<p><code><b>function</b> mymod(a,b: integer): integer;<br>
+	<b>begin<br>
+	</b>&nbsp; <b>if</b> b = 0 <b>then</b> <br>
+&nbsp;&nbsp;&nbsp; writeln('Функция mymod: деление на 0');<br>
+&nbsp; Result := a - (a <b>div</b> b) * b;<br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p>Подобное решение является плохим, поскольку программист, 
+разрабатывающий функцию <code>mymod</code>, не знает, как 
+она будет использоваться. Например, при вызове функции <code>mymod</code>
+в цикле мы увидим на экране многократное сообщение об ошибке.</p>
+<p>Простейший способ - оставить исходный вариант функции и 
+обрабатывать исключение <code>System.DivideByZeroException</code>:</p>
+<blockquote>
+	<p><code><b>try</b> <br>
+&nbsp; readln(a,b);<br>
+&nbsp; writeln(mymod(a,b) <b>mod</b> (a-1));<br>
+	&nbsp; ...<br>
+	<b>except</b><br>
+&nbsp; <b>on</b> System.DivideByZeroException <b>do</b><br>
+&nbsp;&nbsp;&nbsp; writeln('Деление на 0');&nbsp; <br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p>Отличие от вывода внутри функции состоит в том, что при 
+разработке программы мы сами определяем действие, которое необходимо выполнять 
+при обработке исключения. Это может быть специфическое сообщение об ошибке, 
+вывод в файл ошибок или пустой оператор (в случае, когда требуется &quot;беззвучно&quot; 
+погасить исключение). </p>
+<p>Однако, данное решение обладает существенным недостатком: 
+исключение <code>System.DivideByZeroException</code> будет возбуждено и 
+при a=1 и не будет связано с функцией <code>mymod</code>. 
+Для устранения подобного недостатка определим собственный класс исключения и 
+возбудим его в функции <code>mymod</code>: </p>
+<blockquote>
+	<p><code><b>type</b> MyModErrorException =<b> class</b>(System.Exception) <b>end</b>;&nbsp;&nbsp;
+	</code></p>
+	<p><code><b>function</b> mymod(a,b: integer): integer;<br>
+	<b>begin</b><br>
+&nbsp; <b>if</b> b = 0 <b>then</b> <br>
+&nbsp;&nbsp;&nbsp; <b>raise</b> new MyModErrorException('Функция mymod: деление на 0');<br>
+&nbsp; Result := a - (a <b>div</b> b) * b;<br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p>Тогда обработка ошибок будет выглядеть так:</p>
+<blockquote>
+	<p><code><b>try</b> <br>
+&nbsp; readln(a,b);<br>
+&nbsp; writeln(mymod(a,b) <b>mod</b> (a-1));<br>
+	&nbsp; ...<br>
+	<b>except</b><br>
+&nbsp; <b>on</b> System.DivideByZeroException <b>do</b><br>
+&nbsp;&nbsp;&nbsp; writeln('Деление на 0');&nbsp; <br>
+&nbsp; <b>on</b> e: MyModErrorException <b>do</b><br>
+&nbsp;&nbsp;&nbsp; writeln(e.Message);<br>
+&nbsp; <b>else</b> writeln('какое-то другое исключение')&nbsp; <br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p>Если сделать <code>MyModErrorException</code> 
+наследником класса&nbsp;<code>System.ArithmeticException</code>, как и <code>
+System.DivideByZeroException</code>, то последний код можно упростить:<code>&nbsp;&nbsp;
+</code></p>
+<blockquote>
+	<p><code><b>type</b> MyModErrorException =<b> class</b>(System.ArithmeticException) <b>end</b>;</code></p>
+	<p><code>...</code></p>
+	<p><code><b>try</b> <br>
+&nbsp; readln(a,b);<br>
+&nbsp; writeln(mymod(a,b) <b>mod</b> (a-1));<br>
+	&nbsp; ...<br>
+	<b>except</b><br>
+&nbsp; <b>on</b> e: System.ArithmeticException <b>do</b><br>
+&nbsp;&nbsp;&nbsp; writeln(e.Message);&nbsp; <br>
+	&nbsp; <b>else</b> writeln('Какое-то другое исключение')&nbsp; <br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p>Наконец, можно поступить следующим образом. 
+Перехватим в функции <code>mymod</code>
+исключение <code>System.DivideByZeroException</code> и в 
+ответ сгенерируем новое - <code>MyModErrorException</code>:</p>
+<blockquote>
+	<p><code><b>function</b> mymod(a,b: integer): integer;<br>
+	<b>begin</b><br>
+	&nbsp; <b>try</b><br>
+&nbsp;
+&nbsp; Result := a - (a <b>div</b> b) * b;<br>
+&nbsp; <b>except</b><br>
+&nbsp;&nbsp;&nbsp; <b>on</b> e: System.DivideByZeroException <b>do</b><br>
+	&nbsp; &nbsp; &nbsp; <b>raise</b> 
+	<b>new</b> 
+	MyModErrorException('Функция mymod: деление на 0');<br>
+&nbsp; <b>end</b>;<br>
+	<b>end</b>;</code></p>
+</blockquote>
+</body>
+
+</html>

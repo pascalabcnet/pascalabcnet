@@ -1,0 +1,322 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Inc">
+<param name="Keyword" value="Dec">
+<param name="Keyword" value="succ">
+<param name="Keyword" value="pred">
+<param name="Keyword" value="Odd">
+<param name="Keyword" value="Ord">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Подпрограммы для работы с перечислимыми типами</H1>
+<table border=0 CELLPADDING=5>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Inc(<b>var</b> i: integer); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Увеличивает значение переменной 
+<code>i</code> на 1
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Inc(<b>var</b> i: integer; n: integer); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Увеличивает значение переменной 
+<code>i</code> на <code>n</code>
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Dec(<b>var</b> i: integer); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Уменьшает значение переменной 
+<code>i</code> на 1
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Dec(<b>var</b> i: integer; n: integer); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Уменьшает значение переменной 
+<code>i</code> на <code>n</code>
+</td></tr>
+<tr>
+	<td>
+<code>
+<b>procedure</b> Inc(<b>var</b> c: char); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Увеличивает код символа <code>c</code> на 1
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+<b>procedure</b> Inc(<b>var</b> c: char; n: integer); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Увеличивает код символа <code>c</code> на 
+<code>n</code>
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+<b>procedure</b> Dec(<b>var</b> c: char); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Уменьшает код символа <code>c</code> на 1
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+<b>procedure</b> Dec(<b>var</b> c: char; n: integer); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Уменьшает код символа <code>c</code> на 
+<code>n</code>
+</td>
+</tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Inc(<b>var</b> <span lang="en-us">e</span>: 
+<span lang="en-us">System.Enum</span>); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Увеличивает значение 
+перечислимого типа <code><span lang="en-us">e</span></code> на 1
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Inc(<b>var</b> <span lang="en-us">e</span>: 
+<span lang="en-us">System.Enum</span>; n: integer); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Увеличивает значение перечислимого типа <code><span lang="en-us">e</span></code> 
+на <code>n</code>
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Dec(<b>var</b> <span lang="en-us">e</span>: 
+<span lang="en-us">System.Enum</span>); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Уменьшает значение перечислимого типа <code><span lang="en-us">e</span></code> на 1
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Dec(<b>var</b> <span lang="en-us">e</span>: 
+<span lang="en-us">System.Enum</span>; n: integer); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Уменьшает значение перечислимого типа <code><span lang="en-us">e</span></code> на 1
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> <span lang="en-us">S</span>ucc(x: integer): integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующее за <code>x</code> значение
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> <span lang="en-us">S</span>ucc(x: boolean): boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующее за <code>x</code> значение
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> <span lang="en-us">S</span>ucc(x: byte): byte;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующее за <code>x</code> значение
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> <span lang="en-us">S</span>ucc(x: shortint): shortint;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующее за <code>x</code> значение
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> <span lang="en-us">S</span>ucc(x: smallint): smallint;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующее за <code>x</code> значение
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> <span lang="en-us">S</span>ucc(x: word): word;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующее за <code>x</code> значение
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> <span lang="en-us">S</span>ucc(x: longword): longword;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующее за <code>x</code> значение
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> <span lang="en-us">S</span>ucc(x: int64): int64;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующее за <code>x</code> значение
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> <span lang="en-us">S</span>ucc(x: uint64): uint64;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующее за <code>x</code> значение
+</td></tr>
+<tr>
+	<td>
+<code>
+<b>function</b> <span lang="en-us">S</span>ucc(x: char): char;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующее за <code>x</code> значение
+</td>
+</tr>
+<tr><td>
+<code>
+<b>function</b> <span lang="en-us">S</span>ucc(<span lang="en-us">e</span>: 
+<span lang="en-us">System.Enum</span>): <span lang="en-us">System.Enum</span>;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующее за <code>
+<span lang="en-us">e</span></code> значение
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> <span lang="en-us">P</span>red(x: boolean): boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает предшествующее <code>x</code> значение
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> <span lang="en-us">P</span>red(x: byte): byte;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает предшествующее <code>x</code> значение
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> <span lang="en-us">P</span>red(x: shortint): shortint;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает предшествующее <code>x</code> значение
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> <span lang="en-us">P</span>red(x: smallint): smallint;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает предшествующее <code>x</code> значение
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> <span lang="en-us">P</span>red(x: word): word;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает предшествующее <code>x</code> значение
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> <span lang="en-us">P</span>red(x: integer): integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает предшествующее <code>x</code> значение
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> <span lang="en-us">P</span>red(x: longword): longword;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает предшествующее <code>x</code> значение
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> <span lang="en-us">P</span>red(x: int64): int64;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает предшествующее <code>x</code> значение
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> <span lang="en-us">P</span>red(x: uint64): uint64;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает предшествующее <code>x</code> значение
+</td></tr>
+<tr>
+	<td>
+<code>
+<b>function</b> <span lang="en-us">P</span>red(x: char): char;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает предшествующее <code>x</code> значение
+</td>
+</tr>
+<tr><td>
+<code>
+<b>function</b> Pred(<span lang="en-us">e</span>: <span lang="en-us">System.Enum</span>): 
+<span lang="en-us">System.Enum</span>;&nbsp;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает предшествующее 
+<code>
+<span lang="en-us">e</span></code> значение
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> Odd(i: integer): boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если <code>i</code> нечетно
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> Odd(i: longword): boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если <code>i</code> нечетно
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> Odd(i: int64): boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если <code>i</code> нечетно
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> Odd(i: uint64): boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если <code>i</code> нечетно
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> Ord(a: char): byte;
+</code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует символ в код</td></tr>
+<tr><td>
+<code>
+<b>function</b> Ord(a: integer): integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает порядковый номер значения 
+<code>a</code>
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> Ord(a: longword): longword;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает порядковый номер значения 
+<code>a</code>
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> Ord(a: int64): int64;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает порядковый номер значения 
+<code>a</code>
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> Ord(a: uint64): uint64;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает порядковый номер значения 
+<code>a</code>
+</td></tr>
+<tr>
+	<td>
+<code>
+<b>function</b> Ord(a: boolean): integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает порядковый номер значения 
+<code>a</code>
+</td>
+</tr>
+<tr><td>
+<code>
+<b>function</b> Ord(<span lang="en-us">e</span>: <span lang="en-us">System.Enum</span>): integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает порядковый номер значения 
+<code>
+<span lang="en-us">e</span></code>
+</td></tr>
+</table>
+</body></html>

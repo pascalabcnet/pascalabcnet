@@ -1,0 +1,110 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="for">
+<param name="Keyword" value="to">
+<param name="Keyword" value="downto">
+<param name="Keyword" value="do">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+<style type="text/css">
+.auto-style1 {
+	color: #FF0000;
+}
+</style>
+</head>
+
+<body>
+<H1>Оператор цикла for</H1>
+<p>Оператор цикла <code><b>for</b></code> имеет одну из двух 
+форм:</p>
+<blockquote>
+	<p><code><b>for</b> </code><code class="codeit">переменная</code><code> :=</code><code>
+	</code><code class="codeit">начальное 
+	значение</code><code> <b>to</b> </code><code class="codeit">конечное 
+	значение</code><code> <b>do</b><br>
+	&nbsp; </code><code class="codeit">оператор</code></p>
+</blockquote>
+<p>или</p>
+<blockquote>
+	<p><code><b>for</b> </code><code class="codeit">переменная</code><code> :=
+	</code><code class="codeit">начальное 
+	значение</code><code> <b>downto</b> </code><code class="codeit">конечное 
+	значение</code><code> <b>do</b><br>
+	&nbsp; </code><code class="codeit">оператор</code></p>
+</blockquote>
+<p>Кроме того, переменную можно описать непосредственно в 
+заголовке цикла:</p>
+<blockquote>
+	<p><code><b>for</b> </code><code class="codeit">переменная</code><code>:</code><code class="codeit"> тип</code><code> := </code><code class="codeit">начальное 
+	значение</code><code> <b>to</b> </code><code class="codeit">или</code><code><span lang="ru">
+	</span> <b>downto</b> </code><code class="codeit">конечное 
+	значение</code><code> <b>do</b><br>
+	&nbsp; </code><code class="codeit">оператор</code></p>
+</blockquote>
+<p>или</p>
+<blockquote>
+	<p><code><b>for var</b> </code><code class="codeit">переменная</code><code> :=
+	</code><code class="codeit">начальное 
+	значение</code><code> <b>to</b> </code><code class="codeit">или</code><code><span lang="ru">
+	</span> <b>downto</b> </code><code class="codeit">конечное 
+	значение</code><code> <b>do</b><br>
+	&nbsp; </code><code class="codeit">оператор</code></p>
+</blockquote>
+<p>В последнем случае используется <em><strong><span class="auto-style1">автоопределение типа</span></strong></em> 
+переменной по типу начального значения. В двух последних случаях область действия 
+объявленной переменной распространяется до конца тела цикла, которое в данном случае 
+образует неявный блок. Вне тела цикла такая переменная недоступна, поэтому 
+следующий цикл может использовать переменную с тем же именем:</p>
+<blockquote>
+	<p><code><b>for</b> <strong>var</strong> i := 1 <b>to</b> 10 <b>do<br></b>&nbsp; 
+	Print(i);<br>
+	<b>for</b> <strong>var </strong>i := 1 <b>to</b> 5 <b>do</b><br>
+	&nbsp; Print(i*i);</code></p>
+</blockquote>
+<p>Текст от слова <code><b>for</b></code> до слова <code><b>do</b></code> 
+включительно называется <b><font color="#FF0000"> <i>заголовком цикла</i></font></b>, а 
+оператор после <code><b>do</b></code> - <i><b><font color="#FF0000">телом цикла</font></b>.</i> 
+Переменная после слова <code><b>for</b></code> называется <i><b>
+<font color="#FF0000">параметром цикла</font></b></i>.
+Для первой формы цикла с ключевым словом <code><b>to</b></code>
+параметр цикла меняется от начального значения до 
+конечного значения, увеличиваясь всякий раз на единицу, а для 
+второй формы ключевым словом <code><b>downto</b></code> - 
+уменьшаясь на единицу. Для каждого значения переменной-параметра 
+выполняется тело цикла. Однократное повторение тела цикла 
+называется <i><b><font color="#FF0000">итерацией цикла</font></b></i>. Значение параметра цикла после завершения цикла считается неопределенным.</p>
+<p>Переменная-параметр цикла может иметь любой <a href="../Types/index_types.html">порядковый тип</a>. При этом начальное и 
+конечное значения должны быть <a href="../Types/typecompatibility.html">
+совместимы по присваиванию</a> с переменной-параметром цикла. </p>
+<p>Например:</p>
+<blockquote>
+	<p><code><b>var</b> en: (red,green,blue,white);<b><br>
+	...<br>
+	for</b> en := red <b>to</b> blue <b>do</b><br>
+&nbsp; write(Ord(en):2);<br>
+	<b>for</b> <b>var</b> c := 'a' <b>to</b> 'z' <b>do</b><br>
+&nbsp; write(c);</code></p>
+</blockquote>
+<p>Если для цикла <code><b>for</b></code> ... <code><b>to</b></code>
+начальное значение переменной цикла больше конечного значения 
+или для цикла&nbsp;<code><b>for</b></code> ...
+<code><b>downto</b></code> начальное значение переменной цикла 
+меньше конечного значения, то тело цикла не выполнится ни разу.</p>
+<p>Если цикл используется в подпрограмме, то 
+переменная-параметр цикла должна быть описана как локальная. Наилучшим решением 
+в PascalABC.NET является описание переменной в заголовке цикла.</p>
+<p>Изменение переменной-параметра цикла внутри цикла является 
+логической ошибкой. Например, следующий фрагмент со вложенным оператором 
+<code><b>for</b></code> является ошибочным:</p>
+<blockquote>
+	<p><code><b>for</b> i := 1 <b>to</b> 10 <b>do</b><br>
+&nbsp; i -= 1;</code></p>
+</blockquote>
+<p>&nbsp;</p>
+</body>
+
+</html>

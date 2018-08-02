@@ -1,0 +1,41 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+
+<H1>Анимация без мерцания</H1>
+Данная программа иллюстрирует применение процедур <code>LockDrawing</code> и
+<code>Redraw</code> для реализации анимации без мерцания:
+<blockquote>
+<pre>
+<code><b>uses</b> GraphABC;
+<b>begin</b>
+  <a href="../../PABCUnits/GraphABC/gr_LockDrawing.html">LockDrawing</a>;
+  <b>for </b><b>var</b> i:=1 to 500 do
+  <b>begin</b>
+    Window.Clear;
+    Brush.Color := clGreen;
+    Ellipse(i,100,i+100,200);
+    <a href="../../PABCUnits/GraphABC/gr_LockDrawing.html">Redraw</a>;
+    Sleep(1);
+  <b>end</b>;
+<b>end</b>.</code>
+</pre>
+</blockquote>
+
+<p>Основная идея состоит в следующем: отключим рисование на экране, вызвав <code>
+LockDrawing</code> (рисование будет осуществляться только во внеэкранном 
+буфере), после чего будем всякий раз формировать новый кадр изображения и 
+выводить его целиком на экран, вызывая <code>Redraw</code>. При вызове <code>
+Redraw</code> перерисовывается все графическое окно, 
+поэтому скорость анимации ограничена скоростью вывода внеэкранного буфера на 
+экран.</p>
+
+</body>
+
+</html>

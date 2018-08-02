@@ -1,0 +1,37 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Перемещение окна с помощью клавиатуры</H1>
+Данная программа осуществляет перемещение графического окна с помощью клавиатуры:
+
+<blockquote>
+<pre>
+<code><b>uses</b> GraphABC;
+<b><span style="font-size: 4pt">
+</span>procedure</b> KeyDown(Key: integer);
+<b>begin</b>
+  <b> case</b> Key <b>of</b>
+  <a href="../../PABCUnits/GraphABC/gr_VK.html">VK_Left</a>:  Window.Left := Window.Left - 2;
+  <a href="../../PABCUnits/GraphABC/gr_VK.html">VK_Right</a>: Window.Left := Window.Left + 2;
+  <a href="../../PABCUnits/GraphABC/gr_VK.html">VK_Up</a>:    Window.Top := Window.Top - 2;
+  <a href="../../PABCUnits/GraphABC/gr_VK.html">VK_Down</a>:  Window.Top := Window.Top + 2;
+  <b> end</b>;
+<b>end</b>;
+<b><span style="font-size: 4pt">
+</span>begin</b>
+  // Привязка обработчиков к событиям
+  <a href="../../PABCUnits/GraphABC/gr_events.html">OnKeyDown</a> := KeyDown;
+<b>end</b>.</code>
+</pre>
+</blockquote>
+
+
+</body>
+
+</html>

@@ -1,0 +1,144 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="integer">
+<param name="Keyword" value="byte">
+<param name="Keyword" value="shortint">
+<param name="Keyword" value="smallint">
+<param name="Keyword" value="uint64">
+<param name="Keyword" value="int64">
+<param name="Keyword" value="word">
+<param name="Keyword" value="longword">
+<param name="Keyword" value="longint">
+<param name="Keyword" value="cardinal">
+<param name="Keyword" value="BigInteger">
+<param name="Keyword" value="ToString">
+<param name="Keyword" value="Parse">
+<param name="Keyword" value="TryParse">
+<param name="Keyword" value="MinValue">
+<param name="Keyword" value="MaxValue">
+<param name="Keyword" value="MaxInt64">
+<param name="Keyword" value="MaxInt">
+<param name="Keyword" value="MaxSmallInt">
+<param name="Keyword" value="MaxShortInt">
+<param name="Keyword" value="MaxByte">
+<param name="Keyword" value="MaxWord">
+<param name="Keyword" value="MaxLongWord">
+<param name="Keyword" value="MaxUInt64">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Целые типы</H1>
+<p>Ниже приводится таблица целых типов, содержащая также их 
+размер и диапазон допустимых значений.</p>
+<p>&nbsp;</p>
+<table border="0" width="68%" id="table1">
+	<tr>
+		<td width="183">Тип</td>
+		<td width="183">Размер, байт</td>
+		<td width="420">Диапазон значений</td>
+	</tr>
+	<tr>
+		<td width="183"><code>shortint </code></td>
+		<td width="183">1</td>
+		<td width="420">-128..127</td>
+	</tr>
+	<tr>
+		<td width="183"><code>smallint </code></td>
+		<td width="183">2</td>
+		<td width="420">-32768..32767</td>
+	</tr>
+	<tr>
+		<td width="183"><code>integer</code>, <code>longint</code></td>
+		<td width="183">4</td>
+		<td width="420">-2147483648..2147483647</td>
+	</tr>
+	<tr>
+		<td width="183"><code>int64</code></td>
+		<td width="183">8</td>
+		<td width="420">-9223372036854775808..9223372036854775807</td>
+	</tr>
+	<tr>
+		<td width="183"><code>byte </code></td>
+		<td width="183">1</td>
+		<td width="420">0..255</td>
+	</tr>
+	<tr>
+		<td width="183"><code>word</code></td>
+		<td width="183">2</td>
+		<td width="420">0..65535</td>
+	</tr>
+	<tr>
+		<td width="183"><code>longword</code>, <code>cardinal </code></td>
+		<td width="183">4</td>
+		<td width="420">0..4294967295</td>
+	</tr>
+	<tr>
+		<td width="183"><code>uint64</code></td>
+		<td width="183">8</td>
+		<td width="420">0..18446744073709551615</td>
+	</tr>
+	<tr>
+		<td width="183"><code>BigInteger</code></td>
+		<td width="183">переменный</td>
+		<td width="420">неограниченный</td>
+	</tr>
+</table>
+<p>Типы <code>integer</code> и <code>longint</code>, а 
+также <code>longword</code> и <code>cardinal</code> 
+являются синонимами. </p>
+<p>Максимальные значения для каждого целого типа определены как внешние 
+<a href="../PABCSystemUnit/Files/Standard%20constants.html">стандартные константы</a>:
+<code>
+  MaxInt64</code>,
+<code>
+  MaxInt</code>, <code>
+  MaxSmallInt</code>, <code>
+  MaxShortInt</code>,
+<code>
+  MaxUInt64</code>,
+<code>
+  MaxLongWord</code>,
+<code>
+  MaxWord</code>,
+<code>
+  MaxByte</code>.</p>
+<p>Для каждого целого типа <code>T</code> 
+кроме <code>BigInteger</code> 
+определены следующие константы как статические члены:</p>
+<blockquote>
+	<p><code>T.MinValue</code> - константа, представляющая 
+	минимальное значение типа <code>T</code>;</p>
+	<p><code>T.MaxValue</code> - константа, представляющая 
+	максимальное значение типа <code>T</code>;</p>
+</blockquote>
+<p>Для каждого целого типа <code>T</code> 
+определены статические функции:</p>
+<blockquote>
+	<p><code>T.Parse(s)</code> - функция, конвертирующая 
+	строковое представление числа в значение типа <code>T</code>. 
+	Если преобразование невозможно, то генерируется исключение;&nbsp;
+	</p>
+	<p><code>T.TryParse(s,res)</code> - функция, конвертирующая 
+	строковое представление числа в значение типа <code>T</code> 
+	и записывающая его в переменную <code>res</code>. 
+	Если преобразование возможно, то возвращается значение <code>True</code>, 
+	в противном случае - <code>False</code>.</p>
+</blockquote>
+<p>Кроме того, для <code>T</code> определена экземплярная 
+функция <code>ToString</code>, возвращающая строковое 
+представление переменной данного типа.</p>
+<p>Константы целого типа могут представляться как в десятичной, 
+так и в шестнадцатеричной форме, перед шестнадцатеричной константой ставится 
+знак $:</p>
+<blockquote>
+	<p><code>25&nbsp;&nbsp; 3456&nbsp;&nbsp; $FFFF</code></p>
+</blockquote>
+</body>
+
+</html>

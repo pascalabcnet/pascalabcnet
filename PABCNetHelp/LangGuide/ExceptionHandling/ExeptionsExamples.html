@@ -1,0 +1,94 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Примеры обработки исключений</H1>
+<p><b>Пример 1.</b> Обработка неверного ввода данных.</p>
+<p>Рассмотрим программу. </p>
+<blockquote>
+	<p><code><b>var</b> i: integer;<br>
+	<b>begin</b><br>
+&nbsp; readln(i);<br>
+&nbsp; writeln(i);<br>
+&nbsp; writeln('Выполнение программы продолжается');<br>
+	<b>end</b>.</code></p>
+</blockquote>
+<p>Если при вводе данных произойдет ошибка (например, мы введем 
+не число), то программа завершится с ошибкой (ошибка ввода), и последующие 
+операторы <code>writeln</code> не будут выполнены.</p>
+<p>Перехватим исключение в блоке <code><b>try</b></code>:</p>
+<blockquote>
+	<p><code><b>var</b> i: integer;<br>
+	<b>begin</b><br>
+&nbsp; <b>try</b><br>
+&nbsp;&nbsp;&nbsp; readln(i);<br>
+&nbsp;&nbsp;&nbsp; writeln(i);<br>
+&nbsp; <b>except</b><br>
+&nbsp;&nbsp;&nbsp; writeln('Ошибка ввода');<br>
+&nbsp; <b>end</b>;<br>
+&nbsp; writeln('Выполнение программы продолжается');<br>
+	<b>end</b>.</code></p>
+</blockquote>
+<p>На этот раз при возникновении ошибки ввода программа не будет 
+завершена, а выполнение будет передано в блок <code><b>except</b></code>, 
+после чего выполнение программы продолжится дальше. Таким образом, в последней 
+программе не выполнится лишь оператор <code>writeln(i)</code>.</p>
+<p>Если в блоке <code><b>try</b></code> могут 
+возникнуть различные исключения, то обычно используется вторая форма блока <code>
+<b>except</b></code> с несколькими обработчиками 
+исключений. </p>
+<p><b>Пример 2.</b> Обработка различных исключений.</p>
+<blockquote>
+	<p><code><b>var</b> a,b: integer;<br>
+	assign(f,'a.txt');<br>
+	<b>try<br>
+	</b>&nbsp; readln(a,b);<br>
+	&nbsp;&nbsp;reset(f);<br>
+	&nbsp; c:=a <b>div</b> b;<br>
+	<b>except</b><br>
+	&nbsp; <b>on</b> System.DivideByZeroException <b>do</b><br>
+&nbsp;&nbsp;&nbsp; writeln('Целочисленное деление на 0');&nbsp; <br>
+&nbsp; <b>on</b> System.IO.IOException <b>do</b><br>
+&nbsp;&nbsp;&nbsp; writeln('Файл отсутствует');&nbsp;<br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p>Часто необходимо совмещать обработку исключений и 
+освобождение ресурсов независимо от того, произошло исключение или нет. В этом 
+случае используются вложенные операторы <code><b>try</b></code> ... <code>
+<b>except</b></code> и <code><b>try</b></code> ... <code>
+<b>finally</b></code>. </p>
+<p><b>Пример 3.</b> Вложенные операторы <code><b>try</b></code> 
+... <code><b>except</b></code> и <code><b>try</b></code> 
+... <code><b>finally</b></code>. </p>
+<blockquote>
+	<p><code>assign(f,'a.txt');<br>
+	<b>try</b><br>
+&nbsp; reset(f);<br>
+	<b>&nbsp; try<br>
+&nbsp;&nbsp;&nbsp; try</b><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; c:=a <b>div</b> b;<br>
+	<b>&nbsp;&nbsp;&nbsp; except</b><br>
+	&nbsp; <b>&nbsp;&nbsp;&nbsp; on</b> System.DivideByZeroException <b>do</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	writeln('Целочисленное деление на 0');&nbsp; <br><b>&nbsp;&nbsp;&nbsp; 
+	end</b>;<br>
+	<b>&nbsp; finally</b><br>
+&nbsp;&nbsp;&nbsp; close(f);<br>
+	<b>&nbsp; end</b>;<br>
+	<b>except</b><br>
+&nbsp; <b>on</b> System.IO.IOException <b>do</b><br>
+&nbsp;&nbsp;&nbsp; writeln('Файл отсутствует');&nbsp;<br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p>Обратим внимание, что в данном примере исключение, связанное 
+c целочисленным делением на 0, обрабатывается в самом внутреннем 
+блоке <code><b>try</b></code>, а исключение, связанное с 
+отсутствующим файлом - в самом внешнем. При этом, если файл был открыт, то 
+независимо от возникновения исключения деления на 0 он будет закрыт.</p>
+</body>
+
+</html>

@@ -1,0 +1,312 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Length">
+<param name="Keyword" value="Compare">
+<param name="Keyword" value="Format">
+<param name="Keyword" value="Join">
+<param name="Keyword" value="Contains">
+<param name="Keyword" value="EndsWith">
+<param name="Keyword" value="IndexOf">
+<param name="Keyword" value="IndexOfAny">
+<param name="Keyword" value="Insert">
+<param name="Keyword" value="LastIndexOf">
+<param name="Keyword" value="LastIndexOfAny">
+<param name="Keyword" value="PadLeft">
+<param name="Keyword" value="PadRight">
+<param name="Keyword" value="Remove">
+<param name="Keyword" value="Replace">
+<param name="Keyword" value="Split">
+<param name="Keyword" value="StartsWith">
+<param name="Keyword" value="Substring">
+<param name="Keyword" value="ToCharArray">
+<param name="Keyword" value="ToLower">
+<param name="Keyword" value="ToUpper">
+<param name="Keyword" value="Trim">
+<param name="Keyword" value="TrimEnd">
+<param name="Keyword" value="TrimStart">
+<param name="Keyword" value="Inverse">
+<param name="Keyword" value="Print">
+<param name="Keyword" value="Println">
+<param name="Keyword" value="ToWords">
+<param name="Keyword" value="ToInteger">
+<param name="Keyword" value="ToIntegers">
+<param name="Keyword" value="ToReal">
+<param name="Keyword" value="ToReals">
+<param name="Keyword" value="ReadInteger">
+<param name="Keyword" value="ReadReal">
+<param name="Keyword" value="ReadWord">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Методы типа <span lang="en-us">string</span></H1>
+<p>Тип <code><a href="string.html">string</a></code><span lang="en-us"> </span>в
+<span lang="en-us">PascalABC.NET </span>является классом и содержит ряд свойств, 
+статических и экземплярных методов, а также методов расширения.</p>
+<p>В методах класса <code>string</code>
+считается, что строки индексируются с нуля. Кроме того, ни один метод не меняет 
+строку, т.к. строки в .NET являются неизменяемыми.</p>
+<h2><span lang="ru">Свойства</span> класса String</h2>
+<table id="table7" border="1" width="100%">
+	<tr>
+		<td width="410"><b><span lang="ru">Свойство</span></b></td>
+		<td><b>Описание</b></td>
+	</tr>
+	<tr>
+		<td width="410"><code>s[i]</code></td>
+		<td><span lang="ru">Индексное свойство. Возвращает или позволяет 
+		изменить </span>i-<span lang="ru">тый символ строки </span>s<span lang="ru">. 
+		Строки в </span>PascalABC.NET<span lang="ru"> индексируются от 1. </span>
+		</td>
+	</tr>
+	<tr>
+		<td width="410"><code>Length: integer</code></td>
+		<td>Возвра<span lang="ru">щает длину строки</span></td>
+	</tr>
+</table>
+<h2>Статические методы класса String</h2>
+<table id="table8" border="1" width="100%">
+	<tr>
+		<td width="410"><b>Метод</b></td>
+		<td><b>Описание</b></td>
+	</tr>
+	<tr>
+		<td width="410"><code>String.Compare(s1,s2: string): integer</code></td>
+		<td>Сравнивает <span lang="ru">строки </span>s1 <span lang="ru">и </span>
+		s2<span lang="ru">. Возвращает число </span>&lt;<span lang="ru">0 если
+		</span>s1&lt;s2<span lang="ru">, =0 если </span>s1<span lang="ru">=</span>s2<span lang="ru"> 
+		и </span>&gt;<span lang="ru">0 если </span>s1&gt;s2</td>
+	</tr>
+	<tr>
+		<td width="410"><code>String.Compare(s1,s2: string; ignorecase: boolean): 
+		integer</code></td>
+		<td><span lang="ru">То же. Если </span>ignorecase=True<span lang="ru">, 
+		то строки сравниваются без учета регистра букв</span></td>
+	</tr>
+	<tr>
+		<td width="410"><code>String.Format(fmtstr: string, params arr: <b>array 
+		of</b> object): string;</code></td>
+		<td><span lang="ru">Форматирует параметры </span>arr <span lang="ru">
+		согласно форматной строке </span>fmtstr</td>
+	</tr>
+	<tr>
+		<td width="410"><code>String.Join(ss: <b>array of</b> string; delim: 
+		string): string</code></td>
+		<td>Возвра<span lang="ru">щает</span> строку,<span lang="ru"> полученную 
+		слиянием строк </span>ss<span lang="ru"> с использованием </span>delim
+		<span lang="ru">в качестве разделителя</span></td>
+	</tr>
+</table>
+<h2>Экземплярные методы класса String</h2>
+<p><span lang="ru">Отметим, что все экземплярные методы не меняют строку, как 
+это может показаться на первый взгляд, а при необходимости возвращают измененную 
+строку. Кроме того, считается, что символы в сроке индексируются с нуля.</span></p>
+<table id="table9" border="1" width="100%">
+	<tr>
+		<td width="410"><b>Метод</b></td>
+		<td><b>Описание</b></td>
+	</tr>
+	<tr>
+		<td width="410"><code>Contains(s: string): boolean</code></td>
+		<td>Возвра<span lang="ru">щает </span>True<span lang="ru">, если текущая 
+		строка содержит </span>s<span lang="ru">, и </span>False <span lang="ru">
+		в противном случае </span></td>
+	</tr>
+	<tr>
+		<td width="410"><code>EndsWith(s: string): boolean</code></td>
+		<td>Возвра<span lang="ru">щает </span>True<span lang="ru">, если текущая 
+		строка заканчивается на </span>s<span lang="ru">, и </span>False
+		<span lang="ru">в противном случае </span></td>
+	</tr>
+	<tr>
+		<td width="410"><code>IndexOf(s: string): integer</code></td>
+		<td>Возвра<span lang="ru">щает индекс первого вхождения подстроки </span>
+		s <span lang="ru">в текущую строку</span> или -1 если подстрока не 
+		найдена</td>
+	</tr>
+	<tr>
+		<td width="410"><code>IndexOf(s: string; start,count: integer): integer</code></td>
+		<td>Возвра<span lang="ru">щает индекс первого вхождения подстроки </span>
+		s <span lang="ru">в текущую строку</span> или -1 если подстрока не 
+		найдена. Поиск начинается с символа с номером start и распространяется 
+		на следующие count символов</td>
+	</tr>
+	<tr>
+		<td width="410"><code>IndexOfAny(cc: <b>array of</b> char): integer</code></td>
+		<td>Возвра<span lang="ru">щает</span> <span lang="ru">индекс первого 
+		вхождения л</span>юбого символа из массива <span lang="ru">сс</span></td>
+	</tr>
+	<tr>
+		<td width="410"><code>Insert(from: integer; s: string): string</code></td>
+		<td>Возвра<span lang="ru">щает строку, полученную из исходной строки 
+		вставкой подстроки </span>s <span lang="ru">в позицию </span>from</td>
+	</tr>
+	<tr>
+		<td width="410"><code>LastIndexOf(s: string): integer</code></td>
+		<td>Возвра<span lang="ru">щает индекс последнего вхождения подстроки
+		</span>s <span lang="ru">в текущую строку</span></td>
+	</tr>
+	<tr>
+		<td width="410"><code>LastIndexOf(s: string; start,count: integer): integer</code></td>
+		<td>Возвра<span lang="ru">щает индекс последнего вхождения подстроки
+		</span>s <span lang="ru">в текущую строку</span> или -1 если подстрока 
+		не найдена. Поиск начинается с символа с номером start и 
+		распространяется на следующие count символов</td>
+	</tr>
+	<tr>
+		<td width="410"><code>LastIndexOfAny(a: <b>array of</b> char): integer</code></td>
+		<td>Возвра<span lang="ru">щает индекс последнего вхождения л</span>юбого 
+		символа из массива <span lang="ru">сс</span></td>
+	</tr>
+	<tr>
+		<td width="410"><code>PadLeft(n: integer): string</code></td>
+		<td>Возвра<span lang="ru">щает строку, полученную из исходной строки 
+		выравниванием по правому краю с заполнением пробелами слева до длины
+		</span>n</td>
+	</tr>
+	<tr>
+		<td width="410"><code>PadRight(n: integer): string</code></td>
+		<td>Возвра<span lang="ru">щает строку, полученную из исходной строки 
+		выравниванием по левому краю с заполнением пробелами справа до длины
+		</span>n</td>
+	</tr>
+	<tr>
+		<td width="410"><code>Remove(from,len: integer): string</code></td>
+		<td>Возвра<span lang="ru">щает строку, полученную из исходной строки 
+		удалением </span>len <span lang="ru">симолов с позиции </span>from</td>
+	</tr>
+	<tr>
+		<td width="410"><code>Replace(s1,s2: string): string</code></td>
+		<td>Возвра<span lang="ru">щает строку, полученную из исходной строки 
+		заменой всех вхождений подстроки </span>s1<span lang="ru"> на строку
+		</span>s2</td>
+	</tr>
+	<tr>
+		<td width="410"><code>Split(<strong>params</strong> delim: <strong>array 
+		of</strong> char):
+		<b>array of</b> string</code></td>
+		<td>Возвра<span lang="ru">щает массив строк, полученный расщеплением 
+		исходной строки на слова, при этом в качестве разделителей используется</span> 
+		любой из символов<span lang="ru"> </span>delim (по умолчанию - пробел)</td>
+	</tr>
+	<tr>
+		<td width="410"><code>StartsWith(s: string): boolean</code></td>
+		<td>Возвра<span lang="ru">щает </span>True<span lang="ru">, если текущая 
+		строка начинается на </span>s<span lang="ru">, и </span>False
+		<span lang="ru">в противном случае </span></td>
+	</tr>
+	<tr>
+		<td width="410"><code>Substring(from,len: integer): string</code></td>
+		<td>Возвра<span lang="ru">щает подстроку исходной строки с позиции
+		</span>from <span lang="ru">длины </span>len</td>
+	</tr>
+	<tr>
+		<td width="410"><code>ToCharArray: <b>array of</b> char</code></td>
+		<td>Возвра<span lang="ru">щает</span> динамический массив символов 
+		исходной строки</td>
+	</tr>
+	<tr>
+		<td width="410"><code>ToLower: string</code></td>
+		<td>Возвра<span lang="ru">щает строку, приведенную к нижнему регистру</span></td>
+	</tr>
+	<tr>
+		<td width="410"><code>ToUpper: string</code></td>
+		<td>Возвра<span lang="ru">щает строку, приведенную к верхнему регистру</span></td>
+	</tr>
+	<tr>
+		<td width="410"><code>Trim: string</code></td>
+		<td>Возвра<span lang="ru">щает строку, полученную из исходной удалением 
+		лидирующих и завершающих пробелов</span></td>
+	</tr>
+	<tr>
+		<td width="410"><code>TrimEnd<span lang="ru">(</span><b>params</b> cc:
+		<b>array of</b> char): string</code></td>
+		<td>Возвра<span lang="ru">щает строку, полученную из исходной удалением 
+		завершающих символов из массива </span>cc</td>
+	</tr>
+	<tr>
+		<td width="410"><code>TrimStart<span lang="ru">(</span><b>params</b> cc:
+		<b>array of</b> char): string</code></td>
+		<td>Возвра<span lang="ru">щает строку, полученную из исходной удалением 
+		лидирующих&nbsp; символов из массива </span>cc</td>
+	</tr>
+</table>
+<h2>Методы расширения класса String</h2>
+<p>Некоторые методы расширения - стандартные для .NET, некоторые реализованы 
+только в PascalABC.NET.</p>
+<table id="table10" border="1" width="100%">
+	<tr>
+		<td width="410"><b>Метод</b></td>
+		<td><b>Описание</b></td>
+	</tr>
+	<tr>
+		<td width="410"><code>Inverse: string</code></td>
+		<td>Возвра<span lang="ru">щает </span>инверсию <span lang="ru">строк</span>и</td>
+	</tr>
+	<tr>
+		<td width="410"><code>Print</code></td>
+		<td>Выводит буквы строки, разделенные пробелом</td>
+	</tr>
+	<tr>
+		<td width="410"><code>Println</code></td>
+		<td>Выводит буквы строки, разделенные пробелом, и осуществляет переход 
+		на новую строку</td>
+	</tr>
+	<tr>
+		<td width="410"><code>ReadInteger(<strong>var</strong> from: integer): 
+		integer</code></td>
+		<td>Считывает из строки целое число с позиции from и возвращает его. 
+		Позиция from при этом увеличивается на считанный элемент</td>
+	</tr>
+	<tr>
+		<td width="410"><code>ReadReal(<strong>var</strong> from: integer): real</code></td>
+		<td>Считывает из строки вещественное число с позиции from и возвращает 
+		его. Позиция from при этом увеличивается на считанный элемент</td>
+	</tr>
+	<tr>
+		<td width="410"><code>ReadWord(<strong>var</strong> from: integer): 
+		string</code></td>
+		<td>Считывает из строки слово до пробела или до конца строки с позиции 
+		from и возвращает его. Позиция from при этом увеличивается на считанный 
+		элемент</td>
+	</tr>
+	<tr>
+		<td width="410"><code>ToInteger: integer</code></td>
+		<td>Преобразует строку к целому и возвра<span lang="ru">щает </span>его. 
+		Если это невозможно, генерируется исключение</td>
+	</tr>
+	<tr>
+		<td width="410"><code>ToIntegers: <strong>array of</strong> integer</code></td>
+		<td>В строке должны храниться целые, разделенные пробелами. Возвращается 
+		массив целых. Если это невозможно, генерируется исключение</td>
+	</tr>
+	<tr>
+		<td width="410"><code>ToReal: real</code></td>
+		<td>Преобразует строку к вещественному и возвра<span lang="ru">щает </span>
+		его. Если это невозможно, генерируется исключение</td>
+	</tr>
+	<tr>
+		<td width="410"><code>ToReals: <strong>array of </strong>real</code></td>
+		<td>В строке должны храниться вещественные, разделенные пробелами. 
+		Возвращается массив вещественных. Если это невозможно, генерируется 
+		исключение</td>
+	</tr>
+	<tr>
+		<td width="410"><code>ToWords(params delim: <strong>array of</strong> 
+		char): <strong>array of </strong>string</code></td>
+		<td>Возвращает <span lang="ru">массив строк, полученный расщеплением 
+		исходной строки на слова, при этом в качестве разделителей используется</span> 
+		любой из символов<span lang="ru"> </span>delim (по умолчанию - пробел). 
+		В отличие от s.Split не включает в итоговый массив пустые строки. В 
+		частности, это означает, что слова могут быть разделены несколькими 
+		разделителями delim</td>
+	</tr>
+</table>
+</body>
+
+</html>

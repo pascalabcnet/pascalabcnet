@@ -1,0 +1,80 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="public">
+<param name="Keyword" value="private">
+<param name="Keyword" value="protected">
+<param name="Keyword" value="internal">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Видимость членов класса и модификаторы доступа</H1>
+<p>Каждое поле, метод или свойство класса имеет модификатор (атрибут) доступа, 
+задающий правила его видимости. В <b>PascalABC.NET</b> существуют 
+четыре вида модификаторов доступа: <code><b>public</b></code> (открытый), <code><b>private</b></code> (закрытый), <code><b>protected</b></code> (защищенный) 
+и <code><b>internal</b></code> (внутренний). 
+К члену класса, имеющему атрибут <code><b>public</b></code>, 
+можно обратиться из любого места программы, члены класса с атрибутом 
+<code><b>private</b></code> доступны только внутри методов этого 
+класса, члены класса с атрибутом <code><b>protected</b></code>
+доступны внутри методов этого класса 
+и всех его подклассов, члены класса с атрибутом <code><b>internal</b></code> доступны внутри сборки (термин .NET, сборка в 
+нашем понимании - это множество файлов, необходимых для генерации
+.exe или .dll-файла). Кроме 
+того, 
+<code><b>private</b></code> и <code><b>protected</b></code>
+члены видны отовсюду в пределах модуля, в котором определен класс.</p>
+<p>Тело класса делится на секции. В начале каждой секции располагается 
+модификатор доступа, после которого идут поля, а затем методы и свойства с 
+доступом, определяемым этим модификатором. В первой секции модификатор доступа может отсутствовать, в этом случае 
+подразумевается модификатор <code><b>internal</b></code>. В классе может быть произвольное 
+количество секций, располагающихся в произвольном порядке.</p>
+<p>Например, пусть данный код располагается в одном модуле:</p>
+<blockquote>
+	<p><code><b>type</b> <br>
+&nbsp; A =<b> class<br>
+&nbsp; private<br>
+&nbsp; </b>&nbsp; x: integer;<br>
+&nbsp; <b>protected</b><br>
+&nbsp;&nbsp;&nbsp; a: integer;<br><b>&nbsp; public<br>
+&nbsp;&nbsp;&nbsp; constructor </b>Create(xx: integer)<b>;<br>
+&nbsp;&nbsp;&nbsp; begin<br>
+	</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x := xx;<b> </b>// верно, 
+	т.к. внутри метода класса можно обращаться к его закрытому полю x<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; a := 0;&nbsp; // 
+	верно<br>
+	<b>&nbsp;&nbsp;&nbsp; end;<br>
+	&nbsp; end</b>;</code></blockquote>
+Следующий же код пусть располагается в другом модуле:
+<blockquote>	
+<code>
+	<b>type</b> <br>
+&nbsp; B =<b> class</b>(A)<br>
+	<b>&nbsp; public<br>
+</b>&nbsp;
+	<b>&nbsp; procedure</b> print;<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; writeln(a); // верно, т.к. 
+	a - защищенное поле<b><br>
+	</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; writeln(x); // неверно, 
+	т.к. х - закрытое поле<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp; <b>end</b>;<br>
+	...<br>
+	<b>var</b> b1: B := new B(5); <br>
+	...<br>
+	writeln(b1.x); // неверно, т.к. х - закрытое 
+	поле<br>writeln(b1.a); // неверно, т.к. a - 
+	защищенное поле<br>
+	b1.print; // верно, т.к. print -
+	открытый метод</code></blockquote>
+<p>Комментарии по тексту программы описывают верное и неверное в смысле доступа 
+обращение к полям и методам.</p>
+</body>
+
+</html>

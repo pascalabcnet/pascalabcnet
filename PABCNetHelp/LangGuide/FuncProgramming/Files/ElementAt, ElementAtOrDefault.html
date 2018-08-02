@@ -1,0 +1,19 @@
+<html><head><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="ElementAt">
+<param name="Keyword" value="ElementAtOrDefault">
+</object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
+<body>
+<H1>Методы ElementAt, ElementAtOrDefault</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<tr><td>
+<code><b>function </b>ElementAt(index: integer): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает элемент по указанному индексу в последовательности.
+</td></tr>
+<tr><td>
+<code><b>function </b>ElementAtOrDefault(index: integer): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает элемент по указанному индексу в последовательности или значение по умолчанию, если индекс вне допустимого диапазона.
+</td></tr>
+</table>
+<h2>Пример </h2><blockquote><code><strong>begin</strong><br>&nbsp; <strong>var</strong> 
+	a := Arr(1,2,3,4);<br>&nbsp; Println(a.ElementAt(2)); // 3<br>&nbsp; 
+	Println(a.ElementAtOrDefault(10)); // 0<br><strong>end</strong>.</code></blockquote>
+</body>

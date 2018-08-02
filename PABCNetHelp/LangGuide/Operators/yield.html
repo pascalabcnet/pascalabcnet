@@ -1,0 +1,81 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="yield">
+<param name="Keyword" value="Итератор">
+<param name="Keyword" value="Захват переменных в yield">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Оператор yield</H1>
+<p>Оператор yield используется в функциях, генерирующих последовательности, и 
+имеет вид:</p>
+<blockquote>
+	<p><b><code>yield</code></b> <i>выражение</i></p>
+</blockquote>
+<p>Функция, содержащая yieldы, называется <em>итератором</em>. При каждом вызове 
+такая функция выполняет код до следующего 
+yieldа, после чего заканчивает свою работу, возвращая значение выражения, 
+указанного в yieldе, и сохраняет своё состояние до следующего вызова. </p>
+<p>Например:</p>
+<blockquote>
+	<p><code><strong>function</strong> Squares(n: integer): <strong>sequence</strong>
+	<strong>of</strong> integer;<br><strong>begin</strong><br>&nbsp; <strong>for</strong> <strong>var</strong> 
+	i:=1 <strong>to</strong> n <strong>do</strong><br>&nbsp;&nbsp;&nbsp; yield 
+	i*i<br><strong>end</strong>;<br><br><strong>begin</strong><br>&nbsp; <strong>
+	var</strong> q := Squares(5);<br><br>&nbsp; <strong>foreach</strong> <strong>
+	var</strong> x <strong>in</strong> q <strong>do</strong><br>&nbsp;&nbsp;&nbsp; 
+	Print(x);<br>&nbsp; Println;<br><br>&nbsp; q.Println;<br><strong>end</strong>. </code></p>
+</blockquote>
+<p>В данном примере переменная q хранит <a href="../Types/sequences.html">
+последовательность</a>, т.е. алгоритм вычисления квадратов первых n чисел, 
+который будет запущен либо в цикле foreach по последовательности q, либо вызовом 
+метода расширения Println для последовательности q. Данные последовательности 
+поочередно возвращаются вызовами оператора yield в теле функции Squares.</p>
+<p>После каждого вызова оперматора yield функция возвращает следующее значение 
+i*i, заканчивает свою работу и сохраняет значения всех своих переменных во 
+внутреннем контексте. При следующем вызове этой функции её тело как бы начинает 
+выполняться с той точки, в которой мы оказались в конце предыдущего вызова.</p>
+<p>В выражении yield могут фигурировать внешние относительно функции переменные. 
+Говорят, что оператор yield осуществляет захват таких переменных. Например:</p>
+<blockquote>
+	<p><code><strong>var</strong> a := 2;<br><br><strong>function</strong> 
+	Squares(n: integer): <strong>sequence of</strong> integer;<br><strong>begin</strong><br>&nbsp;
+	<strong>for var</strong> i:=1 <strong>to</strong> n <strong>do</strong><br>&nbsp;&nbsp;&nbsp; 
+	yield i*a<br><strong>end</strong>;<br><br><strong>begin</strong><br>&nbsp;
+	<strong>var</strong> q := Squares(5);<br><br>&nbsp; q.Println;<br>&nbsp; a 
+	:= 3;<br>&nbsp; q.Println;<br><strong>end</strong>. </code></p>
+</blockquote>
+<p>В данном коде оператор yield захватывает переменную a из внешнего контекста. 
+Захват производится по ссылке: если изменить переменную a в основной программе и 
+повторно вызвать функцию-итератор, то при генерации последовательности будет 
+использовано измененное значение переменной a. В итоге вывод данной программы 
+будет иметь вид:</p>
+<blockquote>
+	<p><code>
+	2 4 6 8 10<br>3 6 9 12 15</code></p>
+</blockquote>
+<p>Для функций, в теле которых присутствуют yield, имеется ряд ограничений:</p>
+<ol>
+	<li>Функции, содержащие yield, могут возвращать только последовательности.</li>
+	<li>Среди параметров функций-итераторов не может быть const, var, 
+	params-параметров и параметров по умолчанию.</li>
+	<li>Если функция использует yield, в ней запрещено использовать переменную 
+	Result, и наоборот.</li>
+	<li>Функции с yield не могут содержать операторы lock, try...except, 
+	try..finally.</li>
+	<li>Yield не может быть вложена в оператор with.</li>
+	<li>Yield не может быть использована внутри лямбда-выражений.</li>
+	<li>Функции с yield не могут содержать вложенные подпрограммы и сами быть 
+	вложенными подпрограммами.</li>
+	<li>Функции с yield не могут содержать локальные определения типов</li>
+	<li>Методы расширения с yield не могут быть рекурсивными.</li>
+</ol>
+</body>
+
+</html>

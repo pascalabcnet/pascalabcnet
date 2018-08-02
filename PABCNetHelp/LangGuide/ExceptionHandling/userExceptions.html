@@ -1,0 +1,58 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Исключения, определяемые пользователем</H1>
+<p>Для определения своего типа исключения достаточно породить класс - наследник 
+класса <code>Exception</code>:</p>
+<blockquote>
+	<p><code><b>type</b> MyException =<b> class</b>(Exception) <b>end</b>;</code></p>
+</blockquote>
+<p>Тело класса-исключения может быть пустым, но, тем не менее, новое имя для 
+типа исключения позволит его разграничить с остальными исключениями:</p>
+<blockquote>
+	<p><code><b>try</b><br>
+&nbsp; ...<br>
+	<b>except</b><br>
+	&nbsp; <b>on</b> MyException <b>do</b><br>&nbsp;&nbsp;&nbsp; writeln('Целочисленное 
+	деление на 0');&nbsp; <br>&nbsp; <b>on</b> Exception <b>do</b><br><b>&nbsp;&nbsp;&nbsp; 
+	</b>writeln('Файл отсутствует');&nbsp;<br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p>Исключение может содержать дополнительную информацию, связанную с точкой, в 
+которой произошло исключение:</p>
+<blockquote>
+	<p><code><b>type</b> <br>
+&nbsp; FileNotFoundException = <b>class</b>(Exception)<b><br>
+	</b>&nbsp;&nbsp;&nbsp; fname: <b>string</b>;<br>
+	<b>&nbsp; &nbsp; constructor</b> Create(msg,fn: <b>string</b>);<br>
+	<b>&nbsp;&nbsp;&nbsp; begin</b><br>
+	&nbsp; <b>&nbsp;&nbsp;&nbsp; inherited</b> Create(msg);<br>
+&nbsp;&nbsp;&nbsp; &nbsp; fname := fn;<br>
+	<b>&nbsp;&nbsp;&nbsp; end</b>;<b><br>
+&nbsp; end</b>;</code></p>
+	<p><code>...</code></p>
+	<p><code><b>procedure </b>ReadFile(fname: <b>string</b>);<br>
+	<b>begin</b><br>
+&nbsp; <b>if</b> <b>not</b> 
+	FileExists(fname) <b>then</b><br>
+&nbsp;&nbsp;&nbsp; <b>raise</b> <b>new</b> FileNotFoundException('Файл 
+	не найден',fname);<br>
+	<b>end</b>;</code></p>
+	<p><code>...</code></p>
+	<p><code><b>try</b><br>
+&nbsp; ...<br>
+	<b>except</b><br>
+	&nbsp; <b>on</b> e: FileNotFoundException <b>do</b><br><b>&nbsp;&nbsp;&nbsp; 
+	</b>writeln('Файл '+e.fname+'
+	не найден');&nbsp;<br>
+	<b>end</b>;</code></p>
+</blockquote>
+</body>
+
+</html>

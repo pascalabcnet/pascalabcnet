@@ -1,0 +1,135 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Range">
+<param name="Keyword" value="Seq">
+<param name="Keyword" value="SeqFill">
+<param name="Keyword" value="SeqGen">
+<param name="Keyword" value="SeqWhile">
+<param name="Keyword" value="SeqRandom">
+<param name="Keyword" value="SeqRandomReal">
+<param name="Keyword" value="ReadSeqInteger">
+<param name="Keyword" value="ReadSeqReal">
+<param name="Keyword" value="ReadSeqString">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Функции для работы с последовательностями</H1>
+<table border=0 CELLPADDING=5>
+	<tr>
+		<td>
+		<code><strong>function</strong> Range(a,b: integer): <strong>sequence of</strong> 
+		integer; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность целых от a до b</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> Range(c1,c2: char): <strong>sequence of</strong> 
+		char; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность символов от c1 до c2</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> Range(a,b: real; n: integer): <strong>
+		sequence of</strong> real; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность вещественных в точках разбиения 
+		отрезка [a,b] на n равных частей</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> Range(a,b,step: integer): <strong>
+		sequence of</strong> integer; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность целых от a до b с шагом step</td>
+	</tr>
+	<tr>
+		<td>
+	<code><strong>function</strong> Seq&lt;T&gt;(<strong>params</strong> a: <strong>
+	array of</strong> T): <strong>sequence of</strong> T; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность указанных элементов</td>
+	</tr>
+	<tr>
+		<td>
+	<code><strong>function</strong> SeqGen&lt;T&gt;(count: integer; first: T; next: T-&gt;T): <strong>sequence of</strong> T; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов, начинающуюся с 
+		first, с функцией next перехода от предыдущего к следующему</td>
+	</tr>
+<tr><td>
+	<code><strong>function</strong> SeqGen&lt;T&gt;(count: integer; first,second: T; next: 
+	(T,T)-&gt;T): <strong>sequence of</strong> T; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов, начинающуюся с 
+	first и second, с функцией next перехода от двух предыдущих к следующему</td></tr>
+<tr><td>
+	<code><strong>function</strong> SeqFill&lt;T&gt;(count: integer; x: T): <strong>
+	sequence of</strong> T; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов x </td></tr>
+	<tr>
+		<td>
+	<code><strong>function</strong>  SeqGen&lt;T&gt;(count: integer; f: 
+	integer-&gt;T): <strong>sequence of</strong> T; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов, заполненных 
+	значениями f(i) </td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> SeqWhile&lt;T&gt;(first: T; next: T-&gt;T; pred: 
+		T-&gt;boolean): <strong>sequence</strong> <strong>of</strong> T; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность элементов с начальным значением 
+		first, функцией next перехода от предыдущего к следующему и условием 
+		pred продолжения последовательности </td>
+	</tr>
+<tr><td>
+	<code><strong>function</strong> SeqWhile&lt;T&gt;(first,second: T; next: (T,T)-&gt;T; 
+	pred: T-&gt;boolean): <strong>sequence</strong> <strong>of</strong> T; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность элементов, начинающуюся с first и 
+	second, с функцией next перехода от двух предыдущих к следующему и условием 
+	pred продолжения последовательности </td></tr>
+<tr><td>
+	<code><strong>function</strong>  SeqRandom(n: integer := 10; a: integer := 0; 
+	b: integer := 100): <strong>sequence of</strong> integer; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n случайных целых элементов </td></tr>
+<tr>
+	<td>
+	<code><strong>function</strong>  SeqRandomReal(n: integer := 10; a: real := 
+	0; b: real := 10): <strong>sequence of</strong> real; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n случайных вещественных элементов</td>
+</tr>
+<tr>
+	<td>
+	<code><strong>function</strong>  ReadSeqInteger(n: integer): <strong>
+	sequence of </strong> integer; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n целых, введенных с клавиатуры</td>
+</tr>
+	<tr>
+	<td>
+	<code><strong>function</strong> ReadSeqInteger(<strong>const</strong>  
+	prompt: string; n: integer): <strong>sequence of</strong> integer; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает последовательность из n 
+	целых, введенных с клавиатуры</td>
+	</tr>
+	<tr>
+	<td>
+	<code><strong>function</strong> ReadSeqReal(n: integer): <strong>sequence of</strong>  
+	real; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n вещественных, введенных с 
+	клавиатуры</td>
+	</tr>
+	<tr>
+	<td>
+	<code><strong>function</strong> ReadSeqReal(const prompt: string; n: 
+	integer): <strong>sequence of</strong> real; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает последовательность из n 
+	вещественных, введенных с клавиатуры</td>
+	</tr>
+<tr>
+	<td>
+	<code><strong>function</strong> ReadSeqString(n: integer): <strong>sequence of</strong>  
+	string; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из n строк, введенных с клавиатуры</td>
+</tr>
+<tr><td>
+	<code><strong>function</strong>  ReadSeqString(<strong>const</strong>  prompt: 
+	string; n: integer): <strong>sequence of</strong> string; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает 
+	последовательность из n строк, 
+	введенных с клавиатуры</td></tr>
+</table>
+</body></html>

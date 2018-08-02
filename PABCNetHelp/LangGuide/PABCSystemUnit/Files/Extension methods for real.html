@@ -1,0 +1,33 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Between">
+<param name="Keyword" value="InRange">
+<param name="Keyword" value="Round">
+<param name="Keyword" value="RoundBigInteger">
+<param name="Keyword" value="Sqr">
+<param name="Keyword" value="Sqrt">
+<param name="Keyword" value="ToString">
+<param name="Keyword" value="Trunc">
+<param name="Keyword" value="TruncBigInteger"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Методы расширения типа real</H1>
+<table cellpadding=3><tr><td><code><b>function</b> Between(Self: real; a, b: real): boolean; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если значение находится между двумя другими</td></tr>
+<tr><td><code><b>function</b> InRange(Self: real; a,b: real): boolean; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если значение находится между двумя другими</td></tr>
+<tr><td><code><b>function</b> Round(Self: real): integer; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает число, округленное до ближайшего целого</td></tr>
+<tr><td><code><b>function</b> Round(Self: real; digits: integer): real; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает x, округленное до ближайшего вещественного с digits знаками после десятичной точки</td></tr>
+<tr><td><code><b>function</b> RoundBigInteger(Self: real): BigInteger; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает число, округленное до ближайшего длинного целого</td></tr>
+<tr><td><code><b>function</b> Sqr(Self: real): real; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает квадрат числа</td></tr>
+<tr><td><code><b>function</b> Sqrt(Self: real): real; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает квадратный корень числа</td></tr>
+<tr><td><code><b>function</b> ToString(Self: real; frac: integer): string; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает вещественное, отформатированное к строке с frac цифрами после десятичной точки</td></tr>
+<tr><td><code><b>function</b> Trunc(Self: real): integer; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает целую часть вещественного числа</td></tr>
+<tr><td><code><b>function</b> TruncBigInteger(Self: real): BigInteger; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает целую часть вещественного числа как длинное целое</td></tr>
+</table></body></HTML>

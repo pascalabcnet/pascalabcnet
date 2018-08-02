@@ -1,0 +1,78 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="GraphABCFont">
+<param name="Keyword" value="NETFont">
+<param name="Keyword" value="Color">
+<param name="Keyword" value="Style">
+<param name="Keyword" value="Size">
+<param name="Keyword" value="Name">
+<param name="Keyword" value="Font">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Текущий шрифт Font</H1>
+<p>Объект текущего шрифта возвращается функцией 
+<code>Font</code>
+и имеет тип
+<code>
+  GraphABC</code><code>Font</code>:</p>
+<blockquote>
+	<p><code><b>function</b> </code>
+	<code>Font</code><code>: GraphABC</code><code>Font</code><code>;</code></p>
+</blockquote>
+<p>Класс <code>GraphABC</code><code>Font</code> имеет 
+следующий интерфейс: Кроме этого, можно изменять свойства текущего пера через 
+объект 
+<code>Font</code>.</p>
+<blockquote>
+	<p><code><b>type</b> <br>
+&nbsp;
+  GraphABC</code><code>Font</code><code> = <b>class</b><br>
+	&nbsp;&nbsp;&nbsp; <b>property </b>NET</code><code>Font</code><code>: System.Drawing.</code><code>Font</code><code>;<br>
+&nbsp;&nbsp;&nbsp; <b>property</b> Color: GraphABC.Color;<br>
+	&nbsp;&nbsp;&nbsp; <b>property</b> Style: integer;<br>
+	&nbsp;&nbsp;&nbsp; <b>property</b> 
+	Size: integer;
+	<br>
+	&nbsp;&nbsp;&nbsp; <b>property</b> 
+	Name: string;<br>
+	&nbsp; <b>end</b>;</code></p>
+</blockquote>
+<p>Свойства класса <code>GraphABC</code><code>Font</code> 
+описаны в следующей таблице:</p>
+<table border=0 CELLPADDING=5>
+<tr><td>
+<code>
+    <b>property</b> 
+    NETFont: System.Drawing.Font;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Текущий шрифт .NET
+</td></tr>
+<tr><td>
+<code>
+    <b>property</b> Color: GraphABC.Color;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет шрифта
+</td></tr>
+<tr><td>
+<code>
+    <b>property</b> Style: FontStyleType;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Стиль шрифта
+</td></tr>
+<tr><td>
+<code>
+    <b>property</b> Size: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Размер шрифта в пунктах
+</td></tr>
+<tr><td>
+<code>
+    <b>property</b> Name: string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Наименование шрифта
+</td></tr>
+</table>
+<p>Кроме этого, можно изменять свойства текущего шрифта, используя 
+соответствующие <a href="gr_Font.html">процедуры и функции</a>.</p>
+</body></html>

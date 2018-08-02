@@ -1,0 +1,14 @@
+<html><head><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="JoinIntoString">
+</object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
+<body>
+<H1>Метод JoinIntoString</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<tr><td>
+<code><b>function </b>JoinIntoString(delim: string := ' '): string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя delim в качестве разделителя.
+</td></tr>
+</table>
+<h2>Пример </h2><blockquote><code><strong>begin</strong><br>&nbsp; <strong>var</strong> 
+	a := Arr('aaa','bbb','ccc');<br>&nbsp; <strong>var</strong> s: string := 
+	a.JoinIntoString('');<br>&nbsp; Println(s); // aaabbbccc<br><strong>end</strong>.</code></blockquote>
+</body>

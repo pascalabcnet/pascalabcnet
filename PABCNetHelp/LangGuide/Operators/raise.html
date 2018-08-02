@@ -1,0 +1,36 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="raise">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Оператор raise</H1>
+<p>Оператор <b><code>raise</code></b> 
+предназначен для возбуждения исключения и имеет вид:</p>
+<blockquote>
+	<p><b><code>raise</code></b> <i>объект</i></p>
+</blockquote>
+<p>Здесь <i>объект</i> 
+- объект класса, производного от <code>Exception</code>. 
+Например:</p>
+<blockquote>
+	<p><code><b>ra</b></code><code><b>ise</b> new Exception('Ошибка');</code></p>
+</blockquote>
+<p>При возбуждении специфического исключения желательно
+<a href="../ExceptionHandling/userExceptions.html">определить свой тип исключения</a>.&nbsp;
+</p>
+<p>Для <a href="../ExceptionHandling/reraise.html">повторной генерации исключения</a> внутри секции <code><b>except</b></code> 
+используется также вызов <code><b>raise</b></code> без 
+параметров:</p>
+<blockquote>
+	<p><code><b>raise</b>;</code></p>
+</blockquote>
+</body>
+
+</html>

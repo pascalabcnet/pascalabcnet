@@ -1,0 +1,23 @@
+<html><head><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Select">
+</object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
+<body>
+<H1>Метод проецирования Select</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<tr><td>
+<code><b>function </b>Select&lt;Res&gt;(selector: T-&gt;Res): <b>sequence of</b> Res;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проецирует каждый элемент последовательности на другой элемент с помощью функции selector. Возвращает последовательность элементов, полученных в результате проецирования.
+</td></tr>
+<tr><td>
+<code><b>function </b>Select&lt;Res&gt;(selector: (T,integer)-&gt;Res): <b>sequence of</b> Res;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проецирует каждый элемент последовательности на другой элемент с помощью функции selector, учитывающую индекс элемента. Возвращает последовательность элементов, полученных в результате проецирования.
+</td></tr>
+</table>
+<h2>Пример </h2>
+<blockquote>
+<code>
+<strong>begin</strong><br>&nbsp; <strong>var</strong> a := 
+	Arr(1,2,3,4,5,6);<br>&nbsp; a.Select(x -&gt; x*x).Println; // 1 4 9 16 25 36
+	<br><strong>end</strong>.
+</code>
+	</blockquote>
+</body>

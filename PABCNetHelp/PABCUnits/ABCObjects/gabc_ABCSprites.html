@@ -1,0 +1,41 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="ABCSprites">
+<param name="Keyword" value="StartSprites">
+<param name="Keyword" value="StopSprites">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1><span lang="ru">Модуль</span> ABCSprites</H1>
+<p>Модуль <code>ABCSprites</code> <span lang="ru">реализует спрайты - 
+анимационные объекты с автоматически меняющимися кадрами. Спрайт</span>
+<span lang="ru">представляется классом </span><code>
+<a href="gabc_SpriteABC.html">SpriteABC</a></code> <span lang="ru">и является 
+разновидностью мультикартинки </span><code><a href="gabc_MultiPictureABC.html">
+MultiPictureABC</a></code><span lang="ru">, однако, обладает двумя 
+дополнительными возможностями:</span></p>
+<p>1. Спрайты автоматически анимируются в цикле, что управляется специальным 
+таймером. Можно регулировать скорость анимации каждого спрайта, а также 
+останавливать<span lang="en-us">/</span>запускать все спрайты. </p>
+<p>2. Спрайты могут иметь состояния, задаваемые строками. Каждое состояние имеет 
+свой независимый набор кадров, меняющихся циклически. Например, игровой объект в 
+состоянии &quot;Идти&quot; имеет три кадра, а в состоянии &quot;Сидеть&quot; - один кадр (в этом 
+состоянии анимация отсутствует). Пер<span lang="ru">е</span>ключая состояния, 
+можно моделировать различное поведение игрового объекта.</p>
+<p><span lang="ru">Кроме того, анимацию всех спрайтов можно выключить</span>/<span lang="ru">включить 
+вызовом следующих процедур:</span></p>
+<table border=0 CELLPADDING=5>
+<tr><td>
+<code>
+<b>procedure</b> StartSprites;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Стартует анимацию всех спрайтов
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> StopSprites;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Останавливает анимацию всех спрайтов
+</td></tr>
+</table>
+</body></html>

@@ -1,0 +1,81 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="GraphABC">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Модуль GraphABC</H1>
+Модуль <code>GraphABC</code> представляет собой простую 
+графическую библиотеку и предназначен для создания несобытийных графических и 
+анимационных программ в процедурном и частично в объектном стиле. Рисование 
+осуществляется в специальном &nbsp;<i>графическом окне</i>, 
+возможность рисования в нескольких окнах отсутствует. Кроме этого, в модуле
+<code>GraphABC</code> определены простейшие события мыши 
+и клавиатуры, позволяющие создавать элементарные событийные приложения. Основная 
+сфера использования модуля <code>GraphABC</code> - 
+обучение.<p>Модуль <code>GraphABC</code> основан на графической 
+библиотеке GDI+, но запоминает текущие перо, кисть и 
+шрифт, что позволяет не передавать их в качестве параметров при вызове 
+графических примитивов. К свойствам пера, кисти и шрифта 
+можно получать доступ как в процедурном, так и в объектном стиле. Например, для 
+доступа к цвету текущего пера используется процедура <code>SetPenColor(c)</code>
+и функция <code>PenColor</code>, а также 
+свойство <code>Pen.Color</code>.</p>
+<p>В модуле <code>GraphABC</code> 
+можно управлять самим графическим окном и компонентом 
+<code>
+GraphABCControl</code>, на котором осуществляется рисование. По 
+умолчанию компонент 
+<code>
+GraphABCControl</code> занимает всю клиентскую часть 
+графического окна, однако, на графическое окно можно добавить элементы 
+управления, уменьшив область, занимаемую графическим компонентом (например, так 
+сделано в модулях Robot и Drawman).</p>
+<p>Для работы с рисунками используется класс <code>
+<a href="gr_Picture.html">Picture</a></code>, позволяющий рисовать на себе те же графические 
+примитивы, что и на экране.</p>
+<p>Режим блокировки рисования на экране (<code>LockDrawing</code>) позволяет осуществлять 
+прорисовку лишь во внеэкранном буфере, после чего с помощью метода <code>
+Redraw</code> восстанавливать все графическое окно. Данный метод 
+используется для ускорения анимации и создания анимации без мерцания.</p>
+<p>В модуле <code>GraphABC</code> 
+определен ряд констант, типов, процедур, функций 
+и классов для рисования в <i>графическом окне</i>.
+Они подразделяются на следующие группы:</p>
+<blockquote>
+	<p><a href="gr_Prim.html">Графические примитивы</a><br>
+	<a href="gr_ColorFun.html">Функции для работы с цветом</a><br>
+	<a href="gr_Colors.html">Цветовые константы</a><br>
+	<a href="gr_Pen.html">Действия с пером: процедуры и функции</a><br>
+	<a href="gr_PenClass.html">Действия с пером: объект Pen</a><br>
+	<a href="gr_PenDashStyle.html">Стиль пера</a><br>
+	<a href="gr_Brush.html">Действия с кистью: процедуры и функции</a><br>
+	<a href="gr_BrushClass.html">Действия с кистью: объект Brush</a><br>
+	<a href="gr_BrushStyle.html">Стили кисти</a><br>
+	<a href="gr_BrushHatchStyle.html">Стили штриховки кисти</a><br>
+	<a href="gr_Font.html">Действия со шрифтом: процедуры и функции</a><br>
+	<a href="gr_FontClass.html">Действия со шрифтом: объект Font</a><br>
+	<a href="gr_FontStyle.html">Стили шрифта</a><br>
+	<a href="gr_Picture.html">Действия с рисунками: класс Picture</a><br>
+	<a href="gr_Window.html">Действия с графическим окном: процедуры и функции</a><br>
+	<a href="gr_WindowClass.html">
+	Действия с графическим окном: объект Window</a><br>
+	<a href="gr_Coordinate.html">Действия с <span lang="ru">системой</span> <span lang="ru">координат</span>: процедуры и функции</a><br>
+	<a href="gr_WindowClass.html">
+	Действия с <span lang="ru">системой</span> <span lang="ru">координат</span>: объект 
+	Coordinate</a><br>
+	<a href="gr_LockDrawing.html">Блокировка рисования и ускорение анимации</a><br>
+	<a href="gr_Options.html">Режимы рисования</a><br>
+	<a href="gr_events.html">События GraphABC</a><br>
+	<a href="gr_VK.html">Виртуальные коды клавиш</a>
+<br>
+	<span lang="ru"><a href="gr_IO.html">Перенаправление ввода-вывода</a></span></blockquote>
+<p>&nbsp;</p>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="">
+</object>
+
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+<style type="text/css">
+.auto-style1 {
+	font-family: monospace;
+	font-size: 10pt;
+	color: #000080;
+}
+.auto-style2 {
+	font-family: Times;
+	font-size: 10pt;
+	color: #000000;
+}
+</style>
+</head>
+
+<body>
+<H1>Библиотеки dll </H1>
+<p>Библиотеки dll (dynamically linked libraries): </p>
+<ul>
+	<li>содержат группу взаимосвязанных подпрограмм </li>
+	<li>находятся в откомпилированном файле </li>
+	<li>предназначены для обращения к ним из различных программ </li>
+</ul>
+<p>Они находятся в файле с расширением .dll либо в текущем каталоге приложения (<i>локальные</i>), 
+либо в системном каталоге (<i>глобальные библиотеки</i>). Глобальными 
+библиотеками могут пользоваться одновременно несколько приложений. </p>
+<p>По своему назначению библиотеки очень похожи на <a href="indexmodule.html">
+модули</a>, однако, имеют ряд важных отличий.</p>
+<h2>Отличия библиотек от модулей </h2>
+<ol>
+	<li style="width: 1258px">При создании из модулей исполняемого файла .exe 
+	программа-линковщик помещает в него только те подпрограммы, переменные, типы 
+	и константы, которые используются (вызываются) в основной программе. При 
+	компиляции же библиотеки в нее добавляются все подпрограммы, потому что 
+	неизвестно, какие подпрограммы потребуются конкретному приложению. </li>
+	<li>Библиотеки <tt>.dll</tt> при выполнении программы полностью загружаются 
+	в оперативную память. </li>
+	<li>Библиотеки <tt>.dll</tt> часто используются одновременно несколькими 
+	программами. </li>
+	<li>Библиотека <tt>.dll</tt> может быть написана и откомпилирована на одном языке, а 
+	обращаться к ней можно из программ, написанных на других языках. Например, 
+	программа на PascalABC.NET может вызывать функцию из библиотеки, созданной 
+	на языке C# и наобороот. Таким образом, библиотеки 
+	обеспечивают <i><b>межъязыковое взаимодействие</b></i>. </li>
+</ol>
+<h2>Структура библиотеки</h2>
+<p>Библиотека имеет практически ту же структуру, что и
+<a href="indexmodule.html">модуль</a>:</p>
+<blockquote>
+	<p><code><b>library</b> <code class="codeit">имя библиотеки</code>;</code></p>
+	<p><code><b>interface</b></code></p>
+	<p><code>
+	<code class="codeit">раздел интерфейса </code></code></p>
+	<p><code><b>implementation</b></code></p>
+	<p><code><code class="codeit">раздел реализации
+	</code></code> </p>
+	<p><code><b>end</b>.</code> </p>
+</blockquote>
+<p>Имя библиотеки должно совпадать с именем pas-файла, в котором библиотека 
+находится.</p>
+<p>Имеется также упрощенный синтаксис библиотек - без разделов интерфейса и 
+реализации, совпадающий с <a href="simplemodule.html">упрощенным 
+синтаксисом модулей</a> (за исключением заголовка).</p>
+<p>В результате компиляции библиотеки в текущем каталоге создаётся <tt>.dll</tt>-файл, 
+содержащий откомпилированную библиотеку.</p>
+<h2>Подключение библиотеки к основной программе</h2>
+<p>Для подключения библиотеки к основной программе используется директива 
+компилятора <span class="auto-style1">{$reference </span>
+<span class="auto-style2"><em>ИмяБиблиотеки</em></span><span class="auto-style1">}</span>. 
+Например:</p>
+<blockquote>
+	<p><span class="auto-style1">{$reference ABC.dll}<br>{$reference ABC1.dll}<br>
+	<br><strong>begin</strong><br>&nbsp; writeln(a.GetType); <br><strong>end</strong>.</span> </p>
+</blockquote>
+<p>Подключение библиотеки может проводиться в любом месте исходного файла.</p>
+<p>Библиотеки ABC и ABC1 имеют соответственно вид:</p>
+<blockquote>
+	<p class="auto-style1"><strong>library</strong> ABC;</p>
+	<p class="auto-style1"><strong>var</strong> a: integer;</p>
+	<p><span class="auto-style1"><strong>end</strong>.</span> </p>
+</blockquote>
+<p>и</p>
+<blockquote>
+	<p class="auto-style1"><strong>library</strong> ABC1;</p>
+	<p class="auto-style1"><strong>var</strong> a: real;</p>
+	<p><span class="auto-style1"><strong>end</strong>.</span> </p>
+</blockquote>
+<h2>Алгоритм поиска имен в библиотеках </h2>
+<p>В первую очередь имя ищется в исходном модуле, затем в модулях, подключенных 
+в разделе uses в порядке справа налево, и только потом - в подключенных 
+библиотеках в порядке подключения. </p>
+<p>Согласно этому правилу в примере из предыдущего пункта переменная a будет 
+иметь тип integer.</p>
+<p>В случае коллизии имен используемое имя можно предварять именем библиотеки с 
+последующей точкой:</p>
+<blockquote>
+	<p><span class="auto-style1">{$reference ABC.dll}<br>{$reference ABC1.dll}<br>
+	<br><strong>begin</strong><br>&nbsp; writeln(ABC1.a.GetType); <br><strong>
+	end</strong>.</span> </p>
+</blockquote>
+<p>&nbsp;</p>
+</body>
+
+</html>

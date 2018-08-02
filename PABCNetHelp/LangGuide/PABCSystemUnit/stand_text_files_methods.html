@@ -1,0 +1,121 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="ReadInteger">
+<param name="Keyword" value="ReadReal">
+<param name="Keyword" value="ReadChar">
+<param name="Keyword" value="ReadString">
+<param name="Keyword" value="ReadBoolean">
+<param name="Keyword" value="ReadlnInteger">
+<param name="Keyword" value="ReadlnReal">
+<param name="Keyword" value="ReadlnChar">
+<param name="Keyword" value="ReadlnString">
+<param name="Keyword" value="ReadlnBoolean">
+<param name="Keyword" value="Eoln">
+<param name="Keyword" value="SeekEof">
+<param name="Keyword" value="SeekEoln">
+<param name="Keyword" value="Flush">
+<param name="Keyword" value="ReadToEnd">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+<body>
+<H1>Методы текстовых файлов</H1>
+<p>Для 
+текстовых файлов (тип <code>Text</code>) 
+определены следующие методы:</p>
+&nbsp;<table border=0 CELLPADDING=5>
+	<tr>
+		<td>
+	<code><strong>procedure</strong> Writeln(a,b,...); </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Записывает в файл значения a, b, ...
+		и осуществляет переход на следующую строку</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadInteger: integer; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа integer, введенное из текстового файла</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadReal: real; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа real, введенное из текстового файла</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadChar: char; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа char, введенное из текстового файла</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadString: string; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа string, введенное из текстового файла, 
+		без перехода на следующую строку</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadBoolean: boolean; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа boolean, введенное из текстового файла</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadlnInteger: integer; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа integer, введенное из текстового файла, 
+		и переходит на следующую строку</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadlnReal: real; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа real, введенное из текстового файла, и 
+		переходит на следующую строку</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadlnChar: char; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа char, введенное из текстового файла, и 
+		переходит на следующую строку</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadlnString: string; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа string, введенное из текстового файла, 
+		и переходит на следующую строку</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadlnBoolean: boolean; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа boolean, введенное из текстового файла, 
+		и переходит на следующую строку</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> Eoln: boolean; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если достигнут конец строки, и False в 
+		противном случае</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> SeekEof: boolean; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пропускает пробельные символы, после чего возвращает True, если 
+		достигнут конец файла</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> SeekEoln: boolean; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пропускает пробельные символы, после чего возвращает True, если 
+		достигнут конец строки в файле</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>procedure</strong> Flush; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Записывает содержимое буфера файла на диск</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadToEnd: string; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает в виде строки содержимое файла от текущего положения 
+		до конца</td>
+	</tr>
+	</table>
+</body></html>

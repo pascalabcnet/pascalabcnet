@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Директивы компилятора">
+<param name="Keyword" value="apptype">
+<param name="Keyword" value="reference">
+<param name="Keyword" value="gendoc">
+<param name="Keyword" value="mainresource">
+<param name="Keyword" value="resource">
+<param name="Keyword" value="product">
+<param name="Keyword" value="version">
+<param name="Keyword" value="company">
+<param name="Keyword" value="copyright">
+<param name="Keyword" value="trademark">
+<param name="Keyword" value="include">
+<param name="Keyword" value="define">
+<param name="Keyword" value="undef">
+<param name="Keyword" value="ifdef">
+<param name="Keyword" value="ifndef">
+<param name="Keyword" value="else">
+<param name="Keyword" value="endif">
+<param name="Keyword" value="faststrings">
+<param name="Keyword" value="region">
+<param name="Keyword" value="endregion">
+<param name="Keyword" value="string_nullbased">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Директивы компилятора</H1>
+<p>Директивы компилятора - это специальные команды компилятору в ходе 
+компиляции, записанные в тексте программы внутри последовательности {$ ... }. 
+Фигурные скобки обозначают комментарий, но наличие знака $ после { говорит о 
+том, что внутри комментария располагается директива компилятора. </p>
+<p>Общий вид директивы компилятора:</p>
+<blockquote><code>{$ИмяДирективы параметры}</code></blockquote>
+<h2>Список директив компилятора</h2>
+<p><b>{$apptype &lt;тип приложения&gt;}</b> - задание типа приложения 
+(windows/console). </p>
+<p><b>{$reference &lt;имя файла&gt;}</b> - подключение библиотеки. </p>
+<p><b>{$gendoc &lt;параметр&gt;}</b> -генерация документации в XML формате. Параметры:
+<b>true</b>, <b>false</b>. </p>
+<p><b>{$mainresource &lt;имя файла&gt;}</b> - подключение .res файла в качестве 
+неуправляемого ресурса </p>
+<p><b>{$resource &lt;имя файла&gt;}</b> - подключение файла в качестве управляемого 
+ресурса </p>
+<p><b>{$region &lt;имя региона&gt;}</b> - начало региона (используется в 
+редакторе в режиме сворачивания кода</p>
+<p><b>{$endregion}</b> - конец региона</p>
+<p><b>{$product &lt;название продукта&gt;}</b> - название продукта </p>
+<p><b>{$version &lt;версия продукта&gt;}</b> - версия продукта </p>
+<p><b>{$company &lt;компания&gt;}</b> - компания </p>
+<p><b>{$copyright &lt;копирайт&gt;}</b> - копирайт </p>
+<p><b>{$trademark &lt;торговая марка&gt;}</b> - торговая марка </p>
+<p><b>{$include &lt;имя файла&gt;}</b> - включение в текст программы содержимого 
+указанного файла. </p>
+<p><b>{$define &lt;идентификатор&gt;}</b> - определение имени, используемого в 
+директивах <b>$ifdef</b>, <b>$ifndef</b>. </p>
+<p><b>{$undef &lt;идентификатор&gt;}</b> - исключение имени, используется для отмены 
+действия директивы <b>$define</b>. </p>
+<p><b>{$ifdef &lt;идентификатор&gt;}</b> - начало блока условной компиляции 
+(проверяется условие: &quot;идентификатор определен&quot;). </p>
+<p><b>{$ifndef &lt;идентификатор&gt;}</b> - начало блока условной компиляции 
+(проверяется условие: &quot;идентификатор не определен&quot;). </p>
+<p><b>{$else}</b> - директива &quot;иначе&quot; в блоке условной компиляции. </p>
+<p><b>{$endif}</b> - завершение блока условной компиляции. </p>
+<p><b>{$faststrings}</b> - строки с быстрым доступом к символам на запись, но со 
+ссылочной семантикой. </p>
+<p><b>{$string_nullbased+}</b> - включение строк, индексируемых с 0.</p>
+<p><b>{$string_nullbased-}</b> - выключение строк, индексируемых с 0.</p>
+<p>Директивы <b>$ifdef</b>, <b>$ifndef</b> совместно с директивами <b>$else</b> 
+и <b>$endif</b> управлют условной компиляцией частей исходного файла. Каждой 
+директиве <b>$ifdef</b>, <b>$ifndef</b> должна соответствовать завершающая ее 
+директива <b>$endif</b>. Между директивами <b>$ifdef</b>, <b>$ifndef</b> и <b>
+$endif</b> допускается произвольное количество блоков условной компиляции (в том 
+числе вложенных) и не более одной директивы <b>$else</b>. </p>
+<p><strong>Пример.</strong> Использование директив условной компиляции.</p>
+<blockquote><code>{$define DEBUG} <br><strong>begin</strong><br>&nbsp; {$ifndef 
+	DEBUG}<br>&nbsp;&nbsp;&nbsp; writeln('Имя DEBUG не определено');<br>&nbsp; 
+	{$else} <br>&nbsp;&nbsp;&nbsp; writeln('Имя DEBUG определено');<br>&nbsp; 
+	{$endif}<br><strong>end</strong>.</code></blockquote>
+</body>
+
+</html>

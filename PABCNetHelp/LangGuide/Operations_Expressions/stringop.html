@@ -1,0 +1,46 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Конкатенация строк">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+<style type="text/css">
+.auto-style2 {
+	font-family: monospace;
+	font-size: 10pt;
+	color: #000080;
+}
+</style>
+</head>
+<body><H1>Строковые операции</H1>
+<p>К <a href="../Types/string.html">строкам</a> применимы все <a href="relop.html">операции сравнения</a> <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>, <code>=</code>, <code>&lt;&gt;</code>. 
+Сравнение строк на неравенство осуществляется <strong>
+лексикографически</strong>: <span class="auto-style2">s1 &lt; s2</span> если для 
+первого несовпадающего символа с номером i <span class="auto-style2">s1[i]&lt;s2[i]</span> 
+или все символы строк совпадают, но <span class="auto-style2">s1</span> короче
+<span class="auto-style2">s2</span>.  
+</p>
+<p>Кроме этого, к строкам и символам применима операция 
+конкатенации (слияния) <code>+</code>, ее результат имеет строковый тип. 
+</p>
+<p>Например, <code>'a'+'b'='ab'</code>. </p>
+
+<p>К строкам также применима операция <code>+=</code>:
+</p>
+<blockquote>
+	<p><code>s += s1; // s := s + s1;</code> </p>
+</blockquote>
+<p>Строка может складываться с числом, при этом число предварительно 
+преобразуется к строковому представлению:</p>
+<blockquote><code>s := 'Ширина: '+15; // s = 'Ширина: 15'<br>s := 
+20.5+''; // s = '20.5'<br>s += 1; // s = '20.51' </code> 
+</blockquote>
+<p>Над строками и целыми определена операция <span class="auto-style2">*</span>:
+<span class="auto-style2">s*n</span> и <span class="auto-style2">n*s</span> 
+означает строку, образованную из строки <span class="auto-style2">s</span>, 
+повторенной n раз:</p>
+<blockquote><code>s := '*'*10; // s = '**********'<br>s := 5*'ab' // s = 'ababababab'<br>s := 'd'; s *= 3; // s = 
+'ddd'&nbsp;</code></blockquote>
+
+</body></html>

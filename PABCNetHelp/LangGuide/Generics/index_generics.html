@@ -1,0 +1,81 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Обобщенные типы: обзор </H1>
+<p>Обобщенным типом (generic) называется 
+шаблон для создания класса, записи или интерфейса, параметризованный одним или несколькими 
+типами. Класс (запись, интерфейс) образуется из шаблона класса&nbsp;(записи, 
+интерфейса) подстановкой 
+конкретных типов в качестве параметров. Параметры указываются после имени 
+обобщенного типа в угловых скобках. Например, <code>Stack&lt;T&gt;</code> -
+шаблон класса списка элементов типа <code>T</code>, 
+параметризованный типом <code>T</code>, а <code>
+Stack&lt;integer&gt;</code> - класс списка с элементами типа 
+<code>integer</code>.</p>
+<p><a href="generic_sub.html">Обобщённые подпрограммы описываются здесь</a>.</p>
+<p>Для объявления шаблона класса используется следующий 
+синтаксис:</p>
+<blockquote>
+	<p><code><b>type</b><br>
+&nbsp; Node&lt;T&gt; = <b>class<br>
+&nbsp;&nbsp;&nbsp; </b>data: T;<br>
+&nbsp;&nbsp;&nbsp; next: Node&lt;T&gt;;<br>
+&nbsp; <b>public</b><br>
+&nbsp;&nbsp;&nbsp; <b>constructor</b> Create(d: T; nxt: Node&lt;T&gt;);<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; data := d;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; next := nxt;<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp; <b>end</b>; <br>
+&nbsp; Stack&lt;T&gt; = <b>class<br>
+&nbsp;&nbsp;&nbsp; </b>tp: Node&lt;T&gt;; <br>
+&nbsp; <b>public<br>
+&nbsp;&nbsp;&nbsp; procedure</b> Push(x: T);<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tp := <b>new</b> Node&lt;T&gt;(x,tp);<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp;&nbsp;&nbsp; <b>function</b> Pop: T;<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result := tp.data;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tp := tp.next;<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp;&nbsp;&nbsp; <b>function</b> Top: T;<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result := tp.data;<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp;&nbsp;&nbsp; <b>function</b> IsEmpty: boolean;<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result := tp = nil;<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp; <b>end</b>;</code></p>
+</blockquote>
+<p>Использование шаблона класса иллюстрируется ниже:</p>
+<blockquote>
+	<p><code><b>var</b> <br>
+&nbsp; si: Stack&lt;integer&gt;;<br>
+&nbsp; sr: Stack&lt;real&gt;;<br>
+	<b>begin</b><br>
+&nbsp; si := <b>new</b> Stack&lt;integer&gt;;&nbsp; <br>
+&nbsp; sr := <b>new</b> Stack&lt;real&gt;;<br>
+&nbsp; <b>for</b> <span lang="en-us"><b>var</b> </span>i := 1 <b>to</b> 10 <b>do</b><br>
+&nbsp;&nbsp;&nbsp; si.Push(Random(100));<br>
+&nbsp; <b>while</b> <b>not</b> si.IsEmpty <b>do</b><br>
+&nbsp;&nbsp;&nbsp; sr.Push(si.Pop);<br>
+&nbsp; <b>while</b> <b>not</b> sr.IsEmpty <b>do</b><br>
+&nbsp;&nbsp;&nbsp; write(sr.Pop,' ');<br>
+	<b>end</b>.</code></p>
+</blockquote>
+<p>Подстановка конкретного типа-параметра в обобщенный тип называется 
+инстанцированием.</p>
+<p>&nbsp;</p>
+</body>
+
+</html>

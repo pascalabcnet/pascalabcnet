@@ -1,0 +1,85 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Objects">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1><span lang="ru">М</span>ассив <span lang="ru">всех графических объектов
+</span>Objects</H1>
+<p>В модуле <code>ABCObjects</code> определен динамический массив <code>Objects</code>, 
+который
+хранит все созданные графические объекты. Он принадлежит к типу <code>
+ObjectsABCArray</code>, определенному в <code>ABCObjects</code>. Для массива
+<code>Objects</code> определены всего 2 операции:
+<code>Objects.Count</code> возвращает количество 
+графических объектов, а <code>Objects[i]</code>
+возвращает <code>i</code>-тый графический объект (типа
+<code>ObjectABC</code>, нумерация осуществляется с 0).</p>
+<p>Использование массива <code>Objects</code>
+позволяет единообразно обращаться ко всем графическим объектам, вызывая для них 
+любые методы и обращаясь к любым свойствам класса <code>ObjectABC</code>. </p>
+<p><b>Пример 1.</b> Броуновское движение объектов.</p>
+<blockquote>
+	<p><code><b>uses</b> ABCObjects;</code></p>
+	<p><code><b>var</b> i:integer;</code></p>
+	<p><code><b>begin</b><br>
+&nbsp; <b>for</b> i:=1 <b>to</b> 30 <b>do</b><br>
+&nbsp;&nbsp;&nbsp; <b>new </b>CircleABC(Random(WindowWidth),Random(WindowHeight),20,clRandom);<br>
+&nbsp; <b>while</b> True <b>do</b><br>
+&nbsp;&nbsp;&nbsp; <b>for</b> i:=0 <b>to</b> Objects.Count-1 <b>do</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Objects[i].MoveOn(Random(3)-1,Random(3)-1);<br>
+	<b>end</b>. </code></p>
+</blockquote>
+<p>В этом примере создается 30 объектов <code>CircleABC</code>. Поскольку все 
+они сохраняются в массиве <code>Objects</code>, при их создании результат вызова 
+конструктора не присваивается никакой переменной. После 
+создания все объекты начинают перемещаться в бесконечном цикле на 
+случайный вектор, совершая броуновское движение.</p>
+<p><b>Пример 2.</b> Изменение свойств объектов заданного типа.</p>
+<blockquote>
+	<p><code><b>uses</b> ABCObjects;</code></p>
+	<p><code><b>var</b> i:integer;</code></p>
+	<p><code><b>begin</b><br>
+&nbsp; <b>for</b> i:=1 <b>to</b> 30 <b>do</b><br>
+&nbsp;&nbsp;&nbsp; <b>case</b> Random(2) <b>of</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0: <b>new</b> CircleABC(Random(WindowWidth),Random(WindowHeight),20,clRandom);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1: <b>new </b>RegularPolygonABC(Random(WindowWidth),Random(WindowHeight),20,3,clRandom);<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp; <b>while</b> True <b>do</b><br>
+&nbsp;&nbsp;&nbsp; <b>for</b> i:=0 <b>to</b> Objects.Count-1 <b>do</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>if</b> Objects[i] <b>is</b> RegularPolygonABC
+	<b>then</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RegularPolygonABC(Objects[i]).Angle := RegularPolygonABC(Objects[i]).Angle + 1;<br>
+	<b>end</b>.</code></p>
+</blockquote>
+<p>В этом примере создается 30 объектов <code>CircleABC</code> или <code>
+RegularPolygonABC</code>. Затем в бесконечном цикле вращаются только объекты
+<code>RegularPolygonABC</code>. Вращение достигается увеличением свойства <code>
+Angle</code>, которое определено только в классе <code>RegularPolygonABC</code>. 
+Для установки принадлежности объекта к классу <code>RegularPolygonABC</code> 
+используется операция <b><code>is</code></b>, после чего объект <code>Objects</code><code>[i]</code> 
+преобразуется к типу <code>RegularPolygonABC</code> при помощи операции 
+приведения типа.</p>
+<p><b>Пример 3.</b> Удаление всех графических объектов, пересекшихся с объектом
+<code>p</code>:</p>
+<blockquote>
+	<p><code><b>for</b> i:=Objects.Count-1 <b>downto</b> 
+	0 <b>do</b><br>
+	&nbsp; <b>if </b>(Objects[i]&lt;&gt;p) <b>and</b> (p.Intersects(Objects[i]) <b>then</b><br>
+	&nbsp;&nbsp;&nbsp; Objects[i].Destroy;</code></p>
+</blockquote>
+<p>В играх часто нужно удалить все графические объекты, которые &quot;настиг&quot; объект
+<code>p</code>. Для этого следует перебрать все графические объекты за 
+исключением самого <code>p</code> и проверить их на предмет пересечения с <code>
+p</code>. Удаление осуществляется вызовом деструктора соответствующего объекта. 
+Отметим также, что в результате удаления количество объектов уменьшается, 
+поэтому следует перебирать объекты от конца к началу.</p>
+</body>
+
+</html>

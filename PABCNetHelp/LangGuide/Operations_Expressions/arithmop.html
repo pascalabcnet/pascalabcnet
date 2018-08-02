@@ -1,0 +1,219 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="div">
+<param name="Keyword" value="mod">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css"></head>
+<body><H1>Арифметические операции</H1>
+<p>К <i>арифметическим</i> относятся бинарные операции 
+<code>+</code>, <code>-</code>,
+<code>*</code>, <code>/</code> для вещественных и целых чисел, бинарные операции
+<b><code>div</code></b> и <b><code>mod</code></b> для целых чисел и унарные операции 
+<code>+</code> и <code>-</code> для вещественных и целых чисел. Тип выражения
+<code>x</code> <i>op</i> <code>y</code>, где
+<i>op</i> - знак бинарной операции 
+<code>+</code>,&nbsp; <code>-</code> или <code>*</code>, 
+определяется из следующей таблицы: </p>
+<p>&nbsp;</p>
+<table border="1" width="100%" id="table1">
+	<tr>
+		<td>&nbsp;</td>
+		<td><b><code>shortint</code></b></td>
+		<td><b><code>byte</code></b></td>
+		<td><b><code>smallint</code></b></td>
+		<td><b><code>word</code></b></td>
+		<td><b><code>integer</code></b></td>
+		<td><b><code>longword</code></b></td>
+		<td><b><code>int64</code></b></td>
+		<td><b><code>uint64</code></b></td>
+		<td><b><code>BigInteger</code></b></td>
+		<td><b><code>single</code></b></td>
+		<td><b><code>real</code></b></td>
+	</tr>
+	<tr>
+		<td><b><code>shortint</code></b></td>
+		<td><code>integer</code></td>
+		<td><code>integer</code></td>
+		<td><code>integer</code></td>
+		<td><code>integer</code></td>
+		<td><code>integer</code></td>
+		<td><code>int64</code></td>
+		<td><code>int64</code></td>
+		<td><code>uint64</code></td>
+		<td><code>BigInteger</code></td>
+		<td><code>single</code></td>
+		<td><code>real</code></td>
+	</tr>
+	<tr>
+		<td><b><code>byte</code></b></td>
+		<td><code>integer</code></td>
+		<td><code>integer</code></td>
+		<td><code>integer</code></td>
+		<td><code>integer</code></td>
+		<td><code>integer</code></td>
+		<td><code>longword</code></td>
+		<td><code>int64</code></td>
+		<td><code>uint64</code></td>
+		<td><code>BigInteger</code></td>
+		<td><code>single</code></td>
+		<td><code>real</code></td>
+	</tr>
+	<tr>
+		<td><b><code>smallint</code></b></td>
+		<td><code>integer</code></td>
+		<td><code>integer</code></td>
+		<td><code>integer</code></td>
+		<td><code>integer</code></td>
+		<td><code>integer</code></td>
+		<td><code>int64</code></td>
+		<td><code>int64</code></td>
+		<td><code>uint64</code></td>
+		<td><code>BigInteger</code></td>
+		<td><code>single</code></td>
+		<td><code>real</code></td>
+	</tr>
+	<tr>
+		<td><b><code>word</code></b></td>
+		<td><code>integer</code></td>
+		<td><code>integer</code></td>
+		<td><code>integer</code></td>
+		<td><code>integer</code></td>
+		<td><code>integer</code></td>
+		<td><code>longword</code></td>
+		<td><code>int64</code></td>
+		<td><code>uint64</code></td>
+		<td><code>BigInteger</code></td>
+		<td><code>single</code></td>
+		<td><code>real</code></td>
+	</tr>
+	<tr>
+		<td><b><code>integer</code></b></td>
+		<td><code>integer</code></td>
+		<td><code>integer</code></td>
+		<td><code>integer</code></td>
+		<td><code>integer</code></td>
+		<td><code>integer</code></td>
+		<td><code>int64</code></td>
+		<td><code>int64</code></td>
+		<td><code>uint64</code></td>
+		<td><code>BigInteger</code></td>
+		<td><code>single</code></td>
+		<td><code>real</code></td>
+	</tr>
+	<tr>
+		<td><b><code>longword</code></b></td>
+		<td><code>int64</code></td>
+		<td><code>longword</code></td>
+		<td><code>int64</code></td>
+		<td><code>longword</code></td>
+		<td><code>int64</code></td>
+		<td><code>longword</code></td>
+		<td><code>uint64</code></td>
+		<td><code>uint64</code></td>
+		<td><code>BigInteger</code></td>
+		<td><code>single</code></td>
+		<td><code>real</code></td>
+	</tr>
+	<tr>
+		<td><b><code>int64</code></b></td>
+		<td><code>int64</code></td>
+		<td><code>int64</code></td>
+		<td><code>int64</code></td>
+		<td><code>int64</code></td>
+		<td><code>int64</code></td>
+		<td><code>uint64</code></td>
+		<td><code>int64</code></td>
+		<td><code>uint64</code></td>
+		<td><code>BigInteger</code></td>
+		<td><code>single</code></td>
+		<td><code>real</code></td>
+	</tr>
+	<tr>
+		<td><b><code>uint64</code></b></td>
+		<td><code>uint64</code></td>
+		<td><code>uint64</code></td>
+		<td><code>uint64</code></td>
+		<td><code>uint64</code></td>
+		<td><code>uint64</code></td>
+		<td><code>uint64</code></td>
+		<td><code>uint64</code></td>
+		<td><code>uint64</code></td>
+		<td><code>BigInteger</code></td>
+		<td><code>single</code></td>
+		<td><code>real</code></td>
+	</tr>
+	<tr>
+		<td><b><code>BigInteger</code></b></td>
+		<td><code>BigInteger</code></td>
+		<td><code>BigInteger</code></td>
+		<td><code>BigInteger</code></td>
+		<td><code>BigInteger</code></td>
+		<td><code>BigInteger</code></td>
+		<td><code>BigInteger</code></td>
+		<td><code>BigInteger</code></td>
+		<td><code>BigInteger</code></td>
+		<td><code>BigInteger</code></td>
+		<td>-</td>
+		<td>-</td>
+	</tr>
+	<tr>
+		<td><b><code>single</code></b></td>
+		<td><code>single</code></td>
+		<td><code>single</code></td>
+		<td><code>single</code></td>
+		<td><code>single</code></td>
+		<td><code>single</code></td>
+		<td><code>single</code></td>
+		<td><code>single</code></td>
+		<td><code>single</code></td>
+		<td>-</td>
+		<td><code>single</code></td>
+		<td><code>real</code></td>
+	</tr>
+	<tr>
+		<td><b><code>real</code></b></td>
+		<td><code>real</code></td>
+		<td><code>real</code></td>
+		<td><code>real</code></td>
+		<td><code>real</code></td>
+		<td><code>real</code></td>
+		<td><code>real</code></td>
+		<td><code>real</code></td>
+		<td><code>real</code></td>
+		<td>-</td>
+		<td><code>real</code></td>
+		<td><code>real</code></td>
+	</tr>
+</table>
+<p>То есть, если операнды - целые, то результатом является самый короткий целый 
+тип, требуемый для представления всех получаемых значений. </p>
+<p>При выполнении бинарной операции с <code>uint64</code>
+и знаковым целым результирующим типом будет <code>uint64</code>, 
+при этом может произойти переполнение, не вызывающее исключения.</p>
+<p>Для операции <code>/</code> данная таблица исправляется следующим образом: 
+результат деления любого целого на целое имеет тип <code>real</code>.</p>
+<p>Для операций <b><code>div</code></b> и <b><code>mod</code></b> выполняются эти же правила, но операнды могут быть только целыми. Правила 
+вычисления операций <b><code>div</code></b> и <b>
+<code>mod</code></b> - следующие: </p>
+<blockquote>
+	<p><code>x <b>div</b> y</code> - результат 
+	целочисленного деления <code>x</code> на <code>y</code>. 
+	Точнее, <code>x <b>div</b> y = x / y</code>, 
+	округленное до ближайшего целого по направлению к 0;<code><br>
+	x <b>mod</b> y</code> - остаток от целочисленного 
+	деления <code>x</code> на <code>y</code>. Точнее,
+	<code>x <b>mod</b> y = x - (x <b>div</b> y) * y</code>.</p>
+</blockquote>
+<p>Унарная арифметическая операция 
+<code>+</code> для любого целого типа возвращает этот тип. Унарная 
+арифметическая операция <code>-</code> возвращает для целых типов, меньших или 
+равных <code>integer</code>, значение типа <code>integer</code>, для <code>
+longword</code> и <code>int64</code> 
+- значение типа <code>int64</code>, к <code>uint64</code> унарная операция - не применима, для типов <code>single</code> и <code>real</code> - соответственно типы <code>
+single</code> и <code>real</code>. То есть так же 
+результатом является самый короткий тип, требуемый для представления всех 
+получаемых значений.</p>
+
+</body></html>

@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="case">
+<param name="Keyword" value="of">
+<param name="Keyword" value="else">
+<param name="Keyword" value="Оператор выбора">
+</object>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="case">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Оператор выбора</H1>
+<p><i>Оператор выбора</i> выполняет одно действие из нескольких в зависимости от 
+значения некоторого выражения, называемого <i>переключателем</i>. Он имеет 
+следующий вид:</p>
+<blockquote>
+	<p><b><code>case</code></b> <code class="codeit">переключатель</code> <code>
+	<b>of<br>
+	</b>&nbsp; </code> <code class="codeit">список выбора 1</code><code>: </code> <code class="codeit">
+	оператор1</code><code>;<br>
+	&nbsp; ...<br>
+	&nbsp; </code> <code class="codeit">список выбора N</code><code>:
+	</code> <code class="codeit">операторN</code><code>;<br>
+	<b>&nbsp; else</b></code> <code class="codeit">оператор0<br>
+	</code><code><b>end</b>;</code> </p>
+</blockquote>
+<p>Переключатель представляет собой выражение <a href="../Types/index_types.html">порядкового типа</a> 
+или строкового типа, а списки выбора содержат константы совместимого 
+по присваиванию типа. Как и 
+в операторе <b><code>if</code></b>, ветка <b><code>else</code></b> может 
+отсутствовать. </p>
+<p>Оператор <b><code>case</code></b> работает следующим образом. Если в одном из 
+списков выбора найдено текущее значение переключателя, то выполняется оператор, 
+соответствующий данному списку. Если же значение переключателя не найдено ни в 
+одном списке, то выполняется оператор по ветке <b><code>else</code></b> или, 
+если ветка <b><code>else</code></b> отсутствует, оператор <b><code>case</code></b> 
+не выполняет никаких действий. </p>
+<p>Список выбора состоит либо из одной константы, либо для перечислимого типа из диапазона значений 
+вида <code>a..b</code> (константа <code>a</code> должна быть меньше константы
+<code>b</code>); можно также перечислить несколько констант или диапазонов через 
+запятую. Например:</p>
+<blockquote>
+	<p><code><b>case </b>Country <strong>of</strong><br>
+	&nbsp; 'Россия': Capital := 'Москва';<br>
+	&nbsp; 'Франция': Capital := 'Париж';<br>
+	&nbsp; 'Италия': Capital := 'Рим';<br>&nbsp; <strong>else</strong> Capital 
+	:= 'Страна отсутствует в базе данных';<br><strong>end</strong>;</code></p>
+	<p><code><b>case</b> DayOfWeek <b>of</b><br>
+	&nbsp; 1..5: writeln('Будний день');<br>
+	&nbsp; 6,7: writeln('Выходной день');<br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p>Списки выбора не должны пересекаться. Например, следующий фрагмент</p>
+<blockquote>
+	<p><code><b>case</b> i <b>of</b><br>
+	&nbsp; 2,5: write(1);<br>
+	&nbsp; 4..6: write(2);<br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p>приведет к ошибке компиляции.</p>
+<p>&nbsp;</p>
+</body>
+
+</html>

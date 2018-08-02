@@ -1,0 +1,47 @@
+<html><head><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="GroupBy">
+</object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
+<body>
+<H1>Метод GroupBy</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<tr><td>
+<code><b>function </b>GroupBy&lt;Key&gt;(keySelector: T-&gt;Key): IEnumerable&lt;IGrouping&lt;Key,T&gt;&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Группирует элементы последовательности в соответствии с заданной функцией селектора ключа и возвращает последовательность групп; каждая группа соответствует одному значению ключа.
+</td></tr>
+<tr><td>
+<code><b>function </b>GroupBy&lt;Key&gt;(keySelector: T-&gt;Key; comparer: System.Collections.Generic.IEqualityComparer&lt;Key&gt;): IEnumerable&lt;IGrouping&lt;Key,T&gt;&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Группирует элементы последовательности в соответствии с заданной функцией селектора ключа, сравнивает ключи с помощью указанного компаратора и возвращает последовательность групп; каждая группа соответствует одному значению ключа.
+</td></tr>
+<tr><td>
+<code><b>function </b>GroupBy&lt;Key,Element&gt;(keySelector: T-&gt;Key; elementSelector: T-&gt;Element): IEnumerable&lt;IGrouping&lt;Key,T&gt;&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Группирует элементы последовательности в соответствии с заданной функцией селектора ключа и проецирует элементы каждой группы с помощью указанной функции. Возвращает последовательность групп; каждая группа соответствует одному значению ключа.
+</td></tr>
+<tr><td>
+<code><b>function </b>GroupBy&lt;Key,Element&gt;(keySelector: T-&gt;Key; elementSelector: T-&gt;Element; comparer: IEqualityComparer&lt;Key&gt;): IEnumerable&lt;IGrouping&lt;Key,Element&gt;&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Группирует элементы последовательности в соответствии с функцией селектора ключа.Ключи сравниваются с помощью компаратора, элементы каждой группы проецируются с помощью указанной функции.
+</td></tr>
+<tr><td>
+<code><b>function </b>GroupBy&lt;Key,Res&gt;(keySelector: T-&gt;Key; resultSelector: (Key,<b>sequence of</b> T)-&gt;Res): <b>sequence of</b> Res;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Группирует элементы последовательности в соответствии с заданной функцией селектора ключа и создает результирующее значение для каждой группы и ее ключа.
+</td></tr>
+<tr><td>
+<code><b>function </b>GroupBy&lt;Key,Element,Res&gt;(keySelector: T-&gt;Key; elementSelector: T-&gt;Element; resultSelector: (Key,<b>sequence of</b> Element)-&gt;Res): <b>sequence of</b> Res;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Группирует элементы последовательности в соответствии с заданной функцией селектора ключа и создает результирующее значение для каждой группы и ее ключа.Элементы каждой группы проецируются с помощью указанной функции.
+</td></tr>
+<tr><td>
+<code><b>function </b>GroupBy&lt;Key,Res&gt;(keySelector: T-&gt;Key; resultSelector: (Key,<b>sequence of</b> T)-&gt;Res; comparer: IEqualityComparer&lt;Key&gt;): <b>sequence of</b> Res;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Группирует элементы последовательности в соответствии с заданной функцией селектора ключа и создает результирующее значение для каждой группы и ее ключа.Ключи сравниваются с использованием заданного компаратора.
+</td></tr>
+<tr><td>
+<code><b>function </b>GroupBy&lt;Key,Element,Res&gt;(keySelector: T-&gt;Key; elementSelector: System.T-&gt;Element; resultSelector: (Key,<b>sequence of</b> Element)-&gt;Res; comparer: IEqualityComparer&lt;Key&gt;): <b>sequence of</b> Res;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Группирует элементы последовательности в соответствии с заданной функцией селектора ключа и создает результирующее значение для каждой группы и ее ключа.Значения ключей сравниваются с помощью указанного компаратора, элементы каждой группы проецируются с помощью указанной функции.
+</td></tr>
+</table>
+<h2>Пример </h2><blockquote><code><strong>begin</strong><br>&nbsp; <strong>var</strong> 
+	a := Arr(('Иванов',3),('Попов',1),('Авилов',1),<br>&nbsp;&nbsp;&nbsp; 
+	('Козлов',3),('Ослов',2),('Рогов',1));<br>&nbsp; <strong>var</strong> groups 
+	:= a.GroupBy(s-&gt;s[1]);<br><br>&nbsp; <strong>foreach</strong> <strong>var</strong> 
+	g <strong>in</strong> groups <strong>do</strong><br>&nbsp; <strong>begin</strong><br>&nbsp;&nbsp;&nbsp; 
+	Print(g.Key+':');<br>&nbsp;&nbsp;&nbsp; g.Select(x-&gt;x[0]).Println;<br>&nbsp;
+	<strong>end</strong>; <br><strong>end</strong>.<br><br>Вывод:<br>3: Иванов 
+	Козлов<br>1: Попов Авилов Рогов<br>2: Ослов</code></blockquote>
+</body>

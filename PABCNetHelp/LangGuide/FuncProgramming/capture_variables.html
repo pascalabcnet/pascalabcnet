@@ -1,0 +1,34 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Захват переменных в лямбда-выражении">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Захват переменных в лямбда-выражении</H1>
+<p><a href="lambdas.html">Лямбда-выражение</a> может использовать переменные из 
+внешнего контекста. Такие переменные называются захваченными лямбда-выражением.</p>
+<p><strong>Пример 1.</strong> Захват переменной в запросе Select.</p>
+<blockquote><code><strong>begin</strong><br>&nbsp; <strong>var</strong> a := 
+	Seq(2,3,4);<br>&nbsp; <strong>var</strong> z := 1;<br>&nbsp; <strong>var</strong> 
+	q := a.Select(x-&gt;x+z);<br>&nbsp; q.Println;<br>&nbsp; z := 2;<br>&nbsp; 
+	q.Println;<br><strong>end</strong>.</code></blockquote>
+<p>Здесь лямбда-выражение <code>x-&gt;x+z</code> захватывает внешнюю переменную z. 
+Важно заметить, что при изменении значения переменной z запрос <code>
+a.Select(x-&gt;x+z)</code>, хранящийся в переменной q, выполняется с новым 
+значением z.</p>
+<p><strong>Пример 2.</strong> Накопление суммы во внешней переменной.</p>
+<blockquote><code><strong>begin</strong><br>&nbsp; <strong>var</strong> sum := 
+	0;<br>&nbsp; <strong>var</strong> AddToSum: integer -&gt; () := <strong>
+	procedure</strong> (x) -&gt; <strong>begin</strong> sum += x; <strong>
+	end</strong>;<br><br>&nbsp; AddToSum(1);<br>&nbsp; AddToSum(3);<br>&nbsp; 
+	AddToSum(5);<br><br>&nbsp; writeln(sum); <br><strong>end</strong>.</code></blockquote>
+<p>&nbsp;</p>
+</body>
+
+</html>

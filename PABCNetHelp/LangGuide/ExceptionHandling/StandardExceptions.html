@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Exception">
+<param name="Keyword" value="Message">
+<param name="Keyword" value="StackTrace">
+<param name="Keyword" value="SystemException">
+<param name="Keyword" value="OutOfMemoryException">
+<param name="Keyword" value="StackOverflowException">
+<param name="Keyword" value="AccessViolationException">
+<param name="Keyword" value="ArgumentException">
+<param name="Keyword" value="ArithmeticException">
+<param name="Keyword" value="DivideByZeroException">
+<param name="Keyword" value="OverflowException">
+<param name="Keyword" value="FormatException">
+<param name="Keyword" value="IndexOutOfRangeException">
+<param name="Keyword" value="InvalidCastException">
+<param name="Keyword" value="NullReferenceException">
+<param name="Keyword" value="IOException">
+<param name="Keyword" value="DirectoryNotFoundException">
+<param name="Keyword" value="EndOfStreamException">
+<param name="Keyword" value="FileNotFoundException">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+
+<H1>Стандартные классы исключений</H1>
+<p>Все классы исключений являются потомками класса <code>System.Exception</code>, 
+включающего следующий интерфейс:</p>
+<blockquote>
+	<p><code><b>type</b> <br>
+&nbsp; Exception =<b> class<br>
+&nbsp; public </b><br>
+&nbsp;&nbsp;&nbsp; <b>constructor</b> Create;<br>
+&nbsp;&nbsp;&nbsp; <b>constructor</b> Create(message: <b>string</b>);<br>
+&nbsp;&nbsp;&nbsp; <b>property</b> Message: <b>string</b>; // 
+	только на чтение<br>
+&nbsp;&nbsp;&nbsp; <b>property</b> </code><code>StackTrace</code><code>: <b>string</b>; 
+	// только на чтение<br>
+	<b>&nbsp; end</b>;</code></p>
+</blockquote>
+<p>Свойство <code>Message</code> 
+возвращает сообщение, связанное с объектом исключения.</p>
+<p>Свойство <code>StackTrace</code> 
+возвращает стек вызовов подпрограмм на момент генерации исключения.</p>
+<p>Ниже приводятся некоторые классы исключений, определенные в пространстве имен <code>System</code> и 
+являющиеся производными от класса <code>System.SystemException</code>:</p>
+<blockquote>
+	<p><code>System.OutOfMemoryException</code> - недостаточно 
+	памяти для выполнения программы;<br><code>System.StackOverflowException</code> - переполнение стека (как 
+	правило, при многократных вложенных вызовах подпрограмм);<br>
+	<code>System.AccessViolationException</code> - попытка доступа к защищенной 
+	памяти;<br><code>System.ArgumentException</code> - 
+	неверное значение параметра подпрограммы; <br>
+	<code>System.ArithmeticException</code> - базовый класс всех арифметических 
+	исключений. Наследники:</p>
+	<blockquote>
+		<p><code>System.DivideByZeroException</code> - целочисленное деление на 
+		0;<br>
+		<code>System.OverflowException</code> - переполнение при выполнении 
+		арифметической операции или преобразования типов;</p>
+	</blockquote>
+	<p><code>System.FormatException</code> - неверный формат параметра 
+	(например, при преобразовании строки в число); <br>
+	<code>System.IndexOutOfRangeException</code> - выход за границы диапазона 
+	изменения индекса массива; <br><code>System.InvalidCastException</code> - 
+	неверное приведение типов; <br><code>System.NullReferenceException</code> - 
+	попытка вызвать метод для нулевого объекта или разыменовать нулевой 
+	указатель;<br><code>System.IO.IOException</code> - 
+	ошибка ввода-вывода. Наследники: </p>
+	<blockquote>
+		<p><code>System.IO.IOException.DirectoryNotFoundException</code> - 
+		каталог не найден;<br>
+		<code>System.IO.IOException.</code><code>EndOfStreamException</code> - 
+		попытка чтения за концом потока; <br>
+		<code>System.IO.IOException.</code><code>FileNotFoundException</code> - 
+		файл не найден.<br>
+		<br>&nbsp;</code></p>
+	</blockquote>
+</blockquote>
+</body>
+
+</html>

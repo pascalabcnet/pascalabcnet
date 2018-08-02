@@ -1,0 +1,38 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Redraw">
+<param name="Keyword" value="LockDrawing">
+<param name="Keyword" value="UnlockDrawing">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Подпрограммы блокировки рисования</H1>
+<table border=0 CELLPADDING=5>
+<tr><td>
+<code>
+<b>procedure</b> Redraw;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перерисовывает содержимое графического окна. Вызывается в паре с 
+<code>LockDrawing</code>
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> LockDrawing;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Блокирует рисование на графическом окне. Перерисовка графического окна выполняется с помощью 
+<code>Redraw</code>
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> UnlockDrawing;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Снимает блокировку рисования на графическом окне и осуществляет его перерисовку
+</td></tr>
+</table>
+<p>Блокировка вывода в графическое окно
+<code>
+LockDrawing</code> с последующим вызовом <code>Redraw</code> используется для 
+простейшего создания анимации без мерцания.</p>
+<p><b>Пример.</b> <a href="../../Examples/GraphABC/NonBlinkAnim1.html">Анимация 
+без мерцания</a></p>
+</body></html>

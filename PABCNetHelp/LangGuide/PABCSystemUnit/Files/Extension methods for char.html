@@ -1,0 +1,40 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Between">
+<param name="Keyword" value="Code">
+<param name="Keyword" value="InRange">
+<param name="Keyword" value="IsDigit">
+<param name="Keyword" value="IsLetter">
+<param name="Keyword" value="IsLower">
+<param name="Keyword" value="IsUpper">
+<param name="Keyword" value="Pred">
+<param name="Keyword" value="Succ">
+<param name="Keyword" value="ToDigit">
+<param name="Keyword" value="ToLower">
+<param name="Keyword" value="ToUpper"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Методы расширения типа char</H1>
+<table cellpadding=3><tr><td><code><b>function</b> Between(Self: char; a, b: char): boolean; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если значение находится между двумя другими</td></tr>
+<tr><td><code><b>function</b> Code(Self: char): integer; <b>extensionmethod</b> := word(Self);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Код символа в кодировке Unicode</td></tr>
+<tr><td><code><b>function</b> InRange(Self: char; a,b: char): boolean; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если значение находится между двумя другими</td></tr>
+<tr><td><code><b>function</b> IsDigit(Self: char); <b>extensionmethod</b> := char.IsDigit(Self);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Является ли символ цифрой</td></tr>
+<tr><td><code><b>function</b> IsLetter(Self: char): boolean; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Является ли символ буквой</td></tr>
+<tr><td><code><b>function</b> IsLower(Self: char): boolean; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Принадлежит ли символ к категории букв нижнего регистра</td></tr>
+<tr><td><code><b>function</b> IsUpper(Self: char): boolean; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Принадлежит ли символ к категории букв верхнего регистра</td></tr>
+<tr><td><code><b>function</b> Pred(Self: char); <b>extensionmethod</b> := PABCSystem.Pred(Self);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Предыдущий символ</td></tr>
+<tr><td><code><b>function</b> Succ(Self: char); <b>extensionmethod</b> := PABCSystem.Succ(Self);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Следующий символ</td></tr>
+<tr><td><code><b>function</b> ToDigit(Self: char): integer; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует символ в цифру</td></tr>
+<tr><td><code><b>function</b> ToLower(Self: char): char; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует символ в нижний регистр</td></tr>
+<tr><td><code><b>function</b> ToUpper(Self: char): char; <b>extensionmethod</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует символ в верхний регистр</td></tr>
+</table></body></HTML>

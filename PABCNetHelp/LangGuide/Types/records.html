@@ -1,0 +1,214 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="record">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+<style type="text/css">
+.auto-style1 {
+	font-family: monospace;
+	font-size: 10pt;
+	color: #000080;
+}
+</style>
+</head>
+
+<body>
+<H1>Записи</H1>
+<p>Запись представляет собой набор элементов разных типов, каждый из которых 
+имеет свое имя и называется полем записи. </p>
+<h2>Описание записей</h2>
+<p>Тип записи в классическом языке 
+Паскаль описывается следующим 
+образом:</p>
+<blockquote>
+	<p><code><strong>record</strong> <br>
+	</code><i>&nbsp;&nbsp; <code> <code class="codeit">описания полей</code></code><br>
+	</i><code><strong>end</strong></code></p>
+</blockquote>
+<p>где описания полей имеет такой же вид, что и
+<a href="../_ProgrStruct_Defs/vardef.html">раздел описания переменных</a> без 
+ключевого слова <strong><span class="auto-style1">var</span></strong>. </p>
+<p>Например:</p>
+<blockquote>
+	<p><code><b>type</b> <br>
+	&nbsp; Person = <b>record</b><br>
+	&nbsp;&nbsp;&nbsp; Name: string;<br>
+	&nbsp;&nbsp;&nbsp; Age: integer;<br>
+	&nbsp; <b>end</b>;</code></p>
+</blockquote>
+<h2>Переменные типа запись</h2>
+<p>Переменные типа запись хранят в непрерывном блоке памяти значения всех полей 
+записи.&nbsp; </p>
+<p>Для доступа к полям записей используется точечная нотация:</p>
+<blockquote>
+	<p><code><strong>var </strong>p: Person;<strong><br>begin</strong><br>&nbsp; 
+	p.Name := 'Иванов';<br>
+	&nbsp; p.Age := 20;<br>&nbsp; writeln(p); // (Иванов,20)<br>
+	<b>end.</b></code></p>
+</blockquote>
+<p>По умолчанию процедура <code>write</code> выводит содержимое всех полей 
+записи в круглых скобках через запятую. </p>
+<h2>Методы и модификаторы доступа для записей</h2>
+<p>В <strong>PascalABC.NET</strong> внутри записей допустимо определять 
+<a href="../Classes/methods.html">методы</a> и 
+<a href="../Classes/properties.html">свойства</a>, а также использовать
+<a href="../Classes/visibility.html">модификаторы доступа</a>. Таким образом, 
+описание записи в <strong>PascalABC.NET </strong>имеет вид:</p>
+<blockquote>
+	<p><code><strong>record</strong> <br>
+	&nbsp; <code class="codeit">&nbsp; секция1</code>&nbsp; <br>&nbsp;
+	<code class="codeit">&nbsp; секция2</code>&nbsp; <br><code class="codeit">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	...</code><br>
+	<strong>end</strong></code></p>
+</blockquote>
+<p>Каждая секция имеет вид:</p>
+<blockquote>
+	<p><code><code class="codeit">модификатор доступа</code>&nbsp; <br>
+	<code class="codeit">&nbsp;&nbsp; описания полей</code><br>
+	<code class="codeit">&nbsp;&nbsp;
+	объявления или описания методов и описания свойств</code></code></p>
+</blockquote>
+<p><a href="../Classes/visibility.html">Модификатор доступа</a> в первой секции может отсутствовать, в этом случае 
+подразумевается модификатор <strong><span class="auto-style1">public</span></strong> 
+(все члены открыты).</p>
+<p>Например:</p>
+<blockquote>
+	<p><code><b>type</b><br>
+	&nbsp; Person = <b>record<br>
+&nbsp; private</b><br>
+	&nbsp;&nbsp;&nbsp; Name: string;<br>
+	&nbsp;&nbsp;&nbsp; Age: integer;<br>
+	<b>&nbsp; public</b><br>
+&nbsp;&nbsp;&nbsp; <b>constructor</b> Create(Name: string; Age: integer);<br>
+	&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Self.Name := Name;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Self.Age := Age;<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>&nbsp;&nbsp;&nbsp; <strong>procedure</strong> 
+	Print;<br><b>&nbsp; end</b>;<br><br><strong>procedure</strong> Person.Print;<br>
+	<strong>begin</strong><br>&nbsp; writelnFormat('Имя: {0} Возраст: {1}', 
+	Name, Age);<br><strong>end</strong>;</code></p>
+</blockquote>
+<p>Как и в <a href="../Classes/index_classes.html">классах</a>, методы могут 
+описываться как внутри, так и вне тела записи. В примере выше конструктор 
+описывается внутри записи, а метод Print объявляется внутри, а описывается вне 
+тела записи. Метод-конструктор всегда имеет имя Create и предназначен для 
+инициализации полей записи. </p>
+<h2>Инициализация записей</h2>
+<p>При описании переменной или константы типа запись можно использовать 
+инициализатор записи (как и в Delphi Object Pascal):</p>
+<blockquote>
+	<p><code><b>const</b> p: Person = (Name: 'Петрова'; 
+	Age: 18);</code></p>
+</blockquote>
+<blockquote>
+	<p><code><b>var</b> p: Person := (Name: 'Иванов'; 
+	Age: 20);</code></p>
+</blockquote>
+<p>Конструкторы для записей имеют тот же синтаксис, что и для классов. Однако, в 
+отличие от классов, вызов конструктора записи не создает новый объект в 
+динамической памяти, а только инициализирует поля записи: </p>
+<blockquote>
+	<p><code><strong>var</strong> p: Person := new Person('Иванов',20);</code></p>
+</blockquote>
+<p>Более традиционно в записи определяется обычный метод-процедура, традиционно 
+с именем <strong><span class="auto-style1">Init</span></strong>, 
+инициализирующая поля записи: </p>
+<blockquote>
+	<p><code><b>type</b><br>
+	&nbsp; Person = <b>record<br>&nbsp;&nbsp;&nbsp; ...<br>
+	&nbsp; public</b><br>
+&nbsp;&nbsp;&nbsp; <strong>procedure</strong> Init(Name: string; Age: integer);<br>
+	&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Self.Name := Name;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Self.Age := Age;<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>&nbsp;&nbsp;&nbsp; ...<br><b>&nbsp; end</b>;<br>
+	...<br><b>var</b> p: Person;<br>p.Init('Иванов',20);</code></p>
+</blockquote>
+<p>В системном модуле определена также функция <span class="auto-style1">Rec</span>, 
+которая создает переменную типа запись &quot;на лету&quot;:</p>
+<blockquote>
+	<p><code><strong>var</strong> p := Rec('Иванов',20);<br>Println(p); // 
+	(Иванов,20)</code></p>
+</blockquote>
+<p>Тип этой записи - безымянный. Поля данной записи автоматически именуются 
+Item1, Item2 и т.д.:</p>
+<blockquote>
+	<p><code>Println(p.Item1, p.Item2); // Иванов 20</code></p>
+</blockquote>
+<h2>Отличие записей от классов</h2>
+<p>Список отличий между записями и классами 
+приводятся ниже:</p>
+<ol>
+	<li>Запись представляет собой размерный тип (переменные типа запись 
+располагаются на стеке).</li>
+	<li>Записи нельзя наследовать; от записей также нельзя наследовать (отметим, 
+	что записи, тем не менее, могут реализовывать интерфейсы). В .NET тип 
+записи неявно предполагается наследником типа <code>System.ValueType</code> и 
+реализуется struct-типом.</li>
+	<li>Если в записи не указан модификатор доступа, то по умолчанию 
+	подразумевается модификатор <strong><span class="auto-style1">public</span></strong> 
+	(все члены открыты), а в классе - <strong><span class="auto-style1">internal</span></strong>.</li>
+</ol>
+<h2>Вывод переменной типа запись</h2>
+<p>По умолчанию процедура <code>write</code> для переменной типа запись выводит 
+содержимое всех её публичных свойств и полей в круглых скобках через запятую. Чтобы изменить это поведение, в записи следует 
+<a href="../Classes/virtual.html">переопределить</a> виртуальный метод
+<code>ToString</code> класса <code>Object</code> - в этом случае именно он будет 
+вызываться при выводе объекта. </p>
+<p>Например:</p>
+<blockquote>
+	<p><code><b>type</b><br>
+	&nbsp; Person = <b>record<br>
+&nbsp;
+	&nbsp; ...<br>
+&nbsp; &nbsp; function</b> ToString: 
+	string; <b>override</b>;<br>
+	<b>&nbsp;&nbsp;&nbsp; begin</b><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result := 
+	string.Format('Имя: {0}&nbsp; Возраст: {1}',
+	Name, Age); <br>
+	<b>&nbsp;&nbsp;&nbsp; end</b>;<br>
+	<b>&nbsp; end</b>;<br>
+	&nbsp; ...<br>
+	<b>var</b> p: Person := new Person('Иванов',20);<br>
+	writeln(p); // Имя: Иванов&nbsp; Возраст: 20</code></p>
+</blockquote>
+<h2>Присваивание и передача в качестве параметров подпрограмм</h2>
+<p>Поскольку запись, в отличие от класса, представляет собой размерный тип, то присваивание записей копирует содержимое полей одной переменной-записи в 
+другую:</p>
+<blockquote>
+	<p><code>d2 := d1;</code></p>
+</blockquote>
+<p>Для записей принята <a href="typecompatibility.html">именная эквивалентность типов</a>:
+можно присваивать друг другу и передавать в качестве параметров 
+подпрограмм записи, совпадающие только по имени.</p>
+<p>Во избежание копирования те записи, которые содержат несколько полей, передаются в 
+подпрограммы по ссылке. Если запись не меняется внутри подпрограммы, то 
+используют ссылку на константу, если меняется - то ссылку на переменную:</p>
+<blockquote>
+	<p><code><strong>procedure</strong> PrintPerson(<strong>const</strong> p: 
+	Person);<br><strong>begin</strong><br>&nbsp; Print(p.Name, p.Age);<br>
+	<strong>end</strong>;<br><br><strong>procedure</strong> ChangeName(<strong>var</strong> 
+	p: Person; NewName: string);<br><strong>begin</strong><br>&nbsp; p.Name := 
+	Name;<br><strong>end</strong>;</code></p>
+</blockquote>
+<h2>Сравнение на равенство</h2>
+<p>Записи одного типа можно сравнивать на равенство, при этом записи считаются 
+равными если значения всех полей совпадают:</p>
+<blockquote>
+	<p><code><strong>type</strong> Person = <strong>record</strong><br>&nbsp; 
+	name: string;<br>&nbsp; age: integer;<br><strong>end</strong>;<br><br>
+	<strong>var</strong> p1,p2: Person;<br><br><strong>begin</strong><br>&nbsp; 
+	p1.age := 20;<br>&nbsp; p2.age := 20;<br>&nbsp; p1.name := 'Ivanov';<br>&nbsp; 
+	p2.name := 'Ivanov';<br>&nbsp; writeln(p1=p2); // True<br><strong>end</strong>.</code></p>
+</blockquote>
+<h2>Замечание</h2>
+<p>В отличие от Delphi Object Pascal, в <b>PascalABC.NET</b> отсутствуют записи 
+с вариантами.</p>
+</body>
+
+</html>

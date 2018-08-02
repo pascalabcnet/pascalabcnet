@@ -1,0 +1,19 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="MatrFill">
+<param name="Keyword" value="MatrGen">
+<param name="Keyword" value="MatrRandom">
+<param name="Keyword" value="MatrRandomInteger">
+<param name="Keyword" value="MatrRandomReal"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Подпрограммы для генерации случайных матриц</H1>
+<table cellpadding=3><tr><td><code><b>function</b> MatrFill&lt;T&gt;(m,n: integer; x: T): array [,] of T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n, заполненный элементами x</td></tr>
+<tr><td><code><b>function</b> MatrGen&lt;T&gt;(m,n: integer; gen: (integer,integer)-&gt;T): array [,] of T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n, заполненный элементами x</td></tr>
+<tr><td><code><b>function</b> MatrRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями</td></tr>
+<tr><td><code><b>function</b> MatrRandomInteger(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями</td></tr>
+<tr><td><code><b>function</b> MatrRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real := 10): array [,] of real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями</td></tr>
+</table></body></HTML>

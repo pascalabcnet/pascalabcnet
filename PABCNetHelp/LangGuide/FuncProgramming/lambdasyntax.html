@@ -1,0 +1,67 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+<style type="text/css">
+.auto-style1 {
+	font-family: monospace;
+	font-size: 10pt;
+	color: #000080;
+}
+</style>
+</head>
+
+<body>
+<H1>Синтаксис лямбда-выражений</H1>
+<p>Лямбда-выражение имеет следующий синтаксис:</p>
+<blockquote><em>секция_параметров</em> <em>секция_типа</em> <code>-&gt;</code> <em>
+	выражение</em></blockquote>
+<p>или</p>
+<blockquote><em>секция_параметров</em> <em>секция_типа</em> <code>-&gt;</code> <em>
+	составной оператор</em></blockquote>
+<p>или</p>
+<blockquote><strong><span class="auto-style1">function</span></strong> <em>
+	секция_параметров</em> <em>секция_типа</em> <code>-&gt;</code> <em>выражение</em></blockquote>
+<p>или</p>
+<blockquote><span class="auto-style1"><strong>procedure</strong></span> <em>
+	секция_параметров</em> <code>-&gt;</code> <em>составной оператор</em></blockquote>
+<p>Секция типа - либо пуста, либо имеет вид:</p>
+<blockquote><span class="auto-style1">:</span> <em>тип</em></blockquote>
+<p>Секция параметров устроена следующим образом:</p>
+<blockquote><em>идентификатор</em></blockquote>
+<p>или</p>
+<blockquote><span class="auto-style1">(</span> <em>список идентификаторов</em>
+	<span class="auto-style1">)</span> </blockquote>
+<p>Список идентификаторов состоит из секций. Каждая секция содержит 
+идентификаторы, перечисляемые через запятую, после которых может следовать : 
+тип. Секции отделяются одна от другой символом &quot;точка с запятой&quot;. Список 
+идентификаторов не может состоять из одного идентификатора без указания типа.</p>
+<p>В инициализаторах процедурных переменных вида</p>
+<blockquote><span class="auto-style1"><strong>var</strong></span> <em>имя</em><span class="auto-style1">:
+	</span><em>тип</em> <span class="auto-style1">:=</span> <em>лямбда-выражение</em></blockquote>
+<p>если лямбда-выражение не начинается с ключевого слова <strong>
+<span class="auto-style1">function</span></strong> или <span class="auto-style1">
+<strong>procedure</strong></span>, то в секции параметров допустимы только 
+переменные без указания типа, перечисляемые через запятую; секция типа также 
+должна быть пустой</p>
+<p>Например:</p>
+<blockquote class="auto-style1">x -&gt; x+1<br>() -&gt; 1<br>(x,y) -&gt; x*y<br>(x,y: 
+	integer) -&gt; x*y<br>(x,y: integer): integer -&gt; x*y<br>(x: integer; y: 
+	integer) -&gt; x*y<br>(x,y: integer) -&gt; <strong>begin</strong> Result := x*y
+	<strong>end</strong><br>(x,y: integer) -&gt; <strong>begin</strong> Result := 
+	x*y <strong>end</strong><br><strong>function</strong> -&gt; 1<strong><br>
+	function</strong> (x,y) -&gt; x*y<br><strong>function</strong> (x,y: integer) 
+	-&gt; x*y<br><strong>function</strong> (x,y: integer): integer -&gt; x*y<br>
+	<strong>function</strong> (x,y: integer): integer -&gt; <strong>begin</strong> 
+	Result := x*y <strong>end<br>procedure </strong>-&gt; <strong>begin</strong> 
+	write(1); write(2) <strong>end</strong> <br><strong>procedure</strong> (x: 
+	integer; s: string)-&gt; <strong>begin</strong> write(x,s) <strong>end</strong> </blockquote>
+<p>&nbsp;</p>
+</body>
+
+</html>

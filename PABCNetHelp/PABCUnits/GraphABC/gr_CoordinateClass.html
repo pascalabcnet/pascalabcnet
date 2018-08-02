@@ -1,0 +1,122 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="OriginX">
+<param name="Keyword" value="OriginY">
+<param name="Keyword" value="Origin">
+<param name="Keyword" value="Angle">
+<param name="Keyword" value="ScaleX">
+<param name="Keyword" value="ScaleY">
+<param name="Keyword" value="Scale">
+<param name="Keyword" value="Matrix">
+<param name="Keyword" value="SetTransform">
+<param name="Keyword" value="SetOrigin">
+<param name="Keyword" value="SetScale">
+<param name="Keyword" value="SetMathematic">
+<param name="Keyword" value="SetStandard">
+<param name="Keyword" value="Coordinate">
+<param name="Keyword" value="GraphABCCoordinate">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Класс GraphABCCoordinate графического окна</H1>
+<p>Объект текущей <span lang="ru">системы координат</span> возвращается функцией <code><span lang="en-us">Coordinate</span></code> и имеет тип
+<code>
+  GraphABC<span lang="en-us">Coordinate</span></code>:</p>
+<blockquote>
+	<p><code><b>function</b> <span lang="en-us">Coordinate</span>: 
+	GraphABC<span lang="en-us">Coordinate</span>;</code></p>
+</blockquote>
+<p>Класс <code>GraphABCCoordinate</code> 
+представляет тип системы координат для графического окна. </p>
+<table border=0 CELLPADDING=5>
+<tr>
+	<td height="12"></td>
+</tr>
+<tr>
+	<td style="border:1px solid #808080; background-color: #E7E7F7">
+<font style="font-size: 11pt">Свойства класса GraphABCCoordinate</font></td>
+</tr>
+<tr>
+	<td>
+<code><b>property</b> OriginX: integer<span lang="en-us">;</span> </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;X-координата начала координат относительно левого верхнего угла окна
+</td>
+</tr>
+<tr>
+	<td>
+<code><b>property</b> Origin<span lang="en-us">Y</span>: integer; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span lang="en-us">Y</span>-координата начала координат относительно 
+левого верхнего угла окна</td>
+</tr>
+<tr><td>
+<code><b>property</b> Origin: Point;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Координаты начала координат относительно левого верхнего угла окна
+</td></tr>
+<tr>
+	<td>
+<code><b>property</b> Angle: real;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Угол поворота системы координат</td>
+</tr>
+<tr>
+	<td>
+<code><b>property</b> ScaleX: real;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Масштаб системы координат по оси X
+</td>
+</tr>
+<tr>
+	<td>
+<code><b>property</b> ScaleY: real;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Масштаб системы координат по оси <span lang="en-us">Y</span></td>
+</tr>
+<tr>
+	<td>
+<code><b>property</b> Scale: real;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Масштаб системы координат по обоим осям</td>
+</tr>
+<tr>
+	<td>
+<code><b>property</b> Matrix: System.Drawing.Drawing2D.Matrix;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Матрица 3x3 преобразований координат</td>
+</tr>
+<tr>
+	<td height="8"></td>
+</tr>
+<tr>
+	<td style="border:1px solid #808080; background-color: #E7E7F7">
+<font style="font-size: 11pt">Методы класса 
+GraphABCCoordinate</font></td>
+</tr>
+<tr>
+	<td>
+<code><b>procedure</b> SetTransform(x0,y0,angle,sx,sy: real); </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает параметры системы координат</td>
+</tr>
+<tr>
+	<td>
+<code><b>procedure</b> SetOrigin(x0,y0: integer); </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает начало системы координат</td>
+</tr>
+<tr>
+	<td>
+<code><b>procedure</b> SetScale(sx,sy: real); </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает масштаб системы координат</td>
+</tr>
+<tr><td>
+<code>
+    <b>procedure</b> SetScale(scale: real);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает масштаб системы координат</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> SetMathematic;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает правую систему координат (ось OY направлена вверх, ось OX 
+- вправо)</td></tr>
+<tr><td>
+<code><b>procedure</b> Set<span lang="en-us">Standard</span>; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает левую систему координат (ось OY направлена вниз, ось OX - 
+вправо)</td></tr>
+</table>
+<p>Кроме того, можно изменять свойства системы координат, используя 
+соответствующие <a href="gr_Coordinate.html">процедуры и функции</a>.</p>
+</body></html>

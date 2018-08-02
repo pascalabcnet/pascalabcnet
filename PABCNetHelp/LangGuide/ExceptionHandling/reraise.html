@@ -1,0 +1,34 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Повторная генерация исключения</H1>
+<p>Для повторной генерации исключения в блоке <code><b>
+except</b></code> служит <a href="../Operators/raise.html">о</a><a href="../Operators/raise.html">ператор <code> <b>raise</b></code></a>
+без параметров:</p>
+<blockquote>
+	<p><code><b>raise</b>;</code></p>
+</blockquote>
+<p>Например:</p>
+<blockquote>
+	<p><code><b>try</b><br>
+&nbsp; ...<br>
+	<b>except</b><br>
+&nbsp; <b>on</b> FileNotFoundException <b>do</b><br>
+&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp; log.WriteLine('Файл не найден'); //
+	запись в файл ошибок<br>
+&nbsp;&nbsp;&nbsp; <b>raise</b>;<br>
+&nbsp; <b>end</b>;<br>
+	<b>end</b>;</code></p>
+</blockquote>
+</body>
+
+</html>
