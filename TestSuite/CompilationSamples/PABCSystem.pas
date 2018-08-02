@@ -1455,6 +1455,8 @@ function UpperCase(s: string): string;
 function StringOfChar(ch: char; count: integer): string;
 /// Возвращает инвертированную строку
 function ReverseString(s: string): string;
+/// Возвращает инвертированную строку в диапазоне длины length начиная с индекса index
+function ReverseString(s: string; index,length: integer): string;
 /// Сравнивает строки. Возвращает значение < 0 если s1<s2, > 0 если s1>s2 и = 0 если s1=s2
 function CompareStr(s1, s2: string): integer;
 /// Возвращает первые count символов строки s
@@ -7627,6 +7629,13 @@ begin
   Result := new string(ca);
 end;
 
+function ReverseString(s: string; index,length: integer): string;
+begin
+  var ca := s.ToCharArray;
+  &Array.Reverse(ca,index,length);
+  Result := new string(ca);
+end;
+
 function CompareStr(s1, s2: string): Integer;
 begin
   Result := string.CompareOrdinal(s1, s2);
@@ -11218,6 +11227,14 @@ begin
   System.Threading.Thread.CurrentThread.CurrentUICulture := System.Globalization.CultureInfo.GetCultureInfo(locale_str);
   nfi := new System.Globalization.NumberFormatInfo();
   nfi.NumberGroupSeparator := '.';
+   
+  // SSM 1.08.18 только в текущем потоке будет точка в вещетвенных
+  // В Net 4.6 System.Globalization.CultureInfo.DefaultThreadCurrentCulture := ci
+  // Но как сделать чтобы работало и в младших NET - не знаю
+  var ci := (System.Globalization.CultureInfo.CurrentCulture.Clone as System.Globalization.CultureInfo);
+  ci.NumberFormat := nfi;
+  System.Globalization.CultureInfo.CurrentCulture := ci;
+  
   //  System.Threading.Thread.CurrentThread.CurrentCulture := new System.Globalization.CultureInfo('en-US');
   //rnd := new System.Random;
   StartTime := DateTime.Now;

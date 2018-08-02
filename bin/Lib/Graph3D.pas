@@ -1066,9 +1066,10 @@ type
       Element.transfgroup.Children.Add(el);
       var ttname := 't' + el.GetHashCode;
       if not RegisterName(sb, el, ttname) then;
-      dax := AddDoubleAnimByNameUsingKeyframes(sb, a.Select(p -> p.x-Element.x), seconds, ttname, TranslateTransform3D.OffsetXProperty);
-      day := AddDoubleAnimByNameUsingKeyframes(sb, a.Select(p -> p.y-Element.y), seconds, ttname, TranslateTransform3D.OffsetYProperty);
-      daz := AddDoubleAnimByNameUsingKeyframes(sb, a.Select(p -> p.z-Element.z), seconds, ttname, TranslateTransform3D.OffsetZProperty);
+      var aa := a.ToArray;
+      dax := AddDoubleAnimByNameUsingKeyframes(sb, aa.Select(p -> p.x-Element.x), seconds, ttname, TranslateTransform3D.OffsetXProperty);
+      day := AddDoubleAnimByNameUsingKeyframes(sb, aa.Select(p -> p.y-Element.y), seconds, ttname, TranslateTransform3D.OffsetYProperty);
+      daz := AddDoubleAnimByNameUsingKeyframes(sb, aa.Select(p -> p.z-Element.z), seconds, ttname, TranslateTransform3D.OffsetZProperty);
       daz.Completed += Hand;  
     end;
   
