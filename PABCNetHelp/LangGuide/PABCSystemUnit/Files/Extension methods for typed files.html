@@ -7,18 +7,18 @@
 <param name="Keyword" value="Write"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Методы расширения типизированных файлов</H1>
-<table cellpadding=3><tr><td><code><b>function</b> Read&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T): T; <b>extensionmethod</b>;</code>
+<table cellpadding=3><tr><td><code><b>function</b> Read&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T): T; </code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает и возвращает следующий элемент типизированного файла</td></tr>
-<tr><td><code><b>function</b> Read2&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T): (T,T); <b>extensionmethod</b>;</code>
+<tr><td><code><b>function</b> Read2&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T): (T,T); </code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает и возвращает два следующих элемента типизированного файла в виде кортежа</td></tr>
-<tr><td><code><b>function</b> Read3&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T): (T,T,T); <b>extensionmethod</b>;</code>
+<tr><td><code><b>function</b> Read3&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T): (T,T,T); </code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает и возвращает три следующих элемента типизированного файла в виде кортежа</td></tr>
-<tr><td><code><b>function</b> ReadElements&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T; <b>extensionmethod</b>;</code>
+<tr><td><code><b>function</b> ReadElements&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T; </code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность элементов открытого типизированного файла от текущего элемента до конечного</td></tr>
 <tr><td><code><b>function</b> ReadElements&lt;T&gt;(fname: string): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает типизированный файл, возвращает последовательность его элементов и закрывает его</td></tr>
-<tr><td><code><b>function</b> Seek&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T; n: int64):  <b>file</b>  <b>of</b> T; <b>extensionmethod</b>;</code>
+<tr><td><code><b>function</b> Seek&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T; n: int64):  <b>file</b>  <b>of</b> T; </code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает текущую позицию файлового указателя в типизированном файле на элемент с номером n</td></tr>
-<tr><td><code><b>procedure</b> Write&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T; <b>params</b> vals: <b>array</b>  <b>of</b> T); <b>extensionmethod</b>;</code>
+<tr><td><code><b>procedure</b> Write&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T; <b>params</b> vals: <b>array</b>  <b>of</b> T); </code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Записывает данные в типизированный файл</td></tr>
 </table></body></HTML>

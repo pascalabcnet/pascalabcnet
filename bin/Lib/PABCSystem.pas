@@ -1107,7 +1107,7 @@ function EnumerateAllDirectories(path: string): sequence of string;
 
 
 // -----------------------------------------------------
-//>>     Функции для работы с именами файлов # Functions for file names
+//>>     Подпрограммы для работы с именами файлов # Functions for file names
 // -----------------------------------------------------
 /// Выделяет имя файла из полного имени файла fname
 function ExtractFileName(fname: string): string;
@@ -1327,7 +1327,7 @@ function Odd(i: int64): boolean;
 function Odd(i: uint64): boolean;
 
 // -----------------------------------------------------
-//>>     Функции для работы с комплексными числами # Functions for Complex numbers
+//>>     Подпрограммы для работы с комплексными числами # Functions for Complex numbers
 // -----------------------------------------------------
 /// Конструирует комплексное число с вещественной частью re и мнимой частью im
 function Cplx(re, im: real): Complex;
@@ -1355,7 +1355,7 @@ function Power(c, power: Complex): Complex;
 function Sin(c: Complex): Complex;
 
 // -----------------------------------------------------
-//>>     Процедуры для работы со стандартными множествами # Subroutines for set of T
+//>>     Подпрограммы для работы со стандартными множествами # Subroutines for set of T
 // -----------------------------------------------------
 ///- procedure Include(var s: set of T; element: T);
 ///Добавляет элемент element во множество s
@@ -1751,7 +1751,7 @@ function ReadSeqRealWhile(prompt: string; cond: real->boolean): sequence of real
 function ReadSeqStringWhile(prompt: string; cond: string->boolean): sequence of string;
 
 // -----------------------------------------------------
-//>>     Подпрограммы для генерации динамических массивов # Subroutines for array of T generation
+//>>     Подпрограммы для создания динамических массивов # Subroutines for array of T generation
 // -----------------------------------------------------
 /// Возвращает массив, заполненный указанными значениями
 function Arr<T>(params a: array of T): array of T;
@@ -1789,7 +1789,7 @@ function ReadArrReal(prompt: string; n: integer): array of real;
 function ReadArrString(prompt: string; n: integer): array of string;
 
 // -----------------------------------------------------
-//>>     Подпрограммы для матриц # Subroutines for matrixes 
+//>>     Подпрограммы для создания двумерных динамических массивов # Subroutines for matrixes 
 // -----------------------------------------------------
 /// Возвращает двумерный массив размера m x n, заполненный указанными значениями по строкам
 function Matr<T>(m,n: integer; params data: array of T): array [,] of T;
@@ -1979,6 +1979,8 @@ function _ObjectToString(o: object): string;
 function IsUnix: boolean;
 ///--
 function ExecuteAssemlyIsDll: boolean;
+///--
+function __StandardFilesDirectory: string;
 
 // -----------------------------------------------------
 //                  Internal for OpenMPSupport
@@ -8368,7 +8370,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//>>     Методы расширения для sequence of T # Extension methods for sequence of T
+//>>     Методы расширения последовательностей # Extension methods for sequence of T
 //------------------------------------------------------------------------------
 /// Выводит последовательность на экран, используя delim в качестве разделителя
 function Print<T>(Self: sequence of T; delim: string): sequence of T; extensionmethod;
@@ -8920,7 +8922,7 @@ end;
 // ToDo Сделать AdjacentGroup с функцией сравнения
 
 // -----------------------------------------------------
-//>>     Методы расширения типа List<T> # Extension methods for List T
+//>>     Методы расширения списков # Extension methods for List T
 // -----------------------------------------------------
 
 /// Перемешивает элементы списка случайным образом
@@ -9270,7 +9272,7 @@ begin
 end;
 
 // -----------------------------------------------------
-//>>     Методы расширения типа array [,] of T # Extension methods for array [,] of T
+//>>     Методы расширения двумерных динамических массивов # Extension methods for array [,] of T
 // -----------------------------------------------------
 /// Количество строк в двумерном массиве
 function RowCount<T>(Self: array [,] of T): integer; extensionmethod;
@@ -9548,7 +9550,7 @@ begin
 end;
 
 // -----------------------------------------------------
-//>>     Методы расширения типа array of T # Extension methods for array of T
+//>>     Методы расширения одномерных динамических массивов # Extension methods for array of T
 // -----------------------------------------------------
 
 // Дополнения февраль 2016: Shuffle, AdjacentFind, IndexMin, IndexMax, Replace, Transform
@@ -9743,49 +9745,49 @@ begin
 end;}
 
 /// Выполняет бинарный поиск в отсортированном массиве
-function BinarySearch<T>(self: array of T; x: T): integer; extensionmethod;
+function BinarySearch<T>(Self: array of T; x: T): integer; extensionmethod;
 begin
   Result := System.Array.BinarySearch(self, x);  
 end;
 
 /// Преобразует элементы массива и возвращает преобразованный массив
-function ConvertAll<T, T1>(self: array of T; converter: T->T1): array of T1; extensionmethod;
+function ConvertAll<T, T1>(Self: array of T; converter: T->T1): array of T1; extensionmethod;
 begin
   Result := System.Array.ConvertAll(self, t -> converter(t));  
 end;
 
 /// Выполняет поиск первого элемента в массиве, удовлетворяющего предикату. Если не найден, возвращается нулевое значение соответствующего типа
-function Find<T>(self: array of T; p: T->boolean): T; extensionmethod;
+function Find<T>(Self: array of T; p: T->boolean): T; extensionmethod;
 begin
   Result := System.Array.Find(self, p);  
 end;
 
 /// Выполняет поиск индекса первого элемента в массиве, удовлетворяющего предикату. Если не найден, возвращается -1
-function FindIndex<T>(self: array of T; p: T->boolean): integer; extensionmethod;
+function FindIndex<T>(Self: array of T; p: T->boolean): integer; extensionmethod;
 begin
   Result := System.Array.FindIndex(self, p);  
 end;
 
 /// Выполняет поиск индекса первого элемента в массиве, удовлетворяющего предикату, начиная с индекса start. Если не найден, возвращается -1
-function FindIndex<T>(self: array of T; start: integer; p: T->boolean): integer; extensionmethod;
+function FindIndex<T>(Self: array of T; start: integer; p: T->boolean): integer; extensionmethod;
 begin
   Result := System.Array.FindIndex(self, start, p);  
 end;
 
 /// Возвращает в виде массива все элементы, удовлетворяющие предикату
-function FindAll<T>(self: array of T; p: T->boolean): array of T; extensionmethod;
+function FindAll<T>(Self: array of T; p: T->boolean): array of T; extensionmethod;
 begin
   Result := System.Array.FindAll(self, p);  
 end;
 
 /// Выполняет поиск последнего элемента в массиве, удовлетворяющего предикату. Если не найден, возвращается нулевое значение соответствующего типа
-function FindLast<T>(self: array of T; p: T->boolean): T; extensionmethod;
+function FindLast<T>(Self: array of T; p: T->boolean): T; extensionmethod;
 begin
   Result := System.Array.FindLast(self, p);  
 end;
 
 /// Выполняет поиск индекса последнего элемента в массиве, удовлетворяющего предикату. Если не найден, возвращается нулевое значение соответствующего типа
-function FindLastIndex<T>(self: array of T; p: T->boolean): integer; extensionmethod;
+function FindLastIndex<T>(Self: array of T; p: T->boolean): integer; extensionmethod;
 begin
   Result := System.Array.FindLastIndex(self, p);  
 end;
@@ -9793,50 +9795,50 @@ end;
 /// Выполняет поиск индекса последнего элемента в массиве, удовлетворяющего предикату, начиная с индекса start. Если не найден, возвращается нулевое значение соответствующего типа
 function FindLastIndex<T>(self: array of T; start: integer; p: T->boolean): integer; extensionmethod;
 begin
-  Result := System.Array.FindLastIndex(self, start, p);  
+  Result := System.Array.FindLastIndex(Self, start, p);  
 end;
 
 /// Возвращает индекс первого вхождения элемента или -1 если элемент не найден
-function IndexOf<T>(self: array of T; x: T): integer; extensionmethod;
+function IndexOf<T>(Self: array of T; x: T): integer; extensionmethod;
 begin
-  Result := System.Array.IndexOf(self, x);  
+  Result := System.Array.IndexOf(Self, x);  
 end;
 
 /// Возвращает индекс первого вхождения элемента начиная с индекса start или -1 если элемент не найден
-function IndexOf<T>(self: array of T; x: T; start: integer): integer; extensionmethod;
+function IndexOf<T>(Self: array of T; x: T; start: integer): integer; extensionmethod;
 begin
-  Result := System.Array.IndexOf(self, x, start);  
+  Result := System.Array.IndexOf(Self, x, start);  
 end;
 
 /// Возвращает индекс последнего вхождения элемента или -1 если элемент не найден
-function LastIndexOf<T>(self: array of T; x: T): integer; extensionmethod;
+function LastIndexOf<T>(Self: array of T; x: T): integer; extensionmethod;
 begin
-  Result := System.Array.LastIndexOf(self, x);  
+  Result := System.Array.LastIndexOf(Self, x);  
 end;
 
 /// Возвращает индекс последнего вхождения элемента начиная с индекса start или -1 если элемент не найден
-function LastIndexOf<T>(self: array of T; x: T; start: integer): integer; extensionmethod;
+function LastIndexOf<T>(Self: array of T; x: T; start: integer): integer; extensionmethod;
 begin
-  Result := System.Array.LastIndexOf(self, x, start);  
+  Result := System.Array.LastIndexOf(Self, x, start);  
 end;
 
 /// Сортирует массив по возрастанию
-procedure Sort<T>(self: array of T); extensionmethod;
+procedure Sort<T>(Self: array of T); extensionmethod;
 begin
-  System.Array.Sort(self);  
+  System.Array.Sort(Self);  
 end;
 
 /// Сортирует массив по возрастанию, используя cmp в качестве функции сравнения элементов
-procedure Sort<T>(self: array of T; cmp: (T,T) ->integer); extensionmethod;
+procedure Sort<T>(Self: array of T; cmp: (T,T) ->integer); extensionmethod;
 begin
-  System.Array.Sort(self, cmp);  
+  System.Array.Sort(Self, cmp);  
 end;
 
 /// Возвращает индекс последнего элемента массива
-function High(self: System.Array); extensionmethod := High(Self);
+function High(Self: System.Array); extensionmethod := High(Self);
 
 /// Возвращает индекс первого элемента массива
-function Low(self: System.Array); extensionmethod := Low(Self);
+function Low(Self: System.Array); extensionmethod := Low(Self);
 
 /// Возвращает последовательность индексов одномерного массива
 function Indexes<T>(Self: array of T): sequence of integer; extensionmethod := Range(0, Self.Length - 1);
@@ -10405,7 +10407,7 @@ begin
 end;
 
 // -----------------------------------------------------------------------------
-//>>     Методы расширения IDictionary # Extension methods for IDictionary
+//>>     Методы расширения словарей # Extension methods for IDictionary
 // -----------------------------------------------------------------------------
 /// Возвращает в словаре значение, связанное с указанным ключом, а если такого ключа нет, то значение по умолчанию
 function Get<Key, Value>(Self: IDictionary<Key, Value>; K: Key): Value; extensionmethod;
@@ -11185,6 +11187,12 @@ end;
 function IsUnix: boolean;
 begin
   Result := (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX);
+end;
+
+function __StandardFilesDirectory: string;
+begin
+  // Грубо. Исправить, сделав поиск
+  Result := 'C:\Program Files (x86)\PascalABC.NET\Files\';
 end;
 //------------------------------------------------------------------------------
 //OMP

@@ -719,12 +719,24 @@
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Standard types.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="&Icirc;&aacute;&ugrave;&egrave;&aring; &iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc;">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Common subroutines.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="&Iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc; &acirc;&acirc;&icirc;&auml;&agrave;">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Read subroutines.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="&Iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc; &acirc;&ucirc;&acirc;&icirc;&auml;&agrave;">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Write subroutines.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="&Igrave;&agrave;&ograve;&aring;&igrave;&agrave;&ograve;&egrave;&divide;&aring;&ntilde;&ecirc;&egrave;&aring; &iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc;">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Math subroutines.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="C&egrave;&ntilde;&ograve;&aring;&igrave;&iacute;&ucirc;&aring; &iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc;">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\System subroutines.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="&Icirc;&aacute;&ugrave;&egrave;&aring; &iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc; &auml;&euml;&yuml; &eth;&agrave;&aacute;&icirc;&ograve;&ucirc; &ntilde; &ocirc;&agrave;&eacute;&euml;&agrave;&igrave;&egrave;">
@@ -743,20 +755,8 @@
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for binary files.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="C&egrave;&ntilde;&ograve;&aring;&igrave;&iacute;&ucirc;&aring; &iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc;">
-				<param name="Local" value="LangGuide\PABCSystemUnit\Files\System subroutines.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="&Ocirc;&oacute;&iacute;&ecirc;&ouml;&egrave;&egrave; &auml;&euml;&yuml; &eth;&agrave;&aacute;&icirc;&ograve;&ucirc; &ntilde; &egrave;&igrave;&aring;&iacute;&agrave;&igrave;&egrave; &ocirc;&agrave;&eacute;&euml;&icirc;&acirc;">
+				<param name="Name" value="&Iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc; &auml;&euml;&yuml; &eth;&agrave;&aacute;&icirc;&ograve;&ucirc; &ntilde; &egrave;&igrave;&aring;&iacute;&agrave;&igrave;&egrave; &ocirc;&agrave;&eacute;&euml;&icirc;&acirc;">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Functions for file names.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="&Igrave;&agrave;&ograve;&aring;&igrave;&agrave;&ograve;&egrave;&divide;&aring;&ntilde;&ecirc;&egrave;&aring; &iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc;">
-				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Math subroutines.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="&Iuml;&eth;&icirc;&ouml;&aring;&auml;&oacute;&eth;&ucirc; &auml;&euml;&yuml; &eth;&agrave;&aacute;&icirc;&ograve;&ucirc; &ntilde;&icirc; &ntilde;&ograve;&agrave;&iacute;&auml;&agrave;&eth;&ograve;&iacute;&ucirc;&igrave;&egrave; &igrave;&iacute;&icirc;&aelig;&aring;&ntilde;&ograve;&acirc;&agrave;&igrave;&egrave;">
-				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for set of T.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="&Iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc; &auml;&euml;&yuml; &eth;&agrave;&aacute;&icirc;&ograve;&ucirc; &ntilde; &ntilde;&egrave;&igrave;&acirc;&icirc;&euml;&agrave;&igrave;&egrave;">
@@ -767,24 +767,28 @@
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for string.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="&Icirc;&aacute;&ugrave;&egrave;&aring; &iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc;">
-				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Common subroutines.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="&Iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc; &auml;&euml;&yuml; &eth;&agrave;&aacute;&icirc;&ograve;&ucirc; &ntilde; &auml;&egrave;&iacute;&agrave;&igrave;&egrave;&divide;&aring;&ntilde;&ecirc;&egrave;&igrave;&egrave; &igrave;&agrave;&ntilde;&ntilde;&egrave;&acirc;&agrave;&igrave;&egrave;">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for array of T.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="&Iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc; &auml;&euml;&yuml; &eth;&agrave;&aacute;&icirc;&ograve;&ucirc; &ntilde;&icirc; &ntilde;&ograve;&agrave;&iacute;&auml;&agrave;&eth;&ograve;&iacute;&ucirc;&igrave;&egrave; &igrave;&iacute;&icirc;&aelig;&aring;&ntilde;&ograve;&acirc;&agrave;&igrave;&egrave;">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for set of T.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="&Iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc; &auml;&euml;&yuml; &eth;&agrave;&aacute;&icirc;&ograve;&ucirc; &ntilde; &ecirc;&icirc;&igrave;&iuml;&euml;&aring;&ecirc;&ntilde;&iacute;&ucirc;&igrave;&egrave; &divide;&egrave;&ntilde;&euml;&agrave;&igrave;&egrave;">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Functions for Complex numbers.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="&Iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc; &auml;&euml;&yuml; &atilde;&aring;&iacute;&aring;&eth;&agrave;&ouml;&egrave;&egrave; &iuml;&icirc;&ntilde;&euml;&aring;&auml;&icirc;&acirc;&agrave;&ograve;&aring;&euml;&uuml;&iacute;&icirc;&ntilde;&ograve;&aring;&eacute;">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for sequence generation.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="&Iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc; &auml;&euml;&yuml; &atilde;&aring;&iacute;&aring;&eth;&agrave;&ouml;&egrave;&egrave; &auml;&egrave;&iacute;&agrave;&igrave;&egrave;&divide;&aring;&ntilde;&ecirc;&egrave;&otilde; &igrave;&agrave;&ntilde;&ntilde;&egrave;&acirc;&icirc;&acirc;">
+				<param name="Name" value="&Iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc; &auml;&euml;&yuml; &ntilde;&icirc;&ccedil;&auml;&agrave;&iacute;&egrave;&yuml; &auml;&egrave;&iacute;&agrave;&igrave;&egrave;&divide;&aring;&ntilde;&ecirc;&egrave;&otilde; &igrave;&agrave;&ntilde;&ntilde;&egrave;&acirc;&icirc;&acirc;">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for array of T generation.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="&Iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc; &auml;&euml;&yuml; &atilde;&aring;&iacute;&aring;&eth;&agrave;&ouml;&egrave;&egrave; &ntilde;&euml;&oacute;&divide;&agrave;&eacute;&iacute;&ucirc;&otilde; &igrave;&agrave;&ograve;&eth;&egrave;&ouml;">
-				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for matrix generation.html">
+				<param name="Name" value="&Iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc; &auml;&euml;&yuml; &ntilde;&icirc;&ccedil;&auml;&agrave;&iacute;&egrave;&yuml; &auml;&acirc;&oacute;&igrave;&aring;&eth;&iacute;&ucirc;&otilde; &auml;&egrave;&iacute;&agrave;&igrave;&egrave;&divide;&aring;&ntilde;&ecirc;&egrave;&otilde; &igrave;&agrave;&ntilde;&ntilde;&egrave;&acirc;&icirc;&acirc;">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for matrixes.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="&Iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc; &auml;&euml;&yuml; &ntilde;&icirc;&ccedil;&auml;&agrave;&iacute;&egrave;&yuml; &ecirc;&icirc;&eth;&ograve;&aring;&aelig;&aring;&eacute;">
@@ -799,15 +803,15 @@
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Infinite sequences.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="&Igrave;&aring;&ograve;&icirc;&auml;&ucirc; &eth;&agrave;&ntilde;&oslash;&egrave;&eth;&aring;&iacute;&egrave;&yuml; &ograve;&egrave;&iuml;&agrave; sequence of T">
+				<param name="Name" value="&Igrave;&aring;&ograve;&icirc;&auml;&ucirc; &eth;&agrave;&ntilde;&oslash;&egrave;&eth;&aring;&iacute;&egrave;&yuml; &iuml;&icirc;&ntilde;&euml;&aring;&auml;&icirc;&acirc;&agrave;&ograve;&aring;&euml;&uuml;&iacute;&icirc;&ntilde;&ograve;&aring;&eacute;">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for sequence of T.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="&Igrave;&aring;&ograve;&icirc;&auml;&ucirc; &eth;&agrave;&ntilde;&oslash;&egrave;&eth;&aring;&iacute;&egrave;&yuml; &ograve;&egrave;&iuml;&agrave; array of T">
+				<param name="Name" value="&Igrave;&aring;&ograve;&icirc;&auml;&ucirc; &eth;&agrave;&ntilde;&oslash;&egrave;&eth;&aring;&iacute;&egrave;&yuml; &icirc;&auml;&iacute;&icirc;&igrave;&aring;&eth;&iacute;&ucirc;&otilde; &auml;&egrave;&iacute;&agrave;&igrave;&egrave;&divide;&aring;&ntilde;&ecirc;&egrave;&otilde; &igrave;&agrave;&ntilde;&ntilde;&egrave;&acirc;&icirc;&acirc;">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for array of T.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="&Igrave;&aring;&ograve;&icirc;&auml;&ucirc; &eth;&agrave;&ntilde;&oslash;&egrave;&eth;&aring;&iacute;&egrave;&yuml; &ograve;&egrave;&iuml;&agrave; array [,] of T">
+				<param name="Name" value="&Igrave;&aring;&ograve;&icirc;&auml;&ucirc; &eth;&agrave;&ntilde;&oslash;&egrave;&eth;&aring;&iacute;&egrave;&yuml; &auml;&acirc;&oacute;&igrave;&aring;&eth;&iacute;&ucirc;&otilde; &auml;&egrave;&iacute;&agrave;&igrave;&egrave;&divide;&aring;&ntilde;&ecirc;&egrave;&otilde; &igrave;&agrave;&ntilde;&ntilde;&egrave;&acirc;&icirc;&acirc;">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for array [,] of T.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
@@ -843,7 +847,7 @@
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for Complex.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="&Igrave;&aring;&ograve;&icirc;&auml;&ucirc; &eth;&agrave;&ntilde;&oslash;&egrave;&eth;&aring;&iacute;&egrave;&yuml; IDictionary">
+				<param name="Name" value="&Igrave;&aring;&ograve;&icirc;&auml;&ucirc; &eth;&agrave;&ntilde;&oslash;&egrave;&eth;&aring;&iacute;&egrave;&yuml; &ntilde;&euml;&icirc;&acirc;&agrave;&eth;&aring;&eacute;">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for IDictionary.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">

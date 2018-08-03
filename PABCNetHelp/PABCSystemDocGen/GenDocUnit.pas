@@ -172,13 +172,19 @@ begin
   
   for var i:=0 to funcs.Count-1 do
   begin
+    //funcs[i] := Regex.Replace(funcs[i],'\(\ *Self[^;\)]*\)','()');
+    //funcs[i] := Regex.Replace(funcs[i],'\(\ *Self[^;]*;\ *','(');
+    funcs[i] := Regex.Replace(funcs[i],'extensionmethod[^;]*;','');
+
     var dd := defs[i].Remove(0,3).Trim;
     var td := funcs[i].Around('code')
+      .Replace('System.IComparable','IComparable')
       .Replace('function','<b>function</b>')
       .Replace('procedure','<b>procedure</b>')
       .Replace('sequence ','<b>sequence </b> ')
       .Replace('set ','<b>set </b> ')
       .Replace('array ','<b>array</b> ')
+      .Replace('where ','<b>where</b> ')
       .Replace('file ',' <b>file</b> ')
       .Replace('of ',' <b>of</b> ')
       .Replace('var ','<b>var</b> ')
