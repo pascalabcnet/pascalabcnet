@@ -3901,9 +3901,9 @@ namespace PascalABCCompiler.NETGenerator
                     else
                     {
                         if (rank > 1)
-                            CreateNDimUnsizedArray(il, (ElementValues[i] as IArrayInitializer).type, helper.GetTypeReference((ElementValues[i] as IArrayInitializer).type.element_type), rank, get_sizes(ElementValues[0] as IArrayInitializer, rank), lb.LocalType.GetElementType());
+                            CreateNDimUnsizedArray(il, (ElementValues[i] as IArrayInitializer).type, helper.GetTypeReference((ElementValues[i] as IArrayInitializer).type.element_type), rank, get_sizes(ElementValues[i] as IArrayInitializer, rank), lb.LocalType.GetElementType());
                         else
-                            CreateUnsizedArray(il, helper.GetTypeReference((ElementValues[i] as IArrayInitializer).type.element_type), (ElementValues[0] as IArrayInitializer).ElementValues.Length, lb.LocalType.GetElementType());
+                            CreateUnsizedArray(il, helper.GetTypeReference((ElementValues[i] as IArrayInitializer).type.element_type), (ElementValues[i] as IArrayInitializer).ElementValues.Length, lb.LocalType.GetElementType());
                         il.Emit(OpCodes.Stelem, ArrType);
                         il.Emit(OpCodes.Ldloc, lb);
                         PushIntConst(il, i);
@@ -3927,7 +3927,7 @@ namespace PascalABCCompiler.NETGenerator
                         PushIntConst(il, i);
                         il.Emit(OpCodes.Ldelema, ti.tp);
                         il.Emit(OpCodes.Stloc, llb);
-                        if (ElementValues[0] is IRecordConstantNode)
+                        if (ElementValues[i] is IRecordConstantNode)
                             GenerateRecordInitCode(il, llb, ElementValues[i] as IRecordConstantNode);
                         else GenerateRecordInitCode(il, llb, ElementValues[i] as IRecordInitializer, true);
                     }
@@ -4023,7 +4023,7 @@ namespace PascalABCCompiler.NETGenerator
                     }
                     else
                     {
-                        CreateUnsizedArray(il, helper.GetTypeReference((ElementValues[i] as IArrayConstantNode).type.element_type), (ElementValues[0] as IArrayConstantNode).ElementValues.Length, lb.LocalType.GetElementType());
+                        CreateUnsizedArray(il, helper.GetTypeReference((ElementValues[i] as IArrayConstantNode).type.element_type), (ElementValues[i] as IArrayConstantNode).ElementValues.Length, lb.LocalType.GetElementType());
                         il.Emit(OpCodes.Stelem, ArrType);
                         il.Emit(OpCodes.Ldloc, lb);
                         PushIntConst(il, i);
