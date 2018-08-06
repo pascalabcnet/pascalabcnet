@@ -2031,7 +2031,7 @@ namespace PascalABCCompiler.SystemLibrary
 
             // SSM 21.07.18 закомментировал четыре строчки выше, т.к. они давали неоднозначность при decimal(2.5). 
             // Теперь из real в decimal и из single в decimal возможно только явное преобразование
-            // Из longword в decimal и из uint64 в decimal существуют как явное, так и неявное преобразованя
+            // Из longword в decimal и из uint64 в decimal существуют как явное, так и неявное преобразования
             // Это полностью соответствует тому, что в C#
 
             // забавно, но make_type_conversion_use_ctor используется ТОЛЬКО тут и ТОЛЬКО для типа decimal !!!!!!!

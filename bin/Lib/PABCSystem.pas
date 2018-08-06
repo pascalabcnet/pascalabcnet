@@ -1981,6 +1981,8 @@ function IsUnix: boolean;
 function ExecuteAssemlyIsDll: boolean;
 ///--
 function __StandardFilesDirectory: string;
+///--
+function __FindFile(filename: string): string;
 
 // -----------------------------------------------------
 //                  Internal for OpenMPSupport
@@ -7797,47 +7799,15 @@ begin
   value := Res;
 end;
 
-function StrToInt64(s: string): int64;
-begin
-  Result := Convert.ToInt64(s); 
-end;
+function StrToInt64(s: string) := Convert.ToInt64(s); 
+function StrToReal(s: string) := Convert.ToDouble(s, nfi);
+function StrToFloat(s: string) := StrToReal(s);
 
-function StrToFloat(s: string): real;
-begin
-  Result := Convert.ToDouble(s, nfi);
-end;
-
-function StrToReal(s: string) := StrToFloat(s);
-
-function TryStrToInt64(s: string; var value: int64): boolean;
-begin
-  Result := int64.TryParse(s, value);
-end;
-
-function TryStrToFloat(s: string; var value: real): boolean;
-begin
-  try
-    Result := True;
-    value := Convert.ToDouble(s, nfi);
-  except
-    value := 0;
-    Result := False;
-  end;
-end;
-
-function TryStrToFloat(s: string; var value: single): boolean;
-begin
-  try
-    Result := True;
-    value := Convert.ToSingle(s, nfi);
-  except
-    value := 0;
-    Result := False;
-  end;
-end;
-
-function TryStrToReal(s: string; var value: real) := TryStrToFloat(s, value);
-function TryStrToSingle(s: string; var value: single) := TryStrToFloat(s, value);
+function TryStrToInt64(s: string; var value: int64) := int64.TryParse(s, value);
+function TryStrToReal(s: string; var value: real) := real.TryParse(s,System.Globalization.NumberStyles.Float,nil,value);
+function TryStrToSingle(s: string; var value: single) := single.TryParse(s,System.Globalization.NumberStyles.Float,nil,value);
+function TryStrToFloat(s: string; var value: real) := TryStrToReal(s, value);
+function TryStrToFloat(s: string; var value: single) := TryStrToSingle(s, value);
 
 function ReadIntegerFromString(s: string; var from: integer): integer;
 begin
@@ -10187,21 +10157,38 @@ begin
 end;
 
 /// Преобразует строку в целое
-function ToInteger(Self: string): integer; extensionmethod;
-begin
-  Result := integer.Parse(Self);
-end;
+function ToInteger(Self: string): integer; extensionmethod := integer.Parse(Self);
 
 /// Преобразует строку в BigInteger
-function ToBigInteger(Self: string): BigInteger; extensionmethod;
+function ToBigInteger(Self: string): BigInteger; extensionmethod := BigInteger.Parse(Self);
+
+/// Преобразует строку в вещественное
+function ToReal(Self: string): real; extensionmethod := real.Parse(Self, nfi);
+
+/// Преобразует строку в целое и записывает его в value. 
+///При невозможности преобразования возвращается False
+function TryToInteger(Self: string; var value: integer): boolean; extensionmethod := TryStrToInt(Self,value);
+
+/// Преобразует строку в вещественное и записывает его в value. 
+///При невозможности преобразования возвращается False
+function TryToReal(Self: string; var value: real): boolean; extensionmethod := TryStrToReal(Self,value);
+
+/// Преобразует строку в целое
+///При невозможности преобразования возвращается defaultvalue
+function ToInteger(Self: string; defaultvalue: integer): integer; extensionmethod;
 begin
-  Result := BigInteger.Parse(Self);
+  var b := TryStrToInt(Self,Result);
+  if not b then
+    Result := defaultvalue
 end;
 
 /// Преобразует строку в вещественное
-function ToReal(Self: string): real; extensionmethod;
+///При невозможности преобразования возвращается defaultvalue
+function ToReal(Self: string; defaultvalue: real): real; extensionmethod;
 begin
-  Result := real.Parse(Self, nfi);
+  var b := TryStrToReal(Self,Result);
+  if not b then
+    Result := defaultvalue
 end;
 
 /// Преобразует строку в массив слов
@@ -11194,6 +11181,18 @@ begin
   // Грубо. Исправить, сделав поиск
   Result := 'C:\Program Files (x86)\PascalABC.NET\Files\';
 end;
+
+function __FindFile(filename: string): string;
+begin
+  Result := __StandardFilesDirectory+filename;
+  if not FileExists(Result) then 
+    Result := '';
+  if Result = '' then
+    Result := filename;
+  if not FileExists(Result) then 
+    Result := '';
+end;
+
 //------------------------------------------------------------------------------
 //OMP
 
