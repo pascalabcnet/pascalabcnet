@@ -83,6 +83,7 @@
     File ..\bin\Lib\NumLibABC.pcu
     File ..\bin\Lib\GraphWPFBase.pcu
     File ..\bin\Lib\GraphWPF.pcu
+    File ..\bin\Lib\Countries.pcu
     File ..\bin\Lib\Graph3D.pcu
     File ..\bin\Lib\GraphABCHelper.pcu
     File ..\bin\Lib\IniFile.pcu
@@ -138,6 +139,7 @@
     ${AddFile} "NumLibABC.pcu"
     ${AddFile} "GraphWPFBase.pcu"
     ${AddFile} "GraphWPF.pcu"
+    ${AddFile} "Countries.pcu"
     ${AddFile} "Graph3D.pcu"
     ${AddFile} "GraphABCHelper.pcu"
     ${AddFile} "IniFile.pcu"
@@ -204,6 +206,7 @@
     File ..\bin\Lib\NumLibABC.pas
     File ..\bin\Lib\GraphWPFBase.pas
     File ..\bin\Lib\GraphWPF.pas
+    File ..\bin\Lib\Countries.pas
     File ..\bin\Lib\Graph3D.pas
     File ..\bin\Lib\GraphABCHelper.pas
     File ..\bin\Lib\IniFile.pas
@@ -256,6 +259,7 @@
     ${AddFile} "NumLibABC.pas"
     ${AddFile} "GraphWPFBase.pas"
     ${AddFile} "GraphWPF.pas"
+    ${AddFile} "Countries.pas"
     ${AddFile} "Graph3D.pas"
     ${AddFile} "GraphABCHelper.pas"
     ${AddFile} "IniFile.pas"

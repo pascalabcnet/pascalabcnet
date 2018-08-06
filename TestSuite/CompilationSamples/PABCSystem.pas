@@ -1981,6 +1981,8 @@ function IsUnix: boolean;
 function ExecuteAssemlyIsDll: boolean;
 ///--
 function __StandardFilesDirectory: string;
+///--
+function __FindFile(filename: string): string;
 
 // -----------------------------------------------------
 //                  Internal for OpenMPSupport
@@ -11194,6 +11196,18 @@ begin
   // Грубо. Исправить, сделав поиск
   Result := 'C:\Program Files (x86)\PascalABC.NET\Files\';
 end;
+
+function __FindFile(filename: string): string;
+begin
+  Result := __StandardFilesDirectory+filename;
+  if not FileExists(Result) then 
+    Result := '';
+  if Result = '' then
+    Result := filename;
+  if not FileExists(Result) then 
+    Result := '';
+end;
+
 //------------------------------------------------------------------------------
 //OMP
 

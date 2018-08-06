@@ -1810,6 +1810,8 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
                 else if ((parameters.Count == 0 && fn.parameters.Count == 1) && fn.parameters[0].is_params && !set_of_possible_functions.Contains(fn))
+                // SSM 6.08.18 - так просто исправить не получается - видимо, сопоставление параметров работает неверно
+                //else if ((parameters.Count == fn.parameters.Count - 1) && fn.parameters[fn.parameters.Count-1].is_params && !set_of_possible_functions.Contains(fn))
                     set_of_possible_functions.AddElement(fn);
                 else if (fn.num_of_default_parameters != 0 && parameters.Count >= fn.parameters.Count - fn.num_of_default_parameters)
                 {
