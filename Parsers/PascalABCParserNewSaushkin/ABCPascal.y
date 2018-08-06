@@ -3690,10 +3690,13 @@ variable
     | variable tkQuestionSquareOpen format_expr tkSquareClose                
         {
         	var fe = $3 as format_expr; // SSM 9/01/17
-    		if (fe.expr == null)
-    			fe.expr = new int32_const(int.MaxValue,@3);
-    		if (fe.format1 == null)
-    			fe.format1 = new int32_const(int.MaxValue,@3);
+            if (!parsertools.build_tree_for_formatter)
+            {
+                if (fe.expr == null)
+                    fe.expr = new int32_const(int.MaxValue,@3);
+                if (fe.format1 == null)
+                    fe.format1 = new int32_const(int.MaxValue,@3);
+            }
       		$$ = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
         }
     | variable tkRoundOpen optional_expr_list tkRoundClose                
