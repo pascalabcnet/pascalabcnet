@@ -1230,10 +1230,9 @@ namespace CodeCompletion
                                 ss = (cur_scope as ImplementationUnitScope).topScope.FindNameOnlyInThisType(meth_name);
                                 if (ss != null && ss is ProcScope)
                                 {
-                                    //ps = ss as ProcScope;
-                                    //while ((ss as ProcScope).already_defined && (ss as ProcScope).nextProc != null)
-                                    //	ss = (ss as ProcScope).nextProc;
                                     ps = select_function_definition(ss as ProcScope, _procedure_header.parameters, null, null);
+                                    if (ps == null && _procedure_header.parameters == null)
+                                        ps = ss as ProcScope;
                                     if (ps == null)
                                     {
                                         ps = new ProcScope(meth_name, cur_scope);
@@ -1556,6 +1555,8 @@ namespace CodeCompletion
                                     //while ((ss as ProcScope).already_defined && (ss as ProcScope).nextProc != null) ss = (ss as ProcScope).nextProc;
                                     //ps = ss as ProcScope;
                                     ps = select_function_definition(ss as ProcScope, _function_header.parameters, return_type, null, true);
+                                    if (ps == null && _function_header.parameters == null && _function_header.return_type == null)
+                                        ps = ss as ProcScope;
                                     if (ps == null)
                                     {
                                         ps = new ProcScope(meth_name, cur_scope);
