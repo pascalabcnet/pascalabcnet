@@ -9784,10 +9784,11 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
-                if (is_operator && context.converted_type == null && context.converted_template_type == null && !(current_function_header != null && current_function_header.proc_attributes != null && has_extensionmethod_attr(current_function_header.proc_attributes.proc_attributes)) && !(current_function_header != null && current_function_header.template_args != null && current_function_header.template_args.idents.Count > 0))
+                if (is_operator && context.converted_type == null && context.converted_template_type == null && !(current_function_header != null && current_function_header.proc_attributes != null && has_extensionmethod_attr(current_function_header.proc_attributes.proc_attributes)) /*&& !(current_function_header != null && current_function_header.template_args != null && current_function_header.template_args.idents.Count > 0)*/)
                 {
                     AddError(get_location(_method_name), "OVERLOADED_OPERATOR_MUST_BE_STATIC_FUNCTION");
                 }
+                
             }
             convertion_data_and_alghoritms.check_node_parser_error(_method_name.meth_name);
             location loc_name = get_location(_method_name.meth_name);
