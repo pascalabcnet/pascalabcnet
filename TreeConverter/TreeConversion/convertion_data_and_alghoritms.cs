@@ -2343,6 +2343,25 @@ namespace PascalABCCompiler.TreeConverter
                 from = (from as delegated_methods).empty_param_method.ret_type;
             if (to is delegated_methods && (to as delegated_methods).empty_param_method != null && (to as delegated_methods).empty_param_method.ret_type != null)
                 to = (to as delegated_methods).empty_param_method.ret_type;
+            internal_interface from_ii = from.get_internal_interface(internal_interface_kind.delegate_interface);
+            internal_interface to_ii = to.get_internal_interface(internal_interface_kind.delegate_interface);
+            if (from_ii != null && to_ii != null)
+            {
+                delegate_internal_interface from_dii = (delegate_internal_interface)from_ii;
+                if (to_ii != null)
+                {
+                    delegate_internal_interface to_dii = (delegate_internal_interface)to_ii;
+                    if (from_dii.parameters.Count == to_dii.parameters.Count)
+                    {
+                        bool eq = TreeConverter.convertion_data_and_alghoritms.function_eq_params_and_result(from_dii.invoke_method, to_dii.invoke_method);
+                        if (eq)
+                        {
+                            return 0;
+                        }
+                    }
+                }
+            }
+
             type_compare tc = type_table.compare_types(from, to);
             if (tc == type_compare.non_comparable_type)
                 return 1000;
