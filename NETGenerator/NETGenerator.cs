@@ -6919,7 +6919,11 @@ namespace PascalABCCompiler.NETGenerator
             {
             	il.Emit(OpCodes.Box, helper.GetTypeReference(value.obj.conversion_type).tp);
             }
-            else if (value.obj.type.is_value_type && !(value.obj is IAddressedExpressionNode) && !(value.obj is IThisNode) && !(value.obj is ICommonMethodCallNode) && !(value.obj is ICommonStaticMethodCallNode) && !(value.obj is ICommonConstructorCall) && !(value.obj is ICommonNamespaceFunctionCallNode) && !(value.obj is ICommonNestedInFunctionFunctionCallNode))
+            else if (value.obj.type.is_value_type && !(value.obj is IAddressedExpressionNode) && !(value.obj is IThisNode) 
+                && !(value.obj is ICommonMethodCallNode) && !(value.obj is ICommonStaticMethodCallNode) 
+                && !(value.obj is ICommonConstructorCall) && !(value.obj is ICommonNamespaceFunctionCallNode) 
+                && !(value.obj is ICommonNestedInFunctionFunctionCallNode)
+                && !(value.obj.conversion_type != null && !value.obj.conversion_type.is_value_type))
             {
                 LocalBuilder lb = il.DeclareLocal(helper.GetTypeReference(value.obj.type).tp);
                 il.Emit(OpCodes.Stloc, lb);
