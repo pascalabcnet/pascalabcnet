@@ -2734,6 +2734,11 @@ namespace CodeCompletion
 						}
 						else if (returned_scope is TypeScope)
 							is_type = true;
+                        else if (returned_scope is ProcScope && (returned_scope as ProcScope).is_constructor)
+                        {
+                            returned_scope = (returned_scope as ProcScope).declaringType;
+                            return;
+                        }
 					}
 					else
 					{
@@ -3108,11 +3113,18 @@ namespace CodeCompletion
                     if (ps.name == "Copy" && ps.return_type.Name == "Array" && _method_call.parameters.expressions.Count > 0)
                     {
                         _method_call.parameters.expressions[0].visit(this);
-                        
+
                     }
                     else
+                    {
                         returned_scope = ps.return_type;
+                        if (ps.return_type.lazy_instance)
+                            returned_scope = ps.return_type.original_type.GetInstance(ps.return_type.instances);
+                    }
+                        
                 }
+                else if (ps.is_constructor)
+                    returned_scope = ps.declaringType;
                 else
                     returned_scope = null;
             }

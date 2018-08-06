@@ -3628,6 +3628,7 @@ namespace CodeCompletion
         protected List<string> generic_params;
         public bool is_final;
         public bool aliased = false;
+        internal bool lazy_instance = false;
 
         public TypeScope() { }
         public TypeScope(SymbolKind kind, SymScope topScope, SymScope baseScope)
@@ -3901,6 +3902,7 @@ namespace CodeCompletion
         {
             TypeScope ts = new TypeScope(this.kind, this.topScope, this.baseScope);
             ts.original_type = this;
+            ts.lazy_instance = true;
             ts.loc = this.loc;
             for (int i = 0; i < gen_args.Count; i++)
             {
@@ -3971,7 +3973,7 @@ namespace CodeCompletion
                 {
                     ElementScope es = ss as ElementScope;
                     ElementScope new_es = new ElementScope(new SymInfo(es.si.name, es.si.kind, es.si.name), es.sc, ts);
-                    ts.members[i] = new_es;
+                    ts.members[ts.members.IndexOf(ss)] = new_es;
                     new_es.loc = es.loc;
                     new_es.documentation = es.documentation;
                     new_es.si.acc_mod = es.si.acc_mod;
@@ -4002,7 +4004,7 @@ namespace CodeCompletion
                     new_proc.is_abstract = ps.is_abstract;
                     new_proc.is_override = ps.is_override;
                     new_proc.is_reintroduce = ps.is_reintroduce;
-                    ts.members[i] = new_proc;
+                    ts.members[ts.members.IndexOf(ss)] = new_proc;
                     if (ps.parameters != null)
                         for (int j = 0; j < ps.parameters.Count; j++)
                         {
