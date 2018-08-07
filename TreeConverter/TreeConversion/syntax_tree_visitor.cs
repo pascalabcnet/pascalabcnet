@@ -4962,6 +4962,12 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 sil = context.converted_namespace.find(id.name);
                             }
+                            if (sil != null && id.name.ToLower() == "create" && context.converted_type != null && sil.FirstOrDefault().sym_info is common_method_node && (sil.FirstOrDefault().sym_info as common_method_node).is_constructor)
+                            {
+                                List<SymbolInfo> base_si_list = context.converted_type.base_type.find(id.name);
+                                if (base_si_list != null)
+                                    sil.AddRange(base_si_list);
+                            }
                         }
                     }
 
