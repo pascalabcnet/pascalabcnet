@@ -3532,21 +3532,38 @@ begin
 end;
 
 /// ѕреобразует строку в целое
-function ToInteger(Self: string): integer; extensionmethod;
-begin
-  Result := integer.Parse(Self);
-end;
+function ToInteger(Self: string): integer; extensionmethod := integer.Parse(Self);
 
 /// ѕреобразует строку в BigInteger
-function ToBigInteger(Self: string): BigInteger; extensionmethod;
+function ToBigInteger(Self: string): BigInteger; extensionmethod := BigInteger.Parse(Self);
+
+/// ѕреобразует строку в вещественное
+function ToReal(Self: string): real; extensionmethod := real.Parse(Self, nfi);
+
+/// ѕреобразует строку в целое и записывает его в value. 
+///ѕри невозможности преобразовани€ возвращаетс€ False
+function TryToInteger(Self: string; var value: integer): boolean; extensionmethod := TryStrToInt(Self,value);
+
+/// ѕреобразует строку в вещественное и записывает его в value. 
+///ѕри невозможности преобразовани€ возвращаетс€ False
+function TryToReal(Self: string; var value: real): boolean; extensionmethod := TryStrToReal(Self,value);
+
+/// ѕреобразует строку в целое
+///ѕри невозможности преобразовани€ возвращаетс€ defaultvalue
+function ToInteger(Self: string; defaultvalue: integer): integer; extensionmethod;
 begin
-  Result := BigInteger.Parse(Self);
+  var b := TryStrToInt(Self,Result);
+  if not b then
+    Result := defaultvalue
 end;
 
 /// ѕреобразует строку в вещественное
-function ToReal(Self: string): real; extensionmethod;
+///ѕри невозможности преобразовани€ возвращаетс€ defaultvalue
+function ToReal(Self: string; defaultvalue: real): real; extensionmethod;
 begin
-  Result := real.Parse(Self, nfi);
+  var b := TryStrToReal(Self,Result);
+  if not b then
+    Result := defaultvalue
 end;
 
 /// ѕреобразует строку в массив слов

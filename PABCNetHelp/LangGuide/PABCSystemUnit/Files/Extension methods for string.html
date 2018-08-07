@@ -19,7 +19,9 @@
 <param name="Keyword" value="ToIntegers">
 <param name="Keyword" value="ToReal">
 <param name="Keyword" value="ToReals">
-<param name="Keyword" value="ToWords"></object>
+<param name="Keyword" value="ToWords">
+<param name="Keyword" value="TryToInteger">
+<param name="Keyword" value="TryToReal"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Методы расширения типа string</H1>
 <table cellpadding=3><tr><td><code><b>function</b> Between(Self: string; a, b: string): boolean; </code>
@@ -60,12 +62,20 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в BigInteger</td></tr>
 <tr><td><code><b>function</b> ToInteger(Self: string): integer; </code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в целое</td></tr>
+<tr><td><code><b>function</b> ToInteger(Self: string; defaultvalue: integer): integer; </code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в целоеПри невозможности преобразования возвращается defaultvalue</td></tr>
 <tr><td><code><b>function</b> ToIntegers(Self: string): <b>array</b>  <b>of</b> integer; </code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в массив целых</td></tr>
 <tr><td><code><b>function</b> ToReal(Self: string): real; </code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в вещественное</td></tr>
+<tr><td><code><b>function</b> ToReal(Self: string; defaultvalue: real): real; </code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в вещественноеПри невозможности преобразования возвращается defaultvalue</td></tr>
 <tr><td><code><b>function</b> ToReals(Self: string): <b>array</b>  <b>of</b> real; </code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в массив вещественных</td></tr>
 <tr><td><code><b>function</b> ToWords(Self: string; <b>params</b> delim: <b>array</b>  <b>of</b> char): <b>array</b>  <b>of</b> string; </code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в массив слов</td></tr>
+<tr><td><code><b>function</b> TryToInteger(Self: string; <b>var</b> value: integer): boolean; </code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в целое и записывает его в value.При невозможности преобразования возвращается False</td></tr>
+<tr><td><code><b>function</b> TryToReal(Self: string; <b>var</b> value: real): boolean; </code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в вещественное и записывает его в value.При невозможности преобразования возвращается False</td></tr>
 </table></body></HTML>

@@ -353,6 +353,8 @@ type
     function ReadString: string;
     /// Возвращает значение типа boolean, введенное из текстового файла
     function ReadBoolean: boolean;
+    /// Возвращает слово, введенное из текстового файла
+    function ReadWord: string;
     /// Возвращает значение типа integer, введенное из текстового файла, и переходит на следующую строку
     function ReadlnInteger: integer;
     /// Возвращает значение типа real, введенное из текстового файла, и переходит на следующую строку
@@ -369,6 +371,10 @@ type
     procedure Write(params o: array of Object);
     /// Записывает в текстовый файл значения и переходит на следующую строку
     procedure Writeln(params o: array of Object);
+    /// Записывает в текстовый файл значения, разделяя их пробелами
+    procedure Print(params o: array of Object);
+    /// Записывает в текстовый файл значения, разделяя их пробелами, и переходит на следующую строку
+    procedure Println(params o: array of Object);
     /// Возвращает True, если достигнут конец файла, и False в противном случае
     function Eof: boolean;
     /// Возвращает True, если достигнут конец строки, и False в противном случае
@@ -2168,6 +2174,7 @@ const
   FILE_NOT_OPENED = 'Файл не открыт!!File is not opened';
   FILE_NOT_OPENED_FOR_READING = 'Файл не открыт на чтение!!File is not opened for reading';
   FILE_NOT_OPENED_FOR_WRITING = 'Файл не открыт на запись!!File is not opened for writing';
+  READ_LEXEM_AFTER_END_OF_TEXT_FILE = 'Попытка считывания за концом текстового файла!!Read after end of text file';
   RANGE_ERROR_MESSAGE = 'Выход за границы диапазона!!Out of range';
   EOF_FOR_TEXT_WRITEOPENED = 'Функция Eof не может быть вызвана для текстового файла, открытого на запись!!Eof function can''t be called for file, opened on writing';
   EOLN_FOR_TEXT_WRITEOPENED = 'Функция Eoln не может быть вызвана для текстового файла, открытого на запись!!Eoln function can''t be called for file, opened on writing';
@@ -4359,6 +4366,8 @@ begin
   repeat
     i := f.sr.Read();
   until not char.IsWhiteSpace(char(i)); // pass spaces
+  if i=-1 then 
+    raise new System.IO.IOException(GetTranslation(READ_LEXEM_AFTER_END_OF_TEXT_FILE));
   c := char(i);
   var sb := System.Text.StringBuilder.Create;
   repeat
@@ -5351,6 +5360,11 @@ begin
   Result := PABCSystem.ReadString(Self);
 end;
 
+function Text.ReadWord: string;
+begin
+  Result := read_lexem(Self);
+end;
+
 function Text.ReadBoolean: boolean;
 begin
   Result := PABCSystem.ReadBoolean(Self);
@@ -5394,6 +5408,23 @@ end;
 procedure Text.Writeln(params o: array of Object);
 begin
   PABCSystem.Writeln(Self, o);
+end;
+
+procedure Text.Print(params o: array of Object);
+begin
+  foreach var s in o do
+    PABCSystem.Write(Self, s, ' ');
+end;
+
+procedure Text.Println(params o: array of Object);
+begin
+  if o.Length <> 0 then
+  begin
+    for var i:=0 to o.Length-2 do
+      PABCSystem.Write(Self, o[i], ' ');
+    PABCSystem.Write(Self, o.Last);
+  end;
+  PABCSystem.Writeln(Self);
 end;
 
 function Text.Eof: boolean;
@@ -7799,47 +7830,15 @@ begin
   value := Res;
 end;
 
-function StrToInt64(s: string): int64;
-begin
-  Result := Convert.ToInt64(s); 
-end;
+function StrToInt64(s: string) := Convert.ToInt64(s); 
+function StrToReal(s: string) := Convert.ToDouble(s, nfi);
+function StrToFloat(s: string) := StrToReal(s);
 
-function StrToFloat(s: string): real;
-begin
-  Result := Convert.ToDouble(s, nfi);
-end;
-
-function StrToReal(s: string) := StrToFloat(s);
-
-function TryStrToInt64(s: string; var value: int64): boolean;
-begin
-  Result := int64.TryParse(s, value);
-end;
-
-function TryStrToFloat(s: string; var value: real): boolean;
-begin
-  try
-    Result := True;
-    value := Convert.ToDouble(s, nfi);
-  except
-    value := 0;
-    Result := False;
-  end;
-end;
-
-function TryStrToFloat(s: string; var value: single): boolean;
-begin
-  try
-    Result := True;
-    value := Convert.ToSingle(s, nfi);
-  except
-    value := 0;
-    Result := False;
-  end;
-end;
-
-function TryStrToReal(s: string; var value: real) := TryStrToFloat(s, value);
-function TryStrToSingle(s: string; var value: single) := TryStrToFloat(s, value);
+function TryStrToInt64(s: string; var value: int64) := int64.TryParse(s, value);
+function TryStrToReal(s: string; var value: real) := real.TryParse(s,System.Globalization.NumberStyles.Float,nil,value);
+function TryStrToSingle(s: string; var value: single) := single.TryParse(s,System.Globalization.NumberStyles.Float,nil,value);
+function TryStrToFloat(s: string; var value: real) := TryStrToReal(s, value);
+function TryStrToFloat(s: string; var value: single) := TryStrToSingle(s, value);
 
 function ReadIntegerFromString(s: string; var from: integer): integer;
 begin
@@ -10189,21 +10188,38 @@ begin
 end;
 
 /// Преобразует строку в целое
-function ToInteger(Self: string): integer; extensionmethod;
-begin
-  Result := integer.Parse(Self);
-end;
+function ToInteger(Self: string): integer; extensionmethod := integer.Parse(Self);
 
 /// Преобразует строку в BigInteger
-function ToBigInteger(Self: string): BigInteger; extensionmethod;
+function ToBigInteger(Self: string): BigInteger; extensionmethod := BigInteger.Parse(Self);
+
+/// Преобразует строку в вещественное
+function ToReal(Self: string): real; extensionmethod := real.Parse(Self, nfi);
+
+/// Преобразует строку в целое и записывает его в value. 
+///При невозможности преобразования возвращается False
+function TryToInteger(Self: string; var value: integer): boolean; extensionmethod := TryStrToInt(Self,value);
+
+/// Преобразует строку в вещественное и записывает его в value. 
+///При невозможности преобразования возвращается False
+function TryToReal(Self: string; var value: real): boolean; extensionmethod := TryStrToReal(Self,value);
+
+/// Преобразует строку в целое
+///При невозможности преобразования возвращается defaultvalue
+function ToInteger(Self: string; defaultvalue: integer): integer; extensionmethod;
 begin
-  Result := BigInteger.Parse(Self);
+  var b := TryStrToInt(Self,Result);
+  if not b then
+    Result := defaultvalue
 end;
 
 /// Преобразует строку в вещественное
-function ToReal(Self: string): real; extensionmethod;
+///При невозможности преобразования возвращается defaultvalue
+function ToReal(Self: string; defaultvalue: real): real; extensionmethod;
 begin
-  Result := real.Parse(Self, nfi);
+  var b := TryStrToReal(Self,Result);
+  if not b then
+    Result := defaultvalue
 end;
 
 /// Преобразует строку в массив слов
