@@ -1434,11 +1434,19 @@ function ReadReal(Self: string; var from: integer): real; extensionmethod;
 /// —читывает слово из строки начина€ с позиции from и устанавливает from за считанным значением
 function ReadWord(Self: string; var from: integer): string; extensionmethod;
 /// ѕреобразует строку в целое
-function ToInteger(Self: string): integer; extensionmethod;
+function ToInteger(Self: string): integer; extensionmethod := integer.Parse(Self);
 /// ѕреобразует строку в BigInteger
-function ToBigInteger(Self: string): BigInteger; extensionmethod;
+function ToBigInteger(Self: string): BigInteger; extensionmethod := BigInteger.Parse(Self);
 /// ѕреобразует строку в вещественное
-function ToReal(Self: string): real; extensionmethod;
+function ToReal(Self: string): real; extensionmethod := real.Parse(Self, nfi);
+/// ѕреобразует строку в целое и записывает его в value.ѕри невозможности преобразовани€ возвращаетс€ False
+function TryToInteger(Self: string; var value: integer): boolean; extensionmethod := TryStrToInt(Self,value);
+/// ѕреобразует строку в вещественное и записывает его в value.ѕри невозможности преобразовани€ возвращаетс€ False
+function TryToReal(Self: string; var value: real): boolean; extensionmethod := TryStrToReal(Self,value);
+/// ѕреобразует строку в целоеѕри невозможности преобразовани€ возвращаетс€ defaultvalue
+function ToInteger(Self: string; defaultvalue: integer): integer; extensionmethod;
+/// ѕреобразует строку в вещественноеѕри невозможности преобразовани€ возвращаетс€ defaultvalue
+function ToReal(Self: string; defaultvalue: real): real; extensionmethod;
 /// ѕреобразует строку в массив слов
 function ToWords(Self: string; params delim: array of char): array of string; extensionmethod;
 /// ѕреобразует строку в массив целых

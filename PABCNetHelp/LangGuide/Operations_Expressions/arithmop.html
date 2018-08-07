@@ -5,7 +5,13 @@
 </object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title>
-<link rel="StyleSheet" href="../../default.css"></head>
+<link rel="StyleSheet" href="../../default.css">
+<style type="text/css">
+.auto-style1 {
+	text-align: center;
+}
+</style>
+</head>
 <body><H1>Арифметические операции</H1>
 <p>К <i>арифметическим</i> относятся бинарные операции 
 <code>+</code>, <code>-</code>,
@@ -31,6 +37,7 @@
 		<td><b><code>BigInteger</code></b></td>
 		<td><b><code>single</code></b></td>
 		<td><b><code>real</code></b></td>
+		<td><b><code>decimal</code></b></td>
 	</tr>
 	<tr>
 		<td><b><code>shortint</code></b></td>
@@ -45,6 +52,7 @@
 		<td><code>BigInteger</code></td>
 		<td><code>single</code></td>
 		<td><code>real</code></td>
+		<td><code>decimal</code></td>
 	</tr>
 	<tr>
 		<td><b><code>byte</code></b></td>
@@ -59,6 +67,7 @@
 		<td><code>BigInteger</code></td>
 		<td><code>single</code></td>
 		<td><code>real</code></td>
+		<td><code>decimal</code></td>
 	</tr>
 	<tr>
 		<td><b><code>smallint</code></b></td>
@@ -73,6 +82,7 @@
 		<td><code>BigInteger</code></td>
 		<td><code>single</code></td>
 		<td><code>real</code></td>
+		<td><code>decimal</code></td>
 	</tr>
 	<tr>
 		<td><b><code>word</code></b></td>
@@ -87,6 +97,7 @@
 		<td><code>BigInteger</code></td>
 		<td><code>single</code></td>
 		<td><code>real</code></td>
+		<td><code>decimal</code></td>
 	</tr>
 	<tr>
 		<td><b><code>integer</code></b></td>
@@ -101,6 +112,7 @@
 		<td><code>BigInteger</code></td>
 		<td><code>single</code></td>
 		<td><code>real</code></td>
+		<td><code>decimal</code></td>
 	</tr>
 	<tr>
 		<td><b><code>longword</code></b></td>
@@ -115,6 +127,7 @@
 		<td><code>BigInteger</code></td>
 		<td><code>single</code></td>
 		<td><code>real</code></td>
+		<td><code>decimal</code></td>
 	</tr>
 	<tr>
 		<td><b><code>int64</code></b></td>
@@ -129,6 +142,7 @@
 		<td><code>BigInteger</code></td>
 		<td><code>single</code></td>
 		<td><code>real</code></td>
+		<td><code>decimal</code></td>
 	</tr>
 	<tr>
 		<td><b><code>uint64</code></b></td>
@@ -143,6 +157,7 @@
 		<td><code>BigInteger</code></td>
 		<td><code>single</code></td>
 		<td><code>real</code></td>
+		<td><code>decimal</code></td>
 	</tr>
 	<tr>
 		<td><b><code>BigInteger</code></b></td>
@@ -155,8 +170,12 @@
 		<td><code>BigInteger</code></td>
 		<td><code>BigInteger</code></td>
 		<td><code>BigInteger</code></td>
-		<td>-</td>
-		<td>-</td>
+		<td class="auto-style1">
+	<code>-</code></td>
+		<td class="auto-style1">
+	<code>-</code></td>
+		<td class="auto-style1">
+	<code>-</code></td>
 	</tr>
 	<tr>
 		<td><b><code>single</code></b></td>
@@ -168,9 +187,12 @@
 		<td><code>single</code></td>
 		<td><code>single</code></td>
 		<td><code>single</code></td>
-		<td>-</td>
+		<td class="auto-style1">
+	<code>-</code></td>
 		<td><code>single</code></td>
 		<td><code>real</code></td>
+		<td class="auto-style1">
+	<code>-</code></td>
 	</tr>
 	<tr>
 		<td><b><code>real</code></b></td>
@@ -182,9 +204,30 @@
 		<td><code>real</code></td>
 		<td><code>real</code></td>
 		<td><code>real</code></td>
-		<td>-</td>
+		<td class="auto-style1">
+	<code>-</code></td>
 		<td><code>real</code></td>
 		<td><code>real</code></td>
+		<td class="auto-style1">
+	<code>-</code></td>
+	</tr>
+	<tr>
+		<td><b><code>decimal</code></b></td>
+		<td><code>decimal</code></td>
+		<td><code>decimal</code></td>
+		<td><code>decimal</code></td>
+		<td><code>decimal</code></td>
+		<td><code>decimal</code></td>
+		<td><code>decimal</code></td>
+		<td><code>decimal</code></td>
+		<td><code>decimal</code></td>
+		<td class="auto-style1">
+	<code>-</code></td>
+		<td class="auto-style1">
+	<code>-</code></td>
+		<td>
+	<code>-</code></td>
+		<td><code>decimal</code></td>
 	</tr>
 </table>
 <p>То есть, если операнды - целые, то результатом является самый короткий целый 

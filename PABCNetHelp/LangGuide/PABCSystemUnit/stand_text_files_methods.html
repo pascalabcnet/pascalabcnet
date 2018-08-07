@@ -1,20 +1,33 @@
 <html><head>
 <object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Print">
+<param name="Keyword" value="Println">
+<param name="Keyword" value="Write">
+<param name="Keyword" value="Writeln">
 <param name="Keyword" value="ReadInteger">
 <param name="Keyword" value="ReadReal">
 <param name="Keyword" value="ReadChar">
 <param name="Keyword" value="ReadString">
 <param name="Keyword" value="ReadBoolean">
+<param name="Keyword" value="ReadWord">
 <param name="Keyword" value="ReadlnInteger">
 <param name="Keyword" value="ReadlnReal">
 <param name="Keyword" value="ReadlnChar">
 <param name="Keyword" value="ReadlnString">
 <param name="Keyword" value="ReadlnBoolean">
+<param name="Keyword" value="ReadlnWord">
+<param name="Keyword" value="Eof">
 <param name="Keyword" value="Eoln">
 <param name="Keyword" value="SeekEof">
 <param name="Keyword" value="SeekEoln">
 <param name="Keyword" value="Flush">
+<param name="Keyword" value="Reset">
+<param name="Keyword" value="Close">
 <param name="Keyword" value="ReadToEnd">
+<param name="Keyword" value="Name">
+<param name="Keyword" value="FullName">
+<param name="Keyword" value="Erase">
+<param name="Keyword" value="Rename">
 </object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title>
@@ -28,9 +41,26 @@
 &nbsp;<table border=0 CELLPADDING=5>
 	<tr>
 		<td>
+	<code><strong>procedure</strong> Write(a,b,...); </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Записывает в файл значения a, b, ...</td>
+	</tr>
+	<tr>
+		<td>
 	<code><strong>procedure</strong> Writeln(a,b,...); </code><br>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Записывает в файл значения a, b, ...
 		и осуществляет переход на следующую строку</td>
+	</tr>
+	<tr>
+		<td>
+	<code><strong>procedure</strong> Print(a,b,...); </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Записывает в файл значения a, b, ..., 
+		разделяя их пробелами</td>
+	</tr>
+	<tr>
+		<td>
+	<code><strong>procedure</strong> Println(a,b,...); </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Записывает в файл значения a, b, ..., 
+		разделяя их пробелами, и осуществляет переход на следующую строку</td>
 	</tr>
 	<tr>
 		<td>
@@ -57,6 +87,11 @@
 		<td>
 		<code><strong>function</strong> ReadBoolean: boolean; </code><br>
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа boolean, введенное из текстового файла</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadWord: string; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает слово, введенное из текстового файла</td>
 	</tr>
 	<tr>
 		<td>
@@ -90,6 +125,19 @@
 	</tr>
 	<tr>
 		<td>
+		<code><strong>function</strong> ReadlnWord: string; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает слово, введенное из текстового файла, и переходит на 
+		следующую строку</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> Eof: boolean; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если достигнут конец 
+		файла, и False в 
+		противном случае</td>
+	</tr>
+	<tr>
+		<td>
 		<code><strong>function</strong> Eoln: boolean; </code><br>
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если достигнут конец строки, и False в 
 		противном случае</td>
@@ -108,6 +156,26 @@
 	</tr>
 	<tr>
 		<td>
+		<code><strong>function</strong> Name: string; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает имя файла</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> FullName: string;</code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает полное имя файла</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>procedure</strong> Reset; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает файловый указатель на начало файла</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>procedure</strong> Close; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Закрывает файл</td>
+	</tr>
+	<tr>
+		<td>
 		<code><strong>procedure</strong> Flush; </code><br>
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Записывает содержимое буфера файла на диск</td>
 	</tr>
@@ -116,6 +184,17 @@
 		<code><strong>function</strong> ReadToEnd: string; </code><br>
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает в виде строки содержимое файла от текущего положения 
 		до конца</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>procedure</strong> Erase; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет файл (файл должен быть закрыт)</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>procedure</strong> Rename(newname: string); </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переименовывает файл, давая ему имя newname (файл должен быть 
+		закрыт)</td>
 	</tr>
 	</table>
 </body></html>
