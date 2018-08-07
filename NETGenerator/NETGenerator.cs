@@ -1414,7 +1414,7 @@ namespace PascalABCCompiler.NETGenerator
                     {
                         mi = TypeBuilder.GetMethod(t, icmn.method_info);
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         if (icmn.method_info.DeclaringType.IsGenericType && !icmn.method_info.DeclaringType.IsGenericTypeDefinition)
                         {
@@ -1430,6 +1430,24 @@ namespace PascalABCCompiler.NETGenerator
                             }
 
                             mi = TypeBuilder.GetMethod(t, mi);
+                        }
+                        else if (t.Name != "TypeBuilderInstantiation")
+                        {
+                            try
+                            {
+                                foreach (MethodInfo mi2 in t.GetMethods())
+                                {
+                                    if (mi2.MetadataToken == icmn.method_info.MetadataToken)
+                                    {
+                                        mi = mi2;
+                                        break;
+                                    }
+                                }
+                            }
+                            catch
+                            {
+                                mi = icmn.method_info;
+                            }
                         }
                         else
                             mi = icmn.method_info;
