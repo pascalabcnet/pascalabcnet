@@ -681,6 +681,8 @@ namespace CodeCompletion
                 if (_dot_node.right is ident)
                 {
                     ret_tn = ret_tn.FindNameOnlyInType((_dot_node.right as ident).name);
+                    if (ret_tn == null && left_scope is IElementScope && (left_scope as IElementScope).Type is ITypeScope)
+                        ret_tn = ((left_scope as IElementScope).Type as ITypeScope).FindExtensionMethod((_dot_node.right as ident).name);
                 }
             }
             if (ret_tn != null && ret_tn.IsEqual(founded_scope))

@@ -314,6 +314,10 @@ namespace CodeCompletion
 
         public void AddExtensionMethod(string name, ProcScope meth, TypeScope ts)
         {
+            if (ts.original_type != null)
+            {
+                ts.original_type.AddExtensionMethod(name, meth, ts.original_type);
+            }
             if (extension_methods == null)
                 extension_methods = new Dictionary<TypeScope, List<ProcScope>>();
             List<ProcScope> meth_list = null;
@@ -4497,6 +4501,18 @@ namespace CodeCompletion
         public override string ToString()
         {
             return si.name;
+        }
+
+        public IProcScope FindExtensionMethod(string name)
+        {
+            List<ProcScope> meths = null;
+            if (original_type != null)
+                meths = original_type.GetExtensionMethods(name, original_type);
+            else
+                meths = GetExtensionMethods(name, this);
+            if (meths != null && meths.Count > 0)
+                return meths[0];
+            return null;
         }
     }
 
