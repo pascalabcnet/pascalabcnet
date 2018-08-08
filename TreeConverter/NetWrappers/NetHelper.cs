@@ -332,7 +332,9 @@ namespace PascalABCCompiler.NetHelper
 		{
             if (name == null) return null;
 			Assembly a = ass_name_cache[name] as Assembly;
-			if (a != null)
+            if (a == null && name.IndexOf(System.IO.Path.DirectorySeparatorChar) == -1)
+                a = ass_name_cache[System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), name)] as Assembly;
+            if (a != null)
 			{
 				if (System.IO.File.GetLastWriteTime(name) == (DateTime)file_dates[a])
 					return a;
