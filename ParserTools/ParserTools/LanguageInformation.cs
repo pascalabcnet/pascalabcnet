@@ -665,6 +665,7 @@ namespace PascalABCCompiler.Parsers
     		get;
     	}
 
+        IProcScope FindExtensionMethod(string name);
         IProcScope GetConstructor();
     }
     
