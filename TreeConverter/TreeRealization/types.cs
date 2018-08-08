@@ -3309,7 +3309,7 @@ namespace PascalABCCompiler.TreeRealization
                         sil = bas_type.scope.SymbolTable.Find(bas_type.scope, name);
                         bas_type = bas_type.base_type as compiled_type_node;
                     }
-                    if (sil == null)
+                    //if (sil == null || true)
                     {
                         for (int i = 0; i < ImplementingInterfaces.Count; i++)
                         {
@@ -3318,10 +3318,16 @@ namespace PascalABCCompiler.TreeRealization
                                 ctn = ctn.original_generic as compiled_type_node;
                             if (ctn != null && ctn.scope != null)
                             {
-                                sil = ctn.scope.SymbolTable.Find(ctn.scope, name);
+                                List<SymbolInfo> sil3 = ctn.scope.SymbolTable.Find(ctn.scope, name);
+                                if (sil3 != null)
+                                {
+                                    if (sil != null)
+                                        sil.AddRange(sil3);
+                                    else
+                                        sil = sil3;
+                                }
                             }
-                            if (sil != null)
-                                break;
+                            
                         }
                     }
 
