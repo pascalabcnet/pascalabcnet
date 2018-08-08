@@ -2477,7 +2477,7 @@ namespace CodeCompletion
 
         public override bool IsConvertable(TypeScope ts)
         {
-            if (IsEqual(ts))
+            if (IsEqual(ts) || ts is TemplateParameterScope || ts.IsGenericParameter)
                 return true;
             return false;
         }
