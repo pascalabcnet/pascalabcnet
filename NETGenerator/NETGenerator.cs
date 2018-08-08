@@ -10300,7 +10300,7 @@ namespace PascalABCCompiler.NETGenerator
             Type return_type = null;
             bool is_generic = false;
             MethodInfo enumer_mi = null; //typeof(System.Collections.IEnumerable).GetMethod("GetEnumerator", Type.EmptyTypes);
-            if (var_tp.IsValueType && !(in_what_type.IsArray && in_what_type.GetArrayRank() > 1))
+            if (/*var_tp.IsValueType &&*/ !var_tp.IsGenericParameter && !(in_what_type.IsArray && in_what_type.GetArrayRank() > 1))
             {
                 enumer_mi = helper.GetEnumeratorMethod(in_what_type);
                 if (enumer_mi == null)
