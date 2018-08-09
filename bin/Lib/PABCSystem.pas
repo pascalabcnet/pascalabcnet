@@ -9455,12 +9455,29 @@ begin
       Result[i, j] := converter(Self[i, j]);  
 end;
 
+/// Преобразует элементы двумерного массива и возвращает преобразованный массив
+function ConvertAll<T, T1>(Self: array [,] of T; converter: (T,integer,integer)->T1): array [,] of T1; extensionmethod;
+begin
+  Result := new T1[Self.RowCount, Self.ColCount];
+  for var i := 0 to Self.RowCount - 1 do
+    for var j := 0 to Self.ColCount - 1 do
+      Result[i, j] := converter(Self[i, j],i,j);  
+end;
+
 /// Преобразует элементы двумерного массива по заданному правилу
 procedure Transform<T>(Self: array [,] of T; f: T->T); extensionmethod;
 begin
   for var i := 0 to Self.RowCount - 1 do
     for var j := 0 to Self.ColCount - 1 do
       Self[i, j] := f(Self[i, j]);
+end;
+
+/// Преобразует элементы двумерного массива по заданному правилу
+procedure Transform<T>(Self: array [,] of T; f: (T,integer,integer)->T); extensionmethod;
+begin
+  for var i := 0 to Self.RowCount - 1 do
+    for var j := 0 to Self.ColCount - 1 do
+      Self[i, j] := f(Self[i, j],i,j);
 end;
 
 /// Заполняет элементы двумерного массива значениями, вычисляемыми по некоторому правилу
