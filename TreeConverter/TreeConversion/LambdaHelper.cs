@@ -142,6 +142,17 @@ namespace PascalABCCompiler.TreeConverter
             return id.Contains(lambdaPrefix);
         }
 
+        public static bool IsCapturedSelf(expression_node ex)
+        {
+            if (ex is class_field_reference)
+            {
+                class_field fld = (ex as class_field_reference).field;
+                if (fld.name.Contains("<>local_variables_class"))
+                    return true;
+            }
+            return false;
+        }
+
         public static bool IsAuxiliaryLambdaName(ident id)
         {
             if (id == null)

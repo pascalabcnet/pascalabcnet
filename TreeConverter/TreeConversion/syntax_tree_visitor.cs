@@ -9171,7 +9171,7 @@ namespace PascalABCCompiler.TreeConverter
         private expression_node expression_value_reciving(SyntaxTree.ident id_right, List<SymbolInfo> sil, expression_node en, bool expected_delegate)
         {
             general_node_type[] node_types;
-            if (en is this_node)
+            if (en is this_node || LambdaHelper.IsCapturedSelf(en))
                 node_types = new general_node_type[] { general_node_type.variable_node,
                 general_node_type.function_node, general_node_type.property_node, general_node_type.constant_definition, general_node_type.event_node};
             else
@@ -16472,7 +16472,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if ((left as static_event_reference).en is compiled_event)
                             AddError(left.location, "EVENT_{0}_MUST_BE_IN_LEFT_PART", (left as static_event_reference).en.name);
-                        if (context.converted_type != null && context.converted_type != ((left as static_event_reference).en as common_event).cont_type)
+                        if (context.converted_type != null && context.converted_type != ((left as static_event_reference).en as common_event).cont_type && !context.converted_type.name.Contains("<>local_variables_class"))
                             AddError(left.location, "EVENT_{0}_MUST_BE_IN_LEFT_PART", (left as static_event_reference).en.name);
                     }
                     else if (right is static_event_reference)
