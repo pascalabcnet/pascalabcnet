@@ -129,6 +129,11 @@ namespace TreeConverter.LambdaExpressions.Closure
             }
         }
 
+        public override void visit(exception_handler _exception_handler)
+        {
+            ProcessNode(_exception_handler.statements);
+        }
+
         public override void visit(ident id)
         {
             var idName = id.name.ToLower();
