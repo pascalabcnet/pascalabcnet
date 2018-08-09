@@ -156,6 +156,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 si.sym_info.semantic_node_type == semantic_node_type.compiled_type_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.basic_interface_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.common_unit_node ||
+                si.sym_info.semantic_node_type == semantic_node_type.common_namespace_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.compiled_unit_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.template_type ||
                 si.sym_info.semantic_node_type == semantic_node_type.class_constant_definition ||
