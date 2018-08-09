@@ -48,8 +48,23 @@ namespace VisualPascalABC
             this.ActiveTextAreaControl.TextArea.AllowDrop = true;
             this.ActiveTextAreaControl.TextArea.DragEnter += textEditorDragEnter;
             this.ActiveTextAreaControl.TextArea.DragDrop += textEditorDragDrop;
+            this.ActiveTextAreaControl.Document.LineDeleted += Document_LineDeleted;
         }
-		
+
+        private void Document_LineDeleted(object sender, LineEventArgs e)
+        {
+            for (int i = 0; i < e.LineSegment.Words.Count; i++)
+            {
+                if (e.LineSegment.Words[i].SyntaxColor != null && e.LineSegment.Words[i].SyntaxColor.Color.Name == "Green")
+                {
+                    e.Document.HighlightingStrategy.MarkTokens(e.Document);
+                    e.Document.RequestUpdate(new ICSharpCode.TextEditor.TextAreaUpdate(ICSharpCode.TextEditor.TextAreaUpdateType.WholeTextArea));
+                    e.Document.CommitUpdate();
+                    return;
+                }
+            }
+        }
+
         public void MarkForImmediateWindow()
         {
         	editactions[Keys.Space | Keys.Control] = null;

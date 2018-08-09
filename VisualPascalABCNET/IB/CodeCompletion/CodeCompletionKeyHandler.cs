@@ -41,7 +41,6 @@ namespace VisualPascalABC
             //editor.ActiveTextAreaControl.KeyDown += h.TextControlEventHandler;
             // When the editor is disposed, close the code completion window
             editor.Disposed += h.CloseCodeCompletionWindow;
-
             return h;
         }
 
