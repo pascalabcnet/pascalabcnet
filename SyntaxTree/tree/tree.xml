@@ -4123,7 +4123,7 @@
       <HelpData Key="raise_stmt.address" Value="" />
       <HelpData Key="raise_stmt.expr" Value="" />
       <HelpData Key="raise_stmt.object" Value="" />
-      <HelpData Key="read_accessor_name" Value="procedure_definition pr != null если метод сгенерирован по выражению" />
+      <HelpData Key="read_accessor_name" Value="procedure_definition pr != null если метод сгенерирован по выражению. //pr сделано object чтобы не обходилось лишний раз" />
       <HelpData Key="read_accessor_name.accessor_name" Value="" />
       <HelpData Key="read_accessor_name.expr_for_formatting" Value="" />
       <HelpData Key="read_accessor_name.expression_for_formatting" Value="" />
@@ -4612,7 +4612,7 @@
       <HelpData Key="with_statement." Value="" />
       <HelpData Key="with_statement.do_with" Value="Список объектов, с которыми производить действия." />
       <HelpData Key="with_statement.what_do" Value="Что делать." />
-      <HelpData Key="write_accessor_name" Value="procedure_definition pr != null если метод сгенерирован по выражению" />
+      <HelpData Key="write_accessor_name" Value="procedure_definition pr != null если метод сгенерирован по выражению. //pr сделано object чтобы не обходилось лишний раз" />
       <HelpData Key="write_accessor_name.accessor_name" Value="" />
       <HelpData Key="write_accessor_name.pr" Value="" />
       <HelpData Key="write_accessor_name.statment_for_formatting" Value="" />

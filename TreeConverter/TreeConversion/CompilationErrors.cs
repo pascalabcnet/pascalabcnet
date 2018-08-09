@@ -222,7 +222,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             //return ("Possible two type convertions\n"+_en.location.ToString());
             return (string.Format(StringResources.Get("TWO_TYPE_CONVERTIONS_POSSIBLE_FIRST_TYPE_{0}_SECOND_TYE_{1}"),
-                _first.to.PrintableName, _second.to.PrintableName));
+                _first.to?.PrintableName??"null", _second.to?.PrintableName??"null"));
         }
 
         public override ILocation Location

@@ -15665,7 +15665,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///procedure_definition pr != null если метод сгенерирован по выражению
+	///procedure_definition pr != null если метод сгенерирован по выражению. //pr сделано object чтобы не обходилось лишний раз
 	///</summary>
 	[Serializable]
 	public partial class write_accessor_name : syntax_tree_node
@@ -15880,7 +15880,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///procedure_definition pr != null если метод сгенерирован по выражению
+	///procedure_definition pr != null если метод сгенерирован по выражению. //pr сделано object чтобы не обходилось лишний раз
 	///</summary>
 	[Serializable]
 	public partial class read_accessor_name : syntax_tree_node
