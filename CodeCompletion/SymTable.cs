@@ -2033,7 +2033,29 @@ namespace CodeCompletion
             }
             instance.si = this.si;
             if (this.return_type != null)
-                instance.return_type = this.return_type.GetInstance(gen_args);
+            {
+                bool exact = true;
+                if (this.template_parameters != null && this.template_parameters.Count > 0)
+                {
+                    foreach (ElementScope parameter in this.parameters)
+                    {
+                        TypeScope ts = parameter.sc as TypeScope;
+                        if (ts.IsGeneric && !ts.IsGenericParameter)
+                        {
+                            foreach (TypeScope inst_ts in ts.instances)
+                            {
+                                if (this.template_parameters.Contains(inst_ts.name))
+                                {
+                                    exact = false;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                instance.return_type = this.return_type.GetInstance(gen_args, exact);
+            }
+                
             return instance;
         }
 
@@ -3225,6 +3247,8 @@ namespace CodeCompletion
         public override bool IsConvertable(TypeScope ts)
         {
             if (ts is NullTypeScope && is_dynamic_arr)
+                return true;
+            if (ts is TemplateParameterScope || ts.IsGenericParameter)
                 return true;
             if (ts is CompiledScope && (ts as CompiledScope).ctn == PascalABCCompiler.NetHelper.NetHelper.ArrayType)
                 return true;
@@ -5127,7 +5151,10 @@ namespace CodeCompletion
                         lst.Add(gen_args[Math.Min(i, gen_args.Count - 1)]);
                         if (lst[0].instances != null && lst[0].instances.Count > 0)
                             lst[0] = lst[0].instances[Math.Min(i, lst[0].instances.Count - 1)];
-                        sc.instances.Add(this.instances[i].GetInstance(lst));
+                        if (exact)
+                            sc.instances.Add(gen_args[Math.Min(i, gen_args.Count - 1)]);
+                        else
+                            sc.instances.Add(this.instances[i].GetInstance(lst));
                         if (i < gen_args.Count)
                             sc.generic_params.Add(gen_args[i].si.name);
                     }
