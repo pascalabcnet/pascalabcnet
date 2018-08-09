@@ -2702,23 +2702,31 @@ namespace CodeCompletion
                             returned_scope = returned_scope.FindNameOnlyInType((_dot_node.right as ident).name);
                             return;
                         }
-                        TypeScope ts = returned_scope as TypeScope;
-                        if (returned_scope is ProcScope)
-                            ts = (returned_scope as ProcScope).return_type;
-                        if (ts != null)  
-						    returned_scope = ts.FindNameOnlyInType((_dot_node.right as ident).name);
-                        if (returned_scope == null)
+                        if (returned_scope is InterfaceUnitScope)
                         {
-                            List<ProcScope> meths = entry_scope.GetExtensionMethods((_dot_node.right as ident).name, ts);
-                            if (meths.Count > 0)
-                            {
-                                method_call mc = new method_call(_dot_node, new expression_list());
-                                search_all = true;
-                                mc.visit(this);
-                                return;
-                            }
-                                
+                            returned_scope = returned_scope.FindNameOnlyInType((_dot_node.right as ident).name);
                         }
+                        else
+                        {
+                            TypeScope ts = returned_scope as TypeScope;
+                            if (returned_scope is ProcScope)
+                                ts = (returned_scope as ProcScope).return_type;
+                            if (ts != null)
+                                returned_scope = ts.FindNameOnlyInType((_dot_node.right as ident).name);
+                            if (returned_scope == null)
+                            {
+                                List<ProcScope> meths = entry_scope.GetExtensionMethods((_dot_node.right as ident).name, ts);
+                                if (meths.Count > 0)
+                                {
+                                    method_call mc = new method_call(_dot_node, new expression_list());
+                                    search_all = true;
+                                    mc.visit(this);
+                                    return;
+                                }
+
+                            }
+                        }
+                        
                         if (returned_scope != null && returned_scope is ProcScope && (returned_scope as ProcScope).return_type != null)
 						{
                             ProcScope ps = returned_scope as ProcScope;
