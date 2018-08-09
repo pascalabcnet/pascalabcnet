@@ -16,6 +16,11 @@ namespace SyntaxVisitors.SugarVisitors
             get { return new TupleVisitor(); }
         }
 
+        public override void visit(read_accessor_name wn)
+        {
+
+        }
+
         public override void visit(tuple_node tup)
         {
             var dn = new dot_node(new dot_node(new ident("?System"), new ident("Tuple")), new ident("Create", tup.source_context));
