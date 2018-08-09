@@ -9057,6 +9057,13 @@ begin
     Self[i] := f(Self[i]);
 end;
 
+/// Преобразует элементы массива или списка по заданному правилу
+procedure Transform<T>(Self: IList<T>; f: (T,integer)->T); extensionmethod;
+begin
+  for var i := 0 to Self.Count - 1 do
+    Self[i] := f(Self[i],i);
+end;
+
 /// Заполняет элементы массива или списка значениями, вычисляемыми по некоторому правилу
 procedure Fill<T>(Self: IList<T>; f: integer->T); extensionmethod;
 begin
@@ -9755,6 +9762,14 @@ end;
 function ConvertAll<T, T1>(Self: array of T; converter: T->T1): array of T1; extensionmethod;
 begin
   Result := System.Array.ConvertAll(self, t -> converter(t));  
+end;
+
+/// Преобразует элементы массива и возвращает преобразованный массив
+function ConvertAll<T, T1>(Self: array of T; converter: (T,integer)->T1): array of T1; extensionmethod;
+begin
+  Result := new T1[Self.Length];
+  for var i := 0 to Self.Length - 1 do
+    Result[i] := converter(Self[i],i);
 end;
 
 /// Выполняет поиск первого элемента в массиве, удовлетворяющего предикату. Если не найден, возвращается нулевое значение соответствующего типа
