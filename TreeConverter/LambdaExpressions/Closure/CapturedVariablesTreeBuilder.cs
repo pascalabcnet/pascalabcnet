@@ -174,9 +174,26 @@ namespace TreeConverter.LambdaExpressions.Closure
                                     si.sym_info.semantic_node_type == semantic_node_type.local_block_variable ||
                                     si.sym_info.semantic_node_type == semantic_node_type.common_parameter ||
                                     si.sym_info.semantic_node_type == semantic_node_type.class_field
-                                    
                                     ;
-
+            //trjuk, chtoby ne perelopachivat ves kod. zamenjaem ident na self.ident
+            if ((si.sym_info.semantic_node_type == semantic_node_type.common_event || si.sym_info.semantic_node_type == semantic_node_type.common_property_node) && InLambdaContext)
+            {
+                dot_node dn = new dot_node(new ident("self", id.source_context), new ident(id.name, id.source_context), id.source_context);
+                bool ok = true;
+                try
+                {
+                    id.Parent.ReplaceDescendantUnsafe(id, dn);
+                }
+                catch
+                {
+                    ok = false;
+                }
+                if (ok)
+                {
+                    ProcessNode(id.Parent);
+                    return;
+                }
+            }
             if (!(acceptableVarType) && InLambdaContext) 
             {
                 _visitor.AddError(new ThisTypeOfVariablesCannotBeCaptured(_visitor.get_location(id)));
