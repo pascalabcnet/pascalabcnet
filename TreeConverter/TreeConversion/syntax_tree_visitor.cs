@@ -18728,6 +18728,7 @@ namespace PascalABCCompiler.TreeConverter
                         expression_node qq = null;
                         delegated_methods dm = null;
                         common_type_node delegate_type = null;
+                        int err_cnt = ErrorsList.Count;
                         try
                         {
                             qq = convert_strong(ff.dereferencing_value);
@@ -18738,6 +18739,8 @@ namespace PascalABCCompiler.TreeConverter
                         }
                         catch (Exception e)
                         {
+                            if (ErrorsList.Count != err_cnt)//delete fake errors
+                                ErrorsList.RemoveRange(err_cnt, ErrorsList.Count - err_cnt);
                             // Погасить все исключения. Значит, не вывелось, и в правой части лямбды - не вызов процедуры, а скорее всего приведение типа T(x)
                             // К сожалению, сюда попадает случай a->a.Print() где a до более позднего этапа не определяется
                             // Плохо, но лучше пока не получается
