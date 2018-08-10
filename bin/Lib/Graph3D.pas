@@ -186,10 +186,6 @@ type
   ///!#
   View3DT = class
   private
-    procedure SetSCSP(v: boolean) := hvp.ShowCoordinateSystem := v;
-    procedure SetSCS(v: boolean) := Invoke(SetSCSP, v);
-    function GetSCS: boolean := InvokeBoolean(()->hvp.ShowCoordinateSystem);
-    
     procedure SetSGLP(v: boolean) := gvl.Visible := v;
     procedure SetSGL(v: boolean) := Invoke(SetSGLP, v);
     function GetSGL: boolean := InvokeBoolean(()->gvl.Visible);
@@ -219,7 +215,9 @@ type
     function GetBC: GColor := Invoke&<GColor>(()->(hvp.Background as SolidColorBrush).Color);
     procedure ExportP(fname: string) := hvp.Viewport.Export(fname, hvp.Background);
   public 
-    property ShowCoordinateSystem: boolean read GetSCS write SetSCS;
+    property ShowCoordinateSystem: boolean 
+      read InvokeBoolean(()->hvp.ShowCoordinateSystem) 
+      write Invoke(procedure(v: boolean)->hvp.ShowCoordinateSystem := v, value);
     property ShowGridLines: boolean read GetSGL write SetSGL;
     property ShowCameraInfo: boolean read GetSCI write SetSCI;
     property ShowViewCube: boolean read GetSVC write SetSVC;
@@ -452,26 +450,6 @@ type
   private
     procedure MoveToProp(p: Point3D) := MoveTo(p);
   
-  ///---------------------------------- Эксперимент - Position для анимации --------------
-  (*public
-    class PositionProperty: DependencyProperty;
-  private    
-    procedure SetPositionT(value: Point3D);
-    begin
-      MoveTo(value.X,value.Y,value.Z);
-      SetValue(PositionProperty, value);
-    end;
-    procedure SetPosition(value: Point3D) := Invoke(SetPositionT,value);
-    function GetPosition: Point3D := GetPos;
-  public
-    class constructor;
-    begin
-      PositionProperty := DependencyProperty.Register('Position1', typeof (Point3D), typeof (Object3D), nil);
-    end;
-  
-    property Position1: Point3D read GetPosition write SetPosition;  *)
-  ///---------------------------------- Конец эксперимента
-  
   public 
     property Position: Point3D read GetPos write MoveToProp;
     
@@ -588,7 +566,6 @@ type
     
     procedure DestroyT;
     begin
-      
     end;
     
     procedure AddT(obj: Object3D);
@@ -1406,10 +1383,9 @@ type
   
   protected 
     function CreateObject: Object3D; override := new SphereT(X, Y, Z, Radius, Material.Clone);
-  public 
     constructor := CreateBase(NewVisualObject(1), 0, 0, 0, Colors.Blue);
     constructor(x, y, z, r: real; m: Gmaterial) := CreateBase(NewVisualObject(r), x, y, z, m);
-    
+  public 
     property Radius: real read GetR write SetR;
     function Clone := (inherited Clone) as SphereT;
   end;
@@ -1437,9 +1413,8 @@ type
   
   protected
     function CreateObject: Object3D; override := new EllipsoidT(X, Y, Z, RadiusX, RadiusY, RadiusZ, Material.Clone);
-  public 
     constructor(x, y, z, rx, ry, rz: real; m: GMaterial) := CreateBase(NewVisualObject(rx, ry, rz), x, y, z, m);
-    
+  public 
     property RadiusX: real read GetRX write SetRX;
     property RadiusY: real read GetRY write SetRY;
     property RadiusZ: real read GetRZ write SetRZ;
@@ -1463,9 +1438,9 @@ type
   
   protected  
     function CreateObject: Object3D; override := new CubeT(X, Y, Z, SideLength, Material.Clone);
-  public 
     constructor(x, y, z, w: real; m: GMaterial) := CreateBase(NewVisualObject(w), x, y, z, m);
-    
+   
+  public 
     property SideLength: real read GetW write SetW;
     function Clone := (inherited Clone) as CubeT;
   end;
@@ -1499,9 +1474,9 @@ type
   
   protected  
     function CreateObject: Object3D; override := new BoxT(X, Y, Z, Length, Width, Height, Material.Clone);
-  public 
     constructor(x, y, z, l, w, h: real; m: GMaterial) := CreateBase(NewVisualObject(l, w, h), x, y, z, m);
     
+  public 
     property Length: real read GetL write SetL;
     property Width: real read GetW write SetW;
     property Height: real read GetH write SetH;
@@ -1536,7 +1511,6 @@ type
   
   protected  
     function CreateObject: Object3D; override := new ArrowT(X, Y, Z, Direction.X, Direction.Y, Direction.Z, Diameter, HeadLength, Material.Clone);
-  public 
     constructor(x, y, z, dx, dy, dz, d, hl: real; m: GMaterial);
     begin
       var a := NewVisualObject(dx, dy, dz, d, hl);
@@ -1544,6 +1518,7 @@ type
       a.Direction := V3D(dx, dy, dz);
     end;
     
+  public 
     property HeadLength: real read GetL write SetL;
     property Diameter: real read GetD write SetD;
     property Direction: Vector3D read GetDir write SetDir;
@@ -1584,13 +1559,13 @@ type
   
   protected  
     function CreateObject: Object3D; override := new TruncatedConeT(X, Y, Z, Height, BaseRadius, TopRadius, (model as TruncatedConeVisual3D).ThetaDiv - 1, Topcap, Material.Clone);
-  public 
     constructor(x, y, z, h, baser, topr: real; sides: integer; topcap: boolean; m: GMaterial);
     begin
       var a := NewVisualObject(h, baser, topr, sides, topcap);
       CreateBase(a, x, y, z, m);
     end;
     
+  public 
     property Height: real read GetH write SetH;
     property BaseRadius: real read GetBR write SetBR;
     property TopRadius: real read GetTR write SetTR;
@@ -1609,13 +1584,13 @@ type
     function GetR: real := BaseRadius;
   protected  
     function CreateObject: Object3D; override := new CylinderT(X, Y, Z, Height, Radius, (model as TruncatedConeVisual3D).ThetaDiv - 1, Topcap, Material.Clone);
-  public 
     constructor(x, y, z, h, r: real; ThetaDiv: integer; topcap: boolean; m: GMaterial);
     begin
       var a := NewVisualObject(h, r, r, ThetaDiv, topcap);
       CreateBase(a, x, y, z, m);
     end;
     
+  public 
     function Clone := (inherited Clone) as CylinderT;
     property Radius: real read GetR write SetR;
   end;
@@ -1627,7 +1602,6 @@ type
     function GetV: boolean := Invoke&<boolean>(()->(model as MeshElement3D).Visible);
   protected  
     function CreateObject: Object3D; override := new TeapotT(X, Y, Z, Material.Clone);
-  public 
     constructor(x, y, z: real; m: GMaterial);
     begin
       var a := new Teapot;
@@ -1635,6 +1609,7 @@ type
       Rotate(OrtX, 90);
     end;
     
+  public 
     property Visible: boolean read GetV write SetV;
     function Clone := (inherited Clone) as TeapotT;
   end;
@@ -1647,7 +1622,6 @@ type
     function GetD: real := InvokeReal(()->((model as CoordinateSystemVisual3D).Children[0] as ArrowVisual3D).Diameter);
   protected  
     function CreateObject: Object3D; override := new CoordinateSystemT(X, Y, Z, ArrowLengths, Diameter);
-  public 
     constructor(x, y, z, arrlength, diameter: real);
     begin
       var a := new CoordinateSystemVisual3D;
@@ -1659,6 +1633,7 @@ type
       (a.Children[3] as CubeVisual3D).SideLength := diameter;
     end;
     
+  public 
     property ArrowLengths: real read GetAL write SetAL;
     property Diameter: real read GetD;
     function Clone := (inherited Clone) as CoordinateSystemT;
@@ -1677,7 +1652,6 @@ type
     function GetFS: real := InvokeReal(()->model.FontSize);
   protected  
     function CreateObject: Object3D; override := new BillboardTextT(X, Y, Z, Text, FontSize);
-  public 
     constructor(x, y, z: real; text: string; fontsize: real);
     begin
       var a := new BillboardTextVisual3D;
@@ -1687,6 +1661,7 @@ type
       a.FontSize := fontsize;
     end;
     
+  public 
     property Text: string read GetT write SetT;
     property FontSize: real read GetFS write SetFS;
     function Clone := (inherited Clone) as BillboardTextT;
@@ -1718,7 +1693,6 @@ type
     function GetColor: GColor := Invoke&<GColor>(()->(model.Foreground as SolidColorBrush).Color);
   protected  
     function CreateObject: Object3D; override := new TextT(X, Y, Z, Text, Height, Name, Color);
-  public 
     constructor(x, y, z: real; text: string; height: real; fontname: string; c: GColor);
     begin
       var a := new TextVisual3D;
@@ -1732,6 +1706,7 @@ type
       CreateBase0(a, x, y, z);
     end;
     
+  public 
     property Text: string read GetT write SetT;
     property Height: real read GetFS write SetFS;
     property Name: string read GetN write SetN;
@@ -1760,7 +1735,6 @@ type
     function GetN: Vector3D := Invoke&<Vector3D>(()->model.Normal);
   protected  
     function CreateObject: Object3D; override := new RectangleT(X, Y, Z, Length, Width, Normal, LengthDirection, Material);
-  public 
     constructor(x, y, z, Length, Width: real; Normal, LengthDirection: Vector3D; m: GMaterial);
     begin
       var a := new RectangleVisual3D;
@@ -1772,6 +1746,7 @@ type
       CreateBase(a, x, y, z, m);
     end;
     
+  public 
     property Width: real read GetW write SetW;
     property Length: real read GetL write SetL;
     property LengthDirection: Vector3D read GetLD write SetLD;
@@ -1794,7 +1769,6 @@ type
     function GetV: boolean := Invoke&<boolean>(()->(model as FileModelVisual3D).Visibility);}
   protected  
     function CreateObject: Object3D; override := new FileModelT(X, Y, Z, fn, Material.Clone);
-  public 
     constructor(x, y, z: real; fname: string; mat: GMaterial);
     begin
         {model := new MeshVisual3D();
@@ -1841,6 +1815,7 @@ type
       CreateBase0(a, x, y, z);
     end;
     
+  public 
     function Clone := (inherited Clone) as FileModelT;
   end;
   
@@ -1860,7 +1835,6 @@ type
     function GetH: real := InvokeReal(()->model.Point2.Z);
   protected  
     function CreateObject: Object3D; override := new PipeT(X, Y, Z, Height, Radius, InnerRadius, Material);
-  public 
     constructor(x, y, z, h, r, ir: real; m: GMaterial);
     begin
       var a := new PipeVisual3D;
@@ -1871,6 +1845,7 @@ type
       CreateBase(a, x, y, z, m);
     end;
     
+  public 
     property Radius: real read GetD write SetD;
     property InnerRadius: real read GetID write SetID;
     property Height: real read GetH write SetH;
@@ -1894,7 +1869,7 @@ type
     function GetColumns := integer(GetValue(ColumnsProperty));
     procedure SetDivisions(value: integer) := SetValue(DivisionsProperty, value);
     function GetDivisions := integer(GetValue(DivisionsProperty));
-  public 
+
     class constructor;
     begin
       HeightProperty := DependencyProperty.Register('Height', typeof(integer), typeof(LegoVisual3D), new UIPropertyMetadata(3, GeometryChanged));
@@ -1903,6 +1878,7 @@ type
       DivisionsProperty := DependencyProperty.Register('Divisions', typeof(integer), typeof(LegoVisual3D), new UIPropertyMetadata(48));
     end;
     
+  public 
     property Height: integer read GetHeight write SetHeight;
     property Rows: integer read GetRows write SetRows;
     property Columns: integer read GetColumns write SetColumns;
