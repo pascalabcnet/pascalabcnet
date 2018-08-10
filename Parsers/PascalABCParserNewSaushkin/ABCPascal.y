@@ -2000,6 +2000,8 @@ simple_property_definition
                	pa = proc_attribute.attr_virtual;
  			else if ($6.name.ToLower() == "override") 
  			    pa = proc_attribute.attr_override;
+            else if ($6.name.ToLower() == "abstract") 
+ 			    pa = proc_attribute.attr_abstract;
 			$$ = NewSimplePropertyDefinition($2 as method_name, $3 as property_interface, $4 as property_accessors, pa, $8 as property_array_default, @$);
         }
     ;
@@ -3887,6 +3889,8 @@ property_modificator
 	: tkVirtual
 		{ $$ = $1; }
 	| tkOverride
+		{ $$ = $1; }
+    | tkAbstract
 		{ $$ = $1; }
 	;
     
