@@ -3699,6 +3699,19 @@ namespace PascalABCCompiler.TreeConverter
             property_node overrided_property = FindPropertyToOverride(cpn);
             if (overrided_property == null)
                 AddError(cpn.loc, "NO_PROPERTY_TO_OVERRIDE");
+            else
+            {
+                if (cpn.get_function is common_method_node)
+                {
+                    (cpn.get_function as common_method_node).overrided_method = overrided_property.get_function;
+                    (cpn.get_function as common_method_node).polymorphic_state = SemanticTree.polymorphic_state.ps_virtual;
+                } 
+                if (cpn.set_function is common_method_node)
+                {
+                    (cpn.set_function as common_method_node).overrided_method = overrided_property.set_function;
+                    (cpn.set_function as common_method_node).polymorphic_state = SemanticTree.polymorphic_state.ps_virtual;
+                }
+            }
         }
 
         public void set_override(common_method_node cmn)

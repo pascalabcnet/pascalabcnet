@@ -4060,7 +4060,8 @@ namespace PascalABCCompiler.TreeConverter
             	pn.polymorphic_state = SemanticTree.polymorphic_state.ps_static;
             if (_simple_property.virt_over_none_attr == proc_attribute.attr_virtual || _simple_property.virt_over_none_attr == proc_attribute.attr_override)
                 pn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual;
-            
+            else if (_simple_property.virt_over_none_attr == proc_attribute.attr_abstract)
+                pn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual_abstract;
             parameter_list pal_big = new parameter_list();
             //TODO: Спросить у Саши как получить тип параметра - var,const и т.д.
             if (_simple_property.parameter_list != null)
@@ -4098,7 +4099,7 @@ namespace PascalABCCompiler.TreeConverter
                     convertion_data_and_alghoritms.check_node_parser_error(_simple_property.accessors.read_accessor);
                     if (_simple_property.accessors.read_accessor.accessor_name == null)
                     {
-                        if (!context.converted_type.IsInterface)
+                        if (!context.converted_type.IsInterface && _simple_property.virt_over_none_attr != proc_attribute.attr_abstract)
                         {
                             AddError(get_location(_simple_property.accessors.read_accessor), "ACCESSOR_NAME_EXPECTED");
                         }
@@ -4226,7 +4227,7 @@ namespace PascalABCCompiler.TreeConverter
                     convertion_data_and_alghoritms.check_node_parser_error(_simple_property.accessors.write_accessor);
                     if (_simple_property.accessors.write_accessor.accessor_name == null)
                     {
-                        if (!context.converted_type.IsInterface)
+                        if (!context.converted_type.IsInterface && _simple_property.virt_over_none_attr != proc_attribute.attr_abstract)
                         {
                             AddError(get_location(_simple_property.accessors.write_accessor), "ACCESSOR_NAME_EXPECTED");
                         }
@@ -18727,6 +18728,7 @@ namespace PascalABCCompiler.TreeConverter
                         expression_node qq = null;
                         delegated_methods dm = null;
                         common_type_node delegate_type = null;
+                        int err_cnt = ErrorsList.Count;
                         try
                         {
                             qq = convert_strong(ff.dereferencing_value);
@@ -18737,6 +18739,8 @@ namespace PascalABCCompiler.TreeConverter
                         }
                         catch (Exception e)
                         {
+                            if (ErrorsList.Count != err_cnt)//delete fake errors
+                                ErrorsList.RemoveRange(err_cnt, ErrorsList.Count - err_cnt);
                             // Погасить все исключения. Значит, не вывелось, и в правой части лямбды - не вызов процедуры, а скорее всего приведение типа T(x)
                             // К сожалению, сюда попадает случай a->a.Print() где a до более позднего этапа не определяется
                             // Плохо, но лучше пока не получается
