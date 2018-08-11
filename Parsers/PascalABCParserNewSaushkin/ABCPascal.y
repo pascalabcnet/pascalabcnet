@@ -3575,10 +3575,10 @@ factor
 		
 			$$ = new un_expr($2, $1.type, @$); 
 		}
-    | tkDeref factor                
-        { 
-			$$ = new roof_dereference($2 as addressed_value, @$);
-		}
+//    | tkDeref factor // это ерунда какая-то                
+//        { 
+//			$$ = new roof_dereference($2 as addressed_value, @$);
+//		}
     | var_reference
 		{ $$ = $1; }
 	| tuple 

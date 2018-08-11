@@ -2401,6 +2401,13 @@ begin
     Self[i] := f(Self[i]);
 end;
 
+/// ѕреобразует элементы массива или списка по заданному правилу
+procedure Transform<T>(Self: IList<T>; f: (T,integer)->T); extensionmethod;
+begin
+  for var i := 0 to Self.Count - 1 do
+    Self[i] := f(Self[i],i);
+end;
+
 /// «аполн€ет элементы массива или списка значени€ми, вычисл€емыми по некоторому правилу
 procedure Fill<T>(Self: IList<T>; f: integer->T); extensionmethod;
 begin
@@ -2792,12 +2799,29 @@ begin
       Result[i, j] := converter(Self[i, j]);  
 end;
 
+/// ѕреобразует элементы двумерного массива и возвращает преобразованный массив
+function ConvertAll<T, T1>(Self: array [,] of T; converter: (T,integer,integer)->T1): array [,] of T1; extensionmethod;
+begin
+  Result := new T1[Self.RowCount, Self.ColCount];
+  for var i := 0 to Self.RowCount - 1 do
+    for var j := 0 to Self.ColCount - 1 do
+      Result[i, j] := converter(Self[i, j],i,j);  
+end;
+
 /// ѕреобразует элементы двумерного массива по заданному правилу
 procedure Transform<T>(Self: array [,] of T; f: T->T); extensionmethod;
 begin
   for var i := 0 to Self.RowCount - 1 do
     for var j := 0 to Self.ColCount - 1 do
       Self[i, j] := f(Self[i, j]);
+end;
+
+/// ѕреобразует элементы двумерного массива по заданному правилу
+procedure Transform<T>(Self: array [,] of T; f: (T,integer,integer)->T); extensionmethod;
+begin
+  for var i := 0 to Self.RowCount - 1 do
+    for var j := 0 to Self.ColCount - 1 do
+      Self[i, j] := f(Self[i, j],i,j);
 end;
 
 /// «аполн€ет элементы двумерного массива значени€ми, вычисл€емыми по некоторому правилу
@@ -3099,6 +3123,14 @@ end;
 function ConvertAll<T, T1>(Self: array of T; converter: T->T1): array of T1; extensionmethod;
 begin
   Result := System.Array.ConvertAll(self, t -> converter(t));  
+end;
+
+/// ѕреобразует элементы массива и возвращает преобразованный массив
+function ConvertAll<T, T1>(Self: array of T; converter: (T,integer)->T1): array of T1; extensionmethod;
+begin
+  Result := new T1[Self.Length];
+  for var i := 0 to Self.Length - 1 do
+    Result[i] := converter(Self[i],i);
 end;
 
 /// ¬ыполн€ет поиск первого элемента в массиве, удовлетвор€ющего предикату. ≈сли не найден, возвращаетс€ нулевое значение соответствующего типа

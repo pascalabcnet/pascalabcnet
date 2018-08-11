@@ -1236,6 +1236,8 @@ function LastIndexMax<T>(Self: IList<T>; index: integer): integer; extensionmeth
 procedure Replace<T>(Self: IList<T>; oldValue, newValue: T); extensionmethod;
 /// ѕреобразует элементы массива или списка по заданному правилу
 procedure Transform<T>(Self: IList<T>; f: T->T); extensionmethod;
+/// ѕреобразует элементы массива или списка по заданному правилу
+procedure Transform<T>(Self: IList<T>; f: (T,integer)->T); extensionmethod;
 /// «аполн€ет элементы массива или списка значени€ми, вычисл€емыми по некоторому правилу
 procedure Fill<T>(Self: IList<T>; f: integer->T); extensionmethod;
 /// ¬озвращает срез списка от индекса from с шагом step
@@ -1290,8 +1292,12 @@ function ElementsByRow<T>(Self: array [,] of T): sequence of T; extensionmethod;
 function ElementsByCol<T>(Self: array [,] of T): sequence of T; extensionmethod;
 /// ѕреобразует элементы двумерного массива и возвращает преобразованный массив
 function ConvertAll<T, T1>(Self: array [,] of T; converter: T->T1): array [,] of T1; extensionmethod;
+/// ѕреобразует элементы двумерного массива и возвращает преобразованный массив
+function ConvertAll<T, T1>(Self: array [,] of T; converter: (T,integer,integer)->T1): array [,] of T1; extensionmethod;
 /// ѕреобразует элементы двумерного массива по заданному правилу
 procedure Transform<T>(Self: array [,] of T; f: T->T); extensionmethod;
+/// ѕреобразует элементы двумерного массива по заданному правилу
+procedure Transform<T>(Self: array [,] of T; f: (T,integer,integer)->T); extensionmethod;
 /// «аполн€ет элементы двумерного массива значени€ми, вычисл€емыми по некоторому правилу
 procedure Fill<T>(Self: array [,] of T; f: (integer,integer) ->T); extensionmethod;
 //>>     ‘иктивна€ секци€ YYY - не удал€ть! # YYY
@@ -1345,6 +1351,8 @@ procedure Fill<T>(Self: array of T; f: integer -> T); extensionmethod;
 function BinarySearch<T>(Self: array of T; x: T): integer; extensionmethod;
 /// ѕреобразует элементы массива и возвращает преобразованный массив
 function ConvertAll<T, T1>(Self: array of T; converter: T->T1): array of T1; extensionmethod;
+/// ѕреобразует элементы массива и возвращает преобразованный массив
+function ConvertAll<T, T1>(Self: array of T; converter: (T,integer)->T1): array of T1; extensionmethod;
 /// ¬ыполн€ет поиск первого элемента в массиве, удовлетвор€ющего предикату. ≈сли не найден, возвращаетс€ нулевое значение соответствующего типа
 function Find<T>(Self: array of T; p: T->boolean): T; extensionmethod;
 /// ¬ыполн€ет поиск индекса первого элемента в массиве, удовлетвор€ющего предикату. ≈сли не найден, возвращаетс€ -1

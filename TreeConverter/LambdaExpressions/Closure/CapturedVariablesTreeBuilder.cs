@@ -165,6 +165,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 si.sym_info.semantic_node_type == semantic_node_type.compiled_unit_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.template_type ||
                 si.sym_info.semantic_node_type == semantic_node_type.class_constant_definition ||
+                //si.sym_info.semantic_node_type == semantic_node_type.common_property_node || // SSM внес сюда и свойства захватываются - только если не захватывается что-то еще т.е. не создается временный класс
                 si.sym_info.semantic_node_type == semantic_node_type.basic_function_node && idName == "exit")
             {
                 return;
@@ -173,8 +174,9 @@ namespace TreeConverter.LambdaExpressions.Closure
             var acceptableVarType = si.sym_info.semantic_node_type == semantic_node_type.local_variable ||
                                     si.sym_info.semantic_node_type == semantic_node_type.local_block_variable ||
                                     si.sym_info.semantic_node_type == semantic_node_type.common_parameter ||
-                                    si.sym_info.semantic_node_type == semantic_node_type.class_field
-                                    
+                                    si.sym_info.semantic_node_type == semantic_node_type.class_field 
+                                    //|| si.sym_info.semantic_node_type == semantic_node_type.common_property_node // пробуем
+
                                     ;
 
             if (!(acceptableVarType) && InLambdaContext) 
