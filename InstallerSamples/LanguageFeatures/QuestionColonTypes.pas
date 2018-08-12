@@ -92,6 +92,7 @@
   b[5,8] := (True ? i5 : i8).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
   b[5,9] := (True ? i5 : i9).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
   b[5,10] := (True ? i5 : ia).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
+  b[5,11] := (True ? i5 : ib).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
   
   b[6,0] := (True ? i6 : i0).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
   b[6,1] := (True ? i6 : i1).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
@@ -117,6 +118,7 @@
   b[7,8] := (True ? i7 : i8).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
   b[7,9] := (True ? i7 : i9).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
   b[7,10] := (True ? i7 : ia).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
+  b[7,11] := (True ? i7 : ib).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
   
   b[8,0] := (True ? i8 : i0).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
   b[8,1] := (True ? i8 : i1).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
@@ -142,7 +144,7 @@
   b[9,8] := '--'.PadLeft(n);
   b[9,9] := (True ? i9 : i9).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
   b[9,10] := (True ? i9 : ia).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
-  b[9,11] := (True ? i9 : ib).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
+  b[9,11] := '--'.PadLeft(n);
 
   b[10,0] := (True ? ia : i0).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
   b[10,1] := (True ? ia : i1).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
@@ -155,19 +157,19 @@
   b[10,8] := '--'.PadLeft(n);
   b[10,9] := (True ? ia : i9).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
   b[10,10] := (True ? ia : ia).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
-  b[10,11] := (True ? ia : ib).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
+  b[10,11] := '--'.PadLeft(n);
 
   b[11,0] := (True ? ib : i0).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
   b[11,1] := (True ? ib : i1).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
   b[11,2] := (True ? ib : i2).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
   b[11,3] := (True ? ib : i3).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
   b[11,4] := (True ? ib : i4).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
-  b[11,5] := '--'.PadLeft(n);
+  b[11,5] := (True ? ib : i5).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
   b[11,6] := (True ? ib : i6).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
-  b[11,7] := '--'.PadLeft(n);
+  b[11,7] := (True ? ib : i7).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
   b[11,8] := '--'.PadLeft(n);
-  b[11,9] := (True ? ib : i9).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
-  b[11,10] := (True ? ib : ia).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
+  b[11,9] := '--'.PadLeft(n);
+  b[11,10] := '--'.PadLeft(n);
   b[11,11] := (True ? ib : ib).GetType.ToString.Substring(7).ToWords('.').Last.PadLeft(n);
 
   b.Println(8);

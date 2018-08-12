@@ -3648,6 +3648,7 @@ namespace PascalABCCompiler.TreeConverter
                             if (_class_definition.class_parents!=null)
                                 AddError(new AutoClassMustNotHaveParents(get_location(_class_definition)));
                             // добавление членов автоклассов. Не забыть сделать, что от автоклассов нельзя наследовать
+                            // Это спорный вопрос. С другой стороны от автоклассов хочется наследовать
                             SyntaxTreeBuilder.AddMembersForAutoClass(_class_definition,ref names,ref types);
                             for (var i = 0; i < types.Count; i++)
                             {
