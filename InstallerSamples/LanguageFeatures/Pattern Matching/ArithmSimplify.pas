@@ -1,40 +1,20 @@
 ﻿type
-  Expr = class
+  Expr = interface
   end;
   V = auto class(Expr)
     name: string;
-    procedure Deconstruct(var name: string);
-    begin
-      name := Self.name
-    end;
   end;
   Cons = auto class(Expr)
     r: real;
-    procedure Deconstruct(var r: real);
-    begin
-      r := Self.r
-    end;
   end;
   Add = auto class(Expr)
     left,right: Expr;
-    procedure Deconstruct(var l,r: Expr);
-    begin
-      l := left; r := right;
-    end;
   end;
   Mult = auto class(Expr)
     left,right: Expr;
-    procedure Deconstruct(var l,r: Expr);
-    begin
-      l := left; r := right;
-    end;
   end;
   Neg = auto class(Expr)
     ex: Expr;
-    procedure Deconstruct(var ex: Expr);
-    begin
-      ex := Self.ex
-    end;
   end;
   
 function NegC(ex: Expr) := new Neg(ex);  

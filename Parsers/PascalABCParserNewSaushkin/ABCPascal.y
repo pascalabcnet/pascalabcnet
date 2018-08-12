@@ -862,10 +862,10 @@ const_factor
 		}
     | new_expr
 		{ $$ = $1; }
-    | tkDeref const_factor              
-        { 
-			$$ = new roof_dereference($2 as addressed_value, @$);
-		}
+//    | tkDeref const_factor              
+//        { 
+//			$$ = new roof_dereference($2 as addressed_value, @$);
+//		}
     ;
 
 const_set
