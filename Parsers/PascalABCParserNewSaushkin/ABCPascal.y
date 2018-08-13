@@ -2827,7 +2827,15 @@ case_stmt
     : tkCase expr_l1 tkOf case_list else_case tkEnd 
         { 
 			$$ = new case_node($2, $4 as case_variants, $5 as statement, @$); 
-		}                          
+		}  
+	| tkCase expr_l1 tkOf case_list tkSemiColon else_case tkEnd 
+        { 
+			$$ = new case_node($2, $4 as case_variants, $6 as statement, @$); 
+		}
+	| tkCase expr_l1 tkOf else_case tkEnd 
+        { 
+			$$ = new case_node($2, NewCaseItem(new empty_statement(), null), $4 as statement, @$); 
+		}		
     ;
 
 case_list
@@ -2844,11 +2852,7 @@ case_list
     ;
 
 case_item
-    :                                     
-        { 
-			$$ = new empty_statement(); 
-		}
-    | case_label_list tkColon unlabelled_stmt            
+    : case_label_list tkColon unlabelled_stmt            
         { 
 			$$ = new case_variant($1 as expression_list, $3 as statement, @$); 
 		}
