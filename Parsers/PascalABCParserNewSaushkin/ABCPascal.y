@@ -3254,8 +3254,8 @@ list_fields_in_unnamed_object
 array_name_for_new_expr
     : simple_type_identifier 
 		{ $$ = $1; }
-    | unsized_array_type 
-		{ $$ = $1; }
+//    | unsized_array_type - и кому такое приснилось
+//		{ $$ = $1; }
     ;
 
 optional_expr_list_with_bracket

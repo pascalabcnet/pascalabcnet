@@ -8799,7 +8799,7 @@ end;
 
 // Дополнения июль 2016: Incremental
 ///--
-{function IncrementalSeq(Self: sequence of integer): sequence of integer; 
+function IncrementalSeq(Self: sequence of integer): sequence of integer; 
 begin
   var iter := Self.GetEnumerator();
   if iter.MoveNext() then
@@ -8876,7 +8876,7 @@ end;
 function Incremental(Self: LinkedList<real>): sequence of real; extensionmethod;
 begin
   Result := IncrementalSeq(Self);
-end;}
+end;
 
 /// Возвращает последовательность разностей соседних элементов исходной последовательности. В качестве функции разности используется func
 function Incremental<T, T1>(Self: sequence of T; func: (T,T)->T1): sequence of T1; extensionmethod;
