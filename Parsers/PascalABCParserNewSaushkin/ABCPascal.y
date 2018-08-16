@@ -2797,6 +2797,10 @@ match_with
         { 
             $$ = new match_with($2, $4 as pattern_cases, $5 as statement, @$);
         }
+    | tkMatch expr_l1 tkWith pattern_cases tkSemiColon else_case tkEnd
+        { 
+            $$ = new match_with($2, $4 as pattern_cases, $6 as statement, @$);
+        }
     ;
     
 pattern_cases
@@ -2811,9 +2815,7 @@ pattern_cases
     ;
     
 pattern_case
-    : 
-        { $$ = new empty_statement(); }
-    | pattern_optional_var tkWhen expr_l1 tkColon unlabelled_stmt
+    : pattern_optional_var tkWhen expr_l1 tkColon unlabelled_stmt
         {
             $$ = new pattern_case($1 as pattern_node, $5 as statement, $3, @$);
         }
@@ -2832,10 +2834,10 @@ case_stmt
         { 
 			$$ = new case_node($2, $4 as case_variants, $6 as statement, @$); 
 		}
-	| tkCase expr_l1 tkOf else_case tkEnd 
-        { 
-			$$ = new case_node($2, NewCaseItem(new empty_statement(), null), $4 as statement, @$); 
-		}		
+	//| tkCase expr_l1 tkOf else_case tkEnd 
+    //    { 
+	//		$$ = new case_node($2, NewCaseItem(new empty_statement(), null), $4 as statement, @$); 
+	//	}		
     ;
 
 case_list

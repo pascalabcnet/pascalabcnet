@@ -1,38 +1,38 @@
 ﻿type
-  Expr = class
+  Expr = interface
   end;
   Cons = auto class(Expr)
     r: real;
   end;
   Add = auto class(Expr)
     left,right: Expr;
-    procedure Deconstruct(var l,r: Expr);
-    begin
-      l := left; r := right;
-    end;
   end;
   Mult = auto class(Expr)
     left,right: Expr;
-    procedure Deconstruct(var l,r: Expr);
-    begin
-      l := left; r := right;
-    end;
   end;
   Neg = auto class(Expr)
     ex: Expr;
   end;
   
+// Создающие функции
+function ConsC(r: real) := new Cons(r);
+function AddC(l,r: Expr) := new Add(l,r);
+function MultC(l,r: Expr) := new Mult(l,r);
+function NegC(ex: Expr) := new Neg(ex);
+
+// Вычисляющая функция
 function Eval(e: Expr): real;
 begin
   match e with
-    Cons(c): Result := c.r;
-    Neg(n): Result := -Eval(n.Ex);
+    Cons(c): Result := c;
+    Neg(n): Result := -Eval(n);
     Add(l,r): Result := Eval(l) + Eval(r);
     Mult(l,r): Result := Eval(l) * Eval(r);
   end;
 end;  
   
 begin
-  var r := new Add(new Neg(new Cons(2)),new Mult(new Cons(3),new Cons(4)));
+  // -2 + 3 * 4
+  var r := AddC(NegC(ConsC(2)),MultC(ConsC(3),ConsC(4)));
   Eval(r).Print;
 end.  
