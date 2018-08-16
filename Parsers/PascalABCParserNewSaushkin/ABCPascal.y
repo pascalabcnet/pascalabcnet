@@ -2834,10 +2834,10 @@ case_stmt
         { 
 			$$ = new case_node($2, $4 as case_variants, $6 as statement, @$); 
 		}
-	//| tkCase expr_l1 tkOf else_case tkEnd 
-    //    { 
-	//		$$ = new case_node($2, NewCaseItem(new empty_statement(), null), $4 as statement, @$); 
-	//	}		
+	| tkCase expr_l1 tkOf else_case tkEnd 
+        { 
+			$$ = new case_node($2, NewCaseItem(new empty_statement(), null), $4 as statement, @$); 
+		}		
     ;
 
 case_list
