@@ -6172,19 +6172,21 @@ begin
   Close(f);
 end;
 
-procedure Reset(f: AbstractBinaryFile);
+procedure Reset(f: AbstractBinaryFile; en: Encoding);
 begin
   if f.fi = nil then
     raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
   if f.fs = nil then 
   begin
     f.fs := new FileStream(f.fi.FullName, FileMode.Open);
-    f.br := new BinaryReader(f.fs, DefaultEncoding);
-    f.bw := new BinaryWriter(f.fs, DefaultEncoding);
+    f.br := new BinaryReader(f.fs, en);
+    f.bw := new BinaryWriter(f.fs, en);
   end 
   else
     f.fs.Position := 0;
 end;
+
+procedure Reset(f: AbstractBinaryFile) := Reset(f,DefaultEncoding);
 
 procedure Reset(f: AbstractBinaryFile; name: string);
 begin
@@ -6192,21 +6194,35 @@ begin
   Reset(f);
 end;
 
-procedure Rewrite(f: AbstractBinaryFile);
+procedure Reset(f: AbstractBinaryFile; name: string; en: Encoding);
+begin
+  Assign(f, name);
+  Reset(f,en);
+end;
+
+procedure Rewrite(f: AbstractBinaryFile; en: Encoding);
 begin
   if f.fi = nil then
     raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
   if f.fs = nil then
   begin
     f.fs := new FileStream(f.fi.FullName, FileMode.Create);
-    f.bw := new BinaryWriter(f.fs, DefaultEncoding);
-    f.br := new BinaryReader(f.fs, DefaultEncoding);
+    f.bw := new BinaryWriter(f.fs, en);
+    f.br := new BinaryReader(f.fs, en);
   end
   else 
   begin
     f.fs.Position := 0;
     Truncate(f);
   end;  
+end;
+
+procedure Rewrite(f: AbstractBinaryFile) := Rewrite(f,DefaultEncoding);
+
+procedure Rewrite(f: AbstractBinaryFile; name: string; en: Encoding);
+begin
+  Assign(f, name);
+  Rewrite(f,en);
 end;
 
 procedure Rewrite(f: AbstractBinaryFile; name: string);
@@ -6378,8 +6394,8 @@ begin
   else if t = typeof(string) then
   begin
     //var tmp := f.bw.BaseStream.Position;
-    //f.bw.Write(byte(string(val).Length));
-    f.bw.Write(string(val));
+    f.bw.Write(byte(string(val).Length));
+    f.bw.Write(string(val).ToArray);
     if (f is TypedFile) and ((f as TypedFile).offsets <> nil) and ((f as TypedFile).offsets.Length > 0) then
     begin
       f.bw.Write(new byte[(f as TypedFile).offsets[ind] - (val as string).Length]);
