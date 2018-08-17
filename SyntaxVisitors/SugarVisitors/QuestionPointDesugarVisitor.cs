@@ -156,7 +156,7 @@ namespace SyntaxVisitors.SugarVisitors
         public override void visit(dot_question_node dqn)
         {
             var st = dqn.Parent;
-            while (!(st is statement) /*&& (st != null)*/)
+            while ((st != null) && !(st is statement))
                 st = st.Parent;
             if (st == null)
                 throw new SyntaxVisitorError("?._CANNOT_BE_IN_THIS_CONTEXT", dqn.source_context);

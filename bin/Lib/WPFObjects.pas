@@ -189,7 +189,7 @@ type
     begin
       InitOb(x,y,w,h,o,SetWH);
       Color := c;
-      BorderColor := Colors.Black;
+      //BorderColor := Colors.Black;
     end;
     procedure EF(value: GColor) := Element.Fill := new SolidColorBrush(Value);
     procedure ES(value: GColor) := Element.Stroke := new SolidColorBrush(Value);
@@ -395,6 +395,29 @@ type
     function GetInternalGeometry: Geometry; override := new EllipseGeometry(Center,Width/2,Height/2);  
   end;
 
+  PolygonWPF = class(BoundedObjectWPF)
+  private
+    procedure InitOb2(pp: array of Point; c: GColor);
+    begin
+      var x1 := pp.Min(p->p.x);
+      var x2 := pp.Max(p->p.x);
+      var y1 := pp.Min(p->p.y);
+      var y2 := pp.Max(p->p.y);
+      var a := pp.Select(p->Pnt(p.x-x1,p.y-y1)).ToArray;
+      a.Println;
+      Println(x1,x2,y1,y2);
+      InitOb1(x1,x2,x2-x1,y2-y1,c,CreatePolygon(a));
+    end;
+    function CreatePolygon(pp: array of Point): Polygon;
+    begin
+      var p := new Polygon();
+      p.Points := new PointCollection(pp);
+      Result := p;
+    end;
+  public
+    constructor (pp: array of Point; c: GColor) := Invoke(InitOb2,pp,c);
+  end;
+
   PictureWPF = class(ObjectWPF)
   private
     function CreateBitmapImage(fname: string) := new BitmapImage(new System.Uri(fname,System.UriKind.Relative)); 
@@ -423,19 +446,6 @@ type
     constructor (x,y,w,h: real; fname: string) := Invoke(InitOb3,x,y,w,h,fname);
     function GetInternalGeometry: Geometry; override := new RectangleGeometry(Rect(X,Y,Width,Height));  
   end;
-
-  {PolygonWPF = class(BoundedObjectWPF)
-  private
-    procedure InitOb2(c: GColor; pp: array of Point) := InitOb1(0,0,real.NaN,real.NaN,c,CreatePolygon(pp));
-    function CreatePolygon(pp: array of Point): Polygon;
-    begin
-      var p := new Polygon();
-      p.Points := new PointCollection(pp);
-      Result := p;
-    end;
-  public
-    constructor (pp: array of Point; c: GColor) := Invoke(InitOb2,c,pp);
-  end;}
 
 /// Главное окно
 var Window: WindowType;
