@@ -6304,7 +6304,10 @@ begin
   else
   if t = typeof(string) then
   begin
-    Result := f.br.ReadString();
+    var len := f.br.ReadByte();
+    var chh := f.br.ReadChars(len);
+    
+    Result := new string(chh);
     if (f is TypedFile) and ((f as TypedFile).offsets <> nil) and ((f as TypedFile).offsets.Length > 0) then
     begin
       f.br.BaseStream.Seek((f as TypedFile).offsets[ind] - (Result as string).Length, SeekOrigin.Current);
