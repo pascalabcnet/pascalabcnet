@@ -6297,7 +6297,7 @@ begin
     elem := Activator.CreateInstance(t);
     fa := t.GetFields;
     for var i := 0 to fa.Length - 1 do
-      if not fa[i].IsStatic then
+      if not fa[i].IsStatic and not fa[i].IsLiteral then
         fa[i].SetValue(elem, AbstractBinaryFileReadT(f, fa[i].FieldType, ind, in_arr));
     Result := elem;
   end
@@ -6390,7 +6390,7 @@ begin
     fa := t.GetFields;
     for var i := 0 to fa.Length - 1 do
     begin
-      if not fa[i].IsStatic then
+      if not fa[i].IsStatic and not fa[i].IsLiteral then
         Write(f, fa[i].GetValue(val), true, ind, in_arr);
     end;
   end
@@ -10820,7 +10820,7 @@ begin
     fa := t.GetFields;
     Result := 0;
     for var i := 0 to fa.Length - 1 do
-      if not fa[i].IsStatic then 
+      if not fa[i].IsStatic and not fa[i].IsLiteral then 
         Result := Result + RunTimeSizeOf(fa[i].FieldType)
   end
   else if t = typeof(string) then
