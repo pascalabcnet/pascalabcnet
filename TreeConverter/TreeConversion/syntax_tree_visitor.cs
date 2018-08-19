@@ -11536,9 +11536,11 @@ namespace PascalABCCompiler.TreeConverter
         
         private void check_all_fields_have_field_offset_attr(common_type_node ctn)
         {
+            if (ctn.is_generic_type_definition)
+                AddError(ctn.loc, "GENERIC_RECORDS_CANNOT_HAVE_EXPLICIT_LAYOUT");
         	foreach (class_field cf in ctn.fields)
         	{
-        		if (!has_field_offset_attribute(cf.attributes))
+        		if (!has_field_offset_attribute(cf.attributes) && !cf.IsStatic)
                     AddError(cf.loc, "FIELD_MUST_HAVE_FIELD_OFFSET_ATTRIBUTE");
         	}
         }

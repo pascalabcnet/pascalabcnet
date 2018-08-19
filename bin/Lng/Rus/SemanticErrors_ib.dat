@@ -135,6 +135,7 @@ EXTERNAL_METHOD_SHOULD_BE_STATIC=external-методы должны быть с�
 ABSTRACT_CLASS_CANNOT_BE_SEALED=Абстрактный класс не может иметь атрибут sealed
 EXPRESSION_EXPECTED=Ожидалось выражение
 CLASS_ATTRIBUTE_NOT_ALLOWED_IN_CLASS_PREDEFINTIONS=Недопустимо определять атрибуты класса в его предописании
+GENERIC_RECORDS_CANNOT_HAVE_EXPLICIT_LAYOUT=Генерик-записи не могут иметь атрибут LayoutKind.&Explicit
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Ожидался модуль, а встречена библиотека
 ASSEMBLY_{0}_READING_ERROR=Ошибка при чтении сборки '{0}'

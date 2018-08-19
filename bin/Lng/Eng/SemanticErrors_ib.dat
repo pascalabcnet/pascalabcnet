@@ -140,6 +140,7 @@ EXTERNAL_METHOD_SHOULD_BE_STATIC=external-methods should be static
 ABSTRACT_CLASS_CANNOT_BE_SEALED=Abstract classes can not be sealed
 EXPRESSION_EXPECTED=Expression expected
 CLASS_ATTRIBUTE_NOT_ALLOWED_IN_CLASS_PREDEFINTIONS=Can not declare class attributes in class predefintions
+GENERIC_RECORDS_CANNOT_HAVE_EXPLICIT_LAYOUT=Generic-records can not have attribute LayoutKind.&Explicit
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Unit expected, library found
 ASSEMBLY_{0}_READING_ERROR=Error by reading assembly '{0}'
