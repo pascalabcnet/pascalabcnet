@@ -196,7 +196,9 @@ namespace PascalABCCompiler.TreeConverter
 			el.AddElement(cfc);
 
 			SymbolInfo si = exprs[0].type.find_first_in_type(compiler_string_consts.assign_name);
-			if (si == null)
+            if (si == null && exprs[0].type.original_generic != null)
+                si = exprs[0].type.original_generic.find_first_in_type(compiler_string_consts.assign_name);
+            if (si == null)
 			{
 				throw new CompilerInternalError("Undefined delegate operation");
 			}
@@ -223,7 +225,9 @@ namespace PascalABCCompiler.TreeConverter
 			el.AddElement(cfc);
 
 			SymbolInfo si = exprs[0].type.find_first_in_type(compiler_string_consts.assign_name);
-			if (si == null)
+            if (si == null && exprs[0].type.original_generic != null)
+                si = exprs[0].type.original_generic.find_first_in_type(compiler_string_consts.assign_name);
+            if (si == null)
 			{
 				throw new CompilerInternalError("Undefined delegate operation");
 			}
