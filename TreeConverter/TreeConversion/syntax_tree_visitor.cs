@@ -5435,7 +5435,7 @@ namespace PascalABCCompiler.TreeConverter
                                                     function_node tmp_fn = fn;
                                                     exprs.remove_at(0);
                                                     sil = tmp_sil;
-                                                    fn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc, syntax_nodes_parameters);
+                                                    fn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc, syntax_nodes_parameters,true);
                                                     if (fn == null)
                                                     {
                                                         fn = tmp_fn;

@@ -1720,7 +1720,7 @@ namespace PascalABCCompiler.TreeConverter
         }
 
         //Первый параметр - выходной. Он содержит выражения с необходимыми преобразованиями типов.
-        public function_node select_function(expressions_list parameters, List<SymbolInfo> functions, location loc, List<SyntaxTree.expression> syntax_nodes_parameters = null)
+        public function_node select_function(expressions_list parameters, List<SymbolInfo> functions, location loc, List<SyntaxTree.expression> syntax_nodes_parameters = null, bool only_from_not_extensions = false)
         {
             if (functions == null)
             {
@@ -1738,6 +1738,9 @@ namespace PascalABCCompiler.TreeConverter
 
             foreach (SymbolInfo function in functions)
             {
+                // В режиме only_from_not_extensions пропускать все extensions
+                if (only_from_not_extensions && (function.sym_info is function_node) && (function.sym_info as function_node).is_extension_method)
+                    continue;
 #if (DEBUG)
                 if (function.sym_info.general_node_type != general_node_type.function_node && function.sym_info.general_node_type != general_node_type.property_node)
                 {
