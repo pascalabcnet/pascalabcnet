@@ -677,7 +677,8 @@ namespace PascalABCCompiler.TreeConverter
                 if ((ret is base_function_call))
                     (ret as base_function_call).IsExplicitConversion = true;
                 ret.type = to;
-                ret.conversion_type = conv_type;
+                if (ptc.first.convertion_method is basic_function_node)
+                    ret.conversion_type = conv_type;
                 return ret;
             }
 
@@ -2361,19 +2362,37 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
             }
-
+            else if (to_ii != null && from.semantic_node_type == semantic_node_type.delegated_method && (from as delegated_methods).proper_methods[0].ret_type is lambda_any_type_node)
+            {
+                delegate_internal_interface to_dii = (delegate_internal_interface)to_ii;
+                if (to_dii.invoke_method.return_value_type != null)
+                {
+                    to = to_dii.invoke_method.return_value_type;
+                    if (to == SystemLibrary.SystemLibrary.integer_type)
+                        return 94;
+                    else if (to == SystemLibrary.SystemLibrary.int64_type)
+                        return 96;
+                    else if (to == SystemLibrary.SystemLibrary.double_type)
+                        return 98;
+                    else
+                        return 1000;
+                }
+            }
             type_compare tc = type_table.compare_types(from, to);
             if (tc == type_compare.non_comparable_type)
                 return 1000;
             if (!from.IsInterface && to.IsInterface)
-                return 2;
+                return 200;
             if (tc == type_compare.less_type)
-                return 1;
+            {
+                return 100;
+            }
             if (tc == type_compare.greater_type)
-                return 3;
+                return 300;
             return 1000;
         }
 
+        
         private function_node is_exist_eq_return_value_method(function_node fn, function_node_list funcs)
         {
             fn = find_eq_return_value_method_in_list(fn, funcs);

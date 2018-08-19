@@ -151,7 +151,7 @@ namespace VisualPascalABC
             {
                 string meth = construct_header(procs[i] as CodeCompletion.ProcRealization, VisualPABCSingleton.MainForm.UserOptions.CursorTabCount);
                 sb.Append(meth);
-                sb.Append('\n');
+                //sb.Append('\n');
             }
             return sb.ToString();
         }
@@ -169,8 +169,15 @@ namespace VisualPascalABC
                 int off = textArea.Document.PositionToOffset(new TextLocation(procs[i].GetPosition().column - 1, procs[i].GetPosition().line - 1));
                 string meth = textArea.Document.GetText(off, textArea.Document.PositionToOffset(new TextLocation(procs[i].GetPosition().end_column - 1, procs[i].GetPosition().end_line - 1)) - off + 1);
                 meth = construct_header(meth, procs[i], VisualPABCSingleton.MainForm.UserOptions.CursorTabCount);
-                sb.Append(meth);
-                if (i < procs.Length - 1) sb.Append('\n');
+
+                if (i < procs.Length - 1)
+                {
+                    sb.Append(meth);
+                    sb.Append('\n');
+                }
+                else
+                    sb.Append(meth.Trim());
+
             }
             return sb.ToString();
         }

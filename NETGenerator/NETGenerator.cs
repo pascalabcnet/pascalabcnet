@@ -7369,7 +7369,8 @@ namespace PascalABCCompiler.NETGenerator
                 	box_awaited = true;
                 	use_stn4 = true;
                 }
-                	
+                //if (ctn4 != null && ctn4.is_value_type && (ctn4 is ICommonTypeNode || ctn4 is ICompiledTypeNode && !TypeFactory.IsStandType((ctn4 as ICompiledTypeNode).compiled_type)) && ctn3 is ICompiledTypeNode && (ctn3 as ICompiledTypeNode).compiled_type != TypeFactory.ObjectType)
+                //    box_awaited = false;
                 if (!(real_parameters[i] is INullConstantNode))
                 {
                     ti = helper.GetTypeReference(ctn);
