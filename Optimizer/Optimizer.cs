@@ -1172,7 +1172,7 @@ namespace PascalABCCompiler
                 case semantic_node_type.class_field_reference: VisitExpression((p as class_field_reference).obj); IncreaseNumAssField((class_field_reference)p); break;
                 case semantic_node_type.static_class_field_reference: IncreaseNumAssField((static_class_field_reference)p); break;
                 case semantic_node_type.common_parameter_reference: IncreaseNumAssParam((common_parameter_reference)p); break;
-                case semantic_node_type.deref_node: CheckAssign(((dereference_node)p).deref_expr); break;
+                case semantic_node_type.deref_node: VisitDerefNode(((dereference_node)p)); break;
                 case semantic_node_type.simple_array_indexing: VisitSimpleArrayIndexing((simple_array_indexing)p); break;
             }
         }
