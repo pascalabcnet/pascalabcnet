@@ -341,36 +341,31 @@ type
   
   RegularPolygonWPF = class(BoundedObjectWPF)
   private
-    {x,y,}r: real;
     n: integer;
     function Element: Polygon := ob as Polygon;
     procedure InitOb2(x,y,r: real; n: integer; c: GColor);
     begin 
-      InitOb1(x-r,y-r,2*r,2*r,c,CreateRegularPolygon(x,y,r,n),false);
-      (Self.x,Self.y,Self.r,Self.n) := (x-r,y-r,r,n);
+      InitOb1(x-r,y-r,2*r,2*r,c,CreatePolygon(r,n),false);
+      (Self.x,Self.y,Self.n) := (x-r,y-r,n);
     end;  
-    function ChangePointCollection(r: real; n: integer): PointCollection;
+    function ChangePointCollection(r: real; n: integer): PointCollection; 
     begin
       var pp := Partition(0,2*Pi,n).Select(phi->Pnt(r+r*cos(phi-Pi/2),r+r*sin(phi-Pi/2))).ToArray;
       Result := new PointCollection(pp);
     end;
-    function CreateRegularPolygon(x,y,r: real; n: integer): Polygon;
+    function CreatePolygon(r: real; n: integer): Polygon;
     begin
-      var pp := Partition(0,2*Pi,n).Select(phi->Pnt(r+r*cos(phi-Pi/2),r+r*sin(phi-Pi/2))).ToArray;
       var p := new Polygon();
-      p.Points := new PointCollection(pp);
+      p.Points := ChangePointCollection(r,n);
       Result := p;
     end;
-    procedure Rad(value: real);
+    procedure Rad(value: real); 
     begin
       var delta := value - gr.Width/2;
-      //Println('in',x,y);
-      //Println(delta);
       X -= delta;
       Y -= delta;
       (gr.Width,gr.Height) := (value*2,value*2);
       Element.Points := ChangePointCollection(value,n);
-      //Println('in',Self.x,Self.y);
     end;  
     procedure Cnt(value: integer);
     begin
@@ -388,11 +383,66 @@ type
       write begin end; override;
     property Radius: real 
       read InvokeReal(()->gr.Height/2) 
-      write Invoke(Rad,Value);
+      write Invoke(Rad,Value); virtual;
     property Count: integer
       read InvokeInteger(()->n) 
       write Invoke(Cnt,Value);
     function GetInternalGeometry: Geometry; override := new EllipseGeometry(Center,Width/2,Height/2);  
+  end;
+  
+  StarWPF = class(RegularPolygonWPF)
+  private
+    rint: real;
+    procedure InitOb2(x,y,r,rint: real; n: integer; c: GColor);
+    begin 
+      InitOb1(x-r,y-r,2*r,2*r,c,CreatePolygon(r,rint,n),false);
+      (Self.x,Self.y,Self.rint,Self.n) := (x-r,y-r,rint,n);
+    end;  
+    function ChangePointCollection(r,rint: real; n: integer): PointCollection; 
+    begin
+      var pp1 := Partition(0,2*Pi,n).Select(phi->Pnt(r+r*cos(phi-Pi/2),r+r*sin(phi-Pi/2)));
+      var pp2 := Partition(0+Pi/n,2*Pi+Pi/n,n).Select(phi->Pnt(r+rint*cos(phi-Pi/2),r+rint*sin(phi-Pi/2)));
+      Result := new PointCollection(pp1.Interleave(pp2).ToArray);
+    end;
+    function CreatePolygon(r,rint: real; n: integer): Polygon;
+    begin
+      var p := new Polygon();
+      p.Points := ChangePointCollection(r,rint,n);
+      Result := p;
+    end;
+    procedure Rad(value: real);
+    begin
+      var delta := value - gr.Width/2;
+      X -= delta;
+      Y -= delta;
+      (gr.Width,gr.Height) := (value*2,value*2);
+      Element.Points := ChangePointCollection(value,rint,n);
+    end;  
+    procedure IntRad(value: real);
+    begin
+      if value>Radius then
+        value := Radius;
+      Element.Points := ChangePointCollection(Radius,value,n);
+    end;  
+    procedure Cnt(value: integer);
+    begin
+      n := value;
+      Element.Points := ChangePointCollection(Radius,rint,value);
+    end;  
+  public
+    constructor (x,y,r,rinternal: real; n: integer; c: GColor);
+    begin
+      if rinternal<r then
+        Invoke(InitOb2,x,y,r,rinternal,n,c)
+      else Invoke(InitOb2,x,y,rinternal,r,n,c)  
+    end; 
+    constructor (p: Point; r,rinternal: real; n: integer; c: GColor) := Create(p.X,p.Y,r,rinternal,n,c);
+    property Radius: real 
+      read InvokeReal(()->gr.Height/2) 
+      write Invoke(Rad,Value); override;
+    property InternalRadius: real 
+      read rint 
+      write Invoke(IntRad,Value);
   end;
 
   PolygonWPF = class(BoundedObjectWPF)
@@ -483,11 +533,6 @@ function clRandom := RandomColor();
 function Pnt(x,y: real) := new Point(x,y);
 function Rect(x,y,w,h: real) := new System.Windows.Rect(x,y,w,h);
 function ColorBrush(c: Color) := new SolidColorBrush(c);
-
-procedure InvokeVisual(d: System.Delegate; params args: array of object);
-begin
-  app.Dispatcher.Invoke(d,DispatcherPriority.Background,args);
-end;
 
 function operator implicit(Self: (integer, integer)): Point; extensionmethod := new Point(Self[0], Self[1]);
 function operator implicit(Self: (integer, real)): Point; extensionmethod := new Point(Self[0], Self[1]);
