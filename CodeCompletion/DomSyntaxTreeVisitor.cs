@@ -3851,6 +3851,7 @@ namespace CodeCompletion
             }
             //ps.head_loc = loc;
             ps.declaringUnit = entry_scope;
+            ps.is_static = _constructor.class_keyword;
             SetAttributes(ps, _constructor.proc_attributes);
             if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_constructor))
                 ps.AddDocumentation(this.converter.controller.docs[_constructor]);

@@ -4159,7 +4159,7 @@ namespace CodeCompletion
             List<ProcScope> constrs = new List<ProcScope>();
             bool must_inherite = true;
             foreach (SymScope ss in members)
-                if (ss is ProcScope && (ss as ProcScope).IsConstructor())
+                if (ss is ProcScope && (ss as ProcScope).IsConstructor() && !ss.is_static)
                 {
                     if (ss.loc != null)
                         must_inherite = false;
