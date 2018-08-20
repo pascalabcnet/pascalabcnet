@@ -1500,7 +1500,7 @@ namespace CodeCompletion
                 {
                     ps = new ProcScope(meth_name, cur_scope);
                     ps.head_loc = loc;
-                    if (has_extensionmethod_attr(_function_header.proc_attributes.proc_attributes) && _function_header.parameters.params_list.Count > 0)
+                    if (_function_header.proc_attributes != null && has_extensionmethod_attr(_function_header.proc_attributes.proc_attributes) && _function_header.parameters.params_list.Count > 0)
                     {
                         ps.is_extension = true;
                         _function_header.parameters.params_list[0].vars_type.visit(this);
