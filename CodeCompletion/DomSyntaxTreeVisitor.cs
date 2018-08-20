@@ -1182,7 +1182,7 @@ namespace CodeCompletion
                 else
                 {
                     ps = new ProcScope(meth_name, cur_scope);
-                    if (has_extensionmethod_attr(_procedure_header.proc_attributes.proc_attributes) && _procedure_header.parameters.params_list.Count > 0)
+                    if (_procedure_header.proc_attributes != null && has_extensionmethod_attr(_procedure_header.proc_attributes.proc_attributes) && _procedure_header.parameters.params_list.Count > 0)
                     {
                         ps.is_extension = true;
                         _procedure_header.parameters.params_list[0].vars_type.visit(this);
@@ -3271,7 +3271,8 @@ namespace CodeCompletion
             }
                 
             cur_scope.AddName(_simple_property.property_name.name, es);
-
+            //if (_simple_property.accessors != null && _simple_property.accessors.write_accessor != null && _simple_property.accessors.write_accessor.pr != null)
+            //    _simple_property.accessors.write_accessor.pr.visit(this);
         }
 
         public override void visit(index_property _index_property)
