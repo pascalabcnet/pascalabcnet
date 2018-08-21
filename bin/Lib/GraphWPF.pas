@@ -393,6 +393,8 @@ procedure AddTopPanel(Height: real := 100; c: Color := Colors.LightGray);
 procedure AddBottomPanel(Height: real := 100; c: Color := Colors.LightGray);
 
 procedure AddStatusBar(Height: real := 24);}
+procedure __InitModule__;
+procedure __FinalizeModule__;
 
 implementation
 
@@ -1618,6 +1620,7 @@ begin
   if not __initialized then
   begin
     __initialized := true;
+    GraphWPFBase.__InitModule__;
     __InitModule;
   end;
 end;
