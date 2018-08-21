@@ -707,6 +707,7 @@ namespace CodeFormatters
                         || sn is lock_stmt || sn is loop_stmt || sn is simple_property || sn is read_accessor_name || sn is write_accessor_name
                         || sn is formal_parameters || sn is bracket_expr || sn is record_const || sn is array_const || sn is exception_handler
                         || sn is try_handler_finally || sn is try_handler_except || sn is external_directive || sn is where_definition
+                        || sn is match_with
                         || (sn is simple_const_definition && in_class && !in_procedure) || (sn is typed_const_definition && in_class && !in_procedure)
                         )
                         read_from_beg_pos = true;
@@ -2992,6 +2993,7 @@ namespace CodeFormatters
         public override void visit(match_with _match_with)
         {
             sb.Append("match");
+            SetKeywordOffset("match");
             visit_node(_match_with.expr);
             IncOffset();
             add_space_before = true;

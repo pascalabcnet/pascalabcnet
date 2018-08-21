@@ -1583,6 +1583,8 @@ namespace PascalABCCompiler.TreeRealization
             cmn.is_constructor = (compiled_orig != null ||
                 (common_orig != null && common_orig.is_constructor));
             cmn.return_value_type = generic_convertions.determine_type(orig_fn.return_value_type, _instance_params, false);
+            if (common_orig != null)
+                cmn.overrided_method = common_orig.overrided_method;
             if (orig_fn.is_generic_function)
             {
                 cmn.return_value_type = generic_convertions.determine_type(cmn.return_value_type, meth_inst_pars, true);
@@ -2233,7 +2235,6 @@ namespace PascalABCCompiler.TreeRealization
             this.is_final = original_generic_function.is_final;
             this.is_overload = true;
             this.polymorphic_state = original_generic_function.polymorphic_state;
-
             this.return_value_type = generic_convertions.determine_type(original_generic_function.return_value_type, instance_parameters, true);
 
             foreach (parameter par in original_generic_function.parameters)
