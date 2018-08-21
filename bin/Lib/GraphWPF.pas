@@ -21,7 +21,8 @@ uses System.Threading;
 uses System.Windows.Shapes;
 uses System.Windows.Threading;
 
-var CountVisuals := 0;
+var 
+  CountVisuals := 0;
 
 {procedure Invoke(d: System.Delegate; params args: array of object);
 procedure Invoke(d: ()->());
