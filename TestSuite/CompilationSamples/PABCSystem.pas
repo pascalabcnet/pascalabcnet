@@ -500,28 +500,33 @@ type
     ElementSize: int64;
     offset: integer;
     offsets: array of integer;
+    function GetFilePos: int64;
   public 
     ElementType: System.Type;
     constructor Create(ElementType: System.Type);
     constructor Create(ElementType: System.Type; offs: integer; params offsets: array of integer);
     function ToString: string; override;
-    /// Возвращает текущую позицию файлового указателя в типизированном файле
-    function FilePos: int64;
     /// Возвращает количество элементов в типизированном файле
-    function FileSize: int64;
+    function Size: int64;
+    /// Устанавливает текущую позицию файлового указателя в типизированном файле на элемент с номером n  
+    procedure Seek(n: int64);
+    /// Возвращает или устанавливает текущую позицию файлового указателя в типизированном файле
+    property Position: int64 read GetFilePos write Seek; 
   end;
   
   // Class for binary files
   ///--
   BinaryFile = sealed class(AbstractBinaryFile)
+  private 
+    function GetFilePos: int64;
   public 
     function ToString: string; override;
-    /// Возвращает текущую позицию файлового указателя в бестиповом файле
-    function FilePos: int64;
     /// Возвращает количество байт в бестиповом файле
-    function FileSize: int64;
-    /// Устанавливает текущую позицию файлового указателя в бестиповом файле на байт с номером n  
+    function Size: int64;
+    /// Устанавливает текущую позицию файлового указателя в бестиповом файле на элемент с номером n
     procedure Seek(n: int64);
+    /// Возвращает или устанавливает текущую позицию файлового указателя в бестиповом файле
+    property Position: int64 read GetFilePos write Seek; 
   end;
 
 //{{{doc: Начало секции интерфейса для документации }}} 
@@ -1253,20 +1258,32 @@ procedure Randomize;
 procedure Randomize(seed: integer);
 /// Возвращает случайное целое в диапазоне от 0 до maxValue-1
 function Random(maxValue: integer): integer;
+/// Возвращает случайное вещественное в диапазоне [0,maxValue)
+function Random(maxValue: real): real;
 /// Возвращает случайное целое в диапазоне от a до b
 function Random(a, b: integer): integer;
+/// Возвращает случайное вещественное в диапазоне [a,b)
+function Random(a, b: real): real;
 /// Возвращает случайное вещественное в диапазоне [0..1)
 function Random: real;
 /// Возвращает кортеж из двух случайных целых в диапазоне от 0 до maxValue-1
 function Random2(maxValue: integer): (integer, integer);
+/// Возвращает кортеж из двух случайных вещественных в диапазоне [0,maxValue)
+function Random2(maxValue: real): (real, real);
 /// Возвращает кортеж из двух случайных целых в диапазоне от a до b
 function Random2(a, b: integer): (integer, integer);
+/// Возвращает кортеж из двух случайных вещественных в диапазоне [a,b)
+function Random2(a, b: real): (real, real);
 /// Возвращает кортеж из двух случайных вещественных в диапазоне [0..1)
 function Random2: (real, real);
 /// Возвращает кортеж из трех случайных целых в диапазоне от 0 до maxValue-1
 function Random3(maxValue: integer): (integer, integer, integer);
+/// Возвращает кортеж из трех случайных вещественных в диапазоне [0,maxValue)
+function Random3(maxValue: real): (real, real, real);
 /// Возвращает кортеж из трех случайных целых в диапазоне от a до b
 function Random3(a, b: integer): (integer, integer, integer);
+/// Возвращает кортеж из трех случайных вещественных в диапазоне [a,b)
+function Random3(a, b: real): (real, real, real);
 /// Возвращает кортеж из трех случайных вещественных в диапазоне [0..1)
 function Random3: (real, real, real);
 
@@ -5541,30 +5558,17 @@ end;
 // -----------------------------------------------------
 //                TypedFile & BinaryFile methods
 // -----------------------------------------------------
-function TypedFile.FilePos: int64;
-begin
-  Result := PABCSystem.FilePos(Self);
-end;
+function TypedFile.Size: int64 := PABCSystem.FileSize(Self);
 
-function TypedFile.FileSize: int64;
-begin
-  Result := PABCSystem.FileSize(Self);
-end;
+function TypedFile.GetFilePos: int64 := PABCSystem.FilePos(Self);
 
-function BinaryFile.FilePos: int64;
-begin
-  Result := PABCSystem.FilePos(Self);
-end;
+procedure TypedFile.Seek(n: int64) := PABCSystem.Seek(Self, n); 
 
-function BinaryFile.FileSize: int64;
-begin
-  Result := PABCSystem.FileSize(Self);
-end;
+function BinaryFile.GetFilePos: int64 := PABCSystem.FilePos(Self);
 
-procedure BinaryFile.Seek(n: int64);
-begin
-  PABCSystem.Seek(Self, n);
-end;
+function BinaryFile.Size: int64 := PABCSystem.FileSize(Self);
+
+procedure BinaryFile.Seek(n: int64) := PABCSystem.Seek(Self, n);
 
 // -----------------------------------------------------
 //                  Eoln - Eof
@@ -7117,17 +7121,33 @@ begin
   Result := rnd.Next(a, b + 1);
 end;
 
+function Random(a, b: real): real;
+begin
+  if a > b then Swap(a, b);
+  Result := a + Random()*(b-a);
+end;
+
 function Random := rnd.NextDouble;
+
+function Random(MaxValue: real) := Random()*Abs(MaxValue);
 
 function Random2(maxValue: integer) := (Random(maxValue), Random(maxValue));
 
+function Random2(maxValue: real) := (Random(maxValue), Random(maxValue));
+
 function Random2(a, b: integer) := (Random(a, b), Random(a, b));
+
+function Random2(a, b: real) := (Random(a, b), Random(a, b));
 
 function Random2 := (Random, Random);
 
 function Random3(maxValue: integer) := (Random(maxValue), Random(maxValue), Random(maxValue));
 
+function Random3(maxValue: Real) := (Random(maxValue), Random(maxValue), Random(maxValue));
+
 function Random3(a, b: integer) := (Random(a, b), Random(a, b), Random(a, b));
+
+function Random3(a, b: real) := (Random(a, b), Random(a, b), Random(a, b));
 
 function Random3 := (Random, Random, Random);
 
@@ -10723,6 +10743,32 @@ function Add<T1, T2, T3, T4, T5, T6, T7>(Self: (T1, T2, T3, T4, T5, T6); v: T7):
 begin
   Result := (Self[0], Self[1], Self[2], Self[3], Self[4], Self[5], v);
 end;
+
+// Выводит кортеж
+procedure Print<T1, T2>(Self: (T1, T2)); extensionmethod := Print(Self);
+// Выводит кортеж
+procedure Print<T1, T2, T3>(Self: (T1, T2, T3)); extensionmethod := Print(Self);
+// Выводит кортеж
+procedure Print<T1, T2, T3, T4>(Self: (T1, T2, T3, T4)); extensionmethod := Print(Self);
+// Выводит кортеж
+procedure Print<T1, T2, T3, T4, T5>(Self: (T1, T2, T3, T4, T5)); extensionmethod := Print(Self);
+// Выводит кортеж
+procedure Print<T1, T2, T3, T4, T5, T6>(Self: (T1, T2, T3, T4, T5, T6)); extensionmethod := Print(Self);
+// Выводит кортеж
+procedure Print<T1, T2, T3, T4, T5, T6, T7>(Self: (T1, T2, T3, T4, T5, T6, T7)); extensionmethod := Print(Self);
+// Выводит кортеж и переходит на новую строку
+procedure Println<T1, T2>(Self: (T1, T2)); extensionmethod := Println(Self);
+// Выводит кортеж и переходит на новую строку
+procedure Println<T1, T2, T3>(Self: (T1, T2, T3)); extensionmethod := Println(Self);
+// Выводит кортеж и переходит на новую строку
+procedure Println<T1, T2, T3, T4>(Self: (T1, T2, T3, T4)); extensionmethod := Println(Self);
+// Выводит кортеж и переходит на новую строку
+procedure Println<T1, T2, T3, T4, T5>(Self: (T1, T2, T3, T4, T5)); extensionmethod := Println(Self);
+// Выводит кортеж и переходит на новую строку
+procedure Println<T1, T2, T3, T4, T5, T6>(Self: (T1, T2, T3, T4, T5, T6)); extensionmethod := Println(Self);
+// Выводит кортеж и переходит на новую строку
+procedure Println<T1, T2, T3, T4, T5, T6, T7>(Self: (T1, T2, T3, T4, T5, T6, T7)); extensionmethod := Println(Self);
+
 
 {// Определяет, есть ли указанный элемент в массиве
  function Contains<T>(self: array of T; x: T): boolean; extensionmethod;

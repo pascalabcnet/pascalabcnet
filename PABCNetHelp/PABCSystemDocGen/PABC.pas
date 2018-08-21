@@ -938,20 +938,32 @@ procedure Randomize;
 procedure Randomize(seed: integer);
 /// ¬озвращает случайное целое в диапазоне от 0 до maxValue-1
 function Random(maxValue: integer): integer;
+/// ¬озвращает случайное вещественное в диапазоне [0,maxValue)
+function Random(maxValue: real): real;
 /// ¬озвращает случайное целое в диапазоне от a до b
 function Random(a, b: integer): integer;
+/// ¬озвращает случайное вещественное в диапазоне [a,b)
+function Random(a, b: real): real;
 /// ¬озвращает случайное вещественное в диапазоне [0..1)
 function Random: real;
 /// ¬озвращает кортеж из двух случайных целых в диапазоне от 0 до maxValue-1
 function Random2(maxValue: integer): (integer, integer);
+/// ¬озвращает кортеж из двух случайных вещественных в диапазоне [0,maxValue)
+function Random2(maxValue: real): (real, real);
 /// ¬озвращает кортеж из двух случайных целых в диапазоне от a до b
 function Random2(a, b: integer): (integer, integer);
+/// ¬озвращает кортеж из двух случайных вещественных в диапазоне [a,b)
+function Random2(a, b: real): (real, real);
 /// ¬озвращает кортеж из двух случайных вещественных в диапазоне [0..1)
 function Random2: (real, real);
 /// ¬озвращает кортеж из трех случайных целых в диапазоне от 0 до maxValue-1
 function Random3(maxValue: integer): (integer, integer, integer);
+/// ¬озвращает кортеж из трех случайных вещественных в диапазоне [0,maxValue)
+function Random3(maxValue: real): (real, real, real);
 /// ¬озвращает кортеж из трех случайных целых в диапазоне от a до b
 function Random3(a, b: integer): (integer, integer, integer);
+/// ¬озвращает кортеж из трех случайных вещественных в диапазоне [a,b)
+function Random3(a, b: real): (real, real, real);
 /// ¬озвращает кортеж из трех случайных вещественных в диапазоне [0..1)
 function Random3: (real, real, real);
 
@@ -2143,7 +2155,7 @@ end;
 
 // ƒополнени€ июль 2016: Incremental
 ///--
-{function IncrementalSeq(Self: sequence of integer): sequence of integer; 
+function IncrementalSeq(Self: sequence of integer): sequence of integer; 
 begin
   var iter := Self.GetEnumerator();
   if iter.MoveNext() then
@@ -2220,7 +2232,7 @@ end;
 function Incremental(Self: LinkedList<real>): sequence of real; extensionmethod;
 begin
   Result := IncrementalSeq(Self);
-end;}
+end;
 
 /// ¬озвращает последовательность разностей соседних элементов исходной последовательности. ¬ качестве функции разности используетс€ func
 function Incremental<T, T1>(Self: sequence of T; func: (T,T)->T1): sequence of T1; extensionmethod;
@@ -3937,5 +3949,17 @@ procedure Write<T>(Self: file of T; params vals: array of T); extensionmethod;
 begin
   foreach var x in vals do
     PABCSystem.Write(Self, x);
+end;
+
+/// ќткрывает существующий типизированный файл
+procedure Reset<T>(Self: file of T); extensionmethod;
+begin
+  PABCSystem.Reset(Self);
+end;
+
+/// —оздает новый или обнул€ет существующий типизированный файл 
+procedure Rewrite<T>(Self: file of T); extensionmethod;
+begin
+  PABCSystem.Rewrite(Self);
 end;
 

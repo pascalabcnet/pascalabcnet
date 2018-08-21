@@ -133,6 +133,18 @@ begin
     PABCSystem.Write(Self, x);
 end;
 
+/// Открывает существующий типизированный файл
+procedure Reset<T>(Self: file of T); extensionmethod;
+begin
+  PABCSystem.Reset(Self);
+end;
+
+/// Создает новый или обнуляет существующий типизированный файл 
+procedure Rewrite<T>(Self: file of T); extensionmethod;
+begin
+  PABCSystem.Rewrite(Self);
+end;
+
 //{{{--doc: Конец секции подпрограмм для типизированных файлов для документации }}} 
 
 

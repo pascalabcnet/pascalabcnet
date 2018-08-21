@@ -144,6 +144,7 @@
 	<KeyWords name = "NonReserved1" bold="false" italic="false" color="Blue">
 		<Key word = "self" />
 		<Key word = "result" />
+		<Key word = "value" />
 	</KeyWords>
 			
 	<KeyWords name = "OperatorKeywords" bold="true" italic="false" color="Black">

@@ -86,6 +86,7 @@ type
   ObjectsType = class
   private
     l := new List<ObjectWPF>;
+    d := new Dictionary<FrameworkElement,ObjectWPF>;
     procedure AddP(ob: ObjectWPF); 
     procedure DeleteP(ob: ObjectWPF);
     procedure ToBackP(ob: ObjectWPF); 
@@ -112,8 +113,9 @@ type
     ChildrenWPF := new List<ObjectWPF>;
     procedure InitOb(x,y,w,h: real; o: FrameworkElement; SetWH: boolean := True);
   public
-    property X: real read InvokeReal(()->Canvas.GetLeft(can)) write Invoke(procedure->Canvas.SetLeft(can,value)); 
-    property Y: real read InvokeReal(()->Canvas.GetTop(can)) write Invoke(procedure->Canvas.SetTop(can,value)); 
+    dx,dy: real;
+    property Left: real read InvokeReal(()->Canvas.GetLeft(can)) write Invoke(procedure->Canvas.SetLeft(can,value)); 
+    property Top: real read InvokeReal(()->Canvas.GetTop(can)) write Invoke(procedure->Canvas.SetTop(can,value)); 
     property Width: real read InvokeReal(()->gr.Width) write Invoke(procedure->begin gr.Width := value; ob.Width := value end); virtual;
     property Height: real read InvokeReal(()->gr.Height) write Invoke(procedure->begin gr.Height := value; ob.Height := value end); virtual;
     property Text: string read InvokeString(()->t.Text) write Invoke(procedure->t.Text := value);
@@ -135,6 +137,14 @@ type
     procedure AddChildP(ch: ObjectWPF);
     procedure DeleteChildP(ch: ObjectWPF);
     function GetInternalGeometry: Geometry; virtual := nil;
+    function GetGeometry: Geometry; virtual;
+    begin
+      Result := GetInternalGeometry;
+      var g := new TransformGroup();
+      g.Children.Add(r);
+      g.Children.Add(new TranslateTransform(Left,Top));
+      Result.Transform := g; // версия
+    end;
   public
     property TextAlignment: Alignment write Invoke(WTA,Value);
     property FontSize: real read InvokeReal(()->t.FontSize) write Invoke(procedure->t.FontSize := value);
@@ -143,12 +153,12 @@ type
       read Invoke&<GColor>(()->(t.Foreground as SolidColorBrush).Color)
       write Invoke(procedure->t.Foreground := new SolidColorBrush(value));
     property Center: Point 
-      read Pnt(X + Width/2,Y + Height/2)
+      read Pnt(Left + Width/2, Top + Height/2)
       write MoveTo(Value.X - Width/2, Value.Y - Height/2);
-    property LeftTop: Point read Pnt(X,Y);
-    property LeftBottom: Point read Pnt(X,Y + Height);
-    property RightTop: Point read Pnt(X + Height,Y);
-    property RightBottom: Point read Pnt(X + Height,Y + Height);
+    property LeftTop: Point read Pnt(Left,Top);
+    property LeftBottom: Point read Pnt(Left,Top + Height);
+    property RightTop: Point read Pnt(Left + Height,Top);
+    property RightBottom: Point read Pnt(Left + Height,Top + Height);
 
     property RotateAngle: real read InvokeReal(()->r.Angle) write Invoke(procedure->r.Angle := value);
     property RotateCenter: Point 
@@ -158,28 +168,21 @@ type
       read RGB(0,0,0) 
       write begin end; virtual;
     
-    procedure MoveTo(x,y: real) := (Self.X,Self.Y) := (x,y);
+    procedure MoveTo(x,y: real) := (Self.Left,Self.Top) := (x,y);
     procedure MoveForward(r: real);
     begin
-      X := X + r*Cos(Pi/180*(90-RotateAngle));
-      Y := Y - r*Sin(Pi/180*(90-RotateAngle));
+      Left := Left + r*Cos(Pi/180*(90-RotateAngle));
+      Top := Top - r*Sin(Pi/180*(90-RotateAngle));
     end;
 
-    procedure MoveOn(dx,dy: real) := MoveTo(x+dx,y+dy);
-    procedure RotateOn(da: real) := RotateAngle += da;
+    procedure MoveOn(dx,dy: real) := MoveTo(Left+dx,Top+dy);
+    procedure Move := MoveOn(dx,dy);
+    procedure Rotate(da: real) := RotateAngle += da;
     procedure AddChild(ch: ObjectWPF) := Invoke(AddChildP,ch);
     procedure DeleteChild(ch: ObjectWPF) := Invoke(DeleteChildP,ch);
     procedure Destroy;
     procedure ToFront;
     procedure ToBack;
-    function GetGeometry: Geometry; virtual;
-    begin
-      Result := GetInternalGeometry;
-      var g := new TransformGroup();
-      g.Children.Add(r);
-      g.Children.Add(new TranslateTransform(X,Y));
-      Result.Transform := g; // версия
-    end;
   end;
   
   BoundedObjectWPF = class(ObjectWPF)
@@ -212,9 +215,9 @@ type
   EllipseWPF = class(BoundedObjectWPF)
   private
     procedure InitOb2(x,y,w,h: real; c: GColor) := InitOb1(x,y,w,h,c,new Ellipse());
+    function GetInternalGeometry: Geometry; override := (ob as Shape).RenderedGeometry;
   public
     constructor (x,y,w,h: real; c: GColor) := Invoke(InitOb2,x,y,w,h,c);
-    function GetInternalGeometry: Geometry; override := (ob as Shape).RenderedGeometry;
   end;
 
   CircleWPF = class(BoundedObjectWPF)
@@ -225,10 +228,11 @@ type
     procedure Rad(value: real);
     begin
       //(ob as Ellipse).RenderedGeometry
-      X -= value - ob.Width/2;
-      Y -= value - ob.Width/2;
+      Left -= value - ob.Width/2;
+      Top -= value - ob.Width/2;
       (ob.Width,ob.Height) := (value*2,value*2);
     end;  
+    function GetInternalGeometry: Geometry; override := (ob as Shape).RenderedGeometry;
   public
     constructor (x,y,r: real; c: GColor) := Invoke(InitOb2,x,y,r,c);
     constructor (p: Point; r: real; c: GColor) := Invoke(InitOb2,p.x,p.y,r,c);
@@ -241,7 +245,6 @@ type
     property Radius: real 
       read InvokeReal(()->ob.Height/2) 
       write Invoke(Rad,Value);
-    function GetInternalGeometry: Geometry; override := (ob as Shape).RenderedGeometry;
   end;
 
   RectangleWPF = class(BoundedObjectWPF)
@@ -251,17 +254,17 @@ type
       var rr := new Rectangle();
       InitOb1(x,y,w,h,c,rr);
     end;
+    function GetInternalGeometry: Geometry; override := (ob as Shape).RenderedGeometry;
   public
     constructor (x,y,w,h: real; c: GColor) := Invoke(InitOb2,x,y,w,h,c);
-    function GetInternalGeometry: Geometry; override := (ob as Shape).RenderedGeometry;
   end;
   
   SquareWPF = class(CircleWPF)
   private
     procedure InitOb2(x,y,w: real; c: GColor) := InitOb1(x,y,w,w,c,new Rectangle());
+    function GetInternalGeometry: Geometry; override := (ob as Shape).RenderedGeometry;
   public
     constructor (x,y,w: real; c: GColor) := Invoke(InitOb2,x,y,w,c);
-    function GetInternalGeometry: Geometry; override := (ob as Shape).RenderedGeometry;
   end;
   
   RoundRectWPF = class(BoundedObjectWPF)
@@ -272,9 +275,9 @@ type
       rr.RadiusY := r;
       InitOb1(x,y,w,h,c,rr);
     end;
+    function GetInternalGeometry: Geometry; override := (ob as Shape).RenderedGeometry;
   public
     constructor (x,y,w,h,r: real; c: GColor) := Invoke(InitOb2,x,y,w,h,r,c);
-    function GetInternalGeometry: Geometry; override := (ob as Shape).RenderedGeometry;
   end;
   
   RoundSquareWPF = class(CircleWPF)
@@ -285,9 +288,9 @@ type
       rr.RadiusY := r;
       InitOb1(x,y,w,w,c,rr);
     end;
+    function GetInternalGeometry: Geometry; override := (ob as Shape).RenderedGeometry;
   public
     constructor (x,y,w,r: real; c: GColor) := Invoke(InitOb2,x,y,w,r,c);
-    function GetInternalGeometry: Geometry; override := (ob as Shape).RenderedGeometry;
   end;
 
   LineWPF = class(ObjectWPF)
@@ -297,14 +300,14 @@ type
     begin
       var ll := new Line();      
       InitOb(min(x1,x2),min(y1,y2),abs(x1-x2),abs(y1-y2),ll,False);
-      ll.X1 := x1-X;
-      ll.Y1 := y1-Y;
-      ll.X2 := x2-X;
-      ll.y2 := y2-Y;
+      ll.X1 := x1-Left;
+      ll.Y1 := y1-Top;
+      ll.X2 := x2-Left;
+      ll.y2 := y2-Top;
       Color := c;
     end;
-    procedure RecalcXW(x1,x2: real) := (x,Width) := (min(x1,x2),abs(x1-x2));
-    procedure RecalcYH(y1,y2: real) := (y,Height) := (min(y1,y2),abs(y1-y2));
+    procedure RecalcXW(x1,x2: real) := (Left,Width) := (min(x1,x2),abs(x1-x2));
+    procedure RecalcYH(y1,y2: real) := (Top,Height) := (min(y1,y2),abs(y1-y2));
     procedure ES(value: GColor) := Element.Stroke := new SolidColorBrush(Value);
     procedure EST(value: real) := Element.StrokeThickness := Value;
     procedure WX1(value: real) := begin 
@@ -321,8 +324,9 @@ type
         (Element.X1,Element.X2) := (0,Width)
       else (Element.X1,Element.X2) := (Width,0);
     end;
-    procedure WY1(value: real) := begin Element.Y1 := value - Y; {RecalcWHXY;} end;
-    procedure WY2(value: real) := begin Element.Y2 := value - Y; {RecalcWHXY;} end;
+    procedure WY1(value: real) := begin Element.Y1 := value - Top; {RecalcWHXY;} end;
+    procedure WY2(value: real) := begin Element.Y2 := value - Top; {RecalcWHXY;} end;
+    function GetInternalGeometry: Geometry; override := (ob as Shape).RenderedGeometry;
   public
     constructor (x1,y1,x2,y2: real; c: GColor) := Invoke(InitOb2,x1,y1,x2,y2,c);
     property Color: GColor 
@@ -331,12 +335,11 @@ type
     property LineWidth: real 
       read InvokeReal(()->Element.StrokeThickness)
       write Invoke(EST,value);
-    property X1: real read InvokeReal(()->Element.X1 + X) write Invoke(WX1,value);
-    property X2: real read InvokeReal(()->Element.X2 + X) write Invoke(WX2,value);
-    property Y1: real read InvokeReal(()->Element.Y1 + Y) write Invoke(WY1,value);
-    property Y2: real read InvokeReal(()->Element.Y2 + Y) write Invoke(WY2,value);
+    property X1: real read InvokeReal(()->Element.X1 + Left) write Invoke(WX1,value);
+    property X2: real read InvokeReal(()->Element.X2 + Left) write Invoke(WX2,value);
+    property Y1: real read InvokeReal(()->Element.Y1 + Top) write Invoke(WY1,value);
+    property Y2: real read InvokeReal(()->Element.Y2 + Top) write Invoke(WY2,value);
     property P1: Point read Pnt(X1,Y1) write begin X1 := Value.X; Y1 := Value.Y end;
-    function GetInternalGeometry: Geometry; override := (ob as Shape).RenderedGeometry;
   end;
   
   RegularPolygonWPF = class(BoundedObjectWPF)
@@ -346,7 +349,7 @@ type
     procedure InitOb2(x,y,r: real; n: integer; c: GColor);
     begin 
       InitOb1(x-r,y-r,2*r,2*r,c,CreatePolygon(r,n),false);
-      (Self.x,Self.y,Self.n) := (x-r,y-r,n);
+      (Self.Left,Self.Top,Self.n) := (x-r,y-r,n);
     end;  
     function ChangePointCollection(r: real; n: integer): PointCollection; 
     begin
@@ -362,8 +365,8 @@ type
     procedure Rad(value: real); 
     begin
       var delta := value - gr.Width/2;
-      X -= delta;
-      Y -= delta;
+      Left -= delta;
+      Top -= delta;
       (gr.Width,gr.Height) := (value*2,value*2);
       Element.Points := ChangePointCollection(value,n);
     end;  
@@ -372,6 +375,7 @@ type
       n := value;
       Element.Points := ChangePointCollection(Radius,value);
     end;  
+    function GetInternalGeometry: Geometry; override := new EllipseGeometry(Center,Width/2,Height/2);  
   public
     constructor (x,y,r: real; n: integer; c: GColor) := Invoke(InitOb2,x,y,r,n,c);
     constructor (p: Point; r: real; n: integer; c: GColor) := Create(p.X,p.Y,r,n,c);
@@ -387,7 +391,6 @@ type
     property Count: integer
       read InvokeInteger(()->n) 
       write Invoke(Cnt,Value);
-    function GetInternalGeometry: Geometry; override := new EllipseGeometry(Center,Width/2,Height/2);  
   end;
   
   StarWPF = class(RegularPolygonWPF)
@@ -396,7 +399,7 @@ type
     procedure InitOb2(x,y,r,rint: real; n: integer; c: GColor);
     begin 
       InitOb1(x-r,y-r,2*r,2*r,c,CreatePolygon(r,rint,n),false);
-      (Self.x,Self.y,Self.rint,Self.n) := (x-r,y-r,rint,n);
+      (Self.Left,Self.Top,Self.rint,Self.n) := (x-r,y-r,rint,n);
     end;  
     function ChangePointCollection(r,rint: real; n: integer): PointCollection; 
     begin
@@ -413,8 +416,8 @@ type
     procedure Rad(value: real);
     begin
       var delta := value - gr.Width/2;
-      X -= delta;
-      Y -= delta;
+      Left -= delta;
+      Top -= delta;
       (gr.Width,gr.Height) := (value*2,value*2);
       Element.Points := ChangePointCollection(value,rint,n);
     end;  
@@ -454,9 +457,7 @@ type
       var y1 := pp.Min(p->p.y);
       var y2 := pp.Max(p->p.y);
       var a := pp.Select(p->Pnt(p.x-x1,p.y-y1)).ToArray;
-      a.Println;
-      Println(x1,x2,y1,y2);
-      InitOb1(x1,x2,x2-x1,y2-y1,c,CreatePolygon(a));
+      InitOb1(x1,y1,x2-x1,y2-y1,c,CreatePolygon(a));
     end;
     function CreatePolygon(pp: array of Point): Polygon;
     begin
@@ -491,10 +492,10 @@ type
       var b := CreateBitmapImage(fname);
       Rest(x,y,b.Width,b.Height,b);
     end;
+    function GetInternalGeometry: Geometry; override := new RectangleGeometry(Rect(Left,Top,Width,Height));  
   public
     constructor (x,y: real; fname: string) := Invoke(InitOb2,x,y,fname);
     constructor (x,y,w,h: real; fname: string) := Invoke(InitOb3,x,y,w,h,fname);
-    function GetInternalGeometry: Geometry; override := new RectangleGeometry(Rect(X,Y,Width,Height));  
   end;
 
 /// Главное окно
@@ -564,12 +565,14 @@ procedure ObjectsType.AddP(ob: ObjectWPF);
 begin
   l.Add(ob);
   host.Children.Add(ob.can);
+  d.Add(ob.ob,ob);
 end;
 
 procedure ObjectsType.DeleteP(ob: ObjectWPF);
 begin
   l.Remove(ob);
   host.Children.Remove(ob.can);
+  d.Remove(ob.ob);
 end;
 
 procedure ObjectsType.ToBackP(ob: ObjectWPF);
@@ -687,27 +690,16 @@ function MyHitTestResult2(res: HitTestResult): HitTestResultBehavior;
 begin
   var id := (res as GeometryHitTestResult).IntersectionDetail;
 
+  Result :=  HitTestResultBehavior.Stop;
   case id of
-    {IntersectionDetail.FullyContains:
-    begin
-      //hitResultsList.Add(res.VisualHit);
-      Result := HitTestResultBehavior.Continue;
-      exit;
-    end;  }
-    IntersectionDetail.Intersects:
+    IntersectionDetail.FullyContains,
+    IntersectionDetail.Intersects,
+    IntersectionDetail.FullyInside:
     begin
       hitResultsList.Add(res.VisualHit);
       Result := HitTestResultBehavior.Continue;
-      exit;
-    end;  
-    {IntersectionDetail.FullyInside:
-    begin
-      //hitResultsList.Add(res.VisualHit);
-      Result := HitTestResultBehavior.Continue;
-      exit;
-    end;}
+    end; 
   end;
-  Result :=  HitTestResultBehavior.Stop;
 end;
 
 
@@ -728,13 +720,40 @@ begin
       end;
 end;
 
+function ObjectsIntersectPL(o: ObjectWPF): List<ObjectWPF>;
+begin
+  hitResultsList.Clear();
+  
+  VisualTreeHelper.HitTest(host, nil,
+        MyHitTestResult2,
+        new GeometryHitTestParameters(o.GetGeometry));
+        
+  Result := new List<ObjectWPF>;      
+  foreach var a in hitResultsList do
+  begin
+    var aa := a as FrameworkElement;
+    if (aa<>o.ob) and Objects.d.ContainsKey(aa) then
+      Result.Add(Objects.d[aa])
+  end;
+end;
+
+
 type ObHelper = auto class
   o1,o2: ObjectWPF;
   function f: boolean := ObjectsIntersectP(o1,o2);
 end;
 
+type OLHelper = auto class
+  o: ObjectWPF;
+  function f: List<ObjectWPF> := ObjectsIntersectPL(o);
+end;
+
+
 function ObjectsIntersect(o1,o2: ObjectWPF) 
   := Invoke&<boolean>(ObHelper.Create(o1,o2).f);
+  
+function IntersectionList(Self: ObjectWPF): List<ObjectWPF>; extensionmethod
+  := Invoke&<List<ObjectWPF>>(OLHelper.Create(Self).f);
 
 //---------------------------------------------------------------------------  
 function GraphWindowTypeGetLeftP: real;

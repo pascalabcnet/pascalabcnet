@@ -863,6 +863,10 @@
 				<param name="Local" value="LangGuide\PABCSystemUnit\stand_binary_files_methods.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="&Igrave;&aring;&ograve;&icirc;&auml;&ucirc; &ograve;&egrave;&iuml;&egrave;&ccedil;&egrave;&eth;&icirc;&acirc;&agrave;&iacute;&iacute;&ucirc;&otilde; &ocirc;&agrave;&eacute;&euml;&icirc;&acirc;">
+				<param name="Local" value="LangGuide\PABCSystemUnit\stand_typed_files_methods.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="&Igrave;&aring;&ograve;&icirc;&auml;&ucirc; &eth;&agrave;&ntilde;&oslash;&egrave;&eth;&aring;&iacute;&egrave;&yuml; &ograve;&egrave;&iuml;&egrave;&ccedil;&egrave;&eth;&icirc;&acirc;&agrave;&iacute;&iacute;&ucirc;&otilde; &ocirc;&agrave;&eacute;&euml;&icirc;&acirc;">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Extension methods for typed files.html">
 				</OBJECT>

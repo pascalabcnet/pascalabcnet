@@ -3,6 +3,8 @@
 <param name="Keyword" value="Read2">
 <param name="Keyword" value="Read3">
 <param name="Keyword" value="ReadElements">
+<param name="Keyword" value="Reset">
+<param name="Keyword" value="Rewrite">
 <param name="Keyword" value="Seek">
 <param name="Keyword" value="Write"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
@@ -17,6 +19,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность элементов открытого типизированного файла от текущего элемента до конечного</td></tr>
 <tr><td><code><b>function</b> ReadElements&lt;T&gt;(fname: string): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает типизированный файл, возвращает последовательность его элементов и закрывает его</td></tr>
+<tr><td><code><b>procedure</b> Reset&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T); </code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает существующий типизированный файл</td></tr>
+<tr><td><code><b>procedure</b> Rewrite&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T); </code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает новый или обнуляет существующий типизированный файл</td></tr>
 <tr><td><code><b>function</b> Seek&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T; n: int64):  <b>file</b>  <b>of</b> T; </code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает текущую позицию файлового указателя в типизированном файле на элемент с номером n</td></tr>
 <tr><td><code><b>procedure</b> Write&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T; <b>params</b> vals: <b>array</b>  <b>of</b> T); </code>
