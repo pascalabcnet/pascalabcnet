@@ -146,7 +146,7 @@
 %type <stn> stmt_or_expression unlabelled_stmt stmt case_item
 %type <td> set_type  
 %type <ex> as_is_expr as_is_constexpr is_expr as_expr power_expr power_constexpr
-%type <td> unsized_array_type simple_type_or_ simple_type array_name_for_new_expr foreach_stmt_ident_dype_opt fptype type_ref fptype_noproctype array_type 
+%type <td> unsized_array_type simple_type_or_ simple_type /*array_name_for_new_expr*/ foreach_stmt_ident_dype_opt fptype type_ref fptype_noproctype array_type 
 %type <td> template_param structured_type unpacked_structured_type simple_or_template_type_reference type_ref_or_secific for_stmt_decl_or_assign type_decl_type
 %type <stn> type_ref_and_secific_list  
 %type <stn> type_decl_sect
@@ -3181,7 +3181,7 @@ new_expr
         {
 			$$ = new new_expr($2, $3 as expression_list, false, null, @$);
         }      
-    | tkNew array_name_for_new_expr tkSquareOpen optional_expr_list tkSquareClose optional_array_initializer
+    | tkNew simple_or_template_type_reference tkSquareOpen optional_expr_list tkSquareClose optional_array_initializer
         {
         	var el = $4 as expression_list;
         	if (el == null)
@@ -3253,12 +3253,12 @@ list_fields_in_unnamed_object
 		}
 	;
 
-array_name_for_new_expr
+/*array_name_for_new_expr
     : simple_type_identifier 
 		{ $$ = $1; }
 //    | unsized_array_type - и кому такое приснилось
 //		{ $$ = $1; }
-    ;
+    ;*/
 
 optional_expr_list_with_bracket
     :

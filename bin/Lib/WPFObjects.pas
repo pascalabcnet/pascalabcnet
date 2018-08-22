@@ -310,22 +310,40 @@ type
     procedure RecalcYH(y1,y2: real) := (Top,Height) := (min(y1,y2),abs(y1-y2));
     procedure ES(value: GColor) := Element.Stroke := new SolidColorBrush(Value);
     procedure EST(value: real) := Element.StrokeThickness := Value;
-    procedure WX1(value: real) := begin 
+    procedure WX1(value: real);
+    begin
       var xx2 := x2;
       RecalcXW(value,xx2); 
       if value<xx2 then
         (Element.X1,Element.X2) := (0,Width)
       else (Element.X1,Element.X2) := (Width,0);
     end;
-    procedure WX2(value: real) := begin 
+    procedure WX2(value: real);
+    begin
       var xx1 := x1;
       RecalcXW(xx1,value); 
       if value>xx1 then
         (Element.X1,Element.X2) := (0,Width)
       else (Element.X1,Element.X2) := (Width,0);
     end;
-    procedure WY1(value: real) := begin Element.Y1 := value - Top; {RecalcWHXY;} end;
-    procedure WY2(value: real) := begin Element.Y2 := value - Top; {RecalcWHXY;} end;
+    {procedure WY1(value: real) := begin Element.Y1 := value - Top;  end;
+    procedure WY2(value: real) := begin Element.Y2 := value - Top; end;}
+    procedure WY1(value: real);
+    begin 
+      var yy2 := y2;
+      RecalcYH(value,yy2); 
+      if value<yy2 then
+        (Element.Y1,Element.Y2) := (0,Height)
+      else (Element.Y1,Element.Y2) := (Height,0);
+    end;
+    procedure WY2(value: real); 
+    begin 
+      var yy1 := y1;
+      RecalcYH(yy1,value); 
+      if value>yy1 then
+        (Element.Y1,Element.Y2) := (0,Height)
+      else (Element.Y1,Element.Y2) := (Height,0);
+    end;
     function GetInternalGeometry: Geometry; override := (ob as Shape).RenderedGeometry;
   public
     constructor (x1,y1,x2,y2: real; c: GColor) := Invoke(InitOb2,x1,y1,x2,y2,c);
@@ -340,6 +358,20 @@ type
     property Y1: real read InvokeReal(()->Element.Y1 + Top) write Invoke(WY1,value);
     property Y2: real read InvokeReal(()->Element.Y2 + Top) write Invoke(WY2,value);
     property P1: Point read Pnt(X1,Y1) write begin X1 := Value.X; Y1 := Value.Y end;
+    property Width: real 
+      read InvokeReal(()->gr.Width) 
+      write 
+      begin
+        var gr1 := gr;
+        Invoke(procedure->begin gr1.Width := value; end); 
+      end; override; 
+    property Height: real 
+      read InvokeReal(()->gr.Height) 
+      write 
+      begin
+        var gr1 := gr;
+        Invoke(procedure->begin gr1.Height := value; end); 
+      end; override; 
   end;
   
   RegularPolygonWPF = class(BoundedObjectWPF)
