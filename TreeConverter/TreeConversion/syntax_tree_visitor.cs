@@ -2069,7 +2069,8 @@ namespace PascalABCCompiler.TreeConverter
                 		return false;
                 	common_type_node ctn = el_type as common_type_node;
                     foreach (class_field cf in ctn.fields)
-                    	if (cf.type.type_special_kind != SemanticTree.type_special_kind.short_string && !CanUseThisTypeForFiles(cf.type, allow_strings))
+                        if (!cf.IsStatic)
+                        if (cf.type.type_special_kind != SemanticTree.type_special_kind.short_string && !CanUseThisTypeForFiles(cf.type, allow_strings))
                             return false;
                     return true;
                 }
