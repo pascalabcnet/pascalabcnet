@@ -50,9 +50,9 @@
 <tr><td><code><b>function</b> FindLast&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; p: T-&gt;boolean): T; </code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬ыполн€ет поиск последнего элемента в массиве, удовлетвор€ющего предикату. ≈сли не найден, возвращаетс€ нулевое значение соответствующего типа</td></tr>
 <tr><td><code><b>function</b> FindLastIndex&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; p: T-&gt;boolean): integer; </code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬ыполн€ет поиск индекса последнего элемента в массиве, удовлетвор€ющего предикату. ≈сли не найден, возвращаетс€ нулевое значение соответствующего типа</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬ыполн€ет поиск индекса последнего элемента в массиве, удовлетвор€ющего предикату. ≈сли не найден, возвращаетс€ -1</td></tr>
 <tr><td><code><b>function</b> FindLastIndex&lt;T&gt;(self: <b>array</b>  <b>of</b> T; start: integer; p: T-&gt;boolean): integer; </code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬ыполн€ет поиск индекса последнего элемента в массиве, удовлетвор€ющего предикату, начина€ с индекса start. ≈сли не найден, возвращаетс€ нулевое значение соответствующего типа</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬ыполн€ет поиск индекса последнего элемента в массиве, удовлетвор€ющего предикату, в диапазоне индексов от 0 до start. ≈сли не найден, возвращаетс€ -1</td></tr>
 <tr><td><code><b>function</b> High(Self: System.Array); </code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает индекс последнего элемента массива</td></tr>
 <tr><td><code><b>function</b> Indexes&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): <b>sequence </b>  <b>of</b> integer; </code>

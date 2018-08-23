@@ -304,6 +304,8 @@ function RGB(r,g,b: byte): Color;
 function ARGB(a,r,g,b: byte): Color;
 /// Возвращает случайный цвет
 function RandomColor: Color;
+/// Возвращает полностью прозрачный цвет
+function EmptyColor: Color;
 /// Возвращает случайный цвет
 function clRandom: Color;
 /// Возвращает точку с координатами (x,y)
@@ -402,6 +404,7 @@ implementation
 function RGB(r,g,b: byte) := Color.Fromrgb(r, g, b);
 function ARGB(a,r,g,b: byte) := Color.FromArgb(a, r, g, b);
 function RandomColor := RGB(PABCSystem.Random(256), PABCSystem.Random(256), PABCSystem.Random(256));
+function EmptyColor: Color := ARGB(0,0,0,0);
 function clRandom := RandomColor();
 function Pnt(x,y: real) := new Point(x,y);
 function Rect(x,y,w,h: real) := new System.Windows.Rect(x,y,w,h);

@@ -9858,13 +9858,13 @@ begin
   Result := System.Array.FindLast(self, p);  
 end;
 
-/// Выполняет поиск индекса последнего элемента в массиве, удовлетворяющего предикату. Если не найден, возвращается нулевое значение соответствующего типа
+/// Выполняет поиск индекса последнего элемента в массиве, удовлетворяющего предикату. Если не найден, возвращается -1
 function FindLastIndex<T>(Self: array of T; p: T->boolean): integer; extensionmethod;
 begin
   Result := System.Array.FindLastIndex(self, p);  
 end;
 
-/// Выполняет поиск индекса последнего элемента в массиве, удовлетворяющего предикату, начиная с индекса start. Если не найден, возвращается нулевое значение соответствующего типа
+/// Выполняет поиск индекса последнего элемента в массиве, удовлетворяющего предикату, в диапазоне индексов от 0 до start. Если не найден, возвращается -1
 function FindLastIndex<T>(self: array of T; start: integer; p: T->boolean): integer; extensionmethod;
 begin
   Result := System.Array.FindLastIndex(Self, start, p);  
