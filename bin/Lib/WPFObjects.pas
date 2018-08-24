@@ -24,6 +24,11 @@ uses System.Windows.Threading;
 procedure SetLeft(Self: UIElement; l: integer);
 procedure SetTop(Self: UIElement; t: integer); 
 
+//{{{doc: Начало секции 1 }}} 
+// -----------------------------------------------------
+//>>     Стандартные типы # Standard types
+// -----------------------------------------------------
+
 type 
   /// Тип клавиши
   Key = System.Windows.Input.Key;
@@ -35,14 +40,22 @@ type
   GColor = System.Windows.Media.Color;
   /// Тип прямоугольника
   GRect = System.Windows.Rect;
+  /// Тип окна
   GWindow = System.Windows.Window;
+  /// Тип пера
   GPen = System.Windows.Media.Pen;
+  /// Тип точки
   GPoint = System.Windows.Point;
+  /// Тип кисти
   GBrush = System.Windows.Media.Brush;
   /// Тип стиля шрифта
   FontStyle = (Normal,Bold,Italic,BoldItalic);
   
 var host: Canvas;
+
+// -----------------------------------------------------
+//>>     Стандартные функции # Standard functions
+// -----------------------------------------------------
 
 /// Возвращает цвет по красной, зеленой и синей составляющей (в диапазоне 0..255)
 function RGB(r,g,b: byte): Color;
@@ -60,8 +73,12 @@ function Pnt(x,y: real): GPoint;
 function Rect(x,y,w,h: real): GRect;
 /// Возвращает однотонную цветную кисть, заданную цветом
 function ColorBrush(c: Color): GBrush;
+//{{{--doc: Конец секции 1 }}} 
 
-
+//{{{doc: Начало секции 2 }}} 
+// -----------------------------------------------------
+//>>     Класс графического окна # Graph window class
+// -----------------------------------------------------
 type
   /// Класс графического окна
   GraphWindowType = class
@@ -81,9 +98,10 @@ type
     property Height: real read GetHeight;
   end;
   
-  /// Перечислимый тип выравнивания текста в свойстве Text или Number
-  Alignment = (LeftTop,CenterTop,RightTop,LeftCenter,Center,RightCenter,LeftBottom,CenterBottom,RightBottom);
   ObjectWPF = class;
+// -----------------------------------------------------
+//>>     Класс списка графических объектов # List of objects class
+// -----------------------------------------------------
   ///!#
   /// Класс списка графических объектов
   ObjectsType = class
@@ -109,6 +127,12 @@ type
     property Items[i: integer]: ObjectWPF read GetItem write SetItem; default;
   end;
 
+
+// -----------------------------------------------------
+//>>     Класс ObjectWPF # ObjectWPF class
+// -----------------------------------------------------
+  /// Перечислимый тип выравнивания текста в свойстве Text или Number
+  Alignment = (LeftTop,CenterTop,RightTop,LeftCenter,Center,RightCenter,LeftBottom,CenterBottom,RightBottom);
   ///!#
   /// Базовый класс графических объектов
   ObjectWPF = class
@@ -118,13 +142,15 @@ type
     gr: Grid; // Grid связан только с текстом
     t: TextBlock;
     r: RotateTransform;
+    _dx,_dy: real;
+
     ChildrenWPF := new List<ObjectWPF>;
     procedure InitOb(x,y,w,h: real; o: FrameworkElement; SetWH: boolean := True);
   public
     /// Направление движения по оси X. Используется методом Move
-    dx: real;
+    property Dx: real read _dx write _dx;
     /// Направление движения по оси Y. Используется методом Move
-    dy: real;
+    property Dy: real read _dy write _dy;
     /// Отступ графического объекта от левого края 
     property Left: real read InvokeReal(()->Canvas.GetLeft(can)) write Invoke(procedure->Canvas.SetLeft(can,value)); 
     /// Отступ графического объекта от верхнего края 
@@ -237,6 +263,9 @@ type
     end;
   end;
   
+// -----------------------------------------------------
+//>>     Класс графических объектов с границей # Класс графических объектов с границей
+// -----------------------------------------------------
   /// Класс графических объектов с границей
   BoundedObjectWPF = class(ObjectWPF)
   private
@@ -283,6 +312,9 @@ type
     function WithNoBorder: BoundedObjectWPF := Invoke&<BoundedObjectWPF>(WithNoBorderP);
   end;
 
+// -----------------------------------------------------
+//>>     Класс EllipseWPF # Class EllipseWPF 
+// -----------------------------------------------------
   /// Класс графических объектов "Эллипс"
   EllipseWPF = class(BoundedObjectWPF)
   private
@@ -304,6 +336,9 @@ type
     function WithRotate(da: real) := inherited WithRotate(da) as EllipseWPF;
   end;
 
+// -----------------------------------------------------
+//>>     Класс CircleWPF # Class CircleWPF
+// -----------------------------------------------------
   /// Класс графических объектов "Окружность"
   CircleWPF = class(BoundedObjectWPF)
   private
@@ -346,6 +381,9 @@ type
     function WithRotate(da: real) := inherited WithRotate(da) as CircleWPF;
   end;
 
+// -----------------------------------------------------
+//>>     Класс RectangleWPF # Class RectangleWPF
+// -----------------------------------------------------
   /// Класс графических объектов "Прямоугольник"
   RectangleWPF = class(BoundedObjectWPF)
   private
@@ -371,6 +409,9 @@ type
     function WithRotate(da: real) := inherited WithRotate(da) as RectangleWPF;
   end;
   
+// -----------------------------------------------------
+//>>     Класс SquareWPF # Class SquareWPF
+// -----------------------------------------------------
   /// Класс графических объектов "Квадрат"
   SquareWPF = class(CircleWPF)
   private
@@ -392,6 +433,9 @@ type
     function WithRotate(da: real) := inherited WithRotate(da) as SquareWPF;
   end;
   
+// -----------------------------------------------------
+//>>     Класс RoundRectWPF # Class RoundRectWPF
+// -----------------------------------------------------
   /// Класс графических объектов "Прямоугольник со скругленными краями"
   RoundRectWPF = class(BoundedObjectWPF)
     procedure InitOb2(x,y,w,h,r: real; c: GColor);
@@ -424,6 +468,9 @@ type
       end;  
   end;
   
+// -----------------------------------------------------
+//>>     Класс графических объектов "Квадрат со скругленными краями" # Класс графических объектов Квадрат со скругленными краями
+// -----------------------------------------------------
   /// Класс графических объектов "Квадрат со скругленными краями"
   RoundSquareWPF = class(CircleWPF)
     procedure InitOb2(x,y,w,r: real; c: GColor);
@@ -450,6 +497,9 @@ type
     function WithRotate(da: real) := inherited WithRotate(da) as RoundSquareWPF;
   end;
 
+// -----------------------------------------------------
+//>>     Класс LineWPF # Class LineWPF
+// -----------------------------------------------------
   /// Класс графических объектов "Отрезок"
   LineWPF = class(ObjectWPF)
   private
@@ -557,6 +607,9 @@ type
     end;
   end;
   
+// -----------------------------------------------------
+//>>     Класс RegularPolygonWPF # Class RegularPolygonWPF
+// -----------------------------------------------------
   /// Класс графических объектов "Правильный многоугольник"
   RegularPolygonWPF = class(BoundedObjectWPF)
   private
@@ -623,6 +676,9 @@ type
     function WithRotate(da: real) := inherited WithRotate(da) as RegularPolygonWPF;
   end;
   
+// -----------------------------------------------------
+//>>     Класс StarWPF # Class StarWPF
+// -----------------------------------------------------
   /// Класс графических объектов "Звезда"
   StarWPF = class(RegularPolygonWPF)
   private
@@ -694,6 +750,9 @@ type
 
   PointsArray = array of Point;
   
+// -----------------------------------------------------
+//>>     Класс PolygonWPF # Class PolygonWPF
+// -----------------------------------------------------
   /// Класс графических объектов "Многоугольник"
   PolygonWPF = class(BoundedObjectWPF)
   private
@@ -741,6 +800,9 @@ type
     function WithRotate(da: real) := inherited WithRotate(da) as PolygonWPF;
   end;
 
+// -----------------------------------------------------
+//>>     Класс PictureWPF # Class PictureWPF
+// -----------------------------------------------------
   /// Класс графических объектов "Рисунок"
   PictureWPF = class(ObjectWPF)
   private
@@ -782,6 +844,9 @@ type
     function WithRotate(da: real) := inherited WithRotate(da) as PictureWPF;
   end;
 
+// -----------------------------------------------------
+//>>     Переменные модуля WPFObjects# Variables of WPFObjects
+// -----------------------------------------------------
 /// Главное окно
 var Window: WindowType;
 /// Графическое окно
@@ -802,13 +867,18 @@ var
   OnKeyPress: procedure(ch: char);
   /// Событие изменения размера графического окна
   OnResize: procedure;
-
+  /// Список графических объектов
   Objects := new ObjectsType;
 
+// -----------------------------------------------------
+//>>     Функции пересечения# Intersection functions
+// -----------------------------------------------------
 /// Возвращает графический объект под точкой с координатами (x,y) или nil
 function ObjectUnderPoint(x,y: real): ObjectWPF;
 /// Возвращает True если графические объекты пересекаются
 function ObjectsIntersect(o1,o2: ObjectWPF): boolean;
+
+//{{{--doc: Конец секции 2 }}} 
 
 implementation
 

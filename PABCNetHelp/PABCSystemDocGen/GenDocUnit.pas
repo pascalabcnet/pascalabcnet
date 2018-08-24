@@ -1,8 +1,11 @@
 ﻿unit GenDocUnit;
 
-procedure Step1;
 const fname = 'D:\PABC_Git\bin\Lib\PABCSystem.pas';
 const fname1 = 'D:\PABC_Git\bin\Lib\PABCExtensions.pas';
+
+const RootOutputDirectory = 'LangGuide\PABCSystemUnit\';
+
+procedure Step1;
 begin
   var q := ReadLines(fname).Where(s->s.Trim.Length>0);
   
@@ -208,10 +211,10 @@ begin
   s := keys.Around('HEAD')
     + (Title.Around('H1') + table).Around('body');
   //Println(HelpFileName);  
-  WriteAllText('..\LangGuide\PABCSystemUnit\Files\'+HelpFileName+'.html',s.Around('HTML'));
+  WriteAllText('..\'+RootOutputDirectory+'Files\'+HelpFileName+'.html',s.Around('HTML'));
 
   var s1 := '<param name="Name" value="' + Title + '">';
-  var s2 := '<param name="Local" value="LangGuide\PABCSystemUnit\Files\' + HelpFileName + '.html">';
+  var s2 := '<param name="Local" value="'+RootOutputDirectory+'Files\' + HelpFileName + '.html">';
   toc := toc + '<LI> <OBJECT type="text/sitemap">' + s1;
   toc := toc + s2;
   toc := toc + '</OBJECT>';

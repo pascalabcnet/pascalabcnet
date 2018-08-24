@@ -143,13 +143,13 @@ function WindowType.GetTop := InvokeReal(WindowTypeGetTopP);
 procedure WindowTypeSetWidthP(w: real) := MainWindow.Width := w + wplus;
 procedure WindowType.SetWidth(w: real) := Invoke(WindowTypeSetWidthP,w);
 
-function WindowTypeGetWidthP := MainWindow.Width - wplus;
+function WindowTypeGetWidthP := MainWindow.ActualWidth - wplus;
 function WindowType.GetWidth := InvokeReal(WindowTypeGetWidthP);
 
 procedure WindowTypeSetHeightP(h: real) := MainWindow.Height := h + hplus;
 procedure WindowType.SetHeight(h: real) := Invoke(WindowTypeSetHeightP,h);
 
-function WindowTypeGetHeightP := MainWindow.Height - hplus;
+function WindowTypeGetHeightP := MainWindow.ActualHeight - hplus;
 function WindowType.GetHeight := InvokeReal(WindowTypeGetHeightP);
 
 procedure WindowTypeSetCaptionP(c: string) := MainWindow.Title := c;
