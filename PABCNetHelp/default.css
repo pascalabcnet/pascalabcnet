@@ -86,3 +86,10 @@ UL {
         font-size: 9pt;
         font-family: Arial, sans-serif;
 }
+
+TD.secttitle {
+        border-style:solid; 
+        border-width:1px;   
+        border-color: #808080;
+        background-color: #E7E7F7;
+}

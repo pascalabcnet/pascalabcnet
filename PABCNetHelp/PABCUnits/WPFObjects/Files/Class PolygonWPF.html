@@ -1,0 +1,42 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Points">
+<param name="Keyword" value="WithBorder">
+<param name="Keyword" value="WithNoBorder">
+<param name="Keyword" value="WithRotate">
+<param name="Keyword" value="WithText"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Класс PolygonWPF</H1>Класс графических объектов "Многоугольник". Базовый класс - <code>BoundedObjectWPF</code>.
+<table border=0 cellpadding=5><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Конструкторы класса PolygonWPF</font></td></tr>
+
+<tr><tr><td><code><b>constructor</b> (pp: <b>array</b>  <b>of</b> Point; c: GColor);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает многоугольник заданного цвета с координатами вершин, заданными массивом точек pp</td></tr>
+</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства класса PolygonWPF</font></td></tr>
+
+<tr><tr><td><code><b>property</b> Points: <b>array</b>  <b>of</b> Point;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Массив вершин</td></tr>
+</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы класса PolygonWPF</font></td></tr>
+
+<tr><tr><td><code><b>function</b> WithBorder(w: real := -1): PolygonWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
+<tr><td><code><b>function</b> WithNoBorder: PolygonWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор выключения границы объекта</td></tr>
+<tr><td><code><b>function</b> WithRotate(da: real): PolygonWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор поворота объекта</td></tr>
+<tr><td><code><b>function</b> WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): PolygonWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор текста объекта</td></tr>
+</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства предка BoundedObjectWPF</font></td></tr>
+
+<tr><tr><td><code><b>property</b> BorderColor: GColor;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет границы графического объекта</td></tr>
+<tr><td><code><b>property</b> BorderWidth: real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ширина границы графического объекта</td></tr>
+<tr><td><code><b>property</b> Color: GColor;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет графического объекта</td></tr>
+</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы предка BoundedObjectWPF</font></td></tr>
+
+<tr><tr><td><code><b>function</b> WithBorder(w: real := -1): BoundedObjectWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
+<tr><td><code><b>function</b> WithNoBorder: BoundedObjectWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор выключения границы объекта</td></tr>
+</tr></table>
+</body></HTML>

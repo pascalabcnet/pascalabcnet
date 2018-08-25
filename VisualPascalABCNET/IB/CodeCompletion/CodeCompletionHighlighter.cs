@@ -102,7 +102,7 @@ namespace VisualPascalABC
             catch (Exception e)
             {
 #if DEBUG
-                File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+                File.AppendAllText("log.txt", DateTime.Now + Environment.NewLine + e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
 #endif
             }
         }

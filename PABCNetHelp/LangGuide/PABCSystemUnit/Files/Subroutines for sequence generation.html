@@ -16,7 +16,7 @@
 <param name="Keyword" value="SeqWhile"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Подпрограммы для генерации последовательностей</H1>
-<table cellpadding=3><tr><td><code><b>function</b> Partition(a, b: real; n: integer): <b>sequence </b>  <b>of</b> real;</code>
+<table border=0 cellpadding=5><tr><td><code><b>function</b> Partition(a, b: real; n: integer): <b>sequence </b>  <b>of</b> real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей</td></tr>
 <tr><td><code><b>function</b> Range(a, b: integer): <b>sequence </b>  <b>of</b> integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность целых от a до b</td></tr>
@@ -72,4 +72,5 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность элементов с начальным значением first,функцией next перехода от предыдущего к следующему и условием pred продолжения последовательности</td></tr>
 <tr><td><code><b>function</b> SeqWhile&lt;T&gt;(first, second: T; next: (T,T) -&gt;T; pred: T-&gt;boolean): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность элементов, начинающуюся с first и second,с функцией next перехода от двух предыдущих к следующему и условием pred продолжения последовательности</td></tr>
-</table></body></HTML>
+</table>
+</body></HTML>

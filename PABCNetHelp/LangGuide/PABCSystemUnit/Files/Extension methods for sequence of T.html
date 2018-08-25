@@ -33,120 +33,121 @@
 <param name="Keyword" value="ZipTuple"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Методы расширения последовательностей</H1>
-<table cellpadding=3><tr><td><code><b>function</b> AdjacentGroup&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T; </code>
+<table border=0 cellpadding=5><tr><td><code><b>function</b> AdjacentGroup&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Группирует одинаковые подряд идущие элементы, получая последовательность массивов</td></tr>
-<tr><td><code><b>function</b> Batch&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; size: integer): <b>sequence </b>  <b>of</b> <b>sequence </b>  <b>of</b> T; </code>
+<tr><td><code><b>function</b> Batch&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; size: integer): <b>sequence </b>  <b>of</b> <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разбивает последовательность на серии длины size</td></tr>
-<tr><td><code><b>function</b> Batch&lt;T, Res&gt;(Self: <b>sequence </b>  <b>of</b> T; size: integer; proj: Func&lt;IEnumerable&lt;T&gt;, Res&gt;): <b>sequence </b>  <b>of</b> Res; </code>
+<tr><td><code><b>function</b> Batch&lt;T, Res&gt;(Self: <b>sequence </b>  <b>of</b> T; size: integer; proj: Func&lt;IEnumerable&lt;T&gt;, Res&gt;): <b>sequence </b>  <b>of</b> Res;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разбивает последовательность на серии длины size и применяет проекцию к каждой серии</td></tr>
-<tr><td><code><b>function</b> Cartesian&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1): <b>sequence </b>  <b>of</b> (T, T1); </code>
+<tr><td><code><b>function</b> Cartesian&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1): <b>sequence </b>  <b>of</b> (T, T1);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декартово произведение последовательностей</td></tr>
-<tr><td><code><b>function</b> Cartesian&lt;T, T1, T2&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; func: (T,T1)-&gt;T2): <b>sequence </b>  <b>of</b> T2; </code>
+<tr><td><code><b>function</b> Cartesian&lt;T, T1, T2&gt;(Self: <b>sequence </b>  <b>of</b> T; b: <b>sequence </b>  <b>of</b> T1; func: (T,T1)-&gt;T2): <b>sequence </b>  <b>of</b> T2;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декартово произведение последовательностей</td></tr>
-<tr><td><code><b>procedure</b> ForEach&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; action: T -&gt; ()); </code>
+<tr><td><code><b>procedure</b> ForEach&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; action: T -&gt; ());</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Применяет действие к каждому элементу последовательности</td></tr>
-<tr><td><code><b>procedure</b> ForEach&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; action: (T,integer) -&gt; ()); </code>
+<tr><td><code><b>procedure</b> ForEach&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; action: (T,integer) -&gt; ());</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Применяет действие к каждому элементу последовательности, зависящее от номера элемента</td></tr>
-<tr><td><code><b>function</b> Incremental(Self: <b>sequence </b>  <b>of</b> integer): <b>sequence </b>  <b>of</b> integer; </code>
+<tr><td><code><b>function</b> Incremental(Self: <b>sequence </b>  <b>of</b> integer): <b>sequence </b>  <b>of</b> integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность разностей соседних элементов исходной последовательности</td></tr>
-<tr><td><code><b>function</b> Incremental(Self: <b>array</b>  <b>of</b> integer): <b>sequence </b>  <b>of</b> integer; </code>
+<tr><td><code><b>function</b> Incremental(Self: <b>array</b>  <b>of</b> integer): <b>sequence </b>  <b>of</b> integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность разностей соседних элементов исходной последовательности</td></tr>
-<tr><td><code><b>function</b> Incremental(Self: List&lt;integer&gt;): <b>sequence </b>  <b>of</b> integer; </code>
+<tr><td><code><b>function</b> Incremental(Self: List&lt;integer&gt;): <b>sequence </b>  <b>of</b> integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность разностей соседних элементов исходной последовательности</td></tr>
-<tr><td><code><b>function</b> Incremental(Self: LinkedList&lt;integer&gt;): <b>sequence </b>  <b>of</b> integer; </code>
+<tr><td><code><b>function</b> Incremental(Self: LinkedList&lt;integer&gt;): <b>sequence </b>  <b>of</b> integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность разностей соседних элементов исходной последовательности</td></tr>
-<tr><td><code><b>function</b> Incremental(Self: <b>sequence </b>  <b>of</b> real): <b>sequence </b>  <b>of</b> real; </code>
+<tr><td><code><b>function</b> Incremental(Self: <b>sequence </b>  <b>of</b> real): <b>sequence </b>  <b>of</b> real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность разностей соседних элементов исходной последовательности</td></tr>
-<tr><td><code><b>function</b> Incremental(Self: <b>array</b>  <b>of</b> real): <b>sequence </b>  <b>of</b> real; </code>
+<tr><td><code><b>function</b> Incremental(Self: <b>array</b>  <b>of</b> real): <b>sequence </b>  <b>of</b> real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность разностей соседних элементов исходной последовательности</td></tr>
-<tr><td><code><b>function</b> Incremental(Self: List&lt;real&gt;): <b>sequence </b>  <b>of</b> real; </code>
+<tr><td><code><b>function</b> Incremental(Self: List&lt;real&gt;): <b>sequence </b>  <b>of</b> real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность разностей соседних элементов исходной последовательности</td></tr>
-<tr><td><code><b>function</b> Incremental(Self: LinkedList&lt;real&gt;): <b>sequence </b>  <b>of</b> real; </code>
+<tr><td><code><b>function</b> Incremental(Self: LinkedList&lt;real&gt;): <b>sequence </b>  <b>of</b> real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность разностей соседних элементов исходной последовательности</td></tr>
-<tr><td><code><b>function</b> Incremental&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> T; func: (T,T)-&gt;T1): <b>sequence </b>  <b>of</b> T1; </code>
+<tr><td><code><b>function</b> Incremental&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> T; func: (T,T)-&gt;T1): <b>sequence </b>  <b>of</b> T1;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность разностей соседних элементов исходной последовательности. В качестве функции разности используется func</td></tr>
-<tr><td><code><b>function</b> Incremental&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> T; func: (T,T,integer)-&gt;T1): <b>sequence </b>  <b>of</b> T1; </code>
+<tr><td><code><b>function</b> Incremental&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> T; func: (T,T,integer)-&gt;T1): <b>sequence </b>  <b>of</b> T1;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность разностей соседних элементов исходной последовательности. В качестве функции разности используется func</td></tr>
-<tr><td><code><b>function</b> Interleave&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; a: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T; </code>
+<tr><td><code><b>function</b> Interleave&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; a: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Чередует элементы двух последовательностей</td></tr>
-<tr><td><code><b>function</b> Interleave&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; a, b: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T; </code>
+<tr><td><code><b>function</b> Interleave&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; a, b: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Чередует элементы трех последовательностей</td></tr>
-<tr><td><code><b>function</b> Interleave&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; a, b, c: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T; </code>
+<tr><td><code><b>function</b> Interleave&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; a, b, c: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Чередует элементы четырех последовательностей</td></tr>
-<tr><td><code><b>function</b> JoinIntoString&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; delim: string): string; </code>
+<tr><td><code><b>function</b> JoinIntoString&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; delim: string): string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя delim в качестве разделителя</td></tr>
-<tr><td><code><b>function</b> JoinIntoString&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): string; </code>
+<tr><td><code><b>function</b> JoinIntoString&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя пробел в качестве разделителя</td></tr>
-<tr><td><code><b>function</b> LastMaxBy&lt;T, TKey&gt;(Self: <b>sequence </b>  <b>of</b> T; selector: T-&gt;TKey): T; </code>
+<tr><td><code><b>function</b> LastMaxBy&lt;T, TKey&gt;(Self: <b>sequence </b>  <b>of</b> T; selector: T-&gt;TKey): T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последний элемент последовательности с максимальным значением ключа</td></tr>
-<tr><td><code><b>function</b> LastMinBy&lt;T, TKey&gt;(Self: <b>sequence </b>  <b>of</b> T; selector: T-&gt;TKey): T; </code>
+<tr><td><code><b>function</b> LastMinBy&lt;T, TKey&gt;(Self: <b>sequence </b>  <b>of</b> T; selector: T-&gt;TKey): T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последний элемент последовательности с минимальным значением ключа</td></tr>
-<tr><td><code><b>function</b> MaxBy&lt;T, TKey&gt;(Self: <b>sequence </b>  <b>of</b> T; selector: T-&gt;TKey): T; </code>
+<tr><td><code><b>function</b> MaxBy&lt;T, TKey&gt;(Self: <b>sequence </b>  <b>of</b> T; selector: T-&gt;TKey): T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает первый элемент последовательности с максимальным значением ключа</td></tr>
-<tr><td><code><b>function</b> MinBy&lt;T, TKey&gt;(Self: <b>sequence </b>  <b>of</b> T; selector: T-&gt;TKey): T; </code>
+<tr><td><code><b>function</b> MinBy&lt;T, TKey&gt;(Self: <b>sequence </b>  <b>of</b> T; selector: T-&gt;TKey): T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает первый элемент последовательности с минимальным значением ключа</td></tr>
-<tr><td><code><b>function</b> Numerate&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> (integer, T); </code>
+<tr><td><code><b>function</b> Numerate&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> (integer, T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Нумерует последовательность с единицы</td></tr>
-<tr><td><code><b>function</b> Numerate&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; from: integer): <b>sequence </b>  <b>of</b> (integer, T); </code>
+<tr><td><code><b>function</b> Numerate&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; from: integer): <b>sequence </b>  <b>of</b> (integer, T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Нумерует последовательность с номера from</td></tr>
-<tr><td><code><b>function</b> Order&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T; </code>
+<tr><td><code><b>function</b> Order&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отсортированную по возрастанию последовательность</td></tr>
-<tr><td><code><b>function</b> OrderDescending&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T; </code>
+<tr><td><code><b>function</b> OrderDescending&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отсортированную по убыванию последовательность</td></tr>
-<tr><td><code><b>function</b> Pairwise&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> (T, T); </code>
+<tr><td><code><b>function</b> Pairwise&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> (T, T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Превращает последовательность в последовательность пар соседних элементов</td></tr>
-<tr><td><code><b>function</b> Pairwise&lt;T, Res&gt;(Self: <b>sequence </b>  <b>of</b> T; func: (T,T)-&gt;Res): <b>sequence </b>  <b>of</b> Res; </code>
+<tr><td><code><b>function</b> Pairwise&lt;T, Res&gt;(Self: <b>sequence </b>  <b>of</b> T; func: (T,T)-&gt;Res): <b>sequence </b>  <b>of</b> Res;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Превращает последовательность в последовательность пар соседних элементов, применяет func к каждой паре полученных элементов и получает новую последовательность</td></tr>
-<tr><td><code><b>function</b> Partition&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; cond: T-&gt;boolean): (<b>sequence </b>  <b>of</b> T, <b>sequence </b>  <b>of</b> T); </code>
+<tr><td><code><b>function</b> Partition&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; cond: T-&gt;boolean): (<b>sequence </b>  <b>of</b> T, <b>sequence </b>  <b>of</b> T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разделяет последовательности на две по заданному условию</td></tr>
-<tr><td><code><b>function</b> Partition&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; cond: (T,integer)-&gt;boolean): (<b>sequence </b>  <b>of</b> T, <b>sequence </b>  <b>of</b> T); </code>
+<tr><td><code><b>function</b> Partition&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; cond: (T,integer)-&gt;boolean): (<b>sequence </b>  <b>of</b> T, <b>sequence </b>  <b>of</b> T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разделяет последовательности на две по заданному условию, в котором участвует индекс</td></tr>
-<tr><td><code><b>function</b> Print&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; delim: string): <b>sequence </b>  <b>of</b> T; </code>
+<tr><td><code><b>function</b> Print&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; delim: string): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит последовательность на экран, используя delim в качестве разделителя</td></tr>
-<tr><td><code><b>function</b> Print&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T; </code>
+<tr><td><code><b>function</b> Print&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит последовательность на экран, используя пробел в качестве разделителя</td></tr>
-<tr><td><code><b>function</b> PrintLines&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T; </code>
+<tr><td><code><b>function</b> PrintLines&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит последовательность, каждый элемент выводится на новой строке</td></tr>
-<tr><td><code><b>function</b> PrintLines&lt;T,T1&gt;(Self: <b>sequence </b>  <b>of</b> T; map: T-&gt;T1): <b>sequence </b>  <b>of</b> T; </code>
+<tr><td><code><b>function</b> PrintLines&lt;T,T1&gt;(Self: <b>sequence </b>  <b>of</b> T; map: T-&gt;T1): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит последовательность, каждый элемент отображается с помощью функции map и выводится на новой строке</td></tr>
-<tr><td><code><b>function</b> Println&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; delim: string): <b>sequence </b>  <b>of</b> T; </code>
+<tr><td><code><b>function</b> Println&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; delim: string): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит последовательность на экран, используя delim в качестве разделителя, и переходит на новую строку</td></tr>
-<tr><td><code><b>function</b> Println&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T; </code>
+<tr><td><code><b>function</b> Println&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит последовательность на экран, используя пробел качестве разделителя, и переходит на новую строку</td></tr>
-<tr><td><code><b>function</b> SkipLast&lt;T&gt;(self: <b>sequence </b>  <b>of</b> T; count: integer := 1): <b>sequence </b>  <b>of</b> T; </code>
+<tr><td><code><b>function</b> SkipLast&lt;T&gt;(self: <b>sequence </b>  <b>of</b> T; count: integer := 1): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность без последних count элементов</td></tr>
-<tr><td><code><b>function</b> Slice&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; from, step: integer): <b>sequence </b>  <b>of</b> T; </code>
+<tr><td><code><b>function</b> Slice&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; from, step: integer): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает срез последовательности от номера from с шагом step &gt; 0</td></tr>
-<tr><td><code><b>function</b> Slice&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; from, step, count: integer): <b>sequence </b>  <b>of</b> T; </code>
+<tr><td><code><b>function</b> Slice&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; from, step, count: integer): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает срез последовательности от номера from с шагом step &gt; 0 длины не более count</td></tr>
-<tr><td><code><b>function</b> Sorted&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T; </code>
+<tr><td><code><b>function</b> Sorted&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отсортированную по возрастанию последовательность</td></tr>
-<tr><td><code><b>function</b> SortedDescending&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T; </code>
+<tr><td><code><b>function</b> SortedDescending&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отсортированную по убыванию последовательность</td></tr>
-<tr><td><code><b>function</b> SplitAt&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; ind: integer): (<b>sequence </b>  <b>of</b> T, <b>sequence </b>  <b>of</b> T); </code>
+<tr><td><code><b>function</b> SplitAt&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; ind: integer): (<b>sequence </b>  <b>of</b> T, <b>sequence </b>  <b>of</b> T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разбивает последовательности на две в позиции ind</td></tr>
-<tr><td><code><b>function</b> Tabulate&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> T; F: T-&gt;T1): <b>sequence </b>  <b>of</b> (T, T1); </code>
+<tr><td><code><b>function</b> Tabulate&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> T; F: T-&gt;T1): <b>sequence </b>  <b>of</b> (T, T1);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Табулирует функцию последовательностью</td></tr>
-<tr><td><code><b>function</b> TakeLast&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; count: integer): <b>sequence </b>  <b>of</b> T; </code>
+<tr><td><code><b>function</b> TakeLast&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; count: integer): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последние count элементов последовательности</td></tr>
-<tr><td><code><b>function</b> ToHashSet&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): HashSet&lt;T&gt;; </code>
+<tr><td><code><b>function</b> ToHashSet&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): HashSet&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает множество HashSet по данной последовательности</td></tr>
-<tr><td><code><b>function</b> ToLinkedList&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): LinkedList&lt;T&gt;; </code>
+<tr><td><code><b>function</b> ToLinkedList&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): LinkedList&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает LinkedList по данной последовательности</td></tr>
-<tr><td><code><b>function</b> ToSortedSet&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): SortedSet&lt;T&gt;; </code>
+<tr><td><code><b>function</b> ToSortedSet&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): SortedSet&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает множество SortedSet по данной последовательности</td></tr>
-<tr><td><code><b>function</b> UnZipTuple&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> (T, T1)): (<b>sequence </b>  <b>of</b> T, <b>sequence </b>  <b>of</b> T1); </code>
+<tr><td><code><b>function</b> UnZipTuple&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> (T, T1)): (<b>sequence </b>  <b>of</b> T, <b>sequence </b>  <b>of</b> T1);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разъединяет последовательность двухэлементных кортежей на две последовательности</td></tr>
-<tr><td><code><b>function</b> UnZipTuple&lt;T, T1, T2&gt;(Self: <b>sequence </b>  <b>of</b> (T, T1, T2)): (<b>sequence </b>  <b>of</b> T, <b>sequence </b>  <b>of</b> T1, <b>sequence </b>  <b>of</b> T2); </code>
+<tr><td><code><b>function</b> UnZipTuple&lt;T, T1, T2&gt;(Self: <b>sequence </b>  <b>of</b> (T, T1, T2)): (<b>sequence </b>  <b>of</b> T, <b>sequence </b>  <b>of</b> T1, <b>sequence </b>  <b>of</b> T2);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разъединяет последовательность трехэлементных кортежей на три последовательности</td></tr>
-<tr><td><code><b>function</b> UnZipTuple&lt;T, T1, T2, T3&gt;(Self: <b>sequence </b>  <b>of</b> (T, T1, T2, T3)): (<b>sequence </b>  <b>of</b> T, <b>sequence </b>  <b>of</b> T1, <b>sequence </b>  <b>of</b> T2, <b>sequence </b>  <b>of</b> T3); </code>
+<tr><td><code><b>function</b> UnZipTuple&lt;T, T1, T2, T3&gt;(Self: <b>sequence </b>  <b>of</b> (T, T1, T2, T3)): (<b>sequence </b>  <b>of</b> T, <b>sequence </b>  <b>of</b> T1, <b>sequence </b>  <b>of</b> T2, <b>sequence </b>  <b>of</b> T3);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разъединяет последовательность четырехэлементных кортежей на четыре последовательности</td></tr>
-<tr><td><code><b>function</b> WriteLines(Self: <b>sequence </b>  <b>of</b> string; fname: string): <b>sequence </b>  <b>of</b> string; </code>
+<tr><td><code><b>function</b> WriteLines(Self: <b>sequence </b>  <b>of</b> string; fname: string): <b>sequence </b>  <b>of</b> string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит последовательность строк в файл</td></tr>
-<tr><td><code><b>function</b> ZipTuple&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> T; a: <b>sequence </b>  <b>of</b> T1): <b>sequence </b>  <b>of</b> (T, T1); </code>
+<tr><td><code><b>function</b> ZipTuple&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> T; a: <b>sequence </b>  <b>of</b> T1): <b>sequence </b>  <b>of</b> (T, T1);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет две последовательности в последовательность двухэлементных кортежей</td></tr>
-<tr><td><code><b>function</b> ZipTuple&lt;T, T1, T2&gt;(Self: <b>sequence </b>  <b>of</b> T; a: <b>sequence </b>  <b>of</b> T1; b: <b>sequence </b>  <b>of</b> T2): <b>sequence </b>  <b>of</b> (T, T1, T2); </code>
+<tr><td><code><b>function</b> ZipTuple&lt;T, T1, T2&gt;(Self: <b>sequence </b>  <b>of</b> T; a: <b>sequence </b>  <b>of</b> T1; b: <b>sequence </b>  <b>of</b> T2): <b>sequence </b>  <b>of</b> (T, T1, T2);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет три последовательности в последовательность трехэлементных кортежей</td></tr>
-<tr><td><code><b>function</b> ZipTuple&lt;T, T1, T2, T3&gt;(Self: <b>sequence </b>  <b>of</b> T; a: <b>sequence </b>  <b>of</b> T1; b: <b>sequence </b>  <b>of</b> T2; c: <b>sequence </b>  <b>of</b> T3): <b>sequence </b>  <b>of</b> (T, T1, T2, T3); </code>
+<tr><td><code><b>function</b> ZipTuple&lt;T, T1, T2, T3&gt;(Self: <b>sequence </b>  <b>of</b> T; a: <b>sequence </b>  <b>of</b> T1; b: <b>sequence </b>  <b>of</b> T2; c: <b>sequence </b>  <b>of</b> T3): <b>sequence </b>  <b>of</b> (T, T1, T2, T3);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет четыре последовательности в последовательность четырехэлементных кортежей</td></tr>
-</table></body></HTML>
+</table>
+</body></HTML>

@@ -25,11 +25,11 @@ procedure SetLeft(Self: UIElement; l: integer);
 procedure SetTop(Self: UIElement; t: integer); 
 
 //{{{doc: Начало секции 1 }}} 
-// -----------------------------------------------------
-//>>     Стандартные типы # Standard types
-// -----------------------------------------------------
 
 type 
+// -----------------------------------------------------
+//>>     Типы модуля WPFObjects # WPFObjects types
+// -----------------------------------------------------
   /// Тип клавиши
   Key = System.Windows.Input.Key;
   /// Цветовые константы
@@ -54,7 +54,7 @@ type
 var host: Canvas;
 
 // -----------------------------------------------------
-//>>     Стандартные функции # Standard functions
+//>>     WPFObjects функции 1 # WPFObjects functions 1
 // -----------------------------------------------------
 
 /// Возвращает цвет по красной, зеленой и синей составляющей (в диапазоне 0..255)
@@ -76,10 +76,10 @@ function ColorBrush(c: Color): GBrush;
 //{{{--doc: Конец секции 1 }}} 
 
 //{{{doc: Начало секции 2 }}} 
-// -----------------------------------------------------
-//>>     Класс графического окна # Graph window class
-// -----------------------------------------------------
 type
+// -----------------------------------------------------
+//>>     Класс графического окна # Class GraphWindowType
+// -----------------------------------------------------
   /// Класс графического окна
   GraphWindowType = class
   private
@@ -100,7 +100,7 @@ type
   
   ObjectWPF = class;
 // -----------------------------------------------------
-//>>     Класс списка графических объектов # List of objects class
+//>>     Класс списка графических объектов # Class List of objects
 // -----------------------------------------------------
   ///!#
   /// Класс списка графических объектов
@@ -129,7 +129,7 @@ type
 
 
 // -----------------------------------------------------
-//>>     Класс ObjectWPF # ObjectWPF class
+//>>     Класс ObjectWPF # Class ObjectWPF 
 // -----------------------------------------------------
   /// Перечислимый тип выравнивания текста в свойстве Text или Number
   Alignment = (LeftTop,CenterTop,RightTop,LeftCenter,Center,RightCenter,LeftBottom,CenterBottom,RightBottom);
@@ -264,7 +264,7 @@ type
   end;
   
 // -----------------------------------------------------
-//>>     Класс графических объектов с границей # Класс графических объектов с границей
+//>>     Класс графических объектов с границей # Class BoundedObjectWPF
 // -----------------------------------------------------
   /// Класс графических объектов с границей
   BoundedObjectWPF = class(ObjectWPF)
@@ -309,7 +309,8 @@ type
       Result := Self;
     end;
     /// Декоратор выключения границы объекта
-    function WithNoBorder: BoundedObjectWPF := Invoke&<BoundedObjectWPF>(WithNoBorderP);
+    function WithNoBorder: BoundedObjectWPF 
+      := Invoke&<BoundedObjectWPF>(WithNoBorderP);
   end;
 
 // -----------------------------------------------------
@@ -330,10 +331,11 @@ type
     /// Декоратор выключения границы объекта
     function WithNoBorder := inherited WithNoBorder as EllipseWPF;
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black) 
+    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): EllipseWPF 
       := inherited WithText(txt,size,fontname,c) as EllipseWPF;
     /// Декоратор поворота объекта
-    function WithRotate(da: real) := inherited WithRotate(da) as EllipseWPF;
+    function WithRotate(da: real): EllipseWPF 
+      := inherited WithRotate(da) as EllipseWPF;
   end;
 
 // -----------------------------------------------------
@@ -375,10 +377,11 @@ type
     /// Декоратор выключения границы объекта
     function WithNoBorder := inherited WithNoBorder as CircleWPF;
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black) 
+    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): CircleWPF
       := inherited WithText(txt,size,fontname,c) as CircleWPF;
     /// Декоратор поворота объекта
-    function WithRotate(da: real) := inherited WithRotate(da) as CircleWPF;
+    function WithRotate(da: real): CircleWPF
+      := inherited WithRotate(da) as CircleWPF;
   end;
 
 // -----------------------------------------------------
@@ -403,10 +406,11 @@ type
     /// Декоратор выключения границы объекта
     function WithNoBorder := inherited WithNoBorder as RectangleWPF;
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black) 
+    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): RectangleWPF
       := inherited WithText(txt,size,fontname,c) as RectangleWPF;
     /// Декоратор поворота объекта
-    function WithRotate(da: real) := inherited WithRotate(da) as RectangleWPF;
+    function WithRotate(da: real): RectangleWPF 
+      := inherited WithRotate(da) as RectangleWPF;
   end;
   
 // -----------------------------------------------------
@@ -427,10 +431,11 @@ type
     /// Декоратор выключения границы объекта
     function WithNoBorder := inherited WithNoBorder as SquareWPF;
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black) 
+    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): SquareWPF
       := inherited WithText(txt,size,fontname,c) as SquareWPF;
     /// Декоратор поворота объекта
-    function WithRotate(da: real) := inherited WithRotate(da) as SquareWPF;
+    function WithRotate(da: real): SquareWPF
+      := inherited WithRotate(da) as SquareWPF;
   end;
   
 // -----------------------------------------------------
@@ -456,10 +461,12 @@ type
     /// Декоратор выключения границы объекта
     function WithNoBorder := inherited WithNoBorder as RoundRectWPF;
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black) 
+    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): RoundRectWPF
       := inherited WithText(txt,size,fontname,c) as RoundRectWPF;
     /// Декоратор поворота объекта
-    function WithRotate(da: real) := inherited WithRotate(da) as RoundRectWPF;
+    function WithRotate(da: real): RoundRectWPF
+      := inherited WithRotate(da) as RoundRectWPF;
+    /// Радицс скругления
     property RoundRadius: real 
       read InvokeReal(()->(ob as Rectangle).RadiusX)
       write begin
@@ -469,7 +476,7 @@ type
   end;
   
 // -----------------------------------------------------
-//>>     Класс графических объектов "Квадрат со скругленными краями" # Класс графических объектов Квадрат со скругленными краями
+//>>     Класс графических объектов "Квадрат со скругленными краями" # Class RoundSquareWPF
 // -----------------------------------------------------
   /// Класс графических объектов "Квадрат со скругленными краями"
   RoundSquareWPF = class(CircleWPF)
@@ -487,14 +494,17 @@ type
     /// Создает квадрат со скругленными краями со стороной w с радиусом скругления r заданного цвета с координатами левого верхнего угла, задаваемыми точкой
     constructor (p: Point; w,r: real; c: GColor) := Invoke(InitOb2,p.x,p.y,w,r,c);
     /// Декоратор включения границы объекта
-    function WithBorder(w: real := -1) := inherited WithBorder(w) as RoundSquareWPF;
+    function WithBorder(w: real := -1): RoundSquareWPF 
+      := inherited WithBorder(w) as RoundSquareWPF;
     /// Декоратор выключения границы объекта
-    function WithNoBorder := inherited WithNoBorder as RoundSquareWPF;
+    function WithNoBorder: RoundSquareWPF
+      := inherited WithNoBorder as RoundSquareWPF;
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black) 
+    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): RoundSquareWPF 
       := inherited WithText(txt,size,fontname,c) as RoundSquareWPF;
     /// Декоратор поворота объекта
-    function WithRotate(da: real) := inherited WithRotate(da) as RoundSquareWPF;
+    function WithRotate(da: real): RoundSquareWPF 
+      := inherited WithRotate(da) as RoundSquareWPF;
   end;
 
 // -----------------------------------------------------
@@ -595,10 +605,11 @@ type
         Invoke(procedure->begin gr1.Height := value; end); 
       end; override; 
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black) 
+    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): LineWPF
       := inherited WithText(txt,size,fontname,c) as LineWPF;
     /// Декоратор поворота объекта
-    function WithRotate(da: real) := inherited WithRotate(da) as LineWPF;
+    function WithRotate(da: real): LineWPF
+      := inherited WithRotate(da) as LineWPF;
     /// Декоратор ширины линии отрезка
     function WithLineWidth(lw: real): LineWPF;
     begin
@@ -666,14 +677,17 @@ type
       read InvokeInteger(()->n) 
       write Invoke(Cnt,Value);
     /// Декоратор включения границы объекта
-    function WithBorder(w: real := -1) := inherited WithBorder(w) as RegularPolygonWPF;
+    function WithBorder(w: real := -1): RegularPolygonWPF
+      := inherited WithBorder(w) as RegularPolygonWPF;
     /// Декоратор выключения границы объекта
-    function WithNoBorder := inherited WithNoBorder as RegularPolygonWPF;
+    function WithNoBorder: RegularPolygonWPF 
+      := inherited WithNoBorder as RegularPolygonWPF;
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black) 
+    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): RegularPolygonWPF  
       := inherited WithText(txt,size,fontname,c) as RegularPolygonWPF;
     /// Декоратор поворота объекта
-    function WithRotate(da: real) := inherited WithRotate(da) as RegularPolygonWPF;
+    function WithRotate(da: real): RegularPolygonWPF  
+      := inherited WithRotate(da) as RegularPolygonWPF;
   end;
   
 // -----------------------------------------------------
@@ -738,14 +752,17 @@ type
       read rint 
       write Invoke(IntRad,Value);
     /// Декоратор включения границы объекта
-    function WithBorder(w: real := -1) := inherited WithBorder(w) as StarWPF;
+    function WithBorder(w: real := -1): StarWPF 
+      := inherited WithBorder(w) as StarWPF;
     /// Декоратор выключения границы объекта
-    function WithNoBorder := inherited WithNoBorder as StarWPF;
+    function WithNoBorder: StarWPF 
+      := inherited WithNoBorder as StarWPF;
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black) 
+    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): StarWPF 
       := inherited WithText(txt,size,fontname,c) as StarWPF;
     /// Декоратор поворота объекта
-    function WithRotate(da: real) := inherited WithRotate(da) as StarWPF;
+    function WithRotate(da: real): StarWPF 
+      := inherited WithRotate(da) as StarWPF;
   end;
 
   PointsArray = array of Point;
@@ -780,6 +797,7 @@ type
       write begin
         var ob1 := ob;
         var pp := value;
+        // ширина и высота будут некорректно. Надо переопределить на чтение
         var x1 := pp.Min(p->p.x);
         var x2 := pp.Max(p->p.x);
         var y1 := pp.Min(p->p.y);
@@ -790,14 +808,17 @@ type
         Invoke(procedure -> (ob1 as Polygon).Points := new PointCollection(a));
       end;  
     /// Декоратор включения границы объекта
-    function WithBorder(w: real := -1) := inherited WithBorder(w) as PolygonWPF;
+    function WithBorder(w: real := -1): PolygonWPF
+      := inherited WithBorder(w) as PolygonWPF;
     /// Декоратор выключения границы объекта
-    function WithNoBorder := inherited WithNoBorder as PolygonWPF;
+    function WithNoBorder: PolygonWPF 
+      := inherited WithNoBorder as PolygonWPF;
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black) 
+    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): PolygonWPF 
       := inherited WithText(txt,size,fontname,c) as PolygonWPF;
     /// Декоратор поворота объекта
-    function WithRotate(da: real) := inherited WithRotate(da) as PolygonWPF;
+    function WithRotate(da: real): PolygonWPF
+      := inherited WithRotate(da) as PolygonWPF;
   end;
 
 // -----------------------------------------------------
@@ -838,14 +859,15 @@ type
     /// Создает рисунок из файла fname  с координатой левого верхнего угла, заданной точкой p, и размерами (w,h)
     constructor (p: Point; w,h: real; fname: string) := Invoke(InitOb3,p.x,p.y,w,h,fname);
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black) 
+    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): PictureWPF  
       := inherited WithText(txt,size,fontname,c) as PictureWPF;
     /// Декоратор поворота объекта
-    function WithRotate(da: real) := inherited WithRotate(da) as PictureWPF;
+    function WithRotate(da: real): PictureWPF 
+      := inherited WithRotate(da) as PictureWPF;
   end;
 
 // -----------------------------------------------------
-//>>     Переменные модуля WPFObjects# Variables of WPFObjects
+//>>     Переменные модуля WPFObjects# WPFObjects Variables
 // -----------------------------------------------------
 /// Главное окно
 var Window: WindowType;
@@ -868,7 +890,7 @@ var
   /// Событие изменения размера графического окна
   OnResize: procedure;
   /// Список графических объектов
-  Objects := new ObjectsType;
+  Objects: ObjectsType;
 
 // -----------------------------------------------------
 //>>     Функции пересечения# Intersection functions
@@ -1253,6 +1275,7 @@ public
   begin
     Window := new WindowType;
     GraphWindow := new GraphWindowType;
+    Objects := new ObjectsType;
   end;
   
   procedure InitHandlers; override;

@@ -1,9 +1,9 @@
 ﻿unit GenDocUnit;
 
-const fname = 'D:\PABC_Git\bin\Lib\PABCSystem.pas';
-const fname1 = 'D:\PABC_Git\bin\Lib\PABCExtensions.pas';
+var fname := '';
+var fname1 := '';
 
-const RootOutputDirectory = 'LangGuide\PABCSystemUnit\';
+var RootOutputDirectory := '';
 
 procedure Step1;
 begin
@@ -11,7 +11,12 @@ begin
   
   var l := new List<string>;
   var skip := true;
-  foreach var s in ReadLines(fname).ToArray + ReadLines(fname1).ToArray do
+  
+  var ll := ReadLines(fname);
+  if fname1<>'' then
+    ll := ll + ReadLines(fname1);
+  
+  foreach var s in ReadLines(fname) do
   begin
     if s.StartsWith('//{{{doc:') then 
     begin
@@ -27,11 +32,11 @@ begin
     l.Add(s.Replace('&',''));  
   end;
   
-  WriteLines('PABC.pas',l);
+  WriteLines('__PABC.pas',l);
 end;
 
 procedure Step2;
-const fname = 'PABC.pas';
+const fname = '__PABC.pas';
 begin
   var l := new List<string>;
   var skipNext := False;
@@ -40,13 +45,17 @@ begin
   begin
     if s.Trim.StartsWith('/// !! ')then
       continue;
-    if s.Trim.StartsWith('// ')then
+    if s.Trim.StartsWith('// ') then
       continue;
     if s.Trim.StartsWith('//---')then
       continue;
-    if s.Trim.StartsWith('const')then
+      
+    if s.Trim.StartsWith('///!#') then
       continue;
-    if s.Trim.StartsWith('type')then
+    
+    if s.Trim.StartsWith('const ')then
+      continue;
+    if s.Trim.StartsWith('type ')then
       continue;
     if s.Trim.Length=0 then
       continue;
@@ -78,11 +87,11 @@ begin
     l.Add(s.Trim);    
   end;
   
-  WriteLines('PABC1.pas',l);
+  WriteLines('__PABC1.pas',l);
 end;
 
 procedure Step3;
-const fname = 'PABC1.pas';
+const fname = '__PABC1.pas';
 begin
   var l := new List<string>;
   var Prev: string := '';
@@ -96,18 +105,33 @@ begin
     Prev := s;
   end;
   
-  WriteLines('PABC2.pas',l);
+  WriteLines('__PABC1-1.pas',l);
+end;
+
+procedure Step3_1(); // пропускать подряд идущие строки без /// или //>> в начале
+const fname = '__PABC1-1.pas';
+begin
+  var l := new List<string>;
+  var Prev: string := '';
+  foreach var s in ReadLines(fname) do
+  begin
+    if Prev.StartsWith('///') or Prev.StartsWith('//>>') or s.StartsWith('///') or s.StartsWith('//>>') then
+      l.Add(s);    
+    Prev := s;
+  end;
+
+  WriteLines('__PABC2.pas',l);
 end;
 
 procedure Step4;
-const fname = 'PABC2.pas';
+const fname = '__PABC2.pas';
 begin
   var l := new List<string>;
   var p1 := '';
   var p2 := '';
   foreach var s in ReadLines(fname) do
   begin
-    if s.StartsWith('///-')then
+    if s.StartsWith('///-') then
     begin
       p1 := s;
       continue;
@@ -132,7 +156,7 @@ begin
     l.Add(s);    
   end;
   
-  WriteLines('PABCdoc.pas',l);
+  WriteLines('__PABCdoc.pas',l);
 end;
 
 function Around(Self: string; s: string): string; extensionmethod;
@@ -152,15 +176,122 @@ end;
 var toc := Seq('');
 var hrefs := Seq('');
 
+type 
+  FD = auto class
+    fun,def: string;
+  end;
+  BFD = auto class
+    basename: string;
+    fds: List<FD>;
+  end;
+ 
+var dictClasses := new Dictionary<string,BFD>;
+
+function CreateTableData(fds: List<FD>; Keywords: SortedSet<string>): string;
+begin
+  Result := '';
+  for var i:=0 to fds.Count-1 do
+  begin
+    //funcs[i] := Regex.Replace(funcs[i],'\(\ *Self[^;\)]*\)','()');
+    //funcs[i] := Regex.Replace(funcs[i],'\(\ *Self[^;]*;\ *','(');
+    fds[i].fun := fds[i].fun.Trim;
+    
+    if (fds[i].fun.Length>0) and (fds[i].fun.Last<>';') then
+      fds[i].fun += ';';
+
+    fds[i].fun := Regex.Replace(fds[i].fun,'extensionmethod[^;]*;','');
+    fds[i].fun := Regex.Replace(fds[i].fun,' read.*;','');
+    fds[i].fun := Regex.Replace(fds[i].fun,' write.*;','');
+    fds[i].fun := Regex.Replace(fds[i].fun,'\)\s*:=.*',')');
+    fds[i].fun := fds[i].fun.DeleteFirst('var ');
+    
+    fds[i].fun := fds[i].fun.Trim;
+    if (fds[i].fun.Length>0) and (fds[i].fun.Last<>';') then
+      fds[i].fun += ';';
+
+    var dd := fds[i].def.Remove(0,3).Trim;
+    var td := fds[i].fun.Around('code')
+      .Replace('System.IComparable','IComparable')
+      .Replace('function','<b>function</b>')
+      .Replace('procedure','<b>procedure</b>')
+      .Replace('constructor','<b>constructor</b>')
+      .Replace('property','<b>property</b>')
+      .Replace(' read',' <b>read</b>')
+      .Replace(' write',' <b>write</b>')
+      .Replace('virtual','<b>virtual</b>')
+      .Replace('sequence ','<b>sequence </b> ')
+      .Replace('set ','<b>set </b> ')
+      .Replace('array ','<b>array</b> ')
+      .Replace('where ','<b>where</b> ')
+      .Replace('file ',' <b>file</b> ')
+      .Replace('of ',' <b>of</b> ')
+      .Replace('var ','<b>var</b> ')
+      .Replace('params ','<b>params</b> ')
+      .Replace('const ','<b>const</b> ')
+      .Replace('extensionmethod','<b>extensionmethod</b>')
+      + NewLine + '<br>' + '&nbsp;'*8 + dd;
+    if keywords<>nil then // =nil если мы добавляем имена предка и в Keywords их не надо добавлять 
+    if not fds[i].fun.StartsWith('constructor') then
+    begin
+      var k := fds[i].fun.DeleteFirst('function ').DeleteFirst('procedure ').DeleteFirst('property ');
+      k := k.MatchValue('\w+');
+      keywords += k;
+    end;
+    td := td.Around('td').Around('tr')+NewLine;
+    Result += td;
+  end;
+end;
+
+function CreateSectionInClassDef(title: string; fds: sequence of System.Linq.IGrouping<string,FD>; Keywords: SortedSet<string>): string;
+begin
+  Result := '';
+  if fds.Count=0 then
+    exit;
+  title := '<font style="font-size: 11pt">'+title+'</font>';
+  title := '<td class="secttitle">'+title+'</td>';
+  title := '<tr><td></td></tr>' + title.Around('tr');
+  Result += title + NewLine;
+  foreach var group in fds do
+    Result += NewLine + CreateTableData(group.ToList,keywords).Around('tr');
+end;
+
 procedure GenerateHTMLFile(HelpFileName,Title: string; lst: List<string>);
 begin
   var keywords := new SortedSet<string>;
   var s := '';
-  var table := '';
   var lst1 := lst.Select(s->s.Replace('<','&lt;').Replace('>','&gt;'));
   var funcs := lst1.Slice(1,2).ToList;
   var defs := lst1.Slice(0,2).ToList;
-  var names := funcs.Select(s->begin Result := ''; var ss := s.Split(' ','<','(','&',':'); if (ss[0]='procedure') or (ss[0]='function') then Result := ss[1] else Result := ss[0]; end).ToList;
+  
+  // Вырезать из funcs строку где встречается class, его имя и предка
+
+  var classdef,classname,classbase: string;  
+  var ind := funcs.FindIndex(s ->s.Contains(' class'));
+  if ind<>-1 then
+  begin
+    var str := funcs[ind];
+    classdef := defs[ind].ToString.Remove(0,3).Trim;
+    funcs.RemoveAt(ind);
+    defs.RemoveAt(ind);
+    
+    var ss := str.ToWords(' ','=','(',')');
+    classname := ss[0];
+    if ss.Length>2 then
+      classbase := ss[2];
+      
+    classdef := classdef + '.';
+    if classbase<>'' then
+      classdef += ' Базовый класс - '+ classbase.Around('code') + '.';
+    s += classdef;
+  end;
+  
+  var names := funcs.Select(s->begin 
+    Result := ''; 
+    var ss := s.Split(' ','<','(','&',':'); 
+    if (ss[0]='procedure') or (ss[0]='function') or (ss[0]='property') then 
+      Result := ss[1] 
+    else Result := ss[0]; 
+  end).ToList;
   var ttt := funcs.ZipTuple(defs,names).OrderBy(t->t[2]);
   
   funcs := ttt.Select(t->t[0]).ToList;
@@ -173,44 +304,58 @@ begin
     halt;
   end;
   
-  for var i:=0 to funcs.Count-1 do
-  begin
-    //funcs[i] := Regex.Replace(funcs[i],'\(\ *Self[^;\)]*\)','()');
-    //funcs[i] := Regex.Replace(funcs[i],'\(\ *Self[^;]*;\ *','(');
-    funcs[i] := Regex.Replace(funcs[i],'extensionmethod[^;]*;','');
+  // Слить funcs defs в одну структуру FD
+  var fds := funcs.Zip(defs,(f,d)->new FD(f,d)).ToList;
 
-    var dd := defs[i].Remove(0,3).Trim;
-    var td := funcs[i].Around('code')
-      .Replace('System.IComparable','IComparable')
-      .Replace('function','<b>function</b>')
-      .Replace('procedure','<b>procedure</b>')
-      .Replace('sequence ','<b>sequence </b> ')
-      .Replace('set ','<b>set </b> ')
-      .Replace('array ','<b>array</b> ')
-      .Replace('where ','<b>where</b> ')
-      .Replace('file ',' <b>file</b> ')
-      .Replace('of ',' <b>of</b> ')
-      .Replace('var ','<b>var</b> ')
-      .Replace('params ','<b>params</b> ')
-      .Replace('const ','<b>const</b> ')
-      .Replace('extensionmethod','<b>extensionmethod</b>')
-      + NewLine + '<br>' + '&nbsp;'*8 + dd;
-    var k := funcs[i].DeleteFirst('function ').DeleteFirst('procedure ');
-    k := k.MatchValue('\w+');
-    keywords += k;
-    td := td.Around('td').Around('tr')+NewLine;
-    table += td;
+  var table := '';
+  
+  if classname<>'' then
+  begin
+    // пополнение словарика классов. Чтобы потом добавлять свойства и методы предков    
+    dictClasses[classname] := new BFD(classbase,fds);
+    
+  // funcs надо отклассифицировать: конструкторы, свойства, методы, события
+  // Каждую группу предварить заголовком
+    var gr := fds.GroupBy(fd->fd.fun.ToWords[0].Trim);
+    
+    var cons := gr.Where(g->g.Key='constructor');
+    table += CreateSectionInClassDef('Конструкторы класса '+classname,cons,Keywords);
+    
+    var prop := gr.Where(g->g.Key='property');
+    table += CreateSectionInClassDef('Свойства класса '+classname,prop,Keywords);
+
+    var pf := gr.Where(g->(g.Key='procedure') or (g.Key='function'));
+    table += CreateSectionInClassDef('Методы класса '+classname,pf,Keywords);
+    
+    if classbase<>'' then
+    begin
+      gr := dictClasses[classbase].fds.GroupBy(fd->fd.fun.ToWords[0].Trim);
+    // Добавить свойства предка
+      prop := gr.Where(g->g.Key='property');
+      table += CreateSectionInClassDef('Свойства предка '+classbase,prop,nil);
+    // Добавить методы предка
+      pf := gr.Where(g->(g.Key='procedure') or (g.Key='function'));
+      table += CreateSectionInClassDef('Методы предка '+classbase,pf,nil);
+    end;
+  end
+  else
+  begin
+    table := CreateTableData(fds.ToList,keywords);
   end;
+  table := NewLine+'<table border=0 cellpadding=5>' + table + '</table>'+NewLine;
+  s += table;
+  
+  //AddToTable(fds,table,keywords);
+
   var keys := keywords.Select(s->'<param name="Keyword" value="'+s+'">').JoinIntoString(NewLine);
   keys := '<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">'
     + NewLine +keys
     + '</object>'+ NewLine ;
   keys += '<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">'+NewLine;
     
-  table := NewLine+'<table cellpadding=3>' + table + '</table>';
   s := keys.Around('HEAD')
-    + (Title.Around('H1') + table).Around('body');
-  //Println(HelpFileName);  
+    + (Title.Around('H1') + s).Around('body');
+  //Println(HelpFileName);
   WriteAllText('..\'+RootOutputDirectory+'Files\'+HelpFileName+'.html',s.Around('HTML'));
 
   var s1 := '<param name="Name" value="' + Title + '">';
@@ -224,7 +369,7 @@ end;
 
 procedure FinalStep;
 begin
-  var lines := ReadLines('PABCdoc.pas').ToArray;
+  var lines := ReadLines('__PABCdoc.pas').ToArray;
   var lst := new List<string>;
   var HelpFileName := '';
   var Title := '';

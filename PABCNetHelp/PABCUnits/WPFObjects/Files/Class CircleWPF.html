@@ -1,0 +1,50 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Height">
+<param name="Keyword" value="Radius">
+<param name="Keyword" value="Width">
+<param name="Keyword" value="WithBorder">
+<param name="Keyword" value="WithNoBorder">
+<param name="Keyword" value="WithRotate">
+<param name="Keyword" value="WithText"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Класс CircleWPF</H1>Класс графических объектов "Окружность". Базовый класс - <code>BoundedObjectWPF</code>.
+<table border=0 cellpadding=5><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Конструкторы класса CircleWPF</font></td></tr>
+
+<tr><tr><td><code><b>constructor</b> (x,y,r: real; c: GColor);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает круг радиуса r заданного цвета с координатами центра (x,y)</td></tr>
+<tr><td><code><b>constructor</b> (p: Point; r: real; c: GColor);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает круг радиуса r заданного цвета с центром p</td></tr>
+</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства класса CircleWPF</font></td></tr>
+
+<tr><tr><td><code><b>property</b> Height: real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Высота круга</td></tr>
+<tr><td><code><b>property</b> Radius: real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Радиус круга</td></tr>
+<tr><td><code><b>property</b> Width: real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ширина круга</td></tr>
+</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы класса CircleWPF</font></td></tr>
+
+<tr><tr><td><code><b>function</b> WithBorder(w: real := -1);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
+<tr><td><code><b>function</b> WithNoBorder := inherited WithNoBorder as CircleWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор выключения границы объекта</td></tr>
+<tr><td><code><b>function</b> WithRotate(da: real): CircleWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор поворота объекта</td></tr>
+<tr><td><code><b>function</b> WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): CircleWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор текста объекта</td></tr>
+</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства предка BoundedObjectWPF</font></td></tr>
+
+<tr><tr><td><code><b>property</b> BorderColor: GColor;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет границы графического объекта</td></tr>
+<tr><td><code><b>property</b> BorderWidth: real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ширина границы графического объекта</td></tr>
+<tr><td><code><b>property</b> Color: GColor;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет графического объекта</td></tr>
+</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы предка BoundedObjectWPF</font></td></tr>
+
+<tr><tr><td><code><b>function</b> WithBorder(w: real := -1): BoundedObjectWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
+<tr><td><code><b>function</b> WithNoBorder: BoundedObjectWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор выключения границы объекта</td></tr>
+</tr></table>
+</body></HTML>
