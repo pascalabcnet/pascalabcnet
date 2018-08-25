@@ -54,7 +54,7 @@ type
 var host: Canvas;
 
 // -----------------------------------------------------
-//>>     WPFObjects функции 1 # WPFObjects functions 1
+//>>     Вспомогательные функции WPFObjects # WPFObjects functions 1
 // -----------------------------------------------------
 
 /// Возвращает цвет по красной, зеленой и синей составляющей (в диапазоне 0..255)
@@ -466,7 +466,7 @@ type
     /// Декоратор поворота объекта
     function WithRotate(da: real): RoundRectWPF
       := inherited WithRotate(da) as RoundRectWPF;
-    /// Радицс скругления
+    /// Радиус скругления
     property RoundRadius: real 
       read InvokeReal(()->(ob as Rectangle).RadiusX)
       write begin
@@ -476,7 +476,7 @@ type
   end;
   
 // -----------------------------------------------------
-//>>     Класс графических объектов "Квадрат со скругленными краями" # Class RoundSquareWPF
+//>>     Класс графических объектов RoundSquareWPF # Class RoundSquareWPF
 // -----------------------------------------------------
   /// Класс графических объектов "Квадрат со скругленными краями"
   RoundSquareWPF = class(CircleWPF)
