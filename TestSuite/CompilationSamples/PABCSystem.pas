@@ -2085,7 +2085,7 @@ type
     function GetCounter(obj: Object): integer;
     function GetEnumerator: System.Collections.IEnumerator;
   end;
-
+  
 type
   ///--
   PointerOutput = class
@@ -2155,6 +2155,32 @@ type
     begin
     end;
   end;
+  
+type 
+// Смысл полей Num, Width и Fmt соответствует
+// атрибутам форматирования {Num,Width:Fmt}.
+// Поле Comment может интерпретироваться как
+// дополнительная строка, приписываемая слева к свойству.
+// Если для первого атрибута дополнительная строка
+// начинается со скобок или кавычек, то парные символы
+// добавляются в конец итоговой строки.
+/// Класс атрибута форматирования текста 
+  PrintAttribute = class(System.Attribute)
+    public
+    Comment: string;
+    Num: integer;
+    Width: integer;
+    Fmt: string;
+    constructor (n: integer)                          := (Comment, Num, Width, Fmt) := ('', n, 0, '');
+    constructor (n, w: integer)                       := (Comment, Num, Width, Fmt) := ('', n, w, '');
+    constructor (n: integer; f: string)               := (Comment, Num, Width, Fmt) := ('', n, 0, f);
+    constructor (n, w: integer; f: string)            := (Comment, Num, Width, Fmt) := ('', n, w, f);
+    constructor (c: string; n: integer)               := (Comment, Num, Width, Fmt) := (c, n, 0, '');
+    constructor (c: string; n, w: integer)            := (Comment, Num, Width, Fmt) := (c, n, w, '');
+    constructor (c: string; n: integer; f: string)    := (Comment, Num, Width, Fmt) := (c, n, 0, f);
+    constructor (c: string; n, w: integer; f: string) := (Comment, Num, Width, Fmt) := (c, n, w, f);
+  end;
+  
   
 // -----------------------------------------------------
 //                  Internal procedures for PABCRTL.dll
