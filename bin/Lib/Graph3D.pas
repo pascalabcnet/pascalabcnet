@@ -34,8 +34,8 @@ type
   CameraMode = HelixToolkit.Wpf.CameraMode;
   TupleInt3 = (integer, integer, integer);
   TupleReal3 = (real, real, real);
-  Point3D = Point3D;
-  Vector3D = Vector3D;
+  Point3D = System.Windows.Media.Media3D.Point3D;
+  Vector3D = System.Windows.Media.Media3D.Vector3D;
   Point = System.Windows.Point;
   Ray3D = HelixToolkit.Wpf.Ray3D;
   Line3D = class(Ray3D) end;
@@ -46,16 +46,6 @@ var
   hvp: HelixViewport3D;
   LightsGroup: Model3DGroup;
   gvl: GridLinesVisual3D;
-  /// Событие нажатия на кнопку мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
-  OnMouseDown: procedure(x, y: real; mousebutton: integer);
-  /// Событие отжатия кнопки мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если отжата левая кнопка мыши, и 2, если отжата правая кнопка мыши
-  OnMouseUp: procedure(x, y: real; mousebutton: integer);
-  /// Событие перемещения мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 0, если кнопка мыши не нажата, 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
-  OnMouseMove: procedure(x, y: real; mousebutton: integer);
-  /// Событие нажатия клавиши
-  OnKeyDown: procedure(k: Key);
-  /// Событие отжатия клавиши
-  OnKeyUp: procedure(k: Key);
 
 function RGB(r, g, b: byte) := Color.Fromrgb(r, g, b);
 
@@ -71,51 +61,31 @@ function Pnt(x, y: real) := new Point(x, y);
 
 function Rect(x, y, w, h: real) := new System.Windows.Rect(x, y, w, h);
 
-function operator*(p: Point3D; r: real): Point3D; extensionmethod := p.Multiply(r);
+function RandomColor: Color := RGB(Random(256), Random(256), Random(256));
 
-function operator*(r: real; p: Point3D): Point3D; extensionmethod := p.Multiply(r);
+function GrayColor(b: byte): Color := RGB(b, b, b);
 
-function operator+(p1, p2: Point3D): Point3D; extensionmethod := p3d(p1.X + p2.X, p1.Y + p2.Y, p1.Z + p2.Z);
+function RandomSolidBrush: SolidColorBrush := new SolidColorBrush(RandomColor);
 
-function operator-(v: Vector3D): Vector3D; extensionmethod := v3d(-v.x,-v.y,-v.z);
-
+var  
+  /// Событие нажатия на кнопку мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
+  OnMouseDown: procedure(x, y: real; mousebutton: integer);
+  /// Событие отжатия кнопки мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если отжата левая кнопка мыши, и 2, если отжата правая кнопка мыши
+  OnMouseUp: procedure(x, y: real; mousebutton: integer);
+  /// Событие перемещения мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 0, если кнопка мыши не нажата, 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
+  OnMouseMove: procedure(x, y: real; mousebutton: integer);
+  /// Событие нажатия клавиши
+  OnKeyDown: procedure(k: Key);
+  /// Событие отжатия клавиши
+  OnKeyUp: procedure(k: Key);
 
 var
-  OrtX := V3D(1, 0, 0);
-  OrtY := V3D(0, 1, 0);
-  OrtZ := V3D(0, 0, 1);
+  OrtX: Vector3D := V3D(1, 0, 0);
+  OrtY: Vector3D := V3D(0, 1, 0);
+  OrtZ: Vector3D := V3D(0, 0, 1);
   Origin: Point3D := P3D(0, 0, 0);
-  EmptyColor := ARGB(0, 0, 0, 0);
+  EmptyColor: Color := ARGB(0, 0, 0, 0);
 
-function ChangeOpacity(Self: GColor; value: integer); extensionmethod := ARGB(value, Self.R, Self.G, Self.B);
-
-function MoveX(Self: Point3D; dx: real); extensionmethod := P3D(Self.x + dx, Self.y, Self.z);
-
-function MoveY(Self: Point3D; dy: real); extensionmethod := P3D(Self.x, Self.y + dy, Self.z);
-
-function MoveZ(Self: Point3D; dz: real); extensionmethod := P3D(Self.x, Self.y, Self.z + dz);
-
-function Move(Self: Point3D; dx, dy, dz: real); extensionmethod := P3D(Self.x + dx, Self.y + dy, Self.z + dz);
-
-function operator implicit(t: TupleInt3): Point3D; extensionmethod := new Point3D(t[0], t[1], t[2]);
-
-function operator implicit(t: TupleReal3): Point3D; extensionmethod := new Point3D(t[0], t[1], t[2]);
-
-function operator implicit(ar: array of TupleInt3): Point3DCollection; extensionmethod := new Point3DCollection(ar.Select(t -> new Point3D(t[0], t[1], t[2])));
-
-function operator implicit(ar: array of Point3D): Point3DCollection; extensionmethod := new Point3DCollection(ar);
-
-function operator implicit(ar: List<Point3D>): Point3DCollection; extensionmethod := new Point3DCollection(ar);
-
-function RandomColor := RGB(Random(256), Random(256), Random(256));
-
-function GrayColor(b: byte) := RGB(b, b, b);
-
-function RandomSolidBrush := new SolidColorBrush(RandomColor);
-
-function wplus := SystemParameters.WindowResizeBorderThickness.Left + SystemParameters.WindowResizeBorderThickness.Right;
-
-function hplus := SystemParameters.WindowCaptionHeight + SystemParameters.WindowResizeBorderThickness.Top + SystemParameters.WindowResizeBorderThickness.Bottom;
 
 type
   IMHelper = auto class
@@ -158,6 +128,10 @@ function EmissiveMaterial(c: Color): Material := Invoke&<Material>(DEMHelper.Cre
 
 function RainbowMaterial: Material := Materials.Rainbow;
 
+//function wplus: real := SystemParameters.WindowResizeBorderThickness.Left + SystemParameters.WindowResizeBorderThickness.Right;
+
+//function hplus: real := SystemParameters.WindowCaptionHeight + SystemParameters.WindowResizeBorderThickness.Top + SystemParameters.WindowResizeBorderThickness.Bottom;
+
 type
   ///!#
   Materials = class
@@ -168,23 +142,9 @@ type
     class function Rainbow := RainbowMaterial;
   end;
   
-  GMHelper = auto class
-    a, b: Material;
-    function GroupMaterial: Material;
-    begin
-      var g := new MaterialGroup();
-      g.Children.Add(a);
-      g.Children.Add(b);
-      Result := g;
-    end;
-  end;
-
-
-function operator+(a, b: Material): Material; extensionmethod := Invoke&<Material>(GMHelper.Create(a, b).GroupMaterial);
-
 type
   ///!#
-  View3DT = class
+  View3DType = class
   private
     procedure SetSGLP(v: boolean) := gvl.Visible := v;
     procedure SetSGL(v: boolean) := Invoke(SetSGLP, v);
@@ -344,13 +304,11 @@ type
   end;
 
 var
-  View3D: View3DT;
+  View3D: View3DType;
   Window: WindowType;
   Camera: CameraType;
   Lights: LightsType;
   GridLines: GridLinesType;
-
-function operator implicit(c: GColor): GMaterial; extensionmethod := Materialhelper.CreateMaterial(c);
 
 type
   MyAnimation = class;
@@ -504,7 +462,6 @@ type
     function AnimMoveTrajectory(a: sequence of Point3D; seconds: real; Completed: procedure): MyAnimation;
     function AnimMoveTrajectory(a: sequence of Point3D; seconds: real := 1): MyAnimation := AnimMoveTrajectory(a,seconds,nil);
 
-    //function AnimMoveToP3D(x,y,z: real; seconds: real := 1): MyAnimation; - не получилось! Свойство не анимируется!
     function AnimMoveOn(dx, dy, dz: real; seconds: real; Completed: procedure): MyAnimation;
     function AnimMoveOn(dx, dy, dz: real; seconds: real := 1): MyAnimation := AnimMoveOn(dx,dy,dz,seconds,nil);
 
@@ -836,10 +793,6 @@ type
       InitAnim;
       
       ApplyAllDecorators;
-      {sb.Completed += procedure (o, e) -> 
-      begin 
-        sb.Children.Clear; 
-      end;}
       sb.Begin;
     end;
     
@@ -871,11 +824,7 @@ type
   
   EmptyAnimation = class(MyAnimation)
   public 
-    constructor(wait: real);
-    begin
-      Self.Seconds := wait;
-    end;
-    
+    constructor(wait: real) := Seconds := wait;
     procedure InitAnim(); virtual := InitAnimWait;
   end;
   
@@ -1166,36 +1115,6 @@ type
     end;
   end;
   
-  {RotateAnimation = class(Double1AnimationBase)
-  private 
-    vx, vy, vz, angle: real;
-    procedure InitAnimWait(sb: StoryBoard; wait: real); override;
-    begin
-      var rottransform := Element.rotatetransform_anim;
-      var rot := rottransform.Rotation as AxisAngleRotation3D;
-      var ttname := 'r' + rot.GetHashCode;
-      if not RegisterName(sb, rot, ttname) then;
-  
-      rot.Angle := 0; //?
-      rot.Axis := V3D(vx, vy, vz); //?
-  
-      var el: Object3D := Element;
-      sb.Completed += (o, e) -> begin
-        rottransform.Rotation := new AxisAngleRotation3D();
-        el.Rotate(rot.Axis, angle); // переходит в основную матрицу
-      end;
-  
-      da := AddDoubleAnimByName(sb, angle, seconds, ttname, AxisAngleRotation3D.AngleProperty, wait);
-    end;
-  
-  public 
-    constructor(e: Object3D; sec: real; vvx, vvy, vvz, a: real);
-    begin
-      inherited Create(e, sec);
-      (vx, vy, vz, angle) := (vvx, vvy, vvz, a)
-    end;
-  end;}
-  
   RotateAtAnimation = class(Double1AnimationBase)
   private 
     vx, vy, vz, angle: real;
@@ -1351,17 +1270,9 @@ type
     class function &Sequence(params l: array of MyAnimation) := new SequenceAnimation(l);
   end;
 
-function Sec(Self: integer): real; extensionmethod := Self;
-
-function Sec(Self: real): real; extensionmethod := Self;
-// А теперь - тадам! - перегрузка + для Animate.Sequence и перегрузка * для Animate.Group
-function operator+(a, b: MyAnimation): MyAnimation; extensionmethod := Animate.Sequence(a, b);
-
-function operator*(a, b: MyAnimation): MyAnimation; extensionmethod := Animate.Group(a, b);
-
-function MyAnimation.&Then(second: MyAnimation): MyAnimation := Self + second;
-
 function EmptyAnim(sec: real) := EmptyAnimation.Create(sec);
+
+function MyAnimation.&Then(second: MyAnimation): MyAnimation := Animate.Sequence(Self, second);
 
 //------------------------------ End Animation -------------------------------
 
@@ -1383,7 +1294,7 @@ type
   
   protected 
     function CreateObject: Object3D; override := new SphereT(X, Y, Z, Radius, Material.Clone);
-    constructor := CreateBase(NewVisualObject(1), 0, 0, 0, Colors.Blue);
+    constructor := CreateBase(NewVisualObject(1), 0, 0, 0, Materialhelper.CreateMaterial(Colors.Blue));
     constructor(x, y, z, r: real; m: Gmaterial) := CreateBase(NewVisualObject(r), x, y, z, m);
   public 
     property Radius: real read GetR write SetR;
@@ -2285,7 +2196,7 @@ type
     constructor(ppp1, ppp2, ppp3: Point3D);
     begin
       (pp1, pp2, pp3) := (ppp1, ppp2, ppp3);
-      Material := Colors.Red;
+      Material := Materialhelper.CreateMaterial(Colors.Red);
       OnGeometryChanged;
     end;
     
@@ -2532,157 +2443,6 @@ type
     function Clone := (inherited Clone) as PrismT;
   end;
   
-  MyAnyT = class(PlatonicAbstractT)
-  protected  
-    function CreateObject: Object3D; override := new MyAnyT(X, Y, Z, Length, Material);
-  public 
-    constructor(x, y, z, Length: real; m: GMaterial);
-    begin
-      CreateBase(new MyAnyVisual3D(Length), x, y, z, m);
-    end;
-    
-    function Clone := (inherited Clone) as MyAnyT;
-  end;
-
-type
-  My = class(ParametricSurface3D)
-  public 
-    function Evaluate(u: real; v: real; var textureCoord: System.Windows.Point): Point3D; override;
-    begin
-      u -= 0.5;
-      v -= 0.5;
-      u *= 3;
-      v *= 3;
-      textureCoord := new Point(u, 2 * v);
-      Result := P3D(u, v, 0.2 * u * u + sin(u * v) + 2);
-    end;
-  end;
-  
-  My13D = class(MeshElement3D)
-    public function Tessellate(): MeshGeometry3D; override;
-    begin
-      var tm := new MeshBuilder(false, false);
-      tm.AddRevolvedGeometry(Arr(Pnt(0, 0), Pnt(0, 1), Pnt(0.3, 1), Pnt(0.5, 0.3), Pnt(2, 1), Pnt(3, 0)), nil, Origin, OrtZ, 80);
-      Result := tm.ToMesh(false);
-    end;
-  end;
-
-
-
-type
-  AnyT = class(ObjectWithMaterial3D)
-    constructor(x, y, z: real; c: GColor);
-    begin
-      {var a := new ExtrudedVisual3D;
-      a.Path := new Point3DCollection(Arr(P3D(1,0,-0.5),P3D(1,0,0.5)));
-      a.Section := new PointCollection(Arr(Pnt(0,0),Pnt(0.5,0),Pnt(0,0.5)));
-      a.IsSectionClosed := True;}
-      
-      //var a := new TerrainVisual3D;
-      //a.Content := (new SphereVisual3D()).Model;
-      //a.Text := 'PascalABC';
-      //var a := new LinesVisual3D;
-      {a.Thickness := 1.99;
-      a.Points := Arr(P3D(0, 0, 0), P3D(3, 0, 0), P3D(3, 0, 0), P3D(3, 3, 0), P3D(3, 3, 0), P3D(3, 3, 3));
-      a.Color := c;}
-      
-      var a := new My13D;
-      a.Material := c;
-      
-      
-      {var aa := 1;
-      var b := 80;
-      
-      var q := Partition(0,2*Pi*20,360*20*10).Select(t->P3D(5*cos(1*t),5*sin(1*t),t/5));
-      var q1 := q.Interleave(q.Skip(1));
-      
-      //a.Points := Lst(P3D(0,0,0),P3D(4,4,2),p3D(4,4,2),p3D(2,8,-1));
-      a.Points := Lst(q1);
-      a.Color := Colors.Blue;
-      
-      a.Thickness := 1.5;}
-      
-      {var a := new HelixToolkit.Wpf.PieSliceVisual3D;
-      a.StartAngle := 0;
-      a.EndAngle := 360;
-      a.ThetaDiv := 60;}
-      
-      {var a := new HelixToolkit.Wpf.TubeVisual3D;
-      var p := new Point3DCollection(Arr(P3D(1,2,0),P3D(2,1,0),P3D(3,1,0)));
-      a.Diameter := 0.05;
-      a.Path := p;}
-      
-      {var a := new LegoVisual3D();
-      a.Rows := 1;
-      a.Columns := 2;
-      a.Height := 3;
-      //a.Divisions := 100;
-      a.Fill := Brushes.Blue;}
-      
-      CreateBase0(a, x, y, z);
-    end;
-  end;
-
-function FindNearestObject(x, y: real): Object3D;
-begin
-  Result := nil;
-  var v := hvp.FindNearestVisual(new Point(x, y));
-  foreach var obj in Object3DList do
-    if obj.model = v then
-      Result := obj
-end;
-
-var
-  BadPoint := P3D(real.MaxValue, real.MaxValue, real.MaxValue);
-
-function FindNearestObjectPoint(x, y: real): Point3D;
-begin
-  var p1 := hvp.FindNearestPoint(Pnt(x, y));
-  if p1.HasValue then
-    Result := p1.Value
-  else Result := BadPoint;
-end;
-
-function Plane(p: Point3D; normal: Vector3D): Plane3D := new Plane3D(p, normal);
-
-function Ray(p: Point3D; v: Vector3D): Ray3D := new Ray3D(p, v);
-
-function Line(p: Point3D; v: Vector3D): Line3D := new Line3D(p, v);
-
-function Line(p1, p2: Point3D): Line3D := new Line3D(p1, p2 - p1);
-
-var
-  PlaneXY := Plane(Origin, OrtZ);
-  PlaneYZ := Plane(Origin, OrtX);
-  PlaneXZ := Plane(Origin, OrtY);
-  XAxis := Ray(Origin, OrtX);
-  YAxis := Ray(Origin, OrtY);
-  ZAxis := Ray(Origin, OrtZ);
-
-function GetRay(x, y: real): Ray3D := hvp.Viewport.GetRay(Pnt(x, y));
-
-function PointOnPlane(Self: Plane3D; x, y: real): Point3D; extensionmethod;
-begin
-  var r := GetRay(x, y);
-  var p1 := r.PlaneIntersection(Self.Position, Self.Normal);
-  if p1.HasValue then
-    Result := p1.Value
-  else Result := BadPoint;
-end;
-
-function NearestPointOnLine(Self: Ray3D; x, y: real): Point3D; extensionmethod;
-begin
-  var ray := GetRay(x, y);
-  var a := Self.Direction;
-  var b := ray.Direction;
-  var ab := Vector3D.CrossProduct(a, b);
-  var planeNormal := Vector3D.CrossProduct(b, ab);
-  var p := Self.PlaneIntersection(ray.Origin, planeNormal);
-  if p.HasValue then
-    Result := p.Value
-  else Result := BadPoint;
-end;
-
 function DefaultMaterialColor := RandomColor;
 
 function DefaultMaterial := MaterialHelper.CreateMaterial(DefaultMaterialColor);
@@ -2779,7 +2539,6 @@ function Text3D(x, y, z: real; Text: string; Height: real; c: Color) := Text3D(x
 
 function Text3D(p: Point3D; Text: string; Height: real; c: Color) := Text3D(p.x, p.y, p.z, text, height, 'Arial', c);
 
-
 function Rectangle3D(x, y, z, Length, Width: real; Normal, LengthDirection: Vector3D; m: Material := DefaultMaterial): RectangleT := Inv(()->RectangleT.Create(x, y, z, Length, Width, normal, LengthDirection, m));
 
 function Rectangle3D(p: Point3D; Length, Width: real; Normal, LengthDirection: Vector3D; m: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, Length, Width, Normal, LengthDirection, m);
@@ -2845,11 +2604,157 @@ function Torus(p: Point3D; Diameter, TubeDiameter: real; m: Material := DefaultM
 
 function Triangle(p1, p2, p3: Point3D; m: Material := DefaultMaterial): TriangleT := Inv(()->TriangleT.Create(p1, p2, p3, m));
 
-function MyH(x, y, z, Length: real; c: Color): MyAnyT := Inv(()->MyAnyT.Create(x, y, z, Length, c));
+// Конец примитивов
+//------------------------------------------------------------------------------------
 
-function MyH(x, y, z, Length: real; c: Material): MyAnyT := Inv(()->MyAnyT.Create(x, y, z, Length, c));
+// Функции для точек, лучей, прямых, плоскостей
 
-function Any(x, y, z: real; c: Color): AnyT := Inv(()->AnyT.Create(x, y, z, c));
+function FindNearestObject(x, y: real): Object3D;
+begin
+  Result := nil;
+  var v := hvp.FindNearestVisual(new Point(x, y));
+  foreach var obj in Object3DList do
+    if obj.model = v then
+      Result := obj
+end;
+
+var
+  BadPoint: Point3D := P3D(real.MaxValue, real.MaxValue, real.MaxValue);
+
+function FindNearestObjectPoint(x, y: real): Point3D;
+begin
+  var p1 := hvp.FindNearestPoint(Pnt(x, y));
+  if p1.HasValue then
+    Result := p1.Value
+  else Result := BadPoint;
+end;
+
+function Plane(p: Point3D; normal: Vector3D): Plane3D := new Plane3D(p, normal);
+
+function Ray(p: Point3D; v: Vector3D): Ray3D := new Ray3D(p, v);
+
+function Line(p: Point3D; v: Vector3D): Line3D := new Line3D(p, v);
+
+function Line(p1, p2: Point3D): Line3D := new Line3D(p1, p2 - p1);
+
+function GetRay(x, y: real): Ray3D := hvp.Viewport.GetRay(Pnt(x, y));
+
+var
+  PlaneXY: Plane3D := Plane(Origin, OrtZ);
+  PlaneYZ: Plane3D := Plane(Origin, OrtX);
+  PlaneXZ: Plane3D := Plane(Origin, OrtY);
+  XAxis: Ray3D := Ray(Origin, OrtX);
+  YAxis: Ray3D := Ray(Origin, OrtY);
+  ZAxis: Ray3D := Ray(Origin, OrtZ);
+
+function PointOnPlane(Self: Plane3D; x, y: real): Point3D; extensionmethod;
+begin
+  var r := GetRay(x, y);
+  var p1 := r.PlaneIntersection(Self.Position, Self.Normal);
+  if p1.HasValue then
+    Result := p1.Value
+  else Result := BadPoint;
+end;
+
+function NearestPointOnLine(Self: Ray3D; x, y: real): Point3D; extensionmethod;
+begin
+  var ray := GetRay(x, y);
+  var a := Self.Direction;
+  var b := ray.Direction;
+  var ab := Vector3D.CrossProduct(a, b);
+  var planeNormal := Vector3D.CrossProduct(b, ab);
+  var p := Self.PlaneIntersection(ray.Origin, planeNormal);
+  if p.HasValue then
+    Result := p.Value
+  else Result := BadPoint;
+end;
+
+
+
+// Методы расширения для анимаций 
+
+function Sec(Self: integer): real; extensionmethod := Self;
+
+function Sec(Self: real): real; extensionmethod := Self;
+
+// А теперь - тадам! - перегрузка + для Animate.Sequence и перегрузка * для Animate.Group
+function operator+(a, b: MyAnimation): MyAnimation; extensionmethod := Animate.Sequence(a, b);
+
+function operator*(a, b: MyAnimation): MyAnimation; extensionmethod := Animate.Group(a, b);
+
+// Конец методов расширения для анимаций 
+
+// Методы расширения для точки
+
+function operator*(p: Point3D; r: real): Point3D; extensionmethod := p.Multiply(r);
+
+function operator*(r: real; p: Point3D): Point3D; extensionmethod := p.Multiply(r);
+
+function operator+(p1, p2: Point3D): Point3D; extensionmethod := p3d(p1.X + p2.X, p1.Y + p2.Y, p1.Z + p2.Z);
+
+function operator-(v: Vector3D): Vector3D; extensionmethod := v3d(-v.x,-v.y,-v.z);
+
+function MoveX(Self: Point3D; dx: real): Point3D; extensionmethod := P3D(Self.x + dx, Self.y, Self.z);
+
+function MoveY(Self: Point3D; dy: real): Point3D; extensionmethod := P3D(Self.x, Self.y + dy, Self.z);
+
+function MoveZ(Self: Point3D; dz: real): Point3D; extensionmethod := P3D(Self.x, Self.y, Self.z + dz);
+
+function Move(Self: Point3D; dx, dy, dz: real): Point3D; extensionmethod := P3D(Self.x + dx, Self.y + dy, Self.z + dz);
+
+// Конец методов расширения для точки 
+
+// Разные методы расширения
+
+function ChangeOpacity(Self: GColor; value: integer): Color; extensionmethod := ARGB(value, Self.R, Self.G, Self.B);
+
+function operator implicit(t: TupleInt3): Point3D; extensionmethod := new Point3D(t[0], t[1], t[2]);
+
+function operator implicit(t: TupleReal3): Point3D; extensionmethod := new Point3D(t[0], t[1], t[2]);
+
+function operator implicit(ar: array of TupleInt3): Point3DCollection; extensionmethod := new Point3DCollection(ar.Select(t -> new Point3D(t[0], t[1], t[2])));
+
+function operator implicit(ar: array of Point3D): Point3DCollection; extensionmethod := new Point3DCollection(ar);
+
+function operator implicit(ar: List<Point3D>): Point3DCollection; extensionmethod := new Point3DCollection(ar);
+
+// Конец разных методов расширения
+
+type
+  GMHelper = auto class
+    a, b: Material;
+    function GroupMaterial: Material;
+    begin
+      var g := new MaterialGroup();
+      g.Children.Add(a);
+      g.Children.Add(b);
+      Result := g;
+    end;
+  end;
+
+// Методы расширения для Material 
+
+function operator+(a, b: Material): Material; extensionmethod := Invoke&<Material>(GMHelper.Create(a, b).GroupMaterial);
+
+function operator implicit(c: GColor): GMaterial; extensionmethod := Materialhelper.CreateMaterial(c);
+
+// Конец методов расширения для Material 
+
+//=============================================================================
+
+// Экспериментальные функции и классы
+type
+  MyAnyT = class(PlatonicAbstractT)
+  protected  
+    function CreateObject: Object3D; override := new MyAnyT(X, Y, Z, Length, Material);
+  public 
+    constructor(x, y, z, Length: real; m: GMaterial);
+    begin
+      CreateBase(new MyAnyVisual3D(Length), x, y, z, m);
+    end;
+    
+    function Clone := (inherited Clone) as MyAnyT;
+  end;
 
 
 procedure ProbaP;
@@ -2953,6 +2858,91 @@ end;
 procedure Proba3(x,y,z: real) := Invoke(ProbaP3,x,y,z);
 
 type
+  My = class(ParametricSurface3D)
+  public 
+    function Evaluate(u: real; v: real; var textureCoord: System.Windows.Point): Point3D; override;
+    begin
+      u -= 0.5;
+      v -= 0.5;
+      u *= 3;
+      v *= 3;
+      textureCoord := new Point(u, 2 * v);
+      Result := P3D(u, v, 0.2 * u * u + sin(u * v) + 2);
+    end;
+  end;
+  
+  My13D = class(MeshElement3D)
+    public function Tessellate(): MeshGeometry3D; override;
+    begin
+      var tm := new MeshBuilder(false, false);
+      tm.AddRevolvedGeometry(Arr(Pnt(0, 0), Pnt(0, 1), Pnt(0.3, 1), Pnt(0.5, 0.3), Pnt(2, 1), Pnt(3, 0)), nil, Origin, OrtZ, 80);
+      Result := tm.ToMesh(false);
+    end;
+  end;
+
+type
+  AnyT = class(ObjectWithMaterial3D)
+    constructor(x, y, z: real; c: GColor);
+    begin
+      {var a := new ExtrudedVisual3D;
+      a.Path := new Point3DCollection(Arr(P3D(1,0,-0.5),P3D(1,0,0.5)));
+      a.Section := new PointCollection(Arr(Pnt(0,0),Pnt(0.5,0),Pnt(0,0.5)));
+      a.IsSectionClosed := True;}
+      
+      //var a := new TerrainVisual3D;
+      //a.Content := (new SphereVisual3D()).Model;
+      //a.Text := 'PascalABC';
+      //var a := new LinesVisual3D;
+      {a.Thickness := 1.99;
+      a.Points := Arr(P3D(0, 0, 0), P3D(3, 0, 0), P3D(3, 0, 0), P3D(3, 3, 0), P3D(3, 3, 0), P3D(3, 3, 3));
+      a.Color := c;}
+      
+      var a := new My13D;
+      a.Material := c;
+      
+      
+      {var aa := 1;
+      var b := 80;
+      
+      var q := Partition(0,2*Pi*20,360*20*10).Select(t->P3D(5*cos(1*t),5*sin(1*t),t/5));
+      var q1 := q.Interleave(q.Skip(1));
+      
+      //a.Points := Lst(P3D(0,0,0),P3D(4,4,2),p3D(4,4,2),p3D(2,8,-1));
+      a.Points := Lst(q1);
+      a.Color := Colors.Blue;
+      
+      a.Thickness := 1.5;}
+      
+      {var a := new HelixToolkit.Wpf.PieSliceVisual3D;
+      a.StartAngle := 0;
+      a.EndAngle := 360;
+      a.ThetaDiv := 60;}
+      
+      {var a := new HelixToolkit.Wpf.TubeVisual3D;
+      var p := new Point3DCollection(Arr(P3D(1,2,0),P3D(2,1,0),P3D(3,1,0)));
+      a.Diameter := 0.05;
+      a.Path := p;}
+      
+      {var a := new LegoVisual3D();
+      a.Rows := 1;
+      a.Columns := 2;
+      a.Height := 3;
+      //a.Divisions := 100;
+      a.Fill := Brushes.Blue;}
+      
+      CreateBase0(a, x, y, z);
+    end;
+  end;
+
+function MyH(x, y, z, Length: real; c: Color): MyAnyT := Inv(()->MyAnyT.Create(x, y, z, Length, c));
+
+function MyH(x, y, z, Length: real; c: Material): MyAnyT := Inv(()->MyAnyT.Create(x, y, z, Length, c));
+
+function Any(x, y, z: real; c: Color): AnyT := Inv(()->AnyT.Create(x, y, z, c));
+
+// Сервисные функции и классы
+
+type
   Graph3DWindow = class(GMainWindow)
   public 
     procedure InitMainGraphControl; override;
@@ -2994,7 +2984,7 @@ type
       Camera := new CameraType;
       Lights := new LightsType;
       GridLines := new GridLinesType;
-      View3D := new View3DT;
+      View3D := new View3DType;
       
       NameScope.SetNameScope(Self, new NameScope());
     end;
