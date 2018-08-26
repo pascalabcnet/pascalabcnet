@@ -5177,7 +5177,7 @@ namespace PascalABCCompiler.TreeConverter
                                         if (iwt != null)
                                         {
                                             sil = get_generic_functions(sil, true, subloc);
-                                            sil = get_function_instances(sil, iwt.template_params.params_list, id_right.name, subloc, sil.Count() > 1);
+                                            sil = get_function_instances(sil, iwt.template_params.params_list, id_right.name, subloc, sil.Count() <= 1);
                                         }
                                         #region Если встретились лямбды в фактических параметрах, то выбираем нужную функцию из перегруженных, выводим типы, отмечаем флаг в лямбдах, говорящий о том, что мы их реально обходим
                                         //lroman//
@@ -5632,7 +5632,7 @@ namespace PascalABCCompiler.TreeConverter
                                         if (iwt != null)
                                         {
                                             sil = get_generic_functions(sil, true, subloc);
-                                            sil = get_function_instances(sil, iwt.template_params.params_list, id_right.name, subloc, sil.Count() > 1);
+                                            sil = get_function_instances(sil, iwt.template_params.params_list, id_right.name, subloc, sil.Count() <= 1);
                                         }
                                         #region Если встретились лямбды в фактических параметрах, то выбираем нужную функцию из перегруженных, выводим типы, отмечаем флаг в лямбдах, говорящий о том, что мы их реально обходим
                                         //lroman//
@@ -6780,7 +6780,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (iwt != null)
                     {
                         sil = get_generic_functions(sil, true, mcloc);
-                        sil = get_function_instances(sil, iwt.template_params.params_list, id.name, mcloc, sil.Count() > 1);
+                        sil = get_function_instances(sil, iwt.template_params.params_list, id.name, mcloc, sil.Count() <= 1);
                     }
 
                     #region Если встретились лямбды в фактических параметрах, то выбираем нужную функцию из перегруженных, выводим типы, отмечаем флаг в лямбдах, говорящий о том, что мы их реально обходим 
