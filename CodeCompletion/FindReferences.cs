@@ -211,7 +211,7 @@ namespace CodeCompletion
                 else ret_tn = ret_tn.FindNameInAnyOrder(_named_type_reference.names[i].name);
                 if (ret_tn == null) break;
                 else if (founded_scope.IsEqual(ret_tn))
-                    pos_list.Add(get_position(_named_type_reference));
+                    pos_list.Add(get_position(_named_type_reference.names[i]));
             }
         }
 
@@ -519,7 +519,7 @@ namespace CodeCompletion
             IBaseScope ss = entry_scope.FindNameInAnyOrder(_type_declaration.type_name.name);
             if (ss == null && entry_scope is IInterfaceUnitScope && (entry_scope as IInterfaceUnitScope).ImplementationUnitScope != null)
                 ss = (entry_scope as IInterfaceUnitScope).ImplementationUnitScope.FindNameInAnyOrder(_type_declaration.type_name.name);
-            if (for_refactoring && ss != null && ss.IsEqual(founded_scope) && string.Compare(ss.SymbolInfo.name, _type_declaration.type_name.name, true) == 0)
+            if (for_refactoring && ss != null && ss.IsEqual(founded_scope) && string.Compare(ss.SymbolInfo.name, _type_declaration.type_name.name, true) == 0 && !(ss is ITypeSynonimScope && !(founded_scope is ITypeSynonimScope)))
             {
                 pos_list.Add(get_position(_type_declaration.type_name));
             }
