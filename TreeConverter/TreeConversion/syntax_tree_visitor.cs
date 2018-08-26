@@ -13377,6 +13377,47 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
+        private void check_array_on_complex_type(SyntaxTree.array_type type)
+        {
+            SyntaxTree.array_type arr = type as SyntaxTree.array_type;
+            if (arr.indexers != null && arr.indexers.indexers.Count > 0 && arr.indexers.indexers[0] != null)
+                AddError(get_location(type), "STRUCT_TYPE_DEFINITION_IN_FORMAL_PARAM");
+            if (arr.elements_type is SyntaxTree.array_type)
+                check_array_on_complex_type(arr.elements_type as SyntaxTree.array_type);
+            else if (arr.elements_type is SyntaxTree.class_definition)
+                AddError(get_location(arr.elements_type), "STRUCT_TYPE_DEFINITION_IN_FORMAL_PARAM");
+            else if (arr.elements_type is SyntaxTree.set_type_definition)
+                check_set_on_complex_type(arr.elements_type as set_type_definition);
+            else if (arr.elements_type is SyntaxTree.file_type)
+                check_file_on_complex_type(arr.elements_type as file_type);
+        }
+
+        private void check_set_on_complex_type(SyntaxTree.set_type_definition type)
+        {
+            SyntaxTree.set_type_definition set = type as SyntaxTree.set_type_definition;
+            if (set.of_type is SyntaxTree.array_type)
+                check_array_on_complex_type(set.of_type as SyntaxTree.array_type);
+            else if (set.of_type is SyntaxTree.class_definition)
+                AddError(get_location(set.of_type), "STRUCT_TYPE_DEFINITION_IN_FORMAL_PARAM");
+            else if (set.of_type is SyntaxTree.file_type)
+                check_file_on_complex_type(set.of_type as file_type);
+            else if (set.of_type is SyntaxTree.set_type_definition)
+                check_set_on_complex_type(set.of_type as set_type_definition);
+        }
+
+        private void check_file_on_complex_type(SyntaxTree.file_type type)
+        {
+            SyntaxTree.file_type file = type as SyntaxTree.file_type;
+            if (file.file_of_type is SyntaxTree.array_type)
+                check_array_on_complex_type(file.file_of_type as SyntaxTree.array_type);
+            else if (file.file_of_type is SyntaxTree.class_definition)
+                AddError(get_location(file.file_of_type), "STRUCT_TYPE_DEFINITION_IN_FORMAL_PARAM");
+            else if (file.file_of_type is SyntaxTree.file_type)
+                check_file_on_complex_type(file.file_of_type as file_type);
+            else if (file.file_of_type is SyntaxTree.set_type_definition)
+                check_set_on_complex_type(file.file_of_type as set_type_definition);
+        }
+
         public void check_parameter_on_complex_type(SyntaxTree.type_definition type)
         {
             SyntaxTree.array_type arr = type as SyntaxTree.array_type;
@@ -13384,6 +13425,21 @@ namespace PascalABCCompiler.TreeConverter
                 (arr != null && arr.indexers != null && arr.indexers.indexers.Count > 0 && arr.indexers.indexers[0] != null))
             {
                 AddError(get_location(type), "STRUCT_TYPE_DEFINITION_IN_FORMAL_PARAM");
+            }
+            if (arr != null)
+            {
+                check_array_on_complex_type(arr);
+                return;
+            }
+            if (type is SyntaxTree.set_type_definition)
+            {
+                check_set_on_complex_type(type as SyntaxTree.set_type_definition);
+                return;
+            }
+            else if (type is SyntaxTree.file_type)
+            {
+                check_file_on_complex_type(type as SyntaxTree.file_type);
+                return;
             }
             if (context.top_function is common_method_node && (context.converted_type.IsInterface || context.top_function.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract ) 
                 && (type is function_header || type is procedure_header))
