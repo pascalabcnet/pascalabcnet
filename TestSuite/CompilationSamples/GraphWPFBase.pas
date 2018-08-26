@@ -71,8 +71,13 @@ function Inv<T>(p: ()->T): T := Invoke&<T>(p); // Теперь это работ
 
 function MainDockPanel: DockPanel := MainWindow.MainPanel;
 
+//{{{doc: Начало секции 1 }}} 
 type
+// -----------------------------------------------------
+//>>     Класс WindowType # WindowType class
+// -----------------------------------------------------
   ///!#
+  /// Тип главного окна приложения
   WindowType = class
   private 
     procedure SetLeft(l: real);
@@ -121,6 +126,7 @@ type
     /// Возвращает прямоугольник клиентской области окна
     function ClientRect: GRect;
   end;
+//{{{--doc: Конец секции 1 }}} 
   
 
 function wplus := SystemParameters.WindowResizeBorderThickness.Left + SystemParameters.WindowResizeBorderThickness.Right;
