@@ -1,5 +1,6 @@
 cd DocGenForStandardUnits
 !GenDocPABCSystem.exe
+!GenDocGraphWPF.exe
 !GenDocWPFObjects.exe
 cd ..
 "C:\Program Files (x86)\HTML Help Workshop\hhc.exe" PascalABCNET.hhp

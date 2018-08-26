@@ -1,8 +1,8 @@
 ﻿uses GenDocUnit;
 
 begin
-  fname := 'D:\PABC_Git\bin\Lib\PABCSystem.pas';
-  fname1 := 'D:\PABC_Git\bin\Lib\PABCExtensions.pas';
+  fname := '..\..\bin\Lib\PABCSystem.pas';
+  fname1 := '..\..\bin\Lib\PABCExtensions.pas';
   RootOutputDirectory := 'LangGuide\PABCSystemUnit\';
   Step1;
   Step2;

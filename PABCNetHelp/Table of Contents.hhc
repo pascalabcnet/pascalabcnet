@@ -918,6 +918,70 @@
 				<param name="Name" value="&Igrave;&icirc;&auml;&oacute;&euml;&uuml; GraphWPF: &icirc;&aacute;&ccedil;&icirc;&eth;">
 				<param name="Local" value="PABCUnits\GraphWPF\index.html">
 				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: &atilde;&eth;&agrave;&ocirc;&egrave;&divide;&aring;&ntilde;&ecirc;&egrave;&aring; &iuml;&eth;&egrave;&igrave;&egrave;&ograve;&egrave;&acirc;&ucirc;">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF primitives.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: &ocirc;&oacute;&iacute;&ecirc;&ouml;&egrave;&egrave; &auml;&euml;&yuml; &acirc;&ucirc;&acirc;&icirc;&auml;&agrave; &ograve;&aring;&ecirc;&ntilde;&ograve;&agrave;">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF text functions.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: &ocirc;&oacute;&iacute;&ecirc;&ouml;&egrave;&egrave; &auml;&euml;&yuml; &acirc;&ucirc;&acirc;&icirc;&auml;&agrave; &atilde;&eth;&agrave;&ocirc;&egrave;&ecirc;&icirc;&acirc;">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF graph functions.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: &ocirc;&oacute;&iacute;&ecirc;&ouml;&egrave;&egrave; &auml;&euml;&yuml; &acirc;&ucirc;&acirc;&icirc;&auml;&agrave; &egrave;&ccedil;&icirc;&aacute;&eth;&agrave;&aelig;&aring;&iacute;&egrave;&eacute; &egrave; &acirc;&egrave;&auml;&aring;&icirc;">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF functions for images and video.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: &ocirc;&oacute;&iacute;&ecirc;&ouml;&egrave;&egrave; &auml;&euml;&yuml; &iacute;&agrave;&ntilde;&ograve;&eth;&icirc;&eacute;&ecirc;&egrave; &ntilde;&egrave;&ntilde;&ograve;&aring;&igrave;&ucirc; &ecirc;&icirc;&icirc;&eth;&auml;&egrave;&iacute;&agrave;&ograve;">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF coordinate system functions.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: &iuml;&eth;&icirc;&ouml;&aring;&auml;&oacute;&eth;&ucirc; &iuml;&icirc;&ecirc;&agrave;&auml;&eth;&icirc;&acirc;&icirc;&eacute; &agrave;&iacute;&egrave;&igrave;&agrave;&ouml;&egrave;&egrave;">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF FrameBasedAnimation functions.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: &acirc;&ntilde;&iuml;&icirc;&igrave;&icirc;&atilde;&agrave;&ograve;&aring;&euml;&uuml;&iacute;&ucirc;&aring; &ocirc;&oacute;&iacute;&ecirc;&ouml;&egrave;&egrave; GraphWPF">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF service functions.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: &ograve;&egrave;&iuml;&ucirc; &igrave;&icirc;&auml;&oacute;&euml;&yuml; GraphWPF">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF types.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: &iuml;&aring;&eth;&aring;&igrave;&aring;&iacute;&iacute;&ucirc;&aring; &igrave;&icirc;&auml;&oacute;&euml;&yuml; GraphWPF">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF variables.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: &ntilde;&icirc;&aacute;&ucirc;&ograve;&egrave;&yuml; &igrave;&icirc;&auml;&oacute;&euml;&yuml; GraphWPF">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF events.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: &ecirc;&euml;&agrave;&ntilde;&ntilde; BrushType">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\BrushType class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: &ecirc;&euml;&agrave;&ntilde;&ntilde; PenType">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\PenType class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: &ecirc;&euml;&agrave;&ntilde;&ntilde; FontType">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\FontType class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: &ecirc;&euml;&agrave;&ntilde;&ntilde; GraphWindowType">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\GraphWPF GraphWindowType class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: &ecirc;&euml;&agrave;&ntilde;&ntilde; WindowTypeWPF">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\WindowTypeWPF class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphWPF: &ecirc;&euml;&agrave;&ntilde;&ntilde; WindowType">
+				<param name="Local" value="PABCUnits\GraphWPF\Files\WindowType class.html">
+				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="&Igrave;&icirc;&auml;&oacute;&euml;&uuml; WPFObjects">
@@ -934,6 +998,10 @@
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="&Iuml;&aring;&eth;&aring;&igrave;&aring;&iacute;&iacute;&ucirc;&aring; &igrave;&icirc;&auml;&oacute;&euml;&yuml; WPFObjects">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\WPFObjects Variables.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="&Ntilde;&icirc;&aacute;&ucirc;&ograve;&egrave;&yuml; &igrave;&icirc;&auml;&oacute;&euml;&yuml; WPFObjects">
+				<param name="Local" value="PABCUnits\WPFObjects\Files\WPFObjects events.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="WPFObjects: &ecirc;&euml;&agrave;&ntilde;&ntilde; ObjectWPF">
@@ -988,20 +1056,20 @@
 				<param name="Local" value="PABCUnits\WPFObjects\Files\Class PictureWPF.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="&Ecirc;&euml;&agrave;&ntilde;&ntilde; &atilde;&eth;&agrave;&ocirc;&egrave;&divide;&aring;&ntilde;&ecirc;&icirc;&atilde;&icirc; &icirc;&ecirc;&iacute;&agrave;">
+				<param name="Name" value="WPFObjects: &ecirc;&euml;&agrave;&ntilde;&ntilde; &atilde;&eth;&agrave;&ocirc;&egrave;&divide;&aring;&ntilde;&ecirc;&icirc;&atilde;&icirc; &icirc;&ecirc;&iacute;&agrave;">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\Class GraphWindowType.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="&Ecirc;&euml;&agrave;&ntilde;&ntilde; &ntilde;&iuml;&egrave;&ntilde;&ecirc;&agrave; &atilde;&eth;&agrave;&ocirc;&egrave;&divide;&aring;&ntilde;&ecirc;&egrave;&otilde; &icirc;&aacute;&uacute;&aring;&ecirc;&ograve;&icirc;&acirc;">
+				<param name="Name" value="WPFObjects: &ecirc;&euml;&agrave;&ntilde;&ntilde; &ntilde;&iuml;&egrave;&ntilde;&ecirc;&agrave; &atilde;&eth;&agrave;&ocirc;&egrave;&divide;&aring;&ntilde;&ecirc;&egrave;&otilde; &icirc;&aacute;&uacute;&aring;&ecirc;&ograve;&icirc;&acirc;">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\Class List of objects.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="WPFObjects: &ocirc;&oacute;&iacute;&ecirc;&ouml;&egrave;&egrave; &auml;&euml;&yuml; &icirc;&iuml;&eth;&aring;&auml;&aring;&euml;&aring;&iacute;&egrave;&yuml; &iuml;&aring;&eth;&aring;&ntilde;&aring;&divide;&aring;&iacute;&egrave;&yuml;">
+				<param name="Local" value="PABCUnits\WPFObjects\Files\Intersection functions.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="&Acirc;&ntilde;&iuml;&icirc;&igrave;&icirc;&atilde;&agrave;&ograve;&aring;&euml;&uuml;&iacute;&ucirc;&aring; &ocirc;&oacute;&iacute;&ecirc;&ouml;&egrave;&egrave; WPFObjects">
 				<param name="Local" value="PABCUnits\WPFObjects\Files\WPFObjects functions 1.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="&Ocirc;&oacute;&iacute;&ecirc;&ouml;&egrave;&egrave; WPFObjects &auml;&euml;&yuml; &icirc;&iuml;&eth;&aring;&auml;&aring;&euml;&aring;&iacute;&egrave;&yuml; &iuml;&aring;&eth;&aring;&ntilde;&aring;&divide;&aring;&iacute;&egrave;&yuml;">
-				<param name="Local" value="PABCUnits\WPFObjects\Files\Intersection functions.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
@@ -1074,10 +1142,6 @@
 				<param name="Local" value="PABCUnits\GraphABC\gr_FontClass.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="&Ntilde;&ograve;&egrave;&euml;&egrave; &oslash;&eth;&egrave;&ocirc;&ograve;&agrave;">
-				<param name="Local" value="PABCUnits\GraphABC\gr_FontStyle.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="GraphABC: &ecirc;&euml;&agrave;&ntilde;&ntilde; Picture &atilde;&eth;&agrave;&ocirc;&egrave;&divide;&aring;&ntilde;&ecirc;&icirc;&atilde;&icirc; &eth;&egrave;&ntilde;&oacute;&iacute;&ecirc;&agrave;">
 				<param name="Local" value="PABCUnits\GraphABC\gr_Picture.html">
 				</OBJECT>
@@ -1112,6 +1176,10 @@
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="GraphABC: &acirc;&egrave;&eth;&ograve;&oacute;&agrave;&euml;&uuml;&iacute;&ucirc;&aring; &ecirc;&icirc;&auml;&ucirc; &ecirc;&euml;&agrave;&acirc;&egrave;&oslash;">
 				<param name="Local" value="PABCUnits\GraphABC\gr_VK.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="GraphABC: &Ntilde;&ograve;&egrave;&euml;&egrave; &oslash;&eth;&egrave;&ocirc;&ograve;&agrave;">
+				<param name="Local" value="PABCUnits\GraphABC\gr_FontStyle.html">
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">

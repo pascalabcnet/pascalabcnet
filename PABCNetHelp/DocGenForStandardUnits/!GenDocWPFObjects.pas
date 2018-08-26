@@ -1,7 +1,7 @@
 ﻿uses GenDocUnit;
 
 begin
-  fname := 'D:\PABC_Git\bin\Lib\WPFObjects.pas';
+  fname := '..\..\bin\Lib\WPFObjects.pas';
   RootOutputDirectory := 'PABCUnits\WPFObjects\';
   Step1;
   Step2;

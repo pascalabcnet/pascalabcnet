@@ -16,7 +16,7 @@ begin
   if fname1<>'' then
     ll := ll + ReadLines(fname1);
   
-  foreach var s in ReadLines(fname) do
+  foreach var s in ll do
   begin
     if s.StartsWith('//{{{doc:') then 
     begin
@@ -327,7 +327,7 @@ begin
     var pf := gr.Where(g->(g.Key='procedure') or (g.Key='function'));
     table += CreateSectionInClassDef('Методы класса '+classname,pf,Keywords);
     
-    if classbase<>'' then
+    while (classbase<>'') and dictClasses.ContainsKey(classbase) do
     begin
       gr := dictClasses[classbase].fds.GroupBy(fd->fd.fun.ToWords[0].Trim);
     // Добавить свойства предка
@@ -336,6 +336,7 @@ begin
     // Добавить методы предка
       pf := gr.Where(g->(g.Key='procedure') or (g.Key='function'));
       table += CreateSectionInClassDef('Методы предка '+classbase,pf,nil);
+      classbase := dictClasses[classbase].basename;
     end;
   end
   else
