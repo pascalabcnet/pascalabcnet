@@ -4552,10 +4552,12 @@ namespace CodeCompletion
             		{
             			returned_scope = null;
             			td.visit(this);
-            			if (returned_scope != null && returned_scope is TypeScope) 
-            				//instances.Add(ret_tn as TypeScope);
-            				//ts.AddGenericInstanciation(ret_tn as TypeScope);
-            				gen_args.Add(returned_scope as TypeScope);
+                        if (returned_scope is TypeScope)
+                            //instances.Add(ret_tn as TypeScope);
+                            //ts.AddGenericInstanciation(ret_tn as TypeScope);
+                            gen_args.Add(returned_scope as TypeScope);
+                        else if (returned_scope is ProcScope)
+                            gen_args.Add(new ProcType(returned_scope as ProcScope));
             		}
             		
             	}
