@@ -11351,6 +11351,10 @@ namespace PascalABCCompiler.TreeConverter
             if (cl_def.keyword == SyntaxTree.class_keyword.Record)
             {
                 string name = record_type_name = _type_declaration.type_name.name;
+                if (context.top_function != null && context.top_function.generic_params != null)
+                {
+                    AddError(get_location(_type_declaration.type_name), "NESTED_RECORDS_IN_GENERIC_FUNCTIONS_NOT_ALLOWED");
+                }
                 record_is_generic = is_generic;
                 location loc = get_location(_type_declaration.type_name);
                 context.check_name_free(name, loc);
