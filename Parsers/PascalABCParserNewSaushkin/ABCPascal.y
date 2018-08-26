@@ -1413,7 +1413,7 @@ simple_type_or_
     ;
         
 set_type
-    : tkSet tkOf simple_type         
+    : tkSet tkOf type_ref         
         { 
 			$$ = new set_type_definition($3, @$); 
 		}
