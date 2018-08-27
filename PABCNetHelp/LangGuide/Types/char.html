@@ -34,28 +34,28 @@
 <p>Ќад символами определены операции сравнени€&nbsp; <span class="auto-style2">&lt; &gt; &lt;= 
 &gt;= = &lt;&gt;</span>, которые сравнивают коды символов:</p>
 <p class="auto-style1"><code>'a'&lt;'b' // True<br>'2'&lt;'3' // True</code></p>
-<p>ƒл€ преобразовани€ между символами и их кодами в кодировке Windows (CP1251) используютс€ 
+<p>ƒл€ преобразовани€ между символами и их кодами в кодировке Unicode используютс€ 
 стандартные функции
 <code>Chr</code> и <code>Ord</code>:</p>
 <blockquote>
 	<p><code>Chr(n)</code> - функци€, возвращающа€ символ с кодом 
 	<code>n</code>
-	в кодировке Windows;<code><br>
-	Ord(с)</code> - функци€, возвращающа€ значение типа <code>byte</code>, 
+	в кодировке Unicode;<code><br>
+	Ord(с)</code> - функци€, возвращающа€ значение типа <code>word</code>, 
 	представл€ющее собой код символа <code>c</code> 
-	в кодировке Windows.</p>
+	в кодировке Unicode.</p>
 </blockquote>
-<p>ƒл€ преобразовани€ между символами и их кодами в кодировке Unicode используютс€ 
+<p>ƒл€ преобразовани€ между символами и их кодами в кодировке Windows используютс€ 
 стандартные функции
-<code>ChrUnicode</code> и <code>OrdUnicode</code>:</p>
+<code>ChrAnsi</code> и <code>OrdAnsi</code>:</p>
 <blockquote>
-	<p><code>ChrUnicode(w)</code> - возвращает символ с кодом 
+	<p><code>ChrAnsi(w)</code> - возвращает символ с кодом 
 	<code>w</code> 
-в кодировке Unicode;<code><br>
-	OrdUnicode(с)</code> - возвращает значение типа <code>word</code>, представл€ющее 
+в кодировке Windows;<code><br>
+	OrdAnsi(с)</code> - возвращает значение типа <code>byte</code>, представл€ющее 
 	собой код символа 
 	<code>c</code> 
-	в кодировке Unicode.</p>
+	в кодировке Windows.</p>
 </blockquote>
 <p> роме того, выражение <code>#</code><i>число</i> возвращает 
 Unicode-символ с кодом <i>число </i>(число должно 

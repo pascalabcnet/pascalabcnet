@@ -1,0 +1,116 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Arc">
+<param name="Keyword" value="Circle">
+<param name="Keyword" value="DrawCircle">
+<param name="Keyword" value="DrawEllipse">
+<param name="Keyword" value="DrawPolygon">
+<param name="Keyword" value="DrawRectangle">
+<param name="Keyword" value="DrawSector">
+<param name="Keyword" value="Ellipse">
+<param name="Keyword" value="FillCircle">
+<param name="Keyword" value="FillEllipse">
+<param name="Keyword" value="FillPolygon">
+<param name="Keyword" value="FillRectangle">
+<param name="Keyword" value="FillSector">
+<param name="Keyword" value="Line">
+<param name="Keyword" value="LineOn">
+<param name="Keyword" value="LineRel">
+<param name="Keyword" value="LineTo">
+<param name="Keyword" value="MoveOn">
+<param name="Keyword" value="MoveRel">
+<param name="Keyword" value="MoveTo">
+<param name="Keyword" value="Pie">
+<param name="Keyword" value="Polygon">
+<param name="Keyword" value="PolyLine">
+<param name="Keyword" value="Rectangle">
+<param name="Keyword" value="Sector"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Графические примитивы</H1>
+<table border=0 cellpadding=5><tr><td><code><b>procedure</b> Arc(x, y, r, angle1, angle2: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует дугу окружности с центром в точке (x,y) и радиусом r, заключенную между двумя лучами, образующими углы angle1 и angle2 с осью OX</td></tr>
+<tr><td><code><b>procedure</b> Arc(x, y, r, angle1, angle2: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует дугу окружности с центром в точке (x,y) и радиусом r, заключенную между двумя лучами, образующими углы angle1 и angle2 с осью OX, цветом c</td></tr>
+<tr><td><code><b>procedure</b> Circle(x,y,r: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует окружность с центром в точке (x,y) и радиусом r</td></tr>
+<tr><td><code><b>procedure</b> Circle(x,y,r: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует окружность с центром в точке (x,y), радиусом r и цветом c</td></tr>
+<tr><td><code><b>procedure</b> DrawCircle(x,y,r: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур окружности с центром в точке (x,y) и радиусом r</td></tr>
+<tr><td><code><b>procedure</b> DrawCircle(x,y,r: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур окружности с центром в точке (x,y), радиусом r и цветом c</td></tr>
+<tr><td><code><b>procedure</b> DrawEllipse(x,y,rx,ry: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур эллипса с центром в точке (x,y) и радиусами rx и ry</td></tr>
+<tr><td><code><b>procedure</b> DrawEllipse(x,y,rx,ry: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур эллипса с центром в точке (x,y), радиусами rx и ry и цветом c</td></tr>
+<tr><td><code><b>procedure</b> DrawPolygon(points: <b>array</b>  <b>of</b> Point);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур многоугольника, заданного массивом точек</td></tr>
+<tr><td><code><b>procedure</b> DrawPolygon(points: <b>array</b>  <b>of</b> Point; c: GColor);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур многоугольника, заданного массивом точек и цветом</td></tr>
+<tr><td><code><b>procedure</b> DrawRectangle(x,y,w,h: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур прямоугольника с координатами вершин (x,y) и (x+w,y+h)</td></tr>
+<tr><td><code><b>procedure</b> DrawRectangle(x,y,w,h: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур прямоугольника с координатами вершин (x,y) и (x+w,y+h) цветом c</td></tr>
+<tr><td><code><b>procedure</b> DrawSector(x, y, r, angle1, angle2: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур сектора окружности с центром в точке (x,y) и радиусом r, заключенного между двумя лучами, образующими углы angle1 и angle2 с осью OX</td></tr>
+<tr><td><code><b>procedure</b> DrawSector(x, y, r, angle1, angle2: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур сектора окружности с центром в точке (x,y) и радиусом r, заключенного между двумя лучами, образующими углы angle1 и angle2 с осью OX, цветом c</td></tr>
+<tr><td><code><b>procedure</b> Ellipse(x,y,rx,ry: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует эллипс с центром в точке (x,y) и радиусами rx и ry</td></tr>
+<tr><td><code><b>procedure</b> Ellipse(x,y,rx,ry: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует эллипс с центром в точке (x,y), радиусами rx и ry и цветом внутренности c</td></tr>
+<tr><td><code><b>procedure</b> FillCircle(x,y,r: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует внутренность окружности с центром в точке (x,y) и радиусом r</td></tr>
+<tr><td><code><b>procedure</b> FillCircle(x,y,r: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует внутренность окружности с центром в точке (x,y), радиусом r и цветом c</td></tr>
+<tr><td><code><b>procedure</b> FillEllipse(x,y,rx,ry: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует внутренность эллипса с центром в точке (x,y) и радиусами rx и ry</td></tr>
+<tr><td><code><b>procedure</b> FillEllipse(x,y,rx,ry: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует внутренность эллипса с центром в точке (x,y), радиусами rx и ry и цветом c</td></tr>
+<tr><td><code><b>procedure</b> FillPolygon(points: <b>array</b>  <b>of</b> Point);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует внутренность многоугольника, заданного массивом точек</td></tr>
+<tr><td><code><b>procedure</b> FillPolygon(points: <b>array</b>  <b>of</b> Point; c: GColor);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует внутренность многоугольника, заданного массивом точек и цветом</td></tr>
+<tr><td><code><b>procedure</b> FillRectangle(x,y,w,h: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует внутренность прямоугольника с координатами вершин (x,y) и (x+w,y+h)</td></tr>
+<tr><td><code><b>procedure</b> FillRectangle(x,y,w,h: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует внутренность прямоугольника с координатами вершин (x,y) и (x+w,y+h) цветом c</td></tr>
+<tr><td><code><b>procedure</b> FillSector(x, y, r, angle1, angle2: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует внутренность сектора окружности с центром в точке (x,y) и радиусом r, заключенного между двумя лучами, образующими углы angle1 и angle2 с осью OX</td></tr>
+<tr><td><code><b>procedure</b> FillSector(x, y, r, angle1, angle2: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует внутренность сектора окружности с центром в точке (x,y) и радиусом r, заключенного между двумя лучами, образующими углы angle1 и angle2 с осью OX, цветом c</td></tr>
+<tr><td><code><b>procedure</b> Line(x,y,x1,y1: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок прямой от точки (x,y) до точки (x1,y1)</td></tr>
+<tr><td><code><b>procedure</b> Line(x,y,x1,y1: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок прямой от точки (x,y) до точки (x1,y1) цветом c</td></tr>
+<tr><td><code><b>procedure</b> LineOn(dx,dy: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок от текущей позиции до точки, смещённой на вектор (dx,dy). Текущая позиция переносится в новую точку</td></tr>
+<tr><td><code><b>procedure</b> LineRel(dx,dy: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок от текущей позиции до точки, смещённой на вектор (dx,dy). Текущая позиция переносится в новую точку</td></tr>
+<tr><td><code><b>procedure</b> LineTo(x,y: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок от текущей позиции до точки (x,y). Текущая позиция переносится в точку (x,y)</td></tr>
+<tr><td><code><b>procedure</b> MoveOn(dx,dy: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает текущую позицию рисования на вектор (dx,dy)</td></tr>
+<tr><td><code><b>procedure</b> MoveRel(dx,dy: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает текущую позицию рисования на вектор (dx,dy)</td></tr>
+<tr><td><code><b>procedure</b> MoveTo(x,y: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает текущую позицию рисования в точку (x,y)</td></tr>
+<tr><td><code><b>procedure</b> Pie(x, y, r, angle1, angle2: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует сектор окружности с центром в точке (x,y) и радиусом r, заключенный между двумя лучами, образующими углы angle1 и angle2 с осью OX</td></tr>
+<tr><td><code><b>procedure</b> Polygon(points: <b>array</b>  <b>of</b> Point);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует многоугольник, заданный массивом точек</td></tr>
+<tr><td><code><b>procedure</b> Polygon(points: <b>array</b>  <b>of</b> Point; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует многоугольник, заданный массивом точек и цветом</td></tr>
+<tr><td><code><b>procedure</b> PolyLine(points: <b>array</b>  <b>of</b> Point);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует ломаную, заданную массивом точек</td></tr>
+<tr><td><code><b>procedure</b> PolyLine(points: <b>array</b>  <b>of</b> Point; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует ломаную заданную массивом точек и цветом</td></tr>
+<tr><td><code><b>procedure</b> Rectangle(x,y,w,h: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует прямоугольник с координатами вершин (x,y) и (x+w,y+h)</td></tr>
+<tr><td><code><b>procedure</b> Rectangle(x,y,w,h: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует прямоугольник с координатами вершин (x,y) и (x+w,y+h) цветом c</td></tr>
+<tr><td><code><b>procedure</b> Sector(x, y, r, angle1, angle2: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует сектор окружности с центром в точке (x,y) и радиусом r, заключенный между двумя лучами, образующими углы angle1 и angle2 с осью OX</td></tr>
+<tr><td><code><b>procedure</b> Sector(x, y, r, angle1, angle2: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует сектор окружности с центром в точке (x,y) и радиусом r, заключенный между двумя лучами, образующими углы angle1 и angle2 с осью OX, цветом c</td></tr>
+</table>
+</body></HTML>

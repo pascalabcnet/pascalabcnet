@@ -1,0 +1,177 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Arrow">
+<param name="Keyword" value="BillboardText">
+<param name="Keyword" value="Box">
+<param name="Keyword" value="Cone">
+<param name="Keyword" value="CoordinateSystem">
+<param name="Keyword" value="Cube">
+<param name="Keyword" value="Cylinder">
+<param name="Keyword" value="DefaultMaterial">
+<param name="Keyword" value="Dodecahedron">
+<param name="Keyword" value="Ellipsoid">
+<param name="Keyword" value="FileModel3D">
+<param name="Keyword" value="Group">
+<param name="Keyword" value="Icosahedron">
+<param name="Keyword" value="Lego">
+<param name="Keyword" value="Octahedron">
+<param name="Keyword" value="Polygon3D">
+<param name="Keyword" value="Polyline3D">
+<param name="Keyword" value="Prism">
+<param name="Keyword" value="PrismWireFrame">
+<param name="Keyword" value="Pyramid">
+<param name="Keyword" value="PyramidWireFrame">
+<param name="Keyword" value="Rectangle3D">
+<param name="Keyword" value="Segment3D">
+<param name="Keyword" value="Segments3D">
+<param name="Keyword" value="Sphere">
+<param name="Keyword" value="Teapot">
+<param name="Keyword" value="Tetrahedron">
+<param name="Keyword" value="Text3D">
+<param name="Keyword" value="Torus">
+<param name="Keyword" value="Triangle">
+<param name="Keyword" value="TruncatedCone">
+<param name="Keyword" value="Tube"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Graph3D: функции для создания 3D-объектов</H1>
+<table border=0 cellpadding=5><tr><td><code><b>function</b> Arrow(x, y, z, vx, vy, vz, Diameter, HeadLength: real; m: Material := DefaultMaterial): ArrowT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-стрелку с центром в точке (x, y, z), направлением (vx, vy, vz), диаметра Diameter и длиной наконечника HeadLength</td></tr>
+<tr><td><code><b>function</b> Arrow(x, y, z, vx, vy, vz, Diameter: real; m: Material := DefaultMaterial): ArrowT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-стрелку с центром в точке (x, y, z), направлением (vx, vy, vz), диаметра Diameter</td></tr>
+<tr><td><code><b>function</b> Arrow(x, y, z, vx, vy, vz: real; m: Material := DefaultMaterial): ArrowT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-стрелку с центром в точке (x, y, z), направлением (vx, vy, vz)</td></tr>
+<tr><td><code><b>function</b> Arrow(p: Point3D; v: Vector3D; Diameter, HeadLength: real; m: Material := DefaultMaterial): ArrowT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-стрелку с центром в точке p, направлением p, диаметра Diameter и длиной наконечника HeadLength</td></tr>
+<tr><td><code><b>function</b> Arrow(p: Point3D; v: Vector3D; Diameter: real; m: Material := DefaultMaterial): ArrowT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-стрелку с центром в точке p, направлением p, диаметра Diameter</td></tr>
+<tr><td><code><b>function</b> Arrow(p: Point3D; v: Vector3D; m: Material := DefaultMaterial): ArrowT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-стрелку с центром в точке p, направлением p</td></tr>
+<tr><td><code><b>function</b> BillboardText(x, y, z: real; Text: string; Fontsize: real := 12): BillboardTextT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текст на билборде с центром в точке (x, y, z) с размером шрифта Fontsize</td></tr>
+<tr><td><code><b>function</b> BillboardText(p: Point3D; Text: string; Fontsize: real := 12): BillboardTextT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текст на билборде с центром в точке p с размером шрифта Fontsize</td></tr>
+<tr><td><code><b>function</b> Box(x, y, z, SizeX, SizeY, SizeZ: real; m: Material := DefaultMaterial): BoxT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает паралеллепипед с центром в точке (x, y, z) и размерами SizeX, SizeY, SizeZ</td></tr>
+<tr><td><code><b>function</b> Box(center: Point3D; sz: Size3D; m: Material := DefaultMaterial): BoxT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает паралеллепипед с центром в точке center и размерами SizeX, SizeY, SizeZ</td></tr>
+<tr><td><code><b>function</b> Cone(x, y, z, Height, Radius: real; m: Material := DefaultMaterial): TruncatedConeT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает конус с центром основания в точке (x, y, z) высотой Height, радиусом Radius</td></tr>
+<tr><td><code><b>function</b> Cone(p: Point3D; Height, Radius: real; m: Material := DefaultMaterial): TruncatedConeT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает конус с центром основания в точке p высотой Height, радиусом Radius</td></tr>
+<tr><td><code><b>function</b> CoordinateSystem(ArrowsLength, Diameter: real): CoordinateSystemT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает координатную систему с длиной стрелок ArrowsLength и диаметром стрелок Diameter</td></tr>
+<tr><td><code><b>function</b> CoordinateSystem(ArrowsLength: real): CoordinateSystemT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает координатную систему с длиной стрелок ArrowsLength</td></tr>
+<tr><td><code><b>function</b> Cube(x, y, z, SideLength: real; m: Material := DefaultMaterial): CubeT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает эллипсоид с центром в точке (x, y, z) и длиной стороны SideLength</td></tr>
+<tr><td><code><b>function</b> Cube(center: Point3D; SideLength: real; m: Material := DefaultMaterial): CubeT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает эллипсоид с центром в точке center и длиной стороны SideLength</td></tr>
+<tr><td><code><b>function</b> Cylinder(x, y, z, Height, Radius: real; m: Material := DefaultMaterial): CylinderT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цилиндр с центром основания в точке (x, y, z) высоты Height радиуса Radius</td></tr>
+<tr><td><code><b>function</b> Cylinder(p: Point3D; Height, Radius: real; m: Material := DefaultMaterial): CylinderT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цилиндр с центром основания в точке p высоты Height радиуса Radius</td></tr>
+<tr><td><code><b>function</b> DefaultMaterial: Material;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает материал по умолчанию</td></tr>
+<tr><td><code><b>function</b> Dodecahedron(x, y, z, Radius: real; m: Material := DefaultMaterial): DodecahedronT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает додекаэдр с центром в точке (x, y, z) и радиусом описанной окружности Radius</td></tr>
+<tr><td><code><b>function</b> Dodecahedron(p: Point3D; Radius: real; m: Material := DefaultMaterial): DodecahedronT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает додекаэдр с центром в точке p и радиусом описанной окружности Radius</td></tr>
+<tr><td><code><b>function</b> Ellipsoid(x, y, z, RadiusX, RadiusY, RadiusZ: real; m: Material := DefaultMaterial): EllipsoidT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает эллипсоид с центром в точке (x, y, z) и радиусами RadiusX, RadiusY, RadiusZ</td></tr>
+<tr><td><code><b>function</b> Ellipsoid(center: Point3D; RadiusX, RadiusY, RadiusZ: real; m: Material := DefaultMaterial): EllipsoidT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает эллипсоид с центром в точке center и радиусами RadiusX, RadiusY, RadiusZ</td></tr>
+<tr><td><code><b>function</b> FileModel3D(x, y, z: real; fname: string; m: Material): FileModelT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Загружает модель из файла в форматах .obj, .3ds, .lwo, .objz, .stl, .off и отображает ее в точке (x, y, z)</td></tr>
+<tr><td><code><b>function</b> FileModel3D(p: Point3D; fname: string; m: Material): FileModelT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Загружает модель из файла в форматах .obj, .3ds, .lwo, .objz, .stl, .off и отображает ее в точке p</td></tr>
+<tr><td><code><b>function</b> Group(x, y, z: integer): Group3D;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает пустую группу объектов в точке (x, y, z)</td></tr>
+<tr><td><code><b>function</b> Group(p: Point3D): Group3D;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает пустую группу объектов в точке p</td></tr>
+<tr><td><code><b>function</b> Group: Group3D;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает пустую группу объектов в точке (0, 0, 0)</td></tr>
+<tr><td><code><b>function</b> Group(<b>params</b> lst: <b>array</b>  <b>of</b> Object3D): Group3D;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает группу объектов, перечисленных как параметры</td></tr>
+<tr><td><code><b>function</b> Group(en: <b>sequence </b>  <b>of</b> Object3D): Group3D;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает группу объектов из последовательности en</td></tr>
+<tr><td><code><b>function</b> Icosahedron(x, y, z, Radius: real; m: Material := DefaultMaterial): IcosahedronT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает икосаэдр с центром в точке (x, y, z) и радиусом описанной окружности Radius</td></tr>
+<tr><td><code><b>function</b> Icosahedron(p: Point3D; Radius: real; m: Material := DefaultMaterial): IcosahedronT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает икосаэдр с центром в точке p и радиусом описанной окружности Radius</td></tr>
+<tr><td><code><b>function</b> Lego(x, y, z: real; Rows, Columns, Height: integer; m: Material := DefaultMaterial): LegoT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает лего-деталь с центром в точке (x, y, z), размера (Rows, Columns, Height), измеряемом в количестве кирпичиков по каждой размерности</td></tr>
+<tr><td><code><b>function</b> Octahedron(x, y, z, Radius: real; m: Material := DefaultMaterial): OctahedronT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает октаэдр с центром в точке (x, y, z) и радиусом описанной окружности Radius</td></tr>
+<tr><td><code><b>function</b> Octahedron(p: Point3D; Radius: real; m: Material := DefaultMaterial): OctahedronT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает октаэдр с центром в точке p и радиусом описанной окружности Radius</td></tr>
+<tr><td><code><b>function</b> Polygon3D(points: <b>sequence </b>  <b>of</b> Point3D; Thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает замкнутую ломаную, задаваемую последовательностью точек points, толщиной Thickness, заданного цвета</td></tr>
+<tr><td><code><b>function</b> Polyline3D(points: <b>sequence </b>  <b>of</b> Point3D; Thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает ломаную, задаваемую последовательностью точек points, толщиной Thickness, заданного цвета</td></tr>
+<tr><td><code><b>function</b> Prism(x, y, z: real; Sides: integer; Height, Radius: real; m: Material := DefaultMaterial): PrismT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает правильную призму с центром основания в точке (x, y, z), количеством сторон Sides, высотой Height и радиусом Radius</td></tr>
+<tr><td><code><b>function</b> Prism(p: Point3D; Sides: integer; Height, Radius: real; m: Material := DefaultMaterial): PrismT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает правильную призму с центром основания в точке p, количеством сторон Sides, высотой Height и радиусом Radius</td></tr>
+<tr><td><code><b>function</b> PrismWireFrame(x, y, z: real; Sides: integer; Height, Radius: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PrismTWireFrame;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает проволочную правильную призму с центром основания в точке (x, y, z), количеством сторон Sides, высотой Height, радиусом Radius и толщиной проволоки Thickness</td></tr>
+<tr><td><code><b>function</b> PrismWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PrismTWireFrame;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает проволочную правильную призму с центром основания в точке p, количеством сторон Sides, высотой Height, радиусом Radius и толщиной проволоки Thickness</td></tr>
+<tr><td><code><b>function</b> Pyramid(x, y, z: real; Sides: integer; Height, Radius: real; m: Material := DefaultMaterial): PyramidT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает правильную пирамиду с центром основания в точке (x, y, z), количеством сторон Sides, высотой Height и радиусом Radius</td></tr>
+<tr><td><code><b>function</b> Pyramid(p: Point3D; Sides: integer; Height, Radius: real; m: Material := DefaultMaterial): PyramidT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает правильную пирамиду с центром основания в точке p, количеством сторон Sides, высотой Height и радиусом Radius</td></tr>
+<tr><td><code><b>function</b> PyramidWireFrame(x, y, z: real; Sides: integer; Height, Radius: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PyramidTWireFrame;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает проволочную правильную пирамиду с центром основания в точке (x, y, z), количеством сторон Sides, высотой Height и радиусом Radius</td></tr>
+<tr><td><code><b>function</b> PyramidWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PyramidTWireFrame;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает проволочную правильную пирамиду с центром основания в точке p, количеством сторон Sides, высотой Height и радиусом Radius</td></tr>
+<tr><td><code><b>function</b> Rectangle3D(x, y, z, Length, Width: real; Normal, LengthDirection: Vector3D; m: Material := DefaultMaterial): RectangleT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-прямоугольник с центром в точке (x, y, z) длины Length, ширины Width, нормалью Normal и направлением длины LengthDirection</td></tr>
+<tr><td><code><b>function</b> Rectangle3D(p: Point3D; Length, Width: real; Normal, LengthDirection: Vector3D; m: Material := DefaultMaterial): RectangleT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-прямоугольник с центром в точке p длины Length, ширины Width, нормалью Normal и направлением длины LengthDirection</td></tr>
+<tr><td><code><b>function</b> Rectangle3D(x, y, z, Length, Width: real; Normal: Vector3D; m: Material := DefaultMaterial): RectangleT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-прямоугольник с центром в точке (x, y, z) длины Length, ширины Width, нормалью Normal</td></tr>
+<tr><td><code><b>function</b> Rectangle3D(x, y, z, Length, Width: real; m: Material := DefaultMaterial): RectangleT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-прямоугольник с центром в точке (x, y, z) длины Length, ширины Width</td></tr>
+<tr><td><code><b>function</b> Rectangle3D(p: Point3D; Length, Width: real; Normal: Vector3D; m: Material := DefaultMaterial): RectangleT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-прямоугольник с центром в точке p длины Length, ширины Width, нормалью Normal</td></tr>
+<tr><td><code><b>function</b> Rectangle3D(p: Point3D; Length, Width: real; m: Material := DefaultMaterial): RectangleT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-прямоугольник с центром в точке p длины Length, ширины Width</td></tr>
+<tr><td><code><b>function</b> Segment3D(p1, p2: Point3D; Thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отрезок из точки p1 в точку p2 толщиной Thickness заданного цвета</td></tr>
+<tr><td><code><b>function</b> Segments3D(points: <b>sequence </b>  <b>of</b> Point3D; Thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает набор отрезков, задаваемых последовательностью точек points, толщиной Thickness, заданного цвета. Количество точек должно быть четным</td></tr>
+<tr><td><code><b>function</b> Sphere(x, y, z, Radius: real; m: Material := DefaultMaterial): SphereT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает сферу с центром в точке (x, y, z) радиуса Radius</td></tr>
+<tr><td><code><b>function</b> Sphere(center: Point3D; Radius: real; m: Material := DefaultMaterial): SphereT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает сферу с центром в точке center радиуса Radius</td></tr>
+<tr><td><code><b>function</b> Teapot(x, y, z: real; c: Material := DefaultMaterial): TeapotT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает чайник с центром в точке (x, y, z)</td></tr>
+<tr><td><code><b>function</b> Teapot(p: Point3D; c: Material := DefaultMaterial): TeapotT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает чайник с центром в точке p</td></tr>
+<tr><td><code><b>function</b> Tetrahedron(x, y, z, Radius: real; m: Material := DefaultMaterial): TetrahedronT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает тетраэдр с центром в точке (x, y, z) и радиусом описанной окружности Radius</td></tr>
+<tr><td><code><b>function</b> Tetrahedron(p: Point3D; Radius: real; m: Material := DefaultMaterial): TetrahedronT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает тетраэдр с центром в точке p и радиусом описанной окружности Radius</td></tr>
+<tr><td><code><b>function</b> Text3D(x, y, z: real; Text: string; Height: real; FontName: string := 'Arial'; c: Color := Colors.Black): TextT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-текст с центром в точке (x, y, z) с высотой Height, именем шрифта FontName заданного цвета</td></tr>
+<tr><td><code><b>function</b> Text3D(p: Point3D; Text: string; Height: real; FontName: string := 'Arial'; c: Color := Colors.Black): TextT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-текст с центром в точке p с высотой Height, именем шрифта FontName заданного цвета</td></tr>
+<tr><td><code><b>function</b> Text3D(x, y, z: real; Text: string; Height: real; c: Color): TextT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-текст с центром в точке (x, y, z) с высотой Height заданного цвета</td></tr>
+<tr><td><code><b>function</b> Text3D(p: Point3D; Text: string; Height: real; c: Color): TextT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-текст с центром в точке p с высотой Height заданного цвета</td></tr>
+<tr><td><code><b>function</b> Torus(x, y, z, Diameter, TubeDiameter: real; m: Material := DefaultMaterial): TorusT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает тор (бублик) с центром в точке (x, y, z), диаметром Diameter и диаметром трубы TubeDiameter</td></tr>
+<tr><td><code><b>function</b> Torus(p: Point3D; Diameter, TubeDiameter: real; m: Material := DefaultMaterial): TorusT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает тор (бублик) с центром в точке p, диаметром Diameter и диаметром трубы TubeDiameter</td></tr>
+<tr><td><code><b>function</b> Triangle(p1, p2, p3: Point3D; m: Material := DefaultMaterial): TriangleT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает треугольник, соединяющий точки p1, p2, p3</td></tr>
+<tr><td><code><b>function</b> TruncatedCone(x, y, z, Height, Radius, TopRadius: real; m: Material := DefaultMaterial): TruncatedConeT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает усеченный конус с центром основания в точке (x, y, z) высоты Height, радиуса основания Radius, верхнего радиуса TopRadius</td></tr>
+<tr><td><code><b>function</b> TruncatedCone(p: Point3D; Height, Radius, TopRadius: real; m: Material := DefaultMaterial): TruncatedConeT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает усеченный конус с центром основания в точке p высоты Height, радиуса основания Radius, верхнего радиуса TopRadius</td></tr>
+<tr><td><code><b>function</b> Tube(x, y, z, Height, Radius, InnerRadius: real; m: Material := DefaultMaterial): PipeT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает трубу с центром основания в точке (x, y, z) высотой Height, радиусом Radius и внутренним радиусом InnerRadius</td></tr>
+<tr><td><code><b>function</b> Tube(p: Point3D; Height, Radius, InnerRadius: real; m: Material := DefaultMaterial): PipeT;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает трубу с центром основания в точке p высотой Height, радиусом Radius и внутренним радиусом InnerRadius</td></tr>
+</table>
+</body></HTML>
