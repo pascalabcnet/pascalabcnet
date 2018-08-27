@@ -11596,6 +11596,8 @@ namespace PascalABCCompiler.TreeConverter
                             }
                             else
                                 AddError(get_location(attr.qualifier), "ATTRIBUTE_QUALIFIER_MUST_BE_FIRST");
+                        if (tn.is_generic_type_instance || tn.is_generic_type_definition)
+                            AddError(get_location(attr), "ATTRIBUTE_CANNOT_BE_GENERIC");
                         check_for_usage_attribute(ctn, targets, tn.name, get_location(attr), qualifier);
 
                         attribute_converted = false;
