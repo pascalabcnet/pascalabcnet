@@ -63,6 +63,8 @@ function RGB(r,g,b: byte): Color;
 function ARGB(a,r,g,b: byte): Color;
 /// Возвращает случайный цвет
 function RandomColor: Color;
+/// Возвращает серый цвет с интенсивностью b
+function GrayColor(b: byte): Color;
 /// Возвращает полностью прозрачный цвет
 function EmptyColor: Color;
 /// Возвращает случайный цвет
@@ -910,6 +912,7 @@ implementation
 function RGB(r,g,b: byte) := Color.Fromrgb(r, g, b);
 function ARGB(a,r,g,b: byte) := Color.FromArgb(a, r, g, b);
 function RandomColor := RGB(PABCSystem.Random(256), PABCSystem.Random(256), PABCSystem.Random(256));
+function GrayColor(b: byte): Color := RGB(b,b,b);
 function EmptyColor := ARGB(0,0,0,0);
 function clRandom := RandomColor();
 function Pnt(x,y: real) := new Point(x,y);

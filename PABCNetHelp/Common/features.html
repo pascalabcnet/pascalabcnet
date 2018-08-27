@@ -105,12 +105,9 @@ C:\PABCWork.NET) в подпапке Samples\!MainFeatures.</p>
 </ol>
 <p><b>Типы</b></p>
 <ol start=12>
-	<li><b><a href="JavaScript:exam.TCard(212,0)">CharFunc.pas</a>.</b> Символы Char хранят Unicode и поэтому занимают 2 байта. Для функций Ord и Chr оставлено, тем 
-	не менее, прежнее действие (предполагается, что символы находятся в
-	Windows-кодировке). Для
-	работы с кодами Unicode 
-	следует использовать OrdUnicode и
-	ChrUnicode.</li>
+	<li><b><a href="JavaScript:exam.TCard(212,0)">CharFunc.pas</a>.</b> Символы Char хранят Unicode и поэтому занимают 2 байта. 
+	Функции Ord и Chr работают именно с Unicode. Для совместимости функции 
+	OrdAnsi и ChrAnsi работают в однобайтовой кодировке Windows.</li>
 	<li><b><a href="JavaScript:exam.TCard(213,0)">StringTypes.pas</a>.</b> Строки string 
 	занимают память переменной длины и проецируются на .NET-тип System.String. Однако, в отличие от
 	NET-строк они изменяемы и индексируются с 1. Для 

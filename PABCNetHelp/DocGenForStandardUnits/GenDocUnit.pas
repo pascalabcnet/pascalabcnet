@@ -356,7 +356,7 @@ begin
     
   s := keys.Around('HEAD')
     + (Title.Around('H1') + s).Around('body');
-  //Println(HelpFileName);
+  //Println('..\'+RootOutputDirectory+'Files\'+HelpFileName+'.html');
   WriteAllText('..\'+RootOutputDirectory+'Files\'+HelpFileName+'.html',s.Around('HTML'));
 
   var s1 := '<param name="Name" value="' + Title + '">';

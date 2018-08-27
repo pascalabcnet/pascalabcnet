@@ -313,6 +313,8 @@ function ImageSize(fname: string): (integer,integer);
 function RGB(r,g,b: byte): Color;
 /// Возвращает цвет по красной, зеленой и синей составляющей и параметру прозрачности (в диапазоне 0..255)
 function ARGB(a,r,g,b: byte): Color;
+/// Возвращает серый цвет с интенсивностью b
+function GrayColor(b: byte): Color;
 /// Возвращает случайный цвет
 function RandomColor: Color;
 /// Возвращает полностью прозрачный цвет
@@ -478,6 +480,7 @@ implementation
 
 function RGB(r,g,b: byte) := Color.Fromrgb(r, g, b);
 function ARGB(a,r,g,b: byte) := Color.FromArgb(a, r, g, b);
+function GrayColor(b: byte): Color := RGB(b, b, b);
 function RandomColor := RGB(PABCSystem.Random(256), PABCSystem.Random(256), PABCSystem.Random(256));
 function EmptyColor: Color := ARGB(0,0,0,0);
 function clRandom := RandomColor();
