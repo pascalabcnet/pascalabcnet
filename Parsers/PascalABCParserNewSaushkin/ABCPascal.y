@@ -3639,6 +3639,10 @@ attribute_variable
         { 
 			$$ = new attribute(null, $1 as named_type_reference, $2 as expression_list, @$);
 		}
+    | template_type optional_expr_list_with_bracket
+        {
+            $$ = new attribute(null, $1 as named_type_reference, $2 as expression_list, @$);
+        }
     ;
 
 dotted_identifier
