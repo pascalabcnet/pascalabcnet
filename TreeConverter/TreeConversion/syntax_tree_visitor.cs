@@ -14557,6 +14557,7 @@ namespace PascalABCCompiler.TreeConverter
                 	if (tn.IsEnum || tn.type_special_kind == SemanticTree.type_special_kind.diap_type) return null;
                 	common_type_node ctn = tn as common_type_node;
                     foreach (class_field cf in ctn.fields)
+                        if (!cf.IsStatic)
                         if ((btn = FindBadTypeNodeForPointersInDotNetFramework(cf.type)) != null)
                             return btn;
                     return null;
