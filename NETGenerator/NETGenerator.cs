@@ -1593,17 +1593,21 @@ namespace PascalABCCompiler.NETGenerator
             IAttributeNode[] attrs = ctn.Attributes;
             for (int i = 0; i < attrs.Length; i++)
             {
-                //if (attrs[i].AttributeType == SystemLibrary.SystemLibrary.comimport_type)
-                //	continue;
-
-                CustomAttributeBuilder cab = new CustomAttributeBuilder
-                    ((attrs[i].AttributeConstructor is ICompiledConstructorNode) ? (attrs[i].AttributeConstructor as ICompiledConstructorNode).constructor_info : helper.GetConstructor(attrs[i].AttributeConstructor).cnstr, get_constants(attrs[i].Arguments),
-                    get_named_properties(attrs[i].PropertyNames), get_constants(attrs[i].PropertyInitializers),
-                    get_named_fields(attrs[i].FieldNames), get_constants(attrs[i].FieldInitializers));
-                if (t is TypeBuilder)
-                    (t as TypeBuilder).SetCustomAttribute(cab);
-                else if (t is EnumBuilder)
-                    (t as EnumBuilder).SetCustomAttribute(cab);
+                try
+                {
+                    CustomAttributeBuilder cab = new CustomAttributeBuilder
+                        ((attrs[i].AttributeConstructor is ICompiledConstructorNode) ? (attrs[i].AttributeConstructor as ICompiledConstructorNode).constructor_info : helper.GetConstructor(attrs[i].AttributeConstructor).cnstr, get_constants(attrs[i].Arguments),
+                        get_named_properties(attrs[i].PropertyNames), get_constants(attrs[i].PropertyInitializers),
+                        get_named_fields(attrs[i].FieldNames), get_constants(attrs[i].FieldInitializers));
+                    if (t is TypeBuilder)
+                        (t as TypeBuilder).SetCustomAttribute(cab);
+                    else if (t is EnumBuilder)
+                        (t as EnumBuilder).SetCustomAttribute(cab);
+                }
+                catch (ArgumentException ex)
+                {
+                    throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message.Replace("System.ArgumentException: ", ""), attrs[i].Location.document.file_name, attrs[i].Location.begin_line_num, attrs[i].Location.begin_column_num);
+                }
             }
         }
 
@@ -1627,11 +1631,18 @@ namespace PascalABCCompiler.NETGenerator
             IAttributeNode[] attrs = fld.Attributes;
             for (int i = 0; i < attrs.Length; i++)
             {
-                CustomAttributeBuilder cab = new CustomAttributeBuilder
+                try
+                {
+                    CustomAttributeBuilder cab = new CustomAttributeBuilder
                     ((attrs[i].AttributeConstructor is ICompiledConstructorNode) ? (attrs[i].AttributeConstructor as ICompiledConstructorNode).constructor_info : helper.GetConstructor(attrs[i].AttributeConstructor).cnstr, get_constants(attrs[i].Arguments),
                     get_named_properties(attrs[i].PropertyNames), get_constants(attrs[i].PropertyInitializers),
                     get_named_fields(attrs[i].FieldNames), get_constants(attrs[i].FieldInitializers));
-                fb.SetCustomAttribute(cab);
+                    fb.SetCustomAttribute(cab);
+                }
+                catch (ArgumentException ex)
+                {
+                    throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message.Replace("System.ArgumentException: ", ""), attrs[i].Location.document.file_name, attrs[i].Location.begin_line_num, attrs[i].Location.begin_column_num);
+                }
             }
         }
 

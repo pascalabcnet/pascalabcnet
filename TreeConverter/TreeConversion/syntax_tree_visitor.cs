@@ -11631,7 +11631,7 @@ namespace PascalABCCompiler.TreeConverter
                                 check_all_fields_have_field_offset_attr(ctn as common_type_node);
                             }
                         }
-                        attribute_node attr_node = new attribute_node(bfc.simple_function_node, tn, get_location(td));
+                        attribute_node attr_node = new attribute_node(bfc.simple_function_node, tn, get_location(attr));
                         foreach (expression_node en in bfc.parameters)
                         {
                             constant_node cn = convert_strong_to_constant_node(en, en.type);
