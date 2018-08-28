@@ -15557,7 +15557,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     method_call mc = new method_call();
                     mc.parameters = (expr as SyntaxTree.array_const).elements;
-                    mc.dereferencing_value = new dot_node(new ident("Tuple"), new ident("Create"));
+                    mc.dereferencing_value = new dot_node(new ident("Tuple", expr.source_context), new ident("Create", expr.source_context), expr.source_context);
                     return mc;
                 }
                 else if (expr is SyntaxTree.bracket_expr && (tn.type_special_kind == SemanticTree.type_special_kind.array_kind || tn.type_special_kind == SemanticTree.type_special_kind.array_wrapper))
