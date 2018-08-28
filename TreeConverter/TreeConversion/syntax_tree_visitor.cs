@@ -9281,7 +9281,7 @@ namespace PascalABCCompiler.TreeConverter
                 case general_node_type.constant_definition:
                     {
                         //throw new ConstMemberCannotBeAccessedWithAnInstanceReference((class_constant_definition)dn, get_location(id_right));
-                        return ((constant_definition_node)dn).const_value;
+                        return ((constant_definition_node)dn).const_value.get_constant_copy(get_location(id_right));
                     }
                 case general_node_type.event_node:
                     {
