@@ -4099,7 +4099,7 @@ namespace CodeCompletion
                 return true;
             if (this.IsGenericParameter && ts.IsGenericParameter && this.Name == ts.Name)
                 return true;
-            if (ts is TemplateParameterScope)
+            if (ts is TemplateParameterScope || ts.IsGenericParameter)
                 return true;
             TypeScope tmp = this.baseScope;
             while (tmp != null)
