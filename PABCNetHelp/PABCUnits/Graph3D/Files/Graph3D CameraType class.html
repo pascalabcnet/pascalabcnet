@@ -1,0 +1,68 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="AddBackwardForce">
+<param name="Keyword" value="AddDirectionalLight">
+<param name="Keyword" value="AddDownForce">
+<param name="Keyword" value="AddForwardForce">
+<param name="Keyword" value="AddLeftForce">
+<param name="Keyword" value="AddMoveForce">
+<param name="Keyword" value="AddPointLight">
+<param name="Keyword" value="AddRightForce">
+<param name="Keyword" value="AddRotateForce">
+<param name="Keyword" value="AddSpotLight">
+<param name="Keyword" value="AddUpForce">
+<param name="Keyword" value="Count">
+<param name="Keyword" value="Distanse">
+<param name="Keyword" value="LookDirection">
+<param name="Keyword" value="MoveOn">
+<param name="Keyword" value="Position">
+<param name="Keyword" value="RemoveLight">
+<param name="Keyword" value="Rotate">
+<param name="Keyword" value="UpDirection"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Graph3D: класс CameraType</H1>Класс камеры.
+<table border=0 cellpadding=5><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства класса CameraType</font></td></tr>
+
+<tr><tr><td><code><b>property</b> Count: integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Количество источников света</td></tr>
+<tr><td><code><b>property</b> Distanse: real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Расстояние камеры до начала координат</td></tr>
+<tr><td><code><b>property</b> LookDirection: Vector3D;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Направление взгляда камеры</td></tr>
+<tr><td><code><b>property</b> Position: Point3D;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Позиция камеры</td></tr>
+<tr><td><code><b>property</b> UpDirection: Vector3D;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Направление "вверх" камеры</td></tr>
+</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы класса CameraType</font></td></tr>
+
+<tr><tr><td><code><b>procedure</b> AddBackwardForce(Force: real := 0.2);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Обеспечивает плавное движение камеры назад с некоторой силой</td></tr>
+<tr><td><code><b>procedure</b> AddDirectionalLight(c: Color; v: Vector3D);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Добавляет направленный источник света</td></tr>
+<tr><td><code><b>procedure</b> AddDownForce(Force: real := 0.2);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Обеспечивает плавное движение камеры вниз</td></tr>
+<tr><td><code><b>procedure</b> AddForwardForce(Force: real := 0.2);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Обеспечивает плавное движение камеры вперед с некоторой силой</td></tr>
+<tr><td><code><b>procedure</b> AddLeftForce(Force: real := 0.2);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Обеспечивает плавное движение камеры влево</td></tr>
+<tr><td><code><b>procedure</b> AddMoveForce(ForwardForce,RightForce,UpForce: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Обеспечивает плавное движение камеры</td></tr>
+<tr><td><code><b>procedure</b> AddPointLight(c: Color; p: Point3D);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Добавляет точечный источник света</td></tr>
+<tr><td><code><b>procedure</b> AddRightForce(Force: real := 0.2);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Обеспечивает плавное движение камеры вправо</td></tr>
+<tr><td><code><b>procedure</b> AddRotateForce(RightForce,UpForce: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Обеспечивает плавный поворот камеры</td></tr>
+<tr><td><code><b>procedure</b> AddSpotLight(c: Color; p: Point3D; v: Vector3D; outerconeangle, innerconeangle: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Добавляет конусообразный источник света</td></tr>
+<tr><td><code><b>procedure</b> AddUpForce(Force: real := 0.2);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Обеспечивает плавное движение камеры вверх</td></tr>
+<tr><td><code><b>procedure</b> MoveOn(dx,dy,dz: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает камеру на вектор (dx,dy,dz)</td></tr>
+<tr><td><code><b>procedure</b> MoveOn(v: Vector3D);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает камеру на вектор v</td></tr>
+<tr><td><code><b>procedure</b> RemoveLight(i: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет источник света</td></tr>
+<tr><td><code><b>procedure</b> Rotate(axis: Vector3D; angle: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Поворачивает камеру на данный угол относительно данной оси</td></tr>
+</tr></table>
+</body></HTML>

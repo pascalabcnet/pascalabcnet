@@ -1,0 +1,31 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="DrawGrid">
+<param name="Keyword" value="SetMathematicCoords">
+<param name="Keyword" value="SetStandardCoords">
+<param name="Keyword" value="SetStandardCoordsSharpLines">
+<param name="Keyword" value="XMax">
+<param name="Keyword" value="XMin">
+<param name="Keyword" value="YMax">
+<param name="Keyword" value="YMin"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Функции для настройки системы координат</H1>
+<table border=0 cellpadding=5><tr><td><code><b>procedure</b> DrawGrid;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует сетку системы координат</td></tr>
+<tr><td><code><b>procedure</b> SetMathematicCoords(x1: real := -10; x2: real := 10; drawgrid: boolean := true);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает математическую систему координат с диапазоном [x1,x2] по оси OX.</td></tr>
+<tr><td><code><b>procedure</b> SetMathematicCoords(x1,x2,ymin: real; drawgrid: boolean := true);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает математическую систему координат с диапазоном [x1,x2] по оси OX и минимальной координатой ymin по оси OY</td></tr>
+<tr><td><code><b>procedure</b> SetStandardCoords(scale: real := 1.0; x0: real := 0; y0: real := 0);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает стандартную систему координат (ось OY направлена вниз) с центром (x0,y0)</td></tr>
+<tr><td><code><b>procedure</b> SetStandardCoordsSharpLines(x0: real := 0; y0: real := 0);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает стандартную систему координат с центром (x0,y0). Изображение не масштабируется к разрешению монитора и линии получаются чёткими</td></tr>
+<tr><td><code><b>function</b> XMax: real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Максимальная отображаемая x-координата</td></tr>
+<tr><td><code><b>function</b> XMin: real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Минимальная отображаемая x-координата</td></tr>
+<tr><td><code><b>function</b> YMax: real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Максимальная отображаемая y-координата</td></tr>
+<tr><td><code><b>function</b> YMin: real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Минимальная отображаемая y-координата</td></tr>
+</table>
+</body></HTML>

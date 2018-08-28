@@ -1,0 +1,22 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="EmptyAnim">
+<param name="Keyword" value="GetRay">
+<param name="Keyword" value="Line">
+<param name="Keyword" value="Plane">
+<param name="Keyword" value="Ray"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Graph3D: функции для создания невизуальных объектов</H1>
+<table border=0 cellpadding=5><tr><td><code><b>function</b> EmptyAnim(sec: real): EmptyAnimation;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает пустую анимацию заданной длительности</td></tr>
+<tr><td><code><b>function</b> GetRay(x, y: real): Ray3D;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает невизуальный луч, выпущенный из камеры и проходящий через точку (x,y) экрана</td></tr>
+<tr><td><code><b>function</b> Line(p: Point3D; v: Vector3D): Line3D;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает невизуальную прямую, проходящую через точку p в направлении вектора v</td></tr>
+<tr><td><code><b>function</b> Line(p1, p2: Point3D): Line3D;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает невизуальную прямую, проходящую через точки p1 и p2</td></tr>
+<tr><td><code><b>function</b> Plane(p: Point3D; Normal: Vector3D): Plane3D;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает невизуальную плоскость, проходящую через точку p и имеющую нормаль Normal</td></tr>
+<tr><td><code><b>function</b> Ray(p: Point3D; v: Vector3D): Ray3D;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает невизуальный луч, проходящий через точку p в направлении вектора v</td></tr>
+</table>
+</body></HTML>
