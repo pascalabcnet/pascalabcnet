@@ -463,7 +463,7 @@ namespace CodeCompletion
             if (this.used_units != null)
         		for (int i = 0; i < this.used_units.Count; i++)
                 {
-                    if (this.used_units[i] == unit)
+                    if (this.used_units[i] == unit || this.used_units[i] == this)
                     	return true;
                     else if (this.used_units[i].hasUsesCycle(unit))
                     	return true;
@@ -3826,16 +3826,20 @@ namespace CodeCompletion
                 bool has_def_constr = false;
 
                 foreach (SymScope ss in members)
-                    if (ss is ProcScope && (ss as ProcScope).is_constructor)
-                    {
-                        has_def_constr = true;
-                    }
-                if (!has_def_constr)
                 {
-                    ProcScope ps = new ProcScope("Create", this, true);
-                    ps.Complete();
-                    members.Insert(0, ps);
+                    ProcScope ps = ss as ProcScope;
+                    if (ps != null && ps.is_constructor && (ps.parameters == null || ps.parameters.Count == 0) && !ps.is_static)
+                    {
+                        return;
+                    }
                 }
+
+                ProcScope constr = new ProcScope("Create", this, true);
+                constr.si.acc_mod = access_modifer.public_modifer;
+                //constr.head_loc = this.loc;
+                //constr.loc = this.loc;
+                constr.Complete();
+                members.Insert(0, constr);
             }
         }
 
