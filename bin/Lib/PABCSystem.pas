@@ -460,6 +460,9 @@ type
     function ToString: string; override;
     class function operator implicit<T>(s: TypedSet): HashSet<T>;
     class function operator implicit<T>(s: HashSet<T>): TypedSet;
+    function Count: integer := ht.Count;
+    procedure Print(delim: string := ' ');
+    procedure Println(delim: string := ' ');
   end;
 
 type
@@ -2896,6 +2899,28 @@ function TypedSet.CompareGreaterEqual(s: TypedSet): boolean;
 begin
   Result := CompareSetGreaterEqual(Self, s);
 end;
+
+procedure TypedSet.Print(delim: string);
+begin
+  foreach var x in ht.Keys do
+    Write(x,delim)
+end;
+
+procedure TypedSet.Println(delim: string);
+begin
+  var fst := True;
+  foreach var x in ht.Keys do
+  begin
+    if fst then
+    begin
+      fst := False;
+      Write(x);
+    end
+    else Write(delim,x);
+  end;
+  Writeln;  
+end;
+
 
 // -----------------------------------------------------
 //                  Typed Set functions
