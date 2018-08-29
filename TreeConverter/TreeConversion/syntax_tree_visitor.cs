@@ -9281,7 +9281,7 @@ namespace PascalABCCompiler.TreeConverter
                 case general_node_type.constant_definition:
                     {
                         //throw new ConstMemberCannotBeAccessedWithAnInstanceReference((class_constant_definition)dn, get_location(id_right));
-                        return ((constant_definition_node)dn).const_value;
+                        return ((constant_definition_node)dn).const_value.get_constant_copy(get_location(id_right));
                     }
                 case general_node_type.event_node:
                     {
@@ -15553,11 +15553,11 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (tn == null)
                     return expr;
-                if (expr is SyntaxTree.array_const && tn.full_name != null && tn.full_name.StartsWith("System.Tuple") && tn.type_special_kind != SemanticTree.type_special_kind.array_kind)
+                if (expr is SyntaxTree.array_const && tn.BaseFullName != null && tn.BaseFullName.StartsWith("System.Tuple") && tn.type_special_kind != SemanticTree.type_special_kind.array_kind)
                 {
                     method_call mc = new method_call();
                     mc.parameters = (expr as SyntaxTree.array_const).elements;
-                    mc.dereferencing_value = new dot_node(new ident("Tuple"), new ident("Create"));
+                    mc.dereferencing_value = new dot_node(new ident("Tuple", expr.source_context), new ident("Create", expr.source_context), expr.source_context);
                     return mc;
                 }
                 else if (expr is SyntaxTree.bracket_expr && (tn.type_special_kind == SemanticTree.type_special_kind.array_kind || tn.type_special_kind == SemanticTree.type_special_kind.array_wrapper))
