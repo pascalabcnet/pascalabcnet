@@ -6,11 +6,9 @@
 <param name="Keyword" value="CoordinateSystem">
 <param name="Keyword" value="Cube">
 <param name="Keyword" value="Cylinder">
-<param name="Keyword" value="DefaultMaterial">
 <param name="Keyword" value="Dodecahedron">
 <param name="Keyword" value="Ellipsoid">
 <param name="Keyword" value="FileModel3D">
-<param name="Keyword" value="Group">
 <param name="Keyword" value="Icosahedron">
 <param name="Keyword" value="Lego">
 <param name="Keyword" value="Octahedron">
@@ -69,8 +67,6 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цилиндр с центром основания в точке (x, y, z) высоты Height радиуса Radius</td></tr>
 <tr><td><code><b>function</b> Cylinder(p: Point3D; Height, Radius: real; m: Material := DefaultMaterial): CylinderT;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цилиндр с центром основания в точке p высоты Height радиуса Radius</td></tr>
-<tr><td><code><b>function</b> DefaultMaterial: Material;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает материал по умолчанию</td></tr>
 <tr><td><code><b>function</b> Dodecahedron(x, y, z, Radius: real; m: Material := DefaultMaterial): DodecahedronT;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает додекаэдр с центром в точке (x, y, z) и радиусом описанной окружности Radius</td></tr>
 <tr><td><code><b>function</b> Dodecahedron(p: Point3D; Radius: real; m: Material := DefaultMaterial): DodecahedronT;</code>
@@ -83,16 +79,6 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Загружает модель из файла в форматах .obj, .3ds, .lwo, .objz, .stl, .off и отображает ее в точке (x, y, z)</td></tr>
 <tr><td><code><b>function</b> FileModel3D(p: Point3D; fname: string; m: Material): FileModelT;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Загружает модель из файла в форматах .obj, .3ds, .lwo, .objz, .stl, .off и отображает ее в точке p</td></tr>
-<tr><td><code><b>function</b> Group(x, y, z: integer): Group3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает пустую группу объектов в точке (x, y, z)</td></tr>
-<tr><td><code><b>function</b> Group(p: Point3D): Group3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает пустую группу объектов в точке p</td></tr>
-<tr><td><code><b>function</b> Group: Group3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает пустую группу объектов в точке (0, 0, 0)</td></tr>
-<tr><td><code><b>function</b> Group(<b>params</b> lst: <b>array</b>  <b>of</b> Object3D): Group3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает группу объектов, перечисленных как параметры</td></tr>
-<tr><td><code><b>function</b> Group(en: <b>sequence </b>  <b>of</b> Object3D): Group3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает группу объектов из последовательности en</td></tr>
 <tr><td><code><b>function</b> Icosahedron(x, y, z, Radius: real; m: Material := DefaultMaterial): IcosahedronT;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает икосаэдр с центром в точке (x, y, z) и радиусом описанной окружности Radius</td></tr>
 <tr><td><code><b>function</b> Icosahedron(p: Point3D; Radius: real; m: Material := DefaultMaterial): IcosahedronT;</code>

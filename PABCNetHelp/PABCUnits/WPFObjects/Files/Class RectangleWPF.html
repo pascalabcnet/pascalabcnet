@@ -1,4 +1,5 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="RectangleWPF">
 <param name="Keyword" value="WithBorder">
 <param name="Keyword" value="WithNoBorder">
 <param name="Keyword" value="WithRotate">
@@ -15,13 +16,13 @@
 
 <tr><tr><td><code><b>function</b> WithBorder(w: real := -1);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
-<tr><td><code><b>function</b> WithNoBorder := inherited WithNoBorder as RectangleWPF;</code>
+<tr><td><code><b>function</b> WithNoBorder;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор выключения границы объекта</td></tr>
 <tr><td><code><b>function</b> WithRotate(da: real): RectangleWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор поворота объекта</td></tr>
 <tr><td><code><b>function</b> WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): RectangleWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор текста объекта</td></tr>
-</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства предка BoundedObjectWPF</font></td></tr>
+</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства базового класса BoundedObjectWPF</font></td></tr>
 
 <tr><tr><td><code><b>property</b> BorderColor: GColor;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет границы графического объекта</td></tr>
@@ -29,13 +30,13 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ширина границы графического объекта</td></tr>
 <tr><td><code><b>property</b> Color: GColor;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет графического объекта</td></tr>
-</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы предка BoundedObjectWPF</font></td></tr>
+</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы базового класса BoundedObjectWPF</font></td></tr>
 
 <tr><tr><td><code><b>function</b> WithBorder(w: real := -1): BoundedObjectWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
 <tr><td><code><b>function</b> WithNoBorder: BoundedObjectWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор выключения границы объекта</td></tr>
-</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства предка ObjectWPF</font></td></tr>
+</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства базового класса ObjectWPF</font></td></tr>
 
 <tr><tr><td><code><b>property</b> Center: Point;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Центр графического объекта</td></tr>
@@ -77,7 +78,7 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отступ графического объекта от верхнего края</td></tr>
 <tr><td><code><b>property</b> Width: real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ширина графического объекта</td></tr>
-</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы предка ObjectWPF</font></td></tr>
+</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы базового класса ObjectWPF</font></td></tr>
 
 <tr><tr><td><code><b>procedure</b> AddChild(ch: ObjectWPF);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Добавляет к графическому объекту дочерний</td></tr>
@@ -85,7 +86,7 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет из графического объекта дочерний</td></tr>
 <tr><td><code><b>procedure</b> Destroy;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет графический объект</td></tr>
-<tr><td><code><b>procedure</b> Move := MoveOn(dx,dy);</code>
+<tr><td><code><b>procedure</b> Move;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает графический объект на вектор (dx,dy)</td></tr>
 <tr><td><code><b>procedure</b> MoveForward(r: real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает графический объект в направлении RotateAngle (вверх при RotateAngle=0)</td></tr>

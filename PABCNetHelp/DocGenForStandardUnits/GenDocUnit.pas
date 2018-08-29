@@ -187,6 +187,38 @@ type
  
 var dictClasses := new Dictionary<string,BFD>;
 
+procedure ConvertFunDef(var fun: string);
+begin
+  fun := fun.Trim;
+  
+  if (fun.Length>0) and (fun.Last<>';') then
+    fun += ';';
+
+  fun := Regex.Replace(fun,'extensionmethod[^;]*;','');
+  fun := Regex.Replace(fun,' read.*;','');
+  fun := Regex.Replace(fun,' write.*;','');
+  fun := Regex.Replace(fun,'\)\s*:=.*',')');
+  fun := fun.DeleteFirst('var ');
+  
+  fun := fun.Trim;
+  
+  // Попробуем убрать := реализация
+  // Это первое := на внешнем уровне (вне скобок)
+  
+  var p := fun.IndexOf(':=');
+  while p>=0 do
+  begin
+    if fun[:p].Count(c->c='(')=fun[:p].Count(c->c=')') then 
+      break;
+    p := fun.IndexOf(':=',p+1);
+  end;
+  if p>=0 then
+    fun := fun[:p];
+  
+  if (fun.Length>0) and (fun.Last<>';') then
+    fun += ';';
+end;
+
 function CreateTableData(fds: List<FD>; Keywords: SortedSet<string>): string;
 begin
   Result := '';
@@ -194,20 +226,7 @@ begin
   begin
     //funcs[i] := Regex.Replace(funcs[i],'\(\ *Self[^;\)]*\)','()');
     //funcs[i] := Regex.Replace(funcs[i],'\(\ *Self[^;]*;\ *','(');
-    fds[i].fun := fds[i].fun.Trim;
-    
-    if (fds[i].fun.Length>0) and (fds[i].fun.Last<>';') then
-      fds[i].fun += ';';
-
-    fds[i].fun := Regex.Replace(fds[i].fun,'extensionmethod[^;]*;','');
-    fds[i].fun := Regex.Replace(fds[i].fun,' read.*;','');
-    fds[i].fun := Regex.Replace(fds[i].fun,' write.*;','');
-    fds[i].fun := Regex.Replace(fds[i].fun,'\)\s*:=.*',')');
-    fds[i].fun := fds[i].fun.DeleteFirst('var ');
-    
-    fds[i].fun := fds[i].fun.Trim;
-    if (fds[i].fun.Length>0) and (fds[i].fun.Last<>';') then
-      fds[i].fun += ';';
+    ConvertFunDef(fds[i].fun);
 
     var dd := fds[i].def.Remove(0,3).Trim;
     var td := fds[i].fun.Around('code')
@@ -215,6 +234,7 @@ begin
       .Replace('function','<b>function</b>')
       .Replace('procedure','<b>procedure</b>')
       .Replace('constructor','<b>constructor</b>')
+      .Replace('class','<b>class</b>')
       .Replace('property','<b>property</b>')
       .Replace(' read',' <b>read</b>')
       .Replace(' write',' <b>write</b>')
@@ -266,9 +286,10 @@ begin
   // Вырезать из funcs строку где встречается class, его имя и предка
 
   var classdef,classname,classbase: string;  
-  var ind := funcs.FindIndex(s ->s.Contains(' class'));
+  var ind := funcs.FindIndex(s ->s.Contains(' class') and not s.Trim.StartsWith('class'));
   if ind<>-1 then
   begin
+    Println(funcs[ind]);
     var str := funcs[ind];
     classdef := defs[ind].ToString.Remove(0,3).Trim;
     funcs.RemoveAt(ind);
@@ -288,7 +309,9 @@ begin
   var names := funcs.Select(s->begin 
     Result := ''; 
     var ss := s.Split(' ','<','(','&',':'); 
-    if (ss[0]='procedure') or (ss[0]='function') or (ss[0]='property') then 
+    if (ss[0]='class') then  // class function
+      Result := ss[2] 
+    else if (ss[0]='procedure') or (ss[0]='function') or (ss[0]='property') then 
       Result := ss[1] 
     else Result := ss[0]; 
   end).ToList;
@@ -313,6 +336,7 @@ begin
   begin
     // пополнение словарика классов. Чтобы потом добавлять свойства и методы предков    
     dictClasses[classname] := new BFD(classbase,fds);
+    Keywords += classname;
     
   // funcs надо отклассифицировать: конструкторы, свойства, методы, события
   // Каждую группу предварить заголовком
@@ -326,16 +350,19 @@ begin
 
     var pf := gr.Where(g->(g.Key='procedure') or (g.Key='function'));
     table += CreateSectionInClassDef('Методы класса '+classname,pf,Keywords);
+
+    var cpf := gr.Where(g->(g.Key='class'));
+    table += CreateSectionInClassDef('Статические методы класса '+classname,cpf,Keywords);
     
     while (classbase<>'') and dictClasses.ContainsKey(classbase) do
     begin
       gr := dictClasses[classbase].fds.GroupBy(fd->fd.fun.ToWords[0].Trim);
     // Добавить свойства предка
       prop := gr.Where(g->g.Key='property');
-      table += CreateSectionInClassDef('Свойства предка '+classbase,prop,nil);
+      table += CreateSectionInClassDef('Свойства базового класса '+classbase,prop,nil);
     // Добавить методы предка
       pf := gr.Where(g->(g.Key='procedure') or (g.Key='function'));
-      table += CreateSectionInClassDef('Методы предка '+classbase,pf,nil);
+      table += CreateSectionInClassDef('Методы базового класса '+classbase,pf,nil);
       classbase := dictClasses[classbase].basename;
     end;
   end

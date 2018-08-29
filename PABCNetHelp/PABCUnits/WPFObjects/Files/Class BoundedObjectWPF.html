@@ -1,6 +1,7 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="BorderColor">
 <param name="Keyword" value="BorderWidth">
+<param name="Keyword" value="BoundedObjectWPF">
 <param name="Keyword" value="Color">
 <param name="Keyword" value="WithBorder">
 <param name="Keyword" value="WithNoBorder"></object>
@@ -20,7 +21,7 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
 <tr><td><code><b>function</b> WithNoBorder: BoundedObjectWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор выключения границы объекта</td></tr>
-</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства предка ObjectWPF</font></td></tr>
+</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства базового класса ObjectWPF</font></td></tr>
 
 <tr><tr><td><code><b>property</b> Center: Point;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Центр графического объекта</td></tr>
@@ -62,7 +63,7 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отступ графического объекта от верхнего края</td></tr>
 <tr><td><code><b>property</b> Width: real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ширина графического объекта</td></tr>
-</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы предка ObjectWPF</font></td></tr>
+</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы базового класса ObjectWPF</font></td></tr>
 
 <tr><tr><td><code><b>procedure</b> AddChild(ch: ObjectWPF);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Добавляет к графическому объекту дочерний</td></tr>
@@ -70,7 +71,7 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет из графического объекта дочерний</td></tr>
 <tr><td><code><b>procedure</b> Destroy;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет графический объект</td></tr>
-<tr><td><code><b>procedure</b> Move := MoveOn(dx,dy);</code>
+<tr><td><code><b>procedure</b> Move;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает графический объект на вектор (dx,dy)</td></tr>
 <tr><td><code><b>procedure</b> MoveForward(r: real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает графический объект в направлении RotateAngle (вверх при RotateAngle=0)</td></tr>

@@ -6325,9 +6325,9 @@ begin
   else if t.IsValueType then
   begin
     elem := Activator.CreateInstance(t);
-    fa := t.GetFields;
+    fa := t.GetFields(System.Reflection.BindingFlags.GetField or System.Reflection.BindingFlags.Instance or System.Reflection.BindingFlags.Public or System.Reflection.BindingFlags.NonPublic);
     for var i := 0 to fa.Length - 1 do
-      if not fa[i].IsStatic and not fa[i].IsLiteral then
+      if {not fa[i].IsStatic and} not fa[i].IsLiteral then
         fa[i].SetValue(elem, AbstractBinaryFileReadT(f, fa[i].FieldType, ind, in_arr));
     Result := elem;
   end
@@ -6417,10 +6417,10 @@ begin
   end  
   else if t.IsValueType then
   begin
-    fa := t.GetFields;
+    fa := t.GetFields(System.Reflection.BindingFlags.GetField or System.Reflection.BindingFlags.Instance or System.Reflection.BindingFlags.Public or System.Reflection.BindingFlags.NonPublic);
     for var i := 0 to fa.Length - 1 do
     begin
-      if not fa[i].IsStatic and not fa[i].IsLiteral then
+      if {not fa[i].IsStatic and} not fa[i].IsLiteral then
         Write(f, fa[i].GetValue(val), true, ind, in_arr);
     end;
   end
@@ -10889,10 +10889,10 @@ begin
   if t.IsValueType then // it is a record
   begin
     //elem := Activator.CreateInstance(t); //ssyy commented
-    fa := t.GetFields;
+    fa := t.GetFields(System.Reflection.BindingFlags.GetField or System.Reflection.BindingFlags.Instance or System.Reflection.BindingFlags.Public or System.Reflection.BindingFlags.NonPublic);
     Result := 0;
     for var i := 0 to fa.Length - 1 do
-      if not fa[i].IsStatic and not fa[i].IsLiteral then 
+      if {not fa[i].IsStatic and} not fa[i].IsLiteral then 
         Result := Result + RunTimeSizeOf(fa[i].FieldType)
   end
   else if t = typeof(string) then

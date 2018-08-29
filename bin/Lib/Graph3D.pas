@@ -2306,7 +2306,7 @@ type
   
   
 // -----------------------------------------------------
-//>>     Graph3D: функции для создания 3D-объектов # Graph3D functions for creation 3D-objects
+//>>     Graph3D: сервисные функции # Graph3D service functions
 // ----------------------------------------------------- 
 /// Возвращает материал по умолчанию
 function DefaultMaterial: Material;
@@ -2320,6 +2320,10 @@ function Group: Group3D;
 function Group(params lst: array of Object3D): Group3D;
 /// Возвращает группу объектов из последовательности en
 function Group(en: sequence of Object3D): Group3D;
+
+// -----------------------------------------------------
+//>>     Graph3D: функции для создания 3D-объектов # Graph3D functions for creation 3D-objects
+// ----------------------------------------------------- 
 /// Возвращает сферу с центром в точке (x, y, z) радиуса Radius
 function Sphere(x, y, z, Radius: real; m: Material := DefaultMaterial): SphereT;
 /// Возвращает сферу с центром в точке center радиуса Radius
@@ -2500,10 +2504,10 @@ function PointOnPlane(Plane: Plane3D; x, y: real): Point3D;
 /// Возвращает ближайшую точку на линии Line с лучом, выпущенным из камеры и проходящем через точку (x,y) экрана
 function NearestPointOnLine(Line: Ray3D; x, y: real): Point3D;
 
+var  
 // -----------------------------------------------------
 //>>     События модуля Graph3D # Graph3D events
 // -----------------------------------------------------
-var  
   /// Событие нажатия на кнопку мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
   OnMouseDown: procedure(x, y: real; mousebutton: integer);
   /// Событие отжатия кнопки мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если отжата левая кнопка мыши, и 2, если отжата правая кнопка мыши

@@ -1080,6 +1080,182 @@
 				<param name="Name" value="&Igrave;&icirc;&auml;&oacute;&euml;&uuml; Graph3D: &icirc;&aacute;&ccedil;&icirc;&eth;">
 				<param name="Local" value="PABCUnits\Graph3D\index.html">
 				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="&Iuml;&aring;&eth;&aring;&igrave;&aring;&iacute;&iacute;&ucirc;&aring; &igrave;&icirc;&auml;&oacute;&euml;&yuml; Graph3D">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D variables.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="&Ograve;&egrave;&iuml;&ucirc; &igrave;&icirc;&auml;&oacute;&euml;&yuml; Graph3D">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D types.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="&Ntilde;&icirc;&aacute;&ucirc;&ograve;&egrave;&yuml; &igrave;&icirc;&auml;&oacute;&euml;&yuml; Graph3D">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D events.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="&Ecirc;&icirc;&eth;&icirc;&ograve;&ecirc;&egrave;&aring; &ocirc;&oacute;&iacute;&ecirc;&ouml;&egrave;&egrave; &igrave;&icirc;&auml;&oacute;&euml;&yuml; Graph3D">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D short functions.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ocirc;&oacute;&iacute;&ecirc;&ouml;&egrave;&egrave; &auml;&euml;&yuml; &ntilde;&icirc;&ccedil;&auml;&agrave;&iacute;&egrave;&yuml; 3D-&icirc;&aacute;&uacute;&aring;&ecirc;&ograve;&icirc;&acirc;">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D functions for creation 3D-objects.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; Object3D">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D Object3D class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; ObjectWithChildren3D">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D ObjectWithChildren3D class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; ObjectWithMaterial3D">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D ObjectWithMaterial3D class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; SphereT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D SphereT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; EllipsoidT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D EllipsoidT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; CubeT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D CubeT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; BoxT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D BoxT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; ArrowT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D ArrowT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; TruncatedConeT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D TruncatedConeT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; CylinderT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D CylinderT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; TeapotT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D TeapotT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; CoordinateSystemT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D CoordinateSystemT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; BillboardTextT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D BillboardTextT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; TextT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D TextT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; RectangleT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D RectangleT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; FileModelT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D FileModelT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; PipeT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D PipeT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; LegoT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D LegoT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; PlatonicAbstractT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D PlatonicAbstractT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; IcosahedronT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D IcosahedronT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; DodecahedronT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D DodecahedronT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; TetrahedronT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D TetrahedronT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; OctahedronT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D OctahedronT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; TriangleT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D TriangleT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; PrismT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D PrismT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; PyramidT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D PyramidT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; PrismTWireframe">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D PrismTWireframe class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; PyramidTWireframe">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D PyramidTWireframe class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; SegmentsT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D SegmentsT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; TorusT">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D TorusT class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; AnimationBase">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D AnimationBase class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; Materials">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D Materials class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; View3DType">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D View3DType class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; CameraType">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D CameraType class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ecirc;&euml;&agrave;&ntilde;&ntilde; GridLinesType">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D GridLinesType class.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ntilde;&aring;&eth;&acirc;&egrave;&ntilde;&iacute;&ucirc;&aring; &ocirc;&oacute;&iacute;&ecirc;&ouml;&egrave;&egrave;">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D service functions.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ocirc;&oacute;&iacute;&ecirc;&ouml;&egrave;&egrave; &auml;&euml;&yuml; &ntilde;&icirc;&ccedil;&auml;&agrave;&iacute;&egrave;&yuml; &igrave;&agrave;&ograve;&aring;&eth;&egrave;&agrave;&euml;&icirc;&acirc; Materials">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D Materials functions.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ocirc;&oacute;&iacute;&ecirc;&ouml;&egrave;&egrave; &auml;&euml;&yuml; &ntilde;&icirc;&ccedil;&auml;&agrave;&iacute;&egrave;&yuml; &iacute;&aring;&acirc;&egrave;&ccedil;&oacute;&agrave;&euml;&uuml;&iacute;&ucirc;&otilde; &icirc;&aacute;&uacute;&aring;&ecirc;&ograve;&icirc;&acirc;">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D functions for creation non-visual objects.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Graph3D: &ocirc;&oacute;&iacute;&ecirc;&ouml;&egrave;&egrave; &auml;&euml;&yuml; &icirc;&iuml;&eth;&aring;&auml;&aring;&euml;&aring;&iacute;&egrave;&yuml; &aacute;&euml;&egrave;&aelig;&agrave;&eacute;&oslash;&egrave;&otilde; &ograve;&icirc;&divide;&aring;&ecirc; &egrave; &icirc;&aacute;&uacute;&aring;&ecirc;&ograve;&icirc;&acirc;">
+				<param name="Local" value="PABCUnits\Graph3D\Files\Graph3D functions for nearest points and objects.html">
+				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="&Igrave;&icirc;&auml;&oacute;&euml;&uuml; GraphABC">

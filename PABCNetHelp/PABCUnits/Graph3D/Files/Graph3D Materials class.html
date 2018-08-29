@@ -1,6 +1,21 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
-</object>
+<param name="Keyword" value="class">
+<param name="Keyword" value="Materials"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Graph3D: класс Materials</H1>Класс для создания материалов.
-<table border=0 cellpadding=5></table>
+<table border=0 cellpadding=5><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Статические методы класса Materials</font></td></tr>
+
+<tr><tr><td><code><b>class</b> <b>function</b> Diffuse(c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Диффузный материал</td></tr>
+<tr><td><code><b>class</b> <b>function</b> Emissive(c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Светящийся материал</td></tr>
+<tr><td><code><b>class</b> <b>function</b> Image(fname: string; M: real := 1; N: real := 1);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Материал, формируемый на основе изображения. M,N - количество повторений изображения по ширине и высоте</td></tr>
+<tr><td><code><b>class</b> <b>function</b> Rainbow;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Радужный материал</td></tr>
+<tr><td><code><b>class</b> <b>function</b> Specular(specularBrightness: byte := 255; specularpower: real := 100);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Зеркальный материал</td></tr>
+<tr><td><code><b>class</b> <b>function</b> Specular(c: Color; specularpower: real := 100);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Зеркальный материал</td></tr>
+</tr></table>
 </body></HTML>

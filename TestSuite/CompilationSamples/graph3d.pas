@@ -6,6 +6,8 @@ unit Graph3D;
 {$reference System.Xml.dll}
 {$reference HelixToolkit.Wpf.dll}
 
+interface
+
 uses GraphWPFBase;
 
 uses System.Windows;
@@ -24,167 +26,120 @@ uses System.Windows.Input;
 uses HelixToolkit.Wpf;
 //uses Petzold.Media3D;
 
+//{{{doc: Начало секции 1 }}} 
 type
+// -----------------------------------------------------
+//>>     Типы модуля Graph3D # Graph3D types
+// -----------------------------------------------------
+  /// Тип клавиши
   Key = System.Windows.Input.Key;
+  /// Цветовые константы
   Colors = System.Windows.Media.Colors;
+  /// Тип цвета
   GColor = System.Windows.Media.Color;
+  /// Тип материала
   GMaterial = System.Windows.Media.Media3D.Material;
+  /// Тип диффузного материала
+  GDiffuseMaterial = System.Windows.Media.Media3D.DiffuseMaterial;
+  /// Тип материала свечения
+  GEmissiveMaterial = System.Windows.Media.Media3D.EmissiveMaterial;
+  /// Тип камеры
   GCamera = System.Windows.Media.Media3D.ProjectionCamera;
+  /// Тип прямоугольника
   GRect = System.Windows.Rect;
+  /// Тип режима камеры
   CameraMode = HelixToolkit.Wpf.CameraMode;
-  TupleInt3 = (integer, integer, integer);
-  TupleReal3 = (real, real, real);
-  Point3D = Point3D;
-  Vector3D = Vector3D;
+  /// Тип предопределенных материалов
+  GMaterials=Helixtoolkit.Wpf.Materials;
+  /// Тип точки
   Point = System.Windows.Point;
+  /// Тип 3D-точки
+  Point3D = System.Windows.Media.Media3D.Point3D;
+  /// Тип 3D-вектора
+  Vector3D = System.Windows.Media.Media3D.Vector3D;
+  /// Тип 3D-луча
   Ray3D = HelixToolkit.Wpf.Ray3D;
+  /// Тип 3D-прямой
   Line3D = class(Ray3D) end;
+  /// Тип плоскости
   Plane3D = HelixToolkit.Wpf.Plane3D;
+  /// Тип 3D-матрицы
   Matrix3D = System.Windows.Media.Media3D.Matrix3D;
 
 var
   hvp: HelixViewport3D;
   LightsGroup: Model3DGroup;
   gvl: GridLinesVisual3D;
-  /// Событие нажатия на кнопку мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
-  OnMouseDown: procedure(x, y: real; mousebutton: integer);
-  /// Событие отжатия кнопки мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если отжата левая кнопка мыши, и 2, если отжата правая кнопка мыши
-  OnMouseUp: procedure(x, y: real; mousebutton: integer);
-  /// Событие перемещения мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 0, если кнопка мыши не нажата, 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
-  OnMouseMove: procedure(x, y: real; mousebutton: integer);
-  /// Событие нажатия клавиши
-  OnKeyDown: procedure(k: Key);
-  /// Событие отжатия клавиши
-  OnKeyUp: procedure(k: Key);
 
-function RGB(r, g, b: byte) := Color.Fromrgb(r, g, b);
+// -----------------------------------------------------
+//>>     Короткие функции модуля Graph3D # Graph3D short functions
+// -----------------------------------------------------
 
-function ARGB(a, r, g, b: byte) := Color.FromArgb(a, r, g, b);
+/// Возвращает цвет по красной, зеленой и синей составляющей (в диапазоне 0..255)
+function RGB(r, g, b: byte): Color;
+/// Возвращает цвет по красной, зеленой и синей составляющей и параметру прозрачности (в диапазоне 0..255)
+function ARGB(a, r, g, b: byte): Color;
+/// Возвращает серый цвет с интенсивностью b
+function GrayColor(b: byte): Color;
+/// Возвращает случайный цвет
+function RandomColor: Color;
+/// Возвращает полностью прозрачный цвет
+function EmptyColor: Color;
+/// Возвращает точку с координатами (x,y)
+function Pnt(x, y: real): Point;
+/// Возвращает прямоугольник с координатами угла (x,y), шириной w и высотой h
+function Rect(x, y, w, h: real): GRect;
+/// Возвращает 3D-точку с координатами (x,y,z)
+function P3D(x, y, z: real): Point3D;
+/// Возвращает 3D-вектор с координатами (x,y,z)
+function V3D(x, y, z: real): Vector3D;
+/// Возвращает 3D-размер с координатами (x,y,z)
+function Sz3D(x, y, z: real): Size3D;
 
-function P3D(x, y, z: real) := new Point3D(x, y, z);
-
-function V3D(x, y, z: real) := new Vector3D(x, y, z);
-
-function Sz3D(x, y, z: real) := new Size3D(x, y, z);
-
-function Pnt(x, y: real) := new Point(x, y);
-
-function Rect(x, y, w, h: real) := new System.Windows.Rect(x, y, w, h);
-
-function operator*(p: Point3D; r: real): Point3D; extensionmethod := p.Multiply(r);
-
-function operator*(r: real; p: Point3D): Point3D; extensionmethod := p.Multiply(r);
-
-function operator+(p1, p2: Point3D): Point3D; extensionmethod := p3d(p1.X + p2.X, p1.Y + p2.Y, p1.Z + p2.Z);
-
-function operator-(v: Vector3D): Vector3D; extensionmethod := v3d(-v.x,-v.y,-v.z);
-
-
-var
-  OrtX := V3D(1, 0, 0);
-  OrtY := V3D(0, 1, 0);
-  OrtZ := V3D(0, 0, 1);
-  Origin: Point3D := P3D(0, 0, 0);
-  EmptyColor := ARGB(0, 0, 0, 0);
-
-function ChangeOpacity(Self: GColor; value: integer); extensionmethod := ARGB(value, Self.R, Self.G, Self.B);
-
-function MoveX(Self: Point3D; dx: real); extensionmethod := P3D(Self.x + dx, Self.y, Self.z);
-
-function MoveY(Self: Point3D; dy: real); extensionmethod := P3D(Self.x, Self.y + dy, Self.z);
-
-function MoveZ(Self: Point3D; dz: real); extensionmethod := P3D(Self.x, Self.y, Self.z + dz);
-
-function Move(Self: Point3D; dx, dy, dz: real); extensionmethod := P3D(Self.x + dx, Self.y + dy, Self.z + dz);
-
-function operator implicit(t: TupleInt3): Point3D; extensionmethod := new Point3D(t[0], t[1], t[2]);
-
-function operator implicit(t: TupleReal3): Point3D; extensionmethod := new Point3D(t[0], t[1], t[2]);
-
-function operator implicit(ar: array of TupleInt3): Point3DCollection; extensionmethod := new Point3DCollection(ar.Select(t -> new Point3D(t[0], t[1], t[2])));
-
-function operator implicit(ar: array of Point3D): Point3DCollection; extensionmethod := new Point3DCollection(ar);
-
-function operator implicit(ar: List<Point3D>): Point3DCollection; extensionmethod := new Point3DCollection(ar);
-
-function RandomColor := RGB(Random(256), Random(256), Random(256));
-
-function GrayColor(b: byte) := RGB(b, b, b);
-
-function RandomSolidBrush := new SolidColorBrush(RandomColor);
-
-function wplus := SystemParameters.WindowResizeBorderThickness.Left + SystemParameters.WindowResizeBorderThickness.Right;
-
-function hplus := SystemParameters.WindowCaptionHeight + SystemParameters.WindowResizeBorderThickness.Top + SystemParameters.WindowResizeBorderThickness.Bottom;
+// -----------------------------------------------------
+//>>     Graph3D: функции для создания материалов Materials # Graph3D Materials functions
+// ----------------------------------------------------- 
+/// Диффузный материал
+function DiffuseMaterial(c: Color): Material;
+/// Зеркальный материал
+function SpecularMaterial(specularBrightness: byte; specularpower: real := 100): Material;
+/// Зеркальный материал
+function SpecularMaterial(c: Color; specularpower: real := 100): Material;
+/// Светящийся материал
+function EmissiveMaterial(c: Color): Material;
+/// Материал, формируемый на основе изображения. M,N - количество повторений изображения по ширине и высоте
+function ImageMaterial(fname: string; M: real := 1; N: real := 1): Material;
+/// Радужный материал
+function RainbowMaterial: Material;
 
 type
-  IMHelper = auto class
-    fname: string;
-    M, N: real;
-    function ImageMaterial: Material;
-    begin
-      //Result := MaterialHelper.CreateImageMaterial(fname)
-      var bi := new System.Windows.Media.Imaging.BitmapImage();
-      bi.BeginInit();
-      bi.UriSource := new System.Uri(fname, System.UriKind.Relative); 
-      bi.EndInit();
-      var b := new ImageBrush(bi);
-      b.Viewport := Rect(0, 0, M, N);
-      if (M <> 1) or (N <> 1) then
-        b.TileMode := TileMode.Tile;
-      Result := new DiffuseMaterial(b);
-    end;  
-  end;
-  DEMHelper = auto class
-    c: Color;
-    function Diffuse := new DiffuseMaterial(new SolidColorBrush(c));
-    function Emissive := new EmissiveMaterial(new SolidColorBrush(c));
-  end;
-  SpMHelper = auto class
-    c: Color;
-    specularpower: real;
-    function SpecularMaterial := new System.Windows.Media.Media3D.SpecularMaterial(new SolidColorBrush(c), specularpower);
-  end;
-
-function ImageMaterial(fname: string; M: real := 1; N: real := 1): Material := Invoke&<Material>(IMHelper.Create(fname, M, N).ImageMaterial);
-
-function DiffuseMaterial(c: Color): Material := Invoke&<Material>(DEMHelper.Create(c).Diffuse);
-
-function SpecularMaterial(specularBrightness: byte; specularpower: real := 100): Material := Invoke&<Material>(SpMHelper.Create(RGB(specularBrightness, specularBrightness, specularBrightness), specularpower).SpecularMaterial);
-
-function SpecularMaterial(c: Color; specularpower: real := 100): Material := Invoke&<Material>(SpMHelper.Create(c, specularpower).SpecularMaterial);
-
-function EmissiveMaterial(c: Color): Material := Invoke&<Material>(DEMHelper.Create(c).Emissive);
-
-function RainbowMaterial: Material := Materials.Rainbow;
-
-type
+// -----------------------------------------------------
+//>>     Graph3D: класс Materials # Graph3D Materials class
+// ----------------------------------------------------- 
   ///!#
+  /// Класс для создания материалов
   Materials = class
+/// Диффузный материал
     class function Diffuse(c: Color) := DiffuseMaterial(c);
+/// Зеркальный материал
     class function Specular(specularBrightness: byte := 255; specularpower: real := 100) := SpecularMaterial(specularBrightness, specularpower);
+/// Зеркальный материал
     class function Specular(c: Color; specularpower: real := 100) := SpecularMaterial(c, specularpower);
+/// Светящийся материал
     class function Emissive(c: Color) := EmissiveMaterial(c);
+/// Материал, формируемый на основе изображения. M,N - количество повторений изображения по ширине и высоте
+    class function Image(fname: string; M: real := 1; N: real := 1) := ImageMaterial(fname,M,N);
+/// Радужный материал
     class function Rainbow := RainbowMaterial;
   end;
-  
-  GMHelper = auto class
-    a, b: Material;
-    function GroupMaterial: Material;
-    begin
-      var g := new MaterialGroup();
-      g.Children.Add(a);
-      g.Children.Add(b);
-      Result := g;
-    end;
-  end;
-
-
-function operator+(a, b: Material): Material; extensionmethod := Invoke&<Material>(GMHelper.Create(a, b).GroupMaterial);
 
 type
+// -----------------------------------------------------
+//>>     Graph3D: класс View3DType # Graph3D View3DType class
+// ----------------------------------------------------- 
   ///!#
-  View3DT = class
+  /// Класс пространства отображения
+  View3DType = class
   private
     procedure SetSGLP(v: boolean) := gvl.Visible := v;
     procedure SetSGL(v: boolean) := Invoke(SetSGLP, v);
@@ -215,21 +170,33 @@ type
     function GetBC: GColor := Invoke&<GColor>(()->(hvp.Background as SolidColorBrush).Color);
     procedure ExportP(fname: string) := hvp.Viewport.Export(fname, hvp.Background);
   public 
+  /// Отображать ли координатную систему
     property ShowCoordinateSystem: boolean 
       read InvokeBoolean(()->hvp.ShowCoordinateSystem) 
       write Invoke(procedure(v: boolean)->hvp.ShowCoordinateSystem := v, value);
+  /// Отображать ли координатную сетку
     property ShowGridLines: boolean read GetSGL write SetSGL;
+  /// Отображать ли информацию о камере
     property ShowCameraInfo: boolean read GetSCI write SetSCI;
+  /// Отображать ли ViewCube
     property ShowViewCube: boolean read GetSVC write SetSVC;
+  /// Заголовок пространства отображения
     property Title: string read GetT write SetT;
+  /// Подзаголовок пространства отображения
     property SubTitle: string read GetST write SetST;
+  /// Режим камеры
     property CameraMode: HelixToolkit.Wpf.CameraMode read GetCM write SetCM;
+  /// Цвет фона
     property BackgroundColor: GColor read GetBC write SetBC;
-    
+  /// Сохраняет содержимое 3d-окна в файл  
     procedure Save(fname: string) := Invoke(ExportP, fname);
   end;
   
+// -----------------------------------------------------
+//>>     Graph3D: класс CameraType # Graph3D CameraType class
+// ----------------------------------------------------- 
   ///!#
+  /// Класс камеры
   CameraType = class
   private 
     function Cam: GCamera := hvp.Camera;
@@ -284,45 +251,66 @@ type
     end;
     
   public 
+  /// Позиция камеры 
     property Position: Point3D read GetP write SetP;
+  /// Направление взгляда камеры 
     property LookDirection: Vector3D read GetLD write SetLD;
+  /// Направление "вверх" камеры 
     property UpDirection: Vector3D read GetUD write SetUD;
+  /// Расстояние камеры до начала координат
     property Distanse: real read GetD write SetD;
-    procedure MoveOn(x,y,z: real) := Invoke(MoveOnP,x,y,z);
+
+  /// Перемещает камеру на вектор (dx,dy,dz)
+    procedure MoveOn(dx,dy,dz: real) := Invoke(MoveOnP,dx,dy,dz);
+  /// Перемещает камеру на вектор v
     procedure MoveOn(v: Vector3D) := Invoke(MoveOnPV,v);
+  /// Обеспечивает плавное движение камеры
     procedure AddMoveForce(ForwardForce,RightForce,UpForce: real) := Invoke(AddMoveForceP,RightForce,UpForce,ForwardForce);
+  /// Обеспечивает плавное движение камеры вперед с некоторой силой
     procedure AddForwardForce(Force: real := 0.2) := AddMoveForce(Force,0,0);
+  /// Обеспечивает плавное движение камеры назад с некоторой силой
     procedure AddBackwardForce(Force: real := 0.2) := AddMoveForce(-Force,0,0);
+  /// Обеспечивает плавное движение камеры вправо
     procedure AddRightForce(Force: real := 0.2) := AddMoveForce(0,Force,0);
+  /// Обеспечивает плавное движение камеры влево
     procedure AddLeftForce(Force: real := 0.2) := AddMoveForce(0,-Force,0);
+  /// Обеспечивает плавное движение камеры вверх
     procedure AddUpForce(Force: real := 0.2) := AddMoveForce(0,0,Force);
+  /// Обеспечивает плавное движение камеры вниз
     procedure AddDownForce(Force: real := 0.2) := AddMoveForce(0,0,-Force);
+  /// Обеспечивает плавный поворот камеры 
     procedure AddRotateForce(RightForce,UpForce: real) := Invoke(AddRotateForceP,RightForce,UpForce);
+  /// Поворачивает камеру на данный угол относительно данной оси
     procedure Rotate(axis: Vector3D; angle: real) := Invoke(RotateP,axis,angle);
   end;
   
   ///!#
+  /// Класс источника света
   LightsType = class
-  private 
-    function GetC: integer := Invoke&<integer>(()->LightsGroup.Children.Count);
-    //procedure SetLDP(v: Vector3D) := Cam.LookDirection := v;
-    //procedure SetLD(v: Vector3D) := Invoke(SetLDP, v);
-    //function GetLD: Vector3D := Invoke&<Vector3D>(()->Cam.LookDirection);
   public 
-    property Count: integer read GetC;
+  /// Количество источников света
+    property Count: integer read Invoke&<integer>(()->LightsGroup.Children.Count);
+  /// Добавляет направленный источник света
     procedure AddDirectionalLight(c: Color; v: Vector3D) := Invoke(()->LightsGroup.Children.Add(new DirectionalLight(c, v)));
+  /// Добавляет конусообразный источник света
     procedure AddSpotLight(c: Color; p: Point3D; v: Vector3D; outerconeangle, innerconeangle: real) := Invoke(()->LightsGroup.Children.Add(new SpotLight(c, p, v, outerconeangle, innerconeangle)));
+  /// Добавляет точечный источник света
     procedure AddPointLight(c: Color; p: Point3D) := Invoke(()->LightsGroup.Children.Add(new PointLight(c, p)));
+  /// Удаляет источник света
     procedure RemoveLight(i: integer) := Invoke(()->LightsGroup.Children.RemoveAt(i));
-    procedure Proba();
+    {procedure Proba();
     begin
       var p := new PointLight(Colors.Gray, P3D(2, 2, 2));
       p.Color := Colors.Gray;
       p.Position := P3D(3, 3, 3);
-    end;
+    end;}
   end;
   
+// -----------------------------------------------------
+//>>     Graph3D: класс GridLinesType # Graph3D GridLinesType class
+// ----------------------------------------------------- 
   ///!#
+  /// Класс координатной сетки
   GridLinesType = class
   private 
     procedure SetW(r: real) := Invoke(procedure(r: real)->gvl.Width := r, r);
@@ -336,28 +324,29 @@ type
     procedure SetN(r: Vector3D) := Invoke(procedure(r: Vector3D)->gvl.Normal := r, r);
     function GetN: Vector3D := Inv(()->gvl.Normal);
   public 
+  /// Ширина координаной сетки (размер по оси OY)
     property Width: real read GetW write SetW;
+  /// Длина координаной сетки (размер по оси OX)
     property Length: real read GetL write SetL;
+  /// Вектор нормали координаной сетки
     property Normal: Vector3D read GetN write SetN;
+  /// Большое расстояние между линиями координаной сетки
     property MajorDistance: real read GetMj write SetMj;
+  /// Маленькое расстояние между линиями координаной сетки
     property MinorDistance: real read GetMn write SetMn;
   end;
 
-var
-  View3D: View3DT;
-  Window: WindowType;
-  Camera: CameraType;
-  Lights: LightsType;
-  GridLines: GridLinesType;
-
-function operator implicit(c: GColor): GMaterial; extensionmethod := Materialhelper.CreateMaterial(c);
-
 type
-  MyAnimation = class;
+  AnimationBase = class;
   ObjectWithChildren3D = class;
   
+// -----------------------------------------------------
+//>>     Graph3D: класс Object3D # Graph3D Object3D class
+// ----------------------------------------------------- 
   ///!#
-  Object3D = class(DependencyObject)
+  /// Базовый класс трехмерных объектов
+  Object3D = class
+    (DependencyObject) // для генерации документации
   private 
     model: Visual3D;
     Parent: ObjectWithChildren3D;
@@ -426,13 +415,16 @@ type
       //(Result.model.Transform as Transform3DGroup).Children[3] := (model.Transform as Transform3DGroup).Children[3].Clone; //- почему-то это не нужно!!! с ним не работает!
     end;
   
-  public 
+  public
     constructor(model: Visual3D) := CreateBase0(model, 0, 0, 0);
     
+  /// Координата X
     property X: real read GetX write SetX;
+  /// Координата Y
     property Y: real read GetY write SetY;
+  /// Координата Z
     property Z: real read GetZ write SetZ;
-    
+  /// Перемещает 3D-объект к точке (xx,yy,zz)
     function MoveTo(xx, yy, zz: real): Object3D := 
     Invoke&<Object3D>(()->begin
       transltransform.OffsetX += xx - Self.X;
@@ -440,19 +432,28 @@ type
       transltransform.OffsetZ += zz - Self.Z;
       Result := Self;
     end);
-    function MoveTo(p: Point3D) := MoveTo(p.X, p.y, p.z);
-    function MoveOn(dx, dy, dz: real) := MoveTo(x + dx, y + dy, z + dz);
-    function MoveOn(v: Vector3D) := MoveOn(v.X, v.Y, v.Z);
-    function MoveOnX(dx: real) := MoveOn(dx, 0, 0);
-    function MoveOnY(dy: real) := MoveOn(0, dy, 0);
-    function MoveOnZ(dz: real) := MoveOn(0, 0, dz);
+  /// Перемещает 3D-объект к точке p
+    function MoveTo(p: Point3D): Object3D := MoveTo(p.X, p.y, p.z);
+  /// Перемещает 3D-объект на вектор (dx,dy,dz)
+    function MoveOn(dx, dy, dz: real): Object3D := MoveTo(x + dx, y + dy, z + dz);
+  /// Перемещает 3D-объект на вектор v
+    function MoveOn(v: Vector3D): Object3D := MoveOn(v.X, v.Y, v.Z);
+  /// Перемещает x-координату 3D-объекта на dx
+    function MoveOnX(dx: real): Object3D := MoveOn(dx, 0, 0);
+  /// Перемещает y-координату 3D-объекта на dy
+    function MoveOnY(dy: real): Object3D := MoveOn(0, dy, 0);
+  /// Перемещает z-координату 3D-объекта на dz
+    function MoveOnZ(dz: real): Object3D := MoveOn(0, 0, dz);
+  /// Цвет 3D-объекта
     property Color: GColor read GetColor write SetColor; virtual;
   private
     procedure MoveToProp(p: Point3D) := MoveTo(p);
   
   public 
+  /// Позиция 3D-объекта
     property Position: Point3D read GetPos write MoveToProp;
     
+  /// Масштабирует 3D-объект в f раз
     function Scale(f: real): Object3D := 
     Invoke&<Object3D>(()->begin
       scaletransform.ScaleX *= f;
@@ -460,22 +461,25 @@ type
       scaletransform.ScaleZ *= f;
       Result := Self;
     end);
+  /// Масштабирует 3D-объект в f раз по оси OX
     function ScaleX(f: real): Object3D := 
     Invoke&<Object3D>(()->begin
       scaletransform.ScaleX *= f;
       Result := Self;
     end);
+  /// Масштабирует 3D-объект в f раз по оси OY
     function ScaleY(f: real): Object3D := 
     Invoke&<Object3D>(()->begin
       scaletransform.ScaleY *= f;
       Result := Self;
     end);
+  /// Масштабирует 3D-объект в f раз по оси OZ
     function ScaleZ(f: real): Object3D := 
     Invoke&<Object3D>(()->begin
       scaletransform.ScaleZ *= f;
       Result := Self;
     end);
-    /// Поворот на угол angle вокруг оси axis
+    /// Поворачивает объект на угол angle вокруг оси axis
     function Rotate(axis: Vector3D; angle: real): Object3D := 
     Invoke&<Object3D>(()->begin
       var m := Matrix3D.Identity;
@@ -485,7 +489,7 @@ type
       transfgroup.Children[ind] := rotatetransform;
       Result := Self;
     end);
-    /// Поворот на угол angle вокруг оси axis относительно точки center
+    /// Поворачивает объект на угол angle вокруг оси axis относительно точки center
     function RotateAt(axis: Vector3D; angle: real; center: Point3D): Object3D :=
     Invoke&<Object3D>(()->begin
       var m := Matrix3D.Identity;
@@ -495,71 +499,107 @@ type
       transfgroup.Children[ind] := rotatetransform;
       Result := Self;
     end);
-    function AnimMoveTo(x, y, z: real; seconds: real; Completed: procedure): MyAnimation;
-    function AnimMoveTo(x, y, z: real; seconds: real := 1): MyAnimation := AnimMoveTo(x,y,z,seconds,nil);
-    
+    /// Возвращает анимацию перемещения объекта к точке (x, y, z) за seconds секунд. В конце анимации выполняется процедура Completed
+    function AnimMoveTo(x, y, z: real; seconds: real; Completed: procedure): AnimationBase;
+    /// Возвращает анимацию перемещения объекта к точке (x, y, z) за seconds секунд
+    function AnimMoveTo(x, y, z: real; seconds: real := 1): AnimationBase := AnimMoveTo(x,y,z,seconds,nil);
+    /// Возвращает анимацию перемещения объекта к точке p за seconds секунд. В конце анимации выполняется процедура Completed
     function AnimMoveTo(p: Point3D; seconds: real; Completed: procedure) := AnimMoveTo(p.x, p.y, p.z, seconds, Completed);
+    /// Возвращает анимацию перемещения объекта к точке p за seconds секунд
     function AnimMoveTo(p: Point3D; seconds: real := 1) := AnimMoveTo(p.x, p.y, p.z, seconds, nil);
-    
-    function AnimMoveTrajectory(a: sequence of Point3D; seconds: real; Completed: procedure): MyAnimation;
-    function AnimMoveTrajectory(a: sequence of Point3D; seconds: real := 1): MyAnimation := AnimMoveTrajectory(a,seconds,nil);
+    /// Возвращает анимацию перемещения объекта по траектории, заданной последовательностью точек trajectory за seconds секунд. В конце анимации выполняется процедура Completed
+    function AnimMoveTrajectory(trajectory: sequence of Point3D; seconds: real; Completed: procedure): AnimationBase;
+    /// Возвращает анимацию перемещения объекта по траектории, заданной последовательностью точек trajectory за seconds секунд
+    function AnimMoveTrajectory(trajectory: sequence of Point3D; seconds: real := 1): AnimationBase := AnimMoveTrajectory(trajectory,seconds,nil);
 
-    //function AnimMoveToP3D(x,y,z: real; seconds: real := 1): MyAnimation; - не получилось! Свойство не анимируется!
-    function AnimMoveOn(dx, dy, dz: real; seconds: real; Completed: procedure): MyAnimation;
-    function AnimMoveOn(dx, dy, dz: real; seconds: real := 1): MyAnimation := AnimMoveOn(dx,dy,dz,seconds,nil);
+    /// Возвращает анимацию перемещения объекта на вектор (dx, dy, dz) за seconds секунд. В конце анимации выполняется процедура Completed
+    function AnimMoveOn(dx, dy, dz: real; seconds: real; Completed: procedure): AnimationBase;
+    /// Возвращает анимацию перемещения объекта на вектор (dx, dy, dz) за seconds секунд
+    function AnimMoveOn(dx, dy, dz: real; seconds: real := 1): AnimationBase := AnimMoveOn(dx,dy,dz,seconds,nil);
 
+    /// Возвращает анимацию перемещения объекта на вектор v за seconds секунд. В конце анимации выполняется процедура Completed
     function AnimMoveOn(v: Vector3D; seconds: real; Completed: procedure) := AnimMoveOn(v.x, v.y, v.z, seconds, Completed);
+    /// Возвращает анимацию перемещения объекта на вектор v за seconds секунд
     function AnimMoveOn(v: Vector3D; seconds: real := 1) := AnimMoveOn(v.x, v.y, v.z, seconds, nil);
 
-    // Что-то одна версия с параметрами по умолчанию не на всех компьютерах срабатывает, поэтому сделал без параметров по умолчанию
+    /// Возвращает анимацию перемещения объекта по оси OX на величину dx за seconds секунд. В конце анимации выполняется процедура Completed
     function AnimMoveOnX(dx: real; seconds: real; Completed: procedure) := AnimMoveOn(dx, 0, 0, seconds, Completed);
+    /// Возвращает анимацию перемещения объекта по оси OX на величину dx за seconds секунд
     function AnimMoveOnX(dx: real; seconds: real) := AnimMoveOnX(dx, seconds, nil);
+    /// Возвращает анимацию перемещения объекта по оси OX на величину dx за 1 секунду
     function AnimMoveOnX(dx: real) := AnimMoveOnX(dx, 1, nil);
 
+    /// Возвращает анимацию перемещения объекта по оси OY на величину dy за seconds секунд. В конце анимации выполняется процедура Completed
     function AnimMoveOnY(dy: real; seconds: real; Completed: procedure) := AnimMoveOn(0, dy, 0, seconds, Completed);
+    /// Возвращает анимацию перемещения объекта по оси OY на величину dy за seconds секунд
     function AnimMoveOnY(dy: real; seconds: real) := AnimMoveOnY(dy, seconds, nil);
+    /// Возвращает анимацию перемещения объекта по оси OZ на величину dz за 1 секунду
     function AnimMoveOnY(dy: real) := AnimMoveOnY(dy, 1, nil);
 
+    /// Возвращает анимацию перемещения объекта по оси OZ на величину dz за seconds секунд. В конце анимации выполняется процедура Completed
     function AnimMoveOnZ(dz: real; seconds: real; Completed: procedure) := AnimMoveOn(0, 0, dz, seconds, Completed);
+    /// Возвращает анимацию перемещения объекта по оси OZ на величину dz за seconds секунд
     function AnimMoveOnZ(dz: real; seconds: real) := AnimMoveOnZ(dz, seconds, nil);
+    /// Возвращает анимацию перемещения объекта по оси OZ на величину dz за 1 секунду
     function AnimMoveOnZ(dz: real) := AnimMoveOnZ(dz, 1, nil);
 
-    function AnimScale(sc: real; seconds: real; Completed: procedure): MyAnimation;
-    function AnimScaleX(sc: real; seconds: real; Completed: procedure): MyAnimation;
-    function AnimScaleY(sc: real; seconds: real; Completed: procedure): MyAnimation;
-    function AnimScaleZ(sc: real; seconds: real; Completed: procedure): MyAnimation;
+    /// Возвращает анимацию масштабирования объекта на величину sc за seconds секунд. В конце анимации выполняется процедура Completed
+    function AnimScale(sc: real; seconds: real; Completed: procedure): AnimationBase;
+    /// Возвращает анимацию масштабирования объекта по оси OX на величину sc за seconds секунд. В конце анимации выполняется процедура Completed
+    function AnimScaleX(sc: real; seconds: real; Completed: procedure): AnimationBase;
+    /// Возвращает анимацию масштабирования объекта по оси OY на величину sc за seconds секунд. В конце анимации выполняется процедура Completed
+    function AnimScaleY(sc: real; seconds: real; Completed: procedure): AnimationBase;
+    /// Возвращает анимацию масштабирования объекта по оси OZ на величину sc за seconds секунд. В конце анимации выполняется процедура Completed
+    function AnimScaleZ(sc: real; seconds: real; Completed: procedure): AnimationBase;
 
-    function AnimScale(sc: real; seconds: real := 1): MyAnimation := AnimScale(sc,seconds,nil);
-    function AnimScaleX(sc: real; seconds: real := 1): MyAnimation := AnimScale(sc,seconds,nil);
-    function AnimScaleY(sc: real; seconds: real := 1): MyAnimation := AnimScale(sc,seconds,nil);
-    function AnimScaleZ(sc: real; seconds: real := 1): MyAnimation := AnimScale(sc,seconds,nil);
+    /// Возвращает анимацию масштабирования объекта на величину sc за seconds секунд
+    function AnimScale(sc: real; seconds: real := 1): AnimationBase := AnimScale(sc,seconds,nil);
+    /// Возвращает анимацию масштабирования объекта по оси OX на величину sc за seconds секунд
+    function AnimScaleX(sc: real; seconds: real := 1): AnimationBase := AnimScale(sc,seconds,nil);
+    /// Возвращает анимацию масштабирования объекта по оси OY на величину sc за seconds секунд
+    function AnimScaleY(sc: real; seconds: real := 1): AnimationBase := AnimScale(sc,seconds,nil);
+    /// Возвращает анимацию масштабирования объекта по оси OZ на величину sc за seconds секунд
+    function AnimScaleZ(sc: real; seconds: real := 1): AnimationBase := AnimScale(sc,seconds,nil);
 
-    function AnimRotate(vx, vy, vz, angle: real; seconds: real; Completed: procedure): MyAnimation;
-    function AnimRotate(vx, vy, vz, angle: real; seconds: real := 1): MyAnimation := AnimRotate(vx,vy,vz,angle,seconds,nil);
+    /// Возвращает анимацию поворота объекта вокруг вектора (vx,vy,vz) на величину angle за seconds секунд. В конце анимации выполняется процедура Completed
+    function AnimRotate(vx, vy, vz, angle: real; seconds: real; Completed: procedure): AnimationBase;
+    /// Возвращает анимацию поворота объекта вокруг вектора (vx,vy,vz) на величину angle за seconds секунд
+    function AnimRotate(vx, vy, vz, angle: real; seconds: real := 1): AnimationBase := AnimRotate(vx,vy,vz,angle,seconds,nil);
 
+    /// Возвращает анимацию поворота объекта вокруг вектора v, направленного из центра объекта, на величину angle за seconds секунд. В конце анимации выполняется процедура Completed
     function AnimRotate(v: Vector3D; angle: real; seconds: real; Completed: procedure) := AnimRotate(v.x, v.y, v.z, angle, seconds, Completed);
+    /// Возвращает анимацию поворота объекта вокруг вектора v, направленного из центра объекта, на величину angle за seconds секунд
     function AnimRotate(v: Vector3D; angle: real; seconds: real := 1) := AnimRotate(v.x, v.y, v.z, angle, seconds, nil);
     
-    function AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real; Completed: procedure): MyAnimation;
-    function AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real := 1): MyAnimation := AnimRotateAt(axis,angle,center,seconds,nil);
+    /// Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center, на величину angle за seconds секунд. В конце анимации выполняется процедура Completed
+    function AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real; Completed: procedure): AnimationBase;
+    /// Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center, на величину angle за seconds секунд
+    function AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real := 1): AnimationBase := AnimRotateAt(axis,angle,center,seconds,nil);
 
+    /// Клонирует 3D-объект
     function Clone: Object3D := Invoke&<Object3D>(CloneT);
-    
+  private    
     procedure SaveP(fname: string);
     begin
       var f := new System.IO.StreamWriter(fname);
       XamlWriter.Save(Model, f);
       f.Close()
     end;
-    
+  public    
+    /// Сохраняет 3D-объект в файл
     procedure Save(fname: string); virtual := Invoke(SaveP, fname); // надо её сделать виртуальной!
     class function Load(fname: string): Object3D := Invoke&<Object3D>(()->begin
       var m := XamlReader.Load(new System.IO.FileStream(fname, System.IO.FileMode.Open)) as Visual3D;
       Result := new Object3D(m);
     end);
+    /// Удаляет 3D-объект
     procedure Destroy(); virtual := DeleteFromObject3DList;
   end;
   
+// -----------------------------------------------------
+//>>     Graph3D: класс ObjectWithChildren3D # Graph3D ObjectWithChildren3D class
+// ----------------------------------------------------- 
+  /// 3D-объект с дочерними подобъектами
   ObjectWithChildren3D = class(Object3D) // model is ModelVisual3D
   private 
     l := new List<Object3D>;
@@ -629,11 +669,15 @@ type
     end;
   
   public  
+  /// Добавить дочерний подобъект
     procedure AddChild(obj: Object3D) := Invoke(AddT, obj);
+  /// i-тый дочерний подобъект
     property Items[i: integer]: Object3D read GetObj; default;
     
+  /// Количество дочерних подобъектов
     function Count: integer := Invoke&<integer>(CountT);
     
+  private
     procedure DestroyP;
     begin
       if Parent = nil then
@@ -647,6 +691,8 @@ type
       model := nil;
     end;
     
+  public
+  /// Удалить дочерний подобъект
     procedure Destroy; override;
     begin
       inherited Destroy;
@@ -654,6 +700,10 @@ type
     end;
   end;
   
+// -----------------------------------------------------
+//>>     Graph3D: класс ObjectWithMaterial3D # Graph3D ObjectWithMaterial3D class
+// ----------------------------------------------------- 
+  /// 3D-объект с материалом
   ObjectWithMaterial3D = class(ObjectWithChildren3D) // model is MeshElement3D
   private 
     procedure CreateBase(m: MeshElement3D; x, y, z: real; mat: GMaterial);
@@ -691,15 +741,20 @@ type
     procedure SetBMaterial(mat: GMaterial) := Invoke(SetBMP, mat);
     function GetBMaterial: GMaterial := Invoke&<GMaterial>(()->(model as MeshElement3D).BackMaterial);
   public 
+  /// Цвет объекта
     property Color: GColor read GetColor write SetColor; override;
+  /// Материал объекта
     property Material: GMaterial read GetMaterial write SetMaterial;
+  /// Материал задней поверхности объекта
     property BackMaterial: GMaterial read GetBMaterial write SetBMaterial;
+  /// Видим ли объект
     property Visible: boolean read GetV write SetV;
   end;
   
-  GroupT = class(ObjectWithChildren3D)
+  /// Группа 3D-объектов
+  Group3D = class(ObjectWithChildren3D)
   protected 
-    function CreateObject: Object3D; override := new GroupT(X, Y, Z);
+    function CreateObject: Object3D; override := new Group3D(X, Y, Z);
   public 
     constructor(x, y, z: real) := CreateBase0(new ModelVisual3D, x, y, z);
     
@@ -710,12 +765,17 @@ type
         AddChild(xx);
     end;
     
-    function Clone := (inherited Clone) as GroupT;
+  /// ВОзвращает клон группы 3D-объектов
+    function Clone := (inherited Clone) as Group3D;
   end;
   
-  //------------------------------ Animation -----------------------------------
+//------------------------------ Animations -----------------------------------
   
-  MyAnimation = class
+// -----------------------------------------------------
+//>>     Graph3D: класс AnimationBase # Graph3D AnimationBase class
+// ----------------------------------------------------- 
+  /// Базовый класс анимации 3D-объектов
+  AnimationBase = class
   private 
     Element: Object3D;
     Seconds: real;
@@ -823,7 +883,8 @@ type
       (Element, Seconds) := (e, sec);
     end;
     
-    function WhenCompleted(act: procedure): MyAnimation;
+  /// Устанавливает действие по завершению анимации
+    function WhenCompleted(act: procedure): AnimationBase;
     begin
       Self.AnimationCompleted := act;
       Result := Self;
@@ -836,10 +897,6 @@ type
       InitAnim;
       
       ApplyAllDecorators;
-      {sb.Completed += procedure (o, e) -> 
-      begin 
-        sb.Children.Clear; 
-      end;}
       sb.Begin;
     end;
     
@@ -848,7 +905,7 @@ type
       sb.Remove;
       sb := new Storyboard;
     end;
-    procedure ChangeT(a: MyAnimation);
+    procedure ChangeT(a: AnimationBase);
     begin
       sb := CreateStoryboard;
       foreach var d in a.sb.Children do
@@ -856,31 +913,37 @@ type
     end;
   
   public 
+  /// Начинает анимацию
     procedure &Begin; virtual := Invoke(BeginT);
+  /// Удаляет анимацию
     procedure Remove := Invoke(RemoveT);
-    procedure Change(a: MyAnimation) := Invoke(ChangeT, a);
+  /// Меняет анимацию на другую
+    procedure Change(a: AnimationBase) := Invoke(ChangeT, a);
+  /// Делает паузу анимации
     procedure Pause := if sb <> nil then sb.Pause;
+  /// Возобновляет анимацию
     procedure Resume := if sb <> nil then sb.Resume;
     
+  /// Возвращает продолжительность анимации
     function Duration: real; virtual := seconds;
-    function &Then(second: MyAnimation): MyAnimation;
-    function Forever: MyAnimation; virtual := Self;
-    function AutoReverse: MyAnimation; virtual := Self;
-    function AccelerationRatio(acceleration: real; deceleration: real := 0): MyAnimation; virtual := Self;
+  /// Указывает анимацию, выполняющуюся после данной
+    function &Then(second: AnimationBase): AnimationBase;
+  /// Модификатор анимации, выполняющий её бесконечно. Не может быть применен к группе анимаций
+    function Forever: AnimationBase; virtual := Self;
+  /// Модификатор анимации, возвращающий объект в исходное положение. Не может быть применен к группе анимаций
+    function AutoReverse: AnimationBase; virtual := Self;
+  /// Модификатор анимации, устанавливающий ускорение анимации в начале и замедление анимации в конце
+    function AccelerationRatio(acceleration: real; deceleration: real := 0): AnimationBase; virtual := Self;
   end;
   
-  EmptyAnimation = class(MyAnimation)
+  EmptyAnimation = class(AnimationBase)
   public 
-    constructor(wait: real);
-    begin
-      Self.Seconds := wait;
-    end;
-    
+    constructor(wait: real) := Seconds := wait;
     procedure InitAnim(); virtual := InitAnimWait;
   end;
   
-  
-  Double1AnimationBase = class(MyAnimation)
+ 
+  Double1AnimationBase = class(AnimationBase)
   private 
     v: real;
     da: DoubleAnimationBase;
@@ -891,7 +954,7 @@ type
       v := value;
     end;
     
-    function AutoReverse: MyAnimation; override;
+    function AutoReverse: AnimationBase; override;
     begin
       ApplyDecorators.Add(()-> begin
         da.AutoReverse := True;
@@ -899,7 +962,7 @@ type
       Result := Self;
     end;
     
-    function Forever: MyAnimation; override;
+    function Forever: AnimationBase; override;
     begin
       ApplyDecorators.Add(()-> begin
         da.RepeatBehavior := RepeatBehavior.Forever;
@@ -907,7 +970,7 @@ type
       Result := Self;
     end;
     
-    function AccelerationRatio(acceleration: real; deceleration: real := 0): MyAnimation; override;
+    function AccelerationRatio(acceleration: real; deceleration: real := 0): AnimationBase; override;
     begin
       if acceleration < 0 then acceleration := 0;
       if acceleration > 1 then acceleration := 1;
@@ -926,7 +989,7 @@ type
     end;
   end;
   
-  Double3AnimationBase = class(MyAnimation)
+  Double3AnimationBase = class(AnimationBase)
   private 
     x, y, z: real;
     dax, day, daz: DoubleAnimationBase;
@@ -937,7 +1000,7 @@ type
       (x, y, z) := (xx, yy, zz);
     end;
     
-    function AutoReverse: MyAnimation; override;
+    function AutoReverse: AnimationBase; override;
     begin
       ApplyDecorators.Add(()-> begin
         dax.AutoReverse := True;
@@ -947,7 +1010,7 @@ type
       Result := Self;
     end;
     
-    function Forever: MyAnimation; override;
+    function Forever: AnimationBase; override;
     begin
       ApplyDecorators.Add(()-> begin
         dax.RepeatBehavior := RepeatBehavior.Forever;
@@ -957,7 +1020,7 @@ type
       Result := Self;
     end;
     
-    function AccelerationRatio(acceleration: real; deceleration: real := 0): MyAnimation; override;
+    function AccelerationRatio(acceleration: real; deceleration: real := 0): AnimationBase; override;
     begin
       if acceleration < 0 then acceleration := 0;
       if acceleration > 1 then acceleration := 1;
@@ -1166,36 +1229,6 @@ type
     end;
   end;
   
-  {RotateAnimation = class(Double1AnimationBase)
-  private 
-    vx, vy, vz, angle: real;
-    procedure InitAnimWait(sb: StoryBoard; wait: real); override;
-    begin
-      var rottransform := Element.rotatetransform_anim;
-      var rot := rottransform.Rotation as AxisAngleRotation3D;
-      var ttname := 'r' + rot.GetHashCode;
-      if not RegisterName(sb, rot, ttname) then;
-  
-      rot.Angle := 0; //?
-      rot.Axis := V3D(vx, vy, vz); //?
-  
-      var el: Object3D := Element;
-      sb.Completed += (o, e) -> begin
-        rottransform.Rotation := new AxisAngleRotation3D();
-        el.Rotate(rot.Axis, angle); // переходит в основную матрицу
-      end;
-  
-      da := AddDoubleAnimByName(sb, angle, seconds, ttname, AxisAngleRotation3D.AngleProperty, wait);
-    end;
-  
-  public 
-    constructor(e: Object3D; sec: real; vvx, vvy, vvz, a: real);
-    begin
-      inherited Create(e, sec);
-      (vx, vy, vz, angle) := (vvx, vvy, vvz, a)
-    end;
-  end;}
-  
   RotateAtAnimation = class(Double1AnimationBase)
   private 
     vx, vy, vz, angle: real;
@@ -1242,23 +1275,23 @@ type
     end;
   end;
   
-  CompositeAnimation = class(MyAnimation)
+  CompositeAnimation = class(AnimationBase)
   private 
-    ll: List<MyAnimation>;
+    ll: List<AnimationBase>;
   public 
-    constructor(params l: array of MyAnimation) := ll := Lst(l);
-    constructor(l: List<MyAnimation>) := ll := l;
+    constructor(params l: array of AnimationBase) := ll := Lst(l);
+    constructor(l: List<AnimationBase>) := ll := l;
   end;  
   
   GroupAnimation = class(CompositeAnimation)
   public  
     function Duration: real; override := ll.Select(l -> l.Duration).Max;
-    function Add(b: MyAnimation): GroupAnimation;
+    function Add(b: AnimationBase): GroupAnimation;
     begin
       ll += b;
       Result := Self;
     end;
-    class function operator +=(a: GroupAnimation; b: MyAnimation): GroupAnimation;
+    class function operator +=(a: GroupAnimation; b: AnimationBase): GroupAnimation;
     begin
       a.ll += b;
       Result := a;
@@ -1274,12 +1307,12 @@ type
   SequenceAnimation = class(CompositeAnimation)
   public 
     function Duration: real; override := ll.Select(l -> l.Duration).Sum;
-    function Add(b: MyAnimation): SequenceAnimation;
+    function Add(b: AnimationBase): SequenceAnimation;
     begin
       ll += b;
       Result := Self;
     end;
-    class function operator +=(a: SequenceAnimation; b: MyAnimation): SequenceAnimation;
+    class function operator +=(a: SequenceAnimation; b: AnimationBase): SequenceAnimation;
     begin
       a.ll += b;
       Result := a;
@@ -1309,64 +1342,20 @@ type
     procedure &Begin; override := Invoke(BeginT);
   end;
 
-function Object3D.AnimMoveTo(x, y, z, seconds: real; Completed: procedure) := new OffsetAnimation(Self, seconds, x, y, z, Completed);
-
-function Object3D.AnimMoveTrajectory(a: sequence of Point3D; seconds: real; Completed: procedure) := new OffsetAnimationUsingKeyframes(Self, seconds, a, Completed);
-
-function Object3D.AnimMoveOn(dx, dy, dz, seconds: real; Completed: procedure) := new OffsetAnimationOn(Self, seconds, dx, dy, dz, Completed);
-
-function Object3D.AnimScale(sc, seconds: real; Completed: procedure) := new ScaleAnimation(Self, seconds, sc, Completed);
-
-function Object3D.AnimScaleX(sc, seconds: real; Completed: procedure) := new ScaleXAnimation(Self, seconds, sc, Completed);
-
-function Object3D.AnimScaleY(sc, seconds: real; Completed: procedure) := new ScaleYAnimation(Self, seconds, sc, Completed);
-
-function Object3D.AnimScaleZ(sc, seconds: real; Completed: procedure) := new ScaleZAnimation(Self, seconds, sc, Completed);
-
-function Object3D.AnimRotate(vx, vy, vz, angle, seconds: real; Completed: procedure) := new RotateAtAnimation(Self, seconds, vx, vy, vz, angle, P3D(0, 0, 0), Completed);
-
-function Object3D.AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real; Completed: procedure) := new RotateAtAnimation(Self, seconds, axis.X, axis.y, axis.z, angle, center, Completed);
-
-var
-  Object3DList := new List<Object3D>;
-
-procedure Object3D.AddToObject3DList;
-begin
-  Object3DList.Add(Self)
-end;
-
-procedure Object3D.DeleteFromObject3DList;
-begin
-  var oc := Self as ObjectWithChildren3D;
-  foreach var c in oc.l do
-    c.DeleteFromObject3DList;
-  Object3DList.Remove(Self)
-end;
-
-type
+  /// Класс, содержащий комбинации анимаций: группа и последовательность
   Animate = class
   public 
-    class function Group(params l: array of MyAnimation) := new GroupAnimation(Lst(l));
-    //class function &Then(first,second: MyAnimation) := new ThenAnimation(first,second);
-    class function &Sequence(params l: array of MyAnimation) := new SequenceAnimation(l);
+    /// Возвращает группу анимаций, выполняющихся параллельно 
+    class function Group(params l: array of AnimationBase) := new GroupAnimation(Lst(l));
+    /// Возвращает последовательность анимаций, выполняющихся последовательно 
+    class function &Sequence(params l: array of AnimationBase) := new SequenceAnimation(l);
   end;
-
-function Sec(Self: integer): real; extensionmethod := Self;
-
-function Sec(Self: real): real; extensionmethod := Self;
-// А теперь - тадам! - перегрузка + для Animate.Sequence и перегрузка * для Animate.Group
-function operator+(a, b: MyAnimation): MyAnimation; extensionmethod := Animate.Sequence(a, b);
-
-function operator*(a, b: MyAnimation): MyAnimation; extensionmethod := Animate.Group(a, b);
-
-function MyAnimation.&Then(second: MyAnimation): MyAnimation := Self + second;
-
-function EmptyAnim(sec: real) := EmptyAnimation.Create(sec);
-
-//------------------------------ End Animation -------------------------------
-
-
+  
 type
+// -----------------------------------------------------
+//>>     Graph3D: класс SphereT # Graph3D SphereT class
+// ----------------------------------------------------- 
+/// Класс сферы
   SphereT = class(ObjectWithMaterial3D)
   private 
     function Model := inherited model as SphereVisual3D;
@@ -1376,20 +1365,26 @@ type
     function NewVisualObject(r: real): SphereVisual3D;
     begin
       var sph := new SphereVisual3D;
-      sph.Center := Origin;
+      sph.Center := P3D(0,0,0);
       sph.Radius := r;
       Result := sph;
     end;
   
   protected 
     function CreateObject: Object3D; override := new SphereT(X, Y, Z, Radius, Material.Clone);
-    constructor := CreateBase(NewVisualObject(1), 0, 0, 0, Colors.Blue);
+    constructor := CreateBase(NewVisualObject(1), 0, 0, 0, Materialhelper.CreateMaterial(Colors.Blue));
     constructor(x, y, z, r: real; m: Gmaterial) := CreateBase(NewVisualObject(r), x, y, z, m);
   public 
+/// Радиус сферы
     property Radius: real read GetR write SetR;
+/// Возвращает клон сферы
     function Clone := (inherited Clone) as SphereT;
   end;
   
+// -----------------------------------------------------
+//>>     Graph3D: класс EllipsoidT # Graph3D EllipsoidT class
+// ----------------------------------------------------- 
+/// Класс эллипсоида
   EllipsoidT = class(ObjectWithMaterial3D)
   private
     function Model := inherited model as EllipsoidVisual3D;
@@ -1404,7 +1399,7 @@ type
     function NewVisualObject(rx, ry, rz: real): EllipsoidVisual3D;
     begin
       var ell := new EllipsoidVisual3D;
-      ell.Center := Origin;
+      ell.Center := P3D(0,0,0);
       ell.RadiusX := rx;
       ell.RadiusY := ry;
       ell.RadiusZ := rz;
@@ -1415,12 +1410,20 @@ type
     function CreateObject: Object3D; override := new EllipsoidT(X, Y, Z, RadiusX, RadiusY, RadiusZ, Material.Clone);
     constructor(x, y, z, rx, ry, rz: real; m: GMaterial) := CreateBase(NewVisualObject(rx, ry, rz), x, y, z, m);
   public 
+/// Радиус эллипсоида по оси X
     property RadiusX: real read GetRX write SetRX;
+/// Радиус эллипсоида по оси Y
     property RadiusY: real read GetRY write SetRY;
+/// Радиус эллипсоида по оси Z
     property RadiusZ: real read GetRZ write SetRZ;
+/// Возвращает клон эллипсоида
     function Clone := (inherited Clone) as EllipsoidT;
   end;
   
+// -----------------------------------------------------
+//>>     Graph3D: класс CubeT # Graph3D CubeT class
+// ----------------------------------------------------- 
+/// Класс куба
   CubeT = class(ObjectWithMaterial3D)
   private
     function model := inherited model as CubeVisual3D;
@@ -1431,7 +1434,7 @@ type
     function NewVisualObject(w: real): CubeVisual3D;
     begin
       var bx := new CubeVisual3D;
-      bx.Center := Origin;
+      bx.Center := P3D(0,0,0);
       bx.SideLength := w;
       Result := bx;
     end;
@@ -1441,10 +1444,16 @@ type
     constructor(x, y, z, w: real; m: GMaterial) := CreateBase(NewVisualObject(w), x, y, z, m);
    
   public 
+/// Сторона куба
     property SideLength: real read GetW write SetW;
+/// Возвращает клон куба
     function Clone := (inherited Clone) as CubeT;
   end;
   
+// -----------------------------------------------------
+//>>     Graph3D: класс BoxT # Graph3D BoxT class
+// ----------------------------------------------------- 
+/// Класс паралеллепипеда
   BoxT = class(ObjectWithMaterial3D)
   private
     function model := inherited model as BoxVisual3D;
@@ -1467,7 +1476,7 @@ type
     function NewVisualObject(l, w, h: real): BoxVisual3D;
     begin
       var bx := new BoxVisual3D;
-      bx.Center := Origin;
+      bx.Center := P3D(0,0,0);
       (bx.Width, bx.Height, bx.Length) := (w, h, l);
       Result := bx;
     end;
@@ -1477,13 +1486,22 @@ type
     constructor(x, y, z, l, w, h: real; m: GMaterial) := CreateBase(NewVisualObject(l, w, h), x, y, z, m);
     
   public 
+/// Возвращает длину паралеллепипеда (по оси X)
     property Length: real read GetL write SetL;
+/// Возвращает ширину паралеллепипеда (по оси Y)
     property Width: real read GetW write SetW;
+/// Возвращает высоту паралеллепипеда (по оси Z)
     property Height: real read GetH write SetH;
+/// Возвращает размеры паралеллепипеда
     property Size: Size3D read GetSz write SetSz;
+/// Возвращает клон паралеллепипеда
     function Clone := (inherited Clone) as BoxT;
   end;
   
+// -----------------------------------------------------
+//>>     Graph3D: класс ArrowT # Graph3D ArrowT class
+// ----------------------------------------------------- 
+/// Класс 3D-стрелки
   ArrowT = class(ObjectWithMaterial3D)
   private
     function model := inherited model as ArrowVisual3D;
@@ -1505,7 +1523,7 @@ type
       var a := new ArrowVisual3D;
       a.HeadLength := hl;
       a.Diameter := d;
-      a.Origin := Origin;
+      a.Origin := P3D(0,0,0);
       Result := a;
     end;
   
@@ -1519,12 +1537,20 @@ type
     end;
     
   public 
+/// Длина наконечника 3D-стрелки
     property HeadLength: real read GetL write SetL;
+/// Диаметр 3D-стрелки
     property Diameter: real read GetD write SetD;
+/// направление 3D-стрелки
     property Direction: Vector3D read GetDir write SetDir;
+/// Возвращает клон 3D-стрелки
     function Clone := (inherited Clone) as ArrowT;
   end;
   
+// -----------------------------------------------------
+//>>     Graph3D: класс TruncatedConeT # Graph3D TruncatedConeT class
+// ----------------------------------------------------- 
+/// Класс усеченного конуса
   TruncatedConeT = class(ObjectWithMaterial3D)
   private
     function model := inherited model as TruncatedConeVisual3D;
@@ -1547,7 +1573,7 @@ type
     function NewVisualObject(h, baser, topr: real; sides: integer; topcap: boolean): TruncatedConeVisual3D;
     begin
       var a := new TruncatedConeVisual3D;
-      a.Origin := Origin;
+      a.Origin := P3D(0,0,0);
       a.BaseRadius := baser;
       a.TopRadius := topr;
       a.Height := h;
@@ -1566,13 +1592,22 @@ type
     end;
     
   public 
+/// Высота усеченного конуса
     property Height: real read GetH write SetH;
+/// Радиус основания усеченного конуса
     property BaseRadius: real read GetBR write SetBR;
+/// Верхний радиус усеченного конуса
     property TopRadius: real read GetTR write SetTR;
+/// Есть ли шапочка у усеченного конуса
     property Topcap: boolean read GetTC write SetTC;
+/// Возвращает клон усеченного конуса
     function Clone := (inherited Clone) as TruncatedConeT;
   end;
   
+// -----------------------------------------------------
+//>>     Graph3D: класс CylinderT # Graph3D CylinderT class
+// ----------------------------------------------------- 
+/// Класс цилиндра
   CylinderT = class(TruncatedConeT)
   private 
     procedure SetR(r: real);
@@ -1591,10 +1626,16 @@ type
     end;
     
   public 
-    function Clone := (inherited Clone) as CylinderT;
+/// Радиус цилиндра
     property Radius: real read GetR write SetR;
+/// Возвращает клон цилиндра
+    function Clone := (inherited Clone) as CylinderT;
   end;
   
+// -----------------------------------------------------
+//>>     Graph3D: класс TeapotT # Graph3D TeapotT class
+// ----------------------------------------------------- 
+/// Класс чайника
   TeapotT = class(ObjectWithMaterial3D)
   private
     procedure SetVP(v: boolean) := (model as MeshElement3D).Visible := v;
@@ -1606,14 +1647,19 @@ type
     begin
       var a := new Teapot;
       CreateBase(a, x, y, z, m);
-      Rotate(OrtX, 90);
+      Rotate(V3D(1,0,0), 90);
     end;
-    
   public 
+/// Видим ли чайник
     property Visible: boolean read GetV write SetV;
+/// Возвращает клон чайника
     function Clone := (inherited Clone) as TeapotT;
   end;
   
+// -----------------------------------------------------
+//>>     Graph3D: класс CoordinateSystemT # Graph3D CoordinateSystemT class
+// ----------------------------------------------------- 
+/// Класс системы координат
   CoordinateSystemT = class(ObjectWithChildren3D)
   private
     procedure SetALP(r: real) := (model as CoordinateSystemVisual3D).ArrowLengths := r;
@@ -1634,11 +1680,18 @@ type
     end;
     
   public 
+/// Длина стрелок системы координат
     property ArrowLengths: real read GetAL write SetAL;
+/// Диаметр стрелок системы координат
     property Diameter: real read GetD;
+/// Возвращает клон системы координат
     function Clone := (inherited Clone) as CoordinateSystemT;
   end;
   
+// -----------------------------------------------------
+//>>     Graph3D: класс BillboardTextT # Graph3D BillboardTextT class
+// ----------------------------------------------------- 
+/// Класс текста на билборде (всегда направлен к камере)
   BillboardTextT = class(ObjectWithChildren3D)
   private
     function model := inherited model as BillboardTextVisual3D;
@@ -1662,14 +1715,21 @@ type
     end;
     
   public 
+/// Текст на билборде
     property Text: string read GetT write SetT;
+/// Размер шрифта на билборде
     property FontSize: real read GetFS write SetFS;
+/// Возвращает клон билборда
     function Clone := (inherited Clone) as BillboardTextT;
   end;
   
+// -----------------------------------------------------
+//>>     Graph3D: класс TextT # Graph3D TextT class
+// ----------------------------------------------------- 
+/// Класс 3D-текстового объекта 
   TextT = class(ObjectWithChildren3D)
   private 
-    fontname: string;
+    _fontname: string;
     function model := inherited model as TextVisual3D;
     
     procedure SetTP(r: string) := model.Text := r;
@@ -1686,13 +1746,13 @@ type
     
     procedure SetNP(fontname: string) := model.FontFamily := new FontFamily(fontname);
     procedure SetN(fontname: string) := Invoke(SetTP, fontname); 
-    function GetN: string := InvokeString(()->fontname);
+    function GetN: string := InvokeString(()->_fontname);
     
     procedure SetColorP(c: GColor) := model.Foreground := new SolidColorBrush(c);
     procedure SetColor(c: GColor) := Invoke(SetColorP, c); 
     function GetColor: GColor := Invoke&<GColor>(()->(model.Foreground as SolidColorBrush).Color);
   protected  
-    function CreateObject: Object3D; override := new TextT(X, Y, Z, Text, Height, Name, Color);
+    function CreateObject: Object3D; override := new TextT(X, Y, Z, Text, Height, FontName, Color);
     constructor(x, y, z: real; text: string; height: real; fontname: string; c: GColor);
     begin
       var a := new TextVisual3D;
@@ -1700,21 +1760,31 @@ type
       a.Text := text;
       a.Height := height;
       //a.HorizontalAlignment := HorizontalAlignment.Left;
-      Self.fontname := fontname;
+      Self._fontname := fontname;
       a.FontFamily := new FontFamily(fontname);
       a.Foreground := new SolidColorBrush(c);
       CreateBase0(a, x, y, z);
     end;
     
   public 
+/// Текст на 3D-текстовом объекте 
     property Text: string read GetT write SetT;
+/// Высота 3D-текстового объекта 
     property Height: real read GetFS write SetFS;
-    property Name: string read GetN write SetN;
+/// Имя шрифта 3D-текстового объекта 
+    property FontName: string read GetN write SetN;
+/// Направление "вверх" для 3D-текстового объекта 
     property UpDirection: Vector3D read GetU write SetU;
+/// Цвет 3D-текстового объекта 
     property Color: GColor read GetColor write SetColor; override;
+/// Возвращает клон 3D-текстового объекта
     function Clone := (inherited Clone) as TextT;
   end;
   
+// -----------------------------------------------------
+//>>     Graph3D: класс RectangleT # Graph3D RectangleT class
+// ----------------------------------------------------- 
+/// Класс 3D-прямоугольника
   RectangleT = class(ObjectWithMaterial3D)
   private
     function model := inherited model as RectangleVisual3D;
@@ -1747,13 +1817,22 @@ type
     end;
     
   public 
+/// Ширина 3D-прямоугольника 
     property Width: real read GetW write SetW;
+/// Длина 3D-прямоугольника 
     property Length: real read GetL write SetL;
+/// Направление длины 3D-прямоугольника 
     property LengthDirection: Vector3D read GetLD write SetLD;
+/// Нормаль к 3D-прямоугольнику
     property Normal: Vector3D read GetN write SetN;
+/// Возвращает клон 3D-прямоугольника
     function Clone := (inherited Clone) as RectangleT;
   end;
   
+// -----------------------------------------------------
+//>>     Graph3D: класс FileModelT # Graph3D FileModelT class
+// ----------------------------------------------------- 
+/// Класс 3D-модели
   FileModelT = class(ObjectWithChildren3D)
   private 
     fn: string;
@@ -1771,43 +1850,10 @@ type
     function CreateObject: Object3D; override := new FileModelT(X, Y, Z, fn, Material.Clone);
     constructor(x, y, z: real; fname: string; mat: GMaterial);
     begin
-        {model := new MeshVisual3D();
-      
-        var fs := System.IO.File.OpenRead(fname);
-        fn := fname;
-      
-      	var ext := System.IO.Path.GetExtension(fname);
-        ext := ext?.ToLower;
-      
-        var r: ModelReader;
-      
-        case ext of
-      '.off': begin
-          r := new offreader(nil);
-          (model as MeshVisual3D).FaceMaterial := mat;
-          (model as MeshVisual3D).EdgeDiameter := 0;
-          (model as MeshVisual3D).VertexRadius := 0;
-        end;
-      '.3ds': r := new studioreader(nil);
+      {'.3ds': r := new studioreader(nil);
       '.lwo': r := new lworeader(nil);
       '.stl': r := new stlreader(nil);
-      '.obj','.objx': r := new objreader(nil);
-        end;
-      
-        r.DefaultMaterial := mat;
-        //r.DefaultMaterial := Colors.Gray;
-        if ext = '.off' then
-        begin
-          (r as offreader).Load(fs);
-          (model as MeshVisual3D).Mesh := (r as offreader).CreateMesh;
-        end
-        else 
-        begin
-          var md := r.Read(fs);
-          (model as MeshVisual3D).Content := md;
-        end;
-      
-        fs.Close;}
+      '.obj','.objx': r := new objreader(nil);}
       
       var a := new FileModelVisual3D;
       a.DefaultMaterial := mat;
@@ -1816,9 +1862,14 @@ type
     end;
     
   public 
+/// Возвращает клон 3D-модели
     function Clone := (inherited Clone) as FileModelT;
   end;
   
+// -----------------------------------------------------
+//>>     Graph3D: класс PipeT # Graph3D PipeT class
+// ----------------------------------------------------- 
+/// Класс трубы
   PipeT = class(ObjectWithMaterial3D)
   private
     function model := inherited model as PipeVisual3D;
@@ -1846,11 +1897,756 @@ type
     end;
     
   public 
+/// Радиус трубы
     property Radius: real read GetD write SetD;
+/// Внутренний радиус трубы
     property InnerRadius: real read GetID write SetID;
+/// Высота трубы
     property Height: real read GetH write SetH;
+/// Возвращает клон трубы
     function Clone := (inherited Clone) as PipeT;
   end;
+  
+// -----------------------------------------------------
+//>>     Graph3D: класс LegoT # Graph3D LegoT class
+// ----------------------------------------------------- 
+/// Класс лего-детали
+  LegoT = class(ObjectWithMaterial3D)
+  private
+    //function model := inherited model as LegoVisual3D;
+    procedure SetWP(r: integer);
+    procedure SetW(r: integer);
+    function GetW: integer;
+    
+    procedure SetHP(r: integer);
+    procedure SetH(r: integer); 
+    function GetH: integer;
+    
+    procedure SetLP(r: integer);
+    procedure SetL(r: integer);
+    function GetL: integer;
+  
+    {procedure SetSzP(r: Size3D);
+    begin
+      var mmm := model as LegoVisual3D;
+      (mmm.Columns,mmm.Rows,mmm.Height) := (r.X,r.Y,r.Z);
+    end;
+    procedure SetSz(r: Size3D) := Invoke(SetSzP,r);
+    function GetSz: Size3D := Invoke&<Size3D>(()->begin var mmm := model as LegoVisual3D; Result := Sz3D(mmm.Length,mmm.Width,mmm.Height) end);}
+  protected  
+    function CreateObject: Object3D; override := new LegoT(X, Y, Z, Columns, Rows, Height, Material);
+  public 
+    constructor(x, y, z: real; Rows, Columns, Height: integer; m: GMaterial);
+    
+/// Количество кирпичиков лего-детали по оси X
+    property Columns: integer read GetL write SetL;
+/// Количество кирпичиков лего-детали по оси Y
+    property Rows: integer read GetW write SetW;
+/// Высота лего-детали, измеряемая в количестве деталей одинарной высоты 
+    property Height: integer read GetH write SetH;
+    {property Size: Size3D read GetSz write SetSz;}
+/// Возвращает клон лего-детали
+    function Clone := (inherited Clone) as LegoT;
+  end;
+  
+// -----------------------------------------------------
+//>>     Graph3D: класс PlatonicAbstractT # Graph3D PlatonicAbstractT class
+// ----------------------------------------------------- 
+/// Абстрактный класс платоновых тел
+  PlatonicAbstractT = class(ObjectWithMaterial3D)
+  private
+    function GetLength: real;
+    procedure SetLengthP(r: real);
+  public 
+/// Длина грани
+    property Length: real read GetLength write Invoke(SetLengthP, value);
+  end;
+  
+// -----------------------------------------------------
+//>>     Graph3D: класс IcosahedronT # Graph3D IcosahedronT class
+// ----------------------------------------------------- 
+/// Класс икосаэдра
+  IcosahedronT = class(PlatonicAbstractT)
+  protected  
+    function CreateObject: Object3D; override := new IcosahedronT(X, Y, Z, Length, Material);
+  public 
+    constructor(x, y, z, Length: real; m: GMaterial);
+/// Возвращает клон икосаэдра
+    function Clone := (inherited Clone) as IcosahedronT;
+  end;
+  
+// -----------------------------------------------------
+//>>     Graph3D: класс DodecahedronT # Graph3D DodecahedronT class
+// ----------------------------------------------------- 
+/// Класс додекаэдра
+  DodecahedronT = class(PlatonicAbstractT)
+  protected  
+    function CreateObject: Object3D; override := new DodecahedronT(X, Y, Z, Length, Material);
+  public 
+    constructor(x, y, z, Length: real; m: GMaterial);
+/// Возвращает клон додекаэдра
+    function Clone := (inherited Clone) as DodecahedronT;
+  end;
+  
+// -----------------------------------------------------
+//>>     Graph3D: класс TetrahedronT # Graph3D TetrahedronT class
+// ----------------------------------------------------- 
+/// Класс тетраэдра
+  TetrahedronT = class(PlatonicAbstractT)
+  protected  
+    function CreateObject: Object3D; override := new TetrahedronT(X, Y, Z, Length, Material);
+  public 
+    constructor(x, y, z, Length: real; m: GMaterial);
+/// Возвращает клон тетраэдра
+    function Clone := (inherited Clone) as TetrahedronT;
+  end;
+  
+// -----------------------------------------------------
+//>>     Graph3D: класс OctahedronT # Graph3D OctahedronT class
+// ----------------------------------------------------- 
+/// Класс октаэдра
+  OctahedronT = class(PlatonicAbstractT)
+  protected  
+    function CreateObject: Object3D; override := new OctahedronT(X, Y, Z, Length, Material);
+  public 
+    constructor(x, y, z, Length: real; m: GMaterial);
+/// Возвращает клон октаэдра
+    function Clone := (inherited Clone) as OctahedronT;
+  end;
+
+// -----------------------------------------------------
+//>>     Graph3D: класс TriangleT # Graph3D TriangleT class
+// ----------------------------------------------------- 
+/// Класс 3D-треугольника
+  TriangleT = class(ObjectWithMaterial3D)
+  protected
+    procedure SetP1(p: Point3D);
+    function  GetP1: Point3D;
+    procedure SetP2(p: Point3D);
+    function  GetP2: Point3D;
+    procedure SetP3(p: Point3D);
+    function  GetP3: Point3D;
+    
+    function CreateObject: Object3D; override;
+  public 
+    constructor(p1, p2, p3: Point3D; m: Gmaterial);
+    
+/// Первая точка 3D-треугольника
+    property P1: Point3D read GetP1 write SetP1;
+/// Вторая точка 3D-треугольника
+    property P2: Point3D read GetP2 write SetP2;
+/// Третья точка 3D-треугольника
+    property P3: Point3D read GetP3 write SetP3;
+/// Устанавливает точки 3D-треугольника
+    procedure SetPoints(p1, p2, p3: Point3D);
+  end;
+
+// -----------------------------------------------------
+//>>     Graph3D: класс PrismT # Graph3D PrismT class
+// ----------------------------------------------------- 
+/// Класс правильной призмы
+  PrismT = class(ObjectWithMaterial3D)
+  private
+    procedure SetR(r: real);
+    function  GetR: real;
+    procedure SetH(r: real);
+    function  GetH: real;
+    procedure SetN(n: integer);
+    function  GetN: integer;
+  protected
+    function CreateObject: Object3D; override := new PrismT(X, Y, Z, N, Radius, Height, Material.Clone);
+  public 
+    constructor(x, y, z: real; N: integer; r, h: real; m: Gmaterial);
+/// Радиус правильной призмы
+    property Radius: real read GetR write SetR;
+/// Высота правильной призмы
+    property Height: real read GetH write SetH;
+/// Количество углов правильной призмы
+    property N: integer read GetN write SetN;
+/// Возвращает клон правильной призмы
+    function Clone := (inherited Clone) as PrismT;
+  end;
+
+// -----------------------------------------------------
+//>>     Graph3D: класс PyramidT # Graph3D PyramidT class
+// ----------------------------------------------------- 
+/// Класс правильной пирамиды
+  PyramidT = class(PrismT)
+  private
+  protected
+    function CreateObject: Object3D; override := new PyramidT(X, Y, Z, N, Radius, Height, Material.Clone);
+  public 
+    constructor(x, y, z: real; N: integer; r, h: real; m: GMaterial);
+/// Радиус правильной пирамиды
+    property Radius: real read GetR write SetR;
+/// Высота правильной пирамиды
+    property Height: real read GetH write SetH;
+/// Количество углов правильной пирамиды
+    property N: integer read GetN write SetN;
+/// Возвращает клон правильной пирамиды
+    function Clone := (inherited Clone) as PyramidT;
+  end;
+  
+// -----------------------------------------------------
+//>>     Graph3D: класс PrismTWireframe # Graph3D PrismTWireframe class
+// ----------------------------------------------------- 
+/// Класс проволочной правильной призмы
+  PrismTWireframe = class(ObjectWithChildren3D)
+  private 
+    fn: integer;
+    fh, fr: real;
+    function Model := inherited model as LinesVisual3D;
+    
+    procedure SetCP(c: GColor) := (model as LinesVisual3D).Color := c;
+    procedure SetC(c: GColor) := Invoke(SetCP, c);
+    function GetC: GColor := Invoke&<GColor>(()->(model as LinesVisual3D).Color);
+    procedure SetTP(th: real) := (model as LinesVisual3D).Thickness := th;
+    procedure SetT(th: real) := Invoke(SetTP, th);
+    function GetT: real := InvokeReal(()->(model as LinesVisual3D).Thickness);
+    
+    procedure SetRP(value: real);
+    begin
+      if fr = value then 
+        exit;
+      fr := value;
+      (model as LinesVisual3D).Points := CreatePoints;
+    end;
+    
+    procedure SetR(value: real) := Invoke(SetRP, value);
+    procedure SetHP(value: real);
+    begin
+      if fh = value then 
+        exit;
+      fh := value;
+      (model as LinesVisual3D).Points := CreatePoints;
+    end;
+    
+    procedure SetH(value: real) := Invoke(SetHP, value);
+    procedure SetNP(value: integer);
+    begin
+      if fN = value then 
+        exit;
+      fN := value;
+      (model as LinesVisual3D).Points := CreatePoints;
+    end;
+    
+    procedure SetN(value: integer) := Invoke(SetNP, value);
+    
+    function CreatePoints: Point3DCollection; virtual;
+    begin
+      var pc := new Point3DCollection;
+      
+      var a := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
+      var b := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), fh)).ToArray;
+      for var i := 0 to a.High - 1 do
+      begin
+        pc.Add(a[i]);
+        pc.Add(b[i]);
+      end;
+      for var i := 0 to a.High - 1 do
+      begin
+        pc.Add(a[i]);
+        pc.Add(a[i + 1]);
+      end;
+      for var i := 0 to a.High - 1 do
+      begin
+        pc.Add(b[i]);
+        pc.Add(b[i + 1]);
+      end;
+      
+      Result := pc;
+    end;
+    
+    function NewVisualObject(N: integer; Radius, Height: real; Thickness: real; c: GColor): LinesVisual3D;
+    begin
+      (fn, fr, fh) := (n, Radius, Height);
+      var ls := new LinesVisual3D;
+      ls.Thickness := Thickness;
+      ls.Color := c;
+      ls.Points := CreatePoints;
+      Result := ls;
+    end;
+  
+  protected
+    function CreateObject: Object3D; override := new PrismTWireframe(X, Y, Z, N, Radius, Height, (model as LinesVisual3D).Thickness, (model as LinesVisual3D).Color);
+  public 
+    function Points: Point3DCollection; virtual;
+    begin
+      var a := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).SkipLast;
+      var b := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), fh)).SkipLast;
+      var pc := new Point3DCollection(a + b);
+      
+      Result := pc;
+    end;
+    
+    constructor(x, y, z: real; N: integer; Radius, Height: real; Thickness: real; c: GColor) := 
+      CreateBase0(NewVisualObject(N, Radius, Height, Thickness, c), x, y, z);
+    
+/// Радиус проволочной правильной призмы
+    property Radius: real read fr write SetR;
+/// Высота проволочной правильной призмы
+    property Height: real read fh write SetH;
+/// Количество углов проволочной правильной призмы
+    property N: integer read fn write SetN;
+/// Цвет проволоки правильной призмы
+    property Color: GColor read GetC write SetC; override;
+/// Толщина проволоки правильной призмы
+    property Thickness: real read GetT write SetT;
+  end;
+  
+// -----------------------------------------------------
+//>>     Graph3D: класс PyramidTWireframe # Graph3D PyramidTWireframe class
+// ----------------------------------------------------- 
+/// Класс проволочной правильной пирамиды
+  PyramidTWireframe = class(PrismTWireframe)
+  protected
+    function CreateObject: Object3D; override := new PyramidTWireframe(X, Y, Z, N, Radius, Height, (model as LinesVisual3D).Thickness, (model as LinesVisual3D).Color);
+  private 
+    function CreatePoints: Point3DCollection; override;
+    begin
+      var pc := new Point3DCollection;
+      
+      var a := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
+      var b := P3D(0, 0, fh);
+      for var i := 0 to a.High - 1 do
+      begin
+        pc.Add(a[i]);
+        pc.Add(b);
+      end;
+      for var i := 0 to a.High - 1 do
+      begin
+        pc.Add(a[i]);
+        pc.Add(a[i + 1]);
+      end;
+      Result := pc;
+    end;
+  public    
+/// Радиус проволочной правильной пирамиды
+    property Radius: real read fr write SetR;
+/// Высота проволочной правильной пирамиды
+    property Height: real read fh write SetH;
+/// Количество углов проволочной правильной пирамиды
+    property N: integer read fn write SetN;
+/// Цвет проволоки правильной пирамиды
+    property Color: GColor read GetC write SetC; override;
+/// Толщина проволоки правильной пирамиды
+    property Thickness: real read GetT write SetT;
+  end;
+  
+  P3DArray = array of Point3D;
+  //P3DList = List<Point3D>;
+  
+// -----------------------------------------------------
+//>>     Graph3D: класс SegmentsT # Graph3D SegmentsT class
+// ----------------------------------------------------- 
+/// Класс Набор 3D-отрезков
+  SegmentsT = class(ObjectWithChildren3D)
+  private
+    function Model := inherited model as LinesVisual3D;
+    function GetTP: real := Model.Thickness;
+    function GetT: real := InvokeReal(GetTP);
+    procedure SetT(t: real) := Invoke(procedure(t: real)->Model.Thickness := t, t);
+    function GetCP: GColor := Model.Color;
+    function GetC: GColor := Invoke&<GColor>(GetCP);
+    procedure SetC(t: GColor) := Invoke(procedure(t: GColor)->Model.Color := t, t);
+    function GetPP: array of Point3D := Model.Points.ToArray;
+    function GetP: array of Point3D; virtual := Invoke&<array of Point3D>(GetPP);
+    procedure SetPP(pp: array of Point3D) := Model.Points := new Point3DCollection(pp);
+    procedure SetP(pp: array of Point3D) := Invoke(SetPP, pp);
+  protected
+    function CreateObject: Object3D; override := new SegmentsT(Points, Thickness, Color);
+  public 
+    constructor(points: sequence of Point3D; thickness: real; c: GColor);
+    begin
+      var l := new LinesVisual3D;
+      l.Thickness := thickness;
+      l.Color := c;
+      l.Points := new Point3DCollection(points);
+      CreateBase0(l, 0, 0, 0);
+    end;
+    
+/// Толщина 3D-отрезков
+    property Thickness: real read GetT write SetT;
+/// Цвет 3D-отрезков
+    property Color: GColor read GetC write SetC; override;
+/// Точки 3D-отрезков
+    property Points: array of Point3D read GetP write SetP;
+/// Возвращает клон 3D-отрезков
+    function Clone := (inherited Clone) as SegmentsT;
+  end;
+  
+// -----------------------------------------------------
+//>>     Graph3D: класс TorusT # Graph3D TorusT class
+// ----------------------------------------------------- 
+/// Класс Тор (бублик)
+  TorusT = class(ObjectWithMaterial3D)
+  private
+    procedure SetD(d: real) := Invoke(procedure(d: real)->(model as TorusVisual3D).TorusDiameter := d, d);
+    function  GetD: real := InvokeReal(()->(model as TorusVisual3D).TorusDiameter);
+    procedure SetTD(d: real) := Invoke(procedure(d: real)->(model as TorusVisual3D).TubeDiameter := d, d);
+    function  GetTD: real := InvokeReal(()->(model as TorusVisual3D).TubeDiameter);
+  protected
+    function CreateObject: Object3D; override := new TorusT(X, Y, Z, Diameter, TubeDiameter, Material.Clone);
+  public 
+    constructor(x, y, z: real; Diameter, TubeDiameter: real; m: Gmaterial);
+    begin
+      var t := new TorusVisual3D;
+      t.TorusDiameter := Diameter;
+      t.TubeDiameter := TubeDiameter;
+      CreateBase(t, x, y, z, m);
+    end;
+    
+/// Диаметр тора 
+    property Diameter: real read GetD write SetD;
+/// Диаметр трубы тора
+    property TubeDiameter: real read GetTD write SetTD;
+/// Возвращает клон тора
+    function Clone := (inherited Clone) as PrismT;
+  end;
+  
+  
+// -----------------------------------------------------
+//>>     Graph3D: сервисные функции # Graph3D service functions
+// ----------------------------------------------------- 
+/// Возвращает материал по умолчанию
+function DefaultMaterial: Material;
+/// Возвращает пустую группу объектов в точке (x, y, z)
+function Group(x, y, z: integer): Group3D;
+/// Возвращает пустую группу объектов в точке p
+function Group(p: Point3D): Group3D;
+/// Возвращает пустую группу объектов в точке (0, 0, 0)
+function Group: Group3D;
+/// Возвращает группу объектов, перечисленных как параметры
+function Group(params lst: array of Object3D): Group3D;
+/// Возвращает группу объектов из последовательности en
+function Group(en: sequence of Object3D): Group3D;
+
+// -----------------------------------------------------
+//>>     Graph3D: функции для создания 3D-объектов # Graph3D functions for creation 3D-objects
+// ----------------------------------------------------- 
+/// Возвращает сферу с центром в точке (x, y, z) радиуса Radius
+function Sphere(x, y, z, Radius: real; m: Material := DefaultMaterial): SphereT;
+/// Возвращает сферу с центром в точке center радиуса Radius
+function Sphere(center: Point3D; Radius: real; m: Material := DefaultMaterial): SphereT;
+/// Возвращает эллипсоид с центром в точке (x, y, z) и радиусами RadiusX, RadiusY, RadiusZ
+function Ellipsoid(x, y, z, RadiusX, RadiusY, RadiusZ: real; m: Material := DefaultMaterial): EllipsoidT;
+/// Возвращает эллипсоид с центром в точке center и радиусами RadiusX, RadiusY, RadiusZ
+function Ellipsoid(center: Point3D; RadiusX, RadiusY, RadiusZ: real; m: Material := DefaultMaterial): EllipsoidT;
+/// Возвращает эллипсоид с центром в точке (x, y, z) и длиной стороны SideLength
+function Cube(x, y, z, SideLength: real; m: Material := DefaultMaterial): CubeT;
+/// Возвращает эллипсоид с центром в точке center и длиной стороны SideLength
+function Cube(center: Point3D; SideLength: real; m: Material := DefaultMaterial): CubeT;
+/// Возвращает паралеллепипед с центром в точке (x, y, z) и размерами SizeX, SizeY, SizeZ
+function Box(x, y, z, SizeX, SizeY, SizeZ: real; m: Material := DefaultMaterial): BoxT;
+/// Возвращает паралеллепипед с центром в точке center и размерами SizeX, SizeY, SizeZ
+function Box(center: Point3D; sz: Size3D; m: Material := DefaultMaterial): BoxT;
+/// Возвращает 3D-стрелку с центром в точке (x, y, z), направлением (vx, vy, vz), диаметра Diameter и длиной наконечника HeadLength
+function Arrow(x, y, z, vx, vy, vz, Diameter, HeadLength: real; m: Material := DefaultMaterial): ArrowT;
+/// Возвращает 3D-стрелку с центром в точке (x, y, z), направлением (vx, vy, vz), диаметра Diameter
+function Arrow(x, y, z, vx, vy, vz, Diameter: real; m: Material := DefaultMaterial): ArrowT;
+/// Возвращает 3D-стрелку с центром в точке (x, y, z), направлением (vx, vy, vz)
+function Arrow(x, y, z, vx, vy, vz: real; m: Material := DefaultMaterial): ArrowT;
+/// Возвращает 3D-стрелку с центром в точке p, направлением p, диаметра Diameter и длиной наконечника HeadLength
+function Arrow(p: Point3D; v: Vector3D; Diameter, HeadLength: real; m: Material := DefaultMaterial): ArrowT;
+/// Возвращает 3D-стрелку с центром в точке p, направлением p, диаметра Diameter
+function Arrow(p: Point3D; v: Vector3D; Diameter: real; m: Material := DefaultMaterial): ArrowT;
+/// Возвращает 3D-стрелку с центром в точке p, направлением p
+function Arrow(p: Point3D; v: Vector3D; m: Material := DefaultMaterial): ArrowT;
+
+///--
+function TruncatedCone(x, y, z, Height, Radius, TopRadius: real; topcap: boolean; m: Material := DefaultMaterial): TruncatedConeT; 
+/// Возвращает усеченный конус с центром основания в точке (x, y, z) высоты Height, радиуса основания Radius, верхнего радиуса TopRadius
+function TruncatedCone(x, y, z, Height, Radius, TopRadius: real; m: Material := DefaultMaterial): TruncatedConeT;
+///--
+function TruncatedCone(p: Point3D; Height, Radius, TopRadius: real; topcap: boolean; m: Material := DefaultMaterial): TruncatedConeT;
+/// Возвращает усеченный конус с центром основания в точке p высоты Height, радиуса основания Radius, верхнего радиуса TopRadius
+function TruncatedCone(p: Point3D; Height, Radius, TopRadius: real; m: Material := DefaultMaterial): TruncatedConeT;
+
+///--
+function Cylinder(x, y, z, Height, Radius: real; topcap: boolean; m: Material := DefaultMaterial): CylinderT;
+/// Возвращает цилиндр с центром основания в точке (x, y, z) высоты Height радиуса Radius
+function Cylinder(x, y, z, Height, Radius: real; m: Material := DefaultMaterial): CylinderT;
+///--
+function Cylinder(p: Point3D; Height, Radius: real; topcap: boolean; m: Material := DefaultMaterial): CylinderT;
+/// Возвращает цилиндр с центром основания в точке p высоты Height радиуса Radius
+function Cylinder(p: Point3D; Height, Radius: real; m: Material := DefaultMaterial): CylinderT;
+/// Возвращает трубу с центром основания в точке (x, y, z) высотой Height, радиусом Radius и внутренним радиусом InnerRadius
+function Tube(x, y, z, Height, Radius, InnerRadius: real; m: Material := DefaultMaterial): PipeT;
+/// Возвращает трубу с центром основания в точке p высотой Height, радиусом Radius и внутренним радиусом InnerRadius
+function Tube(p: Point3D; Height, Radius, InnerRadius: real; m: Material := DefaultMaterial): PipeT;
+/// Возвращает конус с центром основания в точке (x, y, z) высотой Height, радиусом Radius
+function Cone(x, y, z, Height, Radius: real; m: Material := DefaultMaterial): TruncatedConeT;
+/// Возвращает конус с центром основания в точке p высотой Height, радиусом Radius
+function Cone(p: Point3D; Height, Radius: real; m: Material := DefaultMaterial): TruncatedConeT;
+/// Возвращает чайник с центром в точке (x, y, z) 
+function Teapot(x, y, z: real; c: Material := DefaultMaterial): TeapotT;
+/// Возвращает чайник с центром в точке p 
+function Teapot(p: Point3D; c: Material := DefaultMaterial): TeapotT;
+/// Возвращает текст на билборде с центром в точке (x, y, z) с размером шрифта Fontsize
+function BillboardText(x, y, z: real; Text: string; Fontsize: real := 12): BillboardTextT;
+/// Возвращает текст на билборде с центром в точке p с размером шрифта Fontsize
+function BillboardText(p: Point3D; Text: string; Fontsize: real := 12): BillboardTextT;
+/// Возвращает координатную систему с длиной стрелок ArrowsLength и диаметром стрелок Diameter
+function CoordinateSystem(ArrowsLength, Diameter: real): CoordinateSystemT;
+/// Возвращает координатную систему с длиной стрелок ArrowsLength
+function CoordinateSystem(ArrowsLength: real): CoordinateSystemT;
+/// Возвращает 3D-текст с центром в точке (x, y, z) с высотой Height, именем шрифта FontName заданного цвета
+function Text3D(x, y, z: real; Text: string; Height: real; FontName: string := 'Arial'; c: Color := Colors.Black): TextT;
+/// Возвращает 3D-текст с центром в точке p с высотой Height, именем шрифта FontName заданного цвета
+function Text3D(p: Point3D; Text: string; Height: real; FontName: string := 'Arial'; c: Color := Colors.Black): TextT;
+/// Возвращает 3D-текст с центром в точке (x, y, z) с высотой Height заданного цвета
+function Text3D(x, y, z: real; Text: string; Height: real; c: Color): TextT;
+/// Возвращает 3D-текст с центром в точке p с высотой Height заданного цвета
+function Text3D(p: Point3D; Text: string; Height: real; c: Color): TextT;
+/// Возвращает 3D-прямоугольник с центром в точке (x, y, z) длины Length, ширины Width, нормалью Normal и направлением длины LengthDirection
+function Rectangle3D(x, y, z, Length, Width: real; Normal, LengthDirection: Vector3D; m: Material := DefaultMaterial): RectangleT;
+/// Возвращает 3D-прямоугольник с центром в точке p длины Length, ширины Width, нормалью Normal и направлением длины LengthDirection
+function Rectangle3D(p: Point3D; Length, Width: real; Normal, LengthDirection: Vector3D; m: Material := DefaultMaterial): RectangleT;
+/// Возвращает 3D-прямоугольник с центром в точке (x, y, z) длины Length, ширины Width, нормалью Normal
+function Rectangle3D(x, y, z, Length, Width: real; Normal: Vector3D; m: Material := DefaultMaterial): RectangleT; 
+/// Возвращает 3D-прямоугольник с центром в точке (x, y, z) длины Length, ширины Width
+function Rectangle3D(x, y, z, Length, Width: real; m: Material := DefaultMaterial): RectangleT; 
+/// Возвращает 3D-прямоугольник с центром в точке p длины Length, ширины Width, нормалью Normal
+function Rectangle3D(p: Point3D; Length, Width: real; Normal: Vector3D; m: Material := DefaultMaterial): RectangleT; 
+/// Возвращает 3D-прямоугольник с центром в точке p длины Length, ширины Width
+function Rectangle3D(p: Point3D; Length, Width: real; m: Material := DefaultMaterial): RectangleT; 
+
+/// Загружает модель из файла в форматах .obj, .3ds, .lwo, .objz, .stl, .off и отображает ее в точке (x, y, z)
+function FileModel3D(x, y, z: real; fname: string; m: Material): FileModelT;
+/// Загружает модель из файла в форматах .obj, .3ds, .lwo, .objz, .stl, .off и отображает ее в точке p
+function FileModel3D(p: Point3D; fname: string; m: Material): FileModelT;
+
+/// Возвращает правильную призму с центром основания в точке (x, y, z), количеством сторон Sides, высотой Height и радиусом Radius
+function Prism(x, y, z: real; Sides: integer; Height, Radius: real; m: Material := DefaultMaterial): PrismT;
+/// Возвращает правильную призму с центром основания в точке p, количеством сторон Sides, высотой Height и радиусом Radius
+function Prism(p: Point3D; Sides: integer; Height, Radius: real; m: Material := DefaultMaterial): PrismT;
+/// Возвращает проволочную правильную призму с центром основания в точке (x, y, z), количеством сторон Sides, высотой Height, радиусом Radius и толщиной проволоки Thickness
+function PrismWireFrame(x, y, z: real; Sides: integer; Height, Radius: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PrismTWireFrame;
+/// Возвращает проволочную правильную призму с центром основания в точке p, количеством сторон Sides, высотой Height, радиусом Radius и толщиной проволоки Thickness
+function PrismWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PrismTWireFrame;
+/// Возвращает правильную пирамиду с центром основания в точке (x, y, z), количеством сторон Sides, высотой Height и радиусом Radius
+function Pyramid(x, y, z: real; Sides: integer; Height, Radius: real; m: Material := DefaultMaterial): PyramidT;
+/// Возвращает правильную пирамиду с центром основания в точке p, количеством сторон Sides, высотой Height и радиусом Radius
+function Pyramid(p: Point3D; Sides: integer; Height, Radius: real; m: Material := DefaultMaterial): PyramidT;
+/// Возвращает проволочную правильную пирамиду с центром основания в точке (x, y, z), количеством сторон Sides, высотой Height и радиусом Radius
+function PyramidWireFrame(x, y, z: real; Sides: integer; Height, Radius: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PyramidTWireFrame;
+/// Возвращает проволочную правильную пирамиду с центром основания в точке p, количеством сторон Sides, высотой Height и радиусом Radius
+function PyramidWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PyramidTWireFrame;
+/// Возвращает лего-деталь с центром в точке (x, y, z), размера (Rows, Columns, Height), измеряемом в количестве кирпичиков по каждой размерности 
+function Lego(x, y, z: real; Rows, Columns, Height: integer; m: Material := DefaultMaterial): LegoT;
+/// Возвращает икосаэдр с центром в точке (x, y, z) и радиусом описанной окружности Radius
+function Icosahedron(x, y, z, Radius: real; m: Material := DefaultMaterial): IcosahedronT;
+/// Возвращает додекаэдр с центром в точке (x, y, z) и радиусом описанной окружности Radius
+function Dodecahedron(x, y, z, Radius: real; m: Material := DefaultMaterial): DodecahedronT;
+/// Возвращает тетраэдр с центром в точке (x, y, z) и радиусом описанной окружности Radius
+function Tetrahedron(x, y, z, Radius: real; m: Material := DefaultMaterial): TetrahedronT;
+/// Возвращает октаэдр с центром в точке (x, y, z) и радиусом описанной окружности Radius
+function Octahedron(x, y, z, Radius: real; m: Material := DefaultMaterial): OctahedronT;
+/// Возвращает икосаэдр с центром в точке p и радиусом описанной окружности Radius
+function Icosahedron(p: Point3D; Radius: real; m: Material := DefaultMaterial): IcosahedronT;
+/// Возвращает додекаэдр с центром в точке p и радиусом описанной окружности Radius
+function Dodecahedron(p: Point3D; Radius: real; m: Material := DefaultMaterial): DodecahedronT;
+/// Возвращает тетраэдр с центром в точке p и радиусом описанной окружности Radius
+function Tetrahedron(p: Point3D; Radius: real; m: Material := DefaultMaterial): TetrahedronT;
+/// Возвращает октаэдр с центром в точке p и радиусом описанной окружности Radius
+function Octahedron(p: Point3D; Radius: real; m: Material := DefaultMaterial): OctahedronT;
+/// Возвращает набор отрезков, задаваемых последовательностью точек points, толщиной Thickness, заданного цвета. Количество точек должно быть четным
+function Segments3D(points: sequence of Point3D; Thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT;
+/// Возвращает ломаную, задаваемую последовательностью точек points, толщиной Thickness, заданного цвета
+function Polyline3D(points: sequence of Point3D; Thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT;
+/// Возвращает замкнутую ломаную, задаваемую последовательностью точек points, толщиной Thickness, заданного цвета
+function Polygon3D(points: sequence of Point3D; Thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT;
+/// Возвращает отрезок из точки p1 в точку p2 толщиной Thickness заданного цвета
+function Segment3D(p1, p2: Point3D; Thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT;
+/// Возвращает тор (бублик) с центром в точке (x, y, z), диаметром Diameter и диаметром трубы TubeDiameter
+function Torus(x, y, z, Diameter, TubeDiameter: real; m: Material := DefaultMaterial): TorusT;
+/// Возвращает тор (бублик) с центром в точке p, диаметром Diameter и диаметром трубы TubeDiameter
+function Torus(p: Point3D; Diameter, TubeDiameter: real; m: Material := DefaultMaterial): TorusT;
+/// Возвращает треугольник, соединяющий точки p1, p2, p3
+function Triangle(p1, p2, p3: Point3D; m: Material := DefaultMaterial): TriangleT;
+
+// Конец примитивов
+//------------------------------------------------------------------------------------
+
+// -----------------------------------------------------
+//>>     Graph3D: функции для создания невизуальных объектов # Graph3D functions for creation non-visual objects
+// -----------------------------------------------------
+/// Возвращает невизуальную плоскость, проходящую через точку p и имеющую нормаль Normal
+function Plane(p: Point3D; Normal: Vector3D): Plane3D;
+
+/// Возвращает невизуальный луч, проходящий через точку p в направлении вектора v
+function Ray(p: Point3D; v: Vector3D): Ray3D;
+
+/// Возвращает невизуальную прямую, проходящую через точку p в направлении вектора v
+function Line(p: Point3D; v: Vector3D): Line3D;
+
+/// Возвращает невизуальную прямую, проходящую через точки p1 и p2
+function Line(p1, p2: Point3D): Line3D;
+
+/// Возвращает невизуальный луч, выпущенный из камеры и проходящий через точку (x,y) экрана
+function GetRay(x, y: real): Ray3D;
+
+/// Создает пустую анимацию заданной длительности
+function EmptyAnim(sec: real): EmptyAnimation;
+
+// -----------------------------------------------------
+//>>     Graph3D: функции для определения ближайших точек и объектов # Graph3D functions for nearest points and objects
+// -----------------------------------------------------
+/// Возвращает ближайший 3D-объект, который пересекает луч, выпущенный из камеры и проходящий через точку (x,y) экрана
+function FindNearestObject(x, y: real): Object3D;
+
+/// Возвращает точку на ближайшем 3D-объекте, который пересекает луч, выпущенный из камеры и проходящий через точку (x,y) экрана. Если пересечения нет, возвращается точка BadPoint
+function FindNearestObjectPoint(x, y: real): Point3D;
+
+/// Возвращает точку на плоскости Plane, которую пересекает невизуальный луч, выпущенный из камеры и проходящий через точку (x,y) экрана
+function PointOnPlane(Plane: Plane3D; x, y: real): Point3D;
+
+/// Возвращает ближайшую точку на линии Line с лучом, выпущенным из камеры и проходящем через точку (x,y) экрана
+function NearestPointOnLine(Line: Ray3D; x, y: real): Point3D;
+
+var  
+// -----------------------------------------------------
+//>>     События модуля Graph3D # Graph3D events
+// -----------------------------------------------------
+  /// Событие нажатия на кнопку мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
+  OnMouseDown: procedure(x, y: real; mousebutton: integer);
+  /// Событие отжатия кнопки мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если отжата левая кнопка мыши, и 2, если отжата правая кнопка мыши
+  OnMouseUp: procedure(x, y: real; mousebutton: integer);
+  /// Событие перемещения мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 0, если кнопка мыши не нажата, 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
+  OnMouseMove: procedure(x, y: real; mousebutton: integer);
+  /// Событие нажатия клавиши
+  OnKeyDown: procedure(k: Key);
+  /// Событие отжатия клавиши
+  OnKeyUp: procedure(k: Key);
+
+var
+// -----------------------------------------------------
+//>>     Переменные модуля Graph3D # Graph3D variables
+// -----------------------------------------------------
+/// Пространство отображения
+  View3D: View3DType;
+/// Графическое окно
+  Window: WindowType;
+/// Камера
+  Camera: CameraType;
+/// Источники света
+  Lights: LightsType;
+/// Координатная сетка
+  GridLines: GridLinesType;
+/// Список 3D-объектов
+  Object3DList := new List<Object3D>;
+/// Орт (единичный вектор) оси OX
+  OrtX: Vector3D := V3D(1, 0, 0);
+/// Орт (единичный вектор) оси OY
+  OrtY: Vector3D := V3D(0, 1, 0);
+/// Орт (единичный вектор) оси OZ
+  OrtZ: Vector3D := V3D(0, 0, 1);
+/// Точка начала координат
+  Origin: Point3D := P3D(0, 0, 0);
+/// Плоскость OXY
+  PlaneXY: Plane3D := Plane(Origin, OrtZ);
+/// Плоскость OYZ
+  PlaneYZ: Plane3D := Plane(Origin, OrtX);
+/// Плоскость OXZ
+  PlaneXZ: Plane3D := Plane(Origin, OrtY);
+/// Ось OX
+  XAxis: Ray3D := Ray(Origin, OrtX);
+/// Ось OY
+  YAxis: Ray3D := Ray(Origin, OrtY);
+/// Ось OZ
+  ZAxis: Ray3D := Ray(Origin, OrtZ);
+/// Плохая точка (возвращается в случае неуспеха функцией FindNearestObjectPoint) 
+  BadPoint: Point3D := P3D(real.MaxValue, real.MaxValue, real.MaxValue);
+
+//{{{--doc: Конец секции 1 }}} 
+
+implementation
+
+function RGB(r, g, b: byte) := Color.Fromrgb(r, g, b);
+function ARGB(a, r, g, b: byte) := Color.FromArgb(a, r, g, b);
+function P3D(x, y, z: real) := new Point3D(x, y, z);
+function V3D(x, y, z: real) := new Vector3D(x, y, z);
+function Sz3D(x, y, z: real) := new Size3D(x, y, z);
+function Pnt(x, y: real) := new Point(x, y);
+function Rect(x, y, w, h: real) := new System.Windows.Rect(x, y, w, h);
+function RandomColor: Color := RGB(Random(256), Random(256), Random(256));
+function EmptyColor: Color := ARGB(0,0,0,0);
+function GrayColor(b: byte): Color := RGB(b, b, b);
+function RandomSolidBrush: SolidColorBrush := new SolidColorBrush(RandomColor);
+
+type
+  IMHelper = auto class
+    fname: string;
+    M, N: real;
+    function ImageMaterial: Material;
+    begin
+      //Result := MaterialHelper.CreateImageMaterial(fname)
+      var bi := new System.Windows.Media.Imaging.BitmapImage();
+      bi.BeginInit();
+      bi.UriSource := new System.Uri(fname, System.UriKind.Relative); 
+      bi.EndInit();
+      var b := new ImageBrush(bi);
+      b.Viewport := Rect(0, 0, M, N);
+      if (M <> 1) or (N <> 1) then
+        b.TileMode := TileMode.Tile;
+      Result := new GDiffuseMaterial(b);
+    end;  
+  end;
+  DEMHelper = auto class
+    c: Color;
+    function Diffuse := new GDiffuseMaterial(new SolidColorBrush(c));
+    function Emissive := new GEmissiveMaterial(new SolidColorBrush(c));
+  end;
+  SpMHelper = auto class
+    c: Color;
+    specularpower: real;
+    function SpecularMaterial := new System.Windows.Media.Media3D.SpecularMaterial(new SolidColorBrush(c), specularpower);
+  end;
+
+function ImageMaterial(fname: string; M,N: real): Material := Invoke&<Material>(IMHelper.Create(fname, M, N).ImageMaterial);
+function DiffuseMaterial(c: Color): Material := Invoke&<Material>(DEMHelper.Create(c).Diffuse);
+function SpecularMaterial(specularBrightness: byte; specularpower: real): Material := Invoke&<Material>(SpMHelper.Create(RGB(specularBrightness, specularBrightness, specularBrightness), specularpower).SpecularMaterial);
+function SpecularMaterial(c: Color; specularpower: real): Material := Invoke&<Material>(SpMHelper.Create(c, specularpower).SpecularMaterial);
+function EmissiveMaterial(c: Color): Material := Invoke&<Material>(DEMHelper.Create(c).Emissive);
+function RainbowMaterial: Material := GMaterials.Rainbow;
+
+//function wplus: real := SystemParameters.WindowResizeBorderThickness.Left + SystemParameters.WindowResizeBorderThickness.Right;
+
+//function hplus: real := SystemParameters.WindowCaptionHeight + SystemParameters.WindowResizeBorderThickness.Top + SystemParameters.WindowResizeBorderThickness.Bottom;
+
+function Object3D.AnimMoveTo(x, y, z, seconds: real; Completed: procedure) := new OffsetAnimation(Self, seconds, x, y, z, Completed);
+
+function Object3D.AnimMoveTrajectory(trajectory: sequence of Point3D; seconds: real; Completed: procedure) := new OffsetAnimationUsingKeyframes(Self, seconds, trajectory, Completed);
+
+function Object3D.AnimMoveOn(dx, dy, dz, seconds: real; Completed: procedure) := new OffsetAnimationOn(Self, seconds, dx, dy, dz, Completed);
+
+function Object3D.AnimScale(sc, seconds: real; Completed: procedure) := new ScaleAnimation(Self, seconds, sc, Completed);
+
+function Object3D.AnimScaleX(sc, seconds: real; Completed: procedure) := new ScaleXAnimation(Self, seconds, sc, Completed);
+
+function Object3D.AnimScaleY(sc, seconds: real; Completed: procedure) := new ScaleYAnimation(Self, seconds, sc, Completed);
+
+function Object3D.AnimScaleZ(sc, seconds: real; Completed: procedure) := new ScaleZAnimation(Self, seconds, sc, Completed);
+
+function Object3D.AnimRotate(vx, vy, vz, angle, seconds: real; Completed: procedure) := new RotateAtAnimation(Self, seconds, vx, vy, vz, angle, P3D(0, 0, 0), Completed);
+
+function Object3D.AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real; Completed: procedure) := new RotateAtAnimation(Self, seconds, axis.X, axis.y, axis.z, angle, center, Completed);
+
+procedure Object3D.AddToObject3DList := Object3DList.Add(Self);
+
+procedure Object3D.DeleteFromObject3DList;
+begin
+  var oc := Self as ObjectWithChildren3D;
+  foreach var c in oc.l do
+    c.DeleteFromObject3DList;
+  Object3DList.Remove(Self)
+end;
+
+function EmptyAnim(sec: real) := EmptyAnimation.Create(sec);
+
+function AnimationBase.&Then(second: AnimationBase): AnimationBase := Animate.Sequence(Self, second);
+
+//------------------------------ End Animation -------------------------------
 
 type
   LegoVisual3D = class(MeshElement3D)
@@ -1932,45 +2728,24 @@ type
     end;
   end;
 
-type
-  LegoT = class(ObjectWithMaterial3D)
-  private
-    function model := inherited model as LegoVisual3D;
-    procedure SetWP(r: integer) := model.Rows := r;
-    procedure SetW(r: integer) := Invoke(SetWP, r);
-    function GetW: integer := InvokeInteger(()->model.Rows);
-    
-    procedure SetHP(r: integer) := model.Height := r;
-    procedure SetH(r: integer) := Invoke(SetHP, r); 
-    function GetH: integer := InvokeInteger(()->model.Height);
-    
-    procedure SetLP(r: integer) := model.Columns := r;
-    procedure SetL(r: integer) := Invoke(SetLP, r);
-    function GetL: integer := InvokeInteger(()->model.Columns);
-  
-    {procedure SetSzP(r: Size3D);
-    begin
-      var mmm := model as LegoVisual3D;
-      (mmm.Columns,mmm.Rows,mmm.Height) := (r.X,r.Y,r.Z);
-    end;
-    procedure SetSz(r: Size3D) := Invoke(SetSzP,r);
-    function GetSz: Size3D := Invoke&<Size3D>(()->begin var mmm := model as LegoVisual3D; Result := Sz3D(mmm.Length,mmm.Width,mmm.Height) end);}
-  protected  
-    function CreateObject: Object3D; override := new LegoT(X, Y, Z, Columns, Rows, Height, Material);
-  public 
-    constructor(x, y, z: real; Rows, Columns, Height: integer; m: GMaterial);
-    begin
-      var bx := new LegoVisual3D;
-      (bx.Rows, bx.Height, bx.Columns) := (Rows, Height, Columns);
-      CreateBase(bx, x, y, z, m);
-    end;
-    
-    property Columns: integer read GetL write SetL;
-    property Rows: integer read GetW write SetW;
-    property Height: integer read GetH write SetH;
-    {property Size: Size3D read GetSz write SetSz;}
-    function Clone := (inherited Clone) as LegoT;
-  end;
+constructor LegoT.Create(x, y, z: real; Rows, Columns, Height: integer; m: GMaterial);
+begin
+  var bx := new LegoVisual3D;
+  (bx.Rows, bx.Height, bx.Columns) := (Rows, Height, Columns);
+  CreateBase(bx, x, y, z, m);
+end;
+
+procedure LegoT.SetWP(r: integer) := (model as LegoVisual3D).Rows := r;
+procedure LegoT.SetW(r: integer) := Invoke(SetWP, r);
+function LegoT.GetW: integer := InvokeInteger(()->(model as LegoVisual3D).Rows);
+
+procedure LegoT.SetHP(r: integer) := (model as LegoVisual3D).Height := r;
+procedure LegoT.SetH(r: integer) := Invoke(SetHP, r); 
+function LegoT.GetH: integer := InvokeInteger(()->(model as LegoVisual3D).Height);
+
+procedure LegoT.SetLP(r: integer) := (model as LegoVisual3D).Columns := r;
+procedure LegoT.SetL(r: integer) := Invoke(SetLP, r);
+function LegoT.GetL: integer := InvokeInteger(()->(model as LegoVisual3D).Columns);
 
 type
   Panel = class
@@ -2157,47 +2932,19 @@ type
     public function Tessellate(): MeshGeometry3D; override := CreateModel(ModelTypes.MyAny, Length);
   end;
   
-  PlatonicAbstractT = class(ObjectWithMaterial3D)
-  private
-    procedure SetLengthP(r: real) := (model as PlatonicAbstractVisual3D).Length := r;
-    procedure SetLength(r: real) := Invoke(SetLengthP, r); 
-    function GetLength: real := InvokeReal(()->(model as PlatonicAbstractVisual3D).Length);
-  public 
-    property Length: real read GetLength write SetLength;
-  end;
+function PlatonicAbstractT.GetLength: real := InvokeReal(()->(model as PlatonicAbstractVisual3D).Length);
+procedure PlatonicAbstractT.SetLengthP(r: real) := (model as PlatonicAbstractVisual3D).Length := r;
   
-  IcosahedronT = class(PlatonicAbstractT)
-  protected  
-    function CreateObject: Object3D; override := new IcosahedronT(X, Y, Z, Length, Material);
-  public 
-    constructor(x, y, z, Length: real; m: GMaterial) := CreateBase(new IcosahedronVisual3D(Length), x, y, z, m);
-    function Clone := (inherited Clone) as IcosahedronT;
-  end;
+constructor IcosahedronT.Create(x, y, z, Length: real; m: GMaterial) := CreateBase(new IcosahedronVisual3D(Length), x, y, z, m);
   
-  DodecahedronT = class(PlatonicAbstractT)
-  protected  
-    function CreateObject: Object3D; override := new DodecahedronT(X, Y, Z, Length, Material);
-  public 
-    constructor(x, y, z, Length: real; m: GMaterial) := CreateBase(new DodecahedronVisual3D(Length), x, y, z, m);
-    function Clone := (inherited Clone) as DodecahedronT;
-  end;
+constructor DodecahedronT.Create(x, y, z, Length: real; m: GMaterial) := CreateBase(new DodecahedronVisual3D(Length), x, y, z, m);
   
-  TetrahedronT = class(PlatonicAbstractT)
-  protected  
-    function CreateObject: Object3D; override := new TetrahedronT(X, Y, Z, Length, Material);
-  public 
-    constructor(x, y, z, Length: real; m: GMaterial) := CreateBase(new TetrahedronVisual3D(Length), x, y, z, m);
-    function Clone := (inherited Clone) as TetrahedronT;
-  end;
+constructor TetrahedronT.Create(x, y, z, Length: real; m: GMaterial) := CreateBase(new TetrahedronVisual3D(Length), x, y, z, m);
   
-  OctahedronT = class(PlatonicAbstractT)
-  protected  
-    function CreateObject: Object3D; override := new OctahedronT(X, Y, Z, Length, Material);
-  public 
-    constructor(x, y, z, Length: real; m: GMaterial) := CreateBase(new OctahedronVisual3D(Length), x, y, z, m);
-    function Clone := (inherited Clone) as OctahedronT;
-  end;
+constructor OctahedronT.Create(x, y, z, Length: real; m: GMaterial) := CreateBase(new OctahedronVisual3D(Length), x, y, z, m);
+
   
+type
   PrismVisual3D = class(MeshElement3D)
   private 
     fn: integer;
@@ -2285,7 +3032,7 @@ type
     constructor(ppp1, ppp2, ppp3: Point3D);
     begin
       (pp1, pp2, pp3) := (ppp1, ppp2, ppp3);
-      Material := Colors.Red;
+      Material := Materialhelper.CreateMaterial(Colors.Red);
       OnGeometryChanged;
     end;
     
@@ -2301,327 +3048,202 @@ type
     end;
   end;
   
-  TriangleT = class(ObjectWithMaterial3D)
-  protected
-    function Model := inherited model as TriangleVisual3D;
-    procedure SetP1(p: Point3D) := Invoke(procedure(p: Point3D)->model.P1 := p, p);
-    function  GetP1: Point3D := Invoke&<Point3D>(()->model.P1);
-    procedure SetP2(p: Point3D) := Invoke(procedure(p: Point3D)->model.P2 := p, p);
-    function  GetP2: Point3D := Invoke&<Point3D>(()->model.P2);
-    procedure SetP3(p: Point3D) := Invoke(procedure(p: Point3D)->model.P3 := p, p);
-    function  GetP3: Point3D := Invoke&<Point3D>(()->model.P3);
-    
-    function CreateObject: Object3D; override := new TriangleT(Model.p1, Model.p2, Model.p3, Material.Clone);
-  public 
-    constructor(p1, p2, p3: Point3D; m: Gmaterial);
-    begin
-      CreateBase(new TriangleVisual3D(p1, p2, p3), 0, 0, 0, m);
-      Model.BackMaterial := Model.Material;      
-    end;
-    
-    property P1: Point3D read GetP1 write SetP1;
-    property P2: Point3D read GetP2 write SetP2;
-    property P3: Point3D read GetP3 write SetP3;
-    procedure SetPoints(p1, p2, p3: Point3D) := Invoke(procedure(p1, p2, p3: Point3D)->begin model.SetPoints(p1, p2, p3); end, p1, p2, p3);
-  end;
-  
-  
-  PrismT = class(ObjectWithMaterial3D)
-  private
-    function Model := inherited model as PrismVisual3D;
-    procedure SetR(r: real) := Invoke(procedure(r: real)->model.Radius := r, r);
-    function  GetR: real := InvokeReal(()->model.Radius);
-    procedure SetH(r: real) := Invoke(procedure(r: real)->model.Height := r, r);
-    function  GetH: real := InvokeReal(()->model.Height);
-    procedure SetN(n: integer) := Invoke(procedure(n: integer)->model.N := n, n);
-    function  GetN: integer := InvokeInteger(()->model.N);
-  protected
-    function CreateObject: Object3D; override := new PrismT(X, Y, Z, N, Radius, Height, Material.Clone);
-  public 
-    constructor(x, y, z: real; N: integer; r, h: real; m: Gmaterial) := CreateBase(new PrismVisual3D(N, r, h), x, y, z, m);
-    property Radius: real read GetR write SetR;
-    property Height: real read GetH write SetH;
-    property N: integer read GetN write SetN;
-    function Clone := (inherited Clone) as PrismT;
-  end;
-  
-  PyramidT = class(PrismT)
-  private
-  protected
-    function CreateObject: Object3D; override := new PyramidT(X, Y, Z, N, Radius, Height, Material.Clone);
-  public 
-    constructor(x, y, z: real; N: integer; r, h: real; m: GMaterial) := CreateBase(new PyramidVisual3D(N, r, h), x, y, z, m);
-    function Clone := (inherited Clone) as PyramidT;
-  end;
-  
-  PrismTWireframe = class(ObjectWithChildren3D)
-  private 
-    fn: integer;
-    fh, fr: real;
-    function Model := inherited model as LinesVisual3D;
-    
-    procedure SetCP(c: GColor) := Model.Color := c;
-    procedure SetC(c: GColor) := Invoke(SetCP, c);
-    function GetC: GColor := Invoke&<GColor>(()->Model.Color);
-    procedure SetTP(th: real) := Model.Thickness := th;
-    procedure SetT(th: real) := Invoke(SetTP, th);
-    function GetT: real := InvokeReal(()->Model.Thickness);
-    
-    procedure SetRP(value: real);
-    begin
-      if fr = value then 
-        exit;
-      fr := value;
-      model.Points := CreatePoints;
-    end;
-    
-    procedure SetR(value: real) := Invoke(SetRP, value);
-    procedure SetHP(value: real);
-    begin
-      if fh = value then 
-        exit;
-      fh := value;
-      model.Points := CreatePoints;
-    end;
-    
-    procedure SetH(value: real) := Invoke(SetHP, value);
-    procedure SetNP(value: integer);
-    begin
-      if fN = value then 
-        exit;
-      fN := value;
-      model.Points := CreatePoints;
-    end;
-    
-    procedure SetN(value: integer) := Invoke(SetNP, value);
-    
-    function CreatePoints: Point3DCollection; virtual;
-    begin
-      var pc := new Point3DCollection;
-      
-      var a := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
-      var b := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), fh)).ToArray;
-      for var i := 0 to a.High - 1 do
-      begin
-        pc.Add(a[i]);
-        pc.Add(b[i]);
-      end;
-      for var i := 0 to a.High - 1 do
-      begin
-        pc.Add(a[i]);
-        pc.Add(a[i + 1]);
-      end;
-      for var i := 0 to a.High - 1 do
-      begin
-        pc.Add(b[i]);
-        pc.Add(b[i + 1]);
-      end;
-      
-      Result := pc;
-    end;
-    
-    function NewVisualObject(N: integer; Radius, Height: real; Thickness: real; c: GColor): LinesVisual3D;
-    begin
-      (fn, fr, fh) := (n, Radius, Height);
-      var ls := new LinesVisual3D;
-      ls.Thickness := Thickness;
-      ls.Color := c;
-      ls.Points := CreatePoints;
-      Result := ls;
-    end;
-  
-  protected
-    function CreateObject: Object3D; override := new PrismTWireframe(X, Y, Z, N, Radius, Height, (model as LinesVisual3D).Thickness, (model as LinesVisual3D).Color);
-  public 
-    function Points: Point3DCollection; virtual;
-    begin
-      var a := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).SkipLast;
-      var b := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), fh)).SkipLast;
-      var pc := new Point3DCollection(a + b);
-      
-      Result := pc;
-    end;
-    
-    constructor(x, y, z: real; N: integer; Radius, Height: real; Thickness: real; c: GColor) := 
-    CreateBase0(NewVisualObject(N, Radius, Height, Thickness, c), x, y, z);
-    
-    property Height: real read fh write SetH;
-    property Radius: real read fr write SetR;
-    property N: integer read fn write SetN;
-    property Color: GColor read GetC write SetC; override;
-    property Thickness: real read GetT write SetT;
-  end;
-  
-  PyramidTWireframe = class(PrismTWireframe)
-  protected
-    function CreateObject: Object3D; override := new PyramidTWireframe(X, Y, Z, N, Radius, Height, (model as LinesVisual3D).Thickness, (model as LinesVisual3D).Color);
-  private 
-    function CreatePoints: Point3DCollection; override;
-    begin
-      var pc := new Point3DCollection;
-      
-      var a := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
-      var b := P3D(0, 0, fh);
-      for var i := 0 to a.High - 1 do
-      begin
-        pc.Add(a[i]);
-        pc.Add(b);
-      end;
-      for var i := 0 to a.High - 1 do
-      begin
-        pc.Add(a[i]);
-        pc.Add(a[i + 1]);
-      end;
-      Result := pc;
-    end;
-  end;
-  
-  P3DArray = array of Point3D;
-  //P3DList = List<Point3D>;
-  SegmentsT = class(ObjectWithChildren3D)
-  private
-    function Model := inherited model as LinesVisual3D;
-    function GetTP: real := Model.Thickness;
-    function GetT: real := InvokeReal(GetTP);
-    procedure SetT(t: real) := Invoke(procedure(t: real)->Model.Thickness := t, t);
-    function GetCP: GColor := Model.Color;
-    function GetC: GColor := Invoke&<GColor>(GetCP);
-    procedure SetC(t: GColor) := Invoke(procedure(t: GColor)->Model.Color := t, t);
-    function GetPP: array of Point3D := Model.Points.ToArray;
-    function GetP: array of Point3D; virtual := Invoke&<array of Point3D>(GetPP);
-    procedure SetPP(pp: array of Point3D) := Model.Points := new Point3DCollection(pp);
-    procedure SetP(pp: array of Point3D) := Invoke(SetPP, pp);
-  protected
-    function CreateObject: Object3D; override := new SegmentsT(Points, Thickness, Color);
-  public 
-    constructor(points: sequence of Point3D; thickness: real; c: GColor);
-    begin
-      var l := new LinesVisual3D;
-      l.Thickness := thickness;
-      l.Color := c;
-      l.Points := new Point3DCollection(points);
-      CreateBase0(l, 0, 0, 0);
-    end;
-    
-    property Thickness: real read GetT write SetT;
-    property Color: GColor read GetC write SetC; override;
-    property Points: array of Point3D read GetP write SetP;
-    function Clone := (inherited Clone) as SegmentsT;
-  end;
-  
-  TorusT = class(ObjectWithMaterial3D)
-  private
-    function Model := inherited model as TorusVisual3D;
-    procedure SetD(d: real) := Invoke(procedure(d: real)->model.TorusDiameter := d, d);
-    function  GetD: real := InvokeReal(()->model.TorusDiameter);
-    procedure SetTD(d: real) := Invoke(procedure(d: real)->model.TubeDiameter := d, d);
-    function  GetTD: real := InvokeReal(()->model.TubeDiameter);
-  protected
-    function CreateObject: Object3D; override := new TorusT(X, Y, Z, Diameter, TubeDiameter, Material.Clone);
-  public 
-    constructor(x, y, z: real; Diameter, TubeDiameter: real; m: Gmaterial);
-    begin
-      var t := new TorusVisual3D;
-      t.TorusDiameter := Diameter;
-      t.TubeDiameter := TubeDiameter;
-      CreateBase(t, x, y, z, m);
-    end;
-    
-    property Diameter: real read GetD write SetD;
-    property TubeDiameter: real read GetTD write SetTD;
-    function Clone := (inherited Clone) as PrismT;
-  end;
-  
-  MyAnyT = class(PlatonicAbstractT)
-  protected  
-    function CreateObject: Object3D; override := new MyAnyT(X, Y, Z, Length, Material);
-  public 
-    constructor(x, y, z, Length: real; m: GMaterial);
-    begin
-      CreateBase(new MyAnyVisual3D(Length), x, y, z, m);
-    end;
-    
-    function Clone := (inherited Clone) as MyAnyT;
-  end;
 
-type
-  My = class(ParametricSurface3D)
-  public 
-    function Evaluate(u: real; v: real; var textureCoord: System.Windows.Point): Point3D; override;
-    begin
-      u -= 0.5;
-      v -= 0.5;
-      u *= 3;
-      v *= 3;
-      textureCoord := new Point(u, 2 * v);
-      Result := P3D(u, v, 0.2 * u * u + sin(u * v) + 2);
-    end;
-  end;
+procedure TriangleT.SetP1(p: Point3D) := Invoke(procedure(p: Point3D)->(model as TriangleVisual3D).P1 := p, p);
+function  TriangleT.GetP1: Point3D := Invoke&<Point3D>(()->(model as TriangleVisual3D).P1);
+procedure TriangleT.SetP2(p: Point3D) := Invoke(procedure(p: Point3D)->(model as TriangleVisual3D).P2 := p, p);
+function  TriangleT.GetP2: Point3D := Invoke&<Point3D>(()->(model as TriangleVisual3D).P2);
+procedure TriangleT.SetP3(p: Point3D) := Invoke(procedure(p: Point3D)->(model as TriangleVisual3D).P3 := p, p);
+function  TriangleT.GetP3: Point3D := Invoke&<Point3D>(()->(model as TriangleVisual3D).P3);
+procedure TriangleT.SetPoints(p1, p2, p3: Point3D) := Invoke(procedure(p1, p2, p3: Point3D)->begin (model as TriangleVisual3D).SetPoints(p1, p2, p3); end, p1, p2, p3);
+    
+function TriangleT.CreateObject: Object3D := new TriangleT((model as TriangleVisual3D).p1, (model as TriangleVisual3D).p2, (model as TriangleVisual3D).p3, Material.Clone);
+
+constructor TriangleT.Create(p1, p2, p3: Point3D; m: Gmaterial);
+begin
+  CreateBase(new TriangleVisual3D(p1, p2, p3), 0, 0, 0, m);
+  (model as TriangleVisual3D).BackMaterial := (model as TriangleVisual3D).Material;      
+end;
+    
+procedure PrismT.SetR(r: real) := Invoke(procedure(r: real)->(model as PrismVisual3D).Radius := r, r);
+function  PrismT.GetR: real := InvokeReal(()->(model as PrismVisual3D).Radius);
+procedure PrismT.SetH(r: real) := Invoke(procedure(r: real)->(model as PrismVisual3D).Height := r, r);
+function  PrismT.GetH: real := InvokeReal(()->(model as PrismVisual3D).Height);
+procedure PrismT.SetN(n: integer) := Invoke(procedure(n: integer)->(model as PrismVisual3D).N := n, n);
+function  PrismT.GetN: integer := InvokeInteger(()->(model as PrismVisual3D).N);
+
+constructor PrismT.Create(x, y, z: real; N: integer; r, h: real; m: Gmaterial) := CreateBase(new PrismVisual3D(N, r, h), x, y, z, m);
   
-  My13D = class(MeshElement3D)
-    public function Tessellate(): MeshGeometry3D; override;
-    begin
-      var tm := new MeshBuilder(false, false);
-      tm.AddRevolvedGeometry(Arr(Pnt(0, 0), Pnt(0, 1), Pnt(0.3, 1), Pnt(0.5, 0.3), Pnt(2, 1), Pnt(3, 0)), nil, Origin, OrtZ, 80);
-      Result := tm.ToMesh(false);
-    end;
-  end;
+constructor PyramidT.Create(x, y, z: real; N: integer; r, h: real; m: GMaterial) := CreateBase(new PyramidVisual3D(N, r, h), x, y, z, m);
 
+    
 
+  
+function DefaultMaterialColor := RandomColor;
 
-type
-  AnyT = class(ObjectWithMaterial3D)
-    constructor(x, y, z: real; c: GColor);
-    begin
-      {var a := new ExtrudedVisual3D;
-      a.Path := new Point3DCollection(Arr(P3D(1,0,-0.5),P3D(1,0,0.5)));
-      a.Section := new PointCollection(Arr(Pnt(0,0),Pnt(0.5,0),Pnt(0,0.5)));
-      a.IsSectionClosed := True;}
-      
-      //var a := new TerrainVisual3D;
-      //a.Content := (new SphereVisual3D()).Model;
-      //a.Text := 'PascalABC';
-      //var a := new LinesVisual3D;
-      {a.Thickness := 1.99;
-      a.Points := Arr(P3D(0, 0, 0), P3D(3, 0, 0), P3D(3, 0, 0), P3D(3, 3, 0), P3D(3, 3, 0), P3D(3, 3, 3));
-      a.Color := c;}
-      
-      var a := new My13D;
-      a.Material := c;
-      
-      
-      {var aa := 1;
-      var b := 80;
-      
-      var q := Partition(0,2*Pi*20,360*20*10).Select(t->P3D(5*cos(1*t),5*sin(1*t),t/5));
-      var q1 := q.Interleave(q.Skip(1));
-      
-      //a.Points := Lst(P3D(0,0,0),P3D(4,4,2),p3D(4,4,2),p3D(2,8,-1));
-      a.Points := Lst(q1);
-      a.Color := Colors.Blue;
-      
-      a.Thickness := 1.5;}
-      
-      {var a := new HelixToolkit.Wpf.PieSliceVisual3D;
-      a.StartAngle := 0;
-      a.EndAngle := 360;
-      a.ThetaDiv := 60;}
-      
-      {var a := new HelixToolkit.Wpf.TubeVisual3D;
-      var p := new Point3DCollection(Arr(P3D(1,2,0),P3D(2,1,0),P3D(3,1,0)));
-      a.Diameter := 0.05;
-      a.Path := p;}
-      
-      {var a := new LegoVisual3D();
-      a.Rows := 1;
-      a.Columns := 2;
-      a.Height := 3;
-      //a.Divisions := 100;
-      a.Fill := Brushes.Blue;}
-      
-      CreateBase0(a, x, y, z);
-    end;
-  end;
+function DefaultMaterial: Material := MaterialHelper.CreateMaterial(DefaultMaterialColor);
+
+function Group(x, y, z: integer): Group3D := Inv(()->Group3D.Create(x, y, z));
+
+function Group(p: Point3D): Group3D := Inv(()->Group3D.Create(p.x, p.y, p.z));
+
+function Group: Group3D := Inv(()->Group3D.Create(0, 0, 0));
+
+function Group(params lst: array of Object3D): Group3D := Inv(()->Group3D.Create(0, 0, 0, lst));
+
+function Group(en: sequence of Object3D): Group3D := Inv(()->Group3D.Create(0, 0, 0, en));
+
+function Sphere(x, y, z, Radius: real; m: Material): SphereT := Inv(()->SphereT.Create(x, y, z, Radius, m));
+
+function Sphere(center: Point3D; Radius: real; m: Material) := Sphere(center.x, center.y, center.z, Radius, m);
+
+function Ellipsoid(x, y, z, RadiusX, RadiusY, RadiusZ: real; m: Material): EllipsoidT := Inv(()->EllipsoidT.Create(x, y, z, RadiusX, RadiusY, RadiusZ, m));
+
+function Ellipsoid(center: Point3D; RadiusX, RadiusY, RadiusZ: real; m: Material) := Ellipsoid(center.x, center.y, center.z, RadiusX, RadiusY, RadiusZ, m);
+
+function Cube(x, y, z, SideLength: real; m: Material): CubeT := Inv(()->CubeT.Create(x, y, z, SideLength, m));
+
+function Cube(center: Point3D; SideLength: real; m: Material): CubeT := Cube(center.x, center.y, center.z, SideLength, m);
+
+function Box(x, y, z, SizeX, SizeY, SizeZ: real; m: Material): BoxT := Inv(()->BoxT.Create(x, y, z, SizeX, SizeY, SizeZ, m));
+
+function Box(center: Point3D; sz: Size3D; m: Material): BoxT := Inv(()->BoxT.Create(center.x, center.y, center.z, sz.X, sz.Y, sz.z, m));
+
+const
+  arhl = 3; ard = 0.2;
+
+function Arrow(x, y, z, vx, vy, vz, diameter, HeadLength: real; m: Material): ArrowT := Inv(()->ArrowT.Create(x, y, z, vx, vy, vz, diameter, HeadLength, m));
+
+function Arrow(x, y, z, vx, vy, vz, diameter: real; m: Material) := Arrow(x, y, z, vx, vy, vz, diameter, arhl, m);
+
+function Arrow(x, y, z, vx, vy, vz: real; m: Material) := Arrow(x, y, z, vx, vy, vz, ard, arhl, m);
+
+function Arrow(p: Point3D; v: Vector3D; diameter, HeadLength: real; m: Material) := Arrow(p.x, p.y, p.z, v.X, v.Y, v.Z, diameter, HeadLength, m);
+
+function Arrow(p: Point3D; v: Vector3D; diameter: real; m: Material) := Arrow(p.x, p.y, p.z, v.X, v.Y, v.Z, diameter, arhl, m);
+
+function Arrow(p: Point3D; v: Vector3D; m: Material) := Arrow(p.x, p.y, p.z, v.X, v.Y, v.Z, ard, arhl, m);
+
+function TruncatedConeAux(x, y, z, Height, Radius, TopRadius: real; sides: integer; topcap: boolean; c: Material) := Inv(()->TruncatedConeT.Create(x, y, z, Height, Radius, TopRadius, sides, topcap, c));
+
+const
+  maxsides = 37;
+
+///--
+function TruncatedCone(x, y, z, Height, Radius, TopRadius: real; topcap: boolean; m: Material): TruncatedConeT := TruncatedConeAux(x, y, z, Height, Radius, TopRadius, maxsides, topcap, m); 
+
+function TruncatedCone(x, y, z, Height, Radius, TopRadius: real; m: Material) := TruncatedCone(x, y, z, Height, Radius, TopRadius, True, m);
+///--
+function TruncatedCone(p: Point3D; Height, Radius, TopRadius: real; topcap: boolean; m: Material) := TruncatedCone(p.x, p.y, p.z, Height, Radius, TopRadius, topcap, m);
+
+function TruncatedCone(p: Point3D; Height, Radius, TopRadius: real; m: Material) := TruncatedCone(p.x, p.y, p.z, Height, Radius, TopRadius, True, m);
+
+///--
+function Cylinder(x, y, z, Height, Radius: real; topcap: boolean; m: Material): CylinderT := Inv(()->CylinderT.Create(x, y, z, Height, Radius, maxsides, topcap, m));
+
+function Cylinder(x, y, z, Height, Radius: real; m: Material) := Cylinder(x, y, z, Height, Radius, True, m);
+///--
+function Cylinder(p: Point3D; Height, Radius: real; topcap: boolean; m: Material) := Cylinder(p.x, p.y, p.z, Height, Radius, topcap, m);
+
+function Cylinder(p: Point3D; Height, Radius: real; m: Material) := Cylinder(p.x, p.y, p.z, Height, Radius, True, m);
+
+function Tube(x, y, z, Height, Radius, InnerRadius: real; m: Material): PipeT := Inv(()->PipeT.Create(x, y, z, Height, Radius, InnerRadius, m));
+
+function Tube(p: Point3D; Height, Radius, InnerRadius: real; m: Material) := Tube(p.x, p.y, p.z, Height, Radius, InnerRadius, m);
+
+function Cone(x, y, z, Height, Radius: real; m: Material): TruncatedConeT := TruncatedCone(x, y, z, Height, Radius, 0, True, m);
+
+function Cone(p: Point3D; Height, Radius: real; m: Material) := TruncatedCone(p.x, p.y, p.z, Height, Radius, 0, True, m);
+
+function Teapot(x, y, z: real; c: Material): TeapotT := Inv(()->TeapotT.Create(x, y, z, c));
+
+function Teapot(p: Point3D; c: Material) := Teapot(p.x, p.y, p.z, c);
+
+function BillboardText(x, y, z: real; Text: string; Fontsize: real): BillboardTextT := Inv(()->BillboardTextT.Create(x, y, z, text, fontsize));
+
+function BillboardText(p: Point3D; Text: string; Fontsize: real) := BillboardText(P.x, p.y, p.z, text, fontsize);
+
+function CoordinateSystem(ArrowsLength, Diameter: real): CoordinateSystemT := Inv(()->CoordinateSystemT.Create(0, 0, 0, arrowslength, diameter));
+
+function CoordinateSystem(ArrowsLength: real) := CoordinateSystem(arrowslength, arrowslength / 10);
+
+function Text3D(x, y, z: real; Text: string; Height: real; fontname: string; c: Color): TextT := Inv(()->TextT.Create(x, y, z, text, height, fontname, c));
+
+function Text3D(p: Point3D; Text: string; Height: real; fontname: string; c: Color) := Text3D(P.x, p.y, p.z, text, height, fontname, c);
+
+function Text3D(x, y, z: real; Text: string; Height: real; c: Color) := Text3D(x, y, z, text, height, 'Arial', c);
+
+function Text3D(p: Point3D; Text: string; Height: real; c: Color) := Text3D(p.x, p.y, p.z, text, height, 'Arial', c);
+
+function Rectangle3D(x, y, z, Length, Width: real; Normal, LengthDirection: Vector3D; m: Material): RectangleT := Inv(()->RectangleT.Create(x, y, z, Length, Width, normal, LengthDirection, m));
+
+function Rectangle3D(p: Point3D; Length, Width: real; Normal, LengthDirection: Vector3D; m: Material): RectangleT := Rectangle3D(p.x, p.y, p.z, Length, Width, Normal, LengthDirection, m);
+
+function Rectangle3D(x, y, z, Length, Width: real; Normal: Vector3D; m: Material): RectangleT := Rectangle3D(x, y, z, Length, Width, Normal, OrtX, m); 
+
+function Rectangle3D(x, y, z, Length, Width: real; m: Material): RectangleT := Rectangle3D(x, y, z, Length, Width, OrtZ, OrtX, m); 
+
+function Rectangle3D(p: Point3D; Length, Width: real; Normal: Vector3D; m: Material): RectangleT := Rectangle3D(p.x, p.y, p.z, Length, Width, Normal, OrtX, m); 
+
+function Rectangle3D(p: Point3D; Length, Width: real; m: Material): RectangleT := Rectangle3D(p.x, p.y, p.z, Length, Width, OrtZ, OrtX, m); 
+
+/// Загружает модель из файла .obj, .3ds, .lwo, .objz, .stl, .off
+function FileModel3D(x, y, z: real; fname: string; m: Material): FileModelT := Inv(()->FileModelT.Create(x, y, z, fname, m));
+
+function FileModel3D(p: Point3D; fname: string; m: Material): FileModelT := FileModel3D(p.x, p.y, p.z, fname, m);
+
+function Prism(x, y, z: real; Sides: integer; Height, Radius: real; m: Material): PrismT := Inv(()->PrismT.Create(x, y, z, Sides, Radius, Height, m));
+
+function Prism(p: Point3D; Sides: integer; Height, Radius: real; m: Material): PrismT := Prism(p.X, p.Y, p.Z, Sides, Radius, Height, m);
+
+function PrismWireFrame(x, y, z: real; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PrismTWireFrame := Inv(()->PrismTWireFrame.Create(x, y, z, Sides, Radius, Height, thickness, c));
+
+function PrismWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PrismTWireFrame := PrismWireFrame(p.x, p.y, p.z, Sides, Radius, Height, thickness, c);
+
+function Pyramid(x, y, z: real; Sides: integer; Height, Radius: real; m: Material): PyramidT := Inv(()->PyramidT.Create(x, y, z, Sides, Radius, Height, m));
+
+function Pyramid(p: Point3D; Sides: integer; Height, Radius: real; m: Material): PyramidT := Pyramid(p.X, p.Y, p.Z, Sides, Radius, Height, m);
+
+function PyramidWireFrame(x, y, z: real; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PyramidTWireFrame := Inv(()->PyramidTWireFrame.Create(x, y, z, Sides, Radius, Height, thickness, c));
+
+function PyramidWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PyramidTWireFrame := PyramidWireFrame(p.x, p.y, p.z, Sides, Radius, Height, thickness, c);
+
+function Lego(x, y, z: real; Rows, Columns, Height: integer; m: Material): LegoT := Inv(()->LegoT.Create(x, y, z, Rows, Columns, Height, m));
+
+function Icosahedron(x, y, z, Radius: real; m: Material): IcosahedronT := Inv(()->IcosahedronT.Create(x, y, z, 4 * Radius / Sqrt(2) / Sqrt(5 + Sqrt(5)), m));
+
+function Dodecahedron(x, y, z, Radius: real; m: Material): DodecahedronT := Inv(()->DodecahedronT.Create(x, y, z, Radius * 4 / Sqrt(3) / (1 + Sqrt(5)), m));
+
+function Tetrahedron(x, y, z, Radius: real; m: Material): TetrahedronT := Inv(()->TetrahedronT.Create(x, y, z, 4 * Radius / Sqrt(6), m));
+
+function Octahedron(x, y, z, Radius: real; m: Material): OctahedronT := Inv(()->OctahedronT.Create(x, y, z, Radius * Sqrt(2), m));
+
+function Icosahedron(p: Point3D; Radius: real; m: Material): IcosahedronT := Icosahedron(p.X, p.Y, p.Z, Radius, m);
+
+function Dodecahedron(p: Point3D; Radius: real; m: Material): DodecahedronT := Dodecahedron(p.X, p.Y, p.Z, Radius, m);
+
+function Tetrahedron(p: Point3D; Radius: real; m: Material): TetrahedronT := Tetrahedron(p.X, p.Y, p.Z, Radius, m);
+
+function Octahedron(p: Point3D; Radius: real; m: Material): OctahedronT := Octahedron(p.X, p.Y, p.Z, Radius, m);
+
+function Segments3D(points: sequence of Point3D; thickness: real; c: Color): SegmentsT := Inv(()->SegmentsT.Create(points, thickness, c));
+
+function Polyline3D(points: sequence of Point3D; thickness: real; c: Color): SegmentsT := Inv(()->SegmentsT.Create(points.Pairwise.SelectMany(x -> Seq(x[0], x[1])), thickness, c));
+
+function Polygon3D(points: sequence of Point3D; thickness: real; c: Color): SegmentsT := Inv(()->SegmentsT.Create((points + points.First).Pairwise.SelectMany(x -> Seq(x[0], x[1])), thickness, c));
+
+function Segment3D(p1, p2: Point3D; thickness: real; c: Color): SegmentsT := Inv(()->SegmentsT.Create(Seq(p1, p2), thickness, c));
+
+function Torus(x, y, z, Diameter, TubeDiameter: real; m: Material): TorusT := Inv(()->TorusT.Create(x, y, z, Diameter, TubeDiameter, m));
+
+function Torus(p: Point3D; Diameter, TubeDiameter: real; m: Material): TorusT := Torus(p.x, p.y, p.z, Diameter, TubeDiameter, m);
+
+function Triangle(p1, p2, p3: Point3D; m: Material): TriangleT := Inv(()->TriangleT.Create(p1, p2, p3, m));
+
+// Конец примитивов
+//------------------------------------------------------------------------------------
+
+// Функции для точек, лучей, прямых, плоскостей
 
 function FindNearestObject(x, y: real): Object3D;
 begin
@@ -2631,9 +3253,6 @@ begin
     if obj.model = v then
       Result := obj
 end;
-
-var
-  BadPoint := P3D(real.MaxValue, real.MaxValue, real.MaxValue);
 
 function FindNearestObjectPoint(x, y: real): Point3D;
 begin
@@ -2650,14 +3269,6 @@ function Ray(p: Point3D; v: Vector3D): Ray3D := new Ray3D(p, v);
 function Line(p: Point3D; v: Vector3D): Line3D := new Line3D(p, v);
 
 function Line(p1, p2: Point3D): Line3D := new Line3D(p1, p2 - p1);
-
-var
-  PlaneXY := Plane(Origin, OrtZ);
-  PlaneYZ := Plane(Origin, OrtX);
-  PlaneXZ := Plane(Origin, OrtY);
-  XAxis := Ray(Origin, OrtX);
-  YAxis := Ray(Origin, OrtY);
-  ZAxis := Ray(Origin, OrtZ);
 
 function GetRay(x, y: real): Ray3D := hvp.Viewport.GetRay(Pnt(x, y));
 
@@ -2683,173 +3294,101 @@ begin
   else Result := BadPoint;
 end;
 
-function DefaultMaterialColor := RandomColor;
+function PointOnPlane(Plane: Plane3D; x, y: real): Point3D := Plane.PointOnPlane(x,y);
 
-function DefaultMaterial := MaterialHelper.CreateMaterial(DefaultMaterialColor);
+function NearestPointOnLine(Line: Ray3D; x, y: real): Point3D := Line.NearestPointOnLine(x,y);
 
-function Group(x, y, z: integer): GroupT := Inv(()->GroupT.Create(x, y, z));
 
-function Group(p: Point3D): GroupT := Inv(()->GroupT.Create(p.x, p.y, p.z));
 
-function Group: GroupT := Inv(()->GroupT.Create(0, 0, 0));
+// Методы расширения для анимаций 
 
-function Group(params lst: array of Object3D): GroupT := Inv(()->GroupT.Create(0, 0, 0, lst));
+function Sec(Self: integer): real; extensionmethod := Self;
 
-function Group(en: sequence of Object3D): GroupT := Inv(()->GroupT.Create(0, 0, 0, en));
+function Sec(Self: real): real; extensionmethod := Self;
 
-function Sphere(x, y, z, Radius: real; m: Material := DefaultMaterial): SphereT := Inv(()->SphereT.Create(x, y, z, Radius, m));
+// А теперь - тадам! - перегрузка + для Animate.Sequence и перегрузка * для Animate.Group
+function operator+(a, b: AnimationBase): AnimationBase; extensionmethod := Animate.Sequence(a, b);
 
-function Sphere(center: Point3D; Radius: real; m: Material := DefaultMaterial) := Sphere(center.x, center.y, center.z, Radius, m);
+function operator*(a, b: AnimationBase): AnimationBase; extensionmethod := Animate.Group(a, b);
 
-function Ellipsoid(x, y, z, RadiusX, RadiusY, RadiusZ: real; m: Material := DefaultMaterial): EllipsoidT := Inv(()->EllipsoidT.Create(x, y, z, RadiusX, RadiusY, RadiusZ, m));
+// Конец методов расширения для анимаций 
 
-function Ellipsoid(center: Point3D; RadiusX, RadiusY, RadiusZ: real; m: Material := DefaultMaterial) := Ellipsoid(center.x, center.y, center.z, RadiusX, RadiusY, RadiusZ, m);
+// Методы расширения для точки
 
-function Cube(x, y, z, SideLength: real; m: Material := DefaultMaterial): CubeT := Inv(()->CubeT.Create(x, y, z, SideLength, m));
+function operator*(p: Point3D; r: real): Point3D; extensionmethod := p.Multiply(r);
 
-function Cube(center: Point3D; SideLength: real; m: Material := DefaultMaterial): CubeT := Cube(center.x, center.y, center.z, SideLength, m);
+function operator*(r: real; p: Point3D): Point3D; extensionmethod := p.Multiply(r);
 
-function Box(x, y, z, SizeX, SizeY, SizeZ: real; m: Material := DefaultMaterial): BoxT := Inv(()->BoxT.Create(x, y, z, SizeX, SizeY, SizeZ, m));
+function operator+(p1, p2: Point3D): Point3D; extensionmethod := p3d(p1.X + p2.X, p1.Y + p2.Y, p1.Z + p2.Z);
 
-function Box(center: Point3D; sz: Size3D; m: Material := DefaultMaterial): BoxT := Inv(()->BoxT.Create(center.x, center.y, center.z, sz.X, sz.Y, sz.z, m));
+function operator-(v: Vector3D): Vector3D; extensionmethod := v3d(-v.x,-v.y,-v.z);
 
-const
-  arhl = 3; ard = 0.2;
+function MoveX(Self: Point3D; dx: real): Point3D; extensionmethod := P3D(Self.x + dx, Self.y, Self.z);
 
-function Arrow(x, y, z, vx, vy, vz, diameter, hl: real; m: Material := DefaultMaterial): ArrowT := Inv(()->ArrowT.Create(x, y, z, vx, vy, vz, diameter, hl, m));
+function MoveY(Self: Point3D; dy: real): Point3D; extensionmethod := P3D(Self.x, Self.y + dy, Self.z);
 
-function Arrow(x, y, z, vx, vy, vz, diameter: real; m: Material := DefaultMaterial) := Arrow(x, y, z, vx, vy, vz, diameter, arhl, m);
+function MoveZ(Self: Point3D; dz: real): Point3D; extensionmethod := P3D(Self.x, Self.y, Self.z + dz);
 
-function Arrow(x, y, z, vx, vy, vz: real; m: Material := DefaultMaterial) := Arrow(x, y, z, vx, vy, vz, ard, arhl, m);
+function Move(Self: Point3D; dx, dy, dz: real): Point3D; extensionmethod := P3D(Self.x + dx, Self.y + dy, Self.z + dz);
 
-function Arrow(p: Point3D; v: Vector3D; diameter, hl: real; m: Material := DefaultMaterial) := Arrow(p.x, p.y, p.z, v.X, v.Y, v.Z, diameter, hl, m);
+// Конец методов расширения для точки 
 
-function Arrow(p: Point3D; v: Vector3D; diameter: real; m: Material := DefaultMaterial) := Arrow(p.x, p.y, p.z, v.X, v.Y, v.Z, diameter, arhl, m);
+type 
+  TupleInt3 = (integer, integer, integer);
+  TupleReal3 = (real, real, real);
 
-function Arrow(p: Point3D; v: Vector3D; m: Material := DefaultMaterial) := Arrow(p.x, p.y, p.z, v.X, v.Y, v.Z, ard, arhl, m);
+// Разные методы расширения
 
-function TruncatedConeAux(x, y, z, Height, Radius, TopRadius: real; sides: integer; topcap: boolean; c: Material) := Inv(()->TruncatedConeT.Create(x, y, z, Height, Radius, TopRadius, sides, topcap, c));
+function ChangeOpacity(Self: GColor; value: integer): Color; extensionmethod := ARGB(value, Self.R, Self.G, Self.B);
 
-const
-  maxsides = 37;
+function operator implicit(t: TupleInt3): Point3D; extensionmethod := new Point3D(t[0], t[1], t[2]);
 
-///--
-function TruncatedCone(x, y, z, Height, Radius, TopRadius: real; topcap: boolean; m: Material := DefaultMaterial): TruncatedConeT := TruncatedConeAux(x, y, z, Height, Radius, TopRadius, maxsides, topcap, m); 
+function operator implicit(t: TupleReal3): Point3D; extensionmethod := new Point3D(t[0], t[1], t[2]);
 
-function TruncatedCone(x, y, z, Height, Radius, TopRadius: real; m: Material := DefaultMaterial) := TruncatedCone(x, y, z, Height, Radius, TopRadius, True, m);
-///--
-function TruncatedCone(p: Point3D; Height, Radius, TopRadius: real; topcap: boolean; m: Material := DefaultMaterial) := TruncatedCone(p.x, p.y, p.z, Height, Radius, TopRadius, topcap, m);
+function operator implicit(ar: array of TupleInt3): Point3DCollection; extensionmethod := new Point3DCollection(ar.Select(t -> new Point3D(t[0], t[1], t[2])));
 
-function TruncatedCone(p: Point3D; Height, Radius, TopRadius: real; m: Material := DefaultMaterial) := TruncatedCone(p.x, p.y, p.z, Height, Radius, TopRadius, True, m);
+function operator implicit(ar: array of Point3D): Point3DCollection; extensionmethod := new Point3DCollection(ar);
 
-///--
-function Cylinder(x, y, z, Height, Radius: real; topcap: boolean; m: Material := DefaultMaterial): CylinderT := Inv(()->CylinderT.Create(x, y, z, Height, Radius, maxsides, topcap, m));
+function operator implicit(ar: List<Point3D>): Point3DCollection; extensionmethod := new Point3DCollection(ar);
 
-function Cylinder(x, y, z, Height, Radius: real; m: Material := DefaultMaterial) := Cylinder(x, y, z, Height, Radius, True, m);
-///--
-function Cylinder(p: Point3D; Height, Radius: real; topcap: boolean; m: Material := DefaultMaterial) := Cylinder(p.x, p.y, p.z, Height, Radius, topcap, m);
+// Конец разных методов расширения
 
-function Cylinder(p: Point3D; Height, Radius: real; m: Material := DefaultMaterial) := Cylinder(p.x, p.y, p.z, Height, Radius, True, m);
+type
+  GMHelper = auto class
+    a, b: Material;
+    function GroupMaterial: Material;
+    begin
+      var g := new MaterialGroup();
+      g.Children.Add(a);
+      g.Children.Add(b);
+      Result := g;
+    end;
+  end;
 
-function Tube(x, y, z, Height, Radius, InnerRadius: real; m: Material := DefaultMaterial): PipeT := Inv(()->PipeT.Create(x, y, z, Height, Radius, InnerRadius, m));
+// Методы расширения для Material 
 
-function Tube(p: Point3D; Height, Radius, InnerRadius: real; m: Material := DefaultMaterial) := Tube(p.x, p.y, p.z, Height, Radius, InnerRadius, m);
+function operator+(a, b: Material): Material; extensionmethod := Invoke&<Material>(GMHelper.Create(a, b).GroupMaterial);
 
-function Cone(x, y, z, Height, Radius: real; m: Material := DefaultMaterial): TruncatedConeT := TruncatedCone(x, y, z, Height, Radius, 0, True, m);
+function operator implicit(c: GColor): GMaterial; extensionmethod := Materialhelper.CreateMaterial(c);
 
-function Cone(p: Point3D; Height, Radius: real; m: Material := DefaultMaterial) := TruncatedCone(p.x, p.y, p.z, Height, Radius, 0, True, m);
+// Конец методов расширения для Material 
 
-function Teapot(x, y, z: real; c: Material := DefaultMaterial): TeapotT := Inv(()->TeapotT.Create(x, y, z, c));
 
-function Teapot(p: Point3D; c: Material := DefaultMaterial) := Teapot(p.x, p.y, p.z, c);
+//=============================================================================
 
-function BillboardText(x, y, z: real; Text: string; Fontsize: real := 12): BillboardTextT := Inv(()->BillboardTextT.Create(x, y, z, text, fontsize));
-
-function BillboardText(p: Point3D; Text: string; Fontsize: real := 12) := BillboardText(P.x, p.y, p.z, text, fontsize);
-
-function CoordinateSystem(ArrowsLength, Diameter: real): CoordinateSystemT := Inv(()->CoordinateSystemT.Create(0, 0, 0, arrowslength, diameter));
-
-function CoordinateSystem(ArrowsLength: real) := CoordinateSystem(arrowslength, arrowslength / 10);
-
-function Text3D(x, y, z: real; Text: string; Height: real; fontname: string := 'Arial'; c: Color := Colors.Black): TextT := Inv(()->TextT.Create(x, y, z, text, height, fontname, c));
-
-function Text3D(p: Point3D; Text: string; Height: real; fontname: string := 'Arial'; c: Color := Colors.Black) := Text3D(P.x, p.y, p.z, text, height, fontname, c);
-
-function Text3D(x, y, z: real; Text: string; Height: real; c: Color) := Text3D(x, y, z, text, height, 'Arial', c);
-
-function Text3D(p: Point3D; Text: string; Height: real; c: Color) := Text3D(p.x, p.y, p.z, text, height, 'Arial', c);
-
-
-function Rectangle3D(x, y, z, Length, Width: real; Normal, LengthDirection: Vector3D; m: Material := DefaultMaterial): RectangleT := Inv(()->RectangleT.Create(x, y, z, Length, Width, normal, LengthDirection, m));
-
-function Rectangle3D(p: Point3D; Length, Width: real; Normal, LengthDirection: Vector3D; m: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, Length, Width, Normal, LengthDirection, m);
-
-function Rectangle3D(x, y, z, Length, Width: real; Normal: Vector3D; m: Material := DefaultMaterial): RectangleT := Rectangle3D(x, y, z, Length, Width, Normal, OrtX, m); 
-
-function Rectangle3D(x, y, z, Length, Width: real; m: Material := DefaultMaterial): RectangleT := Rectangle3D(x, y, z, Length, Width, OrtZ, OrtX, m); 
-
-function Rectangle3D(p: Point3D; Length, Width: real; Normal: Vector3D; m: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, Length, Width, Normal, OrtX, m); 
-
-function Rectangle3D(p: Point3D; Length, Width: real; m: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, Length, Width, OrtZ, OrtX, m); 
-
-/// Загружает модель из файла .obj, .3ds, .lwo, .objz, .stl, .off
-function FileModel3D(x, y, z: real; fname: string; m: Material): FileModelT := Inv(()->FileModelT.Create(x, y, z, fname, m));
-
-function FileModel3D(p: Point3D; fname: string; m: Material): FileModelT := FileModel3D(p.x, p.y, p.z, fname, m);
-
-function Prism(x, y, z: real; Sides: integer; Height, Radius: real; m: Material := DefaultMaterial): PrismT := Inv(()->PrismT.Create(x, y, z, Sides, Radius, Height, m));
-
-function Prism(p: Point3D; Sides: integer; Height, Radius: real; m: Material := DefaultMaterial): PrismT := Prism(p.X, p.Y, p.Z, Sides, Radius, Height, m);
-
-function PrismWireFrame(x, y, z: real; Sides: integer; Height, Radius: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PrismTWireFrame := Inv(()->PrismTWireFrame.Create(x, y, z, Sides, Radius, Height, thickness, c));
-
-function PrismWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PrismTWireFrame := PrismWireFrame(p.x, p.y, p.z, Sides, Radius, Height, thickness, c);
-
-function Pyramid(x, y, z: real; Sides: integer; Height, Radius: real; m: Material := DefaultMaterial): PyramidT := Inv(()->PyramidT.Create(x, y, z, Sides, Radius, Height, m));
-
-function Pyramid(p: Point3D; Sides: integer; Height, Radius: real; m: Material := DefaultMaterial): PyramidT := Pyramid(p.X, p.Y, p.Z, Sides, Radius, Height, m);
-
-function PyramidWireFrame(x, y, z: real; Sides: integer; Height, Radius: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PyramidTWireFrame := Inv(()->PyramidTWireFrame.Create(x, y, z, Sides, Radius, Height, thickness, c));
-
-function PyramidWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PyramidTWireFrame := PyramidWireFrame(p.x, p.y, p.z, Sides, Radius, Height, thickness, c);
-
-function Lego(x, y, z: real; Rows, Columns, Height: integer; m: Material := DefaultMaterial): LegoT := Inv(()->LegoT.Create(x, y, z, Rows, Columns, Height, m));
-
-function Icosahedron(x, y, z, r: real; m: Material := DefaultMaterial): IcosahedronT := Inv(()->IcosahedronT.Create(x, y, z, 4 * R / Sqrt(2) / Sqrt(5 + Sqrt(5)), m));
-
-function Dodecahedron(x, y, z, r: real; m: Material := DefaultMaterial): DodecahedronT := Inv(()->DodecahedronT.Create(x, y, z, R * 4 / Sqrt(3) / (1 + Sqrt(5)), m));
-
-function Tetrahedron(x, y, z, r: real; m: Material := DefaultMaterial): TetrahedronT := Inv(()->TetrahedronT.Create(x, y, z, 4 * R / Sqrt(6), m));
-
-function Octahedron(x, y, z, r: real; m: Material := DefaultMaterial): OctahedronT := Inv(()->OctahedronT.Create(x, y, z, R * Sqrt(2), m));
-
-function Icosahedron(p: Point3D; r: real; m: Material := DefaultMaterial): IcosahedronT := Icosahedron(p.X, p.Y, p.Z, R, m);
-
-function Dodecahedron(p: Point3D; r: real; m: Material := DefaultMaterial): DodecahedronT := Dodecahedron(p.X, p.Y, p.Z, R, m);
-
-function Tetrahedron(p: Point3D; r: real; m: Material := DefaultMaterial): TetrahedronT := Tetrahedron(p.X, p.Y, p.Z, R, m);
-
-function Octahedron(p: Point3D; r: real; m: Material := DefaultMaterial): OctahedronT := Octahedron(p.X, p.Y, p.Z, R, m);
-
-function Segments3D(points: sequence of Point3D; thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT := Inv(()->SegmentsT.Create(points, thickness, c));
-
-function Polyline3D(points: sequence of Point3D; thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT := Inv(()->SegmentsT.Create(points.Pairwise.SelectMany(x -> Seq(x[0], x[1])), thickness, c));
-
-function Polygon3D(points: sequence of Point3D; thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT := Inv(()->SegmentsT.Create((points + points.First).Pairwise.SelectMany(x -> Seq(x[0], x[1])), thickness, c));
-
-function Segment3D(p1, p2: Point3D; thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT := Inv(()->SegmentsT.Create(Seq(p1, p2), thickness, c));
-
-function Torus(x, y, z, Diameter, TubeDiameter: real; m: Material := DefaultMaterial): TorusT := Inv(()->TorusT.Create(x, y, z, Diameter, TubeDiameter, m));
-
-function Torus(p: Point3D; Diameter, TubeDiameter: real; m: Material := DefaultMaterial): TorusT := Torus(p.x, p.y, p.z, Diameter, TubeDiameter, m);
-
-function Triangle(p1, p2, p3: Point3D; m: Material := DefaultMaterial): TriangleT := Inv(()->TriangleT.Create(p1, p2, p3, m));
-
-function MyH(x, y, z, Length: real; c: Color): MyAnyT := Inv(()->MyAnyT.Create(x, y, z, Length, c));
-
-function MyH(x, y, z, Length: real; c: Material): MyAnyT := Inv(()->MyAnyT.Create(x, y, z, Length, c));
-
-function Any(x, y, z: real; c: Color): AnyT := Inv(()->AnyT.Create(x, y, z, c));
+// Экспериментальные функции и классы
+type
+  MyAnyT = class(PlatonicAbstractT)
+  protected  
+    function CreateObject: Object3D; override := new MyAnyT(X, Y, Z, Length, Material);
+  public 
+    constructor(x, y, z, Length: real; m: GMaterial);
+    begin
+      CreateBase(new MyAnyVisual3D(Length), x, y, z, m);
+    end;
+    
+    function Clone := (inherited Clone) as MyAnyT;
+  end;
 
 
 procedure ProbaP;
@@ -2953,6 +3492,91 @@ end;
 procedure Proba3(x,y,z: real) := Invoke(ProbaP3,x,y,z);
 
 type
+  My = class(ParametricSurface3D)
+  public 
+    function Evaluate(u: real; v: real; var textureCoord: System.Windows.Point): Point3D; override;
+    begin
+      u -= 0.5;
+      v -= 0.5;
+      u *= 3;
+      v *= 3;
+      textureCoord := new Point(u, 2 * v);
+      Result := P3D(u, v, 0.2 * u * u + sin(u * v) + 2);
+    end;
+  end;
+  
+  My13D = class(MeshElement3D)
+    public function Tessellate(): MeshGeometry3D; override;
+    begin
+      var tm := new MeshBuilder(false, false);
+      tm.AddRevolvedGeometry(Arr(Pnt(0, 0), Pnt(0, 1), Pnt(0.3, 1), Pnt(0.5, 0.3), Pnt(2, 1), Pnt(3, 0)), nil, Origin, OrtZ, 80);
+      Result := tm.ToMesh(false);
+    end;
+  end;
+
+type
+  AnyT = class(ObjectWithMaterial3D)
+    constructor(x, y, z: real; c: GColor);
+    begin
+      {var a := new ExtrudedVisual3D;
+      a.Path := new Point3DCollection(Arr(P3D(1,0,-0.5),P3D(1,0,0.5)));
+      a.Section := new PointCollection(Arr(Pnt(0,0),Pnt(0.5,0),Pnt(0,0.5)));
+      a.IsSectionClosed := True;}
+      
+      //var a := new TerrainVisual3D;
+      //a.Content := (new SphereVisual3D()).Model;
+      //a.Text := 'PascalABC';
+      //var a := new LinesVisual3D;
+      {a.Thickness := 1.99;
+      a.Points := Arr(P3D(0, 0, 0), P3D(3, 0, 0), P3D(3, 0, 0), P3D(3, 3, 0), P3D(3, 3, 0), P3D(3, 3, 3));
+      a.Color := c;}
+      
+      var a := new My13D;
+      a.Material := c;
+      
+      
+      {var aa := 1;
+      var b := 80;
+      
+      var q := Partition(0,2*Pi*20,360*20*10).Select(t->P3D(5*cos(1*t),5*sin(1*t),t/5));
+      var q1 := q.Interleave(q.Skip(1));
+      
+      //a.Points := Lst(P3D(0,0,0),P3D(4,4,2),p3D(4,4,2),p3D(2,8,-1));
+      a.Points := Lst(q1);
+      a.Color := Colors.Blue;
+      
+      a.Thickness := 1.5;}
+      
+      {var a := new HelixToolkit.Wpf.PieSliceVisual3D;
+      a.StartAngle := 0;
+      a.EndAngle := 360;
+      a.ThetaDiv := 60;}
+      
+      {var a := new HelixToolkit.Wpf.TubeVisual3D;
+      var p := new Point3DCollection(Arr(P3D(1,2,0),P3D(2,1,0),P3D(3,1,0)));
+      a.Diameter := 0.05;
+      a.Path := p;}
+      
+      {var a := new LegoVisual3D();
+      a.Rows := 1;
+      a.Columns := 2;
+      a.Height := 3;
+      //a.Divisions := 100;
+      a.Fill := Brushes.Blue;}
+      
+      CreateBase0(a, x, y, z);
+    end;
+  end;
+
+function MyH(x, y, z, Length: real; c: Color): MyAnyT := Inv(()->MyAnyT.Create(x, y, z, Length, c));
+
+function MyH(x, y, z, Length: real; c: Material): MyAnyT := Inv(()->MyAnyT.Create(x, y, z, Length, c));
+
+function Any(x, y, z: real; c: Color): AnyT := Inv(()->AnyT.Create(x, y, z, c));
+
+// Сервисные функции и классы
+
+type
   Graph3DWindow = class(GMainWindow)
   public 
     procedure InitMainGraphControl; override;
@@ -2994,7 +3618,7 @@ type
       Camera := new CameraType;
       Lights := new LightsType;
       GridLines := new GridLinesType;
-      View3D := new View3DT;
+      View3D := new View3DType;
       
       NameScope.SetNameScope(Self, new NameScope());
     end;

@@ -1,8 +1,10 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="AccelerationRatio">
+<param name="Keyword" value="AnimationBase">
 <param name="Keyword" value="AutoReverse">
 <param name="Keyword" value="Begin">
 <param name="Keyword" value="Change">
+<param name="Keyword" value="class">
 <param name="Keyword" value="Duration">
 <param name="Keyword" value="Forever">
 <param name="Keyword" value="Pause">
@@ -14,28 +16,34 @@
 </HEAD><body><H1>Graph3D: класс AnimationBase</H1>Базовый класс анимации 3D-объектов.
 <table border=0 cellpadding=5><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы класса AnimationBase</font></td></tr>
 
-<tr><tr><td><code><b>function</b> AccelerationRatio(acceleration: real; deceleration: real := 0): AnimationBase; <b>virtual</b> := Self;</code>
+<tr><tr><td><code><b>function</b> AccelerationRatio(acceleration: real; deceleration: real := 0): AnimationBase; <b>virtual</b>;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Модификатор анимации, устанавливающий ускорение анимации в начале и замедление анимации в конце</td></tr>
-<tr><td><code><b>function</b> AutoReverse: AnimationBase; <b>virtual</b> := Self;</code>
+<tr><td><code><b>function</b> AutoReverse: AnimationBase; <b>virtual</b>;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Модификатор анимации, возвращающий объект в исходное положение. Не может быть применен к группе анимаций</td></tr>
-<tr><td><code><b>function</b> Duration: real; <b>virtual</b> := seconds;</code>
+<tr><td><code><b>function</b> Duration: real; <b>virtual</b>;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает продолжительность анимации</td></tr>
-<tr><td><code><b>function</b> Forever: AnimationBase; <b>virtual</b> := Self;</code>
+<tr><td><code><b>function</b> Forever: AnimationBase; <b>virtual</b>;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Модификатор анимации, выполняющий её бесконечно. Не может быть применен к группе анимаций</td></tr>
 <tr><td><code><b>function</b> Then(second: AnimationBase): AnimationBase;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Указывает анимацию, выполняющуюся после данной</td></tr>
 <tr><td><code><b>function</b> WhenCompleted(act: <b>procedure</b>): AnimationBase;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает действие по завершению анимации</td></tr>
 </tr>
-<tr><tr><td><code><b>procedure</b> Begin; <b>virtual</b> := Invoke(BeginT);</code>
+<tr><tr><td><code><b>procedure</b> Begin; <b>virtual</b>;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Начинает анимацию</td></tr>
 <tr><td><code><b>procedure</b> Change(a: AnimationBase);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет анимацию на другую</td></tr>
-<tr><td><code><b>procedure</b> Pause := if sb &lt;&gt; nil then sb.Pause;</code>
+<tr><td><code><b>procedure</b> Pause;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Делает паузу анимации</td></tr>
-<tr><td><code><b>procedure</b> Remove := Invoke(RemoveT);</code>
+<tr><td><code><b>procedure</b> Remove;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет анимацию</td></tr>
-<tr><td><code><b>procedure</b> Resume := if sb &lt;&gt; nil then sb.Resume;</code>
+<tr><td><code><b>procedure</b> Resume;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возобновляет анимацию</td></tr>
+</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Статические методы класса AnimationBase</font></td></tr>
+
+<tr><tr><td><code><b>class</b> <b>function</b> Group(<b>params</b> l: <b>array</b>  <b>of</b> AnimationBase);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает группу анимаций, выполняющихся параллельно</td></tr>
+<tr><td><code><b>class</b> <b>function</b> Sequence(<b>params</b> l: <b>array</b>  <b>of</b> AnimationBase);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность анимаций, выполняющихся последовательно</td></tr>
 </tr></table>
 </body></HTML>
