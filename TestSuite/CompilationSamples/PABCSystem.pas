@@ -460,6 +460,9 @@ type
     function ToString: string; override;
     class function operator implicit<T>(s: TypedSet): HashSet<T>;
     class function operator implicit<T>(s: HashSet<T>): TypedSet;
+    function Count: integer := ht.Count;
+    procedure Print(delim: string := ' ');
+    procedure Println(delim: string := ' ');
   end;
 
 type
@@ -2896,6 +2899,28 @@ function TypedSet.CompareGreaterEqual(s: TypedSet): boolean;
 begin
   Result := CompareSetGreaterEqual(Self, s);
 end;
+
+procedure TypedSet.Print(delim: string);
+begin
+  foreach var x in ht.Keys do
+    Write(x,delim)
+end;
+
+procedure TypedSet.Println(delim: string);
+begin
+  var fst := True;
+  foreach var x in ht.Keys do
+  begin
+    if fst then
+    begin
+      fst := False;
+      Write(x);
+    end
+    else Write(delim,x);
+  end;
+  Writeln;  
+end;
+
 
 // -----------------------------------------------------
 //                  Typed Set functions
@@ -6325,9 +6350,9 @@ begin
   else if t.IsValueType then
   begin
     elem := Activator.CreateInstance(t);
-    fa := t.GetFields;
+    fa := t.GetFields(System.Reflection.BindingFlags.GetField or System.Reflection.BindingFlags.Instance or System.Reflection.BindingFlags.Public or System.Reflection.BindingFlags.NonPublic);
     for var i := 0 to fa.Length - 1 do
-      if not fa[i].IsStatic and not fa[i].IsLiteral then
+      if {not fa[i].IsStatic and} not fa[i].IsLiteral then
         fa[i].SetValue(elem, AbstractBinaryFileReadT(f, fa[i].FieldType, ind, in_arr));
     Result := elem;
   end
@@ -6417,10 +6442,10 @@ begin
   end  
   else if t.IsValueType then
   begin
-    fa := t.GetFields;
+    fa := t.GetFields(System.Reflection.BindingFlags.GetField or System.Reflection.BindingFlags.Instance or System.Reflection.BindingFlags.Public or System.Reflection.BindingFlags.NonPublic);
     for var i := 0 to fa.Length - 1 do
     begin
-      if not fa[i].IsStatic and not fa[i].IsLiteral then
+      if {not fa[i].IsStatic and} not fa[i].IsLiteral then
         Write(f, fa[i].GetValue(val), true, ind, in_arr);
     end;
   end
@@ -10889,10 +10914,10 @@ begin
   if t.IsValueType then // it is a record
   begin
     //elem := Activator.CreateInstance(t); //ssyy commented
-    fa := t.GetFields;
+    fa := t.GetFields(System.Reflection.BindingFlags.GetField or System.Reflection.BindingFlags.Instance or System.Reflection.BindingFlags.Public or System.Reflection.BindingFlags.NonPublic);
     Result := 0;
     for var i := 0 to fa.Length - 1 do
-      if not fa[i].IsStatic and not fa[i].IsLiteral then 
+      if {not fa[i].IsStatic and} not fa[i].IsLiteral then 
         Result := Result + RunTimeSizeOf(fa[i].FieldType)
   end
   else if t = typeof(string) then

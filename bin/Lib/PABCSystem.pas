@@ -2961,22 +2961,13 @@ end;
 
 [System.Diagnostics.DebuggerStepThrough]
 function Subtract(s1, s2: TypedSet): TypedSet;
-var
-  en: System.Collections.IEnumerator;
 begin
-  //Result := new TypedSet();
   Result := s1.CloneSet;
-  {en := s1.ht.GetEnumerator();
-  while en.MoveNext() = true do
+  var en := s2.ht.GetEnumerator();
+  while en.MoveNext do
   begin
-  if not s2.Contains((en as IDictionaryEnumerator).Key) then 
-  Result.ht[(en as IDictionaryEnumerator).Key] := (en as IDictionaryEnumerator).Key;
-  end;}
-  en := s2.ht.GetEnumerator();
-  while en.MoveNext() = true do
-  begin
-    if s1.Contains((en as IDictionaryEnumerator).Key) then 
-      Result.ht.Remove((en as IDictionaryEnumerator).Key);
+    if s1.Contains(en.Key) then 
+      Result.ht.Remove(en.Key);
   end;
 end;
 
@@ -2994,13 +2985,11 @@ end;
 
 [System.Diagnostics.DebuggerStepThrough]  
 function Union(s1, s2: TypedSet): TypedSet;
-var
-  en: System.Collections.IEnumerator;
 begin
   Result := s1.CloneSet;
-  en := s2.ht.GetEnumerator();
-  while en.MoveNext() = true do
-    Result.ht[(en as IDictionaryEnumerator).Key] := (en as IDictionaryEnumerator).Key;
+  var en := s2.ht.GetEnumerator();
+  while en.MoveNext do
+    Result.ht[en.Key] := en.Key;
 end;
 
 [System.Diagnostics.DebuggerStepThrough]  
@@ -3010,7 +2999,7 @@ var
 begin
   Result := new TypedSet();
   en := s1.ht.GetEnumerator();
-  while en.MoveNext() = true do
+  while en.MoveNext do
     if s2.Contains((en as IDictionaryEnumerator).Key) then 
       Result.ht[(en as IDictionaryEnumerator).Key] := (en as IDictionaryEnumerator).Key;
 end;
@@ -3041,7 +3030,7 @@ begin
     Exit;
   end;
   en := s1.ht.GetEnumerator();
-  while en.MoveNext() = true do
+  while en.MoveNext do
   begin
     var is_in_s1 := s1.Contains((en as IDictionaryEnumerator).Key);
     var is_in_s2 := s2.Contains((en as IDictionaryEnumerator).Key);
@@ -3060,7 +3049,7 @@ begin
   begin
     en := s2.ht.GetEnumerator();
     en.Reset();
-    while en.MoveNext() = true do
+    while en.MoveNext do
     begin
       var is_in_s1 := s1.Contains((en as IDictionaryEnumerator).Key);
       var is_in_s2 := s2.Contains((en as IDictionaryEnumerator).Key);
@@ -3093,7 +3082,7 @@ var
 begin
   en := s1.ht.GetEnumerator();
   en.Reset();
-  while en.MoveNext() = true do
+  while en.MoveNext do
   begin
     if not s2.Contains((en as IDictionaryEnumerator).Key) then 
     begin
@@ -3106,7 +3095,7 @@ begin
     en := s2.ht.GetEnumerator();
     en.Reset();
     var b: boolean := false;
-    while en.MoveNext() = true do
+    while en.MoveNext do
     begin
       if not s1.Contains((en as IDictionaryEnumerator).Key) then 
       begin
@@ -3127,7 +3116,7 @@ var
 begin
   en := s2.ht.GetEnumerator();
   en.Reset();
-  while en.MoveNext() = true do
+  while en.MoveNext do
   begin
     if not s1.Contains((en as IDictionaryEnumerator).Key) then 
     begin
@@ -3146,7 +3135,7 @@ var
 begin
   en := s1.ht.GetEnumerator();
   en.Reset();
-  while en.MoveNext() = true do
+  while en.MoveNext do
   begin
     if not s2.Contains((en as IDictionaryEnumerator).Key) then 
     begin
@@ -3165,7 +3154,7 @@ var
 begin
   en := s2.ht.GetEnumerator();
   en.Reset();
-  while en.MoveNext() = true do
+  while en.MoveNext do
   begin
     if not s1.Contains((en as IDictionaryEnumerator).Key) then 
     begin
@@ -3178,7 +3167,7 @@ begin
     en := s1.ht.GetEnumerator();
     en.Reset();
     var b: boolean := false;
-    while en.MoveNext() = true do
+    while en.MoveNext do
     begin
       if not s2.Contains((en as IDictionaryEnumerator).Key) then 
       begin
@@ -3687,6 +3676,8 @@ function operator<= <T>(x, y: HashSet<T>); extensionmethod := x.IsSubsetOf(y);
 function operator> <T>(x, y: HashSet<T>); extensionmethod := x.IsProperSupersetOf(y);
 
 function operator>= <T>(x, y: HashSet<T>); extensionmethod := x.IsSupersetOf(y);
+
+
 
 //------------------------------------------------------------------------------
 //          Операции для SortedSet<T> 

@@ -145,6 +145,26 @@ begin
   PABCSystem.Rewrite(Self);
 end;
 
+// -----------------------------------------------------
+//>>     Функции, создающие HashSet и SortedSet по встроенным множествам # Function for creation HashSet and SortedSet from set of T
+// -----------------------------------------------------
+
+/// Создает HashSet по встроенному множеству
+function HSet<T>(s: set of T): HashSet<T>;
+begin
+  Result := new HashSet<T>;
+  foreach var x in s do
+    Result += x;
+end;
+
+/// Создает SortedSet по встроенному множеству
+function SSet<T>(s: set of T): SortedSet<T>;
+begin
+  Result := new SortedSet<T>;
+  foreach var x in s do
+    Result += x;
+end;
+
 //{{{--doc: Конец секции подпрограмм для типизированных файлов для документации }}} 
 
 //------------------------------------------------------------------------------
