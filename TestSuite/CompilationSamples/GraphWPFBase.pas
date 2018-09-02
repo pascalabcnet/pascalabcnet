@@ -207,7 +207,20 @@ function WindowType.Center := Pnt(Width/2,Height/2);
 
 function WindowType.ClientRect := Rect(0,0,Width,Height);
 
+function operator implicit(Self: (integer, integer)): Point; extensionmethod := new Point(Self[0], Self[1]);
+function operator implicit(Self: (integer, real)): Point; extensionmethod := new Point(Self[0], Self[1]);
+function operator implicit(Self: (real, integer)): Point; extensionmethod := new Point(Self[0], Self[1]);
+function operator implicit(Self: (real, real)): Point; extensionmethod := new Point(Self[0], Self[1]);
+
+function operator implicit(Self: array of (real, real)): array of Point; extensionmethod := 
+  Self.Select(t->new Point(t[0],t[1])).ToArray;
+function operator implicit(Self: array of (integer, integer)): array of Point; extensionmethod := 
+  Self.Select(t->new Point(t[0],t[1])).ToArray;
  
+procedure SetLeft(Self: UIElement; l: integer); extensionmethod := Canvas.SetLeft(Self,l);
+
+procedure SetTop(Self: UIElement; t: integer); extensionmethod := Canvas.SetTop(Self,t);
+
   
 var __initialized: boolean;
 

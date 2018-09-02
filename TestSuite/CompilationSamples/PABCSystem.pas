@@ -11405,12 +11405,12 @@ begin
   nfi := new System.Globalization.NumberFormatInfo();
   nfi.NumberGroupSeparator := '.';
    
-  // SSM 1.08.18 только в текущем потоке будет точка в вещетвенных
+  // SSM 1.08.18 только в текущем потоке будет точка в вещественных
   // В Net 4.6 System.Globalization.CultureInfo.DefaultThreadCurrentCulture := ci
   // Но как сделать чтобы работало и в младших NET - не знаю
-  var ci := (System.Globalization.CultureInfo.CurrentCulture.Clone as System.Globalization.CultureInfo);
-  ci.NumberFormat := nfi;
-  System.Globalization.CultureInfo.CurrentCulture := ci;
+  //var ci := (System.Globalization.CultureInfo.CurrentCulture.Clone as System.Globalization.CultureInfo);
+  //ci.NumberFormat := nfi;
+  //System.Globalization.CultureInfo.CurrentCulture := ci;
   
   //  System.Threading.Thread.CurrentThread.CurrentCulture := new System.Globalization.CultureInfo('en-US');
   //rnd := new System.Random;

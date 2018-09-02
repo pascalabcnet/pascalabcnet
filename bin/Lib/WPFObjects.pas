@@ -321,7 +321,7 @@ type
   /// Класс графических объектов "Эллипс"
   EllipseWPF = class(BoundedObjectWPF)
   private
-    procedure InitOb2(x,y,w,h: real; c: GColor) := InitOb1(x,y,w,h,c,new Ellipse());
+    procedure InitOb2(x,y,w,h: real; c: GColor) := InitOb1(x,y,w,h,c,new System.Windows.Shapes.Ellipse());
     function GetInternalGeometry: Geometry; override := (ob as Shape).RenderedGeometry;
   public
     /// Создает эллипс размера (w,h) заданного цвета с координатами левого верхнего угла (x,y)
@@ -346,7 +346,7 @@ type
   /// Класс графических объектов "Окружность"
   CircleWPF = class(BoundedObjectWPF)
   private
-    procedure InitOb2(x,y,r: real; c: GColor) := InitOb1(x-r,y-r,2*r,2*r,c,new Ellipse());
+    procedure InitOb2(x,y,r: real; c: GColor) := InitOb1(x-r,y-r,2*r,2*r,c,new System.Windows.Shapes.Ellipse());
     procedure WT(value: real) := (ob.Width,ob.Height) := (value,value);
     procedure HT(value: real) := (ob.Width,ob.Height) := (value,value);
     procedure Rad(value: real);
@@ -515,10 +515,10 @@ type
   /// Класс графических объектов "Отрезок"
   LineWPF = class(ObjectWPF)
   private
-    function Element := ob as Line;
+    function Element := ob as System.Windows.Shapes.Line;
     procedure InitOb2(x1,y1,x2,y2: real; c: GColor);
     begin
-      var ll := new Line();      
+      var ll := new System.Windows.Shapes.Line();      
       InitOb(min(x1,x2),min(y1,y2),abs(x1-x2),abs(y1-y2),ll,False);
       ll.X1 := x1-Left;
       ll.Y1 := y1-Top;
@@ -627,7 +627,7 @@ type
   RegularPolygonWPF = class(BoundedObjectWPF)
   private
     n: integer;
-    function Element: Polygon := ob as Polygon;
+    function Element: System.Windows.Shapes.Polygon := ob as System.Windows.Shapes.Polygon;
     procedure InitOb2(x,y,r: real; n: integer; c: GColor);
     begin 
       InitOb1(x-r,y-r,2*r,2*r,c,CreatePolygon(r,n),false);
@@ -637,9 +637,9 @@ type
     begin
       var pp := Partition(0,2*Pi,n).Select(phi->Pnt(r+r*cos(phi-Pi/2),r+r*sin(phi-Pi/2))).ToArray;      Result := new PointCollection(pp);
     end;
-    function CreatePolygon(r: real; n: integer): Polygon;
+    function CreatePolygon(r: real; n: integer): System.Windows.Shapes.Polygon;
     begin
-      var p := new Polygon();
+      var p := new System.Windows.Shapes.Polygon();
       p.Points := ChangePointCollection(r,n);
       Result := p;
     end;
@@ -710,9 +710,9 @@ type
       var pp2 := Partition(0+Pi/n,2*Pi+Pi/n,n).Select(phi->Pnt(r+rint*cos(phi-Pi/2),r+rint*sin(phi-Pi/2)));
       Result := new PointCollection(pp1.Interleave(pp2).ToArray);
     end;
-    function CreatePolygon(r,rint: real; n: integer): Polygon;
+    function CreatePolygon(r,rint: real; n: integer): System.Windows.Shapes.Polygon;
     begin
-      var p := new Polygon();
+      var p := new System.Windows.Shapes.Polygon();
       p.Points := ChangePointCollection(r,rint,n);
       Result := p;
     end;
@@ -784,20 +784,24 @@ type
       var a := pp.Select(p->Pnt(p.x-x1,p.y-y1)).ToArray;
       InitOb1(x1,y1,x2-x1,y2-y1,c,CreatePolygon(a),false);
     end;
-    function CreatePolygon(pp: array of Point): Polygon;
+    function CreatePolygon(pp: array of Point): System.Windows.Shapes.Polygon;
     begin
-      var p := new Polygon();
+      var p := new System.Windows.Shapes.Polygon();
       p.Points := new PointCollection(pp);
       Result := p;
+    end;
+    function GetPointsArrayP: PointsArray;
+    begin
+      Result := (ob as System.Windows.Shapes.Polygon).Points.Select(p->p).ToArray;
     end;
   public
     /// Создает многоугольник заданного цвета с координатами вершин, заданными массивом точек pp
     constructor (pp: array of Point; c: GColor) := Invoke(InitOb2,pp,c);
     /// Массив вершин
     property Points: array of Point
-      read Invoke&<PointsArray>(()->(ob as Polygon).Points.Select(p->p).ToArray)
+      read Invoke&<PointsArray>(GetPointsArrayP)
       write begin
-        var ob1 := ob;
+        var ob1 := ob as System.Windows.Shapes.Polygon;
         var pp := value;
         // ширина и высота будут некорректно. Надо переопределить на чтение
         var x1 := pp.Min(p->p.x);
@@ -807,7 +811,7 @@ type
         var a := pp.Select(p->Pnt(p.x-x1,p.y-y1)).ToArray;
         MoveTo(x1,y1);
         //(gr.Width,gr.Height) := (x2-x1,y2-y1);
-        Invoke(procedure -> (ob1 as Polygon).Points := new PointCollection(a));
+        Invoke(procedure -> ob1.Points := new PointCollection(a));
       end;  
     /// Декоратор включения границы объекта
     function WithBorder(w: real := -1): PolygonWPF
@@ -919,22 +923,7 @@ function Pnt(x,y: real) := new Point(x,y);
 function Rect(x,y,w,h: real) := new System.Windows.Rect(x,y,w,h);
 function ColorBrush(c: Color) := new SolidColorBrush(c);
 
-function operator implicit(Self: (integer, integer)): Point; extensionmethod := new Point(Self[0], Self[1]);
-function operator implicit(Self: (integer, real)): Point; extensionmethod := new Point(Self[0], Self[1]);
-function operator implicit(Self: (real, integer)): Point; extensionmethod := new Point(Self[0], Self[1]);
-function operator implicit(Self: (real, real)): Point; extensionmethod := new Point(Self[0], Self[1]);
-
-function operator implicit(Self: array of (real, real)): array of Point; extensionmethod := 
-  Self.Select(t->new Point(t[0],t[1])).ToArray;
-function operator implicit(Self: array of (integer, integer)): array of Point; extensionmethod := 
-  Self.Select(t->new Point(t[0],t[1])).ToArray;
-
-
 ///---- Helpers
-procedure SetLeft(Self: UIElement; l: integer); extensionmethod := Canvas.SetLeft(Self,l);
-
-procedure SetTop(Self: UIElement; t: integer); extensionmethod := Canvas.SetTop(Self,t);
-
 procedure SetLeft(Self: UIElement; l: integer) := Self.SetLeft(l);
 procedure SetTop(Self: UIElement; t: integer) := Self.SetTop(t);
 
