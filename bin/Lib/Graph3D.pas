@@ -2560,6 +2560,11 @@ var
 
 //{{{--doc: Конец секции 1 }}} 
 
+///--
+procedure __InitModule__;
+///--
+procedure __FinalizeModule__;
+
 implementation
 
 function RGB(r, g, b: byte) := Color.Fromrgb(r, g, b);
