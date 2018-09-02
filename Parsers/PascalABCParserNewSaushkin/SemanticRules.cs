@@ -431,7 +431,12 @@ namespace GPPGParserScanner
                 while (match.Success)
                 {
                     string s = match.Value.Replace("{", "").Replace("}", "");
-                    int colon_pos = s.IndexOf(':');
+                    int colon_pos = s.LastIndexOf(':');
+                    int comma_pos = s.LastIndexOf(',');
+                    int bracket_pos = s.LastIndexOf(')');
+                    int sqbracked_pos = s.LastIndexOf(']');
+                    if (comma_pos != -1 && comma_pos > bracket_pos && comma_pos > sqbracked_pos)
+                        colon_pos = comma_pos;
                     if (colon_pos != -1 && s.IndexOf('?') == -1)
                     {
                         var_formats.Add(ind, s.Substring(colon_pos));
