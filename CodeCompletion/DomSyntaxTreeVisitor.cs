@@ -5052,7 +5052,10 @@ namespace CodeCompletion
             }
                 
             cur_scope = tmp;
-            ps.return_type = new UnknownScope(new SymInfo("",SymbolKind.Class,""));// returned_scope as TypeScope;
+            if (_function_lambda_definition.usedkeyword == 2)
+                ps.return_type = null;
+            else
+                ps.return_type = new UnknownScope(new SymInfo("",SymbolKind.Class,""));// returned_scope as TypeScope;
             returned_scope = new ProcType(ps);
         }
 
