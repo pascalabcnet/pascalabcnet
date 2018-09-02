@@ -221,7 +221,6 @@ procedure SetLeft(Self: UIElement; l: integer); extensionmethod := Canvas.SetLef
 
 procedure SetTop(Self: UIElement; t: integer); extensionmethod := Canvas.SetTop(Self,t);
 
-  
 var __initialized: boolean;
 
 procedure __InitModule;

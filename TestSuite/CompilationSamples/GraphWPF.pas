@@ -501,9 +501,6 @@ begin
   end;
 end;
 
-
-
-///---- Helpers
 {procedure MoveTo(Self: UIElement; l,t: integer); extensionmethod;
 begin
   Canvas.SetLeft(Self,l);
