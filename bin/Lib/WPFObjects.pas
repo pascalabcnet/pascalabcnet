@@ -905,6 +905,10 @@ function ObjectUnderPoint(x,y: real): ObjectWPF;
 /// Возвращает True если графические объекты пересекаются
 function ObjectsIntersect(o1,o2: ObjectWPF): boolean;
 
+///--
+procedure __InitModule__;
+///--
+procedure __FinalizeModule__;
 //{{{--doc: Конец секции 2 }}} 
 
 implementation
@@ -1354,6 +1358,7 @@ begin
   if not __initialized then
   begin
     __initialized := true;
+    GraphWPFBase.__InitModule__;
     __InitModule;
   end;
 end;

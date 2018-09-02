@@ -465,7 +465,13 @@ namespace GPPGParserScanner
                     }
                         
                 }
-                mc.parameters.Add(new string_const(sb.ToString(), str.source_context), str.source_context);
+                string str2 = sb.ToString();
+                if (str2.Trim().EndsWith("{"))
+                {
+                    parsertools.errors.Add(new bad_format_string(parsertools.CurrentFileName, str.source_context, str));
+                    return str;
+                }
+                mc.parameters.Add(new string_const(str2, str.source_context), str.source_context);
                 for (int i = 0; i < vars.Count; i++)
                 {
                     string s = vars[i];
