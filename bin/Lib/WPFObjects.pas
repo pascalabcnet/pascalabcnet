@@ -909,6 +909,10 @@ function ObjectUnderPoint(x,y: real): ObjectWPF;
 /// Возвращает True если графические объекты пересекаются
 function ObjectsIntersect(o1,o2: ObjectWPF): boolean;
 
+///--
+procedure __InitModule__;
+///--
+procedure __FinalizeModule__;
 //{{{--doc: Конец секции 2 }}} 
 
 implementation
@@ -923,7 +927,6 @@ function Pnt(x,y: real) := new Point(x,y);
 function Rect(x,y,w,h: real) := new System.Windows.Rect(x,y,w,h);
 function ColorBrush(c: Color) := new SolidColorBrush(c);
 
-///---- Helpers
 procedure SetLeft(Self: UIElement; l: integer) := Self.SetLeft(l);
 procedure SetTop(Self: UIElement; t: integer) := Self.SetTop(t);
 
@@ -1343,6 +1346,7 @@ begin
   if not __initialized then
   begin
     __initialized := true;
+    GraphWPFBase.__InitModule__;
     __InitModule;
   end;
 end;

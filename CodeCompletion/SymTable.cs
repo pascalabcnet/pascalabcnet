@@ -1804,6 +1804,8 @@ namespace CodeCompletion
                 return true;
             if (ts is CompiledScope)
                 return ts.IsConvertable(this);
+            if (ts is TemplateParameterScope || ts.IsGenericParameter)
+                return true;
             return false;
         }
 

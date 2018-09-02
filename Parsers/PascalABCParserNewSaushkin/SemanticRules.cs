@@ -431,7 +431,12 @@ namespace GPPGParserScanner
                 while (match.Success)
                 {
                     string s = match.Value.Replace("{", "").Replace("}", "");
-                    int colon_pos = s.IndexOf(':');
+                    int colon_pos = s.LastIndexOf(':');
+                    int comma_pos = s.LastIndexOf(',');
+                    int bracket_pos = s.LastIndexOf(')');
+                    int sqbracked_pos = s.LastIndexOf(']');
+                    if (comma_pos != -1 && comma_pos > bracket_pos && comma_pos > sqbracked_pos)
+                        colon_pos = comma_pos;
                     if (colon_pos != -1 && s.IndexOf('?') == -1)
                     {
                         var_formats.Add(ind, s.Substring(colon_pos));
@@ -465,7 +470,13 @@ namespace GPPGParserScanner
                     }
                         
                 }
-                mc.parameters.Add(new string_const(sb.ToString(), str.source_context), str.source_context);
+                string str2 = sb.ToString();
+                if (str2.Trim().EndsWith("{"))
+                {
+                    parsertools.errors.Add(new bad_format_string(parsertools.CurrentFileName, str.source_context, str));
+                    return str;
+                }
+                mc.parameters.Add(new string_const(str2, str.source_context), str.source_context);
                 for (int i = 0; i < vars.Count; i++)
                 {
                     string s = vars[i];
