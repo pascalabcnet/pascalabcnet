@@ -4202,7 +4202,7 @@ namespace CodeCompletion
             }*/
             foreach (SymScope ss in members)
             {
-                if (!ss.si.name.StartsWith("$"))
+                if (!ss.si.name.StartsWith("$") && !ss.si.name.StartsWith("#"))
                 {
                     lst.Add(ss.si);
                     if (!ss.si.has_doc)
@@ -4224,7 +4224,7 @@ namespace CodeCompletion
             {
                 //if (ss is ProcScope && (ss as ProcScope).IsConstructor())
                 //    continue;
-                if (!ss.si.name.StartsWith("$"))
+                if (!ss.si.name.StartsWith("$") && !ss.si.name.StartsWith("#"))
                 {
                     if (ss.si.acc_mod == access_modifer.private_modifer)
                     {
@@ -4261,7 +4261,7 @@ namespace CodeCompletion
             }*/
             foreach (SymScope ss in members)
             {
-                if (!ss.si.name.StartsWith("$") && !ss.is_static)
+                if (!ss.si.name.StartsWith("$") && !ss.si.name.StartsWith("#") && !ss.is_static)
                     if (!(ss is ProcScope) && !(ss is TemplateParameterScope))
                     {
                         lst.Add(ss.si);
@@ -4309,7 +4309,7 @@ namespace CodeCompletion
             {
                 if (ss is ProcScope && (ss as ProcScope).IsConstructor())
                     continue;
-                if (!ss.si.name.StartsWith("$"))
+                if (!ss.si.name.StartsWith("$") && !ss.si.name.StartsWith("#"))
                 {
                     if (ss.si.acc_mod == access_modifer.private_modifer)
                     {
@@ -4345,7 +4345,7 @@ namespace CodeCompletion
             List<SymInfo> lst = new List<SymInfo>();
             foreach (SymScope ss in members)
             {
-                if (!ss.si.name.StartsWith("$"))
+                if (!ss.si.name.StartsWith("$") && !ss.si.name.StartsWith("#"))
                 {
                     if (keyword != PascalABCCompiler.Parsers.KeywordKind.Function && keyword != PascalABCCompiler.Parsers.KeywordKind.Constructor && keyword != PascalABCCompiler.Parsers.KeywordKind.Destructor/*!(ev.entry_scope is InterfaceUnitScope) && !(ev.entry_scope is ImplementationUnitScope)*/)
                     {
@@ -4397,7 +4397,7 @@ namespace CodeCompletion
             foreach (SymScope ss in members)
             {
                 if (ss is ProcScope && (ss as ProcScope).IsConstructor()) continue;
-                if (!ss.si.name.StartsWith("$") && !ss.is_static && !(ss is TemplateParameterScope))
+                if (!ss.si.name.StartsWith("$") && !ss.si.name.StartsWith("#") && !ss.is_static && !(ss is TemplateParameterScope))
                 {
                     if (ss.si.acc_mod == access_modifer.private_modifer)
                     {
