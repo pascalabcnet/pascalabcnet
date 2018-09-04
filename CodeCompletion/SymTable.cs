@@ -3840,6 +3840,7 @@ namespace CodeCompletion
                 constr.si.acc_mod = access_modifer.public_modifer;
                 //constr.head_loc = this.loc;
                 //constr.loc = this.loc;
+                constr.is_constructor = true;
                 constr.Complete();
                 members.Insert(0, constr);
             }
@@ -4033,6 +4034,7 @@ namespace CodeCompletion
                     new_proc.loc = ps.loc;
                     new_proc.documentation = ps.documentation;
                     new_proc.si.acc_mod = ps.si.acc_mod;
+                    new_proc.si.description = ps.si.description;
                     new_proc.is_static = ps.is_static;
                     new_proc.is_virtual = ps.is_virtual;
                     new_proc.is_abstract = ps.is_abstract;
