@@ -11405,6 +11405,11 @@ begin
   nfi := new System.Globalization.NumberFormatInfo();
   nfi.NumberGroupSeparator := '.';
    
+  {var ci := System.Globalization.CultureInfo.GetCultureInfo(locale_str);
+  ci.NumberFormat.NumberDecimalSeparator := '.';
+  System.Threading.Thread.CurrentThread.CurrentCulture := ci;
+  System.Threading.Thread.CurrentThread.CurrentUICulture := ci;}
+   
   // SSM 1.08.18 только в текущем потоке будет точка в вещественных
   // В Net 4.6 System.Globalization.CultureInfo.DefaultThreadCurrentCulture := ci
   // Но как сделать чтобы работало и в младших NET - не знаю
