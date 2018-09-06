@@ -8441,6 +8441,11 @@ namespace PascalABCCompiler.TreeConverter
                 		tn = tn.base_type;
                 	}
                 }
+                else if (sn is compiled_namespace_node)
+                {
+                    compiled_namespace_node nn = sn as compiled_namespace_node;
+                    Withs.Add(nn.scope);
+                }
             }
             WithScope.WithScopes = Withs.ToArray();
 

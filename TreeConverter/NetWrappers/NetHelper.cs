@@ -77,7 +77,15 @@ namespace PascalABCCompiler.NetHelper
 		internal Type entry_type = null;
         private List<Type> UnitTypes = null;
 
-		public NetScope(PascalABCCompiler.TreeRealization.using_namespace_list unar,System.Reflection.Assembly assembly,
+        public NetScope(PascalABCCompiler.TreeRealization.using_namespace_list unar,
+            SymbolTable.TreeConverterSymbolTable tcst) : base(tcst)
+        {
+            _unar = unar;
+
+            _tcst = tcst;
+        }
+
+        public NetScope(PascalABCCompiler.TreeRealization.using_namespace_list unar,System.Reflection.Assembly assembly,
 			SymbolTable.TreeConverterSymbolTable tcst) : base(tcst)
 		{
 			_unar=unar;

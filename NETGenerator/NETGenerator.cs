@@ -7218,7 +7218,8 @@ namespace PascalABCCompiler.NETGenerator
 
         private void FixPointer()
         {
-            il.Emit(OpCodes.Call, TypeFactory.GCHandleAlloc);
+            il.Emit(OpCodes.Ldc_I4, (int)GCHandleType.Pinned);
+            il.Emit(OpCodes.Call, TypeFactory.GCHandleAllocPinned);
             il.Emit(OpCodes.Pop);
         }
 
