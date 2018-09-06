@@ -62,27 +62,7 @@ namespace VisualPascalABC.OptionsContent
                         languageSelect.SelectedItem = PascalABCCompiler.StringResourcesLanguage.CurrentLanguageName;
                         cbSaveFilesIfComilationOk.Checked = MainForm.UserOptions.SaveSourceFilesIfComilationOk;
                         cbPauseInRunModeIfConsole.Checked = MainForm.UserOptions.PauseInRunModeIfConsole;
-
-
-                        cbErrorsStrategy.Items.Clear();
-                        //cbErrorsStrategy.Items.Add(PascalABCCompiler.StringResources.Get(strprefix + "ES_ALL"));
-                        cbErrorsStrategy.Items.Add(PascalABCCompiler.StringResources.Get(strprefix + "ES_FIRSTONLY"));
-                        cbErrorsStrategy.Items.Add(PascalABCCompiler.StringResources.Get(strprefix + "ES_FIRSTSEMANTICANDSYNTAX"));
-                        switch (MainForm.ErrorsManager.Strategy)
-                        {
-                            /*case ErrorsStrategy.All:
-                                cbErrorsStrategy.SelectedItem = cbErrorsStrategy.Items[1];
-                                break;*/
-                            case ErrorsStrategy.FirstOnly:
-                                cbErrorsStrategy.SelectedItem = cbErrorsStrategy.Items[0];
-                                break;
-                            case ErrorsStrategy.FirstSemanticAndSyntax:
-                                cbErrorsStrategy.SelectedItem = cbErrorsStrategy.Items[1];
-                                break;
-                            default:
-                                cbErrorsStrategy.SelectedItem = cbErrorsStrategy.Items[1];
-                                break;
-                        }
+                        addErrorStrategyComboBox();
 
                         cbShowDebugPlayPauseButtons.Checked = MainForm.PlayPauseButtonsVisibleInPanel;
                         alreadyShown = true;
@@ -129,10 +109,36 @@ namespace VisualPascalABC.OptionsContent
         }
         #endregion
 
+        private void addErrorStrategyComboBox()
+        {
+            cbErrorsStrategy.Items.Clear();
+            //cbErrorsStrategy.Items.Add(PascalABCCompiler.StringResources.Get(strprefix + "ES_ALL"));
+            cbErrorsStrategy.Items.Add(PascalABCCompiler.StringResources.Get(strprefix + "ES_FIRSTONLY"));
+            cbErrorsStrategy.Items.Add(PascalABCCompiler.StringResources.Get(strprefix + "ES_FIRSTSEMANTICANDSYNTAX"));
+            switch (MainForm.ErrorsManager.Strategy)
+            {
+                /*case ErrorsStrategy.All:
+                    cbErrorsStrategy.SelectedItem = cbErrorsStrategy.Items[1];
+                    break;*/
+                case ErrorsStrategy.FirstOnly:
+                    cbErrorsStrategy.SelectedItem = cbErrorsStrategy.Items[0];
+                    break;
+                case ErrorsStrategy.FirstSemanticAndSyntax:
+                    cbErrorsStrategy.SelectedItem = cbErrorsStrategy.Items[1];
+                    break;
+                default:
+                    cbErrorsStrategy.SelectedItem = cbErrorsStrategy.Items[1];
+                    break;
+            }
+        }
+
         private void languageSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
             PascalABCCompiler.StringResourcesLanguage.CurrentLanguageName = (string)languageSelect.SelectedItem;
             CodeCompletionParserController.CurrentTwoLetterISO = PascalABCCompiler.StringResourcesLanguage.CurrentTwoLetterISO;
+            PascalABCCompiler.StringResources.SetTextForAllObjects(this, strprefix);
+            addErrorStrategyComboBox();
+            MainForm.UpdateOptionsForm();
         }
 
         private void cbShowDebugPlayPauseButtons_CheckedChanged(object sender, EventArgs e)

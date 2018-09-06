@@ -37,6 +37,11 @@ namespace VisualPascalABC.OptionsContent
             }
             optionsWindow.ShowDialog();
         }
+        public void UpdateOptionsForm()
+        {
+            if (optionsWindow != null)
+                optionsWindow.UpdateOptionsForm();
+        }
         internal void Action(IOptionsContent content, OptionsContentAction action)
         {
             content.Action(action);
