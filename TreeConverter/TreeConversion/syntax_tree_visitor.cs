@@ -2009,7 +2009,7 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
-        private bool CanUseThisTypeForFiles(type_node el_type, bool allow_strings)
+        private bool CanUseThisTypeForFiles (type_node el_type, bool allow_strings)
         {
             if (el_type.is_generic_parameter)
             {
