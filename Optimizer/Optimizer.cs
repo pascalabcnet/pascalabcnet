@@ -1020,6 +1020,7 @@ namespace PascalABCCompiler
             for (int i = 0; i < en.parameters.Count; i++)
             {
                 CheckVarParameter(en.parameters[i], en.function_node, i);
+                if (!(en.function_node.function_code is runtime_statement))
                 VisitExpression(en.parameters[i]);
             }    
         }
