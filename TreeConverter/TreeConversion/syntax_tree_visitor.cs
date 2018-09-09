@@ -3620,6 +3620,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         context.converted_type.SetBaseType(SemanticRules.ClassBaseType);
                     }
+                    
                     context.converted_type.is_class = true;
                     if (_class_definition.body == null &&
                         (_class_definition.class_parents == null || _class_definition.class_parents.types.Count == 0))
@@ -11410,11 +11411,13 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (predefined_generic && cl_def.where_section != null && cl_def.where_section.defs.Count > 0)
                 AddError(get_location(cl_def.where_section), "WHERE_SECTION_NOT_ALLOWED");
+            
             visit_where_list(cl_def.where_section);
+           
             CheckWaitedRefTypes(ctn);
             is_direct_type_decl = true;
             hard_node_test_and_visit(_type_declaration.type_def);
-
+            check_where_from_base_class(ctn);
             // frninja 28/04/16 - режем мусорные методы хелперы yield
             {
                 var toRemove = ctn.methods.Where(m => m.is_yield_helper).ToArray();
@@ -11884,6 +11887,60 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 base_params.Add(bt);
                 bt = bt.base_type as common_type_node;
+            }
+        }
+
+        private void check_where_from_base_class(common_type_node ctn)
+        {
+            if (ctn.base_type != null && ctn.base_type.is_generic_type_instance && ctn.is_generic_type_definition)
+            {
+                common_type_node bctn = ctn.base_type.original_generic as common_type_node;
+                compiled_type_node bctn2 = ctn.base_type.original_generic as compiled_type_node;
+                Dictionary<string, SemanticTree.ICommonTypeNode> where_cache = new Dictionary<string, SemanticTree.ICommonTypeNode>();
+                foreach (SemanticTree.ICommonTypeNode t in ctn.generic_params)
+                {
+                    int ind = ctn.base_type.instance_params.IndexOf(t as type_node);
+                    if (ind != -1)
+                    {
+                        if (bctn != null)
+                            where_cache.Add(bctn.generic_params[ind].name, t);
+                        else
+                            where_cache.Add(bctn2.generic_params[ind].name, t);
+                    }
+
+                }
+                if (bctn != null && bctn.generic_params != null)
+                {
+                    foreach (SemanticTree.ICommonTypeNode t in bctn.generic_params)
+                    {
+                        SemanticTree.ICommonTypeNode thist = null;
+                        where_cache.TryGetValue(t.name, out thist);
+                        if (thist == null)
+                            continue;
+                        if (t.is_class || t.is_value_type || t.methods.Length > 0 || t.base_type != SystemLibrary.SystemLibrary.object_type)
+                        {
+                            if (thist.is_class != t.is_class || thist.is_value_type != t.is_value_type && !(t.is_value_type && thist.base_type.is_value_type) 
+                                || thist.methods.Length != t.methods.Length || 
+                                t.base_type != thist.base_type && !type_table.is_derived(t.base_type as type_node, thist.base_type as type_node))
+                                AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
+                        }
+                    }
+                }
+                else if (bctn2 != null && bctn2.generic_params != null)
+                {
+                    foreach (compiled_type_node t in bctn2.generic_params)
+                    {
+                        SemanticTree.ICommonTypeNode thist = null;
+                        where_cache.TryGetValue(t.name, out thist);
+                        if (thist == null)
+                            continue;
+                        if (t.is_value_type || t.base_type != SystemLibrary.SystemLibrary.object_type)
+                        {
+                            if (thist.is_value_type != t.is_value_type && !(t.is_value_type && thist.base_type.is_value_type) || thist.base_type != t.base_type)
+                                AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
+                        }
+                    }
+                }
             }
         }
 
