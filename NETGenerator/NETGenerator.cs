@@ -1105,7 +1105,30 @@ namespace PascalABCCompiler.NETGenerator
             for (int i = 0; i < enums.Count; i++)
                 enums[i].CreateType();
             for (int i = 0; i < value_types.Count; i++)
-                value_types[i].CreateType();
+            {
+                try
+                {
+                    value_types[i].CreateType();
+                }
+                catch (TypeLoadException ex)
+                {
+
+                    SemanticTree.ICommonTypeNode ctn = helper.GetTypeNodeByTypeBuilder(value_types[i]);
+                    if (ctn != null)
+                    {
+                        IAttributeNode[] attrs = ctn.Attributes;
+                        if (attrs.Length > 0 && attrs[0].AttributeType is ICompiledTypeNode && (attrs[0].AttributeType as ICompiledTypeNode).compiled_type == typeof(System.Runtime.InteropServices.StructLayoutAttribute))
+                        {
+                            throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
+                        }
+                        else
+                            throw ex;
+                    }
+                    else
+                        throw ex;
+                }
+            }
+                
             for (int i = 0; i < types.Count; i++)
                 if (!types[i].IsInterface)
                     types[i].CreateType();

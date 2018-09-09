@@ -809,6 +809,16 @@ namespace PascalABCCompiler.NETGenerator {
                 || t == TypeFactory.SingleType || t == TypeFactory.DoubleType;
         }
 
+        public ICommonTypeNode GetTypeNodeByTypeBuilder(TypeBuilder tb)
+        {
+            foreach (object o in defs.Keys)
+            {
+                if (o is ICommonTypeNode && this.GetTypeReference(o as ICommonTypeNode).tp == tb)
+                    return o as ICommonTypeNode;
+            }
+            return null;
+        }
+
         public MethodInfo GetEnumeratorMethod(Type t)
         {
             Type generic_def = null;
