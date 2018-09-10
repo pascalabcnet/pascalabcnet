@@ -149,7 +149,7 @@ namespace PascalABCCompiler.Parsers
         public SyntaxTree.compilation_unit GetCompilationUnitForFormatter(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
         {
             SyntaxTree.syntax_tree_node cu = null;
-            try
+            try // SSM 06.09.18 
             { 
                 cu = Compile(FileName, Text, Errors, Warnings, ParseMode.ForFormatter);
             }
