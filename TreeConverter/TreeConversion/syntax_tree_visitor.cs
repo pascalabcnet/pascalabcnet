@@ -1301,7 +1301,13 @@ namespace PascalABCCompiler.TreeConverter
                     if (no_search_in_extension_methods)
                         return find_operator(name, left, right, loc, false);
                     else
-                        AddError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
+                    {
+                        if (right.type is undefined_type)
+                            AddError(right.location, "CAN_NOT_DEDUCE_TYPE_{0}", "");
+                        else
+                            AddError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
+                    }
+                        
                 }
                     
             }
