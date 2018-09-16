@@ -6859,7 +6859,10 @@ namespace PascalABCCompiler.NETGenerator
             is_dot_expr = false;
             EmitArguments(parameters, real_parameters);
             MethodInfo mi = value.compiled_method.method_info;
-            if (value.compiled_method.comperehensive_type.is_value_type || !value.virtual_call && value.compiled_method.polymorphic_state == polymorphic_state.ps_virtual || value.compiled_method.polymorphic_state == polymorphic_state.ps_static)
+            if (value.compiled_method.comperehensive_type.is_value_type || 
+                //value.compiled_method.comperehensive_type is ICompiledTypeNode && (value.compiled_method.comperehensive_type as ICompiledTypeNode).compiled_type == TypeFactory.EnumType || 
+                !value.virtual_call && value.compiled_method.polymorphic_state == polymorphic_state.ps_virtual || 
+                value.compiled_method.polymorphic_state == polymorphic_state.ps_static)
             {
                 il.EmitCall(OpCodes.Call, mi, null);
             }
@@ -7396,7 +7399,7 @@ namespace PascalABCCompiler.NETGenerator
                 //(ssyy) 07.12.2007 При боксировке нужно вызывать Ldsfld вместо Ldsflda.
                 //Дополнительная проверка введена именно для этого.
                 bool box_awaited =
-                    (ctn2 != null && ctn2.compiled_type == TypeFactory.ObjectType || tn2.IsInterface) && !(real_parameters[i] is SemanticTree.INullConstantNode) 
+                    (ctn2 != null && (ctn2.compiled_type == TypeFactory.ObjectType || ctn2.compiled_type == TypeFactory.EnumType) || tn2.IsInterface) && !(real_parameters[i] is SemanticTree.INullConstantNode) 
                 	&& (ctn3.is_value_type || ctn3.is_generic_parameter);
                 if (!box_awaited && (ctn2 != null && ctn2.compiled_type == TypeFactory.ObjectType || tn2.IsInterface) && !(real_parameters[i] is SemanticTree.INullConstantNode) 
                 	&& ctn4 != null && ctn4.is_value_type)
