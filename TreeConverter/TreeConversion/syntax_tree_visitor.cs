@@ -8734,7 +8734,7 @@ namespace PascalABCCompiler.TreeConverter
                         AddError(new CanNotCallNonStaticMethodWithClass(tn, loc, fn));
                     }
                     if (cmn.cont_type.IsAbstract)
-                    	ErrorsList.Add(new SimpleSemanticError(loc, "ABSTRACT_CONSTRUCTOR_{0}_CALL", cmn.name));
+                    	AddError(new SimpleSemanticError(loc, "ABSTRACT_CONSTRUCTOR_{0}_CALL", cmn.cont_type.name));
                     common_constructor_call csmc2 = new common_constructor_call(cmn, loc);
                     return csmc2;
                     //if (cmn.pascal_associated_constructor==null)
