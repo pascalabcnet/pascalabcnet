@@ -1029,6 +1029,8 @@ namespace PascalABCCompiler
         private void VisitGetAddrNode(get_addr_node en)
         {
             VisitExpression(en.addr_of);
+            if (en.addr_of is local_variable_reference && (en.addr_of as local_variable_reference).var.is_ret_value)
+                IncreaseNumAssVar(en.addr_of as local_variable_reference);
         }
 
         private void VisitClassFieldReference(class_field_reference en)
