@@ -7353,11 +7353,13 @@ namespace PascalABCCompiler.NETGenerator
             EmitArguments(parameters, real_parameters);
             il.EmitCall(OpCodes.Call, mi, null);
             EmitFreePinnedVariables();
-            if (tmp_dot == true)
+            if (tmp_dot)
             {
-                if (mi.ReturnType.IsValueType && !NETGeneratorTools.IsPointer(mi.ReturnType))
+                if (value.namespace_function.return_value_type != null && value.namespace_function.return_value_type.is_value_type && !NETGeneratorTools.IsPointer(mi.ReturnType))
                 {
-                    LocalBuilder lb = il.DeclareLocal(mi.ReturnType);
+                    LocalBuilder lb = mi.ReturnType.IsGenericParameter ?
+                        il.DeclareLocal(helper.GetTypeReference(value.namespace_function.return_value_type).tp) :
+                        il.DeclareLocal(mi.ReturnType);
                     il.Emit(OpCodes.Stloc, lb);
                     il.Emit(OpCodes.Ldloca, lb);
                 }
