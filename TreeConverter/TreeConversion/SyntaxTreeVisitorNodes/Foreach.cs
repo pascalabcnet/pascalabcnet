@@ -112,7 +112,7 @@ namespace PascalABCCompiler.TreeConverter
                 context.close_var_definition_list(tn, null);
             }
 
-            if (!(foreachVariable.type is compiled_generic_instance_type_node) && !sys_coll_ienum)
+            if (/*!(foreachVariable.type is compiled_generic_instance_type_node) &&*/ !sys_coll_ienum) // SSM 16.09.18 - закомментировал это ограничение для фиксации бага #1184
                 convertion_data_and_alghoritms.check_convert_type_with_inheritance(elem_type, foreachVariable.type,
                     get_location(_foreach_stmt.identifier));
             return foreachVariable;
