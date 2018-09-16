@@ -652,8 +652,11 @@ namespace CodeCompletion
         {
             //throw new Exception("The method or operation is not implemented.");
             _roof_dereference.dereferencing_value.visit(this);
-            if (returned_scope != null && returned_scope is PointerScope)
-            	returned_scope = (returned_scope as PointerScope).ref_type;
+            TypeScope ts = returned_scope as TypeScope;
+            while (ts is TypeSynonim)
+                ts = (ts as TypeSynonim).actType;
+            if (ts is PointerScope)
+            	returned_scope = (ts as PointerScope).ref_type;
             else returned_scope = null;
         }
 
@@ -912,8 +915,10 @@ namespace CodeCompletion
             	}
             }
             else indexes.Add((TypeScope)entry_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.integer_type_name));
-       
-            returned_scope = new ArrayScope(of_type as TypeScope,indexes.ToArray());
+            TypeScope ts = of_type as TypeScope;
+            if (of_type is ProcScope)
+                ts = new ProcType(of_type as ProcScope);
+            returned_scope = new ArrayScope(ts as TypeScope,indexes.ToArray());
             returned_scope.topScope = cur_scope;
             if (_array_type.indexers == null) (returned_scope as ArrayScope).is_dynamic_arr = true;
             returned_scope.loc = get_location(_array_type);
@@ -1859,7 +1864,10 @@ namespace CodeCompletion
             //else
             if (returned_scope != null && returned_scope is TypeScope)
             {
-                if (!(_type_declaration.type_def is named_type_reference) && !(returned_scope is CompiledScope && _type_declaration.type_def is enum_type_definition))
+                /*if (!(_type_declaration.type_def is named_type_reference) && !(_type_declaration.type_def is sequence_type)
+                    && !(_type_declaration.type_def is sequence_type) && !(_type_declaration.type_def is array_type)
+                    && !(returned_scope is CompiledScope && _type_declaration.type_def is enum_type_definition))*/
+                if (_type_declaration.type_def is class_definition)
                 {
                     //(ret_tn as TypeScope).name = _type_declaration.type_name.name;
                     returned_scope.si.name = _type_declaration.type_name.name;
@@ -3541,7 +3549,10 @@ namespace CodeCompletion
         {
             //throw new Exception("The method or operation is not implemented.");
             _set_type_definition.of_type.visit(this);
-            returned_scope = new SetScope(returned_scope as TypeScope);
+            TypeScope ts = returned_scope as TypeScope;
+            if (returned_scope is ProcScope)
+                ts = new ProcType(returned_scope as ProcScope);
+            returned_scope = new SetScope(ts);
             returned_scope.topScope = cur_scope;
         }
 
