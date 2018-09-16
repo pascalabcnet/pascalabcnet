@@ -80,7 +80,7 @@
 %type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 const_func_expr_list case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
-%type <ex> const_simple_expr term simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 simple_expr range_term range_factor 
+%type <ex> const_simple_expr term simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda simple_expr range_term range_factor 
 %type <ex> external_directive_ident init_const_expr case_label variable var_reference /*optional_write_expr*/ optional_read_expr simple_expr_or_nothing var_question_point
 %type <ob> for_cycle_type  
 %type <ex> format_expr  
@@ -2360,13 +2360,13 @@ inclass_proc_func_decl_noclass
         {
             $$ = new procedure_definition($1 as procedure_header, $2 as proc_block, @$);
 		}
-	| tkFunction func_name fp_list tkColon fptype optional_method_modificators1 tkAssign expr_l1 tkSemiColon
+	| tkFunction func_name fp_list tkColon fptype optional_method_modificators1 tkAssign expr_l1_func_decl_lambda tkSemiColon
 		{
 			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $6 as procedure_attributes_list, $2 as method_name, $5 as type_definition, $8, @1.Merge(@6));
 			if (parsertools.build_tree_for_formatter)
 				$$ = new short_func_definition($$ as procedure_definition);
 		}
-	| tkFunction func_name fp_list optional_method_modificators1 tkAssign expr_l1 tkSemiColon
+	| tkFunction func_name fp_list optional_method_modificators1 tkAssign expr_l1_func_decl_lambda tkSemiColon
 		{
 			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, null, $6, @1.Merge(@4));
 			if (parsertools.build_tree_for_formatter)
@@ -3122,6 +3122,13 @@ expr_l1
     | question_expr
 		{ $$ = $1; }
     ;
+    
+expr_l1_func_decl_lambda
+	: expr_l1
+		{ $$ = $1; }
+    | func_decl_lambda
+        { $$ = $1; }
+    ;
 	
 expr_dq
 	: relop_expr
@@ -3804,7 +3811,10 @@ literal_list
         }
     | literal_list one_literal    
         { 
-			$$ = ($1 as literal_const_line).Add($2 as literal, @$);
+        	var line = $1 as literal_const_line;
+            if (line.literals.Last() is string_const && $2 is string_const)
+            	parsertools.AddErrorFromResource("TWO_STRING_LITERALS_IN_SUCCESSION",@2);
+			$$ = line.Add($2 as literal, @$);
         } 
     ;
 

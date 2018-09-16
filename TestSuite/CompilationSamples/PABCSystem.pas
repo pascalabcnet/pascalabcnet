@@ -7772,7 +7772,7 @@ end;
 
 function Trim(s: string): string;
 begin
-  Result := s.Trim;
+  Result := s.Trim(' ');
 end;
 
 function TrimLeft(s: string): string;
@@ -10344,13 +10344,13 @@ end;
 /// Преобразует строку в массив целых
 function ToIntegers(Self: string): array of integer; extensionmethod;
 begin
-  Result := Self.ToWords().Select(s -> StrToInt(s)).ToArray();
+  Result := Self.ToWords().ConvertAll(s -> StrToInt(s));
 end;
 
 /// Преобразует строку в массив вещественных
 function ToReals(Self: string): array of real; extensionmethod;
 begin
-  Result := Self.ToWords().Select(s -> StrToFloat(s)).ToArray();
+  Result := Self.ToWords().ConvertAll(s -> StrToFloat(s));
 end;
 
 /// Возвращает инверсию строки
