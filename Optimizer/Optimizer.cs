@@ -18,7 +18,8 @@ namespace PascalABCCompiler
         private bool condition_block = false;
         private bool has_returns = false;
         private bool has_goto = false;
-        
+        private bool no_infinite_recursion;
+
         public Optimizer()
         {
         }
@@ -444,13 +445,13 @@ namespace PascalABCCompiler
 
         private void CheckInfiniteRecursion(common_namespace_function_call cnfc)
         {
-            if (!condition_block && !has_returns && cnfc.function_node == current_function)
+            if (!condition_block && !has_returns && cnfc.function_node == current_function && !no_infinite_recursion)
                 warns.Add(new InfiniteRecursion(cnfc.location));
         }
 
         private void CheckInfiniteRecursion(common_static_method_call cnfc)
         {
-            if (!condition_block && !has_returns && cnfc.function_node == current_function)
+            if (!condition_block && !has_returns && cnfc.function_node == current_function && !no_infinite_recursion)
                 warns.Add(new InfiniteRecursion(cnfc.location));
         }
 
@@ -1225,8 +1226,19 @@ namespace PascalABCCompiler
                 case SemanticTree.basic_function_type.objassign:
                     VisitAssignment(en); return;
             }
+            bool tmp_no_infinite_recursion = no_infinite_recursion;
             for (int i = 0; i < en.parameters.Count; i++)
+            {
+                if (en.function_node.basic_function_type == SemanticTree.basic_function_type.booland
+                    && en.parameters[i] is bool_const_node && (en.parameters[i] as bool_const_node).constant_value == false)
+                    no_infinite_recursion = true;
+                else if (en.function_node.basic_function_type == SemanticTree.basic_function_type.boolor
+                    && en.parameters[0] is bool_const_node && (en.parameters[0] as bool_const_node).constant_value == true)
+                    no_infinite_recursion = true;
                 VisitExpression(en.parameters[i]);
+            }
+            if (!tmp_no_infinite_recursion)
+                no_infinite_recursion = false;
         }
 
        
