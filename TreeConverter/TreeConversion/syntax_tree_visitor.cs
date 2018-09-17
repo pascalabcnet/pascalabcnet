@@ -5208,7 +5208,11 @@ namespace PascalABCCompiler.TreeConverter
                                                         if (ffn == null)
                                                         {
                                                             ThrowCompilationError = true;
-                                                            throw LastError();
+                                                            Errors.Error last_err = LastError();
+                                                            if (last_err is NoFunctionWithSameParametresNum && ErrorsList.Count > 0)
+                                                                throw LastError();
+                                                            else
+                                                                throw last_err;
                                                         }
                                                         RemoveLastError();
                                                         skip_first_parameter = false;
