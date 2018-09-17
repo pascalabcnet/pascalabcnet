@@ -51,6 +51,8 @@ namespace VisualPascalABC
                     {
                         if (isClassMember(beg_off, textArea))
                             return;
+                        if (isClassPredefinition(end_off, textArea))
+                            return;
                     }
                     TmpPos end_pos = GetPositionOfEnd(textArea, end_off);
                     if (end_pos != null)
@@ -110,6 +112,34 @@ namespace VisualPascalABC
         private static bool remove_pred(TextMarker marker)
         {
             return true;
+        }
+
+        private static bool isClassPredefinition(int end_off, TextArea textArea)
+        {
+            int off = end_off;
+            if (off >= textArea.Document.TextContent.Length)
+                return true;
+            char c = textArea.Document.TextContent[off];
+            while (char.IsWhiteSpace(c) || c == '{')
+            {
+                if (c == '{')
+                {
+                    while (c != '}')
+                    {
+                        off++;
+                        if (off >= textArea.Document.TextContent.Length)
+                            break;
+                        c = textArea.Document.TextContent[off];
+                    }
+                }
+                off++;
+                if (off >= textArea.Document.TextContent.Length)
+                    break;
+                c = textArea.Document.TextContent[off];
+            }
+            if (c == ';')
+                return true;
+            return false;
         }
 
         private static bool isClassMember(int beg_off, TextArea textArea)
