@@ -287,6 +287,7 @@ namespace PascalABCCompiler.TreeConverter
                             param.idents = new ident_list();
                             param.idents.Add(lambdaDef.formal_parameters.params_list[i].idents.idents[j]);
                             param.vars_type = lambdaDef.formal_parameters.params_list[i].vars_type;
+                            param.source_context = lambdaDef.formal_parameters.source_context;
                             lambdaDefParamsTypes.Add(param);
                         }
                     for (int i = 0; i < leftTypeParamsNumber && flag; i++)
