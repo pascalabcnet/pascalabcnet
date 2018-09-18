@@ -363,7 +363,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             procedure_definition procDef = null;
             if (functionLambdaDef.return_type == null)
-                procDef = SyntaxTreeNodesConstructor.CreateProcedureDefinitionNode(new method_name(null,null, new ident(functionLambdaDef.lambda_name), null),
+                procDef = SyntaxTreeNodesConstructor.CreateProcedureDefinitionNode(new method_name(null,null, new ident(functionLambdaDef.lambda_name, functionLambdaDef.source_context), null),
                                                               functionLambdaDef.formal_parameters,
                                                               false,
                                                               false,

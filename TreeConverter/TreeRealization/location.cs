@@ -138,6 +138,13 @@ namespace PascalABCCompiler.TreeRealization
 			}
 		}
 
+        public static implicit  operator SyntaxTree.SourceContext(location loc)
+        {
+            if (loc == null)
+                return null;
+            return new SyntaxTree.SourceContext(loc.begin_line_num, loc.begin_column_num, loc.end_line_num, loc.end_column_num, loc.document != null ? loc.document.file_name : null);
+        }
+
 		public override string ToString()
 		{
 			string res="File:  "+doc.ToString();
