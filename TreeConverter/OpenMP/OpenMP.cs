@@ -1170,12 +1170,12 @@ namespace PascalABCCompiler.TreeConverter
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        private static List<SyntaxTree.ident> get_idents_from_dot_string(string s)
+        private static List<SyntaxTree.ident> get_idents_from_dot_string(string s, SyntaxTree.SourceContext sc)
         {
             List<SyntaxTree.ident> idents = new List<PascalABCCompiler.SyntaxTree.ident>();
             string[] strs = s.Split('.');
             foreach (string id in strs)
-                idents.Add(new SyntaxTree.ident(id));
+                idents.Add(new SyntaxTree.ident(id, sc));
             return idents;
 
         }
@@ -1184,13 +1184,13 @@ namespace PascalABCCompiler.TreeConverter
         /// </summary>
         /// <param name="sem_type">семантический тип</param>
         /// <returns></returns>
-        private static List<SyntaxTree.ident> get_idents_from_generic_type(type_node sem_type)
+        private static List<SyntaxTree.ident> get_idents_from_generic_type(type_node sem_type, SyntaxTree.SourceContext sc)
         {
             if (sem_type != null)
             {
                 List<SyntaxTree.ident> idents = null;
                 if (sem_type.original_generic != null)
-                    idents = get_idents_from_dot_string(sem_type.original_generic.full_name);
+                    idents = get_idents_from_dot_string(sem_type.original_generic.full_name, sc);
 
                 return idents;
 
@@ -1200,11 +1200,12 @@ namespace PascalABCCompiler.TreeConverter
         private static SyntaxTree.type_definition get_diapason(type_node sem_type)
         {
             if (sem_type is compiled_type_node)
-                return new PascalABCCompiler.SyntaxTree.named_type_reference(get_idents_from_dot_string(sem_type.PrintableName));
+                return new PascalABCCompiler.SyntaxTree.named_type_reference(get_idents_from_dot_string(sem_type.PrintableName, sem_type.location));
 
             if (sem_type is common_type_node)
             {
                 SyntaxTree.diapason diap = new PascalABCCompiler.SyntaxTree.diapason();
+                diap.source_context = sem_type.location;
                 common_type_node ctn = sem_type as common_type_node;
                 diap.left = ConvertConstant(ctn.low_bound);
                 diap.right = ConvertConstant(ctn.upper_bound);
@@ -1237,7 +1238,9 @@ namespace PascalABCCompiler.TreeConverter
                     SyntaxTree.template_type_reference ttr = new PascalABCCompiler.SyntaxTree.template_type_reference();
                     SyntaxTree.named_type_reference ntr = new PascalABCCompiler.SyntaxTree.named_type_reference();
                     ttr.name = ntr;
-                    ntr.names.AddRange(get_idents_from_generic_type(sem_type));
+                    ttr.source_context = sem_type.location;
+                    ntr.source_context = ttr.source_context;
+                    ntr.names.AddRange(get_idents_from_generic_type(sem_type, sem_type.location));
                     SyntaxTree.template_param_list tpl = new PascalABCCompiler.SyntaxTree.template_param_list();
                     ttr.params_list = tpl;
                     foreach (type_node tn in sem_type.instance_params)
@@ -1246,10 +1249,9 @@ namespace PascalABCCompiler.TreeConverter
                     return ttr;
                 }
                 else if (sem_type.IsEnum)
-                    return new PascalABCCompiler.SyntaxTree.named_type_reference(get_idents_from_dot_string(sem_type.name));
+                    return new PascalABCCompiler.SyntaxTree.named_type_reference(get_idents_from_dot_string(sem_type.name, sem_type.location), sem_type.location);
                 else
-                    return new PascalABCCompiler.SyntaxTree.named_type_reference(get_idents_from_dot_string(sem_type.PrintableName),
-                        new SyntaxTree.SourceContext(sem_type.location.begin_line_num, sem_type.location.begin_column_num, sem_type.location.end_line_num, sem_type.location.end_column_num, sem_type.location.document.file_name));
+                    return new PascalABCCompiler.SyntaxTree.named_type_reference(get_idents_from_dot_string(sem_type.PrintableName, sem_type.location), sem_type.location);
             }
             else if (sem_type.type_special_kind == SemanticTree.type_special_kind.array_kind || sem_type.type_special_kind == SemanticTree.type_special_kind.array_wrapper)
             {
@@ -1310,6 +1312,7 @@ namespace PascalABCCompiler.TreeConverter
             else if (sem_type.type_special_kind == SemanticTree.type_special_kind.typed_file || sem_type.type_special_kind == SemanticTree.type_special_kind.binary_file)
             {
                 SyntaxTree.file_type ft = new PascalABCCompiler.SyntaxTree.file_type();
+                ft.source_context = sem_type.location;
                 if (sem_type.element_type != null)
                     ft.file_of_type = ConvertToSyntaxType(sem_type.element_type);
                 //SyntaxTree.named_type_reference ntr = null;
@@ -1321,6 +1324,7 @@ namespace PascalABCCompiler.TreeConverter
             else if (sem_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.short_string)
             {
                 SyntaxTree.string_num_definition snd = new PascalABCCompiler.SyntaxTree.string_num_definition();
+                snd.source_context = sem_type.location;
                 snd.name = new SyntaxTree.ident(sem_type.name.Substring(0, sem_type.name.IndexOf('[')));
                 snd.num_of_symbols = new SyntaxTree.int32_const(Int32.Parse(get_indexer_string(sem_type.PrintableName)));
                 return snd;
@@ -1328,6 +1332,7 @@ namespace PascalABCCompiler.TreeConverter
             else if (sem_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.set_type)
             {
                 SyntaxTree.set_type_definition std = new PascalABCCompiler.SyntaxTree.set_type_definition();
+                std.source_context = sem_type.location;
                 if (sem_type.element_type != null)
                     std.of_type = ConvertToSyntaxType(sem_type.element_type);
                 return std;
