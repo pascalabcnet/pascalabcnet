@@ -4944,7 +4944,7 @@ namespace CodeCompletion
                     if (ps != null)
                         returned_scopes[i] = ps.GetInstance(template_params);
                     else
-                        returned_scopes[i] = ts.GetInstance(template_params);
+                        returned_scopes[i] = ts.GetInstance(template_params, true);
                 }
                 
             }

@@ -287,6 +287,7 @@ namespace PascalABCCompiler.TreeConverter
                             param.idents = new ident_list();
                             param.idents.Add(lambdaDef.formal_parameters.params_list[i].idents.idents[j]);
                             param.vars_type = lambdaDef.formal_parameters.params_list[i].vars_type;
+                            param.source_context = lambdaDef.formal_parameters.source_context;
                             lambdaDefParamsTypes.Add(param);
                         }
                     for (int i = 0; i < leftTypeParamsNumber && flag; i++)
@@ -363,7 +364,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             procedure_definition procDef = null;
             if (functionLambdaDef.return_type == null)
-                procDef = SyntaxTreeNodesConstructor.CreateProcedureDefinitionNode(new method_name(null,null, new ident(functionLambdaDef.lambda_name), null),
+                procDef = SyntaxTreeNodesConstructor.CreateProcedureDefinitionNode(new method_name(null,null, new ident(functionLambdaDef.lambda_name, functionLambdaDef.source_context), null),
                                                               functionLambdaDef.formal_parameters,
                                                               false,
                                                               false,

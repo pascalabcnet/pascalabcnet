@@ -601,10 +601,11 @@ namespace TreeConverter.LambdaExpressions.Closure
                     for (var j = 0; j < lambdaDefinition.formal_parameters.params_list[i].idents.idents.Count; j++)
                     {
                         var varName = "<>" + lambdaDefinition.formal_parameters.params_list[i].idents.idents[j].name;
-                        var vds = new var_def_statement(new ident(lambdaDefinition.formal_parameters.params_list[i].idents.idents[j].name), varType);
-                        vds.inital_value = new ident(varName);
+                        SourceContext sc = lambdaDefinition.formal_parameters.params_list[i].idents.idents[j].source_context;
+                        var vds = new var_def_statement(new ident(lambdaDefinition.formal_parameters.params_list[i].idents.idents[j].name, sc), varType, sc);
+                        vds.inital_value = new ident(varName, sc);
                         lambdaDefinition.formal_parameters.params_list[i].idents.idents[j].name = varName;
-                        varDefsList.Add(new var_statement(vds));
+                        varDefsList.Add(new var_statement(vds, sc));
                     }
                 }
 

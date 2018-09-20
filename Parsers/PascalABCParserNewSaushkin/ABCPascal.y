@@ -191,6 +191,8 @@ parse_goal
 parts
     : tkParseModeExpression expr
         { $$ = $2; }
+    | tkParseModeExpression tkType type_decl_identifier
+        { $$ = $3; }
     | tkParseModeType variable_as_type
 		{ $$ = $2; }
 	| tkParseModeStatement stmt_or_expression
