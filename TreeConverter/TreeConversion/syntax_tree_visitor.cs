@@ -3672,7 +3672,9 @@ namespace PascalABCCompiler.TreeConverter
                             SyntaxTreeBuilder.AddMembersForAutoClass(_class_definition,ref names,ref types);
                             for (var i = 0; i < types.Count; i++)
                             {
-                                type_node tn = convert_strong(types[i]); 
+                                type_node tn = convert_strong(types[i]);
+                                if (tn.IsEnum && types[i] is enum_type_definition)
+                                    AddError(get_location(types[i]), "AUTO_CLASS_MUST_NOT_HAVE_UNNAMED_ENUMS");
                                 if (tn.IsPointer)
                                     AddError(get_location(types[i]), "AUTO_CLASS_MUST_NOT_HAVE_POINTERS");
                             }

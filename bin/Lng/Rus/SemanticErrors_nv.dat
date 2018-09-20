@@ -3,6 +3,7 @@
 NAME_CANNOT_HAVE_GENERIC_PARAMETERS_{0}=Имя {0} не может иметь обобщенные параметры
 AUTO_CLASS_MUST_NOT_HAVE_POINTERS=Авто класс не может иметь поля, являющиеся указателями
 AUTO_CLASS_MUST_NOT_HAVE_PARENTS=Авто класс не может иметь предков
+AUTO_CLASS_MUST_NOT_HAVE_UNNAMED_ENUMS=Авто класс не может иметь полей с неименованными перечислимыми типами
 UNDEFINED_NAME_REFERENCE_{0}=Неизвестное имя '{0}'
 TWO_TYPE_CONVERTIONS_POSSIBLE_FIRST_TYPE_{0}_SECOND_TYE_{1}=Возможны два преобразования типа: к типу {0} и к типу {1}
 CAN_NOT_CONVERT_TYPES_FROM_{0}_TO_{1}=Нельзя преобразовать тип {0} к {1}
