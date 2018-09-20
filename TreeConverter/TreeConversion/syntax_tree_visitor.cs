@@ -4095,7 +4095,11 @@ namespace PascalABCCompiler.TreeConverter
             if (_simple_property.virt_over_none_attr == proc_attribute.attr_virtual || _simple_property.virt_over_none_attr == proc_attribute.attr_override)
                 pn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual;
             else if (_simple_property.virt_over_none_attr == proc_attribute.attr_abstract)
+            {
+                context.converted_type.SetIsAbstract(true);
                 pn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual_abstract;
+            }
+                
             parameter_list pal_big = new parameter_list();
             //TODO: Спросить у Саши как получить тип параметра - var,const и т.д.
             if (_simple_property.parameter_list != null)
