@@ -1692,11 +1692,13 @@ namespace CodeCompletion
     public class ProcType : TypeScope, IProcType
     {
         public ProcScope target;
+        private CompiledScope parent;
 
         public ProcType(ProcScope target)
         {
             this.target = target;
             this.si = new SymInfo(this.ToString(), SymbolKind.Delegate, this.ToString());
+            this.parent = TypeTable.get_compiled_type(PascalABCCompiler.NetHelper.NetHelper.MulticastDelegateType);
         }
 
         public ProcType(ProcScope target, List<string> generic_params):this(target)
@@ -1741,7 +1743,7 @@ namespace CodeCompletion
         public override SymInfo[] GetNames()
         {
             //SortedDictionary<string,SymInfo> dict = new SortedDictionary<string,SymInfo>();
-            return null;
+            return parent.GetNames();
         }
 
         public override SymInfo[] GetNames(ExpressionVisitor ev, PascalABCCompiler.Parsers.KeywordKind keyword, bool called_in_base)
@@ -1767,13 +1769,13 @@ namespace CodeCompletion
         public override SymInfo[] GetNamesAsInObject()
         {
             //SortedDictionary<string,SymInfo> dict = new SortedDictionary<string,SymInfo>();
-            return new SymInfo[0];
+            return parent.GetNamesAsInObject();
         }
 
         public override SymInfo[] GetNamesAsInObject(ExpressionVisitor ev)
         {
             //SortedDictionary<string,SymInfo> dict = new SortedDictionary<string,SymInfo>();
-            return new SymInfo[0];
+            return parent.GetNamesAsInObject(ev);
         }
 
         public override SymScope FindName(string name)

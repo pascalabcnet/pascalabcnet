@@ -484,6 +484,16 @@ namespace CodeFormatters
                         if (comm.Length == 0 || char.IsLetterOrDigit(comm[0]) || add_space_after)
                             comm = " " + comm;
                     }
+                    if (comm.StartsWith(" "))
+                    {
+                        string trimed_comm = comm.Trim();
+                        if (trimed_comm == "then" || trimed_comm == "do")
+                        {
+                            comm = comm.TrimStart(' ');
+                            if (comm.Length == 0 || char.IsLetterOrDigit(comm[0]) || add_space_after)
+                                comm = " " + comm;
+                        }
+                    }
                 }
                 WriteCommentWithIndent(comm, true);
                 read_from_beg_pos = false;
@@ -516,6 +526,15 @@ namespace CodeFormatters
             if (prev_pos < pos && cur_src_off < pos)
             {
                 string comm = Text.Substring(prev_pos, pos - prev_pos);
+                if (sn is loop_stmt || sn is case_node || sn is if_node || sn is while_node)
+                {
+                    string trimedstr = comm.TrimStart();
+                    if (trimedstr == "do" || trimedstr == "of" || trimedstr == "then")
+                        comm = comm.TrimStart();
+                    else if (trimedstr.StartsWith("of") && !char.IsLetterOrDigit(trimedstr[2]))
+                        comm = comm.TrimStart();
+                }
+                
                 if (sn is program_module || sn is unit_module)
                     comm = Text.Substring(prev_pos);
                 if (comm.StartsWith(" "))

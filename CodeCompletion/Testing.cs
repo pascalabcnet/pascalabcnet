@@ -808,7 +808,6 @@ namespace CodeCompletion
             {
                 sw.WriteLine(parser.LanguageInformation.GetCompiledTypeRepresentation(t, t, ref i, ref j));
             }
-
             sw.Close();
     	}
     }
@@ -867,7 +866,9 @@ namespace CodeCompletion
             files = Directory.GetFiles(test_dir+@"\output", "*.pas");
             foreach (string s in files)
             {
-                string Text = new StreamReader(s, System.Text.Encoding.GetEncoding(1251)).ReadToEnd();
+                var sr = new StreamReader(s, System.Text.Encoding.GetEncoding(1251));
+                string Text = sr.ReadToEnd();
+                sr.Close();
                 List<Error> Errors = new List<Error>();
                 List<CompilerWarning> Warnings = new List<CompilerWarning>();
                 compilation_unit cu = CodeCompletionController.ParsersController.GetCompilationUnitForFormatter(s, Text, Errors, Warnings);
@@ -889,13 +890,25 @@ namespace CodeCompletion
                         }
                     }  
                 }
-                    
+                
                 string shouldFileName = Path.Combine(test_dir + @"\should",Path.GetFileName(s));
                 if (File.Exists(shouldFileName))
                 {
-                    string shouldText = new StreamReader(s, System.Text.Encoding.GetEncoding(1251)).ReadToEnd();
+                    sr = new StreamReader(shouldFileName, System.Text.Encoding.GetEncoding(1251));
+                    string shouldText = sr.ReadToEnd();
+                    sr.Close();
                     if (Text != shouldText)
-                        log.WriteLine("Invalid formatting of File " + s);
+                    {
+                        sr = new StreamReader(s, System.Text.Encoding.UTF8);
+                        Text = sr.ReadToEnd();
+                        sr.Close();
+                        sr = new StreamReader(shouldFileName, System.Text.Encoding.UTF8);
+                        shouldText = sr.ReadToEnd();
+                        sr.Close();
+                    }
+                        
+                    if (Text != shouldText)
+                        log.WriteLine("Invalid formatting of File (text not equal) " + s);
                 }
             }
             log.Close();
