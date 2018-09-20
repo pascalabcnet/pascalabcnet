@@ -138,6 +138,7 @@ ATTRIBUTE_CANNOT_BE_GENERIC=Атрибуты не могут быть генер
 EXTERNAL_METHOD_CANNOT_BE_DECLARED_IN_GENERIC_TYPE=external-методы нельзя описывать в генерик-классах
 EXTERNAL_METHOD_CANNOT_BE_GENERIC=external-методы не могут быть генериками
 WHERE_SPECIFIER_MISMATCH=Несоответствие спецификатора whеre спецификатору where базового классе​
+ATTRIBUTE_{0}_NOT_ALLOWED=Атрибут {0} недопустим в данном контексте
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Очікувався модуль, а зустріли бібліотеку
 ASSEMBLY_{0}_READING_ERROR=Помилка при читанні збірки '{0}'

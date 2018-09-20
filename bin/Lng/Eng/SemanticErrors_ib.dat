@@ -145,6 +145,7 @@ ATTRIBUTE_CANNOT_BE_GENERIC=Attributes cannot be generic
 EXTERNAL_METHOD_CANNOT_BE_DECLARED_IN_GENERIC_TYPE=external-methods can not be declared in generic type
 EXTERNAL_METHOD_CANNOT_BE_GENERIC=external-methods can not be generic
 WHERE_SPECIFIER_MISMATCH=where specifier contradicts with where specifier of base class
+ATTRIBUTE_{0}_NOT_ALLOWED=Attribute {0} is not allowed in this context
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Unit expected, library found
 ASSEMBLY_{0}_READING_ERROR=Error by reading assembly '{0}'

@@ -3545,18 +3545,20 @@ namespace PascalABCCompiler.TreeConverter
             }
 
             if (_class_definition.attribute != class_attribute.None && _class_definition.body == null)
-                ErrorsList.Add(new SimpleSemanticError(get_location(_class_definition), "CLASS_ATTRIBUTE_NOT_ALLOWED_IN_CLASS_PREDEFINTIONS"));
+                AddError(new SimpleSemanticError(get_location(_class_definition), "CLASS_ATTRIBUTE_NOT_ALLOWED_IN_CLASS_PREDEFINTIONS"));
             if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Sealed) == SyntaxTree.class_attribute.Sealed)
             {
                 context.converted_type.SetIsSealed(true);
                 if (_class_definition.keyword == SyntaxTree.class_keyword.Interface || _class_definition.keyword == SyntaxTree.class_keyword.TemplateInterface)
-                    ErrorsList.Add(new SimpleSemanticError(get_location(_class_definition), "INTERFACE_CANNOT_BE_SEALED"));
+                    AddError(new SimpleSemanticError(get_location(_class_definition), "INTERFACE_CANNOT_BE_SEALED"));
             }
             if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Abstract) == SyntaxTree.class_attribute.Abstract &&
                 (_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Sealed) == SyntaxTree.class_attribute.Sealed)
                 AddError(get_location(_class_definition), "ABSTRACT_CLASS_CANNOT_BE_SEALED");
             if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Abstract) == SyntaxTree.class_attribute.Abstract)
             {
+                if (_class_definition.keyword != SyntaxTree.class_keyword.Class)
+                    AddError(get_location(_class_definition), "ATTRIBUTE_{0}_NOT_ALLOWED", "abstract");
                 context.converted_type.SetIsAbstract(true);
             }
             switch (_class_definition.keyword)
