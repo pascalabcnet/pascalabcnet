@@ -82,7 +82,8 @@ namespace PascalABCCompiler.SyntaxTree
                 fp = null;
             var sl = SyntaxTreeBuilder.BuildSimpleAssignList(fields, formal_names);
 
-            return new procedure_definition(new constructor(fp), new block(sl));
+            var c = new constructor(fp);
+            return new procedure_definition(c, new block(sl));
         }
 
         public static procedure_definition BuildSimpleDeConstruct(List<ident> fields, List<ident> formal_names, List<type_definition> types)
@@ -232,7 +233,8 @@ namespace PascalABCCompiler.SyntaxTree
             if (!HasToString)
             { 
                 var tostr = BuildToStringFuncForAutoClass(names);
-                cb.Add(BuildOneMemberSection(tostr));
+                var cm = BuildOneMemberSection(tostr);
+                cb.Add(cm);
                 //cb.class_def_blocks.Insert(0, BuildOneMemberSection(tostr));
             }
         }

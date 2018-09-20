@@ -3670,9 +3670,22 @@ namespace PascalABCCompiler.TreeConverter
                             }
 
                             SyntaxTreeBuilder.AddMembersForAutoClass(_class_definition,ref names,ref types);
+                            // Отдельный цикл по синт поддереву для вылавливания events
+                            foreach (var l in _class_definition.body.class_def_blocks)
+                            {
+                                foreach (var m in l.members)
+                                {
+                                    var mm = m as var_def_statement;
+                                    if (mm != null && mm.is_event)
+                                        AddError(get_location(mm), "AUTO_CLASS_MUST_NOT_HAVE_EVENTS");
+                                }
+                            }
+
                             for (var i = 0; i < types.Count; i++)
                             {
-                                type_node tn = convert_strong(types[i]); 
+                                type_node tn = convert_strong(types[i]);
+                                if (tn.IsEnum && types[i] is enum_type_definition)
+                                    AddError(get_location(types[i]), "AUTO_CLASS_MUST_NOT_HAVE_UNNAMED_ENUMS");
                                 if (tn.IsPointer)
                                     AddError(get_location(types[i]), "AUTO_CLASS_MUST_NOT_HAVE_POINTERS");
                             }
