@@ -1455,10 +1455,10 @@ proc_type_decl
         { 
 			$$ = new procedure_header($2 as formal_parameters,null,null,false,false,null,null,@$);
         }
-	| tkFunction fp_list
+/*	| tkFunction fp_list
 		{
 			$$ = new function_header($2 as formal_parameters, null, null, null, null, @$);
-		}
+		}*/
     | tkFunction fp_list tkColon fptype       
         { 
 			$$ = new function_header($2 as formal_parameters, null, null, null, $4 as type_definition, @$);
