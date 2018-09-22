@@ -51,7 +51,7 @@
 %token <id> tkAbstract tkForward tkOverload tkReintroduce tkOverride tkVirtual tkExtensionMethod 
 %token <ex> tkInteger tkFloat tkHex 
 
-%type <ti> unit_key_word 
+%type <ti> unit_key_word class_or_static
 %type <stn> assignment 
 %type <stn> optional_array_initializer  
 %type <stn> attribute_declarations  
@@ -1874,14 +1874,21 @@ simple_field_or_const_definition
 		}
     | field_definition
 		{ $$ = $1; }
-    | tkClass field_definition       
+    | class_or_static field_definition       
         { 
 			($2 as var_def_statement).var_attr = definition_attribute.Static;
 			($2 as var_def_statement).source_context = @$;
 			$$ = $2;
-        } 
+        }        
     ;
 
+class_or_static
+    : tkStatic 
+        { $$ = $1; }
+    | tkClass 
+        { $$ = $1; }
+    ;
+    
 field_definition
     : var_decl_part
 		{ $$ = $1; }
@@ -1914,7 +1921,7 @@ method_decl
     ;
 
 method_header
-    : tkClass method_procfunc_header
+    : class_or_static method_procfunc_header
         { 
 			($2 as procedure_header).class_keyword = true;
 			$$ = $2;
@@ -1944,7 +1951,7 @@ constr_destr_header
         { 
 			$$ = new constructor(null,$3 as formal_parameters,$4 as procedure_attributes_list,$2 as method_name,false,false,null,null,@$);
         }
-    | tkClass tkConstructor optional_proc_name fp_list optional_method_modificators 
+    | class_or_static tkConstructor optional_proc_name fp_list optional_method_modificators 
         { 
 			$$ = new constructor(null,$4 as formal_parameters,$5 as procedure_attributes_list,$3 as method_name,false,true,null,null,@$);
         }
@@ -1986,7 +1993,7 @@ property_definition
 simple_prim_property_definition
     : simple_property_definition
 		{ $$ = $1; }
-    | tkClass simple_property_definition    
+    | class_or_static simple_property_definition    
         { 
 			$$ = NewSimplePrimPropertyDefinition($2 as simple_property, @$);
         } 
@@ -2263,7 +2270,7 @@ constr_destr_decl
             if (parsertools.build_tree_for_formatter)
 				$$ = new short_func_definition($$ as procedure_definition);
         }
-    | tkClass tkConstructor optional_proc_name fp_list tkAssign unlabelled_stmt tkSemiColon         
+    | class_or_static tkConstructor optional_proc_name fp_list tkAssign unlabelled_stmt tkSemiColon         
         { 
    			if ($6 is empty_statement)
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@7);
@@ -2288,7 +2295,7 @@ inclass_constr_destr_decl
             if (parsertools.build_tree_for_formatter)
 				$$ = new short_func_definition($$ as procedure_definition);
         }
-    | tkClass tkConstructor optional_proc_name fp_list tkAssign unlabelled_stmt tkSemiColon         
+    | class_or_static tkConstructor optional_proc_name fp_list tkAssign unlabelled_stmt tkSemiColon         
         { 
    			if ($6 is empty_statement)
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@7);
@@ -2302,7 +2309,7 @@ inclass_constr_destr_decl
 proc_func_decl
     : proc_func_decl_noclass
 		{ $$ = $1; }
-    | tkClass proc_func_decl_noclass             
+    | class_or_static proc_func_decl_noclass             
         { 
 			($2 as procedure_definition).proc_header.class_keyword = true;
 			$$ = $2;
@@ -2351,7 +2358,7 @@ inclass_proc_func_decl
 		{ 
             $$ = $1; 
         }
-    | tkClass inclass_proc_func_decl_noclass         
+    | class_or_static inclass_proc_func_decl_noclass         
         { 
 		    if (($2 as procedure_definition).proc_header != null)
 				($2 as procedure_definition).proc_header.class_keyword = true;
