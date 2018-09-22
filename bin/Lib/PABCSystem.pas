@@ -7916,8 +7916,8 @@ function StrToReal(s: string) := Convert.ToDouble(s, nfi);
 function StrToFloat(s: string) := StrToReal(s);
 
 function TryStrToInt64(s: string; var value: int64) := int64.TryParse(s, value);
-function TryStrToReal(s: string; var value: real) := real.TryParse(s,System.Globalization.NumberStyles.Float,nil,value);
-function TryStrToSingle(s: string; var value: single) := single.TryParse(s,System.Globalization.NumberStyles.Float,nil,value);
+function TryStrToReal(s: string; var value: real) := real.TryParse(s,System.Globalization.NumberStyles.Float,new Globalization.NumberFormatInfo,value);
+function TryStrToSingle(s: string; var value: single) := single.TryParse(s,System.Globalization.NumberStyles.Float,new Globalization.NumberFormatInfo,value);
 function TryStrToFloat(s: string; var value: real) := TryStrToReal(s, value);
 function TryStrToFloat(s: string; var value: single) := TryStrToSingle(s, value);
 
