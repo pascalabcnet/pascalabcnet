@@ -1915,7 +1915,10 @@ namespace PascalABCCompiler.TreeRealization
                 }
                 if (this.type_special_kind == SemanticTree.type_special_kind.array_kind)
                 {
-                    return string.Format(compiler_string_consts.array_printable_name_template, element_type.PrintableName);
+                    if (rank == 1)
+                        return string.Format(compiler_string_consts.array_printable_name_template, element_type.PrintableName);
+                    else
+                        return string.Format(compiler_string_consts.multi_dim_array_printable_name_template, new string(',', rank-1), element_type.PrintableName);
                 }
                 return base.PrintableName;
             }
