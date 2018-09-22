@@ -1004,10 +1004,20 @@ namespace PascalABCCompiler.Parsers
 			string template_str=GetTemplateString(scope);
 			switch(scope.ElemKind)
 			{
-				case SymbolKind.Class : 
+				case SymbolKind.Class :
+                    string mod = "";
+                    if (scope.IsStatic)
+                        mod = "static ";
+                    else
+                    {
+                        if (scope.IsAbstract)
+                            mod = "abstract ";
+                        if (scope.IsFinal)
+                            mod += "sealed ";
+                    }
 					if (scope.TopScope != null && scope.TopScope.Name != "" && !scope.TopScope.Name.Contains("$"))
-						return (scope.IsAbstract ? "abstract " : "") + (scope.IsFinal?"sealed ":"")+"class "+scope.TopScope.Name + "." +scope.Name+template_str;
-					else return (scope.IsAbstract ? "abstract " : "") + (scope.IsFinal?"sealed ":"")+"class "+scope.Name+template_str;
+						return mod+"class "+scope.TopScope.Name + "." +scope.Name+template_str;
+					else return mod+"class "+scope.Name+template_str;
 				case SymbolKind.Interface :
 					if (scope.TopScope != null && scope.TopScope.Name != "" && !scope.TopScope.Name.Contains("$"))
 					return "interface "+scope.TopScope.Name + "." +scope.Name+template_str;
@@ -1063,8 +1073,18 @@ namespace PascalABCCompiler.Parsers
 			
 			switch(scope.ElemKind)
 			{
-				case SymbolKind.Class : 					
-					return (scope.IsAbstract ? "abstract " : "")+(scope.IsFinal?"sealed ":"")+"class "+s;
+				case SymbolKind.Class :
+                    string mod = "";
+                    if (scope.IsStatic)
+                        mod = "static ";
+                    else
+                    {
+                        if (scope.IsAbstract)
+                            mod = "abstract ";
+                        if (scope.IsFinal)
+                            mod += "sealed ";
+                    }
+                    return mod+"class "+s;
 				case SymbolKind.Interface :
 					return "interface "+s;
 				case SymbolKind.Enum :

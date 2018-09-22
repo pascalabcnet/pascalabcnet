@@ -73,7 +73,12 @@ namespace PascalABCCompiler.TreeRealization
         {
             get { return false; }
         }
-        
+
+        public virtual bool IsStatic
+        {
+            get { return false; }
+        }
+
         public virtual bool IsAbstract
         {
         	get { return false; }
@@ -1510,6 +1515,8 @@ namespace PascalABCCompiler.TreeRealization
         bool _sealed = false;
         bool _is_abstract = false;
         bool _is_partial = false;
+        bool _is_static = false;
+
         public void SetIsSealed(bool val)
         {
             _sealed=val;
@@ -1518,6 +1525,11 @@ namespace PascalABCCompiler.TreeRealization
         public void SetIsAbstract(bool val)
         {
         	_is_abstract = val;
+        }
+
+        public void SetIsStatic(bool val)
+        {
+            _is_static = val;
         }
 
         public bool IsPartial
@@ -1529,6 +1541,14 @@ namespace PascalABCCompiler.TreeRealization
             set
             {
                 _is_partial = value;
+            }
+        }
+
+        public override bool IsStatic
+        {
+            get
+            {
+                return _is_static;
             }
         }
 
@@ -2625,7 +2645,15 @@ namespace PascalABCCompiler.TreeRealization
         		return _compiled_type.IsAbstract;
         	}
         }
-        
+
+        public override bool IsStatic
+        {
+            get
+            {
+                return _compiled_type.IsAbstract && _compiled_type.IsSealed;
+            }
+        }
+
         public bool IsPrimitive
         {
             get { return _compiled_type.IsPrimitive; }

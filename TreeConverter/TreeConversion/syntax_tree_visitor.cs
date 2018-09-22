@@ -1991,6 +1991,7 @@ namespace PascalABCCompiler.TreeConverter
                 //Типизированый файл
                 type_node el_type = convert_strong(_file_type.file_of_type);
                 check_for_type_allowed(el_type,get_location(_file_type.file_of_type));
+                check_using_static_class(el_type, get_location(_file_type.file_of_type));
                 //if (el_type == SystemLibrary.SystemLibrary.void_type)
                 //	ErrorsList.Add(new VoidNotValid(get_location(_file_type.file_of_type)));
                 /*if (el_type == SystemLibrary.SystemLibInitializer.TextFileType.sym_info) 
@@ -3516,13 +3517,14 @@ namespace PascalABCCompiler.TreeConverter
         {
             // throw new NotSupportedError(get_location(_set_type_definition));
             if (SystemLibrary.SystemLibInitializer.TypedSetType == null || SystemLibrary.SystemLibInitializer.CreateSetProcedure == null)
-            	AddError(new NotSupportedError(get_location(_set_type_definition)));
+                AddError(new NotSupportedError(get_location(_set_type_definition)));
             type_node el_type = convert_strong(_set_type_definition.of_type);
             if (el_type.IsPointer)
                 AddError(get_location(_set_type_definition.of_type), "POINTERS_IN_SETS_NOT_ALLOWED");
             //if (el_type == SystemLibrary.SystemLibrary.void_type)
             //	AddError(new VoidNotValid(get_location(_set_type_definition.of_type)));
-            check_for_type_allowed(el_type,get_location(_set_type_definition.of_type));
+            check_for_type_allowed(el_type, get_location(_set_type_definition.of_type));
+            check_using_static_class(el_type, get_location(_set_type_definition.of_type));
             return_value(context.create_set_type(el_type, get_location(_set_type_definition)));
         }
 
@@ -3561,6 +3563,22 @@ namespace PascalABCCompiler.TreeConverter
                     AddError(get_location(_class_definition), "ATTRIBUTE_{0}_NOT_ALLOWED", "abstract");
                 context.converted_type.SetIsAbstract(true);
             }
+            if ((_class_definition.attribute & class_attribute.Static) == class_attribute.Static)
+            {
+                if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Abstract) == SyntaxTree.class_attribute.Abstract)
+                    AddError(get_location(_class_definition), "ATTRIBUTE_{0}_NOT_ALLOWED", "abstract");
+                if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Sealed) == SyntaxTree.class_attribute.Sealed)
+                    AddError(get_location(_class_definition), "ATTRIBUTE_{0}_NOT_ALLOWED", "sealed");
+                if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Auto) == SyntaxTree.class_attribute.Auto)
+                    AddError(get_location(_class_definition), "ATTRIBUTE_{0}_NOT_ALLOWED", "auto");
+                if (_class_definition.keyword != SyntaxTree.class_keyword.Class)
+                    AddError(get_location(_class_definition), "ONLY_CLASS_CAN_BE_STATIC");
+                if (context.converted_type.is_generic_type_definition)
+                    AddError(get_location(_class_definition), "STATIC_CLASS_CANNOT_BE_GENERIC");
+                context.converted_type.SetIsStatic(true);
+                context.converted_type.SetIsSealed(true);
+                context.converted_type.SetIsAbstract(true);
+            }
             switch (_class_definition.keyword)
             {
                 case PascalABCCompiler.SyntaxTree.class_keyword.Class:
@@ -3570,6 +3588,8 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     if ((_class_definition.class_parents != null) && (_class_definition.class_parents.types.Count > 0))
                     {
+                        if (context.converted_type.IsStatic)
+                            AddError(get_location(_class_definition), "STATIC_CLASS_CANNOT_HAVE_PARENT");
                         type_node tn = ret.visit(_class_definition.class_parents.types[0]);
                         //if (tn == context.converted_type)
                         if (type_table.original_types_equals(tn, context.converted_type))
@@ -3716,7 +3736,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     common_type_node converted_type = context.converted_type;
                     context.leave_block();
-                    if (converted_type.IsSealed && converted_type.IsAbstract)
+                    if (converted_type.IsSealed && converted_type.IsAbstract && !converted_type.IsStatic)
                         AddError(get_location(_class_definition), "ABSTRACT_CLASS_CANNOT_BE_SEALED");
                     return;
                 case PascalABCCompiler.SyntaxTree.class_keyword.Record:
@@ -3977,6 +3997,8 @@ namespace PascalABCCompiler.TreeConverter
         //ssyy
         public void generate_default_constructor()
         {
+            if (context.converted_type.IsStatic)
+                return;
             if (!context.converted_type.is_value)
             {
                 if (!generic_convertions.type_has_default_ctor(context.converted_type.base_type, true))
@@ -4092,6 +4114,8 @@ namespace PascalABCCompiler.TreeConverter
             assign_doc_info(pn, _simple_property);
             //pn.polymorphic_state=SemanticTree.polymorphic_state.ps_common;
             //pn.loc=get_location(_simple_property.property_name);
+            if (context.converted_type.IsStatic && _simple_property.attr != SyntaxTree.definition_attribute.Static)
+                AddError(get_location(_simple_property), "STATIC_CLASSES_CANNOT_NON_STATIC_MEMBERS");
             if (_simple_property.attr == SyntaxTree.definition_attribute.Static)
             	pn.polymorphic_state = SemanticTree.polymorphic_state.ps_static;
             if (_simple_property.virt_over_none_attr == proc_attribute.attr_virtual || _simple_property.virt_over_none_attr == proc_attribute.attr_override)
@@ -4103,7 +4127,7 @@ namespace PascalABCCompiler.TreeConverter
                 context.converted_type.SetIsAbstract(true);
                 pn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual_abstract;
             }
-                
+               
             parameter_list pal_big = new parameter_list();
             //TODO: Спросить у Саши как получить тип параметра - var,const и т.д.
             if (_simple_property.parameter_list != null)
@@ -8770,6 +8794,8 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     if (cmn.cont_type.IsAbstract)
                     	AddError(new SimpleSemanticError(loc, "ABSTRACT_CONSTRUCTOR_{0}_CALL", cmn.cont_type.name));
+                    if (cmn.cont_type.IsStatic)
+                        AddError(new SimpleSemanticError(loc, "STATIC_CONSTRUCTOR_CALL"));
                     common_constructor_call csmc2 = new common_constructor_call(cmn, loc);
                     return csmc2;
                     //if (cmn.pascal_associated_constructor==null)
@@ -10867,6 +10893,7 @@ namespace PascalABCCompiler.TreeConverter
             type_node tn = convert_strong(_typed_const_definition.const_type);
             assign_doc_info(cdn,_typed_const_definition);
             check_for_type_allowed(tn,get_location(_typed_const_definition.const_type));
+            check_using_static_class(tn, get_location(_typed_const_definition.const_type));
             if (context.converted_type != null && context.converted_func_stack.Empty)
             	if (!constant_in_class_valid(tn))//proverka na primitivnost konstanty v klasse
                     AddError(get_location(_typed_const_definition), "CLASS_CONSTANT_CAN_HAVE_ONLY_PRIMITIVE_VALUE");
@@ -11903,6 +11930,12 @@ namespace PascalABCCompiler.TreeConverter
         	}
         }
         
+        internal void check_using_static_class(type_node tn, location loc)
+        {
+            if (tn.IsStatic)
+                AddError(loc, "USING_STATIC_CLASS_NOT_VALID");
+        }
+
         internal void check_for_type_allowed(type_node tn, location loc)
         {
         	if (tn == SystemLibrary.SystemLibrary.void_type)
@@ -12189,6 +12222,7 @@ namespace PascalABCCompiler.TreeConverter
 				//if (tn == SystemLibrary.SystemLibrary.void_type)
             	//    AddError(new VoidNotValid(get_location(_function_header.return_type)));
             	check_for_type_allowed(tn,get_location(_function_header.return_type));
+                check_using_static_class(tn, get_location(_function_header.return_type));
             }
             //(ssyy) moved up, так как при проверке аттрибута override надо знать тип возвращаемого значения
             context.top_function.return_value_type = tn;
@@ -12374,7 +12408,8 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             //\ssyy
-
+            if (context.converted_type != null && context.converted_type.IsStatic && !_procedure_definition.proc_header.class_keyword)
+                AddError(get_location(_procedure_definition), "STATIC_CLASSES_CANNOT_NON_STATIC_MEMBERS");
             if (_procedure_definition.proc_body == null)
             {
                 body_exists = false;
@@ -12753,6 +12788,8 @@ namespace PascalABCCompiler.TreeConverter
             	tn = convert_strong(_function_header.return_type);
 
             	check_for_type_allowed(tn,get_location(_function_header.return_type));
+                check_using_static_class(tn, get_location(_function_header.return_type));
+
                 if (_function_header.return_type is function_header || _function_header.return_type is procedure_header)
                     check_delegate_on_generic_parameters(tn as common_type_node, get_location(_function_header.return_type));
             }
@@ -13617,6 +13654,8 @@ namespace PascalABCCompiler.TreeConverter
 
             check_parameter_on_complex_type(_typed_parametres.vars_type);
             type_node tn = convert_strong(_typed_parametres.vars_type);
+            if (tn.IsStatic)
+                AddError(get_location(_typed_parametres), "VARIABLES_OF_STATIC_CLASS_NOT_ALLOWED");
             if (_typed_parametres.vars_type is function_header || _typed_parametres.vars_type is procedure_header)
             {
                 check_delegate_on_generic_parameters(tn as common_type_node, get_location(_typed_parametres.vars_type));
@@ -13772,6 +13811,7 @@ namespace PascalABCCompiler.TreeConverter
                 //if (et == SystemLibrary.SystemLibrary.void_type)
             	//AddError(new VoidNotValid(get_location(_array_type.elemets_types)));
                 check_for_type_allowed(et,get_location(_array_type.elements_type));
+                check_using_static_class(et, get_location(_array_type.elements_type));
                 ret = convertion_data_and_alghoritms.type_constructor.create_unsized_array(et,
                     context.converted_namespace, rank, get_location(_array_type));
                 return_value(ret);
@@ -13805,6 +13845,7 @@ namespace PascalABCCompiler.TreeConverter
                 throw new NotSupportedError(get_location(_array_type.elements_type));
             }
             check_for_type_allowed(elem_type,get_location(_array_type.elements_type));
+            check_using_static_class(elem_type, get_location(_array_type.elements_type));
             for (int i = ind_types.Count - 1; i >= 0; i--)
             {
                 internal_interface ii = ind_types[i].get_internal_interface(internal_interface_kind.ordinal_interface);
@@ -15725,7 +15766,8 @@ namespace PascalABCCompiler.TreeConverter
             {
                 tn = convert_strong(_var_def_statement.vars_type);
                 //LambdaHelper.InferTypesFromVarStmt(tn, _var_def_statement.inital_value as SyntaxTree.function_lambda_definition, this);  //lroman//
-
+                if (tn.IsStatic)
+                    AddError(get_location(_var_def_statement), "VARIABLES_OF_STATIC_CLASS_NOT_ALLOWED");
                 var fld1 = _var_def_statement.inital_value as SyntaxTree.function_lambda_definition;
                 if (fld1 != null)
                 {
@@ -15842,6 +15884,8 @@ namespace PascalABCCompiler.TreeConverter
             		}
 				}
             }
+            if (context.converted_type != null && context.converted_type.IsStatic && _var_def_statement.var_attr != definition_attribute.Static)
+                AddError(get_location(_var_def_statement), "STATIC_CLASSES_CANNOT_NON_STATIC_MEMBERS");
             if (is_event) return;
             context.save_var_definitions();
 
@@ -17706,6 +17750,10 @@ namespace PascalABCCompiler.TreeConverter
             {
             	AddError(loc, "ABSTRACT_CONSTRUCTOR_{0}_CALL", tn.name);
             }
+            if (tn.IsStatic)
+            {
+                AddError(loc, "STATIC_CONSTRUCTOR_CALL");
+            }
             List<SymbolInfo> sil = tn.find_in_type(TreeConverter.compiler_string_consts.default_constructor_name, context.CurrentScope); //tn.Scope); 
             delete_inherited_constructors(ref sil, tn);
             if (sil == null)
@@ -17996,6 +18044,7 @@ namespace PascalABCCompiler.TreeConverter
                 exprs = new expressions_list();
             if (_new_expr.new_array)
             {
+                check_using_static_class(tn, get_location(_new_expr.type));
                 //if (exprs.Count == 1)
                 {
                     //new typename[size]
@@ -18223,6 +18272,8 @@ namespace PascalABCCompiler.TreeConverter
             {
                 throw new CompilerInternalError("Can generate inherited constructors only in class.");
             }
+            if (_ctn.IsStatic)
+                return;
             if (_ctn.has_user_defined_constructor)
             {
                 //Пользователь определил хотя бы один конструктор, никакие конструкторы не наследуем.

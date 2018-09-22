@@ -129,6 +129,7 @@ namespace PascalABCCompiler.TreeRealization
                 return new VoidNotValid(loc);
             }*/
             SystemLibrary.SystemLibrary.syn_visitor.check_for_type_allowed(tn,loc);
+            SystemLibrary.SystemLibrary.syn_visitor.check_using_static_class(tn, loc);
             internal_interface ii = tn.get_internal_interface(internal_interface_kind.bounded_array_interface);
             if (ii != null)
             {
@@ -170,9 +171,11 @@ namespace PascalABCCompiler.TreeRealization
                         return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_IMPLEMENT_INTERFACE_{1}", tn.PrintableName, di.name);
                     }
                 }
+                if (tn.IsStatic)
+                    return new SimpleSemanticError(null, "USING_STATIC_CLASS_NOT_VALID");
                 if (gpe.has_default_ctor)
                 {
-                    if (tn.IsAbstract || !tn.is_value && !generic_convertions.type_has_default_ctor(tn, false))
+                    if (tn.IsAbstract || tn.IsStatic || !tn.is_value && !generic_convertions.type_has_default_ctor(tn, false))
                     {
                         return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_HAVE_DEFAULT_CONSTRUCTOR", tn.PrintableName);
                     }

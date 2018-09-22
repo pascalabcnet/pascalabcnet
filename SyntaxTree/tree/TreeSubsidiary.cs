@@ -185,7 +185,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public enum parametr_kind { none, var_parametr, const_parametr, out_parametr, params_parametr };
 
-    [FlagsAttribute] public enum class_attribute { None = 0, Sealed = 1, Partial = 2, Abstract = 4, Auto = 8 }; // Auto - SSM 24.03.14
+    [FlagsAttribute] public enum class_attribute { None = 0, Sealed = 1, Partial = 2, Abstract = 4, Auto = 8, Static=16 }; // Auto - SSM 24.03.14
     public enum class_keyword { Class, Interface, Record, Struct, Union, TemplateClass, TemplateRecord, TemplateInterface };
 
     public enum c_scalar_type_name { tn_char, tn_int, tn_short, tn_long, tn_short_int, tn_long_int, tn_float, tn_double, tn_void};

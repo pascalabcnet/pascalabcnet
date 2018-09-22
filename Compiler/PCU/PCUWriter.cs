@@ -2415,6 +2415,7 @@ namespace PascalABCCompiler.PCU
             bw.Write((byte)type.type_special_kind);
             bw.Write(type.IsSealed);
             bw.Write(type.IsAbstract);
+            bw.Write(type.IsStatic);
             bw.Write(type.IsPartial);
             if (type.type_special_kind == SemanticTree.type_special_kind.diap_type)
             {

@@ -32,7 +32,7 @@
 %start parse_goal
 
 %token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkQuestionPoint tkDoubleQuestion tkQuestionSquareOpen
-%token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction tkMatch tkWhen
+%token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkStatic tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction tkMatch tkWhen
 %token <ti> tkIf tkImplementation tkInherited tkInterface /* tkTypeclass tkInstance */ tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
 %token <ti> tkLoop 
@@ -1614,6 +1614,8 @@ class_attribute
 		{ $$ = class_attribute.Abstract; }
     | tkAuto
 		{ $$ = class_attribute.Auto; }
+    | tkStatic
+		{ $$ = class_attribute.Static; }
     ;
 	
 class_attributes 
@@ -4043,6 +4045,8 @@ keyword
     | tkTry
 		{ $$ = $1; }
     | tkType
+		{ $$ = $1; }
+    | tkStatic
 		{ $$ = $1; }
     | tkThen
 		{ $$ = $1; }

@@ -107,6 +107,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     tn = convert_strong(_foreach_stmt.type_name);
                     check_for_type_allowed(tn, get_location(_foreach_stmt.type_name));
+                    check_using_static_class(tn, get_location(_foreach_stmt.type_name));
                 }
 
                 context.close_var_definition_list(tn, null);

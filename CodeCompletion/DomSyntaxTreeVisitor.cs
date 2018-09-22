@@ -3435,7 +3435,8 @@ namespace CodeCompletion
                 if ((_class_definition.attribute & class_attribute.Abstract) == class_attribute.Abstract)
                     ss.is_abstract = true;
             }
-                
+            if ((_class_definition.attribute & class_attribute.Static) == class_attribute.Static)
+                ss.is_static = true;
             int num = 0;
             if (_class_definition.keyword != class_keyword.Interface)
                 num = 1;

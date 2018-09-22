@@ -775,6 +775,8 @@ namespace CodeCompletion
                 TypeScope ts = ss as TypeScope;
                 if (ss != this && !ss.si.name.StartsWith("$"))
                 {
+                    if (ts != null && !is_static && ts.IsStatic)
+                        continue;
                     if (ss.loc != null && loc != null)
                     {
                         if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, true) == 0)
@@ -3697,6 +3699,14 @@ namespace CodeCompletion
 
         }
 
+        public virtual bool IsStatic
+        {
+            get
+            {
+                return is_static;
+            }
+        }
+
         public virtual int Rank
         {
             get
@@ -3825,7 +3835,7 @@ namespace CodeCompletion
 
         public void AddDefaultConstructorIfNeed()
         {
-            if (members != null)
+            if (members != null && !is_static)
             {
                 bool has_def_constr = false;
 
@@ -5009,6 +5019,14 @@ namespace CodeCompletion
                 return typ;
             }
             return TypeTable.get_compiled_type(t);
+        }
+
+        public override bool IsStatic
+        {
+            get
+            {
+                return ctn.IsSealed && ctn.IsAbstract;
+            }
         }
 
         public override bool IsGeneric

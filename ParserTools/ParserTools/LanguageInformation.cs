@@ -660,6 +660,11 @@ namespace PascalABCCompiler.Parsers
             get;
         }
 
+        bool IsStatic
+        {
+            get;
+        }
+
         string[] TemplateArguments
     	{
     		get;

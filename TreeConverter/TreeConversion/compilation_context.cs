@@ -2863,6 +2863,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (cint != null)
                     {
                         if (_ctn.IsAbstract) return;
+                        if (_ctn.IsStatic) return;
                         foreach (common_method_node meth in cint.methods)
                         {
                             if (meth.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)

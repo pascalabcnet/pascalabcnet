@@ -54,6 +54,7 @@
 		<Key word = "case" />
 		<Key word = "class" />
 		<Key word = "auto" />
+        <Key word = "static" />
 		<Key word = "template" />
 		<Key word = "sealed" />
 		<Key word = "partial" />
