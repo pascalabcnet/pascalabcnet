@@ -4098,6 +4098,8 @@ namespace PascalABCCompiler.TreeConverter
                 pn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual;
             else if (_simple_property.virt_over_none_attr == proc_attribute.attr_abstract)
             {
+                if (context.converted_type.IsInterface)
+                    AddError(get_location(_simple_property), "ATTRIBUTE_{0}_NOT_ALLOWED", "abstract");
                 context.converted_type.SetIsAbstract(true);
                 pn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual_abstract;
             }
