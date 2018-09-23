@@ -4174,7 +4174,7 @@ namespace PascalABCCompiler.TreeConverter
                     else
                     {
                         if (pn.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)
-                            AddError(get_location(_simple_property.accessors.read_accessor.accessor_name), "ABSTRACT_PROPERTIES_CANNOT_HAVE_IMPLEMENTATION");
+                            AddError(get_location(_simple_property.accessors.read_accessor), "ABSTRACT_PROPERTIES_CANNOT_HAVE_IMPLEMENTATION");
                         convertion_data_and_alghoritms.check_node_parser_error(_simple_property.accessors.read_accessor.accessor_name);
                         sil = context.converted_type.find_in_type(_simple_property.accessors.read_accessor.accessor_name.name, context.CurrentScope);
 
@@ -4304,7 +4304,7 @@ namespace PascalABCCompiler.TreeConverter
                     else
                     {
                         if (pn.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)
-                            AddError(get_location(_simple_property.accessors.write_accessor.accessor_name), "ABSTRACT_PROPERTIES_CANNOT_HAVE_IMPLEMENTATION");
+                            AddError(get_location(_simple_property.accessors.write_accessor), "ABSTRACT_PROPERTIES_CANNOT_HAVE_IMPLEMENTATION");
                         convertion_data_and_alghoritms.check_node_parser_error(_simple_property.accessors.write_accessor.accessor_name);
                         sil = context.converted_type.find_in_type(_simple_property.accessors.write_accessor.accessor_name.name, context.CurrentScope);
 
@@ -17457,7 +17457,14 @@ namespace PascalABCCompiler.TreeConverter
             sil = context.find_definition_node(_template_type_reference.name, loc);
             if (sil != null)
             {
-                type_node rez_type = get_generic_instance(sil?.FirstOrDefault(), _template_type_reference.params_list.params_list);
+                type_node rez_type = sil?.FirstOrDefault().sym_info as type_node;
+                foreach (type_definition td in _template_type_reference.params_list.params_list)
+                    if (td is named_type_reference && (td as named_type_reference).names[0].name == "")
+                    {
+                        return_value(rez_type);
+                        return;
+                    }
+                rez_type = get_generic_instance(sil?.FirstOrDefault(), _template_type_reference.params_list.params_list);
                 if (context.skip_check_where_sections)
                 {
                     generic_instance_type_node gitn = rez_type as generic_instance_type_node;
