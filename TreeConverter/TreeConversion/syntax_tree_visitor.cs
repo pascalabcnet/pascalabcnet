@@ -17509,9 +17509,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     else if (tclass.type_dec.type_def is named_type_reference)
                     {
-                        template_type_reference ttr = new template_type_reference((tclass.type_dec.type_def as named_type_reference), _template_type_reference.params_list, _template_type_reference.source_context);
-
-                        return_value(convert_strong(ttr));
+                        return_value(convert_strong(tclass.type_dec.type_def));
                         return;
                     }
                 }
