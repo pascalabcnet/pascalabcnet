@@ -17494,7 +17494,27 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 AddError(get_location(_template_type_reference), "{0}_IS_NOT_TEMPLATE_CLASS", typename);
             }
+            foreach (type_definition td in _template_type_reference.params_list.params_list)
+                if (td is named_type_reference && (td as named_type_reference).names.Count > 0 && (td as named_type_reference).names[0].name == "")
+                {
+                    if (tclass.type_dec.type_def is template_type_reference)
+                    {
+                        template_type_reference ttr = new template_type_reference((tclass.type_dec.type_def as template_type_reference).name, _template_type_reference.params_list, _template_type_reference.source_context);
+                        ttr.names = (tclass.type_dec.type_def as template_type_reference).names;
+                        if (ttr.name.names.Count >= 1 && ttr.name.names[ttr.name.names.Count - 1].name.IndexOf('`') != -1)
+                            ttr.name.names[ttr.name.names.Count - 1].name = ttr.name.names[ttr.name.names.Count - 1].name.Substring(0, ttr.name.names[ttr.name.names.Count - 1].name.IndexOf('`'));
 
+                        return_value(convert_strong(ttr));
+                        return;
+                    }
+                    else if (tclass.type_dec.type_def is named_type_reference)
+                    {
+                        template_type_reference ttr = new template_type_reference((tclass.type_dec.type_def as named_type_reference), _template_type_reference.params_list, _template_type_reference.source_context);
+
+                        return_value(convert_strong(ttr));
+                        return;
+                    }
+                }
             //Формируем список параметров инстанцирования
             tparams = visit_type_list(_template_type_reference.params_list.params_list);
 

@@ -3,9 +3,9 @@
 //  GPPG error listing for yacc source file <ABCPascal.y>
 // ==========================================================================
 //  Version:  1.3.6
-//  Machine:  DESKTOP-A6LT9RI
-//  DateTime: 22.08.2018 11:22:41
-//  UserName: Станислав
+//  Machine:  IVAN-PC
+//  DateTime: 22.09.2018 19:42:21
+//  UserName: Ivan
 // ==========================================================================
 
 
@@ -43,7 +43,7 @@
 %start parse_goal
 
 %token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkQuestionPoint tkDoubleQuestion tkQuestionSquareOpen
-%token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction tkMatch tkWhen
+%token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkStatic tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction tkMatch tkWhen
 %token <ti> tkIf tkImplementation tkInherited tkInterface /* tkTypeclass tkInstance */ tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
 %token <ti> tkLoop 
@@ -62,7 +62,7 @@
 %token <id> tkAbstract tkForward tkOverload tkReintroduce tkOverride tkVirtual tkExtensionMethod 
 %token <ex> tkInteger tkFloat tkHex 
 
-%type <ti> unit_key_word 
+%type <ti> unit_key_word class_or_static
 %type <stn> assignment 
 %type <stn> optional_array_initializer  
 %type <stn> attribute_declarations  
@@ -91,7 +91,7 @@
 %type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 const_func_expr_list case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
-%type <ex> const_simple_expr term simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 simple_expr range_term range_factor 
+%type <ex> const_simple_expr term simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda simple_expr range_term range_factor 
 %type <ex> external_directive_ident init_const_expr case_label variable var_reference /*optional_write_expr*/ optional_read_expr simple_expr_or_nothing var_question_point
 %type <ob> for_cycle_type  
 %type <ex> format_expr  
@@ -157,15 +157,15 @@
 %type <stn> stmt_or_expression unlabelled_stmt stmt case_item
 %type <td> set_type  
 %type <ex> as_is_expr as_is_constexpr is_expr as_expr power_expr power_constexpr
-%type <td> unsized_array_type simple_type_or_ simple_type array_name_for_new_expr foreach_stmt_ident_dype_opt fptype type_ref fptype_noproctype array_type 
-%type <td> template_param structured_type unpacked_structured_type simple_or_template_type_reference type_ref_or_secific for_stmt_decl_or_assign type_decl_type
+%type <td> unsized_array_type simple_type_or_ simple_type /*array_name_for_new_expr*/ foreach_stmt_ident_dype_opt fptype type_ref fptype_noproctype array_type 
+%type <td> template_param template_empty_param structured_type unpacked_structured_type simple_or_template_type_reference type_ref_or_secific for_stmt_decl_or_assign type_decl_type
 %type <stn> type_ref_and_secific_list  
 %type <stn> type_decl_sect
 %type <stn> try_handler  
 %type <ti> class_or_interface_keyword optional_tk_do keyword reserved_keyword  
 %type <ex> typeof_expr  
 %type <stn> simple_fp_sect   
-%type <stn> template_param_list template_type_params
+%type <stn> template_param_list template_empty_param_list template_type_params template_type_empty_params
 //%type <stn> template_type_or_typeclass_params typeclass_params  
 %type <td> template_type
 %type <stn> try_stmt  
@@ -189,8 +189,14 @@
 %type <stn> pattern pattern_optional_var match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var 
 %type <ob> pattern_out_param_list pattern_out_param_list_optional_var
 %%
-// Warning: NonTerminal symbol "array_name_for_new_expr" is unreachable
-// --------------------------------------------------------------------
+// Warning: Terminating template_empty_param fixes the following size-4 NonTerminal set
+   // {template_empty_param, template_empty_param_list, template_type_empty_params, 
+   //     empty_template_type_reference}
+// Error: NonTerminal symbol "template_empty_param" has no productions
+// Error: There are 4 non-terminating NonTerminal Symbols
+   //  {template_empty_param, template_empty_param_list, template_type_empty_params, 
+   //     empty_template_type_reference}
+// ------------------------------------------------------------------------------------
 
 parse_goal                
     : program_file 
@@ -204,6 +210,8 @@ parse_goal
 parts
     : tkParseModeExpression expr
         { $$ = $2; }
+    | tkParseModeExpression tkType type_decl_identifier
+        { $$ = $3; }
     | tkParseModeType variable_as_type
 		{ $$ = $2; }
 	| tkParseModeStatement stmt_or_expression
@@ -1235,6 +1243,14 @@ template_type_params
 		}
     ;
 
+template_type_empty_params
+    : tkLower template_empty_param_list tkGreater            
+        {
+			$$ = $2;
+			$$.source_context = @$;
+		}
+    ;
+    
 template_param_list
     : template_param                              
         { 
@@ -1246,6 +1262,27 @@ template_param_list
 		}
     ;
 
+template_empty_param_list
+    : template_empty_param                              
+        { 
+			$$ = new template_param_list($1, @$);
+		}
+    | template_empty_param_list tkComma template_empty_param  
+        { 
+			$$ = ($1 as template_param_list).Add($3, @$);
+		}
+    ;
+
+template_empty_param
+    : 
+        { 
+            $$ = new named_type_reference(new ident(""), @$);}
+        }
+//------^
+// Error: Syntax error, unexpected '}'
+// -----------------------------------
+    ;
+    
 template_param
     : simple_type
 		{ $$ = $1; }
@@ -1426,7 +1463,7 @@ simple_type_or_
     ;
         
 set_type
-    : tkSet tkOf simple_type         
+    : tkSet tkOf type_ref         
         { 
 			$$ = new set_type_definition($3, @$); 
 		}
@@ -1466,10 +1503,10 @@ proc_type_decl
         { 
 			$$ = new procedure_header($2 as formal_parameters,null,null,false,false,null,null,@$);
         }
-	| tkFunction fp_list
+/*	| tkFunction fp_list
 		{
 			$$ = new function_header($2 as formal_parameters, null, null, null, null, @$);
-		}
+		}*/
     | tkFunction fp_list tkColon fptype       
         { 
 			$$ = new function_header($2 as formal_parameters, null, null, null, $4 as type_definition, @$);
@@ -1625,6 +1662,8 @@ class_attribute
 		{ $$ = class_attribute.Abstract; }
     | tkAuto
 		{ $$ = class_attribute.Auto; }
+    | tkStatic
+		{ $$ = class_attribute.Static; }
     ;
 	
 class_attributes 
@@ -1883,14 +1922,21 @@ simple_field_or_const_definition
 		}
     | field_definition
 		{ $$ = $1; }
-    | tkClass field_definition       
+    | class_or_static field_definition       
         { 
 			($2 as var_def_statement).var_attr = definition_attribute.Static;
 			($2 as var_def_statement).source_context = @$;
 			$$ = $2;
-        } 
+        }        
     ;
 
+class_or_static
+    : tkStatic 
+        { $$ = $1; }
+    | tkClass 
+        { $$ = $1; }
+    ;
+    
 field_definition
     : var_decl_part
 		{ $$ = $1; }
@@ -1923,7 +1969,7 @@ method_decl
     ;
 
 method_header
-    : tkClass method_procfunc_header
+    : class_or_static method_procfunc_header
         { 
 			($2 as procedure_header).class_keyword = true;
 			$$ = $2;
@@ -1953,7 +1999,7 @@ constr_destr_header
         { 
 			$$ = new constructor(null,$3 as formal_parameters,$4 as procedure_attributes_list,$2 as method_name,false,false,null,null,@$);
         }
-    | tkClass tkConstructor optional_proc_name fp_list optional_method_modificators 
+    | class_or_static tkConstructor optional_proc_name fp_list optional_method_modificators 
         { 
 			$$ = new constructor(null,$4 as formal_parameters,$5 as procedure_attributes_list,$3 as method_name,false,true,null,null,@$);
         }
@@ -1995,7 +2041,7 @@ property_definition
 simple_prim_property_definition
     : simple_property_definition
 		{ $$ = $1; }
-    | tkClass simple_property_definition    
+    | class_or_static simple_property_definition    
         { 
 			$$ = NewSimplePrimPropertyDefinition($2 as simple_property, @$);
         } 
@@ -2272,7 +2318,7 @@ constr_destr_decl
             if (parsertools.build_tree_for_formatter)
 				$$ = new short_func_definition($$ as procedure_definition);
         }
-    | tkClass tkConstructor optional_proc_name fp_list tkAssign unlabelled_stmt tkSemiColon         
+    | class_or_static tkConstructor optional_proc_name fp_list tkAssign unlabelled_stmt tkSemiColon         
         { 
    			if ($6 is empty_statement)
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@7);
@@ -2297,7 +2343,7 @@ inclass_constr_destr_decl
             if (parsertools.build_tree_for_formatter)
 				$$ = new short_func_definition($$ as procedure_definition);
         }
-    | tkClass tkConstructor optional_proc_name fp_list tkAssign unlabelled_stmt tkSemiColon         
+    | class_or_static tkConstructor optional_proc_name fp_list tkAssign unlabelled_stmt tkSemiColon         
         { 
    			if ($6 is empty_statement)
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@7);
@@ -2311,7 +2357,7 @@ inclass_constr_destr_decl
 proc_func_decl
     : proc_func_decl_noclass
 		{ $$ = $1; }
-    | tkClass proc_func_decl_noclass             
+    | class_or_static proc_func_decl_noclass             
         { 
 			($2 as procedure_definition).proc_header.class_keyword = true;
 			$$ = $2;
@@ -2360,7 +2406,7 @@ inclass_proc_func_decl
 		{ 
             $$ = $1; 
         }
-    | tkClass inclass_proc_func_decl_noclass         
+    | class_or_static inclass_proc_func_decl_noclass         
         { 
 		    if (($2 as procedure_definition).proc_header != null)
 				($2 as procedure_definition).proc_header.class_keyword = true;
@@ -2373,13 +2419,13 @@ inclass_proc_func_decl_noclass
         {
             $$ = new procedure_definition($1 as procedure_header, $2 as proc_block, @$);
 		}
-	| tkFunction func_name fp_list tkColon fptype optional_method_modificators1 tkAssign expr_l1 tkSemiColon
+	| tkFunction func_name fp_list tkColon fptype optional_method_modificators1 tkAssign expr_l1_func_decl_lambda tkSemiColon
 		{
 			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $6 as procedure_attributes_list, $2 as method_name, $5 as type_definition, $8, @1.Merge(@6));
 			if (parsertools.build_tree_for_formatter)
 				$$ = new short_func_definition($$ as procedure_definition);
 		}
-	| tkFunction func_name fp_list optional_method_modificators1 tkAssign expr_l1 tkSemiColon
+	| tkFunction func_name fp_list optional_method_modificators1 tkAssign expr_l1_func_decl_lambda tkSemiColon
 		{
 			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, null, $6, @1.Merge(@4));
 			if (parsertools.build_tree_for_formatter)
@@ -3135,6 +3181,13 @@ expr_l1
     | question_expr
 		{ $$ = $1; }
     ;
+    
+expr_l1_func_decl_lambda
+	: expr_l1
+		{ $$ = $1; }
+    | func_decl_lambda
+        { $$ = $1; }
+    ;
 	
 expr_dq
 	: relop_expr
@@ -3155,6 +3208,11 @@ typeof_expr
         { 
 			$$ = new typeof_operator((named_type_reference)$3, @$);  
 		}
+    |
+      tkTypeOf tkRoundOpen empty_template_type_reference tkRoundClose
+        { 
+			$$ = new typeof_operator((named_type_reference)$3, @$);  
+		}
     ;
 
 question_expr
@@ -3166,6 +3224,17 @@ question_expr
 		}
     ;
 
+empty_template_type_reference
+    : simple_type_identifier template_type_empty_params
+        {
+            $$ = new template_type_reference((named_type_reference)$1, (template_param_list)$2, @$); 
+        }
+    | simple_type_identifier tkAmpersend template_type_empty_params
+        {
+            $$ = new template_type_reference((named_type_reference)$1, (template_param_list)$3, @$);
+        }
+    ;
+    
 simple_or_template_type_reference
     : simple_type_identifier
 		{ 
@@ -3266,12 +3335,12 @@ list_fields_in_unnamed_object
 		}
 	;
 
-array_name_for_new_expr
+/*array_name_for_new_expr
     : simple_type_identifier 
 		{ $$ = $1; }
 //    | unsized_array_type - è êîìó òàêîå ïðèñíèëîñü
 //		{ $$ = $1; }
-    ;
+    ;*/
 
 optional_expr_list_with_bracket
     :
@@ -3652,6 +3721,10 @@ attribute_variable
         { 
 			$$ = new attribute(null, $1 as named_type_reference, $2 as expression_list, @$);
 		}
+    | template_type optional_expr_list_with_bracket
+        {
+            $$ = new attribute(null, $1 as named_type_reference, $2 as expression_list, @$);
+        }
     ;
 
 dotted_identifier
@@ -3813,7 +3886,10 @@ literal_list
         }
     | literal_list one_literal    
         { 
-			$$ = ($1 as literal_const_line).Add($2 as literal, @$);
+        	var line = $1 as literal_const_line;
+            if (line.literals.Last() is string_const && $2 is string_const)
+            	parsertools.AddErrorFromResource("TWO_STRING_LITERALS_IN_SUCCESSION",@2);
+			$$ = line.Add($2 as literal, @$);
         } 
     ;
 
@@ -4040,6 +4116,8 @@ keyword
     | tkTry
 		{ $$ = $1; }
     | tkType
+		{ $$ = $1; }
+    | tkStatic
 		{ $$ = $1; }
     | tkThen
 		{ $$ = $1; }
