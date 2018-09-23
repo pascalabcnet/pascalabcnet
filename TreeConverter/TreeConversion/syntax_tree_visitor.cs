@@ -19412,8 +19412,8 @@ namespace PascalABCCompiler.TreeConverter
             var names = l.name_expr.Select(x=>x.name).ToList();
             var strnames = names.Select(id=>id.name).ToList(); // преобразование idents в строки
 
-            var tt1 = l.name_expr[0].expr;
-            var tse = convert_strong(tt1);
+            /*var tt1 = l.name_expr[0].expr;
+            var tse = convert_strong(tt1);*/
 
             var semantic_types = l.name_expr.Select(x => convert_strong(x.expr).type).ToList();
             var types = semantic_types.Select(x => SyntaxTreeBuilder.BuildSemanticType(x)).ToList();

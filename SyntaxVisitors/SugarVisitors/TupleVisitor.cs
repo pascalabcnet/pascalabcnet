@@ -31,6 +31,11 @@ namespace SyntaxVisitors.SugarVisitors
             DefaultVisit(ne);
         }
 
+        public override void visit(name_assign_expr ne)
+        {
+            DefaultVisit(ne);
+        }
+
 
         public override void visit(tuple_node tup)
         {

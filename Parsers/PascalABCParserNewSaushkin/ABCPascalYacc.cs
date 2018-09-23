@@ -1,9 +1,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  IVAN-PC
-// DateTime: 23.09.2018 13:03:25
-// UserName: Ivan
+// Machine:  DESKTOP-A6LT9RI
+// DateTime: 23.09.2018 22:34:26
+// UserName: ?????????
 // Input file <ABCPascal.y>
 
 // options: no-lines gplex
@@ -4324,7 +4324,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         	}
         	else // ����������� ��������
         	{
-				var id = NewId("#GetGen");
+				var id = NewId("#GetGen", LocationStack[LocationStack.Depth-2]);
                 procedure_definition pr = null;
                 if (!parsertools.build_tree_for_formatter)
                     pr = CreateAndAddToClassReadFunc(ValueStack[ValueStack.Depth-2].ex, id, LocationStack[LocationStack.Depth-2]);
@@ -4346,7 +4346,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         	}
         	else // ����������� ��������
         	{
-				var id = NewId("#SetGen");
+				var id = NewId("#SetGen", LocationStack[LocationStack.Depth-2]);
                 procedure_definition pr = null;
                 if (!parsertools.build_tree_for_formatter)
                     pr = CreateAndAddToClassWriteProc(ValueStack[ValueStack.Depth-2].stn as statement,id,LocationStack[LocationStack.Depth-2]);
@@ -4367,7 +4367,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         	}
         	else 
         	{
-				var id = NewId("#SetGen");
+				var id = NewId("#SetGen", LocationStack[LocationStack.Depth-1]);
                 procedure_definition pr = null;
                 if (!parsertools.build_tree_for_formatter)
                     pr = CreateAndAddToClassWriteProc(ValueStack[ValueStack.Depth-1].stn as statement,id,LocationStack[LocationStack.Depth-1]);
@@ -4383,7 +4383,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         	}
         	else 
         	{
-				var id = NewId("#GetGen");
+				var id = NewId("#GetGen", LocationStack[LocationStack.Depth-1]);
                 procedure_definition pr = null;
                 if (!parsertools.build_tree_for_formatter)
                     pr = CreateAndAddToClassReadFunc(ValueStack[ValueStack.Depth-1].ex,id,LocationStack[LocationStack.Depth-1]);
