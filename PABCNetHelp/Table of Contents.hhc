@@ -444,7 +444,7 @@
 				<param name="Local" value="LangGuide\Classes\virtual.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="&Agrave;&aacute;&ntilde;&ograve;&eth;&agrave;&ecirc;&ograve;&iacute;&ucirc;&aring; &igrave;&aring;&ograve;&icirc;&auml;&ucirc;">
+				<param name="Name" value="&Agrave;&aacute;&ntilde;&ograve;&eth;&agrave;&ecirc;&ograve;&iacute;&ucirc;&aring; &igrave;&aring;&ograve;&icirc;&auml;&ucirc; &egrave; &ecirc;&euml;&agrave;&ntilde;&ntilde;&ucirc;">
 				<param name="Local" value="LangGuide\Classes\abstractmethods.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
@@ -452,7 +452,7 @@
 				<param name="Local" value="LangGuide\Classes\operoverloading.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="&Ecirc;&euml;&agrave;&ntilde;&ntilde;&icirc;&acirc;&ucirc;&aring; &iuml;&icirc;&euml;&yuml;, &igrave;&aring;&ograve;&icirc;&auml;&ucirc; &egrave; &ecirc;&icirc;&iacute;&ntilde;&ograve;&eth;&oacute;&ecirc;&ograve;&icirc;&eth;&ucirc;">
+				<param name="Name" value="&Ntilde;&ograve;&agrave;&ograve;&egrave;&divide;&aring;&ntilde;&ecirc;&egrave;&aring; &ecirc;&euml;&agrave;&ntilde;&ntilde;&ucirc;, &iuml;&icirc;&euml;&yuml;, &igrave;&aring;&ograve;&icirc;&auml;&ucirc;, &ntilde;&acirc;&icirc;&eacute;&ntilde;&ograve;&acirc;&agrave; &egrave; &ecirc;&icirc;&iacute;&ntilde;&ograve;&eth;&oacute;&ecirc;&ograve;&icirc;&eth;&ucirc;">
 				<param name="Local" value="LangGuide\Classes\classconstr.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">

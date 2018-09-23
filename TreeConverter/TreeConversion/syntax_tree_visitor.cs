@@ -8792,10 +8792,10 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         AddError(new CanNotCallNonStaticMethodWithClass(tn, loc, fn));
                     }
-                    if (cmn.cont_type.IsAbstract)
-                    	AddError(new SimpleSemanticError(loc, "ABSTRACT_CONSTRUCTOR_{0}_CALL", cmn.cont_type.name));
                     if (cmn.cont_type.IsStatic)
                         AddError(new SimpleSemanticError(loc, "STATIC_CONSTRUCTOR_CALL"));
+                    if (cmn.cont_type.IsAbstract)
+                    	AddError(new SimpleSemanticError(loc, "ABSTRACT_CONSTRUCTOR_{0}_CALL", cmn.cont_type.name));
                     common_constructor_call csmc2 = new common_constructor_call(cmn, loc);
                     return csmc2;
                     //if (cmn.pascal_associated_constructor==null)
@@ -17753,13 +17753,13 @@ namespace PascalABCCompiler.TreeConverter
             {
             	AddError(loc, "INTERFACE_{0}_CONSTRUCTOR_CALL", tn.name);
             }
-            if (tn.IsAbstract)
-            {
-            	AddError(loc, "ABSTRACT_CONSTRUCTOR_{0}_CALL", tn.name);
-            }
             if (tn.IsStatic)
             {
                 AddError(loc, "STATIC_CONSTRUCTOR_CALL");
+            }
+            if (tn.IsAbstract)
+            {
+            	AddError(loc, "ABSTRACT_CONSTRUCTOR_{0}_CALL", tn.name);
             }
             List<SymbolInfo> sil = tn.find_in_type(TreeConverter.compiler_string_consts.default_constructor_name, context.CurrentScope); //tn.Scope); 
             delete_inherited_constructors(ref sil, tn);
