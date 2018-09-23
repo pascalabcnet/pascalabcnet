@@ -71,8 +71,13 @@ function Inv<T>(p: ()->T): T := Invoke&<T>(p); // Теперь это работ
 
 function MainDockPanel: DockPanel := MainWindow.MainPanel;
 
+//{{{doc: Начало секции 1 }}} 
 type
+// -----------------------------------------------------
+//>>     Класс WindowType # WindowType class
+// -----------------------------------------------------
   ///!#
+  /// Тип главного окна приложения
   WindowType = class
   private 
     procedure SetLeft(l: real);
@@ -121,6 +126,7 @@ type
     /// Возвращает прямоугольник клиентской области окна
     function ClientRect: GRect;
   end;
+//{{{--doc: Конец секции 1 }}} 
   
 
 function wplus := SystemParameters.WindowResizeBorderThickness.Left + SystemParameters.WindowResizeBorderThickness.Right;
@@ -143,13 +149,13 @@ function WindowType.GetTop := InvokeReal(WindowTypeGetTopP);
 procedure WindowTypeSetWidthP(w: real) := MainWindow.Width := w + wplus;
 procedure WindowType.SetWidth(w: real) := Invoke(WindowTypeSetWidthP,w);
 
-function WindowTypeGetWidthP := MainWindow.Width - wplus;
+function WindowTypeGetWidthP := MainWindow.ActualWidth - wplus;
 function WindowType.GetWidth := InvokeReal(WindowTypeGetWidthP);
 
 procedure WindowTypeSetHeightP(h: real) := MainWindow.Height := h + hplus;
 procedure WindowType.SetHeight(h: real) := Invoke(WindowTypeSetHeightP,h);
 
-function WindowTypeGetHeightP := MainWindow.Height - hplus;
+function WindowTypeGetHeightP := MainWindow.ActualHeight - hplus;
 function WindowType.GetHeight := InvokeReal(WindowTypeGetHeightP);
 
 procedure WindowTypeSetCaptionP(c: string) := MainWindow.Title := c;
@@ -201,8 +207,20 @@ function WindowType.Center := Pnt(Width/2,Height/2);
 
 function WindowType.ClientRect := Rect(0,0,Width,Height);
 
+function operator implicit(Self: (integer, integer)): Point; extensionmethod := new Point(Self[0], Self[1]);
+function operator implicit(Self: (integer, real)): Point; extensionmethod := new Point(Self[0], Self[1]);
+function operator implicit(Self: (real, integer)): Point; extensionmethod := new Point(Self[0], Self[1]);
+function operator implicit(Self: (real, real)): Point; extensionmethod := new Point(Self[0], Self[1]);
+
+function operator implicit(Self: array of (real, real)): array of Point; extensionmethod := 
+  Self.Select(t->new Point(t[0],t[1])).ToArray;
+function operator implicit(Self: array of (integer, integer)): array of Point; extensionmethod := 
+  Self.Select(t->new Point(t[0],t[1])).ToArray;
  
-  
+procedure SetLeft(Self: UIElement; l: integer); extensionmethod := Canvas.SetLeft(Self,l);
+
+procedure SetTop(Self: UIElement; t: integer); extensionmethod := Canvas.SetTop(Self,t);
+
 var __initialized: boolean;
 
 procedure __InitModule;

@@ -1,0 +1,13 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="BeginFrameBasedAnimation">
+<param name="Keyword" value="EndFrameBasedAnimation"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Процедуры покадровой анимации</H1>
+<table border=0 cellpadding=5><tr><td><code><b>procedure</b> BeginFrameBasedAnimation(Draw: <b>procedure</b>; frate: integer := 60);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Начинает анимацию, основанную на кадре. Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw</td></tr>
+<tr><td><code><b>procedure</b> BeginFrameBasedAnimation(Draw: <b>procedure</b>(frame: integer); frate: integer := 60);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Начинает анимацию, основанную на кадре Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw с параметром, равным номеру кадра</td></tr>
+<tr><td><code><b>procedure</b> EndFrameBasedAnimation;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Завершает анимацию, основанную на кадре</td></tr>
+</table>
+</body></HTML>

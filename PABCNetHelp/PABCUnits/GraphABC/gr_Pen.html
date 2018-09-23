@@ -1,0 +1,94 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="SetPenColor">
+<param name="Keyword" value="PenColor">
+<param name="Keyword" value="SetPenWidth">
+<param name="Keyword" value="PenWidth">
+<param name="Keyword" value="SetPenStyle">
+<param name="Keyword" value="PenStyle">
+<param name="Keyword" value="SetPenMode">
+<param name="Keyword" value="PenMode">
+<param name="Keyword" value="PenX">
+<param name="Keyword" value="PenY">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Подпрограммы для работы с пером</H1>
+<p>Рисование линий осуществляется текущим пером. Доступ к 
+свойствам текущего пера можно осуществлять как в процедурном, так и в 
+объектно-ориентированном стиле.</p>
+<p>Процедуры и функции для доступа к свойствам пера 
+сгруппированы парами: если <code>Prop</code> - имя 
+свойства пера, то функция <code>PenProp</code> возвращает 
+значение этого свойства, а процедура <code>SetPenProp(p)</code> 
+устанавливает это свойство:<br>
+&nbsp;</p>
+<table border=0 CELLPADDING=5>
+<tr><td>
+<code>
+<b>procedure</b> SetPenColor(c: Color); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает цвет текущего пера
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> PenColor: Color;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цвет текущего пера
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> SetPenWidth(Width: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает ширину текущего пера
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> PenWidth: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает ширину текущего пера
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> SetPenStyle(style: 
+<a href="gr_PenDashStyle.html">DashStyle</a>);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает стиль текущего пера. 
+Константы стилей пера приведены <a href="gr_PenDashStyle.html">здесь</a>
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> PenStyle: DashStyle;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает стиль текущего пера. 
+Константы стилей пера приведены <a href="gr_PenDashStyle.html">здесь</a>
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> SetPenMode(m: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает режим текущего пера
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> PenMode: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает режим текущего пера
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> PenX: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращают x-координату текущей позиции рисования
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> PenY: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращают y-координату текущей позиции рисования
+</td></tr>
+</table>
+<p>Кроме этого, можно изменять свойства текущего пера через 
+<a href="gr_PenClass.html">объект </a> <code><a href="gr_PenClass.html">Pen</a></code>.</p>
+
+</body></html>

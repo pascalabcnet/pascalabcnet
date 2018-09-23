@@ -1,0 +1,46 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Arr">
+<param name="Keyword" value="ArrFill">
+<param name="Keyword" value="ArrGen">
+<param name="Keyword" value="ArrRandom">
+<param name="Keyword" value="ArrRandomInteger">
+<param name="Keyword" value="ArrRandomReal">
+<param name="Keyword" value="ReadArrInteger">
+<param name="Keyword" value="ReadArrReal">
+<param name="Keyword" value="ReadArrString"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Подпрограммы для создания динамических массивов</H1>
+<table border=0 cellpadding=5><tr><td><code><b>function</b> Arr&lt;T&gt;(<b>params</b> a: <b>array</b>  <b>of</b> T): <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив, заполненный указанными значениями</td></tr>
+<tr><td><code><b>function</b> Arr&lt;T&gt;(a: <b>sequence </b>  <b>of</b> T): <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив, заполненный значениями из последовательнсти</td></tr>
+<tr><td><code><b>function</b> ArrFill&lt;T&gt;(count: integer; x: T): <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив из count элементов x</td></tr>
+<tr><td><code><b>function</b> ArrGen&lt;T&gt;(count: integer; gen: integer-&gt;T): <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив из count элементов, заполненных значениями gen(i)</td></tr>
+<tr><td><code><b>function</b> ArrGen&lt;T&gt;(count: integer; gen: integer-&gt;T; from: integer): <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив из count элементов, заполненных значениями gen(i), начиная с i=from</td></tr>
+<tr><td><code><b>function</b> ArrGen&lt;T&gt;(count: integer; first: T; next: T-&gt;T): <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив из count элементов, начинающихся с first, с функцией next перехода от предыдущего к следующему</td></tr>
+<tr><td><code><b>function</b> ArrGen&lt;T&gt;(count: integer; first, second: T; next: (T,T) -&gt;T): <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив из count элементов, начинающихся с first и second, с функцией next перехода от двух предыдущих к следующему</td></tr>
+<tr><td><code><b>function</b> ArrRandom(n: integer := 10; a: integer := 0; b: integer := 100): <b>array</b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив размера n, заполненный случайными целыми значениями</td></tr>
+<tr><td><code><b>function</b> ArrRandomInteger(n: integer := 10; a: integer := 0; b: integer := 100): <b>array</b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив размера n, заполненный случайными целыми значениями</td></tr>
+<tr><td><code><b>function</b> ArrRandomReal(n: integer := 10; a: real := 0; b: real := 10): <b>array</b>  <b>of</b> real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив размера n, заполненный случайными вещественными значениями</td></tr>
+<tr><td><code><b>function</b> ReadArrInteger(n: integer): <b>array</b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив из n целых, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadArrInteger(prompt: string; n: integer): <b>array</b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает массив из n целых, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadArrReal(n: integer): <b>array</b>  <b>of</b> real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив из n вещественных, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadArrReal(prompt: string; n: integer): <b>array</b>  <b>of</b> real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает массив из n вещественных, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadArrString(n: integer): <b>array</b>  <b>of</b> string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив из n строк, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadArrString(prompt: string; n: integer): <b>array</b>  <b>of</b> string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает массив из n строк, введенных с клавиатуры</td></tr>
+</table>
+</body></HTML>

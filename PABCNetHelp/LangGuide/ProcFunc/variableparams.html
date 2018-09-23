@@ -1,0 +1,46 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="params">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+
+<H1>Переменное число параметров</H1>
+<p>Для указания того, что подпрограмма должна иметь переменное число параметров, 
+используется ключевое слово <b><code>params</code></b>, за которым следует 
+описание динамического массива. Например:</p>
+<blockquote>
+	<code><b>function</b> Sum(<b>params</b> a: <b>array</b> <b>of</b> integer): integer;
+<b><br>
+	begin</b>
+  <br>
+&nbsp;
+  Result := 0;
+  <b><br>
+&nbsp; for</b> i: integer := 0 <b>to</b> a.Length <b>do</b>
+    <br>
+&nbsp;&nbsp;&nbsp;
+    Inc(Result,a[i]);
+<b><br>
+	end;</b></code>
+</blockquote>
+<p>При вызове 
+подпрограммы на месте формального параметра <b><code>params</code></b>
+может быть любое ненулевое количество фактических 
+параметров совместимого типа, перечисляемых через запятую:</p>
+<blockquote>
+	<p><code><b>var</b> s: integer := Sum(1,2,3,4,5);<br>
+	s := s + Sum(6,7);</code></p>
+</blockquote>
+В списке параметров ключевое слово <b> <code>params</code></b>
+может указываться только для последнего параметра, причем, этот параметр не 
+должен быть параметром по умолчанию. Параметры <b><code>params</code></b> всегда передаются только по значению.
+</body>
+
+</html>

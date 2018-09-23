@@ -1,0 +1,14 @@
+<html><head><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="OfType">
+</object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
+<body>
+<H1>Метод OfType</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<tr><td>
+<code><b>function </b>OfType&lt;Res&gt;(): <b>sequence of</b> Res;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет фильтрацию элементов объекта System.Collections.IEnumerable по заданному типу. Возвращает подпоследовательность данной последовательности. в которой все элементы принадлежат заданному типу.
+</td></tr>
+</table>
+<h2>Пример </h2><blockquote><code><strong>begin</strong><br>&nbsp; <strong>var</strong> 
+	a := new object[](1,2.5,'d','ff',3.4);<br>&nbsp; a.OfType&amp;&lt;real&gt;().Println;<br>
+	<strong>end</strong>.</code></blockquote>
+</body>

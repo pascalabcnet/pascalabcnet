@@ -1,0 +1,116 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="default">
+<param name="Keyword" value="where">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+<style type="text/css">
+.auto-style1 {
+	font-family: monospace;
+	font-size: 10pt;
+	color: #000080;
+}
+</style>
+</head>
+
+<body>
+<H1><span lang="ru">Ограничения на параметры обобщенных подпрограмм и классов</span> </H1>
+<p><span lang="ru">По умолчанию с переменными, имеющими тип параметра 
+обобщенного класса или подпрограммы, внутри методов обобщённых классов и 
+обобщенных подпрограмм можно делать лишь ограниченный набор действий: 
+присваивать и сравнивать на равенство </span>(<span lang="ru">отметим, 
+что в </span>NET <span lang="ru">сравнение на равенство внутри </span>обобщений<span lang="ru"> 
+запрещено!).</span></p>
+<p><span lang="ru">Например, данный код будет работать:</span></p>
+<blockquote>
+	<p><code><b>function</b> Eq&lt;T&gt;(a,b: T): boolean;<br>
+	<b>begin</b><br>
+&nbsp; Result := a = b;<br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p><span lang="ru">Можно также использовать присваивание переменной, имеющей тип 
+параметра обобщенного класса или подпрограммы, значение по умолчанию, используя 
+конструкцию </span><code><b>default</b>(T)</code> - <span lang="ru">значение по 
+умолчанию для типа </span><code>T</code><span lang="ru"> (</span><code>nil</code>
+<span lang="ru">для ссылочных типов и нулевое значение для размерных типов):</span></p>
+<blockquote>
+	<p><code><b>procedure</b> Def&lt;T&gt;(<b>var</b> a: T);<br>
+	<b>begin</b><br>
+&nbsp; a := <b>default</b>(T);<br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p><span lang="ru">Однако, данный код </span>
+</p>
+<blockquote>
+	<p><code><b>function</b> Sum&lt;T&gt;(a,b: T): T;<br>
+	<b>begin</b><br>
+&nbsp; Result := a + b;<br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p><span lang="ru">вызовет ошибку компиляции до инстанцирования (создания 
+экземпляра с конкретным типом). Такое поведение в .</span>NET <span lang="ru">
+кардинально отличается от шаблонов в </span>C++<span lang="ru">, где в коде 
+шаблона можно использовать любые операции с шаблонными параметрами, и ошибка 
+может произойти только в момент инстанцирования с конкретным типом.</span></p>
+<p><span lang="ru">Чтобы разрешить использование некоторых действий с 
+переменными, имеющими тип параметра обобщенного класса или подпрограммы, 
+используются ограничения на 
+обобщенные параметры, задаваемые в секции </span><code><b>where</b></code>
+<span lang="ru">после заголовка подпрограммы или класса:</span></p>
+<blockquote>
+	<p><code><b>type</b><br>
+	<span lang="ru">&nbsp; </span>MyPair&lt;T&gt; = <b>class<br>
+	</b><span lang="ru">&nbsp; </span><b>&nbsp; where</b> T: System.ICloneable;<br>
+	<b>&nbsp; private<br>
+&nbsp;&nbsp;&nbsp; </b>x,y: T;<b><br>
+&nbsp; public<br>
+&nbsp;&nbsp;&nbsp; constructor</b> (x,y: T);<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Self.x := x;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Self.y := y;<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+	<span lang="ru">&nbsp;&nbsp;&nbsp; </span><b>function</b> Clone: MyPair;<br>
+	<span lang="ru">&nbsp;&nbsp;&nbsp; </span><b>begin</b><br>
+	<span lang="ru">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>Result := new MyPair&lt;T&gt;(x.Clone,y.Clone);<br>
+	<span lang="ru">&nbsp;&nbsp;&nbsp; </span><b>end</b>;<br>
+	<span lang="ru">&nbsp; </span><b>end</b>;</code></p>
+</blockquote>
+<p><span lang="ru">В с</span>екци<span lang="ru">и</span> <code><b>where</b></code> <span lang="ru">
+через запятую перечисляются </span>следующи<span lang="ru">е</span> ограничения:<br>
+<span lang="ru">На </span>1 мест<span lang="ru">е</span>: слово <code><b>class</b></code>
+<span lang="ru">или</span> слово <code><b>record</b></code> <span lang="ru">или</span> имя
+<span lang="ru">класса-</span>предка<span lang="ru">.</span><br>
+<span lang="ru">На </span>2 мест<span lang="ru">е</span>: список реализуемых интерфейсов<span lang="ru"> 
+через запятую.</span><br>
+<span lang="ru">На </span>3 мест<span lang="ru">е</span>: слово <strong>
+<span class="auto-style1">constructor</span></strong>, указывающее, что данный тип должен иметь 
+конструктор по умолчанию. </p>
+<p>При этом <span lang="ru">каждое</span> из 
+мест<span lang="ru">, кроме одного,</span> может <span lang="ru">быть пустым</span>. </p>
+<p><span lang="ru">Для каждого типа-параметра может быть своя секция </span>
+<strong><span class="auto-style1">where</span></strong><span lang="ru">, каждая секция </span>
+<strong><span class="auto-style1">where</span></strong> <span lang="ru">завершается 
+точкой с запятой.</span></p>
+<p><span lang="ru"><b>Пример.</b> Обобщенная функция поиска минимального 
+элемента в массиве. Элементы должны реализовывать интерфейс </span><code>
+IComparable&lt;T&gt;</code><span lang="ru">.</span></p>
+<blockquote>
+	<p><code><b>function</b> MinElem&lt;T&gt;(a: <b>array</b> <b>of</b> T): T;<br>
+&nbsp; <b>where</b> T: IComparable&lt;T&gt;;<br>
+	<b>begin</b><br>
+&nbsp; <b>var</b> min := a[0];<br>
+&nbsp; <b>for</b> <b>var</b> i := 1 <b>to</b> a.High <b>do</b><br>
+&nbsp;&nbsp;&nbsp; <b>if</b> a[i].CompareTo(min)&lt;0 <b>then</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; min := a[i];<br>
+&nbsp; Result := min; <br>
+	<b>end</b>; </code></p>
+</blockquote>
+<p><span lang="ru">К сожалению, нет возможности использовать запись a[i]</span>&lt;<span lang="ru">min, 
+поскольку операции не вход</span>я<span lang="ru">т в интерфейс</span>ы<span lang="ru">.</span></p>
+</body>
+
+</html>

@@ -54,6 +54,7 @@
 		<Key word = "case" />
 		<Key word = "class" />
 		<Key word = "auto" />
+        <Key word = "static" />
 		<Key word = "template" />
 		<Key word = "sealed" />
 		<Key word = "partial" />
@@ -144,6 +145,7 @@
 	<KeyWords name = "NonReserved1" bold="false" italic="false" color="Blue">
 		<Key word = "self" />
 		<Key word = "result" />
+		<Key word = "value" />
 	</KeyWords>
 			
 	<KeyWords name = "OperatorKeywords" bold="true" italic="false" color="Black">

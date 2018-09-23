@@ -1,0 +1,105 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="unit">
+<param name="Keyword" value="interface">
+<param name="Keyword" value="implementation">
+<param name="Keyword" value="initialization">
+<param name="Keyword" value="finalization">
+<param name="Keyword" value="Раздел интерфейса">
+<param name="Keyword" value="Раздел реализации">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Структура модуля</H1>
+<p>Модули предназначены для разбиения текста программы на 
+несколько файлов. В модулях описываются переменные, константы, типы, 
+классы, процедуры и функции. Для того чтобы эти объекты можно было использовать 
+в вызывающем модуле (которым может быть и основная программа), следует указать 
+имя файла модуля (без расширения .pas) в разделе <b><code>uses</code></b> 
+вызывающего модуля. Файл модуля (.pas) или откомпилированный 
+файл модуля (.pcu) должен находиться либо в том же 
+каталоге, что и основная программа, либо в подкаталоге <b>Lib</b> 
+системного каталога программы <b>PascalABC.NET</b>.</p>
+<p>Модуль имеет следующую структуру:</p>
+<blockquote>
+	<p><code><b>unit</b> <code class="codeit">имя модуля</code>;</code></p>
+	<p><code><b>interface</b></code></p>
+	<p><code>
+	<code class="codeit">раздел интерфейса </code></code></p>
+	<p><code><b>implementation</b></code></p>
+	<p><code><code class="codeit">раздел реализации
+	</code></code> </p>
+	<p><code><b>initialization</b></code></p>
+	<p><code><code class="codeit">раздел инициализации</code></code></p>
+	<p><code><b>finalization</b></code></p>
+	<p><code><code class="codeit">раздел финализации</code></code></p>
+	<p><code><b>end</b>.</code> </p>
+</blockquote>
+<p>Имеется также <a href="simplemodule.html">упрощенный 
+синтаксис модулей</a> без разделов интерфейса и реализации.</p>
+<p>Первая строка обязательна и называется <b><font color="#FF0000"> <i>заголовком модуля</i></font></b>. 
+Имя модуля должно совпадать с именем файла.</p>
+<p>Раздел интерфейса и раздел реализации модуля могут начинаться 
+с <a href="uses.html">раздела </a> <code><b><a href="uses.html">uses</a></b></code> подключения внешних 
+модулей и пространств имен .NET. Имена в двух разделах
+<code><b>uses</b></code> не должны пересекаться.</p>
+<p><i>Раздел </i><code>
+	<code class="codeit">интерфейса</code></code> включает объявление всех 
+имен, которые экспортируются данным модулем в другие модули (при подключении его 
+в разделе <b><code>uses</code></b>). Это могут быть 
+константы, переменные, процедуры, функции, классы, интерфейсы. Реализация 
+методов классов может быть дана прямо в разделе интерфейса, но это не 
+рекомендуется.</p>
+<p><i>Раздел реализации</i> содержит реализацию всех процедур, функций 
+и методов, объявленных в разделе интерфейса. Кроме этого, в разделе реализации 
+могут быть описания внутренних имен, которые не видны вне модуля и используются 
+лишь как вспомогательные. </p>
+<p><i>Раздел инициализации</i> и <i>р</i><i>аздел финализации</i> 
+представляют собой последовательность операторов, разделяемых символом <code>;</code>. Операторы из раздела 
+инициализации модуля выполняются до начала основной программы,
+операторы из раздела финализации модуля
+- после окончания основной программы. 
+Порядок выполнения разделов инициализации и разделов финализации подключенных 
+модулей непредсказуем. Как раздел инициализации, так и раздел финализации могут 
+отсутствовать. </p>
+<p>Вместо разделов инициализации и финализации может 
+присутствовать только раздел инициализации в виде</p>
+<blockquote>
+	<p><code><b>begin</b></code><br>
+&nbsp;<i> последовательность операторов</i><br>
+	<b><code>en</code></b><code><b>d</b>.</code></p>
+</blockquote>
+<p>Например:</p>
+<blockquote>
+	<p><code><b>unit</b> Lib;</code></p>
+	<p><b><code>interface</code></b></p>
+	<p><code><b>uses</b> GraphABC;</code></p>
+	<p><code><b>const</b> Dim = 5;<br>
+	<b>var</b> Colors: <b>array</b> [1..Dim] <b>of</b> integer;</code></p>
+	<p><code><b>function</b> RandomColor: integer;<br>
+	<b>procedure</b> FillByRandomColor;</code></p>
+	<p><b><code>implementation</code></b></p>
+	<p><code><b>function</b> RandomColor: integer;<br>
+	<b>begin</b><br>
+&nbsp; Result := RGB(Random(255),Random(255),Random(255));<br>
+	<b>end</b>;<br>
+	<b>procedure</b> FillByRandomColor;<br>
+	<b>begin</b><br>
+&nbsp; <b>for</b> i: integer := 1 <b>to</b> Dim <b>do</b><br>
+&nbsp;&nbsp;&nbsp; Colors[i] := RandomColor; <br>
+	<b>end</b>;</code></p>
+	<p><code><b>initialization</b><br>
+&nbsp; FillByRandomColor;<br>
+	<b>end</b>.</code></p>
+</blockquote>
+<p><a href="cyclemodules.html">Циклические ссылки между модулями</a> возможны при 
+определенных ограничениях.</p>
+</body>
+
+</html>

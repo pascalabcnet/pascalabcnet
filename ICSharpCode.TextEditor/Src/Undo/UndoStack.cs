@@ -106,7 +106,11 @@ namespace ICSharpCode.TextEditor.Undo
 		/// </summary>
 		public void Undo()
 		{
-			if (undoGroupDepth != 0) {
+            while (undoGroupDepth != 0) // SSM 24.08.18 - грязный хак в попытке исправления ошибки с Ctrl-Z
+            {
+                EndUndoGroup();
+            }
+            if (undoGroupDepth != 0) {
 				throw new InvalidOperationException("cannot perform Undo/Redo while undo group is open");
 			}
 			if (undostack.Count > 0) {

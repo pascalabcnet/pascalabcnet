@@ -125,6 +125,12 @@ namespace VisualPascalABC
             optionsContentEngine.AddContent(new IntelliseseOptionsContent(this));
         }
 
+        public void UpdateOptionsForm()
+        {
+            if (optionsContentEngine != null)
+                optionsContentEngine.UpdateOptionsForm();
+        }
+
         void AddWindowToDockPanel(DockContent dc, DockPanel dp, DockStyle dockStyle, DockState dockState, bool isFloat, DockPane dockToPane, int ind)
         {
             if (dc.Visible && dc.Pane != null)

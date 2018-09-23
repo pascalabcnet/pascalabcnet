@@ -24,6 +24,11 @@ namespace SyntaxVisitors.SugarVisitors
             return num.ToString();
         }
 
+        public override void visit(write_accessor_name wn)
+        {
+
+        }
+
         public override void visit(assign_tuple asstup)
         {
             // тут возможно ошибка более глубокая - в semantic_check_sugared_statement_node(asstup) возможно остаются во вложенных лямбдах другие assign_tuple

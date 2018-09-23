@@ -1,0 +1,295 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="ClearWindow">
+<param name="Keyword" value="WindowWidth">
+<param name="Keyword" value="WindowHeight">
+<param name="Keyword" value="WindowLeft">
+<param name="Keyword" value="WindowTop">
+<param name="Keyword" value="SetWindowWidth">
+<param name="Keyword" value="SetWindowHeight">
+<param name="Keyword" value="SetWindowLeft">
+<param name="Keyword" value="SetWindowTop">
+<param name="Keyword" value="SetWindowSize">
+<param name="Keyword" value="SetWindowPos">
+<param name="Keyword" value="GraphBoxWidth">
+<param name="Keyword" value="GraphBoxHeight">
+<param name="Keyword" value="GraphBoxLeft">
+<param name="Keyword" value="GraphBoxTop">
+<param name="Keyword" value="WindowCaption">
+<param name="Keyword" value="WindowTitle">
+<param name="Keyword" value="SetWindowCaption">
+<param name="Keyword" value="SetWindowTitle">
+<param name="Keyword" value="InitWindow">
+<param name="Keyword" value="SaveWindow">
+<param name="Keyword" value="LoadWindow">
+<param name="Keyword" value="FillWindow">
+<param name="Keyword" value="CloseWindow">
+<param name="Keyword" value="ScreenWidth">
+<param name="Keyword" value="ScreenHeight">
+<param name="Keyword" value="CenterWindow">
+<param name="Keyword" value="WindowCenter">
+<param name="Keyword" value="MaximizeWindow">
+<param name="Keyword" value="MinimizeWindow">
+<param name="Keyword" value="NormalizeWindow">
+<param name="Keyword" value="WindowIsFixedSize">
+<param name="Keyword" value="SetWindowIsFixedSize">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Подпрограммы для работы с графическим окном</H1>
+<p>Доступ к свойствам графического окна можно осуществлять как в 
+процедурном, так и в объектно-ориентированном стиле.</p>
+<p>Процедуры и функции для доступа к свойствам окна 
+сгруппированы парами: если <code>Prop</code> - имя 
+свойства кисти, то функция <code>PenProp</code> 
+возвращает значение этого свойства, а процедура <code>SetPenProp(p)</code> 
+устанавливает это свойство:</p>
+<table border=0 CELLPADDING=5>
+<tr><td>
+<code>
+<b>function</b> WindowWidth: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает ширину клиентской части графического окна в пикселах
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> WindowHeight: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает высоту клиентской части графического окна в пикселах
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> WindowLeft: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отступ графического окна от левого края экрана в пикселах
+</td></tr>
+<tr>
+	<td>
+<code>
+<b>function</b> WindowTop: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отступ графического окна от верхнего края экрана в пикселах
+</td>
+</tr>
+<tr><td>
+<code>
+<b>function</b> WindowIsFixedSize: boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если графическо<span lang="ru">е</span> окно имеет 
+фиксированный размер, и False в противном случае&nbsp;
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> SetWindowWidth(w: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает ширину клиентской части графического окна в пикселах
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> SetWindowHeight(h: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает высоту клиентской части графического окна в пикселах
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> SetWindowLeft(l: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает отступ графического окна от левого края экрана в пикселах
+</td></tr>
+<tr>
+	<td>
+<code>
+<b>procedure</b> SetWindowTop(t: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает отступ графического окна от верхнего края экрана в пикселах
+</td>
+</tr>
+<tr><td>
+<code>
+<b>procedure</b> SetWindowIsFixedSize(b: boolean);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает, имеет ли графическое окно фиксированный размер
+</td></tr>
+<tr>
+	<td>
+<code>
+<b>function</b> WindowCaption: string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает заголовок графического окна
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+<b>function</b> WindowTitle: string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает заголовок графического окна
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+<b>procedure</b> SetWindowCaption(s: string);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает заголовок графического окна
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+<b>procedure</b> SetWindowTitle(s: string);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает заголовок графического окна
+</td>
+</tr>
+<tr><td>
+<code>
+<b>procedure</b> SetWindowSize(w,h: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает размеры клиентской части графического окна в пикселах
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> SetWindowPos(l,t: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает отступ графического окна от левого верхнего края экрана в пикселах
+</td></tr>
+<tr>
+	<td>
+<code>
+<b>procedure</b> ClearWindow;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Очищает графическое окно белым цветом
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+<b>procedure</b> ClearWindow(c: Color);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Очищает графическое окно цветом c
+</td>
+</tr>
+<tr><td>
+<code>
+<b>procedure</b> InitWindow(Left,Top,Width,Height: integer; BackColor: Color := clWhite);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает ширину и высоту клиентской части графического окна в пикселах
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> SaveWindow(fname: string);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сохраняет содержимое графического окна в файл с именем fname
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> LoadWindow(fname: string);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Восстанавливает содержимое графического окна из файла с именем fname
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> FillWindow(fname: string);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет содержимое графического окна обоями из файла с именем fname
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> CloseWindow;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Закрывает графическое окно и завершает приложение
+</td></tr>
+<tr>
+	<td>
+<code>
+<b>procedure</b> CenterWindow;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Центрирует графическое окно по центру экрана
+</td>
+</tr>
+<tr><td>
+<code>
+<b>function</b> WindowCenter: Point;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает центр графического окна
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> MaximizeWindow;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Максимизирует графическое окно
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> MinimizeWindow;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сворачивает графическое окно
+</td></tr>
+<tr>
+	<td>
+<code>
+<b>procedure</b> NormalizeWindow;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает графическое окно к нормальному размеру
+</td>
+</tr>
+</table>
+<br>
+Кроме того, 
+можно возвращать размеры экрана Screen, а также 
+размеры и положение графического компонента GraphBox, 
+на котором осуществляется рисование:<table border=0 CELLPADDING=5>
+<tr>
+	<td>
+<code>
+<b>function</b> GraphBoxWidth: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает ширину графического компонента в пикселах (по умолчанию совпадает с WindowWidth)
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+<b>function</b> GraphBoxHeight: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает высоту графического компонента в пикселах (по умолчанию совпадает с WindowHeight)
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+<b>function</b> GraphBoxLeft: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отступ графического компонента от левого края окна в пикселах
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+<b>function</b> GraphBoxTop: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отступ графического компонента от верхнего края окна в пикселах
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+<b>function</b> ScreenWidth: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает ширину экрана в пикселях
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+<b>function</b> ScreenHeight: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает высоту экрана в пикселях
+</td>
+</tr>
+</table>
+<p>Можно также изменять свойства графического окна через
+<a href="gr_WindowClass.html">объект
+Window</a></code>.</p>
+</body></html>

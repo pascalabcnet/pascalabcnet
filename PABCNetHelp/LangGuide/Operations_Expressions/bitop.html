@@ -1,0 +1,77 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="and">
+<param name="Keyword" value="or">
+<param name="Keyword" value="not">
+<param name="Keyword" value="xor">
+<param name="Keyword" value="shl">
+<param name="Keyword" value="shr">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+<style type="text/css">
+.auto-style1 {
+	font-family: monospace;
+	font-size: 10pt;
+	color: #000080;
+}
+</style>
+</head>
+<body><H1>Побитовые операции</H1>
+<p>
+К 
+<i>побитовым</i> относятся бинарные операции<i> </i><code><b>and</b></code>, <code><b>or</b></code>, <b><code>not</code></b>,
+<b><code>xor</code></b>, <code><b>shl</b></code>, <code><b>shr</b></code>. Они 
+производят побитовые манипуляции с операндами целого типа. Результирующий тип 
+для <code><b>and</b></code>, <code><b>or</b></code>,
+<b><code>xor</code></b> будет наименьшим целым, включающим все возможные значения обоих типов операндов. 
+Для <code><b>shl</b></code>, <code><b>shr</b></code> результирующий 
+тип совпадает с типом левого операнда, для <code><b>not</b></code> 
+- с типом операнда.</p>
+<p>
+Побитовые операции осуществляются следующим образом: с каждым битом (0 
+принимается за False, 1 - за True) 
+производится соответствующая логическая операция. Например:</p>
+<blockquote>
+	<p><code>00010101 <b>and</b> 00011001 = 00010001<br>
+	00010101 <b>or</b> 00011001 = 00011101<br>
+	00010101 <b>xor</b> 00011001 = 00001100<br>
+	<b>not</b> 00010101 = 11101010</code></p>
+</blockquote>
+<p>
+(операнды и результат представлены в двоичной форме).</p>
+<p>
+Операциии <strong><span class="auto-style1">shl</span></strong> и <strong>
+<span class="auto-style1">shr</span></strong> имеют вид:</p>
+<blockquote>
+<p><code>
+a <strong>shl</strong> n <br>a <strong>shr</strong> n
+</code></p>
+</blockquote>
+<p>
+где n - целое положительное число, a - целое число.</p>
+<p>
+<code>
+a <strong>shl</strong> n</code> представляет собой целое положительное, полученное из двоичного 
+представления числа a сдвигом влево на n позиций. Добавляемые справа позиции 
+заполняются нулями. </p>
+<p>
+<code>
+a <strong>shr</strong> n</code> представляет собой целое положительное, полученное из двоичного 
+представления числа a сдвигом вправо на n позиций.</p>
+<p>
+Например:</p>
+<blockquote>
+<p><code>
+3 <strong>shl</strong> 2 = 12 <br>12 <strong>shr</strong> 2 = 3</code></p>
+</blockquote>
+<p>
+поскольку 3=11<sub>2</sub>, после сдвига влево на 2 позиции 11<sub>2</sub> преобразуется в 1100<sub>2</sub>=12, а 
+12=1100<sub>2</sub> после сдвига вправо на 2 позиции преобразуется в 11<sub>2</sub>=3.</p>
+<p>
+&nbsp;</p>
+<p>
+&nbsp;</p>
+
+</body></html>

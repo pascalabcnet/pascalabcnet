@@ -1,0 +1,14 @@
+<html><head><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Zip">
+</object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
+<body>
+<H1>Метод Zip</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<tr><td>
+<code><b>function </b>Zip&lt;TSecond,Res&gt;(second: <b>sequence of</b> TSecond; resultSelector: (T,TSecond)-&gt;Res): <b>sequence of</b> Res;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет две последовательности, используя указанную функцию, принимающую по одному элементу каждой последовательности и возвращающую элемент результирующей последовательности.
+</td></tr>
+</table>
+<h2>Пример </h2><blockquote><code><strong>begin</strong><br>&nbsp; <strong>var</strong> 
+	a := Arr(1,2,3);<br>&nbsp; <strong>var</strong> b := Lst(4,5,6);<br>&nbsp; 
+	a.Zip(b,(x,y) -&gt; x+y).Println; // 5 7 9&nbsp; <br><strong>end</strong>.</code></blockquote>
+</body>

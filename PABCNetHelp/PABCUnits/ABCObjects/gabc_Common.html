@@ -1,0 +1,100 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="LockDrawingObjects">
+<param name="Keyword" value="UnLockDrawingObjects">
+<param name="Keyword" value="RedrawObjects">
+<param name="Keyword" value="ToFront">
+<param name="Keyword" value="ToBack">
+<param name="Keyword" value="ObjectsCount">
+<param name="Keyword" value="ObjectUnderPoint">
+<param name="Keyword" value="SwapPositions">
+<param name="Keyword" value="UIElementUnderPoint">
+<param name="Keyword" value="Objects">
+<param name="Keyword" value="UIElementABC">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Переменные, процедуры и функции модуля ABCObjects</H1>
+<table border=0 CELLPADDING=5>
+<tr><td>
+<code>
+<b>procedure</b> LockDrawingObjects;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Блокирует рисование графических объектов. Возможна лишь перерисовка всего экрана вместе со всеми графическими объектами на нем вызовом
+<code>RedrawObjects</code>
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> UnLockDrawingObjects;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разблокирует рисование графических объектов
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> RedrawObjects;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перерисовывает все графическое окно вместе со всеми графическими объектами на нем
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> ToFront(g: ObjectABC);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переносит графический объект 
+<code>g</code> на передний план
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> ToBack(g: ObjectABC);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переносит графический объект 
+<code>g</code> на задний план
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> ObjectsCount: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Количество графических объектов
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> ObjectUnderPoint(x,y: integer): ObjectABC;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Графический объект под точкой (<code>x</code>,
+<code>y</code>)
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> ObjectUnderPoint(p: Point): ObjectABC;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Графический объект под точкой 
+<code>p</code>
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> SwapPositions(o1,o2: ObjectABC);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Поменять позиции графических 
+объектов <code>o1</code> и <code>o2</code>
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> UIElementUnderPoint(x,y: integer): UIElementABC;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Элемент управления <code>ABCObject</code> под точкой (<code>x</code>,
+<code>y</code>)
+</td></tr>
+<tr>
+	<td>
+<code><b>var</b> Objects: ObjectsABCArray; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Массив графических объектов
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+  UIElementABC</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Класс элемента управления <code>ABCObject</code>
+</td>
+</tr>
+</table>
+</body></html>

@@ -90,6 +90,8 @@ SectionEnd
   LangString DESC_Core ${LANG_ENGLISH} "Core"
   LangString DESC_PT4 ${LANG_RUSSIAN} "Задачник PT4"
   LangString DESC_PT4 ${LANG_ENGLISH} "PT4 Taskbook"
+  LangString DESC_Files ${LANG_RUSSIAN} "Дополнительные файлы"
+  LangString DESC_Files ${LANG_ENGLISH} "Additional files"
   LangString DESC_PROGRAMMING_LANGUAGES ${LANG_RUSSIAN} "Входные языки"
   LangString DESC_PROGRAMMING_LANGUAGES ${LANG_ENGLISH} "Programming languages"
   LangString DESC_INTERNAL_ERROR_REPORT ${LANG_RUSSIAN} "Контроль внутренних ошибок"

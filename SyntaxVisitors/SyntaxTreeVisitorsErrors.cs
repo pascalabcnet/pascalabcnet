@@ -29,5 +29,10 @@ namespace SyntaxVisitors
         {
 
         }
+        public SyntaxVisitorError(string resourcestring, PascalABCCompiler.SyntaxTree.syntax_tree_node bad_node) 
+            : base(StringResources.Get(resourcestring), "", bad_node.source_context, bad_node)
+        {
+
+        }
     }
 }

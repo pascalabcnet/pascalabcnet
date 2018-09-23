@@ -33,6 +33,8 @@ namespace PascalABCCompiler.SyntaxTree
         DirectDescendants
     }
 
+    public enum SugaredExpressionType { MatchedExpression }
+
     public partial class syntax_tree_node
     {
 
@@ -798,6 +800,7 @@ namespace PascalABCCompiler.SyntaxTree
             this.proc_body = proc_body;
             source_context = sc;
             is_short_definition = false;
+            FillParentsInDirectChilds();
         }
         public procedure_definition(procedure_header proc_header, proc_block proc_body)
         {
@@ -805,6 +808,7 @@ namespace PascalABCCompiler.SyntaxTree
             this.proc_body = proc_body;
             source_context = null;
             is_short_definition = false;
+            FillParentsInDirectChilds();
         }
 
         public static procedure_definition EmptyDefaultConstructor
@@ -1059,7 +1063,7 @@ namespace PascalABCCompiler.SyntaxTree
     public partial class property_accessors
     {
         public property_accessors(ident read_accessor, ident write_accessor, SourceContext sc = null) 
-            : this(new read_accessor_name(read_accessor), new write_accessor_name(write_accessor),sc)
+            : this(new read_accessor_name(read_accessor, null, null), new write_accessor_name(write_accessor, null, null),sc)
         { }
     }
 
@@ -1106,6 +1110,11 @@ namespace PascalABCCompiler.SyntaxTree
         public class_definition(class_body_list body, SourceContext sc = null) : this(null, body, sc)
         { is_auto = false; }
 
+        public bool IsAutoClass()
+        {
+            return (attribute & class_attribute.Auto) == class_attribute.Auto;
+        }
+
     }
 
     public partial class record_const
@@ -1130,6 +1139,8 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class procedure_call
     {
+        public procedure_call(addressed_value _func_name, SourceContext sc=null) : this(_func_name, false, sc) { }
+
         public procedure_call(ident name)
         {
             this._func_name = name;

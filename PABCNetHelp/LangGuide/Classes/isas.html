@@ -1,0 +1,55 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="is">
+<param name="Keyword" value="as">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Операции is и as</H1>
+<p><b>// Старый текст</b></p>
+<p>Операция <code><b>is</b></code> предназначена для проверки того, имеет ли 
+классовая переменная указанный <a href="virtual.html">динамический тип</a>. 
+Операция <code><b>as</b></code> позволяет безопасно преобразовать переменную 
+одного классового типа к другому классовому типу (в отличие от
+<a href="classcast.html#ClassCast">явного приведения классового типа</a>). </p>
+<p>Если <code>a1</code> - переменная 
+классового типа, а <code>B</code> - тип класса, то выражение <code>a1 <b>is</b> 
+B</code> 
+возвращает <code>True</code> если переменная <code>a1</code> имеет динамический 
+тип, совпадающий с B или являющийся одним из его потомков, и <code>False</code> в противном случае. Например:</p>
+<blockquote>
+	<p><code><b>type</b> <br>
+&nbsp; A =<b> class<br>
+	&nbsp; end;</b><br>
+&nbsp; B =<b> class</b>(A)<b><br>
+	&nbsp; end;<br>
+	var </b>a1: A;<br>
+	...<br>
+	a1 := B.Create;<br>
+	writeln(a1 <b>is</b> B); // True</code></p>
+</blockquote>
+<p>Если <code>a1</code> - переменная 
+классового типа, а <code>B</code> - тип класса, то выражение <code>a1 <b>as</b> 
+B</code> 
+возвращает объект класса <code>B</code>, <code>a1</code> имеет динамический тип
+<code>B</code> или производный от него и <b><code>nil</code></b> в противном 
+случае. Например:</p>
+<blockquote>
+	<p><code><b>var</b> b1: B;<br>
+	...<br>
+	b1 := a1 <b>as</b> B;</code><br>
+</blockquote>
+	Фактически последняя строка делает то же, что и следующий фрагмент кода:</p>
+	<blockquote>
+		<p><code><b>if</b> a1 <b>is</b> B <b>then</b><br>&nbsp; b1 := B(a1)<br><b>else</b> b1 :=<b> nil</b>;</code></p>
+</blockquote>
+&nbsp;
+</body>
+
+</html>

@@ -577,9 +577,15 @@ namespace CodeCompletion
     		off = test_str.Length;
     		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,'(',ref num_param);
     		assert(s == test_str);
-    		
-    		//testirovanie nazhatija zapjatoj
-    		test_str = ";test(3,aa.bb";
+
+            test_str = "s.OrderBy";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            assert(s == test_str);
+            
+
+            //testirovanie nazhatija zapjatoj
+            test_str = ";test(3,aa.bb";
     		off = test_str.Length;
     		num_param = 1;
     		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
@@ -802,7 +808,6 @@ namespace CodeCompletion
             {
                 sw.WriteLine(parser.LanguageInformation.GetCompiledTypeRepresentation(t, t, ref i, ref j));
             }
-
             sw.Close();
     	}
     }
@@ -861,20 +866,49 @@ namespace CodeCompletion
             files = Directory.GetFiles(test_dir+@"\output", "*.pas");
             foreach (string s in files)
             {
-                string Text = new StreamReader(s, System.Text.Encoding.GetEncoding(1251)).ReadToEnd();
+                var sr = new StreamReader(s, System.Text.Encoding.GetEncoding(1251));
+                string Text = sr.ReadToEnd();
+                sr.Close();
                 List<Error> Errors = new List<Error>();
                 List<CompilerWarning> Warnings = new List<CompilerWarning>();
                 compilation_unit cu = CodeCompletionController.ParsersController.GetCompilationUnitForFormatter(s, Text, Errors, Warnings);
                 CodeFormatters.CodeFormatter cf = new CodeFormatters.CodeFormatter(2);
                 string Text2 = cf.FormatTree(Text, cu, 1, 1);
                 if (Text != Text2)
-                    log.WriteLine("Invalid formatting of File " + s);
+                {
+                    int line = 1;
+                    for (int i = 0; i < Math.Min(Text.Length, Text2.Length); i++)
+                    {
+                        if (Text[i] != Text2[i])
+                        {
+                            log.WriteLine("Invalid formatting of File " + s + ", line "+line);
+                            break;
+                        }
+                        else if (Text[i] == '\n')
+                        {
+                            line++;
+                        }
+                    }  
+                }
+                
                 string shouldFileName = Path.Combine(test_dir + @"\should",Path.GetFileName(s));
                 if (File.Exists(shouldFileName))
                 {
-                    string shouldText = new StreamReader(s, System.Text.Encoding.GetEncoding(1251)).ReadToEnd();
+                    sr = new StreamReader(shouldFileName, System.Text.Encoding.GetEncoding(1251));
+                    string shouldText = sr.ReadToEnd();
+                    sr.Close();
                     if (Text != shouldText)
-                        log.WriteLine("Invalid formatting of File " + s);
+                    {
+                        sr = new StreamReader(s, System.Text.Encoding.UTF8);
+                        Text = sr.ReadToEnd();
+                        sr.Close();
+                        sr = new StreamReader(shouldFileName, System.Text.Encoding.UTF8);
+                        shouldText = sr.ReadToEnd();
+                        sr.Close();
+                    }
+                        
+                    if (Text != shouldText)
+                        log.WriteLine("Invalid formatting of File (text not equal) " + s);
                 }
             }
             log.Close();

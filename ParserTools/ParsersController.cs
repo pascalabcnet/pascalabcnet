@@ -148,7 +148,17 @@ namespace PascalABCCompiler.Parsers
         }
         public SyntaxTree.compilation_unit GetCompilationUnitForFormatter(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
         {
-            SyntaxTree.syntax_tree_node cu = Compile(FileName, Text, Errors, Warnings, ParseMode.ForFormatter);
+            SyntaxTree.syntax_tree_node cu = null;
+            try // SSM 06.09.18 
+            { 
+                cu = Compile(FileName, Text, Errors, Warnings, ParseMode.ForFormatter);
+            }
+            catch (Errors.ParserBadFileExtension e)
+            {
+                Errors.Add(e);
+                return null;
+                // Погасить исключение если оно не погашено ранее
+            }
             if (cu == null)
                 return null;
             if (cu is SyntaxTree.compilation_unit)

@@ -18,7 +18,8 @@ namespace PascalABCCompiler
         private bool condition_block = false;
         private bool has_returns = false;
         private bool has_goto = false;
-        
+        private bool no_infinite_recursion;
+
         public Optimizer()
         {
         }
@@ -444,13 +445,13 @@ namespace PascalABCCompiler
 
         private void CheckInfiniteRecursion(common_namespace_function_call cnfc)
         {
-            if (!condition_block && !has_returns && cnfc.function_node == current_function)
+            if (!condition_block && !has_returns && cnfc.function_node == current_function && !no_infinite_recursion)
                 warns.Add(new InfiniteRecursion(cnfc.location));
         }
 
         private void CheckInfiniteRecursion(common_static_method_call cnfc)
         {
-            if (!condition_block && !has_returns && cnfc.function_node == current_function)
+            if (!condition_block && !has_returns && cnfc.function_node == current_function && !no_infinite_recursion)
                 warns.Add(new InfiniteRecursion(cnfc.location));
         }
 
@@ -632,8 +633,10 @@ namespace PascalABCCompiler
             {
                 if(stmt.filters[i].exception_var!=null)
                    IncreaseNumUseVar(stmt.filters[i].exception_var);
-                VisitStatement(stmt.finally_statements);
+                VisitStatement(stmt.filters[i].exception_handler);
+                is_break_stmt = false;
             }
+            VisitStatement(stmt.finally_statements);
         }
 
         private void VisitLabeledStatement(labeled_statement stmt)
@@ -1019,6 +1022,7 @@ namespace PascalABCCompiler
             for (int i = 0; i < en.parameters.Count; i++)
             {
                 CheckVarParameter(en.parameters[i], en.function_node, i);
+                if (!(en.function_node.function_code is runtime_statement))
                 VisitExpression(en.parameters[i]);
             }    
         }
@@ -1026,6 +1030,8 @@ namespace PascalABCCompiler
         private void VisitGetAddrNode(get_addr_node en)
         {
             VisitExpression(en.addr_of);
+            if (en.addr_of is local_variable_reference && (en.addr_of as local_variable_reference).var.is_ret_value)
+                IncreaseNumAssVar(en.addr_of as local_variable_reference);
         }
 
         private void VisitClassFieldReference(class_field_reference en)
@@ -1171,7 +1177,7 @@ namespace PascalABCCompiler
                 case semantic_node_type.class_field_reference: VisitExpression((p as class_field_reference).obj); IncreaseNumAssField((class_field_reference)p); break;
                 case semantic_node_type.static_class_field_reference: IncreaseNumAssField((static_class_field_reference)p); break;
                 case semantic_node_type.common_parameter_reference: IncreaseNumAssParam((common_parameter_reference)p); break;
-                case semantic_node_type.deref_node: CheckAssign(((dereference_node)p).deref_expr); break;
+                case semantic_node_type.deref_node: VisitDerefNode(((dereference_node)p)); break;
                 case semantic_node_type.simple_array_indexing: VisitSimpleArrayIndexing((simple_array_indexing)p); break;
             }
         }
@@ -1220,8 +1226,19 @@ namespace PascalABCCompiler
                 case SemanticTree.basic_function_type.objassign:
                     VisitAssignment(en); return;
             }
+            bool tmp_no_infinite_recursion = no_infinite_recursion;
             for (int i = 0; i < en.parameters.Count; i++)
+            {
+                if (en.function_node.basic_function_type == SemanticTree.basic_function_type.booland
+                    && en.parameters[i] is bool_const_node && (en.parameters[i] as bool_const_node).constant_value == false)
+                    no_infinite_recursion = true;
+                else if (en.function_node.basic_function_type == SemanticTree.basic_function_type.boolor
+                    && en.parameters[0] is bool_const_node && (en.parameters[0] as bool_const_node).constant_value == true)
+                    no_infinite_recursion = true;
                 VisitExpression(en.parameters[i]);
+            }
+            if (!tmp_no_infinite_recursion)
+                no_infinite_recursion = false;
         }
 
        

@@ -129,6 +129,11 @@ namespace TreeConverter.LambdaExpressions.Closure
             }
         }
 
+        public override void visit(exception_handler _exception_handler)
+        {
+            ProcessNode(_exception_handler.statements);
+        }
+
         public override void visit(ident id)
         {
             var idName = id.name.ToLower();
@@ -156,6 +161,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 si.sym_info.semantic_node_type == semantic_node_type.compiled_type_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.basic_interface_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.common_unit_node ||
+                si.sym_info.semantic_node_type == semantic_node_type.common_namespace_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.compiled_unit_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.template_type ||
                 si.sym_info.semantic_node_type == semantic_node_type.class_constant_definition ||
@@ -168,9 +174,26 @@ namespace TreeConverter.LambdaExpressions.Closure
                                     si.sym_info.semantic_node_type == semantic_node_type.local_block_variable ||
                                     si.sym_info.semantic_node_type == semantic_node_type.common_parameter ||
                                     si.sym_info.semantic_node_type == semantic_node_type.class_field
-                                    
                                     ;
-
+            //trjuk, chtoby ne perelopachivat ves kod. zamenjaem ident na self.ident
+            if ((si.sym_info.semantic_node_type == semantic_node_type.common_event || si.sym_info.semantic_node_type == semantic_node_type.common_property_node) && InLambdaContext)
+            {
+                dot_node dn = new dot_node(new ident("self", id.source_context), new ident(id.name, id.source_context), id.source_context);
+                bool ok = true;
+                try
+                {
+                    id.Parent.ReplaceDescendantUnsafe(id, dn);
+                }
+                catch
+                {
+                    ok = false;
+                }
+                if (ok)
+                {
+                    ProcessNode(id.Parent);
+                    return;
+                }
+            }
             if (!(acceptableVarType) && InLambdaContext) 
             {
                 _visitor.AddError(new ThisTypeOfVariablesCannotBeCaptured(_visitor.get_location(id)));
@@ -578,10 +601,11 @@ namespace TreeConverter.LambdaExpressions.Closure
                     for (var j = 0; j < lambdaDefinition.formal_parameters.params_list[i].idents.idents.Count; j++)
                     {
                         var varName = "<>" + lambdaDefinition.formal_parameters.params_list[i].idents.idents[j].name;
-                        var vds = new var_def_statement(new ident(lambdaDefinition.formal_parameters.params_list[i].idents.idents[j].name), varType);
-                        vds.inital_value = new ident(varName);
+                        SourceContext sc = lambdaDefinition.formal_parameters.params_list[i].idents.idents[j].source_context;
+                        var vds = new var_def_statement(new ident(lambdaDefinition.formal_parameters.params_list[i].idents.idents[j].name, sc), varType, sc);
+                        vds.inital_value = new ident(varName, sc);
                         lambdaDefinition.formal_parameters.params_list[i].idents.idents[j].name = varName;
-                        varDefsList.Add(new var_statement(vds));
+                        varDefsList.Add(new var_statement(vds, sc));
                     }
                 }
 

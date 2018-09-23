@@ -1,0 +1,75 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="char">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+<style type="text/css">
+.auto-style1 {
+	margin-left: 40px;
+}
+.auto-style2 {
+	font-family: monospace;
+	font-size: 10pt;
+	color: #000080;
+}
+</style>
+</head>
+
+<body>
+<H1>Символьный тип</H1>
+<p>Символьный тип <code>char</code> 
+занимает 2 байта и хранит Unicode-символ. Символы реализуются 
+типом <code>System.Char</code> 
+платформы .NET. </p>
+<p>Операция <code>+</code> для символов означает 
+конкатенацию (слияние) строк. Например: <code>'a'+'b' 
+= 'ab'</code>. Как и для строк, если к символу прибавить число, то число 
+предварительно преобразуется к строковому представлению:</p>
+<p class="auto-style1"><code><strong>var</strong> s: string := ' '+15; // s = ' 15'<br>
+<strong>var</strong> s1: string := 15+' '; // s = '15 '</code></p>
+<p>Над символами определены операции сравнения&nbsp; <span class="auto-style2">&lt; &gt; &lt;= 
+&gt;= = &lt;&gt;</span>, которые сравнивают коды символов:</p>
+<p class="auto-style1"><code>'a'&lt;'b' // True<br>'2'&lt;'3' // True</code></p>
+<p>Для преобразования между символами и их кодами в кодировке Unicode используются 
+стандартные функции
+<code>Chr</code> и <code>Ord</code>:</p>
+<blockquote>
+	<p><code>Chr(n)</code> - функция, возвращающая символ с кодом 
+	<code>n</code>
+	в кодировке Unicode;<code><br>
+	Ord(с)</code> - функция, возвращающая значение типа <code>word</code>, 
+	представляющее собой код символа <code>c</code> 
+	в кодировке Unicode.</p>
+</blockquote>
+<p>Для преобразования между символами и их кодами в кодировке Windows используются 
+стандартные функции
+<code>ChrAnsi</code> и <code>OrdAnsi</code>:</p>
+<blockquote>
+	<p><code>ChrAnsi(w)</code> - возвращает символ с кодом 
+	<code>w</code> 
+в кодировке Windows;<code><br>
+	OrdAnsi(с)</code> - возвращает значение типа <code>byte</code>, представляющее 
+	собой код символа 
+	<code>c</code> 
+	в кодировке Windows.</p>
+</blockquote>
+<p>Кроме того, выражение <code>#</code><i>число</i> возвращает 
+Unicode-символ с кодом <i>число </i>(число должно 
+находиться в диапазоне от 0 до 65535). </p>
+<p>Аналогичную роль играют явные преобразования типов: </p>
+<blockquote>
+	<p><code>char(w)</code> возвращает символ с кодом <code>w</code> 
+	в кодировке Unicode;<code><br>
+	word(с)</code> возвращает код символа 
+	<code>c</code> 
+	в кодировке Unicode.</p>
+</blockquote>
+<p><a href="../PABCSystemUnit/Files/Subroutines%20for%20char.html">Стандартные подпрограммы работы с символами</a>.</p>
+<p><a href="charmembers.html">Статические методы типа <code>char</code></a>.</p>
+</body>
+
+</html>

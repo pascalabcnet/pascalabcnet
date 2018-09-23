@@ -1,0 +1,101 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="operator">
+<param name="Keyword" value="implicit">
+<param name="Keyword" value="explicit">
+<param name="Keyword" value="Перегрузка операций">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Перегрузка операций</H1>
+<p>Перегрузка операций - это средство языка, позволяющее вводить 
+операции над типами, определяемыми пользователем. В <b>PascalABC.NET</b>
+можно использовать только предопределенные значки операций. 
+Перегрузка операций для типа <code>T</code>, являющегося 
+классом или записью, осуществляется при помощи статической (классовой) функции-метода со 
+специальным именем <b><code>operator</code></b> <i>
+ЗнакОперации</i>. Перегрузка специальных операций <code>+=</code>, <code>
+-=</code>, <code>*=</code>, <code>/=</code> 
+	осуществляется с помощью статической (классовой) процедуры-метода, первый параметр 
+которой передается по ссылке.</p>
+<p>Например:</p>
+<blockquote>
+	<p><code><b>type</b> <br>&nbsp; Complex = <b>record</b><br>&nbsp;&nbsp;&nbsp; re,im: real;<br>&nbsp;&nbsp;&nbsp; 
+	<b><span lang="en-us">class </span>function</b> <b>operator</b>+(a,b: Complex): Complex; <br>&nbsp;&nbsp;&nbsp; 
+	<b>begin</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result.re := a.re + b.re;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result.im := a.im + b.im;
+	<br>&nbsp;&nbsp;&nbsp; <b>end</b>; <br>&nbsp;&nbsp;&nbsp;  
+	<b><span lang="en-us">class </span>function</b> <b>operator</b>=(a,b: Complex): boolean; <br>&nbsp;&nbsp;&nbsp; <b>begin</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result := (a.re = b.re)
+	<b>and</b> (a.im = b.im);<br>&nbsp;&nbsp;&nbsp; <b>end</b>; <br>&nbsp; <b>end</b>;</code></p>
+</blockquote>
+<p>Для перегрузки операций действуют следующие правила:</p>
+<ol>
+	<li>Перегружать можно все операции за исключением 
+	<code>@</code> (взятие адреса), <b><code>as</code></b>,
+	<code><b>is</b></code>, <code>new</code>. Кроме того, 
+	можно перегружать специальные бинарные операции <code>+=</code>,
+	<code>-=</code>, <code>*=</code>, <code>/=</code>, 
+	не возвращающие значений.</li>
+	<li>Перегружать можно только еще не перегруженные операции.</li>
+	<li>Тип по крайней мере одного операнда должен совпадать с 
+	типом класса или записи, внутри которого определена операция.</li>
+	<li>Перегрузка осуществляется с помощью статической функции-метода, 
+	количество параметров которой совпадает с количеством параметров 
+	соответствующей операции (2 - для бинарной, 1 - для унарной).</li>
+	<li>Перегрузка операций <code>+=</code>, <code>-=</code>,
+	<code>*=</code>, <code>/=</code>  
+	для соответствующих операторов  
+	осуществляется с помощью статической процедуры-метода, первый параметр которой передается по 
+	ссылке и имеет тип записи или класса, в котором определяется данная 
+	операция, второй - передается по значению и совместим по присваиванию с 
+	первым. Перегрузка остальных операций осуществляется с помощью статических 
+	функций-методов. </li>
+	<li>Типы интерфейсов не могут быть типами параметров. 
+	Причина: типы параметров должны вычисляться на этапе компиляции.</li>
+	<li>Операции приведения типа <span lang="ru">задаются статическими 
+	функциями, у которых </span>вместо имени <span lang="ru">используется </span>
+	<code><b>operator</b></code> <code><b>implicit</b></code> <span lang="ru">
+	(для неявного приведения типа) </span>и<span lang="ru">ли </span><code><b>
+	operator</b></code> <code><b>explicit</b></code> <span lang="ru">(для явного 
+	приведения типа)</span>. </li>
+</ol>
+<p>Например:</p>
+<blockquote>
+	<p><code><b>type</b> <br>&nbsp; Complex = <b>record</b><br>&nbsp;&nbsp;&nbsp; 
+	...<br>&nbsp;&nbsp;&nbsp;  
+	<b><span lang="en-us">class </span>function</b> <b>operator implicit</b>(d: real): Complex;<br>&nbsp;&nbsp;&nbsp; 
+	<b>begin</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result.re := d;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result.im := 0;<br>&nbsp;&nbsp;&nbsp; 
+	<b>end</b>; <br>&nbsp; &nbsp;  
+	<b><span lang="en-us">class </span>function</b> <b>operator explicit</b>(c: Complex): string;<br>&nbsp;&nbsp;&nbsp; 
+	<b>begin</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result := Format('({0},{1})',c.re,c.im);<br>&nbsp;&nbsp;&nbsp; 
+	<b>end</b>;<br>&nbsp;&nbsp;&nbsp;  
+	<b><span lang="en-us">class </span>procedure</b> <b>operator</b>+=(<b>var</b> c: Complex; 
+value: Complex);<br>&nbsp;&nbsp;&nbsp; <b>begin</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	c.re += value.re; 
+	<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; c.im += value.im;<br>&nbsp;&nbsp;&nbsp; 
+	<b>end</b>;<br>&nbsp;&nbsp;&nbsp;  
+	<span lang="en-us">  
+	<b>class </b> </span><b>function</b> <b>operator</b>+(c,c1: Complex): 
+	Complex;<br>&nbsp;&nbsp;&nbsp; <b>begin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	Result.re := c.re + c1.re; 
+	<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	Result.im := c.im + c1.im; 
+	<br>&nbsp;&nbsp;&nbsp; 
+	<b>end</b>;<br>&nbsp; <b>end</b>;</code></p>
+</blockquote>
+<p>Можно перегружать операции с помощью методов расширения - в этом случае при 
+описании подпрограммы не следует писать слово class. Например, так в системном модуле 
+реализовано добавление числа к строке:</p>
+<blockquote>
+	<p><code><strong>function</strong> string.operator+(str: string; n: 
+	integer): string;<br><strong>begin</strong><br>&nbsp; result := str + 
+	n.ToString;<br><strong>end</strong>;</code></p>
+</blockquote>
+</body>
+
+</html>

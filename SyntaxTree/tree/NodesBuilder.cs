@@ -59,6 +59,14 @@ namespace PascalABCCompiler.SyntaxTree
             return fp;
         }
 
+        public static formal_parameters BuildFormalVarParameters(List<ident> names, List<type_definition> types)
+        {
+            var fp = new formal_parameters();
+            for (int i = 0; i < names.Count; i++) 
+                fp.Add(new typed_parameters(new ident_list(names[i]), types[i],parametr_kind.var_parametr,null));
+            return fp;
+        }
+
         public static statement_list BuildSimpleAssignList(List<ident> lnames, List<ident> rnames)
         {
             var sl = new statement_list();
@@ -74,7 +82,18 @@ namespace PascalABCCompiler.SyntaxTree
                 fp = null;
             var sl = SyntaxTreeBuilder.BuildSimpleAssignList(fields, formal_names);
 
-            return new procedure_definition(new constructor(fp), new block(sl));
+            var c = new constructor(fp);
+            return new procedure_definition(c, new block(sl));
+        }
+
+        public static procedure_definition BuildSimpleDeConstruct(List<ident> fields, List<ident> formal_names, List<type_definition> types)
+        {
+            var fp = SyntaxTreeBuilder.BuildFormalVarParameters(formal_names, types);
+            if (fp.params_list.Count == 0)
+                fp = null;
+            var sl = SyntaxTreeBuilder.BuildSimpleAssignList(formal_names, fields);
+
+            return new procedure_definition(new procedure_header("Deconstruct",fp), new block(sl));
         }
 
         public static class_members BuildSimpleConstructorSection(List<ident> fields, List<ident> formal_names, List<type_definition> types)
@@ -84,9 +103,16 @@ namespace PascalABCCompiler.SyntaxTree
             return cm;
         }
 
+        public static class_members BuildSimpleDeconstructSection(List<ident> fields, List<ident> formal_names, List<type_definition> types)
+        {
+            var cm = new class_members(access_modifer.public_modifer);
+            cm.Add(BuildSimpleDeConstruct(fields, formal_names, types));
+            return cm;
+        }
+
         public static simple_property BuildSimpleReadWriteProperty(ident name, ident field, type_definition type)
         {
-            return new simple_property(name, type, new property_accessors(new read_accessor_name(field), new write_accessor_name(field)));
+            return new simple_property(name, type, new property_accessors(new read_accessor_name(field,null,null), new write_accessor_name(field, null, null)));
         }
 
         public static class_members BuildSimpleReadPropertiesSection(List<ident> names, List<ident> fields, List<type_definition> types)
@@ -141,6 +167,7 @@ namespace PascalABCCompiler.SyntaxTree
             class_body_list cb = cd.body;
             bool HasToString = false;
             bool HasConstructor = false;
+            bool HasDeconstruct = false;
             foreach (var l in cb.class_def_blocks)
             {
                 foreach (var m in l.members)
@@ -167,7 +194,15 @@ namespace PascalABCCompiler.SyntaxTree
                             {
                                 HasConstructor = true;
                             }
-                        }   
+                        }
+
+                        if (!HasDeconstruct)
+                        {
+                            if (ts != null && ts.proc_header.name != null && ts.proc_header.name.meth_name.name != null)
+                            {
+                                HasDeconstruct = ts.proc_header.name.meth_name.name.ToLower().Equals("deconstruct");
+                            }
+                        }
 
                         if (!HasToString)
                         {
@@ -184,14 +219,22 @@ namespace PascalABCCompiler.SyntaxTree
             {
                 var fnames = names.Select(x => new ident("f" + x.name)).ToList();    
                 var cm = BuildSimpleConstructorSection(names, fnames, types);
-                cb.Add(cm);
+                cb.Insert(0,cm);
                 //cb.class_def_blocks.Insert(0, cm);
+            }
+
+            if (!HasDeconstruct)
+            {
+                var fnames = names.Select(x => new ident("f" + x.name)).ToList();
+                var cm = BuildSimpleDeconstructSection(names, fnames, types);
+                cb.Add(cm);
             }
 
             if (!HasToString)
             { 
                 var tostr = BuildToStringFuncForAutoClass(names);
-                cb.Add(BuildOneMemberSection(tostr));
+                var cm = BuildOneMemberSection(tostr);
+                cb.Add(cm);
                 //cb.class_def_blocks.Insert(0, BuildOneMemberSection(tostr));
             }
         }

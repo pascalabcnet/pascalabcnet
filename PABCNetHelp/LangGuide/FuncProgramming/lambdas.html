@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+<style type="text/css">
+.auto-style1 {
+	font-family: monospace;
+	font-size: 10pt;
+	color: #000080;
+}
+</style>
+</head>
+
+<body>
+<H1>Лямбда-выражения</H1>
+<p>Лямбда-выражение - это выражение специального вида, которое на этапе 
+компиляции заменяется на имя подпрограммы, соответствующей лямбда-выражению и 
+генерируемой компилятором &quot;на лету&quot;. </p>
+<p>Здесь излагается полный <a href="lambdasyntax.html">синтаксис лямбда-выражений</a>.</p>
+<p>Здесь рассказывается о <a href="capture_variables.html">захвате 
+лямбда-выражением переменных</a> из внешнего контекста.</p>
+<p>Лямбда-выражения запрещается использовать при инициализации полей класса или 
+записи, внутри вложенных подпрограмм, в подпрограмме при наличии вложенной 
+подпрограммы, в разделе инициализации модуля.</p>
+<p>Лямбда-выражения запрещается использовать совместно с метками label и оператором goto в одной подпрограмме.</p>
+<p>Синтаксис лямбда-выражений достаточно сложен и в данном пункте 
+иллюстрируется на примерах. </p>
+<p><strong>Пример 1.</strong></p>
+<blockquote><code><b>var </b>f: integer -&gt; integer := x -&gt; x*x;<br>f(2);</code></blockquote>
+<p>Запись <span class="auto-style1">x -&gt; x</span> является лямбда-выражением, 
+представляющем собой функцию с одним параметром <span class="auto-style1">x</span> 
+типа <span class="auto-style1">integer</span>, возвращающую
+<span class="auto-style1">x*x</span> типа <span class="auto-style1">integer</span>. 
+По данной записи компилятор генерирует следующий код:</p>
+<blockquote><code><b>function</b> #fun1(x: integer): integer;<br><strong>begin<br>
+	</strong>&nbsp; Result := x*x;<br><strong>end;<br>...<br></strong><b>var </b>
+	f: integer -&gt; integer := #fun1;<br>f(2);</code></blockquote>
+<p>Здесь <code>#fun1</code> - это имя, генерируемое компилятором. Кроме того, 
+код функции <code>#fun1</code> также генерируется компилятором. </p>
+<p><strong>Пример 2. </strong>Фильтрация четных</p>
+<p>Обычно лямбда-выражение передаётся как параметр подпрограммы. Например, в 
+следующем коде </p>
+<blockquote><code><strong>var</strong> a := Seq(3,2,4,8,5,5);<br>a.Where(x -&gt; x
+	<strong>mod</strong> 2 = 0).Print;</code></blockquote>
+<p>лямбда-выражение <code>x -&gt; x <strong>mod</strong> 2 = 0</code> задаёт 
+условие отбора чётных чисел из массива a.</p>
+<p><strong>Пример 3. </strong>Сумма квадратов</p>
+<blockquote><code><strong>var</strong> a := Seq(1,3,5);<br>
+	writeln(a.Aggregate(0,(s,x)-&gt;s+x*x));</code></blockquote>
+<p>Иногда необходимо явно задавать тип параметров в лямбда-выражении. </p>
+<p><strong>Пример 4.</strong> Выбор перегруженной версии процедуры с 
+параметром-лямбдой.</p>
+<blockquote><code><strong>procedure</strong> p(f: integer -&gt; integer);<br>
+	<strong>begin</strong><br>&nbsp; write(f(1));<br><strong>end</strong>;<br>
+	<br><strong>procedure</strong> p(f: real -&gt; real);<br><strong>begin</strong><br>&nbsp; 
+	write(f(2.5));<br><strong>end</strong>;<br><br><strong>begin</strong><br>&nbsp; 
+	p((x: real)-&gt;x*x);<br><strong>end</strong>.</code></blockquote>
+<p>В данном примере вызов p(x -&gt; x) вызовет ошибку компиляции, потому что 
+компилятор не может выбрать, какую версию процедуры p выбирать. Задание типа 
+параметра лямбды помогает устранить эту неоднозначность.</p>
+<p><strong>Пример 5.</strong> Лямбда-процедура.</p>
+<blockquote><code><strong>procedure</strong> p(a: integer -&gt; ());<br><strong>
+	begin</strong><br>&nbsp; a(1)<br><strong>end</strong>;<br><br><strong>begin</strong><br>&nbsp; 
+	p(procedure(x) -&gt; write(x));<br><strong>end</strong>.</code></blockquote>
+</body>
+
+</html>

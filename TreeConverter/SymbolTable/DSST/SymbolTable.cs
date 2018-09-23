@@ -441,17 +441,18 @@ namespace SymbolTable
     }
     //\ssyy owns
 
-	public class ClassMethodScope:Scope
+    //В ClassMethodScope TopScope должен быть классом
+    public class ClassMethodScope:Scope
 	{
-        public Scope MyClass;
+        public Scope DefScope;
 
-		public ClassMethodScope(DSSymbolTable vSymbolTable,Scope TopScope,Scope MyClass, string Name):
+		public ClassMethodScope(DSSymbolTable vSymbolTable, Scope TopScope, Scope DefScope, string Name):
 			base(vSymbolTable,TopScope, Name)
 		{
             this.Name = Name;
-            this.MyClass = null;
-			if (MyClass != null) 
-				this.MyClass = MyClass;
+            this.DefScope = null;
+            if (DefScope != null)
+                this.DefScope = DefScope;
 		}
 	}
 	#endregion
@@ -554,8 +555,21 @@ namespace SymbolTable
         private Scope real_scope;
         public PrimaryScope(Scope sc)
         {
-            ScopeName = sc.Name;
             real_scope = sc;
+            if(real_scope is BlockScope)
+            {
+                int deep = 0;
+                Scope Top = real_scope.TopScope;
+                while(Top != null && (Top is BlockScope))
+                {
+                    deep++;
+                    Top = Top.TopScope;
+                }
+                ScopeName = "Begin—End;(Deep = " + deep + ")";
+            }
+            else
+                ScopeName = sc.Name;
+            
         }
     }
     #endregion
@@ -666,9 +680,9 @@ namespace SymbolTable
 		{
 			return new UnitImplementationScope(this, InterfaceScope, UsedUnits, Name);
 		}
-		public ClassMethodScope CreateClassMethodScope(Scope TopScope,Scope MyClass, string Name = "")
+		public ClassMethodScope CreateClassMethodScope(Scope TopScope, Scope DefScope, string Name = "")
 		{
-			return new ClassMethodScope(this, TopScope, MyClass, Name);
+			return new ClassMethodScope(this, TopScope, DefScope, Name);
 		}
 		#endregion
 
@@ -828,7 +842,7 @@ namespace SymbolTable
         {
             while (scope != null && !(scope is ClassScope))
                 if(scope is ClassMethodScope)
-                    scope = ((ClassMethodScope)scope).MyClass;
+                    scope = scope.TopScope;
                 else
                     scope = scope.TopScope;
             return scope;
@@ -886,7 +900,7 @@ namespace SymbolTable
                 ((to.symbol_kind == symbol_kind.sk_overload_function) && (add.symbol_kind == symbol_kind.sk_overload_function))
                 ||
                 ((to.symbol_kind == symbol_kind.sk_overload_procedure) && (add.symbol_kind == symbol_kind.sk_overload_procedure))
-                || to.sym_info != add.sym_info && to.sym_info is PascalABCCompiler.TreeRealization.function_node && add.sym_info is PascalABCCompiler.TreeRealization.function_node && (to.sym_info as PascalABCCompiler.TreeRealization.function_node).is_extension_method && (add.sym_info as PascalABCCompiler.TreeRealization.function_node).is_extension_method
+                || to.sym_info != add.sym_info && to.sym_info is PascalABCCompiler.TreeRealization.function_node && add.sym_info is PascalABCCompiler.TreeRealization.function_node /*&& (to.sym_info as PascalABCCompiler.TreeRealization.function_node).is_extension_method*/ && (add.sym_info as PascalABCCompiler.TreeRealization.function_node).is_extension_method
                 );
         }
 
@@ -991,15 +1005,38 @@ namespace SymbolTable
 
             if (!scope.CaseSensitive)
                 Name = Name.ToLower();
-            CurrentScope = FromScope; //глобальные переменные могут привести к ошибкам при поиске и поторном вызове!
+            CurrentScope = FromScope; //глобальные переменные могут привести к ошибкам при поиске и повторном вызове!
 
             List<SymbolInfo> Result = new List<SymbolInfo>();
+
+            // Находим имена с ? в стандартных местах. Это прежде всего ?System. Потом будет ?PABCSystem.
+
+            if (Name.Equals("?system"))
+            {
+                Name = Name.Substring(1);
+                // Нет. Как-то найти глобальное ПИ модуля 
+                while (scope != null && !(scope is UnitInterfaceScope))
+                {
+                    if (scope is ClassMethodScope)
+                        scope = (scope as ClassMethodScope).DefScope;
+                    else scope = scope.TopScope;
+                }
+                if (scope != null)
+                {
+                    var a = (scope as UnitInterfaceScope).TopScopeArray.Where(x => x is PascalABCCompiler.NetHelper.NetScope).ToArray();
+                    FindAllInAreaList(Name, a, true, Result);
+                }
+
+                if (Result.Count > 0)
+                    return Result;
+                else return null;
+            }
 
             Scope Area = scope;
             Scope[] used_units = null;
 
             HashTableNode tn = null;
-            if (!(scope is DotNETScope) && !Name.StartsWith("?"))
+            if (!(scope is DotNETScope))
             {
                 Scope CurrentArea = Area;
                 while (CurrentArea != null)
@@ -1077,10 +1114,12 @@ namespace SymbolTable
                         }
                         if (CurrentArea is ClassMethodScope)//мы очутились в методе класса
                         {
-                            FindAllInClass(Name, (CurrentArea as ClassMethodScope).MyClass, OnlyInThisClass, Result);//надо сделать поиск по его классу
+                            FindAllInClass(Name, (CurrentArea as ClassMethodScope).TopScope, OnlyInThisClass, Result);//надо сделать поиск по его классу
 
                             if (Result.Count > 0) //если что-то нашли то заканчиваем
                                 return Result;
+                            CurrentArea = (CurrentArea as ClassMethodScope).DefScope;
+                            continue;
                         }
                     }
                     CurrentArea = CurrentArea.TopScope;//Пошли вверх
@@ -1088,11 +1127,6 @@ namespace SymbolTable
             }
 
             //если нет такого ищем в областях .NET
-
-            // SSM 21.01.16
-            if (Name.StartsWith("?"))     // это значит, надо искать в областях .NET
-                Name = Name.Substring(1); // съели ? и ищем т.к. tn<0
-            // end SSM 
 
             //ssyy
             Scope NextUnitArea = null;
@@ -1175,13 +1209,14 @@ namespace SymbolTable
                 if (an is ClassMethodScope)
                 {
                     //ssyy
-                    NextUnitArea = an.TopScope;
+                    NextUnitArea = (an as ClassMethodScope).DefScope;
                     //\ssyy
-                    Area = (an as ClassMethodScope).MyClass;
+                    Area = an.TopScope;
                 }
                 else
                     Area = Area.TopScope;
                 //Area = Area.TopScope;
+
             }
             return null;                //если такого нет то поиск окончен
         }

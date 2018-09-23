@@ -1,0 +1,296 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="SetPixel">
+<param name="Keyword" value="PutPixel">
+<param name="Keyword" value="GetPixel">
+<param name="Keyword" value="MoveTo">
+<param name="Keyword" value="LineTo">
+<param name="Keyword" value="Line">
+<param name="Keyword" value="FillCircle">
+<param name="Keyword" value="DrawCircle">
+<param name="Keyword" value="FillEllipse">
+<param name="Keyword" value="DrawEllipse">
+<param name="Keyword" value="FillRectangle">
+<param name="Keyword" value="FillRect">
+<param name="Keyword" value="DrawRectangle">
+<param name="Keyword" value="FillRoundRect">
+<param name="Keyword" value="DrawRoundRect">
+<param name="Keyword" value="Circle">
+<param name="Keyword" value="Ellipse">
+<param name="Keyword" value="Rectangle">
+<param name="Keyword" value="RoundRect">
+<param name="Keyword" value="Arc">
+<param name="Keyword" value="FillPie">
+<param name="Keyword" value="DrawPie">
+<param name="Keyword" value="Pie">
+<param name="Keyword" value="DrawPolygon">
+<param name="Keyword" value="FillPolygon">
+<param name="Keyword" value="Polygon">
+<param name="Keyword" value="Polyline">
+<param name="Keyword" value="Curve">
+<param name="Keyword" value="DrawClosedCurve">
+<param name="Keyword" value="FillClosedCurve">
+<param name="Keyword" value="ClosedCurve">
+<param name="Keyword" value="TextOut">
+<param name="Keyword" value="FloodFill">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Графические примитивы</H1>
+<p>Графические примитивы представляют собой процедуры, осуществляющие рисование 
+в графическом окне. Рисование осуществляется текущим пером (линии), текущей 
+кистью (заливка замкнутых областей) и текущим шрифтом (вывод строк).<br>
+&nbsp;</p>
+<table border=0 CELLPADDING=5>
+<tr><td>
+<code>
+<b>procedure</b> SetPixel(x,y: integer; c: Color);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Закрашивает пиксел с координатами (x,y) цветом c
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> PutPixel(x,y: integer; c: Color);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Закрашивает пиксел с координатами (x,y) цветом c
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> GetPixel(x,y: integer): Color;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цвет пиксела с координатами (x,y)
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> MoveTo(x,y: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает текущую позицию рисования в точку (x,y)
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> LineTo(x,y: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок от текущей позиции до точки (x,y). Текущая позиция переносится в точку (x,y)
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> LineTo(x,y: integer; c: Color);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок от текущей позиции до точки (x,y) цветом c. Текущая позиция переносится в точку (x,y)
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> Line(x1,y1,x2,y2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок от точки (x1,y1) до точки (x2,y2)
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> Line(x1,y1,x2,y2: integer; c: Color);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок от точки (x1,y1) до точки (x2,y2) цветом c
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> FillCircle(x,y,r: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет внутренность окружности с центром (x,y) и радиусом r
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> DrawCircle(x,y,r: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует окружность с центром (x,y) и радиусом r
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> FillEllipse(x1,y1,x2,y2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет внутренность эллипса, ограниченного прямоугольником, заданным координатами противоположных вершин (x1,y1) и (x2,y2)
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> DrawEllipse(x1,y1,x2,y2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует границу эллипса, ограниченного прямоугольником, заданным координатами противоположных вершин (x1,y1) и (x2,y2)
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> FillRectangle(x1,y1,x2,y2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет внутренность прямоугольника, заданного координатами противоположных вершин (x1,y1) и (x2,y2)
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> FillRect(x1,y1,x2,y2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет внутренность прямоугольника, заданного координатами противоположных вершин (x1,y1) и (x2,y2)
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> DrawRectangle(x1,y1,x2,y2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует границу прямоугольника, заданного координатами противоположных вершин (x1,y1) и (x2,y2)
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> FillRoundRect(x1,y1,x2,y2,w,h: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет внутренность прямоугольника со скругленными краями; (x1,y1) и (x2,y2) задают пару противоположных вершин, а w и h – ширину и высоту эллипса, используемого для скругления краев
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> DrawRoundRect(x1,y1,x2,y2,w,h: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует границу прямоугольника со скругленными краями; (x1,y1) и (x2,y2) задают пару противоположных вершин, а w и h – ширину и высоту эллипса, используемого для скругления краев
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> Circle(x,y,r: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует заполненную окружность с центром (x,y) и радиусом r
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> Ellipse(x1,y1,x2,y2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует заполненный эллипс, ограниченный прямоугольником, заданным координатами противоположных вершин (x1,y1) и (x2,y2)
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> Rectangle(x1,y1,x2,y2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует заполненный прямоугольник, заданный координатами противоположных вершин (x1,y1) и (x2,y2)
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> RoundRect(x1,y1,x2,y2,w,h: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует заполненный прямоугольник со скругленными краями; (x1,y1) и (x2,y2) задают пару противоположных вершин, а w и h – ширину и высоту эллипса, используемого для скругления краев
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> Arc(x,y,r,a1,a2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует дугу окружности с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы a1 и a2 с осью OX (a1 и a2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> FillPie(x,y,r,a1,a2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет внутренность сектора окружности, ограниченного дугой с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы a1 и a2 с осью OX (a1 и a2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> DrawPie(x,y,r,a1,a2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует сектор окружности, ограниченный дугой с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы a1 и a2 с осью OX (a1 и a2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> Pie(x,y,r,a1,a2: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует заполненный сектор окружности, ограниченный дугой с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы a1 и a2 с осью OX (a1 и a2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> DrawPolygon(points: <b>array</b> <b>of</b> Point);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует замкнутую ломаную по точкам, координаты которых заданы в массиве points
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> FillPolygon(points: <b>array</b> <b>of</b> Point);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет многоугольник, координаты вершин которого заданы в массиве points
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> Polygon(points: <b>array</b> <b>of</b> Point);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует заполненный многоугольник, координаты вершин которого заданы в массиве points
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> Polyline(points: <b>array</b> <b>of</b> Point);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует ломаную по точкам, координаты которых заданы в массиве points
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> Curve(points: <b>array</b> <b>of</b> Point);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует кривую по точкам, координаты которых заданы в массиве points
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> DrawClosedCurve(points: <b>array</b> <b>of</b> Point);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует замкнутую кривую по точкам, координаты которых заданы в массиве points
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> FillClosedCurve(points: <b>array</b> <b>of</b> Point);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет замкнутую кривую по точкам, координаты которых заданы в массиве points
+</td></tr>
+<tr><td>
+<code>
+<b>procedure</b> ClosedCurve(points: <b>array</b> <b>of</b> Point);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует заполненную замкнутую кривую по точкам, координаты которых заданы в массиве points
+</td></tr>
+	<tr>
+		<td>
+<code>
+<b>procedure</b> TextOut(x,y: integer; s: string); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит строку s в прямоугольник к координатами левого верхнего угла (x,y)
+</td>
+	</tr>
+	<tr>
+		<td>
+<code>
+<b>procedure</b> TextOut(x,y: integer; n: integer); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит целое n в прямоугольник к координатами левого верхнего угла (x,y)
+</td>
+	</tr>
+<tr><td>
+<code>
+<b>procedure</b> TextOut(x,y: integer; r: real); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит вещественное r в прямоугольник к координатами левого верхнего угла (x,y)
+</td></tr>
+	<tr>
+		<td>
+<code>
+<b>procedure</b> DrawTextCentered(x,y,x1,y1: integer; s: string); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит строку s, 
+		отцентрированную в прямоугольнике с координатами (x,y,x1,y1)</td>
+	</tr>
+	<tr>
+		<td>
+<code>
+<b>procedure</b> DrawTextCentered(x,y,x1,y1: integer; n: integer); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит целое значение n, 
+		отцентрированное в прямоугольнике с координатами (x,y,x1,y1)</td>
+	</tr>
+	<tr>
+		<td>
+<code>
+<b>procedure</b> DrawTextCentered(x,y,x1,y1: integer; r: real); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит вещественное значение r, 
+		отцентрированное в прямоугольнике с координатами (x,y,x1,y1)</td>
+	</tr>
+<tr><td>
+<code>
+<b>procedure</b> FloodFill(x,y: integer; c: Color);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заливает область одного цвета цветом c, начиная с точки (x,y).
+</td></tr>
+</table>
+</body></html>

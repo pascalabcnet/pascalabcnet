@@ -1,0 +1,130 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Создание заданий для исполнителя <span lang="ru">Чертежник</span></H1>
+<hr>
+<p><span lang="ru">Опишем последовательность создания группы заданий для 
+исполнителя Чертежник. Создадим модуль </span><span lang="en-us">DM</span>Tasks.pas со следующи<span lang="ru">м 
+текстом:</span></p>
+<blockquote>
+	<p><code><b>unit</b> <span lang="en-us">DM</span>Tasks;</code></p>
+	<p><code><b>interface</b></code></p>
+	<p><code><b>uses</b> DMTaskMaker;</code></p>
+	<p><code><b>implementation</b></code></p>
+	<p><code><b>procedure</b> First<span lang="en-us">DM</span>;<br>
+	<b>var</b> i,a: integer;<br>
+	<b>begin</b><br>
+&nbsp; TaskText('Задание mydm1. Начертите, используя цикл');<br>
+&nbsp; Field(14,8);<br>
+&nbsp; DoToPoint(7,7);<br>
+&nbsp; a:=6;<br>
+&nbsp; <b>for</b> i:=1 <b>to</b> 6 <b>do</b><br>
+&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp; DoPenDown;<br>
+&nbsp;&nbsp;&nbsp; DoOnVector(a,-a);<br>
+&nbsp;&nbsp;&nbsp; DoOnVector(-a,a);<br>
+&nbsp;&nbsp;&nbsp; DoOnVector(-a,-a);<br>
+&nbsp;&nbsp;&nbsp; DoOnVector(a,a);<br>
+&nbsp;&nbsp;&nbsp; Dec(a);<br>
+&nbsp;&nbsp;&nbsp; DoPenUp;<br>
+&nbsp;&nbsp;&nbsp; DoOnVector(0,-1);<br>
+&nbsp; <b>end</b>;<br>
+	<b>end</b>;</code></p>
+	<p><code><b>begin</b><br>
+	&nbsp; </span>RegisterGroup('mydm','Мои задания для Чертежника','DMTasks',2);<br>
+	&nbsp; </span>RegisterTask('mydm1',FirstDM);<br>
+	<b>end</b>.</code></p>
+</blockquote>
+<p><span lang="ru">Наберем и запустим основную программу (сохранять ее в каком-либо файле не требуется):</span></p>
+<blockquote>
+	<p><code><b>uses</b> <span lang="en-us">Drawman</span>, <span lang="en-us">
+	DM</span>Tasks;<br>
+	<b>begin</b><br>
+&nbsp; Task('my<span lang="en-us">dm</span>1');<br>
+	<b>end</b>.</code></p>
+</blockquote>
+<p>Будет выведено следующее задание для <span lang="ru">Чертежника</span>:</p>
+<p><img border="0" src="images/dmmake1.PNG"></p>
+<p>Добавим задание на разработку процедуры:</p>
+<blockquote>
+<p><code><b>procedure</b> DoCross;<br>
+<b>begin</b><br>
+&nbsp; DoPenDown;<br>
+&nbsp; DoOnVector(1,0); DoOnVector(0,-1);<br>
+&nbsp; DoOnVector(1,0); DoOnVector(0,-1);<br>
+&nbsp; DoOnVector(-1,0); DoOnVector(0,-1);<br>
+&nbsp; DoOnVector(-1,0); DoOnVector(0,1);<br>
+&nbsp; DoOnVector(-1,0); DoOnVector(0,1);<br>
+&nbsp; DoOnVector(1,0); DoOnVector(0,1);<br>
+&nbsp; DoPenUp;<br>
+<b>end</b>;</code></p>
+<p><code><b>procedure</b> SecondDM;<br>
+<b>begin</b><br>
+&nbsp; TaskText('Задание mydm2. Начертите, используя процедуру Cross');<br>
+&nbsp; Field(18,12);<br>
+&nbsp; DoToPoint(3,8);<br>
+&nbsp; DoCross;<br>
+&nbsp; DoToPoint(8,4);<br>
+&nbsp; DoCross;<br>
+&nbsp; DoToPoint(12,11);<br>
+&nbsp; DoCross;<br>
+&nbsp; DoToPoint(15,6);<br>
+&nbsp; DoCross;<br>
+<b>end</b>;</code></p>
+</blockquote>
+<p>Добавим вызов процедуры регистрации для данного задания; в результате секция инициализации примет следующий вид:</p>
+<blockquote>
+ <p><code><b>begin</b><br>
+ &nbsp; RegisterGroup('mydm','Мои задания для Чертежника','DMTasks',2);<br>
+ &nbsp; RegisterTask('mydm1',FirstDM);<br>
+ &nbsp; RegisterTask('mydm2',SecondDM);<br>
+ <b>end</b>.</code></p>
+</blockquote>
+<p><span lang="ru">Изменим основную программу:</span></p>
+<blockquote>
+	<p><code><b>uses</b> <span lang="en-us">Drawman</span>, <span lang="en-us">
+	DM</span>Tasks;<br>
+	<b>begin</b><br>
+&nbsp; Task('my<span lang="en-us">dm2</span>');<br>
+	<b>end</b>.</code></p>
+</blockquote>
+<p>При запуске этой программы в окне исполнителя Чертежник будет выведено новое задание:</p>
+<p><img border="0" src="images/dmmake2.PNG"></p>
+<p>
+При первом запуске программы с подключенным модулем <code>DMTasks</code> созданная нами группа была автоматически зарегистрирована
+в мастере по созданию программ-заготовок <b>PT4Load</b>.
+Если теперь нажать кнопку&nbsp;<img border="0" src="images/load.gif" width="16" height="17">&nbsp;и в появившемся окне
+<b>PT4Load</b> ввести префикс
+</span><span lang="en-us"><code>DM</code></span><span lang="ru"> в поле &laquo;Задание&raquo;, то окно примет следующий вид:
+&nbsp;</span></p>
+<p><img border="0" src="images/dmmake3.PNG">
+&nbsp;</p>
+<p>Мы видим, что группа заданий mydm появилась в списке доступных групп для исполнителя Чертежник. Наберем имя задания
+<span lang="en-us"><code>mydm1</code></span>:</p>
+<p>
+<img border="0" src="images/dmmake4.PNG">
+</p>
+<p>После нажатия клавиши <span lang="en-us"><b>Enter</b> </span>в рабочем каталоге будет создан
+новый файл <span lang="en-us">DMmydm1.pas </span>со следующим содержимым:</p>
+<blockquote>
+	<p><code><b>uses</b> <span lang="en-us">Drawman</span>, <span lang="en-us">
+	DM</span>Tasks;<br>
+	<br>
+	<b>begin</b><br>
+&nbsp; Task('my<span lang="en-us">dm</span>1');<br>
+	<br>
+	<b>end</b>.</code></p>
+</blockquote>
+<p>Можно попытаться решить :)</p>
+</body>
+
+</html>

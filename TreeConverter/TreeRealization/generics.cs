@@ -129,6 +129,7 @@ namespace PascalABCCompiler.TreeRealization
                 return new VoidNotValid(loc);
             }*/
             SystemLibrary.SystemLibrary.syn_visitor.check_for_type_allowed(tn,loc);
+            SystemLibrary.SystemLibrary.syn_visitor.check_using_static_class(tn, loc);
             internal_interface ii = tn.get_internal_interface(internal_interface_kind.bounded_array_interface);
             if (ii != null)
             {
@@ -170,9 +171,11 @@ namespace PascalABCCompiler.TreeRealization
                         return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_IMPLEMENT_INTERFACE_{1}", tn.PrintableName, di.name);
                     }
                 }
+                if (tn.IsStatic)
+                    return new SimpleSemanticError(null, "USING_STATIC_CLASS_NOT_VALID");
                 if (gpe.has_default_ctor)
                 {
-                    if (tn.IsAbstract || !tn.is_value && !generic_convertions.type_has_default_ctor(tn, false))
+                    if (tn.IsAbstract || tn.IsStatic || !tn.is_value && !generic_convertions.type_has_default_ctor(tn, false))
                     {
                         return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_HAVE_DEFAULT_CONSTRUCTOR", tn.PrintableName);
                     }
@@ -735,7 +738,7 @@ namespace PascalABCCompiler.TreeRealization
             return result;
         }
 
-        public static function_node DeduceFunction(function_node func, expressions_list fact, bool alone, location loc, List<SyntaxTree.expression> syntax_nodes_parameters = null)
+        public static function_node DeduceFunction(function_node func, expressions_list fact, bool alone, compilation_context context, location loc, List<SyntaxTree.expression> syntax_nodes_parameters = null)
         {
             parameter_list formal = func.parameters;
             int formal_count = formal.Count;
@@ -832,8 +835,11 @@ namespace PascalABCCompiler.TreeRealization
             }
 
             var continue_trying_to_infer_types = true; 
-            Dictionary<string, delegate_internal_interface> formal_delegates = null; 
+            Dictionary<string, delegate_internal_interface> formal_delegates = null;
 
+            var testIsTypeclassRestricted = func.Attributes?.Any(x => x.AttributeType.name == "__TypeclassRestrictedFunctionAttribute");
+            var isTypeclassRestricted = testIsTypeclassRestricted.HasValue && testIsTypeclassRestricted.Value;
+            var typeclasses = func.get_generic_params_list().Where(t => t.Attributes != null && t.Attributes.Any(a => a.AttributeType != null && a.AttributeType.name == "__TypeclassGenericParameterAttribute")); // Typeclasses
             while (continue_trying_to_infer_types) //Продолжаем пытаться вычислить типы до тех пор пока состояние о выведенных типах не будет отличаться от состояния на предыдущей итерации
             {
                 var previous_deduce_state = deduced // Текущее состояние выведенных на данный момент типов. Простой список индексов с уже выведенными типами из массива deduced
@@ -916,6 +922,37 @@ namespace PascalABCCompiler.TreeRealization
                         }
                     }
                 }
+
+                if (isTypeclassRestricted)
+                {
+                    foreach (var tc in typeclasses)
+                    {
+                        var instances = context.typeclassInstances.Where(ti =>
+                            (ti.ImplementingInterfaces[0] as common_generic_instance_type_node).original_generic ==
+                            (tc.ImplementingInterfaces[0] as common_generic_instance_type_node).original_generic);
+
+                        var appropriateInstances = instances.Where(ti =>
+                            (ti.ImplementingInterfaces[0] as common_generic_instance_type_node).instance_params.SequenceEqual(
+                                (tc.ImplementingInterfaces[0] as common_generic_instance_type_node).instance_params.Select(ip => deduced[ip.generic_param_index])));
+
+                        if (appropriateInstances.Count() == 1)
+                        {
+                            var foundInstance = appropriateInstances.First() as common_type_node;
+                            if (foundInstance.generic_params?.Count > 0 is true)
+                            {
+                                type_node[] deducedInstances = new type_node[foundInstance.generic_params.Count];
+                                DeduceTypeclassInstances(context, deducedInstances, foundInstance.generic_params.OfType<type_node>());
+
+                                deduced[tc.generic_param_index] = foundInstance.get_instance(deducedInstances.ToList());
+                            }
+                            else
+                            {
+                                deduced[tc.generic_param_index] = appropriateInstances.First();
+                            }
+                        }
+                    }
+                }
+
                 var current_deduce_state = deduced               //текущее состояние выведенных типов
                     .Select((t, ii) => new {Type = t, Index = ii})
                     .Where(t => t.Type != null)
@@ -981,6 +1018,38 @@ namespace PascalABCCompiler.TreeRealization
             List<type_node> deduced_list = new List<type_node>(generic_type_params_count);
             deduced_list.AddRange(deduced);
             return func.get_instance(deduced_list, alone, loc);
+        }
+
+        private static void DeduceTypeclassInstances(compilation_context context, type_node[] deduced, IEnumerable<type_node> typeclasses)
+        {
+            foreach (var tc in typeclasses)
+            {
+                var instances = context.typeclassInstances.Where(ti =>
+                    (ti.ImplementingInterfaces[0] as common_generic_instance_type_node).original_generic ==
+                    (tc.ImplementingInterfaces[0] as common_generic_instance_type_node).original_generic);
+
+                var appropriateInstances = instances.Where(ti =>
+                    (ti.ImplementingInterfaces[0] as common_generic_instance_type_node).instance_params.SequenceEqual(
+                        (tc.ImplementingInterfaces[0] as common_generic_instance_type_node).instance_params));
+
+                if (appropriateInstances.Count() == 1)
+                {
+                    var foundInstance = appropriateInstances.First() as common_type_node;
+                    if (foundInstance.generic_params?.Count > 0 is true)
+                    {
+                        List<type_node> instanceTypes = null;
+                        deduced[tc.generic_param_index] = foundInstance.get_instance(instanceTypes);
+                    }
+                    else
+                    {
+                        deduced[tc.generic_param_index] = appropriateInstances.First();
+                    }
+                }
+                else
+                {
+                    // TODO: typeclasses add error message 
+                }
+            }
         }
 
         //Выведение типов
@@ -1517,6 +1586,8 @@ namespace PascalABCCompiler.TreeRealization
             cmn.is_constructor = (compiled_orig != null ||
                 (common_orig != null && common_orig.is_constructor));
             cmn.return_value_type = generic_convertions.determine_type(orig_fn.return_value_type, _instance_params, false);
+            if (common_orig != null)
+                cmn.overrided_method = common_orig.overrided_method;
             if (orig_fn.is_generic_function)
             {
                 cmn.return_value_type = generic_convertions.determine_type(cmn.return_value_type, meth_inst_pars, true);
@@ -2167,7 +2238,6 @@ namespace PascalABCCompiler.TreeRealization
             this.is_final = original_generic_function.is_final;
             this.is_overload = true;
             this.polymorphic_state = original_generic_function.polymorphic_state;
-
             this.return_value_type = generic_convertions.determine_type(original_generic_function.return_value_type, instance_parameters, true);
 
             foreach (parameter par in original_generic_function.parameters)

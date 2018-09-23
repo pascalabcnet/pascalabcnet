@@ -1,0 +1,55 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Методы расширения">
+<param name="Keyword" value="extensionmethod">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Методы расширения</H1>
+<p>Любой существующий тип, хранящийся во внешней dll, и все типы стандартной 
+библитеки .NET можно расширить новыми методами. Метод расширения определяется 
+как процедура или функция с модификатором <code> <strong>
+	extensionmethod</strong></code>. Первый параметр метода расширения 
+обязательно должен иметь имя Self и принадлежит к расширяемому типу. Сравним две 
+процедуры, описанные ниже:</p>
+<blockquote><code><strong>procedure</strong> MyPrint(Self: integer);<br><strong>begin</strong><br>&nbsp; writeln(Self)<br>
+	<strong>end</strong>;<br>
+	<strong><br>procedure</strong> MyPrintEx(Self: integer); <strong>
+	extensionmethod</strong>;<br><strong>begin</strong><br>&nbsp; writeln(Self)<br>
+	<strong>end</strong>;<br>
+<br><strong>begin<br></strong>&nbsp; MyPrint(1);<br>&nbsp; 1.MyPrintEx;<br>
+	<strong>end</strong>.</code></blockquote>
+<p>Здесь MyPrint - это обычная процедура с параметром типа integer, MyPrintEx - 
+метод расширения типа integer. При этом при вызове первый параметр MyPrintEx 
+становится объектом, вызывающим MyPrintEx как метод.</p>
+<p>Можно расширить тип последовательности, тогда все классы, являющиеся 
+последовательностями (динамические одномерные массивы, списки List&lt;T&gt;, множества 
+HashSet&lt;T&gt; и SortedSet&lt;T&gt;), 
+получат этот метод. Например, в системном модуле PABCSystem так введен метод 
+расширения ForEach для последовательностей:</p>
+<blockquote><code><strong>procedure</strong> &amp;ForEach&lt;T&gt;(Self: <strong>sequence 
+	of</strong> T; action: T -&gt; ()); <strong>extensionmethod</strong>;<br>
+	<strong>begin</strong><br>&nbsp; <strong>foreach</strong> x: T <strong>in</strong> 
+	Self <strong>do</strong><br>&nbsp;&nbsp;&nbsp; action(x);<br><strong>end</strong>;</code></blockquote>
+<p>С помощью методов расширения можно <a href="operoverloading.html">перегружать 
+операции</a>:</p>
+<blockquote><code><strong>function operator</strong>+=&lt;T&gt;(a: List&lt;T&gt;; x: T): 
+	List&lt;T&gt;; <strong>extensionmethod</strong>;<br><strong>begin</strong><br>&nbsp; 
+	a.Add(x);<br>&nbsp; Result := a;<br><strong>end</strong>;</code></blockquote>
+<p>В этом случае первый параметр не обязан иметь имя Self.</p>
+<p>Для методов расширения имеется ряд ограничений:</p>
+<ul>
+	<li>Методы расширения не могут быть виртуальными.</li>
+	<li>Если метод расширения имеет то же имя, что и обычный метод, то 
+	предпочтение отдаётся обычному методу. </li>
+</ul>
+<p>&nbsp;</p>
+</body>
+
+</html>

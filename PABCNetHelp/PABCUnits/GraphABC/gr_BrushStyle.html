@@ -1,0 +1,43 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="BrushStyleType">
+<param name="Keyword" value="bsSolid">
+<param name="Keyword" value="bsClear">
+<param name="Keyword" value="bsHatch">
+<param name="Keyword" value="bsGradient">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Стили кисти</H1>
+<p>Стили кисти задаются перечислимым типом <code>BrushStyleType</code>:
+</p>
+<blockquote>
+	<p><code><b>type</b> BrushStyleType = (bsSolid, bsClear, bsHatch, bsGradient);</code></p>
+</blockquote>
+<p>Константы имеют следующий смысл:<br>
+&nbsp;</p>
+<table border=0 CELLPADDING=5>
+<tr><td>
+<code>bsSolid </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сплошная кисть (по умолчанию)</td></tr>
+<tr><td>
+<code>bsClear</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Прозрачная кисть</td></tr>
+<tr><td>
+<code>bsHatch</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Штриховая кисть</td></tr>
+<tr><td>
+<code>bsGradient<br>
+</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Градиентная кисть</td></tr>
+</table>
+
+<p>Для всех кистей используется свойство <code>Color</code>. 
+Для штриховой кисти дополнительно можно устанавливать свойства 
+<code>
+Hatch</code> и 
+<code>
+HatchBackgroundColor</code>, для градиентной - свойство 
+<code>
+GradientSecondColor</code>.</p>
+
+</body></html>

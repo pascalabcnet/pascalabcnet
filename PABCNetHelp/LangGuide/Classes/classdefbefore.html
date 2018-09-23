@@ -1,0 +1,44 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Предварительное объявление классов</H1>
+<p>Два или более класса могут содержать в качестве полей объекты 
+других классов, циклически ссылающиеся друг на друга. </p>
+<p>Например:</p>
+<blockquote>
+	<p><code><b>type</b><br>
+&nbsp; AAA =<b> class<br>
+	</b>&nbsp; &nbsp; b: BBB; <br>
+&nbsp; <b>end</b>;<br>
+&nbsp; BBB =<b> class</b><br>
+	&nbsp; &nbsp; a: AAA;<br>
+&nbsp; <b>end</b>;</code></p>
+</blockquote>
+<p>Данный код вызовет ошибку компиляции, поскольку тип 
+<code>BBB</code> в момент описания поля b 
+еще не определен. В такой ситуации следует воспользоваться предварительным 
+описанием класса в виде</p>
+<blockquote>
+	<p><i>ИмяКласса</i> <code>= <b>class</b></code>;</p>
+</blockquote>
+<p>Предварительно описанный класс должен быть полностью описан в 
+той же секции <code><b>type</b></code>:</p>
+<blockquote>
+	<p><code><b>type</b><br>
+&nbsp; BBB =<b> class</b>;<br>
+&nbsp; AAA =<b> class<br>
+	</b>&nbsp; &nbsp; b: BBB; <br>
+&nbsp; <b>end</b>;<br>
+&nbsp; BBB =<b> class</b><br>
+	&nbsp; &nbsp; a: AAA;<br>
+&nbsp; <b>end</b>;</code></p>
+</blockquote>
+</body>
+
+</html>

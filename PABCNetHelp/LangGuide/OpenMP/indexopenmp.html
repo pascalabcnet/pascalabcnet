@@ -1,0 +1,52 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="OpenMP">
+<param name="Keyword" value="omp">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>OpenMP: обзор</H1>
+<p><font color="#FF0000"><i><b>OpenMP</b></i></font> –
+<a href="http://ru.wikipedia.org/wiki/OpenMP">открытый стандарт для распараллеливания программ</a>
+<span lang="ru">на многопроцессорных системах с общей памятью (например, на 
+многоядерных процессорах)</span>.<span lang="ru"> </span>OpenMP реализует 
+параллельные вычисления с помощью многопоточности<span lang="ru">: главный поток 
+создает набор подчиненных потоков, и задача распределяется между ними.</span></p>
+<p>OpenMP <span lang="ru">представляет собой набор директив компилятора, которые 
+управляют процессом автоматического выделения потоков и данными, требуемыми для 
+работы этих потоков.</span></p>
+<p>В системе PascalABC.NET реализованы следующие элементы OpenMP:</p>
+<ul>
+	<li>Конструкции для создания и распределения работы между потоками (директивы 
+	<code>parallel for</code> и <code>parallel sections</code>)
+	</li>
+	<li>Конструкции для синхронизации потоков (директива <code>critical</code>) 
+	</li>
+</ul>
+<p class="MsoNormal">Директивы имеют следующий вид:</p>
+<p class="MsoNormal"><code><font color="#666666">{$omp directive-name [опция[[,] опция]...]}&nbsp;
+</font>
+</code></p>
+<p class="MsoNormal">Здесь <code>$omp</code> означает то, что это директива 
+OpenMP, <code>directive-name</code> – имя директивы, например <code>parallel</code>, 
+после чего могут быть опции. <b>Директива относится к тому оператору, перед 
+которым она находится.</b></p>
+<p class="MsoNormal">Примеры использования <span lang="en-us">OpenMP </span>
+находятся в папке <span lang="en-us">Samples/OMPSamples</span></p>
+
+<p>Ниже приводится описание директив.</p>
+<blockquote>
+	<p><a href="parallelfor.html">Директива parallel for</a> </p>
+	<p><a href="reduction.html">Редукция в директиве parallel for</a> </p>
+	<p><a href="sections.html">Параллельные секции и директива parallel sections</a> </p>
+	<p><a href="sync.html">Синхронизация и директива critical</a> </p>
+</blockquote>
+</body>
+
+</html>

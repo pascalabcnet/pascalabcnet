@@ -153,7 +153,9 @@ namespace CodeCompletion
                             proces.Add(tmp);
                     }
                     else if (returned_scopes[i] is ProcScope)
+                    {
                         proces.Add(returned_scopes[i] as ProcScope);
+                    }  
                     else if (returned_scopes[i] is ElementScope && (returned_scopes[i] as ElementScope).sc is CompiledScope)
                     {
                         //ProcType pt = new ProcType();
@@ -290,6 +292,11 @@ namespace CodeCompletion
                 returned_scope = null;
                 //if (any_order) ret_scope = entry_scope.FindNameInAnyOrder(_ident.name);
                 returned_scope = entry_scope.FindName(_ident.name);
+                if (returned_scope == null && string.Compare(entry_scope.Name, _ident.name, true) == 0 && entry_scope is ProcScope)
+                {
+                    returned_scope = entry_scope;
+                    return;
+                }  
                 if (returned_scope is ProcScope && (returned_scope as ProcScope).parameters.Count != 0)
                 {
                     returned_scopes = entry_scope.FindOverloadNames(_ident.name);
@@ -1575,6 +1582,7 @@ namespace CodeCompletion
                 }
                 ProcScope tmp = ts.GetConstructor();
                 List<ProcScope> cnstrs = ts.GetConstructors(false);
+                cnstrs.RemoveAll(x => (x.si.acc_mod == access_modifer.private_modifer || x.si.acc_mod == access_modifer.protected_modifer) && !this.CheckPrivateForBaseAccess(entry_scope, x));
                 if (search_all)
                     returned_scopes.AddRange(cnstrs.ToArray());
                 if (!on_bracket)
@@ -1583,6 +1591,8 @@ namespace CodeCompletion
                     ProcScope ps = select_method(constrs, null, null, null, _new_expr.params_list != null ? _new_expr.params_list.expressions.ToArray() : null);
                     if (ps != null)
                         returned_scope = ps;
+                    else if (cnstrs.Count > 0)
+                        returned_scope = cnstrs[0];
                     else
                         returned_scope = tmp;
                 }

@@ -211,7 +211,7 @@ namespace CodeCompletion
                 else ret_tn = ret_tn.FindNameInAnyOrder(_named_type_reference.names[i].name);
                 if (ret_tn == null) break;
                 else if (founded_scope.IsEqual(ret_tn))
-                    pos_list.Add(get_position(_named_type_reference));
+                    pos_list.Add(get_position(_named_type_reference.names[i]));
             }
         }
 
@@ -517,7 +517,9 @@ namespace CodeCompletion
         {
             //SymScope ss = entry_scope.FindScopeByLocation(_type_declaration.source_context.begin_position.line_num,_type_declaration.source_context.begin_position.column_num);
             IBaseScope ss = entry_scope.FindNameInAnyOrder(_type_declaration.type_name.name);
-            if (for_refactoring && ss != null && ss.IsEqual(founded_scope) && string.Compare(ss.SymbolInfo.name, _type_declaration.type_name.name, true) == 0)
+            if (ss == null && entry_scope is IInterfaceUnitScope && (entry_scope as IInterfaceUnitScope).ImplementationUnitScope != null)
+                ss = (entry_scope as IInterfaceUnitScope).ImplementationUnitScope.FindNameInAnyOrder(_type_declaration.type_name.name);
+            if (for_refactoring && ss != null && ss.IsEqual(founded_scope) && string.Compare(ss.SymbolInfo.name, _type_declaration.type_name.name, true) == 0 && !(ss is ITypeSynonimScope && !(founded_scope is ITypeSynonimScope)))
             {
                 pos_list.Add(get_position(_type_declaration.type_name));
             }
@@ -679,6 +681,8 @@ namespace CodeCompletion
                 if (_dot_node.right is ident)
                 {
                     ret_tn = ret_tn.FindNameOnlyInType((_dot_node.right as ident).name);
+                    if (ret_tn == null && left_scope is IElementScope && (left_scope as IElementScope).Type is ITypeScope)
+                        ret_tn = ((left_scope as IElementScope).Type as ITypeScope).FindExtensionMethod((_dot_node.right as ident).name);
                 }
             }
             if (ret_tn != null && ret_tn.IsEqual(founded_scope))
@@ -1610,6 +1614,82 @@ namespace CodeCompletion
             }
             _assign_var_tuple.expr.visit(this);
         }
+        public override void visit(is_pattern_expr _is_pattern_expr)
+        {
+            if (_is_pattern_expr.left != null)
+                _is_pattern_expr.left.visit(this);
+            if (_is_pattern_expr.right != null)
+                _is_pattern_expr.right.visit(this);
+        }
+        public override void visit(type_pattern _type_pattern)
+        {
+            if (_type_pattern.type != null)
+                _type_pattern.type.visit(this);
+            if (_type_pattern.identifier != null)
+                _type_pattern.identifier.visit(this);
+        }
+        public override void visit(dot_question_node _dot_question_node)
+        {
+            _dot_question_node.left.visit(this);
+            _dot_question_node.right.visit(this);
+        }
+        public override void visit(double_question_node _double_question_node)
+        {
+            _double_question_node.left.visit(this);
+            _double_question_node.right.visit(this);
+        }
+        public override void visit(pattern_cases _pattern_cases)
+        {
+            foreach (pattern_case pc in _pattern_cases.elements)
+                pc.visit(this);
+        }
+        public override void visit(var_deconstructor_parameter _var_deconstructor_parameter)
+        {
+            ident s = _var_deconstructor_parameter.identifier;
+            IBaseScope ss = entry_scope.FindScopeByLocation(s.source_context.begin_position.line_num, s.source_context.begin_position.column_num);
+            if (ss != null && ss.IsEqual(founded_scope))
+                pos_list.Add(get_position(s));
+        }
+        public override void visit(pattern_case _pattern_case)
+        {
+            if (_pattern_case.condition != null)
+                _pattern_case.condition.visit(this);
+            if (_pattern_case.pattern != null)
+                _pattern_case.pattern.visit(this);
+            if (_pattern_case.case_action != null)
+            {
+                if (!(_pattern_case.case_action is statement_list))
+                    new statement_list(_pattern_case.case_action, _pattern_case.source_context).visit(this);
+                else
+                    _pattern_case.case_action.visit(this);
+            }
+                
+        }
+        public override void visit(match_with _match_with)
+        {
+            if (_match_with.defaultAction != null)
+                _match_with.defaultAction.visit(this);
+            if (_match_with.expr != null)
+                _match_with.expr.visit(this);
+            if (_match_with.case_list != null)
+                _match_with.case_list.visit(this);
+        }
+        public override void visit(matching_expression _matching_expression)
+        {
+            _matching_expression.left.visit(this);
+            _matching_expression.right.visit(this);
+        }
+        public override void visit(deconstructor_pattern _deconstructor_pattern)
+        {
+            _deconstructor_pattern.type.visit(this);
+            foreach (pattern_deconstructor_parameter pdp in _deconstructor_pattern.parameters)
+                pdp.visit(this);
+        }
+        public override void visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
+        {
+            _recursive_deconstructor_parameter.pattern.visit(this);
+        }
+        
         public override void visit(modern_proc_type _modern_proc_type)
         {
             if (_modern_proc_type.aloneparam != null)

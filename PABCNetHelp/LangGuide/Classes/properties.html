@@ -1,0 +1,127 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="property">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Свойства</H1>
+<p>Свойство внешне выглядит как поле 
+класса, однако, при доступе к нему на чтение или запись позволяет выполнять некоторые действия. Свойство описывается в классе следующим образом:</p>
+<blockquote>
+	<p><code><b>property</b> Prop: <code class="codeit">тип</code> <b>read</b>
+	<code class="codeit">имя функции чтения</code> <b>
+	write</b> <code class="codeit">имя процедуры записи</code>;</code></p>
+</blockquote>
+<p>Как правило, каждое свойство связано с некоторым полем класса 
+и возвращает значение этого поля с помощью <i>функции чтения</i>, а меняет - с 
+помощью <i>процедуры записи</i>. Функция чтения и 
+процедура записи должны быть методами этого класса и иметь следующий вид:</p>
+<blockquote>
+	<p><code><b>function</b> getProp: <code class="codeit">
+	тип</code>;<b><br>
+	procedure</b> setProp(v: <code class="codeit">тип</code>);</code></p>
+</blockquote>
+<p>Обычно функция чтения и процедура записи описываются в 
+приватной секции класса. Они могут быть виртуальными, в этом случае их уместно 
+описывать в защищенной секции класса.</p>
+<p>Вместо <code>
+	<code class="codeit">имени функции чтения</code></code> 
+и <code> <code class="codeit">имени процедуры записи</code></code> 
+может фигурировать имя поля, с которым данное свойство связано. Любая из секций <code><b>read</b></code> 
+или <code><b>write</b></code> может быть опущена, в этом 
+случае мы получаем свойство с доступом только на запись или только на чтение.
+</p>
+<p>Например:</p>
+<blockquote>
+	<p><code><b>type</b> <br>
+	&nbsp; Person =<b> class<br>
+&nbsp; private<br>
+	&nbsp;&nbsp;&nbsp; </b>nm: string;<br>&nbsp; 
+	&nbsp; ag: integer; <br>
+	<b>&nbsp;&nbsp;&nbsp; procedure</b> setAge(a: integer);<br>&nbsp; <b>&nbsp; begin</b><br>&nbsp;&nbsp;&nbsp; 
+	<b>&nbsp; if</b> a&gt;=0 <b>then</b> <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ag := a<br>&nbsp; &nbsp;&nbsp;&nbsp; <b>else</b> 
+	<b>raise</b> new Exception('Возраст не может быть 
+	отрицательным');<br>
+	&nbsp; <b>&nbsp; end</b>;<br>
+&nbsp;&nbsp;&nbsp; <b>function</b> getId: string;<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result := nm + ag.ToString;<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+	&nbsp;
+	<b>public<br>
+	&nbsp; ...<br>
+	</b>&nbsp; <b>property</b> Age: integer <b>read</b> аg <b>write</b> setAge;<br>&nbsp; <b>property</b> 
+	Name: string <b>read</b> nm;<br>&nbsp; <b>property</b> Id: string <b>read</b> 
+	getId;<br><b>end</b>;</code></p>
+	<p><code><b>var</b> p: Person;<br>
+	p := new Person('Иванов',20);<br>p.Age := -3; // 
+	генерируется исключение<br>
+	<b>var</b>
+	i: integer := p.Age;<br>
+	writeln(p.Id); </code></p>
+</blockquote>
+<p>Всякий раз, когда мы присваиваем свойству <code>Age</code> 
+новое значение, 
+вызывается процедура <code>setAge</code> с 
+соответствующим параметром. Всякий раз, когда мы считываем значение свойства
+<code>Age</code>, происходит обращение к полю <code>ag</code>.
+Поле nm<code> </code>доступно только на 
+чтение. Наконец, свойство <code>Id</code> осуществляет 
+доступ на чтение к информации, находящейся в двух полях.</p>
+<p>Обычно для доступа к полю на чтение в секции <code><b>
+read</b></code> свойства указывается именно поле, 
+так как обычно при чтении поля никаких дополнительных действий производить не 
+требуется.</p>
+<p>Свойства не могут передаваться по ссылке в процедуры и функции. Например, 
+следующий код ошибочен:</p>
+<blockquote>
+	<p><code>Inc(p.Age); // ошибка!</code></p>
+</blockquote>
+<p>Если требуется обработать значение свойства, передав его по 
+ссылке, то надо воспользоваться вспомогательной переменной:</p>
+<blockquote>
+	<p><code>a := p.Age;<br>
+	Inc(a);<br>
+	p.Age := a;</code></p>
+</blockquote>
+<p>Однако, свойства соответствующих типов можно использовать в левой части 
+операций присваивания <code>+= -= *= /=</code>:</p>
+<blockquote>
+	<p><code>p.Age += 1<span lang="en-us">;</span></code></p>
+</blockquote>
+<p>Свойства очень удобны при работе с визуальными объектами, 
+поскольку позволяют автоматически перерисовывать объект, если изменить 
+какие-либо его визуальные характеристики. Например, если создана 
+кнопка <code>b1</code> типа <code>
+Button</code>, 
+то для визуального изменения ее ширины достаточно присвоить значение ее свойству
+<code>Width</code>:</p>
+<blockquote>
+	<p><code>b1.Width := 100;</code></p>
+</blockquote>
+<p>Процедура для записи этого свойства в приватное поле <code>fwidth</code> будет выглядеть примерно так:</p>
+<blockquote>
+	<p><code><b>procedure</b> SetWidth(w: integer);<br>
+	<b>begin</b><br>
+&nbsp; <b>if</b> (w&gt;0) <b>and</b> (w&lt;&gt;fwidth) <b>then</b> <br>
+&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp; fwidth := w;<br>
+	</code>&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<i>код перерисовки кнопки</i><br>
+	<code>&nbsp; <b>end</b><br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p>Следует обратить внимание на вторую часть условия в операторе
+<code><b>if</b></code>: <code>w&lt;&gt;fwidth</code>. 
+Добавление этой проверки позволяет избежать лишней перерисовки кнопки в случае, 
+если ее ширина не меняется.</p>
+<p>&nbsp;</p>
+</body>
+
+</html>

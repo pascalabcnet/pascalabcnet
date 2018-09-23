@@ -73,7 +73,12 @@ namespace PascalABCCompiler.TreeRealization
         {
             get { return false; }
         }
-        
+
+        public virtual bool IsStatic
+        {
+            get { return false; }
+        }
+
         public virtual bool IsAbstract
         {
         	get { return false; }
@@ -861,7 +866,15 @@ namespace PascalABCCompiler.TreeRealization
             set { _loc = value; }
         }
 
-		public ref_type_node(type_node pointed_type)
+        public override location location
+        {
+            get
+            {
+                return _loc;
+            }
+        }
+
+        public ref_type_node(type_node pointed_type)
 		{
 			_pointed_type = pointed_type;
 			SystemLibrary.SystemLibrary.init_reference_type(this);
@@ -1114,6 +1127,14 @@ namespace PascalABCCompiler.TreeRealization
             _name = v_name;
             _original_type = v_original_type;
             _loc = loc;
+        }
+
+        public override location location
+        {
+            get
+            {
+                return _loc;
+            }
         }
 
         public string name
@@ -1494,6 +1515,8 @@ namespace PascalABCCompiler.TreeRealization
         bool _sealed = false;
         bool _is_abstract = false;
         bool _is_partial = false;
+        bool _is_static = false;
+
         public void SetIsSealed(bool val)
         {
             _sealed=val;
@@ -1502,6 +1525,11 @@ namespace PascalABCCompiler.TreeRealization
         public void SetIsAbstract(bool val)
         {
         	_is_abstract = val;
+        }
+
+        public void SetIsStatic(bool val)
+        {
+            _is_static = val;
         }
 
         public bool IsPartial
@@ -1513,6 +1541,14 @@ namespace PascalABCCompiler.TreeRealization
             set
             {
                 _is_partial = value;
+            }
+        }
+
+        public override bool IsStatic
+        {
+            get
+            {
+                return _is_static;
             }
         }
 
@@ -1659,7 +1695,15 @@ namespace PascalABCCompiler.TreeRealization
             }
 		}
 
-		public SemanticTree.ILocation Location
+        public override location location
+        {
+            get
+            {
+                return _loc;
+            }
+        }
+
+        public SemanticTree.ILocation Location
 		{
 			get
 			{
@@ -1871,7 +1915,10 @@ namespace PascalABCCompiler.TreeRealization
                 }
                 if (this.type_special_kind == SemanticTree.type_special_kind.array_kind)
                 {
-                    return string.Format(compiler_string_consts.array_printable_name_template, element_type.PrintableName);
+                    if (rank == 1)
+                        return string.Format(compiler_string_consts.array_printable_name_template, element_type.PrintableName);
+                    else
+                        return string.Format(compiler_string_consts.multi_dim_array_printable_name_template, new string(',', rank-1), element_type.PrintableName);
                 }
                 return base.PrintableName;
             }
@@ -2373,7 +2420,14 @@ namespace PascalABCCompiler.TreeRealization
             get { return _loc; }
             set { _loc = value; }
         }
-        
+
+        public override location location
+        {
+            get
+            {
+                return _loc;
+            }
+        }
         /*public short_string_type_node(SemanticTree.type_access_level type_access_level,
             common_namespace_node comprehensive_namespace, SymbolTable.ClassScope cs, location loc, int length)
         :base(null,type_access_level,comprehensive_namespace,cs,loc)
@@ -2381,7 +2435,7 @@ namespace PascalABCCompiler.TreeRealization
             this.length = length;
             this.type_special_kind = SemanticTree.type_special_kind.short_string;
         }*/
-        
+
         public short_string_type_node(SymbolTable.ClassScope cs, location loc, int length)
         {
         	this._scope = cs;
@@ -2594,7 +2648,15 @@ namespace PascalABCCompiler.TreeRealization
         		return _compiled_type.IsAbstract;
         	}
         }
-        
+
+        public override bool IsStatic
+        {
+            get
+            {
+                return _compiled_type.IsAbstract && _compiled_type.IsSealed;
+            }
+        }
+
         public bool IsPrimitive
         {
             get { return _compiled_type.IsPrimitive; }
@@ -3278,7 +3340,7 @@ namespace PascalABCCompiler.TreeRealization
                         sil = bas_type.scope.SymbolTable.Find(bas_type.scope, name);
                         bas_type = bas_type.base_type as compiled_type_node;
                     }
-                    if (sil == null)
+                    //if (sil == null || true)
                     {
                         for (int i = 0; i < ImplementingInterfaces.Count; i++)
                         {
@@ -3287,10 +3349,16 @@ namespace PascalABCCompiler.TreeRealization
                                 ctn = ctn.original_generic as compiled_type_node;
                             if (ctn != null && ctn.scope != null)
                             {
-                                sil = ctn.scope.SymbolTable.Find(ctn.scope, name);
+                                List<SymbolInfo> sil3 = ctn.scope.SymbolTable.Find(ctn.scope, name);
+                                if (sil3 != null)
+                                {
+                                    if (sil != null)
+                                        sil.AddRange(sil3);
+                                    else
+                                        sil = sil3;
+                                }
                             }
-                            if (sil != null)
-                                break;
+                            
                         }
                     }
 

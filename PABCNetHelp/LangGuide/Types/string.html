@@ -1,0 +1,90 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="string">
+<param name="Keyword" value="shortstring">
+<param name="Keyword" value="Короткие строки">
+<param name="Keyword" value="Лексикографическое сравнение строк">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+<style type="text/css">
+.auto-style1 {
+	margin-left: 40px;
+}
+.auto-style2 {
+	font-family: monospace;
+	font-size: 10pt;
+	color: #000080;
+}
+</style>
+</head>
+
+<body>
+<H1>Строковый тип</H1>
+<p>Строки имеют тип <code>string</code>, состоят из набора последовательно расположенных символов 
+<code>char</code> и используются для представления текста.</p>
+<p>Строки могут иметь произвольную длину. К символам в строке можно обращаться, используя индекс:
+<code>s[i]</code> обозначает <code>i</code>-тый 
+символ в строке, нумерация начинается с единицы. Если индекс <code>i</code> выходит за пределы
+длины строки, то генерируется исключение.</p>
+<p><a href="../Operations_Expressions/stringop.html">Над строками определены операции</a> сравнения: <span class="auto-style2">&lt; &gt; &lt;= 
+&gt;= = &lt;&gt;</span>. Сравнение строк на неравенство осуществляется <strong>
+лексикографически</strong>: <span class="auto-style2">s1 &lt; s2</span> если для 
+первого несовпадающего символа с номером i <span class="auto-style2">s1[i]&lt;s2[i]</span> 
+или все символы строк совпадают, но <span class="auto-style2">s1</span> короче
+<span class="auto-style2">s2</span>. </p>
+<p>Операция <code>+</code> для строк означает 
+конкатенацию (слияние) строк. Например: <code>'Петя'+'Маша' 
+= 'ПетяМаша'</code>.</p>
+<p>Расширенный оператор присваивания <code>+=</code> для строк 
+добавляет в конец строки - левого операнда строку - правый операнд. Например: </p>
+<blockquote>
+	<p><code><b>var</b> s: string := 'Петя';<br>
+	s += 'Маша'; // s = 'ПетяМаша'</code></p>
+</blockquote>
+<p>Строка может складываться с числом, при этом число предварительно 
+преобразуется к строковому представлению:</p>
+<p class="auto-style1"><code>s := 'Ширина: '+15; // s = 'Ширина: 15'<br>s := 
+20.5+''; // s = '20.5'<br>s += 1; // s = '20.51' </code> </p>
+<p>Над строками и целыми определена операция <span class="auto-style2">*</span>:
+<span class="auto-style2">s*n</span> и <span class="auto-style2">n*s</span> 
+означает строку, образованную из строки <span class="auto-style2">s</span>, 
+повторенной n раз:</p>
+<p><code class="auto-style1">s := '*'*10; // s = '**********'<br>&nbsp;&nbsp;&nbsp; 
+s := 5*'ab' // s = 'ababababab'<br>&nbsp;&nbsp;&nbsp; s := 'd'; s *= 3; // s = 
+'ddd'&nbsp;&nbsp;&nbsp; </code> </p>
+<p>Строки реализуются типом <code>System.String</code>
+платформы .NET и представляют собой ссылочный тип.
+Таким образом, все операции над строками унаследованы от типа <code>
+System.String</code>. Однако, в отличие от .NET -
+строк, строки в <b>PascalABC.NET</b> изменяемы. 
+Например, можно изменить <code>s[i]</code> (в .NET
+нельзя). <span lang="ru">Более того, строки </span><code>string</code>
+<span lang="ru">в </span><b>PascalABC.NET</b> <span lang="ru">ведут себя как 
+размерные: после </span> </p>
+<blockquote>
+	<p><code><b>var</b> s2 := 'Hello';<br>
+	<b>var</b> s1 := s2;<br>
+	s1[2] := 'a';</code></p>
+</blockquote>
+<p><span lang="ru">строка </span><code>s2</code> <span lang="ru">не изменится. 
+Аналогично при передаче строки по значению в подпрограмму создается копия 
+строки, т.е. обеспечивается поведение, характерное для </span>Delphi Object 
+Pascal<span lang="ru">, а не для </span>.NET<span lang="ru">. </span> </p>
+<p><span lang="ru">Однако, строке можно присвоить </span><code>nil</code><span lang="ru">, 
+что необходимо для работы с </span>NET-<span lang="ru">кодом.</span></p>
+<p>Кроме того, в <b>PascalABC.NET</b> 
+реализованы <em>размерные строки</em>. Для их описания используется тип <code>
+string[n]</code>, где <code>n</code> - 
+константа целого типа, указывающая длину строки. Размерные строки, в отличие от обычных, можно использовать как 
+компоненты <a href="files.html">типизированных файлов</a>. Для совместимости с
+Delphi Object Pascal в стандартном модуле описан тип
+<code>shortstring=string[255]</code>.</p>
+<p><a href="../PABCSystemUnit/Files/Subroutines%20for%20string.html">Стандартные подпрограммы работы со строками</a>.</p>
+<p><a href="stringmembers.html">Члены класса <code>string</code></a>. </p>
+</body>
+
+</html>

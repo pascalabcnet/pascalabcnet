@@ -1,0 +1,43 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="new">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css"></head>
+<body><H1>Операция new</H1>
+<p>Операция
+<b>
+<code>new</code></b> имеет вид:</p>
+<blockquote>
+	<p><code><b>new</b></code> <i>ИмяКласса</i><code>(</code><i>ПараметрыКонструктора</i><code>)</code></p>
+</blockquote>
+<p>Она вызывает конструктор класса <i>ИмяКласса</i> и возвращает 
+созданный объект.</p>
+<p>Например:</p>
+<blockquote>
+	<p><code><b>type</b><br>
+&nbsp; My = <b>class</b><br>
+&nbsp;&nbsp;&nbsp; <b>constructor</b> Create(i: integer);<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp; <b>end</b>;</code></p>
+	<p><code><b>var</b> m: My := <b>new</b> My(5);</code></p>
+</blockquote>
+<p>Эквивалентным способом создания объекта является вызов 
+конструктора в стиле Object Pacal:</p>
+<blockquote>
+	<p><code><b>var</b> m: My := My.Create(5);</code></p>
+</blockquote>
+<p>Создание объекта класса при инициализации переменной проще 
+проводить, используя <i><b><font color="#FF0000">автоопределение типа</font></b></i>:</p>
+<blockquote>
+	<p><code><b>var</b> m := <b>new</b> My(5);</code></p>
+</blockquote>
+<p>В записи также могут быть определены конструкторы, которые вызываются 
+аналогично. Но в отличие от класса вызов конструктора записи не выделяет память 
+(она уже выделена) и только заполняет значения полей. </p>
+<p><br>
+&nbsp; </p>
+
+</body></html>

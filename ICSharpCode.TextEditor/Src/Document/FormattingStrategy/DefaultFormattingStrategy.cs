@@ -130,11 +130,11 @@ namespace ICSharpCode.TextEditor.Document
 			for (int i = offset; i >= 0; --i) {
 				char ch = document.GetCharAt(i);
 				if (ch == openBracket) {
-                    if (!kavs)
+                    if (!kavs || ch == '{')
 					++brackets;
 					if (brackets == 0) return i;
 				} else if (ch == closingBracket) {
-                    if (!kavs)
+                    if (!kavs || ch == '}')
                         --brackets;
                 }
                 else if (ch == '"')
@@ -158,10 +158,10 @@ namespace ICSharpCode.TextEditor.Document
 			for (int i = offset; i < document.TextLength; ++i) {
 				char ch = document.GetCharAt(i);
 				if (ch == openBracket) {
-                    if (!kavs)
+                    if (!kavs || ch == '{')
                         ++brackets;
 				} else if (ch == closingBracket) {
-                    if (!kavs)
+                    if (!kavs || ch == '}')
                         --brackets;
 					if (brackets == 0) return i;
 				} else if (ch == '"') {

@@ -2128,6 +2128,7 @@ namespace PascalABCCompiler.PCU
             SemanticTree.type_special_kind tsk = (SemanticTree.type_special_kind)br.ReadByte();
             ctn.SetIsSealed(br.ReadBoolean());
             ctn.SetIsAbstract(br.ReadBoolean());
+            ctn.SetIsStatic(br.ReadBoolean());
             ctn.IsPartial = br.ReadBoolean();
             
             if (tsk == SemanticTree.type_special_kind.diap_type)

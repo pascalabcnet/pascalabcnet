@@ -1,0 +1,54 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Наследование">
+<param name="Keyword" value="final">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title>Наследование</title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Наследование</H1>
+<p>Класс может быть унаследован от другого класса. Класс, от которого наследуют, 
+называют <font color="#ff0000"><i><b>базовым классом</b></i></font> 
+(<font color="#ff0000"><i><b>надклассом</b></i></font>,  
+<font color="#ff0000"><i><b>предком</b></i></font>), а класс, который 
+наследуется, называется <font color="#ff0000"><i><b>производным классом</b></i></font> 
+(<font color="#ff0000"><i><b>подклассом</b></i></font>,  
+<font color="#ff0000"><i><b>потомком</b></i></font>). При наследовании все поля, 
+методы и свойства базового класса переходят в производный класс, кроме этого, 
+могут быть добавлены новые поля, методы и свойства и переопределены (замещены) 
+старые методы. Конструкторы наследуются по особым правилам, которые 
+рассматриваются
+<A href="constrinheritance.html">здесь</a>.</p>
+<p>При описании класса его базовый класс указывается в скобках после слова <code><b>
+class</b></code>.</p>
+<p>Например:</p>
+<blockquote>
+	<p><code><b>type</b> <br>
+&nbsp; BaseClass = <b>class<br>
+&nbsp;&nbsp;&nbsp; procedure</b> p;<b> </b><br>
+	<b>&nbsp;&nbsp;&nbsp; procedure</b> q(r: real);<b> </b><br>
+&nbsp; <b>end</b>;<br>
+	&nbsp; MyClass =<b> class</b>(BaseClass)<br>
+	<b>&nbsp;&nbsp;&nbsp; procedure</b> p;<b> </b><br>
+	&nbsp;&nbsp;&nbsp; <b>procedure</b> r(i: integer); <br>
+	<b>&nbsp; end</b>;</code></p>
+</blockquote>
+<p>В данном примере процедура <code>p</code>
+переопределяется, а процедура <code>r</code>
+добавляется в класс <code>MyClass</code>.</p>
+<p>Если не указать имя базового класса, то считается, что класс наследуется от 
+класса <code>Object</code> - предка всех классов. Например, <code>BaseClass</code> 
+наследуется от
+<code>Object</code>.</p>
+<p>Переопределение методов при наследовании рассматривается
+<A href="inherited.html">здесь</a>.</p>
+<p>Перед словом <code><b>class</b></code> 
+может быть указано ключевое слово <code><b>sealed</b></code> – в этом случае от 
+класса запрещено наследовать.</p>
+</body>
+

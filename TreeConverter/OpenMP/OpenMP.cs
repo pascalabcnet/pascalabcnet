@@ -210,7 +210,7 @@ namespace PascalABCCompiler.TreeConverter
             else
             {
                 Kind = DirectiveKind.Unknown;
-                PutError(DirText.Length, dir.Directive.source_context, "OMPERROR_UNKNOWN_DIRECTIVE");
+                PutError(DirText.Length, dir.Directive.source_context != null ? dir.Directive.source_context : dir.source_context, "OMPERROR_UNKNOWN_DIRECTIVE");
             }
         }
         //DirSC - SC текста директивы
@@ -719,7 +719,7 @@ namespace PascalABCCompiler.TreeConverter
                         LocksFound = true;
                     else 
                     {
-                        visitor.AddWarning(new Errors.CommonWarning(PascalABCCompiler.StringResources.Get(dirInf.ErrorName), dir.Directive.source_context.FileName, dirInf.SC.begin_position.line_num, dirInf.SC.begin_position.column_num));
+                        visitor.AddWarning(new Errors.CommonWarning(PascalABCCompiler.StringResources.Get(dirInf.ErrorName), dir.source_context.FileName, dirInf.SC.begin_position.line_num, dirInf.SC.begin_position.column_num));
                     }
                 }
             }
@@ -1170,12 +1170,12 @@ namespace PascalABCCompiler.TreeConverter
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        private static List<SyntaxTree.ident> get_idents_from_dot_string(string s)
+        private static List<SyntaxTree.ident> get_idents_from_dot_string(string s, SyntaxTree.SourceContext sc)
         {
             List<SyntaxTree.ident> idents = new List<PascalABCCompiler.SyntaxTree.ident>();
             string[] strs = s.Split('.');
             foreach (string id in strs)
-                idents.Add(new SyntaxTree.ident(id));
+                idents.Add(new SyntaxTree.ident(id, sc));
             return idents;
 
         }
@@ -1184,13 +1184,13 @@ namespace PascalABCCompiler.TreeConverter
         /// </summary>
         /// <param name="sem_type">семантический тип</param>
         /// <returns></returns>
-        private static List<SyntaxTree.ident> get_idents_from_generic_type(type_node sem_type)
+        private static List<SyntaxTree.ident> get_idents_from_generic_type(type_node sem_type, SyntaxTree.SourceContext sc)
         {
             if (sem_type != null)
             {
                 List<SyntaxTree.ident> idents = null;
                 if (sem_type.original_generic != null)
-                    idents = get_idents_from_dot_string(sem_type.original_generic.full_name);
+                    idents = get_idents_from_dot_string(sem_type.original_generic.full_name, sc);
 
                 return idents;
 
@@ -1200,11 +1200,12 @@ namespace PascalABCCompiler.TreeConverter
         private static SyntaxTree.type_definition get_diapason(type_node sem_type)
         {
             if (sem_type is compiled_type_node)
-                return new PascalABCCompiler.SyntaxTree.named_type_reference(get_idents_from_dot_string(sem_type.PrintableName));
+                return new PascalABCCompiler.SyntaxTree.named_type_reference(get_idents_from_dot_string(sem_type.PrintableName, sem_type.location));
 
             if (sem_type is common_type_node)
             {
                 SyntaxTree.diapason diap = new PascalABCCompiler.SyntaxTree.diapason();
+                diap.source_context = sem_type.location;
                 common_type_node ctn = sem_type as common_type_node;
                 diap.left = ConvertConstant(ctn.low_bound);
                 diap.right = ConvertConstant(ctn.upper_bound);
@@ -1231,107 +1232,117 @@ namespace PascalABCCompiler.TreeConverter
             else
                 if (sem_type.type_special_kind == SemanticTree.type_special_kind.none_kind
                     || sem_type.type_special_kind == SemanticTree.type_special_kind.record || sem_type.type_special_kind == SemanticTree.type_special_kind.text_file)
+            {
+                if (sem_type.is_generic_type_instance)// это шаблонный тип
                 {
-                    if (sem_type.is_generic_type_instance)// это шаблонный тип
-                    {
-                        SyntaxTree.template_type_reference ttr = new PascalABCCompiler.SyntaxTree.template_type_reference();
-                        SyntaxTree.named_type_reference ntr = new PascalABCCompiler.SyntaxTree.named_type_reference();
-                        ttr.name = ntr;
-                        ntr.names.AddRange(get_idents_from_generic_type(sem_type));
-                        SyntaxTree.template_param_list tpl = new PascalABCCompiler.SyntaxTree.template_param_list();
-                        ttr.params_list = tpl;
-                        foreach (type_node tn in sem_type.instance_params)
-                            tpl.params_list.Add(ConvertToSyntaxType(tn));
+                    SyntaxTree.template_type_reference ttr = new PascalABCCompiler.SyntaxTree.template_type_reference();
+                    SyntaxTree.named_type_reference ntr = new PascalABCCompiler.SyntaxTree.named_type_reference();
+                    ttr.name = ntr;
+                    ttr.source_context = sem_type.location;
+                    ntr.source_context = ttr.source_context;
+                    ntr.names.AddRange(get_idents_from_generic_type(sem_type, sem_type.location));
+                    SyntaxTree.template_param_list tpl = new PascalABCCompiler.SyntaxTree.template_param_list();
+                    ttr.params_list = tpl;
+                    foreach (type_node tn in sem_type.instance_params)
+                        tpl.params_list.Add(ConvertToSyntaxType(tn));
 
-                        return ttr;
-                    }
-                    else if (sem_type.IsEnum)
-                        return new PascalABCCompiler.SyntaxTree.named_type_reference(get_idents_from_dot_string(sem_type.name));
-                    else
-                        return new PascalABCCompiler.SyntaxTree.named_type_reference(get_idents_from_dot_string(sem_type.PrintableName));
+                    return ttr;
                 }
-                else if (sem_type.type_special_kind == SemanticTree.type_special_kind.array_kind || sem_type.type_special_kind == SemanticTree.type_special_kind.array_wrapper)
+                else if (sem_type.IsEnum)
+                    return new PascalABCCompiler.SyntaxTree.named_type_reference(get_idents_from_dot_string(sem_type.name, sem_type.location), sem_type.location);
+                else
+                    return new PascalABCCompiler.SyntaxTree.named_type_reference(get_idents_from_dot_string(sem_type.PrintableName, sem_type.location), sem_type.location);
+            }
+            else if (sem_type.type_special_kind == SemanticTree.type_special_kind.array_kind || sem_type.type_special_kind == SemanticTree.type_special_kind.array_wrapper)
+            {
+                //значит тип-это массив
+                SyntaxTree.array_type arr_t = new PascalABCCompiler.SyntaxTree.array_type();
+                arr_t.source_context = sem_type.location;
+                // Cоздаем индексер для массива
+                SyntaxTree.indexers_types indt = new PascalABCCompiler.SyntaxTree.indexers_types();
+                indt.source_context = arr_t.source_context;
+                if (sem_type is common_type_node)
                 {
-                    //значит тип-это массив
-                    SyntaxTree.array_type arr_t = new PascalABCCompiler.SyntaxTree.array_type();
-                    arr_t.source_context = new PascalABCCompiler.SyntaxTree.SourceContext(0xFFFFFF, 0, 0xFFFFFF, 0);
-                    // Cоздаем индексер для массива
-                    SyntaxTree.indexers_types indt = new PascalABCCompiler.SyntaxTree.indexers_types();
-                    if (sem_type is common_type_node)
+                    SyntaxTree.diapason diap = new PascalABCCompiler.SyntaxTree.diapason();
+
+                    common_type_node ctn = sem_type as common_type_node;
+                    if (ctn.constants.Length > 1)
                     {
-                        SyntaxTree.diapason diap = new PascalABCCompiler.SyntaxTree.diapason();
-                        common_type_node ctn = sem_type as common_type_node;
-                        if (ctn.constants.Length > 1)
-                        {
-                            diap.left = ConvertConstant(ctn.constants[0].constant_value);
-                            diap.right = ConvertConstant(ctn.constants[1].constant_value);
-                            indt.indexers.Add(diap);
-                        }
+                        diap.left = ConvertConstant(ctn.constants[0].constant_value);
+                        diap.right = ConvertConstant(ctn.constants[1].constant_value);
+                        indt.indexers.Add(diap);
+                    }
+                    else
+                    {
+                        if (ctn.rank == 1)
+                            indt = null;
                         else
-                        {
                             for (int i = 0; i < ctn.rank; i++)
                                 indt.indexers.Add(null);
-                        }
+                    }
 
+                    arr_t.indexers = indt;
+                }
+                else if (sem_type is compiled_type_node)
+                {
+                    compiled_type_node ctn = sem_type as compiled_type_node;
+                    if (ctn.rank > 1)
+                    {
+                        for (int i = 0; i < ctn.rank; i++)
+                            indt.indexers.Add(null);
                         arr_t.indexers = indt;
                     }
-                    else if (sem_type is compiled_type_node)
-                    {
-                        compiled_type_node ctn = sem_type as compiled_type_node;
-                        if (ctn.rank > 1)
-                        {
-                            for (int i = 0; i < ctn.rank; i++)
-                                indt.indexers.Add(null);
-                            arr_t.indexers = indt;
-                        }
-                        //Получаем индексеры из строки
-                        //string ind_str = sem_type.PrintableName;
-                        //ind_str = get_indexer_string(ind_str);
+                    //Получаем индексеры из строки
+                    //string ind_str = sem_type.PrintableName;
+                    //ind_str = get_indexer_string(ind_str);
 
-                        //if (ind_str.Length != 0)
-                        //{
-                        //    indt.indexers.AddRange(get_diapasons(ind_str).ToArray());
-                        //    arr_t.indexers = indt;
-                        //}
-                    }
-                    //проверяем тип элементов массива               
-                    if (sem_type.element_type != null)
-                    {
-                        arr_t.elements_type = ConvertToSyntaxType(sem_type.element_type);
-                    }
-                    return arr_t;
+                    //if (ind_str.Length != 0)
+                    //{
+                    //    indt.indexers.AddRange(get_diapasons(ind_str).ToArray());
+                    //    arr_t.indexers = indt;
+                    //}
                 }
-                else if (sem_type.type_special_kind == SemanticTree.type_special_kind.typed_file || sem_type.type_special_kind == SemanticTree.type_special_kind.binary_file)
+                //проверяем тип элементов массива               
+                if (sem_type.element_type != null)
                 {
-                    SyntaxTree.file_type ft = new PascalABCCompiler.SyntaxTree.file_type();
-                    if (sem_type.element_type != null)
-                        ft.file_of_type = ConvertToSyntaxType(sem_type.element_type);
-                    //SyntaxTree.named_type_reference ntr = null;
-                    //if (sem_type.element_type!= null)
-                    //    ntr= new PascalABCCompiler.SyntaxTree.named_type_reference(get_idents_from_dot_string(sem_type.element_type.name));
-                    //ft.file_of_type = ntr;
-                    return ft;
+                    arr_t.elements_type = ConvertToSyntaxType(sem_type.element_type);
                 }
-                else if (sem_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.short_string)
-                {
-                    SyntaxTree.string_num_definition snd = new PascalABCCompiler.SyntaxTree.string_num_definition();
-                    snd.name = new SyntaxTree.ident(sem_type.name.Substring(0, sem_type.name.IndexOf('[')));
-                    snd.num_of_symbols = new SyntaxTree.int32_const(Int32.Parse(get_indexer_string(sem_type.PrintableName)));
-                    return snd;
-                }
-                else if (sem_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.set_type)
-                {
-                    SyntaxTree.set_type_definition std = new PascalABCCompiler.SyntaxTree.set_type_definition();
-                    if (sem_type.element_type != null)
-                        std.of_type = ConvertToSyntaxType(sem_type.element_type);
-                    return std;
-                }
-                else if (sem_type.type_special_kind == SemanticTree.type_special_kind.diap_type)
-                {
-                    return get_diapason(sem_type);
+                return arr_t;
+            }
+            else if (sem_type.type_special_kind == SemanticTree.type_special_kind.typed_file || sem_type.type_special_kind == SemanticTree.type_special_kind.binary_file)
+            {
+                SyntaxTree.file_type ft = new PascalABCCompiler.SyntaxTree.file_type();
+                ft.source_context = sem_type.location;
+                if (sem_type.element_type != null)
+                    ft.file_of_type = ConvertToSyntaxType(sem_type.element_type);
+                //SyntaxTree.named_type_reference ntr = null;
+                //if (sem_type.element_type!= null)
+                //    ntr= new PascalABCCompiler.SyntaxTree.named_type_reference(get_idents_from_dot_string(sem_type.element_type.name));
+                //ft.file_of_type = ntr;
+                return ft;
+            }
+            else if (sem_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.short_string)
+            {
+                SyntaxTree.string_num_definition snd = new PascalABCCompiler.SyntaxTree.string_num_definition();
+                snd.source_context = sem_type.location;
+                snd.name = new SyntaxTree.ident(sem_type.name.Substring(0, sem_type.name.IndexOf('[')));
+                snd.num_of_symbols = new SyntaxTree.int32_const(Int32.Parse(get_indexer_string(sem_type.PrintableName)));
+                return snd;
+            }
+            else if (sem_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.set_type)
+            {
+                SyntaxTree.set_type_definition std = new PascalABCCompiler.SyntaxTree.set_type_definition();
+                std.source_context = sem_type.location;
+                if (sem_type.element_type != null)
+                    std.of_type = ConvertToSyntaxType(sem_type.element_type);
+                return std;
+            }
+            else if (sem_type.type_special_kind == SemanticTree.type_special_kind.diap_type)
+            {
+                return get_diapason(sem_type);
 
 
-                }
+            }
 
             return null;
         }

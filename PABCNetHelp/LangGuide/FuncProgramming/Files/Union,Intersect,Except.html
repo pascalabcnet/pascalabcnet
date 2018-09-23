@@ -1,0 +1,38 @@
+<html><head><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Union">
+<param name="Keyword" value="Intersect">
+<param name="Keyword" value="Except">
+</object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
+<body>
+<H1>Методы Union,Intersect,Except</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<tr><td>
+<code><b>function </b>Union(second: <b>sequence of</b> T): <b>sequence of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит объединение множеств, представленных двумя последовательностями.
+</td></tr>
+<tr><td>
+<code><b>function </b>Union(second: <b>sequence of</b> T; comparer: IEqualityComparer&lt;T&gt;): <b>sequence of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит объединение множеств, представленных двумя последовательностями, используя указанный компаратор.
+</td></tr>
+<tr><td>
+<code><b>function </b>Intersect(second: <b>sequence of</b> T): <b>sequence of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит пересечение множеств, представленных двумя последовательностями.
+</td></tr>
+<tr><td>
+<code><b>function </b>Intersect(second: <b>sequence of</b> T; comparer: IEqualityComparer&lt;T&gt;): <b>sequence of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит пересечение множеств, представленных двумя последовательностями, используя для сравнения значений указанный компаратор.
+</td></tr>
+<tr><td>
+<code><b>function </b>Except(second: <b>sequence of</b> T): <b>sequence of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит разность множеств, представленных двумя последовательностями.
+</td></tr>
+<tr><td>
+<code><b>function </b>Except(second: <b>sequence of</b> T; comparer: IEqualityComparer&lt;T&gt;): <b>sequence of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит разность множеств, представленных двумя последовательностями, используя для сравнения значений указанный компаратор.
+</td></tr>
+</table>
+<h2>Пример </h2><blockquote><code><strong>begin</strong><br>&nbsp; <strong>var</strong> 
+	a := Range(1,5);<br>&nbsp; <strong>var</strong> b := Range(3,7);<br>&nbsp; 
+	a.Union(b).Println;&nbsp;&nbsp;&nbsp;&nbsp; // 1 2 3 4 5 6 7<br>&nbsp; 
+	a.Intersect(b).Println; // 3 4 5 <br>&nbsp; a.Except(b).Println;&nbsp;&nbsp;&nbsp; 
+	// 1 2 <br><strong>end</strong>.</code></blockquote>
+</body>

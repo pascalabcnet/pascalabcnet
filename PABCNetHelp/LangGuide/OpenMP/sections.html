@@ -1,0 +1,52 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="sections">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Параллельные секции и директива parallel sections</H1>
+<p>Директива <code>parallel sections</code> обеспечивает параллельное выполнение 
+нескольких операторов, простых или составных.</p>
+<blockquote>
+	<p><code><font color="#666666">{$omp parallel sections}<br>
+	</font>
+	<b>begin</b><br>
+	<i>&nbsp; секция 1;<br>
+	&nbsp; секция 2;<br>
+	</i>&nbsp; ...;<br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p>Каждый оператор в блоке <code><b>begin</b> ... <b>end</b></code>, следующем за директивой 
+является отдельной секцией.</p>
+<blockquote>
+	<p><code><font color="#666666">{$omp parallel sections}<br>
+	</font>
+	<b>begin</b><br>
+	<i>&nbsp; оператор 1;<br>
+	&nbsp; оператор 2;<br>
+	</i>&nbsp; <b>begin</b><br>
+	<i>&nbsp;&nbsp;&nbsp; оператор 3;<br>
+	&nbsp;&nbsp;&nbsp; оператор 4;<br>
+	&nbsp;&nbsp;&nbsp; оператор 5;<br>
+	</i>&nbsp; <b>end</b>;<br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p>Здесь описаны три параллельные секции, первая – оператор 1, вторая – оператор 
+2 и третья – блок <code>begin</code> ... <code>end</code>, состоящий из операторов 3-5.</p>
+<p>Все переменные, описанные вне параллельных секций, будут разделяемыми, то 
+есть, если в секциях есть обращение к таким переменным, то потоки, выполняющие 
+эти секции, будут обращаться к одной и той же ячейке памяти. Все переменные, 
+объявленные внутри секции, будут доступны только в той секции, в которой они 
+объявлены.</p>
+<p>Корректная работа параллельных секций возможна, только если секции независимы 
+друг от друга – если они могут выполняться в любом порядке, не обращаются к 
+одним и тем же переменным и не изменяют их.</p>
+</body>
+
+</html>

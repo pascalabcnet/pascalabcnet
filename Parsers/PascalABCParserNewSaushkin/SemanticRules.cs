@@ -216,7 +216,7 @@ namespace GPPGParserScanner
             return nnspd;
         }
 
-        public property_accessors NewPropertySpecifiersRead(ident tkRead, ident opt_identifier, property_accessors property_specifiers, LexLocation loc)
+        public property_accessors NewPropertySpecifiersRead(ident tkRead, ident opt_identifier, procedure_definition pr, expression ex, property_accessors property_specifiers, LexLocation loc)
         {
             var nnps = property_specifiers;
 			if (nnps == null) 
@@ -225,32 +225,37 @@ namespace GPPGParserScanner
 			}
             if (opt_identifier != null && opt_identifier.name.ToLower() == "write")
             {
-                nnps.read_accessor = new read_accessor_name(null);
-                nnps.write_accessor = new write_accessor_name(null);
+                nnps.read_accessor = new read_accessor_name(null, null, null);
+                nnps.write_accessor = new write_accessor_name(null, null, null);
                 nnps.read_accessor.source_context = tkRead.source_context;
                 nnps.write_accessor.source_context = opt_identifier.source_context;
             }
             else
             {
-                if (opt_identifier != null)
-                    nnps.read_accessor = new read_accessor_name(opt_identifier, tkRead.source_context.Merge(opt_identifier.source_context));
-                else nnps.read_accessor = new read_accessor_name(opt_identifier, tkRead.source_context);
+                if (ex != null)
+                    nnps.read_accessor = new read_accessor_name(opt_identifier, pr, ex, tkRead.source_context.Merge(ex.source_context));
+                else if (opt_identifier != null)
+                    nnps.read_accessor = new read_accessor_name(opt_identifier, pr, ex, tkRead.source_context.Merge(opt_identifier.source_context));
+                else nnps.read_accessor = new read_accessor_name(opt_identifier, pr, ex, tkRead.source_context);
 
             }
 			nnps.source_context = loc;
             return nnps;
         }
 
-        public property_accessors NewPropertySpecifiersWrite(ident tkWrite, ident opt_identifier, property_accessors property_specifiers, LexLocation loc)
+        public property_accessors NewPropertySpecifiersWrite(ident tkWrite, ident opt_identifier, procedure_definition pr, statement st, property_accessors property_specifiers, LexLocation loc)
         {
             var nnpsw = property_specifiers;
 			if (nnpsw == null) 
 			{
 				nnpsw = new property_accessors();
 			}
-            if (opt_identifier != null)
-			    nnpsw.write_accessor = new write_accessor_name(opt_identifier,tkWrite.source_context.Merge(opt_identifier.source_context));
-            else nnpsw.write_accessor = new write_accessor_name(opt_identifier,tkWrite.source_context);
+            if (st != null)
+                nnpsw.write_accessor = new write_accessor_name(opt_identifier, pr, st, tkWrite.source_context.Merge(st.source_context));
+            else if (opt_identifier != null)
+			    nnpsw.write_accessor = new write_accessor_name(opt_identifier,pr,st,tkWrite.source_context.Merge(opt_identifier.source_context));
+            else
+                nnpsw.write_accessor = new write_accessor_name(opt_identifier,pr,st,tkWrite.source_context);
 			nnpsw.source_context = loc;
             return nnpsw;
         }
@@ -394,6 +399,7 @@ namespace GPPGParserScanner
             scanner.parsertools = parsertools;// передали parsertools в объект сканера
             GPPGParser parser = new GPPGParser(scanner);
             parsertools.build_tree_for_formatter = false;
+            parser.lambdaHelper = this.lambdaHelper;
             parser.parsertools = parsertools;
             if (!parser.Parse())
                 if (parsertools.errors.Count == 0)
@@ -412,20 +418,35 @@ namespace GPPGParserScanner
                 method_call mc = new method_call();
                 mc.dereferencing_value = new dot_node(new ident("string", str.source_context), new ident("Format", str.source_context), str.source_context);
                 mc.parameters = new expression_list();
-                //string[] arr = Regex.Split(str.Value, @"\{[\w\d._]+\}");
-                //Match match = Regex.Match(str.Value, @"\{[\w\d._]+\}");
+                if (!str.Value.Contains("{"))
+                    return str;
                 string val = str.Value.Replace("{{","![&").Replace("}}}","}&]!").Replace("}}", "&]!");
                 string[] arr = Regex.Split(val, @"\{[^\}]+\}");
                 Match match = Regex.Match(val, @"\{[^\}]+\}");
                 List<string> vars = new List<string>();
                 //Dictionary<string, int> var_offsets = new Dictionary<string, int>();
                 List<int> var_offsets = new List<int>();
+                Dictionary<int, string> var_formats = new Dictionary<int, string>();
+                int ind = 0;
                 while (match.Success)
                 {
                     string s = match.Value.Replace("{", "").Replace("}", "");
+                    int colon_pos = s.LastIndexOf(':');
+                    int comma_pos = s.LastIndexOf(',');
+                    int bracket_pos = s.LastIndexOf(')');
+                    int sqbracked_pos = s.LastIndexOf(']');
+                    if (comma_pos != -1 && comma_pos > bracket_pos && comma_pos > sqbracked_pos)
+                        colon_pos = comma_pos;
+                    if (colon_pos != -1 && s.IndexOf('?') == -1)
+                    {
+                        var_formats.Add(ind, s.Substring(colon_pos));
+                        s = s.Substring(0, colon_pos);
+                        
+                    }  
                     vars.Add(s);
                     var_offsets.Add(match.Index);
                     match = match.NextMatch();
+                    ind++;
                 }
                 if (vars.Count == 0)
                 {
@@ -438,9 +459,24 @@ namespace GPPGParserScanner
                 {
                     sb.Append(arr[i].Replace("![&", "{{").Replace("&]!", "}}"));
                     if (i < arr.Length - 1)
-                        sb.Append("{" + i + "}");
+                    {
+                        sb.Append("{" + i);
+                        string fmt;
+                        if (var_formats.TryGetValue(i, out fmt))
+                        {
+                            sb.Append(fmt);
+                        }
+                        sb.Append("}");
+                    }
+                        
                 }
-                mc.parameters.Add(new string_const(sb.ToString(), str.source_context), str.source_context);
+                string str2 = sb.ToString();
+                if (str2.Trim().EndsWith("{"))
+                {
+                    parsertools.errors.Add(new bad_format_string(parsertools.CurrentFileName, str.source_context, str));
+                    return str;
+                }
+                mc.parameters.Add(new string_const(str2, str.source_context), str.source_context);
                 for (int i = 0; i < vars.Count; i++)
                 {
                     string s = vars[i];
@@ -489,5 +525,25 @@ namespace GPPGParserScanner
             sl.source_context = loc;
 			return sl;
         }
-    } 
+
+        public procedure_definition CreateAndAddToClassReadFunc(expression ex, ident id, SourceContext sc)
+        {
+            var fd = SyntaxTreeBuilder.BuildShortFuncDefinition(new formal_parameters(), null, new method_name(id.name, sc), new no_type(), ex, sc);
+            return fd;
+        }
+        public procedure_definition CreateAndAddToClassWriteProc(statement st, ident id, SourceContext sc)
+        {
+            var fp = SyntaxTreeBuilder.BuildFormalParameters(new List<ident>() { new ident("value") }, new List<type_definition>() { new no_type() });
+            var pd = SyntaxTreeBuilder.BuildShortProcDefinition(fp, null, new method_name(id.name, sc), st, sc);
+            return pd;
+        }
+
+        private int num1 = 0;
+
+        public ident NewId(string prefix)
+        {
+            num1++;
+            return new ident(prefix + num1.ToString());
+        }
+    }
 }

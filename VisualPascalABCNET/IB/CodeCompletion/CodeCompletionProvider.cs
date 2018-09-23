@@ -89,7 +89,8 @@ namespace VisualPascalABC
             if (!(data as UserDefaultCompletionData).IsOnOverrideWindow)
             {
                 int ind = data.Text.IndexOf('<');
-                if (ind != -1 && data.Text.Length > ind + 1 && data.Text[ind + 1] == '>') data.Text = data.Text.Substring(0, ind);
+                if (ind != -1 && data.Text.Length > ind + 1 && data.Text[ind + 1] == '>')
+                    data.Text = data.Text.Substring(0, ind);
             }
             else
                 data.Text = data.Description;
@@ -106,9 +107,17 @@ namespace VisualPascalABC
             List<PascalABCCompiler.Parsers.Position> loc = null;
             if (VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.compilerLoaded)
                 e = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
-            if (e == null /*|| Errors.Count > 0*/) return loc;
+            if (e is PascalABCCompiler.SyntaxTree.bin_expr && expr.Contains("<"))
+            {
+                expr = expr.Replace("<","&<");
+                Errors.Clear();
+                e = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+            }
+            if (e == null)
+                return loc;
             CodeCompletion.DomConverter dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[fileName];
-            if (dconv == null) return loc;
+            if (dconv == null)
+                return loc;
             loc = dconv.GetDefinition(e, line, column, keyword, only_check);
             return loc;
         }
@@ -142,7 +151,7 @@ namespace VisualPascalABC
             {
                 string meth = construct_header(procs[i] as CodeCompletion.ProcRealization, VisualPABCSingleton.MainForm.UserOptions.CursorTabCount);
                 sb.Append(meth);
-                sb.Append('\n');
+                //sb.Append('\n');
             }
             return sb.ToString();
         }
@@ -160,8 +169,15 @@ namespace VisualPascalABC
                 int off = textArea.Document.PositionToOffset(new TextLocation(procs[i].GetPosition().column - 1, procs[i].GetPosition().line - 1));
                 string meth = textArea.Document.GetText(off, textArea.Document.PositionToOffset(new TextLocation(procs[i].GetPosition().end_column - 1, procs[i].GetPosition().end_line - 1)) - off + 1);
                 meth = construct_header(meth, procs[i], VisualPABCSingleton.MainForm.UserOptions.CursorTabCount);
-                sb.Append(meth);
-                if (i < procs.Length - 1) sb.Append('\n');
+
+                if (i < procs.Length - 1)
+                {
+                    sb.Append(meth);
+                    sb.Append('\n');
+                }
+                else
+                    sb.Append(meth.Trim());
+
             }
             return sb.ToString();
         }
@@ -479,7 +495,7 @@ namespace VisualPascalABC
                             SymInfo[] from_list = dconv.GetName(e, expr, line, col, keyword, ref dot_sc);
                             for (int i = 0; i< from_list.Length; i++)
                             {
-                                if (from_list[i].name.StartsWith(pattern))
+                                if (from_list[i].name.StartsWith(pattern, StringComparison.OrdinalIgnoreCase))
                                     si_list.Add(from_list[i]);
                             }
                             mis = si_list.ToArray();

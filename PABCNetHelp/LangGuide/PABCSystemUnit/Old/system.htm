@@ -1,0 +1,93 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Sleep">
+<param name="Keyword" value="Cls">
+<param name="Keyword" value="Halt">
+<param name="Keyword" value="Assert">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+
+<H1>Системные процедуры и функции</H1>
+<table border="0" width="100%">
+	<!-- MSTableType="nolayout" -->
+	<tr>
+		<td width="16%" valign="top"><b>Имя и параметры</b></td>
+		<td width="12%" valign="top"><b>Процедура или функция</b></td>
+		<td width="20%" valign="top"><b>Типы параметров</b></td>
+		<td width="20%" valign="top"><b>Тип возвращаемого значения</b></td>
+		<td valign="top"><b>Действие</b></td>
+	</tr>
+	<tr>
+		<td width="16%" valign="top">
+		<code>Sleep(ms) </code></td>
+		<td width="12%" valign="top">процедура</td>
+		<td width="20%" valign="top"><code>ms</code> - <code>integer</code></td>
+		<td width="20%" valign="top">&nbsp;</td>
+		<td valign="top">Осуществляет паузу в выполнении 
+		программы на <code>ms</code> миллисекунд</td>
+	</tr>
+	<tr>
+		<td width="16%" valign="top">
+		<code>Cls</code></td>
+		<td width="12%" valign="top">процедура</td>
+		<td width="20%" valign="top">&nbsp;</td>
+		<td width="20%" valign="top">&nbsp;</td>
+		<td valign="top">Очищает окно вывода</td>
+	</tr>
+	<tr>
+		<td width="16%" valign="top">
+		<code>Halt(n)</code></td>
+		<td width="12%" valign="top">процедура</td>
+		<td width="20%" valign="top"><code>n</code> - <code>integer</code></td>
+		<td width="20%" valign="top">&nbsp;</td>
+		<td valign="top">Завершает программу. Выводит в окно 
+		вывода предупреждение &quot;Программа завершена 
+		вызовом Halt(n)&quot;</td>
+	</tr>
+	<!-- MSTableType="nolayout" -->
+	<tr>
+		<td width="16%" valign="top">
+		<code>Halt</code></td>
+		<td width="12%" valign="top">процедура</td>
+		<td width="20%" valign="top">&nbsp;</td>
+		<td width="20%" valign="top">&nbsp;</td>
+		<td valign="top">Завершает программу без вывода 
+		предупреждения</td>
+	</tr>
+	<tr>
+		<td width="16%" valign="top">
+		<code>Assert(b)</code></td>
+		<td width="12%" valign="top">процедура</td>
+		<td width="20%" valign="top"><code>b</code> - <code>boolean</code></td>
+		<td width="20%" valign="top">&nbsp;</td>
+		<td valign="top">Если <code>b</code>=<code>False</code>, 
+		то генерирует специальное исключение <code>EAssertionFailed</code>. 
+		Используется для проверки выполнения утверждений в программе</td>
+	</tr>
+	<tr>
+		<td width="16%" valign="top">
+		<code>Assert(b,mess)</code></td>
+		<td width="12%" valign="top">процедура</td>
+		<td width="20%" valign="top"><code>b</code> - <code>boolean</code>,
+		<code>mess</code> - <b><code>string</code></b></td>
+		<td width="20%" valign="top">&nbsp;</td>
+		<td valign="top">Если <code>b</code>=<code>False</code>, 
+		то генерирует специальное исключение <code>EAssertionFailed</code> 
+		с сообщением <code>mess</code>. Используется для 
+		проверки выполнения утверждений в программе.</td>
+	</tr>
+	</table>
+<pre>
+
+
+</pre>
+</body>
+
+</html>

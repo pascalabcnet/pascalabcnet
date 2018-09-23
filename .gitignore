@@ -11,6 +11,9 @@ bin/*.xml
 bin/log.txt
 bin/CompilerController.ini
 
+**/_vti_cnf 
+**/_vti_pvt 
+
 TestSuite/CompilationSamples/*.pcu
 TestSuite/CompilationSamples/*.pdb
 TestSuite/CompilationSamples/*.exe

@@ -1,0 +1,168 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Read">
+<param name="Keyword" value="ReadBoolean">
+<param name="Keyword" value="ReadChar">
+<param name="Keyword" value="ReadChar2">
+<param name="Keyword" value="ReadChar3">
+<param name="Keyword" value="ReadInteger">
+<param name="Keyword" value="ReadInteger2">
+<param name="Keyword" value="ReadInteger3">
+<param name="Keyword" value="Readln">
+<param name="Keyword" value="ReadlnBoolean">
+<param name="Keyword" value="ReadlnChar">
+<param name="Keyword" value="ReadlnChar2">
+<param name="Keyword" value="ReadlnChar3">
+<param name="Keyword" value="ReadlnInteger">
+<param name="Keyword" value="ReadlnInteger2">
+<param name="Keyword" value="ReadlnInteger3">
+<param name="Keyword" value="ReadlnReal">
+<param name="Keyword" value="ReadlnReal2">
+<param name="Keyword" value="ReadlnReal3">
+<param name="Keyword" value="ReadlnString">
+<param name="Keyword" value="ReadlnString2">
+<param name="Keyword" value="ReadlnString3">
+<param name="Keyword" value="ReadReal">
+<param name="Keyword" value="ReadReal2">
+<param name="Keyword" value="ReadReal3">
+<param name="Keyword" value="ReadString">
+<param name="Keyword" value="ReadString2">
+<param name="Keyword" value="ReadString3">
+<param name="Keyword" value="TryRead"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Подпрограммы ввода</H1>
+<table border=0 cellpadding=5><tr><td><code><b>procedure</b> Read(a,b,...);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вводит значения a,b,... с клавиатуры</td></tr>
+<tr><td><code><b>procedure</b> Read(f: файл; a,b,...);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вводит значения a,b,... из файла f</td></tr>
+<tr><td><code><b>function</b> ReadBoolean: boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа boolean, введенное с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadBoolean(prompt: string): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает значение типа boolean, введенное с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadBoolean(f: Text): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа boolean, введенное из текстового файла f</td></tr>
+<tr><td><code><b>function</b> ReadChar: char;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа char, введенное с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadChar(prompt: string): char;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает значение типа char, введенное с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadChar(f: Text): char;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа char, введенное из текстового файла f</td></tr>
+<tr><td><code><b>function</b> ReadChar2: (char, char);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа char, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadChar2(prompt: string): (char, char);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа char, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadChar3: (char, char, char);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа char, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadChar3(prompt: string): (char, char, char);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа char, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadInteger: integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа integer, введенное с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadInteger(prompt: string): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadInteger(f: Text): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа integer, введенное из текстового файла f</td></tr>
+<tr><td><code><b>function</b> ReadInteger2: (integer, integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа integer, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadInteger2(prompt: string): (integer, integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа integer, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadInteger3: (integer, integer, integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа integer, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadInteger3(prompt: string): (integer, integer, integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа integer, введенных с клавиатуры</td></tr>
+<tr><td><code><b>procedure</b> Readln(a,b,...);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вводит значения a,b,... с клавиатуры и осуществляет переход на следующую строку</td></tr>
+<tr><td><code><b>procedure</b> Readln(f: Text; a,b,...);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вводит значения a,b,... из текстового файла f и осуществляет переход на следующую строку</td></tr>
+<tr><td><code><b>function</b> ReadlnBoolean: boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа boolean, введенное с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnBoolean(prompt: string): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает значение типа boolean, введенное с клавиатуры,и осуществляет переход на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnBoolean(f: Text): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа boolean, введенное из текстового файла f,и осуществляет переход на следующую строку</td></tr>
+<tr><td><code><b>function</b> ReadlnChar: char;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа char, введенное с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnChar(prompt: string): char;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает значение типа char, введенное с клавиатуры,и осуществляет переход на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnChar(f: Text): char;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа char, введенное из текстового файла f,и осуществляет переход на следующую строку</td></tr>
+<tr><td><code><b>function</b> ReadlnChar2: (char, char);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnChar2(prompt: string): (char, char);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnChar3: (char, char, char);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnChar3(prompt: string): (char, char, char);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnInteger: integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа integer, введенное с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnInteger(prompt: string): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры,и осуществляет переход на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnInteger(f: Text): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа integer, введенное из текстового файла f,и осуществляет переход на следующую строку</td></tr>
+<tr><td><code><b>function</b> ReadlnInteger2: (integer, integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnInteger2(prompt: string): (integer, integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnInteger3: (integer, integer, integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnInteger3(prompt: string): (integer, integer, integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnReal: real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа real, введенное с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnReal(prompt: string): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает значение типа real, введенное с клавиатуры,и осуществляет переход на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnReal(f: Text): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа real, введенное из текстового файла f,и осуществляет переход на следующую строку</td></tr>
+<tr><td><code><b>function</b> ReadlnReal2: (real, real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnReal2(prompt: string): (real, real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnReal3: (real, real, real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnReal3(prompt: string): (real, real, real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnString: string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа string, введенное с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnString(prompt: string): string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает значение типа string, введенное с клавиатуры,и осуществляет переход на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnString(f: Text): string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа string, введенное из текстового файла f,и осуществляет переход на следующую строку</td></tr>
+<tr><td><code><b>function</b> ReadlnString2: (string, string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnString2(prompt: string): (string, string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnString3: (string, string, string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnString3(prompt: string): (string, string, string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadReal: real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа real, введенное с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadReal(prompt: string): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает значение типа real, введенное с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadReal(f: Text): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа real, введенное из текстового файла f</td></tr>
+<tr><td><code><b>function</b> ReadReal2: (real, real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа real, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadReal2(prompt: string): (real, real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа real, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadReal3: (real, real, real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа real, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadReal3(prompt: string): (real, real, real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа real, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadString: string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа string, введенное с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadString(prompt: string): string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает значение типа string, введенное с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadString(f: Text): string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа string, введенное из текстового файла f</td></tr>
+<tr><td><code><b>function</b> ReadString2: (string, string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа string, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadString2(prompt: string): (string, string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа string, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadString3: (string, string, string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа string, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadString3(prompt: string): (string, string, string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа string, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> TryRead(<b>var</b> x: integer): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вводит числовое значение x клавиатуры. Возвращает False если при вводе произошла ошибка</td></tr>
+</table>
+</body></HTML>

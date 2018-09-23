@@ -1,0 +1,57 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Эквивалентность типов // старое!!!</H1>
+<p>В <b>Pascal ABC</b> два типа считаются 
+эквивалентными (равными), если совпадают их описания. Например, после описаний</p>
+<blockquote>
+	<p><code><b>type </b>Arr=<b>array</b> [1..100] <b>of</b> integer;<b><br>
+	var</b> <br>
+&nbsp; a: Arr;<br>
+&nbsp; b: <b>array</b> [1..100] <b>of</b> integer;</code></p>
+</blockquote>
+<p>можно присваивать массивы друг другу:</p>
+<blockquote>
+	<p><code>a:=b;</code></p>
+</blockquote>
+<p>В типах записей, помимо типов полей, должны совпадать имена:</p>
+<blockquote>
+	<p><code><b>type</b><br>
+&nbsp; rec1 =<b> record</b> i,j: integer <b>end</b>;<br>
+&nbsp; rec2 =<b> record</b> x,y: integer <b>end</b>;<br>
+	...<br>
+	<b>var</b> r1: rec1; r2: rec2;<br>
+	...<br>
+	r1:=r2; // ошибка!</code></p>
+</blockquote>
+<p>В типах формальных параметров процедур и функций имена могут 
+не совпадать:</p>
+<blockquote>
+	<p><code><b>type</b><br>
+&nbsp; proc1 =<b> procedure</b> (i: integer);&nbsp; <br>
+&nbsp; proc2 =<b> procedure</b> (x: integer);<br>
+	...<br>
+	<b>var</b> p1: proc1; p2: proc2;<br>
+	...<br>
+	p1:=p2; // все в порядке</code></p>
+</blockquote>
+<p>Подобная расширенная трактовка эквивалентности (по сравнению 
+с Borland Pascal и Borland Delphi) позволяет передавать параметры 
+составного типа (массивы, записи, процедурный и указательный) в 
+процедуры и функции, не определяя для этих параметров новый тип:</p>
+<blockquote>
+	<p><code><b>procedure</b> foreach(<b>var</b> a: <b>array</b> [1..100] <b>of</b> 
+	real; n: integer; f: <b>function</b>(r: real): real);<br><b>var</b> i: integer;<br>
+	<b>begin</b><br>&nbsp; <b>for</b> i:=1 <b>to</b> n <b>do</b><br>&nbsp;&nbsp;&nbsp; a[i]:=f(a[i]);<br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p>&nbsp;</p>
+</body>
+
+</html>

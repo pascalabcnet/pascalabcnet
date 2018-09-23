@@ -1,0 +1,183 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Window">
+<param name="Keyword" value="GraphABCWindow">
+<param name="Keyword" value="Left">
+<param name="Keyword" value="Top">
+<param name="Keyword" value="Width">
+<param name="Keyword" value="Height">
+<param name="Keyword" value="Title">
+<param name="Keyword" value="Caption">
+<param name="Keyword" value="Clear">
+<param name="Keyword" value="SetSize">
+<param name="Keyword" value="SetPos">
+<param name="Keyword" value="Init">
+<param name="Keyword" value="Save">
+<param name="Keyword" value="Load">
+<param name="Keyword" value="Fill">
+<param name="Keyword" value="Close">
+<param name="Keyword" value="Minimize">
+<param name="Keyword" value="Maximize">
+<param name="Keyword" value="Normalize">
+<param name="Keyword" value="CenterOnScreen">
+<param name="Keyword" value="Center">
+<param name="Keyword" value="IsFixedSize">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Класс GraphABCWindow графического окна</H1>
+<p>Класс <code>GraphABCWindow</code> 
+представляет собой графическое окно. Функция </p>
+<blockquote>
+	<p><code><b>function</b> Window: GraphABCWindow;</code></p>
+</blockquote>
+<p>возвращает объект текущего графического окна.</p>
+<table border=0 CELLPADDING=5>
+<tr>
+	<td height="12"></td>
+</tr>
+<tr>
+	<td style="border:1px solid #808080; background-color: #E7E7F7">
+<font style="font-size: 11pt">Свойства класса 
+GraphABCWindow</font></td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> Left: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отступ графического окна от левого края экрана в пикселах
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> Top: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отступ графического окна от верхнего края экрана в пикселах</td>
+</tr>
+<tr><td>
+<code>
+    <b>property</b> Width: integer;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ширина клиентской части графического окна в пикселах
+</td></tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> Height: integer;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Высота клиентской части графического окна в пикселах
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> Caption: string;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заголовок графического окна
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> Title: string;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заголовок графического окна
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> IsFixedSize: boolean;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Имеет ли графическое окно фиксированный размер
+</td>
+</tr>
+<tr>
+	<td height="8"></td>
+</tr>
+<tr>
+	<td style="border:1px solid #808080; background-color: #E7E7F7">
+<font style="font-size: 11pt">Методы класса 
+GraphABCWindow</font></td>
+</tr>
+<tr>
+	<td>
+<code><b>procedure</b> Clear; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Очищает графическое окно белым цветом</td>
+</tr>
+<tr>
+	<td>
+<code><b>procedure</b> Clear(c: Color); </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Очищает графическое окно цветом c</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>procedure</b> SetSize(w,h: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает размеры клиентской части графического окна в пикселах
+</td>
+</tr>
+<tr><td>
+<code>
+    <b>procedure</b> SetPos(l,t: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает отступ графического окна от левого верхнего края экрана в 
+пикселах</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Init(Left,Top,Width,Height: integer; BackColor: Color := 
+clWhite);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает положение, размеры и цвет графического окна
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Save(fname: string);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сохраняет содержимое графического окна в файл с именем fname</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Load(fname: string);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Восстанавливает содержимое графического окна из файла с именем fname</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Fill(fname: string);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет содержимое графического окна обоями из файла с именем fname</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Close;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Закрывает графическое окно и завершает приложение</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Minimize;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сворачивает графическое окно
+</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Maximize;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Максимизирует графическое окно</td></tr>
+<tr><td>
+<code>
+    <b>procedure</b> Normalize;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает графическое окно к нормальному размеру
+</td></tr>
+<tr>
+	<td>
+<code>
+    <b>procedure</b> CenterOnScreen;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Центрирует графическое окно по центру экрана</td>
+</tr>
+<tr><td>
+<code>
+    <b>function</b> Center: Point;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает центр графического окна</td></tr>
+</table>
+<p>Кроме того, можно изменять свойства графического окна, используя 
+соответствующие <a href="gr_Window.html">процедуры и функции</a>.</p>
+</body></html>

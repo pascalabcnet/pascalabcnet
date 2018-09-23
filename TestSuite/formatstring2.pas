@@ -8,4 +8,5 @@
   assert(s = '2,3,4');
   s := $'{a+1},{b+1},{c+1}';
   assert(s = '3,4,5');
+  assert($'abc'=$'abc');
 end.

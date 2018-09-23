@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Timers">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Модуль Timers</H1>
+Модуль <code>Timers</code> <span lang="ru">содержит класс </span><code>Timer</code><span lang="ru">, 
+позволяющий выполнять определенные действия через равные промежутки времени. В 
+конструкторе класса </span><code>Timer</code> <span lang="ru">указывается 
+промежуток времени и имя процедуры без параметров&nbsp; - обработчика события 
+таймера, вызываемой через указанный промежуток времени.</span><p>Класс <code>
+Timer</code> 
+имеет следующий интерфейс: </p>
+<blockquote>
+	<p><code><b>type</b> <br>
+&nbsp;
+  	Timer = <b>class<br>
+	</b>&nbsp;&nbsp;&nbsp; <b>constructor</b> (ms: integer; TimerProc: <b>
+	procedure</b>); <br>
+&nbsp;&nbsp;&nbsp; <b>procedure</b> Start;<br>
+&nbsp;&nbsp;&nbsp; <b>procedure</b> Stop;<br>
+&nbsp;&nbsp;&nbsp; <b>property</b> Enabled: boolean <b>read write</b>;<br>
+&nbsp;&nbsp;&nbsp; <b>property</b> Interval: integer<b> read write</b>;<br>
+	&nbsp; <b>end</b>;</code></p>
+</blockquote>
+<p><span lang="ru">Члены</span> класса <code>Timer</code> 
+описаны в следующей таблице:</p>
+<table border=0 CELLPADDING=5 id="table1">
+<tr><td>
+<code><b>constructor</b><span lang="ru"> </span>(ms: integer; TimerProc: <b>
+procedure</b>); </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Создает таймер, выполняющий 
+каждые <code>ms</code> миллисекунд действие, содержащееся в процедуре без 
+параметров <code>TimerProc</code><span lang="ru">, называемой обработчиком 
+таймера</span>. Созданный таймер <span lang="ru">необходимо запустить, вызвав 
+метод </span><code>Start</code></td></tr>
+<tr><td>
+<code><b>procedure</b> Start;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает таймер</td></tr>
+<tr><td>
+<code><b>procedure</b> Stop;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Останавливаетает таймер
+</td></tr>
+<tr>
+	<td>
+<code><b>property</b> Enabled: boolean <b>read write</b>;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span lang="ru">Запущен ли 
+таймер</span>
+</td>
+</tr>
+<tr>
+	<td>
+<code><b>property</b> Interval: integer<b> read write</b>;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span lang="ru">Промежуток 
+времени между вызовами обработчика таймера</span>
+</td>
+</tr>
+</table>
+<p><span lang="ru"><a href="../../Examples/Timers/Timer1.html">Пример 
+использования таймера</a>.</span></p>
+</body>
+
+</html>

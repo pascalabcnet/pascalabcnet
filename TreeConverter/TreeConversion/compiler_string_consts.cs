@@ -370,11 +370,11 @@ namespace PascalABCCompiler.TreeConverter
         public static string recort_printable_name_template = "record{0}end";
         public static string set_name = "TypedSet";
         public const string deconstruct_method_name = "deconstruct";
-        public const string is_test_function_name = "IsTest";
+        public const string is_test_function_name = "__TypeCheckAndAssignForIsMatch";
 
         public static string bounded_array_printable_name_template = "array [{0}..{1}] of {2}";
         public static string array_printable_name_template = "array of {0}";
-
+        public static string multi_dim_array_printable_name_template = "array [{0}] of {1}";
         public static readonly string generic_params_infix = "`";
 
         public static string GetAccessorName(string accessorTemplate, string name)

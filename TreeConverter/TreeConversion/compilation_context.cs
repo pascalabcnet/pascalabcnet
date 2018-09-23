@@ -200,6 +200,8 @@ namespace PascalABCCompiler.TreeConverter
         internal List<var_definition_node> var_defs =
             new List<var_definition_node>();
 
+        public List<type_node> typeclassInstances = new List<type_node>();
+
         internal Stack<System.Collections.Generic.List<var_definition_node>> var_defs_stack =
             new Stack<System.Collections.Generic.List<var_definition_node>>();
 
@@ -331,6 +333,7 @@ namespace PascalABCCompiler.TreeConverter
             in_parameters_block = false;
             is_order_independed_method_description = false;
             _has_nested_functions = false;
+            typeclassInstances.Clear();
         }
         
         public void clear_type_prededinitions()
@@ -1022,7 +1025,7 @@ namespace PascalABCCompiler.TreeConverter
         	SymbolInfo si = _ctn.find_first_in_type(compiler_string_consts.noteq_name);
         	if (si.sym_info is common_method_node)
         		return;
-        	SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope,_ctn.scope, si.ToString());
+        	SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.scope, _cmn.scope, si.ToString());
         	common_method_node cmn = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.noteq_name),SystemLibrary.SystemLibrary.bool_type,null,_ctn,
         	                                                SemanticTree.polymorphic_state.ps_static,SemanticTree.field_access_level.fal_public,scope);
         	cmn.IsOperator = true;
@@ -1056,7 +1059,7 @@ namespace PascalABCCompiler.TreeConverter
         	SymbolInfo si = _ctn.find_first_in_type(compiler_string_consts.eq_name);
         	if (si.sym_info is common_method_node)
         		return;
-        	SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope,_ctn.scope, si.ToString());
+        	SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope( _ctn.scope, _cmn.scope,  si.ToString());
         	common_method_node cmn = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.eq_name),SystemLibrary.SystemLibrary.bool_type,null,_ctn,
         	                                                SemanticTree.polymorphic_state.ps_static,SemanticTree.field_access_level.fal_public,scope);
         	cmn.IsOperator = true;
@@ -1175,7 +1178,7 @@ namespace PascalABCCompiler.TreeConverter
             if (_ctn != null)
             {
                 common_method_node cmmn;
-                SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(topScope, _ctn.Scope, "lambda " + name);
+                SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.Scope, topScope, "lambda " + name);
                 //TODO:сделать static и virtual.
                 //TODO: interface and implementation scopes.
                 cmmn = new common_method_node(name, def_loc, _ctn, SemanticTree.polymorphic_state.ps_common, _fal, scope);
@@ -1235,7 +1238,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (!extension_method)
                     {
                         common_method_node cmmn;
-                        SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope, _ctn.Scope, name=="create"? "constructor " + _ctn.Scope : "method " + name + " from " + _ctn.Scope);
+                        SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.Scope, _cmn.scope, name=="create"? "constructor " + _ctn.Scope : "method " + name);
                         //TODO:сделать static и virtual.
                         //TODO: interface and implementation scopes.
                         cmmn = new common_method_node(name, def_loc, _ctn, SemanticTree.polymorphic_state.ps_common, _fal, scope);
@@ -1250,7 +1253,7 @@ namespace PascalABCCompiler.TreeConverter
                     else
                     {
                         common_namespace_function_node cnfnn;
-                        SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope, _ctn.scope, name);
+                        SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.scope, _cmn.scope, name);
                         cnfnn = new common_namespace_function_node(name, def_loc, _cmn, scope);
                         //_cmn.functions.AddElement(cnfnn);
                         syntax_tree_visitor.compiled_unit.namespaces[0].functions.AddElement(cnfnn);
@@ -1266,7 +1269,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     //string cname = compiler_string_consts.GetConnectedFunctionName(_compiled_tn.name, name);
                     common_namespace_function_node cnfnn;
-                    SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope, _compiled_tn.scope, name);
+                    SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_compiled_tn.scope, _cmn.scope, name);
                     cnfnn = new common_namespace_function_node(name, def_loc, _cmn, scope);
                     //_cmn.functions.AddElement(cnfnn);
                     syntax_tree_visitor.compiled_unit.namespaces[0].functions.AddElement(cnfnn);
@@ -2141,17 +2144,17 @@ namespace PascalABCCompiler.TreeConverter
             	}
             	else
             	{
-            		type_node tn = converted_type.ImplementingInterfaces.Find(x=>(x as type_node).full_name.StartsWith("System.Collections.Generic.IEnumerable")) as type_node;
-            		return new List<SymbolInfo> { new SymbolInfo(tn.instance_params[0]) };
+            		type_node tn = converted_type.ImplementingInterfaces.Find(x=>(x as type_node).BaseFullName.StartsWith("System.Collections.Generic.IEnumerable")) as type_node;
+                    return new List<SymbolInfo> { new SymbolInfo(tn.instance_params[0]) };
             	}
             }
             
             	
             List<SymbolInfo> sil = curscope.Find(name, curscope);
             List<SymbolInfo> si2 = null;
-            if (sil != null && sil.FirstOrDefault().scope is SymbolTable.ClassScope && curscope.TopScope is SymbolTable.BlockScope && curscope.TopScope.TopScope is SymbolTable.ClassMethodScope && curscope.TopScope.TopScope.TopScope is SymbolTable.BlockScope)
+            if (sil != null && sil.FirstOrDefault().scope is SymbolTable.ClassScope && curscope.TopScope is SymbolTable.BlockScope && curscope.TopScope.TopScope is SymbolTable.ClassMethodScope && ((SymbolTable.ClassMethodScope)curscope.TopScope.TopScope).DefScope is SymbolTable.BlockScope)
             {
-                si2 = curscope.TopScope.TopScope.TopScope.Find(name, curscope.TopScope.TopScope.TopScope);
+                si2 = ((SymbolTable.ClassMethodScope)curscope.TopScope.TopScope).DefScope.Find(name, ((SymbolTable.ClassMethodScope)curscope.TopScope.TopScope).DefScope);
                 if (si2 != null && si2.FirstOrDefault().scope is SymbolTable.ClassMethodScope)
                 {
                     sil = si2;
@@ -2720,11 +2723,25 @@ namespace PascalABCCompiler.TreeConverter
                     //Переходим к следующей функции-кандидату
                 }
             }
+
+            var testIsInstance = _ctn?.Attributes?.Any(x => x.AttributeType.name == "__TypeclassInstanceAttribute");
+            if (testIsInstance is true)
+            {
+                if (find_method == null || (find_method.sym_info as function_node).polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)
+                {
+                    var instanceName = _ctn.Attributes.First(x => x.AttributeType.name == "__TypeclassInstanceAttribute").Arguments[0].value;
+                    var typeclassName = _ctn.Attributes.First(x => x.AttributeType.name == "__TypeclassAttribute").Arguments[0].value;
+                    AddError(_ctn.location, "INSTANCE_{0}_DOES_NOT_IMPLEMENT_REQUIREMENT_{1}_OF_TYPECLASS_{2}",
+                        instanceName.ToString(), Tools.GetFullMethodHeaderString(meth), typeclassName.ToString());
+                }
+            }
+
             if (find_method == null)
             {
                 //Нет функции с таким именем, набором параметров и возвращаемым значением
                 AddError(new InterfaceMemberNotImplemented(cnode.PrintableName, interf.PrintableName, Tools.GetFullMethodHeaderString(meth), cnode.is_value_type, cnode.loc));
             }
+
             //Теперь проверяем на public и non-static
             bool bad = false;
             common_method_node commn = find_method.sym_info as common_method_node;
@@ -2846,6 +2863,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (cint != null)
                     {
                         if (_ctn.IsAbstract) return;
+                        if (_ctn.IsStatic) return;
                         foreach (common_method_node meth in cint.methods)
                         {
                             if (meth.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)
@@ -3577,7 +3595,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     fn = si.sym_info as function_node;
                     //(ssyy) Сверяем как параметры функций, так и типы возвращаемых значений
-                    if (convertion_data_and_alghoritms.function_eq_params_and_result(cmn, fn))
+                    if (convertion_data_and_alghoritms.function_eq_params_and_result(cmn, fn, true))
                     {
                         find_method = si;
                         break;
@@ -3634,7 +3652,12 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     pn = si.sym_info as property_node;
                     //(ssyy) Сверяем как параметры функций, так и типы возвращаемых значений
-                    if (convertion_data_and_alghoritms.function_eq_params_and_result(cpn.get_function, pn.get_function))
+                    if (cpn.get_function == null && pn.get_function == null && pn.property_type == cpn.property_type)
+                    {
+                        find_property = si;
+                        break;
+                    }
+                    else if (cpn.get_function != null && pn.get_function != null && convertion_data_and_alghoritms.function_eq_params_and_result(cpn.get_function, pn.get_function))
                     {
                         find_property = si;
                         break;
@@ -3677,6 +3700,19 @@ namespace PascalABCCompiler.TreeConverter
             property_node overrided_property = FindPropertyToOverride(cpn);
             if (overrided_property == null)
                 AddError(cpn.loc, "NO_PROPERTY_TO_OVERRIDE");
+            else
+            {
+                if (cpn.get_function is common_method_node)
+                {
+                    (cpn.get_function as common_method_node).overrided_method = overrided_property.get_function;
+                    (cpn.get_function as common_method_node).polymorphic_state = SemanticTree.polymorphic_state.ps_virtual;
+                } 
+                if (cpn.set_function is common_method_node)
+                {
+                    (cpn.set_function as common_method_node).overrided_method = overrided_property.set_function;
+                    (cpn.set_function as common_method_node).polymorphic_state = SemanticTree.polymorphic_state.ps_virtual;
+                }
+            }
         }
 
         public void set_override(common_method_node cmn)

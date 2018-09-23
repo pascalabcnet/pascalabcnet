@@ -1,4 +1,4 @@
-﻿uses Timers,Graph3D;
+﻿uses Graph3D;
 
 begin
   View3D.ShowViewCube := False;

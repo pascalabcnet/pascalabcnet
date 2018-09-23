@@ -1,0 +1,363 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Chr">
+<param name="Keyword" value="Ord">
+<param name="Keyword" value="ChrAnsi">
+<param name="Keyword" value="OrdAnsi">
+<param name="Keyword" value="ChrUnicode">
+<param name="Keyword" value="OrdUnicode">
+<param name="Keyword" value="UpperCase">
+<param name="Keyword" value="LowerCase">
+<param name="Keyword" value="UpCase">
+<param name="Keyword" value="LowCase">
+<param name="Keyword" value="Pos">
+<param name="Keyword" value="PosEx">
+<param name="Keyword" value="Length">
+<param name="Keyword" value="SetLength">
+<param name="Keyword" value="Insert">
+<param name="Keyword" value="Delete">
+<param name="Keyword" value="Copy">
+<param name="Keyword" value="Concat">
+<param name="Keyword" value="StringOfChar">
+<param name="Keyword" value="ReverseString">
+<param name="Keyword" value="CompareStr">
+<param name="Keyword" value="LeftStr">
+<param name="Keyword" value="RightStr">
+<param name="Keyword" value="Trim">
+<param name="Keyword" value="TrimLeft">
+<param name="Keyword" value="TrimRight">
+<param name="Keyword" value="Format">
+<param name="Keyword" value="StrToInt">
+<param name="Keyword" value="StrToInt64">
+<param name="Keyword" value="StrToFloat">
+<param name="Keyword" value="TryStrToInt">
+<param name="Keyword" value="TryStrToInt64">
+<param name="Keyword" value="TryStrToFloat">
+<param name="Keyword" value="Val">
+<param name="Keyword" value="Str">
+<param name="Keyword" value="IntToStr">
+<param name="Keyword" value="FloatToStr">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Подпрограммы для работы с символами и строками</H1>
+<table border=0 CELLPADDING=5>
+	<tr><td>
+<code>
+<b>function</b> Chr(a: byte): char;
+</code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует код в символ
+</td></tr>
+	<tr>
+		<td>
+<code>
+<b>function</b> ChrUnicode(a: word): char;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует код в символ в кодировке Unicode
+		(синоним Chr)</td>
+	</tr>
+<tr><td>
+<code>
+<b>function</b> ChrAnsi(a: word): char;
+</code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует код в символ в кодировке Windows</td></tr>
+	<tr>
+		<td>
+<code>
+<b>function</b> Ord(a: char): word;
+</code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует символ в код
+</td>
+	</tr>
+	<tr>
+		<td>
+<code>
+<b>function</b> OrdUnicode(a: char): word;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует символ в код в кодировке Unicode
+		(синоним Ord)
+</td>
+	</tr>
+<tr><td>
+<code>
+<b>function</b> OrdAnsi(a: char): word;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует символ в код в кодировке Windows</td></tr>
+<tr><td>
+<code>
+<b>function/b> UpperCase(ch: char): char; 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует символ в верхний регистр
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> LowerCase(ch: char): char; 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует символ в нижний регистр
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> UpCase(ch: char): char; 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует символ в верхний регистр
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> LowCase(ch: char): char; 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует символ в нижний регистр
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> Pos(subs,s: string): integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает позицию подстроки subs в строке s. Если не найдена, возвращает 0
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> PosEx(subs,s: string; from: integer := 1): integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает позицию подстроки subs в строке s начиная с позиции from. Если не найдена, возвращает 0
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> Length(s: string): integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает длину строки
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> SetLength(<b>var</b> s: string; n: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает длину строки s равной n
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Insert(source: string; <b>var</b> s: string; index: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вставляет подстроку source в строку s с позиции index
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Delete(<b>var</b> s: string; index,count: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет из строки s count символов с позиции index
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> Copy(s: string; index,count: integer): string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает подстроку строки s длины count с позиции index
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> Concat(s1,s2,...: string): string; 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строку, являющуюся результатом слияния строк s1,s2,...
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> Concat(s1,s2: string): string; 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строку, являющуюся результатом слияния строк s1 и s2
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> LowerCase(s: string): string; 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строку в нижнем регистре
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> UpperCase(s: string): string; 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строку в верхнем регистре
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> StringOfChar(ch: char; count: integer): string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строку, состоящую из count символов ch
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> ReverseString(s: string): string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает инвертированную строку
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> CompareStr(s1,s2: string): integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сравнивает строки. Возвращает значение < 0 если s1<s2, > 0 если s1>s2 и = 0 если s1=s2
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> LeftStr(s: string; count: integer): string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает первые count символов строки s
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> RightStr(s: string; count: integer): string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последние count символов строки s
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> Trim(s: string): string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строку с удаленными начальными и конечными пробелами
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> TrimLeft(s: string): string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строку с удаленными начальными пробелами
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> TrimRight(s: string): string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строку с удаленными конечными пробелами
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> Format(fmtstr: string; <b>params</b> pars: array of object): string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отформатированную строку, построенную по форматной строке fmtstr и списку форматиуемых параметров pars
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> StrToInt(s: string): integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление целого числа к числовому значению
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> StrToInt64(s: string): int64;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление целого числа к числовому значению
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> StrToFloat(s: string): real;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление вещественного числа к числовому значению
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> TryStrToInt(s: string; <b>var</b> value: integer): boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление s целого числа к числовому значению и записывает его в value. При невозможности преобразования возвращается False
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> TryStrToInt64(s: string; <b>var</b> value: int64): boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление s целого числа к числовому значению и записывает его в value. При невозможности преобразования возвращается False
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> TryStrToFloat(s: string; <b>var</b> value: real): boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление s вещественного числа к числовому значению и записывает его в value. При невозможности преобразования возвращается False
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> TryStrToFloat(s: string; <b>var</b> value: single): boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление s вещественного числа к числовому значению и записывает его в value. При невозможности преобразования возвращается False
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Val(s: string; <b>var</b> value: integer; <b>var</b> err: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err>0
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Val(s: string; <b>var</b> value: shortint; <b>var</b> err: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err>0
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Val(s: string; <b>var</b> value: smallint; <b>var</b> err: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err>0
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Val(s: string; <b>var</b> value: int64; <b>var</b> err: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err>0
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Val(s: string; <b>var</b> value: byte; <b>var</b> err: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err>0
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Val(s: string; <b>var</b> value: word; <b>var</b> err: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err>0
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Val(s: string; <b>var</b> value: longword; <b>var</b> err: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err>0
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Val(s: string; <b>var</b> value: uint64; <b>var</b> err: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err>0
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Val(s: string; <b>var</b> value: real; <b>var</b> err: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление s вещественного числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err>0
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Val(s: string; <b>var</b> value: single; <b>var</b> err: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строковое представление s вещественного числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err>0
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Str(i: integer; <b>var</b> s: string); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует целое значение i к строковому представлению и записывает результат в s
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Str(r: real; <b>var</b> s: string);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует вещественное значение r к строковому представлению и записывает результат в s
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> IntToStr(a: integer): string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует целое число к строковому представлению
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> IntToStr(a: int64): string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует целое число к строковому представлению
+</td></tr>
+<tr><td>
+<code>
+<b>function</b> FloatToStr(a: real): string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует вещественное число к строковому представлению
+</td></tr>
+</table>
+</body></html>

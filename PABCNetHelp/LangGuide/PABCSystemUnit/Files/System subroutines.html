@@ -1,0 +1,113 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Assert">
+<param name="Keyword" value="ChangeFileNameExtension">
+<param name="Keyword" value="ChDir">
+<param name="Keyword" value="CreateDir">
+<param name="Keyword" value="DeleteFile">
+<param name="Keyword" value="DiskFree">
+<param name="Keyword" value="DiskSize">
+<param name="Keyword" value="Dispose">
+<param name="Keyword" value="EnumerateAllDirectories">
+<param name="Keyword" value="EnumerateAllFiles">
+<param name="Keyword" value="EnumerateDirectories">
+<param name="Keyword" value="EnumerateFiles">
+<param name="Keyword" value="Exec">
+<param name="Keyword" value="Execute">
+<param name="Keyword" value="FileExists">
+<param name="Keyword" value="GetCurrentDir">
+<param name="Keyword" value="GetDir">
+<param name="Keyword" value="GetEXEFileName">
+<param name="Keyword" value="Halt">
+<param name="Keyword" value="Milliseconds">
+<param name="Keyword" value="MillisecondsDelta">
+<param name="Keyword" value="MkDir">
+<param name="Keyword" value="New">
+<param name="Keyword" value="ParamCount">
+<param name="Keyword" value="ParamStr">
+<param name="Keyword" value="PascalABCVersion">
+<param name="Keyword" value="PointerToString">
+<param name="Keyword" value="RemoveDir">
+<param name="Keyword" value="RenameFile">
+<param name="Keyword" value="RmDir">
+<param name="Keyword" value="SetCurrentDir">
+<param name="Keyword" value="Sleep"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Cистемные подпрограммы</H1>
+<table border=0 cellpadding=5><tr><td><code><b>procedure</b> Assert(cond: boolean; sourceFile: string := ''; line: integer := 0);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит в специальном окне стек вызовов подпрограмм если условие не выполняется</td></tr>
+<tr><td><code><b>procedure</b> Assert(cond: boolean; message: string; sourceFile: string := ''; line: integer := 0);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит в специальном окне диагностическое сообщение и стек вызовов подпрограмм если условие не выполняется</td></tr>
+<tr><td><code><b>function</b> ChangeFileNameExtension(name, newext: string): string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет расширение файла с именем name на newext</td></tr>
+<tr><td><code><b>procedure</b> ChDir(s: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет текущий каталог</td></tr>
+<tr><td><code><b>function</b> CreateDir(s: string): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает каталог. Возвращает True, если каталог успешно создан</td></tr>
+<tr><td><code><b>function</b> DeleteFile(s: string): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет файл. Если файл не может быть удален, то возвращает False</td></tr>
+<tr><td><code><b>function</b> DiskFree(diskname: string): int64;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает свободное место в байтах на диске с именем diskname</td></tr>
+<tr><td><code><b>function</b> DiskFree(disk: integer): int64;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает свободное место в байтах на диске disk. disk=0 - текущий диск, disk=1 - диск A: , disk=2 - диск B: и т.д.</td></tr>
+<tr><td><code><b>function</b> DiskSize(diskname: string): int64;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает размер в байтах на диске с именем diskname</td></tr>
+<tr><td><code><b>function</b> DiskSize(disk: integer): int64;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает размер в байтах на диске disk. disk=0 - текущий диск, disk=1 - диск A: , disk=2 - диск B: и т.д.</td></tr>
+<tr><td><code><b>procedure</b> Dispose&lt;T&gt;(<b>var</b> p: ^T);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Освобождает динамическую память, на которую указывает p</td></tr>
+<tr><td><code><b>function</b> EnumerateAllDirectories(path: string): <b>sequence </b>  <b>of</b> string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность имен каталогов по заданному пути, включая подкаталоги</td></tr>
+<tr><td><code><b>function</b> EnumerateAllFiles(path: string; searchPattern: string := '*.*'): <b>sequence </b>  <b>of</b> string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность имен файлов по заданному пути, соответствующих шаблону поиска, включая подкаталоги</td></tr>
+<tr><td><code><b>function</b> EnumerateDirectories(path: string): <b>sequence </b>  <b>of</b> string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность имен каталогов по заданному пути</td></tr>
+<tr><td><code><b>function</b> EnumerateFiles(path: string; searchPattern: string := '*.*'): <b>sequence </b>  <b>of</b> string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность имен файлов по заданному пути, соответствующих шаблону поиска</td></tr>
+<tr><td><code><b>procedure</b> Exec(filename: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем filename</td></tr>
+<tr><td><code><b>procedure</b> Exec(filename: string; args: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем filename и параметрами командной строки args</td></tr>
+<tr><td><code><b>procedure</b> Execute(filename: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем filename</td></tr>
+<tr><td><code><b>procedure</b> Execute(filename: string; args: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем filename и параметрами командной строки args</td></tr>
+<tr><td><code><b>function</b> FileExists(name: string): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если файл с именем name существует</td></tr>
+<tr><td><code><b>function</b> GetCurrentDir: string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текущий каталог</td></tr>
+<tr><td><code><b>function</b> GetDir: string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает текущий каталог</td></tr>
+<tr><td><code><b>function</b> GetEXEFileName: string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возващает имя запущенного .exe-файла</td></tr>
+<tr><td><code><b>procedure</b> Halt(exitCode: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Завершает работу программы, возвращая код ошибки exitCode</td></tr>
+<tr><td><code><b>procedure</b> Halt;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Завершает работу программы</td></tr>
+<tr><td><code><b>function</b> Milliseconds: integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество миллисекунд с момента начала работы программы</td></tr>
+<tr><td><code><b>function</b> MillisecondsDelta: integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество миллисекунд с момента последнего вызова Milliseconds или MillisecondsDelta</td></tr>
+<tr><td><code><b>procedure</b> MkDir(s: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает каталог</td></tr>
+<tr><td><code><b>procedure</b> New&lt;T&gt;(<b>var</b> p: ^T);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выделяет динамическую память размера sizeof(T) и возвращает в переменной p указатель на нее. Тип T должен быть размерным</td></tr>
+<tr><td><code><b>function</b> ParamCount: integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество параметров командной строки</td></tr>
+<tr><td><code><b>function</b> ParamStr(i: integer): string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает i-тый параметр командной строки</td></tr>
+<tr><td><code><b>function</b> PascalABCVersion: string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает версию PascalABC.NET</td></tr>
+<tr><td><code><b>function</b> PointerToString(p: pointer): string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует указатель к строковому представлению</td></tr>
+<tr><td><code><b>function</b> RemoveDir(s: string): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет каталог. Возвращает True, если каталог успешно удален</td></tr>
+<tr><td><code><b>function</b> RenameFile(name, newname: string): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переименовывает файл name, давая ему новое имя newname. Возвращает True, если файл успешно переименован</td></tr>
+<tr><td><code><b>procedure</b> RmDir(s: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет каталог</td></tr>
+<tr><td><code><b>function</b> SetCurrentDir(s: string): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает текущий каталог. Возвращает True, если каталог успешно удален</td></tr>
+<tr><td><code><b>procedure</b> Sleep(ms: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Делает паузу на ms миллисекунд</td></tr>
+</table>
+</body></HTML>

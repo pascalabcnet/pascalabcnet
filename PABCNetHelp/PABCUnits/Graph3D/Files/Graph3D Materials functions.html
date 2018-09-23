@@ -1,0 +1,22 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="DiffuseMaterial">
+<param name="Keyword" value="EmissiveMaterial">
+<param name="Keyword" value="ImageMaterial">
+<param name="Keyword" value="RainbowMaterial">
+<param name="Keyword" value="SpecularMaterial"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Graph3D: функции для создания материалов Materials</H1>
+<table border=0 cellpadding=5><tr><td><code><b>function</b> DiffuseMaterial(c: Color): Material;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Диффузный материал</td></tr>
+<tr><td><code><b>function</b> EmissiveMaterial(c: Color): Material;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Светящийся материал</td></tr>
+<tr><td><code><b>function</b> ImageMaterial(fname: string; M: real := 1; N: real := 1): Material;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Материал, формируемый на основе изображения. M,N - количество повторений изображения по ширине и высоте</td></tr>
+<tr><td><code><b>function</b> RainbowMaterial: Material;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Радужный материал</td></tr>
+<tr><td><code><b>function</b> SpecularMaterial(specularBrightness: byte; specularpower: real := 100): Material;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Зеркальный материал</td></tr>
+<tr><td><code><b>function</b> SpecularMaterial(c: Color; specularpower: real := 100): Material;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Зеркальный материал</td></tr>
+</table>
+</body></HTML>

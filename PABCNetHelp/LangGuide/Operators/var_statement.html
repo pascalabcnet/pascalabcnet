@@ -1,0 +1,86 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Внутриблочное описание переменной">
+<param name="Keyword" value="Оператор описания переменной">
+<param name="Keyword" value="Автовыведение типа при описании">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Оператор описания переменной</H1>
+<p>В <b>PascalABC.NET</b> можно описывать переменные внутри 
+<a href="beginend.html">составного оператора</a> begin-end в 
+специальном операторе описания переменной. Такие описания называются внутриблочными. </p>
+<p>Внутриблочное описание имеет одну из форм:</p>
+<blockquote>
+	<b><code>var </code></b><code class="codeit"> список имен</code><code>:</code><code class="codeit"> 
+	тип</code><code>;</code></blockquote>
+<p class="pabcmain">или</p>
+<blockquote>
+	<b><code>var </code></b> <code class="codeit">имя</code><code>:</code><code class="codeit"> 
+	тип </code><code>:=</code><code class="codeit"> выражение</code><code>;</code>
+</blockquote>
+<p class="pabcmain">или</p>
+<blockquote>
+	<b><code>var </code></b> <code class="codeit">имя</code><code>:</code><code class="codeit"> 
+	тип </code><code>=</code><code class="codeit"> выражение</code><code>;</code>
+<code>// Для совместимости с Delphi </code>
+</blockquote>
+<p class="pabcmain">или</p>
+<blockquote>
+	<b><code>var </code></b> <code class="codeit">имя </code><code>:=</code><code class="codeit"> 
+	выражение</code><code>;</code>
+</blockquote>
+<p class="pabcmain">Имена в списке перечисляются через запятую. Например:</p>
+<blockquote>
+<code><b>begin<br>
+&nbsp; var </b>a1,a2,a3: integer;<br>&nbsp; <b>var </b>n: real := 5;&nbsp; <br>
+&nbsp; <b>var</b> s := ' ';<b> <br>
+&nbsp; </b>...<b><br>
+	end</b>.</code>
+</blockquote>
+<p class="pabcmain">В последнем случае тип переменной автовыводится по типу 
+выражения в правой части. Автовыведение типа активно используется при 
+инициализации переменной вызовом конструктора или функции. возвращающей объект:</p>
+<blockquote>
+<code><b>begin<br>
+&nbsp; var</b> l&nbsp;:= new List&lt;integer&gt;; <br>&nbsp; <strong>var</strong> a := 
+	Seq(1,3,5); // тип a выводится по типу возвращаемого значения Seq: array of 
+	integer<br>
+	<b>end</b>.</code>
+</blockquote>
+<h2>Кортежное присваивание с описанием переменных</h2>
+<p>Кортежное присваивание (распаковку кортежа в переменные) можно совмещать с описанием переменных:</p>
+
+<blockquote>
+	<code>var t := (1,2);<br>(<strong>var </strong>a,<strong> var </strong>b) := (1,2);</code></blockquote>
+<p>или</p>
+
+<blockquote>
+	<code><strong>var</strong> (a,b) := (1,2);</code></blockquote>
+<p>Распаковка кортежа в переменные часто используется при возвращении функцией 
+кортежа:</p>
+<blockquote>
+	<code><strong>function</strong> SP(a,b: real) := (a*b,2*(a+b)); </code>&nbsp;<br>
+	...<br>
+	<code><strong>var</strong> (S,P) := SP(2,3); </code>
+</blockquote>
+<h2>Инициализация лямбда-выражением</h2>
+<p>Автовыведение типа при описании невозможно при инициализации переменной 
+<a href="../FuncProgramming/lambdas.html">лямбда-выражением</a>:</p>
+<blockquote>
+	<code>// <b>var</b> f&nbsp;:= x -&gt; x*x; // так нельзя!<br><strong>var</strong> 
+	f : Func&lt;integer,integer&gt; := x -&gt; x*x; </code>
+</blockquote>
+<p>Внутриблочные описания используются чтобы не захламлять раздел описаний 
+описанием вспомогательных переменных. Кроме этого, внутриблочные описания 
+позволяют вводить переменные именно в тот момент когда они впервые 
+потребовались. Оба этих фактора существенно повышают читаемость программы.</p>
+</body>
+
+</html>

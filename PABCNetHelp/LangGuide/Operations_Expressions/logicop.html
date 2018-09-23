@@ -1,0 +1,39 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="and">
+<param name="Keyword" value="or">
+<param name="Keyword" value="not">
+<param name="Keyword" value="xor">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css"></head>
+<body><H1>Логические операции</H1>
+<p>К 
+<i>логическим</i> относятся бинарные операции <b><code>and</code></b>, <b><code>or</code></b> и <b><code>xor</code></b>, а также унарная 
+операция <b><code>not</code></b>,
+имеющие операнды 
+типа <code>boolean</code> и возвращающие значение типа
+<code>boolean</code>. Эти операции подчиняются стандартным 
+правилам логики: <code>a <b>and</b> b</code> истинно 
+только тогда, когда истинны <code>a</code> и 
+<code>b</code>, <code>a <b>or</b> b</code>
+истинно только тогда, когда истинно либо <code>a</code>, 
+либо <code>b</code>, <code>a <b>xor</b> b</code>
+истинно только тогда, когда только одно из <code>a</code>
+и <code>b</code> истинно, <code>
+<b>not</b> a</code> истинно только тогда, когда <code>a</code> 
+ложно.&nbsp; </p>
+<p>Выражения с <code><b>and</b></code> и
+<code><b>or</b></code> вычисляются по <i><b>
+<font color="#FF0000">короткой схеме</font></b></i>: </p>
+<blockquote>
+	<p>в выражении <code>x <b>and</b> y</code>
+	если <code>x</code> ложно, то все 
+	выражение ложно, и <code>y</code> не вычисляется;<br>
+	в выражении <code>x <b>or</b> y</code> если 
+	<code>x</code> истинно, то все выражение истинно, и 
+	<code>y</code> не вычисляется.<br><br>&nbsp;</p>
+</blockquote>
+
+</body></html>

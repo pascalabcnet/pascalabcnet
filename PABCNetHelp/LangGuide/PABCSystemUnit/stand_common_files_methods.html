@@ -1,0 +1,61 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Name">
+<param name="Keyword" value="FullName">
+<param name="Keyword" value="Eof">
+<param name="Keyword" value="Close">
+<param name="Keyword" value="Erase">
+<param name="Keyword" value="Rename">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+<body>
+<H1>Общие методы файловых типов</H1>
+<p>Для 
+всех стандартных файловых типов (<code>Text</code>,
+<code><strong>file</strong></code>,
+<code>
+<strong>file of</strong> T</code>) 
+определены следующие методы:</p>
+&nbsp;<table border=0 CELLPADDING=5>
+	<tr>
+		<td>
+	<code><strong>procedure</strong> Write(a,b,...); </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Записывает в файл значения a, b, ...
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> Name: string; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает имя файла</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> FullName: string; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает полное имя файла</td>
+	</tr>
+	<tr>
+		<td>
+	<code><strong>function</strong> Eof: boolean; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True, если достигнут конец файла, и False в противном 
+	случае</td>
+	</tr>
+	<tr>
+		<td>
+	<code><strong>procedure</strong> Close; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Закрывает файл</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>procedure</strong> Erase; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет файл</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>procedure</strong> Rename(newname: string); </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переименовывает файл, давая ему имя newname</td>
+	</tr>
+	</table>
+</body></html>

@@ -466,7 +466,7 @@ namespace CodeFormatters
                     prev_pos = GetPosition(prev_sn.source_context.begin_position.line_num, prev_sn.source_context.begin_position.column_num) + keyword_offset;
                 }
                 else
-                    prev_pos = GetPosition(prev_sn.source_context.end_position.line_num, prev_sn.source_context.end_position.column_num)+1;
+                    prev_pos = GetPosition(prev_sn.source_context.end_position.line_num, prev_sn.source_context.end_position.column_num) + 1;
             if (prev_pos < pos)
             {
                 string comm = Text.Substring(prev_pos, pos - prev_pos);
@@ -484,6 +484,16 @@ namespace CodeFormatters
                         if (comm.Length == 0 || char.IsLetterOrDigit(comm[0]) || add_space_after)
                             comm = " " + comm;
                     }
+                    if (comm.StartsWith(" "))
+                    {
+                        string trimed_comm = comm.Trim();
+                        if (trimed_comm == "then" || trimed_comm == "do")
+                        {
+                            comm = comm.TrimStart(' ');
+                            if (comm.Length == 0 || char.IsLetterOrDigit(comm[0]) || add_space_after)
+                                comm = " " + comm;
+                        }
+                    }
                 }
                 WriteCommentWithIndent(comm, true);
                 read_from_beg_pos = false;
@@ -499,7 +509,7 @@ namespace CodeFormatters
                     sb.AppendLine();
                     insert_newline_after_prev = false;
                 }
-                if (force_tab && sb[sb.Length-1] == '\n')
+                if (force_tab && sb[sb.Length - 1] == '\n')
                     sb.Append(new string(' ', off));
                 force_tab = false;
             }
@@ -516,6 +526,15 @@ namespace CodeFormatters
             if (prev_pos < pos && cur_src_off < pos)
             {
                 string comm = Text.Substring(prev_pos, pos - prev_pos);
+                if (sn is loop_stmt || sn is case_node || sn is if_node || sn is while_node)
+                {
+                    string trimedstr = comm.TrimStart();
+                    if (trimedstr == "do" || trimedstr == "of" || trimedstr == "then")
+                        comm = comm.TrimStart();
+                    else if (trimedstr.StartsWith("of") && !char.IsLetterOrDigit(trimedstr[2]))
+                        comm = comm.TrimStart();
+                }
+                
                 if (sn is program_module || sn is unit_module)
                     comm = Text.Substring(prev_pos);
                 if (comm.StartsWith(" "))
@@ -707,6 +726,7 @@ namespace CodeFormatters
                         || sn is lock_stmt || sn is loop_stmt || sn is simple_property || sn is read_accessor_name || sn is write_accessor_name
                         || sn is formal_parameters || sn is bracket_expr || sn is record_const || sn is array_const || sn is exception_handler
                         || sn is try_handler_finally || sn is try_handler_except || sn is external_directive || sn is where_definition
+                        || sn is match_with
                         || (sn is simple_const_definition && in_class && !in_procedure) || (sn is typed_const_definition && in_class && !in_procedure)
                         )
                         read_from_beg_pos = true;
@@ -771,7 +791,10 @@ namespace CodeFormatters
                         continue;
                     }
                 }
+                if (!(stmt is empty_statement))
+                    add_space_after = true;
                 visit_node(stmt);
+                
             }
             DecOffset();
             if (!tmp_init_part)
@@ -1674,7 +1697,9 @@ namespace CodeFormatters
         {
             sb.Append("write");
             SetKeywordOffset("write");
-            if (_write_accessor_name.accessor_name != null)
+            if (_write_accessor_name.statment_for_formatting != null)
+                visit_node(_write_accessor_name.statment_for_formatting);
+            else if (_write_accessor_name.accessor_name != null)
                 visit_node(_write_accessor_name.accessor_name);
             else
                 read_from_beg_pos = false;
@@ -1684,7 +1709,9 @@ namespace CodeFormatters
         {
             sb.Append("read");
             SetKeywordOffset("read");
-            if (_read_accessor_name.accessor_name != null)
+            if (_read_accessor_name.expression_for_formatting != null)
+                visit_node(_read_accessor_name.expression_for_formatting);
+            else if (_read_accessor_name.accessor_name != null)
                 visit_node(_read_accessor_name.accessor_name);
             else
                 read_from_beg_pos = false;
@@ -2984,7 +3011,8 @@ namespace CodeFormatters
 
         public override void visit(match_with _match_with)
         {
-            sb.Append("match ");
+            sb.Append("match");
+            SetKeywordOffset("match");
             visit_node(_match_with.expr);
             IncOffset();
             add_space_before = true;
@@ -3018,11 +3046,18 @@ namespace CodeFormatters
         {
             visit_node(_deconstructor_pattern.type);
             foreach (var parameter in _deconstructor_pattern.parameters)
+            {
                 visit_node(parameter);
+                add_space_after = true;
+            }
+            add_space_after = false; 
         }
 
         public override void visit(var_deconstructor_parameter _var_deconstructor_parameter)
         {
+            sb.Append("var");
+            SetKeywordOffset("var");
+            read_from_beg_pos = true;
             visit_node(_var_deconstructor_parameter.identifier);
             if (_var_deconstructor_parameter.type != null)
                 visit_node(_var_deconstructor_parameter.type);

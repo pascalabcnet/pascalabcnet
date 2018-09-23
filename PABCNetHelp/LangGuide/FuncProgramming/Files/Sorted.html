@@ -1,0 +1,21 @@
+<html><head><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Sorted">
+<param name="Keyword" value="SortedDescending">
+</object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
+<body>
+<H1>Методы Sorted, SortedDescending</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<tr><td>
+<code><b>function </b>Sorted(): <b>sequence of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отсортированную по возрастанию последовательность.
+</td></tr>
+</table>
+<table>
+<tr><td>
+<code><b>function </b>SortedDescending(): <b>sequence of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отсортированную по убыванию последовательность.
+</td></tr>
+</table>
+<h2>Пример </h2><blockquote><code><strong>begin<br>&nbsp; var</strong> a := 
+	Arr(6,2,7,4,8,1);<br>&nbsp; a.Sorted.Println; // 1 2 4 6 7 8 <br>&nbsp; 
+	a.SortedDescending.Println; // 8 7 6 4 2 1<br><strong>end</strong>.</code></blockquote>
+</body>

@@ -310,9 +310,10 @@ namespace CodeCompletion
                     }
                     foreach (SymScope symsc in ts.members)
                     {
-                        if (symsc is ProcScope && !(symsc as ProcScope).already_defined && symsc.loc != null)
+                        ProcScope proc = symsc as ProcScope;
+                        if (proc != null && !proc.already_defined && !proc.is_abstract && symsc.loc != null)
                         {
-                            meths.Add(symsc as ProcScope);
+                            meths.Add(proc);
                         }
                     }
                 }
@@ -342,9 +343,10 @@ namespace CodeCompletion
                         }
                         foreach (SymScope symsc in ts.members)
                         {
-                            if (symsc is ProcScope && !(symsc as ProcScope).already_defined && symsc.loc != null)
+                            ProcScope proc = symsc as ProcScope;
+                            if (proc != null && !proc.already_defined && !proc.is_abstract && symsc.loc != null)
                             {
-                                meths.Add(symsc as ProcScope);
+                                meths.Add(proc);
                             }
                         }
                     }

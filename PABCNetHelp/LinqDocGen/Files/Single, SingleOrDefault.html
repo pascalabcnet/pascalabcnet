@@ -1,0 +1,25 @@
+<html><head><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Single">
+<param name="Keyword" value="SingleOrDefault">
+</object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
+<body>
+<H1>Методы Single, SingleOrDefault</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<tr><td>
+<code><b>function </b>Single(): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает единственный элемент последовательности и генерирует исключение, если число элементов последовательности отлично от 1.
+</td></tr>
+<tr><td>
+<code><b>function </b>Single(predicate: T-&gt;boolean): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает единственный элемент последовательности, удовлетворяющий заданному условию, и генерирует исключение, если таких элементов больше одного.
+</td></tr>
+<tr><td>
+<code><b>function </b>SingleOrDefault(): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает единственный элемент последовательности или значение по умолчанию, если последовательность пуста; если в последовательности более одного элемента, генерируется исключение.
+</td></tr>
+<tr><td>
+<code><b>function </b>SingleOrDefault(predicate: T-&gt;boolean): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает единственный элемент последовательности, удовлетворяющий заданному условию, или значение по умолчанию, если такого элемента не существует; если условию удовлетворяет более одного элемента, генерируется исключение.
+</td></tr>
+</table>
+<h2>Пример </h2><blockquote><code></code></blockquote>
+</body>

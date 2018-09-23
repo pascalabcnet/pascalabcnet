@@ -1,0 +1,96 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="with">
+<param name="Keyword" value="do">
+</object>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="with">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Оператор with</H1>
+Оператор <b><code>with</code></b> позволяет сократить обращение 
+к полям записи, а также к полям, методам и свойствам объекта. Он имеет вид:<blockquote>
+	<p><code><b>with</b> </code> <code class="codeit">имя 
+	записи или объекта</code><code> <b>do</b> </code>
+	<code class="codeit">оператор</code></p>
+</blockquote>
+<p>или</p><blockquote>
+	<p><code><b>with</b> </code> <code class="codeit">список имен</code><code> <b>do</b> </code> 
+	<code class="codeit">оператор</code></p>
+</blockquote>
+<p>Всюду внутри оператора можно опускать имя записи при 
+обращении к полю указанной записи или имя объекта при обращении к полю, методу 
+или свойству указанного объекта. Например, пусть описана 
+переменная </p>
+<blockquote>
+	<p><code><b>var</b> <br>
+&nbsp; DateOfBirthday =<b> record</b><br>
+&nbsp;&nbsp;&nbsp; Day: Integer;<br>
+&nbsp;&nbsp;&nbsp; Month: Integer;<br>
+&nbsp;&nbsp;&nbsp; Year: Integer;<br>
+&nbsp; <b>end</b>;</code></p>
+</blockquote>
+<p>Тогда присваивание значений ее полям без использования 
+оператора <b><code>with</code></b> имеет вид:</p>
+<blockquote>
+	<p><code>DateOfBirthday.Day := 23;<br>
+	DateOfBirthday.Month := 2;<br>
+	DateOfBirthday.Year := 1965;</code></p>
+</blockquote>
+<p>Использование оператора <code><b>with</b></code> позволяет сократить 
+предыдущую запись:</p>
+<blockquote>
+	<p><code><b>with</b> DateOfBirthday <b>do</b><br>
+	<b>begin</b><br>
+&nbsp; Day := 23;<br>
+&nbsp; Month := 2;<br>
+&nbsp; Year := 1965;<br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p>Если внешняя переменная имеет то же имя, что и поле (метод, свойство), то 
+предпочтение отдается полю (методу, свойству). При наличии вложенных операторов 
+<code><b>with</b></code> вначале предпринимается попытка рассматривать переменную как поле записи 
+или объекта самого внутреннего оператора <code><b>with</b></code>, затем непосредственно объемлющего 
+его оператора <code><b>with</b></code> и т.д. Если оператор
+<code><b>with</b></code> &nbsp;содержит список объектов, 
+то они рассматривается справа налево. Например, если имеются описания </p>
+<blockquote>
+	<p><code><b>var</b> <br>
+&nbsp; x,y,z: integer;<br>
+&nbsp; a: <b>record</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x,y: integer;<br>
+&nbsp; <b>&nbsp;&nbsp; end</b>;<br>
+&nbsp; b: <b>record</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x: integer;<br>
+&nbsp; <b>&nbsp;&nbsp; end</b>;</code></blockquote>
+<p>то фрагмент программы</p>
+<blockquote><code><b>with</b> a,b <b>do</b><br>
+	<b>begin</b><br>
+	&nbsp; x := 1; <br>
+&nbsp; y := 2;<br>
+	&nbsp; z := 3;&nbsp; <br>
+	<b>end</b>;</code></blockquote>
+<p>эквивалентен фрагменту</p>
+<blockquote><code><b>with</b> a <b>do</b><br>
+	&nbsp;<b>with</b> b <b>do</b><br>
+	<b>&nbsp;begin</b><br>
+	&nbsp;&nbsp; x := 1; <br>
+&nbsp;&nbsp; y := 2;<br>
+	&nbsp;&nbsp; z := 3;&nbsp; <br>
+	<b>&nbsp;end</b>;</code></blockquote>
+<p>а также фрагменту </p>
+<blockquote><p><code>b.x:=1; <br>
+	a.y:=2;<br>
+	z:=3;</code></p>
+</blockquote>
+<p>Оператор with устарел и сейчас практически не используется.</p>
+</body>
+
+</html>

@@ -1,0 +1,26 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="typeof">
+<param name="Keyword" value="sizeof">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css"></head>
+<body><H1>Операции typeof и sizeof</H1>
+<p>Операция <code><b>sizeof</b>(</code><i>имя типа</i><code>)</code>
+возвращает для этого типа его размер в байтах.</p>
+<p>Операция <code><b>typeof</b>(</code><i>имя 
+типа</i><code>)</code> возвращает для этого типа объект 
+класса <code>System.Type</code>.
+Приведем пример использования <code>typeof</code>:</p>
+<blockquote>
+	<p><code><b>type</b> <br>
+&nbsp; Base = <b>class</b> ... <b>end</b>; <br>
+&nbsp; Derived = <b>class</b>(Base) ... <b>end</b>;</code></p>
+	<p><code><b>var</b> b: Base := new Derived;</code></p>
+	<p><code><b>begin</b><br>
+&nbsp; writeln(b.GetType = <b>typeof</b>(Derived));&nbsp; <br>
+	<b>end</b>.</code></p>
+</blockquote>
+
+</body></html>

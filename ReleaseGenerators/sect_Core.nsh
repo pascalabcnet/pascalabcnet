@@ -68,6 +68,7 @@
     File ..\bin\Lib\ABCHouse.pcu
     File ..\bin\Lib\ABCObjects.pcu
     File ..\bin\Lib\ABCSprites.pcu
+    File ..\bin\Lib\ABCDatabases.pcu
     File ..\bin\Lib\Arrays.pcu
     ;File ..\bin\Lib\Colors.pcu
     File ..\bin\Lib\CRT.pcu
@@ -83,6 +84,8 @@
     File ..\bin\Lib\NumLibABC.pcu
     File ..\bin\Lib\GraphWPFBase.pcu
     File ..\bin\Lib\GraphWPF.pcu
+    File ..\bin\Lib\WPFObjects.pcu
+    File ..\bin\Lib\Countries.pcu
     File ..\bin\Lib\Graph3D.pcu
     File ..\bin\Lib\GraphABCHelper.pcu
     File ..\bin\Lib\IniFile.pcu
@@ -110,16 +113,20 @@
     File ..\bin\Lib\PT4MakerNetX.pcu
     File ..\bin\Lib\Speech.pcu
     File ..\bin\Lib\Sounds.pcu
+    File ..\bin\Lib\BlockFileOfT.pcu
+
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\PABCRtl32.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
     File ..\bin\Lib\HelixToolkit.dll
+
 	
     ${AddFile} "__RedirectIOMode.pcu"
     ${AddFile} "__RunMode.pcu"
     ${AddFile} "ABCButtons.pcu"
     ${AddFile} "ABCHouse.pcu"
     ${AddFile} "ABCObjects.pcu"
+    ${AddFile} "ABCDatabases.pcu"
     ${AddFile} "ABCSprites.pcu"
     ${AddFile} "Arrays.pcu"
     ${AddFile} "BFSystem.pcu"
@@ -138,6 +145,8 @@
     ${AddFile} "NumLibABC.pcu"
     ${AddFile} "GraphWPFBase.pcu"
     ${AddFile} "GraphWPF.pcu"
+    ${AddFile} "WPFObjects.pcu"
+    ${AddFile} "Countries.pcu"
     ${AddFile} "Graph3D.pcu"
     ${AddFile} "GraphABCHelper.pcu"
     ${AddFile} "IniFile.pcu"
@@ -165,6 +174,7 @@
     ${AddFile} "PT4MakerNetX.pcu"
     ${AddFile} "Speech.pcu"
     ${AddFile} "Sounds.pcu"
+    ${AddFile} "BlockFileOfT.pcu"
     ${AddFile} "PABCRtl.dll"
     ${AddFile} "HelixToolkit.Wpf.dll"
     ${AddFile} "HelixToolkit.dll"
@@ -189,6 +199,7 @@
     File ..\bin\Lib\ABCHouse.pas
     File ..\bin\Lib\ABCObjects.pas
     File ..\bin\Lib\ABCSprites.pas
+    File ..\bin\Lib\ABCDatabases.pas
     File ..\bin\Lib\Arrays.pas
     ;File ..\bin\Lib\Colors.pas
     File ..\bin\Lib\CRT.pas
@@ -204,6 +215,8 @@
     File ..\bin\Lib\NumLibABC.pas
     File ..\bin\Lib\GraphWPFBase.pas
     File ..\bin\Lib\GraphWPF.pas
+    File ..\bin\Lib\WPFObjects.pas
+    File ..\bin\Lib\Countries.pas
     File ..\bin\Lib\Graph3D.pas
     File ..\bin\Lib\GraphABCHelper.pas
     File ..\bin\Lib\IniFile.pas
@@ -231,6 +244,7 @@
     File ..\bin\Lib\PT4MakerNetX.pas
     File ..\bin\Lib\Speech.pas
     File ..\bin\Lib\Sounds.pas
+    File ..\bin\Lib\BlockFileOfT.pas
 	File ..\bin\Lib\__RedirectIOMode.vb
 	File ..\bin\Lib\VBSystem.vb
 	
@@ -241,6 +255,7 @@
     ${AddFile} "ABCHouse.pas"
     ${AddFile} "ABCObjects.pas"
     ${AddFile} "ABCSprites.pas"
+    ${AddFile} "ABCDatabases.pas"
     ${AddFile} "Arrays.pas"
     ;${AddFile} "Colors.pas"
     ${AddFile} "CRT.pas"
@@ -256,6 +271,8 @@
     ${AddFile} "NumLibABC.pas"
     ${AddFile} "GraphWPFBase.pas"
     ${AddFile} "GraphWPF.pas"
+    ${AddFile} "WPFObjects.pas"
+    ${AddFile} "Countries.pas"
     ${AddFile} "Graph3D.pas"
     ${AddFile} "GraphABCHelper.pas"
     ${AddFile} "IniFile.pas"
@@ -283,6 +300,7 @@
     ${AddFile} "PT4MakerNetX.pas"
     ${AddFile} "Speech.pas"
     ${AddFile} "Sounds.pas"
+    ${AddFile} "BlockFileOfT.pas"
 	${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"
 	

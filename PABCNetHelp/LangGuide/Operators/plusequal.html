@@ -1,0 +1,64 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+</object>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="with">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Операторы += и -= для процедурных переменных</H1>
+<p>Оператор присваивания <code>+=</code> предназначен 
+для присоединения к процедурной переменной процедуры, оператор присваивания <code>-=</code> 
+- для отсоединения. Подпрограммы вызываются в порядке присоединения. 
+Например:</p>
+<blockquote>
+	<p><code><b>procedure</b> mult2(<b>var</b> r: real);<br><b>begin</b><br>&nbsp; r := 2 * r;<br>
+	<b>end</b>;</code></p>
+	<p><code><b>procedure</b> add3(<b>var</b> r: real);<br><b>begin</b><br>&nbsp; r := r + 3;<br>
+	<b>end</b>;</code></p>
+	<p><code><b>var</b> <br>
+&nbsp; p: <b>procedure</b> (<b>var</b> x: real);<br>
+&nbsp; r: real;</code></p>
+	<p><code><b>begin</b><br>
+&nbsp; r := 1;<br>
+&nbsp; p := mult2;<br>
+&nbsp; p += add3;<br>
+&nbsp; p(r); // r := 2 * r; r := r + 3;<br>
+&nbsp; p -= mult2;<br>
+&nbsp; p(r); // r := r + 3;&nbsp; <br>
+	<b>end</b>.</code></p>
+</blockquote>
+<p>Отсоединение не присоединенных подпрограмм не выполняет 
+никаких действий.</p>
+<p>Кроме того, к процедурной переменной можно прикреплять/откреплять 
+статические и экземплярные методы классов. Пример см. в теме
+<a href="../Types/proctype.html">процедурные переменные</a>.</p>
+<p>Операторы <code>+=</code> и 
+<code>-=</code> используются также для 
+добавления/удаления обработчиков для событий .NET. 
+Например:</p>
+<blockquote>
+	<p><code><b>procedure</b> OnTimer1(sender: object; e: 
+	System.Timers.ElapsedEventArgs);<br>
+	<b>begin</b><br>
+	&nbsp; write(1);<br>
+	<b>end</b>;</code></p>
+	<p><code><b>begin</b><br>
+	&nbsp; <b>var</b> Timer1 := new 
+	System.Timers.Timer(1000);<br>
+	&nbsp; <b><font color="#FF0000">Timer1.Elapsed +=</font></b> 
+	OnTimer1;<br>
+	&nbsp; Timer1.Start;<br>
+	&nbsp; <b>while</b> True <b>do</b> <br>
+	&nbsp;&nbsp;&nbsp; Sleep(1000);<br>
+	<b>end</b>.</code></p>
+</blockquote>
+</body>
+
+</html>

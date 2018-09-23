@@ -1,0 +1,51 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Циклическая зависимость между модулями">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Циклические ссылки между модулями</H1>
+<p>Циклические ссылки модулей в 
+интерфейсных частях запрещены. Например, следующая 
+ситуация 
+ошибочна:</p>
+<blockquote>
+	<p><code><b>unit</b> A;</code><b><code><br>
+	interface</code></b><code><b><br>
+	uses</b> B;</code><b><code><br>
+	implementation</code></b><code><b><br>
+	end</b>.<b><br>
+	<br>
+	unit</b> B;</code><b><code><br>
+	interface</code></b><code><b><br>
+	uses</b> A;</code><b><code><br>
+	implementation</code></b><code><b><br>
+	end</b>.</code></p>
+</blockquote>
+<p>Таким образом, невозможно определить два общедоступных класса в разных 
+модулях с объектными полями, ссылающимися друг на друга.</p>
+<p>Однако, если одна ссылка находится в интерфейсной части, а 
+вторая - в части реализации, или обе - в частях реализации, то циклические 
+ссылки в этом случае разрешены:</p>
+<blockquote>
+	<p><code><b>unit</b> A;</code><b><code><br>
+	interface</code></b><code><b><br>
+	</b></code><b><code>implementation</code></b><code><b><br>
+	uses</b> B;</code><b><code><br>
+	</code></b><code><b>end</b>.<b><br>
+	<br>
+	unit</b> B;</code><b><code><br>
+	interface</code></b><code><b><br>
+	uses</b> A;</code><b><code><br>
+	implementation</code></b><code><b><br>
+	end</b>.</code></p>
+</blockquote>
+</body>
+
+</html>

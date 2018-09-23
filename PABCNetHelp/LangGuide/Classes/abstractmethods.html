@@ -1,0 +1,64 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Абстрактный метод">
+<param name="Keyword" value="abstract">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1><span lang="ru">Абстрактные </span><span lang="ru">м</span>етоды и классы</H1>
+<p>Методы<span lang="ru">, предназначенные для переопределения в подклассах, 
+объявляются с ключевым словом </span><code><b>abstract</b></code>
+<span lang="ru">и называются абстрактными. Данные методы являются 
+<a href="virtual.html">виртуальными</a>, 
+но ключевое слово </span><code><b>virtual</b></code><span lang="ru"> 
+использовать не нужно. Например:</span></p>
+<blockquote>
+	<p><code><b>type</b> <br>
+&nbsp; Shape = <b>class</b><br>
+&nbsp; <b>private</b><br>
+&nbsp;&nbsp;&nbsp; x,y: integer;<br>
+&nbsp; <b>public</b><br>
+&nbsp;&nbsp;&nbsp; <b>constructor</b> Create(xx,yy: integer);<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x := xx;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; y := yy;<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp;&nbsp;&nbsp; <b>procedure</b> Draw; <b>abstract</b>;<br>
+&nbsp; <b>end</b>;</code></p>
+</blockquote>
+<p><span lang="ru">Классы, содержащие абстрактные методы, также называются 
+<em>абстрактными</em>. Экземпляры этих классов создавать нельзя. </span></p>
+<p><span lang="ru">Классы с абстрактными методами используются как 
+&quot;полуфабрикаты&quot; для создания других классов. Например:</span></p>
+<blockquote>
+	<p><code><b>type</b> <br>
+&nbsp; Point = <b>class</b>(Shape)<br>
+&nbsp; <b>public</b><br>
+&nbsp;&nbsp;&nbsp; <b>procedure</b> Draw; <b>override</b>;<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PitPixel(x,y,Color.Black);<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp; <b>end</b>;</code></p>
+</blockquote>
+<p><span lang="ru">Использование </span><code><b>override</b></code>
+<span lang="ru">при переопределении абстрактных методов обязательно, поскольку 
+абстрактные методы являются разновидностью виртуальных. </span></p>
+<p>Класс можно явно объявить абстрактным, используя ключевое слово <code>
+<strong>abstract</strong></code>. Обычно абстрактные классы содержат абстрактные 
+методы, но необязательно:</p>
+<blockquote>
+	<p><code><b>type</b> <br>
+&nbsp; A = <strong>abstract</strong><b> class</b>(Shape)<br>
+&nbsp; <b>end</b>;</code></p>
+</blockquote>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+
+</html>

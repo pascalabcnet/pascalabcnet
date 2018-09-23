@@ -1,0 +1,60 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="break">
+<param name="Keyword" value="continue">
+<param name="Keyword" value="exit">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Операторы break, continue и 
+exit</H1>
+<p>Операторы <b><code>break</code></b> и <code><b>continue</b></code> 
+используются только внутри циклов.</p>
+<p>Оператор <b><code>break</code></b> предназначен для досрочного завершения 
+цикла. При его выполнении происходит немедленный выход из текущего цикла и 
+переход к выполнению оператора, следующего за циклом. Оператор <code><b>continue</b></code> завершает текущую итерацию цикла, 
+осуществляя переход к концу тела цикла. Например:</p>
+<blockquote>
+	<p><code>flag := False;<br>
+	<b>for</b> <b>var</b> i:=1 <b>to</b> 10 <b>do</b><br>
+	<b>begin</b><br>
+&nbsp; read(x);<br>
+&nbsp; <b>if</b> x&lt;0 <b>then</b> <b>continue</b>; // 
+	пропуск текущей итерации цикла<br>
+&nbsp; <b>if</b> x=5 <b>then</b><br>
+&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp; flag := True;<br>
+&nbsp;&nbsp;&nbsp; <b>break</b>; // выход из цикла<br>
+&nbsp; <b>end</b>;&nbsp; <br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p>Использование операторов <code><b>break</b></code> и <code><b>continue</b></code> 
+вне тела цикла ошибочно.</p>
+<p>Оператор <code><b>exit</b></code> предназначен для досрочного завершения 
+процедуры или функции. Например</p>
+<blockquote>
+	<p><code><b>function</b> Analyze(x: integer): boolean;<br>
+	<b>begin</b><br>
+&nbsp; <b>if</b> x&lt;0 <b>then</b> <br>
+&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp; Result := False;<br>
+&nbsp;&nbsp;&nbsp; <b>exit</b><br>
+&nbsp; <b>end</b>;<br>
+&nbsp; ...<br>
+	<b>end</b>;</code></p>
+</blockquote>
+<p>Вызов <code><b>exit</b></code> в разделе операторов 
+основной программы приводит к ее немедленному завершению.</p>
+<p>Следует отметить, что в <b>
+PascalABC.NET</b> (в отличие от Borland Pascal и 
+Borland Delphi) <code><b>break</b></code>, <code><b>continue</b></code>
+и <code><b>exit</b></code> являются не процедурами, а именно операторами.</p>
+</body>
+
+</html>

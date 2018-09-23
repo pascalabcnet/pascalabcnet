@@ -1,0 +1,28 @@
+<html><head><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Last">
+<param name="Keyword" value="LastOrDefault">
+</object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
+<body>
+<H1>Методы Last, LastOrDefault</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<tr><td>
+<code><b>function </b>Last(): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последний элемент последовательности.
+</td></tr>
+<tr><td>
+<code><b>function </b>Last(predicate: T-&gt;boolean): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последний элемент последовательности, удовлетворяющий указанному условию.
+</td></tr>
+<tr><td>
+<code><b>function </b>LastOrDefault(): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последний элемент последовательности или значение по умолчанию, если последовательность не содержит элементов.
+</td></tr>
+<tr><td>
+<code><b>function </b>LastOrDefault(predicate: T-&gt;boolean): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последний элемент последовательности, удовлетворяющий указанному условию, или значение по умолчанию, если ни одного такого элемента не найдено.
+</td></tr>
+</table>
+<h2>Пример </h2><blockquote><code><strong>begin</strong><br>&nbsp; <strong>var</strong> 
+	a := Arr(1,2,3,4);<br>&nbsp; Println(a.Last); // 4<br>&nbsp; 
+	Println(a.Last(x -&gt; x <strong>mod</strong> 2 = 0); // 4<br>&nbsp; 
+	Println(a.LastOrDefault(x -&gt; x&gt;5); // 0<br><strong>end</strong>.</code></blockquote>
+</body>

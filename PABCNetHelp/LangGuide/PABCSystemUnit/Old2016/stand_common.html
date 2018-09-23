@@ -1,0 +1,179 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Swap">
+<param name="Keyword" value="Rec">
+<param name="Keyword" value="Dict">
+<param name="Keyword" value="KV">
+<param name="Keyword" value="New">
+<param name="Keyword" value="Dispose">
+<param name="Keyword" value="ParamCount">
+<param name="Keyword" value="ParamStr">
+<param name="Keyword" value="Assert">
+<param name="Keyword" value="Halt">
+<param name="Keyword" value="Sleep">
+<param name="Keyword" value="GetEXEFileName">
+<param name="Keyword" value="PointerToString">
+<param name="Keyword" value="Exec">
+<param name="Keyword" value="Execute">
+<param name="Keyword" value="Milliseconds">
+<param name="Keyword" value="MillisecondsDelta">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Общие подпрограммы</H1>
+<table border=0 CELLPADDING=5>
+	<tr>
+	<td>
+<code><b>procedure</b> Swap&lt;T&gt;(var a, b: T); </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Меняет местами значения двух переменных</td>
+	</tr>
+	<tr>
+		<td>
+	<code>
+	<b>function</b> Milliseconds: integer;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество миллисекунд с момента начала работы программы</td>
+	</tr>
+	<tr>
+		<td>
+	<code>
+	<b>function</b> MillisecondsDelta: integer;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество миллисекунд с момента начала работы программы 
+	или предыдущего вызова функций
+	<code>
+	Milliseconds</code> или
+	<code>
+	MillisecondsDelta</code>.</td>
+	</tr>
+	<tr>
+		<td>
+	<code>
+	<b>function</b> Rec&lt;T1,T2,...&gt;(x1: T1; x2: T2, ...): Tuple&lt;T1,T2,...&gt;; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает запись Tuple с соответствующим количеством полей. 
+		Поля именуются соответственно Item1, Item2 и т.д. и получают значения 
+		x1,x2,... Количество полей - от 2 до 6.</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> Dict&lt;TKey, TVal&gt;(params pairs: <strong>
+		array of</strong> KeyValuePair&lt;TKey, TVal&gt;): Dictionary&lt;TKey, TVal&gt;;
+		</code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает словарь пар элементов </td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> KV&lt;TKey, TVal&gt;(key: TKey; value: TVal): 
+		KeyValuePair&lt;TKey, TVal&gt;; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает пару элементов для использования в функции Dict </td>
+	</tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Assert(cond: boolean);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит в специальном окне стек вызовов подпрограмм если условие не выполняется
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Assert(cond: boolean; mes: string);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит в специальном окне диагностическое сообщение mes и стек вызовов подпрограмм если условие не выполняется
+</td></tr>
+	<tr>
+		<td>
+<code>
+		<b>procedure</b> Sleep(ms: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Делает паузу на ms миллисекунд
+</td>
+	</tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Halt; 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Завершает работу программы
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Halt(exitCode: integer); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Завершает работу программы, возвращая код ошибки exitCode
+</td></tr>
+<tr>
+	<td>
+<code>
+<b>procedure</b> Exec(filename: string);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем filename
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+<b>procedure</b> Exec(filename: string; args: string);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем filename и параметрами 
+командной строки args</td>
+</tr>
+<tr>
+	<td>
+<code>
+<b>procedure</b> Execute(filename: string);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем filename
+</td>
+</tr>
+	<tr>
+		<td>
+<code>
+<b>procedure</b> Execute(filename: string; args: 
+string);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Запускает программу или документ с именем filename и параметрами 
+командной строки args</td>
+	</tr>
+<tr>
+	<td>
+<code>
+<b>function</b> ParamCount: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество параметров командной строки
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+<b>function</b> ParamStr(i: integer): string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает i-тый параметр командной строки
+</td>
+</tr>
+	<tr>
+	<td>
+<code><b>procedure </b>New&lt;T&gt;(<b>var</b> p: ^T); </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выделяет динамическую память размера <code><b>sizeof</b>(T)</code> и возвращает в переменной p указатель на нее. 
+Тип T должен быть размерным</td>
+	</tr>
+	<tr>
+	<td>
+<code><b>procedure </b>Dispose&lt;T&gt;(<b>var</b> p: ^T);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Освобождает динамическую память, на которую указывает 
+p</td>
+	</tr>
+<tr>
+	<td>
+<code>
+<b>function</b> GetEXEFileName: string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возващает имя запущенного .exe-файла
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+<b>function</b> PointerToString(p: pointer): string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует указатель к строковому представлению
+</td>
+</tr>
+</table>
+</body></html>

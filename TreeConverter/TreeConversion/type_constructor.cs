@@ -196,7 +196,9 @@ namespace PascalABCCompiler.TreeConverter
 			el.AddElement(cfc);
 
 			SymbolInfo si = exprs[0].type.find_first_in_type(compiler_string_consts.assign_name);
-			if (si == null)
+            if (si == null && exprs[0].type.original_generic != null)
+                si = exprs[0].type.original_generic.find_first_in_type(compiler_string_consts.assign_name);
+            if (si == null)
 			{
 				throw new CompilerInternalError("Undefined delegate operation");
 			}
@@ -223,7 +225,9 @@ namespace PascalABCCompiler.TreeConverter
 			el.AddElement(cfc);
 
 			SymbolInfo si = exprs[0].type.find_first_in_type(compiler_string_consts.assign_name);
-			if (si == null)
+            if (si == null && exprs[0].type.original_generic != null)
+                si = exprs[0].type.original_generic.find_first_in_type(compiler_string_consts.assign_name);
+            if (si == null)
 			{
 				throw new CompilerInternalError("Undefined delegate operation");
 			}
@@ -562,7 +566,7 @@ namespace PascalABCCompiler.TreeConverter
             }
 			
 			//= operation
-			SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope,ctn.scope, "= operator from " + ctn.scope);
+			SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(ctn.scope, _cmn.scope, "= operator from " + ctn.scope);
         	common_method_node cmn_eq = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.eq_name),SystemLibrary.SystemLibrary.bool_type,null,ctn,
         	                                                SemanticTree.polymorphic_state.ps_static,SemanticTree.field_access_level.fal_public,scope);
         	cmn_eq.IsOperator = true;
@@ -597,7 +601,7 @@ namespace PascalABCCompiler.TreeConverter
         	ctn.Scope.AddSymbol(compiler_string_consts.eq_name,new SymbolInfo(cmn_eq));
         	
         	//<> operation
-			scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope,ctn.scope, "<> operator from " + ctn.scope);
+			scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(ctn.scope, _cmn.scope, "<> operator from " + ctn.scope);
         	common_method_node cmn_noteq = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.noteq_name),SystemLibrary.SystemLibrary.bool_type,null,ctn,
         	                                                SemanticTree.polymorphic_state.ps_static,SemanticTree.field_access_level.fal_public,scope);
         	cmn_noteq.IsOperator = true;

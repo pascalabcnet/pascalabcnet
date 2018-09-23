@@ -1,0 +1,20 @@
+<html><head><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Aggregate">
+</object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
+<body>
+<H1>Метод Aggregate</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<tr><td>
+<code><b>function </b>Aggregate(func: (T,T)-&gt;T): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Применяет к последовательности агрегатную функцию. Возвращает конечное агрегатное значение.
+</td></tr>
+<tr><td>
+<code><b>function </b>Aggregate&lt;Accum&gt;(seed: T; func: (Accum,T)-&gt;Accum): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Применяет к последовательности агрегатную функцию. Указанное начальное значение используется в качестве исходного значения агрегатной операции. Возвращает конечное агрегатное значение.
+</td></tr>
+<tr><td>
+<code><b>function </b>Aggregate&lt;Accum,Res&gt;(seed: T; func: (Accum,T)-&gt;Accum; resultSelector: Accum-&gt;Res): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Применяет к последовательности агрегатную функцию.Указанное начальное значение служит исходным значением для агрегатной операции, а указанная функция используется для выбора результирующего значения. Возвращает конечное агрегатное значение.
+</td></tr>
+</table>
+<h2>Пример </h2><blockquote><code></code></blockquote>
+</body>

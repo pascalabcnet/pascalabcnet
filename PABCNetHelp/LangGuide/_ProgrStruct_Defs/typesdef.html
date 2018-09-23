@@ -1,0 +1,97 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="type">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+<style type="text/css">
+.auto-style1 {
+	background-color: #FFFFFF;
+}
+.auto-style2 {
+	font-family: Arial;
+}
+</style>
+</head>
+
+<body>
+<H1>Описание типов</H1>
+<p class="pabcmain"><i>Раздел описания типов</i> начинается 
+со служебного слова <code><b>type</b></code>, 
+после которого следуют строки вида</p>
+<blockquote>
+	<code class="codeit">имя типа </code><code>=</code><code class="codeit"> тип</code><code>;</code>
+</blockquote>
+Например,<blockquote>
+	<p><code><b>type</b><b><br>
+	</b>&nbsp; arr10 = <strong>array</strong> [1..10] of integer;<br>
+	<b>&nbsp; </b>myint = integer;<br>
+&nbsp; pinteger = ^integer;<br>&nbsp; IntFunc = <strong>function</strong>(x: 
+	integer): integer;</code></p>
+</blockquote>
+<p>Обычно описание используется для составных типов (статические массивы, 
+процедурные переменные, записи, классы) чтобы дать имя сложному типу. Если для 
+типа определена <a href="../Types/typecompatibility.html">именная 
+эквивалентность типов</a>, это единственный способ передать переменные этого 
+типа в подпрограмму. 
+<p class="auto-style1">О<span class="auto-style2">п<span class="auto-style1">исание 
+типов для классов использовать обязательно:</span></span></p>
+<blockquote>
+	<p><code><strong>type</strong><br>&nbsp; A = <b>class<br>
+	</b>&nbsp;&nbsp;&nbsp; i: integer;<br>
+&nbsp;&nbsp;&nbsp; <b>constructor</b> Create(ii: integer);<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i:=ii;<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp; <b>end</b>;</code></p>
+</blockquote>
+<p>Если описание типа используется просто для того чтобы заменить одно имя на 
+другое, то такие типы называются <em>синонимами типов</em>: 
+<blockquote>
+	<p><code><b>type <br>&nbsp; </b>int = integer;<br>&nbsp; double = real;</code></p>
+</blockquote>
+<p>Описания типов могут быть обобщёнными, т.е. включать параметры-типы в угловых 
+скобках после имени типа. 
+<blockquote>
+	<p><code><b>type <br></b>&nbsp; Dict&lt;K,V&gt; = Dictionary&lt;K,V&gt;;<br>&nbsp; 
+	Arr&lt;T&gt; = <strong>array of</strong> T; </code></p>
+</blockquote>
+<p>Использование такого типа с конкретным параметром-типом называется <em>
+инстанцированием</em> типа:<blockquote>
+	<p><code><b>var <br></b>&nbsp; a: Arr&lt;integer&gt;;<br>&nbsp; d: 
+	Dict&lt;string,integer&gt;; </code></p>
+</blockquote>
+<p>При описании рекурсивных структур данных указатель на тип может фигурировать 
+раньше описания самого типа в определении другого типа:<blockquote>
+	<p><code><b>type</b><b><br>
+	</b>&nbsp; PNode = ^TNode;<br>
+&nbsp; TNode = <b>record</b><br>
+&nbsp;&nbsp;&nbsp; data: integer;<br>
+&nbsp;&nbsp;&nbsp; next: PNode;<br>
+&nbsp; <b>end</b>;</code></p>
+</blockquote>
+<p>При этом важно, чтобы определения обоих типов находились в одном 
+разделе <code><b>type</b></code>.</p><p>В отличие от Delphi Object Pascal следующее рекурсивное
+описание верно:</p>
+<blockquote>
+	<p><code><b>type<br>
+	</b>&nbsp; TNode = <b>record</b><br>
+&nbsp;&nbsp;&nbsp; data: integer;<br>
+&nbsp;&nbsp;&nbsp; next: ^TNode;<br>
+&nbsp; <b>end</b>;</code></p>
+</blockquote>
+<p>Отметим, что для ссылочных типов (классов) разрешается описание поля с типом, 
+совпадающим с типом текущего класса:</p>
+<blockquote>
+	<p><code><b>type<br>
+	</b>&nbsp; Node = <b>class</b><br>
+&nbsp;&nbsp;&nbsp; data: integer;<br>
+&nbsp;&nbsp;&nbsp; next: Node;<br>
+&nbsp; <b>end</b>;</code></p>
+</blockquote>
+</body>
+
+</html>

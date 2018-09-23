@@ -1,6 +1,6 @@
 ﻿uses Graph3D;
 
-function MultipleClones(c: Object3D; N: integer): GroupT;
+function MultipleClones(c: Object3D; N: integer): Group3D;
 begin
   var g := Group(c);
   loop N-1 do

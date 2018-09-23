@@ -1,0 +1,51 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Copy">
+<param name="Keyword" value="High">
+<param name="Keyword" value="Length">
+<param name="Keyword" value="Low">
+<param name="Keyword" value="Reverse">
+<param name="Keyword" value="SetLength">
+<param name="Keyword" value="Shuffle">
+<param name="Keyword" value="Sort"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Подпрограммы для работы с динамическими массивами</H1>
+<table border=0 cellpadding=5><tr><td><code><b>function</b> Copy(a: <b>array</b>  <b>of</b> T): <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создаёт копию динамического массива</td></tr>
+<tr><td><code><b>function</b> High(a: <b>array</b>  <b>of</b> T): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает верхнюю границу динамического массива</td></tr>
+<tr><td><code><b>function</b> Length(a: <b>array</b>  <b>of</b> T): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает длину динамического массива</td></tr>
+<tr><td><code><b>function</b> Length(a: <b>array</b>  <b>of</b> T; dim: integer): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает длину динамического массива по размерности dim</td></tr>
+<tr><td><code><b>function</b> Low(a: <b>array</b>  <b>of</b> T): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 0</td></tr>
+<tr><td><code><b>procedure</b> Reverse&lt;T&gt;(a: <b>array</b>  <b>of</b> T);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет порядок элементов в динамическом массиве на противоположный</td></tr>
+<tr><td><code><b>procedure</b> Reverse&lt;T&gt;(a: <b>array</b>  <b>of</b> T; index, count: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет порядок элементов на противоположный в диапазоне динамического массива длины count, начиная с индекса index</td></tr>
+<tr><td><code><b>procedure</b> Reverse&lt;T&gt;(a: List&lt;T&gt;);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет порядок элементов в списке на противоположный</td></tr>
+<tr><td><code><b>procedure</b> Reverse&lt;T&gt;(a: List&lt;T&gt;; index, count: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет порядок элементов на противоположный в диапазоне списка длины count, начиная с индекса index</td></tr>
+<tr><td><code><b>procedure</b> SetLength(<b>var</b> a: <b>array</b>  <b>of</b> T);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает длину одномерного динамического массива. Старое содержимое сохраняется</td></tr>
+<tr><td><code><b>procedure</b> SetLength(<b>var</b> a: <b>array</b>  <b>of</b> T; n1,n2,...: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает размеры n-мерного динамического массива. Старое содержимое сохраняется</td></tr>
+<tr><td><code><b>procedure</b> Shuffle&lt;T&gt;(a: <b>array</b>  <b>of</b> T);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемешивает динамический массив случайным образом</td></tr>
+<tr><td><code><b>procedure</b> Shuffle&lt;T&gt;(l: List&lt;T&gt;);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемешивает список случайным образом</td></tr>
+<tr><td><code><b>procedure</b> Sort&lt;T&gt;(a: <b>array</b>  <b>of</b> T);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по возрастанию</td></tr>
+<tr><td><code><b>procedure</b> Sort&lt;T&gt;(a: <b>array</b>  <b>of</b> T; cmp: (T,T)-&gt;integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения cmp</td></tr>
+<tr><td><code><b>procedure</b> Sort&lt;T&gt;(a: <b>array</b>  <b>of</b> T; less: (T,T)-&gt;boolean);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения less</td></tr>
+<tr><td><code><b>procedure</b> Sort&lt;T&gt;(l: List&lt;T&gt;);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по возрастанию</td></tr>
+<tr><td><code><b>procedure</b> Sort&lt;T&gt;(l: List&lt;T&gt;; cmp: (T,T)-&gt;integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по критерию сортировки, задаваемому функцией сравнения cmp</td></tr>
+<tr><td><code><b>procedure</b> Sort&lt;T&gt;(l: List&lt;T&gt;; less: (T,T)-&gt;boolean);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по критерию сортировки, задаваемому функцией сравнения less</td></tr>
+</table>
+</body></HTML>

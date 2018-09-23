@@ -1,0 +1,130 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="virtual">
+<param name="Keyword" value="override">
+<param name="Keyword" value="reintroduce">
+<param name="Keyword" value="Полиморфизм">
+<param name="Keyword" value="Виртуальный метод">
+<param name="Keyword" value="Динамический тип">
+<param name="Keyword" value="Раннее связывание">
+<param name="Keyword" value="Позднее связывание">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Виртуальные методы и полиморфизм</H1>
+<p><font color="#FF0000"><i><b>Полиморфизм</b></i></font> (от <i>греч</i>. 
+&quot;много форм&quot;) - это свойство классов, связанных наследованием, иметь различную 
+реализацию входящих в них методов, и способность 
+переменной базового класса вызывать методы того класса, объект которого 
+содержится в этой переменной в момент вызова метода.</p>
+<p>Полиморфизм используется в ситуации, когда для 
+группы взаимосвязанных объектов требуется выполнить единое действие, но каждый 
+из этих объектов должен выполнить указанное действие по-своему (т.е. у действия 
+возникает много форм). Для этого определяется базовый для всех объектов класс с 
+виртуальными методами, предусмотренными для меняющегося поведения, после чего эти методы 
+переопределяется в потомках. </p>
+<p>Для пояснения рассмотрим переопределение метода в подклассе:</p>
+<blockquote>
+	<p><code><b>type</b><br>
+&nbsp; Base =<b> class<br>
+&nbsp; public </b><br>
+&nbsp;&nbsp;&nbsp; <b>procedure</b> Print;<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; writeln('Base');<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp; <b>end</b>;<br>
+&nbsp; Derived =<b> class</b>(Base)<br>
+	<b>&nbsp; public </b><br>
+&nbsp;&nbsp;&nbsp; <b>procedure</b> Print;<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; writeln('Derived');<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp; <b>end</b>;</code> </p>
+</blockquote>
+<p>Присвоим переменной базового класса <code>Base</code> объект производного 
+класса <code>Derived</code> и вызовем метод <code>Print</code>.</p>
+<blockquote>
+	<p><code><b>var</b> b: Base := new Derived;<br>
+	b.Print;</code></p>
+</blockquote>
+<p>Какая версия метода <code>Print</code> вызывается - класса <code>Base</code> или класса <code>Derived</code>? 
+В данном случае решение будет принято еще на этапе компиляции: вызовется метод
+<code>Print</code> класса <code>Base</code>, 
+заявленного при описании переменной <code>b</code>. Говорят, что имеет место
+<font color="#FF0000"><b> <i>раннее связывание</i></b></font> имени метода с его 
+телом. Если же решение о том, 
+какой метод вызывать, принимается на этапе выполнения программы в зависимости от 
+реального типа объекта, на который ссылается переменная <code>b</code>, то 
+в данном случае вызывается метод <code>Derived.Print</code> (говорят 
+также, что имеет место <i><font color="#FF0000"><b>позднее связывание</b></font></i>). Методы, для которых 
+реализуется позднее связывание, называются <i><font color="#FF0000"><b>виртуальными</b></font></i>, 
+а переменная базового класса, через которую осуществляется вызов виртуального 
+метода, - <i><font color="#FF0000"><b>полиморфной переменной</b></font></i>. 
+Таким образом, полиморфизм реализуется вызовом виртуальных функций через 
+переменную базового класса. Тип класса, который хранится в данной переменной на 
+этапе выполнения, называется <i><font color="#FF0000"><b>динамическим типом</b></font></i> 
+этой переменной. </p>
+<p>Для того чтобы сделать метод виртуальным, следует в объявлении этого метода 
+после заголовка указать ключевое слово <code><b>virtual</b></code> с последующей <code>;</code>. Для переопределения виртуального метода 
+следует использовать ключевое слово <code><b>override</b></code>:</p>
+<blockquote>
+	<p><code><b>type</b><br>
+&nbsp; Base =<b> class<br>
+&nbsp; public </b><br>
+&nbsp;&nbsp;&nbsp; <b>procedure</b> Print; <b>virtual</b>;<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; writeln('Base');<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp; <b>end</b>;<br>
+&nbsp; Derived =<b> class</b>(Base)<br>
+	<b>&nbsp; public </b><br>
+&nbsp;&nbsp;&nbsp; <b>procedure</b> Print; <b>override</b>;<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; writeln('Derived');<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp; <b>end</b>;</code> </p>
+</blockquote>
+<p>Теперь в аналогичном участке кода.</p>
+<blockquote>
+	<p><code><b>var</b> b: Base := new Derived;<br>
+	b.Print;</code></p>
+</blockquote>
+<p>вызывается метод <code>Print</code> класса <code>
+Derived</code> за счет того что решение о вызове метода откладывается на этап 
+выполнения программы.</p>
+<p>Говорят, что методы <code>Print</code> завязаны в
+<font color="#FF0000"><i><b>цепочку виртуальности</b></i></font>. Чтобы 
+разорвать ее (не вызывать методы в подклассах виртуально) используется ключевое 
+слово <code><b>reintroduce</b></code>:</p>
+<blockquote>
+	<p><code><b>type</b><br>&nbsp; DerivedTwice1 =<b> class</b>(Derived)<br>
+	<b>&nbsp; public </b><br>&nbsp;&nbsp;&nbsp; <b>procedure</b> Print; </code><code><b>reintroduce</b></code><code>;<br>&nbsp;&nbsp;&nbsp; 
+	<b>begin</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; writeln('DerivedTwice1');<br>&nbsp;&nbsp;&nbsp; 
+	<b>end</b>;<br>&nbsp; <b>end</b>;</code> </p>
+</blockquote>
+<p>Если мы хотим начать новую цепочку виртуальности, то следует использовать и
+<code><b>virtual</b></code> и <code><b>reintroduce</b></code>: </p>
+<blockquote>
+	<p><code><b>type</b><br>&nbsp; DerivedTwice2 =<b> class</b>(Derived)<br>
+	<b>&nbsp; public </b><br>&nbsp;&nbsp;&nbsp; <b>procedure</b> Print; </code><code><b>virtual</b>; </code><code>
+	<b>reintroduce</b>;<br>&nbsp;&nbsp;&nbsp; 
+	<b>begin</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; writeln('DerivedTwice2');<br>&nbsp;&nbsp;&nbsp; 
+	<b>end</b>;<br>&nbsp; <b>end</b>;</code> </p>
+</blockquote>
+<p>Если переопределить виртуальную функцию невиртуальной без ключевого слова
+<code><b>reintroduce</b></code>, то ошибки не произойдет - будет выведено лишь 
+предупреждение о том, что цепочка виртуальности нарушена. Таким образом, 
+ключевое слово <code><b>reintroduce</b></code> в этой 
+ситуации лишь подавляет вывод предупреждения.</p>
+<p>При переопределении виртуального метода в подклассе его уровень доступа 
+должен быть не ниже, чем в базовом классе. Например, <code><b>public</b></code> 
+виртуальный метод не может быть переопределен в подклассе <code><b>private</b></code>-методом.</p>
+</body>
+
+</html>

@@ -29,4 +29,7 @@ begin
   end;
   var ptr: myptr;
   var r{@var r: real;@} := ptr^;
+  var i: myint;
+  var ptr2{@var ptr2: ^myint;@} := @i;
+  var i2{@var i2: myint;@} := ptr2^;
 end.

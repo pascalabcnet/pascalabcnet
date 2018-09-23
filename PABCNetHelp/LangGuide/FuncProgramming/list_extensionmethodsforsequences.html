@@ -1,0 +1,420 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Список методов последовательностей (устарело)</H1>
+
+<table border=0>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Print(delim: string := ' '): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит последовательность на экран, используя delim в качестве разделителя.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Println(delim: string := ' '): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит последовательность на экран, используя delim в качестве разделителя, и переходит на новую строку.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Where(predicate: Predicate&lt;T&gt;): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет фильтрацию последовательности значений на основе заданного предиката. Возвращает подпоследовательность значений исходной последовательности, удовлетворяющих предикату.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Where(predicate: Predicate2&lt;T,integer&gt;): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет фильтрацию последовательности значений на основе заданного предиката с учётом индекса элемента. Возвращает подпоследовательность значений исходной последовательности, удовлетворяющих предикату.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Select&lt;Res&gt;(selector: Func&lt;T,Res&gt;): IEnumerable&lt;Res&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проецирует каждый элемент последовательности на другой элемент с помощью функции selector. Возвращает последовательность элементов, полученных в результате проецирования.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Select&lt;Res&gt;(selector: Func2&lt;T,integer,Res&gt;): IEnumerable&lt;Res&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проецирует каждый элемент последовательности на другой элемент с помощью функции selector, учитывающую индекс элемента. Возвращает последовательность элементов, полученных в результате проецирования.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.SelectMany&lt;Res&gt;(selector: Func&lt;T,IEnumerable&lt;Res&gt;&gt;): IEnumerable&lt;Res&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проецирует каждый элемент последовательности в новую последовательность и объединяет результирующие последовательности в одну последовательность. Возвращает объединённую последовательность.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.SelectMany&lt;Res&gt;(selector: Func2&lt;T,integer,IEnumerable&lt;Res&gt;&gt;): IEnumerable&lt;Res&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проецирует каждый элемент последовательности в новую последовательность с учетом индекса элемента и объединяет результирующие последовательности в одну последовательность. Возвращает объединённую последовательность.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.SelectMany&lt;Coll,Res&gt;(collSelector: Func2&lt;T,integer,IEnumerable&lt;Coll&gt;&gt;; resultSelector: Func2&lt;T,Coll,Res&gt;): IEnumerable&lt;Res&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проецирует каждый элемент последовательности в новую последовательность, объединяет результирующие последовательности в одну и вызывает функцию селектора результата для каждого элемента этой последовательности. Индекс каждого элемента исходной последовательности используется в промежуточной проецированной форме этого элемента. Возвращает объединённую последовательность.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.SelectMany&lt;Coll,Res&gt;(collSelector: Func&lt;T,IEnumerable&lt;Coll&gt;&gt;; resultSelector: Func2&lt;T,Coll,Res&gt;): IEnumerable&lt;Res&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проецирует каждый элемент последовательности в новую последовательность, объединяет результирующие последовательности в одну и вызывает функцию селектора результата для каждого элемента этой последовательности. Возвращает объединённую последовательность.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Take(count: integer): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов с начала последовательности.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.TakeWhile(predicate: Predicate&lt;T&gt;): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цепочку элементов последовательности, удовлетворяющих указанному условию, до первого не удовлетворяющего.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.TakeWhile(predicate: Predicate2&lt;T,integer&gt;): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цепочку элементов последовательности, удовлетворяющих указанному условию, до первого не удовлетворяющего (учитывается индекс элемента).
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Skip(count: integer): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пропускает count элементов в последовательности и возвращает остальные элементы.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.SkipWhile(predicate: Predicate&lt;T&gt;): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пропускает элементы в последовательности, пока они удовлетворяют заданному условию, и затем возвращает оставшиеся элементы.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.SkipWhile(predicate: Predicate2&lt;T,integer&gt;): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пропускает элементы в последовательности, пока они удовлетворяют заданному условию, и затем возвращает оставшиеся элементы (учитывается индекс элемента).
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Sorted(): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отсортированную по возрстанию последовательность.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.OrderBy&lt;Key&gt;(keySelector: Func&lt;T,Key&gt;): System.Linq.IOrderedEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует элементы последовательности в порядке возрастания ключа и возвращает отсортированнную последовательность. keySelector - функция, проектирующая элемент на ключ.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.OrderBy&lt;Key&gt;(keySelector: System.Func&lt;T,Key&gt;; comparer: IComparer&lt;Key&gt;): System.Linq.IOrderedEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует элементы последовательности в порядке возрастания с использованием компаратора comparer и возвращает отсортированнную последовательность. keySelector - функция, проектирующая элемент на ключ.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.OrderByDescending&lt;Key&gt;(keySelector: System.Func&lt;T,Key&gt;): System.Linq.IOrderedEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует элементы последовательности в порядке убывания ключа и возвращает отсортированнную последовательность. keySelector - функция, проектирующая элемент на ключ.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.OrderByDescending&lt;Key&gt;(keySelector: System.Func&lt;T,Key&gt;; comparer: IComparer&lt;Key&gt;): System.Linq.IOrderedEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует элементы последовательности в порядке убывания с использованием компаратора comparer и возвращает отсортированнную последовательность. keySelector - функция, проектирующая элемент на ключ.
+</td></tr>
+<tr><td>
+<code><b>function</b> System.Linq.IOrderedEnumerable&lt;T&gt;.ThenBy&lt;Key&gt;(keySelector: Func&lt;T,Key&gt;): System.Linq.IOrderedEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет дополнительное упорядочение элементов последовательности в порядке возрастания ключа и возвращает отсортированнную последовательность. keySelector - функция, проектирующая элемент на ключ.
+</td></tr>
+<tr><td>
+<code><b>function</b> System.Linq.IOrderedEnumerable&lt;T&gt;.ThenBy&lt;Key&gt;(keySelector: Func&lt;T,Key&gt;; comparer: IComparer&lt;Key&gt;): System.Linq.IOrderedEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет дополнительное упорядочение элементов последовательности в порядке возрастания с использованием компаратора comparer и возвращает отсортированнную последовательность. keySelector - функция, проектирующая элемент на ключ.
+</td></tr>
+<tr><td>
+<code><b>function</b> System.Linq.IOrderedEnumerable&lt;T&gt;.ThenByDescending&lt;Key&gt;(keySelector: Func&lt;T,Key&gt;): System.Linq.IOrderedEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет дополнительное упорядочение элементов последовательности в порядке убывания ключа и возвращает отсортированнную последовательность. keySelector - функция, проектирующая элемент на ключ.
+</td></tr>
+<tr><td>
+<code><b>function</b> System.Linq.IOrderedEnumerable&lt;T&gt;.ThenByDescending&lt;Key&gt;(keySelector: Func&lt;T,Key&gt;; comparer: IComparer&lt;Key&gt;): System.Linq.IOrderedEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет дополнительное упорядочение элементов последовательности в порядке убывания с использованием компаратора comparer и возвращает отсортированнную последовательность. keySelector - функция, проектирующая элемент на ключ.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Concat(second: IEnumerable&lt;T&gt;): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Соединяет две последовательности, дописывая вторую в конец первой и возвращая результирующую последовательность.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;TFirst&gt;.Zip&lt;TSecond,Res&gt;(second: IEnumerable&lt;TSecond&gt;; resultSelector: Func2&lt;TFirst,TSecond,Res&gt;): IEnumerable&lt;Res&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет две последовательности, используя указанную функцию, принимающую по одному элементу каждой последовательности и возвращающую элемент результирующей последовательности.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Distinct(): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает различающиеся элементы последовательности.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Distinct(comparer: System.Collections.Generic.IEqualityComparer&lt;T&gt;): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает различающиеся элементы последовательности, используя для сравнения значений компаратор comparer.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Union(second: IEnumerable&lt;T&gt;): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит объединение множеств, представленных двумя последовательностями.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Union(second: IEnumerable&lt;T&gt;; comparer: System.Collections.Generic.IEqualityComparer&lt;T&gt;): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит объединение множеств, представленных двумя последовательностями, используя указанный компаратор.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Intersect(second: IEnumerable&lt;T&gt;): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит пересечение множеств, представленных двумя последовательностями.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Intersect(second: IEnumerable&lt;T&gt;; comparer: System.Collections.Generic.IEqualityComparer&lt;T&gt;): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит пересечение множеств, представленных двумя последовательностями, используя для сравнения значений указанный компаратор.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Except(second: IEnumerable&lt;T&gt;): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит разность множеств, представленных двумя последовательностями.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Except(second: IEnumerable&lt;T&gt;; comparer: System.Collections.Generic.IEqualityComparer&lt;T&gt;): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит разность множеств, представленных двумя последовательностями, используя для сравнения значений указанный компаратор.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Reverse(): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает инвертированную последовательность.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.SequenceEqual(second: IEnumerable&lt;T&gt;): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Определяет, совпадают ли две последовательности.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.SequenceEqual(second: IEnumerable&lt;T&gt;; comparer: System.Collections.Generic.IEqualityComparer&lt;T&gt;): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Определяет, совпадают ли две последовательности, используя для сравнения элементов указанный компаратор.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.First(): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает первый элемент последовательности.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.First(predicate: Predicate&lt;T&gt;): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает первый элемент последовательности, удовлетворяющий указанному условию.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.FirstOrDefault(): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает первый элемент последовательности или значение по умолчанию, если последовательность не содержит элементов.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.FirstOrDefault(predicate: Predicate&lt;T&gt;): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает первый удовлетворяющий условию элемент последовательности или значение по умолчанию, если ни одного такого элемента не найдено.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Last(): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последний элемент последовательности.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Last(predicate: Predicate&lt;T&gt;): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последний элемент последовательности, удовлетворяющий указанному условию.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.LastOrDefault(): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последний элемент последовательности или значение по умолчанию, если последовательность не содержит элементов.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.LastOrDefault(predicate: Predicate&lt;T&gt;): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последний элемент последовательности, удовлетворяющий указанному условию, или значение по умолчанию, если ни одного такого элемента не найдено.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Single(): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает единственный элемент последовательности и генерирует исключение, если число элементов последовательности отлично от 1.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Single(predicate: Predicate&lt;T&gt;): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает единственный элемент последовательности, удовлетворяющий заданному условию, и генерирует исключение, если таких элементов больше одного.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.SingleOrDefault(): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает единственный элемент последовательности или значение по умолчанию, если последовательность пуста; если в последовательности более одного элемента, генерируется исключение.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.SingleOrDefault(predicate: Predicate&lt;T&gt;): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает единственный элемент последовательности, удовлетворяющий заданному условию, или значение по умолчанию, если такого элемента не существует; если условию удовлетворяет более одного элемента, генерируется исключение.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.DefaultIfEmpty(): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает элементы указанной последовательности или одноэлементную коллекцию, содержащую значение параметра типа по умолчанию, если последовательность пуста.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.DefaultIfEmpty(defaultValue: T): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает элементы указанной последовательности или одноэлементную коллекцию, содержащую указанное значение, если последовательность пуста.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.ElementAt(index: integer): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает элемент по указанному индексу в последовательности.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.ElementAtOrDefault(index: integer): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает элемент по указанному индексу в последовательности или значение по умолчанию, если индекс вне допустимого диапазона.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Any(): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, содержит ли последовательность какие-либо элементы.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Any(predicate: Predicate&lt;T&gt;): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, удовлетворяет ли какой-либо элемент последовательности заданному условию.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.All(predicate: Predicate&lt;T&gt;): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, все ли элементы последовательности удовлетворяют условию.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Count(): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество элементов в последовательности.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Count(predicate: Predicate&lt;T&gt;): integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает число, представляющее количество элементов последовательности, удовлетворяющих заданному условию.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.LongCount(): int64;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа Int64, представляющее общее число элементов в последовательности.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.LongCount(predicate: Predicate&lt;T&gt;): int64;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа Int64, представляющее число элементов последовательности, удовлетворяющих заданному условию.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Contains(value: T): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Определяет, содержится ли указанный элемент в последовательности, используя компаратор проверки на равенство по умолчанию.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Contains(value: T; comparer: System.Collections.Generic.IEqualityComparer&lt;T&gt;): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Определяет, содержит ли последовательность заданный элемент, используя указанный компаратор.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Aggregate(func: Func2&lt;T,T,T&gt;): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Применяет к последовательности агрегатную функцию. Возвращает конечное агрегатное значение.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Aggregate&lt;Accum&gt;(seed: T; func: Func2&lt;Accum,T,Accum&gt;): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Применяет к последовательности агрегатную функцию. Указанное начальное значение используется в качестве исходного значения агрегатной операции. Возвращает конечное агрегатное значение.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Aggregate&lt;Accum,Res&gt;(seed: T; func: Func2&lt;Accum,T,Accum&gt;; resultSelector: Func&lt;Accum,Res&gt;): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Применяет к последовательности агрегатную функцию.Указанное начальное значение служит исходным значением для агрегатной операции, а указанная функция используется для выбора результирующего значения. Возвращает конечное агрегатное значение.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;число&gt;.Sum(): число;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вычисляет сумму последовательности значений числового типа.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Sum(selector: Func&lt;T,число&gt;): число;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вычисляет сумму последовательности значений числового типа, получаемой в результате применения функции преобразования к каждому элементу входной последовательности.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;число&gt;.Min(): число;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вычисляет минимальный элемент последовательности значений числового типа.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Min(selector: Func&lt;T,число&gt;): число;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вызывает функцию преобразования для каждого элемента последовательности и возвращает минимальное значение числового типа.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;число&gt;.Max(): число;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вычисляет максимальный элемент последовательности значений числового типа.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Max(selector: Func&lt;T,число&gt;): число;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вызывает функцию преобразования для каждого элемента последовательности и возвращает максимальное значение числового типа.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;число&gt;.Average(): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вычисляет среднее для последовательности значений числового типа.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.Average(selector: Func&lt;T,число&gt;): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вычисляет среднее для последовательности значений числового типа, получаемой в результате применения функции преобразования к каждому элементу входной последовательности.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;TOuter&gt;.Join&lt;TInner,Key,Res&gt;(inner: IEnumerable&lt;TInner&gt;; outerKeySelector: Func&lt;TOuter,Key&gt;; innerKeySelector: Func&lt;TInner,Key&gt;; resultSelector: Func2&lt;TOuter,TInner,Res&gt;): IEnumerable&lt;Res&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет две последовательности на основе сопоставления ключей в третью последовательность. Функция resultSelector задаёт проекцию элементов двух последовательностей с одинаковыми значениями ключа в элемент третьей последовательности.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;TOuter&gt;.Join&lt;TInner,Key,Res&gt;(inner: IEnumerable&lt;TInner&gt;; outerKeySelector: Func&lt;TOuter,Key&gt;; innerKeySelector: Func&lt;TInner,Key&gt;; resultSelector: Func2&lt;TOuter,TInner,Res&gt;; comparer: System.Collections.Generic.IEqualityComparer&lt;Key&gt;): IEnumerable&lt;Res&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет две последовательности на основе сопоставления ключей в третью последовательность. Функция resultSelector задаёт проекцию элементов двух последовательностей с одинаковыми значениями ключа в элемент третьей последовательности. Для сравнения ключей используется компаратор comparer.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;TOuter&gt;.GroupJoin&lt;TInner,Key,Res&gt;(inner: IEnumerable&lt;TInner&gt;; outerKeySelector: Func&lt;TOuter,Key&gt;; innerKeySelector: Func&lt;TInner,Key&gt;; resultSelector: Func2&lt;TOuter,IEnumerable&lt;TInner&gt;,Res&gt;): IEnumerable&lt;Res&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет две последовательности на основе равенства ключей и группирует результаты. Затем функция resultSelector проектирует ключ и последовательность соответствующих ему значений на элемент результирующей последовательности.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;TOuter&gt;.GroupJoin&lt;TInner,Key,Res&gt;(inner: IEnumerable&lt;TInner&gt;; outerKeySelector: Func&lt;TOuter,Key&gt;; innerKeySelector: Func&lt;TInner,Key&gt;; resultSelector: Func2&lt;TOuter,IEnumerable&lt;TInner&gt;,Res&gt;; comparer: System.Collections.Generic.IEqualityComparer&lt;Key&gt;): IEnumerable&lt;Res&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет две последовательности на основе равенства ключей и группирует результаты. Для сравнения ключей используется указанный компаратор. Затем функция resultSelector проектирует ключ и последовательность соответствующих ему значений на элемент результирующей последовательности.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.GroupBy&lt;Key&gt;(keySelector: Func&lt;T,Key&gt;): IEnumerable&lt;IGrouping&lt;Key,T&gt;&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Группирует элементы последовательности в соответствии с заданной функцией селектора ключа и возвращает последовательность групп; каждая группа соответствует одному значению ключа.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.GroupBy&lt;Key&gt;(keySelector: Func&lt;T,Key&gt;; comparer: System.Collections.Generic.IEqualityComparer&lt;Key&gt;): IEnumerable&lt;IGrouping&lt;Key,T&gt;&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Группирует элементы последовательности в соответствии с заданной функцией селектора ключа, сравнивает ключи с помощью указанного компаратора и возвращает последовательность групп; каждая группа соответствует одному значению ключа.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.GroupBy&lt;Key,Element&gt;(keySelector: Func&lt;T,Key&gt;; elementSelector: Func&lt;T,Element&gt;): IEnumerable&lt;IGrouping&lt;Key,T&gt;&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Группирует элементы последовательности в соответствии с заданной функцией селектора ключа и проецирует элементы каждой группы с помощью указанной функции. Возвращает последовательность групп; каждая группа соответствует одному значению ключа.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.GroupBy&lt;Key,Element&gt;(keySelector: Func&lt;T,Key&gt;; elementSelector: Func&lt;T,Element&gt;; comparer: System.Collections.Generic.IEqualityComparer&lt;Key&gt;): IEnumerable&lt;IGrouping&lt;Key,Element&gt;&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Группирует элементы последовательности в соответствии с функцией селектора ключа.Ключи сравниваются с помощью компаратора, элементы каждой группы проецируются с помощью указанной функции.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.GroupBy&lt;Key,Res&gt;(keySelector: Func&lt;T,Key&gt;; resultSelector: Func2&lt;Key,IEnumerable&lt;T&gt;,Res&gt;): IEnumerable&lt;Res&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Группирует элементы последовательности в соответствии с заданной функцией селектора ключа и создает результирующее значение для каждой группы и ее ключа.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.GroupBy&lt;Key,Element,Res&gt;(keySelector: Func&lt;T,Key&gt;; elementSelector: Func&lt;T,Element&gt;; resultSelector: Func2&lt;Key,IEnumerable&lt;Element&gt;,Res&gt;): IEnumerable&lt;Res&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Группирует элементы последовательности в соответствии с заданной функцией селектора ключа и создает результирующее значение для каждой группы и ее ключа.Элементы каждой группы проецируются с помощью указанной функции.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.GroupBy&lt;Key,Res&gt;(keySelector: Func&lt;T,Key&gt;; resultSelector: Func2&lt;Key,IEnumerable&lt;T&gt;,Res&gt;; comparer: System.Collections.Generic.IEqualityComparer&lt;Key&gt;): IEnumerable&lt;Res&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Группирует элементы последовательности в соответствии с заданной функцией селектора ключа и создает результирующее значение для каждой группы и ее ключа.Ключи сравниваются с использованием заданного компаратора.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.GroupBy&lt;Key,Element,Res&gt;(keySelector: Func&lt;T,Key&gt;; elementSelector: System.Func&lt;T,Element&gt;; resultSelector: Func2&lt;Key,IEnumerable&lt;Element&gt;,Res&gt;; comparer: System.Collections.Generic.IEqualityComparer&lt;Key&gt;): IEnumerable&lt;Res&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Группирует элементы последовательности в соответствии с заданной функцией селектора ключа и создает результирующее значение для каждой группы и ее ключа.Значения ключей сравниваются с помощью указанного компаратора, элементы каждой группы проецируются с помощью указанной функции.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.AsEnumerable(): IEnumerable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает входные данные, приведенные к типу IEnumerable<T>.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.ToArray(): array of T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает массив из последовательности.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.ToList(): List&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает список List из последовательности.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.ToDictionary&lt;Key&gt;(keySelector: Func&lt;T,Key&gt;): Dictionary&lt;Key,T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает словарь Dictionary из последовательности соответствии с заданной функцией селектора ключа.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.ToDictionary&lt;Key&gt;(keySelector: Func&lt;T,Key&gt;; comparer: System.Collections.Generic.IEqualityComparer&lt;Key&gt;): Dictionary&lt;Key,T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает словарь Dictionary из последовательности в соответствии с заданной функцией селектора ключа и компаратором ключей.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.ToDictionary&lt;Key,Element&gt;(keySelector: Func&lt;T,Key&gt;; elementSelector: Func&lt;T,Element&gt;): Dictionary&lt;Key,Element&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает словарь Dictionary из последовательности в соответствии с заданными функциями селектора ключа и селектора элемента.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.ToDictionary&lt;Key,Element&gt;(keySelector: Func&lt;T,Key&gt;; elementSelector: Func&lt;T,Element&gt;; comparer: System.Collections.Generic.IEqualityComparer&lt;Key&gt;): Dictionary&lt;Key,Element&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает словарь Dictionary из последовательности в соответствии с заданным компаратором и функциями селектора ключа и селектора элемента.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.ToLookup&lt;Key&gt;(keySelector: Func&lt;T,Key&gt;): System.Linq.ILookup&lt;Key,T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает объект System.Linq.Lookup из последовательности в соответствии с заданной функцией селектора ключа.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.ToLookup&lt;Key&gt;(keySelector: Func&lt;T,Key&gt;; comparer: System.Collections.Generic.IEqualityComparer&lt;Key&gt;): System.Linq.ILookup&lt;Key,T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает объект System.Linq.Lookup из последовательности в соответствии с заданной функцией селектора ключа и компаратором ключей.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.ToLookup&lt;Key,Element&gt;(keySelector: Func&lt;T,Key&gt;; elementSelector: Func&lt;T,Element&gt;): System.Linq.ILookup&lt;Key,Element&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает объект System.Linq.Lookup из последовательности в соответствии с заданными функциями селектора ключа и селектора элемента.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.ToLookup&lt;Key,Element&gt;(keySelector: Func&lt;T,Key&gt;; elementSelector: Func&lt;T,Element&gt;; comparer: System.Collections.Generic.IEqualityComparer&lt;Key&gt;): System.Linq.ILookup&lt;Key,Element&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает объект System.Linq.Lookup из последовательности в соответствии с заданным компаратором и функциями селектора ключа и селектора элемента.
+</td></tr>
+<tr><td>
+<code><b>function</b> System.Collections.IEnumerable.OfType&lt;Res&gt;(): IEnumerable&lt;Res&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет фильтрацию элементов объекта System.Collections.IEnumerable по заданному типу. Возвращает подпоследовательность данной последовательности. в которой все элементы принадлежат заданному типу.
+</td></tr>
+<tr><td>
+<code><b>function</b> System.Collections.IEnumerable.Cast&lt;Res&gt;(): IEnumerable&lt;Res&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразовывает элементы объекта System.Collections.IEnumerable в заданный тип.
+</td></tr>
+<tr><td>
+<code><b>function</b> IEnumerable&lt;T&gt;.ToStr(delim: string := ' '): string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает строковое представление последовательности, используя delim в качестве разделителя.
+</td></tr>
+</table>
+
+</body>
+
+</html>

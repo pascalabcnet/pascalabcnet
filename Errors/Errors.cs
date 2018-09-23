@@ -152,8 +152,30 @@ namespace PascalABCCompiler.Errors
             source_context = _source_context;
             if (source_context != null && source_context.FileName != null)
                 base.fileName = source_context.FileName;
+            if (source_context == null && _bad_node != null) // искать source_context у Parentов
+            {
+                var bn = _bad_node;
+
+                do
+                {
+                    bn = bn.Parent;
+                    if (bn != null && bn.source_context != null)
+                    {
+                        source_context = bn.source_context;
+                        if (source_context.FileName != null)
+                            base.fileName = source_context.FileName;
+                        break;
+                    }                        
+                } while (bn != null);
+                    
+            }
             bad_node = _bad_node;
         }
+        public SyntaxError(string Message, string fileName, PascalABCCompiler.SyntaxTree.syntax_tree_node bad_node)
+            : this(Message, fileName, bad_node.source_context, bad_node) { }
+        public SyntaxError(string Message, PascalABCCompiler.SyntaxTree.syntax_tree_node bad_node)
+            : this(Message, null, bad_node.source_context, bad_node) { }
+
         public override string ToString()
         {
             string snode="";

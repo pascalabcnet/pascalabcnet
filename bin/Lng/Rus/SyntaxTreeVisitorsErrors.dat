@@ -13,6 +13,9 @@ FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCAL_TYPE_DEFINITIONS=Функции с yi
 YIELDS_INSIDE_WITH_ARE_ILLEGAL=Оператор yield запрещен внутри with
 LAMBDA_EXPRESSIONS_CANNOT_CONTAIN_YIELD=Лямбда-выражения не могут содержать yield
 
+PATTERN_MATHING_IS_NOT_SUPPORTED_IN_THIS_CONTEXT=Сопоставление с образцом не поддерживается в данном контексте
+
 Var_{0}_is_already_defined=Переменная {0} уже определена
 
+?._CANNOT_BE_IN_THIS_CONTEXT=Операция ?. не может располагаться в этом контексте
 

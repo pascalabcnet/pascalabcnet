@@ -1847,6 +1847,7 @@ namespace PascalABCCompiler.SystemLibrary
             make_function_comparison(_real_smeq, _float_smeq, function_compare.greater);
             make_function_comparison(_real_eq, _float_eq, function_compare.greater);
             make_function_comparison(_real_noteq, _float_noteq, function_compare.greater);
+            make_function_comparison(_real_div, _float_div, function_compare.greater);
 
             //char type.
             //Assign.
@@ -2019,12 +2020,22 @@ namespace PascalABCCompiler.SystemLibrary
             string[] s=new string[0];
             _array_of_string = compiled_type_node.get_type_node(s.GetType());
 
-            make_type_conversion_use_ctor(_float_type, _decimal_type, type_compare.less_type, true);
-            make_type_conversion_use_ctor(_double_type, _decimal_type, type_compare.less_type, true);
-            //это преобразование есть явно в decimal
+            //это преобразование есть явно в decimal - это уже давно было закомментировано
             //make_type_conversion_use_ctor(_integer_type, _decimal_type, type_compare.less_type, true);
-            make_type_conversion_use_ctor(_uint_type, _decimal_type, type_compare.less_type, true);
-            make_type_conversion_use_ctor(_uint64_type, _decimal_type, type_compare.less_type, true);
+
+            //make_type_conversion_use_ctor(_float_type, _decimal_type, type_compare.less_type, true);
+            //make_type_conversion_use_ctor(_double_type, _decimal_type, type_compare.less_type, true);
+
+            //make_type_conversion_use_ctor(_uint_type, _decimal_type, type_compare.less_type, true);
+            //make_type_conversion_use_ctor(_uint64_type, _decimal_type, type_compare.less_type, true);
+
+            // SSM 21.07.18 закомментировал четыре строчки выше, т.к. они давали неоднозначность при decimal(2.5). 
+            // Теперь из real в decimal и из single в decimal возможно только явное преобразование
+            // Из longword в decimal и из uint64 в decimal существуют как явное, так и неявное преобразования
+            // Это полностью соответствует тому, что в C#
+
+            // забавно, но make_type_conversion_use_ctor используется ТОЛЬКО тут и ТОЛЬКО для типа decimal !!!!!!!
+            // То есть, это было неправильное исправление 
 
             writable_in_typed_files_types.Clear();
             writable_in_typed_files_types.Add(_bool_type, _bool_type);

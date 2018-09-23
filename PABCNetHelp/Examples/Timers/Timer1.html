@@ -1,0 +1,37 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+
+<H1>Пример использования таймера</H1>
+Данная программа выводит 1 каждые 100 миллисекунд<span lang="en-us"> </span>в 
+течение 3 секунд:<blockquote>
+<pre>
+<code><b>uses</b> <span lang="en-us">Timers</span>;<b>
+<span style="font-size: 4pt">
+</span>procedure</b> <span lang="en-us">TimerProc</span>;
+<b>begin</b>
+  <span lang="en-us">write(1)</span>;
+<b>end</b>;
+<b><span style="font-size: 4pt">
+
+</span>begin
+</b>  <span lang="en-us"><b>var</b> t := <b>new</b> Timer(100,TimerProc);
+  t.Start;
+  Sleep(3000);
+</span><b>end</b>.</code>
+</pre>
+</blockquote>
+
+<p>Вызов <code>Sleep</code><span lang="en-us"> </span>здесь обязателен, иначе 
+программа после создания таймера сразу закончится, и обработчик таймера ни разу 
+не сработает.</p>
+
+</body>
+
+</html>

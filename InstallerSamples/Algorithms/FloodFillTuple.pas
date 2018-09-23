@@ -1,4 +1,4 @@
-uses GraphABC;
+п»їuses GraphABC;
 
 procedure DrawCell(a: array [,] of integer; x,y: integer);
 var sz := 30;
@@ -49,20 +49,20 @@ begin
       var c := f.ReadChar;
       a[y,x]:= c='*' ? 1 : 0;
     end;
-    readln(f)  
+    f.Readln  
   end;
   f.Close;
 end;
 
 procedure Draw(a: array [,] of integer);
 begin
-  for var y := 0 to a.GetLength(1)-1 do
-  for var x := 0 to a.GetLength(0)-1 do
+  for var y := 0 to a.RowCount-1 do
+  for var x := 0 to a.ColCount-1 do
     DrawCell(a,x,y);
 end;
 
 begin
-  Window.Title := 'Иллюстрация алгоритма FloodFill';
+  Window.Title := 'РР»Р»СЋСЃС‚СЂР°С†РёСЏ Р°Р»РіРѕСЂРёС‚РјР° FloodFill';
   var a: array [,] of integer;
   ReadFromFile('field.txt',a);
   Draw(a);

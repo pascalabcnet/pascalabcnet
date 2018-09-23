@@ -1,0 +1,62 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+        <param name="Keyword" value="while">
+        <param name="Keyword" value="repeat">
+        <param name="Keyword" value="until">
+        <param name="Keyword" value="do">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Операторы цикла while и repeat</H1>
+Оператор цикла 
+<code><b>while</b></code> имеет следующую форму:<blockquote>
+	<p><code><b>while</b> </code><code class="codeit">условие</code><code> <b>do</b><br>
+	&nbsp; </code><code class="codeit">оператор</code></p>
+</blockquote>
+<p><code class="codeit">Условие</code> представляет собой 
+выражение логического типа, а оператор после <code><b>do</b></code>
+называется <i>телом цикла</i>. Перед каждой итерацией цикла 
+условие вычисляется, и если оно истинно, то выполняется тело цикла, в противном 
+случае происходит выход из цикла.</p>
+<p>Если <i>условие</i> всегда оказывается истинным, то может произойти
+<i>зацикливание</i>: </p>
+<blockquote>
+	<p><code><b>while</b> 2&gt;1 <b>do<br>
+	</b>&nbsp; write(1);</code></p>
+</blockquote>
+
+<p>Оператор цикла <b><code>repeat</code></b> имеет следующую форму:
+</p>
+<blockquote>
+	<p><code><b>repeat<br>
+	</b>&nbsp; </code><code class="codeit">операторы<br>
+	</code><b><code>until</code></b> <code class="codeit">условие</code></p>
+</blockquote>
+<p>В отличие от цикла <code><b>while</b></code>, 
+условие вычисляется после очередной итерации цикла, и если оно истинно, то происходит выход из цикла. 
+Таким образом, операторы, образующие тело цикла оператора <b><code>repeat</code></b>, 
+выполняются по крайней мере один раз.</p>
+<p>Обычно оператор repeat используют в ситуациях, где 
+условие нельзя проверить, не выполнив тело цикла. Например:</p>
+<blockquote>
+	<p><code><b>repeat</b><br>
+&nbsp; read(x);<br>
+	<b>until</b> x=0;</code></p>
+</blockquote>
+<p>Если <i>условие</i> всегда оказывается ложным, то может произойти
+<i>зацикливание</i>: </p>
+<blockquote>
+	<p><code><b>repeat<br>
+	</b>&nbsp; write(1);<br>
+	<b>until</b> 2=1;</code></p>
+</blockquote>
+
+</body>
+
+</html>

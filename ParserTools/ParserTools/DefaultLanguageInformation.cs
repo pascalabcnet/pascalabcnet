@@ -120,7 +120,7 @@ namespace PascalABCCompiler.Parsers
             keywords.Add("goto", "goto"); keys.Add("goto");
             keywords.Add("overload", "overload"); keys.Add("overload");
             keywords.Add("internal", "internal"); keys.Add("internal");
-            keywords.Add("template", "template"); keys.Add("template");
+            //keywords.Add("template", "template"); keys.Add("template");
             keywords.Add("namespace", "namespace"); keys.Add("namespace");
             keywords.Add("exit", "exit"); keys.Add("exit");
             keywords.Add("event", "event"); keys.Add("event");
@@ -1004,10 +1004,20 @@ namespace PascalABCCompiler.Parsers
 			string template_str=GetTemplateString(scope);
 			switch(scope.ElemKind)
 			{
-				case SymbolKind.Class : 
+				case SymbolKind.Class :
+                    string mod = "";
+                    if (scope.IsStatic)
+                        mod = "static ";
+                    else
+                    {
+                        if (scope.IsAbstract)
+                            mod = "abstract ";
+                        if (scope.IsFinal)
+                            mod += "sealed ";
+                    }
 					if (scope.TopScope != null && scope.TopScope.Name != "" && !scope.TopScope.Name.Contains("$"))
-						return (scope.IsAbstract ? "abstract " : "") + (scope.IsFinal?"sealed ":"")+"class "+scope.TopScope.Name + "." +scope.Name+template_str;
-					else return (scope.IsAbstract ? "abstract " : "") + (scope.IsFinal?"sealed ":"")+"class "+scope.Name+template_str;
+						return mod+"class "+scope.TopScope.Name + "." +scope.Name+template_str;
+					else return mod+"class "+scope.Name+template_str;
 				case SymbolKind.Interface :
 					if (scope.TopScope != null && scope.TopScope.Name != "" && !scope.TopScope.Name.Contains("$"))
 					return "interface "+scope.TopScope.Name + "." +scope.Name+template_str;
@@ -1063,8 +1073,18 @@ namespace PascalABCCompiler.Parsers
 			
 			switch(scope.ElemKind)
 			{
-				case SymbolKind.Class : 					
-					return (scope.IsAbstract ? "abstract " : "")+(scope.IsFinal?"sealed ":"")+"class "+s;
+				case SymbolKind.Class :
+                    string mod = "";
+                    if (scope.IsStatic)
+                        mod = "static ";
+                    else
+                    {
+                        if (scope.IsAbstract)
+                            mod = "abstract ";
+                        if (scope.IsFinal)
+                            mod += "sealed ";
+                    }
+                    return mod+"class "+s;
 				case SymbolKind.Interface :
 					return "interface "+s;
 				case SymbolKind.Enum :
@@ -2526,7 +2546,7 @@ namespace PascalABCCompiler.Parsers
                 string op = Text.Substring(i - 1, 2).ToLower().Trim();
                 if (op == "or")
                 {
-                    if (!char.IsLetterOrDigit(Text[i - 2]) && Text[i - 2] != '_' && Text[i - 2] != '&')
+                    if (!char.IsLetterOrDigit(Text[i - 2]) && Text[i - 2] != '_' && Text[i - 2] != '&' && !(i + 1 < Text.Length && char.IsLetterOrDigit(Text[i + 1])))
                     {
                         next = i - 2;
                         return true;

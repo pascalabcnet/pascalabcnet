@@ -1,0 +1,414 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="read">
+<param name="Keyword" value="readln">
+<param name="Keyword" value="ReadInteger">
+<param name="Keyword" value="ReadReal">
+<param name="Keyword" value="ReadString">
+<param name="Keyword" value="ReadChar">
+<param name="Keyword" value="ReadBoolean">
+<param name="Keyword" value="ReadlnInteger">
+<param name="Keyword" value="ReadlnReal">
+<param name="Keyword" value="ReadlnString">
+<param name="Keyword" value="ReadlnChar">
+<param name="Keyword" value="ReadlnBoolean">
+<param name="Keyword" value="write">
+<param name="Keyword" value="writeln">
+<param name="Keyword" value="writeFormat">
+<param name="Keyword" value="writelnFormat">
+<param name="Keyword" value="Print">
+<param name="Keyword" value="Println">
+<param name="Keyword" value="ReadSeqInteger">
+<param name="Keyword" value="ReadSeqReal">
+<param name="Keyword" value="ReadSeqString">
+<param name="Keyword" value="ReadlnSeqInteger">
+<param name="Keyword" value="ReadlnSeqReal">
+<param name="Keyword" value="ReadlnSeqString">
+
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Подпрограммы ввода-вывода</H1>
+<table border=0 CELLPADDING=5>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Read(a,b,...);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вводит значения a,b,... с клавиатуры
+</td></tr>
+<tr>
+	<td>
+<code>
+<b>procedure</b> Readln(a,b,...); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вводит значения a,b,... с клавиатуры и осуществляет переход на следующую строку
+</td>
+</tr>
+	<tr>
+	<td>
+<code><b>function </b>ReadInteger: integer; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа integer, введенное с клавиатуры
+</td>
+	</tr>
+	<tr>
+	<td>
+<code><b>function </b>Read<span lang="en-us">Real</span>: real; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа <span lang="en-us">real</span>, введенное с 
+клавиатуры
+</td>
+	</tr>
+	<tr>
+	<td>
+<code><b>function </b>Read<span lang="en-us">String</span>: string; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа <span lang="en-us">string</span>, введенное с 
+клавиатуры
+</td>
+	</tr>
+	<tr>
+	<td>
+<code><b>function </b>Read<span lang="en-us">Char</span>: char; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа <span lang="en-us">char</span>, введенное с 
+клавиатуры
+</td>
+	</tr>
+	<tr>
+		<td>
+<code><b>function </b>Read<span lang="en-us">Boolean</span>: boolean; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа <span lang="en-us">boolean</span>, введенное с 
+клавиатуры
+</td>
+	</tr>
+	<tr>
+	<td>
+<code><b>function </b>ReadlnInteger: integer; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа integer, введенное с клавиатуры, 
+	и переходит на следующую строку ввода
+</td>
+	</tr>
+	<tr>
+	<td>
+<code><b>function </b>Read<span lang="en-us">lnReal</span>: real; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа <span lang="en-us">real</span>, введенное с 
+клавиатуры, и переходит на следующую строку ввода
+</td>
+	</tr>
+	<tr>
+	<td>
+<code><b>function </b>Read<span lang="en-us">lnString</span>: string; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа <span lang="en-us">string</span>, введенное с 
+клавиатуры, и переходит на следующую строку ввода
+</td>
+	</tr>
+	<tr>
+	<td>
+<code><b>function </b>Read<span lang="en-us">lnChar</span>: char; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа <span lang="en-us">char</span>, введенное с 
+клавиатуры, и переходит на следующую строку ввода
+</td>
+	</tr>
+	<tr>
+		<td>
+<code><b>function </b>Read<span lang="en-us">lnBoolean</span>: boolean; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа <span lang="en-us">boolean</span>, введенное с 
+клавиатуры, и переходит на следующую строку ввода
+</td>
+	</tr>
+	<tr>
+	<td>
+<code><b>function </b>ReadInteger(prompt: string): integer; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и 
+	возвращает значение типа integer, введенное с клавиатуры
+</td>
+	</tr>
+	<tr>
+	<td>
+<code><b>function </b>Read<span lang="en-us">Real(prompt: string)</span>: real; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и 
+	возвращает значение типа <span lang="en-us">real</span>, введенное с 
+клавиатуры
+</td>
+	</tr>
+	<tr>
+	<td>
+<code><b>function </b>Read<span lang="en-us">String(prompt: string)</span>: 
+	string; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и 
+	возвращает значение типа <span lang="en-us">string</span>, введенное с 
+клавиатуры
+</td>
+	</tr>
+	<tr>
+	<td>
+<code><b>function </b>Read<span lang="en-us">Char(prompt: string)</span>: char; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и 
+	возвращает значение типа <span lang="en-us">char</span>, введенное с 
+клавиатуры
+</td>
+	</tr>
+	<tr>
+		<td>
+<code><b>function </b>Read<span lang="en-us">Boolean(prompt: string)</span>: 
+		boolean; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и 
+		возвращает значение типа <span lang="en-us">boolean</span>, введенное с 
+клавиатуры
+</td>
+	</tr>
+<tr>
+	<td>
+<code><b>function </b>ReadlnInteger(prompt: string): integer; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и 
+	возвращает значение типа integer, введенное с клавиатуры, 
+	и переходит на следующую строку ввода
+</td>
+</tr>
+<tr>
+	<td>
+<code><b>function </b>Read<span lang="en-us">lnReal(prompt: string)</span>: 
+	real;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и 
+	возвращает значение типа <span lang="en-us">real</span>, введенное с 
+клавиатуры, и переходит на следующую строку ввода
+</td>
+</tr>
+<tr>
+	<td>
+<code><b>function </b>Read<span lang="en-us">lnString(prompt: string)</span>: 
+	string; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и 
+	возвращает значение типа <span lang="en-us">string</span>, введенное с 
+клавиатуры, и переходит на следующую строку ввода
+</td>
+</tr>
+<tr>
+	<td>
+<code><b>function </b>Read<span lang="en-us">lnChar(prompt: string)</span>: 
+	char; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и 
+	возвращает значение типа <span lang="en-us">char</span>, введенное с 
+клавиатуры, и переходит на следующую строку ввода
+</td>
+</tr>
+	<tr>
+		<td>
+<code><b>function </b>Read<span lang="en-us">lnBoolean(prompt: string)</span>: 
+		boolean; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и 
+	возвращает значение типа <span lang="en-us">boolean</span>, введенное с 
+клавиатуры, и переходит на следующую строку ввода
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadSeqInteger(n: integer): array of 
+		integer; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность n целых, введенных с клавиатуры
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadSeqReal(n: integer): array of real;
+		</code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность n целых, введенных с клавиатуры
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadSeqString(n: integer): array of 
+		string; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность n целых, введенных с клавиатуры
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadSeqInteger(<strong>const</strong> 
+		prompt: string; n: integer): array of integer; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает последовательность n 
+		целых, введенных с клавиатуры
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadSeqReal(<strong>const</strong> 
+		prompt: string; n: integer): array of real; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает последовательность n 
+		целых, введенных с клавиатуры
+</td>
+	</tr>
+<tr><td>
+	<code><strong>function</strong> ReadSeqString(<strong>const</strong> prompt: 
+	string; n: integer): array of string; </code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает последовательность n целых, 
+	введенных с клавиатуры
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Read(f: Text; a,b,...); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вводит значения a,b,... из текстового файла f
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Readln(f: Text; a,b,...); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вводит значения a,b,... из текстового файла f и осуществляет переход на следующую строку
+</td></tr>
+<tr>
+	<td>
+<code><b>function </b>ReadInteger(f: Text<span lang="en-us">)</span>: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа integer, введенное из текстового файла f</td>
+</tr>
+<tr>
+	<td>
+<code><b>function </b>Read<span lang="en-us">Real</span>(f: Text<span lang="en-us">)</span>: 
+integer; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа <span lang="en-us">real</span>, введенное из 
+текстового файла f</td>
+</tr>
+<tr>
+	<td>
+<code><b>function </b>Read<span lang="en-us">String</span>(f: Text<span lang="en-us">)</span>: 
+integer; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа <span lang="en-us">string</span>, введенное из 
+текстового файла f</td>
+</tr>
+<tr>
+	<td>
+<code><b>function </b>Read<span lang="en-us">Char</span>(f: Text<span lang="en-us">)</span>: 
+integer; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа <span lang="en-us">char</span>, введенное из 
+текстового файла f</td>
+</tr>
+<tr>
+	<td>
+<code><b>function </b>Read<span lang="en-us">Boolean</span>(f: Text<span lang="en-us">)</span>: 
+integer; </code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа <span lang="en-us">boolean</span>, введенное из 
+текстового файла f</td>
+</tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Readln(f: <b><b>file</b> of</b> T; a,b,...); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вводит значения a,b,... из типизированного файла f и осуществляет переход на следующую строку
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Readln(f: <b>file</b>; a,b,...); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вводит значения a,b,... из нетипизированного файла f и осуществляет переход на следующую строку
+</td></tr>
+<tr>
+	<td>
+<code>
+<b>procedure</b> Write(a,b,...);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит значения a,b,... на экран. 
+	Для вывода значений определяемого пользователем типа используется метод
+	<code>
+	ToString</code> этого типа
+</td>
+</tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> WriteFormat(formatstr: string; a,b,...);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит значения a,b,... на экран 
+согласно форматной строке formatstr
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Writeln(a,b,...);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит значения a,b,... на экран и осуществляет переход на новую строку
+</td></tr>
+<tr>
+	<td>
+<code>
+<b>procedure</b> WritelnFormat(formatstr: string; a,b,...);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит значения a,b,... на экран 
+согласно форматной строке formatstr и осуществляет переход на следующую строку
+</td>
+</tr>
+	<tr>
+	<td>
+<code>
+<b>procedure</b> Print(a,b,...);
+</code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит значения a,b,... на экран, выводя после каждого значения 
+	пробел</td>
+	</tr>
+	<tr>
+	<td>
+<code>
+<b>procedure</b> Println(a,b,...);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит значения a,b,... на экран, 
+	выводя после каждого значения пробел, и осуществляет переход на новую строку</td>
+	</tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Write(f: Text; a,b,...);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит значения a,b,... в текстовый файл f
+</td></tr>
+<tr>
+	<td>
+<code>
+<b>procedure</b> WriteFormat(f: Text; formatstr: string; a,b,...);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит значения a,b,... в 
+текстовый файл f согласно форматной строке formatstr
+</td>
+</tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Writeln(f: Text; a,b,...);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит значения a,b,... в текстовый файл f и осуществляет переход на новую строку
+</td></tr>
+<tr>
+	<td>
+<code>
+<b>procedure</b> WritelnFormat(f: Text; formatstr: string; a,b,...);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит значения a,b,... в 
+текстовый файл f согласно форматной строке formatstr и осуществляет переход на следующую строку
+</td>
+</tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Write(f: <b><b>file</b> of</b> T; a,b,...); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит значения a,b,... в типизированный файл f
+</td></tr>
+<tr><td>
+<code>
+<b><b>procedure</b></b> Write(f: <b>file</b>; a,b,...); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит значения a,b,... в нетипизированный файл f
+</td></tr>
+</table>
+<table border=0 CELLPADDING=5>
+	<tr>
+	<td>
+<code>
+<b>procedure</b> Print(f: Text; a,b,...);
+</code><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит значения a,b,... в 
+	текстовый файл, выводя после каждого значения 
+	пробел</td>
+	</tr>
+	<tr>
+	<td>
+<code>
+<b>procedure</b> Println(f: Text; a,b,...);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит значения a,b,... в 
+	текстовый файл, 
+	выводя после каждого значения пробел, и осуществляет переход на новую строку</td>
+	</tr>
+</table>
+</body></html>

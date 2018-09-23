@@ -945,6 +945,8 @@ namespace PascalABCCompiler.TreeRealization
                 {
                     if (dii.return_value_type == to)
                     {
+                        if (ret.first != null) // SSM 09.08.18
+                            ret.first = null;
                         add_conversion(ret, new convert_types_function_node(convert_delegate_to_return_value_type, true), from, to);
                     }
                     else
@@ -953,11 +955,15 @@ namespace PascalABCCompiler.TreeRealization
                         if ((ptcc.first != null) && (ptcc.first.convertion_method != null))
                         {
                             delegate_type_converter dtc = new delegate_type_converter(ptcc.first.convertion_method);
+                            if (ret.first != null) // SSM 09.08.18
+                                ret.first = null;
                             add_conversion(ret, new convert_types_function_node(dtc.convert_delegate_to_return_value_type_with_convertion, false), from, to);
                         }
                         if ((ptcc.second != null) && (ptcc.second.convertion_method != null))
                         {
                             delegate_type_converter dtc = new delegate_type_converter(ptcc.second.convertion_method);
+                            if (ret.first != null) // SSM 09.08.18
+                                ret.first = null;
                             add_conversion(ret, new convert_types_function_node(dtc.convert_delegate_to_return_value_type_with_convertion, false), from, to);
                         }
                     }

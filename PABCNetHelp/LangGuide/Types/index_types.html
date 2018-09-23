@@ -1,0 +1,63 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Структурированные типы">
+<param name="Keyword" value="Порядковые типы">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+<style type="text/css">
+.auto-style1 {
+	color: #FF0000;
+}
+.auto-style2 {
+	color: #000000;
+}
+</style>
+</head>
+
+<body>
+<H1>Обзор типов</H1>
+<p>Типы в 
+<b>PascalABC.NET</b> подразделяются на простые, 
+структурированные, типы <a href="pointers.html">указателей</a>, 
+<a href="proctype.html">процедурные</a> типы, <a href="sequences.html">
+последовательности</a> и 
+<a href="../Classes/index_classes.html">классы</a>.</p>
+<p>К <i><b><font color="#FF0000">простым</font></b></i> относятся <a href="integer.html">целые</a> 
+и 
+<a href="real.html">вещественные</a> типы, 
+<a href="boolean.html">логический</a>, <a href="char.html">символьный</a>, 
+<a href="enum_subrange.html">перечислимый</a> и <a href="enum_subrange.html">диапазонный</a> тип.</p>
+<p>Тип данных называется <em><strong><span class="auto-style1">структурированным</span></strong></em>, 
+если в одной переменной этого типа может содержаться множество значений.</p>
+<p>К<b><font color="#FF0000"><i> </i></font> </b><span class="auto-style2">структурированным</span> типам 
+относятся 
+<a href="arrays.html">массивы</a>,  
+<a href="string.html">строки</a>, <a href="records.html">записи</a>,
+<a href="tuples.html">кортежи</a>,
+<a href="sets.html">множества</a>, <a href="files.html">файлы</a> и 
+<a href="../Classes/index_classes.html">классы</a>.</p>
+<p>Особым типом данных является <a href="sequences.html">последовательность</a>, 
+которая хранит по-существу алгоритм получения данных последовательности один за 
+другим.</p>
+<p>Все простые типы, кроме вещественного, называются 
+<i><b><font color="#FF0000">порядковыми</font></b></i>. 
+Только значения этих типов могут быть индексами статических массивов и параметрами цикла <b><code>for</code></b>. 
+Кроме того, для порядковых типов используются функции <code>Ord</code>,
+<code>Pred</code> и <code>Succ</code>,
+а также процедуры <code>Inc</code> и <code>Dec</code>.</p>
+<p>Все типы, 
+кроме типов указателей, являются производными от типа <code>Object</code>. 
+Каждый тип в 
+<b>PascalABC.NET</b>&nbsp; имеет <a href="typesprojection.html">отображение на тип .NET</a>. Тип 
+указателя принадлежит к неуправляемому коду и моделируется типом <code>void*</code>.</p>
+<p>Все типы в <strong>PascalABC.NET</strong> подразделяются на две большие группы: <i><b>
+<a href="value_ref_types.html">размерные</a></b></i><a href="value_ref_types.html"> и 
+<b> 
+<i>ссылочные</i></b></a>. </p>
+</body>
+
+</html>

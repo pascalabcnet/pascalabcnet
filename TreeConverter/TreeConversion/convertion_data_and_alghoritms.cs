@@ -677,7 +677,8 @@ namespace PascalABCCompiler.TreeConverter
                 if ((ret is base_function_call))
                     (ret as base_function_call).IsExplicitConversion = true;
                 ret.type = to;
-                ret.conversion_type = conv_type;
+                if (ptc.first.convertion_method is basic_function_node)
+                    ret.conversion_type = conv_type;
                 return ret;
             }
 
@@ -1613,9 +1614,9 @@ namespace PascalABCCompiler.TreeConverter
             //TODO: Можно сделать параметры по умолчанию для откомпилированных функций.
             if ((exprs.Count < fn.parameters.Count) && (fn.node_kind == SemanticTree.node_kind.common))
             {
-                if (exprs.Count == 0 && fn.parameters != null && fn.parameters.Count == 1 && fn.parameters[0].is_params ||
-                    exprs.Count == 1 && fn.parameters != null && fn is common_namespace_function_node && (fn as common_namespace_function_node).ConnectedToType != null &&
-                    fn.parameters.Count == 2 && fn.parameters[1].is_params)
+                if (!(fn is common_namespace_function_node && (fn as common_namespace_function_node).ConnectedToType != null) && fn.parameters != null && fn.parameters.Count - 1 == exprs.Count && fn.parameters[fn.parameters.Count-1].is_params ||
+                    fn is common_namespace_function_node && (fn as common_namespace_function_node).ConnectedToType != null && fn.parameters != null
+                    && fn.parameters.Count - 1 == exprs.Count && fn.parameters[fn.parameters.Count - 1].is_params)
                 {
                     statements_expression_node sre = new statements_expression_node(ptcal.snl, ptcal.var_ref, ptcal.var_ref.location);
                     //exprs.remove_range(fn.parameters.Count - 1, exprs.Count - fn.parameters.Count);
@@ -1633,9 +1634,9 @@ namespace PascalABCCompiler.TreeConverter
             }
             else if ((exprs.Count < fn.parameters.Count) && (fn.node_kind == SemanticTree.node_kind.compiled))
             {
-                if (exprs.Count == 0 && fn.parameters != null && fn.parameters.Count == 1 && fn.parameters[0].is_params ||
-                    exprs.Count == 1 && fn.parameters != null && fn is compiled_function_node && (fn as compiled_function_node).ConnectedToType != null &&
-                    fn.parameters.Count == 2 && fn.parameters[1].is_params)
+                if (!(fn is compiled_function_node && (fn as compiled_function_node).ConnectedToType != null) && fn.parameters != null && fn.parameters.Count - 1 == exprs.Count && fn.parameters[fn.parameters.Count - 1].is_params ||
+                     fn is compiled_function_node && (fn as compiled_function_node).ConnectedToType != null
+                    && fn.parameters != null && fn.parameters.Count - 1 == exprs.Count && fn.parameters[fn.parameters.Count - 1].is_params)
                 {
                     statements_expression_node sre = new statements_expression_node(ptcal.snl, ptcal.var_ref, ptcal.var_ref.location);
                     exprs.AddElement(sre);
@@ -1719,7 +1720,7 @@ namespace PascalABCCompiler.TreeConverter
         }
 
         //Первый параметр - выходной. Он содержит выражения с необходимыми преобразованиями типов.
-        public function_node select_function(expressions_list parameters, List<SymbolInfo> functions, location loc, List<SyntaxTree.expression> syntax_nodes_parameters = null)
+        public function_node select_function(expressions_list parameters, List<SymbolInfo> functions, location loc, List<SyntaxTree.expression> syntax_nodes_parameters = null, bool only_from_not_extensions = false)
         {
             if (functions == null)
             {
@@ -1737,6 +1738,9 @@ namespace PascalABCCompiler.TreeConverter
 
             foreach (SymbolInfo function in functions)
             {
+                // В режиме only_from_not_extensions пропускать все extensions
+                if (only_from_not_extensions && (function.sym_info is function_node) && (function.sym_info as function_node).is_extension_method)
+                    continue;
 #if (DEBUG)
                 if (function.sym_info.general_node_type != general_node_type.function_node && function.sym_info.general_node_type != general_node_type.property_node)
                 {
@@ -1809,7 +1813,9 @@ namespace PascalABCCompiler.TreeConverter
                         }
                     }
                 }
-                else if ((parameters.Count == 0 && fn.parameters.Count == 1) && fn.parameters[0].is_params && !set_of_possible_functions.Contains(fn))
+                //else if ((parameters.Count == 0 && fn.parameters.Count == 1) && fn.parameters[0].is_params && !set_of_possible_functions.Contains(fn))
+                // SSM 6.08.18 - так просто исправить не получается - видимо, сопоставление параметров работает неверно
+                else if ((parameters.Count == fn.parameters.Count - 1) && fn.parameters[fn.parameters.Count-1].is_params && !set_of_possible_functions.Contains(fn))
                     set_of_possible_functions.AddElement(fn);
                 else if (fn.num_of_default_parameters != 0 && parameters.Count >= fn.parameters.Count - fn.num_of_default_parameters)
                 {
@@ -1846,7 +1852,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
 
                         function_node inst = generic_convertions.DeduceFunction(func, parameters,
-                                                                                is_alone_method_defined, loc, syntax_nodes_parameters);
+                                                                                is_alone_method_defined, syntax_tree_visitor.context, loc, syntax_nodes_parameters);
                         if (inst == null)
                         {
                             set_of_possible_functions.remove_at(i);
@@ -2235,8 +2241,7 @@ namespace PascalABCCompiler.TreeConverter
                 // выбрать либо функцию из оставшихся с ровно совпадающим типом лямбды либо с ближайшим 
                 // (остались только те, к которым можно преобразовать)
                 // Некоторая проблема будет если лямбд останется несколько и расстояния до результата будут разными и ненулевыми везде
-
-                if (funcs.Count == 2) // SSM - это ужасный способ устранения бага #236 Range(1,10).Sum(e -> e); Для хорошего способа весь код выбора версий функций для делегатов надо переписывать
+                if (funcs.Count >= 2) // SSM - это ужасный способ устранения бага #236 Range(1,10).Sum(e -> e); Для хорошего способа весь код выбора версий функций для делегатов надо переписывать
                 {
                     var f1 = funcs[0];
                     var f2 = funcs[1];
@@ -2342,18 +2347,55 @@ namespace PascalABCCompiler.TreeConverter
                 from = (from as delegated_methods).empty_param_method.ret_type;
             if (to is delegated_methods && (to as delegated_methods).empty_param_method != null && (to as delegated_methods).empty_param_method.ret_type != null)
                 to = (to as delegated_methods).empty_param_method.ret_type;
+            internal_interface from_ii = from.get_internal_interface(internal_interface_kind.delegate_interface);
+            internal_interface to_ii = to.get_internal_interface(internal_interface_kind.delegate_interface);
+            if (from_ii != null && to_ii != null)
+            {
+                delegate_internal_interface from_dii = (delegate_internal_interface)from_ii;
+                if (to_ii != null)
+                {
+                    delegate_internal_interface to_dii = (delegate_internal_interface)to_ii;
+                    if (from_dii.parameters.Count == to_dii.parameters.Count)
+                    {
+                        bool eq = TreeConverter.convertion_data_and_alghoritms.function_eq_params_and_result(from_dii.invoke_method, to_dii.invoke_method);
+                        if (eq)
+                        {
+                            return 0;
+                        }
+                    }
+                }
+            }
+            else if (to_ii != null && from.semantic_node_type == semantic_node_type.delegated_method && (from as delegated_methods).proper_methods[0].ret_type is lambda_any_type_node)
+            {
+                delegate_internal_interface to_dii = (delegate_internal_interface)to_ii;
+                if (to_dii.invoke_method.return_value_type != null)
+                {
+                    to = to_dii.invoke_method.return_value_type;
+                    if (to == SystemLibrary.SystemLibrary.integer_type)
+                        return 94;
+                    else if (to == SystemLibrary.SystemLibrary.int64_type)
+                        return 96;
+                    else if (to == SystemLibrary.SystemLibrary.double_type)
+                        return 98;
+                    else
+                        return 1000;
+                }
+            }
             type_compare tc = type_table.compare_types(from, to);
             if (tc == type_compare.non_comparable_type)
                 return 1000;
             if (!from.IsInterface && to.IsInterface)
-                return 2;
+                return 200;
             if (tc == type_compare.less_type)
-                return 1;
+            {
+                return 100;
+            }
             if (tc == type_compare.greater_type)
-                return 3;
+                return 300;
             return 1000;
         }
 
+        
         private function_node is_exist_eq_return_value_method(function_node fn, function_node_list funcs)
         {
             fn = find_eq_return_value_method_in_list(fn, funcs);
@@ -2417,6 +2459,105 @@ namespace PascalABCCompiler.TreeConverter
             }
             return ret_type;
         }
-	}
+
+
+        public enum int_types { sbyte_type = 0, byte_type = 1, short_type = 2, ushort_type = 3, integer_type = 4, uint_type = 5, int64_type = 6, uint64_type = 7};
+        public bool is_value_int_type(type_node tn)
+        {
+            return 
+                tn == SystemLibrary.SystemLibrary.sbyte_type ||
+                tn == SystemLibrary.SystemLibrary.byte_type ||
+                tn == SystemLibrary.SystemLibrary.short_type ||
+                tn == SystemLibrary.SystemLibrary.ushort_type ||
+                tn == SystemLibrary.SystemLibrary.integer_type ||
+                tn == SystemLibrary.SystemLibrary.uint_type ||
+                tn == SystemLibrary.SystemLibrary.int64_type ||
+                tn == SystemLibrary.SystemLibrary.uint64_type
+                ;
+        }
+        public bool is_value_real_type(type_node tn)
+        {
+            return tn == SystemLibrary.SystemLibrary.double_type ||
+                tn == SystemLibrary.SystemLibrary.float_type 
+                ;
+        }
+        public bool is_value_num_type(type_node tn)
+        {
+            return is_value_int_type(tn) || is_value_real_type(tn);
+        }
+
+        public type_node int_type_to_type_node(int_types it)
+        {
+            switch (it)
+            {
+                case int_types.sbyte_type: return SystemLibrary.SystemLibrary.sbyte_type;
+                case int_types.byte_type: return SystemLibrary.SystemLibrary.byte_type;
+                case int_types.short_type: return SystemLibrary.SystemLibrary.short_type;
+                case int_types.ushort_type: return SystemLibrary.SystemLibrary.ushort_type;
+                case int_types.integer_type: return SystemLibrary.SystemLibrary.integer_type;
+                case int_types.uint_type: return SystemLibrary.SystemLibrary.uint_type;
+                case int_types.int64_type: return SystemLibrary.SystemLibrary.int64_type;
+                case int_types.uint64_type: return SystemLibrary.SystemLibrary.uint64_type;
+            }
+            return null; // это вхолостую
+        }
+        public int_types type_node_to_int_type(type_node tn)
+        {
+            if (tn == SystemLibrary.SystemLibrary.sbyte_type) // shortint
+                return int_types.sbyte_type;
+            else if (tn == SystemLibrary.SystemLibrary.byte_type)
+                return int_types.byte_type;
+            else if (tn == SystemLibrary.SystemLibrary.short_type) // smallint
+                return int_types.short_type;
+            else if (tn == SystemLibrary.SystemLibrary.ushort_type) // word
+                return int_types.ushort_type;
+            else if (tn == SystemLibrary.SystemLibrary.integer_type)
+                return int_types.integer_type;
+            else if (tn == SystemLibrary.SystemLibrary.uint_type) // longword
+                return int_types.uint_type;
+            else if (tn == SystemLibrary.SystemLibrary.int64_type)
+                return int_types.int64_type;
+            else if (tn == SystemLibrary.SystemLibrary.uint64_type)
+                return int_types.uint64_type;
+            return int_types.uint64_type; // это вхолостую
+        }
+
+        public type_node least_upper_bound_value_int_type(type_node tn1, type_node tn2) // для вещественных: real > single. decimal > всех, но его нельзя присвоить другим
+        {
+            var n1 = type_node_to_int_type(tn1);
+            var n2 = type_node_to_int_type(tn2);
+            if ((int)n1 > (int)n2)
+            {
+                var v = n1;
+                n1 = n2;
+                n2 = v;
+                var t = tn1;
+                tn1 = tn2;
+                tn2 = t;
+            }
+            // Первый тип  - меньше или равен
+            if ((int)n1 <= (int)int_types.integer_type && (int)n2 <= (int)int_types.integer_type) return SystemLibrary.SystemLibrary.integer_type;
+            if (n1 == n2) return tn1;
+            // Первый тип  - меньше
+            if ((int)n2 == (int)int_types.uint64_type)
+                return SystemLibrary.SystemLibrary.uint64_type;
+            if ((int)n2 == (int)int_types.int64_type)
+            {
+                if ((int)n1 <= (int)int_types.integer_type)
+                    return SystemLibrary.SystemLibrary.int64_type;
+                else return SystemLibrary.SystemLibrary.uint64_type;
+            }
+            if ((int)n2 == (int)int_types.uint_type) // longword
+            {
+                if ((int)n1 == 0 || (int)n1 == 2 || (int)n1 == 4)
+                    return SystemLibrary.SystemLibrary.int64_type;
+                if ((int)n1 == 1 || (int)n1 == 3)
+                    return SystemLibrary.SystemLibrary.uint_type; // longword
+                // n1 = 6 или 7
+                return SystemLibrary.SystemLibrary.uint64_type;
+            }
+            return null; // это вхолостую
+        }
+    }
 
 }

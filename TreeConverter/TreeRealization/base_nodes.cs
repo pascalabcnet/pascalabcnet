@@ -142,6 +142,14 @@ namespace PascalABCCompiler.TreeRealization
 			}
 		}
 
+        public virtual location location
+        {
+            get
+            {
+                return null;
+            }
+        }
+
         public virtual semantic_node find_by_location(int line, int col)
         {
             return null;

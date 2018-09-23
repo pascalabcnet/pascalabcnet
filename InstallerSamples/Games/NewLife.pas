@@ -1,8 +1,7 @@
-// Игра Жизнь на торе
+﻿// Игра Жизнь на торе
 // Оптимизация хешированием по равномерной сетке
 
-
-uses Utils,GraphABC;
+uses GraphABC;
 
 const 
   w =3;
@@ -19,8 +18,11 @@ const
   y0=21;
   ClearColor=clBlack;
   FillColor=clLimeGreen;
-  FiledColor=RGB(0,40,0);
-  FiledColor2=RGB(0,70,0);{}
+
+var  
+  FiledColor := RGB(0,40,0);
+  FiledColor2 := RGB(0,70,0);
+  
   {ClearColor=clWhite;
   FillColor=clBlack;
   FiledColor=clLightGray;

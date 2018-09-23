@@ -1,0 +1,16 @@
+<html><head><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="GroupJoin">
+</object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
+<body>
+<H1>Метод GroupJoin</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<tr><td>
+<code><b>function </b>GroupJoin&lt;TInner,Key,Res&gt;(inner: <b>sequence of</b> TInner; outerKeySelector: T-&gt;Key; innerKeySelector: TInner-&gt;TKey; resultSelector: (T,<b>sequence of</b> TInner)-&gt;Res): <b>sequence of</b> Res;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет две последовательности на основе равенства ключей и группирует результаты. Затем функция resultSelector проектирует ключ и последовательность соответствующих ему значений на элемент результирующей последовательности.
+</td></tr>
+<tr><td>
+<code><b>function </b>GroupJoin&lt;TInner,Key,Res&gt;(inner: <b>sequence of</b> TInner; outerKeySelector: T-&gt;Key; innerKeySelector: TInner-&gt;TKey; resultSelector: (T,<b>sequence of</b> TInner)-&gt;Res; comparer: IEqualityComparer&lt;Key&gt;): <b>sequence of</b> Res;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объединяет две последовательности на основе равенства ключей и группирует результаты. Для сравнения ключей используется указанный компаратор. Затем функция resultSelector проектирует ключ и последовательность соответствующих ему значений на элемент результирующей последовательности.
+</td></tr>
+</table>
+<h2>Пример </h2><blockquote><code></code></blockquote>
+</body>

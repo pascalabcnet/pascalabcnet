@@ -122,7 +122,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public static type_definition ConvertSemanticTypeToSyntaxType(type_node semType)
         {
-            return OpenMP.ConvertToSyntaxType(semType);
+            return OpenMP.ConvertToSyntaxType(semType); // Это же надо! Пользоваться для этого хреновиной из OpenMP!!!
         }
 
         public static int processingLambdaParametersForTypeInference = 0; // Счетчик для подсчета лямбд
@@ -140,6 +140,17 @@ namespace PascalABCCompiler.TreeConverter
             if (id == null)
                 return false;
             return id.Contains(lambdaPrefix);
+        }
+
+        public static bool IsCapturedSelf(expression_node ex)
+        {
+            if (ex is class_field_reference)
+            {
+                class_field fld = (ex as class_field_reference).field;
+                if (fld.name.Contains("<>local_variables_class"))
+                    return true;
+            }
+            return false;
         }
 
         public static bool IsAuxiliaryLambdaName(ident id)
@@ -276,6 +287,7 @@ namespace PascalABCCompiler.TreeConverter
                             param.idents = new ident_list();
                             param.idents.Add(lambdaDef.formal_parameters.params_list[i].idents.idents[j]);
                             param.vars_type = lambdaDef.formal_parameters.params_list[i].vars_type;
+                            param.source_context = lambdaDef.formal_parameters.source_context;
                             lambdaDefParamsTypes.Add(param);
                         }
                     for (int i = 0; i < leftTypeParamsNumber && flag; i++)
@@ -352,7 +364,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             procedure_definition procDef = null;
             if (functionLambdaDef.return_type == null)
-                procDef = SyntaxTreeNodesConstructor.CreateProcedureDefinitionNode(new method_name(null,null, new ident(functionLambdaDef.lambda_name), null),
+                procDef = SyntaxTreeNodesConstructor.CreateProcedureDefinitionNode(new method_name(null,null, new ident(functionLambdaDef.lambda_name, functionLambdaDef.source_context), null),
                                                               functionLambdaDef.formal_parameters,
                                                               false,
                                                               false,

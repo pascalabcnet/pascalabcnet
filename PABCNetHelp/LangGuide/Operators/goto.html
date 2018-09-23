@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+        <param name="Keyword" value="goto">
+        <param name="Keyword" value="label">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Оператор безусловного перехода goto</H1>
+Оператор безусловного перехода <b><code>goto</code></b> имеет следующую форму:<blockquote>
+	<p><code><b>goto</b> </code><code class="codeit">
+	метка</code></p>
+</blockquote>
+<p>Он переносит выполнение программы к оператору, помеченному меткой <code class="codeit">
+метка</code>. </p>
+<p>Метка представляет собой идентификатор или целое без знака. Чтобы пометить 
+оператор меткой, необходимо перед оператором указать метку с последующим 
+двоеточием: </p>
+<blockquote>
+	<p><code>label1:</code> <code class="codeit">
+	оператор</code></p>
+</blockquote>
+<p>Метки должны быть описаны в разделе меток с использованием служебного слова
+<b><code>label</code></b>:</p>
+<blockquote>
+	<p><code><b>label</b> 1,2,3;</code></p>
+</blockquote>
+<p>Например, в результате выполнения программы</p>
+<blockquote><p><code><b>label</b> 1,2;<br>
+<b>begin</b><br>
+&nbsp; <b>var</b> i := 5;<br>
+2: <b>if</b> i&lt;0 <b>then</b> <b>goto</b> 1;<br>
+&nbsp; write(i);<br>
+&nbsp; Dec(i);<br>
+&nbsp; <b>goto</b> 2;<br>
+1:<br>
+<b>end</b>.</code></p>
+</blockquote>
+<p>будет выведено <code>543210</code>.</p>
+<p>Метка должна помечать оператор в том же блоке, в котором описана. Метка не 
+может помечать несколько операторов.</p>
+<p>Переход на метку может осуществляться либо на оператор в том же блоке, либо 
+на оператор в объемлющей конструкции. Так, запрещается извне цикла переходить на метку внутри цикла.</p>
+<p>Использование оператора безусловного перехода в программе считается признаком 
+плохого стиля программирования. Для основных вариантов использования <code><b>
+goto</b></code> в язык Паскаль введены специальные 
+процедуры: <code><b><font color="#800000">break</font></b></code> 
+- переход на оператор, следующий за циклом, <code><b><font color="#800000">exit</font></b></code> - переход за последний оператор процедуры, <code><b>
+<font color="#800000">continue</font></b></code> 
+- переход за последний оператор в теле цикла.</p>
+<p>Один из немногих примеров уместного использования оператора <code><b>goto</b></code> в программе&nbsp; - выход из нескольких вложенных циклов одновременно. 
+Например, при поиске элемента <code>k</code> в 
+двумерном массиве:</p>
+<blockquote>
+	<p><code><b>var</b> a: <b>array</b> [1..10,1..10] <b>of</b> integer;<br>
+	...<br>
+	<b>&nbsp; var </b>found := False;<br>
+	&nbsp; <b>for</b> <b>var </b>i:=1 <b>to</b> 10 <b>do</b><br>
+	&nbsp; <b>for</b> <b>var </b>j:=1 <b>to</b> 10 <b>do</b><br>
+&nbsp; &nbsp; <b>if</b> a[i,j]=k <b>then</b> <br>
+	&nbsp; &nbsp; <b>begin</b><br>
+&nbsp; &nbsp; &nbsp; found := True;<br>
+&nbsp;&nbsp;&nbsp; &nbsp; <b>goto</b>
+	c1;<br>
+	&nbsp; &nbsp; <b>end</b>;<br>
+	c1: writeln(found);</code></p>
+</blockquote>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

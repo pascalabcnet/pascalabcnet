@@ -601,6 +601,7 @@ namespace PascalABCCompiler.TreeRealization
         /// </summary>
 		private string _name;
         private common_namespace_node _common_namespace;
+        private SymbolTable.Scope _scope;
 
         private SymbolTable.TreeConverterSymbolTable _tcst;
 
@@ -612,6 +613,9 @@ namespace PascalABCCompiler.TreeRealization
 		{
 			_name=name;
             _tcst = tcst;
+            using_namespace_list unl = new using_namespace_list();
+            unl.AddElement(new using_namespace(_name));
+            _scope = new NetHelper.NetScope(unl, _tcst);
 		}
 
         /// <summary>
@@ -642,10 +646,26 @@ namespace PascalABCCompiler.TreeRealization
             return cnn;
         }
 
+        public SymbolTable.TreeConverterSymbolTable SymbolTable
+        {
+            get
+            {
+                return _tcst;
+            }
+        }
+
+        public SymbolTable.Scope scope
+        {
+            get
+            {
+                return _scope;
+            }
+        }
+
         /// <summary>
         /// Имя пространства имен (не полное).
         /// </summary>
-		public override string namespace_name
+        public override string namespace_name
 		{
 			get
 			{

@@ -1,0 +1,297 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Assign">
+<param name="Keyword" value="Reset">
+<param name="Keyword" value="Rewrite">
+<param name="Keyword" value="Append">
+<param name="Keyword" value="Close">
+<param name="Keyword" value="FileExists">
+<param name="Keyword" value="CanCreateFile">
+<param name="Keyword" value="Eof">
+<param name="Keyword" value="Eoln">
+<param name="Keyword" value="SeekEof">
+<param name="Keyword" value="SeekEoln">
+<param name="Keyword" value="FileSize">
+<param name="Keyword" value="FilePos">
+<param name="Keyword" value="Seek">
+<param name="Keyword" value="Truncate">
+<param name="Keyword" value="Rename">
+<param name="Keyword" value="Erase">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Стандартные процедуры и функции для работы с файлами</H1>
+<table border="0" width="100%">
+	<!-- MSTableType="nolayout" -->
+	<tr>
+		<td width="20%" valign="top"><b>Имя и параметры</b></td>
+		<td width="9%" valign="top"><b>Процедура или функция</b></td>
+		<td width="14%" valign="top"><b>Типы параметров</b></td>
+		<td width="12%" valign="top"><b>Тип возвращаемого значения</b></td>
+		<td valign="top"><b>Действие</b></td>
+	</tr>
+	<tr>
+		<td width="20%" valign="top">
+<code>Assign(f,name) </code></td>
+		<td width="9%" valign="top">процедура</td>
+		<td width="14%" valign="top"><code>f</code> - 
+		переменная файлового типа ,
+		<code>name</code> - <b><code>string</code></b></td>
+		<td width="12%" valign="top">&nbsp;</td>
+		<td valign="top">связывает файловую переменную
+		<code>f</code> с файлом с именем <code>name</code></td>
+	</tr>
+	<tr>
+		<td width="20%" valign="top">
+		<code>Reset(f) </code></td>
+		<td width="9%" valign="top">процедура</td>
+		<td width="14%" valign="top"><code>f</code> - 
+		переменная файлового типа</td>
+		<td width="12%" valign="top">&nbsp;</td>
+		<td valign="top">открывает файл, ранее связанный с файловой переменной
+		<code>f</code> с помощью процедуры <code>Assign</code>. Файл должен существовать на диске, в противном случае 
+		происходит ошибка времени выполнения. Текстовые файлы открываются только 
+		на чтение, типизированные файлы - на чтение и запись</td>
+	</tr>
+	<tr>
+		<td width="20%" valign="top">
+		<code>Rewrite(f) </code></td>
+		<td width="9%" valign="top">процедура</td>
+		<td width="14%" valign="top"><code>f</code> - 
+		переменная файлового типа</td>
+		<td width="12%" valign="top">&nbsp;</td>
+		<td valign="top">создает и открывает новый файл, 
+		ранее связанный с файловой переменной <code>f</code> с помощью процедуры
+		<code>Assign</code>. Если файл с указанным именем уже существует, то он 
+		удаляется, и вместо него создается новый файл. Текстовые файлы 
+		открываются только на запись, типизированные файлы - на чтение и запись</td>
+	</tr>
+	<tr>
+		<td width="20%" valign="top">
+		<code>Append(f) </code></td>
+		<td width="9%" valign="top">процедура</td>
+		<td width="14%" valign="top"><code>f</code> - 
+		переменная типа <code>Text</code></td>
+		<td width="12%" valign="top">&nbsp;</td>
+		<td valign="top">открывает текстовый файл на запись для добавления. 
+		Файловый указатель устанавливается в конец файла.</td>
+	</tr>
+	<tr>
+		<td width="20%" valign="top">
+		<code>Close(f) </code></td>
+		<td width="9%" valign="top">процедура</td>
+		<td width="14%" valign="top"><code>f</code> - 
+		переменная файлового типа</td>
+		<td width="12%" valign="top">&nbsp;</td>
+		<td valign="top">закрывает файл</td>
+	</tr>
+	<tr>
+		<td width="20%" valign="top">
+		<code>FileExists(name) </code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="14%" valign="top"><code>name</code> -
+		<b><code>string</code></b></td>
+		<td width="12%" valign="top"><code>boolean</code></td>
+		<td valign="top">возвращает <code>True</code>, 
+		если на диске имеется файл с именем name, в противном случае возвращает
+		<code>False</code></td>
+	</tr>
+	<tr>
+		<td width="20%" valign="top">
+		<code>CanCreateFile(name) </code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="14%" valign="top"><code>name</code> -
+		<b><code>string</code></b></td>
+		<td width="12%" valign="top"><code>boolean</code></td>
+		<td valign="top">возвращает <code>True</code>, 
+		если можно создать файл с именем name, в противном случае возвращает
+		<code>False</code></td>
+	</tr>
+	<tr>
+		<td width="20%" valign="top">
+<code>Read(f,a,b,...) </code></td>
+		<td width="9%" valign="top">процедура</td>
+		<td width="14%" valign="top"><code>f</code> - 
+		переменная файлового типа, <code>a</code>,<code>b</code> - 
+		переменные простого типа, типа <b><code>string</code></b> или указатели</td>
+		<td width="12%" valign="top">&nbsp;</td>
+		<td valign="top">считывает значения из файла <code>f</code> в переменные <code>a</code>,
+		<code>b</code> 
+		... Если файл типизированный, то типы переменных
+		<code>a</code>,
+		<code>b</code> 
+		... должны совпадать с базовым типом файла, а их значения 
+		считываются из файла в двоичном виде. Если файл текстовый, то переменные <code>a</code>,
+		<code>b</code> 
+		... могут иметь различные типы, а их значения должны храниться в 
+		файле в текстовом виде&nbsp; </td>
+		</tr>
+	<tr>
+		<td width="20%" valign="top">
+<code>Write(f,a,b,...) </code></td>
+		<td width="9%" valign="top">процедура</td>
+		<td width="14%" valign="top"><code>f</code> - 
+		переменная файлового типа, <code>a</code>,<code>b</code> - 
+		выражения простого типа, типа <b><code>string</code></b> или указатели</td>
+		<td width="12%" valign="top">&nbsp;</td>
+		<td valign="top">записывает значения <code>a</code>,
+		<code>b</code> 
+		... в файл <code>f</code>. 
+		Если файл типизированный, то типы значений <code>a</code>,
+		<code>b</code> 
+		... должны быть совместимыми с базовым 
+		типом файла. Если файл текстовый, 
+		то значения <code>a</code>,
+		<code>b</code> 
+		... выводятся в него в текстовом виде, при этом 
+		могут быть использованы форматы вывода</td>
+		</tr>
+	<tr>
+		<td width="20%" valign="top">
+<code>Readln(f,a,b,...) </code></td>
+		<td width="9%" valign="top">процедура</td>
+		<td width="14%" valign="top"><code>f</code> - 
+		переменная типа <code>Text</code>, <code>a</code>,<code>b</code> - 
+		переменные простого типа, типа <b><code>string</code></b> или указатели</td>
+		<td width="12%" valign="top">&nbsp;</td>
+		<td valign="top">считывает значения из текстового 
+		файла <code>f</code> в переменные <code>a</code>,
+		<code>b</code> 
+		..., после чего пропускает символы до конца строки. 
+		Вызов <code>readln(f)</code> просто 
+		пропускает символы до конца строки</td>
+		</tr>
+	<tr>
+		<td width="20%" valign="top">
+<code>Writeln(f,a,b,...) </code></td>
+		<td width="9%" valign="top">процедура</td>
+		<td width="14%" valign="top"><code>f</code> - 
+		переменная типа <code>Text</code>, <code>a</code>,<code>b</code> - 
+		выражения простого типа, типа <b><code>string</code></b> или указатели</td>
+		<td width="12%" valign="top">&nbsp;</td>
+		<td valign="top">записывает значения <code>a</code>,
+		<code>b</code> 
+		... в текстовый файл
+		<code>f</code>, после чего записывает в него символ конца строки. Значения <code>a</code>,
+		<code>b</code> 
+		... записываются в файл в текстовом виде, при этом 
+		могут быть использованы форматы вывода. Вызов <code>writeln(f)</code>
+		просто записывает в файл символ конца строки</td>
+		</tr>
+	<tr>
+		<td width="20%" valign="top">
+		<code>Eof(f) </code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="14%" valign="top"><code>f</code> - 
+		переменная файлового типа</td>
+		<td width="12%" valign="top"><code>boolean</code></td>
+		<td valign="top">возвращает <code>True</code>, если файловый указатель 
+		стоит на конце файла, и <code>False</code>
+		в противном случае</td>
+	</tr>
+	<tr>
+		<td width="20%" valign="top">
+		<code>Eoln(f) </code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="14%" valign="top"><code>f</code> - 
+		переменная типа <code>Text</code></td>
+		<td width="12%" valign="top"><code>boolean</code></td>
+		<td valign="top">возвращает <code>True</code>, если файловый указатель 
+		стоит на конце строки, и <code>False</code> в 
+		противном случае</td>
+	</tr>
+	<tr>
+		<td width="20%" valign="top">
+		<code>SeekEof(f) </code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="14%" valign="top"><code>f</code> - 
+		переменная типа <code>Text</code></td>
+		<td width="12%" valign="top"><code>boolean</code></td>
+		<td valign="top">пропускает пробелы, символы табуляции и перехода на 
+		новую строку, после чего возвращает <code>True</code>, если файловый указатель 
+		стоит на конце файла, и <code>False</code> в 
+		противном случае</td>
+	</tr>
+	<tr>
+		<td width="20%" valign="top">
+		<code>SeekEoln(f) </code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="14%" valign="top"><code>f</code> - 
+		переменная типа <code>Text</code></td>
+		<td width="12%" valign="top"><code>boolean</code></td>
+		<td valign="top">пропускает пробелы, символы табуляции,
+		после чего возвращает <code>True</code>, если файловый указатель 
+		стоит на конце строки, и <code>False</code> в 
+		противном случае</td>
+	</tr>
+	<tr>
+		<td width="20%" valign="top">
+		<code>FileSize(f)&nbsp; </code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="14%" valign="top"><code>f</code> - 
+		переменная типа <b><code>file</code></b></td>
+		<td width="12%" valign="top"><code>integer</code></td>
+		<td valign="top">возвращает количество элементов в типизированном файле</td>
+	</tr>
+	<tr>
+		<td width="20%" valign="top">
+		<code>FilePos(f) </code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="14%" valign="top"><code>f</code> - 
+		переменная типа <b><code>file</code></b></td>
+		<td width="12%" valign="top"><code>integer</code></td>
+		<td valign="top">возвращает позицию файлового указателя в типизированном 
+		файле (нумерация элементов в типизированном файле начинается с нуля)</td>
+	</tr>
+	<tr>
+		<td width="20%" valign="top">
+		<code>Seek(f,n) </code></td>
+		<td width="9%" valign="top">процедура</td>
+		<td width="14%" valign="top"><code>f</code> - 
+		переменная типа <b><code>file</code></b></td>
+		<td width="12%" valign="top">&nbsp;</td>
+		<td valign="top">перемещает файловый указатель в типизированном файле на
+		n-тый элемент (нумерация начинается с нуля)</td>
+	</tr>
+	<tr>
+		<td width="20%" valign="top">
+		<code>Truncate(f) </code></td>
+		<td width="9%" valign="top">процедура</td>
+		<td width="14%" valign="top"><code>f</code> - 
+		переменная типа <b><code>file</code></b></td>
+		<td width="12%" valign="top">&nbsp;</td>
+		<td valign="top">удаляет все элементы типизированного файла с текущей 
+		позиции файлового указателя до конца файла</td>
+	</tr>
+	<tr>
+		<td width="20%" valign="top">
+		<code>Rename(f,name) </code></td>
+		<td width="9%" valign="top">процедура</td>
+		<td width="14%" valign="top"><code>f</code> - 
+		переменная файлового типа,
+		<code>name</code> - <b><code>string</code></b></td>
+		<td width="12%" valign="top">&nbsp;</td>
+		<td valign="top">переименовывает файл, связанный 
+		с файловой переменной
+		<code>f</code>. Файл должен быть закрыт</td>
+	</tr>
+	<tr>
+		<td width="20%" valign="top">
+		<code>Erase(f) </code></td>
+		<td width="9%" valign="top">процедура</td>
+		<td width="14%" valign="top"><code>f</code> - 
+		переменная файлового типа</td>
+		<td width="12%" valign="top">&nbsp;</td>
+		<td valign="top">удаляет файл, связанный с файловой переменной
+		<code>f</code>. Файл должен быть закрыт</td>
+	</tr>
+	</table>
+</body>
+
+</html>

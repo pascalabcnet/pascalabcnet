@@ -45,6 +45,17 @@ namespace VisualPascalABC.OptionsContent
             }
         }
 
+        public void UpdateOptionsForm()
+        {
+            int i = 0;
+            foreach (IOptionsContent content in contentEngine.ContentList)
+            {
+                tvContentList.Nodes[i].Text = content.ContentName;
+                i++;
+            }
+            PascalABCCompiler.StringResources.SetTextForAllObjects(this, strprefix);
+        }
+
         private void tvContentList_AfterSelect(object sender, TreeViewEventArgs e)
         {
             IOptionsContent cont;

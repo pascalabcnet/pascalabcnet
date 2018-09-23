@@ -51,6 +51,8 @@ namespace VisualPascalABC
                     {
                         if (isClassMember(beg_off, textArea))
                             return;
+                        if (isClassPredefinition(end_off, textArea))
+                            return;
                     }
                     TmpPos end_pos = GetPositionOfEnd(textArea, end_off);
                     if (end_pos != null)
@@ -102,7 +104,7 @@ namespace VisualPascalABC
             catch (Exception e)
             {
 #if DEBUG
-                File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+                File.AppendAllText("log.txt", DateTime.Now + Environment.NewLine + e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
 #endif
             }
         }
@@ -112,24 +114,64 @@ namespace VisualPascalABC
             return true;
         }
 
+        private static bool isClassPredefinition(int end_off, TextArea textArea)
+        {
+            int off = end_off;
+            if (off >= textArea.Document.TextContent.Length)
+                return true;
+            char c = textArea.Document.TextContent[off];
+            while (char.IsWhiteSpace(c) || c == '{')
+            {
+                if (c == '{')
+                {
+                    while (c != '}')
+                    {
+                        off++;
+                        if (off >= textArea.Document.TextContent.Length)
+                            break;
+                        c = textArea.Document.TextContent[off];
+                    }
+                }
+                off++;
+                if (off >= textArea.Document.TextContent.Length)
+                    break;
+                c = textArea.Document.TextContent[off];
+            }
+            if (c == ';')
+                return true;
+            return false;
+        }
+
         private static bool isClassMember(int beg_off, TextArea textArea)
         {
             int off = beg_off - 1;
             if (CheckForCommentOrKav(textArea.Document.TextContent, beg_off))
                 return false;
             char c = textArea.Document.TextContent[off];
-            while (char.IsWhiteSpace(c))
+            while (char.IsWhiteSpace(c) || c == '}')
             {
+                if (c == '}')
+                {
+                    while (c != '{')
+                    {
+                        off--;
+                        if (off < 0)
+                            break;
+                        c = textArea.Document.TextContent[off];
+                    }
+                }
                 off--;
                 if (off < 0)
                     return false;
                 c = textArea.Document.TextContent[off];
             }
             c = char.ToLower(c);
-            if (c != '=' && c != 't' && c != 'd' && c != 'o')
+            if (c != '=' && c != 't' && c != 'd' && c != 'o' && c != '{')
             {
                 return true;
             }
+            
+                
             if (c == 't' || c == 'd' || c == 'o')
             {
                 StringBuilder keyword = new StringBuilder();
@@ -389,6 +431,8 @@ namespace VisualPascalABC
             i = off;
             while (i < Text.Length && !is_comm && Text[i] != '\n')
             {
+                if (Text[i] == '{')
+                    return false;
                 if (Text[i] == '}')
                 {
                     return true;

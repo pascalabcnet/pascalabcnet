@@ -1,0 +1,111 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="sequence">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+<style type="text/css">
+.auto-style1 {
+	font-family: monospace;
+	font-size: 10pt;
+	color: #000080;
+}
+</style>
+</head>
+
+<body>
+<H1>Последовательности</H1>
+<p>Последовательность - это набор данных, которые можно перебрать один за другим 
+в некотором порядке. К разновидностям последовательностей относятся одномерные 
+динамические массивы <span class="auto-style1"><strong>array of</strong> T</span>, 
+списки <span class="auto-style1">List&lt;T&gt;</span>, двусвязные списки
+<span class="auto-style1">LinkedList&lt;T&gt;</span>, множества
+<span class="auto-style1">HashSet&lt;T&gt;</span> и <span class="auto-style1">
+SortedSet&lt;T&gt;</span>.</p>
+<p>Тип последовательности конструируется следующим образом:</p>
+<blockquote>
+	<p><code><b>sequence</b> <b>of</b> </code><i>тип элементов</i></p>
+</blockquote>
+<p>Последовательности доступны <strong>только на чтение</strong>. Если требуется 
+изменить последовательность, то генерируется и возвращается новая 
+последовательность.</p>
+<p>Тип <span class="auto-style1"><strong>sequence</strong>
+<strong>of</strong> T</span> является синонимом типа .NET <span class="auto-style1">
+System.Collections.Generic.IEnumerable&lt;T&gt;</span>, а последовательность - 
+синонимом объекта типа, поддерживающего интерфейс <span class="auto-style1">
+System.Collections.Generic.IEnumerable&lt;T&gt;</span>. </p>
+<h2>&nbsp;Инициализация последовательности</h2>
+<p>Последовательность инициализируется с помощью
+<a href="../PABCSystemUnit/Files/Subroutines%20for%20sequence%20generation.html">стандартных функций</a>
+<span class="auto-style1">Seq</span>, <span class="auto-style1">SeqGen</span>,
+<span class="auto-style1">SeqFill</span>, <span class="auto-style1">SeqWhile</span>,
+<span class="auto-style1">SeqRandom</span>, <span class="auto-style1">
+SeqRandomReal</span>, <span class="auto-style1">ReadSeqInteger</span>,
+<span class="auto-style1">ReadSeqReal</span>, <span class="auto-style1">
+ReadSeqString</span>. Например:</p>
+<blockquote>
+	<p><code><b>var </b>s: <b>sequence</b> <b>of</b> integer;<br>s := 
+	Seq(1,3,5);<br>s.Println;<br>s := SeqGen(1,x-&gt;x*2,10);<br>writeln(s);</code></p>
+</blockquote>
+<h2>&nbsp;Хранение последовательности</h2>
+<p>Последовательность <strong>не хранится целиком в памяти</strong>. Элементы 
+последовательности генерируются алгоритмически и возвращаются по одному при 
+обходе.</p>
+<p>Таким образом, в коде</p>
+<blockquote>
+	<p><code><b>var </b>s := SeqFill(1,10000000);<br>writeln(s.Sum());</code></p>
+</blockquote>
+<p>основное время выполнения будет занимать вторая строка, а выполнение первой 
+строки будет сводиться лишь к запоминанию алгоритма генерации последовательности 
+в переменной s.</p>
+<h2>Соединение последовательностей</h2>
+<p>Две последовательности одного типа могут быть соединены операцией +, 
+при этом вторая последовательность дописывается в конец первой. Например:</p>
+<blockquote>
+	<code>Seq(1,2,3) + Seq(5,6,7)<br>Seq(1,2,3) + Arr(5,6,7)</code></blockquote>
+<p>Кроме того, к последовательности некоторого типа можно присоединить операцией + 
+значение этого типа как первый или последний элемент последовательности, 
+например:</p>
+<blockquote>
+	<code>Seq(1,2,3) + 5<br>3 + Seq(5,6,7)<br>3 + Seq(5,6,7) + 9</code></blockquote>
+<p>Операция + является сокращённым вариантом операции
+<a href="../FuncProgramming/Files/Concat.html">Concat</a>.</p>
+<p>Для последовательностей доступна также операция умножения на число:</p>
+<blockquote>
+	<code>Seq(1,2,3) * 3</code></blockquote>
+<p>означает повторение последовательности 1 2 3 три раза: 1 2 3 1 2 3 1 2 3</p>
+<h2>Цикл по последовательности</h2>
+<p>Элементы последовательности можно обойти с помощью цикла
+<span class="auto-style1"><strong>foreach</strong></span>:</p>
+<blockquote>
+	<p><code><b>foreach var</b> x <b>in</b> s<b> do</b><br>&nbsp; <strong>if</strong> 
+	x&gt;2 <strong>then</strong><br>&nbsp;&nbsp;&nbsp; Print(x);</code></p>
+</blockquote>
+<h2>Совместимость по присваиванию</h2>
+<p>Переменной типа &quot;последовательность&quot; с элементами типа
+<span class="auto-style1">T</span> можно присвоить одномерный массив<span class="auto-style1"><strong> 
+array of</strong> T</span>, список <span class="auto-style1">List&lt;T&gt;</span>, 
+двусвязный список <span class="auto-style1">LinkedList&lt;T&gt;</span>, множество
+<span class="auto-style1">HashSet&lt;T&gt;</span> или <span class="auto-style1">
+SortedSet&lt;T&gt;</span>,&nbsp; а также объект любого класса, поддерживающего 
+интерфейс <code>
+System.Collections.Generic.IEnumerable&lt;T&gt;</code>.</p>
+<h2>Стандартные подпрограммы и методы </h2>
+<p>Для последовательностей доступны:</p>
+<ul>
+<li><a href="../FuncProgramming/extensionmethodsforsequences.html">Методы обработки 
+последовательностей</a></li>
+	<li>
+	<a href="../PABCSystemUnit/Files/Subroutines%20for%20sequence%20generation.html">Подпрограммы для генерации последовательностей</a></li>
+	<li><a href="../PABCSystemUnit/Files/Infinite%20sequences.html">Подпрограммы для генерации бесконечных последовательностей</a></li>
+	<li>
+	<a href="../PABCSystemUnit/Files/Extension%20methods%20for%20sequence%20of%20T.html">
+	Методы расширения для последовательностей</a></li>
+</ul>
+<p>&nbsp;</p>
+</body>
+
+</html>

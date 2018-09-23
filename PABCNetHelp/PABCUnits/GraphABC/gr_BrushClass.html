@@ -1,0 +1,89 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="GraphABCBrush">
+<param name="Keyword" value="NETBrush">
+<param name="Keyword" value="Color">
+<param name="Keyword" value="Style">
+<param name="Keyword" value="Hatch">
+<param name="Keyword" value="Brush">
+<param name="Keyword" value="HatchBackgroundColor">
+<param name="Keyword" value="GradientSecondColor">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Текущая графическая кисть Brush</H1>
+<p>Объект текущей кисти возвращается функцией
+<code>Brush</code> и имеет тип
+<code>
+  GraphABC</code><code>Brush</code>:</p>
+<blockquote>
+	<p><code><b>function</b> </code><code>Brush</code><code>: 
+	GraphABC</code><code>Brush</code><code>;</code></p>
+</blockquote>
+<p>Класс <code>GraphABC</code><code>Brush</code> 
+имеет следующий интерфейс: </p>
+<blockquote>
+	<p><code><b>type</b> <br>
+&nbsp;
+  GraphABC</code><code>Brush</code><code> = <b>class</b><br>
+	&nbsp;&nbsp;&nbsp; <b>property </b>NET</code><code>Brush</code><code>: System.Drawing.</code><code>Brush</code><code>;<br>
+&nbsp;&nbsp;&nbsp; <b>property</b> Color: GraphABC.Color;<br>
+	&nbsp;&nbsp;&nbsp; <b>property</b> Style: <a href="gr_BrushStyle.html">BrushStyleType</a>;<br>
+	&nbsp;&nbsp;&nbsp; <b>property</b> Hatch: <a href="gr_BrushHatchStyle.html">HatchStyle</a>;<br>
+	&nbsp;&nbsp;&nbsp; <b>property</b> HatchBackgroundColor: GraphABC.Color;<br>
+	&nbsp;&nbsp;&nbsp; <b>property</b> GradientSecondColor: GraphABC.Color;<br>
+	&nbsp; <b>end</b>;</code></p>
+</blockquote>
+<p>Свойства класса <code>GraphABC</code><code>Brush</code> 
+описаны в следующей таблице:</p>
+<table border=0 CELLPADDING=5>
+<tr><td>
+<code>
+    <b>property</b> 
+    NETBrush: System.Drawing.Brush;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Текущая кисть .NET
+</td></tr>
+<tr><td>
+<code>
+    <b>property</b> Color: GraphABC.Color;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет кисти
+</td></tr>
+<tr><td>
+<code>
+    <b>property</b> Style: <a href="gr_BrushStyle.html">BrushStyleType</a>;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Стиль кисти
+</td></tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> Hatch: <a href="gr_BrushHatchStyle.html">HatchStyle</a>;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Штриховка кисти
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> HatchBackgroundColor: GraphABC.Color;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет заднего плана штриховой кисти
+</td>
+</tr>
+<tr><td>
+<code>
+    <b>property</b> GradientSecondColor: GraphABC.Color;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Второй цвет градиентной кисти</td></tr>
+</table>
+<p><b>Пример.</b></p>
+<blockquote>
+	<p><code>Brush.Color := clRed;<br>
+	Brush.Style := bsHatch;<br>
+	Brush.Hatch := bhBackwardDiagonal;</code></p>
+</blockquote>
+<p>Кроме того, можно изменять свойства текущей кисти, используя 
+соответствующие <a href="gr_Brush.html">процедуры и функции</a>.</p>
+</body></html>

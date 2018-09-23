@@ -1,0 +1,157 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Процедурный тип</H1>
+<p>Тип, предназначенный для хранения ссылок на процедуры или функции, называется 
+процедурным, а переменная такого типа - процедурной переменной. Основное 
+назначение процедурных переменных - хранение и косвенный вызов действий 
+(функций) в ходе выполнения программы и передача их в качестве параметров. </p>
+<h2>Описание процедурного типа</h2>
+<p>Описание процедурного типа совпадает с заголовком соответствующей процедуры 
+или функции без имени. Например:</p>
+<blockquote>
+	<p><code><b>type</b> <br>
+	&nbsp; ProcI =<b> procedure </b>(i: integer);<br>
+&nbsp; FunI = <b>function</b> (x,y: integer): integer;</code></p>
+</blockquote>
+<p>Процедурной переменной можно присвоить процедуру или функцию с совместимым 
+типом, например:</p>
+<blockquote>
+	<p><code><b>function</b> Mult(x,y: integer): integer;<br>
+	<b>begin</b><br>
+	&nbsp; Result := x*y;<br>
+	<b>end</b>;</code></p>
+	<p><code><b>var</b> f: FunI := Mult;</code></p>
+</blockquote>
+<p>Процедурной переменной можно также присвоить
+<a href="../FuncProgramming/lambdas.html">лямбда-выражение</a> с соответствующим 
+количеством параметров и типом возвращаемого значения:</p>
+<blockquote>
+	<p><code><strong>var</strong> f2: FunI := (x,y) -&gt; x+2*y;</code></p>
+</blockquote>
+<p>После этого можно вызвать процедуру или функцию через эту 
+процедурную переменную, пользуясь обычным синтаксисом вызова:</p>
+<blockquote>
+	<p><code>write(f(2));&nbsp; // 8<br>write(f2(3)); // 10</code></p>
+</blockquote>
+<h2>Cинонимы для процедурных типов</h2>
+<p>Для <a href="../PABCSystemUnit/Files/Standard%20types.html">наиболее 
+распространенных процедурных типов</a> в системном модуле определен ряд 
+синонимов. Приведем примеры с их использованием:</p>
+<blockquote>
+	<p><code><strong>var</strong> f3: IntFunc := x -&gt; 2*x-1;<br><strong>var</strong> 
+	f4: Func&lt;integer,real&gt; := x -&gt; 2.5*x;<br><strong>var</strong> f3: 
+	Action&lt;real&gt; := x -&gt; write(x,'&nbsp; ');<br><strong>var</strong> pr: 
+	Predicate&lt;string&gt; := s -&gt; s.Length&gt;0;</code></p>
+</blockquote>
+<h2>Cокращенные конструкции для процедурных типов</h2>
+<p>Для процедурных типов определены также сокращенные конструкции:</p>
+<blockquote>
+	<p><code>() -&gt; T;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // функция 
+	без параметров, возвращающая T<br>T1 -&gt; T;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // функция c параметром T1, возвращающая T<br>(T1,T2) -&gt; T&nbsp;&nbsp;&nbsp;&nbsp; // функция c параметрами T1 и T2, возвращающая T<br>(T1,T2,T3) -&gt; T&nbsp; // 
+	функция c параметрами T1, T2 и T3, возвращающая T<br>&nbsp; и т.д.<br>() -&gt; 
+	();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // процедура без параметров<br>T1 -&gt; 
+	();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // процедура c параметром T1<br>
+	(T1,T2) -&gt; ()&nbsp;&nbsp;&nbsp; // процедура c параметрами T1 и T2<br>
+	(T1,T2,T3) -&gt; () // процедура c параметрами T1, T2 и T3<br>&nbsp; и т.д.</code></p>
+</blockquote>
+<p>Сокращенные конструкции не могут описывать процедурные переменные с 
+параметрами, передаваемыми по ссылке.</p>
+<p>Для процедурных переменных принята 
+<a href="typecompatibility.html">структурная эквивалентность типов</a>: можно 
+присваивать друг другу и передавать в качестве параметров процедурные 
+переменные, совпадающие по структуре (типы и количество параметров, тип 
+возвращаемого значения). </p>
+<h2>Процедурные переменные в качестве параметров</h2>
+<p>Обычно процедурные переменные передаются как параметры для 
+реализации <i>обратного вызова</i> - вызова подпрограммы через процедурную 
+переменную, переданную в качестве параметра в другую подпрограмму:</p>
+<blockquote>
+	<p><code><b>procedure</b> forall(a: <b>array</b> <b>of</b> 
+	real; f: real-&gt;real);<br>
+	<b>begin</b><br>
+&nbsp; <b>for</b> <b>var</b> i := 0 <b>to</b> a.Length-1 <b>do</b><br>
+&nbsp;&nbsp;&nbsp; a[i] := f(a[i]);<br>
+	<b>end</b>;</code></p>
+	<p><code>...<br>
+	forall(a,x-&gt;x*2); // умножение элементов массива на 2<br>
+	forall(a,x-&gt;x+3);&nbsp;// 
+	увеличение элементов массива на 3 </code></p>
+</blockquote>
+<p>Процедурная переменная может хранить нулевое значение, которое задается 
+константой <code>nil</code>. Вызов подпрограммы через нулевую процедурную 
+переменную приводит к ошибке.</p>
+<h2>Операции += и -= для процедурных переменных</h2>
+<p>Процедурные переменные реализуются через делегаты .NET. 
+Это означает, что они могут хранить несколько подпрограмм. Для добавления/отсоединения 
+подпрограмм используются операторы <code>+=</code> и
+<code>-=</code>:</p>
+<blockquote>
+	<p><code>p1 += mult2;<br>
+	p1 += add3;<br>
+	forall(a,p1);&nbsp;&nbsp; </code></p>
+</blockquote>
+<p>Подпрограммы в этом случае вызываются в порядке прикрепления: вначале 
+умножение, потом сложение.</p>
+<p>Отсоединение неприкрепленных подпрограмм не выполняет никаких действий:</p>
+<blockquote>
+	<p><code>p1 -= print;</code></p>
+</blockquote>
+<p>Кроме того, к процедурной переменной можно прикреплять/откреплять 
+<a href="../Classes/methods.html">классовые и экземплярные методы классов</a>. В 
+последнем случае процедурная переменная в полях объекта запоминает некоторое 
+состояние, которое меняется между вызовами метода, связанного с этой процедурной 
+переменной. </p>
+<h2>Пример</h2>
+<blockquote>
+	<p><code><b>type</b> <br>
+&nbsp; A = <b>class<br>
+	</b>&nbsp;&nbsp;&nbsp; x0: integer := 1;<br>
+	&nbsp;&nbsp;&nbsp; h: integer := 2;&nbsp; <br>
+	<b>&nbsp;&nbsp;&nbsp; procedure</b> PrintNext;<br>
+	<b>&nbsp;&nbsp;&nbsp; begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Print(x0);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; x0 
+	*= h;&nbsp; <br>
+	<b>&nbsp;&nbsp;&nbsp; end</b>;<br>
+	<b>&nbsp; end</b>;</code></p>
+	<p><code><b>begin<br>
+&nbsp;
+	var</b><b> </b>p: <b>procedure</b>; <br>
+	<b>&nbsp; var</b> a1 := new A();<br>
+	&nbsp;
+	p := a1.PrintNext;<br>&nbsp; <strong>for var </strong>i:=1 <strong>to</strong> 
+	10 <strong>do </strong><br>
+	&nbsp;
+	&nbsp;
+	p;<br>&nbsp; // 1 2 4 8 16 32 64 128 256 512<br>
+	<b>end</b>.</code></p>
+</blockquote>
+<p>Подобное поведение гораздо проще реализовать с помощью
+<a href="../FuncProgramming/capture_variables.html">захвата переменной</a> 
+лямбда-выражением:</p>
+<blockquote>
+	<p><code><b>begin<br>
+&nbsp;
+	var </b>x0 := 1;<b> <br>
+	&nbsp; var</b> p: Action0 := <strong>procedure </strong>-&gt;<strong> begin</strong> 
+	Print(x0); x0 *= 2 <strong>end</strong>;<br>
+	&nbsp; <strong>for var </strong>i:=1 <strong>to</strong> 10 <strong>do
+	</strong><br>
+	&nbsp;
+	&nbsp;
+	p;<br><b>end</b>.</code></p>
+</blockquote>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+
+</html>

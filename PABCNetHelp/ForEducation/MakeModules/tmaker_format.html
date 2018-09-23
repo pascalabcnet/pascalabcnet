@@ -1,0 +1,1650 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Модуль PT4TaskMakerNET: форматирование текста заданий</H1>
+<hr>
+<h2>Общие сведения</h2>
+<p>В конструкторе учебных заданий PT4TaskMaker предусмотрена возможность <i>форматирования</i> текста заданий, а также
+преамбул для группы и ее подгрупп. Форматирование выполняется с помощью набора <i>управляющих последовательностей</i>
+(команд),
+большинство из которых имеет вид <code>\</code><i>символ</i>.
+</p>
+<p>
+Используя управляющие последовательности, можно выполнять следующие
+действия по форматированию текста в окне задачника:
+</p>
+<ul>
+<li>добавлять в текст специальные символы, в том числе символы шрифта Symbol и буквы западноевропейских языков;
+<li>выделять фрагмент текста полужирным шрифтом;
+<li>использовать в тексте нижние и верхние индексы;
+<li>добавлять в текст задания ссылки на другие задания этой же группы, не указывая при этом название группы (что позволяет
+корректно изменять эти ссылки при включении задания в другие группы);
+<li>добавлять в текст задания элементы, зависящие от текущего языка программирования (в частности,
+обозначения логических констант).
+</ul>
+<p>Все описанные выше действия обеспечивают требуемое форматирование текста задания как в окне задачника,
+так и в html-описании данного задания. Аналогичное форматирование (в частности, использование нижних и верхних индексов)
+можно применять и в текстах комментариев, которые выводятся в окне задачника в разделах исходных и результирующих данных.
+</p>
+<p>Кроме того, имеются управляющие последовательности, не влияющие на текст задания в окне задачника, однако
+обеспечивающие дополнительное форматирование этого текста (и текста комментариев для группы и ее подгрупп)
+в html-описании задания или группы заданий. Данные управляющие последовательности позволяют:
+</p>
+<ul>
+<li>выделять имена переменных курсивом;
+<li>использовать более разнообразное выделение фрагментов текста (помимо полужирного начертания можно установить
+курсивное начертание, выделение моноширинным шрифтом и специальное выделение);
+<li>разбивать текст задания и преамбулы на отдельные абзацы;
+<li>устанавливать для требуемых фрагментов текста режим вывода с центрированием или с отступом;
+<li>обеспечивать вывод фрагментов текста в несколько столбцов, с возможностью установки способа выравнивания
+для каждого столбца.
+</ul>
+<p>Напомним, что для вывода на экран html-страницы с описанием задания или группы заданий достаточно вызвать процедуру Task,
+указав в конце ее параметра (имени задания или группы заданий) суффикс <code>#</code>. Кроме того, html-страницы
+с описанием групп заданий можно генерировать с помощью модуля PT4Demo, используя кнопку <img src="images\demo_3.png">
+в окне этого модуля.
+</p>
+
+
+<h2>Таблица управляющих последовательностей</h2>
+<p>Управляющие последовательности, приведенные в таблице, можно использовать в формулировках
+заданий (параметр S процедуры <a href="tmaker_proc1.html#TaskText">TaskText</a>), комментариях к исходным и результирующим данным
+(параметр Cmt в процедурах групп <a href="tmaker_proc1.html#DataN">Data</a> и <a href="tmaker_proc1.html#ResultN">Result</a>),
+а также в дополнительных описаниях (преамбулах) групп и подгрупп учебных заданий
+(параметр S в процедуре <a href="tmaker_proc1.html#CommentText">CommentText</a>).
+</p>
+<p>Управляющие последовательности, использованные в параметрах процедур групп Data и Result, влияют только на представление соответствующих
+комментариев в окне задачника (см. столбец &laquo;Окно задачника&raquo;).
+Управляющие последовательности, использованные в параметре S процедуры CommentText, обеспечивают соответствующее форматирование
+преамбулы к группе заданий и ее подгруппам в тексте html-страницы с описанием группы заданий (см. столбец &laquo;Html-страница&raquo;).
+Управляющие последовательности, использованные в параметре S процедуры TaskText, влияют на вид
+формулировок заданий как в окне задачника, так и в html-описаниях.
+</p>
+<p>Все последовательности вида <code>\</code><i>символ</i>, не указанные в приведенной ниже таблице, игнорируются как при выводе текста в
+окне задачника, так при его отображения в виде html-страницы.
+</p>
+<p>В <i>заголовках подгрупп</i>, указываемых в процедуре <a href="tmaker_proc1.html#CreateTask">CreateTask</a>
+(параметр SubgroupName), а также в
+<i>тексте краткого описания группы</i>, указываемого в процедуре <a href="tmaker_proc1.html#CreateGroup">CreateGroup</a> (параметр GroupDescription),
+управляющие последовательности не обрабатываются. При указании в этих строках управляющих последовательностей
+они дословно воспроизводятся и в окне задачника, и в html-описании.
+Для указания короткого (&#8211;) или длинного (&#8212;) тире в кратких описаниях и заголовках подгрупп можно использовать
+двойные и тройные дефисы соответственно: -- и ---. Начиная с версии задачника 4.10, двойные и тройные дефисы
+в заголовках подгрупп при их отображении в html-описаниях заменяются на короткие и длинные тире.
+</p>
+<p>
+<table border=1 cellpadding=5 cellspacing=0 width=98% align=center bgcolor=#FFFFFF>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+Команда
+</td>
+<td align=center valign=middle width=40% bgcolor=#FFFFFF>
+Описание
+</td>
+<td align=center valign=middle width=15% bgcolor=#FFFFFF>
+Окно задачника
+</td>
+<td align=center valign=middle width=35% bgcolor=#FFFFFF>
+Html-страница
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=left valign=middle width=100% bgcolor=#FFFFFF colspan = 4>
+<b>Ссылки на другие задания данной группы</b>
+</td>
+</tr>
+
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\</code><i>число</i>
+</td>
+<td align=left valign=middle width=90% bgcolor=#FFFFFF  colspan = 3>
+Имя задания
+из текущей группы с номером, меньшим текущего на величину указанного десятичного числа (или <code>*********</code>,
+если результирующий номер оказывается меньшим 1)
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\0</code><i>число</i>
+</td>
+<td align=left valign=middle width=90% bgcolor=#FFFFFF colspan = 3>
+Имя задания
+из текущей группы с номером, большим текущего на величину указанного десятичного числа
+(или <code>*********</code>,
+если результирующий номер оказывается большим 999)
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=left valign=middle width=100% bgcolor=#FFFFFF  colspan = 4>
+<b>Пробелы</b>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\,</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Малый неразрывный пробел
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<i>Игнорируется</i>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;nbsp;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\;</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Средний неразрывный пробел
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<i>Пробел</i>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;nbsp;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>~</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Обычный неразрывный пробел
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<i>Пробел</i>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;nbsp;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\q</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Большой пробел
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<i>Игнорируется</i>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<i>Пробел</i><code>&amp;nbsp;</code><i>Пробел</i><code>&amp;nbsp;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\Q</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Двойной большой пробел
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<i>Игнорируется</i>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<i>2 копии большого пробела</i>
+</td>
+</tr>
+
+
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=left valign=middle width=100% bgcolor=#FFFFFF  colspan = 4>
+<a name="Symbols"></a><b>Символы</b>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\\</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Обратная косая черта (\)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>\</code>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>\</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\&amp;</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Амперсанд (&amp;)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>&amp;</code>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;amp;</code>
+</td>
+</tr>
+
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\{</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Открывающая фигурная скобка ({)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>{</code>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>{</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\}</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Закрывающая фигурная скобка (})
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>}</code>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>}</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\~</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Символ &laquo;волна&raquo; (~)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>~</code>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>~</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\^</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Символ &laquo;шапочка&raquo; (^)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>^</code>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>^</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\_</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Символ подчеркивания (_)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>_</code>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>_</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\.</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Многоточие (&#8230;)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>...</code><br><i>(три точки)</i>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;#8230;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\=</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Длинное тире (&#8212;)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>&#8212;</code>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;#8212;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\:</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Символ диапазона, или короткое тире (&#8211;)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>&#8211;</code>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;#8211;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\-</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Символ &laquo;минус&raquo; (&#8722;)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>&#8722;</code>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;#8722;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\&lt;</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Открывающие угловые кавычки (&laquo;)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>&#171;</code>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;#171;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\&gt;</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Закрывающие угловые кавычки (&raquo;)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>&#187;</code>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;#187;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\*</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Символ умножения (&#183;)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>&#183;</code>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;#183;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\+</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Символ &laquo;плюс-минус&raquo; (&#177;)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>&#177;</code>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;#177;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\o</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Символ градуса (&#176;)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>&#176;</code>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;#176;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\x</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Символ &laquo;косой крест&raquo; (&#215;)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>&#215;</code>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;#215;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\a</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Греческая буква &laquo;альфа&raquo; (&#945;)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+&#945;
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;#945;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\p</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Греческая буква &laquo;пи&raquo; (&#960;)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+&#960;
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;#960;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\e</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Греческая буква &laquo;эпсилон&raquo; (&#949;)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+&#949;
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;#949;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\l</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Символ &laquo;меньше или равно&raquo; (&#8804;)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>&#8804;</code>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;#8804;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\g</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Символ &laquo;больше или равно&raquo; (&#8805;)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>&#8805;</code>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;#8805;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\n</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Символ &laquo;не равно&raquo; (&#8800;)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>&#8800;</code>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;#8800;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\X</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Символ &laquo;bullet&raquo; (&#8226;)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>&#8226;</code>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;#8226;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\h</code><i>XX</i>, где <i>XX</i> &#151; двузначное 16-ричное число
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Символ с кодом <i>XX</i> из второй половины кодовой таблицы для западноевропейских языков
+ANSI Latin-1 (кодовая страница 1252)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<i>Соответствующий символ</i>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;#</code><i>DDD</i><code>;</code><br>
+<i>(DDD &#151; десятичный код соответствующего символа в кодировке Unicode)</i>
+</td>
+</tr>
+
+
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\H</code><i>XX</i>, где <i>XX</i> &#151; двузначное 16-ричное число
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Символ с кодом <i>XX</i> Windows-шрифта Symbol
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<i>Соответствующий символ</i>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&amp;#</code><i>DDD</i><code>;</code><br>
+<i>(DDD &#151; десятичный код соответствующего символа в кодировке Unicode)</i>    <br>
+<i>или</i><br><code>&lt;font face="Symbol"&gt;&amp;#</code><i>DDD</i><code>;&lt;/font&gt;</code><br>
+<i>(DDD &#151; десятичное число, равное 16-ричному числу XX)</i>
+</td>
+</tr>
+
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=left valign=middle width=100% bgcolor=#FFFFFF  colspan = 4>
+<b>Элементы текста, зависящие от текущего языка программирования</b>
+</td>
+</tr>
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\R</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Метка начала квадратного корня
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>Sqrt(</code><br>
+<i>(Pascal, PascalABC.NET, VB.NET, C#)</i><br>
+<code>sqrt(</code><br>
+<i>(C++, Python, Java)</i><br>
+<code>Sqr(</code><br>
+<i>(Visual Basic версий 5 и&nbsp;6)</i><br>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>(</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\r</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Метка конца квадратного корня
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<code>)</code><br>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>)&lt;sup&gt;1/2&lt;/sup&gt;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\t</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Логическая константа &laquo;True&raquo;
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF colspan=2>
+<code>True</code> <i>(Pascal, PascalABC.NET, Visual Basic, VB.NET, Python)</i><br>
+<code>true</code> <i>(C++, C#, Java)</i>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\f</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Логическая константа &laquo;False&raquo;
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF colspan=2>
+<code>False</code> <i>(Pascal, PascalABC.NET, Visual Basic, VB.NET, Python)</i><br>
+<code>false</code> <i>(C++, C#, Java)</i>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\N</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Нулевой указатель
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF colspan=2>
+<code>nil</code> <i>(Pascal)</i><br>
+<code>NULL</code> <i>(C++)</i>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\O</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Нулевая ссылка для объекта
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF colspan=2>
+<code>null</code> <i>(C#, Java)</i><br>
+<code>Nothing</code> <i>(VB.NET)</i><br>
+<code>nil</code> <i>(PascalABC.NET)</i><br>
+<code>None</code> <i>(Python)</i>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\d</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Имя функции для освобождения ресурсов, выделенных объекту
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF colspan=2>
+<code>Dispose</code> <i>(PascalABC.NET, C#, VB.NET)</i><br>
+<code>dispose</code> <i>(Python, Java)</i><br>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=left valign=middle width=100% bgcolor=#FFFFFF  colspan = 4>
+<b>Индексы</b>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>_</code><i>символ</i>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Односимвольный нижний индекс
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<i>Cимвол выводится как нижний индекс</i>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&lt;sub&gt;</code><i>символ</i><code>&lt;/sub&gt;</code>
+
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>^</code><i>символ</i>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Односимвольный верхний индекс
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<i>Cимвол выводится как верхний индекс</i>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&lt;sup&gt;</code><i>символ</i><code>&lt;/sup&gt;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>_{</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Метка начала многосимвольного нижнего индекса
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<i>Переход в режим нижнего индекса</i>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&lt;sub&gt;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>^{</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Метка начала многосимвольного верхнего индекса
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<i>Переход в режим верхнего индекса</i>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&lt;sup&gt;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>}</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Метка конца текущего (верхнего или нижнего) многосимвольного индекса
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<i>Выход из режима индекса</i>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&lt;/sub&gt;</code><br><i>или</i><br><code>&lt;/sup&gt;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=left valign=middle width=100% bgcolor=#FFFFFF  colspan = 4>
+<b>Выделение (в окне задачника любой режим выделения приводит к выделению полужирным шрифтом)</b>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\B</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Метка начала полужирного выделения
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<i>Переход в режим выделения</i>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&lt;b&gt;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\b</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Метка конца полужирного выделения
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<i>Выход из режима выделения</i>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&lt;/b&gt;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\I</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Метка начала курсивного выделения
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<i>Переход в режим выделения</i>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&lt;i&gt;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\i</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Метка конца курсивного выделения
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<i>Выход из режима выделения</i>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&lt;/i&gt;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\S</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Метка начала специального выделения
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<i>Переход в режим выделения</i>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&lt;span class="ptSpecial"&gt;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\s</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Метка конца специального выделения
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+<i>Выход из режима выделения</i>
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&lt;/span&gt;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=left valign=middle width=100% bgcolor=#FFFFFF  colspan = 4>
+<b>Дополнительное форматирование html-страниц (в окне задачника данные управляющие последовательности игнорируются)</b>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>{</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Метка начала выделения переменной
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+&nbsp;
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&lt;i&gt;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>}</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Метка конца выделения переменной
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+&nbsp;
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&lt;/i&gt;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\M</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Метка начала моноширинного текста
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+&nbsp;
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&lt;tt&gt;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\m</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Метка конца моноширинного текста
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+&nbsp;
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&lt;/tt&gt;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\|</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Разрыв строки
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+&nbsp;
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&lt;br&gt;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\P</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Начало нового абзаца
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+&nbsp;
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<i>Завершается предыдущий абзац и создается абзац стиля</i> <code>ptTaskContinue</code> <i>(при использовании в формулировке задания)
+или</i> <code>ptComment</code> <i>(при использовании в тексте преамбулы)</i>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\[</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Метка начала абзаца с центрированием
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+&nbsp;
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<i>Завершается предыдущий абзац и создается абзац стиля</i> <code>ptTaskCenter</code> <i>(при использовании в формулировке задания)
+или</i> <code>ptCommentCenter</code> <i>(при использовании в тексте преамбулы)</i>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\]</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Метка конца абзаца с центрированием
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+&nbsp;
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<i>Завершается предыдущий абзац и создается абзац стиля</i> <code>ptTaskContinue</code> <i>(при использовании в формулировке задания)
+или</i> <code>ptCommentContinue</code> <i>(при использовании в тексте преамбулы)</i>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\(</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Метка начала абзаца с отступом
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+&nbsp;
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<i>Завершается предыдущий абзац и создается абзац стиля</i> <code>ptTaskQuote</code> <i>(при использовании в формулировке задания)
+или</i> <code>ptCommentQuote</code> <i>(при использовании в тексте преамбулы)</i>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\)</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Метка конца абзаца с отступом
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+&nbsp;
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<i>Завершается предыдущий абзац и создается абзац стиля</i> <code>ptTaskContinue</code> <i>(при использовании в формулировке задания)
+или</i> <code>ptCommentContinue</code> <i>(при использовании в тексте преамбулы)</i>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\J</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Метка начала режима выравнивания по столбцам (после нее
+указывается последовательность символов <code>r</code>, <code>l</code>, <code>c</code>, которая
+должна оканчиваться символом <code>&</code>)
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+&nbsp;
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&lt;table&gt;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>\j</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Метка конца режима выравнивания по столбцам
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+&nbsp;
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<code>&lt;/table&gt;</code>
+</td>
+</tr>
+
+<tr align=left valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>
+<code>&</code>
+</td>
+<td align=left valign=middle width=40% bgcolor=#FFFFFF>
+Переход к новому столбцу в режиме выравнивания по столбцам
+</td>
+<td align=left valign=middle width=15% bgcolor=#FFFFFF>
+&nbsp;
+</td>
+<td align=left valign=middle width=35% bgcolor=#FFFFFF>
+<i>Добавляется тег</i> <code>&lt;td&gt;</code> <i>с соответствующим выравниванием;
+для первого столбца предварительно указывается тег</i> <code>&lt;tr&gt;</code>
+</td>
+</tr>
+</table>
+</p>
+
+<h2>Дополнительные сведения об использовании управляющих последовательностей</h2>
+
+<p>Необходимость в специальных командах для генерации ссылок на другие задания группы объясняется тем, что любое имеющееся задание может быть
+импортировано в группу с другим именем (с помощью процедуры <a href="tmaker_proc1.html#UseTask">UseTask</a>),
+и поэтому все ссылки на другие задания этой группы также потребуется откорректировать,
+указав в них новое имя группы. Разумеется, в подобной ситуации необходимо переносить в новую группу <i>все</i> задания, содержащие
+ссылки друг на друга.
+Следует заметить, что <i>разность</i> между номерами ссылающихся друг на друга заданий не обязана быть такой же,
+как в исходной группе заданий.
+Если в новой группе задания находятся на другом &laquo;расстоянии&raquo; друг от друга, то
+для указания правильной ссылки достаточно внести
+соответствующую <i>поправку</i> в параметр процедуры UseTask.
+</p>
+<p>Наличие нескольких видов <i>неразрывных пробелов</i>,
+не различающихся в тексте заданий и html-страниц, связано с планируемой
+в дальнейшем возможностью генерации текста заданий в других форматах (в частности, в формате системы TeX, в котором
+данные виды пробелов различаются). Приведем рекомендации по использованию
+неразрывных пробелов:
+</p>
+<code></code><ul>
+<li>вокруг символов <code>=</code>, <code>&lt;</code>, <code>&gt;</code> указывается обычный неразрывный пробел <code>~</code>;
+исключением являются фрагменты текста в скобках вида <code>(>&nbsp;0)</code>, в которых рекомендуется использовать
+малый пробел: <code>(>\,0)</code>;
+<li>неразрывный пробел <code>~</code> указывается также между текстом и переменной: <code>стороны~{a} и~{b}</code>;
+<li>вокруг символов <code>+</code> и <code>&#150;</code> ставится средний пробел <code>\;</code>;
+<li>символы умножения <code>\*</code> и деления <code>/</code> пробелами не обрамляются;
+исключением служит ситуация, когда слева и справа от символа деления указываются прописные буквы; в этом случае желательно использовать
+обрамление малыми пробелами.
+</ul>
+<p>Приведем пример оформления формул (данный пример взят из задания Begin39; обратите внимание
+на выделение переменных с помощью фигурных скобок, а также на команды, обеспечивающие вывод индексов,
+выделение квадратного корня и центрирование формулы):
+</p>
+<pre>TaskText('Найти корни \Iквадратного уравнения\i ' +
+  '{A}\*{x}^2\;+\;{B}\*{x}\;+\;{C}~=~0, заданного', 0, 1);
+TaskText('своими коэффициентами~{A}, {B}, {C} ' +
+  '(коэффициент~{A} не равен~0), если известно,', 0, 2);
+TaskText('что дискриминант уравнения положителен. ' +
+  'Вывести вначале меньший, а затем',0,3);
+TaskText('больший из найденных корней. Корни квадратного ' +
+  'уравнения находятся по формуле', 0, 4);
+TaskText('\[{x}_{1,\,2}~=~(\-{B}\;\+\;\R{D}\r)/(2\*{A}),\] ' +
+  'где {D}~\= \Iдискриминант\i, ' +
+  'равный {B}^2\;\-\;4\*{A}\*{C}.', 0, 5);
+</pre>
+<p>В результате обработки данной формулировки задания в окне задачника будет выведен текст:
+</p>
+<p><img border="0" src="images\pt4make15.png"></p>
+<p>В html-описании этот же текст будет отформатирован следующим образом:
+</p>
+<p><img border="1" src="images\pt4make16.png"></p>
+
+<p>Для указания кавычек в тексте задания следует использовать управляющие последовательности <code>\&lt;</code> и <code>\&gt;</code>.
+</p>
+<p>Управляющие последовательности <code>\t</code>, <code>\f</code>, <code>\N</code>, <code>\O</code>
+для логических констант, нулевых указателей и объектов генерируют текст, зависящий от
+выбранного в данный момент языка программирования.
+</p>
+<p>Обычные пробелы, указанные после управляющих последовательностей <code>\q</code>, <code>\Q</code>, <code>\P</code>, <code>\[</code>, <code>\(</code>,
+<code>\]</code>, <code>\)</code>, <code>\|</code> и <code>&</code>, учитываются только в тексте задачника
+(и пропускаются в тексте html-страниц).
+</p>
+<p>Режим специального выделения, устанавливаемый парными командами <code>\S</code> и <code>\s</code>,
+в окне задачника приводит к выделению полужирным шрифтом, а в html-описании
+обеспечивает выделение фрагмента текста,
+аналогичное выделению, используемому для <i>имени задания</i> в начале его формулировки
+(в приведенном выше фрагменте html-описания так выделено имя задания &laquo;Begin39&raquo;).
+Данный режим рекомендуется использовать для выделения <i>заголовков</i>, размещаемых в начале абзаца (например,
+если формулировка задания завершается абзацем, содержащим указание, то с помощью специального выделения
+целесообразно выделить текст &laquo;Указание&raquo; в начале этого абзаца).
+</p>
+<p>Команды выделения переменной <code>{</code> и <code>}</code> не влияют на ее вид в окне задачника, но
+обеспечивают ее выделение курсивом в тексте html-страницы.
+В индексах команды выделения переменной не учитываются,
+а любые <i>латинские</i> буквы в них автоматически выделяются курсивом.
+</p>
+<p>В односимвольных индексах нельзя указывать управляющие последовательности для вывода специальных символов,
+поэтому при необходимости применения в индексах специальных символов следует использовать режим многосимвольных индексов.
+Метки индексов не могут быть вложенными.
+В индексах не допускается использование меток выделения <code>\I</code>, <code>\B</code>, <code>\S</code> и наоборот,
+внутри выделенного текста не допускается указывать индексы.
+</p>
+
+<p>Выделенные фрагменты не могут содержать меток выделения другого вида. Режим индексов и выделения, заданный в
+одной процедуре TaskText или CommentText, не переносится на текст, определяемый при последующих вызовах этих процедур.
+Если в тексте отсутствуют команды завершения текущего режима (индексов или выделения), то режим автоматически завершается
+при достижении конца текста, определяемого в текущей процедуре TaskText или CommentText.
+</p>
+
+<p>В команде начала режима выравнивания по столбцам символы <code>r</code>, <code>l</code>, <code>c</code> определяют
+<i>способ выравнивания</i> в каждом столбце текста (<code>r</code> &#151; выравнивание по правому краю,
+<code>l</code> &#151; выравнивание по левому краю, <code>c</code> &#151; выравнивание по центру).
+Их количество должно быть равно числу столбцов. В каждом столбце должен быть хотя бы один непробельный символ
+(для пустого столбца достаточно указать малый неразрывный пробел <code>\,</code>).
+</p>
+<p>Ввиду сложности управляющих последовательностей, связанных с выравниванием по столбцам, приведем пример их использования
+(пример взят из задания If26):
+</p>
+<pre>TaskText('Для данного вещественного~{x} найти значение ' +
+  'следующей функции~{f},', 0, 1);
+TaskText('принимающей вещественные значения:', 0, 2);
+TaskText('\[\Jrcrl&\,&\,&       \-{x},& если {x}~\l~0,',
+  26, 3);
+TaskText('&{f}({x})&~=~&{x}^2,& если 0~&lt;~{x}~&lt;~2,', 26, 4);
+TaskText('&\,&\,&        4,& если {x}~\g~2.\j\]', 26, 5);
+</pre>
+<p>В результате обработки данной формулировки задания в окне задачника будет выведен текст:
+</p>
+<p><img border="0" src="images\pt4make17.png"></p>
+<p>В html-описании этот же текст будет отформатирован следующим образом:
+</p>
+<p><img border="1" src="images\pt4make18.png"></p>
+<p>Команду разрыва строки <code>\|</code> можно использовать как в обычном тексте, так и в режиме выделения с отступом или центрированием
+(в режиме выравнивания по столбцам переход на новую строку выполняется автоматически).
+Для более наглядного отображения в html-документе текста, выровненного по столбцам, данный текст рекомендуется
+дополнительно центрировать (как в приведенном выше примере) или использовать для него режим выравнивания с отступом.
+</p>
+<p>Следует обратить внимание еще на одну особенность формулировок, содержащих
+выравнивание по столбцам: строки с подобным выравниванием, как правило,
+не нужно центрировать в окне задачника. В приведенном примере в трех последних
+вызовах процедуры TaskText в качестве параметра X указывается не
+нулевое значение (означающее центрирование по горизонтали), а число 26 &#151;
+значение позиции по горизонтали, начиная с которой требуется вывести указанную
+строку.
+</p>
+<p>Указанное обстоятельство может затруднить использование для подобных формулировок
+нового варианта процедуры TaskText, появившегося в конструкторе версии 4.11.
+В этом варианте указывается единственный строковый параметр, содержащий
+все строки формулировки, разделенные символами разрыва строки (#13 или #10).
+При разборе этого параметра из каждой строки формулировки удаляются начальные
+и конечные пробелы, причем строки формулировки, оказавшиеся в результате
+пустыми, игнорируются, а все непустые строки выводятся в окне задачника в режиме
+центрирования. Тем не менее, и этот вариант процедуры TaskText позволяет
+обеспечить особое выравнивание требуемых строк в окне задачника. Для этого
+надо добавить некоторое количество вспомогательных начальных или конечных
+пробелов к строке, требующей специального выравнивания, причем первый начальный
+или последний конечный пробел надо <i>экранировать</i> символом \, чтобы не допустить
+его автоматического удаления. Прочие пробелы (следующие за начальным пробелом
+или предшествующие конечному пробелу) экранировать необязательно.
+Приведем пример определения формулировки, в котором
+используется новый вариант процедуры TaskText (следует обратить внимание
+на конечные пробелы, указанные в последних трех строках; в остальном
+текст формулировки не отличается от приведенного выше):
+</p>
+<pre>TaskText('Для данного вещественного~{x} найти значение следующей функции~{f},'#13 +
+'принимающей вещественные значения:'#13 +
+'\[\Jrcrl&\,&\,&       \-{x},& если {x}~\l~0,     \ '#13 +
+'&{f}({x})&~=~&{x}^2,& если 0~&lt;~{x}~&lt;~2, \ '#13 +
+'&\,&\,&        4,& если {x}~\g~2.\j\]     \ ');
+</pre>
+<p>Управляющая последовательность <code>\P</code> предназначена для разделения абзацев.
+В тексте, отображаемом в окне задачника, данная команда игнорируется (подобно прочим командам, связанным с разделением на абзацы).
+Для нее не предусмотрено парной завершающей команды, поскольку необходимые теги при переходе к новому абзацу
+добавляются в текст html-страницы автоматически. Пробелы после команды <code>\P</code> при генерации html-страницы игнорируются,
+однако они учитываются при отображении текста в окне задачника.
+</p>
+
+
+<h2>Генерация специальных символов</h2>
+<p>Используя две &laquo;универсальные&raquo; управляющие последовательности <code>\h</code> и <code>\H</code>,
+можно включать в текст задания или преамбулы специальные символы,
+входящие во вторую половину кодовой таблицы для западноевропейских языков ANSI Latin-1 (команда <code>\h</code>) или
+содержащиеся в Windows-шрифте Symbol (команда <code>\H</code>).
+После имени каждой из этих команд следует указать двузначное шестнадцатеричное число, определяющее
+код требуемого символа; при этом шестнадцатеричные цифры A, B, C, D, E, F можно указывать в любом регистре.
+Если двухсимвольный текст после команд нельзя преобразовать в шестнадцатеричное число или число не является допустимым,
+то команды возвращают символ &laquo;?&raquo; (знак вопроса).
+</p>
+<p>В случае команды <code>\h</code> (символы таблицы Latin-1) допустимыми считаются числа из диапазона 128&#150;255, за исключением
+кодов неотображаемых символов, например, кода неразрывного пробела 160 (A0) или &laquo;мягкого&raquo; переноса 173 (AD).
+Символы таблицы Ansi Latin-1 с кодами 128&#150;159 имеют в кодировке Unicode другие значения кодов;
+при генерации html-описаний для этих символов используются их коды в таблице Unicode.
+</p>
+<p>С помощью команды <code>\H</code> можно получить только <i>часть</i> символов, определенных в Windows-шрифте Symbol.
+Исключены символы, уже присутствующие в таблицах ASCII и ANSI Latin-1 (например, цифры и знаки препинания)
+или имеющие идентичное начертание с символами из этих таблиц (например, заглавные греческие буквы, совпадающие по
+начертанию с латинскими: A, B, E, H, X и т.&nbsp;д.). Кроме того, исключены символы с кодами 230&#150;239 и 243&#150;254,
+представляющие собой фрагменты больших скобок.
+</p>
+<p>Следует заметить, что для части математических символов нельзя обеспечить их
+правильное отображение в каждом из трех наиболее популярных веб-браузеров (Microsoft Internet Explorer,
+Mozilla Firefox и Opera) без использования средств веб-программирования.
+В браузерах Internet Explorer и Firefox можно подключать шрифты Windows, в том числе
+шрифт Symbol, однако в Opera это сделать нельзя. С другой стороны, в Opera и Firefox для отображения
+всех стандартных математических символов достаточно указать их код в Unicode-кодировке, однако в
+стандартных Windows-шрифтах, используемых браузером Internet Explorer, часть символов с требуемыми кодами отсутствует.
+При реализации команды <code>\H</code> для вывода подобных символов в html-документе был выбран вариант,
+обеспечивающий их правильное отображение в браузере Internet Explorer (и Mozilla Firefox):
+для этого используется Windows-шрифт Symbol. Однако в браузере Opera (и других браузерах, не поддерживающих шрифты Windows)
+<i>данные символы будут отображаться неправильно</i>.
+</p>
+<p><b>Примечание</b>. Для возможности использования Windows-шрифтов в браузере Mozilla Firefox следует установить режим
+&laquo;Разрешить веб-сайтам использовать свои шрифты вместо установленных&raquo;.
+Соответствующий флажок находится в окне &laquo;Шрифты&raquo;, которое можно отобразить с помощью следующей
+последовательности действий: выполнить команду меню &laquo;Инструменты | Настройки...&raquo;, в
+появившемся окне &laquo;Настройки&raquo;
+перейти на вкладку &laquo;Содержимое&raquo; и в разделе &laquo;Шрифты и цвета&raquo; нажать кнопку
+&laquo;Дополнительно...&raquo;.
+</p>
+<p>С некоторыми часто используемыми специальными символами связаны особые управляющие
+последовательности (см. таблицу управляющих последовательностей, раздел &laquo;<a href="#Symbols">Символы</a>&raquo;).
+Все подобные символы правильно отображаются во всех перечисленных выше браузерах.
+</p>
+<p>Хотя символ пересечения (&#8745;, код 8745)
+имеется в стандартных Windows-шрифтах, прочие символы, связанные с множествами
+(объединение, вложение, принадлежность и т.&nbsp;д.), в этих шрифтах отсутствуют.
+Для того чтобы все обозначения, связанные с множествами, выглядели в html-документе единообразно,
+для отображения символа пересечения (команда <code>\Hc7</code>)
+используется соответствующий символ из шрифта Symbol.
+</p>
+<p>Ниже приводятся таблицы всех символов, которые можно получить с помощью универсальных команд <code>\h</code> и <code>\H</code>.
+Первая таблица содержит символы, генерируемые командой <code>\h</code>, а вторая &#151; символы, генерируемые командой <code>\H</code>.
+Команды из второй таблицы, связанные с теми символами, которые будут неверно отображаться в браузере Opera,
+выделены полужирным шрифтом.
+</p>
+
+<p>Таблица 1. Символы, генерируемые командой <code>\h</code>
+</p>
+<p>
+<table border=1 cellpadding=5 cellspacing=0 width=98% align=center bgcolor=#FFFFFF>
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h80</code><br>&#8364;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>&nbsp;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h82</code><br>&#8218;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h83</code><br>&#402;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h84</code><br>&#8222;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h85</code><br>&#8230;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h86</code><br>&#8224;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h87</code><br>&#8225;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h88</code><br>&#710;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h89</code><br>&#8240;</td>
+</tr>
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h8a</code><br>&#352;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h8b</code><br>&#8249;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h8c</code><br>&#338;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>&nbsp;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h8e</code><br>&#381;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>&nbsp;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>&nbsp;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h91</code><br>&#8216;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h92</code><br>&#8217;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h93</code><br>&#8220;</td>
+</tr>
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h94</code><br>&#8221;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h95</code><br>&#8226;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h96</code><br>&#8211;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h97</code><br>&#8212;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h98</code><br>&#732;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h99</code><br>&#8482;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h9a</code><br>&#353;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h9b</code><br>&#8250;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h9c</code><br>&#339;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>&nbsp;</td>
+</tr>
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h9e</code><br>&#382;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\h9f</code><br>&#376;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>&nbsp;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\ha1</code><br>&#161;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\ha2</code><br>&#162;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\ha3</code><br>&#163;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\ha4</code><br>&#164;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\ha5</code><br>&#165;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\ha6</code><br>&#166;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\ha7</code><br>&#167;</td>
+</tr>
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\ha8</code><br>&#168;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\ha9</code><br>&#169;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\haa</code><br>&#170;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hab</code><br>&#171;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hac</code><br>&#172;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>&nbsp;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hae</code><br>&#174;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\haf</code><br>&#175;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hb0</code><br>&#176;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hb1</code><br>&#177;</td>
+</tr>
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hb2</code><br>&#178;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hb3</code><br>&#179;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hb4</code><br>&#180;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hb5</code><br>&#181;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hb6</code><br>&#182;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hb7</code><br>&#183;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hb8</code><br>&#184;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hb9</code><br>&#185;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hba</code><br>&#186;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hbb</code><br>&#187;</td>
+</tr>
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hbc</code><br>&#188;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hbd</code><br>&#189;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hbe</code><br>&#190;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hbf</code><br>&#191;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hc0</code><br>&#192;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hc1</code><br>&#193;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hc2</code><br>&#194;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hc3</code><br>&#195;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hc4</code><br>&#196;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hc5</code><br>&#197;</td>
+</tr>
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hc6</code><br>&#198;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hc7</code><br>&#199;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hc8</code><br>&#200;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hc9</code><br>&#201;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hca</code><br>&#202;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hcb</code><br>&#203;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hcc</code><br>&#204;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hcd</code><br>&#205;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hce</code><br>&#206;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hcf</code><br>&#207;</td>
+</tr>
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hd0</code><br>&#208;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hd1</code><br>&#209;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hd2</code><br>&#210;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hd3</code><br>&#211;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hd4</code><br>&#212;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hd5</code><br>&#213;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hd6</code><br>&#214;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hd7</code><br>&#215;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hd8</code><br>&#216;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hd9</code><br>&#217;</td>
+</tr>
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hda</code><br>&#218;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hdb</code><br>&#219;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hdc</code><br>&#220;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hdd</code><br>&#221;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hde</code><br>&#222;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hdf</code><br>&#223;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\he0</code><br>&#224;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\he1</code><br>&#225;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\he2</code><br>&#226;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\he3</code><br>&#227;</td>
+</tr>
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\he4</code><br>&#228;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\he5</code><br>&#229;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\he6</code><br>&#230;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\he7</code><br>&#231;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\he8</code><br>&#232;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\he9</code><br>&#233;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hea</code><br>&#234;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\heb</code><br>&#235;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hec</code><br>&#236;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hed</code><br>&#237;</td>
+</tr>
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hee</code><br>&#238;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hef</code><br>&#239;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hf0</code><br>&#240;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hf1</code><br>&#241;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hf2</code><br>&#242;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hf3</code><br>&#243;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hf4</code><br>&#244;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hf5</code><br>&#245;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hf6</code><br>&#246;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hf7</code><br>&#247;</td>
+</tr>
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hf8</code><br>&#248;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hf9</code><br>&#249;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hfa</code><br>&#250;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hfb</code><br>&#251;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hfc</code><br>&#252;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hfd</code><br>&#253;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hfe</code><br>&#254;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\hff</code><br>&#255;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>&nbsp;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>&nbsp;</td>
+</tr>
+
+</table>
+</p>
+
+<p>Таблица 2. Символы, генерируемые командой <code>\H</code>
+</p>
+<p>
+<table border=1 cellpadding=5 cellspacing=0 width=98% align=center bgcolor=#FFFFFF>
+
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\H22</b></code><br><font face="Symbol">&#034;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\H24</b></code><br><font face="Symbol">&#036;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\H27</b></code><br><font face="Symbol">&#039;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H2d</code><br>&#8722;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\H40</b></code><br><font face="Symbol">&#064;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H44</code><br>&#916;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H46</code><br>&#934;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H47</code><br>&#915;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H4c</code><br>&#923;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H50</code><br>&#920;</td>
+</tr>
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H51</code><br>&#920;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H53</code><br>&#931;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H56</code><br>&#962;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H57</code><br>&#937;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H58</code><br>&#926;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H59</code><br>&#936;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\H5c</b></code><br><font face="Symbol">&#092;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\H5e</b></code><br><font face="Symbol">&#094;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H61</code><br>&#945;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H62</code><br>&#946;</td>
+</tr>
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H63</code><br>&#967;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H64</code><br>&#948;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H65</code><br>&#949;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\H66</b></code><br><font face="Symbol">&#102;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H67</code><br>&#947;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H68</code><br>&#951;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H69</code><br>&#953;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H6a</code><br>&#966;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H6b</code><br>&#954;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H6c</code><br>&#955;</td>
+</tr>
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H6d</code><br>&#956;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H6e</code><br>&#957;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H70</code><br>&#960;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H71</code><br>&#952;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H72</code><br>&#961;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H73</code><br>&#963;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H74</code><br>&#964;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H75</code><br>&#965;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\H76</b></code><br><font face="Symbol">&#118;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H77</code><br>&#969;</td>
+</tr>
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H78</code><br>&#958;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H79</code><br>&#968;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\H7a</code><br>&#950;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Ha1</b></code><br><font face="Symbol">&#161;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Ha2</code><br>&#8242;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Ha3</code><br>&#8804;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Ha5</code><br>&#8734;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Ha7</code><br>&#9827;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Ha8</code><br>&#9830;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Ha9</code><br>&#9829;</td>
+</tr>
+
+
+
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Haa</code><br>&#9824;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Hab</code><br>&#8596;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Hac</code><br>&#8592;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Had</code><br>&#8593;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Hae</code><br>&#8594;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Haf</code><br>&#8595;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Hb2</code><br>&#8243;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Hb3</code><br>&#8805;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hb5</b></code><br><font face="Symbol">&#181;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Hb6</code><br>&#8706;</td>
+</tr>
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Hb9</code><br>&#8800;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Hba</code><br>&#8801;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Hbb</code><br>&#8776;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Hbd</code><br>&#9474;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Hbe</code><br>&#9472;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hbf</b></code><br><font face="Symbol">&#191;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Hc0</code><br>&#1488;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hc1</b></code><br><font face="Symbol">&#193;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hc2</b></code><br><font face="Symbol">&#194;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hc3</b></code><br><font face="Symbol">&#195;</font></td>
+</tr>
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hc4</b></code><br><font face="Symbol">&#196;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hc5</b></code><br><font face="Symbol">&#197;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hc6</b></code><br><font face="Symbol">&#198;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hc7</b></code><br><font face="Symbol">&#199;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hc8</b></code><br><font face="Symbol">&#200;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hc9</b></code><br><font face="Symbol">&#201;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hca</b></code><br><font face="Symbol">&#202;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hcb</b></code><br><font face="Symbol">&#203;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hcc</b></code><br><font face="Symbol">&#204;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hcd</b></code><br><font face="Symbol">&#205;</font></td>
+</tr>
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hce</b></code><br><font face="Symbol">&#206;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hcf</b></code><br><font face="Symbol">&#207;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hd0</b></code><br><font face="Symbol">&#208;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hd1</b></code><br><font face="Symbol">&#209;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Hd5</code><br>&#8719;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Hd6</code><br>&#8730;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hd9</b></code><br><font face="Symbol">&#217;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hda</b></code><br><font face="Symbol">&#218;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hdb</b></code><br><font face="Symbol">&#219;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hdc</b></code><br><font face="Symbol">&#220;</font></td>
+</tr>
+
+<tr align=center valign=middle width=100% bgcolor=#FFFFFF>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hdd</b></code><br><font face="Symbol">&#221;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hde</b></code><br><font face="Symbol">&#222;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code><b>\Hdf</b></code><br><font face="Symbol">&#223;</font></td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\He0</code><br>&#9674;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\He1</code><br>&#8249;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\He5</code><br>&#8721;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Hf1</code><br>&#8250;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF><code>\Hf2</code><br>&#8747;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>&nbsp;</td>
+<td align=center valign=middle width=10% bgcolor=#FFFFFF>&nbsp;</td>
+</tr>
+
+</table>
+</p>
+

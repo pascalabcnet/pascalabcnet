@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="var">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Описание переменных</H1>
+<p class="pabcmain">Переменные могут быть описаны в разделе описаний, а также 
+непосредственно внутри любого блока&nbsp; <b><code>begin</code></b>/<b><code>end</code></b>.</p>
+<p class="pabcmain">Раздел описания переменных начинается 
+с ключевого слова <b><code>var</code></b>, 
+после которого следуют элементы описания вида</p>
+<blockquote>
+	<code class="codeit">список имен</code><code>:</code><code class="codeit"> 
+	тип</code><code>;</code></blockquote>
+<p class="pabcmain">или</p>
+<blockquote>
+	<code class="codeit">имя</code><code>:</code><code class="codeit"> 
+	тип </code><code>:=</code><code class="codeit"> выражение</code><code>;</code>
+</blockquote>
+<p class="pabcmain">или</p>
+<blockquote>
+	<code class="codeit">имя</code><code>:</code><code class="codeit"> 
+	тип </code><code>=</code><code class="codeit"> выражение</code><code>;</code>
+<code>// для совместимости с Delphi </code>
+</blockquote>
+<p class="pabcmain">или</p>
+<blockquote>
+	<code class="codeit">имя </code><code>:=</code><code class="codeit"> 
+	выражение</code><code>;</code>
+</blockquote>
+<p class="pabcmain">Имена в списке перечисляются через запятую. Например:</p>
+<blockquote>
+	<p><code><b>var<br>
+&nbsp; </b>a,b,c: integer;<br>
+&nbsp; d: real := 3.7;<br>
+&nbsp; s := 'PascalABC forever';<br>
+&nbsp; al := new List&lt;integer&gt;;</code><br>
+	<code>&nbsp; p1 := 1;</code></p>
+</blockquote>
+<p class="pabcmain">В последних трех случаях тип переменной автоматически определяется 
+по типу правой части.</p>
+<p>Переменные могут описываться непосредственно внутри
+<a href="../Operators/beginend.html">блока</a>. Такие описания называются 
+внутриблочными и представляют собой <a href="../Operators/var_statement.html">
+оператор описания переменной</a>.</p>
+<p>Кроме того, переменные-параметры цикла могут описываться в заголовке 
+операторов <code><b><a href="../Operators/for.html">for</a></b></code> и <code><b>
+<a href="../Operators/foreach.html">foreach</a></b></code>.</p>
+<p>Глобальные переменные инициализируются нулевыми значениями. Для локальных 
+переменных это не гарантируется - их надо инициализировать явно. </p>
+<h2>Совмещение описания переменных и кортежного присваивания</h2>
+<p><a href="../Types/tuples.html">Кортежное присваивание</a> (распаковку кортежа 
+в переменные) можно совмещать с описанием переменных:</p>
+
+<blockquote>
+	<code>var t := (1,2);<br>(<strong>var </strong>a,<strong> var </strong>b) := (1,2);</code></blockquote>
+<p>или</p>
+
+<blockquote>
+	<code><strong>var</strong> (a,b) := (1,2);</code></blockquote>
+<p>Распаковка кортежа в переменные часто используется при возвращении функцией 
+кортежа:</p>
+<blockquote>
+	<code><strong>function</strong> SP(a,b: real) := (a*b,2*(a+b)); </code>&nbsp;<br>
+	...<br>
+	<code><strong>var</strong> (S,P) := SP(2,3); </code>
+</blockquote>
+</body>
+
+</html>

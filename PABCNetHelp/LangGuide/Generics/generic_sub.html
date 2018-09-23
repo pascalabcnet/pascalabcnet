@@ -1,0 +1,104 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Обобщенные подпрограммы: обзор </H1>
+<p>Обобщенной подпрограммой (generic) называется подпрограмма, параметризованная одним или несколькими типами. Подпрограмма 
+образуется из обобщенной подпрограммы подстановкой конкретных типов в качестве 
+параметров. Параметры указываются после имени подпрограммы в угловых скобках.
+</p>
+<p>Например, следующая&nbsp; обобщённая функция параметризована 
+одним параметром:</p>
+<blockquote>
+	<p><code><b>function</b> FindFirstInArray&lt;T&gt;(a: <b>array</b> <b>of</b> T; 
+	val: T): integer;<br>
+	<b>begin</b><br>
+&nbsp; <span lang="en-us">R</span>esult := -1;<br>
+&nbsp; <b>for </b><span lang="en-us"><b>var</b> </span>i:=0 <b>to</b> a.Length-1
+	<b>do</b><br>
+&nbsp;&nbsp;&nbsp; <b>if</b> a[i]=val <b>then</b><br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span lang="en-us">R</span>esult := i;<br>
+	<span lang="en-us">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>exit;<br>
+	<span lang="en-us">&nbsp;&nbsp;&nbsp; </span><b>end</b>;<br>
+	<b>end</b>;</code></p>
+	<p><code><b>var</b><span lang="en-us"> </span>x: <b>array</b> <b>of</b> 
+	string;</code></p>
+	<p><code><b>begin</b><br>
+	<span lang="en-us">&nbsp; </span>SetLength(x,4);<br>
+	<span lang="en-us">&nbsp; </span>x[0] := 'Ваня';<br>
+	<span lang="en-us">&nbsp; </span>x[1] := 'Коля';<br>
+	<span lang="en-us">&nbsp; </span>x[2] := 'Сережа';<br>
+	<span lang="en-us">&nbsp; </span>x[3] := 'Саша';<br>
+	<span lang="en-us">&nbsp; </span>writeln(FindFirstInArray(x,'Сережа'));<br>
+	<b>end</b>.</code></p>
+</blockquote>
+<p>При вызове обобщенной подпрограммы тип-параметр обобщения можно не указывать, 
+поскольку компилятор <font color="#FF0000"><i><b>выводит</b></i></font> типы 
+параметров шаблона по типам фактических параметров. В данном случае после 
+выведения получено: <code>T=string</code>. </p>
+<p>При выведении требуется точное соответствие типов, приведение типов не 
+допускается. Например, при компиляции следующего кода </p>
+<blockquote>
+	<p><code>...<b><br>
+	var</b> x: <b>array</b> <b>of</b> real;</code></p>
+	<p><code><b>begin</b><br>
+&nbsp; SetLength(x,3);<br>
+&nbsp; x[0] := 1;<br>
+&nbsp; x[1] := 2.71;<br>
+&nbsp; x[2] := 3.14;<br>
+&nbsp; writeln(FindFirstInArray(x,1));<br>
+	<b>end</b>.</code></p>
+</blockquote>
+<p>произойдет ошибка. Причина состоит в том, что первый параметр имеет тип
+<span lang="en-us">array of real</span>, а второй - тип <span lang="en-us">
+integer</span>, что не соответствует ни одному типу <span lang="en-us">T </span>
+в заголовке обобщенной функции. Для решения проблемы следует либо изменить тип 
+второго параметра на <span lang="en-us">real</span>:</p>
+<blockquote>
+	<p><code>FindFirstInArray(x,1.0)</code></p>
+</blockquote>
+<p>либо явно после имени функции в угловых скобках указать имя типа, которым 
+параметризован данный вызов:</p>
+<blockquote>
+	<p><code>FindFirstInArray&amp;&lt;real&gt;(x,1)</code></p>
+</blockquote>
+<p>Использование знака <span lang="en-us">&amp; </span>здесь обязательно, поскольку 
+в противном случае компилятор трактует знак <span lang="en-us">&lt; </span>как 
+&quot;меньше&quot;.</p>
+<p>Обобщёнными могут быть не только обычные подпрограммы, но и методы классов, а 
+также методы другого обобщённого класса. Например:</p>
+<blockquote>
+	<p><code><b>type</b><br>
+&nbsp; Pair&lt;T,Q&gt; = <b>class</b><br>
+&nbsp;&nbsp;&nbsp; first: T;<br>
+&nbsp;&nbsp;&nbsp; second: Q;<br>
+	<b>&nbsp;&nbsp;&nbsp; function</b> ChangeSecond&lt;S&gt;(newval: S): Pair&lt;T, S&gt;;<br>
+	<b>&nbsp; end</b>;</code></p>
+	<p><code><b>function</b> Pair&lt;T,Q&gt;.ChangeSecond&lt;S&gt;(newval: S): Pair&lt;T,S&gt;;<br>
+	<b>begin</b><br>
+&nbsp; result := <b>new</b> Pair&lt;T,S&gt;;<br>
+&nbsp; result.first := first;<br>
+&nbsp; result.second := newval;<br>
+	<b>end</b>;</code></p>
+	<p><code><b>var</b><br>
+&nbsp; x: Pair&lt;integer,real&gt;;<br>
+&nbsp; y: Pair&lt;integer,string&gt;;<b><br>
+	begin</b><br>
+&nbsp; x := <b>new</b> Pair&lt;integer,real&gt;;<br>
+&nbsp; x.first := 3;<br>
+&nbsp; y := x.ChangeSecond('abc');<br>
+&nbsp; writeln(y.first, y.second);<br>
+	<b>end</b>.</code></p>
+</blockquote>
+<p>По окончании работы данная программа выведет 3abc.</p>
+</body>
+
+</html>

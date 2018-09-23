@@ -1,0 +1,23 @@
+<html><head><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Any">
+<param name="Keyword" value="All">
+</object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
+<body>
+<H1>Методы Any, All</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<tr><td>
+<code><b>function </b>Any(): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, содержит ли последовательность какие-либо элементы.
+</td></tr>
+<tr><td>
+<code><b>function </b>Any(predicate: T-&gt;boolean): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, удовлетворяет ли какой-либо элемент последовательности заданному условию.
+</td></tr>
+<tr><td>
+<code><b>function </b>All(predicate: T-&gt;boolean): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Проверяет, все ли элементы последовательности удовлетворяют условию.
+</td></tr>
+</table>
+<h2>Пример </h2><blockquote><code><strong>begin</strong><br>&nbsp; <strong>var</strong> 
+	a := Lst(1,3,5);<br>&nbsp; Println(a.All(x -&gt; x mod 2 &lt;&gt; 0)); // True<br>&nbsp; 
+	Println(a.Any(x -&gt; x mod 2 = 0));&nbsp; // False<br><strong>end</strong>.</code></blockquote>
+</body>

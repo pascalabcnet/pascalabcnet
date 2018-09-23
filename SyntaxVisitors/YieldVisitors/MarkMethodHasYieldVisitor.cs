@@ -43,7 +43,7 @@ namespace SyntaxVisitors
             base.visit(ws);
         }
 
-
+        ident IdResult = null;
         public override void visit(procedure_definition pd)
         {
             //this.CurrentMethod = pd;
@@ -68,6 +68,19 @@ namespace SyntaxVisitors
                 }
             }
 
+            /*if (pd.has_yield)
+            {
+                var dn = pd.DescendantNodes().OfType<ident>().Where(id => id.name.ToLower() == "result").FirstOrDefault();
+                if (dn != null)
+                    throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_RESULT", dn);
+            }*/
+
+            if (pd.has_yield)
+            {
+                if (IdResult != null)
+                    throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_RESULT", IdResult);
+            }
+
             var innerPds = pd.DescendantNodes().OfType<procedure_definition>();
 
             if (pd.has_yield && innerPds.Count() > 0
@@ -89,6 +102,7 @@ namespace SyntaxVisitors
             }
 
             HasYields = false;
+            IdResult = null;
 
             MethodsStack.Pop();
 
@@ -97,14 +111,15 @@ namespace SyntaxVisitors
 
         public override void visit(ident id)
         {
+            if (MethodsStack.Count > 0 && id.name.ToLower() == "result")
+            {
+                IdResult = id;
+                //throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_RESULT", id.source_context);
+            }
             //if (CurrentMethod == null || !HasYields)
             if (MethodsStack.Count == 0 || !HasYields)
             {
                 return;
-            }
-            if (id.name.ToLower() == "result")
-            {
-                throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_RESULT", id.source_context);
             }
         }
 

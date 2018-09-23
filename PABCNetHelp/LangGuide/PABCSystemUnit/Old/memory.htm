@@ -1,0 +1,92 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="New">
+<param name="Keyword" value="Dispose">
+<param name="Keyword" value="GetMem">
+<param name="Keyword" value="FreeMem">
+<param name="Keyword" value="FillMem">
+<param name="Keyword" value="CopyMem">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Стандартные процедуры и функции для работы с памятью</H1>
+<table border="0" width="100%">
+	<!-- MSTableType="nolayout" -->
+	<tr>
+		<td width="16%" valign="top"><b>Имя и параметры</b></td>
+		<td width="12%" valign="top"><b>Процедура или функция</b></td>
+		<td width="20%" valign="top"><b>Типы параметров</b></td>
+		<td valign="top"><b>Действие</b></td>
+	</tr>
+	<tr>
+		<td width="16%" valign="top">
+<code>New(p) </code></td>
+		<td width="12%" valign="top">процедура</td>
+		<td width="20%" valign="top"><code>p</code> - 
+		типизированный указатель</td>
+		<td valign="top">выделяет динамическую память размера, равного размеру 
+		типа, на который указывает <code>p</code>, и возвращает 
+		указатель на нее в переменной <code>p</code></td>
+	</tr>
+	<tr>
+		<td width="16%" valign="top">
+		<code>Dispose(p) </code></td>
+		<td width="12%" valign="top">процедура</td>
+		<td width="20%" valign="top"><code>p</code> - 
+		типизированный указатель</td>
+		<td valign="top">освобождает динамическую память по указателю <code>p</code>, 
+		ранее выделенную процедурой <code>New</code></td>
+	</tr>
+	<tr>
+		<td width="16%" valign="top">
+		<code>GetMem(p,n) </code></td>
+		<td width="12%" valign="top">процедура</td>
+		<td width="20%" valign="top"><code>p</code> - указатель 
+		любого типа, 
+		<code>n</code> - <code>integer</code></td>
+		<td valign="top">выделяет динамическую память размера <code>n</code>
+		байт и возвращает указатель на нее в переменной
+		<code>p</code></td>
+	</tr>
+	<tr>
+		<td width="16%" valign="top">
+		<code>FreeMem(p) </code></td>
+		<td width="12%" valign="top">процедура</td>
+		<td width="20%" valign="top"><code>p</code> - указатель 
+		любого типа</td>
+		<td valign="top">освобождает динамическую память по указателю <code>p</code>, 
+		ранее выделенную процедурой <code>GetMem</code></td>
+	</tr>
+	<tr>
+		<td width="21%" valign="top">
+		<code>FillMem(v,count,x)</code></td>
+		<td width="13%" valign="top">процедура</td>
+		<td width="14%" valign="top"><code>v</code> - переменная любого типа,
+		<code>count</code> - <code>integer</code>, <code><br>
+		x</code> - <code>byte</code></td>
+		<td valign="top">заполняет <code>count</code> 
+		значениями <code>x</code> область памяти, занимаемую переменной <code>v</code>. 
+		Контроль выхода за границы не производится </td>
+	</tr>
+	<tr>
+		<td width="21%" valign="top">
+		<code>CopyMem(src,dest,count)</code></td>
+		<td width="13%" valign="top">процедура</td>
+		<td width="14%" valign="top"><code>src</code>, <code>dest</code> - <code>
+		pointer</code>, <code>count</code> - <code>integer</code></td>
+		<td valign="top">копирует <code>count</code> 
+		байт из памяти, расположенной по адресу <code>src</code>, 
+		в память, расположенную по адресу <code>dest</code>. 
+		Допускается использовать перекрывающиеся диапазоны памяти.</td>
+	</tr>
+</table>
+<p>&nbsp;</p>
+</body>
+
+</html>

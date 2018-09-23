@@ -1,0 +1,135 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="and">
+<param name="Keyword" value="or">
+<param name="Keyword" value="not">
+<param name="Keyword" value="div">
+<param name="Keyword" value="mod">
+<param name="Keyword" value="shl">
+<param name="Keyword" value="shr">
+<param name="Keyword" value="xor">
+<param name="Keyword" value="in">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css"></head>
+<body><H1>Выражения и операции</H1>
+<p><strong>// устарело и отсутствует в справке</strong></p>
+Любое выражение имеет определенный тип и после вычисления возвращает некоторое значение. Простейшими выражениями являются переменные и константы. Более сложные выражения строятся из более простых с использованием операций, скобок, вызовов функций, индексов и приведений типов. Данные, к которым применяются операции, называются <i>операндами</i>. <p>В <b>Pascal ABC</b> имеются следующие операции: <code>@</code>, </span></span></span></span><b><code>not</code></b>, <code>^</code>, <code>*</code>, <code>/</code>, <b><code>div</code></b>, <code><b>mod</b></code>, <code><b>and</b></code>, <code><b>shl</b></code>, <code><b>shr</b></code>, <code>+</code>, <code>-</code>, <code><b>or</b></code>, <code><b>xor</b></code>, 
+<code><b>in</b></code>, <code>=&gt;</code>, <code>=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>&lt;&gt;</code>, <code>&lt;=</code> и <code>&gt;=</code>.</p>
+<h2>Арифметические операции</h2><p>К <i>арифметическим</i> относятся бинарные операции 
+<code>+</code> <code>-</code> <code>*</code> <code>/</code> для вещественных и целых чисел, бинарные операции
+<b><code>div</code></b> и <b><code>mod</code></b> для целых чисел и унарные операции 
+<code>+</code> и <code>-</code> для вещественных и целых чисел. Выражение, 
+имеющее числовой тип, называется <i>арифметическим</i>. Тип арифметического выражения определяется по следующему правилу: если все операнды целые и в выражении отсутствует операция деления
+<code>/</code>, то выражение имеет тип <code>integer</code>, в противном случае выражение имеет тип <code>real</code>. Например, если <code>b</code> имеет тип <code>byte</code>,
+<code>c</code> имеет тип <code>1..9</code>, то
+<code>b+c</code> и <code>-b</code> имеют тип <code>integer</code>, а <code>2.0+b</code> и <code>1/2</code> - тип <code>real</code>.</p><h2>Логические операции</h2><p>К 
+<i>логическим</i> относятся бинарные операции <b><code>and</code></b>, <b><code>or</code></b> и <b><code>xor</code></b>, а также унарная 
+операция <b><code>not</code></b>,
+имеющие операнды 
+типа <code>boolean</code> и возвращающие значение типа
+<code>boolean</code>. Выражение, имеющее тип
+<code>boolean</code>, называется <i>лог</i><i>ическим</i>. </p><h2>Операции отношения</h2><p>Операции <i>отношения</i>
+<code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>, <code>=</code>, <code>&lt;&gt;</code> возвращают значение типа <code>boolean</code> и применяются к операндам 
+целого, вещественного, символьного, логического и строкового типов, а также к 
+типизированным указателям. Операции <code>=</code> и <code>&lt;&gt;</code> также применяются к операндам типа <code>pointer</code>, к операндам, 
+являющихся объектами классов и к константе <b> <code>nil</code></b>. При сравнении 
+символа и строки символ преобразуется в строку длины 1.</p><h2>Побитовые операции</h2><p>
+<i>Побитовые</i> операции <code><b>and</b></code>, <code><b>or</b></code>, <b><code>not</code></b>,
+<b><code>xor</code></b>, <code><b>shl</b></code>, <code><b>shr</b></code> 
+производят побитовые манипуляции с операндами целого типа. Для унарной операции 
+<b><code>not</code></b> результат имеет тот же тип, что и операнд. Для остальных операций результат имеет 
+тип <code>integer</code>.
+Например, если <code>b</code> имеет тип
+<code>byte</code> и <code>
+b=1</code>, то <code>b <b>shl</b> 10=1024</code>, а <code><b>not</b> b=254</code>.</p>
+<h2>Строковые операции</h2><p>Помимо операций отношения <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>, <code>=</code>, <code>&lt;&gt;</code>, к строковым и символьным операндам применима операция 
+конкатенации (слияния) <code>+</code>. Ее результат имеет строковый тип. 
+Например, <code>'a'+'b'='ab'</code>. </p>
+<h2>Операция @</h2><p>Операция <code>@</code> 
+применяется к переменной и возвращает ее адрес.</p><h2>Операции с указателями</h2><p>
+К типизированным указателям применима операция <i>разыменования</i> <code>^</code>: 
+если <code>p</code> является указателем на тип <code>T</code>, 
+то <code>p^</code> - элемент типа <code>T</code>, на 
+который указывает <code>p</code>.</p>
+<h2>Операции с множествами</h2><p>К множествам применимы 
+операции <code>+</code> (объединение), <code>-</code> 
+(разность) и <code>*</code> (пересечение):</p>
+<blockquote>
+	<p><code><b>var</b> <br>
+&nbsp; s1,s2,s: <b>set</b> <b>of</b> byte;<br>
+	<b>begin<br>
+	</b>&nbsp; s1:=[1..4];<br>
+&nbsp; s2:=[2..5];<br>
+&nbsp; s:=s1+s2; // s=[1..5]<br>
+&nbsp; s:=s1-s2; // s=[1]<br>
+&nbsp; s:=s1*s2; // s=[2..4] </code></p>
+</blockquote>
+<p>К множествам применимы также операции отношения = (равенство), <code>&lt;&gt;</code> 
+(неравенство), &lt;= (вложено) и
+&gt;= (содержит):</p>
+<blockquote>
+	<p><code><b>var</b> <br>
+&nbsp; s1,s2,s: <b>set</b> <b>of</b> byte;<br>
+	&nbsp; b: boolean;<br>
+	<b>begin<br>
+	</b>&nbsp; s1:=[1..4];<br>
+&nbsp; s2:=[2..5];<br>
+&nbsp; s:=[1,2];&nbsp; <br>
+&nbsp; b:=s1=s2; // b=False<br>
+&nbsp; b:=s2&lt;&gt;s; // b=True<br>
+&nbsp; b:=s&lt;=s2; // b=False<br>
+&nbsp; b:=s1&gt;=s; // b=True</code></p>
+</blockquote>
+<p>Наконец, операция <code><b>in</b></code>
+определяет, принадлежит ли элемент множеству:</p>
+<blockquote>
+	<p><code>1 <b>in</b> [2..5] // False<br>
+	3 <b>in</b> [2..5] // True</code></p>
+</blockquote>
+<h2>Приоритет операций</h2>
+<p>Приоритет определяет порядок выполнения операций в выражении. 
+Первыми выполняются операции, имеющие высший приоритет. Операции, имеющие 
+одинаковый приоритет, выполняются слева направо.</p>
+<p style="margin-bottom: 3pt"><b>Таблица приоритетов операций</b></p>
+<table border="0" width="382">
+	<tr>
+		<td><code>@</code>,
+		<b><code>not</code></b>,
+		^
+		</td>
+		<td width="131">1 (наивысший)</td>
+	</tr>
+	<tr>
+		<td><code>*</code>,
+		<code>/</code>,
+		<code><b>div</b></code>,
+		<code><b>mod</b></code>,
+		<code><b>and</b></code>,
+		<code><b>shl</b></code>,
+		<code><b>shr</b></code></td>
+		<td width="131">2</td>
+	</tr>
+	<tr>
+		<td><code>+</code>,
+		<code>-</code>,
+		<code><b>or</b></code>,
+		<code><b>xor</b></code> </td>
+		<td width="131">3</td>
+	</tr>
+	<tr>
+		<td><code>=</code>,
+		<code>&lt;&gt;</code>,
+		<code>&lt;</code>,
+		<code>&gt;</code>,
+		<code>&lt;=</code>,
+		<code>&gt;=</code>,
+		<code><b>in</b></code>,
+		<code>=></code>
+		</td>
+		<td width="131">4 (низший)</td>
+	</tr>
+</table>
+
+</body></html>

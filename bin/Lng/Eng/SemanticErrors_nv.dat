@@ -2,7 +2,7 @@
 
 NAME_CANNOT_HAVE_GENERIC_PARAMETERS_{0}=Name {0} can not have generic parameters
 AUTO_CLASS_MUST_NOT_HAVE_POINTERS=Auto class can not have fields of pointer type
-AUTO_CLASS_MUST_NOT_HAVE_PARENTS=Auto class can not have parents or implement interfaces
+AUTO_CLASS_MUST_NOT_HAVE_PARENTS=Auto class can not have parents
 UNDEFINED_NAME_REFERENCE_{0}=Undefined name reference '{0}'
 TWO_TYPE_CONVERTIONS_POSSIBLE_FIRST_TYPE_{0}_SECOND_TYE_{1}=Two type of convertions are possible: to type '{0}' and to type '{1}'
 CAN_NOT_CONVERT_TYPES_FROM_{0}_TO_{1}=Incompatible types: '{0}' and '{1}'

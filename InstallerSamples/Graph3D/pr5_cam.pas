@@ -1,7 +1,7 @@
-uses Graph3D;
+п»їuses Graph3D;
 
 begin
-  Window.Title := 'Вращение камеры';
+  Window.Title := 'Р’СЂР°С‰РµРЅРёРµ РєР°РјРµСЂС‹';
   var tp := Teapot(0,0,2,Colors.Green);
   tp.Scale(2);
   Camera.Position := P3D(8,16,20);
@@ -19,7 +19,7 @@ begin
     Sleep(10);
     Camera.Position := P3D(15*cos(t),15*sin(t),10);
     Camera.UpDirection := V3D(0,0,1);
-    //Camera.LookDirection := Camera.Position.Multiply(-1).ToVector3D;
+    Camera.LookDirection := Camera.Position.Multiply(-1).ToVector3D;
     t += 2*Pi/360/2;
   end;
   

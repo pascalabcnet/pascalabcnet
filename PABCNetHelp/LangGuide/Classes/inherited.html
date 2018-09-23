@@ -1,0 +1,74 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="inherited">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Переопределение методов</H1>
+<p>Метод базового класса может быть переопределен (замещен) в подклассах. Если 
+при этом требуется вызвать метод базового класса, то используется служебное 
+слово <code><b>inherited</b></code> (англ.-
+унаследованный). Например:</p>
+<p><code><b>type</b><br>
+&nbsp; Person =<b> class<br>
+&nbsp; private</b><br>
+&nbsp;&nbsp;&nbsp; name: <b>string</b>;<br>
+&nbsp;&nbsp;&nbsp; age: integer;<br>
+<b>&nbsp; public</b><br>
+&nbsp;&nbsp;&nbsp; <b>constructor</b> Create(nm: string; ag: integer);<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; name := nm; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; age := ag;<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp;&nbsp;&nbsp; <b>procedure</b> Print;<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; writeln('Имя: ',name,'&nbsp; Возраст: ',age);<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp; <b>end</b>;<br>
+&nbsp; <br>&nbsp; Student =<b> class</b>(Person)<br>
+<b> &nbsp; private</b><br>
+&nbsp;&nbsp;&nbsp; course, group: integer;<br>
+<b>&nbsp; public</b><br>
+&nbsp;&nbsp;&nbsp; <b>constructor</b> Create(nm: <b>string</b>; ag,c,gr: 
+integer);<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>inherited</b> Create(nm,ag);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; course := c; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; group := gr;<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp;&nbsp;&nbsp; <b>procedure</b> Print;<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>inherited</b> Print;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; writeln('Курс: ',course,'&nbsp; Группа: ',group);<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp; <b>end</b>;</code></p>
+<p>Здесь метод <code>Print</code> производного класса <code>Student</code> 
+вызывает вначале метод <code>Print</code>, унаследованный от базового класса
+<code>Person</code>, с помощью конструкции <code><b>inherited</b> Print</code>. 
+Аналогично конструктор <code>Create</code> класса <code>Student</code> вызывает 
+вначале конструктор <code>Create</code> базового класса <code>Person</code>, 
+также используя служебное слово <code><b>inherited</b></code>. </p>
+<p>Правила наследования конструкторов рассматриваются 
+<a href="constrinheritance.html">здесь</a>.</p>
+<p>Следует обратить 
+внимание, что конструктор базового класса вызывается в этом случае как процедура, а не как 
+функция, при этом создания нового объекта не происходит.</p>
+<p>Если в методе вызывается метод базового класса с теми же параметрами, то 
+можно использовать запись <span lang="en-us">inherited</span>, не указывая имя 
+метода и параметры. Например, метод <code>Student.Print</code> можно записать 
+таким образом:</p>
+<p><code>&nbsp;&nbsp;&nbsp; <b>procedure</b> Print;<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>inherited</b>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; writeln('Курс: ',course,'&nbsp; Группа: ',group);<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp;</code></p>
+</body>
+
+</html>

@@ -32,8 +32,8 @@
 %start parse_goal
 
 %token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkQuestionPoint tkDoubleQuestion tkQuestionSquareOpen
-%token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction tkMatch tkWhen
-%token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
+%token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkStatic tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction tkMatch tkWhen
+%token <ti> tkIf tkImplementation tkInherited tkInterface /* tkTypeclass tkInstance */ tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
 %token <ti> tkLoop 
 %token <ti> tkSequence tkYield
@@ -51,7 +51,7 @@
 %token <id> tkAbstract tkForward tkOverload tkReintroduce tkOverride tkVirtual tkExtensionMethod 
 %token <ex> tkInteger tkFloat tkHex 
 
-%type <ti> unit_key_word 
+%type <ti> unit_key_word class_or_static
 %type <stn> assignment 
 %type <stn> optional_array_initializer  
 %type <stn> attribute_declarations  
@@ -80,8 +80,8 @@
 %type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 const_func_expr_list case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
-%type <ex> const_simple_expr term simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 simple_expr range_term range_factor 
-%type <ex> external_directive_ident init_const_expr case_label variable var_reference simple_expr_or_nothing var_question_point
+%type <ex> const_simple_expr term simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda simple_expr range_term range_factor 
+%type <ex> external_directive_ident init_const_expr case_label variable var_reference /*optional_write_expr*/ optional_read_expr simple_expr_or_nothing var_question_point
 %type <ob> for_cycle_type  
 %type <ex> format_expr  
 %type <stn> foreach_stmt  
@@ -91,8 +91,9 @@
 %type <stn> var_address  
 %type <stn> goto_stmt 
 %type <id> func_name_ident param_name const_field_name func_name_with_template_args identifier_or_keyword unit_name exception_variable const_name func_meth_name_ident label_name type_decl_identifier template_identifier_with_equal 
-%type <id> program_param identifier identifier_keyword_operatorname func_class_name_ident optional_identifier visibility_specifier 
+%type <id> program_param identifier identifier_keyword_operatorname func_class_name_ident /*optional_identifier*/ visibility_specifier 
 %type <id> property_specifier_directives non_reserved 
+//%type <id> typeclass_restriction
 %type <stn> if_stmt   
 %type <stn> initialization_part  
 %type <stn> template_arguments label_list ident_or_keyword_pointseparator_list ident_list  param_name_list  
@@ -145,7 +146,7 @@
 %type <stn> stmt_or_expression unlabelled_stmt stmt case_item
 %type <td> set_type  
 %type <ex> as_is_expr as_is_constexpr is_expr as_expr power_expr power_constexpr
-%type <td> unsized_array_type simple_type_or_ simple_type array_name_for_new_expr foreach_stmt_ident_dype_opt fptype type_ref fptype_noproctype array_type 
+%type <td> unsized_array_type simple_type_or_ simple_type /*array_name_for_new_expr*/ foreach_stmt_ident_dype_opt fptype type_ref fptype_noproctype array_type 
 %type <td> template_param structured_type unpacked_structured_type simple_or_template_type_reference type_ref_or_secific for_stmt_decl_or_assign type_decl_type
 %type <stn> type_ref_and_secific_list  
 %type <stn> type_decl_sect
@@ -153,7 +154,8 @@
 %type <ti> class_or_interface_keyword optional_tk_do keyword reserved_keyword  
 %type <ex> typeof_expr  
 %type <stn> simple_fp_sect   
-%type <stn> template_param_list template_type_params  
+%type <stn> template_param_list template_type_params
+//%type <stn> template_type_or_typeclass_params typeclass_params  
 %type <td> template_type
 %type <stn> try_stmt  
 %type <stn> uses_clause used_units_list  
@@ -189,6 +191,8 @@ parse_goal
 parts
     : tkParseModeExpression expr
         { $$ = $2; }
+    | tkParseModeExpression tkType type_decl_identifier
+        { $$ = $3; }
     | tkParseModeType variable_as_type
 		{ $$ = $2; }
 	| tkParseModeStatement stmt_or_expression
@@ -834,14 +838,36 @@ const_factor
 		}
     | sign const_factor                              
         { 
+		    // ручная коррекция целых констант
+			if ($1.type == Operators.Minus)
+			{
+			    var i64 = $2 as int64_const;
+				if (i64 != null && i64.val == (Int64)Int32.MaxValue + 1)
+				{
+					$$ = new int32_const(Int32.MinValue,@$);
+					break;
+				}
+				var ui64 = $2 as uint64_const;
+				if (ui64 != null && ui64.val == (UInt64)Int64.MaxValue + 1)
+				{
+					$$ = new int64_const(Int64.MinValue,@$);
+					break;
+				}
+				if (ui64 != null && ui64.val > (UInt64)Int64.MaxValue + 1)
+				{
+					parsertools.AddErrorFromResource("BAD_INT2",@$);
+					break;
+				}
+			    // можно сделать вычисление константы с вмонтированным минусом
+			}
 			$$ = new un_expr($2, $1.type, @$); 
 		}
     | new_expr
 		{ $$ = $1; }
-    | tkDeref const_factor              
-        { 
-			$$ = new roof_dereference($2 as addressed_value, @$);
-		}
+//    | tkDeref const_factor              
+//        { 
+//			$$ = new roof_dereference($2 as addressed_value, @$);
+//		}
     ;
 
 const_set
@@ -861,6 +887,10 @@ sign
 const_variable
     : identifier
 		{ $$ = $1; }
+    | tkInherited identifier            
+        { 
+			$$ = new inherited_ident($2.name, @$);
+		}
     | sizeof_expr
 		{ $$ = $1; }
     | typeof_expr
@@ -1091,8 +1121,41 @@ simple_type_decl
     | template_identifier_with_equal type_decl_type tkSemiColon 
         { 
 			$$ = new type_declaration($1, $2, @$); 
+		}/*
+	| typeclass_restriction tkEqual tkTypeclass optional_base_classes optional_component_list_seq_end tkSemiColon
+		{
+			$$ = new type_declaration($1 as typeclass_restriction, new typeclass_definition($4 as named_type_reference_list, $5 as class_body_list, @$), @$);
 		}
+	| typeclass_restriction tkEqual tkInstance optional_component_list_seq_end tkSemiColon
+		{
+			$$ = new type_declaration($1 as typeclass_restriction, new instance_definition($4 as class_body_list, @$), @$);
+		}*/
     ;
+/*
+typeclass_restriction
+	: simple_type_identifier typeclass_params
+		{
+			$$ = new typeclass_restriction(($1 as named_type_reference).ToString(), $2 as template_param_list, @$);
+		}
+	;
+
+typeclass_params
+	: tkSquareOpen template_param_list tkSquareClose
+		{
+			$$ = new typeclass_param_list($2 as template_param_list);
+		}
+	;
+
+template_type_or_typeclass_params
+	: template_type_params
+		{
+			$$ = $1;
+		}
+	| typeclass_params
+		{
+			$$ = $1;
+		}
+	;*/
 
 type_decl_identifier
     : identifier
@@ -1352,7 +1415,7 @@ simple_type_or_
     ;
         
 set_type
-    : tkSet tkOf simple_type         
+    : tkSet tkOf type_ref         
         { 
 			$$ = new set_type_definition($3, @$); 
 		}
@@ -1392,10 +1455,10 @@ proc_type_decl
         { 
 			$$ = new procedure_header($2 as formal_parameters,null,null,false,false,null,null,@$);
         }
-	| tkFunction fp_list
+/*	| tkFunction fp_list
 		{
 			$$ = new function_header($2 as formal_parameters, null, null, null, null, @$);
-		}
+		}*/
     | tkFunction fp_list tkColon fptype       
         { 
 			$$ = new function_header($2 as formal_parameters, null, null, null, $4 as type_definition, @$);
@@ -1438,6 +1501,55 @@ object_type
     : class_attributes class_or_interface_keyword optional_base_classes optional_where_section optional_component_list_seq_end
         { 
 			$$ = NewObjectType((class_attribute)$1, $2, $3 as named_type_reference_list, $4 as where_definition_list, $5 as class_body_list, @$);
+            class_definition cd = $$ as class_definition;
+            if (cd == null || cd.body == null)
+                break;
+            var ccnt = cd.body.DescendantNodes().OfType<simple_property>().ToArray();
+            var cm = new class_members(access_modifer.private_modifer);
+            foreach (var prop in ccnt)
+            {
+                var td = prop.property_type;
+                var ra = prop.accessors?.read_accessor;
+                if ($2.text.ToLower() == "interface" && ra != null && (ra.pr != null || ra.accessor_name != null))
+				    parsertools.AddErrorFromResource("INVALID_INTERFACE_MEMBER",ra.source_context);
+
+                if (ra != null && ra.pr != null)
+                {
+                    if (prop.parameter_list != null)
+                        parsertools.AddErrorFromResource("EXTENDED_INDEXED_PROPERTIES",ra.source_context);
+                    var rapr = ra.pr as procedure_definition; 
+                    (rapr.proc_header as function_header).return_type = td;
+                    cm.Add(rapr);
+                    if (prop.attr == definition_attribute.Static)
+                    {
+                        rapr.proc_header.class_keyword = true;
+                        procedure_attribute pa = new procedure_attribute(proc_attribute.attr_static);
+                        pa.source_context = rapr.proc_header.source_context;
+                        rapr.proc_header.proc_attributes = new procedure_attributes_list(pa);
+                    }
+                }
+                var wa = prop.accessors?.write_accessor;
+                if ($2.text.ToLower() == "interface" && wa != null && (wa.pr != null || wa.accessor_name != null))
+				    parsertools.AddErrorFromResource("INVALID_INTERFACE_MEMBER",wa.source_context);
+
+                if (wa != null && wa.pr != null)
+                {
+                    if (prop.parameter_list != null)
+                        parsertools.AddErrorFromResource("EXTENDED_INDEXED_PROPERTIES",ra.source_context);
+                    var wapr = wa.pr as procedure_definition;
+                    wapr.proc_header.parameters.params_list[0].vars_type = td;
+                    cm.Add(wapr);
+                    if (prop.attr == definition_attribute.Static)
+                    {
+                        wapr.proc_header.class_keyword = true;
+                        procedure_attribute pa = new procedure_attribute(proc_attribute.attr_static);
+                        pa.source_context = wapr.proc_header.source_context;
+                        wapr.proc_header.proc_attributes = new procedure_attributes_list(pa);
+                    }
+                }
+            }
+            if (cm.Count>0)
+                cd.body.Insert(0, cm);
 		}
     ;
 
@@ -1445,6 +1557,51 @@ record_type
     : tkRecord optional_base_classes optional_where_section member_list_section tkEnd   
         { 
 			$$ = NewRecordType($2 as named_type_reference_list, $3 as where_definition_list, $4 as class_body_list, @$);
+            class_definition cd = $$ as class_definition;
+            if (cd == null || cd.body == null)
+                break;
+            var ccnt = cd.body.DescendantNodes().OfType<simple_property>().ToArray();
+            var cm = new class_members(access_modifer.private_modifer);
+            foreach (var prop in ccnt)
+            {
+                var td = prop.property_type;
+                var ra = prop.accessors?.read_accessor;
+
+                if (ra != null && ra.pr != null)
+                {
+                    if (prop.parameter_list != null)
+                        parsertools.AddErrorFromResource("EXTENDED_INDEXED_PROPERTIES",ra.source_context);
+                    var rapr = ra.pr as procedure_definition;
+                    (rapr.proc_header as function_header).return_type = td;
+                    cm.Add(rapr);
+                    if (prop.attr == definition_attribute.Static)
+                    {
+                        rapr.proc_header.class_keyword = true;
+                        procedure_attribute pa = new procedure_attribute(proc_attribute.attr_static);
+                        pa.source_context = rapr.proc_header.source_context;
+                        rapr.proc_header.proc_attributes = new procedure_attributes_list(pa);
+                    }
+                }
+                var wa = prop.accessors?.write_accessor;
+
+                if (wa != null && wa.pr != null && prop.parameter_list == null)
+                {
+                    if (prop.parameter_list != null)
+                        parsertools.AddErrorFromResource("EXTENDED_INDEXED_PROPERTIES",ra.source_context);
+                    var wapr = wa.pr as procedure_definition;
+                    wapr.proc_header.parameters.params_list[0].vars_type = td;
+                    cm.Add(wapr);
+                    if (prop.attr == definition_attribute.Static)
+                    {
+                        wapr.proc_header.class_keyword = true;
+                        procedure_attribute pa = new procedure_attribute(proc_attribute.attr_static);
+                        pa.source_context = wapr.proc_header.source_context;
+                        wapr.proc_header.proc_attributes = new procedure_attributes_list(pa);
+                    }
+                }
+            }
+            if (cm.Count>0)
+                cd.body.Insert(0, cm);
 		}
     ;
 
@@ -1457,6 +1614,8 @@ class_attribute
 		{ $$ = class_attribute.Abstract; }
     | tkAuto
 		{ $$ = class_attribute.Auto; }
+    | tkStatic
+		{ $$ = class_attribute.Static; }
     ;
 	
 class_attributes 
@@ -1536,7 +1695,12 @@ base_class_name
     : simple_type_identifier
 		{ $$ = $1; }
     | template_type
-		{ $$ = $1; }
+		{ $$ = $1; }/*
+	| typeclass_restriction
+		{
+			var names = new List<ident>();
+			names.Add(($1 as typeclass_restriction).name);
+			$$ = new typeclass_reference(null, names, ($1 as typeclass_restriction).restriction_args); }*/
     ;
 
 template_arguments
@@ -1569,7 +1733,11 @@ where_part
     : tkWhere ident_list tkColon type_ref_and_secific_list tkSemiColon
         { 
 			$$ = new where_definition($2 as ident_list, $4 as where_type_specificator_list, @$); 
-		}
+		}/*
+	| tkWhere typeclass_restriction tkSemiColon
+		{
+			$$ = new where_typeclass_constraint($2 as typeclass_restriction);
+		}*/
     ;
 
 type_ref_and_secific_list
@@ -1706,14 +1874,21 @@ simple_field_or_const_definition
 		}
     | field_definition
 		{ $$ = $1; }
-    | tkClass field_definition       
+    | class_or_static field_definition       
         { 
 			($2 as var_def_statement).var_attr = definition_attribute.Static;
 			($2 as var_def_statement).source_context = @$;
 			$$ = $2;
-        } 
+        }        
     ;
 
+class_or_static
+    : tkStatic 
+        { $$ = $1; }
+    | tkClass 
+        { $$ = $1; }
+    ;
+    
 field_definition
     : var_decl_part
 		{ $$ = $1; }
@@ -1746,7 +1921,7 @@ method_decl
     ;
 
 method_header
-    : tkClass method_procfunc_header
+    : class_or_static method_procfunc_header
         { 
 			($2 as procedure_header).class_keyword = true;
 			$$ = $2;
@@ -1776,7 +1951,7 @@ constr_destr_header
         { 
 			$$ = new constructor(null,$3 as formal_parameters,$4 as procedure_attributes_list,$2 as method_name,false,false,null,null,@$);
         }
-    | tkClass tkConstructor optional_proc_name fp_list optional_method_modificators 
+    | class_or_static tkConstructor optional_proc_name fp_list optional_method_modificators 
         { 
 			$$ = new constructor(null,$4 as formal_parameters,$5 as procedure_attributes_list,$3 as method_name,false,true,null,null,@$);
         }
@@ -1818,7 +1993,7 @@ property_definition
 simple_prim_property_definition
     : simple_property_definition
 		{ $$ = $1; }
-    | tkClass simple_property_definition    
+    | class_or_static simple_property_definition    
         { 
 			$$ = NewSimplePrimPropertyDefinition($2 as simple_property, @$);
         } 
@@ -1836,6 +2011,8 @@ simple_property_definition
                	pa = proc_attribute.attr_virtual;
  			else if ($6.name.ToLower() == "override") 
  			    pa = proc_attribute.attr_override;
+            else if ($6.name.ToLower() == "abstract") 
+ 			    pa = proc_attribute.attr_abstract;
 			$$ = NewSimplePropertyDefinition($2 as method_name, $3 as property_interface, $4 as property_accessors, pa, $8 as property_array_default, @$);
         }
     ;
@@ -1851,9 +2028,9 @@ array_defaultproperty
     ;
 
 property_interface
-    :  
+    :/*  
 		{ $$ = null; }
-    | property_parameter_list tkColon fptype 
+    |*/ property_parameter_list tkColon fptype 
         { 
 			$$ = new property_interface($1 as property_parameter_list, $3, null, @$);
         }
@@ -1884,8 +2061,22 @@ parameter_decl
 		}
     ;
 
-optional_identifier
+/*optional_identifier
     : identifier
+		{ $$ = $1; }
+    |
+		{ $$ = null; }
+    ;
+    
+optional_write_expr    
+    : var_reference
+		{ $$ = $1; }
+    |
+		{ $$ = null; }
+    ;*/
+    
+optional_read_expr    
+    : expr_with_func_decl_lambda
 		{ $$ = $1; }
     |
 		{ $$ = null; }
@@ -1893,28 +2084,83 @@ optional_identifier
 
 property_specifiers
     :
-    | tkRead optional_identifier write_property_specifiers   
+    | tkRead optional_read_expr write_property_specifiers   
         { 
-			$$ = NewPropertySpecifiersRead($1, $2, $3 as property_accessors, @$);
+        	if ($2 == null || $2 is ident) // стандартные свойства
+        	{
+        		$$ = NewPropertySpecifiersRead($1, $2 as ident, null, null, $3 as property_accessors, @$);
+        	}
+        	else // расширенные свойства
+        	{
+				var id = NewId("#GetGen");
+                procedure_definition pr = null;
+                if (!parsertools.build_tree_for_formatter)
+                    pr = CreateAndAddToClassReadFunc($2, id, @2);
+				$$ = NewPropertySpecifiersRead($1, id, pr, $2, $3 as property_accessors, @$); // $2 передаЄтс€ дл€ форматировани€ 
+			}
         }
-    | tkWrite optional_identifier read_property_specifiers     
+    | tkWrite unlabelled_stmt read_property_specifiers     
         { 
-			$$ = NewPropertySpecifiersWrite($1, $2, $3 as property_accessors, @$);
+        	if ($2 is empty_statement)
+        	{
+        	
+        		$$ = NewPropertySpecifiersWrite($1, null, null, null, $3 as property_accessors, @$);
+        	}
+        	else if ($2 is procedure_call && ($2 as procedure_call).is_ident) // стандартные свойства
+        	{
+        	
+        		$$ = NewPropertySpecifiersWrite($1, ($2 as procedure_call).func_name as ident, null, null, $3 as property_accessors, @$);  // старые свойства - с идентификатором
+        	}
+        	else // расширенные свойства
+        	{
+				var id = NewId("#SetGen");
+                procedure_definition pr = null;
+                if (!parsertools.build_tree_for_formatter)
+                    pr = CreateAndAddToClassWriteProc($2 as statement,id,@2);
+				$$ = NewPropertySpecifiersWrite($1, id, pr, $2 as statement, $3 as property_accessors, @$); // $2 передаЄтс€ дл€ форматировани€
+			}
         }
     ;
 write_property_specifiers
     :
-    |  tkWrite optional_identifier     
+    |  tkWrite unlabelled_stmt     
        { 
-			$$ = NewPropertySpecifiersWrite($1, $2, null, @$);
+        	if ($2 is empty_statement)
+        	{
+        	
+        		$$ = NewPropertySpecifiersWrite($1, null, null, null, null, @$);
+        	}
+        	else if ($2 is procedure_call && ($2 as procedure_call).is_ident)
+        	{
+        		$$ = NewPropertySpecifiersWrite($1, ($2 as procedure_call).func_name as ident, null, null, null, @$); // старые свойства - с идентификатором
+        	}
+        	else 
+        	{
+				var id = NewId("#SetGen");
+                procedure_definition pr = null;
+                if (!parsertools.build_tree_for_formatter)
+                    pr = CreateAndAddToClassWriteProc($2 as statement,id,@2);
+				$$ = NewPropertySpecifiersWrite($1, id, pr, $2 as statement, null, @$);
+			}
        }
     ;
     
 read_property_specifiers
     :
-    |  tkRead optional_identifier     
+    |  tkRead optional_read_expr
        { 
-			$$ = NewPropertySpecifiersRead($1, $2, null, @$);
+        	if ($2 == null || $2 is ident)
+        	{
+        		$$ = NewPropertySpecifiersRead($1, $2 as ident, null, null, null, @$);
+        	}
+        	else 
+        	{
+				var id = NewId("#GetGen");
+                procedure_definition pr = null;
+                if (!parsertools.build_tree_for_formatter)
+                    pr = CreateAndAddToClassReadFunc($2,id,@2);
+				$$ = NewPropertySpecifiersRead($1, id, pr, $2, null, @$);
+			}
        }      
     ;
     
@@ -2024,7 +2270,7 @@ constr_destr_decl
             if (parsertools.build_tree_for_formatter)
 				$$ = new short_func_definition($$ as procedure_definition);
         }
-    | tkClass tkConstructor optional_proc_name fp_list tkAssign unlabelled_stmt tkSemiColon         
+    | class_or_static tkConstructor optional_proc_name fp_list tkAssign unlabelled_stmt tkSemiColon         
         { 
    			if ($6 is empty_statement)
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@7);
@@ -2049,7 +2295,7 @@ inclass_constr_destr_decl
             if (parsertools.build_tree_for_formatter)
 				$$ = new short_func_definition($$ as procedure_definition);
         }
-    | tkClass tkConstructor optional_proc_name fp_list tkAssign unlabelled_stmt tkSemiColon         
+    | class_or_static tkConstructor optional_proc_name fp_list tkAssign unlabelled_stmt tkSemiColon         
         { 
    			if ($6 is empty_statement)
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@7);
@@ -2063,7 +2309,7 @@ inclass_constr_destr_decl
 proc_func_decl
     : proc_func_decl_noclass
 		{ $$ = $1; }
-    | tkClass proc_func_decl_noclass             
+    | class_or_static proc_func_decl_noclass             
         { 
 			($2 as procedure_definition).proc_header.class_keyword = true;
 			$$ = $2;
@@ -2081,6 +2327,9 @@ proc_func_decl_noclass
 		}
 	| tkFunction func_name fp_list optional_method_modificators1 tkAssign expr_l1 tkSemiColon
 		{
+			if ($6 is dot_question_node)
+				parsertools.AddErrorFromResource("DOT_QUECTION_IN_SHORT_FUN",@6);
+	
 			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, null, $6, @1.Merge(@4));
 		}
 	| tkFunction func_name fp_list tkColon fptype optional_method_modificators1 tkAssign func_decl_lambda tkSemiColon
@@ -2109,7 +2358,7 @@ inclass_proc_func_decl
 		{ 
             $$ = $1; 
         }
-    | tkClass inclass_proc_func_decl_noclass         
+    | class_or_static inclass_proc_func_decl_noclass         
         { 
 		    if (($2 as procedure_definition).proc_header != null)
 				($2 as procedure_definition).proc_header.class_keyword = true;
@@ -2122,13 +2371,13 @@ inclass_proc_func_decl_noclass
         {
             $$ = new procedure_definition($1 as procedure_header, $2 as proc_block, @$);
 		}
-	| tkFunction func_name fp_list tkColon fptype optional_method_modificators1 tkAssign expr_l1 tkSemiColon
+	| tkFunction func_name fp_list tkColon fptype optional_method_modificators1 tkAssign expr_l1_func_decl_lambda tkSemiColon
 		{
 			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $6 as procedure_attributes_list, $2 as method_name, $5 as type_definition, $8, @1.Merge(@6));
 			if (parsertools.build_tree_for_formatter)
 				$$ = new short_func_definition($$ as procedure_definition);
 		}
-	| tkFunction func_name fp_list optional_method_modificators1 tkAssign expr_l1 tkSemiColon
+	| tkFunction func_name fp_list optional_method_modificators1 tkAssign expr_l1_func_decl_lambda tkSemiColon
 		{
 			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, null, $6, @1.Merge(@4));
 			if (parsertools.build_tree_for_formatter)
@@ -2511,7 +2760,7 @@ var_ident_list
 proc_call
     : var_reference                                    
         { 
-			$$ = new procedure_call($1 as addressed_value, @$); 
+			$$ = new procedure_call($1 as addressed_value, $1 is ident, @$); 
 		}
     ;
 
@@ -2559,6 +2808,10 @@ match_with
         { 
             $$ = new match_with($2, $4 as pattern_cases, $5 as statement, @$);
         }
+    | tkMatch expr_l1 tkWith pattern_cases tkSemiColon else_case tkEnd
+        { 
+            $$ = new match_with($2, $4 as pattern_cases, $6 as statement, @$);
+        }
     ;
     
 pattern_cases
@@ -2573,9 +2826,7 @@ pattern_cases
     ;
     
 pattern_case
-    : 
-        { $$ = new empty_statement(); }
-    | pattern_optional_var tkWhen expr_l1 tkColon unlabelled_stmt
+    : pattern_optional_var tkWhen expr_l1 tkColon unlabelled_stmt
         {
             $$ = new pattern_case($1 as pattern_node, $5 as statement, $3, @$);
         }
@@ -2589,7 +2840,15 @@ case_stmt
     : tkCase expr_l1 tkOf case_list else_case tkEnd 
         { 
 			$$ = new case_node($2, $4 as case_variants, $5 as statement, @$); 
-		}                          
+		}  
+	| tkCase expr_l1 tkOf case_list tkSemiColon else_case tkEnd 
+        { 
+			$$ = new case_node($2, $4 as case_variants, $6 as statement, @$); 
+		}
+	| tkCase expr_l1 tkOf else_case tkEnd 
+        { 
+			$$ = new case_node($2, NewCaseItem(new empty_statement(), null), $4 as statement, @$); 
+		}		
     ;
 
 case_list
@@ -2606,11 +2865,7 @@ case_list
     ;
 
 case_item
-    :                                     
-        { 
-			$$ = new empty_statement(); 
-		}
-    | case_label_list tkColon unlabelled_stmt            
+    : case_label_list tkColon unlabelled_stmt            
         { 
 			$$ = new case_variant($1 as expression_list, $3 as statement, @$); 
 		}
@@ -2878,6 +3133,13 @@ expr_l1
     | question_expr
 		{ $$ = $1; }
     ;
+    
+expr_l1_func_decl_lambda
+	: expr_l1
+		{ $$ = $1; }
+    | func_decl_lambda
+        { $$ = $1; }
+    ;
 	
 expr_dq
 	: relop_expr
@@ -2903,6 +3165,8 @@ typeof_expr
 question_expr
     : expr_l1 tkQuestion expr_l1 tkColon expr_l1 
         { 
+            if ($3 is nil_const && $5 is nil_const)
+            	parsertools.AddErrorFromResource("TWO_NILS_IN_QUESTION_EXPR",@3);
 			$$ = new question_colon_expression($1, $3, $5, @$);  
 		}
     ;
@@ -2935,7 +3199,7 @@ new_expr
         {
 			$$ = new new_expr($2, $3 as expression_list, false, null, @$);
         }      
-    | tkNew array_name_for_new_expr tkSquareOpen optional_expr_list tkSquareClose optional_array_initializer
+    | tkNew simple_or_template_type_reference tkSquareOpen optional_expr_list tkSquareClose optional_array_initializer
         {
         	var el = $4 as expression_list;
         	if (el == null)
@@ -3007,12 +3271,12 @@ list_fields_in_unnamed_object
 		}
 	;
 
-array_name_for_new_expr
+/*array_name_for_new_expr
     : simple_type_identifier 
 		{ $$ = $1; }
-    | unsized_array_type 
-		{ $$ = $1; }
-    ;
+//    | unsized_array_type - и кому такое приснилось
+//		{ $$ = $1; }
+    ;*/
 
 optional_expr_list_with_bracket
     :
@@ -3286,7 +3550,7 @@ tuple
 			if ($6 != null) 
 				parsertools.AddErrorFromResource("BAD_TUPLE",@6);*/
 
-			if (($4 as expression_list).Count>7) 
+			if (($4 as expression_list).Count>6) 
 				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",@$);
             ($4 as expression_list).Insert(0,$2);
 			$$ = new tuple_node($4 as expression_list,@$);
@@ -3312,13 +3576,35 @@ factor
 			$$ = new un_expr($2, $1.type, @$); 
 		}
     | sign factor             
-        { 
+        {
+			if ($1.type == Operators.Minus)
+			{
+			    var i64 = $2 as int64_const;
+				if (i64 != null && i64.val == (Int64)Int32.MaxValue + 1)
+				{
+					$$ = new int32_const(Int32.MinValue,@$);
+					break;
+				}
+				var ui64 = $2 as uint64_const;
+				if (ui64 != null && ui64.val == (UInt64)Int64.MaxValue + 1)
+				{
+					$$ = new int64_const(Int64.MinValue,@$);
+					break;
+				}
+				if (ui64 != null && ui64.val > (UInt64)Int64.MaxValue + 1)
+				{
+					parsertools.AddErrorFromResource("BAD_INT2",@$);
+					break;
+				}
+			    // можно сделать вычисление константы с вмонтированным минусом
+			}
+		
 			$$ = new un_expr($2, $1.type, @$); 
 		}
-    | tkDeref factor                
-        { 
-			$$ = new roof_dereference($2 as addressed_value, @$);
-		}
+//    | tkDeref factor // это ерунда кака€-то                
+//        { 
+//			$$ = new roof_dereference($2 as addressed_value, @$);
+//		}
     | var_reference
 		{ $$ = $1; }
 	| tuple 
@@ -3371,6 +3657,10 @@ attribute_variable
         { 
 			$$ = new attribute(null, $1 as named_type_reference, $2 as expression_list, @$);
 		}
+    | template_type optional_expr_list_with_bracket
+        {
+            $$ = new attribute(null, $1 as named_type_reference, $2 as expression_list, @$);
+        }
     ;
 
 dotted_identifier
@@ -3433,10 +3723,13 @@ variable
     | variable tkQuestionSquareOpen format_expr tkSquareClose                
         {
         	var fe = $3 as format_expr; // SSM 9/01/17
-    		if (fe.expr == null)
-    			fe.expr = new int32_const(int.MaxValue,@3);
-    		if (fe.format1 == null)
-    			fe.format1 = new int32_const(int.MaxValue,@3);
+            if (!parsertools.build_tree_for_formatter)
+            {
+                if (fe.expr == null)
+                    fe.expr = new int32_const(int.MaxValue,@3);
+                if (fe.format1 == null)
+                    fe.format1 = new int32_const(int.MaxValue,@3);
+            }
       		$$ = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
         }
     | variable tkRoundOpen optional_expr_list tkRoundClose                
@@ -3529,7 +3822,10 @@ literal_list
         }
     | literal_list one_literal    
         { 
-			$$ = ($1 as literal_const_line).Add($2 as literal, @$);
+        	var line = $1 as literal_const_line;
+            if (line.literals.Last() is string_const && $2 is string_const)
+            	parsertools.AddErrorFromResource("TWO_STRING_LITERALS_IN_SUCCESSION",@2);
+			$$ = line.Add($2 as literal, @$);
         } 
     ;
 
@@ -3624,6 +3920,8 @@ property_modificator
 	: tkVirtual
 		{ $$ = $1; }
 	| tkOverride
+		{ $$ = $1; }
+    | tkAbstract
 		{ $$ = $1; }
 	;
     
@@ -3755,6 +4053,8 @@ keyword
 		{ $$ = $1; }
     | tkType
 		{ $$ = $1; }
+    | tkStatic
+		{ $$ = $1; }
     | tkThen
 		{ $$ = $1; }
     | tkTo
@@ -3796,7 +4096,9 @@ keyword
     | tkMatch
         { $$ = $1; }
     | tkWhen
-        { $$ = $1; }
+        { $$ = $1; }/*
+    | tkInstance
+        { $$ = $1; }*/
     ;
 
 reserved_keyword
@@ -4154,6 +4456,10 @@ lambda_procedure_body
 			$$ = new statement_list($1 as statement, @$);
 		}
 	| yield_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| raise_stmt
 		{
 			$$ = new statement_list($1 as statement, @$);
 		}

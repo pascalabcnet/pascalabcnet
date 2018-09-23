@@ -16,6 +16,8 @@ SectionGroupEnd
 
 !include sect_PT4.nsh
 
+!include sect_Files.nsh
+
 !include sect_Samples.nsh
 
 SectionGroup $(DESC_Localization) Localization

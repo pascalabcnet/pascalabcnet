@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Чертежник">
+<param name="Keyword" value="Drawman">
+<param name="Keyword" value="ToPoint">
+<param name="Keyword" value="OnVector">
+<param name="Keyword" value="PenUp">
+<param name="Keyword" value="PenDown">
+<param name="Keyword" value="Task">
+<param name="Keyword" value="Field">
+<param name="Keyword" value="StandardField">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Исполнитель Чертежник</H1>
+Исполнитель Чертежник
+предназначен для построения рисунков и чертежей на плоскости с координатами. 
+Чертежник имеет перо, которое он может поднимать, опускать и перемещать. 
+При перемещении опущенного пера за ним остается след. 
+<p>Исполнитель Чертежник и поле, на котором он работает, отображаются на экране следующим
+образом:</p>
+<p><img border="0" src="DMa1.png" width="381" height="213"></p>
+<p>Здесь маленький квадрат изображает Чертежника, красным цветом изображены 
+отрезки, которые надо нарисовать, а синим &#151; уже нарисованные Чертежником
+отрезки. Когда перо Чертежника опущено, он изображается квадратом меньшего 
+размера.</p>
+<p>Команды исполнителя Чертежник 
+содержатся в модуле <code>Drawman</code>:
+</p>
+<blockquote>
+	<code>ToPoint(x,y)</code> –
+перемещает перо Чертежника в точку <code>(x,y)</code>;<code><br>
+	OnVector(a,b)</code>– перемещает перо 
+Чертежника на вектор <code>(a,b)</code>;<code><br>
+	PenUp</code> – поднимает перо Чертежника;<code><br>
+	PenDown</code> – опускает перо Чертежника.</p>
+</blockquote>
+<p style="margin-top: 6pt">Для вызова задания для исполнителя Чертежник 
+используется следующий шаблон программы:</p>
+<blockquote>
+<code><b>uses</b> Drawman;<br>
+<b>begin</b><br>
+&nbsp;  <a name="Task">Task</a>('c1');<br>
+<b>end</b>. </code>
+</blockquote>
+<p>В конце программы перо Чертежника должно быть поднято и находиться в начале 
+координат.</p>
+<p>Здесь <code>Task</code> ¦&#151; процедура,
+содержащаяся в модуле <code>Drawman</code> и вызывающая 
+задание с указанным именем.</p>
+<p>Имеются следующие группы заданий для исполнителя 
+Чертежник:</p>
+<blockquote>
+	<code>a</code> – вводные задания;<code><br>
+	c</code> – цикл с параметром;<code><br>
+	cc</code> – вложенные циклы;<code><br>
+	p</code> – процедуры без параметров;<code><br>
+	pp</code> – процедуры с параметрами.
+</blockquote>
+<p>Для создания произвольного поля размера 20 x 30 
+используется процедура <code><a name="StandardField">StandardField</a></code> без параметров, а для создания 
+поля размера N x M &#151; процедура <code><a name="Field">Field</a>(N,M)</code>.</p>
+</body>
+
+</html>

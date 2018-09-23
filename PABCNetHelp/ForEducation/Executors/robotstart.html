@@ -1,0 +1,114 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Робот">
+<param name="Keyword" value="Robot">
+<param name="Keyword" value="Left">
+<param name="Keyword" value="Right">
+<param name="Keyword" value="Up">
+<param name="Keyword" value="Down">
+<param name="Keyword" value="Paint">
+<param name="Keyword" value="WallFromLeft">
+<param name="Keyword" value="WallFromRight">
+<param name="Keyword" value="WallFromUp">
+<param name="Keyword" value="WallFromDown">
+<param name="Keyword" value="FreeFromLeft">
+<param name="Keyword" value="FreeFromRight">
+<param name="Keyword" value="FreeFromUp">
+<param name="Keyword" value="FreeFromDown">
+<param name="Keyword" value="CellIsPainted">
+<param name="Keyword" value="CellIsFree">
+<param name="Keyword" value="Task">
+<param name="Keyword" value="Field">
+<param name="Keyword" value="StandardField">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Исполнитель Робот</H1>
+<p >Исполнитель Робот 
+действует на прямоугольном клеточном поле. Между некоторыми клетками, а 
+также по периметру поля находятся <i>стены</i>. Основная цель Робота ¦&#151; закрасить
+указанные клетки и переместиться в конечную клетку.</p>
+<p>Исполнитель Робот и поле, на котором он работает, отображаются следующим 
+образом:</p>
+<p><img border="0" src="../CheckedTasks/gif/RBa1-1.png"></p>
+<p>Здесь большой желтый квадрат изображает Робота, маленький 
+желтый квадрат в левом верхнем углу клетки &#151; конечное положение Робота, черными точками помечены клетки, которые надо закрасить.</p>
+<p>Команды исполнителя Робот содержатся в 
+модуле <code>Robot</code>:
+</p>
+<blockquote>
+	<code>Right</code> –
+перемещает Робота вправо;<code><br>
+	Left</code> – перемещает Робота влево;<code><br>
+	Up</code> – перемещает Робота вверх;
+<code><br>
+	Down</code> – перемещает Робота вниз;
+<code><br>
+	Paint</code> – закрашивает текущую ячейку;<code><br>
+	WallFromLeft</code> – возвращает <code>True</code> 
+если слева от Робота стена;
+<code><br>
+	WallFromRight</code> – возвращает <code>True</code> 
+если справа от Робота стена;
+<code><br>
+	WallFromUp</code> – возвращает <code>True</code> 
+если сверху от Робота стена;
+<code><br>
+	WallFromDown</code> – возвращает <code>True</code> 
+если снизу от Робота стена;
+<code><br>
+	FreeFromLeft</code> – возвращает <code>True</code> 
+если слева от Робота свободно;
+<code><br>
+	FreeFromRight</code> – возвращает <code>True</code> 
+если справа от Робота свободно;
+<code><br>
+	FreeFromUp</code> – возвращает <code>True</code> 
+если сверху от Робота свободно;
+<code><br>
+	FreeFromDown</code> – возвращает <code>True</code> 
+если снизу от Робота свободно;
+<code><br>
+	CellIsPainted</code> – возвращает <code>True</code> 
+если ячейка, в которой находится Робот, закрашена;
+<code><br>
+	CellIsFree</code> – возвращает <code>True</code> 
+	если ячейка, в которой находится Робот, не закрашена.
+</blockquote>
+<p>Для вызова задания для исполнителя Робот используется
+следующий шаблон программы:</p>
+<blockquote>
+<code><b>uses</b> Robot;<br>
+<b>begin</b> <br>
+&nbsp;
+  Task('c1'); <br>
+<b>end</b>. </code>
+</blockquote>
+<p>Здесь <code>Task</code> &#151; процедура,
+содержащаяся в модуле <code>Robot</code> и вызывающая 
+задание с указанным именем.</p>
+<p>Имеются следующие группы заданий для исполнителя Робот:</p>
+<blockquote>
+	<code>a</code> – вводные задания;<code><br>
+	c</code> – цикл с параметром;<code><br>
+	if</code> – логические выражения;<code><br>
+	w</code> – циклы с условием;<code><br>
+	сif</code> – циклы + логические выражения;<code><br>
+	count</code> – переменные-счетчики;<code><br>
+	cc</code> – вложенные циклы;<code><br>
+	p</code> – процедуры без параметров;<code><br>
+	pp</code> – процедуры с параметрами.
+</blockquote>
+<p>Для создания стандартного поля размера 9 x 11
+используется процедура <code><a name="StandardField">StandardField</a></code> без параметров, а для создания 
+поля размера N x M &#151; процедура <code><a name="Field">Field</a>(N,M)</code>.
+Робот при этом помещается в центр поля.</p>
+</body>
+
+</html>

@@ -1,0 +1,362 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="BoundedObjectABC">
+<param name="Keyword" value="SetDrawSettings">
+<param name="Keyword" value="BorderColor">
+<param name="Keyword" value="BorderWidth">
+<param name="Keyword" value="Filled">
+<param name="Keyword" value="Bordered">
+</object></head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title><link rel="StyleSheet" href="../../default.css"><body>
+<H1>Класс BoundedObjectABC</H1>
+<p>Класс<b> </b><code>BoundedObjectABC</code> является 
+непосредственным потомком класса <code>ObjectABC</code> и
+базовым классом для всех замкнутых графических объектов.
+Его основными потомками являются следующие классы: <code>
+RectangleABC</code>, <code>SquareABC</code>, <code>EllipseABC</code>, <code>
+CircleABC</code>, <code>RegularPolygonABC</code>, <code>StarABC</code>, <code>
+BoardABC</code>. Класс<b> </b><code>BoundedObjectABC</code> - абстрактный: 
+объекты этого класса не создаются. </p>
+<table border=0 CELLPADDING=5>
+<tr>
+	<td height="8"></td>
+</tr>
+<tr>
+	<td style="border:1px solid #808080; background-color: #E7E7F7">
+<font style="font-size: 11pt">Свойства класса BoundedObjectABC</font></td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> BorderColor: GColor;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет границы
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> BorderWidth: integer; 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ширина границы
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> Bordered: boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Имеет ли объект границу (по умолчанию 
+<code>True</code>)
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> Filled: boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполнена ли внутренность объекта (по умолчанию 
+<code>True</code>)
+</td>
+</tr>
+<tr>
+	<td height="8"></td>
+</tr>
+<tr>
+	<td style="border:1px solid #808080; background-color: #E7E7F7">
+<font style="font-size: 11pt">Методы класса BoundedObjectABC</font></td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>procedure</b> SetDrawSettings;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Защищенный метод. Устанавливает атрибуты пера и кисти перед рисованием
+</td>
+</tr>
+<tr>
+	<td height="8"></td>
+</tr>
+<tr>
+	<td style="border:1px solid #808080; background-color: #E7E7F7">
+<font style="font-size: 11pt">Свойства, унаследованные от класса ObjectABC</font></td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> Left: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отступ графического объекта от левого края
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> Top: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отступ графического объекта от верхнего края
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> Width: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ширина графического объекта
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> Height: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Высота графического объекта
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> dx: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x-координата вектора перемещения объекта при вызове метода 
+<code>Move</code>. По 
+умолчанию установлено в 0. Для неподвижных объектов может быть использовано для 
+хранения любой дополнительной информации, связанной с объектом
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> dy: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y-координата вектора перемещения объекта при вызове метода 
+<code>Move</code>. По 
+умолчанию установлено в 0. Для неподвижных объектов может быть использовано для 
+хранения любой дополнительной информации, связанной с объектом
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> Center: Point;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Центр графического объекта
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> Position: Point;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Левый верхний угол графического объекта
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> Visible: boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Видим ли графический объект
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> Color: GColor;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет графического объекта
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> FontColor: GColor;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет шрифта графического объекта
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> Text: string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Текст внутри графического объекта
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> TextVisible: boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Видимость текста внутри графического объекта
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> TextScale: real;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Масштаб текста относительно размеров графического объекта, 0&lt;=<code>TextScale</code>&lt;=1. 
+При <code>TextScale</code>=1 текст занимает всю ширину или высоту объекта. По умолчанию 
+<code>TextScale</code>=0.8</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> FontName: string;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Имя шрифта для вывода свойства 
+<code>Text</code>
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> FontStyle: FontStyleType;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Стиль шрифта для вывода свойства 
+<code>Text</code>
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> Number: integer;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Целое число, выводимое в центре графического объекта. Для вывода 
+используется свойство <code>Text</code>
+</td>
+</tr>
+<tr>
+	<td>
+<code><b>property</b> RealNumber: real;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вещественное число, выводимое в центре графического объекта. Для вывода 
+используется свойство <code>Text</code>. Вещественное число выводится с одним знаком после 
+десятичной точки</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>property</b> Owner: ContainerABC;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Владелец графического объекта, ответственный также за перерисовку графического объекта внутри себя (по умолчанию 
+<code>nil</code>)
+</td>
+</tr>
+<tr>
+	<td height="8"></td>
+</tr>
+<tr>
+	<td style="border:1px solid #808080; background-color: #E7E7F7">
+<font style="font-size: 11pt">Методы, унаследованные от класса ObjectABC</font></td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>procedure</b> MoveTo(x,y: integer);
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает левый верхний угол графического объекта к точке (<code>x</code>, <code>y</code>)
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>procedure</b> MoveOn(a,b: integer); 
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает графический объект на вектор (<code>a</code>, <code>b</code>)
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>procedure</b> Move; <b>override</b>;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает графический объект на вектор, задаваемый свойствами 
+<code>dx</code>, <code>dy</code>
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>procedure</b> Scale(f: real); <b>override</b>;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Масштабирует графический объект в f раз (<code>f</code>&gt;1 - увеличение, 0&lt;<code>f</code>&lt;1 - уменьшение)
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>procedure</b> ToFront;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переносит графический объект на передний план
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>procedure</b> ToBack;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переносит графический объект на задний план
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>function</b> Bounds: System.Drawing.Rectangle;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает прямоугольник, определяющий границы графического объекта
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>function</b> PtInside(x,y: integer): boolean; <b>
+override</b>;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает <code>True</code>, если точка (<code>x</code>, <code>y</code>) находится внутри графического объекта, и <code>False</code> в противном случае
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>function</b> Intersect(g: ObjectABC): boolean;<br>
+</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает <code>True</code>, если изображение данного графического объекта пересекается с изображением
+
+    графического объекта <code>g</code>, и <code>False</code> в противном случае. Белый цвет считается прозрачным и не принадлежащим объекту</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>function</b> IntersectRect(r: System.Drawing.Rectangle): boolean;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает <code>True</code>, если прямоугольник графического объекта пересекается прямоугольником 
+<code>r</code>, и <code>False</code> в противном случае
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>function</b> Clone0: ObjectABC; <b>override</b>;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает клон графического объекта
+</td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>procedure</b> Draw(x,y: integer; g: Graphics); <b>
+override</b>;</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Защищенная. Не 
+вызывается явно. Переопределяется для каждого графического класса. Рисует объект на
+объекте <code>g:</code> <code>Graphics</code></td>
+</tr>
+<tr>
+	<td>
+<code>
+    <b>destructor</b> Destroy;
+</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Уничтожает графический объект
+</td>
+</tr>
+</table>
+</body></html>

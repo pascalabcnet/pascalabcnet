@@ -660,11 +660,17 @@ namespace PascalABCCompiler.Parsers
             get;
         }
 
+        bool IsStatic
+        {
+            get;
+        }
+
         string[] TemplateArguments
     	{
     		get;
     	}
 
+        IProcScope FindExtensionMethod(string name);
         IProcScope GetConstructor();
     }
     

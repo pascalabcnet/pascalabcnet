@@ -112,7 +112,7 @@ type
     property Top: integer read fy write SetY;
     /// Ширина графического объекта 
     property Width: integer read fw write SetWidth;
-    /// Высота  графического объекта
+    /// Высота графического объекта
     property Height: integer read fh write SetHeight;
     ///x-координата вектора перемещения объекта при вызове метода Move.
     ///По умолчанию установлено в 0. Для неподвижных объектов может быть использовано 

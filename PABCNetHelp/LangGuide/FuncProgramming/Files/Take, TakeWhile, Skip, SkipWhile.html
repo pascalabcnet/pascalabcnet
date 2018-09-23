@@ -1,0 +1,39 @@
+<html><head><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Take">
+<param name="Keyword" value="TakeWhile">
+<param name="Keyword" value="Skip">
+<param name="Keyword" value="SkipWhile">
+</object><meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><title></title><link rel="StyleSheet" href="../../../default.css"></head>
+<body>
+<H1>Методы Take, TakeWhile, Skip, SkipWhile</H1><h2>Описание методов</h2><p>Методы приведены для последовательности <code><b>sequence of</b> T</code>.</p><table>
+<tr><td>
+<code><b>function </b>Take(count: integer): <b>sequence of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность из count элементов с начала последовательности.
+</td></tr>
+<tr><td>
+<code><b>function </b>TakeWhile(predicate: T-&gt;boolean): <b>sequence of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цепочку элементов последовательности, удовлетворяющих указанному условию, до первого не удовлетворяющего.
+</td></tr>
+<tr><td>
+<code><b>function </b>TakeWhile(predicate: (T,integer)-&gt;boolean): <b>sequence of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цепочку элементов последовательности, удовлетворяющих указанному условию, до первого не удовлетворяющего (учитывается индекс элемента).
+</td></tr>
+<tr><td>
+<code><b>function </b>Skip(count: integer): <b>sequence of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пропускает count элементов в последовательности и возвращает остальные элементы.
+</td></tr>
+<tr><td>
+<code><b>function </b>SkipWhile(predicate: T-&gt;boolean): <b>sequence of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пропускает элементы в последовательности, пока они удовлетворяют заданному условию, и затем возвращает оставшиеся элементы.
+</td></tr>
+<tr><td>
+<code><b>function </b>SkipWhile(predicate: (T,integer)-&gt;boolean): <b>sequence of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Пропускает элементы в последовательности, пока они удовлетворяют заданному условию, и затем возвращает оставшиеся элементы (учитывается индекс элемента).
+</td></tr>
+</table>
+<h2>Пример </h2><blockquote><code><strong>begin<br>&nbsp; var</strong> a := 
+	Arr(1,2,3,4,5,6);<br>&nbsp; a.Take(3).Println; // 1 2 3<br>&nbsp; a.Skip(3).Println; 
+	// 4 5 6<br>&nbsp; a.Skip(2).Take(3).Println; // 3 4 5<br>&nbsp; a.TakeWhile(x 
+	-&gt; x&lt;3).Println; // 1 2
+	<br>&nbsp; a.SkipWhile(x -&gt; x&lt;5).Println; // 5 6<br><strong>end</strong>.</code></blockquote>
+</body>

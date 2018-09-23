@@ -1,0 +1,36 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Автоклассы">
+<param name="Keyword" value="auto">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+<style type="text/css">
+.auto-style1 {
+	font-family: monospace;
+	font-size: 10pt;
+	color: #000080;
+}
+</style>
+</head>
+
+<body>
+<H1>Автоклассы</H1>
+<p>При описании класса перед словом <code><strong>class</strong></code> можно поставить слово <code>
+<strong>auto</strong></code>. Такие 
+классы называются автоклассами. Для автоклассов автоматически генерируется 
+конструктор с параметрами, инициализирующими все поля класса, а также метод 
+<span class="auto-style1">ToString</span>, выводящий значения всех полей класса. Например:</p>
+<blockquote><code><b>type</b> Person = <strong>auto class</strong><br>&nbsp; 
+	name: string;<br>&nbsp; age: integer;<br><strong>end</strong>;<br><strong>
+	var</strong> p := new Person('Иванов',20); // конструктор автокласса 
+	генерируется автоматически<br>writeln(p); // вызывается сгенерированный 
+	автоматически метод ToString</code></blockquote>
+<p>Здесь в отличие от действия writeln по умолчанию выводятся значения не только 
+публичных, а всех полей.</p>
+</body>
+
+</html>

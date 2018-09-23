@@ -1,0 +1,32 @@
+<HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Matr">
+<param name="Keyword" value="MatrFill">
+<param name="Keyword" value="MatrGen">
+<param name="Keyword" value="MatrRandom">
+<param name="Keyword" value="MatrRandomInteger">
+<param name="Keyword" value="MatrRandomReal">
+<param name="Keyword" value="ReadMatrInteger">
+<param name="Keyword" value="ReadMatrReal">
+<param name="Keyword" value="Transpose"></object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
+</HEAD><body><H1>Подпрограммы для создания двумерных динамических массивов</H1>
+<table border=0 cellpadding=5><tr><td><code><b>function</b> Matr&lt;T&gt;(m,n: integer; <b>params</b> data: <b>array</b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n, заполненный указанными значениями по строкам</td></tr>
+<tr><td><code><b>function</b> MatrFill&lt;T&gt;(m, n: integer; x: T): <b>array</b> [,]  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n, заполненный элементами x</td></tr>
+<tr><td><code><b>function</b> MatrGen&lt;T&gt;(m, n: integer; gen: (integer,integer)-&gt;T): <b>array</b> [,]  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n, заполненный элементами x</td></tr>
+<tr><td><code><b>function</b> MatrRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): <b>array</b> [,]  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями</td></tr>
+<tr><td><code><b>function</b> MatrRandomInteger(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): <b>array</b> [,]  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями</td></tr>
+<tr><td><code><b>function</b> MatrRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real := 10): <b>array</b> [,]  <b>of</b> real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями</td></tr>
+<tr><td><code><b>function</b> ReadMatrInteger(m, n: integer): <b>array</b> [,]  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает матрицу m на n целых, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadMatrReal(m, n: integer): <b>array</b> [,]  <b>of</b> real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает матрицу m на n вещественных, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> Transpose&lt;T&gt;(a: <b>array</b> [,]  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Транспонирует двумерный массив</td></tr>
+</table>
+</body></HTML>

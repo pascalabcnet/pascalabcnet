@@ -1,0 +1,85 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="program">
+<param name="Keyword" value="uses">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+<style type="text/css">
+.auto-style1 {
+	font-family: monospace;
+	font-size: 10pt;
+	color: #000080;
+}
+</style>
+</head>
+
+<body>
+<H1>Структура программы: обзор</H1>
+<p class="pabcmain">Программа содержит <a href="identifiers.html">ключевые слова</a>,
+<a href="identifiers.html">идентификаторы</a>, <a href="comments.html">комментарии</a>. 
+Ключевые слова используются для выделения синтаксических конструкций и 
+подсвечиваются жирным шрифтом в редакторе. Идентификаторы являются именами 
+объектов программы и не могут совпадать с ключевыми словами. </p>
+<p class="pabcmain">&nbsp;Программа на языке <b>PascalABC.NET</b> имеет следующий вид:</p>
+<blockquote>
+	<p><code><b>program</b>
+	<code class="codeit">имя программы</code>;<br><code class="codeit">раздел </code></code>
+<b><code>uses</code></b><code><br>
+	<code class="codeit">раздел описаний</code><br><b>begin</b><br>&nbsp; 
+	<code class="codeit">операторы</code><br><b>end</b>.</code> </p>
+</blockquote>
+<p>Первая строка называется <i><b><font color="#FF0000">заголовком программы</font></b></i> и не является 
+обязательной.</p>
+<p><a href="../Modules/uses.html">Раздел
+<code>
+<b>uses</b></code></a>
+состоит из нескольких подряд идущих секций <span class="auto-style1"> <strong>
+uses</strong></span>, каждая из которых
+ начинается с ключевого слова
+<b><code>uses</code></b>, 
+за которым следует список имен модулей и пространств имен .NET, перечисляемых через запятую.</p>
+<p>Раздел описаний может включать следующие подразделы:</p>
+<ul>
+	<li><a href="vardef.html">раздел описания переменных</a> </li>
+	<li><a href="constdef.html">раздел описания констант</a></li>
+	<li><a href="typesdef.html">раздел описания типов</a></li>
+	<li><a href="labeldef.html">раздел описания меток</a></li>
+	<li><a href="../ProcFunc/procdef.html">раздел 
+	описания процедур и функций</a></li>
+</ul>
+<p>Данные подразделы следуют друг 
+за другом в произвольном порядке.</p>
+<p>Далее следует <a href="../Operators/beginend.html">блок</a> <b><code>begin</code></b>/<b><code>end</code></b>, 
+внутри которого находятся <a href="../Operators/index_statements.html">операторы</a>, отделяемые один от другого символом &quot;точка 
+с запятой&quot;. Среди операторов может присутствовать 
+<a href="../Operators/var_statement.html">оператор описания 
+переменной</a>, который позволяет описывать переменные внутри блока.</p>
+<p>Раздел 
+<b><code>uses</code></b><code><code class="codeit"><span style="font-style: normal">
+</span></code></code>и раздел описаний
+могут отсутствовать.</p>
+<p>Например:</p>
+<blockquote>
+	<code><b>program</b> MyProgram;<br>
+	<b>var</b> <br>
+&nbsp; a,b: integer;<br>
+&nbsp; x: real;<br>
+	<b>begin<br>
+	</b>&nbsp; readln(a,b);<br>
+	&nbsp; x := a/b;<br>
+	&nbsp; writeln(x);<br>
+	<b>end</b>.</code></blockquote>
+<p>или</p>
+<blockquote>
+	<code><b>uses</b> GraphABC;<br>
+	<b>begin<br>
+	</b>&nbsp; <strong>var</strong> x := 100;<br>&nbsp; <strong>var</strong> y := 
+	100;<br>&nbsp; <strong>var</strong> r := 50;<br>&nbsp; Circle(x,y,r);<br>
+	<b>end</b>.</code></blockquote>
+</body>
+
+</html>

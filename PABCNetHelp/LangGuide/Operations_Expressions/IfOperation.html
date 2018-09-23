@@ -1,0 +1,28 @@
+<html><head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Условная операция">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+<body><H1>Условная операция</H1>
+<p>Условная операция имеет следующий вид:</p>
+<blockquote>
+	<em>условие</em> <code>?</code> <em>выражение1</em> <code>:</code> <em>выражение2</em>
+</blockquote>
+<p>Если условие выполняется, то результатом является значение выражения1, иначе 
+значение выражения2.</p>
+<p>Например:</p>
+<blockquote>
+	<p><code><b>var</b> min := a &lt; b ? a : b;</code></p>
+</blockquote>
+<p>Нетрудно видеть, что условная операция позволяет в простых случаях не 
+использовать условный оператор. Например, предыдущий код для вещественных a и b 
+эквивалентен следующему:</p>
+<blockquote>
+	<p><code><b>var</b> min: real;<br><strong>if</strong> a&lt;b <strong>then</strong><br>&nbsp; 
+	min := a<br><strong>else</strong> min := b;</code></p>
+</blockquote>
+
+</body></html>

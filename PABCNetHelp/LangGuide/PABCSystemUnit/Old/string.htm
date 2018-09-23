@@ -1,0 +1,267 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Length">
+<param name="Keyword" value="Copy">
+<param name="Keyword" value="Delete">
+<param name="Keyword" value="Insert">
+<param name="Keyword" value="Pos">
+<param name="Keyword" value="SetLength">
+<param name="Keyword" value="Str">
+<param name="Keyword" value="Val">
+<param name="Keyword" value="IntToStr">
+<param name="Keyword" value="StrToInt">
+<param name="Keyword" value="FloatToStr">
+<param name="Keyword" value="StrToFloat">
+<param name="Keyword" value="UpCase">
+<param name="Keyword" value="LowCase">
+<param name="Keyword" value="UpperCase">
+<param name="Keyword" value="LowerCase">
+<param name="Keyword" value="Concat">
+<param name="Keyword" value="Trim">
+<param name="Keyword" value="TrimLeft">
+<param name="Keyword" value="TrimRight">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Стандартные процедуры и функции для работы со строками</H1>
+<table border="0" width="100%">
+	<!-- MSTableType="nolayout" -->
+	<tr>
+		<td width="23%" valign="top"><b>Имя и параметры</b></td>
+		<td width="9%" valign="top"><b>Процедура или функция</b></td>
+		<td width="15%" valign="top"><b>Типы параметров</b></td>
+		<td width="12%" valign="top"><b>Тип возвращаемого значения</b></td>
+		<td valign="top"><b>Действие</b></td>
+	</tr>
+	<tr>
+		<td width="23%" valign="top">
+<code>Length(s) </code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="15%" valign="top"><code>s</code> - <b> <code>string</code></b></td>
+		<td width="12%" valign="top"><code>integer</code></td>
+		<td valign="top">возвращает длину строки <code>s</code></td>
+	</tr>
+	<tr>
+		<td width="23%" valign="top">
+		<code>Copy(s,index,count) </code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="15%" valign="top"><code>s</code> - <code><b>string</b></code>,
+		<code>index</code> и <code>count</code> -
+		<code>integer</code></td>
+		<td width="12%" valign="top"><code><b>string</b></code></td>
+		<td valign="top">возвращает подстроку строки 
+		<code>s</code> длины <code>count</code>, 
+		начиная с позиции <code>index</code></td>
+	</tr>
+	<tr>
+		<td width="23%" valign="top">
+		<code>Delete(s,index,count) </code></td>
+		<td width="9%" valign="top">процедура</td>
+		<td width="15%" valign="top"><code>s</code> - <code><b>string</b></code>,
+		<code>index</code> и <code>count</code> -
+		<code>integer</code></td>
+		<td width="12%" valign="top">&nbsp;</td>
+		<td valign="top">удаляет в строке
+		<code>s</code> <code>count</code> символов 
+		начиная с позиции <code>index</code></td>
+	</tr>
+	<tr>
+		<td width="23%" valign="top">
+		<code>Insert(subs,s,index) </code></td>
+		<td width="9%" valign="top">процедура</td>
+		<td width="15%" valign="top"><code>s</code>, 
+		<code>subs</code> - <code><b>string</b></code>, <code>
+		index</code> - <code>integer</code></td>
+		<td width="12%" valign="top">&nbsp;</td>
+		<td valign="top">вставляет 
+		подстроку <code>subs</code> в строку 
+		<code>s</code><code> </code>с позиции <code>index</code></td>
+	</tr>
+	<tr>
+		<td width="23%" valign="top">
+		<code>Pos(subs,s) </code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="15%" valign="top"><code>s</code>, 
+		<code>subs</code> - <code><b>string</b></code></td>
+		<td width="12%" valign="top"><code>integer</code></td>
+		<td valign="top">возвращает позицию первой подстроки 
+		<code>subs</code> в строке <code>s</code>
+		(или 0 если подстрока не найдена)</td>
+	</tr>
+	<tr>
+		<td width="23%" valign="top">
+		<code>SetLength(s,n) </code></td>
+		<td width="9%" valign="top">процедура</td>
+		<td width="15%" valign="top"><code>s</code> - <code><b>string</b></code>,
+		<code>n</code> - <code>integer</code></td>
+		<td width="12%" valign="top">&nbsp;</td>
+		<td valign="top">устанавливает длину строки 
+		<code>s</code> равной <code>n</code></td>
+	</tr>
+	<tr>
+		<td width="23%" valign="top">
+		<code>Str(x,s)<br>
+		Str(x:n,s)<br>
+		Str(x:n:m,s) </code></td>
+		<td width="9%" valign="top">процедура</td>
+		<td width="15%" valign="top"><code>s</code> - <code><b>string</b></code>,
+		<code>x</code> - <code>integer</code>, 
+		<code>real</code> и 
+		<code>n</code>, 
+		<code>m</code> - <code>integer</code></td>
+		<td width="12%" valign="top">&nbsp;</td>
+		<td valign="top">преобразует <code>x</code> к строковому 
+		представлению (во втором и третьем случаях согласно формату вывода, 
+		устанавливаемому
+		<code>n</code> и
+		<code>m</code>) и записывает результат в строку 
+		<code>s</code></td>
+	</tr>
+	<tr>
+		<td width="23%" valign="top">
+		<code>Val(s,v,code)</code></td>
+		<td width="9%" valign="top">процедура</td>
+		<td width="15%" valign="top"><code>s</code> - <code><b>string</b></code>,
+		<code>v</code> - <code>integer</code>, 
+		<code>real</code>, и <code>code</code> - <code>
+		integer</code></td>
+		<td width="12%" valign="top">&nbsp;</td>
+		<td valign="top">преобразует строку <code>s</code> к 
+		числовому представлению и записывает результат в переменную
+		<code>v</code>. Если преобразование возможно, то в 
+		переменной <code>code</code> возвращается 0, если 
+		невозможно, то в <code>code</code> возвращается 
+		ненулевое значение</td>
+	</tr>
+	<tr>
+		<td width="23%" valign="top">
+		<code>Concat(s1,...,sn) </code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="15%" valign="top"><code>s1</code>,..., <code>sn</code> - <code><b>string</b></code></td>
+		<td width="12%" valign="top"><code><b>string</b></code></td>
+		<td valign="top">возвращает строку, являющуюся 
+		результатом слияния строк <code>s1</code>,..., <code>sn</code>. 
+		Результат тот же, что у выражения <code>s1+s2+...+sn</code></td>
+	</tr>
+	<tr>
+		<td width="23%" valign="top">
+		<code>IntToStr(i) </code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="15%" valign="top"><code>i</code> - <code>integer</code></td>
+		<td width="12%" valign="top"><code><b>string</b></code></td>
+		<td valign="top">преобразует целое число к строке</td>
+	</tr>
+	<tr>
+		<td width="23%" valign="top">
+		<code>StrToInt(s) </code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="15%" valign="top"><code>s</code> - <code><b>string</b></code></td>
+		<td width="12%" valign="top"><code>integer</code></td>
+		<td valign="top">преобразует строку в целое число . Если 
+		преобразование невозможно, то возникает ошибка времени выполнения</td>
+	</tr>
+	<tr>
+		<td width="23%" valign="top">
+		<code>FloatToStr(r) </code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="15%" valign="top"><code>r</code> - <code>real</code></td>
+		<td width="12%" valign="top"><code><b>string</b></code></td>
+		<td valign="top">преобразует вещественное число к строке</td>
+	</tr>
+	<tr>
+		<td width="23%" valign="top">
+		<code>StrToFloat(s) </code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="15%" valign="top"><code>s</code> - <code><b>string</b></code></td>
+		<td width="12%" valign="top"><code>real</code></td>
+		<td valign="top">преобразует строку в вещественное число. Если 
+		преобразование невозможно, то возникает ошибка времени выполнения</td>
+	</tr>
+	<tr>
+		<td width="23%" valign="top">
+		<code>UpCase(c)
+		</code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="15%" valign="top"><code>c</code> - 
+		<code><b>char</b></code></td>
+		<td width="12%" valign="top"><code><b>char</b></code></td>
+		<td valign="top">возвращает символ <code>c</code>, 
+		преобразованный к верхнему регистру</td>
+	</tr>
+	<tr>
+		<td width="23%" valign="top">
+		<code>LowCase(c)
+		</code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="15%" valign="top"><code>c</code> - 
+		<code><b>char</b></code></td>
+		<td width="12%" valign="top"><code><b>char</b></code></td>
+		<td valign="top">возвращает символ <code>c</code>, 
+		преобразованный к нижнему регистру</td>
+	</tr>
+	<tr>
+		<td width="23%" valign="top">
+		<code>UpperCase(s)
+		</code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="15%" valign="top"><code>s</code> - <code><b>string</b></code></td>
+		<td width="12%" valign="top"> <code><b>string</b></code></td>
+		<td valign="top">возвращает строку <code>
+		s</code>, преобразованную к верхнему регистру</td>
+	</tr>
+	<tr>
+		<td width="23%" valign="top">
+		<code>LowerCase(s)
+		</code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="15%" valign="top"><code>s</code> - <code><b>string</b></code></td>
+		<td width="12%" valign="top"> <code><b>string</b></code></td>
+		<td valign="top">возвращает строку <code>s</code>, 
+		преобразованную к нижнему регистру</td>
+	</tr>
+	<tr>
+		<td width="23%" valign="top">
+		<code>Trim(s)
+		</code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="15%" valign="top"><code>s</code> - <code><b>string</b></code></td>
+		<td width="12%" valign="top"> <code><b>string</b></code></td>
+		<td valign="top">возвращает копию строки <code>s</code>
+		с удаленными лидирующими и заключительными пробелами</td>
+	</tr>
+	<tr>
+		<td width="23%" valign="top">
+		<code>TrimLeft(s)
+		</code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="15%" valign="top"><code>s</code> - <code><b>string</b></code></td>
+		<td width="12%" valign="top"> <code><b>string</b></code></td>
+		<td valign="top">возвращает копию строки <code>s</code>
+		с удаленными лидирующими&nbsp; пробелами</td>
+	</tr>
+	<tr>
+		<td width="23%" valign="top">
+		<code>TrimRight(s)
+		</code></td>
+		<td width="9%" valign="top">функция</td>
+		<td width="15%" valign="top"><code>s</code> - <code><b>string</b></code></td>
+		<td width="12%" valign="top"> <code><b>string</b></code></td>
+		<td valign="top">возвращает копию строки <code>s</code>
+		с удаленными заключительными пробелами</td>
+	</tr>
+</table>
+<p><br>
+<br>
+<br>
+<br>
+<br>
+&nbsp;</p>
+</body>
+
+</html>

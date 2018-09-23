@@ -7,9 +7,11 @@
       <Tags>
         <CategoryIndices>
           <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
         </CategoryIndices>
         <TagIndices>
           <TagIndex>1</TagIndex>
+          <TagIndex>9</TagIndex>
         </TagIndices>
       </Tags>
     </SyntaxNode>
@@ -844,7 +846,7 @@
     </SyntaxNode>
     <SyntaxNode Name="method_name" BaseName="syntax_tree_node">
       <Fields>
-        <ExtendedField Name="ln" Type="List&lt;ident&gt;" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="ln" Type="List&lt;ident&gt;" CreateVariable="true" DeleteVariable="false" />
         <SyntaxField Name="class_name" SyntaxType="ident" />
         <SyntaxField Name="meth_name" SyntaxType="ident" />
         <SyntaxField Name="explicit_interface_name" SyntaxType="ident" />
@@ -977,6 +979,8 @@
     <SyntaxNode Name="write_accessor_name" BaseName="syntax_tree_node">
       <Fields>
         <SyntaxField Name="accessor_name" SyntaxType="ident" />
+        <SyntaxField Name="pr" SyntaxType="procedure_definition" />
+        <SyntaxField Name="statment_for_formatting" SyntaxType="statement" />
       </Fields>
       <Methods />
       <Tags>
@@ -987,6 +991,8 @@
     <SyntaxNode Name="read_accessor_name" BaseName="syntax_tree_node">
       <Fields>
         <SyntaxField Name="accessor_name" SyntaxType="ident" />
+        <SyntaxField Name="pr" SyntaxType="procedure_definition" />
+        <SyntaxField Name="expression_for_formatting" SyntaxType="expression" />
       </Fields>
       <Methods />
       <Tags>
@@ -1325,6 +1331,7 @@
     <SyntaxNode Name="procedure_call" BaseName="statement">
       <Fields>
         <SyntaxField Name="func_name" SyntaxType="addressed_value" />
+        <ExtendedField Name="is_ident" Type="bool" CreateVariable="false" DeleteVariable="false" />
       </Fields>
       <Methods />
       <Tags>
@@ -2454,7 +2461,7 @@
         <SyntaxField Name="proc_definition" SyntaxType="procedure_definition" />
         <SyntaxField Name="parameters" SyntaxType="expression_list" />
         <ExtendedField Name="lambda_name" Type="string" CreateVariable="false" DeleteVariable="false" />
-        <ExtendedField Name="defs" Type="List&lt;declaration&gt;" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="defs" Type="List&lt;declaration&gt;" CreateVariable="true" DeleteVariable="false" />
         <ExtendedField Name="lambda_visit_mode" Type="LambdaVisitMode" CreateVariable="false" DeleteVariable="false" />
         <SyntaxField Name="substituting_node" SyntaxType="syntax_tree_node" />
         <ExtendedField Name="usedkeyword" Type="int" CreateVariable="false" DeleteVariable="false" />
@@ -2855,6 +2862,105 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="typeclass_restriction" BaseName="ident">
+      <Fields>
+        <SyntaxField Name="restriction_args" SyntaxType="template_param_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>10</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="instance_definition" BaseName="type_definition">
+      <Fields>
+        <SyntaxField Name="body" SyntaxType="class_body_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>4</TagIndex>
+          <TagIndex>5</TagIndex>
+          <TagIndex>10</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="typeclass_definition" BaseName="type_definition">
+      <Fields>
+        <SyntaxField Name="additional_restrictions" SyntaxType="named_type_reference_list" />
+        <SyntaxField Name="body" SyntaxType="class_body_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>4</TagIndex>
+          <TagIndex>5</TagIndex>
+          <TagIndex>10</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="where_typeclass_constraint" BaseName="where_definition">
+      <Fields>
+        <SyntaxField Name="restriction" SyntaxType="typeclass_restriction" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>10</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="typeclass_param_list" BaseName="template_param_list">
+      <Fields />
+      <Methods>
+        <Method>
+          <Text>public typeclass_param_list(template_param_list _template_param_list): this(_template_param_list.dereferencing_value, _template_param_list.params_list, _template_param_list.source_context)
+{
+}</Text>
+        </Method>
+      </Methods>
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>10</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="typeclass_reference" BaseName="named_type_reference">
+      <Fields>
+        <SyntaxField Name="restriction_args" SyntaxType="template_param_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>4</TagIndex>
+          <TagIndex>10</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
     <SyntaxNode Name="pattern_node" BaseName="syntax_tree_node">
       <Fields />
       <Methods />
@@ -3048,12 +3154,13 @@
         <Tag Name="Выражения" ReferenceCount="36" />
         <Tag Name="Константы" ReferenceCount="15" />
         <Tag Name="Списки" ReferenceCount="23" />
-        <Tag Name="Типы" ReferenceCount="12" />
-        <Tag Name="Описания" ReferenceCount="23" />
+        <Tag Name="Типы" ReferenceCount="15" />
+        <Tag Name="Описания" ReferenceCount="25" />
         <Tag Name="Важнейшие" ReferenceCount="207" />
         <Tag Name="Method_Procedure_Call" ReferenceCount="2" />
         <Tag Name="Yield" ReferenceCount="8" />
         <Tag Name="Patterns" ReferenceCount="12" />
+        <Tag Name="Typeclasses" ReferenceCount="13" />
       </Tags>
     </FilterCategory>
   </TagCategories>
@@ -3069,9 +3176,11 @@
       <HelpData Key=".UnknownID" Value="" />
       <HelpData Key=".Vds" Value="" />
       <HelpData Key="._realType" Value="" />
+      <HelpData Key=".additional_restrictions" Value="" />
       <HelpData Key=".aloneparam" Value="" />
       <HelpData Key=".attr" Value="" />
       <HelpData Key=".attributes" Value="" />
+      <HelpData Key=".body" Value="" />
       <HelpData Key=".cconst" Value="Значение константы." />
       <HelpData Key=".char_num" Value="Номер символа." />
       <HelpData Key=".count" Value="" />
@@ -3103,6 +3212,8 @@
       <HelpData Key=".pattern" Value="" />
       <HelpData Key=".procdef" Value="" />
       <HelpData Key=".res" Value="" />
+      <HelpData Key=".restriction" Value="" />
+      <HelpData Key=".restriction_args" Value="" />
       <HelpData Key=".right" Value="" />
       <HelpData Key=".sharp_consts" Value="Список символьных констант в строке вида #123#124#125" />
       <HelpData Key=".specificator" Value="" />
@@ -3651,6 +3762,8 @@
       <HelpData Key="initfinal_part.initfinal_part(statement_list init,statement_list fin,SourceContext sc)" Value="" />
       <HelpData Key="initfinal_part.initfinal_part(syntax_tree_node stn1, statement_list init, syntax_tree_node stn2, statement_list fin, syntax_tree_node stn3, SourceContext sc)" Value="" />
       <HelpData Key="initfinal_part.initialization_sect" Value="" />
+      <HelpData Key="instance_definition" Value="Определение того как конкретный тип удовлетворяет классу типов." />
+      <HelpData Key="instance_definition.body" Value="" />
       <HelpData Key="int32_const" Value="Целая константа" />
       <HelpData Key="int32_const." Value="" />
       <HelpData Key="int32_const.override string ToString()" Value="" />
@@ -3912,9 +4025,10 @@
       <HelpData Key="procedure_attributes_list.procedure_attributes_list(proc_attribute attr, SourceContext sc): this(new procedure_attribute(attr),sc)" Value="" />
       <HelpData Key="procedure_attributes_list.procedure_attributes_list(procedure_attribute _procedure_attribute)" Value="" />
       <HelpData Key="procedure_attributes_list.procedure_attributes_list(procedure_attribute _procedure_attribute, SourceContext sc)" Value="" />
-      <HelpData Key="procedure_call" Value="" />
+      <HelpData Key="procedure_call" Value="bool is_ident; // является ли вызов процедуры идентификатором. Нужно исключительно для секции write свойств" />
       <HelpData Key="procedure_call." Value="" />
       <HelpData Key="procedure_call.func_name" Value="" />
+      <HelpData Key="procedure_call.is_ident" Value="" />
       <HelpData Key="procedure_call.override string ToString()" Value="" />
       <HelpData Key="procedure_call.parametres" Value="" />
       <HelpData Key="procedure_definition" Value="" />
@@ -4009,8 +4123,11 @@
       <HelpData Key="raise_stmt.address" Value="" />
       <HelpData Key="raise_stmt.expr" Value="" />
       <HelpData Key="raise_stmt.object" Value="" />
-      <HelpData Key="read_accessor_name" Value="" />
+      <HelpData Key="read_accessor_name" Value="procedure_definition pr != null если метод сгенерирован по выражению. //pr сделано object чтобы не обходилось лишний раз" />
       <HelpData Key="read_accessor_name.accessor_name" Value="" />
+      <HelpData Key="read_accessor_name.expr_for_formatting" Value="" />
+      <HelpData Key="read_accessor_name.expression_for_formatting" Value="" />
+      <HelpData Key="read_accessor_name.pr" Value="" />
       <HelpData Key="record_const" Value="" />
       <HelpData Key="record_const." Value="" />
       <HelpData Key="record_const.rec_consts" Value="" />
@@ -4279,6 +4396,17 @@
       <HelpData Key="typecast_node.left" Value="" />
       <HelpData Key="typecast_node.right" Value="" />
       <HelpData Key="typecast_node.type_def" Value="" />
+      <HelpData Key="typeclass_definition" Value="Определение класса типов" />
+      <HelpData Key="typeclass_definition.additional_restrictions" Value="" />
+      <HelpData Key="typeclass_definition.body" Value="" />
+      <HelpData Key="typeclass_param_list" Value="Список параметров тайпкласса" />
+      <HelpData Key="typeclass_param_list.public typeclass_param_list(template_param_list _template_param_list): this(_template_param_list._dereferencing_value, _template_param_list._params_list, _template_param_list.source_context)" Value="" />
+      <HelpData Key="typeclass_param_list.public typeclass_param_list(template_param_list _template_param_list): this(_template_param_list.dereferencing_value, _template_param_list.params_list, _template_param_list.source_context)" Value="" />
+      <HelpData Key="typeclass_param_list.public typeclass_param_list(template_param_list _template_param_list): this(_template_param_list.dereferencing_value, _template_param_list.params_list, _template_param_list.source_context)&#xA;{&#xA;}" Value="" />
+      <HelpData Key="typeclass_reference" Value="" />
+      <HelpData Key="typeclass_reference.restriction_args" Value="" />
+      <HelpData Key="typeclass_restriction" Value="Представляет конструкцию вида Typeclass[T], где Typleclass это ограничение, которое накладывается на тип T" />
+      <HelpData Key="typeclass_restriction.restriction_args" Value="" />
       <HelpData Key="typed_const_definition" Value="" />
       <HelpData Key="typed_const_definition.const_type" Value="" />
       <HelpData Key="typed_parameters" Value="" />
@@ -4470,6 +4598,8 @@
       <HelpData Key="where_definition_list.where_definition_list(where_definition _where_definition, SourceContext sc)" Value="" />
       <HelpData Key="where_type_specificator_list" Value="" />
       <HelpData Key="where_type_specificator_list.defs" Value="" />
+      <HelpData Key="where_typeclass_constraint" Value="" />
+      <HelpData Key="where_typeclass_constraint.restriction" Value="" />
       <HelpData Key="while_node" Value="Цикл ПОКА" />
       <HelpData Key="while_node." Value="" />
       <HelpData Key="while_node.CycleType" Value="Тип цикла ПОКА" />
@@ -4482,8 +4612,10 @@
       <HelpData Key="with_statement." Value="" />
       <HelpData Key="with_statement.do_with" Value="Список объектов, с которыми производить действия." />
       <HelpData Key="with_statement.what_do" Value="Что делать." />
-      <HelpData Key="write_accessor_name" Value="" />
+      <HelpData Key="write_accessor_name" Value="procedure_definition pr != null если метод сгенерирован по выражению. //pr сделано object чтобы не обходилось лишний раз" />
       <HelpData Key="write_accessor_name.accessor_name" Value="" />
+      <HelpData Key="write_accessor_name.pr" Value="" />
+      <HelpData Key="write_accessor_name.statment_for_formatting" Value="" />
       <HelpData Key="yield_node" Value="" />
       <HelpData Key="yield_node.ex" Value="" />
       <HelpData Key="yield_node.override string ToString()" Value="" />

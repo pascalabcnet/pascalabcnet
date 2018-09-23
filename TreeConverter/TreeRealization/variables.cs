@@ -195,7 +195,15 @@ namespace PascalABCCompiler.TreeRealization
 			}
 		}
 
-		public bool is_used_as_unlocal
+        public override location location
+        {
+            get
+            {
+                return _loc;
+            }
+        }
+
+        public bool is_used_as_unlocal
 		{
 			get
 			{
@@ -292,7 +300,13 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
-        
+        public override location location
+        {
+            get
+            {
+                return _loc;
+            }
+        }
 
         public SemanticTree.ILocation Location
         {
@@ -378,7 +392,15 @@ namespace PascalABCCompiler.TreeRealization
             }
 		}
 
-		public SemanticTree.ILocation Location
+        public override location location
+        {
+            get
+            {
+                return _loc;
+            }
+        }
+
+        public SemanticTree.ILocation Location
 		{
 			get
 			{
@@ -474,7 +496,15 @@ namespace PascalABCCompiler.TreeRealization
 			}
 		}
 
-		public SemanticTree.ILocation Location
+        public override location location
+        {
+            get
+            {
+                return _loc;
+            }
+        }
+
+        public SemanticTree.ILocation Location
 		{
 			get
 			{
@@ -891,7 +921,15 @@ namespace PascalABCCompiler.TreeRealization
 			}
 		}
 
-		public SemanticTree.ILocation Location
+        public override location location
+        {
+            get
+            {
+                return _loc;
+            }
+        }
+
+        public SemanticTree.ILocation Location
 		{
 			get
 			{

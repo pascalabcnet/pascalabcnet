@@ -1,0 +1,119 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="static">
+<param name="Keyword" value="статический">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Статические классы, поля, методы, свойства и конструкторы</H1>
+<p>В классе можно объявить так называемые <i>статические</i> 
+поля, свойства и методы. Они не принадлежат конкретному экземпляру класса, а связаны с 
+классом. Для их вызова используется точечная нотация, причем, перед точкой 
+используется не имя объекта, а имя класса. Чтобы поле или свойство или метод сделать 
+статическим, перед его именем следует указать ключевое слово <code>
+<b>static</b></code>. При описании статических свойств в секциях read и write 
+можно указывать только статические поля или методы.</p>
+<p>Например, определим для класса <span lang="en-us">Person </span>количество 
+созданных объектов этого класса как статическое поле и организуем доступ к этому 
+полю на чтение с помощью статической функции<span lang="en-us">. </span>После 
+каждого вызова конструктора значение статического поля будет увеличиваться на 1:</p>
+<p><code><b>type</b> <br>
+&nbsp; Person = <b>class</b><br>
+&nbsp; <b>private</b><br>
+&nbsp;&nbsp;&nbsp; name: string;<br>
+&nbsp;&nbsp;&nbsp; age: integer;<br>
+&nbsp;&nbsp;&nbsp; <b>static</b><span lang="en-us"> cnt: integer := 0;<br></span>&nbsp; <b>public<br>&nbsp;&nbsp;&nbsp; 
+static<span lang="en-us"> 
+property</span></b><span lang="en-us"> Coun: integer <b>read</b> cnt;</span><br>
+&nbsp;&nbsp;&nbsp; <b>constructor</b> (n: string; a: integer);<br>
+&nbsp;&nbsp;&nbsp; <b>begin<br>
+</b><span lang="en-us">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cnt += 1; </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; name := n;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; age := a;<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+<span lang="en-us">&nbsp;&nbsp;&nbsp; <b>static function</b> Count: integer;<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result := cnt;<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;</span><br>
+&nbsp; <span lang="en-us"><b>end</b>;</span></code></p>
+<p><code><span lang="en-us"><b>begin</b><br>
+&nbsp; <b>var</b> p: Person := new Person('</span>Иванов<span lang="en-us">',20);<br>
+&nbsp; <b>var</b> p1: Person := new Person('</span>Петров<span lang="en-us">',18);<br>
+&nbsp; writeln(Person.Count); // </span>обращение к классовому методу
+<span lang="en-us">Count<br>
+<b>end</b>.</span></code></p>
+<p>В отличие от статических полей и методов, обычные поля и методы называются 
+экземплярными. Из обычных методов можно обращаться к экземплярным и статическим 
+полям, но из статических методов можно обращаться только к статическим полям.</p>
+<p>Аналогично можно определить также статический конструктор, 
+предназначенный для автоматической инициализации классовых полей. Статический 
+конструктор<span lang="ru"> описывается с ключевым 
+словом <code>
+<b>static</b></code> и гарантированно вызывается перед вызовом 
+любого статического метода и&nbsp;созданием первого объекта этого класса.</span></p>
+<p>Например, определим в классе <code>Person</code><span lang="en-us"> 
+статическое</span> поле - массив объектов типа <code>Person</code> - и инициализируем его 
+в статическом конструкторе. Потом указанный массив можно использовать в реализации 
+статической функции <code>RandomPerson</code>, возвращающей случайный объект типа
+<code>Person</code><span lang="en-us">:</span><span lang="ru"> </span></p>
+<blockquote>
+	<p><code><b>type</b> <br>
+&nbsp; Person = <b>class</b><br>
+&nbsp; <b>private</b><br>
+&nbsp;&nbsp;&nbsp; <b>static</b> arr: <b>array</b> <b>of</b> Person;&nbsp; <br>
+&nbsp;&nbsp;&nbsp; name: string;<br>
+&nbsp;&nbsp;&nbsp; age: integer;<br>
+&nbsp; <b>public</b><br>
+&nbsp;&nbsp;&nbsp; <b>static</b> constructor; <br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SetLength(arr,3);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; arr[0] := <b>new</b> Person('Иванов',20);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; arr[1] := <b>new</b> Person('Петрова',19);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; arr[2] := <b>new</b> Person('Попов',35);<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+	<span lang="en-us">&nbsp;&nbsp;&nbsp; //...</span><br>
+&nbsp;&nbsp;&nbsp; <b>static</b> <b>function</b> RandomPerson: Person; <br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result := arr[Random(3)];<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp; <b>end</b>;<br>
+	<span lang="en-us"><b>const</b> cnt = 10;</span><b><br>
+	begin<br>
+	</b><span lang="en-us">&nbsp; <b>var</b> a := <b>new</b> Person[cnt];<br>
+&nbsp; <b>for var</b> i:=0 </span><b>to</b><span lang="en-us"> a.Length-1 </span>
+	<b>do</b><span lang="en-us"><br>
+&nbsp;&nbsp;&nbsp; a[i] := Person.RandomPerson;<br>
+	</span><b>end</b><span lang="en-us">.</span></code></p>
+</blockquote>
+<p>Класс также можно описывать как статический:</p>
+<blockquote>
+	<p><code><b>type</b> <br>
+&nbsp; MyStatic = <b>static class<br>&nbsp;&nbsp;&nbsp; static</b> Pi<b>:</b> 
+	real := 3.14;<b><br>&nbsp;&nbsp;&nbsp; static</b> <strong>function</strong> 
+	Pi2 := Pi * Pi;<b><br>&nbsp; end;</b></code></p>
+</blockquote>
+<p>В этом случает все его методы, поля, свойства и конструкторы должны быть 
+статическими. Запрещается создавать экземпляры статических классов. Кроме того, 
+от статических классов нельзя наследовать, статический класс не может быть 
+предком и статическим классом нельзя инстанцировать обобщенный класс.</p>
+<p>Для совместимости с Delphi статические члены класса можно также объявлять с 
+ключевым словом <code>
+<span lang="ru"> <b>c</b></span><b>lass</b></code>, которое в этом контексте 
+является синонимом <span lang="ru"> <code>
+<b>static</b></code></span>:</p>
+<blockquote>
+	<p><code><b>type</b> <br>
+&nbsp; MyStatic = <b>static class<br>&nbsp;&nbsp;&nbsp; </b><strong>class</strong> 
+	Pi<b>:</b> real := 3.14;<b><br>&nbsp;&nbsp;&nbsp; </b><strong>class</strong>
+	<strong>function</strong> Pi2 := Pi * Pi;<b><br>&nbsp; end;</b></code></p>
+</blockquote>
+<p>&nbsp;</p>
+</body>
+
+</html>

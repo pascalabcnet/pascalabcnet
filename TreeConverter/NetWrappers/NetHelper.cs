@@ -77,7 +77,15 @@ namespace PascalABCCompiler.NetHelper
 		internal Type entry_type = null;
         private List<Type> UnitTypes = null;
 
-		public NetScope(PascalABCCompiler.TreeRealization.using_namespace_list unar,System.Reflection.Assembly assembly,
+        public NetScope(PascalABCCompiler.TreeRealization.using_namespace_list unar,
+            SymbolTable.TreeConverterSymbolTable tcst) : base(tcst)
+        {
+            _unar = unar;
+
+            _tcst = tcst;
+        }
+
+        public NetScope(PascalABCCompiler.TreeRealization.using_namespace_list unar,System.Reflection.Assembly assembly,
 			SymbolTable.TreeConverterSymbolTable tcst) : base(tcst)
 		{
 			_unar=unar;
@@ -332,7 +340,9 @@ namespace PascalABCCompiler.NetHelper
 		{
             if (name == null) return null;
 			Assembly a = ass_name_cache[name] as Assembly;
-			if (a != null)
+            if (a == null && name.IndexOf(System.IO.Path.DirectorySeparatorChar) == -1)
+                a = ass_name_cache[System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), name)] as Assembly;
+            if (a != null)
 			{
 				if (System.IO.File.GetLastWriteTime(name) == (DateTime)file_dates[a])
 					return a;

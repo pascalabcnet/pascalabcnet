@@ -27,7 +27,6 @@ namespace PascalABCCompiler.TreeConverter
             var parameterTypes = variableDefinitions.Select(x => x.vars_type == null ? null : convert_strong(x.vars_type)).ToArray();
             List<function_node> candidates = new List<function_node>();
             List<type_node[]> deducedParametersList = new List<type_node[]>();
-
             var allDeconstructs = patternInstance.type.find_in_type(compiler_string_consts.deconstruct_method_name, context.CurrentScope);
             foreach (var canditateSymbol in allDeconstructs)
             {
@@ -221,6 +220,17 @@ namespace PascalABCCompiler.TreeConverter
             foreach (var parameter in deconstructor.parameters.Where(x => !IsSelfParameter(x)))
                 if (parameter.parameter_type != SemanticTree.parameter_type.var && parameter is common_parameter p)
                     AddError(p.loc, "DECONSTRUCTION_PARAMETERS_SHOULD_HAVE_VAR_MODIFIER");
+        }
+
+        /// <summary>
+        /// Проверяет выражение, сопоставляемое с образцом
+        /// </summary>
+        /// <param name="matchedExpression"></param>
+        private void CheckMatchedExpression(expression matchedExpression)
+        {
+            var convertedExpression = convert_strong(matchedExpression);
+            if (convertedExpression.type.IsPointer)
+                AddError(get_location(matchedExpression), "PATTERN_MATCHING_DOESNT_SUPPORT_POINTERS");
         }
     }
 }

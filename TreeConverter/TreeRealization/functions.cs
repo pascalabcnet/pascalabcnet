@@ -857,6 +857,14 @@ namespace PascalABCCompiler.TreeRealization
             }
 		}
 
+        public override location location
+        {
+            get
+            {
+                return _loc;
+            }
+        }
+
         /// <summary>
         /// Расположение имени функции в программе.
         /// Используется при обходе дерева посетителем.

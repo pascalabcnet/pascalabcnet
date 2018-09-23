@@ -465,28 +465,40 @@ namespace PascalABCCompiler.SyntaxTree
 				case 221:
 					return new double_question_node();
 				case 222:
-					return new pattern_node();
+					return new typeclass_restriction();
 				case 223:
-					return new type_pattern();
+					return new instance_definition();
 				case 224:
-					return new is_pattern_expr();
+					return new typeclass_definition();
 				case 225:
-					return new match_with();
+					return new where_typeclass_constraint();
 				case 226:
-					return new pattern_case();
+					return new typeclass_param_list();
 				case 227:
-					return new pattern_cases();
+					return new typeclass_reference();
 				case 228:
-					return new deconstructor_pattern();
+					return new pattern_node();
 				case 229:
-					return new pattern_deconstructor_parameter();
+					return new type_pattern();
 				case 230:
-					return new desugared_deconstruction();
+					return new is_pattern_expr();
 				case 231:
-					return new var_deconstructor_parameter();
+					return new match_with();
 				case 232:
-					return new recursive_deconstructor_parameter();
+					return new pattern_case();
 				case 233:
+					return new pattern_cases();
+				case 234:
+					return new deconstructor_pattern();
+				case 235:
+					return new pattern_deconstructor_parameter();
+				case 236:
+					return new desugared_deconstruction();
+				case 237:
+					return new var_deconstructor_parameter();
+				case 238:
+					return new recursive_deconstructor_parameter();
+				case 239:
 					return new deconstruction_variables_definition();
 			}
 			return null;
@@ -1638,6 +1650,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_syntax_tree_node(_write_accessor_name);
 			_write_accessor_name.accessor_name = _read_node() as ident;
+			_write_accessor_name.pr = _read_node() as procedure_definition;
+			_write_accessor_name.statment_for_formatting = _read_node() as statement;
 		}
 
 
@@ -1650,6 +1664,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_syntax_tree_node(_read_accessor_name);
 			_read_accessor_name.accessor_name = _read_node() as ident;
+			_read_accessor_name.pr = _read_node() as procedure_definition;
+			_read_accessor_name.expression_for_formatting = _read_node() as expression;
 		}
 
 
@@ -2045,6 +2061,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_statement(_procedure_call);
 			_procedure_call.func_name = _read_node() as addressed_value;
+			_procedure_call.is_ident = br.ReadBoolean();
 		}
 
 
@@ -3942,6 +3959,78 @@ namespace PascalABCCompiler.SyntaxTree
 			read_addressed_value_funcname(_double_question_node);
 			_double_question_node.left = _read_node() as expression;
 			_double_question_node.right = _read_node() as expression;
+		}
+
+
+		public void visit(typeclass_restriction _typeclass_restriction)
+		{
+			read_typeclass_restriction(_typeclass_restriction);
+		}
+
+		public void read_typeclass_restriction(typeclass_restriction _typeclass_restriction)
+		{
+			read_ident(_typeclass_restriction);
+			_typeclass_restriction.restriction_args = _read_node() as template_param_list;
+		}
+
+
+		public void visit(instance_definition _instance_definition)
+		{
+			read_instance_definition(_instance_definition);
+		}
+
+		public void read_instance_definition(instance_definition _instance_definition)
+		{
+			read_type_definition(_instance_definition);
+			_instance_definition.body = _read_node() as class_body_list;
+		}
+
+
+		public void visit(typeclass_definition _typeclass_definition)
+		{
+			read_typeclass_definition(_typeclass_definition);
+		}
+
+		public void read_typeclass_definition(typeclass_definition _typeclass_definition)
+		{
+			read_type_definition(_typeclass_definition);
+			_typeclass_definition.additional_restrictions = _read_node() as named_type_reference_list;
+			_typeclass_definition.body = _read_node() as class_body_list;
+		}
+
+
+		public void visit(where_typeclass_constraint _where_typeclass_constraint)
+		{
+			read_where_typeclass_constraint(_where_typeclass_constraint);
+		}
+
+		public void read_where_typeclass_constraint(where_typeclass_constraint _where_typeclass_constraint)
+		{
+			read_where_definition(_where_typeclass_constraint);
+			_where_typeclass_constraint.restriction = _read_node() as typeclass_restriction;
+		}
+
+
+		public void visit(typeclass_param_list _typeclass_param_list)
+		{
+			read_typeclass_param_list(_typeclass_param_list);
+		}
+
+		public void read_typeclass_param_list(typeclass_param_list _typeclass_param_list)
+		{
+			read_template_param_list(_typeclass_param_list);
+		}
+
+
+		public void visit(typeclass_reference _typeclass_reference)
+		{
+			read_typeclass_reference(_typeclass_reference);
+		}
+
+		public void read_typeclass_reference(typeclass_reference _typeclass_reference)
+		{
+			read_named_type_reference(_typeclass_reference);
+			_typeclass_reference.restriction_args = _read_node() as template_param_list;
 		}
 
 

@@ -1,0 +1,60 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Ключевые слова">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title>Идентификаторы и ключевые слова</title>
+<link rel="StyleSheet" href="../../default.css">
+<style type="text/css">
+.auto-style1 {
+	color: #FF0000;
+}
+</style>
+</head>
+
+<body>
+<H1>Идентификаторы и ключевые слова</H1>
+Идентификаторы служат в качестве имен программ, модулей, процедур, функций, 
+типов, переменных и констант. Идентификатором считается любая последовательность 
+латинских букв или цифр, начинающаяся с буквы. Буквой считается также символ 
+подчеркивания &quot;<code>_</code>&quot;.<p>Например, 
+<code>a1</code>, <code>_h</code>, <code>b123</code> - идентификаторы, а <code>1a</code> - нет.</p>
+<p>С каждым идентификатором связана <A href="scope.html">область действия 
+идентификатора</A>.</p>
+<p>Следующие слова являются <span class="auto-style1"><em><strong>ключевыми</strong></em></span>, 
+служат для оформления конструкций языка и не могут использоваться как 
+идентификаторы: </p>
+<p><b><code>and array as auto begin case class const constructor destructor div 
+do downto else end event except extensionmethod file finalization finally for 
+foreach function goto if implementation in inherited initialization interface is 
+label lock loop mod nil not of operator or procedure program property raise record 
+repeat sealed set sequence shl shr sizeof template then to try type typeof until 
+uses using var where while with xor</code></b></p>
+<p>Ряд слов является <i><b><font color="#ff0000">контекстно ключевыми </font></b></i>
+(они являются ключевыми только в некотором контексте): </p>
+<p><b><code>abstract default external forward internal on overload override 
+params private protected public read reintroduce unit virtual write</code></b></p>
+<p>Контекстно ключевые слова могут использоваться в качестве имен.</p>
+<p>Некоторые ключевые слова совпадают с важнейшими именами платформы .NET. 
+Поэтому в <b>PascalABC.NET</b>
+предусмотрена возможность использовать эти имена без конфликтов с ключевыми 
+словами.</p>
+<p>Первый способ состоит в использовании квалифицированного имени. Например:</p>
+<blockquote>
+	<p><code><b>var</b> a: System.Array;</code></p>
+</blockquote>
+<p>В этом контексте слово <code>Array</code> является именем внутри пространства 
+имен <code>System</code>, и конфликта с ключевым словом <b><code>array</code></b> 
+нет.</p>
+<p>Второй способ состоит в использовании специального символа
+<code>&amp;</code> перед именем. В этом случае имя может совпадать с ключевым 
+словом. Например:</p>
+<blockquote>
+	<p><code><b>uses</b> System;<br>
+	<b>var</b> a: &amp;Array;</code></p>
+</blockquote>
+<p>&nbsp;</p>
+</body>
+

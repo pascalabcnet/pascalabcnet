@@ -1,0 +1,223 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="array">
+<param name="Keyword" value="of">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+<style type="text/css">
+.auto-style2 {
+	color: #000080;
+}
+</style>
+</head>
+
+<body>
+<H1>Динамические массивы</H1>
+<h2>Описание динамического массива</h2>
+<p>Тип динамического массива конструируется следующим образом:</p>
+<blockquote>
+	<p><code><b>array</b> <b>of</b> </code><i>тип элементов </i>&nbsp;(одномерный 
+	массив)<br>
+	<code><b>array</b> [,] <b>of</b> </code><i>тип элементов</i>&nbsp; 
+	(двумерный массив)<br>
+	и т.д.</p>
+</blockquote>
+<p>Переменная типа динамический массив представляет собой ссылку. Поэтому 
+динамический массив нуждается в инициализации (выделении памяти под элементы). 
+</p>
+<h2>Выделение памяти под динамический массив</h2>
+<p>Для выделения памяти под динамический массив используется два способа. Первый 
+способ использует операцию <code>new</code> в стиле вызова конструктора класса:</p>
+<blockquote>
+	<p><code><b>var</b> <br>
+&nbsp; a: <b>array of</b> integer;<br>
+&nbsp; b: <b>array</b> [,] <b>of</b> real; <br>
+	<b>begin</b><br>
+&nbsp; a := new integer[5];<br>
+	&nbsp;
+	b := new real[4,3];<br>
+	<b>end</b>.</code></p>
+</blockquote>
+<p>Данный способ хорош тем, что позволяет совместить описание массива и 
+выделение под него памяти:</p>
+<blockquote>
+	<p><code><b>var</b> <br>&nbsp; a: <b>array of</b> integer := new integer[5];<br>
+&nbsp; b: <b>array</b> [,] <b>of</b> real := new real[4,3]; </code></p>
+</blockquote>
+<p>Описание типа можно при этом опускать - тип автовыводится:</p>
+<blockquote>
+	<p><code><b>var</b> <br>&nbsp; a := new integer[5];<br>
+&nbsp; b := new real[4,3]; </code></p>
+</blockquote>
+<p>Второй способ выделения памяти под динамический массив использует стандартную процедуру <code>SetLength</code>: </p>
+<blockquote>
+	<p><code>SetLength(a,10);<br>
+	SetLength(b,5,3);</code></p>
+</blockquote>
+<p>Элементы массива при этом заполняются значениями по умолчанию. </p>
+<p>Процедура <code>SetLength</code> обладает тем преимуществом, что при ее 
+повторном вызове старое содержимое массива сохраняется.</p>
+<h2>Инициализация динамического массива</h2>
+<p>Можно инициализировать динамический массив при выделении под него память 
+операцией new:</p>
+<blockquote>
+	<p><code>a := new integer[3](1,2,3);<br>
+	b := new real[4,3] ((1,2,3),(4,5,6),(7,8,9),(0,1,2));</code></p>
+</blockquote>
+<p>Инициализацию динамического массива в момент описания можно проводить в 
+сокращенной форме:</p>
+<blockquote>
+	<p><code><b>var</b> <br>
+&nbsp; a: <b>array</b> <b>of</b> integer := (1,2,3);<br>
+&nbsp; b: <b>array</b> [,] <b>of</b> real := ((1,2,3),(4,5,6),(7,8,9),(0,1,2));
+	<br>
+	<b>&nbsp;</b> c: <b>array</b> <b>of</b> <b>array</b> <b>of</b> integer := 
+	((1,2,3),(4,5),(6,7,8));</code></p>
+</blockquote>
+<p>При этом происходит выделение памяти под указанное справа количество 
+элементов. </p>
+<p>Инициализация одномерного массива проще всего осуществляется стандартными 
+функциями Seq..., которые выделяют память нужного размера и заполняют массив 
+указанными значениями:</p>
+<blockquote>
+	<p><code><strong>var</strong> a := Arr(1,3,5,7,8);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	// array of integer<br><strong>var</strong> s := 
+	Arr('Иванов','Петров','Сидоров'); // array of string<br><strong>var</strong> 
+	b := ArrFill(777,5);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	// b = [777,777,777,777,777]<br><strong>var</strong> r := ArrRandom(10);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	// заполнение 10 случайными целыми в диапазоне от 0 до 99&nbsp; </code></p>
+</blockquote>
+<p>В таком же стиле можно инициализировать массивы массивов:</p>
+<blockquote>
+	<p><code><strong>var</strong> a := Arr(Arr(1,3,5),Arr(7,8),Arr(5,6)); // 
+	array of array of integer</code></p>
+</blockquote>
+<h2>Длина динамического массива</h2>
+<p>Динамический массив помнит свою длину (n-мерный динамический массив помнит 
+длину по каждой размерности). Длина массива (количество элементов в нем) возвращается стандартной функцией
+<code>Length</code> или свойством <code>Length</code>:</p>
+<blockquote>
+	<p><code>l := Length(a);<br>
+	l := a.Length;</code></p>
+</blockquote>
+<p>Для многомерных массивов длина по каждой размерности возвращается стандартной 
+функцией <code>Length</code> с двумя параметрами или методом <code>GetLength(i)</code>:</p>
+<blockquote>
+	<p><code>l := Length(a,0);<br>
+	l := 
+	a.GetLength(0);&nbsp;</code></p>
+</blockquote>
+<h2>Ввод динамического массива</h2>
+<p>После выделения памяти ввод динамического массива можно осуществлять 
+традиционно в цикле:</p>
+<blockquote><code><strong>for var</strong> i:=0 <strong>to</strong> a.Length-1 
+	<strong>do</strong><br>&nbsp; read(a[i]);</code></blockquote>
+<p>Ввод динамического массива можно осуществлять 
+с помощью стандартной функции ReadSeqInteger:</p>
+<blockquote><code><strong>var</strong> a := ReadSeqInteger(10);</code></blockquote>
+<p>При этом под динамический массив выделяется память нужного размера.</p>
+<h2>Вывод динамического массива</h2>
+<p>Процедура write выводит динамический массив, заключая элементы в квадратные 
+скобки и разделяя их запятыми:</p>
+<blockquote><code><strong>var </strong> a := Arr(1,3,5,7,9);<strong><br></strong> 
+	writeln(a); // [1,3,5,7,9] </code>&nbsp;<span class="auto-style2"><font size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	</font></span></blockquote>
+<p>n-мерный динамический массив выводится так, что каждая размерность 
+заключается в квадратные скобки:.</p>
+<blockquote><code><strong>var </strong> m := new integer[3,3] 
+	((1,2,3),(4,5,6),(7,8,9));<strong><br></strong>writeln(m); // 
+	[[1,2,3],[4,5,6],[7,8,9]] </code></blockquote>
+<p>Динамический массив можно выводить также методом расширения Print или 
+Println:</p>
+<blockquote>
+	<p><code>a.Println;</code></p>
+</blockquote>
+<p>При этом элементы по умолчанию разделяются пробелами, но можно это изменить, 
+задав параметр Print, являющийся разделителем элементов. Например:</p>
+<blockquote>
+	<p><code>a.Print(NewLine);</code></p>
+</blockquote>
+<p>выводит каждый элемент на отдельной строке.</p>
+<h2>Массивы массивов</h2>
+<p>Если объявлен массив массивов</p>
+<blockquote>
+	<p><code><b>var</b> с: <b>array of array of</b> 
+	integer;</code></p>
+</blockquote>
+<p>то его инициализацию можно провести только с помощью 
+<code>SetLength</code>:</p>
+<blockquote>
+	<p><code>SetLength(с,5);<br>
+	<b>for</b> i := 0 <b>to</b> 4 <b>do</b><br>
+&nbsp; SetLength(c[i],3);</code></p>
+</blockquote>
+<p>Для инициализации такого массива с помощью <code>new</code>
+следует ввести имя типа для <code><b>array of</b> integer</code>:</p>
+<blockquote>
+	<p><code><b>type </b>IntArray = <b>array of</b> integer<b>;<br>
+	var</b> с: <b>array of </b>IntArray;<br>
+	...<br>
+	c := new IntArray[5];<br>
+	<b>for</b> i := 0 <b>to</b> 4 <b>do</b><br>
+&nbsp; c[i] := new integer[3]; </code></p>
+</blockquote>
+<p>Инициализацию массива массивов можно также проводить в 
+сокращенной форме:</p>
+<blockquote>
+	<p><code><b>var</b> <br>
+	<b>&nbsp;</b> c: <b>array</b> <b>of</b> <b>array</b> <b>of</b> integer := 
+	((1,2,3),(4,5),(6,7,8));</code></p>
+</blockquote>
+<h2>Присваивание динамических массивов</h2>
+<p>Динамические массивы одного типа можно присваивать друг другу, при этом обе 
+переменные-ссылки будут указывать на одну память:</p>
+<blockquote>
+	<p><code><b>var</b> a1: <b>array</b> <b>of</b> integer;<br>
+	<b>var</b> a2: <b>array</b> <b>of</b> integer;<br>
+	a1 := a2;</code></p>
+</blockquote>
+<p>Следует обратить внимание, что для динамических массивов принята
+<a href="typecompatibility.html">структурная эквивалентность типов</a>: можно 
+присваивать друг другу и передавать в качестве параметров подпрограмм 
+динамические массивы, совпадающие по структуре.</p>
+<p>Чтобы одному динамическому массиву присвоить копию другого массива, следует 
+воспользоваться стандартной функцией <code>Copy</code>:</p>
+<blockquote>
+	<p><code>a1 := Copy(a2);</code></p>
+</blockquote>
+<h2>Передача динамического массива в подпрограмму</h2>
+<p>Динамический массив обычно передается в подпрограмму по значению, т.к. сама 
+переменная уже является ссылкой:</p>
+<blockquote>
+	<p><code><strong>procedure</strong> Squares(a: <strong>array of</strong> 
+	integer);<br><strong>begin</strong><br>&nbsp; <strong>for var</strong> i:=0
+	<strong>to</strong> a.Length-1 <strong>do</strong><br>&nbsp;&nbsp;&nbsp; 
+	a[i] := Sqr(a[i]);<br><strong>end</strong>;<br><br><strong>begin</strong><br>&nbsp;
+	<strong>var</strong> a := Arr(1,3,5,7,9);<br>&nbsp; Squares(a);<br><strong>
+	end</strong>.</code></p>
+</blockquote>
+<p>Динамический массив передается по ссылке только в одном случае: если он 
+создается или пересоздается внутри подпрограммы. В частности, это необходимо 
+делать если для динамического масива внутри подпрограммы вызывается SetLength:</p>
+<blockquote>
+	<p><code><strong>procedure</strong> Add(<strong>var</strong> a: <strong>
+	array</strong> <strong>of</strong> integer; x: integer);<br><strong>begin</strong><br>&nbsp; 
+	SetLength(a,a.Length+1);<br>&nbsp; a[a.Length-1] := x;<br><strong>end</strong>;<br>
+	<br><strong>begin</strong><br>&nbsp; <strong>var</strong> a := 
+	Arr(1,3,5,7,9);<br>&nbsp; Add(a,666);<br>&nbsp; writeln(a);<br><strong>end</strong>.</code></p>
+</blockquote>
+<p><a href="../PABCSystemUnit/Files/Subroutines%20for%20array%20of%20T.html">Подпрограммы для работы с динамическими массивами</a></p>
+<p>
+<a href="../PABCSystemUnit/Files/Subroutines%20for%20array%20of%20T%20generation.html">Подпрограммы для генерации динамических массивов</a></p>
+<p><a href="../FuncProgramming/extensionmethodsforsequences.html">Методы 
+расширения для последовательностей</a></p>
+<p>
+<a href="../PABCSystemUnit/Files/Extension%20methods%20for%20array%20of%20T.html">Методы расширения 
+для динамических массивов</a></p>
+</body>
+
+</html>
