@@ -21,6 +21,17 @@ namespace SyntaxVisitors.SugarVisitors
 
         }
 
+        public override void visit(unnamed_type_object u)
+        {
+            DefaultVisit(u);
+        }
+
+        public override void visit(name_assign_expr_list ne)
+        {
+            DefaultVisit(ne);
+        }
+
+
         public override void visit(tuple_node tup)
         {
             var dn = new dot_node(new dot_node(new ident("?System"), new ident("Tuple")), new ident("Create", tup.source_context));

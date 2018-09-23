@@ -42340,7 +42340,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///<summary>
 	///Это - сахарная конструкция.
 /// Объект безымянного класса. Например: new class(Name := 'Иванов'; Age := 25);
-/// ne - это узел для генерации кода, основной узел предназначен для форматирования
+/// new_ex - это узел для генерации кода, основной узел предназначен для форматирования
 	///</summary>
 	[Serializable]
 	public partial class unnamed_type_object : expression
