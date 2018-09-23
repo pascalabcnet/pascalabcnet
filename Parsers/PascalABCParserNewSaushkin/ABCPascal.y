@@ -147,14 +147,14 @@
 %type <td> set_type  
 %type <ex> as_is_expr as_is_constexpr is_expr as_expr power_expr power_constexpr
 %type <td> unsized_array_type simple_type_or_ simple_type /*array_name_for_new_expr*/ foreach_stmt_ident_dype_opt fptype type_ref fptype_noproctype array_type 
-%type <td> template_param structured_type unpacked_structured_type simple_or_template_type_reference type_ref_or_secific for_stmt_decl_or_assign type_decl_type
+%type <td> template_param template_empty_param structured_type unpacked_structured_type empty_template_type_reference simple_or_template_type_reference type_ref_or_secific for_stmt_decl_or_assign type_decl_type
 %type <stn> type_ref_and_secific_list  
 %type <stn> type_decl_sect
 %type <stn> try_handler  
 %type <ti> class_or_interface_keyword optional_tk_do keyword reserved_keyword  
 %type <ex> typeof_expr  
 %type <stn> simple_fp_sect   
-%type <stn> template_param_list template_type_params
+%type <stn> template_param_list template_empty_param_list template_type_params template_type_empty_params
 //%type <stn> template_type_or_typeclass_params typeclass_params  
 %type <td> template_type
 %type <stn> try_stmt  
@@ -1224,6 +1224,21 @@ template_type_params
 		}
     ;
 
+template_type_empty_params
+    :   tkNotEqual            
+        {
+            var ntr = new named_type_reference(new ident(""), @$);
+            
+			$$ = new template_param_list(ntr, @$);
+            ntr.source_context = new SourceContext($$.source_context.end_position.line_num, $$.source_context.end_position.column_num, $$.source_context.begin_position.line_num, $$.source_context.begin_position.column_num);
+		}
+    |   tkLower template_empty_param_list tkGreater            
+        {
+			$$ = $2;
+			$$.source_context = @$;
+		}
+    ;
+    
 template_param_list
     : template_param                              
         { 
@@ -1235,6 +1250,24 @@ template_param_list
 		}
     ;
 
+template_empty_param_list
+    : template_empty_param                              
+        { 
+			$$ = new template_param_list($1, @$);
+		}
+    | template_empty_param_list tkComma template_empty_param  
+        { 
+			$$ = ($1 as template_param_list).Add($3, @$);
+		}
+    ;
+
+template_empty_param
+    : 
+        { 
+            $$ = new named_type_reference(new ident(""), @$);
+        }
+    ;
+    
 template_param
     : simple_type
 		{ $$ = $1; }
@@ -3160,6 +3193,11 @@ typeof_expr
         { 
 			$$ = new typeof_operator((named_type_reference)$3, @$);  
 		}
+    |
+      tkTypeOf tkRoundOpen empty_template_type_reference tkRoundClose
+        { 
+			$$ = new typeof_operator((named_type_reference)$3, @$);  
+		}
     ;
 
 question_expr
@@ -3171,6 +3209,17 @@ question_expr
 		}
     ;
 
+empty_template_type_reference
+    : simple_type_identifier template_type_empty_params
+        {
+            $$ = new template_type_reference((named_type_reference)$1, (template_param_list)$2, @$); 
+        }
+    | simple_type_identifier tkAmpersend template_type_empty_params
+        {
+            $$ = new template_type_reference((named_type_reference)$1, (template_param_list)$3, @$);
+        }
+    ;
+    
 simple_or_template_type_reference
     : simple_type_identifier
 		{ 
