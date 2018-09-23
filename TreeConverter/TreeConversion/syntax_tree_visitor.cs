@@ -17459,7 +17459,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 type_node rez_type = sil?.FirstOrDefault().sym_info as type_node;
                 foreach (type_definition td in _template_type_reference.params_list.params_list)
-                    if (td is named_type_reference && (td as named_type_reference).names[0].name == "")
+                    if (td is named_type_reference && (td as named_type_reference).names.Count > 0 && (td as named_type_reference).names[0].name == "")
                     {
                         return_value(rez_type);
                         return;
