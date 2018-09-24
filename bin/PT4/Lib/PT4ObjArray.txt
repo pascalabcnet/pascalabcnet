@@ -1,0 +1,48 @@
+[=PascalABC]
+[0]
+uses PT4, ABCDatabases;
+
+[-HW]
+[1-24]
+begin
+  Task('%{task}');
+  var a := GetFitness;
+  a.Show;
+
+end.
+[25-36]
+begin
+  Task('%{task}');
+  var a := GetAbiturs;
+  a.Show;
+
+end.
+[37-48]
+begin
+  Task('%{task}');
+  var a := GetDebtors;
+  a.Show;
+
+end.
+[49-60]
+begin
+  Task('%{task}');
+  var a := GetFuelStations;
+  a.Show;
+
+end.
+[61-72]
+begin
+  Task('%{task}');
+  var a := GetPupilExams;
+  a.Show;
+
+end.
+[73-82]
+begin
+  Task('%{task}');
+  var a := GetPupilMarks;
+  a.Show;
+
+end.
+[1000]
