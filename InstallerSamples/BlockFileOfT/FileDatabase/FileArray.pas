@@ -75,11 +75,25 @@ type
       f := new BlockFileOf<T>(fname);
       f.Open(mode);
     end;
+    ///Использует заданный файл как основу для массива
+    ///Если файл не открыт - его откроет в режиме System.IO.FileMode.OpenOrCreate
+    public constructor(&file: BlockFileOf<T>);
+    begin
+      f := &file;
+      if not f.Opened then
+        f.Open(System.IO.FileMode.OpenOrCreate);
+    end;
+    ///Открывает заданный файл в режиме mode и использует его как основу для массива
+    public constructor(&file: BlockFileOf<T>; mode: System.IO.FileMode);
+    begin
+      f := &file;
+      f.Open(mode);
+    end;
     ///Создаёт новый массив хранящий данные в новом временном файл (в системной папке)
     ///Созданный файл будет удалёт в произвольное время (после завершения пользования переменной) или при вызове Finalize
     public constructor;
     begin
-      Create(System.IO.Path.GetTempFileName);
+      Create(System.IO.Path.GetTempFileName, System.IO.FileMode.CreateNew);
       DeleteOnExit := true;
     end;
     ///Выполняет необходимую отчистку при завершении работы с переменной

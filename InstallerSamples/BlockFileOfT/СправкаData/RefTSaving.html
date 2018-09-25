@@ -1,0 +1,490 @@
+
+<html>
+
+	<head>
+		<style type="text/css">
+			.code_block {
+			background: #c0c0c0;
+			padding: 5px;
+			padding-right: 20px; 
+			border: solid 1px black; 
+			}
+		</style>
+		 
+		<script type="text/javascript">
+			function toggle_show(id) {
+				document.getElementById(id).style.display = document.getElementById(id).style.display == 'none' ? 'block' : 'none';
+			}
+		</script>
+	</head>
+
+
+
+	<body>
+		<font size="3"><a href="../Справка.html"><=</a></font><br>
+		<br>
+		<font size="5">Сохранение ссылочных и особых типов в блочный файл.</font><br>
+		<hr />
+		
+		
+		<p onClick="toggle_show('spet')"><font size="4" color="008000" style="cursor: pointer">В чём проблема особых типов</font></p>
+		<div id=spet style="display: none">
+			<p class=code_block>
+					<t style="margin-left: 00px">uses BlockFileOfT;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 00px">type		</t>
+				<br><t style="margin-left: 10px">r1=record		</t>
+				<br><t style="margin-left: 20px">ch: char;		</t>
+				<br><t style="margin-left: 20px">constructor(ch: char) :=		</t>
+				<br><t style="margin-left: 20px">self.ch := ch;		</t>
+				<br><t style="margin-left: 10px">end;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 00px">begin		</t>
+				<br><t style="margin-left: 10px">var f := new BlockFileOf&ltr1>('temp.bin');		</t>
+				<br><t style="margin-left: 10px">f.Rewrite;		</t>
+				<br><t style="margin-left: 10px">f.Write(new r1('a'));		</t>
+				<br><t style="margin-left: 10px">f.Write(new r1('b'),new r1('c'));//Ошибка: Объект содержит данные, которые не являются примитивами или требуют преобразования.		</t>
+				<br><t style="margin-left: 10px">f.Close;		</t>
+				<br><t style="margin-left: 00px">end.		</t>
+			</p>
+			Тут второе Write вызовет ошибку описаную выше.<br>
+			Это потому - что во второй Write передаётся array of r1.<br>
+			Когда для копирования памяти из этого массива в массив байт запрашивается блокировка памяти -<br>
+			.Net видит что r1 содержит поле типа - char. Я так и не нашёл однозначного определения что с ним не так.<br>
+			Но, вроде, проблема в том - что в разных системах и версиях char может по разному хранится в памяти.<br>
+			И эта ошибка - защита от дурака, чтоб не дать данные из 1 системы скопировать в другую.<br>
+			<br>
+			char - не единственный такой "особый тип"<br>
+			если получаете такую же ошибку - записывайте и считывайте по 1 элементу<br>
+			или воспользуйтесь следующим способом обхода:<br>
+			<br>
+			<p class=code_block>
+					<t style="margin-left: 00px">uses BlockFileOfT;		</t>
+				<br><t style="margin-left: 00px">uses System.Runtime.InteropServices;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 00px">type		</t>
+				<br><t style="margin-left: 10px">[StructLayout(LayoutKind.&Explicit)]		</t>
+				<br><t style="margin-left: 10px">CWConv = record		</t>
+				<br><t style="margin-left: 20px">[FieldOffset(0)] ch:char;//У обоих этих полей одинаковая позиция в памяти (0 байт от начала записси) и объём (2 байт)		</t>
+				<br><t style="margin-left: 20px">[FieldOffset(0)] id:word;//Поэтому можно записать в 1 поле, а считать из другого, не теряя информацию		</t>
+				<br><t style="margin-left: 10px">end;		</t>
+				<br><t style="margin-left: 10px">r1=record		</t>
+				<br><t style="margin-left: 20px">ch: word;		</t>
+				<br><t style="margin-left: 20px">constructor(ch: char) :=		</t>
+				<br><t style="margin-left: 20px">begin		</t>
+				<br><t style="margin-left: 30px">var a: CWConv;		</t>
+				<br><t style="margin-left: 30px">a.ch := ch;		</t>
+				<br><t style="margin-left: 30px">self.ch := a.id;		</t>
+				<br><t style="margin-left: 20px">end;		</t>
+				<br><t style="margin-left: 20px">function GetCh:char;		</t>
+				<br><t style="margin-left: 20px">begin		</t>
+				<br><t style="margin-left: 30px">var a: CWConv;		</t>
+				<br><t style="margin-left: 30px">a.id := self.ch;		</t>
+				<br><t style="margin-left: 30px">Result := a.ch;		</t>
+				<br><t style="margin-left: 20px">end;		</t>
+				<br><t style="margin-left: 10px">end;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 00px">begin		</t>
+				<br><t style="margin-left: 10px">var f := new BlockFileOf&ltr1>('temp.bin');		</t>
+				<br><t style="margin-left: 10px">f.Rewrite;		</t>
+				<br><t style="margin-left: 10px">f.Write(new r1('a'));		</t>
+				<br><t style="margin-left: 10px">f.Write(new r1('b'),new r1('c'));		</t>
+				<br><t style="margin-left: 10px">f.Close;		</t>
+				<br><t style="margin-left: 00px">end.		</t>
+			</p>
+			Тип word занимает в памяти 2 байта, так же как char, поэтому char можно заменить на word.<br>
+			Узнать объём типа можно вызвав sizeof(word), sizeof(char) и т.д.<br>
+			Конечно, в данном случае создавать CWConv не обязательно, потому что word(ch) и char(id) и без того работает.<br>
+			Но с другими особыми типами это может не сработать.<br>
+			<hr />
+		</div>
+		
+		
+		
+		<p onClick="toggle_show('decl')"><font size="4" color="008000" style="cursor: pointer">В чём проблема ссылочных типов</font></p>
+		<div id=decl style="display: none">
+			<p class=code_block>
+					<t style="margin-left: 00px">type		</t>
+				<br><t style="margin-left: 10px">r1=record		</t>
+				<br><t style="margin-left: 20px">b:byte;		</t>
+				<br><t style="margin-left: 20px">i:integer;		</t>
+				<br><t style="margin-left: 20px">s:string;		</t>
+				<br><t style="margin-left: 10px">end;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 00px">begin		</t>
+				<br><t style="margin-left: 10px">var a: r1;		</t>
+				<br><t style="margin-left: 10px">a.b := 5;		</t>
+				<br><t style="margin-left: 10px">a.i := 12345;		</t>
+				<br><t style="margin-left: 10px">a.s := 'abcdef'*10000;//Это 60 000 символов, ~120KB		</t>
+				<br><t style="margin-left: 00px">end.		</t>
+			</p>
+			Проблема заключается в том, как хранится элементы этой записи в оперативной памяти.<br>
+			"a.b" и "a.i" будут находится прямо друг за другом.<br>
+			Но "a.s" будет где то в случайной области памяти.<br>
+			При этом, после "a.i", вместо "a.s" будет номер ячейки памяти (по сути - ссылка, отсюда название), в которую сохранило "a.s".<br>
+			Блочное сохранение обычно работает потому, что все элементы записи хранит друг за другом, 1 блоком в памяти.<br>
+			Этот блок можно целиком скопировать в файл, что является главным принципом "BlockFileOf&ltT>".<br>
+			Но раз "a.s" находится не в теле записи - вместо него в файл сохранит только номер ячейки где "a.s" хранится.<br>
+			Если, потом, попытаться загрузить эту запись назад - в "a.s" запишет номер ячейки где раньше была наша строка.<br>
+			Но строки по тому адресу уже может и не быть. Если так - попытка получить её значение выведет мусор или даст ошибку чтения защищённой памяти.<br>
+			Кроме всего прочего, сборщик мусора от .Net может перемещать ссылочные типы в памяти, для экономии места.<br>
+			Если запись ещё находится в оперативной памяти в момент сборки мусора - адрес строки не забудет поменять.<br>
+			Но если запись сохранили в файл, потом произошла сборка мусора, а затем мы загрузили запись назад - адрес строки будет уже устаревший.<br>
+			<br>
+			В общем, сохранение записей с полями ссылочных типов - ни к чему хорошему не приведёт.<br>
+			Но, все записи имеют неизменяемую длину, в то время как, к примеру, у массивов и строк - практически нету ограничения.<br>
+			Это 1 из причин, почему ссылочные типы удобнее хранить отдельно, по ссылке.<br>
+			И неизменяемая длина -  не только ограничение записей, это так же ограничение алгоритмов "file of T" и "BlockFileOf&ltT>",<br>
+			потому что для нормальной работы "Seek" - надо чтоб все элементы имели одинаковую длину.<br>
+			По этому, в примерах сохранения ссылочных типов, описаных далее - всегда стоит определённое ограничение на рамер,<br>
+			которое можно менять только перед компиляцией.<br>
+			<hr />
+		</div>
+		
+		
+		
+		<p onClick="toggle_show('io_basics')"><font size="4" color="008000" style="cursor: pointer">Массивы (статичные)</font></p>
+		<div id=io_basics style="display: none">
+			<p class=code_block>
+					<t style="margin-left: 00px">uses BlockFileOfT;			</t>
+				<br><t style="margin-left: 00px">uses System.Runtime.InteropServices;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 00px">type		</t>
+				<br><t style="margin-left: 10px">[StructLayout(LayoutKind.&Explicit)]			</t>
+				<br><t style="margin-left: 10px">CharArr15 = record			</t>
+				<br><t style="margin-left: 20px">private const MaxLength = 15;//Ограничение кол-ва элементов			</t>
+				<br><t style="margin-left: 20px">private const TSize = 2;//То что возвращает sizeof(T) где T - тип элементов массива (в нашем случае - char)			</t>
+				<br><t style="margin-left: 20px">private const Size = MaxLength * TSize;			</t>
+				<br><t style="margin-left: 20px">private [FieldOffset(Size-1)] last: byte;			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 20px">public class function operator explicit(a: array of char): CharArr15;		</t>
+				<br><t style="margin-left: 20px">begin		</t>
+				<br><t style="margin-left: 30px">if a.Length &lt MaxLength then 		</t>
+				<br><t style="margin-left: 40px">a := a + new char[MaxLength - a.Length];//Если не добавить тут лишние нули - копирование содержимого попытается прочитать после конца массива			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 30px">var hnd := GCHandle.Alloc(a, GCHandleType.Pinned);//Надо заблокировать память, иначе сборщик мусора может очень невовремя переместить массив		</t>
+				<br><t style="margin-left: 30px">try		</t>
+				<br><t style="margin-left: 40px">var ptr: ^CharArr15 := pointer(hnd.AddrOfPinnedObject);			</t>
+				<br><t style="margin-left: 40px">Result := ptr^;//Тут содержимое массива читает как CharArr15. Обычно так делать не стоит, но тут это лучший вариант, ибо единственный		</t>
+				<br><t style="margin-left: 30px">finally		</t>
+				<br><t style="margin-left: 40px">hnd.Free;//Если возникнет какая то ошибка - надо всё равно освободить дескриптор, иначе будет утечка памяти		</t>
+				<br><t style="margin-left: 30px">end;		</t>
+				<br><t style="margin-left: 20px">end;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 20px">public class function operator explicit(a: CharArr15): array of char;		</t>
+				<br><t style="margin-left: 20px">begin		</t>
+				<br><t style="margin-left: 30px">Result := new char[MaxLength];		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 30px">var hnd := GCHandle.Alloc(Result, GCHandleType.Pinned);		</t>
+				<br><t style="margin-left: 30px">try		</t>
+				<br><t style="margin-left: 40px">var ptr: ^CharArr15 := pointer(hnd.AddrOfPinnedObject);			</t>
+				<br><t style="margin-left: 40px">ptr^ := a;//А тут назад, содержимое "a" копируется в результат		</t>
+				<br><t style="margin-left: 30px">finally		</t>
+				<br><t style="margin-left: 40px">hnd.Free;		</t>
+				<br><t style="margin-left: 30px">end;		</t>
+				<br><t style="margin-left: 20px">end;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 20px">public function ToRefArr: array of char;		</t>
+				<br><t style="margin-left: 20px">type		</t>
+				<br><t style="margin-left: 30px">CharArr = array of char;		</t>
+				<br><t style="margin-left: 20px">begin		</t>
+				<br><t style="margin-left: 30px">Result := CharArr(self);			</t>
+				<br><t style="margin-left: 20px">end;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 10px">end;		</t>
+				<br><t style="margin-left: 10px">r1 = record			</t>
+				<br><t style="margin-left: 20px">public a: CharArr15;			</t>
+				<br><t style="margin-left: 20px">public i: integer;			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 20px">public constructor(a: array of char; i: integer);		</t>
+				<br><t style="margin-left: 20px">begin		</t>
+				<br><t style="margin-left: 30px">self.a := CharArr15(a);			</t>
+				<br><t style="margin-left: 30px">self.i := i;			</t>
+				<br><t style="margin-left: 20px">end;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 20px">public constructor(s: string; i: integer) :=		</t>
+				<br><t style="margin-left: 20px">Create(s.ToCharArray, i);		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 20px">public function ToString: string; override :=			</t>
+				<br><t style="margin-left: 20px">//Replace(#0,#32) заменяет пустые символы на пробелы			</t>
+				<br><t style="margin-left: 20px">//IDE паскаля немного ломается, если попытаться вывести char(0)			</t>
+				<br><t style="margin-left: 20px">$'r1("{(new string(a.ToRefArr)).Replace(#0,#32)}", {i})';			</t>
+				<br><t style="margin-left: 10px">end;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 00px">begin		</t>
+				<br><t style="margin-left: 10px">var f := new BlockFileOf&ltr1>('temp.bin');			</t>
+				<br><t style="margin-left: 10px">var a1 := new r1(new char[]('a', 'b', 'd', 'q'), 6);			</t>
+				<br><t style="margin-left: 10px">var b1 := new r1('Hello, world!', 278);			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 10px">{		</t>
+				<br><t style="margin-left: 10px">f.Reset;			</t>
+				<br><t style="margin-left: 10px">{}		</t>
+				<br><t style="margin-left: 10px">f.Rewrite;			</t>
+				<br><t style="margin-left: 10px">f.Write(a1, b1);			</t>
+				<br><t style="margin-left: 10px">{}			</t>
+				<br><t style="margin-left: 10px">f.Pos := 0;			</t>
+				<br><t style="margin-left: 10px">var a2 := f.Read;			</t>
+				<br><t style="margin-left: 10px">var b2 := f.Read;			</t>
+				<br><t style="margin-left: 10px">f.Close;			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 10px">writeln(a1);			</t>
+				<br><t style="margin-left: 10px">writeln(b1);			</t>
+				<br><t style="margin-left: 10px">writeln(a1.a.ToRefArr.Length);			</t>
+				<br><t style="margin-left: 10px">writeln(b1.a.ToRefArr.Length);			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 10px">writeln(a2);			</t>
+				<br><t style="margin-left: 10px">writeln(b2);			</t>
+				<br><t style="margin-left: 10px">writeln(a2.a.ToRefArr.Length);			</t>
+				<br><t style="margin-left: 10px">writeln(b2.a.ToRefArr.Length);			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 00px">end.		</t>
+			</p>
+			Что делают "[StructLayout(LayoutKind.&Explicit)]" и "[FieldOffset(Size-1)]"?<br>
+			"FieldOffset" указывает где в записи будет размещено поле "last: byte"<br>
+			Таким образом, мы, как бы, резервируем "Size" байт для записи.<br>
+			Они оказываются ничем не заняты, но в них можно сохранить информацию, что далее и происходит.<br>
+			А "LayoutKind.&Explicit" разрешает использовать "FieldOffset" для "CharArr15".<br>
+			<br>
+			"StructLayout", "LayoutKind.&Explicit" и "FieldOffset" находятся в пространстве имён<br>
+			"System.Runtime.InteropServices", поэтому я подключил его в начале файла.<br>
+			Но его можно не подключать, тогда придётся писать "System.Runtime.InteropServices.StructLayout" и т.п.<br>
+			Хотя есть ещё третий вариант - добавить свои синонимы в начале файла:
+			<p class=code_block>
+					<t style="margin-left: 00px">type		</t>
+				<br><t style="margin-left: 10px">StructLayout = System.Runtime.InteropServices.StructLayoutAttribute;		</t>
+				<br><t style="margin-left: 10px">LayoutKind = System.Runtime.InteropServices.LayoutKind;		</t>
+				<br><t style="margin-left: 10px">FieldOffset = System.Runtime.InteropServices.FieldOffsetAttribute;		</t>
+			</p>
+			Как видите, с тем что уже есть - можно хранить и строки, как массивы символов.<br>
+			Но, хотя мы сохраняли массив из 4 элемента и строку на 13 символов - при чтении назад им дало длину 15.<br>
+			Это вполне реально исправить, надо лишь сохранять - сколько символов было использовано.<br>
+			Но, конечно, это будут дополнительные затраты памяти и производительности:
+			<p class=code_block>
+					<t style="margin-left: 00px">uses BlockFileOfT;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 00px">type		</t>
+				<br><t style="margin-left: 10px">StructLayout = System.Runtime.InteropServices.StructLayoutAttribute;		</t>
+				<br><t style="margin-left: 10px">LayoutKind = System.Runtime.InteropServices.LayoutKind;		</t>
+				<br><t style="margin-left: 10px">FieldOffset = System.Runtime.InteropServices.FieldOffsetAttribute;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 10px">GCHandle = System.Runtime.InteropServices.GCHandle;		</t>
+				<br><t style="margin-left: 10px">GCHandleType = System.Runtime.InteropServices.GCHandleType;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 10px">[StructLayout(LayoutKind.&Explicit)]			</t>
+				<br><t style="margin-left: 10px">CharArr15Body = record			</t>
+				<br><t style="margin-left: 20px">private const MaxLength = 15;			</t>
+				<br><t style="margin-left: 20px">private const TSize = 2;			</t>
+				<br><t style="margin-left: 20px">private const Size = MaxLength * TSize;			</t>
+				<br><t style="margin-left: 20px">[FieldOffset(Size-1)] last: byte;			</t>
+				<br><t style="margin-left: 10px">end;		</t>
+				<br><t style="margin-left: 10px">[StructLayout(LayoutKind.&Explicit)]			</t>
+				<br><t style="margin-left: 10px">CharArr15 = record			</t>
+				<br><t style="margin-left: 20px">//shortint занимает 1 байт и принимает значения от -128 до 127			</t>
+				<br><t style="margin-left: 20px">//У нас максимум 15 элементов, поэтому этого вполне хватит.			</t>
+				<br><t style="margin-left: 20px">public [FieldOffset(0)] length: shortint;		</t>
+				<br><t style="margin-left: 20px">//Тут FieldOffset=1, потому что length занимает 1 байт в памяти			</t>
+				<br><t style="margin-left: 20px">//Если в вашей реализации "length" будет занимать бОльший объём - не забудьте поменять			</t>
+				<br><t style="margin-left: 20px">public [FieldOffset(1)] body: CharArr15Body;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 20px">public class function operator explicit(a: array of char): CharArr15;		</t>
+				<br><t style="margin-left: 20px">begin		</t>
+				<br><t style="margin-left: 30px">Result.length := a.Length;//Если передать массив с длиной больше чем помещается в shortint - произвойдёт переполнение.			</t>
+				<br><t style="margin-left: 30px">//Если такая возможность существует - надо поставить тут проверку, чтоб длине не присваивало ничего > 127			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 30px">if a.Length &lt CharArr15Body.MaxLength then 		</t>
+				<br><t style="margin-left: 40px">a := a + new char[CharArr15Body.MaxLength - a.Length];			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 30px">var hnd := GCHandle.Alloc(a, GCHandleType.Pinned);		</t>
+				<br><t style="margin-left: 30px">try		</t>
+				<br><t style="margin-left: 40px">var ptr: ^CharArr15Body := pointer(hnd.AddrOfPinnedObject);			</t>
+				<br><t style="margin-left: 40px">Result.body := ptr^;			</t>
+				<br><t style="margin-left: 30px">finally		</t>
+				<br><t style="margin-left: 40px">hnd.Free;		</t>
+				<br><t style="margin-left: 30px">end;		</t>
+				<br><t style="margin-left: 20px">end;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 20px">public class function operator explicit(a: CharArr15): array of char;		</t>
+				<br><t style="margin-left: 20px">begin		</t>
+				<br><t style="margin-left: 30px">//Если кол-во сохранённых байт &lt MaxLength - a.body будет занимать бОльший объём в памяти, чем поместится в Result		</t>
+				<br><t style="margin-left: 30px">//Поэтому надо сначала прочитать всё, включая пустые символы на конце, во временную переменную		</t>
+				<br><t style="margin-left: 30px">//А затем скопировать нужное кол-во символов в Result		</t>
+				<br><t style="margin-left: 30px">var temp := new char[CharArr15Body.MaxLength];		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 30px">var hnd := GCHandle.Alloc(temp, GCHandleType.Pinned);		</t>
+				<br><t style="margin-left: 30px">try		</t>
+				<br><t style="margin-left: 40px">var ptr: ^CharArr15Body := pointer(hnd.AddrOfPinnedObject);			</t>
+				<br><t style="margin-left: 40px">ptr^ := a.body;			</t>
+				<br><t style="margin-left: 30px">finally		</t>
+				<br><t style="margin-left: 40px">hnd.Free;		</t>
+				<br><t style="margin-left: 30px">end;		</t>
+				<br><t style="margin-left: 30px">Result := new char[a.length];			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 30px">//Если в "explicit(a:array of char):CharArr15" вы запретили length>MaxLength,			</t>
+				<br><t style="margin-left: 30px">//То "Min(a.length, CharArr15Body.MaxLength)" можно заменить на "a.length"			</t>
+				<br><t style="margin-left: 30px">System.Array.Copy(temp, Result, Min(a.length, CharArr15Body.MaxLength));			</t>
+				<br><t style="margin-left: 20px">end;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 20px">public function ToRefArr: array of char;		</t>
+				<br><t style="margin-left: 20px">type		</t>
+				<br><t style="margin-left: 30px">CharArr = array of char;		</t>
+				<br><t style="margin-left: 20px">begin		</t>
+				<br><t style="margin-left: 30px">Result := CharArr(self);			</t>
+				<br><t style="margin-left: 20px">end;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 10px">end;		</t>
+				<br><t style="margin-left: 10px">r1 = record			</t>
+				<br><t style="margin-left: 20px">public a: CharArr15;			</t>
+				<br><t style="margin-left: 20px">public i: integer;			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 20px">public constructor(a: array of char; i: integer);		</t>
+				<br><t style="margin-left: 20px">begin		</t>
+				<br><t style="margin-left: 30px">self.a := CharArr15(a);			</t>
+				<br><t style="margin-left: 30px">self.i := i;			</t>
+				<br><t style="margin-left: 20px">end;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 20px">public constructor(s: string; i: integer) :=			</t>
+				<br><t style="margin-left: 20px">Create(s.ToCharArray, i);			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 20px">public function ToString: string; override :=			</t>
+				<br><t style="margin-left: 20px">$'r1("{(new string(a.ToRefArr)).Replace(#0,#32)}", {i})';			</t>
+				<br><t style="margin-left: 10px">end;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 00px">begin		</t>
+				<br><t style="margin-left: 10px">var f := new BlockFileOf&ltr1>('temp.bin');			</t>
+				<br><t style="margin-left: 10px">var a1 := new r1(new char[]('a', 'b', 'd', 'q'), 6);			</t>
+				<br><t style="margin-left: 10px">var b1 := new r1('Hello, world!', 278);			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 10px">{		</t>
+				<br><t style="margin-left: 10px">f.Reset;			</t>
+				<br><t style="margin-left: 10px">{}		</t>
+				<br><t style="margin-left: 10px">f.Rewrite;			</t>
+				<br><t style="margin-left: 10px">f.Write(a1, b1);			</t>
+				<br><t style="margin-left: 10px">{}			</t>
+				<br><t style="margin-left: 10px">f.Pos := 0;			</t>
+				<br><t style="margin-left: 10px">var a2 := f.Read;			</t>
+				<br><t style="margin-left: 10px">var b2 := f.Read;			</t>
+				<br><t style="margin-left: 10px">f.Close;			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 10px">writeln(a1);			</t>
+				<br><t style="margin-left: 10px">writeln(b1);			</t>
+				<br><t style="margin-left: 10px">writeln(a1.a.ToRefArr.Length);			</t>
+				<br><t style="margin-left: 10px">writeln(b1.a.ToRefArr.Length);			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 10px">writeln(a2);			</t>
+				<br><t style="margin-left: 10px">writeln(b2);			</t>
+				<br><t style="margin-left: 10px">writeln(a2.a.ToRefArr.Length);			</t>
+				<br><t style="margin-left: 10px">writeln(b2.a.ToRefArr.Length);			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 00px">end.		</t>
+			</p>
+			В этот раз, уже, нулевые символы в конеце строки обрезало при чтении,<br>
+			потому что знало после какого символа надо обрезать.<br>
+			<hr />
+		</div>
+		
+		
+		
+		<p onClick="toggle_show('to_seq')"><font size="4" color="008000" style="cursor: pointer">Использование сериализаторов</font></p>
+		<div id=to_seq style="display: none">
+			<p class=code_block>
+					<t style="margin-left: 00px">uses BlockFileOfT;			</t>
+				<br><t style="margin-left: 00px">uses System.Runtime.InteropServices;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 00px">type		</t>
+				<br><t style="margin-left: 10px">[StructLayout(LayoutKind.&Explicit)]			</t>
+				<br><t style="margin-left: 10px">Str15 = record			</t>
+				<br><t style="margin-left: 20px">private const MaxLength = 15;			</t>
+				<br><t style="margin-left: 20px">//Я провёл много тестов чтоб убедится:			</t>
+				<br><t style="margin-left: 20px">//-BinaryFormatter всегда делает для string заголовок в 25 байт			</t>
+				<br><t style="margin-left: 20px">//-В разных случаях тело строки может сохранять как MaxLength*1, MaxLength*2 и MaxLength*3 байт.			</t>
+				<br><t style="margin-left: 20px">//-Предыдущее зависит от того, на сколько редкие символы были использованы. Для более редких символов надо больше памяти			</t>
+				<br><t style="margin-left: 20px">//Поэтому, на всякий случай, я сделал Size с расчётом на то, что все MaxLength символов могут быть редкими.			</t>
+				<br><t style="margin-left: 20px">private const Size = 25 + MaxLength * 3;			</t>
+				<br><t style="margin-left: 20px">private [FieldOffset(Size-1)] last: byte;			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 20px">private class f := new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter;			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 20px">public class function operator explicit(s: string): Str15;		</t>
+				<br><t style="margin-left: 20px">begin		</t>
+				<br><t style="margin-left: 30px">if s.Length > MaxLength then s := s.Substring(0, MaxLength);			</t>
+				<br><t style="margin-left: 30px">var str := new System.IO.MemoryStream(Size);			</t>
+				<br><t style="margin-left: 30px">str.SetLength(Size);			</t>
+				<br><t style="margin-left: 30px">f.Serialize(str, s);			</t>
+				<br><t style="margin-left: 30px">var a := str.ToArray;		</t>
+				<br><t style="margin-left: 30px">var hnd := GCHandle.Alloc(a, GCHandleType.Pinned);		</t>
+				<br><t style="margin-left: 30px">try		</t>
+				<br><t style="margin-left: 40px">var ptr: ^Str15 := pointer(hnd.AddrOfPinnedObject);			</t>
+				<br><t style="margin-left: 40px">Result := ptr^;			</t>
+				<br><t style="margin-left: 30px">finally		</t>
+				<br><t style="margin-left: 40px">hnd.Free;		</t>
+				<br><t style="margin-left: 30px">end;		</t>
+				<br><t style="margin-left: 20px">end;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 20px">public class function operator explicit(s: Str15): string;		</t>
+				<br><t style="margin-left: 20px">begin		</t>
+				<br><t style="margin-left: 30px">var a := new byte[Size];			</t>
+				<br><t style="margin-left: 30px">var hnd := GCHandle.Alloc(a, GCHandleType.Pinned);		</t>
+				<br><t style="margin-left: 30px">try		</t>
+				<br><t style="margin-left: 40px">var ptr: ^Str15 := pointer(hnd.AddrOfPinnedObject);			</t>
+				<br><t style="margin-left: 40px">ptr^ := s;			</t>
+				<br><t style="margin-left: 30px">finally		</t>
+				<br><t style="margin-left: 40px">hnd.Free;		</t>
+				<br><t style="margin-left: 30px">end;		</t>
+				<br><t style="margin-left: 30px">var str := new System.IO.MemoryStream(a);			</t>
+				<br><t style="margin-left: 30px">Result := string(f.Deserialize(str));			</t>
+				<br><t style="margin-left: 20px">end;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 10px">end;		</t>
+				<br><t style="margin-left: 10px">r1 = record			</t>
+				<br><t style="margin-left: 20px">public s: Str15;			</t>
+				<br><t style="margin-left: 20px">public i: integer;			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 20px">public constructor(s: string; i: integer);		</t>
+				<br><t style="margin-left: 20px">begin		</t>
+				<br><t style="margin-left: 30px">self.s := Str15(s);			</t>
+				<br><t style="margin-left: 30px">self.i := i;			</t>
+				<br><t style="margin-left: 20px">end;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 20px">public function ToString: string; override :=			</t>
+				<br><t style="margin-left: 20px">$'r1("{string(s)}", {i})';			</t>
+				<br><t style="margin-left: 10px">end;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 00px">begin		</t>
+				<br><t style="margin-left: 10px">var f := new BlockFileOf&ltr1>('temp.bin');			</t>
+				<br><t style="margin-left: 10px">var a1 := new r1('abcd', 1234);			</t>
+				<br><t style="margin-left: 10px">var b1 := new r1('abcd' * 4, 5678);			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 10px">{		</t>
+				<br><t style="margin-left: 10px">f.Reset;			</t>
+				<br><t style="margin-left: 10px">{}		</t>
+				<br><t style="margin-left: 10px">f.Rewrite;			</t>
+				<br><t style="margin-left: 10px">f.Write(a1, b1);			</t>
+				<br><t style="margin-left: 10px">{}			</t>
+				<br><t style="margin-left: 10px">f.Pos := 0;			</t>
+				<br><t style="margin-left: 10px">var a2 := f.Read;			</t>
+				<br><t style="margin-left: 10px">var b2 := f.Read;			</t>
+				<br><t style="margin-left: 10px">f.Close;			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 10px">writeln(a1);			</t>
+				<br><t style="margin-left: 10px">writeln(b1);			</t>
+				<br><t style="margin-left: 10px">writeln(string(a1.s).Length);			</t>
+				<br><t style="margin-left: 10px">writeln(string(b1.s).Length);			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 10px">writeln(a2);			</t>
+				<br><t style="margin-left: 10px">writeln(b2);			</t>
+				<br><t style="margin-left: 10px">writeln(string(a2.s).Length);			</t>
+				<br><t style="margin-left: 10px">writeln(string(b2.s).Length);			</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 00px">end.		</t>
+			</p>
+			Конечно, памяти будет нужен на много больший объём для такого сохранения.<br>
+			А т.к. памяти будет больше - значит и записывать/читать придётся больше, то есть производительность тоже ниже.<br>
+			Хотя в целом - такой способ должен быть проще в реализации.
+			<hr />
+		</div>
+		
+		
+	</body>
+
+</html>
