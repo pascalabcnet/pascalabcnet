@@ -44,7 +44,8 @@ namespace SyntaxVisitors.SugarVisitors
 
             //var sug = new sugared_expression(tup, mc, tup.source_context); - нет никакой семантической проверки - всё - на уровне синтаксиса!
 
-            ReplaceUsingParent(tup, mc);
+            //ReplaceUsingParent(tup, mc); - исправление #1199. Оказывается, ReplaceUsingParent и Replace не эквивалентны
+            Replace(tup, mc);
             visit(mc); 
         }
 

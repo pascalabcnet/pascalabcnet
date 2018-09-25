@@ -3270,9 +3270,9 @@ new_expr
         	var typename = "AnonymousType#"+Guid();
         	var type = new named_type_reference(typename,@1);
         	
-			// node new_expr - for code generation
+			// node new_expr - for code generation of new node
 			var ne = new new_expr(type, new expression_list(exprs), @$);
-			// node unnamed_type_object - for formatting
+			// node unnamed_type_object - for formatting and code generation (new node and Anonymous class)
 			$$ = new unnamed_type_object(l, true, ne, @$);
         }      
     ;
