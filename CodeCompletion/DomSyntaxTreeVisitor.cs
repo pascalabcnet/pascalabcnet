@@ -4028,7 +4028,9 @@ namespace CodeCompletion
         public override void visit(typecast_node _typecast_node)
         {
             if (_typecast_node.cast_op == op_typecast.is_op)
+            {
                 returned_scope = TypeTable.bool_type;
+            }
             else
                 _typecast_node.type_def.visit(this);
         }
@@ -4703,6 +4705,10 @@ namespace CodeCompletion
         {
             //throw new Exception("The method or operation is not implemented.");
             _var_statement.var_def.visit(this);
+            foreach (var_def_statement vds in pending_is_pattern_vars)
+            {
+                vds.visit(this);
+            }
         }
 
         public override void visit(PascalABCCompiler.SyntaxTree.question_colon_expression _question_colon_expression)
