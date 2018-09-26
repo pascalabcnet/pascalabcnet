@@ -15,6 +15,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
         public string Name { get; } = "Standard";
         public syntax_tree_node Convert(syntax_tree_node root)
         {
+            CapturedNamesHelper.Reset();
             // Прошивание ссылками на Parent nodes. Должно идти первым
             // FillParentNodeVisitor расположен в SyntaxTree/tree как базовый визитор, отвечающий за построение дерева
             FillParentNodeVisitor.New.ProcessNode(root);
