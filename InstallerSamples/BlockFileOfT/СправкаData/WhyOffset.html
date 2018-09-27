@@ -1,0 +1,107 @@
+
+<html>
+
+	<head>
+		<style type="text/css">
+			.code_block {
+			background: #c0c0c0;
+			padding: 5px;
+			padding-right: 20px; 
+			border: solid 1px black; 
+			}
+		</style>
+		 
+		<script type="text/javascript">
+			function toggle_show(id) {
+				document.getElementById(id).style.display = document.getElementById(id).style.display == 'none' ? 'block' : 'none';
+			}
+		</script>
+	</head>
+
+
+
+	<body>
+		<font size="3"><a href="../Справка.html"><=</a></font><br>
+		<br>
+		<hr />
+		
+		
+		<p onClick="toggle_show('io_basics')"><font size="4" color="008000" style="cursor: pointer">Что такое "Offset"</font></p>
+		<div id=io_basics style="display: none">
+			"Offset", он же отступ - это кол-во байт в начале файла, которые запрещенно использовать под элементы, сохранённые в файл.<br>
+			При этом, в эту область можно использовать под что угодно.<br>
+			Чаще всего - заголовок файла, описывающий какую то, общую для всех элементов файла, информацию.<br>
+			<br>
+			Если у файла есть отступ - "Size" и "Pos" будут учитывать его.<br>
+			То есть, если длина файла 11 байт, 1 элемент занимает 2 байт, а отступ 3 байт - "Size" будет возвращать 4, потому что (11-3)/2 .<br>
+			<br>
+			Но, что очень важно помнить - когда файл только открыт/создан любым способом, кроме "Append" -<br>
+			позиция в файле находится в самом начале, то есть на отсутпе.<br>
+			А попытка прочитать/записать элемент на отустп, конечно, ничем хорошим не закончится.<br>
+			Поэтому, в большинстве случаев лучше вызвать "f.Pos := 0" перед чтением/записью.<br>
+			Это поставить позицию в файле на элемент #0, то есть сразу после отступа.
+			<hr />
+		</div>
+		
+		
+		
+		<p onClick="toggle_show('decl')"><font size="4" color="008000" style="cursor: pointer">Заголовки</font></p>
+		<div id=decl style="display: none">
+			И так, как написано выше, основное применение - заголовок файла:
+			<p class=code_block>
+					<t style="margin-left: 00px">uses BlockFileOfT;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 00px">type		</t>
+				<br><t style="margin-left: 10px">HeaderT =  record		</t>
+				<br><t style="margin-left: 20px">version: integer;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 20px">public function ToString:string; override :=		</t>
+				<br><t style="margin-left: 20px">$'Header:[version={version}]';		</t>
+				<br><t style="margin-left: 10px">end;		</t>
+				<br><t style="margin-left: 10px">ElementT = byte;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 00px">begin		</t>
+				<br><t style="margin-left: 10px">var f := new BlockFileOf&ltElementT>('temp.bin',sizeof(HeaderT));//Этот конструктор установит Offset на sizeof(HeaderT)		</t>
+				<br><t style="margin-left: 10px">f.Rewrite;		</t>
+				<br><t style="margin-left: 10px">begin		</t>
+				<br><t style="margin-left: 20px">var hf := new BlockFileOf&ltHeaderT>(f);//Этот конструктор создаст новый "BlockFileOf&ltT>", у которого будет общий фаловый поток с "f"		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 20px">var h: HeaderT;		</t>
+				<br><t style="margin-left: 20px">h.version := 5;		</t>
+				<br><t style="margin-left: 20px">hf.Write(h);		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 20px">hf.Close;//Эта строчка не закроет поток, потому что файл сейчас открыт в 2 переменных		</t>
+				<br><t style="margin-left: 65px">//Но она отвяжет "hf" от файла открытого в "f", чтоб когда "f" закроется - файл тоже был закрыт		</t>
+				<br><t style="margin-left: 10px">end;		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 10px">f.Write(		</t>
+				<br><t style="margin-left: 20px">1,2,3,4,5,6,7,8,9		</t>
+				<br><t style="margin-left: 10px">);		</t>
+				<br><t style="margin-left: 10px">f.Close;//А вот теперь поток будет закрыт и файл сохранён, потому что теперь это последняя перменная, в которой открыт файл		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 10px">f.Reset;		</t>
+				<br><t style="margin-left: 10px">begin		</t>
+				<br><t style="margin-left: 20px">var hf := new BlockFileOf&ltHeaderT>(f);		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 20px">var h := hf.Read;		</t>
+				<br><t style="margin-left: 20px">writeln(h);		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 20px">hf.Close;//Опять же, надо закрыть сразу, как закончили пользоваться		</t>
+				<br><t style="margin-left: 10px">end;		</t>
+				<br><t style="margin-left: 10px">f.Read(9).Print		</t>
+				<br><t style="margin-left: 10px">f.Close		</t>
+				<br><t style="margin-left: 00px">		</t>
+				<br><t style="margin-left: 00px">end.		</t>
+			</p>
+			Прошу обратить внимание на то, что я не поставил тут "f.Pos := 0" перед чтением/записью только по стечению 2 обстоятельств:<br>
+			1. Этот код линейный, в нём хорошо видно что прямо перед чтением/записью элементов идёт чтение/запись заголовка. А значит, файловая позиция сама передвинется на sizeof(HeaderT).<br>
+			2. Написав этот короткий участок кода - я протестировал его, чтоб быть увереным что ничего не забыл и не перепутал.
+			<hr />
+		</div>
+		
+		
+	</body>
+
+</html>
