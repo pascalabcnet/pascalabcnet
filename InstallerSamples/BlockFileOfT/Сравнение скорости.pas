@@ -5,7 +5,13 @@ type
   LayoutKind = System.Runtime.InteropServices.LayoutKind;
   FieldOffset = System.Runtime.InteropServices.FieldOffsetAttribute;
   
+  GCHandle = System.Runtime.InteropServices.GCHandle;
+  GCHandleType = System.Runtime.InteropServices.GCHandleType;
   
+  
+  
+  //Эти 2 типа взят из справки, и по рекомендациям от туда переделан под наш случай
+  //имеется в виду справка, которая html файл, лежащий в папке с этим примером
   [StructLayout(LayoutKind.&Explicit)]	
   CharArr255Body = record	
     private const MaxLength = 255;	
@@ -15,40 +21,56 @@ type
   end;
   [StructLayout(LayoutKind.&Explicit)]	
   CharArr255 = record	
-    public [FieldOffset(0)] length: byte;
-    public [FieldOffset(1)] body: CharArr255Body;
+    public [FieldOffset(0)] length: byte;	
+    public [FieldOffset(1)] body: CharArr255Body;	
     
     public class function operator explicit(a: array of char): CharArr255;
     begin
-      if a.Length > CharArr255Body.MaxLength then
-      begin
-        var na := new char[CharArr255Body.MaxLength];
-        System.Array.Copy(a, na, CharArr255Body.MaxLength);
-        a := na;
-      end;
-      Result.length := a.Length;
-      if a.Length < CharArr255Body.MaxLength then
-      begin
-        var na := new char[CharArr255Body.MaxLength];
-        System.Array.Copy(a, na, a.Length);
-        a := na;
-      end;
+      Result.length := Min(CharArr255Body.MaxLength, a.Length);//если a.Length>MaxLength - length присвоит MaxLength
       
-      var ptr: ^CharArr255Body := pointer(@a[0]);
-      Result.body := ptr^;
+      if a.Length < CharArr255Body.MaxLength then 
+        a := a + new char[CharArr255Body.MaxLength - a.Length];//если a.Length<MaxLength - надо удлинить
+                                                              //иначе можем иногда получать ошибки чтения защищённой памяти
+                                                              //если откажет в доступе к памяти, которая находиться полсе массива
+      
+      //надо заблокировать массив на 1 месте в памяти, чтоб сборщик мусора не двигал пока мы копируем
+      var hnd := GCHandle.Alloc(a, GCHandleType.Pinned);	
+//      try
+        var ptr: ^CharArr255Body := pointer(hnd.AddrOfPinnedObject);	
+        Result.body := ptr^;
+//      finally
+        hnd.Free;//в finally, чтоб если возникнет какая то ошибка - блокировку всё равно сняло
+                 //иначе получим утечку памяти, потому что блокировка запрещает сборщику мусора освобождать память
+                 //Но пока что я убрал, потому что github.com/pascalabcnet/pascalabcnet/issues/1267
+//      end;	
     end;
     
-    public class function operator explicit(a: string): CharArr255 :=
-    CharArr255(a.ToCharArray);
+    public class function operator explicit(s: string): CharArr255 :=
+    CharArr255(s.ToCharArray);
     
     public class function operator explicit(a: CharArr255): array of char;
     begin
+      //Если кол-во сохранённых байт < MaxLength - a.body будет занимать бОльший объём в памяти, чем поместится в Result	
+      //Поэтому надо сначала прочитать всё, включая пустые символы на конце, во временную переменную	
+      //А затем скопировать нужное кол-во символов в Result	
       var temp := new char[CharArr255Body.MaxLength];	
-      var ptr: ^CharArr255Body := pointer(@temp[0]);	
-      ptr^ := a.body;	
-      Result := new char[a.length];	
       
-      System.Array.Copy(temp, Result, a.length);	
+      var hnd := GCHandle.Alloc(temp, GCHandleType.Pinned);	
+//      try
+        var ptr: ^CharArr255Body := pointer(hnd.AddrOfPinnedObject);	
+        ptr^ := a.body;
+//      finally
+        hnd.Free;	
+//      end;
+      
+      if a.length = CharArr255Body.MaxLength then
+      begin
+        Result := temp;//всё же, копирование ссылки - это быстрее, чем копировать всё содержимое массива
+        exit;
+      end;
+      
+      Result := new char[a.length];	
+      System.Array.Copy(temp, Result, a.length);
     end;
     
     public function ToRefArr: array of char;
@@ -57,7 +79,13 @@ type
     begin
       Result := CharArr(self);	
     end;
-  
+    
+    public function ToString: string; override :=
+    new string(ToRefArr);
+    
+    public class function operator explicit(s: CharArr255): string :=
+    s.ToString;
+    
   end;
   
   ///Это будет сохранять в file of T
@@ -72,10 +100,10 @@ type
   ///Это будет сохранять в BlockFileOfT
   BR = record
     s: CharArr255;
-    //dt: System.DateTime;//И тут тоже - .Net запрещает делать указатели на System.DateTime, из за того, что в других версиях способ хранения может быть другой
+    //dt: System.DateTime;//И тут тоже - DateTime это "особый тип", подробнее в справке
     dt: int64;//Ну а мы - знаем 1 версию, ту что сейчас, и в ней всё хранится как внутренне поле типа int64
     i: integer;
-    //ch: char;//и тут опять, ну, word хранит информацию так же как char
+    //ch: char;//И тут, опять, особый тип. Ну, word хранит информацию так же как char
     ch: word;//В типе IOR описаны все преобразования, как превратить эти типы в System.DateTime и char
     b: byte;
   end;
@@ -83,7 +111,7 @@ type
   ///Этот тип для ввода/вывода
   ///Чтоб и string[255] и CharArr255 преобразовывало в string
   ///Так честнее
-  ///Хотя при преобразовании string[255] к string почти ничего не происходит, только копируется один указатель
+  ///Хотя при преобразовании string[255] к string почти ничего не происходит, только копируется одна ссылка
   IOR = record
     s: string;
     dt: System.DateTime;
@@ -217,8 +245,8 @@ procedure TestSpeed;
 begin
   
   var sw := new System.Diagnostics.Stopwatch;//точнее чем этим замерить невозможно
-  var lc := 100;
-  var ec := 1000;//Чем больше элементов - тем больше преимущество BlockFileOf<T>, потому что он сохраняет их всех сразу.
+  var lc := 10;
+  var ec := 10000;//Чем больше элементов - тем больше преимущество BlockFileOf<T>, потому что он сохраняет их всех сразу.
                   //Но он быстрее даже если сохранять по 1 элементу
   var t1, t2: int64;
   
@@ -235,12 +263,12 @@ begin
     loop lc do
     begin
       Rewrite(f1);
-      foreach var a in test_arr.Select(a -> AR(a)) do
-        f1.Write(a);
+      var AR_arr := test_arr.ConvertAll(a -> AR(a));
+      foreach var a in AR_arr do f1.Write(a);
       f1.Close;
       
       Reset(f1);
-      foreach var el in SeqGen(ec, i -> f1.Read).Select(a -> IOR(a)) do;
+      ArrGen(ec, i -> IOR(f1.Read));
       f1.Close;
     end;
     sw.Stop;
