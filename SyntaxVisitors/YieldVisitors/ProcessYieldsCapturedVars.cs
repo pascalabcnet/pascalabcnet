@@ -21,6 +21,11 @@ namespace SyntaxVisitors
     {
         public static int CurrentLocalVariableNum = 0;
 
+        public static void Reset()
+        {
+            CurrentLocalVariableNum = 0;
+        }
+
         public static string MakeCapturedFormalParameterName(string formalParamName)
         {
             return string.Format("<>{0}__{1}", YieldConsts.ReservedNum.MethodFormalParam, formalParamName);

@@ -226,8 +226,24 @@ namespace CodeCompletion
                     tright = (returned_scope as ElementScope).sc as TypeScope;
                 if (tleft != null && tright != null)
                 {
-                    List<SymScope> lst = tleft.FindOverloadNamesOnlyInType
-                        (PascalABCCompiler.TreeConverter.name_reflector.get_name(_bin_expr.operation_type));
+                    string name = PascalABCCompiler.TreeConverter.name_reflector.get_name(_bin_expr.operation_type);
+                    List<SymScope> lst = tleft.FindOverloadNamesOnlyInType(name);
+                    List<SymScope> lst_right = tright.FindOverloadNamesOnlyInType(name);
+                    if (lst.Count == 0 && !char.IsLetter(name[0]))
+                        lst = tleft.FindOverloadNamesOnlyInType("operator" + name);
+                    if (lst_right.Count == 0 && !char.IsLetter(name[0]))
+                        lst_right = tright.FindOverloadNamesOnlyInType("operator" + name);
+                    if (!char.IsLetter(name[0]))
+                        name = "operator" + name;
+                    else
+                        name = "operator " + name;
+                    List<ProcScope> meths = entry_scope.GetExtensionMethods(name, tleft);
+                    foreach (ProcScope meth in meths)
+                        lst.Add(meth);
+                    lst.AddRange(lst_right);
+                    meths = entry_scope.GetExtensionMethods(name, tright);
+                    foreach (ProcScope meth in meths)
+                        lst.Add(meth);
                     ProcScope ps = select_method(lst.ToArray(), tleft, tright, null, _bin_expr.left, _bin_expr.right);
                     if (ps != null)
                         returned_scope = new ElementScope(ps.return_type);
@@ -456,10 +472,24 @@ namespace CodeCompletion
             //throw new NotImplementedException();
             _indexer.dereferencing_value.visit(this);
             if (returned_scope != null)
-                if (returned_scope is ElementScope && (returned_scope as ElementScope).sc is ProcScope && ((returned_scope as ElementScope).sc as ProcScope).return_type != null)
-                    returned_scope = new ElementScope(((returned_scope as ElementScope).sc as ProcScope).return_type.GetElementType());
-                else
-                    returned_scope = new ElementScope(returned_scope.GetElementType());
+            {
+                if (returned_scope != null)
+                    if (returned_scope is ElementScope && (returned_scope as ElementScope).sc is ProcScope && ((returned_scope as ElementScope).sc as ProcScope).return_type != null)
+                        returned_scope = new ElementScope(((returned_scope as ElementScope).sc as ProcScope).return_type.GetElementType());
+                    else
+                        returned_scope = new ElementScope(returned_scope.GetElementType());
+            }
+            else
+            {
+                for (int i = 0; i < returned_scopes.Count; i++)
+                {
+                    if (returned_scopes[i] is ElementScope && (returned_scopes[i] as ElementScope).sc is ProcScope && ((returned_scopes[i] as ElementScope).sc as ProcScope).return_type != null)
+                        returned_scopes[i] = new ElementScope(((returned_scopes[i] as ElementScope).sc as ProcScope).return_type.GetElementType());
+                    else
+                        returned_scopes[i] = new ElementScope(returned_scopes[i].GetElementType());
+                }
+                search_all = false;
+            }
         }
 
         public override void visit(for_node _for_node)
@@ -755,7 +785,12 @@ namespace CodeCompletion
                 if (ts != null)
                     returned_scope = new ElementScope(ts);
             }
-
+            else if ((returned_scope != null && returned_scope is ElementScope && (returned_scope as ElementScope).sc is CompiledScope))
+            {
+                ProcScope invoke_meth = ((returned_scope as ElementScope).sc as CompiledScope).FindNameOnlyInThisType("Invoke") as ProcScope;
+                if (invoke_meth != null)
+                    returned_scope = new ElementScope(invoke_meth.return_type);
+            }
             if (returned_scope != null)
             {
                 if (!search_all)
