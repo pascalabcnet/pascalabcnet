@@ -15884,7 +15884,7 @@ namespace PascalABCCompiler.TreeConverter
             		}
 				}
             }
-            if (context.converted_type != null && context.converted_type.IsStatic && _var_def_statement.var_attr != definition_attribute.Static)
+            if (context.converted_type != null && context.converting_block() == block_type.type_block && context.converted_type.IsStatic && _var_def_statement.var_attr != definition_attribute.Static)
                 AddError(get_location(_var_def_statement), "STATIC_CLASSES_CANNOT_NON_STATIC_MEMBERS");
             if (is_event) return;
             context.save_var_definitions();
