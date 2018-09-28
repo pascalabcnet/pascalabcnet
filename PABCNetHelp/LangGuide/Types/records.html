@@ -128,17 +128,6 @@
 &nbsp;&nbsp;&nbsp; <b>end</b>;<br>&nbsp;&nbsp;&nbsp; ...<br><b>&nbsp; end</b>;<br>
 	...<br><b>var</b> p: Person;<br>p.Init('Иванов',20);</code></p>
 </blockquote>
-<p>В системном модуле определена также функция <span class="auto-style1">Rec</span>, 
-которая создает переменную типа запись &quot;на лету&quot;:</p>
-<blockquote>
-	<p><code><strong>var</strong> p := Rec('Иванов',20);<br>Println(p); // 
-	(Иванов,20)</code></p>
-</blockquote>
-<p>Тип этой записи - безымянный. Поля данной записи автоматически именуются 
-Item1, Item2 и т.д.:</p>
-<blockquote>
-	<p><code>Println(p.Item1, p.Item2); // Иванов 20</code></p>
-</blockquote>
 <h2>Отличие записей от классов</h2>
 <p>Список отличий между записями и классами 
 приводятся ниже:</p>

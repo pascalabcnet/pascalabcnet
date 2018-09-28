@@ -791,10 +791,6 @@
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for matrixes.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="&Iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc; &auml;&euml;&yuml; &ntilde;&icirc;&ccedil;&auml;&agrave;&iacute;&egrave;&yuml; &ecirc;&icirc;&eth;&ograve;&aring;&aelig;&aring;&eacute;">
-				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for tuple generation.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="&Ecirc;&icirc;&eth;&icirc;&ograve;&ecirc;&egrave;&aring; &ocirc;&oacute;&iacute;&ecirc;&ouml;&egrave;&egrave; Lst, HSet, SSet, Dict, KV">
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Short functions Lst, HSet, SSet, Dict, KV.html">
 				</OBJECT>
