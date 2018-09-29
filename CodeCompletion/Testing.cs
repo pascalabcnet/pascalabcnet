@@ -54,7 +54,7 @@ namespace CodeCompletion
                     if (desc == null)
                         desc = "";
                     desc = desc.Split(new string[] { "\n"},StringSplitOptions.None)[0].Trim();
-                    assert(desc == should_desc, FileName+", should: "+should_desc+", is: "+desc);
+                    assert(desc.Replace(", ", ",") == should_desc.Replace(", ",","), FileName+", should: "+should_desc+", is: "+desc);
                     tmp = tmp.Remove(ind, tmp.IndexOf("@}") + 2 - ind);
                     ind = tmp.IndexOf("{@");
                 }
