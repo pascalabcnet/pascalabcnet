@@ -223,6 +223,7 @@ namespace SyntaxVisitors
                         //function_header nfh = ObjectCopier.Clone(fh);
 
                         function_header nfh = fh.TypedClone();
+                        nfh.proc_attributes.proc_attributes.RemoveAll(pat => pat.attribute_type == proc_attribute.attr_override);
 
                         //function_header nfh = new function_header();
                         //nfh.name = new method_name(fh.name.meth_name.name);
@@ -614,6 +615,8 @@ namespace SyntaxVisitors
             //var pdCloned = ObjectCopier.Clone(pd);
             var pdCloned = (procedure_definition)pd.Clone();
 
+            pdCloned.proc_header.proc_attributes.proc_attributes.RemoveAll(pat => pat.attribute_type == proc_attribute.attr_override);
+
             pdCloned.has_yield = false;
 
 
@@ -657,6 +660,8 @@ namespace SyntaxVisitors
             pdCloned.proc_header.name.meth_name = new ident(YieldConsts.YieldHelperMethodPrefix+ "_locals_type_detector>" + pd.proc_header.name.meth_name.name,
                 // frninja 05/06/16 - фиксим source_context
                 pd.proc_header.name.meth_name.source_context); // = new method_name("<yield_helper_locals_type_detector>" + pd.proc_header.className.meth_name.className);
+
+            //pdCloned.proc_header.proc_attributes.proc_attributes.RemoveAll(pat => pat.attribute_type == proc_attribute.attr_override);
 
             InsertHelperMethod(pd, pdCloned); // SSM 13.07.16 - вызов этого метода можно не добавлять
         }
@@ -915,7 +920,7 @@ namespace SyntaxVisitors
 
         public override void visit(procedure_definition pd)
         {
-            // frninja 14/06/16 - проверяем наличие yield у вложенных методов (и запрещаем )
+            // frninja 14/06/16 - проверяем наличие yield у вложенных методов (и запрещаем)
             CheckInnerMethodsWithYield(pd);
 
             if (!pd.has_yield)
