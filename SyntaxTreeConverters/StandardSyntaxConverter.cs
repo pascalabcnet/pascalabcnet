@@ -73,14 +73,14 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             cv.ProcessNode(root);
             cv.Output(@"Light1.txt");*/
             
-            try
+            /*try
             {
                 root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz4.txt"));
             }
             catch
             {
 
-            }
+            }*/
 
 #endif
             return root;
