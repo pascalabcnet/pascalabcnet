@@ -4144,8 +4144,6 @@ keyword
 		{ $$ = $1; }
     | tkMatch
         { $$ = $1; }
-    | tkStatic
-        { $$ = $1; }
     | tkWhen
         { $$ = $1; }/*
     | tkInstance
