@@ -222,6 +222,27 @@ namespace CodeFormatters
             }
         }
 
+        private void WriteNodeAndReplaceOverSpaces(syntax_tree_node sn)
+        {
+            if (sn.source_context != null)
+            {
+                int start_pos = GetPosition(sn.source_context.begin_position.line_num, sn.source_context.begin_position.column_num);
+                int end_pos = GetPosition(sn.source_context.end_position.line_num, sn.source_context.end_position.column_num);
+                string s = Text.Substring(start_pos, end_pos - start_pos + 1);
+                string[] arr = s.Split(' ');
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    if (arr[i] != "")
+                    {
+                        sb.Append(arr[i]);
+                        if (i < arr.Length - 1)
+                            sb.Append(" ");
+                    }
+                }
+                    
+            }
+        }
+
         private void WriteNode(syntax_tree_node sn)
         {
             if (sn.source_context != null)
@@ -494,6 +515,10 @@ namespace CodeFormatters
                                 comm = " " + comm;
                         }
                     }
+                    if (comm.EndsWith(" "))
+                    {
+
+                    }
                     if (comm.Replace(" ","") == "():")//special case: functions with no parameters
                     {
                         comm = "():";
@@ -541,6 +566,8 @@ namespace CodeFormatters
                 }
                 else if (trimedstr.StartsWith(")") || trimedstr.StartsWith(";") || trimedstr.StartsWith("]") || trimedstr.StartsWith(">") || trimedstr.StartsWith(":"))
                     comm = trimedstr;
+                if (trimedstr.Length >= 2 && trimedstr[0] == '(' && trimedstr[trimedstr.Length - 1] == ')' && trimedstr.Replace("(", "").Replace(")", "").Trim() == "")
+                    comm = "()";//special case: (  )
                 //else if (sn is uses_closure || sn is formal_parameters || sn is type_declaration)
                 //    comm = comm.TrimStart();
                 if (sn is program_module || sn is unit_module)
@@ -2569,7 +2596,7 @@ namespace CodeFormatters
 
         public override void visit(operator_name_ident _operator_name_ident)
         {
-            WriteNode(_operator_name_ident);
+            WriteNodeAndReplaceOverSpaces(_operator_name_ident);
         }
 
         public override void visit(var_statement _var_statement)
