@@ -534,7 +534,7 @@ namespace CodeFormatters
                     else if (trimedstr.StartsWith("of") && !char.IsLetterOrDigit(trimedstr[2]))
                         comm = comm.TrimStart();
                 }
-                else if (sn is uses_closure || sn is formal_parameters)
+                else if (sn is uses_closure || sn is formal_parameters || sn is type_declaration)
                     comm = comm.TrimStart();
                 if (sn is program_module || sn is unit_module)
                     comm = Text.Substring(prev_pos);
