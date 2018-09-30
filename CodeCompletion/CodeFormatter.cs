@@ -494,6 +494,10 @@ namespace CodeFormatters
                                 comm = " " + comm;
                         }
                     }
+                    if (comm.Replace(" ","") == "():")//special case: functions with no parameters
+                    {
+                        comm = "():";
+                    }
                 }
                 WriteCommentWithIndent(comm, true);
                 read_from_beg_pos = false;
@@ -535,7 +539,7 @@ namespace CodeFormatters
                     else if (trimedstr.StartsWith("of") && !char.IsLetterOrDigit(trimedstr[2]))
                         comm = comm.TrimStart();
                 }
-                else if (trimedstr.StartsWith(")") || trimedstr.StartsWith(";") || trimedstr.StartsWith("]") || trimedstr.StartsWith(">"))
+                else if (trimedstr.StartsWith(")") || trimedstr.StartsWith(";") || trimedstr.StartsWith("]") || trimedstr.StartsWith(">") || trimedstr.StartsWith(":"))
                     comm = trimedstr;
                 //else if (sn is uses_closure || sn is formal_parameters || sn is type_declaration)
                 //    comm = comm.TrimStart();
@@ -545,7 +549,7 @@ namespace CodeFormatters
                     add_space_before = true;
                 WriteCommentWithIndent(comm, false);
                 cur_src_off = pos;
-            } 
+            }
         }
 
         private void IncOffset()
