@@ -3848,12 +3848,14 @@ namespace CodeCompletion
                     }
                 }
 
+                ProcScope other_constr = this.FindNameOnlyInType("Create") as ProcScope;
                 ProcScope constr = new ProcScope("Create", this, true);
                 constr.si.acc_mod = access_modifer.public_modifer;
                 //constr.head_loc = this.loc;
                 //constr.loc = this.loc;
                 constr.is_constructor = true;
                 constr.Complete();
+                constr.nextProc = other_constr;
                 members.Insert(0, constr);
             }
         }
