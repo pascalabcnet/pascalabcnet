@@ -3068,6 +3068,11 @@ namespace CodeFormatters
             visit_node(_recursive_deconstructor_parameter.pattern);
         }
 
+        public override void visit(dot_question_node _dot_question_node)
+        {
+            visit_node(_dot_question_node.left);
+            visit_node(_dot_question_node.right);
+        }
         #endregion
     }
 }
