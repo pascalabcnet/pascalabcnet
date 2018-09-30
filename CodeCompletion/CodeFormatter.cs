@@ -526,16 +526,19 @@ namespace CodeFormatters
             if (prev_pos < pos && cur_src_off < pos)
             {
                 string comm = Text.Substring(prev_pos, pos - prev_pos);
+                string trimedstr = comm.TrimStart();
                 if (sn is loop_stmt || sn is case_node || sn is if_node || sn is while_node)
                 {
-                    string trimedstr = comm.TrimStart();
+
                     if (trimedstr == "do" || trimedstr == "of" || trimedstr == "then")
                         comm = comm.TrimStart();
                     else if (trimedstr.StartsWith("of") && !char.IsLetterOrDigit(trimedstr[2]))
                         comm = comm.TrimStart();
                 }
-                else if (sn is uses_closure || sn is formal_parameters || sn is type_declaration)
-                    comm = comm.TrimStart();
+                else if (trimedstr.StartsWith(")") || trimedstr.StartsWith(";"))
+                    comm = trimedstr;
+                //else if (sn is uses_closure || sn is formal_parameters || sn is type_declaration)
+                //    comm = comm.TrimStart();
                 if (sn is program_module || sn is unit_module)
                     comm = Text.Substring(prev_pos);
                 if (comm.StartsWith(" "))
