@@ -19821,6 +19821,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 var qce = av.new_addr_value as SyntaxTree.question_colon_expression;
                 var av_cs = convert_strong(qce.ret_if_false);
+                try_convert_typed_expression_to_function_call(ref av_cs);
                 if (!type_table.is_with_nil_allowed(av_cs.type))
                 {
                     var dn = new dot_node(new ident("PABCSystem"), new ident("DQNToNullable"));
