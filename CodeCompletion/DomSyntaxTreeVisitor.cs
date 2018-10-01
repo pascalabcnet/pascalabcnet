@@ -4505,11 +4505,12 @@ namespace CodeCompletion
             SymScope tmp = cur_scope;
             if (_foreach_stmt.type_name != null)
             {
-            	SymScope stmt_scope = new BlockScope(cur_scope);
-        		cur_scope.AddName("$block_scope",stmt_scope);
-        		stmt_scope.loc = get_location(_foreach_stmt);
+                SymScope stmt_scope = new BlockScope(cur_scope);
+                cur_scope.AddName("$block_scope", stmt_scope);
+                stmt_scope.loc = get_location(_foreach_stmt);
                 if (_foreach_stmt.type_name is no_type_foreach)
                 {
+                    cur_scope = stmt_scope;
                     _foreach_stmt.in_what.visit(this);
                     if (returned_scope != null)
                         returned_scope = returned_scope.GetElementType();
@@ -4518,18 +4519,24 @@ namespace CodeCompletion
                 }
                 else
                 {
+                    if (has_lambdas(_foreach_stmt.in_what))
+                    {
+                        cur_scope = stmt_scope;
+                        _foreach_stmt.in_what.visit(this);
+                    }
                     _foreach_stmt.type_name.visit(this);
+
                 }
-        		if (returned_scope != null)
-        		{
-        			cur_scope = stmt_scope;
-        			ElementScope es = new ElementScope(new SymInfo(_foreach_stmt.identifier.name, SymbolKind.Variable,_foreach_stmt.identifier.name),returned_scope,cur_scope);
-        			es.loc = get_location(_foreach_stmt.identifier);
-        			stmt_scope.AddName(_foreach_stmt.identifier.name,es);
-        		}
+                if (returned_scope != null)
+                {
+                    cur_scope = stmt_scope;
+                    ElementScope es = new ElementScope(new SymInfo(_foreach_stmt.identifier.name, SymbolKind.Variable, _foreach_stmt.identifier.name), returned_scope, cur_scope);
+                    es.loc = get_location(_foreach_stmt.identifier);
+                    stmt_scope.AddName(_foreach_stmt.identifier.name, es);
+                }
             }
             if (_foreach_stmt.stmt != null)
-            _foreach_stmt.stmt.visit(this);
+                _foreach_stmt.stmt.visit(this);
             cur_scope = tmp;
         }
 
