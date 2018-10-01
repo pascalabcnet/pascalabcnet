@@ -428,7 +428,14 @@ namespace CodeFormatters
                                     lines[i] = new string(' ', off);
                             }
                             else
-                                lines[i] = new string(' ', off) + lines[i].TrimStart(' ', '\t');
+                            {
+                                string str = lines[i].TrimStart(' ', '\t');
+                                /*if (str.StartsWith("//") || str.StartsWith("{"))
+                                    lines[i] = new string(' ', off) + lines[i];
+                                else*/
+                                    lines[i] = new string(' ', off) + str;
+                            }
+                                
                         }
                     }
                 }
@@ -567,14 +574,21 @@ namespace CodeFormatters
                 else if (trimedstr.StartsWith(")") || trimedstr.StartsWith(";") || trimedstr.StartsWith("]") || trimedstr.StartsWith(">") || trimedstr.StartsWith(":"))
                     comm = trimedstr;
                 if (trimedstr.Length >= 2 && trimedstr[0] == '(' && trimedstr[trimedstr.Length - 1] == ')' && trimedstr.Replace("(", "").Replace(")", "").Trim() == "")
-                    comm = "()";//special case: (  )
+                    comm = "()";
+                if (trimedstr.StartsWith(";  "))
+                {
+                    comm = "; " + trimedstr.Substring(1).TrimStart(' ', '\t');
+                }
                 //else if (sn is uses_closure || sn is formal_parameters || sn is type_declaration)
                 //    comm = comm.TrimStart();
                 if (sn is program_module || sn is unit_module)
                     comm = Text.Substring(prev_pos);
                 if (comm.StartsWith(" "))
                     add_space_before = true;
-                WriteCommentWithIndent(comm, false);
+                if (comm != "()")
+                    WriteCommentWithIndent(comm, false);
+                else
+                    sb.Append("()");
                 cur_src_off = pos;
             }
         }

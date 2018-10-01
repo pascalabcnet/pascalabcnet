@@ -931,14 +931,14 @@ namespace PascalABCCompiler.NETGenerator
                     }
                     catch (System.Runtime.InteropServices.COMException e)
                     {
-                        throw new TreeConverter.SaveAssemblyError(e.Message);
+                        throw new TreeConverter.SaveAssemblyError(e.Message, new TreeRealization.location(0, 0, 0, 0, new TreeRealization.document(SourceFileName)));
                     }
                     catch (System.IO.IOException e)
                     {
                         if (tries < num_try_save)
                             tries++;
                         else
-                            throw new TreeConverter.SaveAssemblyError(e.Message);
+                            throw new TreeConverter.SaveAssemblyError(e.Message, new TreeRealization.location(0, 0, 0, 0, new TreeRealization.document(SourceFileName)));
                     }
                 }
                 while (not_done);
