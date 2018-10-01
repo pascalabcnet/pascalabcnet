@@ -17284,14 +17284,42 @@ namespace PascalABCCompiler.TreeConverter
             condition = convertion_data_and_alghoritms.convert_type(condition, SystemLibrary.SystemLibrary.bool_type);
             expression_node left = convert_strong(node.ret_if_true);
             expression_node right = convert_strong(node.ret_if_false);
+
             try_convert_typed_expression_to_function_call(ref left);
             try_convert_typed_expression_to_function_call(ref right);
+
+            /*if (left is null_const_node && right.type.is_value_type)
+            {
+                if (right.type is compiled_type_node)
+                {
+                    var rt = right.type as compiled_type_node;
+                    if (!rt.compiled_type.IsGenericType || rt.compiled_type.GetGenericTypeDefinition() != typeof(System.Nullable<>))
+                    {
+                        right = convert_strong(ToNullable(node.ret_if_false));
+                    }                    
+                }
+            } 
+            else
+            if (right is null_const_node && left.type.is_value_type)
+            {
+                if (left.type is compiled_type_node)
+                {
+                    var lt = left.type as compiled_type_node;
+                    if (!lt.compiled_type.IsGenericType || lt.compiled_type.GetGenericTypeDefinition() != typeof(System.Nullable<>))
+                    {
+                        left = convert_strong(ToNullable(node.ret_if_true));
+                    }
+                }
+            }*/
+
             /*var typeComparisonResult = type_table.compare_types(left.type, right.type);
             if (typeComparisonResult == type_compare.greater_type)
                 right = convertion_data_and_alghoritms.convert_type(right, left.type);
             else left = convertion_data_and_alghoritms.convert_type(left, right.type);*/
             if (left is null_const_node)
+            {
                 left = convertion_data_and_alghoritms.convert_type(left, right.type);
+            }
             else
             {
                 delegated_methods del_left = left.type as delegated_methods;
@@ -19811,6 +19839,12 @@ namespace PascalABCCompiler.TreeConverter
             ProcessNode(ex.new_expr); // обойти десахарное выражение - обязательно ProcessNode - visit нельзя!
         }
 
+        public method_call ToNullable(expression e)
+        {
+            var dn = new dot_node(new ident("PABCSystem"), new ident("DQNToNullable"));
+            return new method_call(dn, new expression_list(e), e.source_context);
+        }
+
         public override void visit(SyntaxTree.sugared_addressed_value av)
         {
             if (av.sugared_expr is SyntaxTree.slice_expr) // и slice_expr_question
@@ -19821,12 +19855,17 @@ namespace PascalABCCompiler.TreeConverter
             {
                 var qce = av.new_addr_value as SyntaxTree.question_colon_expression;
                 var av_cs = convert_strong(qce.ret_if_false);
-                try_convert_typed_expression_to_function_call(ref av_cs);
+                //try_convert_typed_expression_to_function_call(ref av_cs);
                 if (!type_table.is_with_nil_allowed(av_cs.type))
                 {
                     var dn = new dot_node(new ident("PABCSystem"), new ident("DQNToNullable"));
                     (av.new_addr_value as SyntaxTree.question_colon_expression).ret_if_false
                      = new method_call(dn, new expression_list((av.new_addr_value as SyntaxTree.question_colon_expression).ret_if_false), av.source_context);
+
+                    /*var avqce = av.new_addr_value as SyntaxTree.question_colon_expression;
+                    //var dn = new dot_node(new ident("PABCSystem"), new ident("DQNToNullable"));
+                    avqce.ret_if_false = ToNullable(avqce.ret_if_false);
+                        //new method_call(dn, new expression_list(avqce.ret_if_false), av.source_context);*/
                 }
                 semantic_check_dot_question(av.new_addr_value as SyntaxTree.question_colon_expression);
             }
