@@ -585,7 +585,10 @@ namespace CodeFormatters
                     comm = Text.Substring(prev_pos);
                 if (comm.StartsWith(" "))
                     add_space_before = true;
-                WriteCommentWithIndent(comm, false);
+                if (comm != "()")
+                    WriteCommentWithIndent(comm, false);
+                else
+                    sb.Append("()");
                 cur_src_off = pos;
             }
         }
