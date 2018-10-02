@@ -2181,7 +2181,7 @@ procedure __FinalizeModule__;
 //                   DQNToNullable for dot_question_node
 // -----------------------------------------------------
 
-function DQNToNullable(v: integer): Nullable<integer>;
+function DQNToNullable<T>(v: T): Nullable<T>; where T: record;
 
 implementation
 
@@ -11423,9 +11423,9 @@ end;
 //   DQNToNullable for dot_question_node: implementation
 // -----------------------------------------------------
 
-function DQNToNullable(v: integer): System.Nullable<integer>;
+function DQNToNullable<T>(v: T): System.Nullable<T>; where T: record;
 begin
-  Result := new System.Nullable<integer>(v);
+  Result := new System.Nullable<T>(v);
 end;
 
 initialization
