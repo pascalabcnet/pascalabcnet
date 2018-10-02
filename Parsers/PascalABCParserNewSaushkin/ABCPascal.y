@@ -817,8 +817,6 @@ const_factor
 		{ $$ = $1; }
     | unsigned_number
 		{ $$ = $1; }
-    | literal
-		{ $$ = $1; }
     | tkNil                        
         { 
 			$$ = new nil_const();  
@@ -886,6 +884,8 @@ sign
 
 const_variable
     : identifier
+		{ $$ = $1; }
+    | literal // SSM 02.10.18 для '123'.Length при инициализации констант
 		{ $$ = $1; }
     | tkInherited identifier            
         { 
