@@ -7378,7 +7378,7 @@ namespace PascalABCCompiler.NETGenerator
         	bool is_comp_gen = false;
         	for (int i = 0; i < real_parameters.Length; i++)
             {
-        		if (real_parameters[i] is INullConstantNode && parameters[i].type.is_nullable_type)
+                if (real_parameters[i] is INullConstantNode && parameters[i].type.is_nullable_type)
                 {
         			Type tp = helper.GetTypeReference(parameters[i].type).tp;
         			LocalBuilder lb = il.DeclareLocal(tp);
@@ -9307,7 +9307,11 @@ namespace PascalABCCompiler.NETGenerator
             SemanticTree.ICommonMethodCallNode cmcall = ifc as SemanticTree.ICommonMethodCallNode;
             if (cmcall != null)
             {
-                cmcall.obj.visit(this);
+                LocalBuilder memoized_lb = helper.GetLocalBuilderForExpression(cmcall.obj);
+                if (memoized_lb != null)
+                    il.Emit(OpCodes.Ldloc, memoized_lb);
+                else
+                    cmcall.obj.visit(this);
                 if (cmcall.obj.type.is_value_type)
                     il.Emit(OpCodes.Box, helper.GetTypeReference(cmcall.obj.type).tp);
                 else if (cmcall.obj.conversion_type != null && cmcall.obj.conversion_type.is_value_type)
@@ -9323,7 +9327,11 @@ namespace PascalABCCompiler.NETGenerator
             SemanticTree.ICompiledMethodCallNode cmccall = ifc as SemanticTree.ICompiledMethodCallNode;
             if (cmccall != null)
             {
-                cmccall.obj.visit(this);
+                LocalBuilder memoized_lb = helper.GetLocalBuilderForExpression(cmccall.obj);
+                if (memoized_lb != null)
+                    il.Emit(OpCodes.Ldloc, memoized_lb);
+                else
+                    cmccall.obj.visit(this);
                 if (cmccall.obj.type.is_value_type)
                     il.Emit(OpCodes.Box, helper.GetTypeReference(cmccall.obj.type).tp);
                 else if (cmccall.obj.conversion_type != null && cmccall.obj.conversion_type.is_value_type)
@@ -9902,7 +9910,27 @@ namespace PascalABCCompiler.NETGenerator
             bool tmp_is_addr = is_addr;
             is_dot_expr = false;//don't box the condition expression
             is_addr = false;
-            value.condition.visit(this);
+            LocalBuilder funcptr_lb = null;
+            if (value.condition is IBasicFunctionCallNode && 
+                (value.condition as IBasicFunctionCallNode).real_parameters[0].type.IsDelegate &&
+                (value.condition as IBasicFunctionCallNode).real_parameters[1] is INullConstantNode &&
+                (value.condition as IBasicFunctionCallNode).basic_function.basic_function_type == basic_function_type.objeq)
+            {
+                IBasicFunctionCallNode eq = (value.condition as IBasicFunctionCallNode);
+                funcptr_lb = il.DeclareLocal(helper.GetTypeReference((value.condition as IBasicFunctionCallNode).real_parameters[0].type).tp);
+                eq.real_parameters[0].visit(this);
+                il.Emit(OpCodes.Stloc, funcptr_lb);
+                il.Emit(OpCodes.Ldloc, funcptr_lb);
+                il.Emit(OpCodes.Ldnull);
+                il.Emit(OpCodes.Ceq);
+                if (value.ret_if_false is ICommonConstructorCall)
+                    helper.LinkExpressionToLocalBuilder((value.condition as IBasicFunctionCallNode).real_parameters[0], funcptr_lb);
+                else if (value.ret_if_false is ICompiledConstructorCall)
+                    helper.LinkExpressionToLocalBuilder((value.condition as IBasicFunctionCallNode).real_parameters[0], funcptr_lb);
+            }
+            else
+                value.condition.visit(this);
+            
             is_dot_expr = tmp_is_dot_expr;
             is_addr = tmp_is_addr;
             il.Emit(OpCodes.Brfalse, FalseLabel);
