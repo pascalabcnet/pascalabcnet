@@ -1837,6 +1837,24 @@ function ReadMatrInteger(m, n: integer): array [,] of integer;
 function ReadMatrReal(m, n: integer): array [,] of real;
 
 // -----------------------------------------------------
+//>>     Подпрограммы для создания кортежей # Subroutines for tuple generation
+// -----------------------------------------------------
+///- function Rec(x1: T1, x2: T2,...): (T1,T2,...);
+/// Возвращает кортеж из элементов разных типов
+function Rec<T1, T2>(x1: T1; x2: T2): System.Tuple<T1, T2>;
+///--
+function Rec<T1, T2, T3>(x1: T1; x2: T2; x3: T3): (T1, T2, T3);
+///--
+function Rec<T1, T2, T3, T4>(x1: T1; x2: T2; x3: T3; x4: T4): (T1, T2, T3, T4);
+///--
+function Rec<T1, T2, T3, T4, T5>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5): (T1, T2, T3, T4, T5);
+///--
+function Rec<T1, T2, T3, T4, T5, T6>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6): (T1, T2, T3, T4, T5, T6);
+///--
+function Rec<T1, T2, T3, T4, T5, T6, T7>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6; x7: T7): (T1, T2, T3, T4, T5, T6, T7);
+
+
+// -----------------------------------------------------
 //>>     Короткие функции Lst, LLst, HSet, SSet, Dict, KV # Short functions Lst, HSet, SSet, Dict, KV
 // -----------------------------------------------------
 /// Возвращает список, заполненный указанными значениями
@@ -4259,6 +4277,21 @@ begin
   Print(prompt);
   Result := ReadSeqStringWhile(cond);
 end;
+
+// -----------------------------------------------------------------------------
+//                Функции Rec для создания кортежей
+// -----------------------------------------------------------------------------
+function Rec<T1, T2>(x1: T1; x2: T2) := Tuple.Create(x1, x2);
+
+function Rec<T1, T2, T3>(x1: T1; x2: T2; x3: T3) := Tuple.Create(x1, x2, x3);
+
+function Rec<T1, T2, T3, T4>(x1: T1; x2: T2; x3: T3; x4: T4) := Tuple.Create(x1, x2, x3, x4);
+
+function Rec<T1, T2, T3, T4, T5>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5) := Tuple.Create(x1, x2, x3, x4, x5);
+
+function Rec<T1, T2, T3, T4, T5, T6>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6) := Tuple.Create(x1, x2, x3, x4, x5, x6);
+
+function Rec<T1, T2, T3, T4, T5, T6, T7>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6; x7: T7) := Tuple.Create(x1, x2, x3, x4, x5, x6, x7);
 
 // -----------------------------------------------------------------------------
 //                Функции Lst, LLst, Dict, KV, HSet, SSet
