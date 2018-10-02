@@ -522,9 +522,9 @@ namespace CodeFormatters
                                 comm = " " + comm;
                         }
                     }
-                    if (comm.EndsWith(" "))
+                    if (comm.EndsWith(" ") && (comm.TrimEnd(' ').EndsWith("class") || comm.TrimEnd(' ').EndsWith("static")))
                     {
-
+                        comm = comm.TrimEnd(' ')+" ";
                     }
                     if (comm.Replace(" ","") == "():")//special case: functions with no parameters
                     {
