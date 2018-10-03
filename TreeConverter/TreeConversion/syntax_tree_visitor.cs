@@ -14040,7 +14040,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 compiled_static_method_call csmc = expr as compiled_static_method_call;
 
-                if (/*csmc.parameters.Count == 0 &&*/ csmc.type != null && csmc.type != SystemLibrary.SystemLibrary.void_type)
+                if (csmc.type != null && csmc.type != SystemLibrary.SystemLibrary.void_type && (csmc.function_node.IsSpecialName && csmc.function_node.is_readonly || NetHelper.NetHelper.PABCSystemType != null && csmc.function_node.cont_type.compiled_type.Assembly == NetHelper.NetHelper.PABCSystemType.Assembly))
                     constant = new compiled_static_method_call_as_constant(csmc, expr.location);
             }
             else if (expr is common_namespace_function_call && SystemLibrary.SystemLibInitializer.CreateSetProcedure != null && (expr as common_namespace_function_call).function_node == SystemLibrary.SystemLibInitializer.CreateSetProcedure.sym_info as common_namespace_function_node)

@@ -748,6 +748,12 @@ namespace CodeCompletion
             return es;
         }
 
+        public override void visit(dot_question_node _dot_question_node)
+        {
+            dot_node dn = new dot_node(_dot_question_node.left, _dot_question_node.right, _dot_question_node.source_context);
+            dn.visit(this);
+        }
+
         public override void visit(dot_node _dot_node)
         {
             bool tmp = by_dot;

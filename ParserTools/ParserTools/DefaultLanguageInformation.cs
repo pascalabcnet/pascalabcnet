@@ -2719,7 +2719,7 @@ namespace PascalABCCompiler.Parsers
                         kav.Push('\'');
                     sb.Insert(0, ch);//.Append(Text[i]);
                 }
-                else if (ch == '.' || ch == '^' || ch == '&')
+                else if (ch == '.' || ch == '^' || ch == '&' || ch == '?')
                 {
                     if (ch == '.' && i >= 1 && Text[i - 1] == '.') end = true; else sb.Insert(0, ch);
                     if (ch != '.') punkt_sym = true;
@@ -2765,7 +2765,7 @@ namespace PascalABCCompiler.Parsers
                             if (kav.Count == 0)
                             {
                                 string tmps = sb.ToString().Trim(' ', '\r', '\t', '\n');
-                                if (tmps.Length >= 1 && (char.IsLetter(tmps[0]) || tmps[0] == '_' || tmps[0] == '&') && tokens.Count == 0)
+                                if (tmps.Length >= 1 && (char.IsLetter(tmps[0]) || tmps[0] == '_' || tmps[0] == '&' || tmps[0] == '?') && tokens.Count == 0)
                                     end = true;
                                 else
                                     tokens.Push(ch);
@@ -2837,7 +2837,7 @@ namespace PascalABCCompiler.Parsers
                                                     i--;
                                             }
                                         }
-                                        if (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
+                                        if (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?'))
                                         {
                                             bound = i + 1;
                                             TestForKeyword(Text, i, ref bound, punkt_sym, out keyw);
@@ -2938,10 +2938,10 @@ namespace PascalABCCompiler.Parsers
                 return "";
             bool is_char = false;
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            if (Text[i] != ' ' && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
+            if (Text[i] != ' ' && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?'))
             {
                 //sb.Remove(0,sb.Length);
-                while (i >= 0 && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
+                while (i >= 0 && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?'))
                 {
                     //sb.Insert(0,Text[i]);//.Append(Text[i]);
                     i--;
@@ -2949,7 +2949,7 @@ namespace PascalABCCompiler.Parsers
                 is_char = true;
             }
             i = off;
-            if (i < Text.Length && Text[i] != ' ' && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
+            if (i < Text.Length && Text[i] != ' ' && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?'))
             {
                 while (i < Text.Length && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_'))
                 {
@@ -3047,7 +3047,7 @@ namespace PascalABCCompiler.Parsers
                             sk_stack.Push('<');
 
                         }
-                        else if (!char.IsLetterOrDigit(c) && c != '&' && c != '.' && c != ' ' && c != '\t' && c != '\n' && c != ',')
+                        else if (!char.IsLetterOrDigit(c) && c != '?' && c != '&' && c != '.' && c != ' ' && c != '\t' && c != '\n' && c != ',')
                         {
                             break;
                         }

@@ -1681,6 +1681,7 @@ namespace PascalABCCompiler.TreeRealization
         private bool _is_extension_method=false;
         private compiled_type_node connected_to_type;
         private List<compiled_type_node> _generic_params;
+        private System.Reflection.PropertyInfo getter_of_property;
         private static System.Collections.Generic.Dictionary<System.Reflection.MethodInfo, compiled_function_node> compiled_methods =
             new System.Collections.Generic.Dictionary<System.Reflection.MethodInfo, compiled_function_node>();
 
@@ -1700,6 +1701,7 @@ namespace PascalABCCompiler.TreeRealization
                     ret_val = null;
                 }
 			}
+            
 			System.Reflection.ParameterInfo[] pinf=mi.GetParameters();
             parameter_list pal = new parameter_list();
             //if (!(_mi.IsGenericMethod))
@@ -1749,7 +1751,16 @@ namespace PascalABCCompiler.TreeRealization
             _is_extension_method = NetHelper.NetHelper.IsExtensionMethod(mi);
 			this.return_value_type=ret_val;
 			this.parameters.AddRange(pal);
-		}
+            if (mi.Name.StartsWith("get_"))
+                foreach (System.Reflection.PropertyInfo pi in mi.DeclaringType.GetProperties())
+                {
+                    if (pi.GetGetMethod() == mi)
+                    {
+                        getter_of_property = pi;
+                        break;
+                    }
+                }
+        }
 
         /// <summary>
         /// Метод создания узла. Позволяет обеспичивать уникальность обертки для каждого метода.
@@ -1778,6 +1789,16 @@ namespace PascalABCCompiler.TreeRealization
 				return _mi;
 			}
 		}
+
+        public bool is_readonly
+        {
+            get
+            {
+                if (getter_of_property != null && getter_of_property.GetSetMethod() == null)
+                    return true;
+                return false;
+            }
+        }
 
         public override bool is_extension_method
         {

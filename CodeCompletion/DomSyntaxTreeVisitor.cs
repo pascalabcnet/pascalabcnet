@@ -5192,6 +5192,12 @@ namespace CodeCompletion
             _slice_expr_question.v.visit(this);
         }
 
+        public override void visit(dot_question_node _dot_question_node)
+        {
+            dot_node dn = new dot_node(_dot_question_node.left, _dot_question_node.right, _dot_question_node.source_context);
+            dn.visit(this);
+        }
+
         public override void visit(modern_proc_type _modern_proc_type)
         {
             template_type_reference ttr = new template_type_reference();
