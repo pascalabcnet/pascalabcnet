@@ -2721,8 +2721,14 @@ namespace PascalABCCompiler.Parsers
                 }
                 else if (ch == '.' || ch == '^' || ch == '&' || ch == '?')
                 {
-                    if (ch == '.' && i >= 1 && Text[i - 1] == '.') end = true; else sb.Insert(0, ch);
-                    if (ch != '.') punkt_sym = true;
+                    if (ch == '.' && i >= 1 && Text[i - 1] == '.')
+                        end = true;
+                    else if (ch == '?' && i + 1 < Text.Length && Text[i + 1] != '.')
+                        end = true;
+                    else
+                        sb.Insert(0, ch);
+                    if (ch != '.')
+                        punkt_sym = true;
                 }
                 else if (ch == '}')
                 {
