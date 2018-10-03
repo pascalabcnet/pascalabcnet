@@ -1669,6 +1669,8 @@ class_attributes1
 		}
 	| class_attributes1 class_attribute
 		{
+            if (((class_attribute)$1 & (class_attribute)$2) == (class_attribute)$2)
+                parsertools.AddErrorFromResource("ATTRIBUTE_REDECLARED",@2);
 			$$  = ((class_attribute)$1) | ((class_attribute)$2);
 			//$$ = $1;
 		}

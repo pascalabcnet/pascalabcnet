@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  IVAN-PC
-// DateTime: 03.10.2018 19:30:35
+// DateTime: 03.10.2018 21:42:43
 // UserName: Ivan
 // Input file <ABCPascal.y>
 
@@ -3917,6 +3917,8 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 294: // class_attributes1 -> class_attributes1, class_attribute
 {
+            if (((class_attribute)ValueStack[ValueStack.Depth-2].ob & (class_attribute)ValueStack[ValueStack.Depth-1].ob) == (class_attribute)ValueStack[ValueStack.Depth-1].ob)
+                parsertools.AddErrorFromResource("ATTRIBUTE_REDECLARED",LocationStack[LocationStack.Depth-1]);
 			CurrentSemanticValue.ob  = ((class_attribute)ValueStack[ValueStack.Depth-2].ob) | ((class_attribute)ValueStack[ValueStack.Depth-1].ob);
 			//$$ = $1;
 		}
