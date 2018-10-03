@@ -33,7 +33,7 @@
 
 %token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkQuestionPoint tkDoubleQuestion tkQuestionSquareOpen
 %token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkStatic tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction tkMatch tkWhen
-%token <ti> tkIf tkImplementation tkInherited tkInterface /* tkTypeclass tkInstance */ tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
+%token <ti> tkIf tkImplementation tkInherited tkInterface tkTypeclass tkInstance tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
 %token <ti> tkLoop 
 %token <ti> tkSequence tkYield
@@ -93,7 +93,7 @@
 %type <id> func_name_ident param_name const_field_name func_name_with_template_args identifier_or_keyword unit_name exception_variable const_name func_meth_name_ident label_name type_decl_identifier template_identifier_with_equal 
 %type <id> program_param identifier identifier_keyword_operatorname func_class_name_ident /*optional_identifier*/ visibility_specifier 
 %type <id> property_specifier_directives non_reserved 
-//%type <id> typeclass_restriction
+%type <id> typeclass_restriction
 %type <stn> if_stmt   
 %type <stn> initialization_part  
 %type <stn> template_arguments label_list ident_or_keyword_pointseparator_list ident_list  param_name_list  
@@ -155,7 +155,7 @@
 %type <ex> typeof_expr  
 %type <stn> simple_fp_sect   
 %type <stn> template_param_list template_empty_param_list template_type_params template_type_empty_params
-//%type <stn> template_type_or_typeclass_params typeclass_params  
+%type <stn> template_type_or_typeclass_params typeclass_params  
 %type <td> template_type
 %type <stn> try_stmt  
 %type <stn> uses_clause used_units_list  
@@ -908,7 +908,7 @@ const_variable
         {
 			$$ = NewConstVariable($1, $2, @$);
         }
-    | const_variable tkAmpersend template_type_params                
+    | const_variable tkAmpersend template_type_or_typeclass_params                
         {
 			$$ = new ident_with_templateparams($1 as addressed_value, $3 as template_param_list, @$);
         }
@@ -1121,7 +1121,7 @@ simple_type_decl
     | template_identifier_with_equal type_decl_type tkSemiColon 
         { 
 			$$ = new type_declaration($1, $2, @$); 
-		}/*
+		}
 	| typeclass_restriction tkEqual tkTypeclass optional_base_classes optional_component_list_seq_end tkSemiColon
 		{
 			$$ = new type_declaration($1 as typeclass_restriction, new typeclass_definition($4 as named_type_reference_list, $5 as class_body_list, @$), @$);
@@ -1129,9 +1129,9 @@ simple_type_decl
 	| typeclass_restriction tkEqual tkInstance optional_component_list_seq_end tkSemiColon
 		{
 			$$ = new type_declaration($1 as typeclass_restriction, new instance_definition($4 as class_body_list, @$), @$);
-		}*/
+		}
     ;
-/*
+
 typeclass_restriction
 	: simple_type_identifier typeclass_params
 		{
@@ -1155,8 +1155,7 @@ template_type_or_typeclass_params
 		{
 			$$ = $1;
 		}
-	;*/
-
+	;
 type_decl_identifier
     : identifier
 		{ $$ = $1; }
@@ -1728,12 +1727,12 @@ base_class_name
     : simple_type_identifier
 		{ $$ = $1; }
     | template_type
-		{ $$ = $1; }/*
+		{ $$ = $1; }
 	| typeclass_restriction
 		{
 			var names = new List<ident>();
 			names.Add(($1 as typeclass_restriction).name);
-			$$ = new typeclass_reference(null, names, ($1 as typeclass_restriction).restriction_args); }*/
+			$$ = new typeclass_reference(null, names, ($1 as typeclass_restriction).restriction_args); }
     ;
 
 template_arguments
@@ -1766,11 +1765,11 @@ where_part
     : tkWhere ident_list tkColon type_ref_and_secific_list tkSemiColon
         { 
 			$$ = new where_definition($2 as ident_list, $4 as where_type_specificator_list, @$); 
-		}/*
+		}
 	| tkWhere typeclass_restriction tkSemiColon
 		{
 			$$ = new where_typeclass_constraint($2 as typeclass_restriction);
-		}*/
+		}
     ;
 
 type_ref_and_secific_list
@@ -3229,7 +3228,7 @@ simple_or_template_type_reference
         { 
 			$$ = new template_type_reference((named_type_reference)$1, (template_param_list)$2, @$); 
         }
-    | simple_type_identifier tkAmpersend template_type_params
+    | simple_type_identifier tkAmpersend template_type_or_typeclass_params
         { 
 			$$ = new template_type_reference((named_type_reference)$1, (template_param_list)$3, @$); 
         }
@@ -3801,7 +3800,7 @@ variable
         {
 			$$ = new roof_dereference($1 as addressed_value,@$);
         }
-    | variable tkAmpersend template_type_params                
+    | variable tkAmpersend template_type_or_typeclass_params                
         {
 			$$ = new ident_with_templateparams($1 as addressed_value, $3 as template_param_list, @$);
         }
@@ -4145,9 +4144,9 @@ keyword
     | tkMatch
         { $$ = $1; }
     | tkWhen
-        { $$ = $1; }/*
+        { $$ = $1; }
     | tkInstance
-        { $$ = $1; }*/
+        { $$ = $1; }
     ;
 
 reserved_keyword
