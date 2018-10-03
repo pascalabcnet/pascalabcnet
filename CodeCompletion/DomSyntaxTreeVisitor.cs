@@ -5068,6 +5068,14 @@ namespace CodeCompletion
             cur_scope = ps;
             if (!disable_lambda_compilation)
             {
+                if (awaitedProcType != null)
+                {
+                    var invokeMeth = awaitedProcType.FindNameOnlyInType("Invoke") as ProcScope;
+                    if (invokeMeth != null && invokeMeth.return_type != null)
+                    {
+                        cur_scope.AddName("Result", new ElementScope(new SymInfo("Result",SymbolKind.Variable,"Result"), invokeMeth.return_type, cur_scope));
+                    }
+                }
                 statement_list sl = _function_lambda_definition.proc_body as statement_list;
                 if (sl != null && sl.list.Count == 1 && sl.list[0] is assign && (sl.list[0] as assign).to is ident
                     && ((sl.list[0] as assign).to as ident).name.ToLower() == "result")
