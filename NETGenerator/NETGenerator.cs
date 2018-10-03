@@ -8482,51 +8482,75 @@ namespace PascalABCCompiler.NETGenerator
                 }
                 if (real_parameters.Length > 1)
                 {
-                	if (real_parameters[0].type.is_nullable_type && real_parameters[1] is INullConstantNode)
-                	{
-                		bool tmp = is_dot_expr;
-                		is_dot_expr = true;
-                		TypeInfo ti = helper.GetTypeReference(real_parameters[0].type);
-                		real_parameters[0].visit(this);
-                		is_dot_expr = tmp;
-                		MethodInfo mi = null;
-                		if (real_parameters[0].type is IGenericTypeInstance)
-                			mi = TypeBuilder.GetMethod(ti.tp, typeof(Nullable<>).GetMethod("get_HasValue"));
-                		else
-                			mi = ti.tp.GetMethod("get_HasValue");
-                		il.Emit(OpCodes.Call, mi);
-                		if (ft == basic_function_type.objeq)
-                			il.Emit(OpCodes.Not);
-                		return;
-                	}
-                	else if (real_parameters[1].type.is_nullable_type && real_parameters[0] is INullConstantNode)
-                	{
-                		bool tmp = is_dot_expr;
-                		is_dot_expr = true;
-                		TypeInfo ti = helper.GetTypeReference(real_parameters[1].type);
-                		real_parameters[1].visit(this);
-                		is_dot_expr = tmp;
-                		MethodInfo mi = null;
-                		if (real_parameters[1].type is IGenericTypeInstance)
-                			mi = TypeBuilder.GetMethod(ti.tp, typeof(Nullable<>).GetMethod("get_HasValue"));
-                		else
-                			mi = ti.tp.GetMethod("get_HasValue");
-                		il.Emit(OpCodes.Call, mi);
-                		if (ft == basic_function_type.objeq)
-                			il.Emit(OpCodes.Not);
-                		return;
-                	}
+                    if (real_parameters[0].type.is_nullable_type && real_parameters[1] is INullConstantNode)
+                    {
+                        bool tmp = is_dot_expr;
+                        is_dot_expr = true;
+                        TypeInfo ti = helper.GetTypeReference(real_parameters[0].type);
+                        real_parameters[0].visit(this);
+                        is_dot_expr = tmp;
+                        MethodInfo mi = null;
+                        if (real_parameters[0].type is IGenericTypeInstance)
+                            mi = TypeBuilder.GetMethod(ti.tp, typeof(Nullable<>).GetMethod("get_HasValue"));
+                        else
+                            mi = ti.tp.GetMethod("get_HasValue");
+                        il.Emit(OpCodes.Call, mi);
+                        if (ft == basic_function_type.objeq)
+                            il.Emit(OpCodes.Not);
+                        return;
+                    }
+                    else if (real_parameters[1].type.is_nullable_type && real_parameters[0] is INullConstantNode)
+                    {
+                        bool tmp = is_dot_expr;
+                        is_dot_expr = true;
+                        TypeInfo ti = helper.GetTypeReference(real_parameters[1].type);
+                        real_parameters[1].visit(this);
+                        is_dot_expr = tmp;
+                        MethodInfo mi = null;
+                        if (real_parameters[1].type is IGenericTypeInstance)
+                            mi = TypeBuilder.GetMethod(ti.tp, typeof(Nullable<>).GetMethod("get_HasValue"));
+                        else
+                            mi = ti.tp.GetMethod("get_HasValue");
+                        il.Emit(OpCodes.Call, mi);
+                        if (ft == basic_function_type.objeq)
+                            il.Emit(OpCodes.Not);
+                        return;
+                    }
+                    else if (real_parameters[0].type.is_nullable_type && real_parameters[1].type.is_nullable_type)
+                    {
+                        MethodInfo mi_left = null;
+                        TypeInfo ti_left = helper.GetTypeReference(real_parameters[0].type);
+                        if (real_parameters[0].type is IGenericTypeInstance)
+                            mi_left = TypeBuilder.GetMethod(ti_left.tp, typeof(Nullable<>).GetMethod("GetValueOrDefault", new Type[] { }));
+                        else
+                            mi_left = ti_left.tp.GetMethod("GetValueOrDefault", new Type[] { });
+                        MethodInfo mi_right = null;
+                        TypeInfo ti_right = helper.GetTypeReference(real_parameters[1].type);
+                        if (real_parameters[1].type is IGenericTypeInstance)
+                            mi_right = TypeBuilder.GetMethod(ti_right.tp, typeof(Nullable<>).GetMethod("GetValueOrDefault", new Type[] { }));
+                        else
+                            mi_right = ti_right.tp.GetMethod("GetValueOrDefault", new Type[] { });
+                        is_dot_expr = true;
+                        real_parameters[0].visit(this);
+                        il.Emit(OpCodes.Call, mi_left);
+                        is_dot_expr = true;
+                        real_parameters[1].visit(this);
+                        il.Emit(OpCodes.Call, mi_right);
+                        EmitOperator(value);
+                        if (tmp_dot)
+                        {
+                            is_dot_expr = tmp_dot;
+                            NETGeneratorTools.CreateLocalAndLoad(il, helper.GetTypeReference(value.type).tp);
+                        }
+                        return;
+                    }
                 }
                 real_parameters[0].visit(this);
                 if (real_parameters.Length > 1)
                     real_parameters[1].visit(this);
-                //is_dot_expr = tmp_dot;
                 EmitOperator(value);//кладем соотв. команду
-                if (tmp_dot == true)
+                if (tmp_dot)
                 {
-                    //LocalBuilder lb = il.DeclareLocal(helper.GetTypeReference(value.type).tp);
-                    //il.Emit(OpCodes.Stloc, lb);
-                    //il.Emit(OpCodes.Ldloca, lb);
                     is_dot_expr = tmp_dot;
                     NETGeneratorTools.CreateLocalAndLoad(il, helper.GetTypeReference(value.type).tp);
                 }
