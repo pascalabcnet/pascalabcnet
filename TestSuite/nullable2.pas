@@ -1,4 +1,4 @@
-﻿function f: integer?;
+﻿function f: System.Nullable<integer>;
 begin
   Result := 2;
 end;

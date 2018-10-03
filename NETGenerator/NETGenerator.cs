@@ -8537,6 +8537,7 @@ namespace PascalABCCompiler.NETGenerator
                         real_parameters[1].visit(this);
                         il.Emit(OpCodes.Call, mi_right);
                         EmitOperator(value);
+                        is_dot_expr = tmp_dot;
                         if (tmp_dot)
                         {
                             is_dot_expr = tmp_dot;
