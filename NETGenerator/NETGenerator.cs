@@ -7889,7 +7889,8 @@ namespace PascalABCCompiler.NETGenerator
         private void AssignToStaticField(IExpressionNode to, IExpressionNode from)
         {
             IStaticCommonClassFieldReferenceNode value = (IStaticCommonClassFieldReferenceNode)to;
-            FieldInfo fi = helper.GetField(value.static_field).fi;
+            FldInfo fi_info = helper.GetField(value.static_field);
+            FieldInfo fi = fi_info.fi;
             TypeInfo ti = helper.GetTypeReference(to.type);
             if (to.type.is_value_type)
             {
@@ -7920,7 +7921,7 @@ namespace PascalABCCompiler.NETGenerator
             if (ti != null)
                 EmitBox(from, ti.tp);
             else
-                EmitBox(from, fi.FieldType);
+                EmitBox(from, fi_info.field_type);
             CheckArrayAssign(to, from, il);
             il.Emit(OpCodes.Stsfld, fi);
         }
