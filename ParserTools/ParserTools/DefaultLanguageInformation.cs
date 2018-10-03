@@ -2925,6 +2925,8 @@ namespace PascalABCCompiler.Parsers
             }
 
             //return RemovePossibleKeywords(sb);
+            if (sb.Length > 0 && sb[sb.Length - 1] == '?')
+                sb.Remove(sb.Length - 1, 1);
             return sb.ToString();
 
         }
