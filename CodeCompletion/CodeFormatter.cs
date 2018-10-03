@@ -507,7 +507,7 @@ namespace CodeFormatters
             int pos = GetPosition(sn.source_context.begin_position.line_num, sn.source_context.begin_position.column_num);
             int prev_pos = 0;
             if (prev_sn != null)
-                if (read_from_beg_pos)
+                if (read_from_beg_pos || sn is procedure_definition && prev_sn is program_module)
                 {
                     prev_pos = GetPosition(prev_sn.source_context.begin_position.line_num, prev_sn.source_context.begin_position.column_num) + keyword_offset;
                 }
