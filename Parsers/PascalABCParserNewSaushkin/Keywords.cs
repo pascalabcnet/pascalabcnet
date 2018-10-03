@@ -144,7 +144,7 @@ namespace GPPGParserScanner
             keywords.Add(Convert("match"), (int)Tokens.tkMatch);
             keywords.Add(Convert("when"), (int)Tokens.tkWhen);
             keywords.Add(Convert("namespace"), (int)Tokens.tkNamespace);
-            keywords.Add(Convert("static"), (int)Tokens.tkStatic);/*
+            keywords.Add(Convert("static"), (int)Tokens.tkStatic);
             keywords.Add(Convert("typeclass"), (int)Tokens.tkTypeclass);
             keywords.Add(Convert("instance"), (int)Tokens.tkInstance);
         }
