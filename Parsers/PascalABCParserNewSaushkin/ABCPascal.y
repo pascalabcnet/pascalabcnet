@@ -2602,15 +2602,15 @@ simple_fp_sect
         { 
 			$$ = new typed_parameters($2 as ident_list, $4,parametr_kind.params_parametr,null, @$);  
 		}
-    | param_name_list tkColon fptype tkAssign const_expr        
+    | param_name_list tkColon fptype tkAssign expr        
         { 
 			$$ = new typed_parameters($1 as ident_list, $3, parametr_kind.none, $5, @$); 
 		}
-    | tkVar param_name_list tkColon fptype tkAssign const_expr  
+    | tkVar param_name_list tkColon fptype tkAssign expr  
         { 
 			$$ = new typed_parameters($2 as ident_list, $4, parametr_kind.var_parametr, $6, @$);  
 		}
-    | tkConst param_name_list tkColon fptype tkAssign const_expr    
+    | tkConst param_name_list tkColon fptype tkAssign expr    
         { 
 			$$ = new typed_parameters($2 as ident_list, $4, parametr_kind.const_parametr, $6, @$);  
 		}

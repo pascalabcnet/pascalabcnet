@@ -3,9 +3,9 @@
 //  GPPG error listing for yacc source file <ABCPascal.y>
 // ==========================================================================
 //  Version:  1.3.6
-//  Machine:  IVAN-PC
-//  DateTime: 22.09.2018 19:42:21
-//  UserName: Ivan
+//  Machine:  DESKTOP-A6LT9RI
+//  DateTime: 03.10.2018 18:40:08
+//  UserName: Станислав
 // ==========================================================================
 
 
@@ -158,7 +158,7 @@
 %type <td> set_type  
 %type <ex> as_is_expr as_is_constexpr is_expr as_expr power_expr power_constexpr
 %type <td> unsized_array_type simple_type_or_ simple_type /*array_name_for_new_expr*/ foreach_stmt_ident_dype_opt fptype type_ref fptype_noproctype array_type 
-%type <td> template_param template_empty_param structured_type unpacked_structured_type simple_or_template_type_reference type_ref_or_secific for_stmt_decl_or_assign type_decl_type
+%type <td> template_param template_empty_param structured_type unpacked_structured_type empty_template_type_reference simple_or_template_type_reference type_ref_or_secific for_stmt_decl_or_assign type_decl_type
 %type <stn> type_ref_and_secific_list  
 %type <stn> type_decl_sect
 %type <stn> try_handler  
@@ -189,14 +189,6 @@
 %type <stn> pattern pattern_optional_var match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var 
 %type <ob> pattern_out_param_list pattern_out_param_list_optional_var
 %%
-// Warning: Terminating template_empty_param fixes the following size-4 NonTerminal set
-   // {template_empty_param, template_empty_param_list, template_type_empty_params, 
-   //     empty_template_type_reference}
-// Error: NonTerminal symbol "template_empty_param" has no productions
-// Error: There are 4 non-terminating NonTerminal Symbols
-   //  {template_empty_param, template_empty_param_list, template_type_empty_params, 
-   //     empty_template_type_reference}
-// ------------------------------------------------------------------------------------
 
 parse_goal                
     : program_file 
@@ -836,8 +828,6 @@ const_factor
 		{ $$ = $1; }
     | unsigned_number
 		{ $$ = $1; }
-    | literal
-		{ $$ = $1; }
     | tkNil                        
         { 
 			$$ = new nil_const();  
@@ -905,6 +895,8 @@ sign
 
 const_variable
     : identifier
+		{ $$ = $1; }
+    | literal // SSM 02.10.18 äëÿ '123'.Length ïðè èíèöèàëèçàöèè êîíñòàíò
 		{ $$ = $1; }
     | tkInherited identifier            
         { 
@@ -990,6 +982,11 @@ const_elem_list1
 
 const_elem
     : const_expr
+		{ $$ = $1; }
+    : format_expr
+//--^
+// Error: Syntax error, unexpected ':'
+// -----------------------------------
 		{ $$ = $1; }
     | const_expr tkDotDot const_expr      
         { 
@@ -1244,7 +1241,14 @@ template_type_params
     ;
 
 template_type_empty_params
-    : tkLower template_empty_param_list tkGreater            
+    :   tkNotEqual            
+        {
+            var ntr = new named_type_reference(new ident(""), @$);
+            
+			$$ = new template_param_list(ntr, @$);
+            ntr.source_context = new SourceContext($$.source_context.end_position.line_num, $$.source_context.end_position.column_num, $$.source_context.begin_position.line_num, $$.source_context.begin_position.column_num);
+		}
+    |   tkLower template_empty_param_list tkGreater            
         {
 			$$ = $2;
 			$$.source_context = @$;
@@ -1276,11 +1280,8 @@ template_empty_param_list
 template_empty_param
     : 
         { 
-            $$ = new named_type_reference(new ident(""), @$);}
+            $$ = new named_type_reference(new ident(""), @$);
         }
-//------^
-// Error: Syntax error, unexpected '}'
-// -----------------------------------
     ;
     
 template_param
@@ -2140,7 +2141,7 @@ property_specifiers
         	}
         	else // ðàñøèðåííûå ñâîéñòâà
         	{
-				var id = NewId("#GetGen");
+				var id = NewId("#GetGen", @2);
                 procedure_definition pr = null;
                 if (!parsertools.build_tree_for_formatter)
                     pr = CreateAndAddToClassReadFunc($2, id, @2);
@@ -2161,7 +2162,7 @@ property_specifiers
         	}
         	else // ðàñøèðåííûå ñâîéñòâà
         	{
-				var id = NewId("#SetGen");
+				var id = NewId("#SetGen", @2);
                 procedure_definition pr = null;
                 if (!parsertools.build_tree_for_formatter)
                     pr = CreateAndAddToClassWriteProc($2 as statement,id,@2);
@@ -2184,7 +2185,7 @@ write_property_specifiers
         	}
         	else 
         	{
-				var id = NewId("#SetGen");
+				var id = NewId("#SetGen", @2);
                 procedure_definition pr = null;
                 if (!parsertools.build_tree_for_formatter)
                     pr = CreateAndAddToClassWriteProc($2 as statement,id,@2);
@@ -2203,7 +2204,7 @@ read_property_specifiers
         	}
         	else 
         	{
-				var id = NewId("#GetGen");
+				var id = NewId("#GetGen", @2);
                 procedure_definition pr = null;
                 if (!parsertools.build_tree_for_formatter)
                     pr = CreateAndAddToClassReadFunc($2,id,@2);
@@ -3285,9 +3286,9 @@ new_expr
         	var typename = "AnonymousType#"+Guid();
         	var type = new named_type_reference(typename,@1);
         	
-			// node new_expr - for code generation
+			// node new_expr - for code generation of new node
 			var ne = new new_expr(type, new expression_list(exprs), @$);
-			// node unnamed_type_object - for formatting
+			// node unnamed_type_object - for formatting and code generation (new node and Anonymous class)
 			$$ = new unnamed_type_object(l, true, ne, @$);
         }      
     ;
