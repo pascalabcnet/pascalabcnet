@@ -574,7 +574,7 @@ namespace SyntaxVisitors
                         .SelectMany(tdecls => tdecls.types_decl)
                         .Where(td => td.type_name.name == GetClassName(pd).name)
                         .Select(td => td.type_def as class_definition)
-                        .Where(_cd => _cd != null)
+                        .Where(_cd => _cd != null && _cd.body != null)
                         .SelectMany(_cd => _cd.body.class_def_blocks);
                     implementation_node impl = UpperTo<implementation_node>();
                     if (impl != null)
@@ -585,7 +585,7 @@ namespace SyntaxVisitors
                         .SelectMany(tdecls => tdecls.types_decl)
                         .Where(td => td.type_name.name == GetClassName(pd).name)
                         .Select(td => td.type_def as class_definition)
-                        .Where(_cd => _cd != null)
+                        .Where(_cd => _cd != null && _cd.body != null)
                         .SelectMany(_cd => _cd.body.class_def_blocks));
                     }
 
