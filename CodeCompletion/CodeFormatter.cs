@@ -2926,14 +2926,16 @@ namespace CodeFormatters
             if (_short_func_definition.Parent is class_members && (_short_func_definition.Parent as class_members).access_mod != null && (_short_func_definition.Parent as class_members).access_mod.source_context != null)
                 add_space_before = true;
             add_newline_after = false;
+            int cur_off = tab;
             visit_node(_short_func_definition.procdef.proc_header);
             bool tmp_in_procedure = in_procedure;
             in_procedure = true;
             //sb.Append(":=");
             add_space_before = true;
             add_space_after = true;
+            
             visit_node(_short_func_definition.procdef.proc_body);
-            //if (in_one_row(_short_func_definition.procdef.proc_body))
+            if (!(_short_func_definition.procdef.proc_header is constructor))
                 IncOffset();
             in_procedure = tmp_in_procedure;
             multiline_stack_pop(_short_func_definition);
