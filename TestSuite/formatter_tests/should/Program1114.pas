@@ -1,5 +1,5 @@
 ﻿begin
-  (new System.Threading.Thread(()->begin
+  (new System.Threading.Thread(() -> begin
     //комментарий
     writeln;//
     writeln;

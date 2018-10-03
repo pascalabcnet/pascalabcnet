@@ -548,6 +548,15 @@ namespace CodeFormatters
                     {
                         comm = "():";
                     }
+                    if (comm.EndsWith("->"))
+                    {
+                        if (comm.StartsWith("()"))
+                            comm = RemoveOverSpaces(comm);
+                        if (comm == "()->")
+                            comm = "() ->";
+                        comm += " ";
+                    }
+                        
                 }
                 WriteCommentWithIndent(comm, true);
                 read_from_beg_pos = false;

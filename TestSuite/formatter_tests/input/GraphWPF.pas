@@ -21,7 +21,8 @@ uses System.Threading;
 uses System.Windows.Shapes;
 uses System.Windows.Threading;
 
-var CountVisuals := 0;
+var 
+  CountVisuals := 0;
 
 {procedure Invoke(d: System.Delegate; params args: array of object);
 procedure Invoke(d: ()->());
@@ -29,7 +30,12 @@ function Invoke<T>(d: Func0<T>): T;
 function InvokeReal(f: ()->real): real;
 function InvokeString(f: ()->string): string;}
 
+//{{{doc: Начало секции 1 }}} 
+
 type 
+// -----------------------------------------------------
+//>>     Типы модуля GraphWPF # GraphWPF types
+// -----------------------------------------------------
   /// Тип клавиши
   Key = System.Windows.Input.Key;
   /// Цветовые константы
@@ -40,14 +46,29 @@ type
   GColor = System.Windows.Media.Color;
   /// Тип прямоугольника
   GRect = System.Windows.Rect;
+  /// Тип окна
   GWindow = System.Windows.Window;
   GPen = System.Windows.Media.Pen;
+  /// Тип точки
   GPoint = System.Windows.Point;
   GBrush = System.Windows.Media.Brush;
   /// Тип стиля шрифта
   FontStyle = (Normal,Bold,Italic,BoldItalic);
+
+  /// Виды системы координат
+  CoordType = (MathematicalCoords,StandardCoords);
+  /// Константы выравнивания текста относительно точки
+  Alignment = (LeftTop,CenterTop,RightTop,LeftCenter,Center,RightCenter,LeftBottom,CenterBottom,RightBottom);
   
+//{{{--doc: Конец секции 1 }}} 
+  
+//{{{doc: Начало секции 2 }}} 
+
+// -----------------------------------------------------
+//>>     Класс BrushType # BrushType class
+// -----------------------------------------------------
   ///!#
+  /// Тип кисти
   BrushType = class
   private
     c := Colors.White;
@@ -57,7 +78,11 @@ type
     property Color: GColor read c write c;
   end;
   
+// -----------------------------------------------------
+//>>     Класс PenType # PenType class
+// -----------------------------------------------------
   ///!#
+  /// Тип пера
   PenType = class
   private
     c: Color := Colors.Black;
@@ -79,7 +104,11 @@ type
     property Y: real read fy;
   end;
 
+// -----------------------------------------------------
+//>>     Класс FontType # FontType class
+// -----------------------------------------------------
   ///!#
+  /// Тип шрифта
   FontType = class
   private
     tf := new Typeface('Arial');
@@ -113,6 +142,11 @@ type
     property Style: FontStyle write SetFS;
   end;
   
+// -----------------------------------------------------
+//>>     Класс GraphWindowType # GraphWPF GraphWindowType class
+// -----------------------------------------------------
+  ///!#
+  /// Тип графического окна
   GraphWindowType = class
   private
     function GetTop: real;
@@ -137,6 +171,10 @@ type
   end;
   
   // Специфический тип окна для модуля GraphWPF
+// -----------------------------------------------------
+//>>     Класс WindowTypeWPF # WindowTypeWPF class
+// -----------------------------------------------------
+  /// Тип графического окна WindowTypeWPF
   WindowTypeWPF = class(WindowType)
   public
     /// Сохраняет содержимое графического окна в файл с именем fname
@@ -147,12 +185,14 @@ type
     procedure Clear; override;
   end;
 
+//{{{--doc: Конец секции 2 }}} 
   
-  /// Виды системы координат
-  CoordType = (MathematicalCoords,StandardCoords);
-  /// Константы выравнивания текста относительно точки
-  Alignment = (LeftTop,CenterTop,RightTop,LeftCenter,Center,RightCenter,LeftBottom,CenterBottom,RightBottom);
+ 
+//{{{doc: Начало секции 3 }}} 
 
+// -----------------------------------------------------
+//>>     Графические примитивы # GraphWPF primitives
+// -----------------------------------------------------
 /// Рисует эллипс с центром в точке (x,y) и радиусами rx и ry
 procedure Ellipse(x,y,rx,ry: real);
 /// Рисует контур эллипса с центром в точке (x,y) и радиусами rx и ry
@@ -247,6 +287,9 @@ procedure DrawPolygon(points: array of Point; c: GColor);
 /// Рисует внутренность многоугольника, заданного массивом точек и цветом
 procedure FillPolygon(points: array of Point; c: GColor);
 
+// -----------------------------------------------------
+//>>     Функции для вывода изображений и видео # GraphWPF functions for images and video
+// -----------------------------------------------------
 /// Рисует изображение из файла fname в позиции (x,y)
 procedure DrawImage(x,y: real; fname: string);
 /// Рисует изображение из файла fname в позиции (x,y) размера w на h
@@ -263,46 +306,19 @@ function ImageHeight(fname: string): integer;
 /// Размер изображения в пикселах
 function ImageSize(fname: string): (integer,integer);
 
-/// Ширина текста при выводе
-function TextWidth(text: string): real;
-/// Высота текста при выводе
-function TextHeight(text: string): real;
-/// Размер текста при выводе
-function TextSize(text: string): Size;
-
-/// Текущая кисть
-var Brush: BrushType;
-/// Текущее перо
-var Pen: PenType;
-/// Текущий шрифт
-var Font: FontType;
-/// Главное окно
-var Window: WindowTypeWPF;
-/// Графическое окно
-var GraphWindow: GraphWindowType;
-
-var
-  /// Событие нажатия на кнопку мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
-  OnMouseDown: procedure(x, y: real; mousebutton: integer);
-  /// Событие отжатия кнопки мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если отжата левая кнопка мыши, и 2, если отжата правая кнопка мыши
-  OnMouseUp: procedure(x, y: real; mousebutton: integer);
-  /// Событие перемещения мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 0, если кнопка мыши не нажата, 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
-  OnMouseMove: procedure(x, y: real; mousebutton: integer);
-  /// Событие нажатия клавиши
-  OnKeyDown: procedure(k: Key);
-  /// Событие отжатия клавиши
-  OnKeyUp: procedure(k: Key);
-  /// Событие нажатия символьной клавиши
-  OnKeyPress: procedure(ch: char);
-  /// Событие изменения размера графического окна
-  OnResize: procedure;
-
+// -----------------------------------------------------
+//>>     Вспомогательные функции GraphWPF # GraphWPF service functions
+// -----------------------------------------------------
 /// Возвращает цвет по красной, зеленой и синей составляющей (в диапазоне 0..255)
 function RGB(r,g,b: byte): Color;
 /// Возвращает цвет по красной, зеленой и синей составляющей и параметру прозрачности (в диапазоне 0..255)
 function ARGB(a,r,g,b: byte): Color;
+/// Возвращает серый цвет с интенсивностью b
+function GrayColor(b: byte): Color;
 /// Возвращает случайный цвет
 function RandomColor: Color;
+/// Возвращает полностью прозрачный цвет
+function EmptyColor: Color;
 /// Возвращает случайный цвет
 function clRandom: Color;
 /// Возвращает точку с координатами (x,y)
@@ -314,13 +330,19 @@ function ColorBrush(c: Color): GBrush;
 /// Возвращает однотонное цветное перо, заданное цветом
 function ColorPen(c: Color): GPen;
 
-/// Начать анимацию, основанную на кадре
+// -----------------------------------------------------
+//>>     Процедуры покадровой анимации # GraphWPF FrameBasedAnimation functions
+// -----------------------------------------------------
+/// Начинает анимацию, основанную на кадре. Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw
 procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer := 60);
-/// Начать анимацию, основанную на кадре
+/// Начинает анимацию, основанную на кадре Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw с параметром, равным номеру кадра
 procedure BeginFrameBasedAnimation(Draw: procedure(frame: integer); frate: integer := 60);
-/// Завершить анимацию, основанную на кадре
+/// Завершает анимацию, основанную на кадре
 procedure EndFrameBasedAnimation;
 
+// -----------------------------------------------------
+//>>     Функции для вывода текста # GraphWPF text functions
+// -----------------------------------------------------
 /// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
 procedure DrawText(x, y, w, h: real; text: string; align: Alignment := Alignment.Center; angle: real := 0.0);
 /// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
@@ -359,6 +381,16 @@ procedure TextOut(x, y: real; text: real; align: Alignment := Alignment.LeftTop;
 /// Выводит вещественное в позицию (x,y) цветом c
 procedure TextOut(x, y: real; text: real; c: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
 
+/// Ширина текста при выводе
+function TextWidth(text: string): real;
+/// Высота текста при выводе
+function TextHeight(text: string): real;
+/// Размер текста при выводе
+function TextSize(text: string): Size;
+
+// -----------------------------------------------------
+//>>     Функции для вывода графиков # GraphWPF graph functions
+// -----------------------------------------------------
 /// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
 procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h: real);
 /// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике r
@@ -376,16 +408,64 @@ procedure DrawGraph(f: real -> real; a, b: real);
 /// Рисует график функции f, заданной на отрезке [-5,5], на полное графическое окно  
 procedure DrawGraph(f: real -> real);
 
-procedure SetMathematicCoords(x1: real := -10; x2: real := 10; drawcoords: boolean := true);
-procedure SetMathematicCoords(x1,x2,ymin: real; drawcoords: boolean := true);
+// -----------------------------------------------------
+//>>     Функции для настройки системы координат # GraphWPF coordinate system functions
+// -----------------------------------------------------
+/// Устанавливает математическую систему координат с диапазоном [x1,x2] по оси OX. 
+procedure SetMathematicCoords(x1: real := -10; x2: real := 10; drawgrid: boolean := true);
+/// Устанавливает математическую систему координат с диапазоном [x1,x2] по оси OX и минимальной координатой ymin по оси OY
+procedure SetMathematicCoords(x1,x2,ymin: real; drawgrid: boolean := true);
+/// Устанавливает стандартную систему координат (ось OY направлена вниз) с центром (x0,y0)
 procedure SetStandardCoords(scale: real := 1.0; x0: real := 0; y0: real := 0);
+/// Устанавливает стандартную систему координат с центром (x0,y0). Изображение не масштабируется к разрешению монитора и линии получаются чёткими
 procedure SetStandardCoordsSharpLines(x0: real := 0; y0: real := 0);
+/// Рисует сетку системы координат
 procedure DrawGrid;
 
+/// Минимальная отображаемая x-координата
 function XMin: real;
+/// Максимальная отображаемая x-координата
 function XMax: real;
+/// Минимальная отображаемая y-координата
 function YMin: real;
+/// Максимальная отображаемая y-координата
 function YMax: real;
+
+// -----------------------------------------------------
+//>>     Переменные модуля GraphWPF # GraphWPF variables
+// -----------------------------------------------------
+/// Текущая кисть
+var Brush: BrushType;
+/// Текущее перо
+var Pen: PenType;
+/// Текущий шрифт
+var Font: FontType;
+/// Главное окно
+var Window: WindowTypeWPF;
+/// Графическое окно
+var GraphWindow: GraphWindowType;
+
+// -----------------------------------------------------
+//>>     События модуля GraphWPF # GraphWPF events
+// -----------------------------------------------------
+var
+  /// Событие нажатия на кнопку мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
+  OnMouseDown: procedure(x, y: real; mousebutton: integer);
+  /// Событие отжатия кнопки мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если отжата левая кнопка мыши, и 2, если отжата правая кнопка мыши
+  OnMouseUp: procedure(x, y: real; mousebutton: integer);
+  /// Событие перемещения мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 0, если кнопка мыши не нажата, 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
+  OnMouseMove: procedure(x, y: real; mousebutton: integer);
+  /// Событие нажатия клавиши
+  OnKeyDown: procedure(k: Key);
+  /// Событие отжатия клавиши
+  OnKeyUp: procedure(k: Key);
+  /// Событие нажатия символьной клавиши
+  OnKeyPress: procedure(ch: char);
+  /// Событие изменения размера графического окна
+  OnResize: procedure;
+
+
+//{{{--doc: Конец секции 3 }}} 
 
 {procedure AddRightPanel(Width: real := 200; c: Color := Colors.LightGray);
 procedure AddLeftPanel(Width: real := 200; c: Color := Colors.LightGray);
@@ -393,12 +473,16 @@ procedure AddTopPanel(Height: real := 100; c: Color := Colors.LightGray);
 procedure AddBottomPanel(Height: real := 100; c: Color := Colors.LightGray);
 
 procedure AddStatusBar(Height: real := 24);}
+procedure __InitModule__;
+procedure __FinalizeModule__;
 
 implementation
 
 function RGB(r,g,b: byte) := Color.Fromrgb(r, g, b);
 function ARGB(a,r,g,b: byte) := Color.FromArgb(a, r, g, b);
+function GrayColor(b: byte): Color := RGB(b, b, b);
 function RandomColor := RGB(PABCSystem.Random(256), PABCSystem.Random(256), PABCSystem.Random(256));
+function EmptyColor: Color := ARGB(0,0,0,0);
 function clRandom := RandomColor();
 function Pnt(x,y: real) := new Point(x,y);
 function Rect(x,y,w,h: real) := new System.Windows.Rect(x,y,w,h);
@@ -416,22 +500,6 @@ begin
     Sleep(10);    
   end;
 end;
-
-function operator implicit(Self: (integer, integer)): Point; extensionmethod := new Point(Self[0], Self[1]);
-function operator implicit(Self: (integer, real)): Point; extensionmethod := new Point(Self[0], Self[1]);
-function operator implicit(Self: (real, integer)): Point; extensionmethod := new Point(Self[0], Self[1]);
-function operator implicit(Self: (real, real)): Point; extensionmethod := new Point(Self[0], Self[1]);
-
-function operator implicit(Self: array of (real, real)): array of Point; extensionmethod := 
-  Self.Select(t->new Point(t[0],t[1])).ToArray;
-function operator implicit(Self: array of (integer, integer)): array of Point; extensionmethod := 
-  Self.Select(t->new Point(t[0],t[1])).ToArray;
-
-
-///---- Helpers
-procedure SetLeft(Self: UIElement; l: integer); extensionmethod := Canvas.SetLeft(Self,l);
-
-procedure SetTop(Self: UIElement; t: integer); extensionmethod := Canvas.SetTop(Self,t);
 
 {procedure MoveTo(Self: UIElement; l,t: integer); extensionmethod;
 begin
@@ -1229,7 +1297,7 @@ begin
 end;
 procedure SetMathematicCoordsScale(x0,y0,scale: real) := Invoke(SetMathematicCoordsScaleP,x0,y0,scale);
 
-procedure SetMathematicCoordsP(x1,x2: real; drawcoords: boolean);
+procedure SetMathematicCoordsP(x1,x2: real; drawgrid: boolean);
 begin
   if CurrentCoordType = StandardCoords then
     StandardCoordsPenWidthSave := Pen.Width;
@@ -1241,10 +1309,10 @@ begin
   XOrigin := -x1*GlobalScale;
   YOrigin := Window.Height/2;
   SetMathematicCoordsScaleP(XOrigin,YOrigin,GlobalScale);
-  if drawcoords then
+  if drawgrid then
     DrawGridP
 end;
-procedure SetMathematicCoordsP1(x1,x2,ymin: real; drawcoords: boolean);
+procedure SetMathematicCoordsP1(x1,x2,ymin: real; drawgrid: boolean);
 begin
   if CurrentCoordType = StandardCoords then
     StandardCoordsPenWidthSave := Pen.Width;
@@ -1258,11 +1326,11 @@ begin
   // Window.Height + ymin*scale
   YOrigin := Window.Height + ymin*GlobalScale;
   SetMathematicCoordsScaleP(XOrigin,YOrigin,GlobalScale);
-  if drawcoords then
+  if drawgrid then
     DrawGridP
 end;
-procedure SetMathematicCoords(x1: real; x2: real; drawcoords: boolean) := Invoke(SetMathematicCoordsP,x1,x2,drawcoords);
-procedure SetMathematicCoords(x1,x2,ymin: real; drawcoords: boolean) := Invoke(SetMathematicCoordsP1,x1,x2,ymin,drawcoords);
+procedure SetMathematicCoords(x1: real; x2: real; drawgrid: boolean) := Invoke(SetMathematicCoordsP,x1,x2,drawgrid);
+procedure SetMathematicCoords(x1,x2,ymin: real; drawgrid: boolean) := Invoke(SetMathematicCoordsP1,x1,x2,ymin,drawgrid);
 
 procedure SetStandardCoordsP(scale: real := 1.0; x0: real := 0; y0: real := 0);
 begin
@@ -1471,7 +1539,7 @@ public
 
 
   /// --- SystemKeyEvents
-  procedure SystemOnKeyDown(sender: Object; e: System.Windows.Input.KeyEventArgs);
+  (*procedure SystemOnKeyDown(sender: Object; e: System.Windows.Input.KeyEventArgs);
   begin
     if GraphWPF.OnKeyDown <> nil then
       GraphWPF.OnKeyDown(e.Key);
@@ -1520,7 +1588,7 @@ public
       mb := 2;
     if GraphWPF.OnMouseMove <> nil then  
       GraphWPF.OnMouseMove(p.x, p.y, mb);
-  end;
+  end;*)
   
 end;
 
@@ -1618,6 +1686,7 @@ begin
   if not __initialized then
   begin
     __initialized := true;
+    GraphWPFBase.__InitModule__;
     __InitModule;
   end;
 end;
