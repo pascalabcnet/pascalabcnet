@@ -43,7 +43,8 @@ namespace PascalABCCompiler
         public void AddVariable(var_definition_node vdn)
         {
             VarInfo vi = new VarInfo();
-            ht[vdn] = vi;
+            if (ht[vdn] == null)
+                ht[vdn] = vi;
         }
 
         public VarInfo GetVariable(var_definition_node vdn)

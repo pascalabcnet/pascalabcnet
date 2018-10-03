@@ -704,6 +704,11 @@ namespace PascalABCCompiler
         private void IncreaseNumUseVar(local_block_variable_reference lvr)
         {
             VarInfo vi = helper.GetVariable(lvr.var);
+            if (vi == null)
+            {
+                helper.AddVariable(lvr.var);
+                vi = helper.GetVariable(lvr.var);
+            }
             if (vi == null) return;
             vi.num_use++;
             vi.act_num_use++;
