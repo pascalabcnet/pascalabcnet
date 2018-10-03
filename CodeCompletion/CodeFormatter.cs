@@ -243,6 +243,24 @@ namespace CodeFormatters
             }
         }
 
+        private string RemoveOverSpaces(string s)
+        {
+            if (s.IndexOf("//") != -1 || s.IndexOf("{") != -1)
+                return s;
+            StringBuilder sb = new StringBuilder();
+            string[] arr = s.Split(' ');
+            for (int i = 0; i < arr.Length; i++)
+            {
+                if (arr[i] != "")
+                {
+                    sb.Append(arr[i]);
+                    if (i < arr.Length - 1)
+                        sb.Append(" ");
+                }
+            }
+            return sb.ToString();
+        }
+
         private void WriteNode(syntax_tree_node sn)
         {
             if (sn.source_context != null)
@@ -257,7 +275,7 @@ namespace CodeFormatters
         {
             int start_pos = GetPosition(sn.source_context.begin_position.line_num, sn.source_context.begin_position.column_num);
             int end_pos = GetPosition(sn.source_context.end_position.line_num, sn.source_context.end_position.column_num);
-            string node_text = prepare_comment(Text.Substring(start_pos, end_pos - start_pos + 1), false);
+            string node_text = prepare_comment(RemoveOverSpaces(Text.Substring(start_pos, end_pos - start_pos + 1)), false);
             sb.Append(node_text);
         }
 
