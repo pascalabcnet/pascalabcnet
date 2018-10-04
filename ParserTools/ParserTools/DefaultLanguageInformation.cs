@@ -3068,7 +3068,7 @@ namespace PascalABCCompiler.Parsers
                     }
                     if (generic)
                     {
-                        break;
+                        //break;
                     }
                 }
                 else if (c == '[' && !in_comment)
