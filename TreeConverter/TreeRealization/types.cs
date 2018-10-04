@@ -1920,6 +1920,31 @@ namespace PascalABCCompiler.TreeRealization
                     else
                         return string.Format(compiler_string_consts.multi_dim_array_printable_name_template, new string(',', rank-1), element_type.PrintableName);
                 }
+                if (this.IsDelegate && this.name != null && this.name.IndexOf("$") != -1)
+                {
+                    var sil = this.find_in_type("Invoke");
+                    if (sil != null && sil.Count > 0)
+                    {
+                        common_method_node cmn = sil[0].sym_info as common_method_node;
+                        if (cmn != null)
+                        {
+                            StringBuilder params_sb = new StringBuilder();
+                            for (int i=0; i<cmn.parameters.Count; i++)
+                            {
+                                parameter cp = cmn.parameters[i];
+                                params_sb.Append((cp.parameter_type == SemanticTree.parameter_type.var ? "var ":"")+ cp.name+": "+cp.type.PrintableName);
+                                if (i < cmn.parameters.Count - 1)
+                                    params_sb.Append("; ");
+                            }
+                            if (cmn.return_value_type != null)
+                            {
+                                return "function("+ params_sb.ToString() +"): " + cmn.return_value_type.PrintableName;
+                            }
+                            else
+                                return "procedure(" + params_sb.ToString()+")";
+                        }
+                    }
+                }
                 return base.PrintableName;
             }
         }
