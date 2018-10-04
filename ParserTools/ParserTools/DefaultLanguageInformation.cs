@@ -2629,8 +2629,13 @@ namespace PascalABCCompiler.Parsers
 				{
 					if (kav.Count == 0)
                     {
-                        is_comm = true;
                         comment_position = i;
+                        while (i >= 0 && Text[i] != '\'')
+                            i--;
+                        if (i >= 1 && Text[i - 1] == '$')
+                            return false;
+                        is_comm = true;
+                        return is_comm;
                     }  
 				}
 				else if (Text[i] == '}')
