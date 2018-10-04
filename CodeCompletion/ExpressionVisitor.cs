@@ -79,7 +79,7 @@ namespace CodeCompletion
             {
                 returned_scope = null;
             }
-            if (returned_scope != null && returned_scope is ElementScope && (returned_scope as ElementScope).sc is ProcType)
+            if (returned_scope != null && returned_scope is ElementScope && (returned_scope as ElementScope).sc is ProcType && expr is method_call)
             {
                 if (by_dot)
                     if (((returned_scope as ElementScope).sc as ProcType).target.return_type != null)
@@ -99,7 +99,7 @@ namespace CodeCompletion
                     else
                         returned_scope = null;
             }
-            else if (returned_scope != null && returned_scope is ElementScope && (returned_scope as ElementScope).sc is CompiledScope && ((returned_scope as ElementScope).sc as CompiledScope).CompiledType.BaseType == typeof(MulticastDelegate))
+            else if (returned_scope != null && returned_scope is ElementScope && (returned_scope as ElementScope).sc is CompiledScope && ((returned_scope as ElementScope).sc as CompiledScope).CompiledType.BaseType == typeof(MulticastDelegate) && expr is method_call)
             {
                 ProcScope invoke_meth = ((returned_scope as ElementScope).sc as CompiledScope).FindNameOnlyInThisType("Invoke") as ProcScope;
                 if (invoke_meth != null)
@@ -351,9 +351,9 @@ namespace CodeCompletion
                     }
                     else if (returned_scope is ElementScope && (returned_scope as ElementScope).sc is ProcType && by_dot)
                     {
-                        TypeScope ts = ((returned_scope as ElementScope).sc as ProcType).target.return_type;
-                        if (ts != null)
-                            returned_scope = new ElementScope(ts);
+                        //TypeScope ts = ((returned_scope as ElementScope).sc as ProcType).target.return_type;
+                        //if (ts != null)
+                        //    returned_scope = new ElementScope(ts);
                     }
                     if (returned_scope is ElementScope)
                         returned_scope = CheckForAccess(entry_scope, returned_scope as ElementScope);
@@ -785,13 +785,14 @@ namespace CodeCompletion
                 else
                     returned_scope = new ElementScope((returned_scope as ProcScope).return_type);
             }
-            else if (returned_scope != null && returned_scope is ElementScope && (returned_scope as ElementScope).sc is ProcType)
+            else if (returned_scope != null && returned_scope is ElementScope && (returned_scope as ElementScope).sc is ProcType && _dot_node.left is method_call)
             {
                 TypeScope ts = ((returned_scope as ElementScope).sc as ProcType).target.return_type;
                 if (ts != null)
                     returned_scope = new ElementScope(ts);
+                
             }
-            else if ((returned_scope != null && returned_scope is ElementScope && (returned_scope as ElementScope).sc is CompiledScope))
+            else if ((returned_scope != null && returned_scope is ElementScope && (returned_scope as ElementScope).sc is CompiledScope) && _dot_node.left is method_call)
             {
                 ProcScope invoke_meth = ((returned_scope as ElementScope).sc as CompiledScope).FindNameOnlyInThisType("Invoke") as ProcScope;
                 if (invoke_meth != null)
