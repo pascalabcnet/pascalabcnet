@@ -10612,6 +10612,11 @@ namespace PascalABCCompiler.NETGenerator
             else il.Emit(OpCodes.Ldsflda, fb);
         }
 
+        public override void visit(IDefaultOperatorNodeAsConstant value)
+        {
+            value.DefaultOperator.visit(this);
+        }
+
         public override void visit(ICommonConstructorCallAsConstant value)
         {
             value.ConstructorCall.visit(this);

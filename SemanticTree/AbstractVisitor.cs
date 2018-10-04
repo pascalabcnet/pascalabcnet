@@ -641,6 +641,11 @@ namespace PascalABCCompiler.SemanticTree
         public virtual void visit(ICommonNamespaceEventNode value)
         {
         }
+
+        public virtual void visit(IDefaultOperatorNodeAsConstant value)
+        {
+
+        }
     }
 
 }

@@ -297,6 +297,8 @@ namespace PascalABCCompiler.SemanticTree
         void visit(ILambdaFunctionCallNode value);
 
         void visit(ICommonNamespaceEventNode value);
+
+        void visit(IDefaultOperatorNodeAsConstant value);
     }
 
 }

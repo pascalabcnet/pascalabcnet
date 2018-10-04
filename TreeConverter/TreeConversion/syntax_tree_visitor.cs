@@ -14232,6 +14232,8 @@ namespace PascalABCCompiler.TreeConverter
                 constant = new compiled_static_field_reference_as_constant(expr as static_compiled_variable_reference, null);
                 return constant;
             }
+            else if (expr is default_operator_node)
+                constant = new default_operator_node_as_constant(expr as default_operator_node, null);
             else
             {
                 constant = expr as constant_node;
@@ -14258,6 +14260,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
 
             }
+            
             if (constant == null)
                 AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
             if (IsBoundedArray(tn) || IsUnsizedArray(tn))
