@@ -408,7 +408,7 @@ namespace SyntaxVisitors
             {
                 // Метод класса описан вне класса
 
-                return UpperTo<declarations>().list
+                cd = UpperTo<declarations>().list
                     .OfType<type_declarations>()
                     .SelectMany(tdecls => tdecls.types_decl)
                     .Where(td => td.type_name.name == GetClassName(pd).name)
@@ -416,6 +416,23 @@ namespace SyntaxVisitors
                     .Where(_cd => _cd != null)
                     .DefaultIfEmpty()
                     .First();
+                if (cd == null)
+                {
+                    implementation_node impl = UpperTo<implementation_node>();
+                    if (impl != null)
+                    {
+                        cd = (impl.Parent as unit_module).interface_part.interface_definitions.list
+                            .OfType<type_declarations>()
+                            .SelectMany(tdecls => tdecls.types_decl)
+                            .Where(td => td.type_name.name == GetClassName(pd).name)
+                            .Select(td => td.type_def as class_definition)
+                            .Where(_cd => _cd != null)
+                            .DefaultIfEmpty()
+                            .First();
+                    }
+                }
+                
+                return cd;
             }
         }
 
