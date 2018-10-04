@@ -164,6 +164,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 si.sym_info.semantic_node_type == semantic_node_type.common_namespace_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.compiled_unit_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.template_type ||
+                si.sym_info.semantic_node_type == semantic_node_type.generic_indicator ||
                 si.sym_info.semantic_node_type == semantic_node_type.class_constant_definition ||
                 si.sym_info.semantic_node_type == semantic_node_type.basic_function_node && idName == "exit")
             {

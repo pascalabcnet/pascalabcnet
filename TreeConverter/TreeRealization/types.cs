@@ -3055,6 +3055,7 @@ namespace PascalABCCompiler.TreeRealization
         private void add_delegate_operator(string name, compile_time_executor executor)
         {
             common_namespace_function_node cnfn = new common_namespace_function_node(name, this, null, null, null);
+            
             cnfn.ConnectedToType = this;
             cnfn.compile_time_executor = executor;
             add_name(name, new SymbolInfo(cnfn));
@@ -3064,6 +3065,7 @@ namespace PascalABCCompiler.TreeRealization
                                                         cnfn, concrete_parameter_type.cpt_none, null, null);
             cnfn.parameters.AddElement(cp1);
             cnfn.parameters.AddElement(cp2);
+            
         }
 
         //private bool ctors_inited = false;
