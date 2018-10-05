@@ -83,7 +83,7 @@
 %type <ex> const_simple_expr term simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda simple_expr range_term range_factor 
 %type <ex> external_directive_ident init_const_expr case_label variable var_reference /*optional_write_expr*/ optional_read_expr simple_expr_or_nothing var_question_point
 %type <ob> for_cycle_type  
-%type <ex> format_expr  
+%type <ex> format_expr format_const_expr const_expr_or_nothing  
 %type <stn> foreach_stmt  
 %type <stn> for_stmt loop_stmt yield_stmt yield_sequence_stmt
 %type <stn> fp_list fp_sect_list  
@@ -815,8 +815,6 @@ const_factor
 		{ $$ = $1; }
     | const_set
 		{ $$ = $1; }
-    | unsigned_number
-		{ $$ = $1; }
     | tkNil                        
         { 
 			$$ = new nil_const();  
@@ -887,6 +885,8 @@ const_variable
 		{ $$ = $1; }
     | literal // SSM 02.10.18 для '123'.Length при инициализации констант
 		{ $$ = $1; }
+    | unsigned_number
+		{ $$ = $1; }
     | tkInherited identifier            
         { 
 			$$ = new inherited_ident($2.name, @$);
@@ -912,6 +912,18 @@ const_variable
         {
 			$$ = new ident_with_templateparams($1 as addressed_value, $3 as template_param_list, @$);
         }
+    | const_variable tkSquareOpen format_const_expr tkSquareClose
+        { 
+    		var fe = $3 as format_expr;
+            if (!parsertools.build_tree_for_formatter)
+            {
+                if (fe.expr == null)
+                    fe.expr = new int32_const(int.MaxValue,@3);
+                if (fe.format1 == null)
+                    fe.format1 = new int32_const(int.MaxValue,@3);
+            }
+    		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
+		}
     ;
 
 const_variable_2
@@ -3454,6 +3466,17 @@ simple_expr_or_nothing
 	}
 	;
 
+const_expr_or_nothing
+	: const_expr 
+	{
+		$$ = $1;
+	}
+	|
+	{
+		$$ = null;
+	}
+	;
+	
 format_expr 
     : simple_expr tkColon simple_expr_or_nothing                        
         { 
@@ -3472,6 +3495,26 @@ format_expr
 			$$ = new format_expr(null, $2, $4, @$); 
 		}
     ;
+
+format_const_expr 
+    : const_expr tkColon const_expr_or_nothing                        
+        { 
+			$$ = new format_expr($1, $3, null, @$); 
+		}
+    | tkColon const_expr_or_nothing                        
+        { 
+			$$ = new format_expr(null, $2, null, @$); 
+		}
+    | const_expr tkColon const_expr_or_nothing tkColon const_expr   
+        { 
+			$$ = new format_expr($1, $3, $5, @$); 
+		}
+    | tkColon const_expr_or_nothing tkColon const_expr   
+        { 
+			$$ = new format_expr(null, $2, $4, @$); 
+		}
+    ;
+
 
 relop
     : tkEqual
