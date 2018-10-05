@@ -68,4 +68,4 @@ BAD_INT2=Слишком маленькое целое
 INVALID_INTERFACE_MEMBER=Члены интерфейса не могут иметь определение
 EXTENDED_INDEXED_PROPERTIES=Индексные свойства не могут быть расширенными
 TWO_STRING_LITERALS_IN_SUCCESSION=Две литеральные строковые константы не могут стоять подряд
-ATTRIBUTE_REDECLARED=Повоторное применение атрибута
+ATTRIBUTE_REDECLARED=Повторное применение атрибута
