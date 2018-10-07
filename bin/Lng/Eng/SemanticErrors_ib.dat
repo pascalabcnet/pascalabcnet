@@ -25,6 +25,7 @@ POINTERS_IN_SETS_NOT_ALLOWED=Set cannot contain pointers
 VOID_NOT_VALID=Type 'System.Void' cannot be used in this context
 EXPECTED_TYPE=Type expected
 INTERFACE_CANNOT_BE_SEALED=Interfaces cannot be sealed
+INTERFACE_CANNOT_BE_AUTO=Interfaces cannot have 'auto' attribute
 RANGE_TOO_LARGE=The range is too large
 CANNOT_EVALUATE_SIZE=Cannot evaluate size of record
 CANNOT_CALL_NEW_BECAUSE_OF_UNDEFINED_SIZE=Cannot call 'New' because the structure hasn't predefined size

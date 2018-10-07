@@ -25,6 +25,7 @@ POINTERS_IN_SETS_NOT_ALLOWED=Множество не может содержат
 VOID_NOT_VALID=Использование типа System.Void в данном контексте недопустимо
 EXPECTED_TYPE=Ожидался тип
 INTERFACE_CANNOT_BE_SEALED=Интерфейсы не могут быть финальными
+INTERFACE_CANNOT_BE_AUTO=Интерфейсы не могут иметь атрибут auto
 RANGE_TOO_LARGE=Слишком большой диапазон
 CANNOT_EVALUATE_SIZE=Нельзя вычислить размер записи
 CANNOT_CALL_NEW_BECAUSE_OF_UNDEFINED_SIZE=Нельзя вызвать New, так как невозможно вычислить размер записи

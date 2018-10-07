@@ -3554,6 +3554,11 @@ namespace PascalABCCompiler.TreeConverter
                 if (_class_definition.keyword == SyntaxTree.class_keyword.Interface || _class_definition.keyword == SyntaxTree.class_keyword.TemplateInterface)
                     AddError(new SimpleSemanticError(get_location(_class_definition), "INTERFACE_CANNOT_BE_SEALED"));
             }
+            if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Auto) == SyntaxTree.class_attribute.Auto)
+            {
+                if (_class_definition.keyword == SyntaxTree.class_keyword.Interface || _class_definition.keyword == SyntaxTree.class_keyword.TemplateInterface)
+                    AddError(new SimpleSemanticError(get_location(_class_definition), "INTERFACE_CANNOT_BE_AUTO"));
+            }
             if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Abstract) == SyntaxTree.class_attribute.Abstract &&
                 (_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Sealed) == SyntaxTree.class_attribute.Sealed)
                 AddError(get_location(_class_definition), "ABSTRACT_CLASS_CANNOT_BE_SEALED");
