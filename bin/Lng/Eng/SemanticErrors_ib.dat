@@ -155,6 +155,7 @@ STATIC_CLASSES_CANNOT_NON_STATIC_MEMBERS=Static class can have only static membe
 VARIABLES_OF_STATIC_CLASS_NOT_ALLOWED=Can not declare variables, parameters, fields with type of static class
 STATIC_CONSTRUCTOR_CALL=Can not instance the static classes
 USING_STATIC_CLASS_NOT_VALID=Using of static class is not allowed in this context
+INTERFACE_PROPERTIES_CANNOT_BE_STATIC=Interface properties can not be static
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Unit expected, library found
 ASSEMBLY_{0}_READING_ERROR=Error by reading assembly '{0}'

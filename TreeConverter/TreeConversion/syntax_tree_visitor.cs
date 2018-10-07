@@ -4122,7 +4122,12 @@ namespace PascalABCCompiler.TreeConverter
             if (context.converted_type.IsStatic && _simple_property.attr != SyntaxTree.definition_attribute.Static)
                 AddError(get_location(_simple_property), "STATIC_CLASSES_CANNOT_NON_STATIC_MEMBERS");
             if (_simple_property.attr == SyntaxTree.definition_attribute.Static)
-            	pn.polymorphic_state = SemanticTree.polymorphic_state.ps_static;
+            {
+                if (context.converted_type.IsInterface)
+                    AddError(get_location(_simple_property), "INTERFACE_PROPERTIES_CANNOT_BE_STATIC");
+                pn.polymorphic_state = SemanticTree.polymorphic_state.ps_static;
+            }
+            	
             if (_simple_property.virt_over_none_attr == proc_attribute.attr_virtual || _simple_property.virt_over_none_attr == proc_attribute.attr_override)
                 pn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual;
             else if (_simple_property.virt_over_none_attr == proc_attribute.attr_abstract)
