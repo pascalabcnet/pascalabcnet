@@ -57,7 +57,7 @@
 %type <stn> attribute_declarations  
 %type <stn> ot_visibility_specifier  
 %type <stn> one_attribute attribute_variable 
-%type <ex> const_factor const_variable_2 const_term const_variable literal_or_number unsigned_number  
+%type <ex> const_factor const_variable_2 const_term const_variable literal_or_number unsigned_number variable_or_literal_or_number 
 %type <stn> program_block  
 %type <ob> optional_var class_attribute class_attributes class_attributes1 
 %type <stn> member_list_section optional_component_list_seq_end  
@@ -146,7 +146,7 @@
 %type <stn> stmt_or_expression unlabelled_stmt stmt case_item
 %type <td> set_type  
 %type <ex> as_is_expr as_is_constexpr is_expr as_expr power_expr power_constexpr
-%type <td> unsized_array_type simple_type_or_ simple_type /*array_name_for_new_expr*/ foreach_stmt_ident_dype_opt fptype type_ref fptype_noproctype array_type 
+%type <td> unsized_array_type simple_type_or_ simple_type simple_type_question/*array_name_for_new_expr*/ foreach_stmt_ident_dype_opt fptype type_ref fptype_noproctype array_type 
 %type <td> template_param template_empty_param structured_type unpacked_structured_type empty_template_type_reference simple_or_template_type_reference type_ref_or_secific for_stmt_decl_or_assign type_decl_type
 %type <stn> type_ref_and_secific_list  
 %type <stn> type_decl_sect
@@ -1192,10 +1192,8 @@ type_decl_type
 		{ $$ = $1; }
     ;
 
-type_ref
-    : simple_type
-		{ $$ = $1; }
-	| simple_type tkQuestion
+simple_type_question
+	: simple_type tkQuestion
 		{
             if (parsertools.build_tree_for_formatter)
    			{
@@ -1209,6 +1207,13 @@ type_ref
                 $$ = new template_type_reference(new named_type_reference(l), new template_param_list($1), @$);
             }
 		}
+	;	
+
+type_ref
+    : simple_type
+		{ $$ = $1; }
+	| simple_type_question
+		{ $$ = $1; }
     | string_type
 		{ $$ = $1; }
     | pointer_type
@@ -3771,6 +3776,13 @@ variable_as_type
 		{ $$ = new ident_with_templateparams($1 as addressed_value, $2 as template_param_list, @$);   }
 	;
 	
+variable_or_literal_or_number
+	: variable 
+		{ $$ = $1; }
+	| literal_or_number
+		{ $$ = $1; }
+	;
+	
 variable
     : identifier 
 		{ $$ = $1; }
@@ -3797,7 +3809,12 @@ variable
         { 
 			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); 
 		}
-    | variable tkSquareOpen expr_list tkSquareClose                
+    /*| literal_or_number tkSquareOpen expr_list tkSquareClose
+    	{
+    		var el = $3 as expression_list;
+    		$$ = new indexer($1 as addressed_value,el, @$);
+    	}*/
+    | variable_or_literal_or_number tkSquareOpen expr_list tkSquareClose                
         {
         	var el = $3 as expression_list; // SSM 10/03/16
         	if (el.Count==1 && el.expressions[0] is format_expr) 
