@@ -842,10 +842,12 @@ namespace CodeFormatters
                 }*/
                 visit_node(_statement_list.left_logical_bracket);
             }
+            
             if (!in_one_row(_statement_list) && _statement_list.left_logical_bracket != null && _statement_list.subnodes.Count > 0 && _statement_list.subnodes[0].source_context != null && _statement_list.left_logical_bracket.source_context.end_position.line_num == _statement_list.subnodes[0].source_context.begin_position.line_num)
                 add_newline_after = true;
             else
                 add_space_after = true;
+            bool tmp_add_newline_after = add_newline_after;
             if (init_part)
             {
                 init_part = false;
@@ -872,6 +874,8 @@ namespace CodeFormatters
                 visit_node(stmt);
                 
             }
+            if (_statement_list.subnodes.Count == 2 && _statement_list.subnodes[0] is statement_list)
+                add_newline_after = tmp_add_newline_after;
             DecOffset();
             if (!tmp_init_part)
                 if (_statement_list.right_logical_bracket != null)
