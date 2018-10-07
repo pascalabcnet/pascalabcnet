@@ -3809,11 +3809,6 @@ variable
         { 
 			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); 
 		}
-    /*| literal_or_number tkSquareOpen expr_list tkSquareClose
-    	{
-    		var el = $3 as expression_list;
-    		$$ = new indexer($1 as addressed_value,el, @$);
-    	}*/
     | variable_or_literal_or_number tkSquareOpen expr_list tkSquareClose                
         {
         	var el = $3 as expression_list; // SSM 10/03/16

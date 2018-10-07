@@ -462,17 +462,17 @@ namespace PascalABCCompiler.SystemLibrary
             //sc.AddSymbol(TreeConverter.compiler_string_consts.new_procedure_name, _NewProcedure);
             
             basic_function_node break_procedure = new basic_function_node(SemanticTree.basic_function_type.none,
-                null, true);
+                null, true, PascalABCCompiler.TreeConverter.compiler_string_consts.break_procedure_name);
             break_procedure.compile_time_executor = initialization_properties.break_executor;
             sc.AddSymbol(PascalABCCompiler.TreeConverter.compiler_string_consts.break_procedure_name, new PascalABCCompiler.TreeConverter.SymbolInfo(break_procedure));
             
             basic_function_node continue_procedure = new basic_function_node(SemanticTree.basic_function_type.none,
-                null, true);
+                null, true, PascalABCCompiler.TreeConverter.compiler_string_consts.continue_procedure_name);
             continue_procedure.compile_time_executor = initialization_properties.continue_executor;
             sc.AddSymbol(PascalABCCompiler.TreeConverter.compiler_string_consts.continue_procedure_name, new PascalABCCompiler.TreeConverter.SymbolInfo(continue_procedure));
 
             basic_function_node exit_procedure = new basic_function_node(SemanticTree.basic_function_type.none,
-                null, true);
+                null, true, PascalABCCompiler.TreeConverter.compiler_string_consts.exit_procedure_name);
             exit_procedure.compile_time_executor = initialization_properties.exit_executor;
             sc.AddSymbol(PascalABCCompiler.TreeConverter.compiler_string_consts.exit_procedure_name, new PascalABCCompiler.TreeConverter.SymbolInfo(exit_procedure));
 

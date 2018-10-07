@@ -4202,7 +4202,8 @@ namespace PascalABCCompiler.TreeConverter
 
                         if (sil == null)
                         {
-                            AddError(new UndefinedNameReference(_simple_property.accessors.read_accessor.accessor_name.name, loc1));
+                            //AddError(new UndefinedNameReference(_simple_property.accessors.read_accessor.accessor_name.name, loc1));
+                            AddError(loc1, "NAME_IN_PROPERTY_READ_SECTION_MUST_BE_FIELD_OR_METHOD_NAME");
                         }
 
                         //dn = check_name_node_type(_simple_property.accessors.read_accessor.accessor_name.name,
@@ -4332,7 +4333,8 @@ namespace PascalABCCompiler.TreeConverter
 
                         if (sil == null)
                         {
-                            AddError( new UndefinedNameReference(_simple_property.accessors.write_accessor.accessor_name.name, loc2));
+                            //AddError( new UndefinedNameReference(_simple_property.accessors.write_accessor.accessor_name.name, loc2));
+                            AddError(loc2, "NAME_IN_PROPERTY_WRITE_SECTION_MUST_BE_FIELD_OR_METHOD_NAME");
                         }
 
                         //dn = check_name_node_type(_simple_property.accessors.write_accessor.accessor_name.name,
