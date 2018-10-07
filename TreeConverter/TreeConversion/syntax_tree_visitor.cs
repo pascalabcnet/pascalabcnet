@@ -4137,7 +4137,17 @@ namespace PascalABCCompiler.TreeConverter
                 context.converted_type.SetIsAbstract(true);
                 pn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual_abstract;
             }
-               
+            if (context.converted_type.is_value_type)
+            {
+                if (_simple_property.virt_over_none_attr == proc_attribute.attr_virtual)
+                    AddError(get_location(_simple_property), "ATTRIBUTE_{0}_NOT_ALLOWED", "virtual");
+                else if (_simple_property.virt_over_none_attr == proc_attribute.attr_override)
+                    AddError(get_location(_simple_property), "ATTRIBUTE_{0}_NOT_ALLOWED", "override");
+                else if (_simple_property.virt_over_none_attr == proc_attribute.attr_reintroduce)
+                    AddError(get_location(_simple_property), "ATTRIBUTE_{0}_NOT_ALLOWED", "reintroduce");
+                else if (_simple_property.virt_over_none_attr == proc_attribute.attr_abstract)
+                    AddError(get_location(_simple_property), "ATTRIBUTE_{0}_NOT_ALLOWED", "abstract");
+            }
             parameter_list pal_big = new parameter_list();
             //TODO: Спросить у Саши как получить тип параметра - var,const и т.д.
             if (_simple_property.parameter_list != null)
