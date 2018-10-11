@@ -4213,6 +4213,9 @@ namespace PascalABCCompiler.TreeConverter
 
                         if (read_accessor != null)
                         {
+                            if (!(read_accessor as common_method_node).IsStatic && _simple_property.attr == definition_attribute.Static)
+                                AddError(loc1,"STATIC_PROPERTY_MUST_HAVE_STATIC_ACCESSOR");
+
                             bool good_func = true;
                             bool one_func = sil.Count() == 1;
                             int si_index = 0;

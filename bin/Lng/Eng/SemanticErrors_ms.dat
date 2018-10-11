@@ -13,3 +13,4 @@ MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}=Missed semantic check for sugared nod
 OPERATOR_DQ_MUST_BE_USED_WITH_A_REFERENCE_TYPE_VALUETYPE=Left operand of ?. operation must have reference type
 NAME_IN_PROPERTY_READ_SECTION_MUST_BE_FIELD_OR_METHOD_NAME=Name in property read section must be field name or method name of this class
 NAME_IN_PROPERTY_WRITE_SECTION_MUST_BE_FIELD_OR_METHOD_NAME=Name in property write section must be field name or method name of this class
+STATIC_PROPERTY_MUST_HAVE_STATIC_ACCESSOR=Static property accessor must be static

@@ -14,3 +14,4 @@ OPERATOR_DQ_MUST_BE_USED_WITH_A_REFERENCE_TYPE_VALUETYPE=Левый операн
 AUTOCLASS_MUST_NOT_CONTAIN_ENUM_TYPE_DEFINITION_IN_FIELD_TYPE=Автокласс не может содержать поля безымянного перечислимого типа
 NAME_IN_PROPERTY_READ_SECTION_MUST_BE_FIELD_OR_METHOD_NAME=Имя в секции read свойства должно быть именем поля или функции-метода этого класса
 NAME_IN_PROPERTY_WRITE_SECTION_MUST_BE_FIELD_OR_METHOD_NAME=Имя в секции write свойства должно быть именем поля или процедуры-метода этого класса
+STATIC_PROPERTY_MUST_HAVE_STATIC_ACCESSOR=Акцессор статического свойства должен быть статическим 
