@@ -142,7 +142,7 @@
 %type <stn> stmt_list else_case exception_block_else_branch  compound_stmt  
 %type <td> string_type  
 %type <ex> sizeof_expr  
-%type <stn> simple_prim_property_definition simple_property_definition
+%type <stn> simple_property_definition
 %type <stn> stmt_or_expression unlabelled_stmt stmt case_item
 %type <td> set_type  
 %type <ex> as_is_expr as_is_constexpr is_expr as_expr power_expr power_constexpr
@@ -2036,21 +2036,12 @@ qualified_identifier
     ;
 
 property_definition
-    : attribute_declarations simple_prim_property_definition
+    : attribute_declarations simple_property_definition
         {  
 			$$ = NewPropertyDefinition($1 as attribute_list, $2 as declaration, @2);
         }
     ;
     
-simple_prim_property_definition
-    : simple_property_definition
-		{ $$ = $1; }
-    | class_or_static simple_property_definition    
-        { 
-			$$ = NewSimplePrimPropertyDefinition($2 as simple_property, @$);
-        } 
-	;
-	
 simple_property_definition
     : tkProperty qualified_identifier property_interface property_specifiers tkSemiColon array_defaultproperty
         { 
@@ -2066,6 +2057,15 @@ simple_property_definition
             else if ($6.name.ToLower() == "abstract") 
  			    pa = proc_attribute.attr_abstract;
 			$$ = NewSimplePropertyDefinition($2 as method_name, $3 as property_interface, $4 as property_accessors, pa, $8 as property_array_default, @$);
+        }
+    | class_or_static tkProperty qualified_identifier property_interface property_specifiers tkSemiColon array_defaultproperty
+        { 
+			$$ = NewSimplePropertyDefinition($3 as method_name, $4 as property_interface, $5 as property_accessors, proc_attribute.attr_none, $7 as property_array_default, @$);
+        	($$ as simple_property).attr = definition_attribute.Static;
+        }
+    | class_or_static tkProperty qualified_identifier property_interface property_specifiers tkSemiColon property_modificator tkSemiColon array_defaultproperty
+        { 
+			parsertools.AddErrorFromResource("STATIC_PROPERTIES_CANNOT_HAVE_ATTRBUTE_{0}",@7,$7.name);        	
         }
     ;
 
@@ -3642,7 +3642,7 @@ default_expr
     ;
 
 tuple
-	 : tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose // lambda_type_ref optional_full_lambda_fp_list нужно оставить чтобы не было конфликтов с грамматикой лямбд 
+	 : tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref tkRoundClose // lambda_type_ref optional_full_lambda_fp_list нужно оставить чтобы не было конфликтов с грамматикой лямбд 
 		{
 			/*if ($5 != null) 
 				parsertools.AddErrorFromResource("BAD_TUPLE",@5);
@@ -3700,10 +3700,6 @@ factor
 		
 			$$ = new un_expr($2, $1.type, @$); 
 		}
-//    | tkDeref factor // это ерунда какая-то                
-//        { 
-//			$$ = new roof_dereference($2 as addressed_value, @$);
-//		}
     | var_reference
 		{ $$ = $1; }
 	| tuple 
