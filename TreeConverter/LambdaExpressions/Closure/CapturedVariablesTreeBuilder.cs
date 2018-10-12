@@ -177,7 +177,8 @@ namespace TreeConverter.LambdaExpressions.Closure
                                     si.sym_info.semantic_node_type == semantic_node_type.class_field
                                     ;
             //trjuk, chtoby ne perelopachivat ves kod. zamenjaem ident na self.ident
-            if ((si.sym_info.semantic_node_type == semantic_node_type.class_field || si.sym_info.semantic_node_type == semantic_node_type.common_event || si.sym_info.semantic_node_type == semantic_node_type.common_property_node) && InLambdaContext)
+            // Использую этот трюк для нестатических полей предков - они не захватываются из-за плохого алгоритма захвата
+            if ((si.sym_info.semantic_node_type == semantic_node_type.class_field && !(si.sym_info as class_field).IsStatic || si.sym_info.semantic_node_type == semantic_node_type.common_event || si.sym_info.semantic_node_type == semantic_node_type.common_property_node) && InLambdaContext)
             {
                 dot_node dn = new dot_node(new ident("self", id.source_context), new ident(id.name, id.source_context), id.source_context);
                 bool ok = true;

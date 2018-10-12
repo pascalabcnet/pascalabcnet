@@ -3642,7 +3642,7 @@ default_expr
     ;
 
 tuple
-	 : tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref tkRoundClose // lambda_type_ref optional_full_lambda_fp_list нужно оставить чтобы не было конфликтов с грамматикой лямбд 
+	 : tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose // lambda_type_ref optional_full_lambda_fp_list нужно оставить чтобы не было конфликтов с грамматикой лямбд 
 		{
 			/*if ($5 != null) 
 				parsertools.AddErrorFromResource("BAD_TUPLE",@5);

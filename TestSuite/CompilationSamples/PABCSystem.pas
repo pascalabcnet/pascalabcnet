@@ -8395,6 +8395,12 @@ begin
   Result := Self;
 end;
 
+function Print(Self: int64): int64; extensionmethod;
+begin
+  PABCSystem.Print(Self);
+  Result := Self;
+end;
+
 function Print(Self: real): real; extensionmethod;
 begin
   PABCSystem.Print(Self);
@@ -8425,6 +8431,12 @@ begin
   Result := Self;
 end;
 
+function Println(Self: int64): int64; extensionmethod;
+begin
+  PABCSystem.Println(Self);
+  Result := Self;
+end;
+
 function Println(Self: real): real; extensionmethod;
 begin
   PABCSystem.Println(Self);
@@ -8448,7 +8460,6 @@ begin
   PABCSystem.Println(Self);
   Result := Self;
 end;
-
 
 
 //------------------------------------------------------------------------------
