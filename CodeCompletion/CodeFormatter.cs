@@ -614,6 +614,8 @@ namespace CodeFormatters
                     comm = trimedstr;
                 if (trimedstr.Length >= 2 && trimedstr[0] == '(' && trimedstr[trimedstr.Length - 1] == ')' && trimedstr.Replace("(", "").Replace(")", "").Trim() == "")
                     comm = "()";
+                else if (trimedstr.Length >= 2 && trimedstr[0] == '(' && trimedstr[trimedstr.Length - 1] == ';')
+                    comm = trimedstr.Replace(" ", "");
                 if (trimedstr.StartsWith(";  "))
                 {
                     comm = "; " + trimedstr.Substring(1).TrimStart(' ', '\t');
