@@ -555,16 +555,18 @@ namespace CodeFormatters
                         else if (comm.StartsWith("procedure") || comm.StartsWith("function"))
                         {
                             comm = RemoveOverSpaces(comm);
-                            comm = comm.Replace("( )","()");
+                            comm = comm.Replace("( )", "()");
                         }
                         if (comm == "()->")
                             comm = "() ->";
                         comm += " ";
                     }
-                    else if (comm.StartsWith(":") && comm.EndsWith(":") && comm.Replace(" ","") == "::")
+                    else if (comm.StartsWith(":") && comm.EndsWith(":") && comm.Replace(" ", "") == "::")
                         comm = "::";
                     else if (comm.StartsWith("array") || comm.StartsWith("set"))
                         comm = RemoveOverSpaces(comm);
+                    else if ((comm.StartsWith("class") || comm.StartsWith("interface")) && comm.EndsWith("("))
+                        comm = comm.Replace(" ","");
                 }
                 WriteCommentWithIndent(comm, true);
                 read_from_beg_pos = false;
