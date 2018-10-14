@@ -607,10 +607,17 @@ namespace CodeFormatters
                 {
                     comm = "; " + trimedstr.Substring(1).TrimStart(' ', '\t');
                 }
+                else if (trimedstr == ".")
+                    comm = trimedstr;
                 //else if (sn is uses_closure || sn is formal_parameters || sn is type_declaration)
                 //    comm = comm.TrimStart();
                 if (sn is program_module || sn is unit_module)
+                {
                     comm = Text.Substring(prev_pos);
+                    trimedstr = comm.TrimStart();
+                    if (trimedstr.StartsWith("."))
+                        comm = trimedstr;
+                }
                 if (comm.StartsWith(" "))
                     add_space_before = true;
                 if (comm != "()")
