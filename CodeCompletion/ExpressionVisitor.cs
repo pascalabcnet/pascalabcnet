@@ -476,6 +476,8 @@ namespace CodeCompletion
                 if (returned_scope != null)
                     if (returned_scope is ElementScope && (returned_scope as ElementScope).sc is ProcScope && ((returned_scope as ElementScope).sc as ProcScope).return_type != null)
                         returned_scope = new ElementScope(((returned_scope as ElementScope).sc as ProcScope).return_type.GetElementType());
+                    else if (returned_scope is ProcScope && (returned_scope as ProcScope).is_constructor)
+                        returned_scope = new ElementScope((returned_scope as ProcScope).declaringType.GetElementType());
                     else
                         returned_scope = new ElementScope(returned_scope.GetElementType());
             }
@@ -485,6 +487,8 @@ namespace CodeCompletion
                 {
                     if (returned_scopes[i] is ElementScope && (returned_scopes[i] as ElementScope).sc is ProcScope && ((returned_scopes[i] as ElementScope).sc as ProcScope).return_type != null)
                         returned_scopes[i] = new ElementScope(((returned_scopes[i] as ElementScope).sc as ProcScope).return_type.GetElementType());
+                    else if (returned_scopes[i] is ProcScope && (returned_scopes[i] as ProcScope).is_constructor)
+                        returned_scopes[i] = new ElementScope((returned_scopes[i] as ProcScope).declaringType.GetElementType());
                     else
                         returned_scopes[i] = new ElementScope(returned_scopes[i].GetElementType());
                 }
