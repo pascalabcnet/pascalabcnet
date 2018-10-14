@@ -3998,7 +3998,7 @@ namespace CodeCompletion
             ts.loc = this.loc;
             for (int i = 0; i < gen_args.Count; i++)
             {
-                ts.AddGenericParameter(gen_args[i].si.name);
+                ts.AddGenericInstanceParameter(gen_args[i].si.name);
                 ts.AddGenericInstanciation(gen_args[i]);
             }
             ts.si.name = this.si.name;
@@ -4024,14 +4024,14 @@ namespace CodeCompletion
                             if (string.Compare(gen_arg.original_type.generic_params[j], this.generic_params[j], true) == 0)
                             {
                                 new_gen_args.Add(gen_arg.instances[j]);
-                                ts.AddGenericParameter(gen_arg.instances[j].si.name);
+                                ts.AddGenericInstanceParameter(gen_arg.instances[j].si.name);
                                 ts.AddGenericInstanciation(gen_arg.instances[j]);
                             }
                         }
                 }
                 else
                 {
-                    ts.AddGenericParameter(gen_args[i].si.name);
+                    ts.AddGenericInstanceParameter(gen_args[i].si.name);
                     ts.AddGenericInstanciation(gen_args[i]);
                     new_gen_args.Add(gen_args[i]);
                 }
@@ -4137,6 +4137,12 @@ namespace CodeCompletion
             if (generic_params == null) generic_params = new List<string>();
             generic_params.Add(name);
             AddName(name, new TemplateParameterScope(name, TypeTable.obj_type, this));
+        }
+
+        public virtual void AddGenericInstanceParameter(string name)
+        {
+            if (generic_params == null) generic_params = new List<string>();
+            generic_params.Add(name);
         }
 
         public virtual void AddImplementedInterface(TypeScope type)
