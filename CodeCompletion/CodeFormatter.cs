@@ -567,6 +567,8 @@ namespace CodeFormatters
                         comm = RemoveOverSpaces(comm);
                     else if ((comm.StartsWith("class") || comm.StartsWith("interface")) && comm.EndsWith("("))
                         comm = comm.Replace(" ","");
+                    else if ((comm.StartsWith("auto") || comm.StartsWith("sealed") || comm.StartsWith("abstract")) && comm.EndsWith("("))
+                        comm = RemoveOverSpaces(comm);
                 }
                 WriteCommentWithIndent(comm, true);
                 read_from_beg_pos = false;
