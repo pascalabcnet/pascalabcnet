@@ -556,7 +556,8 @@ namespace CodeFormatters
                             comm = "() ->";
                         comm += " ";
                     }
-                        
+                    else if (comm.StartsWith(":") && comm.EndsWith(":") && comm.Replace(" ","") == "::")
+                        comm = "::";
                 }
                 WriteCommentWithIndent(comm, true);
                 read_from_beg_pos = false;
