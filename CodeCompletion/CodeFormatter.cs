@@ -552,12 +552,19 @@ namespace CodeFormatters
                     {
                         if (comm.StartsWith("()"))
                             comm = RemoveOverSpaces(comm);
+                        else if (comm.StartsWith("procedure") || comm.StartsWith("function"))
+                        {
+                            comm = RemoveOverSpaces(comm);
+                            comm = comm.Replace("( )","()");
+                        }
                         if (comm == "()->")
                             comm = "() ->";
                         comm += " ";
                     }
                     else if (comm.StartsWith(":") && comm.EndsWith(":") && comm.Replace(" ","") == "::")
                         comm = "::";
+                    else if (comm.StartsWith("array") || comm.StartsWith("set"))
+                        comm = RemoveOverSpaces(comm);
                 }
                 WriteCommentWithIndent(comm, true);
                 read_from_beg_pos = false;
