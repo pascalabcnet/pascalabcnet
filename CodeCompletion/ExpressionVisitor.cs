@@ -1586,9 +1586,18 @@ namespace CodeCompletion
                 else
                     suffix = "";
                 if (i > 0)
+                {
                     returned_scope = returned_scope.FindNameOnlyInType(_template_type_reference.name.names[i].name + suffix);
+                    if (returned_scope == null)
+                        returned_scope = returned_scope.FindNameOnlyInType(_template_type_reference.name.names[i].name + suffix);
+                }  
                 else
+                {
                     returned_scope = returned_scope.FindName(_template_type_reference.name.names[i].name + suffix);
+                    if (returned_scope == null)
+                        returned_scope = returned_scope.FindName(_template_type_reference.name.names[i].name);
+                }
+                    
                 if (returned_scope == null)
                     return;
             }
@@ -1889,6 +1898,13 @@ namespace CodeCompletion
         }
         public override void visit(semantic_type_node stn) // SSM 
         {
+        }
+        public override void visit(tuple_node _tuple_node)
+        {
+            method_call mc = new method_call();
+            mc.parameters = _tuple_node.el;
+            mc.dereferencing_value = new dot_node(new ident("Tuple"), new ident("Create"));
+            mc.visit(this);
         }
     }
 }
