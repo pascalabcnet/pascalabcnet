@@ -1580,7 +1580,15 @@ namespace CodeCompletion
             returned_scope = entry_scope;
             for (int i = 0; i < _template_type_reference.name.names.Count; i++)
             {
-                returned_scope = returned_scope.FindName(_template_type_reference.name.names[i].name);
+                string suffix = "";
+                if (i == _template_type_reference.name.names.Count - 1)
+                    suffix = "`" + _template_type_reference.params_list.params_list.Count;
+                else
+                    suffix = "";
+                if (i > 0)
+                    returned_scope = returned_scope.FindNameOnlyInType(_template_type_reference.name.names[i].name + suffix);
+                else
+                    returned_scope = returned_scope.FindName(_template_type_reference.name.names[i].name + suffix);
                 if (returned_scope == null)
                     return;
             }
