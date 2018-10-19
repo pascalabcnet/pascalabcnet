@@ -2524,6 +2524,11 @@ namespace PascalABCCompiler
 
             if (System.IO.File.Exists(FileName)) // для отладки с *.inc файлами
             {
+                if (FileName.IndexOf(Path.DirectorySeparatorChar) != -1)
+                {
+                    File.Copy(Path.Combine(Environment.CurrentDirectory, FileName), Path.Combine(Environment.CurrentDirectory, Path.GetFileName(FileName)), true);
+                    return Path.Combine(Environment.CurrentDirectory, Path.GetFileName(FileName));
+                }
                 return Path.Combine(Environment.CurrentDirectory, FileName);//.ToLower();//? а надо ли tolover?
             }
             else

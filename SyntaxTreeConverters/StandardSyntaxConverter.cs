@@ -75,11 +75,12 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             
             /*try
             {
-                //root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz4.txt"));
+                root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz4.txt"));
             }
-            catch
+            catch(Exception e)
             {
 
+                System.IO.File.AppendAllText(@"d:\\zzz4.txt",e.Message);
             }*/
 
 #endif

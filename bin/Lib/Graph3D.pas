@@ -939,7 +939,7 @@ type
   EmptyAnimation = class(AnimationBase)
   public 
     constructor(wait: real) := Seconds := wait;
-    procedure InitAnim(); virtual := InitAnimWait;
+    procedure InitAnim(); override := InitAnimWait;
   end;
   
  

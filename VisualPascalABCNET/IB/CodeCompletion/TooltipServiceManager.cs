@@ -36,6 +36,11 @@ namespace VisualPascalABC
             List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
             PascalABCCompiler.SyntaxTree.expression tree = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + Path.GetExtension(FileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
             bool header = false;
+            if (Errors.Count > 0 && expr.IndexOf('<') != -1 && expr.IndexOf('>') != -1)
+            {
+                Errors.Clear();
+                tree = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + Path.GetExtension(FileName), expr.Replace("<","&<"), Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+            }
             if (tree == null || Errors.Count > 0)
             {
                 Errors.Clear();

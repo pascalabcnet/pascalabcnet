@@ -1857,7 +1857,15 @@ namespace PascalABCCompiler.SemanticTree
     		get;
     	}
     }
-    
+
+    public interface IDefaultOperatorNodeAsConstant : IConstantNode
+    {
+        IDefaultOperatorNode DefaultOperator
+        {
+            get;
+        }
+    }
+
     public interface ICompiledConstructorCallAsConstant : IConstantNode
     {
         ICompiledConstructorCall MethodCall

@@ -67,3 +67,5 @@ DOT_QUECTION_IN_SHORT_FUN=Expression with ?. cannot appear in a short function d
 BAD_INT2=Too small int64
 INVALID_INTERFACE_MEMBER=Interface members cannot have definitions
 EXTENDED_INDEXED_PROPERTIES=Extended indexed properties are not realized
+ATTRIBUTE_REDECLARED=This attribute has been already applied to type
+STATIC_PROPERTIES_CANNOT_HAVE_ATTRBUTE_{0}=Static properties cannot have attribute '{0}'

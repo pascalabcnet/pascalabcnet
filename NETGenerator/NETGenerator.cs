@@ -931,14 +931,14 @@ namespace PascalABCCompiler.NETGenerator
                     }
                     catch (System.Runtime.InteropServices.COMException e)
                     {
-                        throw new TreeConverter.SaveAssemblyError(e.Message);
+                        throw new TreeConverter.SaveAssemblyError(e.Message, new TreeRealization.location(0, 0, 0, 0, new TreeRealization.document(SourceFileName)));
                     }
                     catch (System.IO.IOException e)
                     {
                         if (tries < num_try_save)
                             tries++;
                         else
-                            throw new TreeConverter.SaveAssemblyError(e.Message);
+                            throw new TreeConverter.SaveAssemblyError(e.Message, new TreeRealization.location(0, 0, 0, 0, new TreeRealization.document(SourceFileName)));
                     }
                 }
                 while (not_done);
@@ -7378,7 +7378,7 @@ namespace PascalABCCompiler.NETGenerator
         	bool is_comp_gen = false;
         	for (int i = 0; i < real_parameters.Length; i++)
             {
-        		if (real_parameters[i] is INullConstantNode && parameters[i].type.is_nullable_type)
+                if (real_parameters[i] is INullConstantNode && parameters[i].type.is_nullable_type)
                 {
         			Type tp = helper.GetTypeReference(parameters[i].type).tp;
         			LocalBuilder lb = il.DeclareLocal(tp);
@@ -7889,7 +7889,8 @@ namespace PascalABCCompiler.NETGenerator
         private void AssignToStaticField(IExpressionNode to, IExpressionNode from)
         {
             IStaticCommonClassFieldReferenceNode value = (IStaticCommonClassFieldReferenceNode)to;
-            FieldInfo fi = helper.GetField(value.static_field).fi;
+            FldInfo fi_info = helper.GetField(value.static_field);
+            FieldInfo fi = fi_info.fi;
             TypeInfo ti = helper.GetTypeReference(to.type);
             if (to.type.is_value_type)
             {
@@ -7920,7 +7921,7 @@ namespace PascalABCCompiler.NETGenerator
             if (ti != null)
                 EmitBox(from, ti.tp);
             else
-                EmitBox(from, fi.FieldType);
+                EmitBox(from, fi_info.field_type);
             CheckArrayAssign(to, from, il);
             il.Emit(OpCodes.Stsfld, fi);
         }
@@ -8482,51 +8483,76 @@ namespace PascalABCCompiler.NETGenerator
                 }
                 if (real_parameters.Length > 1)
                 {
-                	if (real_parameters[0].type.is_nullable_type && real_parameters[1] is INullConstantNode)
-                	{
-                		bool tmp = is_dot_expr;
-                		is_dot_expr = true;
-                		TypeInfo ti = helper.GetTypeReference(real_parameters[0].type);
-                		real_parameters[0].visit(this);
-                		is_dot_expr = tmp;
-                		MethodInfo mi = null;
-                		if (real_parameters[0].type is IGenericTypeInstance)
-                			mi = TypeBuilder.GetMethod(ti.tp, typeof(Nullable<>).GetMethod("get_HasValue"));
-                		else
-                			mi = ti.tp.GetMethod("get_HasValue");
-                		il.Emit(OpCodes.Call, mi);
-                		if (ft == basic_function_type.objeq)
-                			il.Emit(OpCodes.Not);
-                		return;
-                	}
-                	else if (real_parameters[1].type.is_nullable_type && real_parameters[0] is INullConstantNode)
-                	{
-                		bool tmp = is_dot_expr;
-                		is_dot_expr = true;
-                		TypeInfo ti = helper.GetTypeReference(real_parameters[1].type);
-                		real_parameters[1].visit(this);
-                		is_dot_expr = tmp;
-                		MethodInfo mi = null;
-                		if (real_parameters[1].type is IGenericTypeInstance)
-                			mi = TypeBuilder.GetMethod(ti.tp, typeof(Nullable<>).GetMethod("get_HasValue"));
-                		else
-                			mi = ti.tp.GetMethod("get_HasValue");
-                		il.Emit(OpCodes.Call, mi);
-                		if (ft == basic_function_type.objeq)
-                			il.Emit(OpCodes.Not);
-                		return;
-                	}
+                    if (real_parameters[0].type.is_nullable_type && real_parameters[1] is INullConstantNode)
+                    {
+                        bool tmp = is_dot_expr;
+                        is_dot_expr = true;
+                        TypeInfo ti = helper.GetTypeReference(real_parameters[0].type);
+                        real_parameters[0].visit(this);
+                        is_dot_expr = tmp;
+                        MethodInfo mi = null;
+                        if (real_parameters[0].type is IGenericTypeInstance)
+                            mi = TypeBuilder.GetMethod(ti.tp, typeof(Nullable<>).GetMethod("get_HasValue"));
+                        else
+                            mi = ti.tp.GetMethod("get_HasValue");
+                        il.Emit(OpCodes.Call, mi);
+                        if (ft == basic_function_type.objeq)
+                            il.Emit(OpCodes.Not);
+                        return;
+                    }
+                    else if (real_parameters[1].type.is_nullable_type && real_parameters[0] is INullConstantNode)
+                    {
+                        bool tmp = is_dot_expr;
+                        is_dot_expr = true;
+                        TypeInfo ti = helper.GetTypeReference(real_parameters[1].type);
+                        real_parameters[1].visit(this);
+                        is_dot_expr = tmp;
+                        MethodInfo mi = null;
+                        if (real_parameters[1].type is IGenericTypeInstance)
+                            mi = TypeBuilder.GetMethod(ti.tp, typeof(Nullable<>).GetMethod("get_HasValue"));
+                        else
+                            mi = ti.tp.GetMethod("get_HasValue");
+                        il.Emit(OpCodes.Call, mi);
+                        if (ft == basic_function_type.objeq)
+                            il.Emit(OpCodes.Not);
+                        return;
+                    }
+                    else if (real_parameters[0].type.is_nullable_type && real_parameters[1].type.is_nullable_type)
+                    {
+                        MethodInfo mi_left = null;
+                        TypeInfo ti_left = helper.GetTypeReference(real_parameters[0].type);
+                        if (real_parameters[0].type is IGenericTypeInstance)
+                            mi_left = TypeBuilder.GetMethod(ti_left.tp, typeof(Nullable<>).GetMethod("GetValueOrDefault", new Type[] { }));
+                        else
+                            mi_left = ti_left.tp.GetMethod("GetValueOrDefault", new Type[] { });
+                        MethodInfo mi_right = null;
+                        TypeInfo ti_right = helper.GetTypeReference(real_parameters[1].type);
+                        if (real_parameters[1].type is IGenericTypeInstance)
+                            mi_right = TypeBuilder.GetMethod(ti_right.tp, typeof(Nullable<>).GetMethod("GetValueOrDefault", new Type[] { }));
+                        else
+                            mi_right = ti_right.tp.GetMethod("GetValueOrDefault", new Type[] { });
+                        is_dot_expr = true;
+                        real_parameters[0].visit(this);
+                        il.Emit(OpCodes.Call, mi_left);
+                        is_dot_expr = true;
+                        real_parameters[1].visit(this);
+                        il.Emit(OpCodes.Call, mi_right);
+                        EmitOperator(value);
+                        is_dot_expr = tmp_dot;
+                        if (tmp_dot)
+                        {
+                            is_dot_expr = tmp_dot;
+                            NETGeneratorTools.CreateLocalAndLoad(il, helper.GetTypeReference(value.type).tp);
+                        }
+                        return;
+                    }
                 }
                 real_parameters[0].visit(this);
                 if (real_parameters.Length > 1)
                     real_parameters[1].visit(this);
-                //is_dot_expr = tmp_dot;
                 EmitOperator(value);//кладем соотв. команду
-                if (tmp_dot == true)
+                if (tmp_dot)
                 {
-                    //LocalBuilder lb = il.DeclareLocal(helper.GetTypeReference(value.type).tp);
-                    //il.Emit(OpCodes.Stloc, lb);
-                    //il.Emit(OpCodes.Ldloca, lb);
                     is_dot_expr = tmp_dot;
                     NETGeneratorTools.CreateLocalAndLoad(il, helper.GetTypeReference(value.type).tp);
                 }
@@ -9307,7 +9333,11 @@ namespace PascalABCCompiler.NETGenerator
             SemanticTree.ICommonMethodCallNode cmcall = ifc as SemanticTree.ICommonMethodCallNode;
             if (cmcall != null)
             {
-                cmcall.obj.visit(this);
+                LocalBuilder memoized_lb = helper.GetLocalBuilderForExpression(cmcall.obj);
+                if (memoized_lb != null)
+                    il.Emit(OpCodes.Ldloc, memoized_lb);
+                else
+                    cmcall.obj.visit(this);
                 if (cmcall.obj.type.is_value_type)
                     il.Emit(OpCodes.Box, helper.GetTypeReference(cmcall.obj.type).tp);
                 else if (cmcall.obj.conversion_type != null && cmcall.obj.conversion_type.is_value_type)
@@ -9323,7 +9353,11 @@ namespace PascalABCCompiler.NETGenerator
             SemanticTree.ICompiledMethodCallNode cmccall = ifc as SemanticTree.ICompiledMethodCallNode;
             if (cmccall != null)
             {
-                cmccall.obj.visit(this);
+                LocalBuilder memoized_lb = helper.GetLocalBuilderForExpression(cmccall.obj);
+                if (memoized_lb != null)
+                    il.Emit(OpCodes.Ldloc, memoized_lb);
+                else
+                    cmccall.obj.visit(this);
                 if (cmccall.obj.type.is_value_type)
                     il.Emit(OpCodes.Box, helper.GetTypeReference(cmccall.obj.type).tp);
                 else if (cmccall.obj.conversion_type != null && cmccall.obj.conversion_type.is_value_type)
@@ -9902,7 +9936,27 @@ namespace PascalABCCompiler.NETGenerator
             bool tmp_is_addr = is_addr;
             is_dot_expr = false;//don't box the condition expression
             is_addr = false;
-            value.condition.visit(this);
+            LocalBuilder funcptr_lb = null;
+            if (value.condition is IBasicFunctionCallNode && 
+                (value.condition as IBasicFunctionCallNode).real_parameters[0].type.IsDelegate &&
+                (value.condition as IBasicFunctionCallNode).real_parameters[1] is INullConstantNode &&
+                (value.condition as IBasicFunctionCallNode).basic_function.basic_function_type == basic_function_type.objeq)
+            {
+                IBasicFunctionCallNode eq = (value.condition as IBasicFunctionCallNode);
+                funcptr_lb = il.DeclareLocal(helper.GetTypeReference((value.condition as IBasicFunctionCallNode).real_parameters[0].type).tp);
+                eq.real_parameters[0].visit(this);
+                il.Emit(OpCodes.Stloc, funcptr_lb);
+                il.Emit(OpCodes.Ldloc, funcptr_lb);
+                il.Emit(OpCodes.Ldnull);
+                il.Emit(OpCodes.Ceq);
+                if (value.ret_if_false is ICommonConstructorCall)
+                    helper.LinkExpressionToLocalBuilder((value.condition as IBasicFunctionCallNode).real_parameters[0], funcptr_lb);
+                else if (value.ret_if_false is ICompiledConstructorCall)
+                    helper.LinkExpressionToLocalBuilder((value.condition as IBasicFunctionCallNode).real_parameters[0], funcptr_lb);
+            }
+            else
+                value.condition.visit(this);
+            
             is_dot_expr = tmp_is_dot_expr;
             is_addr = tmp_is_addr;
             il.Emit(OpCodes.Brfalse, FalseLabel);
@@ -10556,6 +10610,11 @@ namespace PascalABCCompiler.NETGenerator
                 else il.Emit(OpCodes.Ldsfld, fb);
             }
             else il.Emit(OpCodes.Ldsflda, fb);
+        }
+
+        public override void visit(IDefaultOperatorNodeAsConstant value)
+        {
+            value.DefaultOperator.visit(this);
         }
 
         public override void visit(ICommonConstructorCallAsConstant value)

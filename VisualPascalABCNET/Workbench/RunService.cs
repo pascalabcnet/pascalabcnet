@@ -129,6 +129,12 @@ namespace VisualPascalABC
                 switch (Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.OutputFileType)
                 {
                     case PascalABCCompiler.CompilerOptions.OutputType.ClassLibrary:
+                        if (DocumentService.ActiveCodeFileDocument != null && DocumentService.ActiveCodeFileDocument != DocumentService.CurrentCodeFileDocument && !DocumentService.ActiveCodeFileDocument.Run)
+                            if (!RunActiveTabPage)
+                            {
+                                RunActiveTabPage = true;
+                                return Run(DocumentService.ActiveCodeFileDocument, forDebugging, startWithGoto, needFirstBreakpoint);
+                            }
                         MessageBox.Show(Form1StringResources.Get("RUN_DLL_WARNING_TEXT"), PascalABCCompiler.StringResources.Get("!WARNING"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         RunActiveTabPage = false;
                         break;

@@ -1837,6 +1837,24 @@ function ReadMatrInteger(m, n: integer): array [,] of integer;
 function ReadMatrReal(m, n: integer): array [,] of real;
 
 // -----------------------------------------------------
+//>>     Подпрограммы для создания кортежей # Subroutines for tuple generation
+// -----------------------------------------------------
+///- function Rec(x1: T1, x2: T2,...): (T1,T2,...);
+/// Возвращает кортеж из элементов разных типов
+function Rec<T1, T2>(x1: T1; x2: T2): System.Tuple<T1, T2>;
+///--
+function Rec<T1, T2, T3>(x1: T1; x2: T2; x3: T3): (T1, T2, T3);
+///--
+function Rec<T1, T2, T3, T4>(x1: T1; x2: T2; x3: T3; x4: T4): (T1, T2, T3, T4);
+///--
+function Rec<T1, T2, T3, T4, T5>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5): (T1, T2, T3, T4, T5);
+///--
+function Rec<T1, T2, T3, T4, T5, T6>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6): (T1, T2, T3, T4, T5, T6);
+///--
+function Rec<T1, T2, T3, T4, T5, T6, T7>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6; x7: T7): (T1, T2, T3, T4, T5, T6, T7);
+
+
+// -----------------------------------------------------
 //>>     Короткие функции Lst, LLst, HSet, SSet, Dict, KV # Short functions Lst, HSet, SSet, Dict, KV
 // -----------------------------------------------------
 /// Возвращает список, заполненный указанными значениями
@@ -2181,7 +2199,7 @@ procedure __FinalizeModule__;
 //                   DQNToNullable for dot_question_node
 // -----------------------------------------------------
 
-function DQNToNullable(v: integer): Nullable<integer>;
+function DQNToNullable<T>(v: T): Nullable<T>; where T: record;
 
 implementation
 
@@ -4259,6 +4277,21 @@ begin
   Print(prompt);
   Result := ReadSeqStringWhile(cond);
 end;
+
+// -----------------------------------------------------------------------------
+//                Функции Rec для создания кортежей
+// -----------------------------------------------------------------------------
+function Rec<T1, T2>(x1: T1; x2: T2) := Tuple.Create(x1, x2);
+
+function Rec<T1, T2, T3>(x1: T1; x2: T2; x3: T3) := Tuple.Create(x1, x2, x3);
+
+function Rec<T1, T2, T3, T4>(x1: T1; x2: T2; x3: T3; x4: T4) := Tuple.Create(x1, x2, x3, x4);
+
+function Rec<T1, T2, T3, T4, T5>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5) := Tuple.Create(x1, x2, x3, x4, x5);
+
+function Rec<T1, T2, T3, T4, T5, T6>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6) := Tuple.Create(x1, x2, x3, x4, x5, x6);
+
+function Rec<T1, T2, T3, T4, T5, T6, T7>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6; x7: T7) := Tuple.Create(x1, x2, x3, x4, x5, x6, x7);
 
 // -----------------------------------------------------------------------------
 //                Функции Lst, LLst, Dict, KV, HSet, SSet
@@ -8362,6 +8395,12 @@ begin
   Result := Self;
 end;
 
+function Print(Self: int64): int64; extensionmethod;
+begin
+  PABCSystem.Print(Self);
+  Result := Self;
+end;
+
 function Print(Self: real): real; extensionmethod;
 begin
   PABCSystem.Print(Self);
@@ -8392,6 +8431,12 @@ begin
   Result := Self;
 end;
 
+function Println(Self: int64): int64; extensionmethod;
+begin
+  PABCSystem.Println(Self);
+  Result := Self;
+end;
+
 function Println(Self: real): real; extensionmethod;
 begin
   PABCSystem.Println(Self);
@@ -8415,7 +8460,6 @@ begin
   PABCSystem.Println(Self);
   Result := Self;
 end;
-
 
 
 //------------------------------------------------------------------------------
@@ -11423,9 +11467,9 @@ end;
 //   DQNToNullable for dot_question_node: implementation
 // -----------------------------------------------------
 
-function DQNToNullable(v: integer): System.Nullable<integer>;
+function DQNToNullable<T>(v: T): System.Nullable<T>; where T: record;
 begin
-  Result := new System.Nullable<integer>(v);
+  Result := new System.Nullable<T>(v);
 end;
 
 initialization

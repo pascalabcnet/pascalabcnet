@@ -3466,6 +3466,11 @@ namespace PascalABCCompiler.PCU
             return new compiled_constructor_call_as_constant(CreateCompiledConstructorCall(), null);
         }
         
+        private default_operator_node_as_constant CreateDefaultOperatorAsConstant()
+        {
+            return new default_operator_node_as_constant(CreateDefaultOperator(), null);
+        }
+
         private expression_node CreateExpression(semantic_node_type snt)
 		{
             //location loc = ReadDebugInfo();
@@ -3490,6 +3495,8 @@ namespace PascalABCCompiler.PCU
                     return CreateCommonNamespaceFunctionCallNodeAsConstant();
                 case semantic_node_type.compiled_constructor_call_as_constant:
                     return CreateCompiledConstructorCallAsConstant();
+                case semantic_node_type.default_operator_node_as_constant:
+                    return CreateDefaultOperatorAsConstant();
                 case semantic_node_type.array_const:
                     return CreateArrayConst();
                 case semantic_node_type.record_const:
@@ -3608,7 +3615,7 @@ namespace PascalABCCompiler.PCU
 			throw new Exception("Unknown expression "+snt);
 		}
 		
-        private expression_node CreateDefaultOperator()
+        private default_operator_node CreateDefaultOperator()
         {
         	return new default_operator_node(GetTypeReference(),null);
         }

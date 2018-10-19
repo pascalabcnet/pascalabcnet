@@ -4505,11 +4505,12 @@ namespace CodeCompletion
             SymScope tmp = cur_scope;
             if (_foreach_stmt.type_name != null)
             {
-            	SymScope stmt_scope = new BlockScope(cur_scope);
-        		cur_scope.AddName("$block_scope",stmt_scope);
-        		stmt_scope.loc = get_location(_foreach_stmt);
+                SymScope stmt_scope = new BlockScope(cur_scope);
+                cur_scope.AddName("$block_scope", stmt_scope);
+                stmt_scope.loc = get_location(_foreach_stmt);
                 if (_foreach_stmt.type_name is no_type_foreach)
                 {
+                    cur_scope = stmt_scope;
                     _foreach_stmt.in_what.visit(this);
                     if (returned_scope != null)
                         returned_scope = returned_scope.GetElementType();
@@ -4518,18 +4519,24 @@ namespace CodeCompletion
                 }
                 else
                 {
+                    if (has_lambdas(_foreach_stmt.in_what))
+                    {
+                        cur_scope = stmt_scope;
+                        _foreach_stmt.in_what.visit(this);
+                    }
                     _foreach_stmt.type_name.visit(this);
+
                 }
-        		if (returned_scope != null)
-        		{
-        			cur_scope = stmt_scope;
-        			ElementScope es = new ElementScope(new SymInfo(_foreach_stmt.identifier.name, SymbolKind.Variable,_foreach_stmt.identifier.name),returned_scope,cur_scope);
-        			es.loc = get_location(_foreach_stmt.identifier);
-        			stmt_scope.AddName(_foreach_stmt.identifier.name,es);
-        		}
+                if (returned_scope != null)
+                {
+                    cur_scope = stmt_scope;
+                    ElementScope es = new ElementScope(new SymInfo(_foreach_stmt.identifier.name, SymbolKind.Variable, _foreach_stmt.identifier.name), returned_scope, cur_scope);
+                    es.loc = get_location(_foreach_stmt.identifier);
+                    stmt_scope.AddName(_foreach_stmt.identifier.name, es);
+                }
             }
             if (_foreach_stmt.stmt != null)
-            _foreach_stmt.stmt.visit(this);
+                _foreach_stmt.stmt.visit(this);
             cur_scope = tmp;
         }
 
@@ -5061,6 +5068,14 @@ namespace CodeCompletion
             cur_scope = ps;
             if (!disable_lambda_compilation)
             {
+                if (awaitedProcType != null)
+                {
+                    var invokeMeth = awaitedProcType.FindNameOnlyInType("Invoke") as ProcScope;
+                    if (invokeMeth != null && invokeMeth.return_type != null)
+                    {
+                        cur_scope.AddName("Result", new ElementScope(new SymInfo("Result",SymbolKind.Variable,"Result"), invokeMeth.return_type, cur_scope));
+                    }
+                }
                 statement_list sl = _function_lambda_definition.proc_body as statement_list;
                 if (sl != null && sl.list.Count == 1 && sl.list[0] is assign && (sl.list[0] as assign).to is ident
                     && ((sl.list[0] as assign).to as ident).name.ToLower() == "result")
@@ -5183,6 +5198,12 @@ namespace CodeCompletion
         public override void visit(slice_expr_question _slice_expr_question)
         {
             _slice_expr_question.v.visit(this);
+        }
+
+        public override void visit(dot_question_node _dot_question_node)
+        {
+            dot_node dn = new dot_node(_dot_question_node.left, _dot_question_node.right, _dot_question_node.source_context);
+            dn.visit(this);
         }
 
         public override void visit(modern_proc_type _modern_proc_type)

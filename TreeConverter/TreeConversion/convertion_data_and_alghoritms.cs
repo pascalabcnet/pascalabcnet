@@ -1482,6 +1482,8 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (tn1.get_internal_interface(internal_interface_kind.delegate_interface) != null)
             {
+                if (strong)
+                    return tn1 == tn2;
                 delegate_internal_interface d1 = tn1.get_internal_interface(internal_interface_kind.delegate_interface) as delegate_internal_interface;
                 delegate_internal_interface d2 = tn2.get_internal_interface(internal_interface_kind.delegate_interface) as delegate_internal_interface;
                 if (d2 != null)
@@ -1496,7 +1498,7 @@ namespace PascalABCCompiler.TreeConverter
         }
 
         //Этот метод сверяет не только параметры, но и возвращаемое значение
-        public static bool function_eq_params_and_result(function_node left, function_node right, bool weak=false)
+        public static bool function_eq_params_and_result(function_node left, function_node right, bool weak = false)
         {
             if (!function_eq_params(left, right, weak))
             {
@@ -1504,7 +1506,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
-                return eq_type_nodes(left.return_value_type,right.return_value_type);
+                return eq_type_nodes(left.return_value_type, right.return_value_type, weak);
             }
         }
 
