@@ -15,6 +15,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
         public string Name { get; } = "Standard";
         public syntax_tree_node Convert(syntax_tree_node root)
         {
+            CapturedNamesHelper.Reset();
             // Прошивание ссылками на Parent nodes. Должно идти первым
             // FillParentNodeVisitor расположен в SyntaxTree/tree как базовый визитор, отвечающий за построение дерева
             FillParentNodeVisitor.New.ProcessNode(root);
@@ -22,16 +23,16 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // Выносим выражения с лямбдами из заголовка foreach
             StandOutExprWithLambdaInForeachSequenceVisitor.New.ProcessNode(root);
 
-            // type classes
+            // type classes - пока закомментировал SSM 20/10/18. Грязный кусок кода. FillParentsInAllChilds вызывается повторно
 
-            {
+            /*{
                 var typeclasses = SyntaxVisitors.TypeclassVisitors.FindTypeclassesVisitor.New;
                 typeclasses.ProcessNode(root);
                 var instancesAndRestrictedFunctions = SyntaxVisitors.TypeclassVisitors.FindInstancesAndRestrictedFunctionsVisitor.New(typeclasses.typeclasses);
                 instancesAndRestrictedFunctions.ProcessNode(root);
                 SyntaxVisitors.TypeclassVisitors.ReplaceTypeclassVisitor.New(instancesAndRestrictedFunctions).ProcessNode(root);
             }
-            root.FillParentsInAllChilds();
+            root.FillParentsInAllChilds();*/
 #if DEBUG
             //new SimplePrettyPrinterVisitor("E:/projs/out.txt").ProcessNode(root);
 #endif
@@ -62,7 +63,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
 
 #if DEBUG
-            //new SimplePrettyPrinterVisitor("G:\\Tree.txt").ProcessNode(root);
+            //new SimplePrettyPrinterVisitor("D:\\Tree.txt").ProcessNode(root);
             //FillParentNodeVisitor.New.ProcessNode(root);
 
             
@@ -72,11 +73,12 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             
             /*try
             {
-                //root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz4.txt"));
+                root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz4.txt"));
             }
-            catch
+            catch(Exception e)
             {
 
+                System.IO.File.AppendAllText(@"d:\\zzz4.txt",e.Message);
             }*/
 
 #endif

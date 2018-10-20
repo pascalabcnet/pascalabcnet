@@ -169,7 +169,8 @@ namespace SyntaxVisitors.SugarVisitors
 
             var qce = ConvertToQCE1(dqn, tname);
             var sug = sugared_addressed_value.NewP(dqn, qce, dqn.source_context);
-            ReplaceUsingParent(dqn, sug);
+            //ReplaceUsingParent(dqn, sug);
+            Replace(dqn, sug); // SSM 30/09/18
             visit(qce);
 
             ReplaceStatementUsingParent(st as statement, l);

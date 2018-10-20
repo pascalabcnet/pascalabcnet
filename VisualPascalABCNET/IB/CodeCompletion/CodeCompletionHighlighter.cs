@@ -147,6 +147,8 @@ namespace VisualPascalABC
             int off = beg_off - 1;
             if (CheckForCommentOrKav(textArea.Document.TextContent, beg_off))
                 return false;
+            if (off >= textArea.Document.TextContent.Length)
+                return false;
             char c = textArea.Document.TextContent[off];
             while (char.IsWhiteSpace(c) || c == '}')
             {

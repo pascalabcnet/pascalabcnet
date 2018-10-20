@@ -149,7 +149,7 @@ namespace PascalABCCompiler.TreeRealization
                 {
                     return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_REFERENCE_TYPE", tn.PrintableName);
                 }
-                if (gpe.is_value && !tn.is_value && !tn.is_generic_parameter)
+                if (gpe.is_value && (!tn.is_value || tn.BaseFullName != null && tn.BaseFullName.StartsWith("System.Nullable")) && !tn.is_generic_parameter)
                 {
                     return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_VALUE_TYPE", tn.PrintableName);
                 }
@@ -1334,6 +1334,8 @@ namespace PascalABCCompiler.TreeRealization
 
         public static bool type_has_default_ctor(type_node tn, bool find_protected_ctors)
         {
+            if (tn.is_generic_parameter && tn.base_type != null && tn.base_type.IsAbstract)
+                return false;
             List<SymbolInfo> sil = tn.find_in_type(compiler_string_consts.default_constructor_name, tn.Scope);
             if (sil != null)
             {

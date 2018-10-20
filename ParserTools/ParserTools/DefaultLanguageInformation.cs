@@ -125,6 +125,7 @@ namespace PascalABCCompiler.Parsers
             keywords.Add("exit", "exit"); keys.Add("exit");
             keywords.Add("event", "event"); keys.Add("event");
             keywords.Add("match", "match"); keys.Add("match");
+            keywords.Add("static", "static"); keys.Add("static");
             //keywords.Add("typeof", "typeof"); //keys.Add("typeof");
             //keywords.Add("sizeof", "sizeof"); //keys.Add("sizeof");
             keywords_array = new string[keywords.Count + 2];
@@ -422,12 +423,12 @@ namespace PascalABCCompiler.Parsers
 			}
 			return sb.ToString();
 		}
-		
-		protected virtual string GetFullTypeName(Type ctn, bool no_alias=true)
-		{
-			TypeCode tc = Type.GetTypeCode(ctn);
-			if (ctn.FullName == null && !ctn.IsArray && !ctn.IsGenericTypeDefinition && ctn.IsGenericParameter) 
-				return ctn.Name;
+
+        protected virtual string GetFullTypeName(Type ctn, bool no_alias = true)
+        {
+            TypeCode tc = Type.GetTypeCode(ctn);
+            if (ctn.FullName == null && !ctn.IsArray && !ctn.IsGenericTypeDefinition && ctn.IsGenericParameter)
+                return ctn.Name;
             if (!ctn.IsEnum)
             {
                 switch (tc)
@@ -452,7 +453,7 @@ namespace PascalABCCompiler.Parsers
                     else
                         return "^" + GetFullTypeName(ctn.GetElementType());
             }
-            else 
+            else
                 return ctn.FullName;
             if (!no_alias)
             {
@@ -465,28 +466,28 @@ namespace PascalABCCompiler.Parsers
                 else if (ctn.Name.Contains("Tuple`"))
                     return get_tuple_string(ctn);
             }
-			if (ctn.Name.Contains("`"))
-			{
-				int len = ctn.GetGenericArguments().Length;
-				Type[] gen_ps = ctn.GetGenericArguments();
-				System.Text.StringBuilder sb = new System.Text.StringBuilder();
-				sb.Append(ctn.Namespace+"."+ctn.Name.Substring(0,ctn.Name.IndexOf('`')));
-				sb.Append('<');
-				for (int i=0; i<len; i++)
-				{
-					sb.Append(gen_ps[i].Name);
-					if (i<len-1)
-					sb.Append(',');
-				}
-				sb.Append('>');
-				return sb.ToString();
-			}
-			if (ctn.IsArray) return "array of "+GetFullTypeName(ctn.GetElementType());
-			if (ctn == Type.GetType("System.Void*")) return "pointer";
-			if (ctn.IsNested) 
-				return ctn.Name;
-			return ctn.FullName;
-		}
+            if (ctn.Name.Contains("`"))
+            {
+                int len = ctn.GetGenericArguments().Length;
+                Type[] gen_ps = ctn.GetGenericArguments();
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                sb.Append(ctn.Namespace + "." + ctn.Name.Substring(0, ctn.Name.IndexOf('`')));
+                sb.Append('<');
+                for (int i = 0; i < len; i++)
+                {
+                    sb.Append(gen_ps[i].Name);
+                    if (i < len - 1)
+                        sb.Append(", ");
+                }
+                sb.Append('>');
+                return sb.ToString();
+            }
+            if (ctn.IsArray) return "array of " + GetFullTypeName(ctn.GetElementType());
+            if (ctn == Type.GetType("System.Void*")) return "pointer";
+            if (ctn.IsNested)
+                return ctn.Name;
+            return ctn.FullName;
+        }
 
         private string get_tuple_string(ITypeScope[] generic_args)
         {
@@ -581,7 +582,7 @@ namespace PascalABCCompiler.Parsers
                 {
                     sb.Append(gen_args[i].Name);
                     if (i < gen_args.Length - 1)
-                        sb.Append(",");
+                        sb.Append(", ");
                 }
                 sb.Append('>');
             }
@@ -920,7 +921,7 @@ namespace PascalABCCompiler.Parsers
                     {
                         sb.Append(gen_ps[i].Name);
                         if (i < len - 1)
-                            sb.Append(',');
+                            sb.Append(", ");
                     }
                 }
 				sb.Append('>');
@@ -990,7 +991,7 @@ namespace PascalABCCompiler.Parsers
 					{
 						sb.Append(GetSimpleDescriptionWithoutNamespace(gen_insts[i]));
 						if (i < gen_insts.Length -1)
-						sb.Append(',');
+						sb.Append(", ");
 					}
 					sb.Append('>');
 					return sb.ToString();
@@ -1065,7 +1066,7 @@ namespace PascalABCCompiler.Parsers
 				{
 					sb.Append(GetSimpleDescriptionWithoutNamespace(instances[i]));
 					//sb.Append(instances[i].Name);
-					if (i < instances.Length - 1) sb.Append(',');
+					if (i < instances.Length - 1) sb.Append(", ");
 				}
 				sb.Append('>');
 				s = sb.ToString();
@@ -1098,34 +1099,34 @@ namespace PascalABCCompiler.Parsers
 			}
 			return s;
 		}
-		
-		
-		
-		public virtual string GetSimpleDescriptionWithoutNamespace(ITypeScope scope)
-		{
-			ICompiledTypeScope cts = scope as ICompiledTypeScope;
-			if (cts == null)
-				return GetSimpleDescription(scope);
-			string s = GetShortName(cts);
-			ITypeScope[] instances = scope.GenericInstances;
-			if (instances != null && instances.Length > 0)
-			{
-				System.Text.StringBuilder sb = new System.Text.StringBuilder();
-				int ind = s.IndexOf('<');
-				if (ind != -1) sb.Append(s.Substring(0,ind));
-				else
-				sb.Append(s);
-				sb.Append('<');
-				for (int i=0; i<instances.Length; i++)
-				{
-					sb.Append(GetSimpleDescriptionWithoutNamespace(instances[i]));
-					if (i < instances.Length - 1) sb.Append(',');
-				}
-				sb.Append('>');
-				s = sb.ToString();
-			}
-			return s;
-		}
+
+
+
+        public virtual string GetSimpleDescriptionWithoutNamespace(ITypeScope scope)
+        {
+            ICompiledTypeScope cts = scope as ICompiledTypeScope;
+            if (cts == null)
+                return GetSimpleDescription(scope);
+            string s = GetShortName(cts);
+            ITypeScope[] instances = scope.GenericInstances;
+            if (instances != null && instances.Length > 0)
+            {
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                int ind = s.IndexOf('<');
+                if (ind != -1) sb.Append(s.Substring(0, ind));
+                else
+                    sb.Append(s);
+                sb.Append('<');
+                for (int i = 0; i < instances.Length; i++)
+                {
+                    sb.Append(GetSimpleDescriptionWithoutNamespace(instances[i]));
+                    if (i < instances.Length - 1) sb.Append(", ");
+                }
+                sb.Append('>');
+                s = sb.ToString();
+            }
+            return s;
+        }
 
         protected bool isIdentifier(string str)
         {
@@ -1270,7 +1271,7 @@ namespace PascalABCCompiler.Parsers
                     for (int i = 0; i < instances.Length; i++)
                     {
                         sb.Append(GetSimpleDescriptionWithoutNamespace(instances[i]));
-                        if (i < instances.Length - 1) sb.Append(',');
+                        if (i < instances.Length - 1) sb.Append(", ");
                     }
                     sb.Append('>');
                     s = sb.ToString();
@@ -1666,7 +1667,7 @@ namespace PascalABCCompiler.Parsers
                     else
                         sb.Append(get_type_instance(args[i], generic_args, generic_param_args));
                     if (i < args.Length - 1)
-                        sb.Append(',');
+                        sb.Append(", ");
                 }
                 sb.Append('>');
                 return sb.ToString();
@@ -1695,7 +1696,7 @@ namespace PascalABCCompiler.Parsers
                 for (int i = 0; i < tt.Length; i++)
                 {
                     sb.Append(tt[i].Name);
-                    if (i < tt.Length - 1) sb.Append(',');
+                    if (i < tt.Length - 1) sb.Append(", ");
                 }
                 sb.Append('>');
             }
@@ -1860,7 +1861,7 @@ namespace PascalABCCompiler.Parsers
                     
                     else
                         sb.Append(tt[i].Name);
-                    if (i < tt.Length - 1) sb.Append(',');
+                    if (i < tt.Length - 1) sb.Append(", ");
                 }
                 sb.Append('>');
             }
@@ -2029,7 +2030,7 @@ namespace PascalABCCompiler.Parsers
 				{
 					sb.Append(template_args[i]);
 					if (i < template_args.Length-1)
-						sb.Append(',');
+						sb.Append(", ");
 				}
 				sb.Append('>');
 			}
@@ -2628,8 +2629,13 @@ namespace PascalABCCompiler.Parsers
 				{
 					if (kav.Count == 0)
                     {
-                        is_comm = true;
                         comment_position = i;
+                        while (i >= 0 && Text[i] != '\'')
+                            i--;
+                        if (i >= 1 && Text[i - 1] == '$')
+                            return false;
+                        is_comm = true;
+                        return is_comm;
                     }  
 				}
 				else if (Text[i] == '}')
@@ -2718,10 +2724,16 @@ namespace PascalABCCompiler.Parsers
                         kav.Push('\'');
                     sb.Insert(0, ch);//.Append(Text[i]);
                 }
-                else if (ch == '.' || ch == '^' || ch == '&')
+                else if (ch == '.' || ch == '^' || ch == '&' || ch == '?')
                 {
-                    if (ch == '.' && i >= 1 && Text[i - 1] == '.') end = true; else sb.Insert(0, ch);
-                    if (ch != '.') punkt_sym = true;
+                    if (ch == '.' && i >= 1 && Text[i - 1] == '.')
+                        end = true;
+                    else if (ch == '?' && i + 1 < Text.Length && Text[i + 1] != '.')
+                        end = true;
+                    else
+                        sb.Insert(0, ch);
+                    if (ch != '.')
+                        punkt_sym = true;
                 }
                 else if (ch == '}')
                 {
@@ -2764,7 +2776,7 @@ namespace PascalABCCompiler.Parsers
                             if (kav.Count == 0)
                             {
                                 string tmps = sb.ToString().Trim(' ', '\r', '\t', '\n');
-                                if (tmps.Length >= 1 && (char.IsLetter(tmps[0]) || tmps[0] == '_' || tmps[0] == '&') && tokens.Count == 0)
+                                if (tmps.Length >= 1 && (char.IsLetter(tmps[0]) || tmps[0] == '_' || tmps[0] == '&' || tmps[0] == '?') && tokens.Count == 0)
                                     end = true;
                                 else
                                     tokens.Push(ch);
@@ -2836,7 +2848,7 @@ namespace PascalABCCompiler.Parsers
                                                     i--;
                                             }
                                         }
-                                        if (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
+                                        if (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?'))
                                         {
                                             bound = i + 1;
                                             TestForKeyword(Text, i, ref bound, punkt_sym, out keyw);
@@ -2918,6 +2930,8 @@ namespace PascalABCCompiler.Parsers
             }
 
             //return RemovePossibleKeywords(sb);
+            if (sb.Length > 0 && sb[sb.Length - 1] == '?')
+                sb.Remove(sb.Length - 1, 1);
             return sb.ToString();
 
         }
@@ -2937,10 +2951,10 @@ namespace PascalABCCompiler.Parsers
                 return "";
             bool is_char = false;
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            if (Text[i] != ' ' && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
+            if (Text[i] != ' ' && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?'))
             {
                 //sb.Remove(0,sb.Length);
-                while (i >= 0 && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
+                while (i >= 0 && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?'))
                 {
                     //sb.Insert(0,Text[i]);//.Append(Text[i]);
                     i--;
@@ -2948,7 +2962,7 @@ namespace PascalABCCompiler.Parsers
                 is_char = true;
             }
             i = off;
-            if (i < Text.Length && Text[i] != ' ' && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
+            if (i < Text.Length && Text[i] != ' ' && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?'))
             {
                 while (i < Text.Length && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_'))
                 {
@@ -3046,7 +3060,7 @@ namespace PascalABCCompiler.Parsers
                             sk_stack.Push('<');
 
                         }
-                        else if (!char.IsLetterOrDigit(c) && c != '&' && c != '.' && c != ' ' && c != '\t' && c != '\n' && c != ',')
+                        else if (!char.IsLetterOrDigit(c) && c != '?' && c != '&' && c != '.' && c != ' ' && c != '\t' && c != '\n' && c != ',')
                         {
                             break;
                         }
@@ -3054,7 +3068,7 @@ namespace PascalABCCompiler.Parsers
                     }
                     if (generic)
                     {
-                        break;
+                        //break;
                     }
                 }
                 else if (c == '[' && !in_comment)

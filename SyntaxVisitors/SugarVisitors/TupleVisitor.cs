@@ -21,6 +21,22 @@ namespace SyntaxVisitors.SugarVisitors
 
         }
 
+        public override void visit(unnamed_type_object u)
+        {
+            DefaultVisit(u);
+        }
+
+        public override void visit(name_assign_expr_list ne)
+        {
+            DefaultVisit(ne);
+        }
+
+        public override void visit(name_assign_expr ne)
+        {
+            DefaultVisit(ne);
+        }
+
+
         public override void visit(tuple_node tup)
         {
             var dn = new dot_node(new dot_node(new ident("?System"), new ident("Tuple")), new ident("Create", tup.source_context));
@@ -28,7 +44,8 @@ namespace SyntaxVisitors.SugarVisitors
 
             //var sug = new sugared_expression(tup, mc, tup.source_context); - нет никакой семантической проверки - всё - на уровне синтаксиса!
 
-            ReplaceUsingParent(tup, mc);
+            //ReplaceUsingParent(tup, mc); - исправление #1199. Оказывается, ReplaceUsingParent и Replace не эквивалентны - у копии Parent на старого родителя
+            Replace(tup, mc);
             visit(mc); 
         }
 

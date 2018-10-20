@@ -3615,6 +3615,8 @@ namespace PascalABCCompiler.PCU
                     VisitCommonConstructorCallAsConstant((common_constructor_call_as_constant)en); break;
                 case semantic_node_type.basic_function_call_node_as_constant:
                     VisitBasicFunctionCallAsConstant((basic_function_call_as_constant)en); break;
+                case semantic_node_type.default_operator_node_as_constant:
+                    VisitDefaultOperatorAsConstant((default_operator_node_as_constant)en); break;
                 case semantic_node_type.array_initializer:
                     VisitArrayInitializer((array_initializer)en); break;
                 case semantic_node_type.record_initializer:
@@ -3672,7 +3674,12 @@ namespace PascalABCCompiler.PCU
 			VisitBasicFunctionCall(expr.method_call);
 		}
 		
-		private void VisitNamespaceConstantReference(namespace_constant_reference expr)
+        private void VisitDefaultOperatorAsConstant(default_operator_node_as_constant expr)
+        {
+            VisitDefaultOperator(expr.default_operator);
+        }
+
+        private void VisitNamespaceConstantReference(namespace_constant_reference expr)
 		{
 			WriteConstantReference(expr.constant);
 		}

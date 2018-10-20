@@ -750,6 +750,9 @@ namespace PascalABCCompiler.SyntaxTree
             if (parameters != null)
                 sb.Append("(" + parameters.ToString() + ")");
             sb.Append(";");
+            if (this.proc_attributes != null)
+                foreach (var pa in this.proc_attributes.proc_attributes)
+                    sb.Append(" " + pa.ToString() + " ");
             return sb.ToString();
         }
     }

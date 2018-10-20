@@ -176,7 +176,6 @@
     <name value="method_decl_withattr" />
     <name value="method_decl" />
     <name value="property_definition" />
-    <name value="simple_prim_property_definition" />
     <name value="simple_property_definition" />
     <name value="property_specifiers" />
     <name value="var_decl" />

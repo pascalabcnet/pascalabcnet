@@ -164,11 +164,11 @@ namespace PascalABCCompiler.TreeConverter
         }
     }
 
-    public class SaveAssemblyError : CompilationError
+    public class SaveAssemblyError : CompilationErrorWithLocation
     {
         private string _text;
 
-        public SaveAssemblyError(string text)
+        public SaveAssemblyError(string text, location loc): base(loc)
         {
             _text = text;
         }

@@ -540,10 +540,10 @@ namespace GPPGParserScanner
 
         private int num1 = 0;
 
-        public ident NewId(string prefix)
+        public ident NewId(string prefix, SourceContext sc = null)
         {
             num1++;
-            return new ident(prefix + num1.ToString());
+            return new ident(prefix + num1.ToString(),sc);
         }
     }
 }

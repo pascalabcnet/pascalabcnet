@@ -24,10 +24,21 @@ namespace PascalABCCompiler.TreeConverter
 
         private type_node[] InferAndCheckPatternVariableTypes(List<var_def_statement> variableDefinitions, expression_node patternInstance, desugared_deconstruction deconstruction)
         {
+            if (patternInstance.type.IsPointer)
+            {
+                AddError(get_location(deconstruction), "PATTERN_MATCHING_DOESNT_SUPPORT_POINTERS");
+                return null;
+            }
             var parameterTypes = variableDefinitions.Select(x => x.vars_type == null ? null : convert_strong(x.vars_type)).ToArray();
             List<function_node> candidates = new List<function_node>();
             List<type_node[]> deducedParametersList = new List<type_node[]>();
             var allDeconstructs = patternInstance.type.find_in_type(compiler_string_consts.deconstruct_method_name, context.CurrentScope);
+            if (allDeconstructs == null)
+            {
+                AddError(get_location(deconstruction), "NO_DECONSTRUCT_FOUND");
+                return null;
+            }
+
             foreach (var canditateSymbol in allDeconstructs)
             {
                 var deducedParameters = new type_node[parameterTypes.Length];
