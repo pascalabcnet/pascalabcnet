@@ -19847,10 +19847,16 @@ namespace PascalABCCompiler.TreeConverter
                 semantic_check_loop_stmt(expr);
             }
             // Patterns
-            else if (st.typ is SugaredExpressionType.MatchedExpression)
+            else if (st.typ is SemanticCheckType.MatchedExpression)
             {
                 var expr = st.lst[0] as expression;
                 CheckMatchedExpression(expr);
+            }
+            else if (st.typ is SemanticCheckType.MatchedExpressionAndType)
+            {
+                var expr = st.lst[0] as expression;
+                var type = st.lst[1] as type_definition;
+                CheckIfCanBeMatched(expr, type);
             }
             // !Patterns
             else

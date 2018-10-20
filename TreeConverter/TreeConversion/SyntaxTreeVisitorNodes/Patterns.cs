@@ -243,5 +243,19 @@ namespace PascalABCCompiler.TreeConverter
             if (convertedExpression.type.IsPointer)
                 AddError(get_location(matchedExpression), "PATTERN_MATCHING_DOESNT_SUPPORT_POINTERS");
         }
+
+        private void CheckIfCanBeMatched(expression matchedExpression, type_definition targetType)
+        {
+            var type = convert_strong(targetType);
+            var expression = convert_strong(matchedExpression).type;
+
+            if (type_table.is_derived(type, expression) ||
+                type_table.is_derived(expression, type) ||
+                AreTheSameType(type, expression) ||
+                type.IsInterface && expression.IsInterface)
+                return;
+
+            AddError(get_location(matchedExpression), "EXPRESSION_OF_TYPE_{0}_CANNOT_BE_MATCHED_AGAINST_PATTERN_WITH_TYPE_{1}", expression.name, type.name);
+        }
     }
 }

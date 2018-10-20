@@ -33,7 +33,7 @@ namespace PascalABCCompiler.SyntaxTree
         DirectDescendants
     }
 
-    public enum SugaredExpressionType { MatchedExpression }
+    public enum SemanticCheckType { MatchedExpression, MatchedExpressionAndType }
 
     public partial class syntax_tree_node
     {

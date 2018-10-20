@@ -194,6 +194,8 @@ namespace SyntaxVisitors.SugarVisitors
             var patternLocation = GetLocation(isPatternExpr);
             
             var pattern = isPatternExpr.right as deconstructor_pattern;
+
+            AddDefinitionsInUpperStatementList(isPatternExpr, new[] { GetTypeCompatibilityCheck(isPatternExpr) });
             if (pattern.IsRecursive)
             {
                 var desugaredRecursiveIs = DesugarRecursiveDeconstructor(isPatternExpr.left, pattern);
@@ -271,7 +273,10 @@ namespace SyntaxVisitors.SugarVisitors
         }
 
         private semantic_check_sugared_statement_node GetMatchedExpressionCheck(expression matchedExpression)
-        => new semantic_check_sugared_statement_node(SugaredExpressionType.MatchedExpression, new List<syntax_tree_node>() { matchedExpression });
+        => new semantic_check_sugared_statement_node(SemanticCheckType.MatchedExpression, new List<syntax_tree_node>() { matchedExpression });
+
+        private semantic_check_sugared_statement_node GetTypeCompatibilityCheck(is_pattern_expr expression) =>
+            new semantic_check_sugared_statement_node(SemanticCheckType.MatchedExpressionAndType, new List<syntax_tree_node>() { expression.left, (expression.right as deconstructor_pattern).type });
 
         private statement_list ConvertIfNode(if_node ifNode, List<statement> statementsBeforeIf, out statement elseBody)
         {
