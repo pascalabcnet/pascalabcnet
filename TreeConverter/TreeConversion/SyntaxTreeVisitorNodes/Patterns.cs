@@ -28,6 +28,12 @@ namespace PascalABCCompiler.TreeConverter
             List<function_node> candidates = new List<function_node>();
             List<type_node[]> deducedParametersList = new List<type_node[]>();
             var allDeconstructs = patternInstance.type.find_in_type(compiler_string_consts.deconstruct_method_name, context.CurrentScope);
+            if (allDeconstructs == null)
+            {
+                AddError(get_location(deconstruction), "NO_SUITABLE_DECONSTRUCT_FOUND");
+                return null;
+            }
+
             foreach (var canditateSymbol in allDeconstructs)
             {
                 var deducedParameters = new type_node[parameterTypes.Length];
