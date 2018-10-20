@@ -195,7 +195,7 @@ namespace SyntaxVisitors.SugarVisitors
             
             var pattern = isPatternExpr.right as deconstructor_pattern;
 
-            AddDefinitionsInUpperStatementList(isPatternExpr, new[] { GetTypeCompatibilityCheck(isPatternExpr) });
+            //AddDefinitionsInUpperStatementList(isPatternExpr, new[] { GetTypeCompatibilityCheck(isPatternExpr) });
             if (pattern.IsRecursive)
             {
                 var desugaredRecursiveIs = DesugarRecursiveDeconstructor(isPatternExpr.left, pattern);
@@ -239,6 +239,7 @@ namespace SyntaxVisitors.SugarVisitors
 
             var statementsToAdd = desugaringResult.GetDeconstructionDefinitions(pattern.source_context);
             statementsToAdd.Add(GetMatchedExpressionCheck(isExpression.left));
+            statementsToAdd.Add(GetTypeCompatibilityCheck(isExpression));
             statementsToAdd.Add(desugaringResult.GetPatternCheckWithDeconstrunctorCall());
 
             AddDefinitionsInUpperStatementList(isExpression, statementsToAdd);
@@ -252,6 +253,7 @@ namespace SyntaxVisitors.SugarVisitors
 
             var statementsToAdd = desugaringResult.GetDeconstructionDefinitions(pattern.source_context);
             statementsToAdd.Add(GetMatchedExpressionCheck(isExpression.left));
+            statementsToAdd.Add(GetTypeCompatibilityCheck(isExpression));
             statementsToAdd.Add(desugaringResult.GetPatternCheckWithDeconstrunctorCall());
 
             var enclosingIf = GetAscendant<if_node>(isExpression);
