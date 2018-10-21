@@ -1,0 +1,10 @@
+var a: real;
+begin
+  write('Введите a: ');
+  readln(a);
+  var a2,a4,a8: real; // вспомогательные переменные
+  a2 := a * a;
+  a4 := a2 * a2;
+  a8 := a4 * a4;
+  writeln(a,' в степени 8 = ',a8);
+end.
