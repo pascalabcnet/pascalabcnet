@@ -13867,10 +13867,17 @@ namespace PascalABCCompiler.TreeConverter
                 	if (tn.base_type == SystemLibrary.SystemLibrary.uint_type || tn.base_type == SystemLibrary.SystemLibrary.int64_type || 
                 	   tn.base_type == SystemLibrary.SystemLibrary.uint64_type)
                 	//ordinal_type_interface oti = tn.get_internal_interface(internal_interface_kind.ordinal_interface) as ordinal_type_interface;
-                    AddError(get_location(td), "RANGE_TOO_LARGE");
+                        AddError(get_location(td), "RANGE_TOO_LARGE");
+                    if (tn.base_type == SystemLibrary.SystemLibrary.integer_type)
+                    {
+                        Int64 low = ((tn as SemanticTree.ICommonTypeNode).lower_value as int_const_node).constant_value;
+                        Int64 high = ((tn as SemanticTree.ICommonTypeNode).upper_value as int_const_node).constant_value;
+                        if (high-low >= int.MaxValue)
+                            AddError(get_location(td), "RANGE_TOO_LARGE");
+                    }
                 }
                 else if (tn == SystemLibrary.SystemLibrary.uint_type || tn == SystemLibrary.SystemLibrary.int64_type ||
-                        tn == SystemLibrary.SystemLibrary.uint64_type)
+                        tn == SystemLibrary.SystemLibrary.uint64_type || tn == SystemLibrary.SystemLibrary.integer_type)
                     AddError(get_location(td), "RANGE_TOO_LARGE");
                 ind_types.AddElement(tn);
             }
