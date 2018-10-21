@@ -225,8 +225,10 @@ namespace PascalABCCompiler.TreeConverter
         /// <param name="deconstructor"></param>
         private void ExecuteCommonChecks(common_function_node deconstructor)
         {
+            if ((deconstructor as common_method_node).IsStatic)
+                AddError(deconstructor.loc, "DECONSTRUCTOR_SHOULD_NOT_BE_STATIC");
             if (deconstructor.return_value_type != null)
-                AddError(deconstructor.loc, "DECONSTRUCTOR_SOULD_BE_A_PROCEDURE");
+                AddError(deconstructor.loc, "DECONSTRUCTOR_SHOULD_BE_A_PROCEDURE");
 
             foreach (var parameter in deconstructor.parameters.Where(x => !IsSelfParameter(x)))
                 if (parameter.parameter_type != SemanticTree.parameter_type.var && parameter is common_parameter p)

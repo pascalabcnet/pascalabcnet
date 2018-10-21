@@ -55,7 +55,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             DoubleQuestionDesugarVisitor.New.ProcessNode(root);
 
             // Patterns
-            SingleDeconstructChecker.New.ProcessNode(root);
+            // SingleDeconstructChecker.New.ProcessNode(root); // SSM 21.10.18 - пока разрешил множественные деконструкторы. Если будут проблемы - запретить
             PatternsDesugaringVisitor.New.ProcessNode(root);
 
             // Всё, связанное с yield

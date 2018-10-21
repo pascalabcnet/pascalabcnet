@@ -14,6 +14,7 @@ YIELDS_INSIDE_WITH_ARE_ILLEGAL=with statement cannot contain yields
 LAMBDA_EXPRESSIONS_CANNOT_CONTAIN_YIELD=Lambda-expressions cannot contain yields
 
 PATTERN_MATHING_IS_NOT_SUPPORTED_IN_THIS_CONTEXT=Pattern matching is not supported in this context
+ONLY_ONE_DECONSTRUCT_ALLOWED=Only one user deconstructor is allowed
 
 Var_{0}_is_already_defined=Variable {0} is already defined
 

@@ -16,9 +16,12 @@
     end;
   end;
 
-
 begin
   var p := new Person('Петр', 25);
   if p is Person(var name, var age) then
     Println(name, age);
+    
+  match p with
+    Person(name,age): Println(name,age);
+  end;
 end.
