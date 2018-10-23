@@ -1,13 +1,13 @@
-// ÷икл for. a в степени n
-var 
-  a: real;
-  n: integer;
+﻿// Цикл for. Вычисление a в степени n
 
 begin
-  write('¬ведите a,n: ');
-  readln(a,n);
-  var p: real := 1;
+  var a := ReadlnReal('Введите a:');
+  var n := ReadlnInteger('Введите n:');
+
+  var p := 1.0;
   for var i:=1 to n do
-    p := p * a; // можно p *= a
-  writelnFormat('{0} в степени {1} = {2}',a,n,p);  
+    p *= a; 
+  Println($'{a} в степени {n} = {p}');
+  
+  Println($'Стандартная операция {a} ** {n} = {a ** n}');  
 end.

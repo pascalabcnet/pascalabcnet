@@ -1,18 +1,18 @@
-// ÷икл while. —умма цифр положительного числа
-var m: integer;
+﻿// Цикл while. Сумма цифр положительного числа
 
 begin
-  writeln('¬ведите положительное число: ');
-  read(m);
-  write('÷ифры числа в обратном пор¤дке: ');
+  var m := ReadlnInteger('Введите положительное число: ');
+
+  Print('Цифры числа в обратном порядке:');
   var s := 0;
   while m>0 do
   begin
     var digit := m mod 10;
-    write(digit,' ');
+    Print(digit);
     s += digit;
     m := m div 10;
   end;
-  writeln;
-  writeln('—умма цифр = ',s);
+  
+  Println;
+  Println('Сумма цифр =',s);
 end.

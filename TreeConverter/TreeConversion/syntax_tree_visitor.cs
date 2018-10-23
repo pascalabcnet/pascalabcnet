@@ -11248,6 +11248,35 @@ namespace PascalABCCompiler.TreeConverter
                 //Проверяем параметры шаблона на совпадение друг с другом
                 check_param_redeclared(ttn.template_args.idents);
                 context.AddTemplate(ttn.name, tc, t_loc);
+
+                // SSM 23.10.18. Bug fix #1395. Пытаемся проверить, что это - enum. Повторяем с изменениями код в enum_type_node
+                if (_type_declaration.type_def is enum_type_definition etd)
+                {
+                    // значит это возможно enum
+                    //var etd =
+                    foreach (SyntaxTree.enumerator en in etd.enumerators.enumerators)
+                    {
+                        if (!((en.name is named_type_reference) && (en.name as named_type_reference).names.Count() == 1))
+                        {
+                            // Это tupletype
+                            return;
+                        }
+                        // Все - идентификаторы. Проверяем дальше
+                        SyntaxTree.ident id = (en.name as named_type_reference).FirstIdent;
+
+                        // Если равен какому-то имени в параметрах обобщения, то это тип - пропускаем. Ищем не тип или неизвестное имя
+                        if (ttn.template_args.idents.Select(ide => ide.name.ToLower()).Any(s => s.Equals(id.name.ToLower()))) 
+                            continue;
+                        var si = context.CurrentScope.Find(id.name);
+                        if ((si == null) || !(si.FirstOrDefault().sym_info is type_node))
+                        {
+                            // Это точно enum. Выдавать ошибку - enumы не могут быть обобщёнными
+                            AddError(get_location(ttn), "ENUMS_CANNOT_BE_GENERIC");
+                        }
+                    }                 
+                }
+                // Это не enum. Значит, просто выйти. Так было в коде до SSM 23.10.18
+
                 return;
 
                 //is_template_synonym = true;

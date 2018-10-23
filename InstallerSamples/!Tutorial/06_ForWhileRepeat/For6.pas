@@ -1,4 +1,4 @@
-// Цикл for. Таблица функции
+п»ї// Р¦РёРєР» for. РўР°Р±Р»РёС†Р° С„СѓРЅРєС†РёРё
 var 
   a: real := 0;
   b: real := 4;
@@ -9,7 +9,7 @@ begin
   var x := a;
   for var i:=0 to n do
   begin
-    writelnFormat('{0:f2}  {1:f4}',x,sqrt(x));  
+    WritelnFormat('{0:f2}  {1:f4}',x,sqrt(x));  
     x += h;
   end;
 end.
