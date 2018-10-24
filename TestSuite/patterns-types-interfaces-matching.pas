@@ -15,4 +15,6 @@ begin
   if a2 is i1(var o) then;   
   
   if a3 is i1(var o) then; 
+  if a3 is t1(var o) then;
+  if a3 is t2(var o) then; 
 end.
