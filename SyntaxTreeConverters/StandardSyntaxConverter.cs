@@ -18,8 +18,8 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             CapturedNamesHelper.Reset();
             // Прошивание ссылками на Parent nodes. Должно идти первым
             // FillParentNodeVisitor расположен в SyntaxTree/tree как базовый визитор, отвечающий за построение дерева
-            FillParentNodeVisitor.New.ProcessNode(root);
-
+            //FillParentNodeVisitor.New.ProcessNode(root); // почему-то перепрошивает не всё. А следующий вызов - всё
+            root.FillParentsInAllChilds();
             // Выносим выражения с лямбдами из заголовка foreach
             StandOutExprWithLambdaInForeachSequenceVisitor.New.ProcessNode(root);
 
@@ -31,8 +31,8 @@ namespace PascalABCCompiler.SyntaxTreeConverters
                 var instancesAndRestrictedFunctions = SyntaxVisitors.TypeclassVisitors.FindInstancesAndRestrictedFunctionsVisitor.New(typeclasses.typeclasses);
                 instancesAndRestrictedFunctions.ProcessNode(root);
                 SyntaxVisitors.TypeclassVisitors.ReplaceTypeclassVisitor.New(instancesAndRestrictedFunctions).ProcessNode(root);
-            }
-            root.FillParentsInAllChilds();*/
+            }*/
+            //root.FillParentsInAllChilds();
 #if DEBUG
             //new SimplePrettyPrinterVisitor("E:/projs/out.txt").ProcessNode(root);
 #endif
