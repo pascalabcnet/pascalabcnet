@@ -225,7 +225,8 @@ namespace PascalABCCompiler.TreeConverter
         /// <param name="deconstructor"></param>
         private void ExecuteCommonChecks(common_function_node deconstructor)
         {
-            if ((deconstructor as common_method_node).IsStatic)
+            var dd = deconstructor as common_method_node;
+            if (dd != null && dd.IsStatic)
                 AddError(deconstructor.loc, "DECONSTRUCTOR_SHOULD_NOT_BE_STATIC");
             if (deconstructor.return_value_type != null)
                 AddError(deconstructor.loc, "DECONSTRUCTOR_SHOULD_BE_A_PROCEDURE");
