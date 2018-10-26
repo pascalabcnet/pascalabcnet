@@ -1,12 +1,10 @@
-// Вывод результатов вычислений. Используются переменные и процедура ввода
-var a,b: integer;
+﻿// Вывод результатов вычислений. Используются переменные и процедура ввода
 
 begin
-  writeln('Введите a и b:');
-  readln(a,b);
-  writeln;
-  writeln(a,' + ',b,' = ',a+b);
-  writeln(a,' - ',b,' = ',a-b);
-  writeln(a,' * ',b,' = ',a*b);
-  writeln(a,' / ',b,' = ',a/b);
+  var (a,b) := ReadlnInteger2('Введите a и b:');
+  Writeln;
+  Writeln(a,' + ',b,' = ',a+b);
+  Writeln(a,' - ',b,' = ',a-b);
+  Writeln(a,' * ',b,' = ',a*b);
+  Writeln(a,' / ',b,' = ',a/b);
 end.

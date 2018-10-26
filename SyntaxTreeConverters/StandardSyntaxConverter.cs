@@ -15,7 +15,6 @@ namespace PascalABCCompiler.SyntaxTreeConverters
         public string Name { get; } = "Standard";
         public syntax_tree_node Convert(syntax_tree_node root)
         {
-            CapturedNamesHelper.Reset();
             // Прошивание ссылками на Parent nodes. Должно идти первым
             // FillParentNodeVisitor расположен в SyntaxTree/tree как базовый визитор, отвечающий за построение дерева
             //FillParentNodeVisitor.New.ProcessNode(root); // почему-то перепрошивает не всё. А следующий вызов - всё
@@ -59,6 +58,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             PatternsDesugaringVisitor.New.ProcessNode(root);
 
             // Всё, связанное с yield
+            CapturedNamesHelper.Reset();
             MarkMethodHasYieldAndCheckSomeErrorsVisitor.New.ProcessNode(root);
             ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
 

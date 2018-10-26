@@ -21,6 +21,7 @@ UNEXPECTED_SYMBOL{0}=Неожиданный символ '{0}'
 UNSUPPORTED_OLD_DIRECTIVES=Директивы компилятора в стиле # более не поддерживаются. Используйте директивы в стиле {$ }
 INCLUDE_COULDNT_OPEN_FILE{0}=Директива компилятора $include: нельзя открыть файл '{0}'
 INCLUDE_EMPTY_FILE=Директива компилятора $include: не указано имя файла 
+RECUR_INCLUDE=Директива компилятора $include: рекурсивное включение файла 
 UNNECESSARY $endif=Лишний $endif
 ENDIF_ABSENT=Незакрытая директива $ifdef или $ifndef - отсутствует $endif
 UNNECESSARY $else=Лишний $else

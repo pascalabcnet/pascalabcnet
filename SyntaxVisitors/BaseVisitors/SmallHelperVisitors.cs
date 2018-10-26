@@ -49,4 +49,29 @@ namespace SyntaxVisitors
                 ProcessNode(dn.right);
         }
     }
+
+    public class ExprHasNameVisitor : WalkingVisitorNew  // есть ли в выражении переменная с данным именем (не включая вложенные лямбды) (используется для поиска Result)
+    {
+        private string varname;
+        public bool Has = false;
+        public ExprHasNameVisitor(string varname)
+        {
+            this.varname = varname.ToLower();
+        }
+        public override void visit(ident id)
+        {
+            if (id.name.ToLower() == varname)
+                Has = true;
+        }
+        public override void visit(dot_node dn)
+        {
+            ProcessNode(dn.left);
+            if (dn.right.GetType() != typeof(ident))
+                ProcessNode(dn.right);
+        }
+        public override void visit(function_lambda_definition fd)
+        {            
+        }
+    }
+
 }
