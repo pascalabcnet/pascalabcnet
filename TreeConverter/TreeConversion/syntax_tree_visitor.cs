@@ -16188,6 +16188,10 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             AddError(lloc, "EXPECTED_TYPE_AFTER_NEW");
                         }
+                        if (sil.FirstOrDefault().sym_info == SystemLibrary.SystemLibInitializer.DisposeProcedure.sym_info)
+                        {
+                            AddError(lloc, "CANNOT_GET_POINTER_TO_DISPOSE");
+                        }
                         if (sil.FirstOrDefault().sym_info is common_method_node && (sil.FirstOrDefault().sym_info as common_method_node).is_constructor)
                             return convertion_data_and_alghoritms.create_full_function_call(new expressions_list(),
                             sil, lloc, context.converted_type, context.top_function, false);

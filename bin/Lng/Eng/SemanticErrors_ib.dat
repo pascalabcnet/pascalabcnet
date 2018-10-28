@@ -157,6 +157,7 @@ STATIC_CONSTRUCTOR_CALL=Can not instance the static classes
 USING_STATIC_CLASS_NOT_VALID=Using of static class is not allowed in this context
 INTERFACE_PROPERTIES_CANNOT_BE_STATIC=Interface properties can not be static
 ARRAY_RANK_CANNOT_BE_GREATER_32=Rank of multidimensional unsized array cannot be greater 32
+CANNOT_GET_POINTER_TO_DISPOSE=Cannot get a pointer to intrinsic procedure Dispose
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Unit expected, library found
 ASSEMBLY_{0}_READING_ERROR=Error by reading assembly '{0}'
