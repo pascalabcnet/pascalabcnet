@@ -13875,6 +13875,8 @@ namespace PascalABCCompiler.TreeConverter
         	int rank = 1;
         	if (is_unsized_array(_array_type.indexers, out rank))
             {
+                if (rank > 32)
+                    AddError(get_location(_array_type.indexers), "ARRAY_RANK_CANNOT_BE_GREATER_32");
                 type_node ret = null;
                 type_node et = convert_strong(_array_type.elements_type);
                 //if (et == SystemLibrary.SystemLibrary.void_type)

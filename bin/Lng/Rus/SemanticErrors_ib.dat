@@ -151,6 +151,7 @@ VARIABLES_OF_STATIC_CLASS_NOT_ALLOWED=Переменные, параметры, 
 STATIC_CONSTRUCTOR_CALL=Нельзя создавать объекты статических классов
 USING_STATIC_CLASS_NOT_VALID=Использование статического класса в данном контексте недопустимо
 INTERFACE_PROPERTIES_CANNOT_BE_STATIC=Свойства интерфейса не могут быть статическими
+ARRAY_RANK_CANNOT_BE_GREATER_32=Размерность многомерного динамического массива не может быть больше 32
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Ожидался модуль, а встречена библиотека
 ASSEMBLY_{0}_READING_ERROR=Ошибка при чтении сборки '{0}'
