@@ -24,6 +24,7 @@ namespace VisualPascalABC
             highlighted_keywords["case"] = "case";
             highlighted_keywords["class"] = "class";
             highlighted_keywords["record"] = "record";
+            highlighted_keywords["match"] = "match";
             //highlighted_keywords["interface"] = "interface";
             //ignored_keywords["class"] = "class";
             //ignored_keywords["record"] = "record";
