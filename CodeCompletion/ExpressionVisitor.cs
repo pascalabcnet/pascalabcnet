@@ -1593,13 +1593,13 @@ namespace CodeCompletion
                 {
                     returned_scope = returned_scope.FindNameOnlyInType(_template_type_reference.name.names[i].name + suffix);
                     if (returned_scope == null)
-                        returned_scope = returned_scope.FindNameOnlyInType(_template_type_reference.name.names[i].name + suffix);
+                        returned_scope = entry_scope.FindNameOnlyInType(_template_type_reference.name.names[i].name + suffix);
                 }  
                 else
                 {
                     returned_scope = returned_scope.FindName(_template_type_reference.name.names[i].name + suffix);
                     if (returned_scope == null)
-                        returned_scope = returned_scope.FindName(_template_type_reference.name.names[i].name);
+                        returned_scope = entry_scope.FindName(_template_type_reference.name.names[i].name);
                 }
                     
                 if (returned_scope == null)
