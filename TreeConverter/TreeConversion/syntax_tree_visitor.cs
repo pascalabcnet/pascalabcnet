@@ -11225,6 +11225,10 @@ namespace PascalABCCompiler.TreeConverter
         
         public override void visit(SyntaxTree.type_declaration _type_declaration)
         {
+            if (_type_declaration.type_name.name.ToLower() == "program")
+            {
+                AddError(get_location(_type_declaration), "PROGRAM_NAME_FOR_TYPE_NAME_IS_PROHIBITED");
+            }
             //bool is_template_synonym = false;
             //SyntaxTree.array_type at=_type_declaration.type_def as SyntaxTree.array_type;
             
