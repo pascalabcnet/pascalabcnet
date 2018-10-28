@@ -9685,8 +9685,20 @@ namespace PascalABCCompiler.NETGenerator
                 if (is_constructor || cur_meth.IsStatic == false) pos = (byte)pb.Position;
                 else pos = (byte)(pb.Position - 1);
                 //***********************End of Kolay modified**********************
-                if (pos <= 255) il.Emit(OpCodes.Ldarga_S, pos);
-                else il.Emit(OpCodes.Ldarga, pos);
+                if (value.parameter.parameter_type != parameter_type.var)
+                {
+                    if (pos <= 255)
+                        il.Emit(OpCodes.Ldarga_S, pos);
+                    else
+                        il.Emit(OpCodes.Ldarga, pos);
+                }
+                else
+                {
+                    if (pos <= 255)
+                        il.Emit(OpCodes.Ldarg_S, pos);
+                    else
+                        il.Emit(OpCodes.Ldarg, pos);
+                }
             }
             else
             {
