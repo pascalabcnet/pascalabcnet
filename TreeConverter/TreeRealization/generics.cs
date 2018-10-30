@@ -729,7 +729,7 @@ namespace PascalABCCompiler.TreeRealization
                                                      (type_node)((lambda_inferred_type)lambda_syntax_node.return_type).real_type,
                                                      deduced, nils)) //Выводим дженерик-параметры после того как вычислили тип возвращаемого значения
                             {
-                                result = false;
+                                result = false; 
                             }
                         }
                     }

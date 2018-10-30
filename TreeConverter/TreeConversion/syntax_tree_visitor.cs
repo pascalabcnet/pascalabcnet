@@ -5281,7 +5281,8 @@ namespace PascalABCCompiler.TreeConverter
                                                         expressions_list ex_list = new expressions_list();
                                                         ex_list.AddRange(exprs);
                                                         ex_list.remove_at(0);
-                                                        ffn = convertion_data_and_alghoritms.select_function(ex_list, sil, subloc, syntax_nodes_parameters,true);
+                                                        // Последний параметр - странный. Глупо искать не в методах расширения если это - метод расширения и мы удаляем затем первый параметр
+                                                        ffn = convertion_data_and_alghoritms.select_function(ex_list, sil, subloc, syntax_nodes_parameters/*,true*/); 
                                                         if (ffn == null)
                                                         {
                                                             ThrowCompilationError = true;
