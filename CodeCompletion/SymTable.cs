@@ -312,6 +312,11 @@ namespace CodeCompletion
 
         }
 
+        protected bool IsHiddenName(string name)
+        {
+            return name.StartsWith("#") || name.StartsWith("<>") || name.Contains("$");
+        }
+
         public void AddExtensionMethod(string name, ProcScope meth, TypeScope ts)
         {
             if (ts.original_type != null)
@@ -709,7 +714,7 @@ namespace CodeCompletion
             List<SymInfo> lst = new List<SymInfo>();
             foreach (SymScope ss in members)
             {
-                if (ss != this && !(ss is NamespaceScope) && ss.si.kind != SymbolKind.Namespace && !ss.si.name.Contains("$"))
+                if (ss != this && !(ss is NamespaceScope) && ss.si.kind != SymbolKind.Namespace && !IsHiddenName(ss.si.name))
                 {
                     lst.Add(ss.si);
                     if (!ss.si.has_doc)
@@ -742,7 +747,7 @@ namespace CodeCompletion
             List<SymInfo> lst = new List<SymInfo>();
             foreach (SymScope ss in members)
             {
-                if (ss != this && !ss.si.name.StartsWith("$"))
+                if (ss != this && !IsHiddenName(ss.si.name))
                 {
                     if (ss.loc != null && loc != null)
                     {
@@ -773,7 +778,7 @@ namespace CodeCompletion
             foreach (SymScope ss in members)
             {
                 TypeScope ts = ss as TypeScope;
-                if (ss != this && !ss.si.name.StartsWith("$"))
+                if (ss != this && !IsHiddenName(ss.si.name))
                 {
                     if (ts != null && !is_static && ts.IsStatic)
                         continue;
@@ -1111,7 +1116,7 @@ namespace CodeCompletion
         {
             sc.si.name = name;
             object o = symbol_table[name];
-            if (o != null && !name.StartsWith("$"))
+            if (o != null && !IsHiddenName(name))
             {
                 if (o is SymScope)
                 {
@@ -2188,7 +2193,7 @@ namespace CodeCompletion
                 lst.Add(sc.si);
             }*/
             foreach (SymScope ss in members)
-                if (ss != this && !ss.si.name.StartsWith("$"))
+                if (ss != this && !IsHiddenName(ss.si.name))
                 {
                     if (ss.loc != null && loc != null)
                     {
@@ -2215,7 +2220,7 @@ namespace CodeCompletion
         {
             List<SymInfo> lst = new List<SymInfo>();
             foreach (SymScope ss in members)
-                if (ss != this && !ss.si.name.StartsWith("$"))
+                if (ss != this && !IsHiddenName(ss.si.name))
                 {
                     if (ss.loc != null && loc != null)
                     {
@@ -4265,7 +4270,7 @@ namespace CodeCompletion
             }*/
             foreach (SymScope ss in members)
             {
-                if (!ss.si.name.StartsWith("$") && !ss.si.name.StartsWith("#"))
+                if (!IsHiddenName(ss.si.name))
                 {
                     lst.Add(ss.si);
                     if (!ss.si.has_doc)
@@ -4287,7 +4292,7 @@ namespace CodeCompletion
             {
                 //if (ss is ProcScope && (ss as ProcScope).IsConstructor())
                 //    continue;
-                if (!ss.si.name.StartsWith("$") && !ss.si.name.StartsWith("#"))
+                if (!IsHiddenName(ss.si.name))
                 {
                     if (ss.si.acc_mod == access_modifer.private_modifer)
                     {
@@ -4324,7 +4329,7 @@ namespace CodeCompletion
             }*/
             foreach (SymScope ss in members)
             {
-                if (!ss.si.name.StartsWith("$") && !ss.si.name.StartsWith("#") && !ss.is_static)
+                if (!IsHiddenName(ss.si.name) && !ss.is_static)
                     if (!(ss is ProcScope) && !(ss is TemplateParameterScope))
                     {
                         lst.Add(ss.si);
@@ -4372,7 +4377,7 @@ namespace CodeCompletion
             {
                 if (ss is ProcScope && (ss as ProcScope).IsConstructor())
                     continue;
-                if (!ss.si.name.StartsWith("$") && !ss.si.name.StartsWith("#"))
+                if (!IsHiddenName(ss.si.name))
                 {
                     if (ss.si.acc_mod == access_modifer.private_modifer)
                     {
@@ -4408,7 +4413,7 @@ namespace CodeCompletion
             List<SymInfo> lst = new List<SymInfo>();
             foreach (SymScope ss in members)
             {
-                if (!ss.si.name.StartsWith("$") && !ss.si.name.StartsWith("#"))
+                if (!IsHiddenName(ss.si.name))
                 {
                     if (keyword != PascalABCCompiler.Parsers.KeywordKind.Function && keyword != PascalABCCompiler.Parsers.KeywordKind.Constructor && keyword != PascalABCCompiler.Parsers.KeywordKind.Destructor/*!(ev.entry_scope is InterfaceUnitScope) && !(ev.entry_scope is ImplementationUnitScope)*/)
                     {
@@ -4460,7 +4465,7 @@ namespace CodeCompletion
             foreach (SymScope ss in members)
             {
                 if (ss is ProcScope && (ss as ProcScope).IsConstructor()) continue;
-                if (!ss.si.name.StartsWith("$") && !ss.si.name.StartsWith("#") && !ss.is_static && !(ss is TemplateParameterScope))
+                if (!IsHiddenName(ss.si.name) && !ss.is_static && !(ss is TemplateParameterScope))
                 {
                     if (ss.si.acc_mod == access_modifer.private_modifer)
                     {
@@ -4718,7 +4723,7 @@ namespace CodeCompletion
                 if (types != null)
                     foreach (Type t in types)
                     {
-                        if (!t.IsNotPublic && !t.IsSpecialName && t.IsVisible && !t.Name.Contains("$") && !t.IsNested)
+                        if (!t.IsNotPublic && !t.IsSpecialName && t.IsVisible && !IsHiddenName(t.Name) && !t.IsNested)
                         {
                             if (t.BaseType == typeof(MulticastDelegate))
                                 //syms.Add(new CompiledScope(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Delegate, "delegate "+TypeUtility.GetTypeName(t) + "\n" + AssemblyDocCache.GetDocumentation(t)),t));
@@ -4742,7 +4747,7 @@ namespace CodeCompletion
             if (ns != null)
                 foreach (string s in ns)
                 {
-                    if (!s.Contains(".") && !s.Contains("$"))
+                    if (!s.Contains(".") && !IsHiddenName(s))
                         syms.Add(new SymInfo(s, SymbolKind.Namespace, ""));
                 }
             if (syms.Count != 0) return syms.ToArray();
@@ -4896,7 +4901,7 @@ namespace CodeCompletion
             if (types != null)
                 foreach (Type t in types)
                 {
-                    if (!t.IsNotPublic && !t.IsSpecialName && t.IsVisible && !t.Name.Contains("$"))
+                    if (!t.IsNotPublic && !t.IsSpecialName && t.IsVisible && !IsHiddenName(t.Name))
                     {
                         if (t.BaseType == typeof(MulticastDelegate))
                             //syms.Add(new CompiledScope(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Delegate, "delegate "+TypeUtility.GetTypeName(t) + "\n" + AssemblyDocCache.GetDocumentation(t)),t));
@@ -4936,7 +4941,7 @@ namespace CodeCompletion
             if (types != null)
                 foreach (Type t in types)
                 {
-                    if (!t.IsNotPublic && !t.IsSpecialName && t.IsVisible && !t.Name.Contains("$"))
+                    if (!t.IsNotPublic && !t.IsSpecialName && t.IsVisible && !IsHiddenName(t.Name))
                     {
                         if (t.BaseType == typeof(MulticastDelegate))
                             //syms.Add(new CompiledScope(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Delegate, "delegate "+TypeUtility.GetTypeName(t) + "\n" + AssemblyDocCache.GetDocumentation(t)),t));
@@ -5323,7 +5328,7 @@ namespace CodeCompletion
                 mis = mems.ToArray();
             }
             foreach (MemberInfo mi in mis)
-                if (!mi.Name.Contains("$"))
+                if (!IsHiddenName(mi.Name))
                     switch (mi.MemberType)
                     {
                         case MemberTypes.Method: if (!(mi as MethodInfo).IsStatic)
@@ -5360,7 +5365,7 @@ namespace CodeCompletion
                 mis = mems.ToArray();
             }
             foreach (MemberInfo mi in mis)
-                if (!mi.Name.Contains("$"))
+                if (!IsHiddenName(mi.Name))
                     switch (mi.MemberType)
                     {
                         case MemberTypes.Method: if (!(mi as MethodInfo).IsStatic)
@@ -5614,7 +5619,7 @@ namespace CodeCompletion
                 return syms.ToArray();
             }
             foreach (MemberInfo mi in mis)
-                if (!mi.Name.Contains("$"))
+                if (!IsHiddenName(mi.Name))
                     switch (mi.MemberType)
                     {
                         case MemberTypes.Method: if (!(mi as MethodInfo).IsSpecialName && (mi as MethodInfo).IsStatic)
@@ -5763,7 +5768,7 @@ namespace CodeCompletion
                 return syms.ToArray();
             }
             foreach (MemberInfo mi in mis)
-                if (!mi.Name.Contains("$"))
+                if (!IsHiddenName(mi.Name))
                     switch (mi.MemberType)
                     {
                         case MemberTypes.Method: if (!(mi as MethodInfo).IsSpecialName && (mi as MethodInfo).IsStatic)
@@ -5858,7 +5863,7 @@ namespace CodeCompletion
                 mis = mems.ToArray();
             }
             foreach (MemberInfo mi in mis)
-                if (!mi.Name.Contains("$"))
+                if (!IsHiddenName(mi.Name))
                     switch (mi.MemberType)
                     {
                         case MemberTypes.Method: if (!(mi as MethodInfo).IsSpecialName)
@@ -5945,7 +5950,7 @@ namespace CodeCompletion
             if (!is_static)
             {
                 foreach (MemberInfo mi in mis)
-                    if (!mi.Name.Contains("$"))
+                    if (!IsHiddenName(mi.Name))
                     {
                         switch (mi.MemberType)
                         {
@@ -6067,7 +6072,7 @@ namespace CodeCompletion
             if (si.kind != SymbolKind.Type)
             {
                 foreach (MemberInfo mi in mis)
-                    if (!mi.Name.Contains("$"))
+                    if (!IsHiddenName(mi.Name))
                         switch (mi.MemberType)
                         {
                             case MemberTypes.Method: if (!(mi as MethodInfo).IsSpecialName)
@@ -6174,7 +6179,7 @@ namespace CodeCompletion
                 return syms.ToArray();
             MemberInfo[] mis = ctn.GetMembers(BindingFlags.Public | BindingFlags.Instance);
             foreach (MemberInfo mi in mis)
-                if (!mi.Name.Contains("$"))
+                if (!IsHiddenName(mi.Name))
                     switch (mi.MemberType)
                     {
                         case MemberTypes.Method: if (!(mi as MethodInfo).IsSpecialName)
