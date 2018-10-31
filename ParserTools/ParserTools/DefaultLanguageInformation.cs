@@ -2009,7 +2009,7 @@ namespace PascalABCCompiler.Parsers
 				}
 			}
 			sb.Append(')');
-			if (scope.ReturnType != null && !scope.IsConstructor())
+			if (scope.ReturnType != null && !scope.IsConstructor() && !(scope.ReturnType is IProcType && (scope.ReturnType as IProcType).Target == scope))
 				sb.Append(": "+GetSimpleDescription(scope.ReturnType));
 			//if (scope.IsStatic) sb.Append("; static");
 			if (scope.IsVirtual) sb.Append("; virtual");

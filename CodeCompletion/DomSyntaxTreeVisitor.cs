@@ -1798,7 +1798,10 @@ namespace CodeCompletion
                                         ass.from.visit(this);
                                         if (returned_scope != null && returned_scope is TypeScope)
                                         {
+                                            
                                             tmp_scope.return_type = returned_scope as TypeScope;
+                                            if (tmp_scope.return_type is ProcType && (tmp_scope.return_type as ProcType).target == tmp_scope)
+                                                tmp_scope.return_type = null;
                                             tmp_scope.Complete();
                                             returned_scope = tmp_scope;
                                         }
