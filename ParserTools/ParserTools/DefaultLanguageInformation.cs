@@ -1401,7 +1401,7 @@ namespace PascalABCCompiler.Parsers
 			sb.Append('[');
 			for (int i=0; i<indexers.Length; i++)
 			{
-				sb.Append(indexers[i].Name);
+				sb.Append(GetSimpleDescription(indexers[i]));
 				if (i <indexers.Length-1)
 					sb.Append(',');
 			}
