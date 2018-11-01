@@ -1829,6 +1829,17 @@ namespace CodeCompletion
                 }
                 returned_scope = ps.GetInstance(template_params);
             }
+            else if (returned_scope is TypeScope && !(returned_scope as TypeScope).IsGeneric)
+            {
+                SymScope ts = returned_scope;
+                if (node.name is ident)
+                    (node.name as ident).name += "`" + node.template_params.params_list.Count;
+                else if (node.name is dot_node && (node.name as dot_node).right is ident)
+                    ((node.name as dot_node).right as ident).name += "`" + node.template_params.params_list.Count;
+                node.name.visit(this);
+                if (returned_scope == null)
+                    returned_scope = ts;
+            }
             /*else if (this.returned_scope != null)
             {
                 if (this.returned_scope is TypeScope)
