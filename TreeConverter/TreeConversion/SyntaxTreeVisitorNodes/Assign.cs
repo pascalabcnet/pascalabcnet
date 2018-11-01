@@ -60,8 +60,6 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
-        
-
         /// <summary>
         /// Обрабатывает случай, когда левая часть присваивания short string.
         /// </summary>
@@ -198,7 +196,10 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     var cfr = to as class_field_reference;
                     cfr.field.type = from.type;
-                    cfr.type = from.type;
+                    cfr.type = from.type; // Это неверно работает когда yieldится процедура #1439
+                    // SSM 1.11.18 попытка правки возвращения процедуры в yield
+                    //if (from.type.semantic_node_type == semantic_node_type.delegated_method)
+
                     cfr.field.inital_value = context.GetInitalValueForVariable(cfr.field, cfr.field.inital_value);
                 }
                 else if (to is local_block_variable_reference)
