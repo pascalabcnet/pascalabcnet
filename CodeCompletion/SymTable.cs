@@ -314,7 +314,8 @@ namespace CodeCompletion
 
         protected bool IsHiddenName(string name)
         {
-            return name.StartsWith("#") || name.StartsWith("<>") || name.Contains("$");
+            char c = name[0];
+            return c == '#' || c == '%' || c == '<' || name.Contains("$");
         }
 
         public void AddExtensionMethod(string name, ProcScope meth, TypeScope ts)
@@ -1178,7 +1179,7 @@ namespace CodeCompletion
         public ImplementationUnitScope(SymInfo si, SymScope topScope)
             : base(si, topScope)
         {
-            //this.symbol_table = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
+            this.symbol_table = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
         }
 
         public override bool InUsesRange(int line, int column)
@@ -1221,6 +1222,29 @@ namespace CodeCompletion
             if (topScope != null)
                 names.AddRange(topScope.FindOverloadNames(name));
             return names;
+        }
+
+        public override void AddName(string name, SymScope sc)
+        {
+            sc.si.name = name;
+            object o = symbol_table[name];
+            if (o != null && !IsHiddenName(name))
+            {
+                if (o is SymScope)
+                {
+                    List<SymScope> lst = new List<SymScope>();
+                    lst.Add(o as SymScope);
+                    lst.Add(sc);
+                    symbol_table[name] = lst;
+                }
+                else
+                {
+                    (o as List<SymScope>).Add(sc);
+                }
+            }
+            else
+                symbol_table[name] = sc;
+            members.Add(sc);
         }
 
         public override SymScope FindNameInAnyOrder(string name)
