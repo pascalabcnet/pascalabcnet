@@ -3260,6 +3260,9 @@ namespace CodeCompletion
             {
                 es.elementType = returned_scope as TypeScope;
                 ProcScope ps = new ProcScope("#getset" + _simple_property.property_name.name, cur_scope);
+                ps.procRealization = new ProcRealization(ps, ps.topScope);
+                ps.already_defined = true;
+                cur_scope.AddName("#getset" + _simple_property.property_name.name, ps);
                 for (int i = 0; i < _simple_property.parameter_list.parameters.Count; i++)
                 {
                     _simple_property.parameter_list.parameters[i].type.visit(this);
@@ -3271,9 +3274,10 @@ namespace CodeCompletion
                         
                         ps.loc = get_location(_simple_property);
                         ps.si.not_include = true;
+                        
                         string param_name = _simple_property.parameter_list.parameters[i].names.idents[j].name;
                         ps.AddName(param_name, new ElementScope(new SymInfo(param_name, SymbolKind.Parameter, null),returned_scope, ps));
-                        cur_scope.AddName("#getset" + _simple_property.property_name.name, ps);
+                        
                         es.AddIndexer(returned_scope as TypeScope);
                     } 
                 }
