@@ -1073,7 +1073,7 @@ namespace PascalABCCompiler.SyntaxTree
     public partial class simple_property
     {
         public simple_property(ident name, type_definition type, property_accessors accessors, SourceContext sc = null) 
-            : this(name, type, null, accessors, null, null, definition_attribute.None,proc_attribute.attr_none,sc)
+            : this(name, type, null, accessors, null, null, definition_attribute.None,proc_attribute.attr_none,false,sc)
         { }
     }
 

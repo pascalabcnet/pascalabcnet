@@ -6473,6 +6473,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         expression_node param0 = convert_strong(_method_call.parameters.expressions[0]);
                         expression_node param1 = convert_strong(_method_call.parameters.expressions[1]);
+                        param1 = convert_if_typed_expression_to_function_call(param1);
                         expressions_list args = new expressions_list();
                         args.AddElement(param0);
                         args.AddElement(param1);
