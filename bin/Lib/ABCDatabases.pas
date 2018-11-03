@@ -255,8 +255,8 @@ begin
     raise new System.ApplicationException('Не найден массив учеников Databases\Ученики.csv');
   Result := ReadLines(fname)
     .Select(s->s.ToWords(';'))
-    .Select(w->new Pupil(w[0],GenderToBoolean(w[1]),w[2].ToInteger,w[3].ToInteger,
-      InSunschoolToBoolean(w[4]))).ToArray;
+    .Select(w->new Pupil(w[0],GenderToBoolean(w[2]),w[4].ToInteger,w[1].ToInteger,
+      InSunschoolToBoolean(w[3]))).ToArray;
 end; 
 
 function GetPupils: array of Pupil := ЗаполнитьМассивУчеников;
