@@ -195,7 +195,10 @@ namespace TreeConverter.LambdaExpressions.Closure
                 }
                 if (ok)
                 {
-                    ProcessNode(id.Parent);
+                    if (id.Parent is var_def_statement)
+                        ProcessNode(id); // Грубая правка, закрывающая ошибку #1390
+                    else ProcessNode(id.Parent); // Грубо, поскольку id.Parent уже начал обходиться - а здесь рекурсия
+                    // Это рубится на коде var s := c; где s - локальная в лямбде, а c - захваченное поле класса. В результате s создаётся дважды.
                     return;
                 }
             }
