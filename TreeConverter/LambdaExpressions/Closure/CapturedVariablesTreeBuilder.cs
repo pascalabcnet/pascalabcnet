@@ -166,6 +166,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 si.sym_info.semantic_node_type == semantic_node_type.template_type ||
                 si.sym_info.semantic_node_type == semantic_node_type.generic_indicator ||
                 si.sym_info.semantic_node_type == semantic_node_type.class_constant_definition ||
+                si.sym_info.semantic_node_type == semantic_node_type.function_constant_definition || // SSM 03.11.18 bug fix #1449
                 si.sym_info.semantic_node_type == semantic_node_type.basic_function_node && (idName == "exit" || idName == "continue" || idName == "break"))
             {
                 return;
