@@ -1948,8 +1948,8 @@ var
   ///--
   PrintDelimDefault: string := ' ';
 
-///--
 var
+///--
   __CONFIG__: Dictionary<string, object> := new Dictionary<string, object>;
 
 // Вспомогательные подпрограммы. Из раздела интерфейса не убирать!!! 
