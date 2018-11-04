@@ -68,6 +68,8 @@ namespace PascalABCCompiler
                 {
                     helper.AddVariable(vdn);
                     CheckType(vdn.type, vdn.inital_value, vdn.loc);
+                    if (vdn.inital_value != null)
+                        VisitExpression(vdn.inital_value);
                 }
             }
         }
@@ -246,6 +248,8 @@ namespace PascalABCCompiler
             foreach (local_variable lv in var_list)
             {
                 CheckType(lv.type, lv.inital_value, lv.loc);
+                if (lv.inital_value != null)
+                    VisitExpression(lv.inital_value);
             }
         }
 
