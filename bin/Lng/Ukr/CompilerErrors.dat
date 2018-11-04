@@ -13,6 +13,7 @@ UNDEFINED_SEMANTIC_ERROR{0}=Невизначена семантична поми
 RESOURCEFILE_{0}_NOT_FOUND=Файл '{0}' не знайдено
 DUPLICATE_USES_UNIT{0}=Повторне підключення модуля {0} в секції uses
 MAINRESOURCE_NOT_ALLOWED=Неприпустимо сумісне використання директиви mainresource і директив product, version, company, trademark
+DUPLICATE_DIRECTIVE{0}=Повторное объявление директивы {0}
 
 %PREFIX%=
 COMPILER_INTERNAL_ERROR_IN_UNIT_{0}_:{1}=Внутрішня помилка компілятора в модулі {0} :'{1}'

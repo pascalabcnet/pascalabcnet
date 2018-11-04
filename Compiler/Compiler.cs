@@ -303,7 +303,16 @@ namespace PascalABCCompiler
             this.source_context = sc;
         }
     }
-    
+    public class DuplicateDirective : CompilerCompilationError
+    {
+        public string DirectiveName;
+        public DuplicateDirective(string FileName, string DirectiveName, SyntaxTree.SourceContext sc)
+            : base(string.Format(StringResources.Get("COMPILATIONERROR_DUPLICATE_DIRECTIVE{0}"), DirectiveName), FileName)
+        {
+            this.DirectiveName = DirectiveName;
+            this.source_context = sc;
+        }
+    }
     public class UnitNotFound : CompilerCompilationError
     {
         public string UnitName;
@@ -1076,18 +1085,20 @@ namespace PascalABCCompiler
             }
         }
 
-        private Dictionary<string,List<TreeRealization.compiler_directive>> GetCompilerDirectives(List<CompilationUnit> Units)
+        private Dictionary<string, List<TreeRealization.compiler_directive>> GetCompilerDirectives(List<CompilationUnit> Units)
         {
             Dictionary<string, List<TreeRealization.compiler_directive>> Directives = new Dictionary<string, List<TreeRealization.compiler_directive>>(StringComparer.CurrentCultureIgnoreCase);
-            
+
             for (int i = 0; i < Units.Count; i++)
             {
                 TreeRealization.common_unit_node cun = Units[i].SemanticTree as TreeRealization.common_unit_node;
-                if (cun!=null)
+                if (cun != null)
                     foreach (TreeRealization.compiler_directive cd in cun.compiler_directives)
                     {
-                        if(!Directives.ContainsKey(cd.name))
+                        if (!Directives.ContainsKey(cd.name))
                             Directives.Add(cd.name, new List<TreeRealization.compiler_directive>());
+                        else if (string.Compare(cd.name, "mainresource", true) == 0)
+                            throw new DuplicateDirective(cd.location.doc.file_name, "mainresource", cd.location);
                         Directives[cd.name].Insert(0, cd);
                     }
             }
@@ -1850,7 +1861,6 @@ namespace PascalABCCompiler
 
 
                 TreeRealization.compiler_directive compilerDirective;
-                //TODO сделать это понормальному!!!!!
                 if (compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.compiler_directive_apptype))
                 {
                     string directive = compilerDirectives[TreeConverter.compiler_string_consts.compiler_directive_apptype][0].directive;
