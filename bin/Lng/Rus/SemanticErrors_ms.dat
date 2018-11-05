@@ -17,3 +17,4 @@ NAME_IN_PROPERTY_WRITE_SECTION_MUST_BE_FIELD_OR_METHOD_NAME=Имя в секци
 STATIC_PROPERTY_MUST_HAVE_STATIC_ACCESSOR=Акцессор статического свойства должен быть статическим 
 ENUMS_CANNOT_BE_GENERIC=Перечислимый тип не может быть обобщенным
 PROGRAM_NAME_FOR_TYPE_NAME_IS_PROHIBITED=Имя 'program' запрещено в качестве имени типа
+DEFAULT_PARAMS_IN_DELEGATE_TYPE=В процедурном типе не могут быть параметры по умолчанию

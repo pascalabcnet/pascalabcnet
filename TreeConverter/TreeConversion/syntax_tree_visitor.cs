@@ -15830,6 +15830,18 @@ namespace PascalABCCompiler.TreeConverter
         
         public override void visit(SyntaxTree.var_def_statement _var_def_statement)
         {
+            if (_var_def_statement.vars_type != null && _var_def_statement.vars_type is procedure_header)
+            {
+                var ph = _var_def_statement.vars_type as procedure_header;
+                if (ph.parameters != null)
+                    foreach (var x in ph.parameters.params_list)
+                    {
+                        if (x.inital_value != null)
+                            AddError(get_location(x.inital_value), "DEFAULT_PARAMS_IN_DELEGATE_TYPE");  // SSM bug fix #1463
+                    }
+
+            }
+
             if (_var_def_statement.vars_type == null && _var_def_statement.inital_value is SyntaxTree.function_lambda_definition)
                 AddError(get_location(_var_def_statement.inital_value), "IMPOSSIBLE_TO_INFER_TYPES_IN_LAMBDA");  //lroman//
 
