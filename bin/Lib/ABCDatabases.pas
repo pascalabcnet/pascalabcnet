@@ -32,11 +32,11 @@ type
 
   Pupil = auto class
     _name: string;
-    _gender: boolean; 
+    _gender: ТипПола; 
     _height: integer;
     _cls: integer;
     _inSunSchool: boolean; 
-    function getGender: ТипПола := _gender ? Муж : Жен;
+    function getGender: ТипПола := _gender;
   public
     [PrintAttribute(0, -16)]
     property Name: string read _name;
@@ -61,7 +61,7 @@ type
     
   end;
 
-function GenderToBoolean(a: string): boolean := a = 'Муж';
+function GenderToТипПола(a: string): ТипПола := a = 'Муж' ? Муж : Жен;
 function InSunSchoolToBoolean(a: string): boolean := a = 'Да';
 
 type 
@@ -255,7 +255,7 @@ begin
     raise new System.ApplicationException('Не найден массив учеников Databases\Ученики.csv');
   Result := ReadLines(fname)
     .Select(s->s.ToWords(';'))
-    .Select(w->new Pupil(w[0],GenderToBoolean(w[2]),w[4].ToInteger,w[1].ToInteger,
+    .Select(w->new Pupil(w[0],GenderToТипПола(w[2]),w[4].ToInteger,w[1].ToInteger,
       InSunschoolToBoolean(w[3]))).ToArray;
 end; 
 
