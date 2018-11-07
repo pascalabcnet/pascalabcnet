@@ -449,14 +449,14 @@ namespace PascalABCCompiler
 
         private void CheckInfiniteRecursion(common_namespace_function_call cnfc)
         {
-            if (!condition_block && !has_returns && cnfc.function_node == current_function && !no_infinite_recursion)
-                warns.Add(new InfiniteRecursion(cnfc.location));
+            //if (!condition_block && !has_returns && cnfc.function_node == current_function && !no_infinite_recursion)
+            //    warns.Add(new InfiniteRecursion(cnfc.location));
         }
 
         private void CheckInfiniteRecursion(common_static_method_call cnfc)
         {
-            if (!condition_block && !has_returns && cnfc.function_node == current_function && !no_infinite_recursion)
-                warns.Add(new InfiniteRecursion(cnfc.location));
+            //if (!condition_block && !has_returns && cnfc.function_node == current_function && !no_infinite_recursion)
+            //    warns.Add(new InfiniteRecursion(cnfc.location));
         }
 
         private void SaveConditionBlock()
