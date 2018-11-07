@@ -151,6 +151,8 @@ namespace VisualPascalABC
             if (off >= textArea.Document.TextContent.Length)
                 return false;
             char c = textArea.Document.TextContent[off];
+            if (textArea.Document.TextContent[beg_off] == '=')
+                c = '=';
             while (char.IsWhiteSpace(c) || c == '}')
             {
                 if (c == '}')
