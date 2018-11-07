@@ -4525,7 +4525,7 @@
       <HelpData Key="var_def_list.vars" Value="" />
       <HelpData Key="var_def_list_for_record" Value="" />
       <HelpData Key="var_def_list_for_record.vars" Value="" />
-      <HelpData Key="var_def_statement" Value="Описание переменных одной строкой. Не содержит var, т.к. встречается исключительно внутри другой конструкции.Может встречаться как до beginа (внутри variable_definitions), так и как внутриблочное описание (внутри var_statement).&#xD;&#xA;" />
+      <HelpData Key="var_def_statement" Value="Описание переменных одной строкой. Не содержит var, т.к. встречается исключительно внутри другой конструкции. Может встречаться как до beginа (внутри variable_definitions), так и как внутриблочное описание (внутри var_statement).&#xD;&#xA;" />
       <HelpData Key="var_def_statement." Value="" />
       <HelpData Key="var_def_statement.field_attr" Value="" />
       <HelpData Key="var_def_statement.inital_value" Value="Начальное значение переменных" />

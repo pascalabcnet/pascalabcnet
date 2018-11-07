@@ -8690,7 +8690,7 @@ begin
       yield func(x, y)
 end;
 
-/// Разбивает последовательности на две в позиции ind
+/// Разбивает последовательность на две в позиции ind. Реализуется двухпроходным алгоритмом
 function SplitAt<T>(Self: sequence of T; ind: integer): (sequence of T, sequence of T); extensionmethod;
 begin
   Result := (Self.Take(ind), Self.Skip(ind));
@@ -8700,13 +8700,13 @@ end;
 
 // ToDo: SequenceCompare
 
-/// Разделяет последовательности на две по заданному условию
+/// Разделяет последовательность на две по заданному условию. Реализуется двухпроходным алгоритмом
 function Partition<T>(Self: sequence of T; cond: T->boolean): (sequence of T, sequence of T); extensionmethod;
 begin
   Result := (Self.Where(cond), Self.Where(x -> not cond(x)));
 end;
 
-/// Разделяет последовательности на две по заданному условию, в котором участвует индекс
+/// Разделяет последовательность на две по заданному условию, в котором участвует индекс. Реализуется двухпроходным алгоритмом
 function Partition<T>(Self: sequence of T; cond: (T,integer)->boolean): (sequence of T, sequence of T); extensionmethod;
 begin
   Result := (Self.Where(cond), Self.Where((x, i)-> not cond(x, i)));
@@ -8742,19 +8742,19 @@ begin
   Result := Self.Zip(a, (x, y)-> (x, y)).Zip(b, (p, z)-> (p[0], p[1], z)).Zip(c, (p, z)-> (p[0], p[1], p[2], z));
 end;
 
-/// Разъединяет последовательность двухэлементных кортежей на две последовательности
+/// Разъединяет последовательность двухэлементных кортежей на две последовательности. Реализуется двухпроходным алгоритмом
 function UnZipTuple<T, T1>(Self: sequence of (T, T1)): (sequence of T, sequence of T1); extensionmethod;
 begin
   Result := (Self.Select(x -> x[0]), Self.Select(x -> x[1]))
 end;
 
-/// Разъединяет последовательность трехэлементных кортежей на три последовательности
+/// Разъединяет последовательность трехэлементных кортежей на три последовательности. Реализуется многопроходным алгоритмом
 function UnZipTuple<T, T1, T2>(Self: sequence of (T, T1, T2)): (sequence of T, sequence of T1, sequence of T2); extensionmethod;
 begin
   Result := (Self.Select(x -> x[0]), Self.Select(x -> x[1]), Self.Select(x -> x[2]))
 end;
 
-/// Разъединяет последовательность четырехэлементных кортежей на четыре последовательности
+/// Разъединяет последовательность четырехэлементных кортежей на четыре последовательности. Реализуется многопроходным алгоритмом
 function UnZipTuple<T, T1, T2, T3>(Self: sequence of (T, T1, T2, T3)): (sequence of T, sequence of T1, sequence of T2, sequence of T3); extensionmethod;
 begin
   Result := (Self.Select(x -> x[0]), Self.Select(x -> x[1]), Self.Select(x -> x[2]), Self.Select(x -> x[3]))

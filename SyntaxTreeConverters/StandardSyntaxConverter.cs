@@ -66,11 +66,11 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             //new SimplePrettyPrinterVisitor("D:\\Tree.txt").ProcessNode(root);
             //FillParentNodeVisitor.New.ProcessNode(root);
 
-            
+
             /*var cv = CollectLightSymInfoVisitor.New;
             cv.ProcessNode(root);
             cv.Output(@"Light1.txt");*/
-            
+
             /*try
             {
                 //root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz4.txt"));
@@ -80,7 +80,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
                 System.IO.File.AppendAllText(@"d:\\zzz4.txt",e.Message);
             }*/
-            
+
 
 #endif
             return root;
