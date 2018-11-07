@@ -1008,6 +1008,12 @@ namespace CodeCompletion
             }
             ExpressionVisitor ev = new ExpressionVisitor(expr, si, visitor);
             si = ev.GetScopeOfExpression(false, true);
+            if (si is ProcScope)
+            {
+                ProcScope ps = si as ProcScope;
+                if (ps.is_constructor)
+                    si = new ElementScope(ps.declaringType);
+            }
             return CodeCompletionController.CurrentParser.LanguageInformation.GetIndexerString(si);
         }
 

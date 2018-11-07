@@ -10,10 +10,12 @@ FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCK=Функции с yield не могу�
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_TRY_EXCEPT_FINALLY=Функции с yield не могут содержать блоков try..except и try..finally
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_NESTED_SUBROUTINES=Функции с yield не могут содержать вложенные подпрограммы и сами быть вложенными 
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCAL_TYPE_DEFINITIONS=Функции с yield не могут содержать локальные определения типов
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_INHERITED_CALLS=Функции с yield не могут содержать вызовы inherited методов
 YIELDS_INSIDE_WITH_ARE_ILLEGAL=Оператор yield запрещен внутри with
 LAMBDA_EXPRESSIONS_CANNOT_CONTAIN_YIELD=Лямбда-выражения не могут содержать yield
 
 PATTERN_MATHING_IS_NOT_SUPPORTED_IN_THIS_CONTEXT=Сопоставление с образцом не поддерживается в данном контексте
+ONLY_ONE_DECONSTRUCT_ALLOWED=Можно определить только один пользовательский деконструктор
 
 Var_{0}_is_already_defined=Переменная {0} уже определена
 

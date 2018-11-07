@@ -1,5 +1,5 @@
-// Первая программа
+﻿// Первая программа
 program HelloWorld;
 begin
-  writeln('Привет, мир!');
+  Writeln('Привет, мир!');
 end.

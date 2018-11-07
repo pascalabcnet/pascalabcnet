@@ -1752,7 +1752,10 @@ namespace PascalABCCompiler.PCU
             cmn.loc = ReadDebugInfo();
             cmn.function_code = GetCode(br.ReadInt32());
             cmn.cont_type.methods.AddElement(cmn);
-            
+            if (cmn.name == "op_Equality")
+                cmn.cont_type.scope.AddSymbol(compiler_string_consts.eq_name, new SymbolInfo(cmn));
+            else if (cmn.name == "op_Inequality")
+                cmn.cont_type.scope.AddSymbol(compiler_string_consts.noteq_name, new SymbolInfo(cmn));
             return cmn;
         }
 
@@ -2222,6 +2225,10 @@ namespace PascalABCCompiler.PCU
             		type_constructor.make_array_interface(ctn);
             	}
             }
+            if (ctn.is_value_type)
+            {
+
+            }
             //RestoreAllFields(ctn);
             if(!waited_types_to_restore_fields.Contains(ctn))
                 waited_types_to_restore_fields.Add(ctn);
@@ -2529,6 +2536,14 @@ namespace PascalABCCompiler.PCU
                 waited_types_to_restore_fields.Remove(ctn);
                 RestoreAllFields(ctn);
             }
+        }
+
+        private void RestoreOperators(common_type_node ctn)
+        {
+            string[] mnames = class_names[ctn];
+            WrappedClassScope wcs = ctn.scope as WrappedClassScope;
+            foreach (string mname in mnames)
+                wcs.RestoreMembers(mname);
         }
 
         private void RestoreAllFields(common_type_node ctn)
@@ -3466,6 +3481,11 @@ namespace PascalABCCompiler.PCU
             return new compiled_constructor_call_as_constant(CreateCompiledConstructorCall(), null);
         }
         
+        private default_operator_node_as_constant CreateDefaultOperatorAsConstant()
+        {
+            return new default_operator_node_as_constant(CreateDefaultOperator(), null);
+        }
+
         private expression_node CreateExpression(semantic_node_type snt)
 		{
             //location loc = ReadDebugInfo();
@@ -3490,6 +3510,8 @@ namespace PascalABCCompiler.PCU
                     return CreateCommonNamespaceFunctionCallNodeAsConstant();
                 case semantic_node_type.compiled_constructor_call_as_constant:
                     return CreateCompiledConstructorCallAsConstant();
+                case semantic_node_type.default_operator_node_as_constant:
+                    return CreateDefaultOperatorAsConstant();
                 case semantic_node_type.array_const:
                     return CreateArrayConst();
                 case semantic_node_type.record_const:
@@ -3608,7 +3630,7 @@ namespace PascalABCCompiler.PCU
 			throw new Exception("Unknown expression "+snt);
 		}
 		
-        private expression_node CreateDefaultOperator()
+        private default_operator_node CreateDefaultOperator()
         {
         	return new default_operator_node(GetTypeReference(),null);
         }

@@ -1,7 +1,7 @@
 ﻿uses System.Linq;
 
 begin
-  match 'a b c'.Any(x -> x = 'a') with
+  match 'a b c'.Any(x -> x = 'a') as object with
     string(s): Assert(false);
     boolean(b): Assert(b);
     integer(i): Assert(false);
@@ -17,7 +17,7 @@ begin
   end;
   Assert(count = 5);
   
-  match 'a b c'.Any(x -> x = 'a') with
+  match 'a b c'.Any(x -> x = 'a') as object with
     string(s): Assert(false);
     boolean(b):
       begin

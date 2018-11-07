@@ -529,6 +529,13 @@ UNICODEARROW \x890
                 string full_path = fName;
                 if (!Path.IsPathRooted(full_path))
                     full_path = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(parsertools.CurrentFileName), fName));
+                    
+                if (fNameStack.Contains(full_path))
+                {
+                    parsertools.AddErrorFromResource("RECUR_INCLUDE", CurrentLexLocation, fName);
+                    return;
+                }
+                    
                 SetSource(File.ReadAllText(full_path), 0);
 				fNameStack.Push(parsertools.CurrentFileName);
 				parsertools.CurrentFileName = full_path;

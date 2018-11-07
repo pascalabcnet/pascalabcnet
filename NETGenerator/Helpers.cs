@@ -515,7 +515,8 @@ namespace PascalABCCompiler.NETGenerator {
         private Hashtable processing_types = new Hashtable();
 		private MethodInfo arr_mi=null;
 		private Hashtable pas_defs = new Hashtable();
-		
+        private Hashtable memoized_exprs = new Hashtable();
+
 		public Helper() {}
 		
 		public void AddPascalTypeReference(ITypeNode tn, Type t)
@@ -873,8 +874,18 @@ namespace PascalABCCompiler.NETGenerator {
             return processing_types[type] != null;
         }
 
+        public void LinkExpressionToLocalBuilder(IExpressionNode expr, LocalBuilder lb)
+        {
+            memoized_exprs[expr] = lb;
+        }
+
+        public LocalBuilder GetLocalBuilderForExpression(IExpressionNode expr)
+        {
+            return memoized_exprs[expr] as LocalBuilder;
+        }
+
         //получение типа
-		public TypeInfo GetTypeReference(ITypeNode type)
+        public TypeInfo GetTypeReference(ITypeNode type)
 		{
 			TypeInfo ti = defs[type] as TypeInfo;
 			if (ti != null) 

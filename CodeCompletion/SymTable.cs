@@ -312,6 +312,12 @@ namespace CodeCompletion
 
         }
 
+        protected bool IsHiddenName(string name)
+        {
+            char c = name[0];
+            return c == '#' || c == '%' || c == '<' || name.Contains("$");
+        }
+
         public void AddExtensionMethod(string name, ProcScope meth, TypeScope ts)
         {
             if (ts.original_type != null)
@@ -709,7 +715,7 @@ namespace CodeCompletion
             List<SymInfo> lst = new List<SymInfo>();
             foreach (SymScope ss in members)
             {
-                if (ss != this && !(ss is NamespaceScope) && ss.si.kind != SymbolKind.Namespace && !ss.si.name.Contains("$"))
+                if (ss != this && !(ss is NamespaceScope) && ss.si.kind != SymbolKind.Namespace && !IsHiddenName(ss.si.name))
                 {
                     lst.Add(ss.si);
                     if (!ss.si.has_doc)
@@ -742,7 +748,7 @@ namespace CodeCompletion
             List<SymInfo> lst = new List<SymInfo>();
             foreach (SymScope ss in members)
             {
-                if (ss != this && !ss.si.name.StartsWith("$"))
+                if (ss != this && !IsHiddenName(ss.si.name))
                 {
                     if (ss.loc != null && loc != null)
                     {
@@ -773,7 +779,7 @@ namespace CodeCompletion
             foreach (SymScope ss in members)
             {
                 TypeScope ts = ss as TypeScope;
-                if (ss != this && !ss.si.name.StartsWith("$"))
+                if (ss != this && !IsHiddenName(ss.si.name))
                 {
                     if (ts != null && !is_static && ts.IsStatic)
                         continue;
@@ -1111,7 +1117,7 @@ namespace CodeCompletion
         {
             sc.si.name = name;
             object o = symbol_table[name];
-            if (o != null && !name.StartsWith("$"))
+            if (o != null && !IsHiddenName(name))
             {
                 if (o is SymScope)
                 {
@@ -1173,7 +1179,7 @@ namespace CodeCompletion
         public ImplementationUnitScope(SymInfo si, SymScope topScope)
             : base(si, topScope)
         {
-            //this.symbol_table = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
+            this.symbol_table = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
         }
 
         public override bool InUsesRange(int line, int column)
@@ -1216,6 +1222,29 @@ namespace CodeCompletion
             if (topScope != null)
                 names.AddRange(topScope.FindOverloadNames(name));
             return names;
+        }
+
+        public override void AddName(string name, SymScope sc)
+        {
+            sc.si.name = name;
+            object o = symbol_table[name];
+            if (o != null && !IsHiddenName(name))
+            {
+                if (o is SymScope)
+                {
+                    List<SymScope> lst = new List<SymScope>();
+                    lst.Add(o as SymScope);
+                    lst.Add(sc);
+                    symbol_table[name] = lst;
+                }
+                else
+                {
+                    (o as List<SymScope>).Add(sc);
+                }
+            }
+            else
+                symbol_table[name] = sc;
+            members.Add(sc);
         }
 
         public override SymScope FindNameInAnyOrder(string name)
@@ -1402,7 +1431,7 @@ namespace CodeCompletion
         {
             if (string.Compare(si.name, s, true) == 0)
                 return this;
-            return topScope.FindNameOnlyInType(s);
+            return topScope.FindName(s);
         }
 
         public override List<SymScope> FindOverloadNames(string name)
@@ -1695,12 +1724,14 @@ namespace CodeCompletion
     {
         public ProcScope target;
         private CompiledScope parent;
+        private ProcScope invokeMeth;
 
         public ProcType(ProcScope target)
         {
             this.target = target;
             this.si = new SymInfo(this.ToString(), SymbolKind.Delegate, this.ToString());
             this.parent = TypeTable.get_compiled_type(PascalABCCompiler.NetHelper.NetHelper.MulticastDelegateType);
+            
         }
 
         public ProcType(ProcScope target, List<string> generic_params):this(target)
@@ -1737,20 +1768,59 @@ namespace CodeCompletion
             }
         }
 
+        public ProcScope InvokeMethod
+        {
+            get
+            {
+                if (invokeMeth == null)
+                {
+                    invokeMeth = new ProcScope("Invoke", target);
+                    invokeMeth.declaringType = parent;
+                    invokeMeth.parameters = target.parameters;
+                    invokeMeth.return_type = target.return_type;
+                    invokeMeth.is_virtual = true;
+                    invokeMeth.Complete();
+                }
+                return invokeMeth;
+            }
+        }
+
         public override TypeScope GetInstance(List<TypeScope> gen_args, bool exact = false)
         {
             return this;
         }
 
+        public override List<SymScope> FindOverloadNames(string name)
+        {
+            List<SymScope> lst = new List<SymScope>();
+            if (string.Compare(name, InvokeMethod.name, true) == 0)
+                lst.Add(InvokeMethod);
+            else
+                lst.AddRange(parent.FindOverloadNames(name));
+            return lst;
+        }
+
+        public override List<SymScope> FindOverloadNamesOnlyInType(string name)
+        {
+            List<SymScope> lst = new List<SymScope>();
+            if (string.Compare(name, InvokeMethod.name, true) == 0)
+                lst.Add(InvokeMethod);
+            else
+                lst.AddRange(parent.FindOverloadNamesOnlyInType(name));
+            return lst;
+        }
+
         public override SymInfo[] GetNames()
         {
-            //SortedDictionary<string,SymInfo> dict = new SortedDictionary<string,SymInfo>();
-            return parent.GetNames();
+            List<SymInfo> lst = new List<SymInfo>();
+            lst.Add(InvokeMethod.si);
+            lst.AddRange(parent.GetNames());
+            return lst.ToArray();
         }
 
         public override SymInfo[] GetNames(ExpressionVisitor ev, PascalABCCompiler.Parsers.KeywordKind keyword, bool called_in_base)
         {
-            return null;
+            return parent.GetNames(ev, keyword, called_in_base);
         }
 
         public override string GetDescription()
@@ -1770,36 +1840,38 @@ namespace CodeCompletion
 
         public override SymInfo[] GetNamesAsInObject()
         {
-            //SortedDictionary<string,SymInfo> dict = new SortedDictionary<string,SymInfo>();
-            return parent.GetNamesAsInObject();
+            List<SymInfo> lst = new List<SymInfo>();
+            lst.Add(InvokeMethod.si);
+            lst.AddRange(parent.GetNamesAsInObject());
+            return lst.ToArray();
         }
 
         public override SymInfo[] GetNamesAsInObject(ExpressionVisitor ev)
         {
-            //SortedDictionary<string,SymInfo> dict = new SortedDictionary<string,SymInfo>();
-            return parent.GetNamesAsInObject(ev);
+            List<SymInfo> lst = new List<SymInfo>();
+            lst.Add(InvokeMethod.si);
+            lst.AddRange(parent.GetNamesAsInObject(ev));
+            return lst.ToArray();
         }
 
         public override SymScope FindName(string name)
         {
-            if (topScope != null) return topScope.FindName(name);
-            return null;
+            return topScope.FindName(name);
         }
 
         public override SymScope FindNameInAnyOrder(string name)
         {
-            if (topScope != null) return topScope.FindNameInAnyOrder(name);
-            return null;
+            return parent.FindNameInAnyOrder(name);
         }
 
         public override SymScope FindNameOnlyInType(string name)
         {
-            return null;
+            return parent.FindNameOnlyInType(name);
         }
 
         public override SymScope FindNameOnlyInThisType(string name)
         {
-            return null;
+            return parent.FindNameOnlyInThisType(name);
         }
 
         public override bool IsConvertable(TypeScope ts)
@@ -2145,7 +2217,7 @@ namespace CodeCompletion
                 lst.Add(sc.si);
             }*/
             foreach (SymScope ss in members)
-                if (ss != this && !ss.si.name.StartsWith("$"))
+                if (ss != this && !IsHiddenName(ss.si.name))
                 {
                     if (ss.loc != null && loc != null)
                     {
@@ -2172,7 +2244,7 @@ namespace CodeCompletion
         {
             List<SymInfo> lst = new List<SymInfo>();
             foreach (SymScope ss in members)
-                if (ss != this && !ss.si.name.StartsWith("$"))
+                if (ss != this && !IsHiddenName(ss.si.name))
                 {
                     if (ss.loc != null && loc != null)
                     {
@@ -3848,12 +3920,14 @@ namespace CodeCompletion
                     }
                 }
 
+                ProcScope other_constr = this.FindNameOnlyInType("Create") as ProcScope;
                 ProcScope constr = new ProcScope("Create", this, true);
                 constr.si.acc_mod = access_modifer.public_modifer;
                 //constr.head_loc = this.loc;
                 //constr.loc = this.loc;
                 constr.is_constructor = true;
                 constr.Complete();
+                constr.nextProc = other_constr;
                 members.Insert(0, constr);
             }
         }
@@ -3953,7 +4027,7 @@ namespace CodeCompletion
             ts.loc = this.loc;
             for (int i = 0; i < gen_args.Count; i++)
             {
-                ts.AddGenericParameter(gen_args[i].si.name);
+                ts.AddGenericInstanceParameter(gen_args[i].si.name);
                 ts.AddGenericInstanciation(gen_args[i]);
             }
             ts.si.name = this.si.name;
@@ -3979,14 +4053,14 @@ namespace CodeCompletion
                             if (string.Compare(gen_arg.original_type.generic_params[j], this.generic_params[j], true) == 0)
                             {
                                 new_gen_args.Add(gen_arg.instances[j]);
-                                ts.AddGenericParameter(gen_arg.instances[j].si.name);
+                                ts.AddGenericInstanceParameter(gen_arg.instances[j].si.name);
                                 ts.AddGenericInstanciation(gen_arg.instances[j]);
                             }
                         }
                 }
                 else
                 {
-                    ts.AddGenericParameter(gen_args[i].si.name);
+                    ts.AddGenericInstanceParameter(gen_args[i].si.name);
                     ts.AddGenericInstanciation(gen_args[i]);
                     new_gen_args.Add(gen_args[i]);
                 }
@@ -4092,6 +4166,12 @@ namespace CodeCompletion
             if (generic_params == null) generic_params = new List<string>();
             generic_params.Add(name);
             AddName(name, new TemplateParameterScope(name, TypeTable.obj_type, this));
+        }
+
+        public virtual void AddGenericInstanceParameter(string name)
+        {
+            if (generic_params == null) generic_params = new List<string>();
+            generic_params.Add(name);
         }
 
         public virtual void AddImplementedInterface(TypeScope type)
@@ -4214,7 +4294,7 @@ namespace CodeCompletion
             }*/
             foreach (SymScope ss in members)
             {
-                if (!ss.si.name.StartsWith("$") && !ss.si.name.StartsWith("#"))
+                if (!IsHiddenName(ss.si.name))
                 {
                     lst.Add(ss.si);
                     if (!ss.si.has_doc)
@@ -4236,7 +4316,7 @@ namespace CodeCompletion
             {
                 //if (ss is ProcScope && (ss as ProcScope).IsConstructor())
                 //    continue;
-                if (!ss.si.name.StartsWith("$") && !ss.si.name.StartsWith("#"))
+                if (!IsHiddenName(ss.si.name))
                 {
                     if (ss.si.acc_mod == access_modifer.private_modifer)
                     {
@@ -4273,7 +4353,7 @@ namespace CodeCompletion
             }*/
             foreach (SymScope ss in members)
             {
-                if (!ss.si.name.StartsWith("$") && !ss.si.name.StartsWith("#") && !ss.is_static)
+                if (!IsHiddenName(ss.si.name) && !ss.is_static)
                     if (!(ss is ProcScope) && !(ss is TemplateParameterScope))
                     {
                         lst.Add(ss.si);
@@ -4321,7 +4401,7 @@ namespace CodeCompletion
             {
                 if (ss is ProcScope && (ss as ProcScope).IsConstructor())
                     continue;
-                if (!ss.si.name.StartsWith("$") && !ss.si.name.StartsWith("#"))
+                if (!IsHiddenName(ss.si.name))
                 {
                     if (ss.si.acc_mod == access_modifer.private_modifer)
                     {
@@ -4357,7 +4437,7 @@ namespace CodeCompletion
             List<SymInfo> lst = new List<SymInfo>();
             foreach (SymScope ss in members)
             {
-                if (!ss.si.name.StartsWith("$") && !ss.si.name.StartsWith("#"))
+                if (!IsHiddenName(ss.si.name))
                 {
                     if (keyword != PascalABCCompiler.Parsers.KeywordKind.Function && keyword != PascalABCCompiler.Parsers.KeywordKind.Constructor && keyword != PascalABCCompiler.Parsers.KeywordKind.Destructor/*!(ev.entry_scope is InterfaceUnitScope) && !(ev.entry_scope is ImplementationUnitScope)*/)
                     {
@@ -4409,7 +4489,7 @@ namespace CodeCompletion
             foreach (SymScope ss in members)
             {
                 if (ss is ProcScope && (ss as ProcScope).IsConstructor()) continue;
-                if (!ss.si.name.StartsWith("$") && !ss.si.name.StartsWith("#") && !ss.is_static && !(ss is TemplateParameterScope))
+                if (!IsHiddenName(ss.si.name) && !ss.is_static && !(ss is TemplateParameterScope))
                 {
                     if (ss.si.acc_mod == access_modifer.private_modifer)
                     {
@@ -4667,7 +4747,7 @@ namespace CodeCompletion
                 if (types != null)
                     foreach (Type t in types)
                     {
-                        if (!t.IsNotPublic && !t.IsSpecialName && t.IsVisible && !t.Name.Contains("$") && !t.IsNested)
+                        if (!t.IsNotPublic && !t.IsSpecialName && t.IsVisible && !IsHiddenName(t.Name) && !t.IsNested)
                         {
                             if (t.BaseType == typeof(MulticastDelegate))
                                 //syms.Add(new CompiledScope(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Delegate, "delegate "+TypeUtility.GetTypeName(t) + "\n" + AssemblyDocCache.GetDocumentation(t)),t));
@@ -4691,7 +4771,7 @@ namespace CodeCompletion
             if (ns != null)
                 foreach (string s in ns)
                 {
-                    if (!s.Contains(".") && !s.Contains("$"))
+                    if (!s.Contains(".") && !IsHiddenName(s))
                         syms.Add(new SymInfo(s, SymbolKind.Namespace, ""));
                 }
             if (syms.Count != 0) return syms.ToArray();
@@ -4845,7 +4925,7 @@ namespace CodeCompletion
             if (types != null)
                 foreach (Type t in types)
                 {
-                    if (!t.IsNotPublic && !t.IsSpecialName && t.IsVisible && !t.Name.Contains("$"))
+                    if (!t.IsNotPublic && !t.IsSpecialName && t.IsVisible && !IsHiddenName(t.Name))
                     {
                         if (t.BaseType == typeof(MulticastDelegate))
                             //syms.Add(new CompiledScope(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Delegate, "delegate "+TypeUtility.GetTypeName(t) + "\n" + AssemblyDocCache.GetDocumentation(t)),t));
@@ -4885,7 +4965,7 @@ namespace CodeCompletion
             if (types != null)
                 foreach (Type t in types)
                 {
-                    if (!t.IsNotPublic && !t.IsSpecialName && t.IsVisible && !t.Name.Contains("$"))
+                    if (!t.IsNotPublic && !t.IsSpecialName && t.IsVisible && !IsHiddenName(t.Name))
                     {
                         if (t.BaseType == typeof(MulticastDelegate))
                             //syms.Add(new CompiledScope(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Delegate, "delegate "+TypeUtility.GetTypeName(t) + "\n" + AssemblyDocCache.GetDocumentation(t)),t));
@@ -5272,7 +5352,7 @@ namespace CodeCompletion
                 mis = mems.ToArray();
             }
             foreach (MemberInfo mi in mis)
-                if (!mi.Name.Contains("$"))
+                if (!IsHiddenName(mi.Name))
                     switch (mi.MemberType)
                     {
                         case MemberTypes.Method: if (!(mi as MethodInfo).IsStatic)
@@ -5309,7 +5389,7 @@ namespace CodeCompletion
                 mis = mems.ToArray();
             }
             foreach (MemberInfo mi in mis)
-                if (!mi.Name.Contains("$"))
+                if (!IsHiddenName(mi.Name))
                     switch (mi.MemberType)
                     {
                         case MemberTypes.Method: if (!(mi as MethodInfo).IsStatic)
@@ -5563,7 +5643,7 @@ namespace CodeCompletion
                 return syms.ToArray();
             }
             foreach (MemberInfo mi in mis)
-                if (!mi.Name.Contains("$"))
+                if (!IsHiddenName(mi.Name))
                     switch (mi.MemberType)
                     {
                         case MemberTypes.Method: if (!(mi as MethodInfo).IsSpecialName && (mi as MethodInfo).IsStatic)
@@ -5712,7 +5792,7 @@ namespace CodeCompletion
                 return syms.ToArray();
             }
             foreach (MemberInfo mi in mis)
-                if (!mi.Name.Contains("$"))
+                if (!IsHiddenName(mi.Name))
                     switch (mi.MemberType)
                     {
                         case MemberTypes.Method: if (!(mi as MethodInfo).IsSpecialName && (mi as MethodInfo).IsStatic)
@@ -5807,7 +5887,7 @@ namespace CodeCompletion
                 mis = mems.ToArray();
             }
             foreach (MemberInfo mi in mis)
-                if (!mi.Name.Contains("$"))
+                if (!IsHiddenName(mi.Name))
                     switch (mi.MemberType)
                     {
                         case MemberTypes.Method: if (!(mi as MethodInfo).IsSpecialName)
@@ -5894,7 +5974,7 @@ namespace CodeCompletion
             if (!is_static)
             {
                 foreach (MemberInfo mi in mis)
-                    if (!mi.Name.Contains("$"))
+                    if (!IsHiddenName(mi.Name))
                     {
                         switch (mi.MemberType)
                         {
@@ -6016,7 +6096,7 @@ namespace CodeCompletion
             if (si.kind != SymbolKind.Type)
             {
                 foreach (MemberInfo mi in mis)
-                    if (!mi.Name.Contains("$"))
+                    if (!IsHiddenName(mi.Name))
                         switch (mi.MemberType)
                         {
                             case MemberTypes.Method: if (!(mi as MethodInfo).IsSpecialName)
@@ -6123,7 +6203,7 @@ namespace CodeCompletion
                 return syms.ToArray();
             MemberInfo[] mis = ctn.GetMembers(BindingFlags.Public | BindingFlags.Instance);
             foreach (MemberInfo mi in mis)
-                if (!mi.Name.Contains("$"))
+                if (!IsHiddenName(mi.Name))
                     switch (mi.MemberType)
                     {
                         case MemberTypes.Method: if (!(mi as MethodInfo).IsSpecialName)

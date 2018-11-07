@@ -1,4 +1,4 @@
-/// Стандартные размерные типы данных и их размер
+﻿/// Стандартные размерные типы данных и их размер
 var 
   i: integer;
   j: shortint;
@@ -16,18 +16,18 @@ var
   c: char;
   
 begin
-  writeln('sizeof(integer) = ':20, sizeof(integer));
-  writeln('sizeof(shortint) = ':20,sizeof(shortint));
-  writeln('sizeof(smallint) = ':20,sizeof(smallint));
-  writeln('sizeof(longint) = ':20, sizeof(longint));
-  writeln('sizeof(int64) = ':20,   sizeof(int64));
-  writeln('sizeof(byte) = ':20,    sizeof(byte));
-  writeln('sizeof(word) = ':20,    sizeof(word));
-  writeln('sizeof(longword) = ':20,sizeof(longword));
-  writeln('sizeof(cardinal) = ':20,sizeof(cardinal));
-  writeln('sizeof(uint64) = ':20,  sizeof(uint64));
-  writeln('sizeof(real) = ':20,    sizeof(real));
-  writeln('sizeof(double) = ':20,  sizeof(double));
-  writeln('sizeof(single) = ':20,  sizeof(single));
-  writeln('sizeof(char) = ':20,    sizeof(char));
+  Writeln('sizeof(integer) = ':20, sizeof(integer));
+  Writeln('sizeof(shortint) = ':20,sizeof(shortint));
+  Writeln('sizeof(smallint) = ':20,sizeof(smallint));
+  Writeln('sizeof(longint) = ':20, sizeof(longint));
+  Writeln('sizeof(int64) = ':20,   sizeof(int64));
+  Writeln('sizeof(byte) = ':20,    sizeof(byte));
+  Writeln('sizeof(word) = ':20,    sizeof(word));
+  Writeln('sizeof(longword) = ':20,sizeof(longword));
+  Writeln('sizeof(cardinal) = ':20,sizeof(cardinal));
+  Writeln('sizeof(uint64) = ':20,  sizeof(uint64));
+  Writeln('sizeof(real) = ':20,    sizeof(real));
+  Writeln('sizeof(double) = ':20,  sizeof(double));
+  Writeln('sizeof(single) = ':20,  sizeof(single));
+  Writeln('sizeof(char) = ':20,    sizeof(char));
 end.

@@ -53,7 +53,7 @@ namespace VisualPascalABC
 
         private void Document_LineDeleted(object sender, LineEventArgs e)
         {
-            for (int i = 0; i < e.LineSegment.Words.Count; i++)
+            /*for (int i = 0; i < e.LineSegment.Words.Count; i++)
             {
                 if (e.LineSegment.Words[i].SyntaxColor != null && e.LineSegment.Words[i].SyntaxColor.Color.Name == "Green")
                 {
@@ -62,7 +62,7 @@ namespace VisualPascalABC
                     e.Document.CommitUpdate();
                     return;
                 }
-            }
+            }*/
         }
 
         public void MarkForImmediateWindow()

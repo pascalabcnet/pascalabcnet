@@ -24,10 +24,21 @@ namespace PascalABCCompiler.TreeConverter
 
         private type_node[] InferAndCheckPatternVariableTypes(List<var_def_statement> variableDefinitions, expression_node patternInstance, desugared_deconstruction deconstruction)
         {
+            if (patternInstance.type.IsPointer)
+            {
+                AddError(get_location(deconstruction), "PATTERN_MATCHING_DOESNT_SUPPORT_POINTERS");
+                return null;
+            }
             var parameterTypes = variableDefinitions.Select(x => x.vars_type == null ? null : convert_strong(x.vars_type)).ToArray();
             List<function_node> candidates = new List<function_node>();
             List<type_node[]> deducedParametersList = new List<type_node[]>();
             var allDeconstructs = patternInstance.type.find_in_type(compiler_string_consts.deconstruct_method_name, context.CurrentScope);
+            if (allDeconstructs == null)
+            {
+                AddError(get_location(deconstruction), "NO_DECONSTRUCT_FOUND");
+                return null;
+            }
+
             foreach (var canditateSymbol in allDeconstructs)
             {
                 var deducedParameters = new type_node[parameterTypes.Length];
@@ -92,6 +103,10 @@ namespace PascalABCCompiler.TreeConverter
             if (candidateParameterTypes.Length != givenParameterTypes.Length)
                 return false;
 
+            // Разрешаем только deconstruct текущего класса, родительские в расчет не берем
+            if (candidate is common_method_node commonMethod && !AreTheSameType(patternInstance.type, commonMethod.cont_type))
+                return false;
+
             var genericDeduceNeeded = candidate.is_extension_method && candidate.is_generic_function;
             type_node[] deducedGenerics = new type_node[candidate.generic_parameters_count];
             if (genericDeduceNeeded)
@@ -100,10 +115,6 @@ namespace PascalABCCompiler.TreeConverter
                 var nils = new List<int>();
                 var deduceSucceded = generic_convertions.DeduceInstanceTypes(selfParameter.type, patternInstance.type, deducedGenerics, nils);
                 if (!deduceSucceded || deducedGenerics.Contains(null))
-                    // Проверка на то, что в Deconstruct все дженерики выводятся по self делается в другом месте
-                    // TODO Patterns: сделать проверку из коммента выше
-                    // TODO Patterns: запретить дженерик методы в классах. Можно использовать только дженерик-типы самого класса в качестве параметров
-                    //AddError(deconstructionLocation, "COULDNT_DEDUCE_DECONSTRUCT_GENERIC_TYPE");
                     return false;
             }
 
@@ -123,10 +134,20 @@ namespace PascalABCCompiler.TreeConverter
             return true;
         }
 
-        private bool AreTheSameType(type_node type1, type_node type2)
+        private type_node GetDeconstructorOwner(function_node deconstructor)
         {
-            return convertion_data_and_alghoritms.possible_equal_types(type1, type2);
+            switch (deconstructor)
+            {
+                case common_method_node commonMethod: return commonMethod.cont_type;
+                case common_namespace_function_node commonNamespaseFunction: return GetSelfParameter(commonNamespaseFunction).type;
+                default: return null;
+            }
         }
+
+        private bool AreTheSameType(type_node type1, type_node type2) => 
+            type1 != null && 
+            type2 != null && 
+            convertion_data_and_alghoritms.possible_equal_types(type1, type2);
 
         private bool IsSelfParameter(parameter parameter) => parameter.name.ToLower() == compiler_string_consts.self_word;
 
@@ -204,8 +225,11 @@ namespace PascalABCCompiler.TreeConverter
         /// <param name="deconstructor"></param>
         private void ExecuteCommonChecks(common_function_node deconstructor)
         {
+            var dd = deconstructor as common_method_node;
+            if (dd != null && dd.IsStatic)
+                AddError(deconstructor.loc, "DECONSTRUCTOR_SHOULD_NOT_BE_STATIC");
             if (deconstructor.return_value_type != null)
-                AddError(deconstructor.loc, "DECONSTRUCTOR_SOULD_BE_A_PROCEDURE");
+                AddError(deconstructor.loc, "DECONSTRUCTOR_SHOULD_BE_A_PROCEDURE");
 
             foreach (var parameter in deconstructor.parameters.Where(x => !IsSelfParameter(x)))
                 if (parameter.parameter_type != SemanticTree.parameter_type.var && parameter is common_parameter p)
@@ -221,6 +245,21 @@ namespace PascalABCCompiler.TreeConverter
             var convertedExpression = convert_strong(matchedExpression);
             if (convertedExpression.type.IsPointer)
                 AddError(get_location(matchedExpression), "PATTERN_MATCHING_DOESNT_SUPPORT_POINTERS");
+        }
+
+        private void CheckIfCanBeMatched(expression matchedExpression, type_definition targetType)
+        {
+            var type = convert_strong(targetType);
+            var expression = convert_strong(matchedExpression).type;
+
+            if (type_table.is_derived(type, expression) ||
+                type_table.is_derived(expression, type) ||
+                AreTheSameType(type, expression) ||
+                type.IsInterface ||
+                expression.IsInterface)
+                return;
+
+            AddError(get_location(matchedExpression), "EXPRESSION_OF_TYPE_{0}_CANNOT_BE_MATCHED_AGAINST_PATTERN_WITH_TYPE_{1}", expression.name, type.name);
         }
     }
 }

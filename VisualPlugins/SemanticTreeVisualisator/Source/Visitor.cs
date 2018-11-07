@@ -2555,5 +2555,10 @@ namespace VisualPascalABCPlugins
         public virtual void visit(ICommonNamespaceEventNode value)
         {
         }
+
+        public void visit(IDefaultOperatorNodeAsConstant value)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

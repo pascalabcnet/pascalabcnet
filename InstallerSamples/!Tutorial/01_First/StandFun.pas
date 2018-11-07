@@ -1,14 +1,14 @@
-// Стандартные функции
+﻿// Стандартные функции
 var x: real;
 
 begin 
   write('Введите x: ');
-  readln(x);
-  writeln('Квадрат ',x,' равен ',sqr(x));
-  writeln(x,' в степени 5 равно ',power(x,5));
-  writeln('Квадратный корень из ',x,' равен ',sqrt(x));
-  writeln('Модуль ',x,' равен ',abs(x));
-  writeln('Натуральный логарифм ',x,' равен ',ln(x));
-  writeln('Синус ',x,' равен ',sin(x));
-  writeln('Косинус ',x,' равен ',cos(x));
+  Readln(x);
+  Writeln('Квадрат ',x,' равен ',Sqr(x));
+  Writeln(x,' в степени 5 равно ',Power(x,5));
+  Writeln('Квадратный корень из ',x,' равен ',Sqrt(x));
+  Writeln('Модуль ',x,' равен ',Abs(x));
+  Writeln('Натуральный логарифм ',x,' равен ',Ln(x));
+  Writeln('Синус ',x,' равен ',Sin(x));
+  Writeln('Косинус ',x,' равен ',Cos(x));
 end.

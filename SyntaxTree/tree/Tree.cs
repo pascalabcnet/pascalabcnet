@@ -16294,7 +16294,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public simple_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr)
+		public simple_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,bool _is_auto)
 		{
 			this._property_name=_property_name;
 			this._property_type=_property_type;
@@ -16304,13 +16304,14 @@ namespace PascalABCCompiler.SyntaxTree
 			this._parameter_list=_parameter_list;
 			this._attr=_attr;
 			this._virt_over_none_attr=_virt_over_none_attr;
+			this._is_auto=_is_auto;
 			FillParentsInDirectChilds();
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public simple_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,SourceContext sc)
+		public simple_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,bool _is_auto,SourceContext sc)
 		{
 			this._property_name=_property_name;
 			this._property_type=_property_type;
@@ -16320,6 +16321,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._parameter_list=_parameter_list;
 			this._attr=_attr;
 			this._virt_over_none_attr=_virt_over_none_attr;
+			this._is_auto=_is_auto;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
@@ -16331,6 +16333,7 @@ namespace PascalABCCompiler.SyntaxTree
 		protected property_parameter_list _parameter_list;
 		protected definition_attribute _attr;
 		protected proc_attribute _virt_over_none_attr;
+		protected bool _is_auto;
 
 		///<summary>
 		///
@@ -16464,6 +16467,21 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+		///<summary>
+		///
+		///</summary>
+		public bool is_auto
+		{
+			get
+			{
+				return _is_auto;
+			}
+			set
+			{
+				_is_auto=value;
+			}
+		}
+
 
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -16509,6 +16527,7 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 			copy.attr = attr;
 			copy.virt_over_none_attr = virt_over_none_attr;
+			copy.is_auto = is_auto;
 			return copy;
 		}
 
@@ -16675,7 +16694,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public index_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,formal_parameters _property_parametres,default_indexer_property_node _is_default)
+		public index_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,bool _is_auto,formal_parameters _property_parametres,default_indexer_property_node _is_default)
 		{
 			this._property_name=_property_name;
 			this._property_type=_property_type;
@@ -16685,6 +16704,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._parameter_list=_parameter_list;
 			this._attr=_attr;
 			this._virt_over_none_attr=_virt_over_none_attr;
+			this._is_auto=_is_auto;
 			this._property_parametres=_property_parametres;
 			this._is_default=_is_default;
 			FillParentsInDirectChilds();
@@ -16693,7 +16713,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public index_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,formal_parameters _property_parametres,default_indexer_property_node _is_default,SourceContext sc)
+		public index_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,bool _is_auto,formal_parameters _property_parametres,default_indexer_property_node _is_default,SourceContext sc)
 		{
 			this._property_name=_property_name;
 			this._property_type=_property_type;
@@ -16703,6 +16723,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._parameter_list=_parameter_list;
 			this._attr=_attr;
 			this._virt_over_none_attr=_virt_over_none_attr;
+			this._is_auto=_is_auto;
 			this._property_parametres=_property_parametres;
 			this._is_default=_is_default;
 			source_context = sc;
@@ -16790,6 +16811,7 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 			copy.attr = attr;
 			copy.virt_over_none_attr = virt_over_none_attr;
+			copy.is_auto = is_auto;
 			if (property_parametres != null)
 			{
 				copy.property_parametres = (formal_parameters)property_parametres.Clone();

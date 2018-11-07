@@ -1698,6 +1698,7 @@ namespace PascalABCCompiler.SyntaxTree
 			_simple_property.parameter_list = _read_node() as property_parameter_list;
 			_simple_property.attr = (definition_attribute)br.ReadByte();
 			_simple_property.virt_over_none_attr = (proc_attribute)br.ReadByte();
+			_simple_property.is_auto = br.ReadBoolean();
 		}
 
 

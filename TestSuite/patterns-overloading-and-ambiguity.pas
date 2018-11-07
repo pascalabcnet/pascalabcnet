@@ -29,7 +29,7 @@ end;
 begin
   var l := new My<List<integer>>; 
   l._a := Arr(1, 2, 3).ToList;
-  match l with
+  match l as object with
     My<real>(a: real): Assert(false);
     My<integer>(a: integer): Assert(false);
     My<List<integer>>(a: object): ;

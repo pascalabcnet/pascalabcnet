@@ -21,6 +21,11 @@ namespace SyntaxVisitors
     {
         public static int CurrentLocalVariableNum = 0;
 
+        public static void Reset()
+        {
+            CurrentLocalVariableNum = 0;
+        }
+
         public static string MakeCapturedFormalParameterName(string formalParamName)
         {
             return string.Format("<>{0}__{1}", YieldConsts.ReservedNum.MethodFormalParam, formalParamName);
@@ -218,6 +223,7 @@ namespace SyntaxVisitors
                         //function_header nfh = ObjectCopier.Clone(fh);
 
                         function_header nfh = fh.TypedClone();
+                        nfh.proc_attributes.proc_attributes.RemoveAll(pat => pat.attribute_type == proc_attribute.attr_override);
 
                         //function_header nfh = new function_header();
                         //nfh.name = new method_name(fh.name.meth_name.name);
@@ -402,7 +408,7 @@ namespace SyntaxVisitors
             {
                 // Метод класса описан вне класса
 
-                return UpperTo<declarations>().list
+                cd = UpperTo<declarations>().list
                     .OfType<type_declarations>()
                     .SelectMany(tdecls => tdecls.types_decl)
                     .Where(td => td.type_name.name == GetClassName(pd).name)
@@ -410,6 +416,23 @@ namespace SyntaxVisitors
                     .Where(_cd => _cd != null)
                     .DefaultIfEmpty()
                     .First();
+                if (cd == null)
+                {
+                    implementation_node impl = UpperTo<implementation_node>();
+                    if (impl != null)
+                    {
+                        cd = (impl.Parent as unit_module).interface_part.interface_definitions.list
+                            .OfType<type_declarations>()
+                            .SelectMany(tdecls => tdecls.types_decl)
+                            .Where(td => td.type_name.name == GetClassName(pd).name)
+                            .Select(td => td.type_def as class_definition)
+                            .Where(_cd => _cd != null)
+                            .DefaultIfEmpty()
+                            .First();
+                    }
+                }
+                
+                return cd;
             }
         }
 
@@ -568,7 +591,7 @@ namespace SyntaxVisitors
                         .SelectMany(tdecls => tdecls.types_decl)
                         .Where(td => td.type_name.name == GetClassName(pd).name)
                         .Select(td => td.type_def as class_definition)
-                        .Where(_cd => _cd != null)
+                        .Where(_cd => _cd != null && _cd.body != null)
                         .SelectMany(_cd => _cd.body.class_def_blocks);
                     implementation_node impl = UpperTo<implementation_node>();
                     if (impl != null)
@@ -579,7 +602,7 @@ namespace SyntaxVisitors
                         .SelectMany(tdecls => tdecls.types_decl)
                         .Where(td => td.type_name.name == GetClassName(pd).name)
                         .Select(td => td.type_def as class_definition)
-                        .Where(_cd => _cd != null)
+                        .Where(_cd => _cd != null && _cd.body != null)
                         .SelectMany(_cd => _cd.body.class_def_blocks));
                     }
 
@@ -608,6 +631,8 @@ namespace SyntaxVisitors
             // Клонируем исходный метод для проверок ошибок бэкендом
             //var pdCloned = ObjectCopier.Clone(pd);
             var pdCloned = (procedure_definition)pd.Clone();
+
+            pdCloned.proc_header.proc_attributes.proc_attributes.RemoveAll(pat => pat.attribute_type == proc_attribute.attr_override);
 
             pdCloned.has_yield = false;
 
@@ -652,6 +677,8 @@ namespace SyntaxVisitors
             pdCloned.proc_header.name.meth_name = new ident(YieldConsts.YieldHelperMethodPrefix+ "_locals_type_detector>" + pd.proc_header.name.meth_name.name,
                 // frninja 05/06/16 - фиксим source_context
                 pd.proc_header.name.meth_name.source_context); // = new method_name("<yield_helper_locals_type_detector>" + pd.proc_header.className.meth_name.className);
+
+            //pdCloned.proc_header.proc_attributes.proc_attributes.RemoveAll(pat => pat.attribute_type == proc_attribute.attr_override);
 
             InsertHelperMethod(pd, pdCloned); // SSM 13.07.16 - вызов этого метода можно не добавлять
         }
@@ -910,7 +937,7 @@ namespace SyntaxVisitors
 
         public override void visit(procedure_definition pd)
         {
-            // frninja 14/06/16 - проверяем наличие yield у вложенных методов (и запрещаем )
+            // frninja 14/06/16 - проверяем наличие yield у вложенных методов (и запрещаем)
             CheckInnerMethodsWithYield(pd);
 
             if (!pd.has_yield)

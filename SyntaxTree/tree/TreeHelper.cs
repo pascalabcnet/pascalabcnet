@@ -33,7 +33,7 @@ namespace PascalABCCompiler.SyntaxTree
         DirectDescendants
     }
 
-    public enum SugaredExpressionType { MatchedExpression }
+    public enum SemanticCheckType { MatchedExpression, MatchedExpressionAndType }
 
     public partial class syntax_tree_node
     {
@@ -750,6 +750,9 @@ namespace PascalABCCompiler.SyntaxTree
             if (parameters != null)
                 sb.Append("(" + parameters.ToString() + ")");
             sb.Append(";");
+            if (this.proc_attributes != null)
+                foreach (var pa in this.proc_attributes.proc_attributes)
+                    sb.Append(" " + pa.ToString() + " ");
             return sb.ToString();
         }
     }
@@ -1070,7 +1073,7 @@ namespace PascalABCCompiler.SyntaxTree
     public partial class simple_property
     {
         public simple_property(ident name, type_definition type, property_accessors accessors, SourceContext sc = null) 
-            : this(name, type, null, accessors, null, null, definition_attribute.None,proc_attribute.attr_none,sc)
+            : this(name, type, null, accessors, null, null, definition_attribute.None,proc_attribute.attr_none,false,sc)
         { }
     }
 

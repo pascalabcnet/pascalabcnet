@@ -603,6 +603,10 @@ namespace PascalABCCompiler.TreeRealization
             {
                 return type_compare.non_comparable_type;
             }
+            if (tins.Length == 1 && tins[0].this_to_another != null && tins[0].this_to_another.is_explicit) // SSM bug fix #1441
+            {
+                return type_compare.non_comparable_type;
+            }
             if (tins.Length == 1)
             {
                 return tins[0].type_compare;

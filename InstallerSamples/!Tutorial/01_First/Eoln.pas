@@ -1,9 +1,8 @@
-// Демонстрация работы функции eoln
+﻿// Демонстрация работы функции Eoln
 begin
-  while not eoln do
+  while not Eoln do
   begin
-    var c: char;
-    read(c);
-    write(c,' ');
+    var c := ReadChar;
+    Print(c);
   end;
 end.

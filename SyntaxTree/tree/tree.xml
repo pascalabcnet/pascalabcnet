@@ -1021,6 +1021,7 @@
         <SyntaxField Name="parameter_list" SyntaxType="property_parameter_list" />
         <ExtendedField Name="attr" Type="definition_attribute" CreateVariable="false" DeleteVariable="false" />
         <ExtendedField Name="virt_over_none_attr" Type="proc_attribute" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="is_auto" Type="bool" CreateVariable="false" DeleteVariable="false" />
       </Fields>
       <Methods />
       <Tags>
@@ -4228,6 +4229,7 @@
       <HelpData Key="simple_property.array_default" Value="" />
       <HelpData Key="simple_property.attr" Value="" />
       <HelpData Key="simple_property.index_expression" Value="" />
+      <HelpData Key="simple_property.is_auto" Value="" />
       <HelpData Key="simple_property.parameter_list" Value="" />
       <HelpData Key="simple_property.property_name" Value="" />
       <HelpData Key="simple_property.property_type" Value="" />

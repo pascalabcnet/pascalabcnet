@@ -68,6 +68,8 @@ namespace PascalABCCompiler
                 {
                     helper.AddVariable(vdn);
                     CheckType(vdn.type, vdn.inital_value, vdn.loc);
+                    if (vdn.inital_value != null)
+                        VisitExpression(vdn.inital_value);
                 }
             }
         }
@@ -246,6 +248,8 @@ namespace PascalABCCompiler
             foreach (local_variable lv in var_list)
             {
                 CheckType(lv.type, lv.inital_value, lv.loc);
+                if (lv.inital_value != null)
+                    VisitExpression(lv.inital_value);
             }
         }
 
@@ -445,14 +449,14 @@ namespace PascalABCCompiler
 
         private void CheckInfiniteRecursion(common_namespace_function_call cnfc)
         {
-            if (!condition_block && !has_returns && cnfc.function_node == current_function && !no_infinite_recursion)
-                warns.Add(new InfiniteRecursion(cnfc.location));
+            //if (!condition_block && !has_returns && cnfc.function_node == current_function && !no_infinite_recursion)
+            //    warns.Add(new InfiniteRecursion(cnfc.location));
         }
 
         private void CheckInfiniteRecursion(common_static_method_call cnfc)
         {
-            if (!condition_block && !has_returns && cnfc.function_node == current_function && !no_infinite_recursion)
-                warns.Add(new InfiniteRecursion(cnfc.location));
+            //if (!condition_block && !has_returns && cnfc.function_node == current_function && !no_infinite_recursion)
+            //    warns.Add(new InfiniteRecursion(cnfc.location));
         }
 
         private void SaveConditionBlock()
@@ -704,6 +708,11 @@ namespace PascalABCCompiler
         private void IncreaseNumUseVar(local_block_variable_reference lvr)
         {
             VarInfo vi = helper.GetVariable(lvr.var);
+            if (vi == null)
+            {
+                helper.AddVariable(lvr.var);
+                vi = helper.GetVariable(lvr.var);
+            }
             if (vi == null) return;
             vi.num_use++;
             vi.act_num_use++;
@@ -1169,6 +1178,21 @@ namespace PascalABCCompiler
             for (int i = 1; i < en.parameters.Count; i++)
                 VisitExpression(en.parameters[i]);
             expression_node p = en.parameters[0];
+            if (en.parameters[1] is common_parameter_reference && (en.parameters[1] as common_parameter_reference).par.name.StartsWith("<>"))
+            {
+                switch (p.semantic_node_type)
+                {
+                    case semantic_node_type.local_variable_reference: IncreaseNumUseVar((local_variable_reference)p); break;
+                    case semantic_node_type.local_block_variable_reference: IncreaseNumUseVar((local_block_variable_reference)p); break;
+                    case semantic_node_type.namespace_variable_reference: IncreaseNumUseVar((namespace_variable_reference)p); break;
+                    case semantic_node_type.class_field_reference: VisitExpression((p as class_field_reference).obj); IncreaseNumUseField((class_field_reference)p); break;
+                    case semantic_node_type.static_class_field_reference: IncreaseNumUseField((static_class_field_reference)p); break;
+                    case semantic_node_type.common_parameter_reference: IncreaseNumUseParam((common_parameter_reference)p); break;
+                    case semantic_node_type.deref_node: VisitDerefNode(((dereference_node)p)); break;
+                    case semantic_node_type.simple_array_indexing: VisitSimpleArrayIndexing((simple_array_indexing)p); break;
+                }
+            }
+            else
             switch (p.semantic_node_type)
             {
                 case semantic_node_type.local_variable_reference: IncreaseNumAssVar((local_variable_reference)p); break;

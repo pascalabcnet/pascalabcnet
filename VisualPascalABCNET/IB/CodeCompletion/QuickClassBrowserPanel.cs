@@ -485,7 +485,7 @@ namespace VisualPascalABC
                 ArrayList props = new ArrayList();
                 ArrayList consts = new ArrayList();
                 foreach (IBaseScope el in scope.Members)
-                    if (el.GetPosition().file_name != null)
+                    if (el.GetPosition().file_name != null && !el.SymbolInfo.not_include)
                     {
                         ComboBoxItem cbi = new ComboBoxItem(el, el.GetDescriptionWithoutDoc(), CodeCompletionProvider.ImagesProvider.GetPictureNum(el.SymbolInfo), true, false);
                         switch (el.SymbolInfo.kind)

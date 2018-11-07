@@ -24,6 +24,7 @@ namespace VisualPascalABC
             highlighted_keywords["case"] = "case";
             highlighted_keywords["class"] = "class";
             highlighted_keywords["record"] = "record";
+            highlighted_keywords["match"] = "match";
             //highlighted_keywords["interface"] = "interface";
             //ignored_keywords["class"] = "class";
             //ignored_keywords["record"] = "record";
@@ -147,7 +148,11 @@ namespace VisualPascalABC
             int off = beg_off - 1;
             if (CheckForCommentOrKav(textArea.Document.TextContent, beg_off))
                 return false;
+            if (off >= textArea.Document.TextContent.Length)
+                return false;
             char c = textArea.Document.TextContent[off];
+            if (textArea.Document.TextContent[beg_off] == '=')
+                c = '=';
             while (char.IsWhiteSpace(c) || c == '}')
             {
                 if (c == '}')
