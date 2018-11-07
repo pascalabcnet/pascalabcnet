@@ -1752,7 +1752,10 @@ namespace PascalABCCompiler.PCU
             cmn.loc = ReadDebugInfo();
             cmn.function_code = GetCode(br.ReadInt32());
             cmn.cont_type.methods.AddElement(cmn);
-            
+            if (cmn.name == "op_Equality")
+                cmn.cont_type.scope.AddSymbol(compiler_string_consts.eq_name, new SymbolInfo(cmn));
+            else if (cmn.name == "op_Inequality")
+                cmn.cont_type.scope.AddSymbol(compiler_string_consts.noteq_name, new SymbolInfo(cmn));
             return cmn;
         }
 
@@ -2222,6 +2225,10 @@ namespace PascalABCCompiler.PCU
             		type_constructor.make_array_interface(ctn);
             	}
             }
+            if (ctn.is_value_type)
+            {
+
+            }
             //RestoreAllFields(ctn);
             if(!waited_types_to_restore_fields.Contains(ctn))
                 waited_types_to_restore_fields.Add(ctn);
@@ -2529,6 +2536,14 @@ namespace PascalABCCompiler.PCU
                 waited_types_to_restore_fields.Remove(ctn);
                 RestoreAllFields(ctn);
             }
+        }
+
+        private void RestoreOperators(common_type_node ctn)
+        {
+            string[] mnames = class_names[ctn];
+            WrappedClassScope wcs = ctn.scope as WrappedClassScope;
+            foreach (string mname in mnames)
+                wcs.RestoreMembers(mname);
         }
 
         private void RestoreAllFields(common_type_node ctn)
