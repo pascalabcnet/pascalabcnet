@@ -609,7 +609,8 @@ namespace SyntaxVisitors
                     // Вставляем предописание метода-хелпера 
                     var helperPredefHeader = ObjectCopier.Clone(helper.proc_header);
                     helperPredefHeader.name.class_name = null;
-                    classMembers.First().members.Insert(0, helperPredefHeader);
+                    //classMembers.First().members.Insert(0, helperPredefHeader);
+                    classMembers.First().members.Add(helperPredefHeader); // SSM bug fix #1474
 
                     // Вставляем тело метода-хелпера
                     UpperTo<declarations>().InsertBefore(pd, helper);
