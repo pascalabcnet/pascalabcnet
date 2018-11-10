@@ -4,7 +4,7 @@
 // ==========================================================================
 //  Version:  1.3.6
 //  Machine:  DESKTOP-A6LT9RI
-//  DateTime: 11.10.2018 8:44:50
+//  DateTime: 10.11.2018 23:09:24
 //  UserName: Станислав
 // ==========================================================================
 
@@ -189,6 +189,8 @@
 %type <stn> pattern pattern_optional_var match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var 
 %type <ob> pattern_out_param_list pattern_out_param_list_optional_var
 %%
+// Warning: NonTerminal symbol "const_func_expr_list" is unreachable
+// -----------------------------------------------------------------
 
 parse_goal                
     : program_file 
@@ -958,7 +960,7 @@ const_variable_2
     ;
 
 optional_const_func_expr_list
-    : const_func_expr_list
+    : expr_list
 		{ $$ = $1; }
     |
 		{ $$ = null; }
@@ -2069,17 +2071,14 @@ simple_property_definition
  			    pa = proc_attribute.attr_abstract;
 			$$ = NewSimplePropertyDefinition($2 as method_name, $3 as property_interface, $4 as property_accessors, pa, $8 as property_array_default, @$);
         }
-    : class_or_static tkProperty qualified_identifier property_interface property_specifiers tkSemiColon array_defaultproperty
-//--^
-// Error: Syntax error, unexpected ':'
-// -----------------------------------
+    | class_or_static tkProperty qualified_identifier property_interface property_specifiers tkSemiColon array_defaultproperty
         { 
 			$$ = NewSimplePropertyDefinition($3 as method_name, $4 as property_interface, $5 as property_accessors, proc_attribute.attr_none, $7 as property_array_default, @$);
         	($$ as simple_property).attr = definition_attribute.Static;
         }
     | class_or_static tkProperty qualified_identifier property_interface property_specifiers tkSemiColon property_modificator tkSemiColon array_defaultproperty
         { 
-			parsertools.AddErrorFromResource("STATIC_PROPERTIES_CANNOT_HAVE_THIS_ATTRBUTE",@7);        	
+			parsertools.AddErrorFromResource("STATIC_PROPERTIES_CANNOT_HAVE_ATTRBUTE_{0}",@7,$7.name);        	
         }
     ;
 
@@ -3656,7 +3655,7 @@ default_expr
     ;
 
 tuple
-	 : tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref tkRoundClose // lambda_type_ref optional_full_lambda_fp_list íóæíî îñòàâèòü ÷òîáû íå áûëî êîíôëèêòîâ ñ ãðàììàòèêîé ëÿìáä 
+	 : tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose // lambda_type_ref optional_full_lambda_fp_list íóæíî îñòàâèòü ÷òîáû íå áûëî êîíôëèêòîâ ñ ãðàììàòèêîé ëÿìáä 
 		{
 			/*if ($5 != null) 
 				parsertools.AddErrorFromResource("BAD_TUPLE",@5);
@@ -4486,7 +4485,10 @@ lambda_type_ref_noproctype
 lambda_function_body
 	: expr_l1 
 		{
-			$$ = NewLambdaBody($1, @$);
+			//$$ = NewLambdaBody($1, @$);
+			var sl = new statement_list(new assign("result",$1,@$),@$); // íàäî ïîìå÷àòü åù¸ è assign êàê àâòîñãåíåðèðîâàííûé äëÿ ëÿìáäû
+			sl.expr_lambda_body = true;
+			$$ = sl;
 		}
 	| compound_stmt
 		{

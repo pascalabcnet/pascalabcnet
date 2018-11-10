@@ -36,7 +36,6 @@
   </tag>
   <tag value="Списки">
     <name value="decl_sect_list" />
-    <name value="const_func_expr_list" />
     <name value="label_list" />
     <name value="const_field_list" />
     <name value="const_field_list_1" />

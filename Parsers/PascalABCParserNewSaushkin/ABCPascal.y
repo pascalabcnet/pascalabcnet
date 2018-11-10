@@ -77,7 +77,7 @@
 %type <stn> exception_handler  
 %type <stn> exception_handler_list  
 %type <stn> exception_identifier  
-%type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 const_func_expr_list case_label_list const_elem_list optional_const_func_expr_list elem_list1  
+%type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 /*const_func_expr_list*/ case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
 %type <ex> const_simple_expr term simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda simple_expr range_term range_factor 
@@ -947,13 +947,13 @@ const_variable_2
     ;
 
 optional_const_func_expr_list
-    : const_func_expr_list
+    : expr_list
 		{ $$ = $1; }
     |
 		{ $$ = null; }
     ;
         
-const_func_expr_list
+/*const_func_expr_list
     : const_expr                               
         { 	
 			$$ = new expression_list($1, @$);
@@ -962,7 +962,7 @@ const_func_expr_list
         { 
 			$$ = ($1 as expression_list).Add($3, @$);
 		}
-    ;
+    ;*/
 
 const_elem_list
     : const_elem_list1
