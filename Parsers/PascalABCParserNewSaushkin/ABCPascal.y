@@ -4472,7 +4472,10 @@ lambda_type_ref_noproctype
 lambda_function_body
 	: expr_l1 
 		{
-			$$ = NewLambdaBody($1, @$);
+			//$$ = NewLambdaBody($1, @$);
+			var sl = new statement_list(new assign("result",$1,@$),@$); // надо помечать ещё и assign как автосгенерированный для лямбды
+			sl.expr_lambda_body = true;
+			$$ = sl;
 		}
 	| compound_stmt
 		{

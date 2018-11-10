@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-A6LT9RI
-// DateTime: 26.10.2018 20:10:08
+// DateTime: 10.11.2018 13:30:37
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -6744,7 +6744,10 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 882: // lambda_function_body -> expr_l1
 {
-			CurrentSemanticValue.stn = NewLambdaBody(ValueStack[ValueStack.Depth-1].ex, CurrentLocationSpan);
+			//$$ = NewLambdaBody($1, @$);
+			var sl = new statement_list(new assign("result",ValueStack[ValueStack.Depth-1].ex,CurrentLocationSpan),CurrentLocationSpan);
+			sl.expr_lambda_body = true;
+			CurrentSemanticValue.stn = sl;
 		}
         break;
       case 883: // lambda_function_body -> compound_stmt

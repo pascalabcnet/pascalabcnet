@@ -11428,7 +11428,8 @@ begin
   //ci.NumberFormat := nfi;
   //System.Globalization.CultureInfo.CurrentCulture := ci;
   
-  //  System.Threading.Thread.CurrentThread.CurrentCulture := new System.Globalization.CultureInfo('en-US');
+  // SSM 10/11/18 восстановил эту строку чтобы в главном потоке в вещественных была точка
+  System.Threading.Thread.CurrentThread.CurrentCulture := new System.Globalization.CultureInfo('en-US');
   //rnd := new System.Random;
   StartTime := DateTime.Now;
   output := new TextFile();
