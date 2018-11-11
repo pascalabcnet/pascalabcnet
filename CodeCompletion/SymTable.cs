@@ -2881,6 +2881,14 @@ namespace CodeCompletion
             return ts;
         }
 
+        public override ITypeScope ElementType
+        {
+            get
+            {
+                return actType.ElementType;
+            }
+        }
+
         public override void AddIndexer(TypeScope ts)
         {
             actType.AddIndexer(ts);
@@ -5100,6 +5108,14 @@ namespace CodeCompletion
             }
             return TypeTable.get_compiled_type(t);
         }
+
+        /*public override ITypeScope ElementType
+        {
+            get
+            {
+                return GetElementType();
+            }
+        }*/
 
         public override bool IsStatic
         {
