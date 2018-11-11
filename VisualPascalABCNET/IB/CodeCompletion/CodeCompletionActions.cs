@@ -79,7 +79,8 @@ namespace VisualPascalABC
                     return;
                 unitName = (cu as PascalABCCompiler.SyntaxTree.program_module).program_name.prog_name;
             }
-
+            if (unitName.source_context == null)
+                return;
             List<SymbolsViewerSymbol> refers = ccp.Rename(unitName.name, unitName.name, FileName, unitName.source_context.begin_position.line_num, unitName.source_context.begin_position.column_num);
             if (refers == null || new_val == null) return;
             int addit = 0;
