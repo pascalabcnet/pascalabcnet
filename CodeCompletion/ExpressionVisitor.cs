@@ -478,6 +478,27 @@ namespace CodeCompletion
                         returned_scope = new ElementScope(((returned_scope as ElementScope).sc as ProcScope).return_type.GetElementType());
                     else if (returned_scope is ProcScope && (returned_scope as ProcScope).is_constructor)
                         returned_scope = new ElementScope((returned_scope as ProcScope).declaringType.GetElementType());
+                    else if (returned_scope is ElementScope && (returned_scope as ElementScope).sc is TypeScope)
+                    {
+                        TypeScope ts = (returned_scope as ElementScope).sc as TypeScope;
+                        if (ts.GetFullName() != null && (ts.GetFullName().IndexOf("System.Tuple") == 0 || ts.original_type != null && ts.original_type.GetFullName() != null && ts.original_type.GetFullName().IndexOf("(T1,") == 0))
+                        {
+                            if (_indexer.indexes.expressions[0] is int32_const)
+                            {
+                                if ((_indexer.indexes.expressions[0] as int32_const).val >= 0)
+                                {
+                                    dot_node dn = new dot_node(_indexer.dereferencing_value, new ident("Item" + ((_indexer.indexes.expressions[0] as int32_const).val + 1)));
+                                    dn.visit(this);
+                                }
+                                else
+                                    returned_scope = null;
+                            }
+                            else
+                                returned_scope = null;
+                        }
+                        else
+                            returned_scope = new ElementScope(returned_scope.GetElementType());
+                    }
                     else
                         returned_scope = new ElementScope(returned_scope.GetElementType());
             }

@@ -666,7 +666,8 @@ namespace CodeCompletion
             _indexer.dereferencing_value.visit(this);
             if (returned_scope != null && returned_scope is TypeScope)
             {
-                if ((returned_scope as TypeScope).GetFullName() != null && (returned_scope as TypeScope).GetFullName().IndexOf("System.Tuple") == 0)
+                TypeScope ts = returned_scope as TypeScope;
+                if (ts.GetFullName() != null && (ts.GetFullName().IndexOf("System.Tuple") == 0 || ts.original_type != null && ts.original_type.GetFullName() != null && ts.original_type.GetFullName().IndexOf("(T1,") == 0))
                 {
                     if (_indexer.indexes.expressions[0] is int32_const)
                     {
