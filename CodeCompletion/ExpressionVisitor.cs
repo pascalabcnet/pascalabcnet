@@ -1834,6 +1834,7 @@ namespace CodeCompletion
                     }
                 }
                 returned_scopes[0] = ps.GetInstance(template_params);
+                returned_scope = returned_scopes[0];
             }
             else if (returned_scope is ProcScope)
             {
