@@ -499,6 +499,8 @@ namespace CodeCompletion
                         else
                             returned_scope = new ElementScope(returned_scope.GetElementType());
                     }
+                    else if (returned_scope is ProcScope && (returned_scope as ProcScope).return_type != null)
+                        returned_scope = new ElementScope((returned_scope as ProcScope).return_type.GetElementType());
                     else
                         returned_scope = new ElementScope(returned_scope.GetElementType());
             }
