@@ -1,6 +1,6 @@
 ﻿uses Graph3D;
 
-function ParametricTrajectory(a,b: real; fun: real->Point3D; N: integer) := Partition(a,b,N).Select(fun);
+function ParametricTrajectory(a,b: real; fun: real->Point3D; N: integer) := PartitionPoints(a,b,N).Select(fun);
 
 function ParametricCirve3D(a,b: real; fun: real->Point3D; N: integer := 200): SegmentsT;
 begin
@@ -11,7 +11,7 @@ end;
 procedure DuplicateByTrajectory(c: Object3D; a,b: real; fun: real->Point3D; N: integer);
 begin
   c.MoveTo(fun(a));
-  foreach var p in Partition(a,b,N).Skip(1).Select(fun) do
+  foreach var p in PartitionPoints(a,b,N).Skip(1).Select(fun) do
   begin
     var c1 := c.Clone.MoveTo(p);
     c1.Rotate(OrtZ,3);

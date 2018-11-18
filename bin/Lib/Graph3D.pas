@@ -2136,8 +2136,8 @@ type
     begin
       var pc := new Point3DCollection;
       
-      var a := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
-      var b := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), fh)).ToArray;
+      var a := PartitionPoints(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
+      var b := PartitionPoints(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), fh)).ToArray;
       for var i := 0 to a.High - 1 do
       begin
         pc.Add(a[i]);
@@ -2172,8 +2172,8 @@ type
   public 
     function Points: Point3DCollection; virtual;
     begin
-      var a := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).SkipLast;
-      var b := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), fh)).SkipLast;
+      var a := PartitionPoints(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).SkipLast;
+      var b := PartitionPoints(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), fh)).SkipLast;
       var pc := new Point3DCollection(a + b);
       
       Result := pc;
@@ -2206,7 +2206,7 @@ type
     begin
       var pc := new Point3DCollection;
       
-      var a := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
+      var a := PartitionPoints(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
       var b := P3D(0, 0, fh);
       for var i := 0 to a.High - 1 do
       begin
@@ -2976,8 +2976,8 @@ type
       var pmb := new PanelModelBuilder();
       if N > 0 then
       begin
-        var a := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
-        var b := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), fh)).ToArray;
+        var a := PartitionPoints(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
+        var b := PartitionPoints(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), fh)).ToArray;
         for var i := 0 to fn - 1 do
           pmb.AddPanel(a[i + 1].X, a[i + 1].Y, a[i + 1].Z, a[i].X, a[i].Y, a[i].Z, b[i].X, b[i].Y, b[i].Z, b[i + 1].X, b[i + 1].Y, b[i + 1].Z);
         pmb.AddPanel(a.Reverse.ToArray);
@@ -2994,7 +2994,7 @@ type
       var pmb := new PanelModelBuilder();
       if N > 0 then
       begin
-        var a := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
+        var a := PartitionPoints(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
         var top := P3D(0, 0, fh);
         for var i := 0 to fn - 1 do
           pmb.AddPanel(a[i + 1].X, a[i + 1].Y, a[i + 1].Z, a[i].X, a[i].Y, a[i].Z, top.X, top.Y, top.Z);

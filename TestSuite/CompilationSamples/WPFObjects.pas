@@ -635,7 +635,7 @@ type
     end;  
     function ChangePointCollection(r: real; n: integer): PointCollection; 
     begin
-      var pp := Partition(0,2*Pi,n).Select(phi->Pnt(r+r*cos(phi-Pi/2),r+r*sin(phi-Pi/2))).ToArray;      Result := new PointCollection(pp);
+      var pp := PartitionPoints(0,2*Pi,n).Select(phi->Pnt(r+r*cos(phi-Pi/2),r+r*sin(phi-Pi/2))).ToArray;      Result := new PointCollection(pp);
     end;
     function CreatePolygon(r: real; n: integer): System.Windows.Shapes.Polygon;
     begin
@@ -706,8 +706,8 @@ type
     end;  
     function ChangePointCollection(r,rint: real; n: integer): PointCollection; 
     begin
-      var pp1 := Partition(0,2*Pi,n).Select(phi->Pnt(r+r*cos(phi-Pi/2),r+r*sin(phi-Pi/2)));
-      var pp2 := Partition(0+Pi/n,2*Pi+Pi/n,n).Select(phi->Pnt(r+rint*cos(phi-Pi/2),r+rint*sin(phi-Pi/2)));
+      var pp1 := PartitionPoints(0,2*Pi,n).Select(phi->Pnt(r+r*cos(phi-Pi/2),r+r*sin(phi-Pi/2)));
+      var pp2 := PartitionPoints(0+Pi/n,2*Pi+Pi/n,n).Select(phi->Pnt(r+rint*cos(phi-Pi/2),r+rint*sin(phi-Pi/2)));
       Result := new PointCollection(pp1.Interleave(pp2).ToArray);
     end;
     function CreatePolygon(r,rint: real; n: integer): System.Windows.Shapes.Polygon;

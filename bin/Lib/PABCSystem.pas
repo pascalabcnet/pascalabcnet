@@ -5825,7 +5825,7 @@ end;
 procedure WritelnFormat(f: Text; formatstr: string; params args: array of object);
 begin
   var s := Format(formatstr, args);
-  writeln(f, s);
+  Writeln(f, s);
 end;
 
 // -----------------------------------------------------
@@ -5833,7 +5833,7 @@ end;
 // -----------------------------------------------------
 procedure Print(s: string);
 begin
-  write(s, ' ');
+  Write(s, ' ');
 end;
 
 procedure Print(params args: array of object);
@@ -5841,13 +5841,13 @@ begin
   if args.Length = 0 then
     exit;
   for var i := 0 to args.length - 1 do
-    write(args[i], ' ');
+    Write(args[i], ' ');
 end;
 
 procedure Println(params args: array of object);
 begin
   Print(args);
-  writeln;
+  Writeln;
 end;
 
 procedure Print(f: Text; params args: array of object);
@@ -5855,13 +5855,13 @@ begin
   if args.Length = 0 then
     exit;
   for var i := 0 to args.length - 1 do
-    write(f, args[i], ' ');
+    Write(f, args[i], ' ');
 end;
 
 procedure Println(f: Text; params args: array of object);
 begin
   Print(f, args);
-  writeln(f);
+  Writeln(f);
 end;
 // -----------------------------------------------------
 //                  Text files

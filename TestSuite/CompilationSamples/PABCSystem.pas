@@ -1675,12 +1675,12 @@ function Length(a: System.Array): integer;
 ///- function Length(a: array of T; dim: integer): integer;
 /// Возвращает длину динамического массива по размерности dim
 function Length(a: System.Array; dim: integer): integer;
-///- procedure SetLength(var a: array of T);
+///- procedure SetLength(var a: array of T; n: integer);
 /// Устанавливает длину одномерного динамического массива. Старое содержимое сохраняется
-//procedure SetLength(var a: System.Array);
-///- procedure SetLength(var a: array of T; n1,n2,...: integer);
+//procedure SetLength<T>(var a: array of T; n: integer);
+///- procedure SetLength(var a: array [,...,] of T; n1,n2,...: integer);
 /// Устанавливает размеры n-мерного динамического массива. Старое содержимое сохраняется
-//procedure SetLength(var a: System.Array);
+//procedure SetLength<T>(var a: array[,...,] of T; n: integer);
 ///- function Copy(a: array of T): array of T;
 /// Создаёт копию динамического массива
 function Copy(a: System.Array): System.Array;
@@ -1716,10 +1716,8 @@ procedure Shuffle<T>(l: List<T>);
 function Range(a, b: integer): sequence of integer;
 /// Возвращает последовательность символов от c1 до c2
 function Range(c1, c2: char): sequence of char;
-/// Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей (Используйте Partition)
-function Range(a, b: real; n: integer): sequence of real;
 /// Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей
-function Partition(a, b: real; n: integer): sequence of real;
+function PartitionPoints(a, b: real; n: integer): sequence of real;
 /// Возвращает последовательность целых от a до b с шагом step
 function Range(a, b, step: integer): sequence of integer;
 /// Возвращает последовательность указанных элементов
@@ -3934,7 +3932,7 @@ begin
   end;
 end;
 
-function Partition(a, b: real; n: integer): sequence of real;
+function PartitionPoints(a, b: real; n: integer): sequence of real;
 begin
   Result := Range(a, b, n)
 end;
