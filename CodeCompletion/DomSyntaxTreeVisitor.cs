@@ -3194,9 +3194,9 @@ namespace CodeCompletion
                 element_type = element_types[0];
                 for (int i = 1; i < element_types.Count; i++)
                 {
-                    if (element_type.IsConvertable(element_types[i]))
+                    if (element_type.IsConvertable(element_types[i], true))
                         element_type = element_types[i];
-                    else if (!element_types[i].IsConvertable(element_type))
+                    else if (!element_types[i].IsConvertable(element_type, true))
                     {
                         element_type = TypeTable.obj_type;
                         break;
@@ -4754,7 +4754,7 @@ namespace CodeCompletion
                 return;
             }
                 
-            if (type1.IsConvertable(type2))
+            if (type1.IsConvertable(type2, true))
             {
                 returned_scope = type2;
                 return;
