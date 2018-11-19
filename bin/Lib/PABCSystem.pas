@@ -1945,6 +1945,8 @@ var
   DefaultEncoding: Encoding;
   ///--
   PrintDelimDefault: string := ' ';
+  ///--
+  PrintMatrixWithFormat: boolean := True;
 
 var
 ///--
@@ -5469,16 +5471,24 @@ end;
 
 procedure Text.Print(params o: array of Object);
 begin
-  foreach var s in o do
-    PABCSystem.Write(Self, s, ' ');
+  if PrintDelimDefault<>'' then
+    foreach var s in o do
+      PABCSystem.Write(Self, s, PrintDelimDefault)
+  else    
+    foreach var s in o do
+      PABCSystem.Write(Self, s)
 end;
 
 procedure Text.Println(params o: array of Object);
 begin
   if o.Length <> 0 then
   begin
-    for var i:=0 to o.Length-2 do
-      PABCSystem.Write(Self, o[i], ' ');
+    if PrintDelimDefault<>'' then
+      for var i:=0 to o.Length-2 do
+        PABCSystem.Write(Self, o[i], PrintDelimDefault)
+    else    
+      for var i:=0 to o.Length-2 do
+        PABCSystem.Write(Self, o[i]);
     PABCSystem.Write(Self, o.Last);
   end;
   PABCSystem.Writeln(Self);
@@ -5833,15 +5843,21 @@ end;
 // -----------------------------------------------------
 procedure Print(s: string);
 begin
-  Write(s, ' ');
+  if PrintDelimDefault<>'' then
+    Write(s, PrintDelimDefault)
+  else Write(s)  
 end;
 
 procedure Print(params args: array of object);
 begin
   if args.Length = 0 then
     exit;
-  for var i := 0 to args.length - 1 do
-    Write(args[i], ' ');
+  if PrintDelimDefault<>'' then
+    for var i := 0 to args.length - 1 do
+      Write(args[i], PrintDelimDefault)
+  else     
+    for var i := 0 to args.length - 1 do
+      Write(args[i])
 end;
 
 procedure Println(params args: array of object);
@@ -5854,8 +5870,12 @@ procedure Print(f: Text; params args: array of object);
 begin
   if args.Length = 0 then
     exit;
-  for var i := 0 to args.length - 1 do
-    Write(f, args[i], ' ');
+  if PrintDelimDefault<>'' then
+    for var i := 0 to args.length - 1 do
+      Write(f, args[i], PrintDelimDefault)
+  else     
+    for var i := 0 to args.length - 1 do
+      Write(f, args[i])
 end;
 
 procedure Println(f: Text; params args: array of object);
@@ -9391,9 +9411,9 @@ begin
   begin
     for var j := 0 to Self.ColCount - 1 do
     begin
-      var elem := Self[i, j];
-      var s := StructuredObjectToString(elem);
-      Write(s.PadLeft(w));
+      if PrintMatrixWithFormat then
+        Write(StructuredObjectToString(Self[i, j]).PadLeft(w))
+      else Print(Self[i, j]);
     end;
     Writeln;  
   end;
@@ -9406,7 +9426,11 @@ begin
   for var i := 0 to Self.RowCount - 1 do
   begin
     for var j := 0 to Self.ColCount - 1 do
-      Write(FormatValue(Self[i, j], w, f));
+    begin
+      if PrintMatrixWithFormat then
+        Write(FormatValue(Self[i, j], w, f))
+      else Print(Self[i, j]);
+    end;  
     Writeln;  
   end;
   Result := Self;  
