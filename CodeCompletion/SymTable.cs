@@ -1874,12 +1874,12 @@ namespace CodeCompletion
             return parent.FindNameOnlyInThisType(name);
         }
 
-        public override bool IsConvertable(TypeScope ts)
+        public override bool IsConvertable(TypeScope ts, bool strong = false)
         {
             if (IsEqual(ts))
                 return true;
             if (ts is CompiledScope)
-                return ts.IsConvertable(this);
+                return ts.IsConvertable(this, strong);
             if (ts is TemplateParameterScope || ts.IsGenericParameter)
                 return true;
             return false;
@@ -2423,7 +2423,7 @@ namespace CodeCompletion
             enum_consts.Add(name);
         }
 
-        public override bool IsConvertable(TypeScope ts)
+        public override bool IsConvertable(TypeScope ts, bool strong = false)
         {
             if (IsEqual(ts))
                 return true;
@@ -2579,7 +2579,7 @@ namespace CodeCompletion
             return null;
         }
 
-        public override bool IsConvertable(TypeScope ts)
+        public override bool IsConvertable(TypeScope ts, bool strong = false)
         {
             if (IsEqual(ts) || ts is TemplateParameterScope || ts.IsGenericParameter)
                 return true;
@@ -2703,7 +2703,7 @@ namespace CodeCompletion
             return new FileScope(gen_args[0], this.topScope);
         }
 
-        public override bool IsConvertable(TypeScope ts)
+        public override bool IsConvertable(TypeScope ts, bool strong = false)
         {
             if (ts is FileScope)
             {
@@ -2881,6 +2881,14 @@ namespace CodeCompletion
             return ts;
         }
 
+        public override ITypeScope ElementType
+        {
+            get
+            {
+                return actType.ElementType;
+            }
+        }
+
         public override void AddIndexer(TypeScope ts)
         {
             actType.AddIndexer(ts);
@@ -2921,12 +2929,12 @@ namespace CodeCompletion
             return actType.FindOverloadNamesOnlyInType(name);
         }
 
-        public override bool IsConvertable(TypeScope ts)
+        public override bool IsConvertable(TypeScope ts, bool strong = false)
         {
             if (ts is TypeSynonim)
                 ts = (ts as TypeSynonim).actType;
             if (ts is TypeScope)
-                return this.actType.IsConvertable(ts);
+                return this.actType.IsConvertable(ts, strong);
             return false;
         }
 
@@ -3080,9 +3088,9 @@ namespace CodeCompletion
             return false;
         }
 
-        public override bool IsConvertable(TypeScope ts)
+        public override bool IsConvertable(TypeScope ts, bool strong = false)
         {
-            if (ts is TypeSynonim) return actType.IsConvertable((ts as TypeSynonim).actType);
+            if (ts is TypeSynonim) return actType.IsConvertable((ts as TypeSynonim).actType, strong);
             if (ts is ShortStringScope) return true;
             return false;
         }
@@ -3322,7 +3330,7 @@ namespace CodeCompletion
 
         }
 
-        public override bool IsConvertable(TypeScope ts)
+        public override bool IsConvertable(TypeScope ts, bool strong = false)
         {
             if (ts is NullTypeScope && is_dynamic_arr)
                 return true;
@@ -3545,7 +3553,7 @@ namespace CodeCompletion
 
         }
 
-        public override bool IsConvertable(TypeScope ts)
+        public override bool IsConvertable(TypeScope ts, bool strong = false)
         {
             if (ts is NullTypeScope)
                 return false;
@@ -3630,7 +3638,7 @@ namespace CodeCompletion
             get { return ref_type; }
         }
 
-        public override bool IsConvertable(TypeScope ts)
+        public override bool IsConvertable(TypeScope ts, bool strong = false)
         {
             if (IsEqual(ts))
                 return true;
@@ -4186,7 +4194,7 @@ namespace CodeCompletion
             si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetSynonimDescription(this);
         }
 
-        public virtual bool IsConvertable(TypeScope ts)
+        public virtual bool IsConvertable(TypeScope ts, bool strong = false)
         {
             if (IsEqual(ts))
                 return true;
@@ -5101,6 +5109,14 @@ namespace CodeCompletion
             return TypeTable.get_compiled_type(t);
         }
 
+        /*public override ITypeScope ElementType
+        {
+            get
+            {
+                return GetElementType();
+            }
+        }*/
+
         public override bool IsStatic
         {
             get
@@ -5458,7 +5474,7 @@ namespace CodeCompletion
                 instances.Clear();
         }
 
-        public override bool IsConvertable(TypeScope ts)
+        public override bool IsConvertable(TypeScope ts, bool strong = false)
         {
             CompiledScope cs = ts as CompiledScope;
             if (ts == null)
@@ -5467,7 +5483,7 @@ namespace CodeCompletion
                 return true;
             if (cs == null)
                 if (ts is TypeSynonim)
-                    return this.IsConvertable((ts as TypeSynonim).actType);
+                    return this.IsConvertable((ts as TypeSynonim).actType, strong);
                 else
                     if (ts is ShortStringScope && ctn == typeof(string))
                     return true;
@@ -5496,7 +5512,7 @@ namespace CodeCompletion
                         for (int i = 0; i < parameters.Length; i++)
                         {
                             CompiledScope param_cs = TypeTable.get_compiled_type(null, parameters[i].ParameterType);
-                            if (!(pt.target.parameters[i].sc is TypeScope) || !param_cs.IsConvertable(pt.target.parameters[i].sc as TypeScope))
+                            if (!(pt.target.parameters[i].sc is TypeScope) || !param_cs.IsConvertable(pt.target.parameters[i].sc as TypeScope, strong))
                                 return false;
                         }
                         return CompiledScope.get_type_instance(invoke_meth.ReturnType, new List<TypeScope>()).IsConvertable(pt.target.return_type);
@@ -5571,6 +5587,11 @@ namespace CodeCompletion
                 }
                 if (cs.ctn.IsGenericParameter || this.ctn.IsGenericParameter)
                     return true;
+                if (!strong && tc == type_compare.greater_type && this.ctn.IsPrimitive && cs.ctn.IsPrimitive)
+                {
+                    if (code1 != TypeCode.Double && code2 != TypeCode.Single)
+                        return true;
+                }
                 return tc == type_compare.less_type;
             }
             else

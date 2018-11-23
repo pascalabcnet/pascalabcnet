@@ -1,6 +1,6 @@
 ﻿uses Graph3D;
 
-function ParametricTrajectory(a,b: real; N: integer; fun: real->Point3D) := Partition(a,b,N).Select(fun);
+function ParametricTrajectory(a,b: real; N: integer; fun: real->Point3D) := PartitionPoints(a,b,N).Select(fun);
 
 function ParametricCirve3D(a,b: real; fun: real->Point3D; N: integer := 200): SegmentsT;
 begin

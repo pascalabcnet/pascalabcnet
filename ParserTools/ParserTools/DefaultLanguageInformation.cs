@@ -2848,7 +2848,7 @@ namespace PascalABCCompiler.Parsers
                                                     i--;
                                             }
                                         }
-                                        if (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?'))
+                                        if (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?' && IsPunctuation(Text, i+1)))
                                         {
                                             bound = i + 1;
                                             TestForKeyword(Text, i, ref bound, punkt_sym, out keyw);
@@ -2942,6 +2942,15 @@ namespace PascalABCCompiler.Parsers
             return FindExpressionFromAnyPosition(off, Text, line, col, out keyw, out expr_without_brackets);
         }
 
+        private bool IsPunctuation(string Text, int ind)
+        {
+            while (ind < Text.Length && char.IsWhiteSpace(Text[ind]))
+                ind++;
+            if (ind >= Text.Length)
+                return true;
+            return char.IsPunctuation(Text[ind]);
+        }
+
         public virtual string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out KeywordKind keyw, out string expr_without_brackets)
         {
             int i = off - 1;
@@ -2951,10 +2960,10 @@ namespace PascalABCCompiler.Parsers
                 return "";
             bool is_char = false;
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            if (Text[i] != ' ' && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?'))
+            if (Text[i] != ' ' && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?' && IsPunctuation(Text, i + 1)))
             {
                 //sb.Remove(0,sb.Length);
-                while (i >= 0 && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?'))
+                while (i >= 0 && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?' && IsPunctuation(Text, i + 1)))
                 {
                     //sb.Insert(0,Text[i]);//.Append(Text[i]);
                     i--;
@@ -2962,7 +2971,7 @@ namespace PascalABCCompiler.Parsers
                 is_char = true;
             }
             i = off;
-            if (i < Text.Length && Text[i] != ' ' && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?'))
+            if (i < Text.Length && Text[i] != ' ' && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?' && IsPunctuation(Text, i + 1)))
             {
                 while (i < Text.Length && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_'))
                 {
@@ -3112,6 +3121,8 @@ namespace PascalABCCompiler.Parsers
                     if (ind != -1)
                         return ss.Substring(ind + 3);
                 }
+                if (is_new && ss != null && ss.IndexOf("new") == -1 && ss.IndexOf(":") != -1)
+                    return expr_without_brackets + "(true?"+ss;
                 return ss;
             }
             return null;

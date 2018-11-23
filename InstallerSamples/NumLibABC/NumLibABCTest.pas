@@ -1,46 +1,46 @@
-uses NumLibABC;
+п»їuses NumLibABC;
 
 procedure TestApproxCheb(s:string; a,b:array of real; eps:real);
-// a - массив вычисленных значений
-// b - массив ожидаемых значений
-// eps - допустимая абсолютная погрешность решений
+// a - РјР°СЃСЃРёРІ РІС‹С‡РёСЃР»РµРЅРЅС‹С… Р·РЅР°С‡РµРЅРёР№
+// b - РјР°СЃСЃРёРІ РѕР¶РёРґР°РµРјС‹С… Р·РЅР°С‡РµРЅРёР№
+// eps - РґРѕРїСѓСЃС‚РёРјР°СЏ Р°Р±СЃРѕР»СЋС‚РЅР°СЏ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ СЂРµС€РµРЅРёР№
 begin
   for var i:=0 to a.Length-1 do begin
-    var Msg:=s+': найдено: '+a[i]+', ожидалось '+b[i];
+    var Msg:=s+': РЅР°Р№РґРµРЅРѕ: '+a[i]+', РѕР¶РёРґР°Р»РѕСЃСЊ '+b[i];
     Assert(Abs(Abs(a[i])-Abs(b[i]))<=eps,Msg);
     end
 end;
 
 procedure TestDecomp(s:string; a:array[,] of real; b:array of real;
     roots:array of real; eps:real);
-// a - матрица системы;
-// b - вектор правых частей;
-// roots - вектор эталонных решений;
-// eps - максимальная абсолютная погрешность решений
+// a - РјР°С‚СЂРёС†Р° СЃРёСЃС‚РµРјС‹;
+// b - РІРµРєС‚РѕСЂ РїСЂР°РІС‹С… С‡Р°СЃС‚РµР№;
+// roots - РІРµРєС‚РѕСЂ СЌС‚Р°Р»РѕРЅРЅС‹С… СЂРµС€РµРЅРёР№;
+// eps - РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ Р°Р±СЃРѕР»СЋС‚РЅР°СЏ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ СЂРµС€РµРЅРёР№
 begin
   var oD:=new Decomp(a);
-  var Msg:=s+': cond='+oD.cond+' обнаружена вырожденность матрицы';
+  var Msg:=s+': cond='+oD.cond+' РѕР±РЅР°СЂСѓР¶РµРЅР° РІС‹СЂРѕР¶РґРµРЅРЅРѕСЃС‚СЊ РјР°С‚СЂРёС†С‹';
   var Flag:=oD.cond+1=oD.cond;
   Assert(not Flag,Msg);
   if not Flag then begin
     oD.Solve(b);
     var sum:=b.Zip(roots,(p,q)->Abs(Abs(p)-Abs(q))).Sum;
-    Msg:=s+': недопустимая погрешность '+sum+' > '+eps+NewLine+
-        'Получено : '+b.JoinIntoString(' ')+NewLine+
-        'Ожидалось: '+roots.JoinIntoString(' ');
+    Msg:=s+': РЅРµРґРѕРїСѓСЃС‚РёРјР°СЏ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ '+sum+' > '+eps+NewLine+
+        'РџРѕР»СѓС‡РµРЅРѕ : '+b.JoinIntoString(' ')+NewLine+
+        'РћР¶РёРґР°Р»РѕСЃСЊ: '+roots.JoinIntoString(' ');
     Assert(sum<=eps,Msg);
     end
 end;
 
 procedure TestFactors(s:string; a:array of integer; roots:array of integer);
-// a - коэффициенты полинома;
-// aroots - вектор эталонных решений;
+// a - РєРѕСЌС„С„РёС†РёРµРЅС‚С‹ РїРѕР»РёРЅРѕРјР°;
+// aroots - РІРµРєС‚РѕСЂ СЌС‚Р°Р»РѕРЅРЅС‹С… СЂРµС€РµРЅРёР№;
 begin
   var oL:=new Factors(a);
   var r:=oL.Factorize;
   var r1:=r.Rows.SelectMany(x->x);
-  var Msg:=s+': ошибка.'+Newline+r1.JoinIntoString+': получено'+NewLine+
-      roots.JoinIntoString+': ожидалось';
+  var Msg:=s+': РѕС€РёР±РєР°.'+Newline+r1.JoinIntoString+': РїРѕР»СѓС‡РµРЅРѕ'+NewLine+
+      roots.JoinIntoString+': РѕР¶РёРґР°Р»РѕСЃСЊ';
   if r1.Count=roots.Count then begin
     var s1:=r1.Zip(roots,(i,j)->i-j).Sum;
     Assert(s1=0,Msg)
@@ -51,78 +51,78 @@ end;
 
 {$region FMinTest}
 procedure TestFMin(s:string; f:real->real; a,b,etx,ety,epsx,epsy:real);
-// etx - ожидаемое значение аргумента
-// etx - ожидаемое значение функции
-// epsx - допустимая абсолютная погрешность по аргументу
-// epsy - допустимая абсолютная погрешность по функции
+// etx - РѕР¶РёРґР°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ Р°СЂРіСѓРјРµРЅС‚Р°
+// etx - РѕР¶РёРґР°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ С„СѓРЅРєС†РёРё
+// epsx - РґРѕРїСѓСЃС‚РёРјР°СЏ Р°Р±СЃРѕР»СЋС‚РЅР°СЏ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ РїРѕ Р°СЂРіСѓРјРµРЅС‚Сѓ
+// epsy - РґРѕРїСѓСЃС‚РёРјР°СЏ Р°Р±СЃРѕР»СЋС‚РЅР°СЏ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ РїРѕ С„СѓРЅРєС†РёРё
 begin
   var oL:=new FMin(f,a,b);
   var (x,y):=(oL.x,oL.Value);
-  var Msg:=s+': найден аргумент: '+x+', ожидался '+etx;
+  var Msg:=s+': РЅР°Р№РґРµРЅ Р°СЂРіСѓРјРµРЅС‚: '+x+', РѕР¶РёРґР°Р»СЃСЏ '+etx;
   Assert(Abs(x-etx)<=epsx,Msg);
-  Msg:=s+': значение функции: '+y+', ожидалось '+ety;
+  Msg:=s+': Р·РЅР°С‡РµРЅРёРµ С„СѓРЅРєС†РёРё: '+y+', РѕР¶РёРґР°Р»РѕСЃСЊ '+ety;
   Assert(Abs(y-ety)<=epsy,Msg);
 end;
 
 procedure TestFMinN1(s:string; f:function(x:array of real):real;
     xb:array of real; etx:array of real; ety,epsx,epsy:real);
-// xb - массив аргументов
-// etx - массив ожидаемых значений аргументов
-// etx - ожидаемое значение функции
-// epsx - допустимая абсолютная погрешность по аргументу
-// epsy - допустимая абсолютная погрешность по функции
+// xb - РјР°СЃСЃРёРІ Р°СЂРіСѓРјРµРЅС‚РѕРІ
+// etx - РјР°СЃСЃРёРІ РѕР¶РёРґР°РµРјС‹С… Р·РЅР°С‡РµРЅРёР№ Р°СЂРіСѓРјРµРЅС‚РѕРІ
+// etx - РѕР¶РёРґР°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ С„СѓРЅРєС†РёРё
+// epsx - РґРѕРїСѓСЃС‚РёРјР°СЏ Р°Р±СЃРѕР»СЋС‚РЅР°СЏ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ РїРѕ Р°СЂРіСѓРјРµРЅС‚Сѓ
+// epsy - РґРѕРїСѓСЃС‚РёРјР°СЏ Р°Р±СЃРѕР»СЋС‚РЅР°СЏ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ РїРѕ С„СѓРЅРєС†РёРё
 begin
   var oL:=new FMinN(xb,f);
   var x:=oL.HJ;
   var y:=f(x);
-  var Msg:=s+':'+NewLine+'найдены аргументы  : '+
+  var Msg:=s+':'+NewLine+'РЅР°Р№РґРµРЅС‹ Р°СЂРіСѓРјРµРЅС‚С‹  : '+
       x.Select(t->Format('{0}',t)).JoinIntoString+NewLine+
-      'ожидались аргументы: '+
+      'РѕР¶РёРґР°Р»РёСЃСЊ Р°СЂРіСѓРјРµРЅС‚С‹: '+
       etx.Select(t->Format('{0}',t)).JoinIntoString;
   for var i:=0 to x.Length-1 do
     if Abs(x[i]-etx[i])>epsx then begin
       Assert(false,Msg);
       break
     end;
-  Msg:=s+': значение функции: '+y+', ожидалось '+ety;
+  Msg:=s+': Р·РЅР°С‡РµРЅРёРµ С„СѓРЅРєС†РёРё: '+y+', РѕР¶РёРґР°Р»РѕСЃСЊ '+ety;
   Assert(Abs(y-ety)<=epsy,Msg);
 end;
 
 procedure TestFMinN2(s:string; f:function(x:array of real):real;
     a,b:array of real; k,m:integer; etx:array of real; ety,epsx,epsy:real);
-// a,b - массивы нижних и верхних границ аргументов
-// k - количество случайных точек в BPHS
-// m - количество вызовов MKSearch
-// etx - массив ожидаемых значений аргументов
-// etx - ожидаемое значение функции
-// epsx - допустимая абсолютная погрешность по аргументу
-// epsy - допустимая абсолютная погрешность по функции
+// a,b - РјР°СЃСЃРёРІС‹ РЅРёР¶РЅРёС… Рё РІРµСЂС…РЅРёС… РіСЂР°РЅРёС† Р°СЂРіСѓРјРµРЅС‚РѕРІ
+// k - РєРѕР»РёС‡РµСЃС‚РІРѕ СЃР»СѓС‡Р°Р№РЅС‹С… С‚РѕС‡РµРє РІ BPHS
+// m - РєРѕР»РёС‡РµСЃС‚РІРѕ РІС‹Р·РѕРІРѕРІ MKSearch
+// etx - РјР°СЃСЃРёРІ РѕР¶РёРґР°РµРјС‹С… Р·РЅР°С‡РµРЅРёР№ Р°СЂРіСѓРјРµРЅС‚РѕРІ
+// etx - РѕР¶РёРґР°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ С„СѓРЅРєС†РёРё
+// epsx - РґРѕРїСѓСЃС‚РёРјР°СЏ Р°Р±СЃРѕР»СЋС‚РЅР°СЏ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ РїРѕ Р°СЂРіСѓРјРµРЅС‚Сѓ
+// epsy - РґРѕРїСѓСЃС‚РёРјР°СЏ Р°Р±СЃРѕР»СЋС‚РЅР°СЏ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ РїРѕ С„СѓРЅРєС†РёРё
 begin
   var oL:=new FMinN(etx,f);
   var y:real;
   oL.BPHS(a,b,y,k,m);
-  var Msg:=s+':'+NewLine+'найдены аргументы  : '+
+  var Msg:=s+':'+NewLine+'РЅР°Р№РґРµРЅС‹ Р°СЂРіСѓРјРµРЅС‚С‹  : '+
       oL.x.Select(t->Format('{0}',t)).JoinIntoString+NewLine+
-      'ожидались аргументы: '+
+      'РѕР¶РёРґР°Р»РёСЃСЊ Р°СЂРіСѓРјРµРЅС‚С‹: '+
       etx.Select(t->Format('{0}',t)).JoinIntoString;
   for var i:=0 to oL.x.Length-1 do
     if Abs(oL.x[i]-etx[i])>epsx then begin
       Assert(false,Msg);
       break
     end;
-  Msg:=s+': значение функции: '+y+', ожидалось '+ety;
+  Msg:=s+': Р·РЅР°С‡РµРЅРёРµ С„СѓРЅРєС†РёРё: '+y+', РѕР¶РёРґР°Р»РѕСЃСЊ '+ety;
   Assert(Abs(y-ety)<=epsy,Msg);
 end;
 
 procedure TestFMinN3(s:string; f:function(x:array of real):real;
     a,b:array of real; k,m:integer; etx:array of real; ety,epsx,epsy:real);
-// a,b - массивы нижних и верхних границ аргументов
-// k - количество случайных точек в BPHS
-// m - количество вызовов MKSearch
-// etx - массив ожидаемых значений аргументов
-// etx - ожидаемое значение функции
-// epsx - допустимая абсолютная погрешность по аргументу
-// epsy - допустимая абсолютная погрешность по функции
+// a,b - РјР°СЃСЃРёРІС‹ РЅРёР¶РЅРёС… Рё РІРµСЂС…РЅРёС… РіСЂР°РЅРёС† Р°СЂРіСѓРјРµРЅС‚РѕРІ
+// k - РєРѕР»РёС‡РµСЃС‚РІРѕ СЃР»СѓС‡Р°Р№РЅС‹С… С‚РѕС‡РµРє РІ BPHS
+// m - РєРѕР»РёС‡РµСЃС‚РІРѕ РІС‹Р·РѕРІРѕРІ MKSearch
+// etx - РјР°СЃСЃРёРІ РѕР¶РёРґР°РµРјС‹С… Р·РЅР°С‡РµРЅРёР№ Р°СЂРіСѓРјРµРЅС‚РѕРІ
+// etx - РѕР¶РёРґР°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ С„СѓРЅРєС†РёРё
+// epsx - РґРѕРїСѓСЃС‚РёРјР°СЏ Р°Р±СЃРѕР»СЋС‚РЅР°СЏ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ РїРѕ Р°СЂРіСѓРјРµРЅС‚Сѓ
+// epsy - РґРѕРїСѓСЃС‚РёРјР°СЏ Р°Р±СЃРѕР»СЋС‚РЅР°СЏ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ РїРѕ С„СѓРЅРєС†РёРё
 begin
   var oL:=new FMinN(etx,f);
   var y:real;
@@ -130,98 +130,98 @@ begin
   var x:array of real;
   foreach var t in r do begin
     (y,x):=(t[0],t[1]);
-    var Msg:=s+':'+NewLine+'найдены аргументы  : '+
+    var Msg:=s+':'+NewLine+'РЅР°Р№РґРµРЅС‹ Р°СЂРіСѓРјРµРЅС‚С‹  : '+
         x.Select(t->Format('{0}',t)).JoinIntoString+NewLine+
-        'ожидались аргументы: '+
+        'РѕР¶РёРґР°Р»РёСЃСЊ Р°СЂРіСѓРјРµРЅС‚С‹: '+
         etx.Select(t->Format('{0}',t)).JoinIntoString;
       for var i:=0 to x.Length-1 do
       if Abs(x[i]-etx[i])>epsx then begin
         Assert(false,Msg);
         break
         end;
-    Msg:=s+': значение функции: '+y+', ожидалось '+ety;
+    Msg:=s+': Р·РЅР°С‡РµРЅРёРµ С„СѓРЅРєС†РёРё: '+y+', РѕР¶РёРґР°Р»РѕСЃСЊ '+ety;
     Assert(Abs(y-ety)<=epsy,Msg)
     end
 end;
 
 procedure TestFMin4(s:string; f:function(x:array of real):real;
     x:array of real; R:real; var t:real; v:array of real; eps,epsf:real);
-// f - функция
-// x - вектор координат
-// R - максимально допустимая неопределенность
-// t - полученный радиус сферы неопределенности
-// v - вектор эталонного решения
-// eps - оценочная точность решения по координатам
-// epsf - оценочная точность по функции
+// f - С„СѓРЅРєС†РёСЏ
+// x - РІРµРєС‚РѕСЂ РєРѕРѕСЂРґРёРЅР°С‚
+// R - РјР°РєСЃРёРјР°Р»СЊРЅРѕ РґРѕРїСѓСЃС‚РёРјР°СЏ РЅРµРѕРїСЂРµРґРµР»РµРЅРЅРѕСЃС‚СЊ
+// t - РїРѕР»СѓС‡РµРЅРЅС‹Р№ СЂР°РґРёСѓСЃ СЃС„РµСЂС‹ РЅРµРѕРїСЂРµРґРµР»РµРЅРЅРѕСЃС‚Рё
+// v - РІРµРєС‚РѕСЂ СЌС‚Р°Р»РѕРЅРЅРѕРіРѕ СЂРµС€РµРЅРёСЏ
+// eps - РѕС†РµРЅРѕС‡РЅР°СЏ С‚РѕС‡РЅРѕСЃС‚СЊ СЂРµС€РµРЅРёСЏ РїРѕ РєРѕРѕСЂРґРёРЅР°С‚Р°Рј
+// epsf - РѕС†РµРЅРѕС‡РЅР°СЏ С‚РѕС‡РЅРѕСЃС‚СЊ РїРѕ С„СѓРЅРєС†РёРё
 begin
   var oL:=new FMinN(x,f);
   oL.ARS(R,t);
-  var Msg:=s+': Требуемая точность не достигнута';
+  var Msg:=s+': РўСЂРµР±СѓРµРјР°СЏ С‚РѕС‡РЅРѕСЃС‚СЊ РЅРµ РґРѕСЃС‚РёРіРЅСѓС‚Р°';
   Assert(t<=R,Msg);
-  Msg:=s+': не найдено решение, ожидалось ['+v.Skip(1).JoinIntoString(',')+
-    '], получено ['+oL.x.JoinIntoString(',')+']';
+  Msg:=s+': РЅРµ РЅР°Р№РґРµРЅРѕ СЂРµС€РµРЅРёРµ, РѕР¶РёРґР°Р»РѕСЃСЊ ['+v.Skip(1).JoinIntoString(',')+
+    '], РїРѕР»СѓС‡РµРЅРѕ ['+oL.x.JoinIntoString(',')+']';
   var p:=true;
   for var i:=0 to oL.x.Length-1 do p:=p and (Abs(oL.x[i])-Abs(v[i+1])<=eps);
   Assert(p,Msg);
-  Msg:=s+': найден радиус сферы '+t+', ожидаемый '+v[0];
+  Msg:=s+': РЅР°Р№РґРµРЅ СЂР°РґРёСѓСЃ СЃС„РµСЂС‹ '+t+', РѕР¶РёРґР°РµРјС‹Р№ '+v[0];
   Assert(Abs(t-v[0])<=epsf,Msg)
 end;
 {$endregion}
 
 procedure TestFraction(s:string; res,ans:Fraction);
-// результат сравнения res=ans
+// СЂРµР·СѓР»СЊС‚Р°С‚ СЃСЂР°РІРЅРµРЅРёСЏ res=ans
 begin
-  Assert(res=ans,s+': получено '+res.ToString+', ожидалось '+ans.ToString)
+  Assert(res=ans,s+': РїРѕР»СѓС‡РµРЅРѕ '+res.ToString+', РѕР¶РёРґР°Р»РѕСЃСЊ '+ans.ToString)
 end;
 
 {$region MatrixTest}
 procedure TestMatrixS(s:string; a,r,eps:real);
-// a - найденное значение;
-// r - ожидаемое значение;
-// eps - максимальная допустимая абсолютная погрешность
+// a - РЅР°Р№РґРµРЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ;
+// r - РѕР¶РёРґР°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ;
+// eps - РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ РґРѕРїСѓСЃС‚РёРјР°СЏ Р°Р±СЃРѕР»СЋС‚РЅР°СЏ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ
 begin
-  var Msg:=s+': погрешность выше допустимой.'+Newline+'Получено значение '+
-      a+', ожидалось значение '+r;
+  var Msg:=s+': РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ РІС‹С€Рµ РґРѕРїСѓСЃС‚РёРјРѕР№.'+Newline+'РџРѕР»СѓС‡РµРЅРѕ Р·РЅР°С‡РµРЅРёРµ '+
+      a+', РѕР¶РёРґР°Р»РѕСЃСЊ Р·РЅР°С‡РµРЅРёРµ '+r;
   Assert(Abs(a-r)<=eps,Msg)
 end;
 
 procedure TestMatrixV(s:string; a,r:Vector; eps:real);
-// a - вектор найденных значений;
-// r - вектор ожидаемых значений;
-// eps - максимальная допустимая абсолютная погрешность
+// a - РІРµРєС‚РѕСЂ РЅР°Р№РґРµРЅРЅС‹С… Р·РЅР°С‡РµРЅРёР№;
+// r - РІРµРєС‚РѕСЂ РѕР¶РёРґР°РµРјС‹С… Р·РЅР°С‡РµРЅРёР№;
+// eps - РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ РґРѕРїСѓСЃС‚РёРјР°СЏ Р°Р±СЃРѕР»СЋС‚РЅР°СЏ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ
 begin
   for var i:=0 to a.Length-1 do
     Assert(Abs(a.Value[i]-r.Value[i])<=eps,
-        s+': погрешность выше допустимой.'+Newline+'Получено значение '+
-        a.Value[i]+', ожидалось значение '+r.Value[i])
+        s+': РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ РІС‹С€Рµ РґРѕРїСѓСЃС‚РёРјРѕР№.'+Newline+'РџРѕР»СѓС‡РµРЅРѕ Р·РЅР°С‡РµРЅРёРµ '+
+        a.Value[i]+', РѕР¶РёРґР°Р»РѕСЃСЊ Р·РЅР°С‡РµРЅРёРµ '+r.Value[i])
 end;
 
 procedure TestMatrixM(s:string; a,r:Matrix; eps:real);
-// a - вычисленная матрица;
-// r - эталонная матрица;
-// eps - максимальная допустимая абсолютная погрешность
+// a - РІС‹С‡РёСЃР»РµРЅРЅР°СЏ РјР°С‚СЂРёС†Р°;
+// r - СЌС‚Р°Р»РѕРЅРЅР°СЏ РјР°С‚СЂРёС†Р°;
+// eps - РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ РґРѕРїСѓСЃС‚РёРјР°СЏ Р°Р±СЃРѕР»СЋС‚РЅР°СЏ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ
 begin
   for var i:=0 to a.RowCount-1 do
     for var j:=0 to a.ColCount-1 do
       Assert(Abs(a.Value[i,j]-r.Value[i,j])<=eps,
-          s+': погрешность выше допустимой.'+Newline+'Получено значение a['+
-          i+','+j+']='+a.Value[i,j]+', ожидалось значение '+r.Value[i,j])
+          s+': РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ РІС‹С€Рµ РґРѕРїСѓСЃС‚РёРјРѕР№.'+Newline+'РџРѕР»СѓС‡РµРЅРѕ Р·РЅР°С‡РµРЅРёРµ a['+
+          i+','+j+']='+a.Value[i,j]+', РѕР¶РёРґР°Р»РѕСЃСЊ Р·РЅР°С‡РµРЅРёРµ '+r.Value[i,j])
 end;
 {$endregion}
 
 procedure TestPolRt(s:string; a:Polynom; roots:array of complex; eps:real);
-// roots -массив ожидаемых значений корней
-// eps - максимальная абсолютная погрешность решений
+// roots -РјР°СЃСЃРёРІ РѕР¶РёРґР°РµРјС‹С… Р·РЅР°С‡РµРЅРёР№ РєРѕСЂРЅРµР№
+// eps - РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ Р°Р±СЃРѕР»СЋС‚РЅР°СЏ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ СЂРµС€РµРЅРёР№
 begin
   var oP:=new PolRt(a);
   if oP.ier>0 then begin
-    var Msg:=s+': тест не прошел, ошибка с кодом '+oP.ier;
+    var Msg:=s+': С‚РµСЃС‚ РЅРµ РїСЂРѕС€РµР», РѕС€РёР±РєР° СЃ РєРѕРґРѕРј '+oP.ier;
     Assert(false,Msg)
     end
   else begin
     var r:=oP.Value;
     for var i:=0 to r.Length-1 do begin
-      var Msg:=s+': найдено: ('+r[i].Real+','+r[i].Imaginary+'), ожидалось ('+
+      var Msg:=s+': РЅР°Р№РґРµРЅРѕ: ('+r[i].Real+','+r[i].Imaginary+'), РѕР¶РёРґР°Р»РѕСЃСЊ ('+
         roots[i].Real+','+roots[i].Imaginary+')';
       Assert(Complex.Abs(r[i]-roots[i])<=eps,Msg);
       end
@@ -229,121 +229,121 @@ begin
 end;
 
 procedure TestPolynomD(s:string; res,lim:real; n1,n2:integer);
-// res - вычисленное значение
-// lim - предельно допустимая величина res
-// проверяется также условие n2<n1
+// res - РІС‹С‡РёСЃР»РµРЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ
+// lim - РїСЂРµРґРµР»СЊРЅРѕ РґРѕРїСѓСЃС‚РёРјР°СЏ РІРµР»РёС‡РёРЅР° res
+// РїСЂРѕРІРµСЂСЏРµС‚СЃСЏ С‚Р°РєР¶Рµ СѓСЃР»РѕРІРёРµ n2<n1
 begin
-  Assert(n1>n2,s+': экономизации не произошло');
-  Assert(res<=lim,s+': отклонение '+res+' превышает '+lim);
+  Assert(n1>n2,s+': СЌРєРѕРЅРѕРјРёР·Р°С†РёРё РЅРµ РїСЂРѕРёР·РѕС€Р»Рѕ');
+  Assert(res<=lim,s+': РѕС‚РєР»РѕРЅРµРЅРёРµ '+res+' РїСЂРµРІС‹С€Р°РµС‚ '+lim);
 end;
 
 procedure TestPolynomV(s:string; p:Polynom; x,r,eps:real);
-// х - аргумент, для которого вычисляется полином
-// r - ожидаемое значение
-// eps - максимальная абсолютная погрешность решения
+// С… - Р°СЂРіСѓРјРµРЅС‚, РґР»СЏ РєРѕС‚РѕСЂРѕРіРѕ РІС‹С‡РёСЃР»СЏРµС‚СЃСЏ РїРѕР»РёРЅРѕРј
+// r - РѕР¶РёРґР°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ
+// eps - РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ Р°Р±СЃРѕР»СЋС‚РЅР°СЏ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ СЂРµС€РµРЅРёСЏ
 begin
   var a:=p.Value(x);
-  var Msg:=s+': найдено: '+a+', ожидалось '+r;
+  var Msg:=s+': РЅР°Р№РґРµРЅРѕ: '+a+', РѕР¶РёРґР°Р»РѕСЃСЊ '+r;
   Assert(Abs(a-r)<=eps,Msg)
 end;
 
 procedure TestQuanc8(s:string; a,b:real; F:real->real; ae,re,r2,eps:real);
-// cres - аналитически найденное значение интеграла
-// eps - допустимая абсолютная погрешность решения
+// cres - Р°РЅР°Р»РёС‚РёС‡РµСЃРєРё РЅР°Р№РґРµРЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РёРЅС‚РµРіСЂР°Р»Р°
+// eps - РґРѕРїСѓСЃС‚РёРјР°СЏ Р°Р±СЃРѕР»СЋС‚РЅР°СЏ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ СЂРµС€РµРЅРёСЏ
 begin
   var Msg:string;
   var oQ:=new Quanc8(f,a,b,ae,re);
   var r1:=oQ.Value;
   if r1[2]=0 then begin
-    Msg:=s+': вычислено '+r1[0]+', ожидалось '+r2;
+    Msg:=s+': РІС‹С‡РёСЃР»РµРЅРѕ '+r1[0]+', РѕР¶РёРґР°Р»РѕСЃСЊ '+r2;
     Assert(Abs(r1[0]-r2)<=eps,Msg)
     end
   else begin
-    Msg:=s+': вычислено '+r1[0]+', ожидалось '+r2+', errest='+r1[1]+', flag='+r1[2];
+    Msg:=s+': РІС‹С‡РёСЃР»РµРЅРѕ '+r1[0]+', РѕР¶РёРґР°Р»РѕСЃСЊ '+r2+', errest='+r1[1]+', flag='+r1[2];
     Assert(Abs(r1[0]-r2)<=eps,Msg)
     end
 end;
 
 procedure TestRKF45(s:string; res,ans,eps:real);
 begin
-  Assert(Abs(res-ans)<=eps,s+': контрольная сумма '+res+', ожидалась '+ans)
+  Assert(Abs(res-ans)<=eps,s+': РєРѕРЅС‚СЂРѕР»СЊРЅР°СЏ СЃСѓРјРјР° '+res+', РѕР¶РёРґР°Р»Р°СЃСЊ '+ans)
 end;
 
 procedure TestRootsIsolation(s:string; f:real->real; a,b,h:real;
     t:array of real);
-// f - функция
-// a,b - границы интервала поиска
-// h - шаг поиска
-// t - эталонный массив нулей функции
+// f - С„СѓРЅРєС†РёСЏ
+// a,b - РіСЂР°РЅРёС†С‹ РёРЅС‚РµСЂРІР°Р»Р° РїРѕРёСЃРєР°
+// h - С€Р°Рі РїРѕРёСЃРєР°
+// t - СЌС‚Р°Р»РѕРЅРЅС‹Р№ РјР°СЃСЃРёРІ РЅСѓР»РµР№ С„СѓРЅРєС†РёРё
 begin
   var oRI:=new RootsIsolation(f,a,b,h);
   var r:=oRI.Value;
   for var i:=0 to t.Length-1 do begin
-    var Msg:=s+': точка нуля '+t[i]+' не в интервале ['+r[i][0]+';'+r[i][1]+']';
+    var Msg:=s+': С‚РѕС‡РєР° РЅСѓР»СЏ '+t[i]+' РЅРµ РІ РёРЅС‚РµСЂРІР°Р»Рµ ['+r[i][0]+';'+r[i][1]+']';
     Assert(t[i].Between(r[i][0],r[i][1]),Msg)
     end;
 end;
 
 procedure TestSpline(st:string; x:real; F:real->real; eps:real; S:Spline);
-// eps - относительная погрешность в процентах
+// eps - РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅР°СЏ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ РІ РїСЂРѕС†РµРЅС‚Р°С…
 begin
   var r1:=F(x);
   var r2:=S.Value(x);
-  var Msg:=st+': F('+x+')='+r1+', получено '+r2;
+  var Msg:=st+': F('+x+')='+r1+', РїРѕР»СѓС‡РµРЅРѕ '+r2;
   Assert(Abs((r1-r2)/r1)<=eps/100,Msg);
 end;
 
 procedure TestSvenn(s:string; f:real->real; x0,t,a,b:real);
-// f - функция
-// x0 - начальная точка поиска
-// t - шаг поиска
-// a,b - ожидаемый интервал (результат должен ему принадлежать)
+// f - С„СѓРЅРєС†РёСЏ
+// x0 - РЅР°С‡Р°Р»СЊРЅР°СЏ С‚РѕС‡РєР° РїРѕРёСЃРєР°
+// t - С€Р°Рі РїРѕРёСЃРєР°
+// a,b - РѕР¶РёРґР°РµРјС‹Р№ РёРЅС‚РµСЂРІР°Р» (СЂРµР·СѓР»СЊС‚Р°С‚ РґРѕР»Р¶РµРЅ РµРјСѓ РїСЂРёРЅР°РґР»РµР¶Р°С‚СЊ)
 begin
   var oS:=new Svenn(f,x0,t);
   var r:=oS.Value;
-  var Msg:=s+': не найдено решение, ожидалось ['+a+';'+b+']';
+  var Msg:=s+': РЅРµ РЅР°Р№РґРµРЅРѕ СЂРµС€РµРЅРёРµ, РѕР¶РёРґР°Р»РѕСЃСЊ ['+a+';'+b+']';
   Assert(r[2]=0,Msg);
-  Msg:=s+': интервал ['+a+';'+b+'] не входит в ['+r[0]+';'+r[1]+']';
+  Msg:=s+': РёРЅС‚РµСЂРІР°Р» ['+a+';'+b+'] РЅРµ РІС…РѕРґРёС‚ РІ ['+r[0]+';'+r[1]+']';
   Assert(a.Between(r[0],r[1]) and b.Between(r[0],r[1]),Msg)
 end;
 
 {$region VectorTest}
 procedure TestVector1(s:string; a,r,eps:real);
-// a - найденное значение;
-// r - ожидаемое значение;
-// eps - максимальная допустимая абсолютная погрешность
+// a - РЅР°Р№РґРµРЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ;
+// r - РѕР¶РёРґР°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ;
+// eps - РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ РґРѕРїСѓСЃС‚РёРјР°СЏ Р°Р±СЃРѕР»СЋС‚РЅР°СЏ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ
 begin
-  var Msg:=s+': погрешность выше допустимой.'+Newline+'Получено значение '+
-      a+', ожидалось значение '+r;
+  var Msg:=s+': РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ РІС‹С€Рµ РґРѕРїСѓСЃС‚РёРјРѕР№.'+Newline+'РџРѕР»СѓС‡РµРЅРѕ Р·РЅР°С‡РµРЅРёРµ '+
+      a+', РѕР¶РёРґР°Р»РѕСЃСЊ Р·РЅР°С‡РµРЅРёРµ '+r;
   Assert(Abs(a-r)<=eps,Msg)
 end;
 
 procedure TestVectorN(s:string; a,r:Vector; eps:real);
-// a - вектор найденных значений;
-// r - вектор ожидаемых значений;
-// eps - максимальная допустимая абсолютная погрешность
+// a - РІРµРєС‚РѕСЂ РЅР°Р№РґРµРЅРЅС‹С… Р·РЅР°С‡РµРЅРёР№;
+// r - РІРµРєС‚РѕСЂ РѕР¶РёРґР°РµРјС‹С… Р·РЅР°С‡РµРЅРёР№;
+// eps - РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ РґРѕРїСѓСЃС‚РёРјР°СЏ Р°Р±СЃРѕР»СЋС‚РЅР°СЏ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ
 begin
   for var i:=0 to a.Length-1 do
     Assert(Abs(a.Value[i]-r.Value[i])<=eps,
-        s+': погрешность выше допустимой.'+Newline+'Получено значение '+
-        a.Value[i]+', ожидалось значение '+r.Value[i])
+        s+': РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ РІС‹С€Рµ РґРѕРїСѓСЃС‚РёРјРѕР№.'+Newline+'РџРѕР»СѓС‡РµРЅРѕ Р·РЅР°С‡РµРЅРёРµ '+
+        a.Value[i]+', РѕР¶РёРґР°Р»РѕСЃСЊ Р·РЅР°С‡РµРЅРёРµ '+r.Value[i])
 end;
 {$endregion}
 
 procedure TestZeroin(s:string; a,b:real; F:real->real; root,eps:real);
-// root - точное значение корня
-// eps - абсолютная погрешность значения корня
+// root - С‚РѕС‡РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РєРѕСЂРЅСЏ
+// eps - Р°Р±СЃРѕР»СЋС‚РЅР°СЏ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ Р·РЅР°С‡РµРЅРёСЏ РєРѕСЂРЅСЏ
 begin
   var oZ:=new Zeroin(F,eps);
   var x:=oZ.Value(a,b);
-  var Msg:=s+': корень: '+x+', ожидалось '+root;
+  var Msg:=s+': РєРѕСЂРµРЅСЊ: '+x+', РѕР¶РёРґР°Р»РѕСЃСЊ '+root;
   Assert(Abs(x-root)<=eps,Msg);
 end;
 
 begin
   var nt:=1;
   Writeln('*** ',&NumLibABCVersion,' ***');
-  Writeln('     *** Тестирование начато ***');
+  Writeln('     *** РўРµСЃС‚РёСЂРѕРІР°РЅРёРµ РЅР°С‡Р°С‚Рѕ ***');
   
   {$region ApproxCheb}
   begin
@@ -367,14 +367,14 @@ begin
     oC:=new ApproxCheb(x,y,e);
     TestApproxCheb('AppoxCheb 3',oC.f,y,0.8);
     
-    Writeln(nt:2,'. Проверка класса ApproxCheb завершена');
+    Writeln(nt:2,'. РџСЂРѕРІРµСЂРєР° РєР»Р°СЃСЃР° ApproxCheb Р·Р°РІРµСЂС€РµРЅР°');
     nt+=1;
   end;
   {$endregion}  
     
   {$region Decomp}
   begin
-    // из первоисточника
+    // РёР· РїРµСЂРІРѕРёСЃС‚РѕС‡РЅРёРєР°
     var a:=new real[3,3] (
         (10.0,-7.0,0.0),
         (-3.0,2.0,6.0),
@@ -383,8 +383,8 @@ begin
     var r:=Arr(0.0,-1.0,1.0);
     TestDecomp('Decomp/Solve 1',a,b,r,1e-15);
     
-    // Фаддеев Д.К, Фаддеева В.Н. "Вычислительные методы линейной алгебры"
-    // Точное регение получено при помощи пакета Maple15
+    // Р¤Р°РґРґРµРµРІ Р”.Рљ, Р¤Р°РґРґРµРµРІР° Р’.Рќ. "Р’С‹С‡РёСЃР»РёС‚РµР»СЊРЅС‹Рµ РјРµС‚РѕРґС‹ Р»РёРЅРµР№РЅРѕР№ Р°Р»РіРµР±СЂС‹"
+    // РўРѕС‡РЅРѕРµ СЂРµРіРµРЅРёРµ РїРѕР»СѓС‡РµРЅРѕ РїСЂРё РїРѕРјРѕС‰Рё РїР°РєРµС‚Р° Maple15
     a:=new real[4,4] (
         (1.0,0.17,-0.25,0.54),
         (0.47,1.0,0.67,-0.32),
@@ -394,13 +394,13 @@ begin
     r:=Arr(7039205/15965951,-5796135/15965951,18629045/15965951,6283675/15965951);
     TestDecomp('Decomp/Solve 2',a,b,r,1e-15);
     
-    // Свидетельство к алгоритму 135б. В кн. Агеев М.И. и др.
-    // "Библиотека алгоритмов 101б-150б"
+    // РЎРІРёРґРµС‚РµР»СЊСЃС‚РІРѕ Рє Р°Р»РіРѕСЂРёС‚РјСѓ 135Р±. Р’ РєРЅ. РђРіРµРµРІ Рњ.Р. Рё РґСЂ.
+    // "Р‘РёР±Р»РёРѕС‚РµРєР° Р°Р»РіРѕСЂРёС‚РјРѕРІ 101Р±-150Р±"
     var aa:=new real[3,3] (
         (4.0,2.0,2.0),
         (2.0,2.0,2.0),
         (2.0,2.0,3.0));
-    a:=Copy(aa); //для теста
+    a:=Copy(aa); //РґР»СЏ С‚РµСЃС‚Р°
     //a:=MatrGen(3,3,(i,j)->aa[3*i+j]);
     b:=Arr(2.0,3.0,4.0);
     r:=Arr(-0.5,1.0,1.0);
@@ -414,7 +414,7 @@ begin
     r:=Arr(0.5,-0.5,1.0);
     TestDecomp('Decomp/Solve 3-3',a,b,r,1e-15);
     
-    Writeln(nt:2,'. Проверка класса Decomp/Solve завершена');
+    Writeln(nt:2,'. РџСЂРѕРІРµСЂРєР° РєР»Р°СЃСЃР° Decomp/Solve Р·Р°РІРµСЂС€РµРЅР°');
     nt+=1
   end;
   {$endregion}
@@ -436,7 +436,7 @@ begin
     a:=Arr(-40,78,-29,3);
     TestFactors('Factors 5',a,Arr(3,1,1,4,1,5,3,2));
     
-    Writeln(nt:2,'. Проверка класса Factors завершена');
+    Writeln(nt:2,'. РџСЂРѕРІРµСЂРєР° РєР»Р°СЃСЃР° Factors Р·Р°РІРµСЂС€РµРЅР°');
     nt+=1
   end;
   {$endregion}
@@ -460,7 +460,7 @@ begin
     f:=x->x=0?1e15:(x+2)*Exp(1/x);
     TestFMin('FMin 5',f,-1.5,4,2.0,4*Exp(0.5),1e-7,1e-17);
     
-    Writeln(nt:2,'. Проверка класса FMin завершена');
+    Writeln(nt:2,'. РџСЂРѕРІРµСЂРєР° РєР»Р°СЃСЃР° FMin Р·Р°РІРµСЂС€РµРЅР°');
     nt+=1
   end;
   {$endregion}
@@ -471,7 +471,7 @@ begin
         x->100*Sqr(x[1]-Sqr(x[0]))+Sqr(1-x[0]);
     var xb:=Arr(-1.2,1.0);
     var xet:=Arr(1.0,1.0);
-    TestFminN1('FMinN 1: HJ, функция Розенброка',
+    TestFminN1('FMinN 1: HJ, С„СѓРЅРєС†РёСЏ Р РѕР·РµРЅР±СЂРѕРєР°',
         Rosenbrock,xb,xet,0,1e-5,1e-8);
         
     var Woods:function(x:array of real):real:=x->
@@ -488,14 +488,14 @@ begin
       end;
     xb:=Arr(-3.0,-1.0,-3.0,-1.0);
     xet:=Arr(1.0,1.0,1.0,1.0);
-    TestFminN1('FMinN 2: HJ, функция с 4 аргументами',
+    TestFminN1('FMinN 2: HJ, С„СѓРЅРєС†РёСЏ СЃ 4 Р°СЂРіСѓРјРµРЅС‚Р°РјРё',
         Woods,xb,xet,0,1e-4,1e-8);
     
     var f1:function(x:array of real):real:=
         x->x[0]*(Sqr(x[0])-2)-5;
     xb:=Arr(0.0);
     xet:=Arr(Sqrt(2/3));
-    TestFminN1('FMinN 3: HJ, функция x^3-2x-5',
+    TestFminN1('FMinN 3: HJ, С„СѓРЅРєС†РёСЏ x^3-2x-5',
         f1,xb,xet,-Sqrt(32/27)-5,1e-4,1e-8);    
     
     var FSimplex:function(x:array of real):real:=x->
@@ -518,26 +518,26 @@ begin
     var y:real;
     oL.MKSearch(a,b,y);
     xb:=oL.x.Select(t->real(Round(t))).ToArray;
-    TestFminN1('FMinN 4: MKSearch+HJ, целочисленная функция со штрафом',
+    TestFminN1('FMinN 4: MKSearch+HJ, С†РµР»РѕС‡РёСЃР»РµРЅРЅР°СЏ С„СѓРЅРєС†РёСЏ СЃРѕ С€С‚СЂР°С„РѕРј',
         FSimplex,xb,xet,-29,1e-4,1e-8);
         
     a:=Arr(-1.0,-1.0);
     b:=Arr(2.0,2.0);
     xb:=new real[a.Length];
     xet:=Arr(1.0,1.0);
-    TestFminN2('FMinN 5: BPHS, функция Розенброка',
+    TestFminN2('FMinN 5: BPHS, С„СѓРЅРєС†РёСЏ Р РѕР·РµРЅР±СЂРѕРєР°',
         Rosenbrock,a,b,100,1000,xet,0,1e-3,1e-5);
         
     a:=Arr(-1.0,-1.0,-1.0,-1.0);
     b:=Arr(2.0,2.0,2.0,2.0);
     xet:=Arr(1.0,1.0,1.0,1.0);
-    TestFminN2('FMinN 6: BPHS, функция с 4 аргументами',
+    TestFminN2('FMinN 6: BPHS, С„СѓРЅРєС†РёСЏ СЃ 4 Р°СЂРіСѓРјРµРЅС‚Р°РјРё',
         Woods,a,b,100,5000,xet,0,1e-1,1e-2);
         
     a:=Arr(0.0,0.0);
     b:=Arr(8.0,8.0);
     xet:=Arr(6.0,2.0);
-    TestFminN2('FMinN 7: BestP, целочисленная функция со штрафом',
+    TestFminN2('FMinN 7: BestP, С†РµР»РѕС‡РёСЃР»РµРЅРЅР°СЏ С„СѓРЅРєС†РёСЏ СЃРѕ С€С‚СЂР°С„РѕРј',
         FSimplex,a,b,100,1000,xet,-29,1e-2,1e-6);
         
     f1:=x->4*Sqr(x[0]-5)+Sqr(x[1]-6);
@@ -552,7 +552,7 @@ begin
     v:=Arr(f1(Arr(0.0,0.0)),0.0,0.0);
     TestFMin4('FMinN 9: ARS',f1,xb,R,t,v,2*R,10*R);    
     
-    Writeln(nt:2,'. Проверка класса FMinN завершена');
+    Writeln(nt:2,'. РџСЂРѕРІРµСЂРєР° РєР»Р°СЃСЃР° FMinN Р·Р°РІРµСЂС€РµРЅР°');
     nt+=1
   end;
   {$endregion}
@@ -572,7 +572,7 @@ begin
     var b:=Frc(6190283353629375,42849873690624001); 
     TestFraction('Fraction 3',a,b);
     
-    Writeln(nt:2,'. Проверка класса Fraction завершена');
+    Writeln(nt:2,'. РџСЂРѕРІРµСЂРєР° РєР»Р°СЃСЃР° Fraction Р·Р°РІРµСЂС€РµРЅР°');
     nt+=1
   end;
   {$endregion}
@@ -619,7 +619,7 @@ begin
     TestMatrixV('Matrix 5.1',vr,new Vector(4,0,-1),1e-15);
     TestMatrixS('Matrix 5.2',cond,1.97935318837932,1e-14);
 
-    Writeln(nt:2,'. Проверка класса Matrix завершена');
+    Writeln(nt:2,'. РџСЂРѕРІРµСЂРєР° РєР»Р°СЃСЃР° Matrix Р·Р°РІРµСЂС€РµРЅР°');
     nt+=1
   end;  {$endregion}
   
@@ -662,17 +662,17 @@ begin
     cr[3]:=cplx((Sqrt(5)-1)/4,-Sqrt(10+2*Sqrt(5))/4); cr[4]:=Conjugate(cr[3]);
     TestPolrt('Polrt 8',p,cr,1e-15);
     
-    Writeln(nt:2,'. Проверка класса PolRt завершена');
+    Writeln(nt:2,'. РџСЂРѕРІРµСЂРєР° РєР»Р°СЃСЃР° PolRt Р·Р°РІРµСЂС€РµРЅР°');
     nt+=1;
   end;
   {$endregion}
     
   {$region Polynom}
   begin
-    var p:=new Polynom(2,6,8,3,1);  // запись 13862(10)
+    var p:=new Polynom(2,6,8,3,1);  // Р·Р°РїРёСЃСЊ 13862(10)
     TestPolynomV('Polynom 1',p,10,13862,1e-15);
     
-    p:=new Polynom(0,3,8,6,4,2,5); // запись 0.386425
+    p:=new Polynom(0,3,8,6,4,2,5); // Р·Р°РїРёСЃСЊ 0.386425
     TestPolynomV('Polynom 2',p,0.1,0.386425,1e-15);
     
     p:=new Polynom(1,0,1,1,0,1,1,0,1); // 365(10)=101101101(2)
@@ -681,7 +681,7 @@ begin
     p:=new Polynom(1,1,1/2,1/6,1/24,1/120,1/720,1/5040,1/40320); // exp(x)
     TestPolynomV('Polynom 4',p,0.36,exp(0.36),1e-9);
     
-    // пример -1435+(25*12+917) = -218
+    // РїСЂРёРјРµСЂ -1435+(25*12+917) = -218
     var a:=new Polynom(5,3,4,1);
     var b:=new Polynom(5,2);
     var c:=new Polynom(2,1);
@@ -694,7 +694,7 @@ begin
     var x:=pi;
     var x1:=b.Value(x)+c.Value(x)/a.Value(x);
     var x2:=p.Value(x)/a.Value(x);
-    var Msg:='Polynom 6: найдено: '+x1+', ожидалось '+x2;
+    var Msg:='Polynom 6: РЅР°Р№РґРµРЅРѕ: '+x1+', РѕР¶РёРґР°Р»РѕСЃСЊ '+x2;
     Assert(Abs(x1-x2)<=1e-15,Msg);
     
     var k:=ArrFill(20,0.0);
@@ -729,7 +729,7 @@ begin
       end;
     TestPolynomD('Polynom 8',dm,1e-10,p.n,p2.n); 
     
-    Writeln(nt:2,'. Проверка класса Polynom завершена');
+    Writeln(nt:2,'. РџСЂРѕРІРµСЂРєР° РєР»Р°СЃСЃР° Polynom Р·Р°РІРµСЂС€РµРЅР°');
     nt+=1
   end;
   {$endregion}
@@ -737,7 +737,7 @@ begin
   {$region Quanc8}
   begin
     var (a,b,relerr,abserr):=(0.0,2.0,1e-12,0.0);
-    var f:real->real:=x->x=0?1.0:Sin(x)/x; // интегральный синус
+    var f:real->real:=x->x=0?1.0:Sin(x)/x; // РёРЅС‚РµРіСЂР°Р»СЊРЅС‹Р№ СЃРёРЅСѓСЃ
     var s:real; 
     begin  
       s:=2.0;
@@ -766,21 +766,21 @@ begin
     s:=pi/2;
     TestQuanc8('Quanc8 5',-0.5,0.5,f,abserr,relerr,s,1e-15);
     
-    Writeln(nt:2,'. Проверка класса Quanc8 завершена');
+    Writeln(nt:2,'. РџСЂРѕРІРµСЂРєР° РєР»Р°СЃСЃР° Quanc8 Р·Р°РІРµСЂС€РµРЅР°');
     nt+=1
   end;
   {$endregion}
   
   {$region RKF45}
   begin
-    // лямбда-процедура чтобы не выходить за пределы блока  
+    // Р»СЏРјР±РґР°-РїСЂРѕС†РµРґСѓСЂР° С‡С‚РѕР±С‹ РЅРµ РІС‹С…РѕРґРёС‚СЊ Р·Р° РїСЂРµРґРµР»С‹ Р±Р»РѕРєР°  
     var p1:procedure(t:real; y,yp:array of real):=(t,y,yp)->
     begin
       var alpha:=Sqr(ArcTan(1.0));
       var r:=y[0]*y[0]+y[1]*y[1]; r:=r*Sqrt(r)/alpha;
       yp[0]:=y[2]; yp[1]:=y[3]; yp[2]:=-y[0]/r; yp[3]:=-y[1]/r
     end;
-    // конец процедуры
+    // РєРѕРЅРµС† РїСЂРѕС†РµРґСѓСЂС‹
     var e:=0.25;
     var y:=Arr(1.0-e,0.0,0.0,ArcTan(1)*Sqrt((1.0+e)/(1.0-e)));
     var (abserr,relerr):=(0.0,0.3e-6);
@@ -837,7 +837,7 @@ begin
     end;
     TestRKF45('RKF45 3',ss,603.231676788451,1e-12);
     
-    Writeln(nt:2,'. Проверка класса RKF45 завершена');
+    Writeln(nt:2,'. РџСЂРѕРІРµСЂРєР° РєР»Р°СЃСЃР° RKF45 Р·Р°РІРµСЂС€РµРЅР°');
     nt+=1
   end;
   {$endregion}
@@ -850,10 +850,10 @@ begin
     
     f:=t->sin(t)/(1+Sqr(Exp(t)))-0.1;
     (a,b,h):=(-10,5,0.3);
-    var r:=Arr(-9.52495,-6.18307,-3.24191,0.27789,1.00272); // найдено заранее
+    var r:=Arr(-9.52495,-6.18307,-3.24191,0.27789,1.00272); // РЅР°Р№РґРµРЅРѕ Р·Р°СЂР°РЅРµРµ
     TestRootsIsolation('RootsIsolation 2',f,a,b,h,r);
     
-    Writeln(nt:2,'. Проверка класса RootsIsolation завершена');
+    Writeln(nt:2,'. РџСЂРѕРІРµСЂРєР° РєР»Р°СЃСЃР° RootsIsolation Р·Р°РІРµСЂС€РµРЅР°');
     nt+=1
   end;
   {$endregion}
@@ -861,37 +861,37 @@ begin
   {$region Spline}
   begin
     var f:real->real:=x->x*x*x;
-    var pp:=Partition(1.0,10.0,9).Select(x->new Point(x,f(x))).ToArray;
-    var Sp:=new Spline(pp); // создаем сплайн с заданными узлами интерполяции.
-    TestSpline('Spline1-1',1,f,1e-15,Sp); // левая точка
-    TestSpline('Spline1-2',1.25,f,1e-15,Sp); // внутри
-    TestSpline('Spline1-3',2.5,f,1e-15,Sp); // внутри
-    TestSpline('Spline1-4',7.2,f,1e-15,Sp); // внутри
-    TestSpline('Spline1-5',10,f,1e-5,Sp); // правая точка
+    var pp:=PartitionPoints(1.0,10.0,9).Select(x->new Point(x,f(x))).ToArray;
+    var Sp:=new Spline(pp); // СЃРѕР·РґР°РµРј СЃРїР»Р°Р№РЅ СЃ Р·Р°РґР°РЅРЅС‹РјРё СѓР·Р»Р°РјРё РёРЅС‚РµСЂРїРѕР»СЏС†РёРё.
+    TestSpline('Spline1-1',1,f,1e-15,Sp); // Р»РµРІР°СЏ С‚РѕС‡РєР°
+    TestSpline('Spline1-2',1.25,f,1e-15,Sp); // РІРЅСѓС‚СЂРё
+    TestSpline('Spline1-3',2.5,f,1e-15,Sp); // РІРЅСѓС‚СЂРё
+    TestSpline('Spline1-4',7.2,f,1e-15,Sp); // РІРЅСѓС‚СЂРё
+    TestSpline('Spline1-5',10,f,1e-5,Sp); // РїСЂР°РІР°СЏ С‚РѕС‡РєР°
     
     f:=x->Power(x,4);
-    pp:=Partition(1.0,10.0,9).Select(x->new Point(x,f(x))).ToArray;
+    pp:=PartitionPoints(1.0,10.0,9).Select(x->new Point(x,f(x))).ToArray;
     Sp:=new Spline(pp);
-    TestSpline('Spline2-1',1.28,f,32,Sp); // 32% у края... надо исходный шаг мельче
+    TestSpline('Spline2-1',1.28,f,32,Sp); // 32% Сѓ РєСЂР°СЏ... РЅР°РґРѕ РёСЃС…РѕРґРЅС‹Р№ С€Р°Рі РјРµР»СЊС‡Рµ
     TestSpline('Spline2-2',2.5,f,0.8,Sp); // 0.8%
     TestSpline('Spline2-3',5.1,f,0.005,Sp); // 0.005%
     TestSpline('Spline2-4',9.7,f,0.01,Sp); // 0.01%
     
-    pp:=Partition(1.0,10.0,36).Select(x->new Point(x,f(x))).ToArray;
+    pp:=PartitionPoints(1.0,10.0,36).Select(x->new Point(x,f(x))).ToArray;
     Sp:=new Spline(pp);
     TestSpline('Spline3-1',1.28,f,0.03,Sp); // 0.03%
     TestSpline('Spline3-2',1.1,f,0.24,Sp); // 0.24%
     TestSpline('Spline3-3',1.03,f,0.18,Sp); // 0.18%
     
     f:=x->(3*x-8)/(8*x-4.1);
-    pp:=Partition(1.0,10.0,18).Select(x->new Point(x,f(x))).ToArray;
+    pp:=PartitionPoints(1.0,10.0,18).Select(x->new Point(x,f(x))).ToArray;
     Sp:=new Spline(pp);
     TestSpline('Spline4-1',1.1,f,4.8,Sp); // 4.8%
     TestSpline('Spline4-2',2.6,f,5.8,Sp); // 5.8%
     TestSpline('Spline4-3',5.9,f,0.001,Sp); // <0.001%
     TestSpline('Spline4-4',9.9,f,0.001,Sp); // <0.001% 
     
-    Writeln(nt:2,'. Проверка класса Spline завершена');
+    Writeln(nt:2,'. РџСЂРѕРІРµСЂРєР° РєР»Р°СЃСЃР° Spline Р·Р°РІРµСЂС€РµРЅР°');
     nt+=1
   end;
   {$endregion}
@@ -909,7 +909,7 @@ begin
     f:=x->x*(x*x-2)-5;
     TestSvenn('Svenn 4',f,0,1,2.0945514814,2.0945514816);
     
-    Writeln(nt:2,'. Проверка класса Svenn завершена');
+    Writeln(nt:2,'. РџСЂРѕРІРµСЂРєР° РєР»Р°СЃСЃР° Svenn Р·Р°РІРµСЂС€РµРЅР°');
     nt+=1
   end;
   {$endregion}
@@ -947,35 +947,35 @@ begin
     r:=a.VP(b).ModV/2;
     TestVector1('Vector 5',r,24.5,1e-15);
     
-    Writeln(nt:2,'. Проверка класса Vector завершена');
+    Writeln(nt:2,'. РџСЂРѕРІРµСЂРєР° РєР»Р°СЃСЃР° Vector Р·Р°РІРµСЂС€РµРЅР°');
     nt+=1
   end;
   {$endregion}
   
   {$region Zeroin}
   begin  
-    var f:real->real:=x->x*(x*x-2)-5; // классика
-    // Точное решeние по формуле Кардано 2.094551481542326591482386540579...
+    var f:real->real:=x->x*(x*x-2)-5; // РєР»Р°СЃСЃРёРєР°
+    // РўРѕС‡РЅРѕРµ СЂРµС€eРЅРёРµ РїРѕ С„РѕСЂРјСѓР»Рµ РљР°СЂРґР°РЅРѕ 2.094551481542326591482386540579...
     var root:=(Power(5+Sqrt(643/27),1/3)+Power(5-Sqrt(643/27),1/3))/Power(2,1/3);
     TestZeroin('Zeroin 1',2,3,f,root,1e-15);
     
     f:=x->Power((12-2*x)/(x-1),1/3)+Power((x-1)/(12-2*x),1/3)-2.5;
     root:=2;
-    TestZeroin('Zeroin 2',1.01,3.5,f,root,1e-15); // разрыв при х=1
+    TestZeroin('Zeroin 2',1.01,3.5,f,root,1e-15); // СЂР°Р·СЂС‹РІ РїСЂРё С…=1
     
     root:=97/17;
-    TestZeroin('Zeroin 3',3,5.99,f,root,1e-15); // разрыв при х=6
+    TestZeroin('Zeroin 3',3,5.99,f,root,1e-15); // СЂР°Р·СЂС‹РІ РїСЂРё С…=6
     
     f:=x->3*Sin(x)+4*Cos(x)-5;
     root:=2*ArcTan(1/3);
     TestZeroin('Zeroin 4',-1,1,f,root,1e-8);
     
-    Writeln(nt:2,'. Проверка класса Zeroin завершена');
+    Writeln(nt:2,'. РџСЂРѕРІРµСЂРєР° РєР»Р°СЃСЃР° Zeroin Р·Р°РІРµСЂС€РµРЅР°');
     nt+=1
   end;  
   {$endregion}
   
-  Writeln('*** Тестирование завершено ***');
-  Writeln('*** Если в тесте класса FMinN были ошибки, повторите тест ***');
+  Writeln('*** РўРµСЃС‚РёСЂРѕРІР°РЅРёРµ Р·Р°РІРµСЂС€РµРЅРѕ ***');
+  Writeln('*** Р•СЃР»Рё РІ С‚РµСЃС‚Рµ РєР»Р°СЃСЃР° FMinN Р±С‹Р»Рё РѕС€РёР±РєРё, РїРѕРІС‚РѕСЂРёС‚Рµ С‚РµСЃС‚ ***');
   
 end.

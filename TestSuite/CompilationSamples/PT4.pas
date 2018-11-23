@@ -1936,6 +1936,7 @@ procedure __InitModule;
 begin
   CurrentIOSystem := new IOPT4System;
   PrintDelimDefault := '';
+  PrintMatrixWithFormat := False;
   loadNodes := new ArrayList;  
   ExecuteBeforeProcessTerminateIn__Mode += PT4_ExecuteBeforeProcessTerminateIn__Mode;
   StartPT(512);    

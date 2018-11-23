@@ -1130,7 +1130,7 @@ begin
   
   Pen.Color := Colors.Black;
   var n := Round(w / 3);
-  Polyline(Partition(a, b, n).Select(fso.Apply).ToArray);
+  Polyline(PartitionPoints(a, b, n).Select(fso.Apply).ToArray);
 end;
 
 procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect) := DrawGraph(f, a, b, min, max, r.X, r.Y, r.Width, r.Height);  
@@ -1140,7 +1140,7 @@ procedure DrawGraph(f: real -> real; a, b, min, max: real) := DrawGraph(f, a, b,
 procedure DrawGraph(f: real -> real; a, b: real; x, y, w, h: real);
 begin
   var n := Round(w / 3);
-  var q := Partition(a, b, n);
+  var q := PartitionPoints(a, b, n);
   DrawGraph(f, a, b, q.Min(f), q.Max(f), x, y, w, h)
 end;
 

@@ -79,7 +79,8 @@ namespace VisualPascalABC
                     return;
                 unitName = (cu as PascalABCCompiler.SyntaxTree.program_module).program_name.prog_name;
             }
-
+            if (unitName.source_context == null)
+                return;
             List<SymbolsViewerSymbol> refers = ccp.Rename(unitName.name, unitName.name, FileName, unitName.source_context.begin_position.line_num, unitName.source_context.begin_position.column_num);
             if (refers == null || new_val == null) return;
             int addit = 0;
@@ -130,7 +131,7 @@ namespace VisualPascalABC
             if (expressionResult != full_expr && full_expr.StartsWith("("))
                 return new List<Position>();
             List<Position> poses = ccp.GetDefinition(full_expr, textArea.MotherTextEditorControl.FileName, textArea.Caret.Line, textArea.Caret.Column, only_check);
-            if (poses == null)
+            if (poses == null || poses.Count == 0)
                 poses = ccp.GetDefinition(expressionResult, textArea.MotherTextEditorControl.FileName, textArea.Caret.Line, textArea.Caret.Column, only_check);
             return poses;
         }
@@ -144,7 +145,7 @@ namespace VisualPascalABC
             string full_expr;
             string expressionResult = FindFullExpression(textContent, textArea, out ccp.keyword, out full_expr);
             List<Position> poses = ccp.GetRealization(full_expr, textArea.MotherTextEditorControl.FileName, textArea.Caret.Line, textArea.Caret.Column);
-            if (poses == null)
+            if (poses == null || poses.Count == 0)
                 poses = ccp.GetRealization(expressionResult, textArea.MotherTextEditorControl.FileName, textArea.Caret.Line, textArea.Caret.Column);
             return poses;
         }
@@ -162,7 +163,7 @@ namespace VisualPascalABC
         {
             if (CodeCompletion.CodeCompletionController.CurrentParser == null) return;
             position = GetRealizationPosition(textArea);
-            if (position == null) return;
+            if (position == null || position.Count == 0) return;
             if (position.Count == 1)
             {
                 Position pos = position[0];

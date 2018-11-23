@@ -1,6 +1,6 @@
-// Âûâîä òàáëèöû çíà÷åíèé ôóíêöèè sin
+ï»¿// Ð’Ñ‹Ð²Ð¾Ð´ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ð¹ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ sin
 
 begin
-  Range(0,Pi,20).Select(x->Format('({0:f4}, {1:f7})',x,sin(x))).Println(NewLine);
+  PartitionPoints(0,Pi,20).Select(x->Format('({0:f4}, {1:f7})',x,sin(x))).Println(NewLine);
 end.
 

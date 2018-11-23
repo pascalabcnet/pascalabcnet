@@ -174,18 +174,24 @@ namespace VisualPascalABC
             }
         }
         
+        public bool hasNamespaceFileReference(string fileName)
+        {
+            var text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(currentProject.main_file, PascalABCCompiler.SourceFileOperation.GetText) as string;
+            return text.IndexOf("{$includenamespace " + Path.GetFileName(fileName) + "}") != -1;
+        }
+
         public void RemoveNamespaceFileReference(string fileName)
         {
-        	var text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(currentProject.main_file, PascalABCCompiler.SourceFileOperation.GetText) as string;
-        	text = text.Replace("{$includenamespace " + Path.GetFileName(fileName) + "}"+Environment.NewLine,"");
-        	var doc = WorkbenchServiceFactory.DocumentService.GetDocument(currentProject.main_file);
+            var text = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.SourceFilesProvider(currentProject.main_file, PascalABCCompiler.SourceFileOperation.GetText) as string;
+            text = text.Replace("{$includenamespace " + Path.GetFileName(fileName) + "}" + Environment.NewLine, "");
+            var doc = WorkbenchServiceFactory.DocumentService.GetDocument(currentProject.main_file);
             if (doc != null)
             {
-            	doc.TextEditor.Text = text;
+                doc.TextEditor.Text = text;
             }
             else
             {
-            	File.WriteAllText(currentProject.main_file, text);
+                File.WriteAllText(currentProject.main_file, text);
             }
         }
 
@@ -211,8 +217,13 @@ namespace VisualPascalABC
 		
 		public void RenameFile(PascalABCCompiler.IFileInfo fi, string new_name)
 		{
-			fi.Name = new_name;
+            bool hasNsReference = hasNamespaceFileReference(fi.Name);
+            if (hasNsReference)
+                RemoveNamespaceFileReference(fi.Name);
+            fi.Name = new_name;
 			Dirty = true;
+            if (hasNsReference)
+                AddNamespaceFileReference(fi.Name);
 		}
 		
 		public string GetUnitFileName()

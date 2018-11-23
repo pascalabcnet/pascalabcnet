@@ -1675,12 +1675,12 @@ function Length(a: System.Array): integer;
 ///- function Length(a: array of T; dim: integer): integer;
 /// Возвращает длину динамического массива по размерности dim
 function Length(a: System.Array; dim: integer): integer;
-///- procedure SetLength(var a: array of T);
+///- procedure SetLength(var a: array of T; n: integer);
 /// Устанавливает длину одномерного динамического массива. Старое содержимое сохраняется
-//procedure SetLength(var a: System.Array);
-///- procedure SetLength(var a: array of T; n1,n2,...: integer);
+//procedure SetLength<T>(var a: array of T; n: integer);
+///- procedure SetLength(var a: array [,...,] of T; n1,n2,...: integer);
 /// Устанавливает размеры n-мерного динамического массива. Старое содержимое сохраняется
-//procedure SetLength(var a: System.Array);
+//procedure SetLength<T>(var a: array[,...,] of T; n: integer);
 ///- function Copy(a: array of T): array of T;
 /// Создаёт копию динамического массива
 function Copy(a: System.Array): System.Array;
@@ -1716,10 +1716,8 @@ procedure Shuffle<T>(l: List<T>);
 function Range(a, b: integer): sequence of integer;
 /// Возвращает последовательность символов от c1 до c2
 function Range(c1, c2: char): sequence of char;
-/// Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей (Используйте Partition)
-function Range(a, b: real; n: integer): sequence of real;
 /// Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей
-function Partition(a, b: real; n: integer): sequence of real;
+function PartitionPoints(a, b: real; n: integer): sequence of real;
 /// Возвращает последовательность целых от a до b с шагом step
 function Range(a, b, step: integer): sequence of integer;
 /// Возвращает последовательность указанных элементов
@@ -1947,6 +1945,8 @@ var
   DefaultEncoding: Encoding;
   ///--
   PrintDelimDefault: string := ' ';
+  ///--
+  PrintMatrixWithFormat: boolean := True;
 
 var
 ///--
@@ -3934,7 +3934,7 @@ begin
   end;
 end;
 
-function Partition(a, b: real; n: integer): sequence of real;
+function PartitionPoints(a, b: real; n: integer): sequence of real;
 begin
   Result := Range(a, b, n)
 end;
@@ -5471,16 +5471,24 @@ end;
 
 procedure Text.Print(params o: array of Object);
 begin
-  foreach var s in o do
-    PABCSystem.Write(Self, s, ' ');
+  if PrintDelimDefault<>'' then
+    foreach var s in o do
+      PABCSystem.Write(Self, s, PrintDelimDefault)
+  else    
+    foreach var s in o do
+      PABCSystem.Write(Self, s)
 end;
 
 procedure Text.Println(params o: array of Object);
 begin
   if o.Length <> 0 then
   begin
-    for var i:=0 to o.Length-2 do
-      PABCSystem.Write(Self, o[i], ' ');
+    if PrintDelimDefault<>'' then
+      for var i:=0 to o.Length-2 do
+        PABCSystem.Write(Self, o[i], PrintDelimDefault)
+    else    
+      for var i:=0 to o.Length-2 do
+        PABCSystem.Write(Self, o[i]);
     PABCSystem.Write(Self, o.Last);
   end;
   PABCSystem.Writeln(Self);
@@ -5827,7 +5835,7 @@ end;
 procedure WritelnFormat(f: Text; formatstr: string; params args: array of object);
 begin
   var s := Format(formatstr, args);
-  writeln(f, s);
+  Writeln(f, s);
 end;
 
 // -----------------------------------------------------
@@ -5835,35 +5843,45 @@ end;
 // -----------------------------------------------------
 procedure Print(s: string);
 begin
-  write(s, ' ');
+  if PrintDelimDefault<>'' then
+    Write(s, PrintDelimDefault)
+  else Write(s)  
 end;
 
 procedure Print(params args: array of object);
 begin
   if args.Length = 0 then
     exit;
-  for var i := 0 to args.length - 1 do
-    write(args[i], ' ');
+  if PrintDelimDefault<>'' then
+    for var i := 0 to args.length - 1 do
+      Write(args[i], PrintDelimDefault)
+  else     
+    for var i := 0 to args.length - 1 do
+      Write(args[i])
 end;
 
 procedure Println(params args: array of object);
 begin
   Print(args);
-  writeln;
+  Writeln;
 end;
 
 procedure Print(f: Text; params args: array of object);
 begin
   if args.Length = 0 then
     exit;
-  for var i := 0 to args.length - 1 do
-    write(f, args[i], ' ');
+  if PrintDelimDefault<>'' then
+    for var i := 0 to args.length - 1 do
+      Write(f, args[i], PrintDelimDefault)
+  else     
+    for var i := 0 to args.length - 1 do
+      Write(f, args[i])
 end;
 
 procedure Println(f: Text; params args: array of object);
 begin
   Print(f, args);
-  writeln(f);
+  Writeln(f);
 end;
 // -----------------------------------------------------
 //                  Text files
@@ -8690,7 +8708,7 @@ begin
       yield func(x, y)
 end;
 
-/// Разбивает последовательности на две в позиции ind
+/// Разбивает последовательность на две в позиции ind. Реализуется двухпроходным алгоритмом
 function SplitAt<T>(Self: sequence of T; ind: integer): (sequence of T, sequence of T); extensionmethod;
 begin
   Result := (Self.Take(ind), Self.Skip(ind));
@@ -8700,13 +8718,13 @@ end;
 
 // ToDo: SequenceCompare
 
-/// Разделяет последовательности на две по заданному условию
+/// Разделяет последовательность на две по заданному условию. Реализуется двухпроходным алгоритмом
 function Partition<T>(Self: sequence of T; cond: T->boolean): (sequence of T, sequence of T); extensionmethod;
 begin
   Result := (Self.Where(cond), Self.Where(x -> not cond(x)));
 end;
 
-/// Разделяет последовательности на две по заданному условию, в котором участвует индекс
+/// Разделяет последовательность на две по заданному условию, в котором участвует индекс. Реализуется двухпроходным алгоритмом
 function Partition<T>(Self: sequence of T; cond: (T,integer)->boolean): (sequence of T, sequence of T); extensionmethod;
 begin
   Result := (Self.Where(cond), Self.Where((x, i)-> not cond(x, i)));
@@ -8742,19 +8760,19 @@ begin
   Result := Self.Zip(a, (x, y)-> (x, y)).Zip(b, (p, z)-> (p[0], p[1], z)).Zip(c, (p, z)-> (p[0], p[1], p[2], z));
 end;
 
-/// Разъединяет последовательность двухэлементных кортежей на две последовательности
+/// Разъединяет последовательность двухэлементных кортежей на две последовательности. Реализуется двухпроходным алгоритмом
 function UnZipTuple<T, T1>(Self: sequence of (T, T1)): (sequence of T, sequence of T1); extensionmethod;
 begin
   Result := (Self.Select(x -> x[0]), Self.Select(x -> x[1]))
 end;
 
-/// Разъединяет последовательность трехэлементных кортежей на три последовательности
+/// Разъединяет последовательность трехэлементных кортежей на три последовательности. Реализуется многопроходным алгоритмом
 function UnZipTuple<T, T1, T2>(Self: sequence of (T, T1, T2)): (sequence of T, sequence of T1, sequence of T2); extensionmethod;
 begin
   Result := (Self.Select(x -> x[0]), Self.Select(x -> x[1]), Self.Select(x -> x[2]))
 end;
 
-/// Разъединяет последовательность четырехэлементных кортежей на четыре последовательности
+/// Разъединяет последовательность четырехэлементных кортежей на четыре последовательности. Реализуется многопроходным алгоритмом
 function UnZipTuple<T, T1, T2, T3>(Self: sequence of (T, T1, T2, T3)): (sequence of T, sequence of T1, sequence of T2, sequence of T3); extensionmethod;
 begin
   Result := (Self.Select(x -> x[0]), Self.Select(x -> x[1]), Self.Select(x -> x[2]), Self.Select(x -> x[3]))
@@ -9393,9 +9411,9 @@ begin
   begin
     for var j := 0 to Self.ColCount - 1 do
     begin
-      var elem := Self[i, j];
-      var s := StructuredObjectToString(elem);
-      Write(s.PadLeft(w));
+      if PrintMatrixWithFormat then
+        Write(StructuredObjectToString(Self[i, j]).PadLeft(w))
+      else Print(Self[i, j]);
     end;
     Writeln;  
   end;
@@ -9408,7 +9426,11 @@ begin
   for var i := 0 to Self.RowCount - 1 do
   begin
     for var j := 0 to Self.ColCount - 1 do
-      Write(FormatValue(Self[i, j], w, f));
+    begin
+      if PrintMatrixWithFormat then
+        Write(FormatValue(Self[i, j], w, f))
+      else Print(Self[i, j]);
+    end;  
     Writeln;  
   end;
   Result := Self;  
@@ -11428,7 +11450,8 @@ begin
   //ci.NumberFormat := nfi;
   //System.Globalization.CultureInfo.CurrentCulture := ci;
   
-  //  System.Threading.Thread.CurrentThread.CurrentCulture := new System.Globalization.CultureInfo('en-US');
+  // SSM 10/11/18 восстановил эту строку чтобы в главном потоке в вещественных была точка
+  System.Threading.Thread.CurrentThread.CurrentCulture := new System.Globalization.CultureInfo('en-US');
   //rnd := new System.Random;
   StartTime := DateTime.Now;
   output := new TextFile();
