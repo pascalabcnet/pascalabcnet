@@ -868,7 +868,10 @@ namespace PascalABCCompiler.TreeRealization
                 return ret;
             }
 
-            if (is_derived(to, from) || (from.IsInterface && to == SystemLibrary.SystemLibrary.object_type) || from.is_generic_type_instance && to == SystemLibrary.SystemLibrary.object_type)
+            if (is_derived(to, from)
+                || (from.IsInterface && to == SystemLibrary.SystemLibrary.object_type)
+                || from.is_generic_type_instance && to == SystemLibrary.SystemLibrary.object_type
+                )
             {
                 add_conversion(ret, TreeConverter.convertion_data_and_alghoritms.get_empty_conversion(from, to, true), from, to);
                 //add_conversion(ret, SystemLibrary.SystemLibrary.empty_method, from, to);

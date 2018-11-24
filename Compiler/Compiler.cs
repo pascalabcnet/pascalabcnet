@@ -2852,7 +2852,7 @@ namespace PascalABCCompiler
             SyntaxTree.compilation_unit SyntaxTree = InternalParseText(FileName, SourceText, errorsList, warnings, DefinesList);
             if (errorsList.Count > 0)
                 throw errorsList[0];
-            SyntaxTree = syntaxTreeConvertersController.Convert(SyntaxTree) as SyntaxTree.compilation_unit;
+            SyntaxTree = syntaxTreeConvertersController.Convert(SyntaxTree, errorsList) as SyntaxTree.compilation_unit;
             return SyntaxTree;
         }
 
@@ -3160,7 +3160,7 @@ namespace PascalABCCompiler
 
                 if (errorsList.Count == 0) // SSM 2/05/16 - для преобразования синтаксических деревьев извне
                 {
-                    CurrentUnit.SyntaxTree = syntaxTreeConvertersController.Convert(CurrentUnit.SyntaxTree) as SyntaxTree.compilation_unit;
+                    CurrentUnit.SyntaxTree = syntaxTreeConvertersController.Convert(CurrentUnit.SyntaxTree, errorsList) as SyntaxTree.compilation_unit;
                     
                 }
 
