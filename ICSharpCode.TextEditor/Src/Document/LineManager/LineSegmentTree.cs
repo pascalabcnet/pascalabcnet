@@ -100,8 +100,9 @@ namespace ICSharpCode.TextEditor.Document
 		RedBlackTreeNode<RBNode> GetNode(int index)
 		{
 			if (index < 0 || index >= tree.Count)
-				throw new ArgumentOutOfRangeException("index", index, "index should be between 0 and " + (tree.Count-1));
-			RedBlackTreeNode<RBNode> node = tree.root;
+                return tree.root;
+            //throw new ArgumentOutOfRangeException("index", index, "index should be between 0 and " + (tree.Count-1));
+            RedBlackTreeNode<RBNode> node = tree.root;
 			while (true) {
 				if (node.left != null && index < node.left.val.count) {
 					node = node.left;
