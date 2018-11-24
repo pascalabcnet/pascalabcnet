@@ -18,6 +18,8 @@ namespace VisualPascalABC
         private System.Windows.Forms.DataGridViewTextBoxColumn WColumn2;
         private System.Windows.Forms.DataGridViewTextBoxColumn WColumn3;
         private System.Windows.Forms.DataGridViewTextBoxColumn WColumn5;
+		
+        private System.Windows.Forms.DataGridViewTextBoxColumn WColumn6Empty;
 
         public DebugVariablesListWindowForm(Form1 MainForm)
             :base(MainForm)
@@ -30,15 +32,18 @@ namespace VisualPascalABC
             this.WColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.WColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.WColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.WColumn6Empty = new System.Windows.Forms.DataGridViewTextBoxColumn();
 
             this.watchList.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.watchList.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
             this.watchList.BackgroundColor = System.Drawing.Color.White;
             this.watchList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.watchList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.WColumn1,
-            this.WColumn3,
-            this.WColumn2});
+				this.WColumn1,
+				this.WColumn3,
+				this.WColumn2,
+				this.WColumn6Empty
+			});
             this.watchList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.watchList.GridColor = System.Drawing.SystemColors.Control;
             this.watchList.Location = new System.Drawing.Point(1, 1);
@@ -97,12 +102,23 @@ namespace VisualPascalABC
             // 
             // Column3
             // 
-            this.WColumn3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.WColumn3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
             this.WColumn3.FillWeight = 101.5228F;
             this.WColumn3.Frozen = false;
             this.WColumn3.HeaderText = "WT_VALUE";
             this.WColumn3.Name = "WColumn3";
             this.WColumn3.ReadOnly = true;
+			
+            // 
+            // Column6Empty
+            // 
+            this.WColumn6Empty.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.WColumn6Empty.FillWeight = 101.5228F;
+            this.WColumn6Empty.Frozen = false;
+            this.WColumn6Empty.HeaderText = "";
+            this.WColumn6Empty.Name = "Empty";
+            this.WColumn6Empty.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.WColumn6Empty.ReadOnly = true;
 
             // 
             // Column5
