@@ -130,7 +130,11 @@ namespace CodeCompletion
                     return null;
             }
             SetCurrentUsedAssemblies();
+            string trimed = str.Trim();
+            if (trimed.Length > 0 && trimed[0] == '(' && trimed[trimed.Length - 1] == ')')
+                expr = new bracket_expr(expr);
             ExpressionVisitor ev = new ExpressionVisitor(expr, si, visitor);
+           
             si = ev.GetScopeOfExpression(true, false);
             root = si;
             if (si is ElementScope) root = (si as ElementScope).sc;
