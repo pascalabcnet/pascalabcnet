@@ -449,7 +449,7 @@ namespace CodeCompletion
         public SymInfo[] GetNameByPattern(string pattern, int line, int col, bool all_names, int nest_level)
         {
             if (visitor.cur_scope == null) return null;
-            SymScope si = visitor.FindScopeByLocation(line + 1, col + 1);
+            SymScope si = visitor.FindScopeByLocation(line + 1, col);
             if (si == null)
             {
                 si = visitor.FindScopeByLocation(line, col + 1);
