@@ -2724,7 +2724,7 @@ namespace PascalABCCompiler.Parsers
                         kav.Push('\'');
                     sb.Insert(0, ch);//.Append(Text[i]);
                 }
-                else if (ch == '.' || ch == '^' || ch == '&' || ch == '?')
+                else if (ch == '.' || ch == '^' || ch == '&' || ch == '?' && IsPunctuation(Text, i + 1))
                 {
                     if (ch == '.' && i >= 1 && Text[i - 1] == '.')
                         end = true;
