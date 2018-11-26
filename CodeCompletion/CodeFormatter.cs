@@ -569,7 +569,7 @@ namespace CodeFormatters
                     }
                     else if (comm.StartsWith(":") && comm.EndsWith(":") && comm.Replace(" ", "") == "::")
                         comm = "::";
-                    else if (comm.StartsWith("array") || comm.StartsWith("set"))
+                    else if (comm.StartsWith("array") || comm.StartsWith("set") || comm.StartsWith("sequence"))
                         comm = RemoveOverSpaces(comm);
                     else if ((comm.StartsWith("class") || comm.StartsWith("interface")) && comm.EndsWith("("))
                         comm = comm.Replace(" ","");
@@ -819,7 +819,7 @@ namespace CodeFormatters
                         WritePossibleCommentBefore(sn);
                     if (sn.source_context != null)
                         prev_sn = sn;
-                    if (sn is variable_definitions || sn is array_type || sn is set_type_definition
+                    if (sn is variable_definitions || sn is array_type || sn is sequence_type || sn is set_type_definition
                         || sn is repeat_node || sn is if_node || sn is while_node || sn is for_node
                         || sn is foreach_stmt || sn is var_statement || sn is try_stmt || sn is goto_statement
                         || sn is with_statement || sn is case_node || sn is function_header || sn is procedure_header
@@ -2974,7 +2974,6 @@ namespace CodeFormatters
 
         public override void visit(sequence_type _sequence_type)
         {
-            sb.Append("sequence of ");
             visit_node(_sequence_type.elements_type);
         }
 
