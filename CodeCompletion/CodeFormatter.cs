@@ -332,7 +332,10 @@ namespace CodeFormatters
             string[] lines = null;
             if (insert_newline_after_prev && !insert_newline_after_prev_semicolon && before)
             {
-                lines = comm.Split(new string[] { "\r\n" }, StringSplitOptions.None);
+                if (comm.IndexOf("\n") != -1 && comm.IndexOf("\r") == -1)
+                    lines = comm.Split(new string[] { "\n" }, StringSplitOptions.None);
+                else
+                    lines = comm.Split(new string[] { "\r\n" }, StringSplitOptions.None);
                 if (lines.Length == 2)
                     comm = comm + "\r\n";
                 else if (lines.Length < 2)
@@ -341,7 +344,7 @@ namespace CodeFormatters
             }
             if (add_newline_before)
             {
-                if (comm.IndexOf("\r\n") == -1)
+                if (comm.IndexOf("\r\n") == -1 && comm.IndexOf("\n") == -1)
                     comm = comm + "\r\n";
                 //if (!comm.Trim(' ','\t').StartsWith("\r\n"))
                 //    comm = "\r\n" + comm;
@@ -349,11 +352,14 @@ namespace CodeFormatters
             }
             else if (add_newline_after)
             {
-                if (!comm.Trim(' ', '\t').EndsWith("\r\n"))
+                if (!comm.Trim(' ', '\t').EndsWith("\r\n") && !comm.Trim(' ', '\t').EndsWith("\n"))
                     comm += "\r\n";
                 add_newline_after = false;
             }
-            lines = comm.Split(new string[] { "\r\n" }, StringSplitOptions.None);
+            if (comm.IndexOf("\n") != -1 && comm.IndexOf("\r") == -1)
+                lines = comm.Split(new string[] { "\n" }, StringSplitOptions.None);
+            else
+                lines = comm.Split(new string[] { "\r\n" }, StringSplitOptions.None);
             if (lines.Length > 1)
             {
                 int min_off = 0;
