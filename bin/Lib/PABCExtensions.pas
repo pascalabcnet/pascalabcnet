@@ -59,7 +59,7 @@ begin
   Result := CreateFile&<real>(fname);
 end;
 
-/// Открывает типизированный файл, возвращает последовательность его элементов и закрывает его
+/// Открывает типизированный файл, записывает в него последовательность элементов ss и закрывает его
 procedure WriteElements<T>(fname: string; ss: sequence of T);
 begin
   var f := CreateBinary&<T>(fname);

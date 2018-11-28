@@ -603,11 +603,16 @@ namespace PascalABCCompiler.TreeConverter
         }
         private void PutError(int TextLength, SyntaxTree.SourceContext DirSC, string ErrorName)
         {
-            int bp = DirSC.Length - TextLength-"omp".Length;
-            SC = new SyntaxTree.SourceContext(DirSC.begin_position.line_num,
-                        DirSC.begin_position.column_num + bp,
-                        DirSC.begin_position.line_num,
-                        DirSC.begin_position.column_num + bp);
+            if (DirSC != null)
+            {
+                int bp = DirSC.Length - TextLength - "omp".Length;
+
+                SC = new SyntaxTree.SourceContext(DirSC.begin_position.line_num,
+                            DirSC.begin_position.column_num + bp,
+                            DirSC.begin_position.line_num,
+                            DirSC.begin_position.column_num + bp);
+            }
+            
 
             this.ErrorName = ErrorName;
         }
@@ -719,7 +724,10 @@ namespace PascalABCCompiler.TreeConverter
                         LocksFound = true;
                     else 
                     {
-                        visitor.AddWarning(new Errors.CommonWarning(PascalABCCompiler.StringResources.Get(dirInf.ErrorName), dir.source_context.FileName, dirInf.SC.begin_position.line_num, dirInf.SC.begin_position.column_num));
+                        visitor.AddWarning(new Errors.CommonWarning(PascalABCCompiler.StringResources.Get(dirInf.ErrorName), 
+                            dir.source_context.FileName, 
+                            dirInf.SC != null ? dirInf.SC.begin_position.line_num : dir.source_context.begin_position.line_num,
+                            dirInf.SC != null ? dirInf.SC.begin_position.column_num : dir.source_context.begin_position.column_num));
                     }
                 }
             }

@@ -682,17 +682,15 @@ namespace CodeCompletion
 
         public override void visit(case_variant _case_variant)
         {
-            throw new NotImplementedException();
         }
 
         public override void visit(case_node _case_node)
         {
-            throw new NotImplementedException();
+
         }
 
         public override void visit(method_name _method_name)
         {
-            throw new NotImplementedException();
         }
 
         public bool CheckForBaseAccess(SymScope cur, SymScope sc)
@@ -1938,6 +1936,7 @@ namespace CodeCompletion
         public override void visit(semantic_type_node stn) // SSM 
         {
         }
+        
         public override void visit(tuple_node _tuple_node)
         {
             method_call mc = new method_call();

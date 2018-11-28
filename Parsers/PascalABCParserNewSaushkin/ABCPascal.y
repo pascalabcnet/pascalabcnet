@@ -172,7 +172,7 @@
 %type <ex> variable_as_type dotted_identifier
 %type <ex> func_decl_lambda expl_func_decl_lambda
 %type <td> lambda_type_ref lambda_type_ref_noproctype
-%type <stn> full_lambda_fp_list lambda_simple_fp_sect lambda_function_body lambda_procedure_body optional_full_lambda_fp_list
+%type <stn> full_lambda_fp_list lambda_simple_fp_sect lambda_function_body lambda_procedure_body common_lambda_body optional_full_lambda_fp_list
 %type <ob> field_in_unnamed_object list_fields_in_unnamed_object func_class_name_ident_list rem_lambda variable_list var_ident_list
 %type <ti> tkAssignOrEqual
 %type <stn> pattern pattern_optional_var match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var 
@@ -4469,15 +4469,8 @@ lambda_type_ref_noproctype
 		}
 	;
 
-lambda_function_body
-	: expr_l1 
-		{
-			//$$ = NewLambdaBody($1, @$);
-			var sl = new statement_list(new assign("result",$1,@$),@$); // надо помечать ещё и assign как автосгенерированный для лямбды
-			sl.expr_lambda_body = true;
-			$$ = sl;
-		}
-	| compound_stmt
+common_lambda_body
+	: compound_stmt
 		{
 			$$ = $1;
 		}
@@ -4501,6 +4494,10 @@ lambda_function_body
 		{
 			$$ = new statement_list($1 as statement, @$);
 		}
+	| loop_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
 	| case_stmt
 		{
 			$$ = new statement_list($1 as statement, @$);
@@ -4520,6 +4517,21 @@ lambda_function_body
 	| raise_stmt
 		{
 			$$ = new statement_list($1 as statement, @$);
+		}
+	;
+
+
+lambda_function_body
+	: expr_l1 
+		{
+			//$$ = NewLambdaBody($1, @$);
+			var sl = new statement_list(new assign("result",$1,@$),@$); // надо помечать ещё и assign как автосгенерированный для лямбды - чтобы запретить явный Result
+			sl.expr_lambda_body = true;
+			$$ = sl;
+		}
+	| common_lambda_body
+		{
+			$$ = $1;
 		}
 	;	
 
@@ -4528,53 +4540,13 @@ lambda_procedure_body
 		{
 			$$ = new statement_list($1 as statement, @$);
 		}
-	| compound_stmt
-		{
-			$$ = $1;
-		}
-    | if_stmt
-		{
-			$$ = new statement_list($1 as statement, @$);
-		}
-	| while_stmt
-		{
-			$$ = new statement_list($1 as statement, @$);
-		}
-	| repeat_stmt
-		{
-			$$ = new statement_list($1 as statement, @$);
-		}
-	| for_stmt
-		{
-			$$ = new statement_list($1 as statement, @$);
-		}
-	| foreach_stmt
-		{
-			$$ = new statement_list($1 as statement, @$);
-		}
-	| case_stmt
-		{
-			$$ = new statement_list($1 as statement, @$);
-		}
-	| try_stmt
-		{
-			$$ = new statement_list($1 as statement, @$);
-		}
-	| lock_stmt
-		{
-			$$ = new statement_list($1 as statement, @$);
-		}
-	| yield_stmt
-		{
-			$$ = new statement_list($1 as statement, @$);
-		}
-	| raise_stmt
-		{
-			$$ = new statement_list($1 as statement, @$);
-		}
 	| assignment
 		{
 			$$ = new statement_list($1 as statement, @$);
+		}
+	| common_lambda_body
+		{
+			$$ = $1;
 		}
 	;
 

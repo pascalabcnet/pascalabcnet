@@ -332,7 +332,10 @@ namespace CodeFormatters
             string[] lines = null;
             if (insert_newline_after_prev && !insert_newline_after_prev_semicolon && before)
             {
-                lines = comm.Split(new string[] { "\r\n" }, StringSplitOptions.None);
+                if (comm.IndexOf("\n") != -1 && comm.IndexOf("\r") == -1)
+                    lines = comm.Split(new string[] { "\n" }, StringSplitOptions.None);
+                else
+                    lines = comm.Split(new string[] { "\r\n" }, StringSplitOptions.None);
                 if (lines.Length == 2)
                     comm = comm + "\r\n";
                 else if (lines.Length < 2)
@@ -341,7 +344,7 @@ namespace CodeFormatters
             }
             if (add_newline_before)
             {
-                if (comm.IndexOf("\r\n") == -1)
+                if (comm.IndexOf("\r\n") == -1 && comm.IndexOf("\n") == -1)
                     comm = comm + "\r\n";
                 //if (!comm.Trim(' ','\t').StartsWith("\r\n"))
                 //    comm = "\r\n" + comm;
@@ -349,11 +352,14 @@ namespace CodeFormatters
             }
             else if (add_newline_after)
             {
-                if (!comm.Trim(' ', '\t').EndsWith("\r\n"))
+                if (!comm.Trim(' ', '\t').EndsWith("\r\n") && !comm.Trim(' ', '\t').EndsWith("\n"))
                     comm += "\r\n";
                 add_newline_after = false;
             }
-            lines = comm.Split(new string[] { "\r\n" }, StringSplitOptions.None);
+            if (comm.IndexOf("\n") != -1 && comm.IndexOf("\r") == -1)
+                lines = comm.Split(new string[] { "\n" }, StringSplitOptions.None);
+            else
+                lines = comm.Split(new string[] { "\r\n" }, StringSplitOptions.None);
             if (lines.Length > 1)
             {
                 int min_off = 0;
@@ -563,7 +569,7 @@ namespace CodeFormatters
                     }
                     else if (comm.StartsWith(":") && comm.EndsWith(":") && comm.Replace(" ", "") == "::")
                         comm = "::";
-                    else if (comm.StartsWith("array") || comm.StartsWith("set"))
+                    else if (comm.StartsWith("array") || comm.StartsWith("set") || comm.StartsWith("sequence"))
                         comm = RemoveOverSpaces(comm);
                     else if ((comm.StartsWith("class") || comm.StartsWith("interface")) && comm.EndsWith("("))
                         comm = comm.Replace(" ","");
@@ -813,7 +819,7 @@ namespace CodeFormatters
                         WritePossibleCommentBefore(sn);
                     if (sn.source_context != null)
                         prev_sn = sn;
-                    if (sn is variable_definitions || sn is array_type || sn is set_type_definition
+                    if (sn is variable_definitions || sn is array_type || sn is sequence_type || sn is set_type_definition
                         || sn is repeat_node || sn is if_node || sn is while_node || sn is for_node
                         || sn is foreach_stmt || sn is var_statement || sn is try_stmt || sn is goto_statement
                         || sn is with_statement || sn is case_node || sn is function_header || sn is procedure_header
@@ -2968,7 +2974,6 @@ namespace CodeFormatters
 
         public override void visit(sequence_type _sequence_type)
         {
-            sb.Append("sequence of ");
             visit_node(_sequence_type.elements_type);
         }
 

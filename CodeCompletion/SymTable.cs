@@ -3268,11 +3268,11 @@ namespace CodeCompletion
             if (!is_dynamic_arr && !IsMultiDynArray)
                 return new List<SymScope>();
             List<SymScope> syms = base.FindOverloadNamesOnlyInType(name);
-            if (implemented_interfaces != null)
+            /*if (implemented_interfaces != null)
             {
                 foreach (TypeScope ts in implemented_interfaces)
                     syms.AddRange(ts.FindOverloadNamesOnlyInType(name));
-            }
+            }*/
             return syms;
         }
 
