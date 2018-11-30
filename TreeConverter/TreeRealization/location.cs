@@ -147,10 +147,13 @@ namespace PascalABCCompiler.TreeRealization
 
 		public override string ToString()
 		{
-			string res="File:  "+doc.ToString();
-			res+="  line:  "+begin_line_num.ToString();
-			res+="  column:  "+begin_column_num.ToString();
-			return res;
+
+            return string.Format("[({0},{1})-({2},{3})]",
+                begin_line_num, begin_column_num, end_line_num, end_column_num);
+            /*string res ="File:  "+doc.ToString();
+			    res+="  line:  "+begin_line_num.ToString();
+			    res+="  column:  "+begin_column_num.ToString();
+			    return res;*/
 		}
 	}
 
