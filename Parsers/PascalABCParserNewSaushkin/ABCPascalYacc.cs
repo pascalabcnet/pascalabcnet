@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-G8V08V4
-// DateTime: 24.11.2018 8:10:22
+// DateTime: 01.12.2018 12:55:41
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -18,6 +18,7 @@ using PascalABCSavParser;
 using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.Errors;
 using System.Linq;
+using SyntaxVisitors;
 
 namespace GPPGParserScanner
 {
@@ -6773,8 +6774,12 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 892: // lambda_function_body -> expr_l1
 {
-			//$$ = NewLambdaBody($1, @$);
-			var sl = new statement_list(new assign("result",ValueStack[ValueStack.Depth-1].ex,CurrentLocationSpan),CurrentLocationSpan); // ���� �������� ��� � assign ��� ������������������� ��� ������
+		    /*var id = SyntaxVisitors.ExprHasNameVisitor.HasName(ValueStack[ValueStack.Depth-1].ex, "Result"); 
+            if (id != null)
+            {
+                 parsertools.AddErrorFromResource("RESULT_IDENT_NOT_EXPECTED_IN_THIS_CONTEXT", id.source_context);
+            }*/
+			var sl = new statement_list(new assign("result",ValueStack[ValueStack.Depth-1].ex,CurrentLocationSpan),CurrentLocationSpan); // ���� �������� ��� � assign ��� ������������������� ��� ������ - ����� ��������� ����� Result
 			sl.expr_lambda_body = true;
 			CurrentSemanticValue.stn = sl;
 		}

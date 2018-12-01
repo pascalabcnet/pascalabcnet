@@ -24,6 +24,7 @@
 %using PascalABCCompiler.ParserTools;
 %using PascalABCCompiler.Errors;
 %using System.Linq;
+%using SyntaxVisitors;
 
 %namespace GPPGParserScanner
 
@@ -4524,7 +4525,11 @@ common_lambda_body
 lambda_function_body
 	: expr_l1 
 		{
-			//$$ = NewLambdaBody($1, @$);
+		    var id = SyntaxVisitors.ExprHasNameVisitor.HasName($1, "Result"); 
+            if (id != null)
+            {
+                 parsertools.AddErrorFromResource("RESULT_IDENT_NOT_EXPECTED_IN_THIS_CONTEXT", id.source_context);
+            }
 			var sl = new statement_list(new assign("result",$1,@$),@$); // надо помечать ещё и assign как автосгенерированный для лямбды - чтобы запретить явный Result
 			sl.expr_lambda_body = true;
 			$$ = sl;
