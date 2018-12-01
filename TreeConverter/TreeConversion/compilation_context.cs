@@ -2590,7 +2590,11 @@ namespace PascalABCCompiler.TreeConverter
         {
             foreach (common_function_node cfn in cnn.functions)
                 if (cfn.function_code == null)
-                    AddError(cfn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
+                {
+                    //AddError(cfn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
+                    AddError(new FunctionPredefinitionWithoutDefinition(cfn, cfn.loc));
+                }
+                    
             foreach (common_type_node ctn in cnn.types)
             {
                 //(ssyy) Для интерфейсов не проверяем
@@ -2598,7 +2602,8 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     foreach (common_method_node cmn in ctn.methods)
                         if (cmn.function_code == null && cmn.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual_abstract)
-                            AddError(cmn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
+                            AddError(new FunctionPredefinitionWithoutDefinition(cmn, cmn.loc));
+                            //AddError(cmn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
                 }
             }
         }
@@ -2914,7 +2919,8 @@ namespace PascalABCCompiler.TreeConverter
 					{
 						if (cfn.function_code==null)
 						{
-                            AddError(cfn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
+                            //AddError(cfn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
+                            AddError(new FunctionPredefinitionWithoutDefinition(cfn, cfn.loc));
 						}
 					}
                     check_labels(_func_stack.top().label_nodes_list);
@@ -2929,7 +2935,8 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             if (cfn.function_code == null)
                             {
-                                AddError(cfn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
+                                AddError(new FunctionPredefinitionWithoutDefinition(cfn, cfn.loc));
+                                //AddError(cfn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
                             }
                         }
                         foreach (common_type_node ctn in _cmn.types)
@@ -2942,7 +2949,8 @@ namespace PascalABCCompiler.TreeConverter
                                 {
                                     if (cmn.function_code == null && cmn.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual_abstract)
                                     {
-                                        AddError(cmn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
+                                        //AddError(cmn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
+                                        AddError(new FunctionPredefinitionWithoutDefinition(cmn, cmn.loc));
                                     }
                                 }
                             }

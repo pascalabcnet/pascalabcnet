@@ -17957,7 +17957,8 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (cmn.function_code == null)
                         {
-                            AddError(cmn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
+                            //AddError(cmn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
+                            AddError(new FunctionPredefinitionWithoutDefinition(cmn, cmn.loc));
                         }
                     }
                 }
