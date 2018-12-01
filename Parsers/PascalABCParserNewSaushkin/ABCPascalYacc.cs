@@ -6774,11 +6774,11 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 892: // lambda_function_body -> expr_l1
 {
-		    /*var id = SyntaxVisitors.ExprHasNameVisitor.HasName(ValueStack[ValueStack.Depth-1].ex, "Result"); 
+		    var id = SyntaxVisitors.ExprHasNameVisitor.HasName(ValueStack[ValueStack.Depth-1].ex, "Result"); 
             if (id != null)
             {
                  parsertools.AddErrorFromResource("RESULT_IDENT_NOT_EXPECTED_IN_THIS_CONTEXT", id.source_context);
-            }*/
+            }
 			var sl = new statement_list(new assign("result",ValueStack[ValueStack.Depth-1].ex,CurrentLocationSpan),CurrentLocationSpan); // ���� �������� ��� � assign ��� ������������������� ��� ������ - ����� ��������� ����� Result
 			sl.expr_lambda_body = true;
 			CurrentSemanticValue.stn = sl;
