@@ -3009,8 +3009,11 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         }
         break;
       case 103: // var_decl_sect -> var_decl_sect, var_decl
-{ 
-			CurrentSemanticValue.stn = (ValueStack[ValueStack.Depth-2].stn as variable_definitions).Add(ValueStack[ValueStack.Depth-1].stn as var_def_statement, CurrentLocationSpan);
+{
+                        var vdn = ValueStack[ValueStack.Depth - 2].stn as variable_definitions;
+                        var vds = ValueStack[ValueStack.Depth - 1].stn as var_def_statement;
+
+            CurrentSemanticValue.stn = vdn.Add(vds, CurrentLocationSpan);
 		}
         break;
       case 104: // var_decl_sect -> tkVar, tkRoundOpen, identifier, tkComma, ident_list, 
