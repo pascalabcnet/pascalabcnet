@@ -18,7 +18,7 @@ namespace SyntaxVisitors.SugarVisitors
 
         public override void visit(read_accessor_name wn)
         {
-
+            DefaultVisit(wn);
         }
 
         public override void visit(unnamed_type_object u)
