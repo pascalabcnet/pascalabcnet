@@ -164,7 +164,7 @@
 %type <stn> used_unit_name
 %type <stn> unit_header  
 %type <stn> var_decl_sect  
-%type <stn> var_decl var_decl_part /*var_decl_internal*/ field_definition  
+%type <stn> var_decl var_decl_part /*var_decl_internal*/ field_definition var_decl_with_assign_var_tuple 
 %type <stn> var_stmt  
 %type <stn> where_part  
 %type <stn> where_part_list optional_where_section  
@@ -654,26 +654,39 @@ type_decl_sect
 		} 
     ;
 
+var_decl_with_assign_var_tuple
+	: var_decl 
+		{ 
+			$$ = $1; 
+		}
+	| tkRoundOpen identifier tkComma ident_list tkRoundClose tkAssign expr_l1 tkSemiColon
+		{
+			($4 as ident_list).Insert(0,$2);
+			$4.source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5);
+			$$ = new var_tuple_def_statement($4 as ident_list, $7, @$);
+		}
+	;
+
 var_decl_sect
-    : tkVar var_decl                     
+    : tkVar var_decl_with_assign_var_tuple                     
         { 
 			$$ = new variable_definitions($2 as var_def_statement, @$);
 		}
-    | tkEvent var_decl
+    | tkEvent var_decl_with_assign_var_tuple
         { 
 			$$ = new variable_definitions($2 as var_def_statement, @$);                        
 			($2 as var_def_statement).is_event = true;
         }
-    | var_decl_sect var_decl              
+    | var_decl_sect var_decl_with_assign_var_tuple              
         { 
 			$$ = ($1 as variable_definitions).Add($2 as var_def_statement, @$);
 		} 
-    | tkVar tkRoundOpen identifier tkComma ident_list tkRoundClose tkAssign expr_l1 tkSemiColon
+    /*| tkVar tkRoundOpen identifier tkComma ident_list tkRoundClose tkAssign expr_l1 tkSemiColon
 	    {
 			($5 as ident_list).Insert(0,$3);
 			$5.source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
 			$$ = new assign_var_tuple($5 as ident_list, $8, @$);
-	    }
+	    }*/
     ;
 
 const_decl
@@ -2166,12 +2179,6 @@ var_decl_part
         { 
 			$$ = new var_def_statement($1 as ident_list, $3, $5, definition_attribute.None, false, @$); 
 		}
-	/*| tkRoundOpen identifier tkComma ident_list tkRoundClose tkAssign expr_l1 
-	    {
-			($4 as ident_list).Insert(0,$2);
-			$4.source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
-			$$ = new assign_var_tuple($4 as ident_list, $7, @$);
-	    }*/
     ;
 
 typed_var_init_expression

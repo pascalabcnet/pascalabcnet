@@ -60,12 +60,11 @@ namespace VisualPascalABC
             this.lvErrorsList.GridLines = true;
             this.lvErrorsList.HideSelection = false;
             this.lvErrorsList.Location = new System.Drawing.Point(0, 0);
-            this.lvErrorsList.Margin = new System.Windows.Forms.Padding(4);
             this.lvErrorsList.MultiSelect = false;
             this.lvErrorsList.Name = "lvErrorsList";
             this.lvErrorsList.RightToLeftLayout = true;
             this.lvErrorsList.ShowItemToolTips = true;
-            this.lvErrorsList.Size = new System.Drawing.Size(1049, 336);
+            this.lvErrorsList.Size = new System.Drawing.Size(787, 273);
             this.lvErrorsList.SmallImageList = this.ilvlErrorList;
             this.lvErrorsList.TabIndex = 1;
             this.lvErrorsList.TileSize = new System.Drawing.Size(1, 1);
@@ -110,12 +109,12 @@ namespace VisualPascalABC
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tPCOPYToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(140, 26);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(124, 26);
             // 
             // tPCOPYToolStripMenuItem
             // 
             this.tPCOPYToolStripMenuItem.Name = "tPCOPYToolStripMenuItem";
-            this.tPCOPYToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.tPCOPYToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
             this.tPCOPYToolStripMenuItem.Text = "ER_COPY";
             this.tPCOPYToolStripMenuItem.Click += new System.EventHandler(this.tPCOPYToolStripMenuItem_Click);
             // 
@@ -129,14 +128,14 @@ namespace VisualPascalABC
             // 
             // ErrorsListWindowForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1049, 336);
+            this.ClientSize = new System.Drawing.Size(787, 273);
             this.Controls.Add(this.lvErrorsList);
             this.DockAreas = WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "ErrorsListWindowForm";
+            this.ShowIcon = false;
             this.TabText = "TP_ERRORSLIST";
             this.Text = "TP_ERRORSLIST";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ErrorsListWindowForm_FormClosing);

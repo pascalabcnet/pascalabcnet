@@ -94,7 +94,7 @@ namespace VisualPascalABC
             this.mCOPYToolStripMenuItem,
             this.mSELECTALLToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(155, 70);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(155, 48);
             // 
             // mCOPYToolStripMenuItem
             // 
@@ -228,8 +228,7 @@ namespace VisualPascalABC
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             this.ResumeLayout(false);
-            this.outputTextBox.KeyUp += OutputTextBox_KeyUp;
-            this.InputTextBox.KeyUp += InputTextBox_KeyUp;
+
         }
         #endregion
 

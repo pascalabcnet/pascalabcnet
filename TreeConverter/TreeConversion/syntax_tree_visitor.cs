@@ -20032,7 +20032,22 @@ namespace PascalABCCompiler.TreeConverter
             // !Patterns
             else
             {
-                AddError(get_location(st), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", (st.typ as System.Type)?.Name??"Unknown");
+                AddError(get_location(st), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", (st.typ as System.Type)?.Name ?? "Unknown");
+            }
+            ret.reset(); // обязательно очистить - этот узел в семантику ничего не должен приносить!
+        }
+
+        public override void visit(SyntaxTree.semantic_check_sugared_var_def_statement_node st)
+        {
+            if (st.typ as System.Type == typeof(SyntaxTree.assign_var_tuple))
+            {
+                var idents = st.lst[0] as SyntaxTree.ident_list;
+                var expr = st.lst[1] as SyntaxTree.expression;
+                semantic_check_assign_var_tuple(idents, expr);
+            }
+            else
+            {
+                AddError(get_location(st), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", (st.typ as System.Type)?.Name ?? "Unknown");
             }
             ret.reset(); // обязательно очистить - этот узел в семантику ничего не должен приносить!
         }
