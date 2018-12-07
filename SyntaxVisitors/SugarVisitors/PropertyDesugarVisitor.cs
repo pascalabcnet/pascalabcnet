@@ -63,6 +63,11 @@ namespace SyntaxVisitors.SugarVisitors
 
             if (_simple_property.is_auto)
             {
+                if (_simple_property.parameter_list != null)
+                {
+                    throw new SyntaxVisitorError(
+                    "INDEXED_AUTO_PROPERTY", _simple_property.source_context);
+                }
                 AutoPropertyDesugaring(_simple_property, new_class_members);
             }
 
