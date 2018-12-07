@@ -12115,8 +12115,6 @@ namespace PascalABCCompiler.TreeConverter
         {
         	if (tn == SystemLibrary.SystemLibrary.void_type)
         		AddError(loc, "TYPE_{0}_NOT_VALID", tn.name);
-            if (tn.IsDelegate)
-                AddError(loc, "CONSTRUCTOR_CALL_FOR_DELEGATE_TYPES_IS_FORBIDDEN");
         }
 
         private void check_cycle_inheritance(common_type_node cnode, type_node base_of_cnode)
@@ -18282,6 +18280,8 @@ namespace PascalABCCompiler.TreeConverter
             type_node tn = ret.visit(_new_expr.type);
             //if (tn == SystemLibrary.SystemLibrary.void_type)
             //	AddError(new VoidNotValid(get_location(_new_expr.type)));
+            if (tn.IsDelegate)
+                AddError(get_location(_new_expr), "CONSTRUCTOR_CALL_FOR_DELEGATE_TYPES_IS_FORBIDDEN");
             check_for_type_allowed(tn,get_location(_new_expr.type));
             location loc = get_location(_new_expr);
             expressions_list exprs = null;
