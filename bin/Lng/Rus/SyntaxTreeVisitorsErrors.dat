@@ -21,3 +21,5 @@ Var_{0}_is_already_defined=Переменная {0} уже определена
 
 ?._CANNOT_BE_IN_THIS_CONTEXT=Операция ?. не может располагаться в этом контексте
 
+INVALID_INTERFACE_MEMBER=Члены интерфейса не могут иметь определение
+INDEXED_AUTO_PROPERTY=Автосвойства не могут быть индексными

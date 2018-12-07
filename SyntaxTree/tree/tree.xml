@@ -3135,6 +3135,25 @@
         </TagIndices>
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="var_tuple_def_statement" BaseName="var_def_statement">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="semantic_check_sugared_var_def_statement_node" BaseName="var_def_statement">
+      <Fields>
+        <ExtendedField Name="typ" Type="object" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="lst" Type="List&lt;syntax_tree_node&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3230,6 +3249,7 @@
       <HelpData Key=".tags" Value="" />
       <HelpData Key=".tn" Value="" />
       <HelpData Key=".to" Value="" />
+      <HelpData Key=".typ" Value="" />
       <HelpData Key=".type" Value="" />
       <HelpData Key=".types" Value="" />
       <HelpData Key=".unknown_foreach" Value="" />
@@ -4185,10 +4205,13 @@
       <HelpData Key="semantic_check_statement.stat" Value="" />
       <HelpData Key="semantic_check_sugared_statement" Value="узел, не генерирующий кода, но осуществляющий семантические проверки сахарных узлов. stat - это на самом деле statement. stat сделано типа object - чтобы оно автоматически не обходилось" />
       <HelpData Key="semantic_check_sugared_statement.stat" Value="" />
-      <HelpData Key="semantic_check_sugared_statement_node" Value="Узел, не генерирующий кода, но осуществляющий семантические проверки сахарных узлов. stat - это на самом деле statement. stat сделано типа object - чтобы оно автоматически не обходилось" />
+      <HelpData Key="semantic_check_sugared_statement_node" Value="" />
       <HelpData Key="semantic_check_sugared_statement_node.lst" Value="" />
       <HelpData Key="semantic_check_sugared_statement_node.stat" Value="" />
       <HelpData Key="semantic_check_sugared_statement_node.typ" Value="" />
+      <HelpData Key="semantic_check_sugared_var_def_statement_node" Value="" />
+      <HelpData Key="semantic_check_sugared_var_def_statement_node.lst" Value="" />
+      <HelpData Key="semantic_check_sugared_var_def_statement_node.typ" Value="" />
       <HelpData Key="semantic_expr_node" Value="" />
       <HelpData Key="semantic_expr_node.expr" Value="" />
       <HelpData Key="semantic_type_node" Value="" />
@@ -4547,6 +4570,7 @@
       <HelpData Key="var_statement." Value="" />
       <HelpData Key="var_statement.override string ToString()" Value="" />
       <HelpData Key="var_statement.var_def" Value="" />
+      <HelpData Key="var_tuple_def_statement" Value="" />
       <HelpData Key="variable_definitions" Value="Секция описания переменных (до beginа). Состоит из var_def_statement. Не путать с var_statement - однострочным описанием переменной внутри begin-end" />
       <HelpData Key="variable_definitions." Value="" />
       <HelpData Key="variable_definitions.override string ToString()" Value="" />

@@ -47208,7 +47208,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///Узел, не генерирующий кода, но осуществляющий семантические проверки сахарных узлов. stat - это на самом деле statement. stat сделано типа object - чтобы оно автоматически не обходилось
+	///
 	///</summary>
 	[Serializable]
 	public partial class semantic_check_sugared_statement_node : statement
@@ -51841,6 +51841,608 @@ namespace PascalABCCompiler.SyntaxTree
 					if(index_counter < definitions.Count)
 					{
 						definitions[index_counter]= (var_def_statement)value;
+						return;
+					}
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class var_tuple_def_statement : var_def_statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public var_tuple_def_statement()
+		{
+
+		}
+
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public var_tuple_def_statement(ident_list _vars,type_definition _vars_type,expression _inital_value,definition_attribute _var_attr,bool _is_event)
+		{
+			this._vars=_vars;
+			this._vars_type=_vars_type;
+			this._inital_value=_inital_value;
+			this._var_attr=_var_attr;
+			this._is_event=_is_event;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public var_tuple_def_statement(ident_list _vars,type_definition _vars_type,expression _inital_value,definition_attribute _var_attr,bool _is_event,SourceContext sc)
+		{
+			this._vars=_vars;
+			this._vars_type=_vars_type;
+			this._inital_value=_inital_value;
+			this._var_attr=_var_attr;
+			this._is_event=_is_event;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			var_tuple_def_statement copy = new var_tuple_def_statement();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (vars != null)
+			{
+				copy.vars = (ident_list)vars.Clone();
+				copy.vars.Parent = copy;
+			}
+			if (vars_type != null)
+			{
+				copy.vars_type = (type_definition)vars_type.Clone();
+				copy.vars_type.Parent = copy;
+			}
+			if (inital_value != null)
+			{
+				copy.inital_value = (expression)inital_value.Clone();
+				copy.inital_value.Parent = copy;
+			}
+			copy.var_attr = var_attr;
+			copy.is_event = is_event;
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new var_tuple_def_statement TypedClone()
+		{
+			return Clone() as var_tuple_def_statement;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (vars != null)
+				vars.Parent = this;
+			if (vars_type != null)
+				vars_type.Parent = this;
+			if (inital_value != null)
+				inital_value.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			vars?.FillParentsInAllChilds();
+			vars_type?.FillParentsInAllChilds();
+			inital_value?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return vars;
+					case 1:
+						return vars_type;
+					case 2:
+						return inital_value;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						vars = (ident_list)value;
+						break;
+					case 1:
+						vars_type = (type_definition)value;
+						break;
+					case 2:
+						inital_value = (expression)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class semantic_check_sugared_var_def_statement_node : var_def_statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public semantic_check_sugared_var_def_statement_node()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public semantic_check_sugared_var_def_statement_node(object _typ,List<syntax_tree_node> _lst)
+		{
+			this._typ=_typ;
+			this._lst=_lst;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public semantic_check_sugared_var_def_statement_node(object _typ,List<syntax_tree_node> _lst,SourceContext sc)
+		{
+			this._typ=_typ;
+			this._lst=_lst;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public semantic_check_sugared_var_def_statement_node(ident_list _vars,type_definition _vars_type,expression _inital_value,definition_attribute _var_attr,bool _is_event,object _typ,List<syntax_tree_node> _lst)
+		{
+			this._vars=_vars;
+			this._vars_type=_vars_type;
+			this._inital_value=_inital_value;
+			this._var_attr=_var_attr;
+			this._is_event=_is_event;
+			this._typ=_typ;
+			this._lst=_lst;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public semantic_check_sugared_var_def_statement_node(ident_list _vars,type_definition _vars_type,expression _inital_value,definition_attribute _var_attr,bool _is_event,object _typ,List<syntax_tree_node> _lst,SourceContext sc)
+		{
+			this._vars=_vars;
+			this._vars_type=_vars_type;
+			this._inital_value=_inital_value;
+			this._var_attr=_var_attr;
+			this._is_event=_is_event;
+			this._typ=_typ;
+			this._lst=_lst;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		public semantic_check_sugared_var_def_statement_node(syntax_tree_node elem, SourceContext sc = null)
+		{
+			Add(elem, sc);
+		    FillParentsInDirectChilds();
+		}
+		
+		protected object _typ;
+		protected List<syntax_tree_node> _lst=new List<syntax_tree_node>();
+
+		///<summary>
+		///
+		///</summary>
+		public object typ
+		{
+			get
+			{
+				return _typ;
+			}
+			set
+			{
+				_typ=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public List<syntax_tree_node> lst
+		{
+			get
+			{
+				return _lst;
+			}
+			set
+			{
+				_lst=value;
+			}
+		}
+
+
+		public semantic_check_sugared_var_def_statement_node Add(syntax_tree_node elem, SourceContext sc = null)
+		{
+			lst.Add(elem);
+			if (elem != null)
+				elem.Parent = this;
+			if (sc != null)
+				source_context = sc;
+			return this;
+		}
+		
+		public void AddFirst(syntax_tree_node el)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			lst.Insert(0, el);
+			FillParentsInDirectChilds();
+		}
+		
+		public void AddFirst(IEnumerable<syntax_tree_node> els)
+		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
+			lst.InsertRange(0, els);
+			foreach (var el in els)
+				if (el != null)
+					el.Parent = this;
+		}
+		
+		public void AddMany(params syntax_tree_node[] els)
+		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
+			lst.AddRange(els);
+			foreach (var el in els)
+				if (el != null)
+					el.Parent = this;
+		}
+		
+		private int FindIndexInList(syntax_tree_node el)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			var ind = lst.FindIndex(x => x == el);
+			if (ind == -1)
+				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
+			return ind;
+		}
+		
+		public void InsertAfter(syntax_tree_node el, syntax_tree_node newel)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
+			lst.Insert(FindIndexInList(el) + 1, newel);
+			newel.Parent = this;
+		}
+		
+		public void InsertAfter(syntax_tree_node el, IEnumerable<syntax_tree_node> newels)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
+			lst.InsertRange(FindIndexInList(el) + 1, newels);
+			foreach (var newel in newels)
+				if (newel != null)
+					newel.Parent = this;
+		}
+		
+		public void InsertBefore(syntax_tree_node el, syntax_tree_node newel)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
+			lst.Insert(FindIndexInList(el), newel);
+			newel.Parent = this;
+		}
+		
+		public void InsertBefore(syntax_tree_node el, IEnumerable<syntax_tree_node> newels)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
+			lst.InsertRange(FindIndexInList(el), newels);
+			foreach (var newel in newels)
+				if (newel != null)
+					newel.Parent = this;
+		}
+		
+		public bool Remove(syntax_tree_node el)
+		{
+			return lst.Remove(el);
+		}
+		
+		public void ReplaceInList(syntax_tree_node el, syntax_tree_node newel)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
+			lst[FindIndexInList(el)] = newel;
+			newel.Parent = this;
+		}
+		
+		public void ReplaceInList(syntax_tree_node el, IEnumerable<syntax_tree_node> newels)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
+			var ind = FindIndexInList(el);
+			lst.RemoveAt(ind);
+			lst.InsertRange(ind, newels);
+		    foreach (var newel in newels)
+				if (newel != null)
+					newel.Parent = this;
+		}
+		
+		public int RemoveAll(Predicate<syntax_tree_node> match)
+		{
+			return lst.RemoveAll(match);
+		}
+		
+		public syntax_tree_node Last()
+		{
+			if (lst.Count > 0)
+		        return lst[lst.Count - 1];
+			throw new InvalidOperationException("Список пуст");
+		}
+		
+		public int Count
+		{
+		    get { return lst.Count; }
+		}
+		
+		public void Insert(int pos, syntax_tree_node el)
+		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			lst.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
+		}
+		
+		
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			semantic_check_sugared_var_def_statement_node copy = new semantic_check_sugared_var_def_statement_node();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (vars != null)
+			{
+				copy.vars = (ident_list)vars.Clone();
+				copy.vars.Parent = copy;
+			}
+			if (vars_type != null)
+			{
+				copy.vars_type = (type_definition)vars_type.Clone();
+				copy.vars_type.Parent = copy;
+			}
+			if (inital_value != null)
+			{
+				copy.inital_value = (expression)inital_value.Clone();
+				copy.inital_value.Parent = copy;
+			}
+			copy.var_attr = var_attr;
+			copy.is_event = is_event;
+			copy.typ = typ;
+			if (lst != null)
+			{
+				foreach (syntax_tree_node elem in lst)
+				{
+					if (elem != null)
+					{
+						copy.Add(elem.Clone());
+						copy.Last().Parent = copy;
+					}
+					else
+						copy.Add(null);
+				}
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new semantic_check_sugared_var_def_statement_node TypedClone()
+		{
+			return Clone() as semantic_check_sugared_var_def_statement_node;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (vars != null)
+				vars.Parent = this;
+			if (vars_type != null)
+				vars_type.Parent = this;
+			if (inital_value != null)
+				inital_value.Parent = this;
+			if (lst != null)
+			{
+				foreach (var child in lst)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			vars?.FillParentsInAllChilds();
+			vars_type?.FillParentsInAllChilds();
+			inital_value?.FillParentsInAllChilds();
+			if (lst != null)
+			{
+				foreach (var child in lst)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 3 + (lst == null ? 0 : lst.Count);
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return vars;
+					case 1:
+						return vars_type;
+					case 2:
+						return inital_value;
+				}
+				Int32 index_counter=ind - 3;
+				if(lst != null)
+				{
+					if(index_counter < lst.Count)
+					{
+						return lst[index_counter];
+					}
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						vars = (ident_list)value;
+						break;
+					case 1:
+						vars_type = (type_definition)value;
+						break;
+					case 2:
+						inital_value = (expression)value;
+						break;
+				}
+				Int32 index_counter=ind - 3;
+				if(lst != null)
+				{
+					if(index_counter < lst.Count)
+					{
+						lst[index_counter]= (syntax_tree_node)value;
 						return;
 					}
 				}

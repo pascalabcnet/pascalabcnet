@@ -556,6 +556,12 @@ namespace PascalABCCompiler.SyntaxTree
         }
     }
 
+    public partial class var_tuple_def_statement
+    {
+        public var_tuple_def_statement(ident_list vars, expression iv, SourceContext sc = null) : this(vars, null, iv, definition_attribute.None, false, sc)
+        { }
+    }
+
     public partial class declarations
     {
 

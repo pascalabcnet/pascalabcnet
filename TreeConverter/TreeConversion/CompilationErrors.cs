@@ -3082,6 +3082,27 @@ namespace PascalABCCompiler.TreeConverter
         }
     }
 
+
+    public class FunctionPredefinitionWithoutDefinition : CompilationErrorWithLocation
+    {
+        private common_function_node cfn;
+
+        public FunctionPredefinitionWithoutDefinition(common_function_node cfn, location loc): base(loc)
+        {
+            this.cfn = cfn;
+        }
+
+        public override string ToString()
+        {
+            if (cfn is common_method_node && (cfn as common_method_node).is_constructor)
+                return StringResources.Get("CONSTRUCTOR_PREDEFINITION_WITHOUT_DEFINITION");
+            if (cfn.return_value_type == null)
+                return StringResources.Get("PROCEDURE_PREDEFINITION_WITHOUT_DEFINITION");
+            return StringResources.Get("FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
+        }
+    }
+
+
     public class FailedWhileTryingToCompileLambdaBodyWithGivenParametersException : Exception
     {
         public Exception ExceptionOnCompileBody { get; private set; }

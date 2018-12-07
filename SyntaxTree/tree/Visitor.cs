@@ -1444,6 +1444,18 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_deconstruction_variables_definition">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(deconstruction_variables_definition _deconstruction_variables_definition);
+		///<summary>
+		///Method to visit var_tuple_def_statement.
+		///</summary>
+		///<param name="_var_tuple_def_statement">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(var_tuple_def_statement _var_tuple_def_statement);
+		///<summary>
+		///Method to visit semantic_check_sugared_var_def_statement_node.
+		///</summary>
+		///<param name="_semantic_check_sugared_var_def_statement_node">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(semantic_check_sugared_var_def_statement_node _semantic_check_sugared_var_def_statement_node);
 	}
 
 

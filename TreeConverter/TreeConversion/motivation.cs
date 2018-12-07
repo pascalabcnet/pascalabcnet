@@ -9,7 +9,7 @@ namespace PascalABCCompiler.TreeConverter
     /// <summary>
     /// Будущее название класса - request.
     /// </summary>
-	public enum motivation {none,expression_evaluation,address_reciving,semantic_node_reciving};
+	public enum motivation {none,expression_evaluation,address_receiving,semantic_node_reciving};
 
     //TODO: Избавиться от этого.
 	public class motivation_keeper
@@ -33,7 +33,7 @@ namespace PascalABCCompiler.TreeConverter
 
 		public void set_motivation_to_expect_address()
 		{
-			_mot=motivation.address_reciving;
+			_mot=motivation.address_receiving;
 		}
 
 		public void set_motivation_to_expect_semantic_node()

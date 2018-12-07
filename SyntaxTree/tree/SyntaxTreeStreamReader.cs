@@ -500,6 +500,10 @@ namespace PascalABCCompiler.SyntaxTree
 					return new recursive_deconstructor_parameter();
 				case 239:
 					return new deconstruction_variables_definition();
+				case 240:
+					return new var_tuple_def_statement();
+				case 241:
+					return new semantic_check_sugared_var_def_statement_node();
 			}
 			return null;
 		}
@@ -4217,6 +4221,42 @@ namespace PascalABCCompiler.SyntaxTree
 				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
 				{
 					_deconstruction_variables_definition.definitions.Add(_read_node() as var_def_statement);
+				}
+			}
+		}
+
+
+		public void visit(var_tuple_def_statement _var_tuple_def_statement)
+		{
+			read_var_tuple_def_statement(_var_tuple_def_statement);
+		}
+
+		public void read_var_tuple_def_statement(var_tuple_def_statement _var_tuple_def_statement)
+		{
+			read_var_def_statement(_var_tuple_def_statement);
+		}
+
+
+		public void visit(semantic_check_sugared_var_def_statement_node _semantic_check_sugared_var_def_statement_node)
+		{
+			read_semantic_check_sugared_var_def_statement_node(_semantic_check_sugared_var_def_statement_node);
+		}
+
+		public void read_semantic_check_sugared_var_def_statement_node(semantic_check_sugared_var_def_statement_node _semantic_check_sugared_var_def_statement_node)
+		{
+			read_var_def_statement(_semantic_check_sugared_var_def_statement_node);
+			_semantic_check_sugared_var_def_statement_node.typ = (object)br.ReadByte();
+			if (br.ReadByte() == 0)
+			{
+				_semantic_check_sugared_var_def_statement_node.lst = null;
+			}
+			else
+			{
+				_semantic_check_sugared_var_def_statement_node.lst = new List<syntax_tree_node>();
+				Int32 ssyy_count = br.ReadInt32();
+				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
+				{
+					_semantic_check_sugared_var_def_statement_node.lst.Add(_read_node() as syntax_tree_node);
 				}
 			}
 		}

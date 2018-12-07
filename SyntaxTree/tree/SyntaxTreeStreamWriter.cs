@@ -6654,6 +6654,52 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(var_tuple_def_statement _var_tuple_def_statement)
+		{
+			bw.Write((Int16)240);
+			write_var_tuple_def_statement(_var_tuple_def_statement);
+		}
+
+		public void write_var_tuple_def_statement(var_tuple_def_statement _var_tuple_def_statement)
+		{
+			write_var_def_statement(_var_tuple_def_statement);
+		}
+
+
+		public void visit(semantic_check_sugared_var_def_statement_node _semantic_check_sugared_var_def_statement_node)
+		{
+			bw.Write((Int16)241);
+			write_semantic_check_sugared_var_def_statement_node(_semantic_check_sugared_var_def_statement_node);
+		}
+
+		public void write_semantic_check_sugared_var_def_statement_node(semantic_check_sugared_var_def_statement_node _semantic_check_sugared_var_def_statement_node)
+		{
+			write_var_def_statement(_semantic_check_sugared_var_def_statement_node);
+			bw.Write((byte)_semantic_check_sugared_var_def_statement_node.typ);
+			if (_semantic_check_sugared_var_def_statement_node.lst == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				bw.Write(_semantic_check_sugared_var_def_statement_node.lst.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _semantic_check_sugared_var_def_statement_node.lst.Count; ssyy_i++)
+				{
+					if (_semantic_check_sugared_var_def_statement_node.lst[ssyy_i] == null)
+					{
+						bw.Write((byte)0);
+					}
+					else
+					{
+						bw.Write((byte)1);
+						_semantic_check_sugared_var_def_statement_node.lst[ssyy_i].visit(this);
+					}
+				}
+			}
+		}
+
 	}
 
 

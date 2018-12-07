@@ -1925,6 +1925,22 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(var_tuple_def_statement _var_tuple_def_statement)
+		{
+		}
+
+		public virtual void post_do_visit(var_tuple_def_statement _var_tuple_def_statement)
+		{
+		}
+
+		public virtual void pre_do_visit(semantic_check_sugared_var_def_statement_node _semantic_check_sugared_var_def_statement_node)
+		{
+		}
+
+		public virtual void post_do_visit(semantic_check_sugared_var_def_statement_node _semantic_check_sugared_var_def_statement_node)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -3984,6 +4000,22 @@ namespace PascalABCCompiler.SyntaxTree
 			for (int i = 0; i < definitions.Count; i++)
 				visit(deconstruction_variables_definition.definitions[i]);
 			post_do_visit(_deconstruction_variables_definition);
+		}
+
+		public override void visit(var_tuple_def_statement _var_tuple_def_statement)
+		{
+			DefaultVisit(_var_tuple_def_statement);
+			pre_do_visit(_var_tuple_def_statement);
+			post_do_visit(_var_tuple_def_statement);
+		}
+
+		public override void visit(semantic_check_sugared_var_def_statement_node _semantic_check_sugared_var_def_statement_node)
+		{
+			DefaultVisit(_semantic_check_sugared_var_def_statement_node);
+			pre_do_visit(_semantic_check_sugared_var_def_statement_node);
+			for (int i = 0; i < lst.Count; i++)
+				visit(semantic_check_sugared_var_def_statement_node.lst[i]);
+			post_do_visit(_semantic_check_sugared_var_def_statement_node);
 		}
 	}
 

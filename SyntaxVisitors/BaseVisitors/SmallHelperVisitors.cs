@@ -53,15 +53,21 @@ namespace SyntaxVisitors
     public class ExprHasNameVisitor : WalkingVisitorNew  // есть ли в выражении переменная с данным именем (не включая вложенные лямбды) (используется для поиска Result)
     {
         private string varname;
-        public bool Has = false;
+        public ident id = null;
+        public static ident HasName(expression ex, string varname)
+        {
+            var v = new ExprHasNameVisitor(varname);
+            v.ProcessNode(ex);
+            return v.id;
+        }
         public ExprHasNameVisitor(string varname)
         {
             this.varname = varname.ToLower();
         }
-        public override void visit(ident id)
+        public override void visit(ident i)
         {
-            if (id.name.ToLower() == varname)
-                Has = true;
+            if (i.name.ToLower() == varname)
+                id = i;
         }
         public override void visit(dot_node dn)
         {

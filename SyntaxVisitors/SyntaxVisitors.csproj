@@ -37,8 +37,6 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -55,6 +53,7 @@
     <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\DoubleQuestionDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\LoopDesugarVisitor.cs" />
+    <Compile Include="SugarVisitors\PropertyDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\QuestionPointDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\PatternsDesugaringVisitor.cs" />
     <Compile Include="SugarVisitors\SliceDesugarVisitor.cs" />

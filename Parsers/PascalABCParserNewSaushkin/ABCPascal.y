@@ -24,6 +24,7 @@
 %using PascalABCCompiler.ParserTools;
 %using PascalABCCompiler.Errors;
 %using System.Linq;
+%using SyntaxVisitors;
 
 %namespace GPPGParserScanner
 
@@ -163,7 +164,7 @@
 %type <stn> used_unit_name
 %type <stn> unit_header  
 %type <stn> var_decl_sect  
-%type <stn> var_decl var_decl_part /*var_decl_internal*/ field_definition  
+%type <stn> var_decl var_decl_part /*var_decl_internal*/ field_definition var_decl_with_assign_var_tuple 
 %type <stn> var_stmt  
 %type <stn> where_part  
 %type <stn> where_part_list optional_where_section  
@@ -653,26 +654,39 @@ type_decl_sect
 		} 
     ;
 
+var_decl_with_assign_var_tuple
+	: var_decl 
+		{ 
+			$$ = $1; 
+		}
+	| tkRoundOpen identifier tkComma ident_list tkRoundClose tkAssign expr_l1 tkSemiColon
+		{
+			($4 as ident_list).Insert(0,$2);
+			$4.source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5);
+			$$ = new var_tuple_def_statement($4 as ident_list, $7, @$);
+		}
+	;
+
 var_decl_sect
-    : tkVar var_decl                     
+    : tkVar var_decl_with_assign_var_tuple                     
         { 
 			$$ = new variable_definitions($2 as var_def_statement, @$);
 		}
-    | tkEvent var_decl
+    | tkEvent var_decl_with_assign_var_tuple
         { 
 			$$ = new variable_definitions($2 as var_def_statement, @$);                        
 			($2 as var_def_statement).is_event = true;
         }
-    | var_decl_sect var_decl              
+    | var_decl_sect var_decl_with_assign_var_tuple              
         { 
 			$$ = ($1 as variable_definitions).Add($2 as var_def_statement, @$);
 		} 
-    | tkVar tkRoundOpen identifier tkComma ident_list tkRoundClose tkAssign expr_l1 tkSemiColon
+    /*| tkVar tkRoundOpen identifier tkComma ident_list tkRoundClose tkAssign expr_l1 tkSemiColon
 	    {
 			($5 as ident_list).Insert(0,$3);
 			$5.source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
 			$$ = new assign_var_tuple($5 as ident_list, $8, @$);
-	    }
+	    }*/
     ;
 
 const_decl
@@ -1551,55 +1565,6 @@ object_type
     : class_attributes class_or_interface_keyword optional_base_classes optional_where_section optional_component_list_seq_end
         { 
 			$$ = NewObjectType((class_attribute)$1, $2, $3 as named_type_reference_list, $4 as where_definition_list, $5 as class_body_list, @$);
-            class_definition cd = $$ as class_definition;
-            if (cd == null || cd.body == null)
-                break;
-            var ccnt = cd.body.DescendantNodes().OfType<simple_property>().ToArray();
-            var cm = new class_members(access_modifer.private_modifer);
-            foreach (var prop in ccnt)
-            {
-                var td = prop.property_type;
-                var ra = prop.accessors?.read_accessor;
-                if ($2.text.ToLower() == "interface" && ra != null && (ra.pr != null || ra.accessor_name != null))
-				    parsertools.AddErrorFromResource("INVALID_INTERFACE_MEMBER",ra.source_context);
-
-                if (ra != null && ra.pr != null)
-                {
-                    if (prop.parameter_list != null)
-                        parsertools.AddErrorFromResource("EXTENDED_INDEXED_PROPERTIES",ra.source_context);
-                    var rapr = ra.pr as procedure_definition; 
-                    (rapr.proc_header as function_header).return_type = td;
-                    cm.Add(rapr);
-                    if (prop.attr == definition_attribute.Static)
-                    {
-                        rapr.proc_header.class_keyword = true;
-                        procedure_attribute pa = new procedure_attribute(proc_attribute.attr_static);
-                        pa.source_context = rapr.proc_header.source_context;
-                        rapr.proc_header.proc_attributes = new procedure_attributes_list(pa);
-                    }
-                }
-                var wa = prop.accessors?.write_accessor;
-                if ($2.text.ToLower() == "interface" && wa != null && (wa.pr != null || wa.accessor_name != null))
-				    parsertools.AddErrorFromResource("INVALID_INTERFACE_MEMBER",wa.source_context);
-
-                if (wa != null && wa.pr != null)
-                {
-                    if (prop.parameter_list != null)
-                        parsertools.AddErrorFromResource("EXTENDED_INDEXED_PROPERTIES",ra.source_context);
-                    var wapr = wa.pr as procedure_definition;
-                    wapr.proc_header.parameters.params_list[0].vars_type = td;
-                    cm.Add(wapr);
-                    if (prop.attr == definition_attribute.Static)
-                    {
-                        wapr.proc_header.class_keyword = true;
-                        procedure_attribute pa = new procedure_attribute(proc_attribute.attr_static);
-                        pa.source_context = wapr.proc_header.source_context;
-                        wapr.proc_header.proc_attributes = new procedure_attributes_list(pa);
-                    }
-                }
-            }
-            if (cm.Count>0)
-                cd.body.Insert(0, cm);
 		}
     ;
 
@@ -1607,51 +1572,6 @@ record_type
     : tkRecord optional_base_classes optional_where_section member_list_section tkEnd   
         { 
 			$$ = NewRecordType($2 as named_type_reference_list, $3 as where_definition_list, $4 as class_body_list, @$);
-            class_definition cd = $$ as class_definition;
-            if (cd == null || cd.body == null)
-                break;
-            var ccnt = cd.body.DescendantNodes().OfType<simple_property>().ToArray();
-            var cm = new class_members(access_modifer.private_modifer);
-            foreach (var prop in ccnt)
-            {
-                var td = prop.property_type;
-                var ra = prop.accessors?.read_accessor;
-
-                if (ra != null && ra.pr != null)
-                {
-                    if (prop.parameter_list != null)
-                        parsertools.AddErrorFromResource("EXTENDED_INDEXED_PROPERTIES",ra.source_context);
-                    var rapr = ra.pr as procedure_definition;
-                    (rapr.proc_header as function_header).return_type = td;
-                    cm.Add(rapr);
-                    if (prop.attr == definition_attribute.Static)
-                    {
-                        rapr.proc_header.class_keyword = true;
-                        procedure_attribute pa = new procedure_attribute(proc_attribute.attr_static);
-                        pa.source_context = rapr.proc_header.source_context;
-                        rapr.proc_header.proc_attributes = new procedure_attributes_list(pa);
-                    }
-                }
-                var wa = prop.accessors?.write_accessor;
-
-                if (wa != null && wa.pr != null && prop.parameter_list == null)
-                {
-                    if (prop.parameter_list != null)
-                        parsertools.AddErrorFromResource("EXTENDED_INDEXED_PROPERTIES",ra.source_context);
-                    var wapr = wa.pr as procedure_definition;
-                    wapr.proc_header.parameters.params_list[0].vars_type = td;
-                    cm.Add(wapr);
-                    if (prop.attr == definition_attribute.Static)
-                    {
-                        wapr.proc_header.class_keyword = true;
-                        procedure_attribute pa = new procedure_attribute(proc_attribute.attr_static);
-                        pa.source_context = wapr.proc_header.source_context;
-                        wapr.proc_header.proc_attributes = new procedure_attributes_list(pa);
-                    }
-                }
-            }
-            if (cm.Count>0)
-                cd.body.Insert(0, cm);
 		}
     ;
 
@@ -2067,12 +1987,17 @@ simple_property_definition
         { 
 			parsertools.AddErrorFromResource("STATIC_PROPERTIES_CANNOT_HAVE_ATTRBUTE_{0}",@7,$7.name);        	
         }
+	| tkAuto tkProperty qualified_identifier property_interface tkSemiColon
+		{
+			$$ = NewSimplePropertyDefinition($3 as method_name, $4 as property_interface, null, proc_attribute.attr_none, null, @$);
+			($$ as simple_property).is_auto = true;
+		}
     ;
 
 array_defaultproperty
     :  
 		{ $$ = null; }
-    | tkDefault tkSemiColon                   
+    | tkDefault tkSemiColon               
         { 
 			$$ = new property_array_default();  
 			$$.source_context = @$;
@@ -2254,12 +2179,6 @@ var_decl_part
         { 
 			$$ = new var_def_statement($1 as ident_list, $3, $5, definition_attribute.None, false, @$); 
 		}
-	/*| tkRoundOpen identifier tkComma ident_list tkRoundClose tkAssign expr_l1 
-	    {
-			($4 as ident_list).Insert(0,$2);
-			$4.source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
-			$$ = new assign_var_tuple($4 as ident_list, $7, @$);
-	    }*/
     ;
 
 typed_var_init_expression
@@ -4524,7 +4443,11 @@ common_lambda_body
 lambda_function_body
 	: expr_l1 
 		{
-			//$$ = NewLambdaBody($1, @$);
+		    var id = SyntaxVisitors.ExprHasNameVisitor.HasName($1, "Result"); 
+            if (id != null)
+            {
+                 parsertools.AddErrorFromResource("RESULT_IDENT_NOT_EXPECTED_IN_THIS_CONTEXT", id.source_context);
+            }
 			var sl = new statement_list(new assign("result",$1,@$),@$); // надо помечать ещё и assign как автосгенерированный для лямбды - чтобы запретить явный Result
 			sl.expr_lambda_body = true;
 			$$ = sl;

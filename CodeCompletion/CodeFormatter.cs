@@ -1853,11 +1853,30 @@ namespace CodeFormatters
         public override void visit(simple_property _simple_property)
         {
             multiline_stack_push(_simple_property);
+
+            string keyword_with_spaces = "property";
+            var property_keyword = "property";
+            if (_simple_property.is_auto)
+            {
+                property_keyword = property_keyword.Insert(0, "auto ");
+                var name_pos = GetPosition(
+                    _simple_property.property_name.source_context.begin_position.line_num,
+                    _simple_property.property_name.source_context.begin_position.column_num);
+                var property_start_pos = GetPosition(
+                    _simple_property.source_context.begin_position.line_num,
+                    _simple_property.source_context.begin_position.column_num);
+
+                keyword_with_spaces = Text.Substring(
+                    property_start_pos, name_pos - property_start_pos - 1);
+                keyword_with_spaces.Trim();
+            }
+
             if (_simple_property.attr != definition_attribute.Static)
             {
-                sb.Append("property");
-                SetKeywordOffset("property");
+                sb.Append(property_keyword);
+                SetKeywordOffset(keyword_with_spaces);
             }
+
             visit_node(_simple_property.property_name);
             if (_simple_property.parameter_list != null)
             {

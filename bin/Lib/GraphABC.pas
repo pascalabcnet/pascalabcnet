@@ -2564,10 +2564,12 @@ end;
 
 procedure Ellipse(x1, y1, x2, y2: integer);
 begin
+  Monitor.Enter(f);
   if Brush.NETBrush <> nil then 
     FillEllipse(x1, y1, x2, y2);
   if Pen.NETPen.DashStyle <> DashStyle.Custom then
     DrawEllipse(x1, y1, x2, y2);
+  Monitor.Exit(f);
 end;
 
 procedure FillRectangle(x1, y1, x2, y2: integer);
@@ -2592,6 +2594,7 @@ end;
 
 procedure Rectangle(x1, y1, x2, y2: integer);
 begin
+  Monitor.Enter(f);
   if x1 > x2 then 
     Swap(x1, x2);
   if y1 > y2 then 
@@ -2600,6 +2603,7 @@ begin
     FillRectangle(x1, y1, x2 - 1, y2 - 1);
   if Pen.NETPen.DashStyle <> DashStyle.Custom then
     DrawRectangle(x1, y1, x2, y2);
+  Monitor.Exit(f);
 end;
 
 procedure DrawRoundRect(x1, y1, x2, y2, w, h: integer);

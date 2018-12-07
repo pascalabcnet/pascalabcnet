@@ -1207,6 +1207,16 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_deconstruction_variables_definition);
 		}
+
+		public virtual void visit(var_tuple_def_statement _var_tuple_def_statement)
+		{
+			DefaultVisit(_var_tuple_def_statement);
+		}
+
+		public virtual void visit(semantic_check_sugared_var_def_statement_node _semantic_check_sugared_var_def_statement_node)
+		{
+			DefaultVisit(_semantic_check_sugared_var_def_statement_node);
+		}
 	}
 
 
