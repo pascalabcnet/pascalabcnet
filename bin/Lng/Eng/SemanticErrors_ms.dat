@@ -17,3 +17,4 @@ STATIC_PROPERTY_MUST_HAVE_STATIC_ACCESSOR=Static property accessor must be stati
 ENUMS_CANNOT_BE_GENERIC=Enumerator type cannot be generic
 PROGRAM_NAME_FOR_TYPE_NAME_IS_PROHIBITED=The name 'program' is prohibited as type name
 DEFAULT_PARAMS_IN_DELEGATE_TYPE=Procedure type cannot have default parameters
+CONSTRUCTOR_CALL_FOR_DELEGATE_TYPES_IS_FORBIDDEN=Constructor call for delegate types is forbidden

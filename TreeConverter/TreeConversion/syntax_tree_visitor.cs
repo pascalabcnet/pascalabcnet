@@ -12115,8 +12115,10 @@ namespace PascalABCCompiler.TreeConverter
         {
         	if (tn == SystemLibrary.SystemLibrary.void_type)
         		AddError(loc, "TYPE_{0}_NOT_VALID", tn.name);
+            if (tn.IsDelegate)
+                AddError(loc, "CONSTRUCTOR_CALL_FOR_DELEGATE_TYPES_IS_FORBIDDEN");
         }
-        
+
         private void check_cycle_inheritance(common_type_node cnode, type_node base_of_cnode)
         {
             List<common_type_node> base_params = new List<common_type_node>();
