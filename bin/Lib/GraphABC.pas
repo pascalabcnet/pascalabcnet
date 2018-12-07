@@ -1123,8 +1123,8 @@ type
 function SetProcessDPIAware(): boolean; external 'user32.dll';
 
 var
-  // строка-буфер ввода
-  MainThread: Thread;
+  ///потоки, ожидающие ввода
+  ReadSuspThreads: Queue<Thread>;
   // строка-буфер ввода
   readbuffer: string;
   _Window: GraphABCWindow := new GraphABCWindow;
@@ -1283,9 +1283,13 @@ function IOGraphABCSystem.read_symbol: char;
 begin
   if readbuffer.Length = 0 then
   begin
-    IOPanel.Invoke(SetIOPanelVisible);
-    // приостановить основной поток
-    MainThread.Suspend;
+    if ReadSuspThreads.Count=0 then
+      IOPanel.Invoke(SetIOPanelVisible);
+    // приостановить поток который запросил ввод
+    var thr := Thread.CurrentThread;
+    lock ReadSuspThreads do
+      ReadSuspThreads.Enqueue(thr);
+    thr.Suspend;
   end;
   Result := readBuffer[1];
   readBuffer := readBuffer.Remove(0, 1);
@@ -1295,9 +1299,13 @@ function IOGraphABCSystem.peek: integer;
 begin
   if readbuffer.Length = 0 then
   begin
-    IOPanel.Invoke(SetIOPanelVisible);
-    // приостановить основной поток
-    MainThread.Suspend;
+    if ReadSuspThreads.Count=0 then
+      IOPanel.Invoke(SetIOPanelVisible);
+    // приостановить поток который запросил ввод
+    var thr := Thread.CurrentThread;
+    lock ReadSuspThreads do
+      ReadSuspThreads.Enqueue(thr);
+    thr.Suspend;
   end;
   Result := integer(readBuffer[1]);
 end;
@@ -3927,8 +3935,19 @@ begin
   if e.KeyCode = Keys.Return then
   begin
     readbuffer := ed.Text + Environment.NewLine;
-    IOPanel.Invoke(SetIOPanelInVisible);
-    MainThread.Resume;
+    
+    // получить последний поток
+    // и если его ничего не убило - разблокировать
+    // мы не обрабатываем случай, в котором программист разблокировал этот поток, потому что это нарушает ввод
+    // но мы обрабатываем случай, в котором программист убил поток, потому что это реальная ситуация которая может случится
+    var thr: Thread;
+    lock ReadSuspThreads do thr := ReadSuspThreads.Dequeue;
+    if thr.IsAlive then
+      thr.Resume;
+    
+    if ReadSuspThreads.Count=0 then
+      IOPanel.Invoke(SetIOPanelInVisible);
+    
   end;
 end;
 
@@ -3937,8 +3956,19 @@ begin
   if IOPanel.Visible = False then 
     Exit;
   readbuffer := ed.Text + Environment.NewLine;
-  IOPanel.Invoke(SetIOPanelInVisible);
-  MainThread.Resume;
+  
+  // получить последний поток
+  // и если его ничего не убило - разблокировать
+  // мы не обрабатываем случай, в котором программист разблокировал этот поток, потому что это нарушает ввод
+  // но мы обрабатываем случай, в котором программист убил поток, потому что это реальная ситуация которая может случится
+  var thr: Thread;
+  lock ReadSuspThreads do thr := ReadSuspThreads.Dequeue;
+  if thr.IsAlive then
+    thr.Resume;
+  
+  if ReadSuspThreads.Count=0 then
+    IOPanel.Invoke(SetIOPanelInVisible);
+  
 end;
 
 procedure InitForm;
@@ -4018,7 +4048,7 @@ end;
 
 procedure __InitModule;
 begin
-  MainThread := Thread.CurrentThread;
+  ReadSuspThreads := new Queue<Thread>;
   InitGraphABC;
 end;
 
