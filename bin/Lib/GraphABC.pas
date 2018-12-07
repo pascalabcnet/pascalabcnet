@@ -1285,10 +1285,18 @@ begin
   begin
     if ReadSuspThreads.Count=0 then
       IOPanel.Invoke(SetIOPanelVisible);
+    
     // приостановить поток который запросил ввод
     var thr := Thread.CurrentThread;
+    
+    // блокировка потока формы не приводит ни к чему хорошему
+    // а исправить это без костыля - надо будет много менять
+    if thr.ManagedThreadId=MainFormThread.ManagedThreadId then
+      raise new InvalidOperationException('Нельзя вызывать чтение из потока формы. Создайте отдельный поток');
+    
     lock ReadSuspThreads do
       ReadSuspThreads.Enqueue(thr);
+    
     thr.Suspend;
   end;
   Result := readBuffer[1];
@@ -1301,10 +1309,18 @@ begin
   begin
     if ReadSuspThreads.Count=0 then
       IOPanel.Invoke(SetIOPanelVisible);
+    
     // приостановить поток который запросил ввод
     var thr := Thread.CurrentThread;
+    
+    // блокировка потока формы не приводит ни к чему хорошему
+    // а исправить это без костыля - надо будет много менять
+    if thr.ManagedThreadId=MainFormThread.ManagedThreadId then
+      raise new InvalidOperationException('Нельзя вызывать чтение из потока формы. Создайте отдельный поток');
+    
     lock ReadSuspThreads do
       ReadSuspThreads.Enqueue(thr);
+    
     thr.Suspend;
   end;
   Result := integer(readBuffer[1]);
@@ -3946,7 +3962,8 @@ begin
       thr.Resume;
     
     if ReadSuspThreads.Count=0 then
-      IOPanel.Invoke(SetIOPanelInVisible);
+      IOPanel.Invoke(SetIOPanelInVisible) else
+      IOPanel.Invoke(procedure->ed.Text := '');
     
   end;
 end;
@@ -3967,7 +3984,8 @@ begin
     thr.Resume;
   
   if ReadSuspThreads.Count=0 then
-    IOPanel.Invoke(SetIOPanelInVisible);
+    IOPanel.Invoke(SetIOPanelInVisible) else
+    IOPanel.Invoke(procedure->ed.Text := '');
   
 end;
 
