@@ -3540,6 +3540,13 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.class_definition _class_definition)
         {
+            /*var tt = _class_definition.DescendantNodes().OfType<class_definition>();
+            if (tt.Count() > 0)
+            {
+                AddWarning(new Errors.CompilerWarning("bs", _class_definition.source_context.FileName));
+                AddError(get_location(tt.First()),"NESTED_RECORD_DEFINITIONS_ARE_FORBIDDEN");
+            }*/
+
             var testIsTypeclassInstance = context._ctn?.Attributes?.Any(a => a.AttributeType.name == "__TypeclassInstanceAttribute");
             if (testIsTypeclassInstance.HasValue && testIsTypeclassInstance.Value)
             {
