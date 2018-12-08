@@ -1571,7 +1571,14 @@ object_type
 record_type 
     : tkRecord optional_base_classes optional_where_section member_list_section tkEnd   
         { 
-			$$ = NewRecordType($2 as named_type_reference_list, $3 as where_definition_list, $4 as class_body_list, @$);
+			var nnrt = new class_definition($2 as named_type_reference_list, $4 as class_body_list, class_keyword.Record, null, $3 as where_definition_list, class_attribute.None, false, @$); 
+			if (/*nnrt.body!=null && nnrt.body.class_def_blocks!=null && 
+				nnrt.body.class_def_blocks.Count>0 &&*/ 
+				nnrt.body.class_def_blocks[0].access_mod==null)
+			{
+                nnrt.body.class_def_blocks[0].access_mod = new access_modifer_node(access_modifer.public_modifer);
+			}        
+			$$ = nnrt;
 		}
     ;
 

@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-G8V08V4
-// DateTime: 06.12.2018 14:23:43
+// DateTime: 08.12.2018 10:42:33
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -3819,12 +3819,28 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                optional_component_list_seq_end
 { 
 			CurrentSemanticValue.td = NewObjectType((class_attribute)ValueStack[ValueStack.Depth-5].ob, ValueStack[ValueStack.Depth-4].ti, ValueStack[ValueStack.Depth-3].stn as named_type_reference_list, ValueStack[ValueStack.Depth-2].stn as where_definition_list, ValueStack[ValueStack.Depth-1].stn as class_body_list, CurrentLocationSpan);
-		}
+                        var tt = CurrentSemanticValue.td.DescendantNodes().OfType<class_definition>();
+                        if (tt.Count()>0)
+                        {
+                            var sc = tt.First().source_context;
+                            parsertools.AddErrorFromResource("NESTED_RECORD_DEFINITIONS_ARE_FORBIDDEN", new LexLocation(sc.begin_position.line_num, sc.begin_position.column_num-1, sc.end_position.line_num, sc.end_position.column_num, sc.FileName));
+                        }
+                            
+
+
+        }
         break;
       case 286: // record_type -> tkRecord, optional_base_classes, optional_where_section, 
                 //                member_list_section, tkEnd
 { 
-			CurrentSemanticValue.td = NewRecordType(ValueStack[ValueStack.Depth-4].stn as named_type_reference_list, ValueStack[ValueStack.Depth-3].stn as where_definition_list, ValueStack[ValueStack.Depth-2].stn as class_body_list, CurrentLocationSpan);
+			var nnrt = new class_definition(ValueStack[ValueStack.Depth-4].stn as named_type_reference_list, ValueStack[ValueStack.Depth-2].stn as class_body_list, class_keyword.Record, null, ValueStack[ValueStack.Depth-3].stn as where_definition_list, class_attribute.None, false, CurrentLocationSpan); 
+			if (/*nnrt.body!=null && nnrt.body.class_def_blocks!=null && 
+				nnrt.body.class_def_blocks.Count>0 &&*/ 
+				nnrt.body.class_def_blocks[0].access_mod==null)
+			{
+                nnrt.body.class_def_blocks[0].access_mod = new access_modifer_node(access_modifer.public_modifer);
+			}        
+			CurrentSemanticValue.td = nnrt;
 		}
         break;
       case 287: // class_attribute -> tkSealed
