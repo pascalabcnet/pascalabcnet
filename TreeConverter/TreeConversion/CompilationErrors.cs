@@ -390,6 +390,8 @@ namespace PascalABCCompiler.TreeConverter
         {
             _is_alone = is_alone;
             this.first_function = first_function;
+            if (first_function is compiled_constructor_node || first_function is common_method_node && (first_function as common_method_node).is_constructor)
+                is_constructor = true;
         }
 
         public bool is_alone_function_defined
