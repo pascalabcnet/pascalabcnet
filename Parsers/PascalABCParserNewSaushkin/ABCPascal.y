@@ -2009,6 +2009,12 @@ simple_property_definition
 			$$ = NewSimplePropertyDefinition($3 as method_name, $4 as property_interface, null, proc_attribute.attr_none, null, @$);
 			($$ as simple_property).is_auto = true;
 		}
+	| class_or_static tkAuto tkProperty qualified_identifier property_interface tkSemiColon
+		{
+			$$ = NewSimplePropertyDefinition($4 as method_name, $5 as property_interface, null, proc_attribute.attr_none, null, @$);
+			($$ as simple_property).is_auto = true;
+			($$ as simple_property).attr = definition_attribute.Static;
+		}
     ;
 
 array_defaultproperty
