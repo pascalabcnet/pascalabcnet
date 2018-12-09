@@ -4756,7 +4756,10 @@ namespace CodeCompletion
                 
             if (type1.IsConvertable(type2, true))
             {
-                returned_scope = type2;
+                if (!(type2 is NullTypeScope))
+                    returned_scope = type2;
+                else
+                    returned_scope = type1;
                 return;
             }
             returned_scope = type1;
