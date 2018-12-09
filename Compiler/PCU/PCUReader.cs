@@ -481,6 +481,8 @@ namespace PascalABCCompiler.PCU
                         if (ctn.scope == null)
                             ctn.init_scope();
                         ctn.scope.AddSymbol(names[i].name, si);
+                        if (ctn.original_generic != null && ctn.original_generic.Scope != null)
+                            ctn.original_generic.Scope.AddSymbol(names[i].name, si);
                     }
                     else if (tn is generic_instance_type_node)
                         tn.Scope.AddSymbol(names[i].name, si);
