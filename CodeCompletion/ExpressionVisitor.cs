@@ -1722,7 +1722,7 @@ namespace CodeCompletion
 
         public override void visit(var_statement _var_statement)
         {
-            throw new NotImplementedException();
+           
         }
 
         public override void visit(question_colon_expression _question_colon_expression)
