@@ -2040,7 +2040,7 @@ namespace PascalABCCompiler.TreeRealization
             if (this.is_generic_parameter && sil != null)
             {
                 sil = sil?.Select(x => x.copy()).ToList();
-                //удаляем повторяющиеся символы
+                //удаляем повторяющиеся символы. Ужас, но верно
                 for (int i = 0; i < sil.Count; ++i)
                 {
                     for (int j = i + 1; j < sil.Count; ++j)
@@ -2105,13 +2105,12 @@ namespace PascalABCCompiler.TreeRealization
                             {
                                 if (!cache.ContainsKey(si.sym_info))
                                 {
-                                    if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method)
+                                    if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method
+                                        && sil.FindIndex(ssi=> ssi.sym_info == si.sym_info)==-1)  // SSM 12.12.18 - за счёт методов интерфейсов тоже могут добавляться одинаковые - исключаем их
                                         sil.Add(si);
                                     cache.Add(si.sym_info, si.sym_info);
                                 }
                             }
-
-
                         }
                     }
                     if (sil != null && sil.Count() == 0)
