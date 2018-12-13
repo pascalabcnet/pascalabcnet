@@ -89,13 +89,32 @@ namespace SyntaxVisitors.SugarVisitors
             //AddDefinitionsInUpperStatementList(matchWith, new[] { new var_statement(cachedExpression, matchWith.expr) });
 
             // Преобразование из сахара в известную конструкцию каждого case
+            var usedDeconstructionTypes = new HashSet<string>();
             foreach (var patternCase in matchWith.case_list.elements)
             {
                 if (patternCase == null)
                     continue;
 
                 if (patternCase.pattern is deconstructor_pattern)
+                {
+                    // Проверяем встречался ли уже такой тип при деконструкции
+                    var deconstructionType = (patternCase.pattern as deconstructor_pattern).
+                        type as named_type_reference;
+                    if (deconstructionType != null &&
+                        deconstructionType.names != null &&
+                        deconstructionType.names.Count != 0)
+                    {
+                        var deconstructionTypeName = deconstructionType.names[0].name;
+                        if (usedDeconstructionTypes.Contains(deconstructionTypeName))
+                        {
+                            throw new SyntaxVisitorError("REPEATED_DECONSTRUCTION_TYPE",
+                                                         patternCase.pattern.source_context);
+                        }
+                        usedDeconstructionTypes.Add(deconstructionTypeName);
+                    }
+
                     DesugarDeconstructorPatternCase(matchWith.expr, patternCase);
+                }
             }
 
             if (matchWith.defaultAction != null)
