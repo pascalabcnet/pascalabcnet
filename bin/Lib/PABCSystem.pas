@@ -8581,6 +8581,22 @@ begin
   end;
 end;
 
+/// Возвращает произведение элементов последовательности
+function Product(Self: sequence of real): real; extensionmethod;
+begin
+  Result := 1.0;
+  foreach var x in Self do
+    Result *= x;
+end;
+
+/// Возвращает произведение элементов последовательности
+function Product(Self: sequence of integer): integer; extensionmethod;
+begin
+  Result := 1;
+  foreach var x in Self do
+    Result *= x;
+end;
+
 /// Возвращает отсортированную по возрастанию последовательность
 function Sorted<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
@@ -9602,6 +9618,22 @@ begin
       Self[i, j] := f(i, j);
 end;
 
+/// Применяет действие к каждому элементу двумерного массива
+procedure &ForEach<T>(Self: array [,] of T; act: T -> ()); extensionmethod;
+begin
+  for var i := 0 to Self.RowCount - 1 do
+    for var j := 0 to Self.ColCount - 1 do
+      act(Self[i, j]);
+end;
+
+/// Применяет действие к каждому элементу двумерного массива
+procedure &ForEach<T>(Self: array [,] of T; act: (T,integer,integer) -> ()); extensionmethod;
+begin
+  for var i := 0 to Self.RowCount - 1 do
+    for var j := 0 to Self.ColCount - 1 do
+      act(Self[i, j],i,j);
+end;
+
 // -----------------------------------------------------
 //>>     Фиктивная секция YYY - не удалять! # YYY
 // -----------------------------------------------------
@@ -9730,7 +9762,7 @@ begin
 end;}
 
 /// Возвращает минимальный элемент 
-function Min<T>(Self: array of T): T; extensionmethod;where T: System.IComparable<T>;
+function Min<T>(Self: array of T): T; extensionmethod; where T: System.IComparable<T>;
 begin
   Result := Self[0];
   for var i := 1 to Self.Length - 1 do
@@ -9739,7 +9771,7 @@ begin
 end;
 
 /// Возвращает максимальный элемент 
-function Max<T>(Self: array of T): T; extensionmethod;where T: System.IComparable<T>;
+function Max<T>(Self: array of T): T; extensionmethod; where T: System.IComparable<T>;
 begin
   Result := Self[0];
   for var i := 1 to Self.Length - 1 do

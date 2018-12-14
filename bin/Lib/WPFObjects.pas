@@ -77,6 +77,8 @@ function Rect(x,y,w,h: real): GRect;
 function ColorBrush(c: Color): GBrush;
 //{{{--doc: Конец секции 1 }}} 
 
+procedure Invoke(p: ()->());
+
 //{{{doc: Начало секции 2 }}} 
 type
 // -----------------------------------------------------
@@ -926,6 +928,8 @@ function clRandom := RandomColor();
 function Pnt(x,y: real) := new Point(x,y);
 function Rect(x,y,w,h: real) := new System.Windows.Rect(x,y,w,h);
 function ColorBrush(c: Color) := new SolidColorBrush(c);
+
+procedure Invoke(p: ()->()) := GraphWPFBase.Invoke(p);
 
 procedure SetLeft(Self: UIElement; l: integer) := Self.SetLeft(l);
 procedure SetTop(Self: UIElement; t: integer) := Self.SetTop(t);

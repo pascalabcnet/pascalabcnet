@@ -138,7 +138,7 @@ namespace GPPGParserScanner
             return nnof;
         }
 
-        public class_definition NewRecordType(named_type_reference_list opt_base_classes, where_definition_list opt_where_section, class_body_list component_list_seq, LexLocation loc)
+        /*public class_definition NewRecordType(named_type_reference_list opt_base_classes, where_definition_list opt_where_section, class_body_list component_list_seq, LexLocation loc)
         {
             var nnrt = new class_definition(opt_base_classes, component_list_seq, class_keyword.Record, null, opt_where_section, class_attribute.None, false, loc); 
 			if (nnrt.body!=null && nnrt.body.class_def_blocks!=null && 
@@ -147,7 +147,7 @@ namespace GPPGParserScanner
                 nnrt.body.class_def_blocks[0].access_mod = new access_modifer_node(access_modifer.public_modifer);
 			}
             return nnrt;
-        }
+        } */
 
         public token_info NewClassOrInterfaceKeyword(token_info tktemp)
         {

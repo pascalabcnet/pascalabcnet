@@ -18,6 +18,8 @@ using System.Text;
 
 namespace PascalABCCompiler.SyntaxTree
 {
+    // Визитор накопления легковесной синтаксической таблицы символов. 
+    // Не дописан. Имеет большой потенциал применения
     public partial class CollectLightSymInfoVisitor : BaseEnterExitVisitor
     {
         public ScopeSyntax Root;

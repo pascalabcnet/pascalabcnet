@@ -371,25 +371,61 @@ namespace SyntaxVisitors
             //var ass1 = new var_statement(fn.loop_variable, fn.type_name, fn.initial_value);
             //var ass2 = new var_statement(endtemp, fn.type_name, fn.finish_value);
 
+            // Исправления в связи с #1254 (новый алгоритм)
+            // цикл for i:=a to b do
+            //          i := a
+            //          if i > b then goto break
+            //Start:    stmts
+            //          if i >= b then goto break
+            //Continue: Inc(i)
+            //          goto Start
+            //Break:
+
+            // цикл for i:=a downto b do
+            //          i := a
+            //          if i < b then goto break
+            //Start:    stmts
+            //          if i <= b then goto break
+            //Continue: Dec(i)
+            //          goto Start
+            //Break:
+
             // frninja 05/06/16 - фиксим для !fn.create_variable
             var ass1 = fn.create_loop_variable
                 ? new var_statement(fn.loop_variable, fn.type_name, fn.initial_value) as statement
                 : new assign(fn.loop_variable, fn.initial_value) as statement;
 
-
             var if0 = new if_node((fn.cycle_type == for_cycle_type.to) ?
                 bin_expr.Greater(fn.loop_variable, fn.finish_value) :
                 bin_expr.Less(fn.loop_variable, fn.finish_value), gotoBreak);
 
-            var lb2 = new labeled_statement(gotoStart.label, if0);
-            var lb1 = new labeled_statement(gotoBreak.label);
+            var if1 = new if_node((fn.cycle_type == for_cycle_type.to) ?
+                bin_expr.GreaterEqual(fn.loop_variable, fn.finish_value) :
+                bin_expr.LessEqual(fn.loop_variable, fn.finish_value), gotoBreak);
+
+            var lb1 = new labeled_statement(gotoStart.label);
+            var lb2 = new labeled_statement(gotoBreak.label); // пустой оператор
             var Inc = new procedure_call(new method_call((fn.cycle_type == for_cycle_type.to) ?
                 new ident("Inc") :
                 new ident("Dec"), new expression_list(fn.loop_variable)));
 
             var lbInc = new labeled_statement(gotoContinue.label, Inc);
 
-            ReplaceStatement(fn, SeqStatements(ass1, lb2, fn.statements, lbInc, gotoStart, lb1));
+            ReplaceStatement(fn, SeqStatements(ass1, if0, lb1, fn.statements, if1, lbInc, gotoStart, lb2));
+
+            /*var if0 = new if_node((fn.cycle_type == for_cycle_type.to) ?
+                bin_expr.Greater(fn.loop_variable, fn.finish_value) :
+                bin_expr.Less(fn.loop_variable, fn.finish_value), gotoBreak);
+
+            var lb2 = new labeled_statement(gotoStart.label, if0);
+            var lb1 = new labeled_statement(gotoBreak.label); // пустой оператор
+            var Inc = new procedure_call(new method_call((fn.cycle_type == for_cycle_type.to) ?
+                new ident("Inc") :
+                new ident("Dec"), new expression_list(fn.loop_variable)));
+
+            var lbInc = new labeled_statement(gotoContinue.label, Inc);
+
+            ReplaceStatement(fn, SeqStatements(ass1, lb2, fn.statements, lbInc, gotoStart, lb1));*/
 
             // в declarations ближайшего блока добавить описание labels
             block bl = listNodes.FindLast(x => x is block) as block;

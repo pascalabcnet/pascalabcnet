@@ -375,9 +375,17 @@ namespace PascalABCCompiler.SyntaxTree
         {
             return new bin_expr(left, right, Operators.Greater);
         }
+        public static bin_expr GreaterEqual(expression left, expression right)
+        {
+            return new bin_expr(left, right, Operators.GreaterEqual);
+        }
         public static bin_expr Less(expression left, expression right)
         {
             return new bin_expr(left, right, Operators.Less);
+        }
+        public static bin_expr LessEqual(expression left, expression right)
+        {
+            return new bin_expr(left, right, Operators.LessEqual);
         }
 
         public static bin_expr LogicalAnd(expression left, expression right)

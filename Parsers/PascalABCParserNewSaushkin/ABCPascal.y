@@ -1564,14 +1564,31 @@ proc_type_decl
 object_type
     : class_attributes class_or_interface_keyword optional_base_classes optional_where_section optional_component_list_seq_end
         { 
-			$$ = NewObjectType((class_attribute)$1, $2, $3 as named_type_reference_list, $4 as where_definition_list, $5 as class_body_list, @$);
+            var cd = NewObjectType((class_attribute)$1, $2, $3 as named_type_reference_list, $4 as where_definition_list, $5 as class_body_list, @$); 
+			$$ = cd;
+            var tt = cd.DescendantNodes().OfType<class_definition>().Where(cld => cld.keyword == class_keyword.Record);
+            if (tt.Count()>0)
+            {
+                foreach (var ttt in tt)
+                {
+	                var sc = ttt.source_context;
+	                parsertools.AddErrorFromResource("NESTED_RECORD_DEFINITIONS_ARE_FORBIDDEN", new LexLocation(sc.begin_position.line_num, sc.begin_position.column_num-1, sc.end_position.line_num, sc.end_position.column_num, sc.FileName));
+                }
+            }
 		}
     ;
 
 record_type 
     : tkRecord optional_base_classes optional_where_section member_list_section tkEnd   
         { 
-			$$ = NewRecordType($2 as named_type_reference_list, $3 as where_definition_list, $4 as class_body_list, @$);
+			var nnrt = new class_definition($2 as named_type_reference_list, $4 as class_body_list, class_keyword.Record, null, $3 as where_definition_list, class_attribute.None, false, @$); 
+			if (/*nnrt.body!=null && nnrt.body.class_def_blocks!=null && 
+				nnrt.body.class_def_blocks.Count>0 &&*/ 
+				nnrt.body.class_def_blocks[0].access_mod==null)
+			{
+                nnrt.body.class_def_blocks[0].access_mod = new access_modifer_node(access_modifer.public_modifer);
+			}        
+			$$ = nnrt;
 		}
     ;
 
@@ -1991,6 +2008,12 @@ simple_property_definition
 		{
 			$$ = NewSimplePropertyDefinition($3 as method_name, $4 as property_interface, null, proc_attribute.attr_none, null, @$);
 			($$ as simple_property).is_auto = true;
+		}
+	| class_or_static tkAuto tkProperty qualified_identifier property_interface tkSemiColon
+		{
+			$$ = NewSimplePropertyDefinition($4 as method_name, $5 as property_interface, null, proc_attribute.attr_none, null, @$);
+			($$ as simple_property).is_auto = true;
+			($$ as simple_property).attr = definition_attribute.Static;
 		}
     ;
 

@@ -1,5 +1,5 @@
 ﻿begin
-  var a := new List<integer>(arr(1, 2));
+  var a: object := new List<integer>(arr(1, 2));
   match a with
     integer(var c): write(1);
     boolean(var s): write(2);

@@ -781,8 +781,8 @@ namespace CodeCompletion
                 TypeScope ts = ss as TypeScope;
                 if (ss != this && !IsHiddenName(ss.si.name))
                 {
-                    if (ts != null && !is_static && ts.IsStatic)
-                        continue;
+                    //if (ts != null && !is_static && ts.IsStatic)
+                    //    continue;
                     if (ss.loc != null && loc != null)
                     {
                         if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, true) == 0)

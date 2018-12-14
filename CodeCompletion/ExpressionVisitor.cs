@@ -817,7 +817,7 @@ namespace CodeCompletion
                     returned_scope = new ElementScope(ts);
                 
             }
-            else if ((returned_scope != null && returned_scope is ElementScope && (returned_scope as ElementScope).sc is CompiledScope) && _dot_node.left is method_call)
+            else if ((returned_scope != null && returned_scope is ElementScope && (returned_scope as ElementScope).sc is CompiledScope && ((returned_scope as ElementScope).sc as CompiledScope).IsDelegate) && _dot_node.left is method_call)
             {
                 ProcScope invoke_meth = ((returned_scope as ElementScope).sc as CompiledScope).FindNameOnlyInThisType("Invoke") as ProcScope;
                 if (invoke_meth != null)
@@ -1722,7 +1722,7 @@ namespace CodeCompletion
 
         public override void visit(var_statement _var_statement)
         {
-            throw new NotImplementedException();
+           
         }
 
         public override void visit(question_colon_expression _question_colon_expression)

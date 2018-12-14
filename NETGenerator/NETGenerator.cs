@@ -1101,7 +1101,21 @@ namespace PascalABCCompiler.NETGenerator
             //(ssyy) TODO: подумать, в каком порядке создавать типы
             for (int i = 0; i < types.Count; i++)
                 if (types[i].IsInterface)
-                    types[i].CreateType();
+                    try
+                    {
+                        types[i].CreateType();
+                    }
+                    catch(TypeLoadException ex)
+                    {
+                        if (ex.Message.Contains("рекурсивное") || ex.Message.Contains("recursive") || ex.Message.Contains("rekursiv"))
+                        {
+                            SemanticTree.ICommonTypeNode ctn = helper.GetTypeNodeByTypeBuilder(types[i]);
+                            if (ctn != null)
+                                throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
+                        }
+
+                    }
+                        
             for (int i = 0; i < enums.Count; i++)
                 enums[i].CreateType();
             for (int i = 0; i < value_types.Count; i++)

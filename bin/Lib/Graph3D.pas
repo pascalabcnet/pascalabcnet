@@ -75,6 +75,8 @@ var
 //>>     Короткие функции модуля Graph3D # Graph3D short functions
 // -----------------------------------------------------
 
+procedure Invoke(p: ()->());
+
 /// Возвращает цвет по красной, зеленой и синей составляющей (в диапазоне 0..255)
 function RGB(r, g, b: byte): Color;
 /// Возвращает цвет по красной, зеленой и синей составляющей и параметру прозрачности (в диапазоне 0..255)
@@ -1373,8 +1375,8 @@ type
   protected 
     function CreateObject: Object3D; override := new SphereT(X, Y, Z, Radius, Material.Clone);
     constructor := CreateBase(NewVisualObject(1), 0, 0, 0, Materialhelper.CreateMaterial(Colors.Blue));
-    constructor(x, y, z, r: real; m: Gmaterial) := CreateBase(NewVisualObject(r), x, y, z, m);
   public 
+    constructor(x, y, z, r: real; m: Gmaterial) := CreateBase(NewVisualObject(r), x, y, z, m);
 /// Радиус сферы
     property Radius: real read GetR write SetR;
 /// Возвращает клон сферы
@@ -2566,6 +2568,8 @@ procedure __InitModule__;
 procedure __FinalizeModule__;
 
 implementation
+
+procedure Invoke(p: ()->()) := GraphWPFBase.Invoke(p);
 
 function RGB(r, g, b: byte) := Color.Fromrgb(r, g, b);
 function ARGB(a, r, g, b: byte) := Color.FromArgb(a, r, g, b);

@@ -1889,6 +1889,8 @@ namespace CodeCompletion
                             key = "abstract " + key;
                         else if (cl_def.attribute == class_attribute.Sealed)
                             key = "sealed " + key;
+                        else if (cl_def.attribute == class_attribute.Static)
+                            key = "static " + key;
                         if (key != null && returned_scope.body_loc != null)
                         {
                             returned_scope.head_loc = new location(returned_scope.body_loc.begin_line_num, returned_scope.body_loc.begin_column_num, returned_scope.body_loc.begin_line_num, returned_scope.body_loc.begin_column_num + key.Length, doc);
@@ -4756,7 +4758,10 @@ namespace CodeCompletion
                 
             if (type1.IsConvertable(type2, true))
             {
-                returned_scope = type2;
+                if (!(type2 is NullTypeScope))
+                    returned_scope = type2;
+                else
+                    returned_scope = type1;
                 return;
             }
             returned_scope = type1;

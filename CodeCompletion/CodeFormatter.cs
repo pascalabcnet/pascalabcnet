@@ -353,7 +353,7 @@ namespace CodeFormatters
             else if (add_newline_after)
             {
                 if (!comm.Trim(' ', '\t').EndsWith("\r\n") && !comm.Trim(' ', '\t').EndsWith("\n"))
-                    comm += "\r\n";
+                    comm = comm.TrimEnd()+"\r\n";
                 add_newline_after = false;
             }
             if (comm.IndexOf("\n") != -1 && comm.IndexOf("\r") == -1)

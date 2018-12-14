@@ -98,14 +98,21 @@ namespace SyntaxVisitors.SugarVisitors
             accessors.read_accessor = new read_accessor_name(id, null, null, simple_property.source_context);
             simple_property.accessors = accessors;
 
+            var def_attribute = definition_attribute.None;
+            if (simple_property.attr == definition_attribute.Static)
+            {
+                def_attribute = definition_attribute.Static;
+            }
+
             List<ident> l = new List<ident>() { id };
             var var_def_statement = new var_def_statement(
                 new ident_list(l, simple_property.source_context),
                 simple_property.property_type,
                 null,
-                definition_attribute.None,
+                def_attribute,
                 false,
                 simple_property.source_context);
+
             members.Add(var_def_statement);
         }
 
@@ -137,6 +144,7 @@ namespace SyntaxVisitors.SugarVisitors
             }
 
             members.Add(read_accessor_procedure);
+
             if (simple_property.attr == definition_attribute.Static)
             {
                 read_accessor_procedure.proc_header.class_keyword = true;
@@ -180,6 +188,7 @@ namespace SyntaxVisitors.SugarVisitors
             }
 
             members.Add(write_accessor_procedure);
+
             if (simple_property.attr == definition_attribute.Static)
             {
                 write_accessor_procedure.proc_header.class_keyword = true;
