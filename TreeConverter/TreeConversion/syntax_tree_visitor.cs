@@ -18280,7 +18280,7 @@ namespace PascalABCCompiler.TreeConverter
             type_node tn = ret.visit(_new_expr.type);
             //if (tn == SystemLibrary.SystemLibrary.void_type)
             //	AddError(new VoidNotValid(get_location(_new_expr.type)));
-            if (tn.IsDelegate)
+            if (tn.IsDelegate && !_new_expr.new_array)
                 AddError(get_location(_new_expr), "CONSTRUCTOR_CALL_FOR_DELEGATE_TYPES_IS_FORBIDDEN");
             check_for_type_allowed(tn,get_location(_new_expr.type));
             location loc = get_location(_new_expr);
