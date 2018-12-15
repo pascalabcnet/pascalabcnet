@@ -2117,7 +2117,9 @@ property_specifiers
                 procedure_definition pr = null;
                 if (!parsertools.build_tree_for_formatter)
                     pr = CreateAndAddToClassWriteProc($2 as statement,id,@2);
-				$$ = NewPropertySpecifiersWrite($1, id, pr, $2 as statement, $3 as property_accessors, @$); // $2 передаётся для форматирования
+                if (parsertools.build_tree_for_formatter)
+					$$ = NewPropertySpecifiersWrite($1, id, pr, $2 as statement, $3 as property_accessors, @$); // $2 передаётся для форматирования
+				else $$ = NewPropertySpecifiersWrite($1, id, pr, null, $3 as property_accessors, @$); 	
 			}
         }
     ;
@@ -2140,7 +2142,9 @@ write_property_specifiers
                 procedure_definition pr = null;
                 if (!parsertools.build_tree_for_formatter)
                     pr = CreateAndAddToClassWriteProc($2 as statement,id,@2);
-				$$ = NewPropertySpecifiersWrite($1, id, pr, $2 as statement, null, @$);
+                if (parsertools.build_tree_for_formatter)
+					$$ = NewPropertySpecifiersWrite($1, id, pr, $2 as statement, null, @$);
+				else $$ = NewPropertySpecifiersWrite($1, id, pr, null, null, @$);	
 			}
        }
     ;

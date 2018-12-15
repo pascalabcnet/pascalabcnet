@@ -24,15 +24,15 @@ namespace SyntaxVisitors.SugarVisitors
             return num.ToString();
         }
 
-        public override void visit(write_accessor_name wn)
+        /*public override void visit(write_accessor_name wn)
         {
 
-        }
+        } */
 
         public override void visit(assign_tuple asstup)
         {
             // тут возможно ошибка более глубокая - в semantic_check_sugared_statement_node(asstup) возможно остаются во вложенных лямбдах другие assign_tuple
-            var sl = new statement_list();
+            var sl = new List<statement>();
             sl.Add(new semantic_check_sugared_statement_node(typeof(assign_tuple), new List<syntax_tree_node> { asstup.vars, asstup.expr }, asstup.source_context)); // Это нужно для проверок на этапе преобразования в семантику
 
             var tname = "#temp_var" + UniqueNumStr();
@@ -48,7 +48,7 @@ namespace SyntaxVisitors.SugarVisitors
                 sl.Add(a);
             }
             // Замена 1 оператор на 1 оператор - всё OK
-            ReplaceUsingParent(asstup, sl);
+            ReplaceStatementUsingParent(asstup, sl);
 
             visit(asstup.expr);
         }

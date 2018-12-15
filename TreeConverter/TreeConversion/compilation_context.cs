@@ -51,7 +51,7 @@ namespace PascalABCCompiler.TreeConverter
 	public class compilation_context
 	{
         private ContextState SavedContext = null; // сохраненный контекст, используется при переходе к другому контексту при компиляции и последующем возврате к первоначальному контексту
-        public Stack<ContextState> SavedContextStack = new Stack<ContextState>(); // SSM 26/08/15 - пробую сделать стек контекстов. Может, что-то надо удет клонировать?
+        public Stack<ContextState> SavedContextStack = new Stack<ContextState>(); // SSM 26/08/15 - пробую сделать стек контекстов. Может, что-то надо будет клонировать?
 
         // Существуют 3 перехода вверх:
         // Из блока в раздел описаний до beginа этого блока (если это глобальный блок, то - на глобальный уровень). Обнуляется convertion_data_and_alghoritms.statement_list_stack. Поля func_stack и _ctn остаются нетронутыми
