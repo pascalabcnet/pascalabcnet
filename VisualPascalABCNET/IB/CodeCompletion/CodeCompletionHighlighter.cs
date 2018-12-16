@@ -25,6 +25,7 @@ namespace VisualPascalABC
             highlighted_keywords["class"] = "class";
             highlighted_keywords["record"] = "record";
             highlighted_keywords["match"] = "match";
+            highlighted_keywords["interface"] = "interface";
             //highlighted_keywords["interface"] = "interface";
             //ignored_keywords["class"] = "class";
             //ignored_keywords["record"] = "record";
@@ -48,11 +49,17 @@ namespace VisualPascalABC
                 string word = GetWordAtOffset(textArea, out beg_off, out end_off);
                 if (string.Compare(word, "begin", true) == 0 || highlighted_keywords[word] != null)
                 {
+                    
                     if (string.Compare(word, "class", true) == 0)
                     {
                         if (isClassMember(beg_off, textArea))
                             return;
                         if (isClassPredefinition(end_off, textArea))
+                            return;
+                    }
+                    else if (string.Compare(word, "interface", true) == 0)
+                    {
+                        if (!isTypeDeclaration(beg_off, textArea))
                             return;
                     }
                     TmpPos end_pos = GetPositionOfEnd(textArea, end_off);
@@ -113,6 +120,41 @@ namespace VisualPascalABC
         private static bool remove_pred(TextMarker marker)
         {
             return true;
+        }
+
+        private static bool isTypeDeclaration(int beg_off, TextArea textArea)
+        {
+            int off = beg_off - 1;
+            if (CheckForCommentOrKav(textArea.Document.TextContent, beg_off))
+                return false;
+            if (off >= textArea.Document.TextContent.Length)
+                return false;
+            char c = textArea.Document.TextContent[off];
+            if (textArea.Document.TextContent[beg_off] == '=')
+                return true;
+            while (char.IsWhiteSpace(c) || c == '}')
+            {
+                if (c == '}')
+                {
+                    while (c != '{')
+                    {
+                        off--;
+                        if (off < 0)
+                            break;
+                        c = textArea.Document.TextContent[off];
+                    }
+                }
+                off--;
+                if (off < 0)
+                    return false;
+                c = textArea.Document.TextContent[off];
+            }
+            c = char.ToLower(c);
+            if (c == '=')
+            {
+                return true;
+            }
+            return false;
         }
 
         private static bool isClassPredefinition(int end_off, TextArea textArea)
