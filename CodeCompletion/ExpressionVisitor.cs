@@ -841,7 +841,7 @@ namespace CodeCompletion
                                 returned_scope = CheckForAccess(left_scope as TypeScope, returned_scope as ElementScope);
                             return;
                         }
-                        if (returned_scope != null && returned_scope is ProcScope)
+                        if (returned_scope != null && returned_scope is ProcScope && !((returned_scope as ProcScope).IsStatic && tmp_tn is ElementScope))
                         {
                             if ((returned_scope as ProcScope).return_type == null)
                             {
