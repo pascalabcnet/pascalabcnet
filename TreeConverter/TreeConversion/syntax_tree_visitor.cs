@@ -1136,6 +1136,11 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
 
+            if (right_type.semantic_node_type == semantic_node_type.delegated_method && !left_type.IsDelegate && left_type.semantic_node_type != semantic_node_type.delegated_method)
+            {
+                try_convert_typed_expression_to_function_call(ref right);
+                right_type = right.type;
+            }
             if (right_type.semantic_node_type == semantic_node_type.delegated_method && name != compiler_string_consts.plusassign_name && name != compiler_string_consts.minusassign_name)
             {
                 delegated_methods dm2 = (delegated_methods)right_type;
