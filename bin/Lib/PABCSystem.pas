@@ -6358,7 +6358,7 @@ begin
   else if t.IsEnum then Result := f.br.ReadInt32
   else if t.IsValueType then
   begin
-    elem := Activator.CreateInstance(t);
+    elem := Activator.CreateInstance(t,true);
     fa := t.GetFields(System.Reflection.BindingFlags.GetField or System.Reflection.BindingFlags.Instance or System.Reflection.BindingFlags.Public or System.Reflection.BindingFlags.NonPublic);
     for var i := 0 to fa.Length - 1 do
       if {not fa[i].IsStatic and} not fa[i].IsLiteral then
