@@ -3888,6 +3888,7 @@ namespace PascalABCCompiler.TreeConverter
                     AddError(loc, "INTERFACE_{0}_ALREADY_ADDED_TO_IMPLEMENTING_LIST", interf.PrintableName);
                 }
                 used_interfaces.Add(interf, interf);
+                check_cycle_interface_inheritance(t, interf, new List<common_type_node>());
                 type_table.AddInterface(t, interf, loc);
             }
         }
@@ -12130,6 +12131,26 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 base_params.Add(bt);
                 bt = bt.base_type as common_type_node;
+            }
+        }
+
+        private void check_cycle_interface_inheritance(common_type_node cnode, type_node base_of_cnode, List<common_type_node> interfaces)
+        {
+            interfaces.Add(cnode);
+            common_type_node bt = base_of_cnode as common_type_node;
+            if (bt != null && bt.original_generic != null)
+                bt = bt.original_generic as common_type_node;    
+            if (bt != null)
+            {
+                if (interfaces.Contains(bt))
+                {
+                    AddError(bt.loc, "TYPE_{0}_DERIVED_FROM_ITSELF", bt.PrintableName);
+                }
+                interfaces.Add(bt);
+                foreach (var tn in bt.ImplementingInterfaces)
+                {
+                    check_cycle_interface_inheritance(bt, tn as type_node, interfaces);
+                }
             }
         }
 
