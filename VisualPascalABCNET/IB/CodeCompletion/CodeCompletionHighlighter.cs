@@ -47,7 +47,7 @@ namespace VisualPascalABC
                 }
                 RemoveMarkers(textArea);
                 string word = GetWordAtOffset(textArea, out beg_off, out end_off);
-                if (string.Compare(word, "begin", true) == 0 || highlighted_keywords[word] != null)
+                if (string.Compare(word, "begin", true) == 0 || string.Compare(word, "repeat", true) == 0 || highlighted_keywords[word] != null)
                 {
                     
                     if (string.Compare(word, "class", true) == 0)
@@ -62,7 +62,11 @@ namespace VisualPascalABC
                         if (!isTypeDeclaration(beg_off, textArea))
                             return;
                     }
-                    TmpPos end_pos = GetPositionOfEnd(textArea, end_off);
+                    TmpPos end_pos = null;
+                    if (string.Compare(word, "repeat", true) != 0)
+                        end_pos = GetPositionOfEnd(textArea, end_off);
+                    else
+                        end_pos = GetPositionOfUntil(textArea, end_off);
                     if (end_pos != null)
                     {
                         TextLocation Beg = textArea.Document.OffsetToPosition(beg_off);
@@ -84,14 +88,18 @@ namespace VisualPascalABC
                         textArea.Document.CommitUpdate();
                     }
                 }
-                else if (string.Compare(word, "end", true) == 0)
+                else if (string.Compare(word, "end", true) == 0 || string.Compare(word, "until", true) == 0)
                 {
-                    TmpPos beg_pos = GetPositionOfBegin(textArea, beg_off);
+                    TmpPos beg_pos = null;
+                    if (string.Compare(word, "end", true) == 0)
+                        beg_pos = GetPositionOfBegin(textArea, beg_off);
+                    else
+                        beg_pos = GetPositionOfRepeat(textArea, beg_off);
                     if (beg_pos != null)
                     {
                         TextLocation Beg = textArea.Document.OffsetToPosition(beg_off);
                         TextLocation End = textArea.Document.OffsetToPosition(end_off);
-                        TextMarker marker = new TextMarker(beg_off, 3, TextMarkerType.SolidBlock, System.Drawing.Color.FromArgb(219, 224, 204));
+                        TextMarker marker = new TextMarker(beg_off, word.Length, TextMarkerType.SolidBlock, System.Drawing.Color.FromArgb(219, 224, 204));
                         marker.WholeLine = false;
                         textArea.Document.MarkerStrategy.AddMarker(marker);
                         marks.Add(marker);
@@ -275,6 +283,72 @@ namespace VisualPascalABC
             }
         }
 
+        private static TmpPos GetPositionOfUntil(TextArea textArea, int end_off)
+        {
+            string text = textArea.Document.TextContent;
+            int off = textArea.Caret.Offset;
+            if (CheckForCommentOrKavAhead(text, off - 1)) //proverka esli my v kommentarii ili v kavychkah
+                return null;
+            Stack<string> beg_stack = new Stack<string>();
+            beg_stack.Push("repeat");
+            StringBuilder sb = new StringBuilder();
+            while (end_off < text.Length)
+            {
+                char c = text[end_off];
+                if (char.IsLetterOrDigit(c) || c == '_' || c == '&')
+                {
+                    sb.Append(c);
+                }
+                else if (c == '}')//okazalis vnutri kommentarija
+                {
+                    return null;
+                }
+                else if (c == '{')//nachalo kommentarija, propuskaem ego
+                {
+                    end_off++;
+                    while (end_off < text.Length && text[end_off] != '}')
+                        end_off++;
+                }
+                else if (c == '\'')//nachalo kavychek, propuskaem
+                {
+                    end_off++;
+                    while (end_off < text.Length && text[end_off] != '\'')
+                        end_off++;
+                }
+                else if (c == '/' && end_off < text.Length - 1 && text[end_off + 1] == '/')
+                {
+                    while (end_off < text.Length && text[end_off] != '\n')
+                        end_off++;
+                }
+                else
+                {
+                    string word = sb.ToString();
+                    if (string.Compare(word, "repeat", true) == 0)
+                    {
+                        beg_stack.Push(word);
+                    }
+                    else if (string.Compare(word, "until", true) == 0)
+                    {
+                        //if (!CheckForCommentOrKavAhead(text, end_off))
+                        {
+                            string s = beg_stack.Pop();
+                            if (beg_stack.Count == 0 && string.Compare(s, "repeat", true) == 0)
+                                return new TmpPos(end_off - 5, word.Length);
+                            if (beg_stack.Count == 0 && ignored_keywords[s] != null)
+                                return null;
+                        }
+                    }
+                    sb.Remove(0, sb.Length);
+                }
+                end_off++;
+            }
+            if (string.Compare(sb.ToString(), "until", true) == 0 && beg_stack.Count > 0)
+            {
+                return new TmpPos(end_off - 5, 5);
+            }
+            return null;
+        }
+
         private static TmpPos GetPositionOfEnd(TextArea textArea, int end_off)
         {
             string text = textArea.Document.TextContent;
@@ -414,6 +488,74 @@ namespace VisualPascalABC
             }
             string s = sb.ToString();
             if ((string.Compare(s, "begin", true) == 0 || highlighted_keywords[s] != null) && beg_stack.Count > 0)
+            {
+                return new TmpPos(beg_off + 1, s.Length);
+            }
+            return null;
+        }
+
+        private static TmpPos GetPositionOfRepeat(TextArea textArea, int beg_off)
+        {
+            string text = textArea.Document.TextContent;
+            int off = textArea.Caret.Offset;
+            if (CheckForCommentOrKav(text, off))//zdes nado proverjat vpered i nazad
+                return null;
+            Stack<string> beg_stack = new Stack<string>();
+            beg_stack.Push("until");
+            StringBuilder sb = new StringBuilder();
+            bool was_comment = false;
+            while (beg_off >= 0)
+            {
+                char c = text[beg_off];
+                if (char.IsLetterOrDigit(c) || c == '_' || c == '&')
+                {
+                    sb.Insert(0, c);
+                }
+                else if (c == '{')//v kommentarii, vyhodim
+                {
+                    if (!was_comment)
+                        return null;
+                }
+                else if (c == '}')//nachalo kommenta
+                {
+                    beg_off--;
+                    was_comment = true;
+                    while (beg_off >= 0 && text[beg_off] != '{')
+                        beg_off--;
+                }
+                else if (c == '\'')
+                {
+                    beg_off--;
+                    while (beg_off >= 0 && text[beg_off] != '\'')
+                        beg_off--;
+                }
+                else
+                {
+                    string word = sb.ToString();
+                    if (string.Compare(word, "until", true) == 0)
+                    {
+                        if (!CheckForCommentOrKavAhead(text, beg_off))//esli end ne v kavychkah i ne v kommentarii
+                            beg_stack.Push("until");
+                    }
+                    else if (string.Compare(word, "repeat", true) == 0)
+                    {
+                        if (!CheckForCommentOrKavAhead(text, beg_off))
+                        {
+                            beg_stack.Pop();
+                            if (beg_stack.Count == 0 && string.Compare(word, "repeat", true) == 0)
+                            {
+                                return new TmpPos(beg_off + 1, word.Length);
+                            }
+                            if (beg_stack.Count == 0 && ignored_keywords[word] != null)
+                                return null;
+                        }
+                    }
+                    sb.Remove(0, sb.Length);
+                }
+                beg_off--;
+            }
+            string s = sb.ToString();
+            if (string.Compare(s, "repeat", true) == 0 && beg_stack.Count > 0)
             {
                 return new TmpPos(beg_off + 1, s.Length);
             }
