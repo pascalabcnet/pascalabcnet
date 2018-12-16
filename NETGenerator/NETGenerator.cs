@@ -9008,6 +9008,8 @@ namespace PascalABCCompiler.NETGenerator
                 case basic_function_type.booltoui: il.Emit(OpCodes.Conv_U4); break;
                 case basic_function_type.booltol: il.Emit(OpCodes.Conv_I8); break;
                 case basic_function_type.booltoul: il.Emit(OpCodes.Conv_U8); break;
+                case basic_function_type.ltop: il.Emit(OpCodes.Conv_I); break;
+                case basic_function_type.ptol: il.Emit(OpCodes.Conv_I8); break;
 
                 case basic_function_type.objtoobj:
                     {

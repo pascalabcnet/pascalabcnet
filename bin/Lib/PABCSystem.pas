@@ -6877,7 +6877,10 @@ begin
   //result:= Convert.ToString(integer(p), 16);
   if p = nil then
     result := 'nil'
-  else result := '$' + integer(p).ToString('X');
+  else if Environment.Is64BitProcess then 
+    result := '$' + int64(p).ToString('X')
+  else
+    result := '$' + integer(p).ToString('X')
 end;
 
 procedure Exec(filename: string);
