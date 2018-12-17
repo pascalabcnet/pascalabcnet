@@ -770,13 +770,15 @@ namespace PascalABCCompiler.SyntaxTree
             return sb.ToString();
         }
 
-        bool is_extension()
+        public bool is_extension()
         {
-            return proc_attributes.proc_attributes.FindIndex(attr => attr.attribute_type == proc_attribute.attr_extension) >=0;
+            if (proc_attributes?.proc_attributes != null)
+                return proc_attributes.proc_attributes.FindIndex(attr => attr.attribute_type == proc_attribute.attr_extension) >= 0;
+            else return false;
         }
     }
 
-    public partial class function_header
+    public partial class function_header                                                                     
     {
         public function_header(formal_parameters _parameters, procedure_attributes_list _proc_attributes, method_name _name, where_definition_list _where_defs, type_definition _return_type, SourceContext sc)
             : base(_parameters, _proc_attributes, _name, _where_defs, sc)

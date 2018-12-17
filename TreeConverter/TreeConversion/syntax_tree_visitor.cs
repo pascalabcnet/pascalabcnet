@@ -13252,6 +13252,17 @@ namespace PascalABCCompiler.TreeConverter
             }
             current_function_header = _procedure_header;
             hard_node_test_and_visit(_procedure_header.name);
+
+            if (!_procedure_header.is_extension() && !(context.top_function is common_namespace_function_node))
+            {
+                var q = _procedure_header.parameters?.params_list?.SelectMany(p => p.idents.idents).Where(id => id.name.ToLower() == "self");
+                if (q != null && q.Count() > 0)
+                {
+                    var sid = q.First();
+                    AddError(get_location(sid), "SELF_NOT_ALLOWED_IN_METHOD_PARAMS");
+                }
+            }
+
             current_function_header = null;
             if (context.converted_template_type != null)
             {
