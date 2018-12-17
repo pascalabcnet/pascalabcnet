@@ -17342,7 +17342,8 @@ namespace PascalABCCompiler.TreeConverter
                     
                 Type r;
                 var IEnTstring = "System.Collections.Generic.IEnumerable`1";
-                if (ct.ToString().StartsWith(IEnTstring))
+                //if (ct.ToString().StartsWith(IEnTstring))  // SSM Ошибка!!! IEnumerable`1[] тоже начинается с IEnumerable`1, но это массив!
+                if (ct.Name.Equals("IEnumerable`1"))
                     r = ct;
                 else
                     r = ct.GetInterface(IEnTstring);

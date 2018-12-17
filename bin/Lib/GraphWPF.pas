@@ -459,8 +459,6 @@ var
   OnKeyDown: procedure(k: Key);
   /// Событие отжатия клавиши
   OnKeyUp: procedure(k: Key);
-  /// Событие нажатия символьной клавиши
-  OnKeyPress: procedure(ch: char);
   /// Событие изменения размера графического окна
   OnResize: procedure;
 
@@ -1393,9 +1391,11 @@ begin
 end;
 
 /// --- SystemKeyEvents
-procedure SystemOnKeyDown(sender: Object; e: KeyEventArgs) := 
+procedure SystemOnKeyDown(sender: Object; e: KeyEventArgs);
+begin
   if OnKeyDown<>nil then
     OnKeyDown(e.Key);
+end;
 
 procedure SystemOnKeyUp(sender: Object; e: KeyEventArgs) := 
   if OnKeyUp<>nil then
