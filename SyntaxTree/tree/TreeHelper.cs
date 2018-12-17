@@ -769,6 +769,11 @@ namespace PascalABCCompiler.SyntaxTree
                     sb.Append(" " + pa.ToString() + " ");
             return sb.ToString();
         }
+
+        bool is_extension()
+        {
+            return proc_attributes.proc_attributes.FindIndex(attr => attr.attribute_type == proc_attribute.attr_extension) >=0;
+        }
     }
 
     public partial class function_header
