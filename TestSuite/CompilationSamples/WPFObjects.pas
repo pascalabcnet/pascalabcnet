@@ -1241,6 +1241,12 @@ procedure SystemOnKeyUp(sender: Object; e: KeyEventArgs) :=
   if OnKeyUp<>nil then
     OnKeyUp(e.Key);
     
+procedure SystemOnKeyPress(sender: Object; e: TextCompositionEventArgs) := 
+begin
+  if (OnKeyPress<>nil) and (e.Text<>nil) and (e.Text.Length>0) then
+    OnKeyPress(e.Text[1]);
+end;    
+    
 procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) := 
   if OnResize<>nil then
     OnResize();
@@ -1288,6 +1294,7 @@ public
     MouseMove += SystemOnMouseMove;
     KeyDown += SystemOnKeyDown;
     KeyUp += SystemOnKeyUp;
+    TextInput += SystemOnKeyPress;
     SizeChanged += SystemOnResize;
     
     Loaded += (o,e) -> mre.Set();

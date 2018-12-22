@@ -1527,7 +1527,7 @@ public
     MouseMove += SystemOnMouseMove;
     KeyDown += SystemOnKeyDown;
     KeyUp += SystemOnKeyUp;
-    Self.TextInput += SystemOnKeyPress;
+    TextInput += SystemOnKeyPress;
     SizeChanged += SystemOnResize;
     
     CompositionTarget.Rendering += RenderFrame;

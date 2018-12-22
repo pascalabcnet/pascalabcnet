@@ -1588,6 +1588,11 @@ namespace PascalABCCompiler.SyntaxTree
             this._IsYieldInStaticMethod = isYieldInStaticMethod;
             source_context = sc;
         }
+        public override string ToString()
+        {
+            return /*""+this.ClassName+" "+this.name+" "+*/this.UnknownID.ToString();
+        }
+
     }
 
     public partial class yield_unknown_foreach_type : type_definition
@@ -1676,14 +1681,6 @@ namespace PascalABCCompiler.SyntaxTree
         public override string ToString()
         {
             return this.access_level.ToString().Replace("_modifier","");
-        }
-    }
-
-	public partial class yield_unknown_ident
-    {
-        public override string ToString()
-        {
-            return this.UnknownID.ToString();
         }
     }
 
