@@ -116,5 +116,6 @@ GENERIC_NESTED_FUNCTIONS_NOT_ALLOWED=Вложенные generic-подпрогр
 NESTED_FUNCTIONS_IN_GENERIC_FUNCTIONS_NOT_ALLOWED=Вложенные подпрограммы запрещены внутри generic-подпрограмм
 NESTED_RECORDS_IN_GENERIC_FUNCTIONS_NOT_ALLOWED=Определение типа записи в generic-подпрограмме запрещено
 GENERIC_TYPE_{0}_NEEDS_{1}_GENERIC_PARAMETERS=Количество шаблонных параметров типа {0} должно быть равно {1}
-EXPRESSION_IS_NOT_ADDRESSED=Это выражение не может стоять в левой части оператора присваивания или передаваться как var-параметр в подпрограмму
+EXPRESSION_IS_NOT_ADDRESSED1=Это выражение не может стоять в левой части оператора присваивания или передаваться как var-параметр в подпрограмму
+EXPRESSION_IS_NOT_ADDRESSED=Это выражение не может стоять в левой части оператора присваивания
 

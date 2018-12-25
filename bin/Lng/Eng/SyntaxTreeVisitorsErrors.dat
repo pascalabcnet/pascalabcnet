@@ -10,10 +10,12 @@ FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCK=Functions with yield cannot contain lo
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_TRY_EXCEPT_FINALLY=Functions with yield cannot contain try..except or try..finally statements
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_NESTED_SUBROUTINES=Functions with yield cannot contain nested subrotines or be nested
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCAL_TYPE_DEFINITIONS=Functions with yield cannot contain local type definitions
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_INHERITED_CALLS=Functions with yield cannot contain calls of inherited methods
 YIELDS_INSIDE_WITH_ARE_ILLEGAL=with statement cannot contain yields
 LAMBDA_EXPRESSIONS_CANNOT_CONTAIN_YIELD=Lambda-expressions cannot contain yields
 
 PATTERN_MATHING_IS_NOT_SUPPORTED_IN_THIS_CONTEXT=Pattern matching is not supported in this context
+ONLY_ONE_DECONSTRUCT_ALLOWED=Only one user deconstructor is allowed
 
 Var_{0}_is_already_defined=Variable {0} is already defined
 

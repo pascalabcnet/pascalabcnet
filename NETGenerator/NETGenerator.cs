@@ -1101,7 +1101,21 @@ namespace PascalABCCompiler.NETGenerator
             //(ssyy) TODO: подумать, в каком порядке создавать типы
             for (int i = 0; i < types.Count; i++)
                 if (types[i].IsInterface)
-                    types[i].CreateType();
+                    try
+                    {
+                        types[i].CreateType();
+                    }
+                    catch(TypeLoadException ex)
+                    {
+                        if (ex.Message.Contains("рекурсивное") || ex.Message.Contains("recursive") || ex.Message.Contains("rekursiv"))
+                        {
+                            SemanticTree.ICommonTypeNode ctn = helper.GetTypeNodeByTypeBuilder(types[i]);
+                            if (ctn != null)
+                                throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
+                        }
+
+                    }
+                        
             for (int i = 0; i < enums.Count; i++)
                 enums[i].CreateType();
             for (int i = 0; i < value_types.Count; i++)
@@ -8994,6 +9008,8 @@ namespace PascalABCCompiler.NETGenerator
                 case basic_function_type.booltoui: il.Emit(OpCodes.Conv_U4); break;
                 case basic_function_type.booltol: il.Emit(OpCodes.Conv_I8); break;
                 case basic_function_type.booltoul: il.Emit(OpCodes.Conv_U8); break;
+                case basic_function_type.ltop: il.Emit(OpCodes.Conv_I); break;
+                case basic_function_type.ptol: il.Emit(OpCodes.Conv_I8); break;
 
                 case basic_function_type.objtoobj:
                     {
@@ -9685,8 +9701,20 @@ namespace PascalABCCompiler.NETGenerator
                 if (is_constructor || cur_meth.IsStatic == false) pos = (byte)pb.Position;
                 else pos = (byte)(pb.Position - 1);
                 //***********************End of Kolay modified**********************
-                if (pos <= 255) il.Emit(OpCodes.Ldarga_S, pos);
-                else il.Emit(OpCodes.Ldarga, pos);
+                if (value.parameter.parameter_type != parameter_type.var)
+                {
+                    if (pos <= 255)
+                        il.Emit(OpCodes.Ldarga_S, pos);
+                    else
+                        il.Emit(OpCodes.Ldarga, pos);
+                }
+                else
+                {
+                    if (pos <= 255)
+                        il.Emit(OpCodes.Ldarg_S, pos);
+                    else
+                        il.Emit(OpCodes.Ldarg, pos);
+                }
             }
             else
             {
@@ -10610,6 +10638,11 @@ namespace PascalABCCompiler.NETGenerator
                 else il.Emit(OpCodes.Ldsfld, fb);
             }
             else il.Emit(OpCodes.Ldsflda, fb);
+        }
+
+        public override void visit(IDefaultOperatorNodeAsConstant value)
+        {
+            value.DefaultOperator.visit(this);
         }
 
         public override void visit(ICommonConstructorCallAsConstant value)

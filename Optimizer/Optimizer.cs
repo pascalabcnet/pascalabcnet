@@ -68,6 +68,8 @@ namespace PascalABCCompiler
                 {
                     helper.AddVariable(vdn);
                     CheckType(vdn.type, vdn.inital_value, vdn.loc);
+                    if (vdn.inital_value != null)
+                        VisitExpression(vdn.inital_value);
                 }
             }
         }
@@ -246,6 +248,8 @@ namespace PascalABCCompiler
             foreach (local_variable lv in var_list)
             {
                 CheckType(lv.type, lv.inital_value, lv.loc);
+                if (lv.inital_value != null)
+                    VisitExpression(lv.inital_value);
             }
         }
 
@@ -445,14 +449,14 @@ namespace PascalABCCompiler
 
         private void CheckInfiniteRecursion(common_namespace_function_call cnfc)
         {
-            if (!condition_block && !has_returns && cnfc.function_node == current_function && !no_infinite_recursion)
-                warns.Add(new InfiniteRecursion(cnfc.location));
+            //if (!condition_block && !has_returns && cnfc.function_node == current_function && !no_infinite_recursion)
+            //    warns.Add(new InfiniteRecursion(cnfc.location));
         }
 
         private void CheckInfiniteRecursion(common_static_method_call cnfc)
         {
-            if (!condition_block && !has_returns && cnfc.function_node == current_function && !no_infinite_recursion)
-                warns.Add(new InfiniteRecursion(cnfc.location));
+            //if (!condition_block && !has_returns && cnfc.function_node == current_function && !no_infinite_recursion)
+            //    warns.Add(new InfiniteRecursion(cnfc.location));
         }
 
         private void SaveConditionBlock()

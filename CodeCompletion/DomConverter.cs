@@ -130,7 +130,11 @@ namespace CodeCompletion
                     return null;
             }
             SetCurrentUsedAssemblies();
+            string trimed = str.Trim();
+            if (trimed.Length > 0 && trimed[0] == '(' && trimed[trimed.Length - 1] == ')')
+                expr = new bracket_expr(expr);
             ExpressionVisitor ev = new ExpressionVisitor(expr, si, visitor);
+           
             si = ev.GetScopeOfExpression(true, false);
             root = si;
             if (si is ElementScope) root = (si as ElementScope).sc;
@@ -445,7 +449,7 @@ namespace CodeCompletion
         public SymInfo[] GetNameByPattern(string pattern, int line, int col, bool all_names, int nest_level)
         {
             if (visitor.cur_scope == null) return null;
-            SymScope si = visitor.FindScopeByLocation(line + 1, col + 1);
+            SymScope si = visitor.FindScopeByLocation(line + 1, col);
             if (si == null)
             {
                 si = visitor.FindScopeByLocation(line, col + 1);
@@ -1008,6 +1012,12 @@ namespace CodeCompletion
             }
             ExpressionVisitor ev = new ExpressionVisitor(expr, si, visitor);
             si = ev.GetScopeOfExpression(false, true);
+            if (si is ProcScope)
+            {
+                ProcScope ps = si as ProcScope;
+                if (ps.is_constructor)
+                    si = new ElementScope(ps.declaringType);
+            }
             return CodeCompletionController.CurrentParser.LanguageInformation.GetIndexerString(si);
         }
 

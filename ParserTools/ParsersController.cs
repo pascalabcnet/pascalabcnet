@@ -168,7 +168,15 @@ namespace PascalABCCompiler.Parsers
         }
         public SyntaxTree.expression GetExpression(string FileName, string Text, List<Error> Errors, List<CompilerWarning> Warnings)
         {
-            SyntaxTree.syntax_tree_node cu = Compile(FileName, Text, Errors, Warnings, ParseMode.Expression);
+            SyntaxTree.syntax_tree_node cu = null;
+            try // SSM 06.09.18 
+            {
+                cu = Compile(FileName, Text, Errors, Warnings, ParseMode.Expression);
+            }
+            catch
+            {
+
+            }
             if (cu == null)
                 return null;
             if (cu is SyntaxTree.expression)

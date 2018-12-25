@@ -65,6 +65,11 @@ namespace SyntaxVisitors
                     {
                         throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCAL_TYPE_DEFINITIONS", FirstTypeDeclaration.First().source_context);
                     }
+                    var FirstInheritedIdent = ee.DescendantNodes().OfType<inherited_ident>(); // SSM bug fix #1440
+                    if (FirstInheritedIdent.Count() > 0)
+                    {
+                        throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_INHERITED_CALLS", FirstInheritedIdent.First().source_context);
+                    }
                 }
             }
 

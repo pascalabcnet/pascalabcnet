@@ -72,6 +72,10 @@ namespace SyntaxVisitors
             Print(""+st);
         }
 
+        public override void visit(assign ass)
+        {
+            DefaultVisit(ass);
+        }
         public virtual void Enter(syntax_tree_node st)
         {
             if (st is statement_list)

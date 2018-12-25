@@ -73,6 +73,9 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Debugger.Core">
       <HintPath>..\Libraries\Debugger.Core.dll</HintPath>
@@ -532,6 +535,9 @@
     <EmbeddedResource Include="FormsDesignerBinding\FormsDesigner\Resources\ConfigureSidebarDialog.xfrm" />
     <EmbeddedResource Include="FormsDesignerBinding\FormsDesigner\Resources\RenameSidebarCategoryDialog.xfrm" />
     <EmbeddedResource Include="FormsDesignerBinding\FormsDesigner\Resources\WindowsFormsGeneralOptions.xfrm" />
+    <None Include="app.manifest">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

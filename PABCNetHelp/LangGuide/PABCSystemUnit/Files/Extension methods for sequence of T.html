@@ -98,9 +98,9 @@
 <tr><td><code><b>function</b> Pairwise&lt;T, Res&gt;(Self: <b>sequence </b>  <b>of</b> T; func: (T,T)-&gt;Res): <b>sequence </b>  <b>of</b> Res;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Превращает последовательность в последовательность пар соседних элементов, применяет func к каждой паре полученных элементов и получает новую последовательность</td></tr>
 <tr><td><code><b>function</b> Partition&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; cond: T-&gt;boolean): (<b>sequence </b>  <b>of</b> T, <b>sequence </b>  <b>of</b> T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разделяет последовательности на две по заданному условию</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разделяет последовательность на две по заданному условию. Реализуется двухпроходным алгоритмом</td></tr>
 <tr><td><code><b>function</b> Partition&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; cond: (T,integer)-&gt;boolean): (<b>sequence </b>  <b>of</b> T, <b>sequence </b>  <b>of</b> T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разделяет последовательности на две по заданному условию, в котором участвует индекс</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разделяет последовательность на две по заданному условию, в котором участвует индекс. Реализуется двухпроходным алгоритмом</td></tr>
 <tr><td><code><b>function</b> Print&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; delim: string): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит последовательность на экран, используя delim в качестве разделителя</td></tr>
 <tr><td><code><b>function</b> Print&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
@@ -124,7 +124,7 @@
 <tr><td><code><b>function</b> SortedDescending&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает отсортированную по убыванию последовательность</td></tr>
 <tr><td><code><b>function</b> SplitAt&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; ind: integer): (<b>sequence </b>  <b>of</b> T, <b>sequence </b>  <b>of</b> T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разбивает последовательности на две в позиции ind</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разбивает последовательность на две в позиции ind. Реализуется двухпроходным алгоритмом</td></tr>
 <tr><td><code><b>function</b> Tabulate&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> T; F: T-&gt;T1): <b>sequence </b>  <b>of</b> (T, T1);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Табулирует функцию последовательностью</td></tr>
 <tr><td><code><b>function</b> TakeLast&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; count: integer): <b>sequence </b>  <b>of</b> T;</code>
@@ -136,11 +136,11 @@
 <tr><td><code><b>function</b> ToSortedSet&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): SortedSet&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает множество SortedSet по данной последовательности</td></tr>
 <tr><td><code><b>function</b> UnZipTuple&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> (T, T1)): (<b>sequence </b>  <b>of</b> T, <b>sequence </b>  <b>of</b> T1);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разъединяет последовательность двухэлементных кортежей на две последовательности</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разъединяет последовательность двухэлементных кортежей на две последовательности. Реализуется двухпроходным алгоритмом</td></tr>
 <tr><td><code><b>function</b> UnZipTuple&lt;T, T1, T2&gt;(Self: <b>sequence </b>  <b>of</b> (T, T1, T2)): (<b>sequence </b>  <b>of</b> T, <b>sequence </b>  <b>of</b> T1, <b>sequence </b>  <b>of</b> T2);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разъединяет последовательность трехэлементных кортежей на три последовательности</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разъединяет последовательность трехэлементных кортежей на три последовательности. Реализуется многопроходным алгоритмом</td></tr>
 <tr><td><code><b>function</b> UnZipTuple&lt;T, T1, T2, T3&gt;(Self: <b>sequence </b>  <b>of</b> (T, T1, T2, T3)): (<b>sequence </b>  <b>of</b> T, <b>sequence </b>  <b>of</b> T1, <b>sequence </b>  <b>of</b> T2, <b>sequence </b>  <b>of</b> T3);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разъединяет последовательность четырехэлементных кортежей на четыре последовательности</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Разъединяет последовательность четырехэлементных кортежей на четыре последовательности. Реализуется многопроходным алгоритмом</td></tr>
 <tr><td><code><b>function</b> WriteLines(Self: <b>sequence </b>  <b>of</b> string; fname: string): <b>sequence </b>  <b>of</b> string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит последовательность строк в файл</td></tr>
 <tr><td><code><b>function</b> ZipTuple&lt;T, T1&gt;(Self: <b>sequence </b>  <b>of</b> T; a: <b>sequence </b>  <b>of</b> T1): <b>sequence </b>  <b>of</b> (T, T1);</code>

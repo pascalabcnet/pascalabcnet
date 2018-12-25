@@ -89,13 +89,32 @@ namespace SyntaxVisitors.SugarVisitors
             //AddDefinitionsInUpperStatementList(matchWith, new[] { new var_statement(cachedExpression, matchWith.expr) });
 
             // Преобразование из сахара в известную конструкцию каждого case
+            var usedDeconstructionTypes = new HashSet<string>();
             foreach (var patternCase in matchWith.case_list.elements)
             {
                 if (patternCase == null)
                     continue;
 
                 if (patternCase.pattern is deconstructor_pattern)
+                {
+                    // Проверяем встречался ли уже такой тип при деконструкции
+                    var deconstructionType = (patternCase.pattern as deconstructor_pattern).
+                        type as named_type_reference;
+                    if (deconstructionType != null &&
+                        deconstructionType.names != null &&
+                        deconstructionType.names.Count != 0)
+                    {
+                        var deconstructionTypeName = deconstructionType.names[0].name;
+                        if (usedDeconstructionTypes.Contains(deconstructionTypeName))
+                        {
+                            throw new SyntaxVisitorError("REPEATED_DECONSTRUCTION_TYPE",
+                                                         patternCase.pattern.source_context);
+                        }
+                        usedDeconstructionTypes.Add(deconstructionTypeName);
+                    }
+
                     DesugarDeconstructorPatternCase(matchWith.expr, patternCase);
+                }
             }
 
             if (matchWith.defaultAction != null)
@@ -194,6 +213,8 @@ namespace SyntaxVisitors.SugarVisitors
             var patternLocation = GetLocation(isPatternExpr);
             
             var pattern = isPatternExpr.right as deconstructor_pattern;
+
+            //AddDefinitionsInUpperStatementList(isPatternExpr, new[] { GetTypeCompatibilityCheck(isPatternExpr) });
             if (pattern.IsRecursive)
             {
                 var desugaredRecursiveIs = DesugarRecursiveDeconstructor(isPatternExpr.left, pattern);
@@ -237,6 +258,7 @@ namespace SyntaxVisitors.SugarVisitors
 
             var statementsToAdd = desugaringResult.GetDeconstructionDefinitions(pattern.source_context);
             statementsToAdd.Add(GetMatchedExpressionCheck(isExpression.left));
+            statementsToAdd.Add(GetTypeCompatibilityCheck(isExpression));
             statementsToAdd.Add(desugaringResult.GetPatternCheckWithDeconstrunctorCall());
 
             AddDefinitionsInUpperStatementList(isExpression, statementsToAdd);
@@ -250,6 +272,7 @@ namespace SyntaxVisitors.SugarVisitors
 
             var statementsToAdd = desugaringResult.GetDeconstructionDefinitions(pattern.source_context);
             statementsToAdd.Add(GetMatchedExpressionCheck(isExpression.left));
+            statementsToAdd.Add(GetTypeCompatibilityCheck(isExpression));
             statementsToAdd.Add(desugaringResult.GetPatternCheckWithDeconstrunctorCall());
 
             var enclosingIf = GetAscendant<if_node>(isExpression);
@@ -271,7 +294,10 @@ namespace SyntaxVisitors.SugarVisitors
         }
 
         private semantic_check_sugared_statement_node GetMatchedExpressionCheck(expression matchedExpression)
-        => new semantic_check_sugared_statement_node(SugaredExpressionType.MatchedExpression, new List<syntax_tree_node>() { matchedExpression });
+        => new semantic_check_sugared_statement_node(SemanticCheckType.MatchedExpression, new List<syntax_tree_node>() { matchedExpression });
+
+        private semantic_check_sugared_statement_node GetTypeCompatibilityCheck(is_pattern_expr expression) =>
+            new semantic_check_sugared_statement_node(SemanticCheckType.MatchedExpressionAndType, new List<syntax_tree_node>() { expression.left, (expression.right as deconstructor_pattern).type });
 
         private statement_list ConvertIfNode(if_node ifNode, List<statement> statementsBeforeIf, out statement elseBody)
         {

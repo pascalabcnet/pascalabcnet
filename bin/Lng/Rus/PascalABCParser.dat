@@ -21,10 +21,12 @@ UNEXPECTED_SYMBOL{0}=Неожиданный символ '{0}'
 UNSUPPORTED_OLD_DIRECTIVES=Директивы компилятора в стиле # более не поддерживаются. Используйте директивы в стиле {$ }
 INCLUDE_COULDNT_OPEN_FILE{0}=Директива компилятора $include: нельзя открыть файл '{0}'
 INCLUDE_EMPTY_FILE=Директива компилятора $include: не указано имя файла 
+RECUR_INCLUDE=Директива компилятора $include: рекурсивное включение файла 
 UNNECESSARY $endif=Лишний $endif
 ENDIF_ABSENT=Незакрытая директива $ifdef или $ifndef - отсутствует $endif
 UNNECESSARY $else=Лишний $else
 TYPE_NAME_EXPECTED=Ожидался тип
+
 
 EOF1=конец файла
 EOF=(конец файла)
@@ -67,3 +69,7 @@ BAD_INT2=Слишком маленькое целое
 INVALID_INTERFACE_MEMBER=Члены интерфейса не могут иметь определение
 EXTENDED_INDEXED_PROPERTIES=Индексные свойства не могут быть расширенными
 TWO_STRING_LITERALS_IN_SUCCESSION=Две литеральные строковые константы не могут стоять подряд
+ATTRIBUTE_REDECLARED=Повторное применение атрибута
+STATIC_PROPERTIES_CANNOT_HAVE_ATTRBUTE_{0}=Статические свойства не могут иметь атрибут '{0}'
+RESULT_IDENT_NOT_EXPECTED_IN_THIS_CONTEXT=Имя Result недопустимо в этом контексте
+NESTED_RECORD_DEFINITIONS_ARE_FORBIDDEN=Вложенные описания записей запрещены

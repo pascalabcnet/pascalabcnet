@@ -1021,6 +1021,7 @@
         <SyntaxField Name="parameter_list" SyntaxType="property_parameter_list" />
         <ExtendedField Name="attr" Type="definition_attribute" CreateVariable="false" DeleteVariable="false" />
         <ExtendedField Name="virt_over_none_attr" Type="proc_attribute" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="is_auto" Type="bool" CreateVariable="false" DeleteVariable="false" />
       </Fields>
       <Methods />
       <Tags>
@@ -2862,105 +2863,6 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
-    <SyntaxNode Name="typeclass_restriction" BaseName="ident">
-      <Fields>
-        <SyntaxField Name="restriction_args" SyntaxType="template_param_list" />
-      </Fields>
-      <Methods />
-      <Tags>
-        <CategoryIndices>
-          <CategoryIndex>0</CategoryIndex>
-        </CategoryIndices>
-        <TagIndices>
-          <TagIndex>10</TagIndex>
-        </TagIndices>
-      </Tags>
-    </SyntaxNode>
-    <SyntaxNode Name="instance_definition" BaseName="type_definition">
-      <Fields>
-        <SyntaxField Name="body" SyntaxType="class_body_list" />
-      </Fields>
-      <Methods />
-      <Tags>
-        <CategoryIndices>
-          <CategoryIndex>0</CategoryIndex>
-          <CategoryIndex>0</CategoryIndex>
-          <CategoryIndex>0</CategoryIndex>
-        </CategoryIndices>
-        <TagIndices>
-          <TagIndex>4</TagIndex>
-          <TagIndex>5</TagIndex>
-          <TagIndex>10</TagIndex>
-        </TagIndices>
-      </Tags>
-    </SyntaxNode>
-    <SyntaxNode Name="typeclass_definition" BaseName="type_definition">
-      <Fields>
-        <SyntaxField Name="additional_restrictions" SyntaxType="named_type_reference_list" />
-        <SyntaxField Name="body" SyntaxType="class_body_list" />
-      </Fields>
-      <Methods />
-      <Tags>
-        <CategoryIndices>
-          <CategoryIndex>0</CategoryIndex>
-          <CategoryIndex>0</CategoryIndex>
-          <CategoryIndex>0</CategoryIndex>
-        </CategoryIndices>
-        <TagIndices>
-          <TagIndex>4</TagIndex>
-          <TagIndex>5</TagIndex>
-          <TagIndex>10</TagIndex>
-        </TagIndices>
-      </Tags>
-    </SyntaxNode>
-    <SyntaxNode Name="where_typeclass_constraint" BaseName="where_definition">
-      <Fields>
-        <SyntaxField Name="restriction" SyntaxType="typeclass_restriction" />
-      </Fields>
-      <Methods />
-      <Tags>
-        <CategoryIndices>
-          <CategoryIndex>0</CategoryIndex>
-        </CategoryIndices>
-        <TagIndices>
-          <TagIndex>10</TagIndex>
-        </TagIndices>
-      </Tags>
-    </SyntaxNode>
-    <SyntaxNode Name="typeclass_param_list" BaseName="template_param_list">
-      <Fields />
-      <Methods>
-        <Method>
-          <Text>public typeclass_param_list(template_param_list _template_param_list): this(_template_param_list.dereferencing_value, _template_param_list.params_list, _template_param_list.source_context)
-{
-}</Text>
-        </Method>
-      </Methods>
-      <Tags>
-        <CategoryIndices>
-          <CategoryIndex>0</CategoryIndex>
-        </CategoryIndices>
-        <TagIndices>
-          <TagIndex>10</TagIndex>
-        </TagIndices>
-      </Tags>
-    </SyntaxNode>
-    <SyntaxNode Name="typeclass_reference" BaseName="named_type_reference">
-      <Fields>
-        <SyntaxField Name="restriction_args" SyntaxType="template_param_list" />
-      </Fields>
-      <Methods />
-      <Tags>
-        <CategoryIndices>
-          <CategoryIndex>0</CategoryIndex>
-          <CategoryIndex>0</CategoryIndex>
-        </CategoryIndices>
-        <TagIndices>
-          <TagIndex>4</TagIndex>
-          <TagIndex>10</TagIndex>
-        </TagIndices>
-      </Tags>
-    </SyntaxNode>
     <SyntaxNode Name="pattern_node" BaseName="syntax_tree_node">
       <Fields />
       <Methods />
@@ -3134,6 +3036,25 @@
         </TagIndices>
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="var_tuple_def_statement" BaseName="var_def_statement">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="semantic_check_sugared_var_def_statement_node" BaseName="var_def_statement">
+      <Fields>
+        <ExtendedField Name="typ" Type="object" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="lst" Type="List&lt;syntax_tree_node&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3229,6 +3150,7 @@
       <HelpData Key=".tags" Value="" />
       <HelpData Key=".tn" Value="" />
       <HelpData Key=".to" Value="" />
+      <HelpData Key=".typ" Value="" />
       <HelpData Key=".type" Value="" />
       <HelpData Key=".types" Value="" />
       <HelpData Key=".unknown_foreach" Value="" />
@@ -4184,10 +4106,13 @@
       <HelpData Key="semantic_check_statement.stat" Value="" />
       <HelpData Key="semantic_check_sugared_statement" Value="узел, не генерирующий кода, но осуществляющий семантические проверки сахарных узлов. stat - это на самом деле statement. stat сделано типа object - чтобы оно автоматически не обходилось" />
       <HelpData Key="semantic_check_sugared_statement.stat" Value="" />
-      <HelpData Key="semantic_check_sugared_statement_node" Value="Узел, не генерирующий кода, но осуществляющий семантические проверки сахарных узлов. stat - это на самом деле statement. stat сделано типа object - чтобы оно автоматически не обходилось" />
+      <HelpData Key="semantic_check_sugared_statement_node" Value="" />
       <HelpData Key="semantic_check_sugared_statement_node.lst" Value="" />
       <HelpData Key="semantic_check_sugared_statement_node.stat" Value="" />
       <HelpData Key="semantic_check_sugared_statement_node.typ" Value="" />
+      <HelpData Key="semantic_check_sugared_var_def_statement_node" Value="" />
+      <HelpData Key="semantic_check_sugared_var_def_statement_node.lst" Value="" />
+      <HelpData Key="semantic_check_sugared_var_def_statement_node.typ" Value="" />
       <HelpData Key="semantic_expr_node" Value="" />
       <HelpData Key="semantic_expr_node.expr" Value="" />
       <HelpData Key="semantic_type_node" Value="" />
@@ -4228,6 +4153,7 @@
       <HelpData Key="simple_property.array_default" Value="" />
       <HelpData Key="simple_property.attr" Value="" />
       <HelpData Key="simple_property.index_expression" Value="" />
+      <HelpData Key="simple_property.is_auto" Value="" />
       <HelpData Key="simple_property.parameter_list" Value="" />
       <HelpData Key="simple_property.property_name" Value="" />
       <HelpData Key="simple_property.property_type" Value="" />
@@ -4523,7 +4449,7 @@
       <HelpData Key="var_def_list.vars" Value="" />
       <HelpData Key="var_def_list_for_record" Value="" />
       <HelpData Key="var_def_list_for_record.vars" Value="" />
-      <HelpData Key="var_def_statement" Value="Описание переменных одной строкой. Не содержит var, т.к. встречается исключительно внутри другой конструкции.Может встречаться как до beginа (внутри variable_definitions), так и как внутриблочное описание (внутри var_statement).&#xD;&#xA;" />
+      <HelpData Key="var_def_statement" Value="Описание переменных одной строкой. Не содержит var, т.к. встречается исключительно внутри другой конструкции. Может встречаться как до beginа (внутри variable_definitions), так и как внутриблочное описание (внутри var_statement).&#xD;&#xA;" />
       <HelpData Key="var_def_statement." Value="" />
       <HelpData Key="var_def_statement.field_attr" Value="" />
       <HelpData Key="var_def_statement.inital_value" Value="Начальное значение переменных" />
@@ -4545,6 +4471,7 @@
       <HelpData Key="var_statement." Value="" />
       <HelpData Key="var_statement.override string ToString()" Value="" />
       <HelpData Key="var_statement.var_def" Value="" />
+      <HelpData Key="var_tuple_def_statement" Value="" />
       <HelpData Key="variable_definitions" Value="Секция описания переменных (до beginа). Состоит из var_def_statement. Не путать с var_statement - однострочным описанием переменной внутри begin-end" />
       <HelpData Key="variable_definitions." Value="" />
       <HelpData Key="variable_definitions.override string ToString()" Value="" />

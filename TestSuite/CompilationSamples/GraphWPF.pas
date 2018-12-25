@@ -1130,7 +1130,7 @@ begin
   
   Pen.Color := Colors.Black;
   var n := Round(w / 3);
-  Polyline(Partition(a, b, n).Select(fso.Apply).ToArray);
+  Polyline(PartitionPoints(a, b, n).Select(fso.Apply).ToArray);
 end;
 
 procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect) := DrawGraph(f, a, b, min, max, r.X, r.Y, r.Width, r.Height);  
@@ -1140,7 +1140,7 @@ procedure DrawGraph(f: real -> real; a, b, min, max: real) := DrawGraph(f, a, b,
 procedure DrawGraph(f: real -> real; a, b: real; x, y, w, h: real);
 begin
   var n := Round(w / 3);
-  var q := Partition(a, b, n);
+  var q := PartitionPoints(a, b, n);
   DrawGraph(f, a, b, q.Min(f), q.Max(f), x, y, w, h)
 end;
 
@@ -1401,6 +1401,12 @@ procedure SystemOnKeyUp(sender: Object; e: KeyEventArgs) :=
   if OnKeyUp<>nil then
     OnKeyUp(e.Key);
     
+procedure SystemOnKeyPress(sender: Object; e: TextCompositionEventArgs) := 
+begin
+  if (OnKeyPress<>nil) and (e.Text<>nil) and (e.Text.Length>0) then
+    OnKeyPress(e.Text[1]);
+end;    
+    
 procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) := 
   if OnResize<>nil then
     OnResize();
@@ -1521,6 +1527,7 @@ public
     MouseMove += SystemOnMouseMove;
     KeyDown += SystemOnKeyDown;
     KeyUp += SystemOnKeyUp;
+    TextInput += SystemOnKeyPress;
     SizeChanged += SystemOnResize;
     
     CompositionTarget.Rendering += RenderFrame;

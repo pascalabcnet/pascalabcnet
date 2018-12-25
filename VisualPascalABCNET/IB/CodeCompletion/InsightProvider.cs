@@ -174,7 +174,7 @@ namespace VisualPascalABC
         {
             get
             {
-                return defaultIndex;
+                return Math.Min(defaultIndex, InsightDataCount-1);
             }
         }
     }

@@ -60,8 +60,6 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
-        
-
         /// <summary>
         /// Обрабатывает случай, когда левая часть присваивания short string.
         /// </summary>
@@ -197,8 +195,34 @@ namespace PascalABCCompiler.TreeConverter
                 if (to is class_field_reference)
                 {
                     var cfr = to as class_field_reference;
+
+                    if (from is typed_expression) // SSM 22.12.18 syntax_tree_visitor.cs 16066 - взял оттуда
+                    {
+                        base_function_call bfc = ((from as typed_expression).type as delegated_methods).proper_methods[0];
+                        /*if (bfc.function.is_generic_function && _var_def_statement.vars_type == null)
+                        {
+                            AddError(inital_value.location, "CAN_NOT_DEDUCE_TYPE_{0}", null);
+                        }
+                        foreach (parameter p in bfc.simple_function_node.parameters)
+                        {
+                            if (p.type.is_generic_parameter)
+                                AddError(inital_value.location, "USE_ANONYMOUS_FUNCTION_TYPE_WITH_GENERICS");
+                        } */
+                        common_type_node del =
+                            convertion_data_and_alghoritms.type_constructor.create_delegate(context.get_delegate_type_name(), bfc.simple_function_node.return_value_type, bfc.simple_function_node.parameters, context.converted_namespace, null);
+                        context.converted_namespace.types.AddElement(del); //- сомневаюсь - контекст уже поменялся!
+                        //tn = del;
+                        from = convertion_data_and_alghoritms.explicit_convert_type(from, del);
+                        from.type = del;
+                    }
+
                     cfr.field.type = from.type;
-                    cfr.type = from.type;
+                    cfr.type = from.type; // Это неверно работает когда yieldится процедура #1439
+                                          // SSM 1.11.18 попытка правки возвращения процедуры в yield
+                                          //if (from.type.semantic_node_type == semantic_node_type.delegated_method)
+                                          //cfr.type.semantic_node_type = semantic_node_type.delegated_method;
+
+
                     cfr.field.inital_value = context.GetInitalValueForVariable(cfr.field, cfr.field.inital_value);
                 }
                 else if (to is local_block_variable_reference)

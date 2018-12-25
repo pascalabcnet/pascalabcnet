@@ -390,6 +390,13 @@ namespace CodeCompletion
             s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
             assert(s.Trim('\n', ' ', '\t') == "seq1.Where(i ->(i = 1) or (i = 2)).JoinIntoString");
 
+            test_str = "$'{f1(s0)}'";
+            off = test_str.Length - 3;
+            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            assert(s.Trim('\n', ' ', '\t') == "s0");
+
+            
+
             int num_param = 0;
     		//testirovanie nazhatija skobki
     		test_str = "writeln";
@@ -772,6 +779,21 @@ namespace CodeCompletion
     		off = 1;
     		s = parser.LanguageInformation.FindExpressionFromAnyPosition(off,test_str,line,col,out keyw,out str);
     		assert(s.Trim('\n',' ','\t')==test_str);
+
+            test_str = "new t1<byte>(2)";
+            off = 5;
+            s = parser.LanguageInformation.FindExpressionFromAnyPosition(off, test_str, line, col, out keyw, out str);
+            assert(s.Trim('\n', ' ', '\t') == "new t1<byte>(2)");
+
+            test_str = "new t1<List<byte>>(2)";
+            off = 5;
+            s = parser.LanguageInformation.FindExpressionFromAnyPosition(off, test_str, line, col, out keyw, out str);
+            assert(s.Trim('\n', ' ', '\t') == "new t1<List<byte>>(2)");
+
+            test_str = "t1&<byte>.x";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpressionFromAnyPosition(off, test_str, line, col, out keyw, out str);
+            assert(s.Trim('\n', ' ', '\t') == "t1&<byte>.x");
 
             //----
             Type[] types = typeof(int).Assembly.GetExportedTypes();

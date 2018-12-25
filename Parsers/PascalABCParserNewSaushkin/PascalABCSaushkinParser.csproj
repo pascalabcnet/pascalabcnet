@@ -126,13 +126,13 @@
       <Project>{AF2EFD7B-69DD-4B43-AF65-B59B29349C23}</Project>
       <Name>ParserTools</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SemanticTree\SemanticTree.csproj">
-      <Project>{613e0dda-aa8a-437c-ac45-507b47429ff9}</Project>
-      <Name>SemanticTree</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SyntaxTree\SyntaxTree.csproj">
       <Project>{C2CAC65A-B2AE-4CCC-B067-E6B8E75DF73A}</Project>
       <Name>SyntaxTree</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SyntaxVisitors\SyntaxVisitors.csproj">
+      <Project>{a9ab4282-83b4-41a7-86c3-e5bf6a45e7e2}</Project>
+      <Name>SyntaxVisitors</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\TreeConverter\TreeConverter.csproj">
       <Project>{1c9c945a-586d-42a2-a06b-65d84fa7ff78}</Project>

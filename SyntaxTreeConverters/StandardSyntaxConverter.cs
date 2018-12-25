@@ -15,24 +15,13 @@ namespace PascalABCCompiler.SyntaxTreeConverters
         public string Name { get; } = "Standard";
         public syntax_tree_node Convert(syntax_tree_node root)
         {
-            CapturedNamesHelper.Reset();
             // Прошивание ссылками на Parent nodes. Должно идти первым
             // FillParentNodeVisitor расположен в SyntaxTree/tree как базовый визитор, отвечающий за построение дерева
-            FillParentNodeVisitor.New.ProcessNode(root);
-
+            //FillParentNodeVisitor.New.ProcessNode(root); // почему-то перепрошивает не всё. А следующий вызов - всё
+            root.FillParentsInAllChilds();
             // Выносим выражения с лямбдами из заголовка foreach
             StandOutExprWithLambdaInForeachSequenceVisitor.New.ProcessNode(root);
 
-            // type classes
-
-            {
-                var typeclasses = SyntaxVisitors.TypeclassVisitors.FindTypeclassesVisitor.New;
-                typeclasses.ProcessNode(root);
-                var instancesAndRestrictedFunctions = SyntaxVisitors.TypeclassVisitors.FindInstancesAndRestrictedFunctionsVisitor.New(typeclasses.typeclasses);
-                instancesAndRestrictedFunctions.ProcessNode(root);
-                SyntaxVisitors.TypeclassVisitors.ReplaceTypeclassVisitor.New(instancesAndRestrictedFunctions).ProcessNode(root);
-            }
-            root.FillParentsInAllChilds();
 #if DEBUG
             //new SimplePrettyPrinterVisitor("E:/projs/out.txt").ProcessNode(root);
 #endif
@@ -55,12 +44,14 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             DoubleQuestionDesugarVisitor.New.ProcessNode(root);
 
             // Patterns
+            // SingleDeconstructChecker.New.ProcessNode(root); // SSM 21.10.18 - пока разрешил множественные деконструкторы. Если будут проблемы - запретить
             PatternsDesugaringVisitor.New.ProcessNode(root);
 
-
-
+            // simple_property
+            PropertyDesugarVisitor.New.ProcessNode(root);
 
             // Всё, связанное с yield
+            CapturedNamesHelper.Reset();
             MarkMethodHasYieldAndCheckSomeErrorsVisitor.New.ProcessNode(root);
             ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
 
@@ -68,19 +59,21 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             //new SimplePrettyPrinterVisitor("D:\\Tree.txt").ProcessNode(root);
             //FillParentNodeVisitor.New.ProcessNode(root);
 
-            
+
             /*var cv = CollectLightSymInfoVisitor.New;
             cv.ProcessNode(root);
             cv.Output(@"Light1.txt");*/
-            
+
             /*try
             {
                 root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz4.txt"));
             }
-            catch
+            catch(Exception e)
             {
 
-            }*/
+                System.IO.File.AppendAllText(@"d:\\zzz4.txt",e.Message);
+            } */
+
 
 #endif
             return root;

@@ -323,6 +323,11 @@ namespace TreeConverter.LambdaExpressions.Closure
                         }
 
                         var forNodeIndex = enclosedStatementList.subnodes.FindIndex(stmt => stmt == forNode);
+
+                        if (forNodeIndex == -1) // SSM 30.10.18 грубый fix #1443 Если for_node находится на 2 и более уровней ниже, то мы её нне найдём - пробуем вставить в начало блока
+                            forNodeIndex = 0;
+                        // Конечно, могут возникнуть проблемы что мы вставляем в начало блока, но если там нет перекрывающихся имен, то вроде и проблем нет
+
                         enclosedStatementList.subnodes.InsertRange(forNodeIndex, nodesToAdd);
 
 

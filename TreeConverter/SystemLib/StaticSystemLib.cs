@@ -493,6 +493,9 @@ namespace PascalABCCompiler.SystemLibrary
 
         private static basic_function_node _obj_to_obj;
 
+        private static basic_function_node _int64_to_pointer;
+        private static basic_function_node _pointer_to_int64;
+
         private static compiled_function_node _resize_func;
 
         private static System.StringComparer _string_comparer = StringComparer.Ordinal;
@@ -2057,6 +2060,8 @@ namespace PascalABCCompiler.SystemLibrary
             
             _exception_base_type = compiled_type_node.get_type_node(typeof(System.Exception), symtab);
             _exception_base_type.SetName(compiler_string_consts.base_exception_class_name);
+            _int64_to_pointer = make_type_conversion(_int64_type, _pointer_type, type_compare.greater_type, SemanticTree.basic_function_type.ltop, false);
+            _pointer_to_int64 = make_type_conversion(_pointer_type, _int64_type, type_compare.less_type, SemanticTree.basic_function_type.ptol, false);
         }
 		
         private static List<type_node> wait_add_ref_list = new List<type_node>();
@@ -5154,6 +5159,22 @@ namespace PascalABCCompiler.SystemLibrary
         	{
         		return _enum_smeq;
         	}
+        }
+
+        public static basic_function_node int64_to_pointer
+        {
+            get
+            {
+                return _int64_to_pointer;
+            }
+        }
+
+        public static basic_function_node pointer_to_int64
+        {
+            get
+            {
+                return _pointer_to_int64;
+            }
         }
 
         public static compiled_type_node icloneable_interface

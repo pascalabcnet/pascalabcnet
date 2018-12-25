@@ -164,8 +164,10 @@ namespace TreeConverter.LambdaExpressions.Closure
                 si.sym_info.semantic_node_type == semantic_node_type.common_namespace_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.compiled_unit_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.template_type ||
+                si.sym_info.semantic_node_type == semantic_node_type.generic_indicator ||
                 si.sym_info.semantic_node_type == semantic_node_type.class_constant_definition ||
-                si.sym_info.semantic_node_type == semantic_node_type.basic_function_node && idName == "exit")
+                si.sym_info.semantic_node_type == semantic_node_type.function_constant_definition || // SSM 03.11.18 bug fix #1449
+                si.sym_info.semantic_node_type == semantic_node_type.basic_function_node && (idName == "exit" || idName == "continue" || idName == "break"))
             {
                 return;
             }
@@ -176,7 +178,10 @@ namespace TreeConverter.LambdaExpressions.Closure
                                     si.sym_info.semantic_node_type == semantic_node_type.class_field
                                     ;
             //trjuk, chtoby ne perelopachivat ves kod. zamenjaem ident na self.ident
-            if ((si.sym_info.semantic_node_type == semantic_node_type.common_event || si.sym_info.semantic_node_type == semantic_node_type.common_property_node) && InLambdaContext)
+            // Использую этот трюк для нестатических полей предков - они не захватываются из-за плохого алгоритма захвата
+            if ((si.sym_info.semantic_node_type == semantic_node_type.class_field && !(si.sym_info as class_field).IsStatic 
+                || si.sym_info.semantic_node_type == semantic_node_type.common_method_node && !(si.sym_info as common_method_node).IsStatic
+                || si.sym_info.semantic_node_type == semantic_node_type.common_event || si.sym_info.semantic_node_type == semantic_node_type.common_property_node) && InLambdaContext)
             {
                 dot_node dn = new dot_node(new ident("self", id.source_context), new ident(id.name, id.source_context), id.source_context);
                 bool ok = true;
@@ -190,7 +195,10 @@ namespace TreeConverter.LambdaExpressions.Closure
                 }
                 if (ok)
                 {
-                    ProcessNode(id.Parent);
+                    if (id.Parent is var_def_statement)
+                        ProcessNode(id); // Грубая правка, закрывающая ошибку #1390
+                    else ProcessNode(id.Parent); // Грубо, поскольку id.Parent уже начал обходиться - а здесь рекурсия
+                    // Это рубится на коде var s := c; где s - локальная в лямбде, а c - захваченное поле класса. В результате s создаётся дважды.
                     return;
                 }
             }

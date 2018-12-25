@@ -1,9 +1,9 @@
-// Демонстрация работы функции eof. Запускать по Shift-F9
-var s: char;
+﻿// Демонстрация работы функции eof. Запускать по Shift-F9, завершать по Ctrl-Z
 begin
-  while not eof do
+  var s: char;
+  while not Eof do
   begin
-    read(s);
-    writeln('- ',Ord(s),' -');
+    Read(s);
+    Println('-',Ord(s),' -');
   end;
 end.

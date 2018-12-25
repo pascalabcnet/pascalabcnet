@@ -2,15 +2,18 @@
 
 const 
 /// Количество графических объектов
-  Count = 300;
+  Count = 1000;
   
 /// Возвращает случайный графический объект
+
+var w := 50;
+
 function NewRandomABC: ObjectWPF;
 begin
   case Random(3) of
-0: Result := new CircleWPF(Random(Window.Width.Round-30)+10,Random(Window.Height.Round-30)+10,Random(10)+5,RandomColor);
-1: Result := new RectangleWPF(Random(Window.Width.Round-30)+10,Random(Window.Height.Round-30)+10,Random(20)+10,Random(20)+10,RandomColor);
-2: Result := new StarWPF(Random(Window.Width.Round-30)+10,Random(Window.Height.Round-30)+10,Random(20)+10,Random(10)+5,Random(4)+4,RandomColor);
+0: Result := new CircleWPF(Random(Window.Width.Round-w)+w/2,Random(Window.Height.Round-w)+w/2,Random(w/2),RandomColor);
+1: Result := new RectangleWPF(Random(Window.Width.Round-w)+w/2,Random(Window.Height.Round-w)+w/2,Random(w),Random(w),RandomColor);
+2: Result := new StarWPF(Random(Window.Width.Round-w)+w/2,Random(Window.Height.Round-w)+w/2,Random(w/2),Random(w/2),Random(4)+4,RandomColor);
   end;
 end;
 
@@ -24,8 +27,8 @@ begin
     o.dy := -o.dy;
 end;
 
+procedure CreateAll;
 begin
-  Window.Title := 'Движущиеся объекты';
   for var i:=1 to Count do
   begin
     var m: ObjectWPF := NewRandomABC;
@@ -34,11 +37,21 @@ begin
       m.dy := Random(-3,3);
     until (m.dx<>0) and (m.dy<>0);
   end;
+end;
+
+procedure MoveAll;
+begin
+  for var i:=0 to Objects.Count-1 do
+    Move(Objects[i]);
+end;
+
+begin
+  Window.Title := 'Движущиеся объекты';
+  Invoke(CreateAll);
   var k := 1;
   while True do
   begin
-    for var i:=0 to Objects.Count-1 do
-      Move(Objects[i]);
+    Invoke(MoveAll);
     k += 1;
     Window.Title := Format('{0,5:f2}',k/Milliseconds*1000)+' кадров в секунду';
   end;

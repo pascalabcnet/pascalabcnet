@@ -11,7 +11,11 @@ namespace PascalABCCompiler.TreeRealization
 		private local_variable _var;
 		private int _static_depth;
 
-		public local_variable_reference(local_variable var,int static_depth,location loc) : base(var.type,loc)
+        public override string ToString()
+        {
+            return this.var.name;
+        }
+        public local_variable_reference(local_variable var,int static_depth,location loc) : base(var.type,loc)
 		{
 			_var=var;
 			this.static_depth=static_depth;   

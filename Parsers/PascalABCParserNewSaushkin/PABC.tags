@@ -36,7 +36,6 @@
   </tag>
   <tag value="Списки">
     <name value="decl_sect_list" />
-    <name value="const_func_expr_list" />
     <name value="label_list" />
     <name value="const_field_list" />
     <name value="const_field_list_1" />
@@ -176,7 +175,6 @@
     <name value="method_decl_withattr" />
     <name value="method_decl" />
     <name value="property_definition" />
-    <name value="simple_prim_property_definition" />
     <name value="simple_property_definition" />
     <name value="property_specifiers" />
     <name value="var_decl" />
@@ -241,7 +239,6 @@
     <name value="const_decl_sect" />
     <name value="res_str_decl_sect" />
     <name value="type_decl_sect" />
-    <name value="var_decl_sect" />
     <name value="uses_clause" />
     <name value="interface_part" />
     <name value="implementation_part" />

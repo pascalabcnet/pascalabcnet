@@ -2564,10 +2564,12 @@ end;
 
 procedure Ellipse(x1, y1, x2, y2: integer);
 begin
+  Monitor.Enter(f);
   if Brush.NETBrush <> nil then 
     FillEllipse(x1, y1, x2, y2);
   if Pen.NETPen.DashStyle <> DashStyle.Custom then
     DrawEllipse(x1, y1, x2, y2);
+  Monitor.Exit(f);
 end;
 
 procedure FillRectangle(x1, y1, x2, y2: integer);
@@ -2592,6 +2594,7 @@ end;
 
 procedure Rectangle(x1, y1, x2, y2: integer);
 begin
+  Monitor.Enter(f);
   if x1 > x2 then 
     Swap(x1, x2);
   if y1 > y2 then 
@@ -2600,6 +2603,7 @@ begin
     FillRectangle(x1, y1, x2 - 1, y2 - 1);
   if Pen.NETPen.DashStyle <> DashStyle.Custom then
     DrawRectangle(x1, y1, x2, y2);
+  Monitor.Exit(f);
 end;
 
 procedure DrawRoundRect(x1, y1, x2, y2, w, h: integer);
@@ -3835,7 +3839,7 @@ begin
   
   Pen.Color := Color.Black;
   var n := (x2 - x1) div 3;
-  Polyline(Range(a, b, n).Select(fso.Apply).ToArray);
+  Polyline(PartitionPoints(a, b, n).Select(fso.Apply).ToArray);
 end;
 
 procedure Draw(f: real-> real; a, b, min, max: real; r: System.Drawing.Rectangle);
@@ -3855,7 +3859,7 @@ end;
 procedure Draw(f: real-> real; a, b: real; x1, y1, x2, y2: integer);
 begin
   var n := (x2 - x1) div 3;
-  Draw(f, a, b, Range(a, b, n).Min(f), Range(a, b, n).Max(f), x1, y1, x2, y2)
+  Draw(f, a, b, PartitionPoints(a, b, n).Min(f), PartitionPoints(a, b, n).Max(f), x1, y1, x2, y2)
 end;
 
 procedure Draw(f: real-> real; a, b: real; r: System.Drawing.Rectangle);

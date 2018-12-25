@@ -33,7 +33,7 @@ namespace PascalABCCompiler.SyntaxTree
         DirectDescendants
     }
 
-    public enum SugaredExpressionType { MatchedExpression }
+    public enum SemanticCheckType { MatchedExpression, MatchedExpressionAndType }
 
     public partial class syntax_tree_node
     {
@@ -375,9 +375,17 @@ namespace PascalABCCompiler.SyntaxTree
         {
             return new bin_expr(left, right, Operators.Greater);
         }
+        public static bin_expr GreaterEqual(expression left, expression right)
+        {
+            return new bin_expr(left, right, Operators.GreaterEqual);
+        }
         public static bin_expr Less(expression left, expression right)
         {
             return new bin_expr(left, right, Operators.Less);
+        }
+        public static bin_expr LessEqual(expression left, expression right)
+        {
+            return new bin_expr(left, right, Operators.LessEqual);
         }
 
         public static bin_expr LogicalAnd(expression left, expression right)
@@ -554,6 +562,12 @@ namespace PascalABCCompiler.SyntaxTree
             sb.Append("; ");
             return sb.ToString();
         }
+    }
+
+    public partial class var_tuple_def_statement
+    {
+        public var_tuple_def_statement(ident_list vars, expression iv, SourceContext sc = null) : this(vars, null, iv, definition_attribute.None, false, sc)
+        { }
     }
 
     public partial class declarations
@@ -750,13 +764,21 @@ namespace PascalABCCompiler.SyntaxTree
             if (parameters != null)
                 sb.Append("(" + parameters.ToString() + ")");
             sb.Append(";");
-            foreach (var pa in this.proc_attributes.proc_attributes)
-                sb.Append(" " + pa.ToString() + " ");
+            if (this.proc_attributes != null)
+                foreach (var pa in this.proc_attributes.proc_attributes)
+                    sb.Append(" " + pa.ToString() + " ");
             return sb.ToString();
+        }
+
+        public bool is_extension()
+        {
+            if (proc_attributes?.proc_attributes != null)
+                return proc_attributes.proc_attributes.FindIndex(attr => attr.attribute_type == proc_attribute.attr_extension) >= 0;
+            else return false;
         }
     }
 
-    public partial class function_header
+    public partial class function_header                                                                     
     {
         public function_header(formal_parameters _parameters, procedure_attributes_list _proc_attributes, method_name _name, where_definition_list _where_defs, type_definition _return_type, SourceContext sc)
             : base(_parameters, _proc_attributes, _name, _where_defs, sc)
@@ -1072,7 +1094,7 @@ namespace PascalABCCompiler.SyntaxTree
     public partial class simple_property
     {
         public simple_property(ident name, type_definition type, property_accessors accessors, SourceContext sc = null) 
-            : this(name, type, null, accessors, null, null, definition_attribute.None,proc_attribute.attr_none,sc)
+            : this(name, type, null, accessors, null, null, definition_attribute.None,proc_attribute.attr_none,false,sc)
         { }
     }
 
@@ -1566,6 +1588,11 @@ namespace PascalABCCompiler.SyntaxTree
             this._IsYieldInStaticMethod = isYieldInStaticMethod;
             source_context = sc;
         }
+        public override string ToString()
+        {
+            return /*""+this.ClassName+" "+this.name+" "+*/this.UnknownID.ToString();
+        }
+
     }
 
     public partial class yield_unknown_foreach_type : type_definition
@@ -1654,14 +1681,6 @@ namespace PascalABCCompiler.SyntaxTree
         public override string ToString()
         {
             return this.access_level.ToString().Replace("_modifier","");
-        }
-    }
-
-	public partial class yield_unknown_ident
-    {
-        public override string ToString()
-        {
-            return this.UnknownID.ToString();
         }
     }
 

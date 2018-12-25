@@ -105,7 +105,36 @@ namespace SyntaxVisitors
             --CurrentLevel;
         }
 
-        public override void visit(var_statement vs)
+        public override void visit(var_def_statement var_def)
+        {
+            if (var_def.vars.idents.Any(id => id.name.StartsWith("$")))
+            {
+                base.visit(var_def); // SSM 17/07/16 исправление ошибки - не обходилось выражение-инициализатор
+                return;
+            }
+
+            var newLocalNames = var_def.vars.idents.Select(id => 
+                {
+                    var low = id.name
+                    //.ToLower()
+                    ;
+
+                    var newName = this.CreateNewVariableName(low);
+                    //BlockNamesStack[CurrentLevel].Add(low, newName);
+                    BlockNamesStack[CurrentLevel][low] = newName;
+                    return new ident(newName, id.source_context);
+                });
+
+            var newVS = new var_def_statement(new ident_list(newLocalNames.ToArray()),
+                var_def.vars_type,
+                var_def.inital_value);
+
+            Replace(var_def, newVS);
+            listNodes[listNodes.Count - 1] = newVS; //SSM 8.11.18
+            base.visit(newVS);
+        }
+
+        /*public override void visit(var_statement vs)
         {
             if (vs.var_def.vars.idents.Any(id => id.name.StartsWith("$")))
             {
@@ -113,15 +142,17 @@ namespace SyntaxVisitors
                 return;
             }
 
-            var newLocalNames = vs.var_def.vars.idents.Select(id => 
-                {
-                    var low = id.name/*.ToLower()*/;
+            var newLocalNames = vs.var_def.vars.idents.Select(id =>
+            {
+                var low = id.name
+                //.ToLower()
+                ;
 
-                    var newName = this.CreateNewVariableName(low);
-                    //BlockNamesStack[CurrentLevel].Add(low, newName);
-                    BlockNamesStack[CurrentLevel][low] = newName;
-                    return new ident(newName, id.source_context);
-                });
+                var newName = this.CreateNewVariableName(low);
+                //BlockNamesStack[CurrentLevel].Add(low, newName);
+                BlockNamesStack[CurrentLevel][low] = newName;
+                return new ident(newName, id.source_context);
+            });
 
             var newVS = new var_statement(new var_def_statement(new ident_list(newLocalNames.ToArray()),
                 vs.var_def.vars_type,
@@ -130,7 +161,7 @@ namespace SyntaxVisitors
             Replace(vs, newVS);
 
             base.visit(newVS);
-        }
+        }/* */
 
         public override void visit(variable_definitions vd)
         {

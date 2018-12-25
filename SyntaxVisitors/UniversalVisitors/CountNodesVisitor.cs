@@ -11,6 +11,7 @@ using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors
 {
+    // Учебный визитор подсчёта узлов каждого типа
     public class CountNodesVisitor : BaseEnterExitVisitor
     {
         public Dictionary<System.Type, int> d = new Dictionary<System.Type, int>();

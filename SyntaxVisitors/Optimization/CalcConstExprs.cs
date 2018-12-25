@@ -11,7 +11,9 @@ using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors
 {
-    public class CalcConstExprs : BaseChangeVisitor // вычисление целых и вещественных константных выражений на этапе парсинга
+    // Учебный визитор. 
+    // Вычисление целых и вещественных константных выражений на этапе парсинга
+    public class CalcConstExprs : BaseChangeVisitor 
     {
         public override void Exit(syntax_tree_node st)
         {

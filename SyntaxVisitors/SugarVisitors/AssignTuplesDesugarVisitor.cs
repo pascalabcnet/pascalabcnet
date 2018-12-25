@@ -24,15 +24,15 @@ namespace SyntaxVisitors.SugarVisitors
             return num.ToString();
         }
 
-        public override void visit(write_accessor_name wn)
+        /*public override void visit(write_accessor_name wn)
         {
 
-        }
+        } */
 
         public override void visit(assign_tuple asstup)
         {
             // тут возможно ошибка более глубокая - в semantic_check_sugared_statement_node(asstup) возможно остаются во вложенных лямбдах другие assign_tuple
-            var sl = new statement_list();
+            var sl = new List<statement>();
             sl.Add(new semantic_check_sugared_statement_node(typeof(assign_tuple), new List<syntax_tree_node> { asstup.vars, asstup.expr }, asstup.source_context)); // Это нужно для проверок на этапе преобразования в семантику
 
             var tname = "#temp_var" + UniqueNumStr();
@@ -48,12 +48,12 @@ namespace SyntaxVisitors.SugarVisitors
                 sl.Add(a);
             }
             // Замена 1 оператор на 1 оператор - всё OK
-            ReplaceUsingParent(asstup, sl);
+            ReplaceStatementUsingParent(asstup, sl);
 
             visit(asstup.expr);
         }
 
-        public void ReplaceAssignVarTupleUsingParent(assign_var_tuple from, IEnumerable<declaration> to, Desc d = Desc.DirectDescendants)
+        public void ReplaceAssignVarTupleUsingParent(assign_var_tuple from, IEnumerable<declaration> to)
         {
             foreach (var x in to)
                 x.Parent = from.Parent;
@@ -64,6 +64,40 @@ namespace SyntaxVisitors.SugarVisitors
             }
         }
 
+        public void ReplaceVarTupleDefStatementUsingParent(var_tuple_def_statement from, IEnumerable<var_def_statement> to)
+        {
+            foreach (var x in to)
+                x.Parent = from.Parent;
+            var sl = from.Parent as variable_definitions;
+            if (sl != null)
+            {
+                sl.ReplaceInList(from, to);
+            }
+        }
+        public override void visit(var_tuple_def_statement vtd)
+        {
+            // Состоит из var_def_statements. Некоторые являются var_tuple_def_statement
+            // Их надо найти и сделать несколько секций variable_definitions - без семантических проверок.
+            // Каждую var_tuple_def_statement надо заменить на assign_var_tuple - одну на секцию variable_definitions
+            // А потом оставшаяся часть визитора сделает семантические проверки 
+            var tname = "#temp_var" + UniqueNumStr();
+            var vd = new List<var_def_statement>();
+            vd.Add(new semantic_check_sugared_var_def_statement_node(typeof(assign_var_tuple), new List<syntax_tree_node> { vtd.vars, vtd.inital_value }, vtd.source_context)); // Это нужно для проверок на этапе преобразования в семантику
+            var tt1 = new var_def_statement(new ident(tname), vtd.inital_value);
+            vd.Add(tt1);
+            var nn = vtd.vars.idents.Count();
+            for (var i = 0; i < nn; i++)
+            {
+                var a = new var_def_statement(vtd.vars.idents[i],
+                    new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString())),
+                    vtd.vars.idents[i].source_context);
+                vd.Add(a);
+            }
+
+            ReplaceVarTupleDefStatementUsingParent(vtd, vd);
+            visit(vtd.inital_value);
+            return;
+        }
 
         public override void visit(assign_var_tuple assvartup)
         {

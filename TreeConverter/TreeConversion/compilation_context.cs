@@ -51,7 +51,7 @@ namespace PascalABCCompiler.TreeConverter
 	public class compilation_context
 	{
         private ContextState SavedContext = null; // сохраненный контекст, используется при переходе к другому контексту при компиляции и последующем возврате к первоначальному контексту
-        public Stack<ContextState> SavedContextStack = new Stack<ContextState>(); // SSM 26/08/15 - пробую сделать стек контекстов. Может, что-то надо удет клонировать?
+        public Stack<ContextState> SavedContextStack = new Stack<ContextState>(); // SSM 26/08/15 - пробую сделать стек контекстов. Может, что-то надо будет клонировать?
 
         // Существуют 3 перехода вверх:
         // Из блока в раздел описаний до beginа этого блока (если это глобальный блок, то - на глобальный уровень). Обнуляется convertion_data_and_alghoritms.statement_list_stack. Поля func_stack и _ctn остаются нетронутыми
@@ -200,8 +200,6 @@ namespace PascalABCCompiler.TreeConverter
         internal List<var_definition_node> var_defs =
             new List<var_definition_node>();
 
-        public List<type_node> typeclassInstances = new List<type_node>();
-
         internal Stack<System.Collections.Generic.List<var_definition_node>> var_defs_stack =
             new Stack<System.Collections.Generic.List<var_definition_node>>();
 
@@ -333,7 +331,6 @@ namespace PascalABCCompiler.TreeConverter
             in_parameters_block = false;
             is_order_independed_method_description = false;
             _has_nested_functions = false;
-            typeclassInstances.Clear();
         }
         
         public void clear_type_prededinitions()
@@ -2590,7 +2587,11 @@ namespace PascalABCCompiler.TreeConverter
         {
             foreach (common_function_node cfn in cnn.functions)
                 if (cfn.function_code == null)
-                    AddError(cfn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
+                {
+                    //AddError(cfn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
+                    AddError(new FunctionPredefinitionWithoutDefinition(cfn, cfn.loc));
+                }
+                    
             foreach (common_type_node ctn in cnn.types)
             {
                 //(ssyy) Для интерфейсов не проверяем
@@ -2598,7 +2599,8 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     foreach (common_method_node cmn in ctn.methods)
                         if (cmn.function_code == null && cmn.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual_abstract)
-                            AddError(cmn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
+                            AddError(new FunctionPredefinitionWithoutDefinition(cmn, cmn.loc));
+                            //AddError(cmn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
                 }
             }
         }
@@ -2721,18 +2723,6 @@ namespace PascalABCCompiler.TreeConverter
                         }
                     }
                     //Переходим к следующей функции-кандидату
-                }
-            }
-
-            var testIsInstance = _ctn?.Attributes?.Any(x => x.AttributeType.name == "__TypeclassInstanceAttribute");
-            if (testIsInstance is true)
-            {
-                if (find_method == null || (find_method.sym_info as function_node).polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)
-                {
-                    var instanceName = _ctn.Attributes.First(x => x.AttributeType.name == "__TypeclassInstanceAttribute").Arguments[0].value;
-                    var typeclassName = _ctn.Attributes.First(x => x.AttributeType.name == "__TypeclassAttribute").Arguments[0].value;
-                    AddError(_ctn.location, "INSTANCE_{0}_DOES_NOT_IMPLEMENT_REQUIREMENT_{1}_OF_TYPECLASS_{2}",
-                        instanceName.ToString(), Tools.GetFullMethodHeaderString(meth), typeclassName.ToString());
                 }
             }
 
@@ -2914,7 +2904,8 @@ namespace PascalABCCompiler.TreeConverter
 					{
 						if (cfn.function_code==null)
 						{
-                            AddError(cfn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
+                            //AddError(cfn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
+                            AddError(new FunctionPredefinitionWithoutDefinition(cfn, cfn.loc));
 						}
 					}
                     check_labels(_func_stack.top().label_nodes_list);
@@ -2929,7 +2920,8 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             if (cfn.function_code == null)
                             {
-                                AddError(cfn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
+                                AddError(new FunctionPredefinitionWithoutDefinition(cfn, cfn.loc));
+                                //AddError(cfn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
                             }
                         }
                         foreach (common_type_node ctn in _cmn.types)
@@ -2942,7 +2934,8 @@ namespace PascalABCCompiler.TreeConverter
                                 {
                                     if (cmn.function_code == null && cmn.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual_abstract)
                                     {
-                                        AddError(cmn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
+                                        //AddError(cmn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
+                                        AddError(new FunctionPredefinitionWithoutDefinition(cmn, cmn.loc));
                                     }
                                 }
                             }

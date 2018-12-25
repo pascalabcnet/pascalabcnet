@@ -138,7 +138,7 @@ namespace GPPGParserScanner
             return nnof;
         }
 
-        public class_definition NewRecordType(named_type_reference_list opt_base_classes, where_definition_list opt_where_section, class_body_list component_list_seq, LexLocation loc)
+        /*public class_definition NewRecordType(named_type_reference_list opt_base_classes, where_definition_list opt_where_section, class_body_list component_list_seq, LexLocation loc)
         {
             var nnrt = new class_definition(opt_base_classes, component_list_seq, class_keyword.Record, null, opt_where_section, class_attribute.None, false, loc); 
 			if (nnrt.body!=null && nnrt.body.class_def_blocks!=null && 
@@ -147,7 +147,7 @@ namespace GPPGParserScanner
                 nnrt.body.class_def_blocks[0].access_mod = new access_modifer_node(access_modifer.public_modifer);
 			}
             return nnrt;
-        }
+        } */
 
         public token_info NewClassOrInterfaceKeyword(token_info tktemp)
         {
@@ -496,7 +496,7 @@ namespace GPPGParserScanner
             return str;
         }
 
-        public var_def_statement NewVarOrIdentifier(ident identifier, named_type_reference fptype, LexLocation loc)
+        /*public var_def_statement NewVarOrIdentifier(ident identifier, named_type_reference fptype, LexLocation loc)
         {
             var n_t_r = fptype;
 			var vds = new var_def_statement();
@@ -505,15 +505,15 @@ namespace GPPGParserScanner
 			vds.vars_type = n_t_r;
             vds.source_context = loc;
 			return vds;
-        }
+        }*/
 
-        public statement_list NewLambdaBody(expression expr_l1, LexLocation loc)
+        /* Функция стала короткой и утратила необходимость
+         *public statement_list NewLambdaBody(expression expr_l1, LexLocation loc)
         {
             var sl = new statement_list();
             sl.expr_lambda_body = true;
             var id = new ident("result");
 			var op = new op_type_node(Operators.Assignment);
-			//_op_type_node.source_context = parsertools.GetTokenSourceContext();
 			var ass = new assign(id, expr_l1, op.type);
 			parsertools.create_source_context(ass, id, expr_l1); // дурацкая функция - если хотя бы у одного sc=null, то возвращает null
             if (ass.source_context == null)
@@ -523,8 +523,10 @@ namespace GPPGParserScanner
                     ass.source_context = id.source_context;
             sl.subnodes.Add(ass);
             sl.source_context = loc;
-			return sl;
-        }
+            var sl = new statement_list(new assign("result",expr_l1,loc),loc);
+
+            return sl;
+        }/**/
 
         public procedure_definition CreateAndAddToClassReadFunc(expression ex, ident id, SourceContext sc)
         {

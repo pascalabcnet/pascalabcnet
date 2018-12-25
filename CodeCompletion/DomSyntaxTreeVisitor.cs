@@ -666,7 +666,8 @@ namespace CodeCompletion
             _indexer.dereferencing_value.visit(this);
             if (returned_scope != null && returned_scope is TypeScope)
             {
-                if ((returned_scope as TypeScope).GetFullName() != null && (returned_scope as TypeScope).GetFullName().IndexOf("System.Tuple") == 0)
+                TypeScope ts = returned_scope as TypeScope;
+                if (ts.GetFullName() != null && (ts.GetFullName().IndexOf("System.Tuple") == 0 || ts.original_type != null && ts.original_type.GetFullName() != null && ts.original_type.GetFullName().IndexOf("(T1,") == 0))
                 {
                     if (_indexer.indexes.expressions[0] is int32_const)
                     {
@@ -1798,7 +1799,10 @@ namespace CodeCompletion
                                         ass.from.visit(this);
                                         if (returned_scope != null && returned_scope is TypeScope)
                                         {
+                                            
                                             tmp_scope.return_type = returned_scope as TypeScope;
+                                            if (tmp_scope.return_type is ProcType && (tmp_scope.return_type as ProcType).target == tmp_scope)
+                                                tmp_scope.return_type = null;
                                             tmp_scope.Complete();
                                             returned_scope = tmp_scope;
                                         }
@@ -1885,6 +1889,8 @@ namespace CodeCompletion
                             key = "abstract " + key;
                         else if (cl_def.attribute == class_attribute.Sealed)
                             key = "sealed " + key;
+                        else if (cl_def.attribute == class_attribute.Static)
+                            key = "static " + key;
                         if (key != null && returned_scope.body_loc != null)
                         {
                             returned_scope.head_loc = new location(returned_scope.body_loc.begin_line_num, returned_scope.body_loc.begin_column_num, returned_scope.body_loc.begin_line_num, returned_scope.body_loc.begin_column_num + key.Length, doc);
@@ -3190,9 +3196,9 @@ namespace CodeCompletion
                 element_type = element_types[0];
                 for (int i = 1; i < element_types.Count; i++)
                 {
-                    if (element_type.IsConvertable(element_types[i]))
+                    if (element_type.IsConvertable(element_types[i], true))
                         element_type = element_types[i];
-                    else if (!element_types[i].IsConvertable(element_type))
+                    else if (!element_types[i].IsConvertable(element_type, true))
                     {
                         element_type = TypeTable.obj_type;
                         break;
@@ -3256,12 +3262,27 @@ namespace CodeCompletion
             if (_simple_property.parameter_list != null)
             {
                 es.elementType = returned_scope as TypeScope;
+                ProcScope ps = new ProcScope("#getset" + _simple_property.property_name.name, cur_scope);
+                ps.procRealization = new ProcRealization(ps, ps.topScope);
+                ps.already_defined = true;
+                cur_scope.AddName("#getset" + _simple_property.property_name.name, ps);
                 for (int i = 0; i < _simple_property.parameter_list.parameters.Count; i++)
                 {
                     _simple_property.parameter_list.parameters[i].type.visit(this);
-                    if (returned_scope == null || !(returned_scope is TypeScope)) return;
+                    if (returned_scope == null || !(returned_scope is TypeScope))
+                        return;
+
                     for (int j = 0; j < _simple_property.parameter_list.parameters[i].names.idents.Count; j++)
+                    {
+                        
+                        ps.loc = get_location(_simple_property);
+                        ps.si.not_include = true;
+                        
+                        string param_name = _simple_property.parameter_list.parameters[i].names.idents[j].name;
+                        ps.AddName(param_name, new ElementScope(new SymInfo(param_name, SymbolKind.Parameter, null),returned_scope, ps));
+                        
                         es.AddIndexer(returned_scope as TypeScope);
+                    } 
                 }
                 es.MakeDescription();
             }
@@ -4735,9 +4756,12 @@ namespace CodeCompletion
                 return;
             }
                 
-            if (type1.IsConvertable(type2))
+            if (type1.IsConvertable(type2, true))
             {
-                returned_scope = type2;
+                if (!(type2 is NullTypeScope))
+                    returned_scope = type2;
+                else
+                    returned_scope = type1;
                 return;
             }
             returned_scope = type1;

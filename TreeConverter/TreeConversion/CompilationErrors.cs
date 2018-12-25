@@ -390,6 +390,8 @@ namespace PascalABCCompiler.TreeConverter
         {
             _is_alone = is_alone;
             this.first_function = first_function;
+            if (first_function is compiled_constructor_node || first_function is common_method_node && (first_function as common_method_node).is_constructor)
+                is_constructor = true;
         }
 
         public bool is_alone_function_defined
@@ -3081,6 +3083,27 @@ namespace PascalABCCompiler.TreeConverter
             return StringResources.Get("USING_CAPTURED_PARAMETERS_IS_NOT_ALLOWED_IN_INITIALIZERS");
         }
     }
+
+
+    public class FunctionPredefinitionWithoutDefinition : CompilationErrorWithLocation
+    {
+        private common_function_node cfn;
+
+        public FunctionPredefinitionWithoutDefinition(common_function_node cfn, location loc): base(loc)
+        {
+            this.cfn = cfn;
+        }
+
+        public override string ToString()
+        {
+            if (cfn is common_method_node && (cfn as common_method_node).is_constructor)
+                return StringResources.Get("CONSTRUCTOR_PREDEFINITION_WITHOUT_DEFINITION");
+            if (cfn.return_value_type == null)
+                return StringResources.Get("PROCEDURE_PREDEFINITION_WITHOUT_DEFINITION");
+            return StringResources.Get("FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
+        }
+    }
+
 
     public class FailedWhileTryingToCompileLambdaBodyWithGivenParametersException : Exception
     {

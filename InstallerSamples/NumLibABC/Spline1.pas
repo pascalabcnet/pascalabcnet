@@ -3,7 +3,7 @@ uses NumLibABC;
 // Интерполяция табличной функции кубическим сплайном
 begin
   var f:real->real:=x->(3*x-8)/(8*x-4.1);
-  var pt:=Partition(1.0,10.0,18).Select(x->new Point(x,f(x))).ToArray;
+  var pt:=PartitionPoints(1.0,10.0,18).Select(x->new Point(x,f(x))).ToArray;
   var oL:=new Spline(pt);
   var r:=oL.Value(4.8);
   Writeln('Значение аппроксимированной функции для х=4.8: ',r);

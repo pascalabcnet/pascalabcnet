@@ -1,6 +1,6 @@
 ﻿uses Graph3D;
 
-function ParametricTrajectory(a,b: real; N: integer; fun: real->Point3D) := Partition(a,b,N).Select(fun);
+function ParametricTrajectory(a,b: real; N: integer; fun: real->Point3D) := PartitionPoints(a,b,N).Select(fun);
 
 begin
   var tr := ParametricTrajectory(0,2*Pi,100,t->P3D(8*cos(t),4*sin(t),0));

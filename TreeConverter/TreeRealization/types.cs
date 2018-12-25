@@ -1920,6 +1920,31 @@ namespace PascalABCCompiler.TreeRealization
                     else
                         return string.Format(compiler_string_consts.multi_dim_array_printable_name_template, new string(',', rank-1), element_type.PrintableName);
                 }
+                if (this.IsDelegate && this.name != null && this.name.IndexOf("$") != -1)
+                {
+                    var sil = this.find_in_type("Invoke");
+                    if (sil != null && sil.Count > 0)
+                    {
+                        common_method_node cmn = sil[0].sym_info as common_method_node;
+                        if (cmn != null)
+                        {
+                            StringBuilder params_sb = new StringBuilder();
+                            for (int i=0; i<cmn.parameters.Count; i++)
+                            {
+                                parameter cp = cmn.parameters[i];
+                                params_sb.Append((cp.parameter_type == SemanticTree.parameter_type.var ? "var ":"")+ cp.name+": "+cp.type.PrintableName);
+                                if (i < cmn.parameters.Count - 1)
+                                    params_sb.Append("; ");
+                            }
+                            if (cmn.return_value_type != null)
+                            {
+                                return "function("+ params_sb.ToString() +"): " + cmn.return_value_type.PrintableName;
+                            }
+                            else
+                                return "procedure(" + params_sb.ToString()+")";
+                        }
+                    }
+                }
                 return base.PrintableName;
             }
         }
@@ -2015,7 +2040,7 @@ namespace PascalABCCompiler.TreeRealization
             if (this.is_generic_parameter && sil != null)
             {
                 sil = sil?.Select(x => x.copy()).ToList();
-                //удаляем повторяющиеся символы
+                //удаляем повторяющиеся символы. Ужас, но верно
                 for (int i = 0; i < sil.Count; ++i)
                 {
                     for (int j = i + 1; j < sil.Count; ++j)
@@ -2080,13 +2105,12 @@ namespace PascalABCCompiler.TreeRealization
                             {
                                 if (!cache.ContainsKey(si.sym_info))
                                 {
-                                    if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method)
+                                    if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method
+                                        && sil.FindIndex(ssi=> ssi.sym_info == si.sym_info)==-1)  // SSM 12.12.18 - за счёт методов интерфейсов тоже могут добавляться одинаковые - исключаем их
                                         sil.Add(si);
                                     cache.Add(si.sym_info, si.sym_info);
                                 }
                             }
-
-
                         }
                     }
                     if (sil != null && sil.Count() == 0)
@@ -3030,6 +3054,7 @@ namespace PascalABCCompiler.TreeRealization
         private void add_delegate_operator(string name, compile_time_executor executor)
         {
             common_namespace_function_node cnfn = new common_namespace_function_node(name, this, null, null, null);
+            
             cnfn.ConnectedToType = this;
             cnfn.compile_time_executor = executor;
             add_name(name, new SymbolInfo(cnfn));
@@ -3039,6 +3064,7 @@ namespace PascalABCCompiler.TreeRealization
                                                         cnfn, concrete_parameter_type.cpt_none, null, null);
             cnfn.parameters.AddElement(cp1);
             cnfn.parameters.AddElement(cp2);
+            
         }
 
         //private bool ctors_inited = false;
@@ -3688,13 +3714,29 @@ namespace PascalABCCompiler.TreeRealization
             if (_explicit_convertions_from.TryGetValue(ctn, out fn))
                 return fn;
             if (SemanticRules.PoinerRealization == PoinerRealization.VoidStar)
+            {
                 if ((this == SystemLibrary.SystemLibrary.integer_type && ctn == SystemLibrary.SystemLibrary.pointer_type) ||
-                    (this == SystemLibrary.SystemLibrary.pointer_type && ctn == SystemLibrary.SystemLibrary.integer_type))
+                    (this == SystemLibrary.SystemLibrary.pointer_type && ctn == SystemLibrary.SystemLibrary.integer_type)
+                    )
                 {
                     fn = TreeConverter.convertion_data_and_alghoritms.get_empty_conversion(ctn, this, false);
                     _explicit_convertions_from.Add(ctn, fn);
                     return fn;
                 }
+                /*else if ((this == SystemLibrary.SystemLibrary.pointer_type && ctn == SystemLibrary.SystemLibrary.int64_type))
+                {
+                    fn = SystemLibrary.SystemLibrary.int64_to_pointer;
+                    _explicit_convertions_from.Add(ctn, fn);
+                    return fn;
+                }
+                else if ((this == SystemLibrary.SystemLibrary.int64_type && ctn == SystemLibrary.SystemLibrary.pointer_type))
+                {
+                    fn = SystemLibrary.SystemLibrary.pointer_to_int64;
+                    _explicit_convertions_from.Add(ctn, fn);
+                    return fn;
+                }*/
+            }
+                
 
             //enum->int32, int32->enum
             //TODO переделать это. Наверно это делается както нетак. Enum Conversion

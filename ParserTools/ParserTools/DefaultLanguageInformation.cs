@@ -1401,7 +1401,7 @@ namespace PascalABCCompiler.Parsers
 			sb.Append('[');
 			for (int i=0; i<indexers.Length; i++)
 			{
-				sb.Append(indexers[i].Name);
+				sb.Append(GetSimpleDescription(indexers[i]));
 				if (i <indexers.Length-1)
 					sb.Append(',');
 			}
@@ -1439,13 +1439,13 @@ namespace PascalABCCompiler.Parsers
                     }
                     break;
                 case SymbolKind.Event:
-                    if (scope.IsStatic) sb.Append("class ");
+                    if (scope.IsStatic) sb.Append("static ");
                     sb.Append("event " + GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name);
                     append_modifiers(sb, scope);
                     break;
                 case SymbolKind.Field:
                     if (scope.IsStatic)
-                        sb.Append("class ");
+                        sb.Append("static ");
                     else
                         sb.Append("var ");
                     sb.Append(GetTopScopeName(scope.TopScope) + scope.Name + ": " + type_name);
@@ -1455,7 +1455,7 @@ namespace PascalABCCompiler.Parsers
                     break;
                 case SymbolKind.Property:
                     if (scope.IsStatic)
-                        sb.Append("class ");
+                        sb.Append("static ");
                     sb.Append("property " + GetTopScopeName(scope.TopScope) + scope.Name + get_index_description(scope) + ": " + type_name);
                     if (scope.IsReadOnly)
                         sb.Append("; readonly");
@@ -1482,7 +1482,7 @@ namespace PascalABCCompiler.Parsers
             else if (fi.IsFamily)
                 sb.Append("protected ");
             if (!fi.IsLiteral)
-                if (fi.IsStatic) sb.Append("class ");
+                if (fi.IsStatic) sb.Append("static ");
             if (!fi.IsLiteral)
             {
                 sb.Append(prepare_member_name(fi.Name));
@@ -1501,7 +1501,7 @@ namespace PascalABCCompiler.Parsers
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
 			if (!scope.CompiledField.IsLiteral)
-			if (scope.CompiledField.IsStatic && !scope.IsGlobal) sb.Append("class ");
+			if (scope.CompiledField.IsStatic && !scope.IsGlobal) sb.Append("static ");
 			else sb.Append("var ");
 			string inst_type = null;
 			if (scope.GenericArgs != null)
@@ -1543,7 +1543,7 @@ namespace PascalABCCompiler.Parsers
                 sb.Append("public ");
             else if (get_meth.IsFamily)
                 sb.Append("protected ");
-            if (get_meth.IsStatic) sb.Append("class ");
+            if (get_meth.IsStatic) sb.Append("static ");
             sb.Append("property " + prepare_member_name(pi.Name));
             ParameterInfo[] prms = get_meth.GetParameters();
             if (prms.Length > 0)
@@ -1572,7 +1572,7 @@ namespace PascalABCCompiler.Parsers
 			MethodInfo acc = scope.CompiledProperty.GetGetMethod();
 			string inst_type = null;
 			if (acc != null)
-			if (acc.IsStatic) sb.Append("class ");
+			if (acc.IsStatic) sb.Append("static ");
 			if (scope.Type is ICompiledTypeScope && scope.GenericArgs != null)
 			{
 				Type t = (scope.Type as ICompiledTypeScope).CompiledType;
@@ -1683,7 +1683,7 @@ namespace PascalABCCompiler.Parsers
                 sb.Append("public ");
             else if (mi.IsFamily)
                 sb.Append("protected ");
-            if (mi.IsStatic) sb.Append("class ");
+            if (mi.IsStatic) sb.Append("static ");
             if (mi.ReturnType == typeof(void))
                 sb.Append("procedure ");
             else
@@ -1761,7 +1761,7 @@ namespace PascalABCCompiler.Parsers
                 }
             }
                 
-            if (scope.IsStatic && !scope.IsGlobal) sb.Append("class ");
+            if (scope.IsStatic && !scope.IsGlobal) sb.Append("static ");
             if (scope.ReturnType == null)
                 sb.Append("procedure ");
             else
@@ -1958,7 +1958,7 @@ namespace PascalABCCompiler.Parsers
                 }   
             }
               
-			if (scope.IsStatic) sb.Append("class ");
+			if (scope.IsStatic) sb.Append("static ");
 			if (scope.IsConstructor())
 				sb.Append("constructor ");
 			else
@@ -2009,7 +2009,7 @@ namespace PascalABCCompiler.Parsers
 				}
 			}
 			sb.Append(')');
-			if (scope.ReturnType != null && !scope.IsConstructor())
+			if (scope.ReturnType != null && !scope.IsConstructor() && !(scope.ReturnType is IProcType && (scope.ReturnType as IProcType).Target == scope))
 				sb.Append(": "+GetSimpleDescription(scope.ReturnType));
 			//if (scope.IsStatic) sb.Append("; static");
 			if (scope.IsVirtual) sb.Append("; virtual");
@@ -2073,13 +2073,13 @@ namespace PascalABCCompiler.Parsers
                 sb.Append("public ");
             else if (add_meth.IsFamily)
                 sb.Append("protected ");
-            sb.Append((add_meth.IsStatic ? "class " : "") + "event " + prepare_member_name(ei.Name) + ": " + GetFullTypeName(ei.EventHandlerType) + ";");
+            sb.Append((add_meth.IsStatic ? "static " : "") + "event " + prepare_member_name(ei.Name) + ": " + GetFullTypeName(ei.EventHandlerType) + ";");
             return sb.ToString();
         }
 
 		protected virtual string GetDescriptionForCompiledEvent(ICompiledEventScope scope)
 		{
-			return (scope.IsStatic?"class ":"")+"event "+ GetShortTypeName(scope.CompiledEvent.DeclaringType, true) +"."+ scope.CompiledEvent.Name + ": "+GetSimpleDescription(scope.Type)+ ";";
+			return (scope.IsStatic?"static ":"")+"event "+ GetShortTypeName(scope.CompiledEvent.DeclaringType, true) +"."+ scope.CompiledEvent.Name + ": "+GetSimpleDescription(scope.Type)+ ";";
 		}
 
         protected virtual string GetDescriptionForCompiledConstructor(ConstructorInfo ci)
@@ -2090,7 +2090,7 @@ namespace PascalABCCompiler.Parsers
             else if (ci.IsFamily)
                 sb.Append("protected ");
             if (ci.IsStatic)
-                sb.Append("class ");
+                sb.Append("static ");
             sb.Append("constructor ");
             //sb.Append(".");
             //sb.Append("Create");
@@ -2450,7 +2450,7 @@ namespace PascalABCCompiler.Parsers
         	bool is_cnstr = false;
         	StringBuilder sb = new StringBuilder();
             if (scope.IsStatic)
-                sb.Append("class ");
+                sb.Append("static ");
         	while (i < meth.Length && char.IsLetterOrDigit(meth[i]))
         	{
         		sb.Append(meth[i++]);
@@ -2618,7 +2618,7 @@ namespace PascalABCCompiler.Parsers
             comment_position = -1;
 			Stack<char> kav = new Stack<char>();
 			bool is_comm = false;
-			while (i>=0 && !is_comm && Text[i] != '\n')
+			while (i>=0 && !is_comm && Text[i] != '\n' && Text[i] != '\r')
 			{
 				if (Text[i] == '\'')
 				{
@@ -2629,8 +2629,13 @@ namespace PascalABCCompiler.Parsers
 				{
 					if (kav.Count == 0)
                     {
-                        is_comm = true;
                         comment_position = i;
+                        while (i >= 0 && Text[i] != '\'')
+                            i--;
+                        if (i >= 1 && Text[i - 1] == '$')
+                            return false;
+                        is_comm = true;
+                        return is_comm;
                     }  
 				}
 				else if (Text[i] == '}')
@@ -2719,7 +2724,7 @@ namespace PascalABCCompiler.Parsers
                         kav.Push('\'');
                     sb.Insert(0, ch);//.Append(Text[i]);
                 }
-                else if (ch == '.' || ch == '^' || ch == '&' || ch == '?')
+                else if (ch == '.' || ch == '^' || ch == '&' || ch == '?' && IsPunctuation(Text, i + 1))
                 {
                     if (ch == '.' && i >= 1 && Text[i - 1] == '.')
                         end = true;
@@ -2843,7 +2848,7 @@ namespace PascalABCCompiler.Parsers
                                                     i--;
                                             }
                                         }
-                                        if (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?'))
+                                        if (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?' && IsPunctuation(Text, i+1)))
                                         {
                                             bound = i + 1;
                                             TestForKeyword(Text, i, ref bound, punkt_sym, out keyw);
@@ -2937,6 +2942,15 @@ namespace PascalABCCompiler.Parsers
             return FindExpressionFromAnyPosition(off, Text, line, col, out keyw, out expr_without_brackets);
         }
 
+        private bool IsPunctuation(string Text, int ind)
+        {
+            while (ind < Text.Length && char.IsWhiteSpace(Text[ind]))
+                ind++;
+            if (ind >= Text.Length)
+                return true;
+            return char.IsPunctuation(Text[ind]);
+        }
+
         public virtual string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out KeywordKind keyw, out string expr_without_brackets)
         {
             int i = off - 1;
@@ -2946,10 +2960,10 @@ namespace PascalABCCompiler.Parsers
                 return "";
             bool is_char = false;
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            if (Text[i] != ' ' && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?'))
+            if (Text[i] != ' ' && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?' && IsPunctuation(Text, i + 1)))
             {
                 //sb.Remove(0,sb.Length);
-                while (i >= 0 && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?'))
+                while (i >= 0 && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?' && IsPunctuation(Text, i + 1)))
                 {
                     //sb.Insert(0,Text[i]);//.Append(Text[i]);
                     i--;
@@ -2957,7 +2971,7 @@ namespace PascalABCCompiler.Parsers
                 is_char = true;
             }
             i = off;
-            if (i < Text.Length && Text[i] != ' ' && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?'))
+            if (i < Text.Length && Text[i] != ' ' && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&' || Text[i] == '?' && IsPunctuation(Text, i + 1)))
             {
                 while (i < Text.Length && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_'))
                 {
@@ -3063,7 +3077,7 @@ namespace PascalABCCompiler.Parsers
                     }
                     if (generic)
                     {
-                        break;
+                        //break;
                     }
                 }
                 else if (c == '[' && !in_comment)
@@ -3107,6 +3121,8 @@ namespace PascalABCCompiler.Parsers
                     if (ind != -1)
                         return ss.Substring(ind + 3);
                 }
+                if (is_new && ss != null && ss.IndexOf("new") == -1 && ss.IndexOf(":") != -1)
+                    return expr_without_brackets + "(true?"+ss;
                 return ss;
             }
             return null;

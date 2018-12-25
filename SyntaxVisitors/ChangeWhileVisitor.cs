@@ -12,6 +12,8 @@ using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors
 {
+    // Визитор, заменяющий цикл while на низкоуровневый код из if и goto
+    // Это - учебный визитор, служит отправной точкой при изучении визиторов изменения синтаксического дерева
     public class ChangeWhileVisitor : BaseChangeVisitor
     {
         int lbnum = 0;

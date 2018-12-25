@@ -1118,36 +1118,6 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_double_question_node);
 		}
 
-		public virtual void visit(typeclass_restriction _typeclass_restriction)
-		{
-			DefaultVisit(_typeclass_restriction);
-		}
-
-		public virtual void visit(instance_definition _instance_definition)
-		{
-			DefaultVisit(_instance_definition);
-		}
-
-		public virtual void visit(typeclass_definition _typeclass_definition)
-		{
-			DefaultVisit(_typeclass_definition);
-		}
-
-		public virtual void visit(where_typeclass_constraint _where_typeclass_constraint)
-		{
-			DefaultVisit(_where_typeclass_constraint);
-		}
-
-		public virtual void visit(typeclass_param_list _typeclass_param_list)
-		{
-			DefaultVisit(_typeclass_param_list);
-		}
-
-		public virtual void visit(typeclass_reference _typeclass_reference)
-		{
-			DefaultVisit(_typeclass_reference);
-		}
-
 		public virtual void visit(pattern_node _pattern_node)
 		{
 			DefaultVisit(_pattern_node);
@@ -1206,6 +1176,16 @@ namespace PascalABCCompiler.SyntaxTree
 		public virtual void visit(deconstruction_variables_definition _deconstruction_variables_definition)
 		{
 			DefaultVisit(_deconstruction_variables_definition);
+		}
+
+		public virtual void visit(var_tuple_def_statement _var_tuple_def_statement)
+		{
+			DefaultVisit(_var_tuple_def_statement);
+		}
+
+		public virtual void visit(semantic_check_sugared_var_def_statement_node _semantic_check_sugared_var_def_statement_node)
+		{
+			DefaultVisit(_semantic_check_sugared_var_def_statement_node);
 		}
 	}
 

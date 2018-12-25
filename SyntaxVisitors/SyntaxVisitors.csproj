@@ -37,8 +37,6 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -51,16 +49,15 @@
     <Compile Include="LightSymInfoVisitors\LightScopeHelperClasses.cs" />
     <Compile Include="LightSymInfoVisitors\SymInfoCollect1.cs" />
     <Compile Include="LightSymInfoVisitors\SymInfoCollect1Helper.cs" />
+    <Compile Include="PatternsVisitors\SingleDeconstructChecker.cs" />
     <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\DoubleQuestionDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\LoopDesugarVisitor.cs" />
+    <Compile Include="SugarVisitors\PropertyDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\QuestionPointDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\PatternsDesugaringVisitor.cs" />
     <Compile Include="SugarVisitors\SliceDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\TupleVisitor.cs" />
-    <Compile Include="TypeclassVisitors\FindInstancesAndRestrictedFunctionsVisitor.cs" />
-    <Compile Include="TypeclassVisitors\FindTypeclassesVisitor.cs" />
-    <Compile Include="TypeclassVisitors\ReplaceTypeclassVisitor.cs" />
     <Compile Include="YieldVisitors\ObjectCopier\ObjectCopier.cs" />
     <Compile Include="Optimization\CalcConstExprs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

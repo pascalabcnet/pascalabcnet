@@ -1,4 +1,4 @@
-// Параметры-переменные
+﻿// Параметры-переменные
 
 procedure DivMod(a,b: integer; var d,m: integer);
 begin
@@ -14,9 +14,9 @@ begin
   a := 7;
   b := 3;
   DivMod(a,b,d,m);
-  writelnFormat('{0} div {1} = {2};  {0} mod {1} = {3}',a,b,a div b,a mod b);
+  writelnFormat('{0} div {1} = {2};  {0} mod {1} = {3}',a,b,d,m);
   a := 23;
   b := 5;
   DivMod(a,b,d,m);
-  writelnFormat('{0} div {1} = {2};  {0} mod {1} = {3}',a,b,a div b,a mod b);
+  writelnFormat('{0} div {1} = {2};  {0} mod {1} = {3}',a,b,d,m);
 end.  

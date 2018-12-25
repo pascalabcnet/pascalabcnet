@@ -181,7 +181,7 @@ namespace PascalABCCompiler.PCU
                 if (tsi.sym_info.semantic_node_type == semantic_node_type.wrap_def)
                 {
                     PCUSymbolInfo pcu_tsi = tsi as PCUSymbolInfo;
-                    if (!(pcu_tsi != null && pcu_tsi.semantic_node_type == semantic_node_type.common_method_node && !pcu_tsi.virtual_slot) || pr.comp.CompilerOptions.OutputFileType == CompilerOptions.OutputType.ClassLibrary)
+                    if (!(pcu_tsi != null && pcu_tsi.semantic_node_type == semantic_node_type.common_method_node && !pcu_tsi.virtual_slot) || pr.comp.CompilerOptions.OutputFileType == CompilerOptions.OutputType.ClassLibrary || name == "op_Equality" || name == "op_Inequality")
                     {
                         wrapped_definition_node wdn = (wrapped_definition_node)tsi.sym_info;
                         tsi.sym_info = wdn.PCUReader.CreateInterfaceInClassMember(wdn.offset, name);

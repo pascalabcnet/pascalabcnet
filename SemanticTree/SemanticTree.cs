@@ -63,7 +63,8 @@ namespace PascalABCCompiler.SemanticTree
 		objassign,objeq,objnoteq, //присваивание и эквивалентность объектов по ссылке.
 		//write,writei,writed,writec,writeb,read,readi,readd,readc,readb,expd,absd,absi //temporary functions (Нужны только на начальном этапе отладки. Потом обязательно удалить.)
         objtoobj, boolinc, booldec, boolsinc, boolsdec, booltoi, enumgr, enumgreq, enumsm, enumsmeq,
-        booltob, booltosb, booltos, booltous, booltoui, booltol, booltoul
+        booltob, booltosb, booltos, booltous, booltoui, booltol, booltoul,
+        ltop, ptol
 	};
 
     public enum runtime_statement_type { invoke_delegate, ctor_delegate, begin_invoke_delegate, end_invoke_delegate };
@@ -1857,7 +1858,15 @@ namespace PascalABCCompiler.SemanticTree
     		get;
     	}
     }
-    
+
+    public interface IDefaultOperatorNodeAsConstant : IConstantNode
+    {
+        IDefaultOperatorNode DefaultOperator
+        {
+            get;
+        }
+    }
+
     public interface ICompiledConstructorCallAsConstant : IConstantNode
     {
         ICompiledConstructorCall MethodCall
