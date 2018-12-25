@@ -1,9 +1,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-G8V08V4
-// DateTime: 15.12.2018 17:00:09
-// UserName: ?????????
+// Machine:  DESKTOP-7B4K9VB
+// DateTime: 25.12.2018 22:48:30
+// UserName: Bogdan
 // Input file <ABCPascal.y>
 
 // options: no-lines gplex

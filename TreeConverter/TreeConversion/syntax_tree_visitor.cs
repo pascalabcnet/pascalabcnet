@@ -1081,46 +1081,6 @@ namespace PascalABCCompiler.TreeConverter
             	right = null_const_node.get_const_node_with_type(left.type, (null_const_node)right);
             }
 
-            // voloshinbogdan Typeclasses 21.05.2018
-            var testTopFunctionForTypeclassRestriction = context.func_stack.top()?.attributes?.Any(x => x.AttributeType.name == "__TypeclassRestrictedFunctionAttribute");
-            if (testTopFunctionForTypeclassRestriction.HasValue && testTopFunctionForTypeclassRestriction.Value)
-            {
-                var func = context.func_stack.top();
-                var typeclasses = func.generic_params.Where(x => x.Attributes != null && x.Attributes.Any(attr => attr.AttributeType.name == "__TypeclassGenericParameterAttribute"));
-                foreach (var item in typeclasses)
-                {
-                    var args = item.Attributes.First(x => x.AttributeType.name == "__TypeclassGenericParameterAttribute").Arguments;
-                    var silTmp = (item as type_node)?.find_in_type("$typeclass" + name, context.CurrentScope);
-                    if (silTmp != null)
-                    {
-                        var dn = new ident((args.First() as string_const_node).constant_value);
-                        var dns = convert_strong(dn);
-                        var exp = convertion_data_and_alghoritms.create_method_call(silTmp[0].sym_info as function_node, null, dns, left, right);
-                        return exp;
-                    }
-                }
-            }
-
-            var testIsTypeclass = context._ctn?.Attributes?.Any(x => x.AttributeType.name == "__TypeclassAttribute");
-            var testIsInstance = context._ctn?.Attributes?.Any(x => x.AttributeType.name == "__TypeclassInstanceAttribute");
-            if (testIsTypeclass.HasValue && testIsTypeclass.Value && !(testIsInstance.HasValue && testIsInstance.Value))
-            {
-                var type = context._ctn;
-
-                var silTmp = (type.ImplementingInterfaces[0] as type_node)?.find_in_type("$typeclass" + name, context.CurrentScope);
-                if (silTmp != null)
-                {
-                    var methodName = convert_strong(new ident("$typeclass" + name));
-                    var thisNode = convert_strong(new ident("self"));
-                    var exp = convertion_data_and_alghoritms.create_method_call(silTmp[0].sym_info as function_node, null, thisNode, left, right);
-
-                    return exp;
-                }
-
-            }
-            // ! voloshinbogdan Typeclasses 21.05.2018
-
-
             type_node left_type = left.type;
             type_node right_type = right.type;
 
@@ -3545,12 +3505,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.class_definition _class_definition)
         {
-            var testIsTypeclassInstance = context._ctn?.Attributes?.Any(a => a.AttributeType.name == "__TypeclassInstanceAttribute");
-            if (testIsTypeclassInstance.HasValue && testIsTypeclassInstance.Value)
-            {
-                context.typeclassInstances.Add(context._ctn);
-            }
-
             if (_class_definition.attribute != class_attribute.None && _class_definition.body == null)
                 AddError(new SimpleSemanticError(get_location(_class_definition), "CLASS_ATTRIBUTE_NOT_ALLOWED_IN_CLASS_PREDEFINTIONS"));
             if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Sealed) == SyntaxTree.class_attribute.Sealed)
@@ -5114,28 +5068,6 @@ namespace PascalABCCompiler.TreeConverter
                             }
                         }
                     }
-
-                    // Typeclasses voloshinbogdan 2018.21.05 - search methods at typeclasses
-                    if (sil == null)
-                    {
-                        var testTopFunctionForTypeclassRestriction = context.func_stack.top()?.attributes?.Any(x => x.AttributeType.name == "__TypeclassRestrictedFunctionAttribute");
-                        if (testTopFunctionForTypeclassRestriction.HasValue && testTopFunctionForTypeclassRestriction.Value && sil == null)
-                        {
-                            var func = context.func_stack.top();
-                            var typeclasses = func.generic_params.Where(x => x.Attributes != null && x.Attributes.Any(attr => attr.AttributeType.name == "__TypeclassGenericParameterAttribute"));
-                            foreach (var item in typeclasses)
-                            {
-                                var args = item.Attributes.First(x => x.AttributeType.name == "__TypeclassGenericParameterAttribute").Arguments;
-                                var silTmp = (item as type_node)?.find_in_type(id.name, context.CurrentScope);
-                                if (silTmp != null)
-                                {
-                                    deref_value = new dot_node((args.First() as string_const_node).constant_value, id);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    // ! Typeclasses
                 }
                 if (sil == null)
                 {
@@ -13017,8 +12949,7 @@ namespace PascalABCCompiler.TreeConverter
                 if (context.top_function is common_method_node)
                 {
                     common_method_node cmmn = context.top_function as common_method_node;
-                    var testIsTypeclass = context._ctn?.Attributes?.Any(x => x.AttributeType.name == "__TypeclassAttribute");
-                    if (cmmn.polymorphic_state != SemanticTree.polymorphic_state.ps_static && !(testIsTypeclass.HasValue && testIsTypeclass.Value))
+                    if (cmmn.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
                     {
                         AddError(get_location(_function_header), "OVERLOADED_OPERATOR_MUST_BE_STATIC_FUNCTION");
                     }
@@ -13063,7 +12994,7 @@ namespace PascalABCCompiler.TreeConverter
                             if (ptn == cmmn.cont_type)
                                 has_types = true;
                         }
-                        if (!has_types && !(testIsTypeclass.HasValue && testIsTypeclass.Value))
+                        if (!has_types)
                             AddError(new SimpleSemanticError(cmmn.loc, "LEAST_ONE_PARAMETER_TYPE_SHOULD_EQ_DECLARING_TYPE_{0}",cmmn.cont_type.name));
                     }
                 }
@@ -13700,9 +13631,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             first_param = false;
             common_method_node cnode = context.top_function as common_method_node;
-            // Typeclasses voloshinbogdan 2018.05.21
-            var testIsTypeclass = context._ctn?.Attributes?.Any(x => x.AttributeType.name == "__TypeclassAttribute");
-            if (cnode != null && cnode.IsOperator && !(testIsTypeclass.HasValue && testIsTypeclass.Value))
+            if (cnode != null && cnode.IsOperator)
             {
                 parameter_list pars = context.top_function.parameters;
                 if (cnode.name != compiler_string_consts.implicit_operator_name && cnode.name != compiler_string_consts.explicit_operator_name)
@@ -16893,17 +16822,6 @@ namespace PascalABCCompiler.TreeConverter
             expression_node left = convert_strong(_bin_expr.left);
             expression_node right = convert_strong(_bin_expr.right);
             expression_node res = find_operator(_bin_expr.operation_type, left, right, get_location(_bin_expr));
-            // voloshinbogdan 22.05.2018 Typeclasses
-            var testTopFunctionForTypeclassRestriction = context.func_stack.top()?.attributes?.Any(x => x.AttributeType.name == "__TypeclassRestrictedFunctionAttribute");
-            var testIsTypeclass = context._ctn?.Attributes?.Any(x => x.AttributeType.name == "__TypeclassAttribute");
-            if (
-                (testTopFunctionForTypeclassRestriction.HasValue && testTopFunctionForTypeclassRestriction.Value) ||
-                (testIsTypeclass.HasValue && testIsTypeclass.Value))
-            {
-                return_value(res);
-                return;
-            }
-
 
             if (res.type is undefined_type)
                 AddError(get_location(_bin_expr), "OPERATOR_RETURN_TYPE_UNDEFINED_{0}", name_reflector.get_name(_bin_expr.operation_type));

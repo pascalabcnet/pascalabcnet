@@ -1781,54 +1781,6 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
-		public virtual void pre_do_visit(typeclass_restriction _typeclass_restriction)
-		{
-		}
-
-		public virtual void post_do_visit(typeclass_restriction _typeclass_restriction)
-		{
-		}
-
-		public virtual void pre_do_visit(instance_definition _instance_definition)
-		{
-		}
-
-		public virtual void post_do_visit(instance_definition _instance_definition)
-		{
-		}
-
-		public virtual void pre_do_visit(typeclass_definition _typeclass_definition)
-		{
-		}
-
-		public virtual void post_do_visit(typeclass_definition _typeclass_definition)
-		{
-		}
-
-		public virtual void pre_do_visit(where_typeclass_constraint _where_typeclass_constraint)
-		{
-		}
-
-		public virtual void post_do_visit(where_typeclass_constraint _where_typeclass_constraint)
-		{
-		}
-
-		public virtual void pre_do_visit(typeclass_param_list _typeclass_param_list)
-		{
-		}
-
-		public virtual void post_do_visit(typeclass_param_list _typeclass_param_list)
-		{
-		}
-
-		public virtual void pre_do_visit(typeclass_reference _typeclass_reference)
-		{
-		}
-
-		public virtual void post_do_visit(typeclass_reference _typeclass_reference)
-		{
-		}
-
 		public virtual void pre_do_visit(pattern_node _pattern_node)
 		{
 		}
@@ -3846,54 +3798,6 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(double_question_node.left);
 			visit(double_question_node.right);
 			post_do_visit(_double_question_node);
-		}
-
-		public override void visit(typeclass_restriction _typeclass_restriction)
-		{
-			DefaultVisit(_typeclass_restriction);
-			pre_do_visit(_typeclass_restriction);
-			visit(typeclass_restriction.restriction_args);
-			post_do_visit(_typeclass_restriction);
-		}
-
-		public override void visit(instance_definition _instance_definition)
-		{
-			DefaultVisit(_instance_definition);
-			pre_do_visit(_instance_definition);
-			visit(instance_definition.body);
-			post_do_visit(_instance_definition);
-		}
-
-		public override void visit(typeclass_definition _typeclass_definition)
-		{
-			DefaultVisit(_typeclass_definition);
-			pre_do_visit(_typeclass_definition);
-			visit(typeclass_definition.additional_restrictions);
-			visit(typeclass_definition.body);
-			post_do_visit(_typeclass_definition);
-		}
-
-		public override void visit(where_typeclass_constraint _where_typeclass_constraint)
-		{
-			DefaultVisit(_where_typeclass_constraint);
-			pre_do_visit(_where_typeclass_constraint);
-			visit(where_typeclass_constraint.restriction);
-			post_do_visit(_where_typeclass_constraint);
-		}
-
-		public override void visit(typeclass_param_list _typeclass_param_list)
-		{
-			DefaultVisit(_typeclass_param_list);
-			pre_do_visit(_typeclass_param_list);
-			post_do_visit(_typeclass_param_list);
-		}
-
-		public override void visit(typeclass_reference _typeclass_reference)
-		{
-			DefaultVisit(_typeclass_reference);
-			pre_do_visit(_typeclass_reference);
-			visit(typeclass_reference.restriction_args);
-			post_do_visit(_typeclass_reference);
 		}
 
 		public override void visit(pattern_node _pattern_node)
