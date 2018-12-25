@@ -6178,9 +6178,135 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(pattern_node _pattern_node)
+		public void visit(typeclass_restriction _typeclass_restriction)
 		{
 			bw.Write((Int16)222);
+			write_typeclass_restriction(_typeclass_restriction);
+		}
+
+		public void write_typeclass_restriction(typeclass_restriction _typeclass_restriction)
+		{
+			write_ident(_typeclass_restriction);
+			if (_typeclass_restriction.restriction_args == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_typeclass_restriction.restriction_args.visit(this);
+			}
+		}
+
+
+		public void visit(instance_definition _instance_definition)
+		{
+			bw.Write((Int16)223);
+			write_instance_definition(_instance_definition);
+		}
+
+		public void write_instance_definition(instance_definition _instance_definition)
+		{
+			write_type_definition(_instance_definition);
+			if (_instance_definition.body == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_instance_definition.body.visit(this);
+			}
+		}
+
+
+		public void visit(typeclass_definition _typeclass_definition)
+		{
+			bw.Write((Int16)224);
+			write_typeclass_definition(_typeclass_definition);
+		}
+
+		public void write_typeclass_definition(typeclass_definition _typeclass_definition)
+		{
+			write_type_definition(_typeclass_definition);
+			if (_typeclass_definition.additional_restrictions == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_typeclass_definition.additional_restrictions.visit(this);
+			}
+			if (_typeclass_definition.body == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_typeclass_definition.body.visit(this);
+			}
+		}
+
+
+		public void visit(where_typeclass_constraint _where_typeclass_constraint)
+		{
+			bw.Write((Int16)225);
+			write_where_typeclass_constraint(_where_typeclass_constraint);
+		}
+
+		public void write_where_typeclass_constraint(where_typeclass_constraint _where_typeclass_constraint)
+		{
+			write_where_definition(_where_typeclass_constraint);
+			if (_where_typeclass_constraint.restriction == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_where_typeclass_constraint.restriction.visit(this);
+			}
+		}
+
+
+		public void visit(typeclass_param_list _typeclass_param_list)
+		{
+			bw.Write((Int16)226);
+			write_typeclass_param_list(_typeclass_param_list);
+		}
+
+		public void write_typeclass_param_list(typeclass_param_list _typeclass_param_list)
+		{
+			write_template_param_list(_typeclass_param_list);
+		}
+
+
+		public void visit(typeclass_reference _typeclass_reference)
+		{
+			bw.Write((Int16)227);
+			write_typeclass_reference(_typeclass_reference);
+		}
+
+		public void write_typeclass_reference(typeclass_reference _typeclass_reference)
+		{
+			write_named_type_reference(_typeclass_reference);
+			if (_typeclass_reference.restriction_args == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_typeclass_reference.restriction_args.visit(this);
+			}
+		}
+
+
+		public void visit(pattern_node _pattern_node)
+		{
+			bw.Write((Int16)228);
 			write_pattern_node(_pattern_node);
 		}
 
@@ -6192,7 +6318,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(type_pattern _type_pattern)
 		{
-			bw.Write((Int16)223);
+			bw.Write((Int16)229);
 			write_type_pattern(_type_pattern);
 		}
 
@@ -6222,7 +6348,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(is_pattern_expr _is_pattern_expr)
 		{
-			bw.Write((Int16)224);
+			bw.Write((Int16)230);
 			write_is_pattern_expr(_is_pattern_expr);
 		}
 
@@ -6252,7 +6378,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(match_with _match_with)
 		{
-			bw.Write((Int16)225);
+			bw.Write((Int16)231);
 			write_match_with(_match_with);
 		}
 
@@ -6291,7 +6417,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(pattern_case _pattern_case)
 		{
-			bw.Write((Int16)226);
+			bw.Write((Int16)232);
 			write_pattern_case(_pattern_case);
 		}
 
@@ -6330,7 +6456,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(pattern_cases _pattern_cases)
 		{
-			bw.Write((Int16)227);
+			bw.Write((Int16)233);
 			write_pattern_cases(_pattern_cases);
 		}
 
@@ -6363,7 +6489,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(deconstructor_pattern _deconstructor_pattern)
 		{
-			bw.Write((Int16)228);
+			bw.Write((Int16)234);
 			write_deconstructor_pattern(_deconstructor_pattern);
 		}
 
@@ -6405,7 +6531,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
 		{
-			bw.Write((Int16)229);
+			bw.Write((Int16)235);
 			write_pattern_deconstructor_parameter(_pattern_deconstructor_parameter);
 		}
 
@@ -6417,7 +6543,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(desugared_deconstruction _desugared_deconstruction)
 		{
-			bw.Write((Int16)230);
+			bw.Write((Int16)236);
 			write_desugared_deconstruction(_desugared_deconstruction);
 		}
 
@@ -6447,7 +6573,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(var_deconstructor_parameter _var_deconstructor_parameter)
 		{
-			bw.Write((Int16)231);
+			bw.Write((Int16)237);
 			write_var_deconstructor_parameter(_var_deconstructor_parameter);
 		}
 
@@ -6477,7 +6603,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
 		{
-			bw.Write((Int16)232);
+			bw.Write((Int16)238);
 			write_recursive_deconstructor_parameter(_recursive_deconstructor_parameter);
 		}
 
@@ -6498,7 +6624,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(deconstruction_variables_definition _deconstruction_variables_definition)
 		{
-			bw.Write((Int16)233);
+			bw.Write((Int16)239);
 			write_deconstruction_variables_definition(_deconstruction_variables_definition);
 		}
 
@@ -6531,7 +6657,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(var_tuple_def_statement _var_tuple_def_statement)
 		{
-			bw.Write((Int16)234);
+			bw.Write((Int16)240);
 			write_var_tuple_def_statement(_var_tuple_def_statement);
 		}
 
@@ -6543,7 +6669,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(semantic_check_sugared_var_def_statement_node _semantic_check_sugared_var_def_statement_node)
 		{
-			bw.Write((Int16)235);
+			bw.Write((Int16)241);
 			write_semantic_check_sugared_var_def_statement_node(_semantic_check_sugared_var_def_statement_node);
 		}
 

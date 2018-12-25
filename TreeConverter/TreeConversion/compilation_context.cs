@@ -200,6 +200,8 @@ namespace PascalABCCompiler.TreeConverter
         internal List<var_definition_node> var_defs =
             new List<var_definition_node>();
 
+        public List<type_node> typeclassInstances = new List<type_node>();
+
         internal Stack<System.Collections.Generic.List<var_definition_node>> var_defs_stack =
             new Stack<System.Collections.Generic.List<var_definition_node>>();
 
@@ -331,6 +333,7 @@ namespace PascalABCCompiler.TreeConverter
             in_parameters_block = false;
             is_order_independed_method_description = false;
             _has_nested_functions = false;
+            typeclassInstances.Clear();
         }
         
         public void clear_type_prededinitions()
@@ -2723,6 +2726,18 @@ namespace PascalABCCompiler.TreeConverter
                         }
                     }
                     //Переходим к следующей функции-кандидату
+                }
+            }
+
+            var testIsInstance = _ctn?.Attributes?.Any(x => x.AttributeType.name == "__TypeclassInstanceAttribute");
+            if (testIsInstance is true)
+            {
+                if (find_method == null || (find_method.sym_info as function_node).polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)
+                {
+                    var instanceName = _ctn.Attributes.First(x => x.AttributeType.name == "__TypeclassInstanceAttribute").Arguments[0].value;
+                    var typeclassName = _ctn.Attributes.First(x => x.AttributeType.name == "__TypeclassAttribute").Arguments[0].value;
+                    AddError(_ctn.location, "INSTANCE_{0}_DOES_NOT_IMPLEMENT_REQUIREMENT_{1}_OF_TYPECLASS_{2}",
+                        instanceName.ToString(), Tools.GetFullMethodHeaderString(meth), typeclassName.ToString());
                 }
             }
 
