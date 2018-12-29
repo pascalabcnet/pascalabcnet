@@ -85,6 +85,7 @@
     File ..\bin\Lib\GraphWPFBase.pcu
     File ..\bin\Lib\GraphWPF.pcu
     File ..\bin\Lib\WPFObjects.pcu
+    File ..\bin\Lib\Controls.pcu
     File ..\bin\Lib\Countries.pcu
     File ..\bin\Lib\Graph3D.pcu
     File ..\bin\Lib\GraphABCHelper.pcu
@@ -146,6 +147,7 @@
     ${AddFile} "GraphWPFBase.pcu"
     ${AddFile} "GraphWPF.pcu"
     ${AddFile} "WPFObjects.pcu"
+    ${AddFile} "Controls.pcu"
     ${AddFile} "Countries.pcu"
     ${AddFile} "Graph3D.pcu"
     ${AddFile} "GraphABCHelper.pcu"
@@ -216,6 +218,7 @@
     File ..\bin\Lib\GraphWPFBase.pas
     File ..\bin\Lib\GraphWPF.pas
     File ..\bin\Lib\WPFObjects.pas
+    File ..\bin\Lib\Controls.pas
     File ..\bin\Lib\Countries.pas
     File ..\bin\Lib\Graph3D.pas
     File ..\bin\Lib\GraphABCHelper.pas
@@ -272,6 +275,7 @@
     ${AddFile} "GraphWPFBase.pas"
     ${AddFile} "GraphWPF.pas"
     ${AddFile} "WPFObjects.pas"
+    ${AddFile} "Controls.pas"
     ${AddFile} "Countries.pas"
     ${AddFile} "Graph3D.pas"
     ${AddFile} "GraphABCHelper.pas"

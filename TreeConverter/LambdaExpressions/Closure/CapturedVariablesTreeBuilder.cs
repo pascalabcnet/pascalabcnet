@@ -604,6 +604,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 {
                     var varType = lambdaDefinition.formal_parameters.params_list[i].vars_type is lambda_inferred_type ?
                         LambdaHelper.ConvertSemanticTypeToSyntaxType((type_node)((lambda_inferred_type)lambdaDefinition.formal_parameters.params_list[i].vars_type).real_type) :
+                        //new semantic_type_node(((lambda_inferred_type)lambdaDefinition.formal_parameters.params_list[i].vars_type).real_type): // SSM 29/12/18 поменял - пробую - не получилось
                         lambdaDefinition.formal_parameters.params_list[i].vars_type;
                     
                     for (var j = 0; j < lambdaDefinition.formal_parameters.params_list[i].idents.idents.Count; j++)

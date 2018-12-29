@@ -1230,6 +1230,7 @@ namespace PascalABCCompiler.TreeConverter
         /// <returns>Синтаксический тип</returns>
         public static SyntaxTree.type_definition ConvertToSyntaxType(type_node sem_type)
         {
+            // SSM 29/12/18 для перечислимого типа возвращает null!
             if (sem_type.IsPointer)// если указатель
             {
                 SyntaxTree.ref_type rt = new PascalABCCompiler.SyntaxTree.ref_type();
@@ -1351,6 +1352,8 @@ namespace PascalABCCompiler.TreeConverter
 
 
             }
+            else if (sem_type.type_special_kind == SemanticTree.type_special_kind.enum_kind)
+                return new SyntaxTree.semantic_type_node(sem_type);
 
             return null;
         }

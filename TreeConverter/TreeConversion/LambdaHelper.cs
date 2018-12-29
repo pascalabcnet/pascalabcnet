@@ -122,6 +122,10 @@ namespace PascalABCCompiler.TreeConverter
 
         public static type_definition ConvertSemanticTypeToSyntaxType(type_node semType)
         {
+            // SSM 29/12/18 пробую скомбинировать
+            //if (semType is compiled_type_node && !(semType as compiled_type_node).is_generic_type_definition && !(semType as compiled_type_node).is_generic_type_instance)
+              //return new semantic_type_node(semType); // SSM 29/12/18 поменял на современное. Не получилось!
+            //else 
             return OpenMP.ConvertToSyntaxType(semType); // Это же надо! Пользоваться для этого хреновиной из OpenMP!!!
         }
 
@@ -348,12 +352,15 @@ namespace PascalABCCompiler.TreeConverter
             if (def.formal_parameters != null && def.formal_parameters.params_list.Count != 0)
             {
                 for (int i = 0; i < def.formal_parameters.params_list.Count; i++)
+                { 
+                    var tt = visitor.convert_strong(def.formal_parameters.params_list[i].vars_type); // SSM 29/12/18
                     for (int j = 0; j < def.formal_parameters.params_list[i].idents.idents.Count; j++)
                     {
                         var new_param = new common_parameter(null, SemanticTree.parameter_type.value, res, concrete_parameter_type.cpt_none, visitor.get_location(def.formal_parameters.params_list[i].idents.idents[0]));
-                        new_param.type = visitor.convert_strong(def.formal_parameters.params_list[i].vars_type);
+                        new_param.type = tt;
                         res.parameters.AddElement(new_param);
                     }
+                }
             }
             var hhh = new delegated_methods();
             hhh.proper_methods.AddElement(new common_namespace_function_call(res, visitor.get_location(def)));
