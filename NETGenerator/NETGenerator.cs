@@ -5708,7 +5708,9 @@ namespace PascalABCCompiler.NETGenerator
                         LocalBuilder lb = il.DeclareLocal(typ);
                         helper.AddVariable(iefbn.ExceptionInstance.Variable, lb);
                         if (save_debug_info && iefbn.ExceptionInstance.Location != null)
-                            lb.SetLocalSymInfo(iefbn.ExceptionInstance.Variable.name + ":" + iefbn.ExceptionInstance.Location.begin_line_num + ":" + iefbn.ExceptionInstance.Location.end_line_num);
+                            lb.SetLocalSymInfo(iefbn.ExceptionInstance.Variable.name + ":" + 
+                                iefbn.ExceptionInstance.Location.begin_line_num + ":" +
+                                ((iefbn.ExceptionHandler != null && iefbn.ExceptionHandler.Location != null) ? iefbn.ExceptionHandler.Location.end_line_num : iefbn.ExceptionInstance.Location.end_line_num));
                         il.Emit(OpCodes.Stloc, lb);
                     }
                     else
