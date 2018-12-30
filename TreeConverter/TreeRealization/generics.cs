@@ -1792,6 +1792,13 @@ namespace PascalABCCompiler.TreeRealization
                     default:
                         throw new CompilerInternalError("Unexpected definition_node.");
                 }
+                /*if (orig_node is class_field cf)
+                {
+                    if (cf.type.name == "T1")
+                        orig_node = orig_node;
+                    else AddMember(orig_node, rez_node);
+                }
+                else*/
                 AddMember(orig_node, rez_node);
             }
             return rez_node;
