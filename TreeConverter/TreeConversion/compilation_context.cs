@@ -1305,6 +1305,8 @@ namespace PascalABCCompiler.TreeConverter
             if (rez != null)
             {
                 _ctn = rez;
+                if (def_loc != null)
+                    _ctn.loc = def_loc;
                 _types_predefined.Remove(_ctn);
                 return rez;
             }
