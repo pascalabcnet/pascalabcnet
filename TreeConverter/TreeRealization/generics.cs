@@ -1431,8 +1431,24 @@ namespace PascalABCCompiler.TreeRealization
 
         protected void AddMember(object original, object converted)
         {
-            _members.Add(original, converted);
-            _member_definitions.Add(converted, original);
+            if (!_members.ContainsValue(original))
+            {
+                _members.Add(original, converted);
+                _member_definitions.Add(converted, original);
+            }
+            else
+            {
+                //_member_definitions[original] = converted;
+                object kk = null;
+                foreach (System.Collections.DictionaryEntry x in _members)
+                {
+                    if (x.Value == original)
+                        kk = x.Key;
+                }
+                _members[kk] = converted;
+                _member_definitions.Remove(original);
+                _member_definitions[converted] = kk;
+            }
         }
 
         protected parameter_list make_parameters(parameter_list orig_pl, common_function_node fn)
