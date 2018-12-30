@@ -2904,8 +2904,8 @@ namespace CodeCompletion
             }
             else
             {
-                if (args.Count < ps.parameters.Count)
-                    return false;
+                //if (args.Count < ps.parameters.Count)
+                //    return false;
                 int min_arg_cnt = Math.Min(args.Count, ps.parameters.Count);
 
                 for (int i = 0; i < min_arg_cnt; i++)
@@ -2917,15 +2917,43 @@ namespace CodeCompletion
                     {
                         if (ps.parameters[i].param_kind == parametr_kind.params_parametr)
                         {
-                            if (!(ps.parameters[i].sc is ArrayScope && ts.IsConvertable((ps.parameters[i].sc as ArrayScope).elementType)))
-                                return false;
+                            TypeScope pts = ps.parameters[i].sc as TypeScope;
+                            if (!(pts != null && pts.elementType != null && ts.IsConvertable(pts.elementType)))
+                                return false; 
                         }
                         else
                             return false;
                     }
-                    else if (i == ps.parameters.Count - 1 && ps.parameters[i].param_kind != parametr_kind.params_parametr)
-                        return false;
-
+                    //else if (args.Count > ps.parameters.Count && i == min_arg_cnt - 1 && ps.parameters[i].param_kind != parametr_kind.params_parametr)
+                    //    return false;
+                }
+                if (args.Count < ps.parameters.Count)
+                {
+                    for (int i = min_arg_cnt; i < ps.parameters.Count; i++)
+                    {
+                        if (ps.parameters[i].cnst_val != null || ps.parameters[i].param_kind == parametr_kind.params_parametr && i == ps.parameters.Count - 1)
+                            return true;
+                        else
+                            return false;
+                    }
+                }
+                else if (args.Count > ps.parameters.Count)
+                {
+                    for (int i = min_arg_cnt; i < args.Count; i++)
+                    {
+                        if (ps.parameters[min_arg_cnt - 1].param_kind == parametr_kind.params_parametr)
+                        {
+                            if (!(args[i] is TypeScope))
+                                return false;
+                            TypeScope ts = args[i] as TypeScope;
+                            TypeScope pts = ps.parameters[min_arg_cnt - 1].sc as TypeScope;
+                            if (!(pts != null && pts.elementType != null && ts.IsConvertable(pts.elementType)))
+                                return false;
+                                
+                        }
+                        else
+                            return false;
+                    }
                 }
                 return true;
             }
@@ -2960,7 +2988,8 @@ namespace CodeCompletion
                     {
                         if (parameter.param_kind == parametr_kind.params_parametr)
                         {
-                            if (!(parameter.sc is ArrayScope && ts.IsEqual((parameter.sc as ArrayScope).elementType)))
+                            TypeScope pts = parameter.sc as TypeScope;
+                            if (!(pts != null && pts.elementType != null && ts.IsEqual(pts.elementType)))
                                 return false;
                         }
                         else
@@ -2984,7 +3013,8 @@ namespace CodeCompletion
                     {
                         if (ps.parameters[i].param_kind == parametr_kind.params_parametr)
                         {
-                            if (!(ps.parameters[i].sc is ArrayScope && ts.IsEqual((ps.parameters[i].sc as ArrayScope).elementType)))
+                            TypeScope pts = ps.parameters[i].sc as TypeScope;
+                            if (!(pts != null && pts.elementType != null && ts.IsEqual(pts.elementType)))
                                 return false;
                         }
                         else
@@ -2994,7 +3024,7 @@ namespace CodeCompletion
                         return false;
 
                 }
-                return false;
+                return true;
             }
         }
 
