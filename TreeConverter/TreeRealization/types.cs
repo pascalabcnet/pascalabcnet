@@ -5020,6 +5020,17 @@ namespace PascalABCCompiler.TreeRealization
                 _element_type = value;
             }
         }
+
+        public override string PrintableName
+        {
+            get
+            {
+                if (_element_type != null)
+                    return "array of " + _element_type.PrintableName;
+                else
+                    return base.PrintableName;
+            }
+        }
     }
 
     public class RecordConstType : undefined_type
