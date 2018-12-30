@@ -530,7 +530,7 @@ namespace PascalABCCompiler.SystemLibrary
         public static basic_function_node make_unary_operator(string operator_name, type_node to,
             SemanticTree.basic_function_type bft, type_node ret_value_type)
         {
-            basic_function_node bfn = new basic_function_node(bft, ret_value_type,true);
+            basic_function_node bfn = new basic_function_node(bft, ret_value_type,true, operator_name);
             basic_parameter par = new basic_parameter(compiler_string_consts.unary_param_name, to,
                 SemanticTree.parameter_type.value, bfn);
             bfn.parameters.AddElement(par);
