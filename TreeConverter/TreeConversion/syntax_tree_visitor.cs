@@ -1571,7 +1571,16 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 else
                 {
-                    AddError(loc, "EXPECTED_NON_STATIC_METHOD");
+                    if (sil != null && sil.Count != 0 && sil.First().sym_info is basic_function_node)
+                    {
+                        basic_function_node bfn = sil.First().sym_info as basic_function_node;
+                        if (bfn.return_value_type != null)
+                            AddError(loc, "USING_{0}_NOT_ALLOWED_IN_THIS_CONTEXT", bfn.name);
+                        else
+                            AddError(loc, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", bfn.name);
+                    }
+                    else
+                        AddError(loc, "EXPECTED_NON_STATIC_METHOD");
                 }
             }
             delegated_methods dm = new delegated_methods();

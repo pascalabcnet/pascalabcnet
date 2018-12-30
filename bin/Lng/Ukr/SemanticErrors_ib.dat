@@ -150,6 +150,7 @@ USING_STATIC_CLASS_NOT_VALID=Использование статического
 INTERFACE_PROPERTIES_CANNOT_BE_STATIC=Свойства интерфейса не могут быть статическими
 ARRAY_RANK_CANNOT_BE_GREATER_32=Размерность многомерного динамического массива не может быть больше 32
 CANNOT_GET_POINTER_TO_DISPOSE=Нельзя получить указатель на процедуру Dispose
+USING_{0}_NOT_ALLOWED_IN_THIS_CONTEXT=Использование {0} недопустимо в данном контексте
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Очікувався модуль, а зустріли бібліотеку
 ASSEMBLY_{0}_READING_ERROR=Помилка при читанні збірки '{0}'
