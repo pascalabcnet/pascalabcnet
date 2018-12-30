@@ -3164,7 +3164,7 @@ namespace PascalABCCompiler.Parsers
                 j++;
             }
             j = i;
-            if (kav_stack.Count != 0 || in_keyw) return PascalABCCompiler.Parsers.KeywordKind.Punkt;
+            if ((kav_stack.Count != 0 || in_keyw) && !in_format_str) return PascalABCCompiler.Parsers.KeywordKind.Punkt;
             if (j >= 0 && Text[j] == '.') return PascalABCCompiler.Parsers.KeywordKind.Punkt;
             while (j >= 0)
             {
