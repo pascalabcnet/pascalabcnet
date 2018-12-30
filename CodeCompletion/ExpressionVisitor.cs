@@ -154,7 +154,8 @@ namespace CodeCompletion
                     }
                     else if (returned_scopes[i] is ProcScope)
                     {
-                        proces.Add(returned_scopes[i] as ProcScope);
+                        if (!((returned_scopes[i] as ProcScope).is_constructor && returned_scopes[i].is_static))
+                            proces.Add(returned_scopes[i] as ProcScope);
                     }  
                     else if (returned_scopes[i] is ElementScope && (returned_scopes[i] as ElementScope).sc is CompiledScope)
                     {

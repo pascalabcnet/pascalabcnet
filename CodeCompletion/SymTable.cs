@@ -4459,12 +4459,15 @@ namespace CodeCompletion
                             if (ss.is_static && ev.CheckForBaseAccess(ev.entry_scope, this))
                                 lst.Add(ss.si);
                         }
-                        else
-                            if (ss.is_static)
+                        else if (ss.is_static)
+                        {
+                            if (!((ss is ProcScope) && (ss as ProcScope).IsConstructor()))
                                 lst.Add(ss.si);
-                            else if ((ss is ProcScope) && (ss as ProcScope).IsConstructor())
-                                if (!((ss as ProcScope).parameters == null || (ss as ProcScope).parameters.Count == 0) || !called_in_base)
-                                    lst.Add(ss.si);
+                        }
+
+                        else if ((ss is ProcScope) && (ss as ProcScope).IsConstructor())
+                            if (!((ss as ProcScope).parameters == null || (ss as ProcScope).parameters.Count == 0) || !called_in_base)
+                                lst.Add(ss.si);
                     }
                     else
                     {
