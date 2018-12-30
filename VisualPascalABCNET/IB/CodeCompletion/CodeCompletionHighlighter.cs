@@ -221,7 +221,7 @@ namespace VisualPascalABC
                 c = textArea.Document.TextContent[off];
             }
             c = char.ToLower(c);
-            if (c != '=' && c != 't' && c != 'd' && c != 'o' && c != '{')
+            if (c != '=' && c != 't' && c != 'd' && c != 'o' && c != '{' && c != 'c')
             {
                 return true;
             }
