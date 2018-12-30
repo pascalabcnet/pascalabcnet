@@ -1191,7 +1191,21 @@ namespace CodeCompletion
                     if (_procedure_header.proc_attributes != null && has_extensionmethod_attr(_procedure_header.proc_attributes.proc_attributes) && _procedure_header.parameters.params_list.Count > 0)
                     {
                         ps.is_extension = true;
-                        _procedure_header.parameters.params_list[0].vars_type.visit(this);
+                        if (_procedure_header.parameters.params_list[0].vars_type is enum_type_definition)
+                        {
+                            template_type_reference tuple = new template_type_reference();
+                            tuple.name = new named_type_reference(new ident_list(new ident("System"), new ident("Tuple")).idents);
+                            template_param_list tpl = new template_param_list();
+                            enum_type_definition etd = _procedure_header.parameters.params_list[0].vars_type as enum_type_definition;
+                            foreach (enumerator en in etd.enumerators.enumerators)
+                            {
+                                tpl.Add(en.name);
+                            }
+                            tuple.params_list = tpl;
+                            tuple.visit(this);
+                        }
+                        else
+                            _procedure_header.parameters.params_list[0].vars_type.visit(this);
                         topScope = returned_scope;
                         ps.declaringType = topScope as TypeScope;
                         TypeScope ts = topScope as TypeScope;
@@ -1509,7 +1523,21 @@ namespace CodeCompletion
                     if (_function_header.proc_attributes != null && has_extensionmethod_attr(_function_header.proc_attributes.proc_attributes) && _function_header.parameters.params_list.Count > 0)
                     {
                         ps.is_extension = true;
-                        _function_header.parameters.params_list[0].vars_type.visit(this);
+                        if (_function_header.parameters.params_list[0].vars_type is enum_type_definition)
+                        {
+                            template_type_reference tuple = new template_type_reference();
+                            tuple.name = new named_type_reference(new ident_list(new ident("System"), new ident("Tuple")).idents);
+                            template_param_list tpl = new template_param_list();
+                            enum_type_definition etd = _function_header.parameters.params_list[0].vars_type as enum_type_definition;
+                            foreach (enumerator en in etd.enumerators.enumerators)
+                            {
+                                tpl.Add(en.name);
+                            }
+                            tuple.params_list = tpl;
+                            tuple.visit(this);
+                        }
+                        else
+                            _function_header.parameters.params_list[0].vars_type.visit(this);
                         topScope = returned_scope;
                         if (topScope is ProcScope)
                             topScope = new ProcType(topScope as ProcScope);
