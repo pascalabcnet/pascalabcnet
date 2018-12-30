@@ -14171,9 +14171,11 @@ namespace PascalABCCompiler.TreeConverter
                     if (!(en is constant_node /*|| en is statements_expression_node*/)) AddError(en.location, "CONSTANT_EXPRESSION_EXPECTED");
         }
 
-        private constant_node convert_strong_to_constant_node(expression_node expr, type_node tn, bool is_const_section_and_userfuncall = false, bool is_const_section = false)
+        private constant_node convert_strong_to_constant_node(expression_node expr, type_node tn, bool is_const_section_and_userfuncall = false, bool is_const_section = false, location parent_loc = null)
         {
             location loc = expr.location;
+            if (parent_loc != null)
+                loc = parent_loc;
             constant_node constant = null;
             try_convert_typed_expression_to_function_call(ref expr);
             if (expr is null_const_node) 
@@ -14214,7 +14216,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 common_namespace_function_call cnfc=expr as common_namespace_function_call;
                 foreach (expression_node el in cnfc.parameters)
-                    convert_strong_to_constant_node(el, el.type);
+                    convert_strong_to_constant_node(el, el.type, false, false, cnfc.location);
                 //if (cnfc.function_node.namespace_node == context.converted_namespace)
                 //    AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
                 //  throw new ConstantExpressionExpected(loc);
@@ -14226,7 +14228,7 @@ namespace PascalABCCompiler.TreeConverter
                 //if (cnfc.function_node.namespace_node == context.converted_namespace)
                 //  throw new ConstantExpressionExpected(loc);
                 foreach (expression_node el in cnfc.parameters)
-                        convert_strong_to_constant_node(el, el.type);
+                    convert_strong_to_constant_node(el, el.type);
                 constant = new basic_function_call_as_constant(expr as basic_function_call, loc);
             }
             else if (expr is typed_expression)
