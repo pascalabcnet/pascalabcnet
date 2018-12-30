@@ -3589,7 +3589,7 @@ namespace PascalABCCompiler.TreeConverter
                         }
                         else
                         {
-                            if (tn.ForwardDeclarationOnly)
+                            if (tn.ForwardDeclarationOnly || tn.original_generic != null && tn.original_generic.ForwardDeclarationOnly)
                             {
                                 AddError(get_location(_class_definition.class_parents.types[0]), "FORWARD_DECLARATION_{0}_AS_BASE_TYPE", tn.name);
                             }
