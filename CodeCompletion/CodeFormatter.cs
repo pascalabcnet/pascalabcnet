@@ -1294,12 +1294,12 @@ namespace CodeFormatters
 
         public override void visit(typed_parameters _typed_parametres)
         {
-            if (_typed_parametres.attributes != null)
+            /*if (_typed_parametres.attributes != null)
             {
                 attr_on_new_line = false;
                 visit_node(_typed_parametres.attributes);
                 attr_on_new_line = true;
-            }
+            }*/
             if (_typed_parametres.param_kind != parametr_kind.none)
             {
                 string s = GetParamKind(_typed_parametres.param_kind);
@@ -1335,6 +1335,11 @@ namespace CodeFormatters
             {
                 if (i > 0)
                     add_space_after = true;
+                if (_formal_parametres.params_list[i].attributes != null)
+                {
+                    add_space_after = true;
+                }
+                    
                 visit_node(_formal_parametres.params_list[i]);
             }
         }
