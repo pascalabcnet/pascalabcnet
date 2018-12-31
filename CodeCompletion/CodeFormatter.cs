@@ -397,7 +397,7 @@ namespace CodeFormatters
                         {
                             if (multi_line_nodes.Count == 1)
                             {
-                                if (!(multi_line_nodes.Peek() is function_lambda_definition))
+                                if (!(multi_line_nodes.Peek() is function_lambda_definition) && !(multi_line_nodes.Peek() is simple_property))
                                     lines[i] = new string(' ', addit_pos_for_multiline) + lines[i];
                                 else
                                     lines[i] = new string(' ', off) + lines[i].Trim();
@@ -405,7 +405,7 @@ namespace CodeFormatters
                                 
                             else
                             {
-                                if (!(multi_line_nodes.Peek() is function_lambda_definition))
+                                if (!(multi_line_nodes.Peek() is function_lambda_definition) && !(multi_line_nodes.Peek() is simple_property))
                                 {
                                     if (off > lines[i].Length)
                                         lines[i] = new string(' ', addit_pos_for_multiline + off) + lines[i];
@@ -1168,10 +1168,10 @@ namespace CodeFormatters
             //WriteKeyword(" do");
             bool need_off = !(_while_node.statements is statement_list);
             if (need_off)
-            IncOffset();
+                IncOffset();
             visit_node(_while_node.statements);
             if (need_off)
-            DecOffset();
+                DecOffset();
         }
 
         private void WriteKeyword(string s)
@@ -1806,7 +1806,14 @@ namespace CodeFormatters
             sb.Append("write");
             SetKeywordOffset("write");
             if (_write_accessor_name.statment_for_formatting != null)
+            {
+                if (_write_accessor_name.statment_for_formatting is statement_list)
+                    IncOffset();
                 visit_node(_write_accessor_name.statment_for_formatting);
+                if (_write_accessor_name.statment_for_formatting is statement_list)
+                    DecOffset();
+            }
+                
             else if (_write_accessor_name.accessor_name != null)
                 visit_node(_write_accessor_name.accessor_name);
             else
