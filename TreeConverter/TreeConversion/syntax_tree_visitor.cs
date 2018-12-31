@@ -19290,7 +19290,8 @@ namespace PascalABCCompiler.TreeConverter
                             procDecl.proc_header.where_defs = whereSection;
                         }
 
-                        if (!context.func_stack.Empty && context.func_stack.top().polymorphic_state == SemanticTree.polymorphic_state.ps_static)
+                        if (!context.func_stack.Empty && context.func_stack.top().polymorphic_state == SemanticTree.polymorphic_state.ps_static
+                        || context.converted_type != null && context.converted_type.IsStatic)
                         {
                             procDecl.proc_header.class_keyword = true;
                             if (procDecl.proc_header.proc_attributes == null)
