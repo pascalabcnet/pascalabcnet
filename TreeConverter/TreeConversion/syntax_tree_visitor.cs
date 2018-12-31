@@ -9036,6 +9036,8 @@ namespace PascalABCCompiler.TreeConverter
             {
                 AddError(new MemberIsNotDeclaredInNamespace(id_right, get_location(id_right), nn));
             }
+            if (si_right.Count > 0 && si_right[0].sym_info == nn)
+                AddError(new MemberIsNotDeclaredInNamespace(id_right, get_location(id_right), nn));
             switch (mot)
             {
                 case motivation.address_receiving:
