@@ -1436,6 +1436,8 @@ namespace CodeCompletion
 
         public override List<SymScope> FindOverloadNames(string name)
         {
+            if (string.Compare(si.name, name, true) == 0)
+                return new List<SymScope>() { this };
             List<SymScope> names = sc.FindOverloadNames(name);
             if (topScope != null)
                 names.AddRange(topScope.FindOverloadNames(name));
@@ -2921,7 +2923,11 @@ namespace CodeCompletion
 
         public override List<SymScope> FindOverloadNames(string name)
         {
-            return actType.FindOverloadNames(name);
+            List<SymScope> names = actType.FindOverloadNames(name);
+            if (names.Count > 0)
+                return names;
+            if (topScope != null) return topScope.FindOverloadNames(name);
+            return names;
         }
 
         public override List<SymScope> FindOverloadNamesOnlyInType(string name)
@@ -4221,6 +4227,8 @@ namespace CodeCompletion
         public override bool IsEqual(SymScope ts)
         {
             bool eq = this == ts as TypeScope;
+            if (ts == null)
+                return false;
             if (ts is NullTypeScope && this.kind == SymbolKind.Class)
                 return true;
             if (eq)

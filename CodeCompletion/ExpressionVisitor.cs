@@ -57,6 +57,17 @@ namespace CodeCompletion
             {
                 returned_scope = null;
             }
+            if (returned_scope is ProcScope && (expr is ident || expr is dot_node))
+            {
+                try
+                {
+                    expr = new method_call(expr as addressed_value, new expression_list());
+                    expr.visit(this);
+                }
+                catch (Exception e)
+                {
+                }
+            }
             if (returned_scope != null && returned_scope is ElementScope && (returned_scope as ElementScope).sc is ProcScope)
             {
                 if ((returned_scope as ElementScope).si.kind == SymbolKind.Delegate)
