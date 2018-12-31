@@ -5273,7 +5273,7 @@ namespace PascalABCCompiler.TreeConverter
                                                         {
                                                             ThrowCompilationError = true;
                                                             Errors.Error last_err = LastError();
-                                                            if (last_err is NoFunctionWithSameParametresNum && ErrorsList.Count > 0)
+                                                            if (/*last_err is NoFunctionWithSameParametresNum && */ErrorsList.Count > 0)
                                                                 throw LastError();
                                                             else
                                                                 throw last_err;
