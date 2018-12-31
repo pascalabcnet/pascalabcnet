@@ -143,11 +143,11 @@ namespace TreeConverter.LambdaExpressions.Closure
             
             if (si == null)
             {
-                if (InLambdaContext)
+                /*if (InLambdaContext)
                 {
                     _visitor.AddError(new ThisTypeOfVariablesCannotBeCaptured(_visitor.get_location(id)));
                     return;
-                }
+                }*/
                 return;
             }
 
