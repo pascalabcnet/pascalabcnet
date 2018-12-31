@@ -17040,7 +17040,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 catch (Errors.Error ex)
                 {
-                    if (ThrowCompilationError)
+                    if (ThrowCompilationError || ex is MemberIsNotDeclaredInType || ex is UndefinedNameReference)//TODO: add interface
                         throw ex;
                     else
                         ErrorsList.Add(ex);
