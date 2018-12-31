@@ -122,8 +122,9 @@ namespace TreeConverter.LambdaExpressions.Closure
         {
             if (newExpr.params_list != null && newExpr.params_list.expressions != null)
             {
-                foreach (var expr in newExpr.params_list.expressions)
+                for (int i = 0; i < newExpr.params_list.expressions.Count; i++)
                 {
+                    expression expr = newExpr.params_list.expressions[i];
                     ProcessNode(expr);
                 }
             }
