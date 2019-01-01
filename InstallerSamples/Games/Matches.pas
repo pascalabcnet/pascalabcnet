@@ -1,4 +1,4 @@
-// Игра "Спички"
+﻿// Игра "Спички"
 const InitialCount=15;
 
 var
@@ -18,9 +18,9 @@ begin
     begin
       var Correct: boolean;
       repeat
-        write('Ваш ход. На столе ',Count,' спичек. ');
-        write('Сколько спичек Вы берете? ');
-        readln(Num);
+        Write('Ваш ход. На столе ',Count,' спичек. ');
+        Write('Сколько спичек Вы берете? ');
+        Readln(Num);
         Correct := (Num>=1) and (Num<=3) and (Num<=Count);
         if not Correct then
           writeln('Неверно! Повторите ввод!');
@@ -31,7 +31,7 @@ begin
       Num := Random(1,3);
       if Num>Count then 
         Num := Count;
-      writeln('Мой ход. Я взял ',Num,' спичек');
+      Writeln('Мой ход. Я взял ',Num,' спичек');
     end;
     Count -= Num;
     if Player=1 then 
@@ -40,6 +40,6 @@ begin
   until Count=0;
   
   if Player=1 then
-    writeln('Вы победили!')
-  else writeln('Вы проиграли!');
+    Writeln('Вы победили!')
+  else Writeln('Вы проиграли!');
 end.
