@@ -204,7 +204,7 @@ namespace VisualPascalABC
             startColumn = makerStartColumn;
             endLine = makerEndLine;
             endColumn = makerEndColumn;
-
+            
             LineSegment line = document.GetLineSegment(startLine - 1);
             instance = new CurrentBreakpointBookmark(fileName, document, startLine - 1);
             document.BookmarkManager.AddMark(instance);
