@@ -5591,7 +5591,7 @@ namespace PascalABCCompiler.TreeConverter
                                         }
                                         else
                                         {
-                                            sil = nsn.find(id_right.name);
+                                            sil = nsn.findOnlyInNamespace(id_right.name);
                                             if (templ_args_count != 0)
                                             {
                                                 sil = nsn.find(id_right.name + compiler_string_consts.generic_params_infix + templ_args_count.ToString());
@@ -9031,7 +9031,7 @@ namespace PascalABCCompiler.TreeConverter
 
         private void dot_node_as_namespace_ident(namespace_node nn, SyntaxTree.ident id_right, motivation mot)
         {
-            List<SymbolInfo> si_right = nn.find(id_right.name);
+            List<SymbolInfo> si_right = nn.findOnlyInNamespace(id_right.name);
             if (si_right == null)
             {
                 AddError(new MemberIsNotDeclaredInNamespace(id_right, get_location(id_right), nn));
