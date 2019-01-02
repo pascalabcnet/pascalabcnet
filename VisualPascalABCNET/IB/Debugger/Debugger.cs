@@ -362,6 +362,7 @@ namespace VisualPascalABC
             }
             if (!added)
                 br = dbg.AddBreakpoint(fileName, line);
+            
             return br;
         }
 		
@@ -483,6 +484,42 @@ namespace VisualPascalABC
 
         Function currentFunction;
         Dictionary<int, int> sourceMap;
+
+        public void UpdateBreakpoints()
+        {
+            try
+            {
+                Dictionary<string, List<int>> dict = new Dictionary<string, List<int>>();
+                List<Breakpoint> toRemove = new List<Breakpoint>();
+                foreach (CurrentBreakpointBookmark b in BreakPointFactory.breakpoints.Keys)
+                {
+                    try
+                    {
+                        if (dbg.GetBreakpoint(b.FileName, b.LineNumber + 1) == null)
+                            dbg.AddBreakpoint(b.FileName, b.LineNumber + 1);
+                        if (!dict.ContainsKey(b.FileName))
+                            dict.Add(b.FileName, new List<int>());
+                        if (!dict[b.FileName].Contains(b.LineNumber + 1))
+                            dict[b.FileName].Add(b.LineNumber + 1);
+                    }
+                    catch
+                    {
+                        if (!dict.ContainsKey(b.FileName))
+                            dict.Add(b.FileName, new List<int>());
+                    }
+                }
+
+                foreach (Breakpoint b in dbg.Breakpoints)
+                    if (dict.ContainsKey(b.SourcecodeSegment.SourceFullFilename) && !dict[b.SourcecodeSegment.SourceFullFilename].Contains(b.SourcecodeSegment.StartLine))
+                        toRemove.Add(b);
+                foreach (Breakpoint b in toRemove)
+                    dbg.RemoveBreakpoint(b);
+            }
+            catch
+            {
+
+            }
+        }
 
         void debuggedProcess_DebuggeeStateChanged(object sender, ProcessEventArgs e)
         {

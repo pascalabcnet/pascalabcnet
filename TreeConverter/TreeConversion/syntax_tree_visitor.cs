@@ -3914,9 +3914,18 @@ namespace PascalABCCompiler.TreeConverter
                             type_node self_type = cmn.cont_type;
                             if (cmn.cont_type.is_generic_type_definition)
                                 self_type = cmn.cont_type.get_instance(cmn.cont_type.generic_params.ConvertAll<type_node>(o => (type_node)o));// new generic_instance_type_node(self_type, self_type.generic_params.ConvertAll<type_node>(o => (type_node)o), self_type.base_type, self_type.name, self_type.type_access_level, self_type.comprehensive_namespace, self_type.loc);
-                    		local_variable lv = new local_variable(compiler_string_consts.self_word, self_type, cmn, null);
-                    		cmn.scope.AddSymbol(compiler_string_consts.self_word, new SymbolInfo(lv));
-                    		cmn.self_variable = lv;
+                            if (!(cmn.is_constructor && cmn.cont_type.name.StartsWith("<>local_variables_class")))
+                            {
+                                local_variable lv = new local_variable(compiler_string_consts.self_word, self_type, cmn, null);
+                                cmn.scope.AddSymbol(compiler_string_consts.self_word, new SymbolInfo(lv));
+                                cmn.self_variable = lv;
+                            }
+                    		else
+                            {
+                                local_variable lv = new local_variable(compiler_string_consts.self_word+"$", self_type, cmn, null);
+                                cmn.scope.AddSymbol(compiler_string_consts.self_word+"$", new SymbolInfo(lv));
+                                cmn.self_variable = lv;
+                            }
                 		}
         				if ((sd as SyntaxTree.procedure_definition).proc_body != null)
                 		{
@@ -9814,6 +9823,8 @@ namespace PascalABCCompiler.TreeConverter
             definition_node def_temp = null;
             SyntaxTree.template_type_name ttn = null;
             bool is_operator = _method_name.meth_name is SyntaxTree.operator_name_ident;
+            if (is_operator && context.converted_type != null && context.converted_type.IsInterface)
+                AddError(get_location(_method_name), "OPERATORS_IN_INTERFACES_NOT_ALLOWED");
             SyntaxTree.Operators op = PascalABCCompiler.SyntaxTree.Operators.Undefined;
             if(is_operator)
                 op=(_method_name.meth_name as SyntaxTree.operator_name_ident).operator_type;

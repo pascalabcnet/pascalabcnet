@@ -471,16 +471,6 @@ namespace PascalABCCompiler.TreeRealization
         public override List<SymbolInfo> findOnlyInNamespace(string name)
         {
             List<SymbolInfo> si_list = _scope.FindOnlyInScope(name);//c,cc,c,cc
-            /*if (_scope is SymbolTable.UnitImplementationScope)
-            {
-                List<SymbolInfo> si_list2 = _scope.TopScope.FindOnlyInScope(name);
-                if (si_list == null)
-                    return si_list2;
-                if (si_list2 == null)
-                    return si_list;
-                si_list.AddRange(si_list2);
-                return si_list;
-            }*/
             return si_list;
         }
 
