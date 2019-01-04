@@ -827,7 +827,7 @@ namespace CodeFormatters
                         || sn is label_definitions || sn is class_definition || sn is uses_list || sn is uses_closure || sn is unit_name || sn is program_name ||
                         sn is new_expr || sn is raise_stmt || sn is interface_node || sn is implementation_node
                         || sn is lock_stmt || sn is loop_stmt || sn is simple_property || sn is read_accessor_name || sn is write_accessor_name
-                        || sn is formal_parameters || sn is bracket_expr || sn is record_const || sn is array_const || sn is exception_handler
+                        || sn is formal_parameters || sn is bracket_expr || sn is record_const || sn is array_const || sn is enum_type_definition || sn is exception_handler
                         || sn is try_handler_finally || sn is try_handler_except || sn is external_directive || sn is where_definition
                         || sn is var_tuple_def_statement
                         || sn is match_with
@@ -2026,7 +2026,10 @@ namespace CodeFormatters
         public override void visit(enum_type_definition _enum_type_definition)
         {
             sb.Append("(");
+            keyword_offset = 1;
+            multiline_stack_push(_enum_type_definition);
             visit_node(_enum_type_definition.enumerators);
+            multiline_stack_pop(_enum_type_definition);
             //sb.Append(")");
         }
 
@@ -2751,6 +2754,8 @@ namespace CodeFormatters
             visit_node(_enumerator.name);
             if (_enumerator.value != null)
             {
+                add_space_before = true;
+                add_space_after = true;
                 visit_node(_enumerator.value);
             }
         }
