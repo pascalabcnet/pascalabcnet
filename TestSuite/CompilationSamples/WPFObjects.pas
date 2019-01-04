@@ -146,15 +146,14 @@ type
     gr: Grid; // Grid связан только с текстом
     t: TextBlock;
     r: RotateTransform;
-    _dx,_dy: real;
 
     ChildrenWPF := new List<ObjectWPF>;
     procedure InitOb(x,y,w,h: real; o: FrameworkElement; SetWH: boolean := True);
   public
     /// Направление движения по оси X. Используется методом Move
-    property Dx: real read _dx write _dx;
+    auto property Dx: real;
     /// Направление движения по оси Y. Используется методом Move
-    property Dy: real read _dy write _dy;
+    auto property Dy: real;
     /// Отступ графического объекта от левого края 
     property Left: real read InvokeReal(()->Canvas.GetLeft(can)) write Invoke(procedure->Canvas.SetLeft(can,value)); 
     /// Отступ графического объекта от верхнего края 
@@ -163,6 +162,8 @@ type
     property Width: real read InvokeReal(()->gr.Width) write Invoke(procedure->begin gr.Width := value; ob.Width := value end); virtual;
     /// Высота графического объекта
     property Height: real read InvokeReal(()->gr.Height) write Invoke(procedure->begin gr.Height := value; ob.Height := value end); virtual;
+    /// Прямоугольник графического объекта
+    property Bounds: GRect read Invoke&<GRect>(()->begin Result := new GRect(Canvas.GetLeft(can),Canvas.GetTop(can),gr.Width,gr.Height); end); 
     /// Текст внутри графического объекта
     property Text: string read InvokeString(()->t.Text) write Invoke(procedure->t.Text := value);
     /// Целое число, выводимое в центре графического объекта. Используется свойство Text
@@ -193,6 +194,10 @@ type
       Result.Transform := g; // версия
     end;
   public
+    /// Видимость графического объекта
+    property Visible: boolean 
+      read InvokeBoolean(()->ob.Visibility = Visibility.Visible)
+      write Invoke(procedure -> if value then ob.Visibility := Visibility.Visible else ob.Visibility := Visibility.Hidden);
     /// Выравнивание текста внутри графического объекта
     property TextAlignment: Alignment write Invoke(WTA,Value);
     /// Размер текста внутри графического объекта
@@ -237,7 +242,7 @@ type
     /// Перемещает графический объект на вектор (a,b)
     procedure MoveOn(a,b: real) := MoveTo(Left+a,Top+b);
     /// Перемещает графический объект на вектор (dx,dy)
-    procedure Move := MoveOn(dx,dy);
+    procedure Move; virtual := MoveOn(dx,dy);
     /// Поворачивает графический объект по часовой стрелке на угол da
     procedure Rotate(da: real) := RotateAngle += da;
     /// Добавляет к графическому объекту дочерний

@@ -1,4 +1,4 @@
-// Ханойские башни
+﻿// Ханойские башни
 uses GraphABC;
 
 type
@@ -59,7 +59,7 @@ begin
   DrawTower(Tower[2],DisksInTower[2],x2,y0);
   DrawTower(Tower[3],DisksInTower[3],x3,y0);
   Brush.Color := clWhite;
-  TextOut(20,20,'Число перемещений дисков = '+IntToStr(MoveNumber));
+  TextOut(20,20,'Число перемещений дисков = '+MoveNumber);
   Redraw;
 end;
 

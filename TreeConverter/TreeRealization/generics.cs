@@ -1431,14 +1431,13 @@ namespace PascalABCCompiler.TreeRealization
 
         protected void AddMember(object original, object converted)
         {
-            if (!_members.ContainsValue(original))
+            if (!_members.ContainsValue(original))  // SSM 30.12.18 bug fix #907
             {
                 _members.Add(original, converted);
                 _member_definitions.Add(converted, original);
             }
-            else
+            else // SSM 30.12.18 bug fix #907
             {
-                //_member_definitions[original] = converted;
                 object kk = null;
                 foreach (System.Collections.DictionaryEntry x in _members)
                 {
