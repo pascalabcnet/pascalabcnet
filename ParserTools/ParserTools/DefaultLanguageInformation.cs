@@ -2790,7 +2790,12 @@ namespace PascalABCCompiler.Parsers
                         case '>':
                             if (tokens.Count == 0)
                             {
-                                if (ugl_skobki.Count > 0 || i == off - 1 || i + 1 < Text.Length && Text[i - 1] != '-' && (Text[i + 1] == '.' || Text[i + 1] == '('))
+                                int j = i + 1;
+                                
+                                while (j < Text.Length && char.IsWhiteSpace(Text[j]))
+                                    j++;
+                                
+                                if (ugl_skobki.Count > 0 || i == off - 1 || j == off && off == Text.Length || j < Text.Length && Text[i - 1] != '-' && (Text[j] == '.' || Text[j] == '('))
                                 {
                                     ugl_skobki.Push('>');
                                     sb.Insert(0, ch);
@@ -3327,13 +3332,17 @@ namespace PascalABCCompiler.Parsers
                             case '>':
                                 if (kav.Count == 0)
                                 {
+                                    int j = i + 1;
+
+                                    while (j < Text.Length && char.IsWhiteSpace(Text[j]))
+                                        j++;
                                     if (ch != '>')
                                         tokens.Push(ch);
                                     if (ch == ')')
                                         skobki.Push(ch);
                                     if (tokens.Count > 0 || pressed_key == ',')
                                         sb.Insert(0, ch);
-                                    else if (i == off - 1 || ugl_skobki.Count > 0 || i + 1 < Text.Length && Text[i-1] != '-' && (Text[i + 1] == '.' || Text[i + 1] == '('))
+                                    else if (i == off - 1 || j == off && off == Text.Length || ugl_skobki.Count > 0 || j < Text.Length && Text[i-1] != '-' && (Text[j] == '.' || Text[j] == '('))
                                     {
                                         tokens.Push(ch);
                                         ugl_skobki.Push(ch);

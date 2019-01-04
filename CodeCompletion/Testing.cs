@@ -395,7 +395,10 @@ namespace CodeCompletion
             s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
             assert(s.Trim('\n', ' ', '\t') == "s0");
 
-            
+            test_str = "f1&<byte>\n.ToString";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            assert(s.Trim('\n', ' ', '\t') == test_str);
 
             int num_param = 0;
     		//testirovanie nazhatija skobki
@@ -589,7 +592,11 @@ namespace CodeCompletion
             off = test_str.Length;
             s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
             assert(s == test_str);
-            
+
+            test_str = "f1&<byte>\n.ToString";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            assert(s.Trim('\n', ' ', '\t') == "f1&<byte>\n.ToString");
 
             //testirovanie nazhatija zapjatoj
             test_str = ";test(3,aa.bb";
