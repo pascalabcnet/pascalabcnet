@@ -1,35 +1,26 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
-<param name="Keyword" value="ARGB">
-<param name="Keyword" value="EmptyColor">
-<param name="Keyword" value="GrayColor">
-<param name="Keyword" value="P3D">
-<param name="Keyword" value="Pnt">
-<param name="Keyword" value="RandomColor">
-<param name="Keyword" value="Rect">
-<param name="Keyword" value="RGB">
-<param name="Keyword" value="Sz3D">
-<param name="Keyword" value="V3D"></object>
+<param name="Keyword" value="Возвращает"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Короткие функции модуля Graph3D</H1>
-<table border=0 cellpadding=5><tr><td><code><b>function</b> ARGB(a, r, g, b: byte): Color;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цвет по красной, зеленой и синей составляющей и параметру прозрачности (в диапазоне 0..255)</td></tr>
-<tr><td><code><b>function</b> EmptyColor: Color;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает полностью прозрачный цвет</td></tr>
-<tr><td><code><b>function</b> GrayColor(b: byte): Color;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает серый цвет с интенсивностью b</td></tr>
-<tr><td><code><b>function</b> P3D(x, y, z: real): Point3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-точку с координатами (x,y,z)</td></tr>
-<tr><td><code><b>function</b> Pnt(x, y: real): Point;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает точку с координатами (x,y)</td></tr>
-<tr><td><code><b>function</b> RandomColor: Color;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайный цвет</td></tr>
-<tr><td><code><b>function</b> Rect(x, y, w, h: real): GRect;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает прямоугольник с координатами угла (x,y), шириной w и высотой h</td></tr>
-<tr><td><code><b>function</b> RGB(r, g, b: byte): Color;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цвет по красной, зеленой и синей составляющей (в диапазоне 0..255)</td></tr>
-<tr><td><code><b>function</b> Sz3D(x, y, z: real): Size3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-размер с координатами (x,y,z)</td></tr>
-<tr><td><code><b>function</b> V3D(x, y, z: real): Vector3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 3D-вектор с координатами (x,y,z)</td></tr>
+<table border=0 cellpadding=5><tr><td><code>/// Возвращает цвет по красной, зеленой и синей составляющей (в диапазоне 0..255);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cedure Invoke(p: ()-&gt;());</td></tr>
+<tr><td><code>/// Возвращает цвет по красной, зеленой и синей составляющей и параметру прозрачности (в диапазоне 0..255);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ction RGB(r, g, b: byte): Color;</td></tr>
+<tr><td><code>/// Возвращает серый цвет с интенсивностью b;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ction ARGB(a, r, g, b: byte): Color;</td></tr>
+<tr><td><code>/// Возвращает случайный цвет;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ction GrayColor(b: byte): Color;</td></tr>
+<tr><td><code>/// Возвращает полностью прозрачный цвет;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ction RandomColor: Color;</td></tr>
+<tr><td><code>/// Возвращает точку с координатами (x,y);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ction EmptyColor: Color;</td></tr>
+<tr><td><code>/// Возвращает прямоугольник с координатами угла (x,y), шириной w и высотой h;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ction Pnt(x, y: real): Point;</td></tr>
+<tr><td><code>/// Возвращает 3D-точку с координатами (x,y,z);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ction Rect(x, y, w, h: real): GRect;</td></tr>
+<tr><td><code>/// Возвращает 3D-вектор с координатами (x,y,z);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ction P3D(x, y, z: real): Point3D;</td></tr>
+<tr><td><code>/// Возвращает 3D-размер с координатами (x,y,z);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ction V3D(x, y, z: real): Vector3D;</td></tr>
 </table>
 </body></HTML>
