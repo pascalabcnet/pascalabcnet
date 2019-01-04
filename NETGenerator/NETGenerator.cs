@@ -3008,7 +3008,8 @@ namespace PascalABCCompiler.NETGenerator
         private void CreateArrayForClassField(ILGenerator il, FieldBuilder fb, TypeInfo ti, IArrayInitializer InitalValue, ITypeNode ArrayType)
         {
             int rank = 1;
-            il.Emit(OpCodes.Ldarg_0);
+            if (!fb.IsStatic)
+                il.Emit(OpCodes.Ldarg_0);
             if (NETGeneratorTools.IsBoundedArray(ti))
                 NETGeneratorTools.CreateBoundedArray(il, fb, ti);
             else
@@ -3023,8 +3024,13 @@ namespace PascalABCCompiler.NETGenerator
             if (InitalValue != null)
             {
                 LocalBuilder lb = null;
-                il.Emit(OpCodes.Ldarg_0);
-                il.Emit(OpCodes.Ldfld, fb);
+                if (!fb.IsStatic)
+                {
+                    il.Emit(OpCodes.Ldarg_0);
+                    il.Emit(OpCodes.Ldfld, fb);
+                }
+                else
+                    il.Emit(OpCodes.Ldsfld, fb);
                 if (NETGeneratorTools.IsBoundedArray(ti))
                 {
                     lb = il.DeclareLocal(ti.arr_fld.FieldType);
