@@ -515,6 +515,16 @@ namespace PascalABCCompiler.NetHelper
                                             mths = new List<MethodInfo>();
                                             type_extensions.Add(tmp, mths);
                                         }
+                                        if ((tmp.BaseType == DelegateType || tmp.BaseType == MulticastDelegateType))
+                                        {
+                                            List<MethodInfo> mths3 = null;
+                                            if (!type_extensions.TryGetValue(DelegateType, out mths3))
+                                            {
+                                                mths3 = new List<MethodInfo>();
+                                                type_extensions.Add(DelegateType, mths3);
+                                            }
+                                            mths3.Add(mi);
+                                        }
                                         mths.Add(mi);
                                         if (tmp.IsArray && !generic_array_type_extensions.TryGetValue(tmp.GetArrayRank(), out mths2))
                                         {

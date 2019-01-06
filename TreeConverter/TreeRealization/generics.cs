@@ -1137,9 +1137,18 @@ namespace PascalABCCompiler.TreeRealization
                 {
                     delegate_internal_interface dii = formal_type.get_internal_interface(internal_interface_kind.delegate_interface) as delegate_internal_interface;
                     delegated_methods dm = fact_type as delegated_methods;
+                    function_node fact_func = null;
                     if (dm != null && dm.proper_methods.Count == 1)
+                        fact_func = dm.proper_methods[0].simple_function_node;
+                    else if (fact_type.IsDelegate)
                     {
-                        function_node fact_func = dm.proper_methods[0].simple_function_node;
+                        var sil = fact_type.find_in_type("Invoke");
+                        if (sil != null && sil.Count > 0)
+                            fact_func = sil[0].sym_info as function_node;
+                    }
+                        
+                    if (fact_func != null)
+                    {
                         if (fact_func.parameters.Count != dii.parameters.Count)
                         {
                             goto eq_cmp;
