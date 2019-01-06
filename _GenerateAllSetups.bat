@@ -16,13 +16,8 @@ Utils\ReplaceInFiles\ReplaceInFiles.exe Configuration\Version.defs Configuration
 Utils\ReplaceInFiles\ReplaceInFiles.exe Configuration\Version.defs ReleaseGenerators\PascalABCNET_version.nsh.tmpl ReleaseGenerators\PascalABCNET_version.nsh
 Utils\ReplaceInFiles\ReplaceInFiles.exe Configuration\Version.defs Configuration\pabcversion.txt.tmpl Release\pabcversion.txt
 
-if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\msbuild.exe" (
-"%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\msbuild.exe" /t:rebuild /property:Configuration=Release PascalABCNET.sln
-) else if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Professional\MSBuild\15.0\Bin\msbuild.exe" (
-"%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Professional\MSBuild\15.0\Bin\msbuild.exe" /t:rebuild /property:Configuration=Release PascalABCNET.sln
-) else (
-"%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Enterprise\MSBuild\15.0\Bin\msbuild.exe" /t:rebuild /property:Configuration=Release PascalABCNET.sln
-)
+call Studio.bat /t:rebuild "/property:Configuration=Release" PascalABCNET.sln
+
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 cd ReleaseGenerators
@@ -55,7 +50,13 @@ REM MPGORunner.exe
 TestRunner.exe
 
 cd ..\ReleaseGenerators
-PascalABCNET_ALL.bat
+call PascalABCNET_ALL.bat
+
+cd ..
+call Studio.bat /t:rebuild "/property:Configuration=Release" PascalABCNET_40.sln
+cd ReleaseGenerators
+call PascalABCNETWithDotNet40.bat
+
 GOTO EXIT
 
 :ERROR

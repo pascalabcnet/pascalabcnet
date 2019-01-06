@@ -23,14 +23,12 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор выключения границы объекта</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства базового класса ObjectWPF</font></td></tr>
 
-<tr><tr><td><code><b>property</b> Center: Point;</code>
+<tr><tr><td><code><b>property</b> Bounds: GRect;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Прямоугольник графического объекта</td></tr>
+<tr><td><code><b>property</b> Center: Point;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Центр графического объекта</td></tr>
 <tr><td><code><b>property</b> Color: GColor;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет графического объекта</td></tr>
-<tr><td><code><b>property</b> Dx: real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Направление движения по оси X. Используется методом Move</td></tr>
-<tr><td><code><b>property</b> Dy: real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Направление движения по оси Y. Используется методом Move</td></tr>
 <tr><td><code><b>property</b> FontColor: Color;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет шрифта текста внутри графического объекта</td></tr>
 <tr><td><code><b>property</b> FontName: string;</code>
@@ -61,6 +59,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выравнивание текста внутри графического объекта</td></tr>
 <tr><td><code><b>property</b> Top: real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отступ графического объекта от верхнего края</td></tr>
+<tr><td><code><b>property</b> Visible: boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Видимость графического объекта</td></tr>
 <tr><td><code><b>property</b> Width: real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ширина графического объекта</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы базового класса ObjectWPF</font></td></tr>
@@ -71,7 +71,7 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет из графического объекта дочерний</td></tr>
 <tr><td><code><b>procedure</b> Destroy;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет графический объект</td></tr>
-<tr><td><code><b>procedure</b> Move;</code>
+<tr><td><code><b>procedure</b> Move; <b>virtual</b>;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает графический объект на вектор (dx,dy)</td></tr>
 <tr><td><code><b>procedure</b> MoveForward(r: real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает графический объект в направлении RotateAngle (вверх при RotateAngle=0)</td></tr>

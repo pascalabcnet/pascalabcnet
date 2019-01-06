@@ -634,7 +634,6 @@ namespace VisualPascalABC
             this.menuStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
             this.menuStrip1.Size = new System.Drawing.Size(1156, 24);
             this.menuStrip1.TabIndex = 3;
             this.menuStrip1.Text = "menuStrip1";
@@ -663,7 +662,7 @@ namespace VisualPascalABC
             this.miRecentProjects,
             this.miExit});
             this.mrFile.Name = "mrFile";
-            this.mrFile.Size = new System.Drawing.Size(61, 24);
+            this.mrFile.Size = new System.Drawing.Size(61, 20);
             this.mrFile.Text = "MR_FILE";
             // 
             // miNew
@@ -857,7 +856,7 @@ namespace VisualPascalABC
             this.toolStripMenuItem7});
             this.mrEdit.Name = "mrEdit";
             this.mrEdit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
-            this.mrEdit.Size = new System.Drawing.Size(63, 24);
+            this.mrEdit.Size = new System.Drawing.Size(63, 20);
             this.mrEdit.Text = "MR_EDIT";
             // 
             // miUndo
@@ -1058,7 +1057,7 @@ namespace VisualPascalABC
             this.miNavigForw});
             this.mrView.Name = "mrView";
             this.mrView.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.mrView.Size = new System.Drawing.Size(66, 24);
+            this.mrView.Size = new System.Drawing.Size(66, 20);
             this.mrView.Text = "MR_VIEW";
             // 
             // miClearOutput
@@ -1228,7 +1227,7 @@ namespace VisualPascalABC
             this.mADDREFERENCEToolStripMenuItem,
             this.mPROPERTIESToolStripMenuItem});
             this.mRPROJECTToolStripMenuItem.Name = "mRPROJECTToolStripMenuItem";
-            this.mRPROJECTToolStripMenuItem.Size = new System.Drawing.Size(85, 24);
+            this.mRPROJECTToolStripMenuItem.Size = new System.Drawing.Size(85, 20);
             this.mRPROJECTToolStripMenuItem.Text = "MR_PROJECT";
             // 
             // mADDFILEToolStripMenuItem
@@ -1284,7 +1283,7 @@ namespace VisualPascalABC
             this.miAddExpr});
             this.mrProgram.Name = "mrProgram";
             this.mrProgram.ShortcutKeys = System.Windows.Forms.Keys.F8;
-            this.mrProgram.Size = new System.Drawing.Size(90, 24);
+            this.mrProgram.Size = new System.Drawing.Size(90, 20);
             this.mrProgram.Text = "MR_PROGRAM";
             // 
             // miRun
@@ -1370,7 +1369,7 @@ namespace VisualPascalABC
             this.miZOrder,
             this.miTabOrder});
             this.mrDesigner.Name = "mrDesigner";
-            this.mrDesigner.Size = new System.Drawing.Size(90, 24);
+            this.mrDesigner.Size = new System.Drawing.Size(90, 20);
             this.mrDesigner.Text = "MR_DESIGNER";
             this.mrDesigner.Visible = false;
             // 
@@ -1558,7 +1557,7 @@ namespace VisualPascalABC
             this.mrService.Name = "mrService";
             this.mrService.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.D)));
-            this.mrService.Size = new System.Drawing.Size(82, 24);
+            this.mrService.Size = new System.Drawing.Size(82, 20);
             this.mrService.Text = "MR_SERVICE";
             // 
             // mOPTIONSToolStripMenuItem
@@ -1619,7 +1618,7 @@ namespace VisualPascalABC
             // miPlugins
             // 
             this.miPlugins.Name = "miPlugins";
-            this.miPlugins.Size = new System.Drawing.Size(82, 24);
+            this.miPlugins.Size = new System.Drawing.Size(82, 20);
             this.miPlugins.Text = "MR_PLUGINS";
             this.miPlugins.Visible = false;
             // 
@@ -1635,7 +1634,7 @@ namespace VisualPascalABC
             this.miCheckUpdates,
             this.miAbout});
             this.mrHelp.Name = "mrHelp";
-            this.mrHelp.Size = new System.Drawing.Size(64, 24);
+            this.mrHelp.Size = new System.Drawing.Size(64, 20);
             this.mrHelp.Text = "MR_HELP";
             // 
             // tsHelp
