@@ -1187,6 +1187,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_semantic_check_sugared_var_def_statement_node);
 		}
+
+		public virtual void visit(const_pattern _const_pattern)
+		{
+			DefaultVisit(_const_pattern);
+		}
 	}
 
 

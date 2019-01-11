@@ -492,6 +492,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new var_tuple_def_statement();
 				case 235:
 					return new semantic_check_sugared_var_def_statement_node();
+				case 236:
+					return new const_pattern();
 			}
 			return null;
 		}
@@ -4175,6 +4177,18 @@ namespace PascalABCCompiler.SyntaxTree
 					_semantic_check_sugared_var_def_statement_node.lst.Add(_read_node() as syntax_tree_node);
 				}
 			}
+		}
+
+
+		public void visit(const_pattern _const_pattern)
+		{
+			read_const_pattern(_const_pattern);
+		}
+
+		public void read_const_pattern(const_pattern _const_pattern)
+		{
+			read_pattern_node(_const_pattern);
+			_const_pattern.pattern_expression = _read_node() as expression;
 		}
 
 	}

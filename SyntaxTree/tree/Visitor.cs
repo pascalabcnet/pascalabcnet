@@ -1420,6 +1420,12 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_semantic_check_sugared_var_def_statement_node">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(semantic_check_sugared_var_def_statement_node _semantic_check_sugared_var_def_statement_node);
+		///<summary>
+		///Method to visit const_pattern.
+		///</summary>
+		///<param name="_const_pattern">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(const_pattern _const_pattern);
 	}
 
 

@@ -116,6 +116,11 @@ namespace SyntaxVisitors.SugarVisitors
 
                     DesugarDeconstructorPatternCase(matchWith.expr, patternCase);
                 }
+
+                if (patternCase.pattern is const_pattern)
+                {
+                    DesugarConstPatternCase(matchWith.expr, patternCase);
+                }
             }
 
             if (matchWith.defaultAction != null)
@@ -145,6 +150,29 @@ namespace SyntaxVisitors.SugarVisitors
             
             var isExpression = new is_pattern_expr(matchingExpression, patternCase.pattern);
             var ifCondition = patternCase.condition == null ? (expression)isExpression : bin_expr.LogicalAnd(isExpression, patternCase.condition);
+            var ifCheck = SubtreeCreator.CreateIf(ifCondition, patternCase.case_action);
+
+            // Добавляем полученные statements в результат
+            AddDesugaredCaseToResult(ifCheck, ifCheck);
+        }
+
+        void DesugarConstPatternCase(expression matchingExpression, pattern_case patternCase)
+        {
+            Debug.Assert(patternCase.pattern is const_pattern);
+
+            var eqParams = new expression_list(
+                new List<expression>()
+                {
+                    matchingExpression,
+                    (patternCase.pattern as const_pattern).pattern_expression
+                }
+            );
+            var equalsCallNode = new method_call(
+            new dot_node(new ident("object"), new ident("Equals")),
+            eqParams,
+            patternCase.source_context);
+            
+            var ifCondition = patternCase.condition == null ? (expression)equalsCallNode : bin_expr.LogicalAnd(equalsCallNode, patternCase.condition);
             var ifCheck = SubtreeCreator.CreateIf(ifCondition, patternCase.case_action);
 
             // Добавляем полученные statements в результат

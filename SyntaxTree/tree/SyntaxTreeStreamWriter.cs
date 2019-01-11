@@ -6574,6 +6574,27 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(const_pattern _const_pattern)
+		{
+			bw.Write((Int16)236);
+			write_const_pattern(_const_pattern);
+		}
+
+		public void write_const_pattern(const_pattern _const_pattern)
+		{
+			write_pattern_node(_const_pattern);
+			if (_const_pattern.pattern_expression == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_const_pattern.pattern_expression.visit(this);
+			}
+		}
+
 	}
 
 

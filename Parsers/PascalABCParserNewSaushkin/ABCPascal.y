@@ -3282,6 +3282,10 @@ pattern_optional_var
         { 
             $$ = new deconstructor_pattern($3 as List<pattern_deconstructor_parameter>, $1, @$); 
         }
+	| literal_or_number 
+		{
+			$$ = new const_pattern($1, @$); 
+		}
     ;    
     
 pattern_out_param_list_optional_var

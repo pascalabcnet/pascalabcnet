@@ -3187,6 +3187,12 @@ namespace CodeFormatters
             DecOffset();
         }
 
+        public override void visit(const_pattern _const_pattern)
+        {
+            visit_node(_const_pattern.pattern_expression);
+            add_space_after = false;
+        }
+
         public override void visit(deconstructor_pattern _deconstructor_pattern)
         {
             visit_node(_deconstructor_pattern.type);

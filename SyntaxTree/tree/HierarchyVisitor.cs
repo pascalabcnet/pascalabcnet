@@ -1893,6 +1893,14 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(const_pattern _const_pattern)
+		{
+		}
+
+		public virtual void post_do_visit(const_pattern _const_pattern)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -3920,6 +3928,14 @@ namespace PascalABCCompiler.SyntaxTree
 			for (int i = 0; i < lst.Count; i++)
 				visit(semantic_check_sugared_var_def_statement_node.lst[i]);
 			post_do_visit(_semantic_check_sugared_var_def_statement_node);
+		}
+
+		public override void visit(const_pattern _const_pattern)
+		{
+			DefaultVisit(_const_pattern);
+			pre_do_visit(_const_pattern);
+			visit(const_pattern.pattern_expression);
+			post_do_visit(_const_pattern);
 		}
 	}
 

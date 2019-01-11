@@ -51248,6 +51248,155 @@ namespace PascalABCCompiler.SyntaxTree
 	}
 
 
+	///<summary>
+	///паттерн для константного матчинга
+	///</summary>
+	[Serializable]
+	public partial class const_pattern : pattern_node
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public const_pattern()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public const_pattern(expression _pattern_expression)
+		{
+			this._pattern_expression=_pattern_expression;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public const_pattern(expression _pattern_expression,SourceContext sc)
+		{
+			this._pattern_expression=_pattern_expression;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected expression _pattern_expression;
+
+		///<summary>
+		///
+		///</summary>
+		public expression pattern_expression
+		{
+			get
+			{
+				return _pattern_expression;
+			}
+			set
+			{
+				_pattern_expression=value;
+				if (_pattern_expression != null)
+					_pattern_expression.Parent = this;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			const_pattern copy = new const_pattern();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (pattern_expression != null)
+			{
+				copy.pattern_expression = (expression)pattern_expression.Clone();
+				copy.pattern_expression.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new const_pattern TypedClone()
+		{
+			return Clone() as const_pattern;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (pattern_expression != null)
+				pattern_expression.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			pattern_expression?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return pattern_expression;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						pattern_expression = (expression)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
 
 }
 

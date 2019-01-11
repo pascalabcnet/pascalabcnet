@@ -3055,6 +3055,20 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="const_pattern" BaseName="pattern_node">
+      <Fields>
+        <SyntaxField Name="pattern_expression" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>11</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3082,6 +3096,7 @@
         <Tag Name="Yield" ReferenceCount="8" />
         <Tag Name="Patterns" ReferenceCount="12" />
         <Tag Name="Typeclasses" ReferenceCount="13" />
+        <Tag Name="patterns" ReferenceCount="5" />
       </Tags>
     </FilterCategory>
   </TagCategories>
@@ -3131,6 +3146,7 @@
       <HelpData Key=".parameters" Value="" />
       <HelpData Key=".params" Value="" />
       <HelpData Key=".pattern" Value="" />
+      <HelpData Key=".pattern_expression" Value="" />
       <HelpData Key=".procdef" Value="" />
       <HelpData Key=".res" Value="" />
       <HelpData Key=".restriction" Value="" />
@@ -3355,6 +3371,8 @@
       <HelpData Key="const_method_call.parametres" Value="" />
       <HelpData Key="const_method_call.unit_name" Value="" />
       <HelpData Key="const_node" Value="Константа" />
+      <HelpData Key="const_pattern" Value="паттерн для константного матчинга" />
+      <HelpData Key="const_pattern.pattern_expression" Value="" />
       <HelpData Key="constructor" Value="" />
       <HelpData Key="constructor.constructor(formal_parameters fp): this(fp, null)" Value="" />
       <HelpData Key="constructor.constructor(formal_parameters fp,SourceContext sc): this(null, fp, new procedure_attributes_list(proc_attribute.attr_overload), null, false, false, null, null)" Value="" />
