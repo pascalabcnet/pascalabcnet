@@ -7849,6 +7849,10 @@ namespace PascalABCCompiler.NETGenerator
         {
             ICommonClassFieldReferenceNode value = (ICommonClassFieldReferenceNode)to;
             FldInfo fi_info = helper.GetField(value.field);
+            /*if (value.field.name == "XYZW")
+            {
+                var y = value.field.GetHashCode();
+            } */
             FieldInfo fi = fi_info.fi;
             is_dot_expr = true;
             has_dereferences = false;

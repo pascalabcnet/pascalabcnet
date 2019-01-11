@@ -57,6 +57,9 @@ call Studio.bat /t:rebuild "/property:Configuration=Release" PascalABCNET_40.sln
 cd ReleaseGenerators
 call PascalABCNETWithDotNet40.bat
 
+cd ..
+call Studio.bat /t:rebuild "/property:Configuration=Release" PascalABCNET.sln
+
 GOTO EXIT
 
 :ERROR
