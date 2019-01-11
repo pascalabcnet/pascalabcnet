@@ -3492,6 +3492,10 @@ is_expr
         {
             $$ = NewAsIsExpr($1, op_typecast.is_op, $3, @$);
         }
+	| term tkIs literal_or_number
+		{
+            $$ = NewIsObjectExpr($1, $3, @$);
+        }
     ;
     
 simple_term
