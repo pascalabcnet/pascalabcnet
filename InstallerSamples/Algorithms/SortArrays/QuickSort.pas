@@ -36,9 +36,9 @@ const n = 20;
 
 begin
   var a := ArrRandom(n);
-  writeln('До сортировки: ');
+  Println('До сортировки: ');
   Writeln(a);
   QuickSort(a,0,a.Length-1);
-  writeln('После сортировки: ');
-  Writeln(a);
+  Println('После сортировки: ');
+  Println(a);
 end.

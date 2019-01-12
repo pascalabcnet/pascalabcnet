@@ -1,4 +1,4 @@
-uses ABCObjects,GraphABC;
+﻿uses WPFObjects;
 
 const CountSquares = 20;
 
@@ -8,21 +8,21 @@ var
   /// Количество ошибок
   Mistakes: integer;
   /// Строка информации
-  StatusRect: RectangleABC;
+  StatusRect: RectangleWPF;
 
 /// Вывод информационной строки
 procedure DrawStatusText;
 begin
   if CurrentDigit<=CountSquares then
-    StatusRect.Text := 'Удалено квадратов: ' + IntToStr(CurrentDigit-1) + '    Ошибок: ' + IntToStr(Mistakes)
-  else StatusRect.Text := 'Игра окончена. Время: ' + IntToStr(Milliseconds div 1000) + ' с.    Ошибок: ' + IntToStr(Mistakes);
+    StatusRect.Text := $'Удалено квадратов: {CurrentDigit-1}     Ошибок: {Mistakes}'
+  else StatusRect.Text := $'Игра окончена. Время: {Milliseconds div 1000} с.    Ошибок: {Mistakes}';
 end;
 
 /// Обработчик события мыши
-procedure MyMouseDown(x,y,mb: integer);
+procedure MyMouseDown(x,y: real; mb: integer);
 begin
   var ob := ObjectUnderPoint(x,y);
-  if (ob<>nil) and (ob is RectangleABC) then
+  if (ob<>nil) and (ob is RectangleWPF) then
     if ob.Number=CurrentDigit then
     begin
       ob.Destroy;
@@ -31,7 +31,7 @@ begin
     end
     else
     begin
-      ob.Color := clRed;
+      ob.Color := Colors.Red;
       Inc(Mistakes);
       DrawStatusText;
     end;
@@ -39,15 +39,15 @@ end;
 
 begin
   Window.Title := 'Игра: удали все квадраты по порядку';
-  Window.IsFixedSize := True;
   for var i:=1 to CountSquares do
   begin
-    var x := Random(WindowWidth-50);
-    var y := Random(WindowHeight-100);
-    var ob := RectangleABC.Create(x,y,50,50,clMoneyGreen);
+    var x := Random(Window.Width-50);
+    var y := Random(Window.Height-100);
+    var ob := RectangleWPF.Create(x,y,50,50,Colors.LightGreen).WithBorder;
+    ob.FontSize := 25;
     ob.Number := i;
   end;
-  StatusRect := RectangleABC.Create(0,Window.Height-40,Window.Width,40,Color.LightSteelBlue);
+  StatusRect := RectangleWPF.Create(0,Window.Height-40,Window.Width,40,Colors.LightBlue);
   CurrentDigit := 1;
   Mistakes := 0;
   DrawStatusText;

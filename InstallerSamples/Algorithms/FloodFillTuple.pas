@@ -39,8 +39,8 @@ end;
 procedure ReadFromFile(fname: string; var a: array [,] of integer);
 begin
   var f := OpenRead(fname);
-  var dimx,dimy: integer;
-  readln(f,dimy,dimx);
+  var dimx,dimy: integer; 
+  Readln(f,dimy,dimx);
   SetLength(a,dimy,dimx);
   for var y := 0 to dimy-1 do
   begin

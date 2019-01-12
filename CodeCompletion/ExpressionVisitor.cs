@@ -57,6 +57,17 @@ namespace CodeCompletion
             {
                 returned_scope = null;
             }
+            if (returned_scope is ProcScope && (expr is ident || expr is dot_node))
+            {
+                try
+                {
+                    expr = new method_call(expr as addressed_value, new expression_list());
+                    expr.visit(this);
+                }
+                catch (Exception e)
+                {
+                }
+            }
             if (returned_scope != null && returned_scope is ElementScope && (returned_scope as ElementScope).sc is ProcScope)
             {
                 if ((returned_scope as ElementScope).si.kind == SymbolKind.Delegate)
@@ -154,7 +165,8 @@ namespace CodeCompletion
                     }
                     else if (returned_scopes[i] is ProcScope)
                     {
-                        proces.Add(returned_scopes[i] as ProcScope);
+                        if (!((returned_scopes[i] as ProcScope).is_constructor && returned_scopes[i].is_static))
+                            proces.Add(returned_scopes[i] as ProcScope);
                     }  
                     else if (returned_scopes[i] is ElementScope && (returned_scopes[i] as ElementScope).sc is CompiledScope)
                     {
@@ -841,7 +853,7 @@ namespace CodeCompletion
                                 returned_scope = CheckForAccess(left_scope as TypeScope, returned_scope as ElementScope);
                             return;
                         }
-                        if (returned_scope != null && returned_scope is ProcScope)
+                        if (returned_scope != null && returned_scope is ProcScope && !((returned_scope as ProcScope).IsStatic && tmp_tn is ElementScope))
                         {
                             if ((returned_scope as ProcScope).return_type == null)
                             {

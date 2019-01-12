@@ -397,7 +397,7 @@ namespace CodeFormatters
                         {
                             if (multi_line_nodes.Count == 1)
                             {
-                                if (!(multi_line_nodes.Peek() is function_lambda_definition))
+                                if (!(multi_line_nodes.Peek() is function_lambda_definition) && !(multi_line_nodes.Peek() is simple_property))
                                     lines[i] = new string(' ', addit_pos_for_multiline) + lines[i];
                                 else
                                     lines[i] = new string(' ', off) + lines[i].Trim();
@@ -405,7 +405,7 @@ namespace CodeFormatters
                                 
                             else
                             {
-                                if (!(multi_line_nodes.Peek() is function_lambda_definition))
+                                if (!(multi_line_nodes.Peek() is function_lambda_definition) && !(multi_line_nodes.Peek() is simple_property))
                                 {
                                     if (off > lines[i].Length)
                                         lines[i] = new string(' ', addit_pos_for_multiline + off) + lines[i];
@@ -827,8 +827,9 @@ namespace CodeFormatters
                         || sn is label_definitions || sn is class_definition || sn is uses_list || sn is uses_closure || sn is unit_name || sn is program_name ||
                         sn is new_expr || sn is raise_stmt || sn is interface_node || sn is implementation_node
                         || sn is lock_stmt || sn is loop_stmt || sn is simple_property || sn is read_accessor_name || sn is write_accessor_name
-                        || sn is formal_parameters || sn is bracket_expr || sn is record_const || sn is array_const || sn is exception_handler
+                        || sn is formal_parameters || sn is bracket_expr || sn is record_const || sn is array_const || sn is enum_type_definition || sn is exception_handler
                         || sn is try_handler_finally || sn is try_handler_except || sn is external_directive || sn is where_definition
+                        || sn is var_tuple_def_statement
                         || sn is match_with
                         || (sn is simple_const_definition && in_class && !in_procedure) || (sn is typed_const_definition && in_class && !in_procedure)
                         )
@@ -1167,10 +1168,10 @@ namespace CodeFormatters
             //WriteKeyword(" do");
             bool need_off = !(_while_node.statements is statement_list);
             if (need_off)
-            IncOffset();
+                IncOffset();
             visit_node(_while_node.statements);
             if (need_off)
-            DecOffset();
+                DecOffset();
         }
 
         private void WriteKeyword(string s)
@@ -1293,12 +1294,12 @@ namespace CodeFormatters
 
         public override void visit(typed_parameters _typed_parametres)
         {
-            if (_typed_parametres.attributes != null)
+            /*if (_typed_parametres.attributes != null)
             {
                 attr_on_new_line = false;
                 visit_node(_typed_parametres.attributes);
                 attr_on_new_line = true;
-            }
+            }*/
             if (_typed_parametres.param_kind != parametr_kind.none)
             {
                 string s = GetParamKind(_typed_parametres.param_kind);
@@ -1334,6 +1335,11 @@ namespace CodeFormatters
             {
                 if (i > 0)
                     add_space_after = true;
+                if (_formal_parametres.params_list[i].attributes != null)
+                {
+                    add_space_after = true;
+                }
+                    
                 visit_node(_formal_parametres.params_list[i]);
             }
         }
@@ -1805,7 +1811,14 @@ namespace CodeFormatters
             sb.Append("write");
             SetKeywordOffset("write");
             if (_write_accessor_name.statment_for_formatting != null)
+            {
+                if (_write_accessor_name.statment_for_formatting is statement_list)
+                    IncOffset();
                 visit_node(_write_accessor_name.statment_for_formatting);
+                if (_write_accessor_name.statment_for_formatting is statement_list)
+                    DecOffset();
+            }
+                
             else if (_write_accessor_name.accessor_name != null)
                 visit_node(_write_accessor_name.accessor_name);
             else
@@ -2013,7 +2026,10 @@ namespace CodeFormatters
         public override void visit(enum_type_definition _enum_type_definition)
         {
             sb.Append("(");
+            keyword_offset = 1;
+            multiline_stack_push(_enum_type_definition);
             visit_node(_enum_type_definition.enumerators);
+            multiline_stack_pop(_enum_type_definition);
             //sb.Append(")");
         }
 
@@ -2738,6 +2754,8 @@ namespace CodeFormatters
             visit_node(_enumerator.name);
             if (_enumerator.value != null)
             {
+                add_space_before = true;
+                add_space_after = true;
                 visit_node(_enumerator.value);
             }
         }
@@ -3193,6 +3211,25 @@ namespace CodeFormatters
         public override void visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
         {
             visit_node(_recursive_deconstructor_parameter.pattern);
+        }
+
+        public override void visit(var_tuple_def_statement _var_tuple_def_statement)
+        {
+            sb.Append("(");
+            SetKeywordOffset("(");
+            read_from_beg_pos = true;
+            visit_node(_var_tuple_def_statement.vars);
+            if (_var_tuple_def_statement.vars_type != null)
+            {
+                add_space_after = true;
+                visit_node(_var_tuple_def_statement.vars_type);
+            }
+            if (_var_tuple_def_statement.inital_value != null)
+            {
+                add_space_after = true;
+                add_space_before = true;
+                visit_node(_var_tuple_def_statement.inital_value);
+            }
         }
 
         public override void visit(dot_question_node _dot_question_node)

@@ -481,6 +481,13 @@ namespace GPPGParserScanner
                 {
                     string s = vars[i];
                     var expr = ParseExpression(new string('\n', str.source_context.begin_position.line_num - 1) + new string(' ', str.source_context.begin_position.column_num + var_offsets[i] + 2) + s, str.source_context.begin_position.line_num, str.source_context.begin_position.column_num + var_offsets[i] + 2);
+                    if (expr == null)
+                    {
+                        var err = parsertools.errors[0] as LocatedError;
+                        err.SourceContext.begin_position.line_num = str.source_context.begin_position.line_num;
+                        err.SourceContext.begin_position.column_num = str.source_context.begin_position.column_num + var_offsets[i] + vars[i].Length + 3;
+                        return str;
+                    }
                     expr.source_context.begin_position.line_num = str.source_context.begin_position.line_num;
                     expr.source_context.end_position.line_num = str.source_context.end_position.line_num;
                     mc.parameters.Add(expr);

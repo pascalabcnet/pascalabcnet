@@ -12,7 +12,9 @@
 	<RuleSets>
 		<RuleSet ignorecase="true">
 			<Delimiters>&amp;&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
-		
+            <Span name = "LineBigComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
+			   	<Begin>////</Begin>
+		  	</Span>
 		  	<Span name = "LineComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
 			   	<Begin>//@!/@</Begin>
 		  	</Span>
@@ -20,7 +22,7 @@
 		  	<Span name = "LineComment" bold = "false" italic = "false" color = "Gray" stopateol = "true">
 			   	<Begin>///@!/@</Begin>
 		  	</Span>
-
+            
 		  	<!-- <Span name = "CompilerDirectives" rule = "CompilerDirectivesSet" bold = "false" italic = "false" color = "Black" stopateol = "true">
 			   	<Begin>#</Begin>
 		  	</Span> -->

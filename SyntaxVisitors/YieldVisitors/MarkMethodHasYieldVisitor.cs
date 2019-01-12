@@ -150,7 +150,8 @@ namespace SyntaxVisitors
             var seqt = fh.return_type as sequence_type;
             if (seqt == null)
                 throw new SyntaxVisitorError("YIELD_FUNC_MUST_RETURN_SEQUENCE", fh.source_context);
-
+            if (seqt.elements_type is procedure_header || seqt.elements_type is function_header)
+                throw new SyntaxVisitorError("YIELD_FUNC_CANNOT_RETURN_SEQUENCE_OF_ANONYMOUS_DELEGATES", fh.source_context);
             var pars = fh.parameters;
             if (pars != null)
                 foreach (var ps in pars.params_list)

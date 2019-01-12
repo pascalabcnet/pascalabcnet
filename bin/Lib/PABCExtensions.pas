@@ -32,7 +32,9 @@ end;
 /// Создаёт или обнуляет типизированный файл и возвращает значение для инициализации файловой переменной
 function CreateFile<T>(fname: string): file of T;
 begin
-  PABCSystem.Rewrite(Result, fname);
+  var res: file of T;
+  PABCSystem.Rewrite(res, fname);
+  Result := res;
 end;
 
 /// Открывает типизированный файл целых и возвращает значение для инициализации файловой переменной

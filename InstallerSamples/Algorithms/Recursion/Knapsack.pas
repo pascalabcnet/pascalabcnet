@@ -1,4 +1,4 @@
-// Задача о ранце. В массиве B заданы веса предметов.
+﻿// Задача о ранце. В массиве B заданы веса предметов.
 // Выдать все варианты полной комплектации ранца частью этих предметов
 const Sz=100;
 
@@ -7,8 +7,8 @@ type IntArr = array [1..Sz] of integer;
 procedure PrintArr(const A: IntArr; n: integer);
 begin
   for var i:=1 to n do
-    write(A[i],' ');
-  writeln;
+    Print(A[i]);
+  Println;
 end;
 
 procedure TrySolve(n: integer; const B: IntArr; nb: integer);

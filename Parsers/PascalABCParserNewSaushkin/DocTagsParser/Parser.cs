@@ -98,6 +98,8 @@ namespace PascalABCCompiler.DocTagsParser
         documentation_comment_section parse_section(string text)
         {
             documentation_comment_section dcs = new documentation_comment_section();
+            if (text.StartsWith("////"))
+                return dcs;
             text = Regex.Replace(text, @"\r\n(\s)*///", "\r\n", RegexOptions.Compiled);
             text = Regex.Replace(text, @"(\s)*///", "", RegexOptions.Compiled);
             /*foreach (string section_name in sectionNames)

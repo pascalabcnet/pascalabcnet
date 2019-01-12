@@ -2,6 +2,7 @@
 %PREFIX%=SYNTAXTREEVISITORSERROR_
 
 YIELD_FUNC_MUST_RETURN_SEQUENCE=Functions with yield must return sequences
+YIELD_FUNC_CANNOT_RETURN_SEQUENCE_OF_ANONYMOUS_DELEGATES=Functions with yield cannot return sequence of anonymous delegates
 ONLY_FUNCTIONS_CAN_CONTAIN_YIELDS=Only functions can contain yield
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_VAR_CONST_PARAMS_MODIFIERS=Functions with yield cannot contain 'var', 'const' or 'params' modifiers
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_DEFAULT_PARAMETERS=Functions with yield cannot have default parameters

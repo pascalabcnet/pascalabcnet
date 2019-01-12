@@ -233,14 +233,15 @@ namespace VisualPascalABC
             this.mADDFILEToolStripMenuItem.Image = miNew.Image;
             this.mADDEXISTFILEToolStripMenuItem.Image = miOpen.Image;
             this.mADDFORMToolStripMenuItem.Image = new System.Drawing.Bitmap(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("VisualPascalABC.Resources.Icons.16x16.Form.png"));
-            toolStripPanel.Size = new Size(toolStripPanel.Size.Width, toolStrip1.Height);
+            //toolStripPanel.Size = new Size(toolStripPanel.Size.Width, toolStrip1.Height);
+            toolStripPanel.AutoSize = true;
             var gr = Graphics.FromHwnd(Handle);
             if (gr.DpiX >= 96*2)
             {
                 toolStrip1.ImageScalingSize = new Size(32, 32);
                 menuStrip1.ImageScalingSize = new Size(32, 32);
-                toolStripPanel.Size = new Size(toolStripPanel.Size.Width, 38);
-            }
+                //toolStripPanel.Size = new Size(toolStripPanel.Size.Width, 38);
+            } 
             serviceContainer = new WorkbenchServiceContainer();
 
             if (DebuggerVisible)

@@ -2520,6 +2520,8 @@ var
   OnKeyDown: procedure(k: Key);
   /// Событие отжатия клавиши
   OnKeyUp: procedure(k: Key);
+  /// Событие нажатия символьной клавиши
+  OnKeyPress: procedure(ch: char);
 
 var
 // -----------------------------------------------------
@@ -3640,10 +3642,17 @@ type
       e.Handled := True;
     end;
     
-    procedure SystemOnKeyUp(sender: Object; e: System.Windows.Input.KeyEventArgs) := 
+    procedure SystemOnKeyUp(sender: Object; e: System.Windows.Input.KeyEventArgs);
     begin
       if Graph3D.OnKeyUp <> nil then
         Graph3D.OnKeyUp(e.Key);
+      e.Handled := True;
+    end;    
+    
+    procedure SystemOnKeyPress(sender: Object; e: TextCompositionEventArgs); 
+    begin
+      if (OnKeyPress<>nil) and (e.Text<>nil) and (e.Text.Length>0) then
+        OnKeyPress(e.Text[1]);
       e.Handled := True;
     end;    
     
@@ -3692,6 +3701,7 @@ type
       
       hvp.PreviewKeyDown += (o, e)-> SystemOnKeyDown(o, e);
       hvp.PreviewKeyUp += (o, e)-> SystemOnKeyUp(o, e);
+      hvp.PreviewTextInput += SystemOnKeyPress; // не работает
       
       hvp.Focus();
       Closed += procedure(sender, e) -> begin Halt; end;

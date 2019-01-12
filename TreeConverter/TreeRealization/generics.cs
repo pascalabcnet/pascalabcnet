@@ -837,9 +837,6 @@ namespace PascalABCCompiler.TreeRealization
             var continue_trying_to_infer_types = true; 
             Dictionary<string, delegate_internal_interface> formal_delegates = null;
 
-            var testIsTypeclassRestricted = func.Attributes?.Any(x => x.AttributeType.name == "__TypeclassRestrictedFunctionAttribute");
-            var isTypeclassRestricted = testIsTypeclassRestricted.HasValue && testIsTypeclassRestricted.Value;
-            var typeclasses = func.get_generic_params_list().Where(t => t.Attributes != null && t.Attributes.Any(a => a.AttributeType != null && a.AttributeType.name == "__TypeclassGenericParameterAttribute")); // Typeclasses
             while (continue_trying_to_infer_types) //Продолжаем пытаться вычислить типы до тех пор пока состояние о выведенных типах не будет отличаться от состояния на предыдущей итерации
             {
                 var previous_deduce_state = deduced // Текущее состояние выведенных на данный момент типов. Простой список индексов с уже выведенными типами из массива deduced
@@ -922,37 +919,7 @@ namespace PascalABCCompiler.TreeRealization
                         }
                     }
                 }
-
-                if (isTypeclassRestricted)
-                {
-                    foreach (var tc in typeclasses)
-                    {
-                        var instances = context.typeclassInstances.Where(ti =>
-                            (ti.ImplementingInterfaces[0] as common_generic_instance_type_node).original_generic ==
-                            (tc.ImplementingInterfaces[0] as common_generic_instance_type_node).original_generic);
-
-                        var appropriateInstances = instances.Where(ti =>
-                            (ti.ImplementingInterfaces[0] as common_generic_instance_type_node).instance_params.SequenceEqual(
-                                (tc.ImplementingInterfaces[0] as common_generic_instance_type_node).instance_params.Select(ip => deduced[ip.generic_param_index])));
-
-                        if (appropriateInstances.Count() == 1)
-                        {
-                            var foundInstance = appropriateInstances.First() as common_type_node;
-                            if (foundInstance.generic_params?.Count > 0 is true)
-                            {
-                                type_node[] deducedInstances = new type_node[foundInstance.generic_params.Count];
-                                DeduceTypeclassInstances(context, deducedInstances, foundInstance.generic_params.OfType<type_node>());
-
-                                deduced[tc.generic_param_index] = foundInstance.get_instance(deducedInstances.ToList());
-                            }
-                            else
-                            {
-                                deduced[tc.generic_param_index] = appropriateInstances.First();
-                            }
-                        }
-                    }
-                }
-
+                
                 var current_deduce_state = deduced               //текущее состояние выведенных типов
                     .Select((t, ii) => new {Type = t, Index = ii})
                     .Where(t => t.Type != null)
@@ -1018,38 +985,6 @@ namespace PascalABCCompiler.TreeRealization
             List<type_node> deduced_list = new List<type_node>(generic_type_params_count);
             deduced_list.AddRange(deduced);
             return func.get_instance(deduced_list, alone, loc);
-        }
-
-        private static void DeduceTypeclassInstances(compilation_context context, type_node[] deduced, IEnumerable<type_node> typeclasses)
-        {
-            foreach (var tc in typeclasses)
-            {
-                var instances = context.typeclassInstances.Where(ti =>
-                    (ti.ImplementingInterfaces[0] as common_generic_instance_type_node).original_generic ==
-                    (tc.ImplementingInterfaces[0] as common_generic_instance_type_node).original_generic);
-
-                var appropriateInstances = instances.Where(ti =>
-                    (ti.ImplementingInterfaces[0] as common_generic_instance_type_node).instance_params.SequenceEqual(
-                        (tc.ImplementingInterfaces[0] as common_generic_instance_type_node).instance_params));
-
-                if (appropriateInstances.Count() == 1)
-                {
-                    var foundInstance = appropriateInstances.First() as common_type_node;
-                    if (foundInstance.generic_params?.Count > 0 is true)
-                    {
-                        List<type_node> instanceTypes = null;
-                        deduced[tc.generic_param_index] = foundInstance.get_instance(instanceTypes);
-                    }
-                    else
-                    {
-                        deduced[tc.generic_param_index] = appropriateInstances.First();
-                    }
-                }
-                else
-                {
-                    // TODO: typeclasses add error message 
-                }
-            }
         }
 
         //Выведение типов
@@ -1202,9 +1137,18 @@ namespace PascalABCCompiler.TreeRealization
                 {
                     delegate_internal_interface dii = formal_type.get_internal_interface(internal_interface_kind.delegate_interface) as delegate_internal_interface;
                     delegated_methods dm = fact_type as delegated_methods;
+                    function_node fact_func = null;
                     if (dm != null && dm.proper_methods.Count == 1)
+                        fact_func = dm.proper_methods[0].simple_function_node;
+                    else if (fact_type.IsDelegate)
                     {
-                        function_node fact_func = dm.proper_methods[0].simple_function_node;
+                        var sil = fact_type.find_in_type("Invoke");
+                        if (sil != null && sil.Count > 0)
+                            fact_func = sil[0].sym_info as function_node;
+                    }
+                        
+                    if (fact_func != null)
+                    {
                         if (fact_func.parameters.Count != dii.parameters.Count)
                         {
                             goto eq_cmp;
@@ -1496,8 +1440,23 @@ namespace PascalABCCompiler.TreeRealization
 
         protected void AddMember(object original, object converted)
         {
-            _members.Add(original, converted);
-            _member_definitions.Add(converted, original);
+            if (!_members.ContainsValue(original))  // SSM 30.12.18 bug fix #907
+            {
+                _members.Add(original, converted);
+                _member_definitions.Add(converted, original);
+            }
+            else // SSM 30.12.18 bug fix #907
+            {
+                object kk = null;
+                foreach (System.Collections.DictionaryEntry x in _members)
+                {
+                    if (x.Value == original)
+                        kk = x.Key;
+                }
+                _members[kk] = converted;
+                _member_definitions.Remove(original);
+                _member_definitions[converted] = kk;
+            }
         }
 
         protected parameter_list make_parameters(parameter_list orig_pl, common_function_node fn)
@@ -1857,6 +1816,13 @@ namespace PascalABCCompiler.TreeRealization
                     default:
                         throw new CompilerInternalError("Unexpected definition_node.");
                 }
+                /*if (orig_node is class_field cf)
+                {
+                    if (cf.type.name == "T1")
+                        orig_node = orig_node;
+                    else AddMember(orig_node, rez_node);
+                }
+                else*/
                 AddMember(orig_node, rez_node);
             }
             return rez_node;

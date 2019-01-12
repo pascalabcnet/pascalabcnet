@@ -1,4 +1,4 @@
-// Игра в 15
+﻿// Игра в 15
 uses GraphABC,ABCObjects,ABCButtons;
 
 const
@@ -37,9 +37,9 @@ begin
 end;
 
 // Определить, являются ли клетки соседями
-function Sosedi(x1,y1,x2,y2: integer): boolean;
+function Neighbours(x1,y1,x2,y2: integer): boolean;
 begin
-  Result := (abs(x1-x2)=1) and (y1=y2) or (abs(y1-y2)=1) and (x1=x2)
+  Result := (Abs(x1-x2)=1) and (y1=y2) or (Abs(y1-y2)=1) and (x1=x2)
 end;
 
 // Заполнить вспомогательный массив цифр
@@ -50,7 +50,7 @@ begin
 end;
 
 // Перемешать вспомогательный массив цифр. Количество обменов должно быть четным
-procedure MeshDigitsArr;
+procedure MixDigitsArr;
 var x: integer;
 begin
   for var i:=1 to n*n-1 do
@@ -81,9 +81,9 @@ begin
 end;
 
 // Перемешать массив фишек
-procedure Mesh15;
+procedure Mix15;
 begin
-  MeshDigitsArr;
+  MixDigitsArr;
   Fill15ByDigitsArr;
   MovesCount := 0;
   EndOfGame := False;
@@ -107,25 +107,24 @@ begin
   p[EmptyCellY,EmptyCellX].Color := clWhite;
   p[EmptyCellY,EmptyCellX].BorderColor := clWhite;
   FillDigitsArr;
-  MeshDigitsArr;
+  MixDigitsArr;
   Fill15ByDigitsArr;
 end;
 
 // Проверить, все ли фишки стоят на своих местах
 function IsSolution: boolean;
-var x,y,i: integer;
 begin
   Result:=True;
-  i:=1;
-  for y:=1 to n do
-  for x:=1 to n do
+  var i:=1;
+  for var y:=1 to n do
+  for var x:=1 to n do
   begin
     if p[y,x].Number<>i then
     begin
       Result:=False;
       break;
     end;
-    Inc(i);
+    i += 1;
     if i=n*n then i:=0;
   end;
 end;
@@ -140,16 +139,16 @@ begin
   var fy := (y-y0) div (sz+zz) + 1;
   if (fx>n) or (fy>n) then
     exit;
-  if Sosedi(fx,fy,EmptyCellX,EmptyCellY) then // Если ячейка соседствует с пустой, то поменять их местами
+  if Neighbours(fx,fy,EmptyCellX,EmptyCellY) then // Если ячейка соседствует с пустой, то поменять их местами
   begin
     Swap(p[EmptyCellY,EmptyCellX],p[fy,fx]);
     EmptyCellX := fx;
     EmptyCellY := fy;
     Inc(MovesCount);
-    StatusRect.Text := 'Количество ходов: ' + IntToStr(MovesCount);
+    StatusRect.Text := 'Количество ходов: ' + MovesCount;
     if IsSolution then
     begin
-      StatusRect.Text := 'Победа! Сделано ходов: ' + IntToStr(MovesCount);
+      StatusRect.Text := 'Победа! Сделано ходов: ' + MovesCount;
       StatusRect.Color := RGB(255,200,200);
       EndOfGame := True;
     end
@@ -166,7 +165,7 @@ begin
   Create15;
 
   MeshButton := ButtonABC.Create((WindowWidth-200) div 2,2*y0+(sz+zz)*n-zz,200,'Перемешать',clLightGray);
-  MeshButton.OnClick := Mesh15;
+  MeshButton.OnClick := Mix15;
   StatusRect := new RectangleABC(0,WindowHeight-40,WindowWidth,40,RGB(200,200,255));
   StatusRect.TextVisible := True;
   StatusRect.Text := 'Количество ходов: '+IntToStr(MovesCount);

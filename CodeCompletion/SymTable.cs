@@ -407,7 +407,8 @@ namespace CodeCompletion
                                 (t is ArrayScope && tmp_ts2.IsArray && t.Rank == tmp_ts2.Rank) || 
                                 ( tmp_ts2 is ArrayScope && t.IsArray && tmp_ts2.Rank == t.Rank) || 
                                 (t is TemplateParameterScope || t is UnknownScope) ||
-                                t is FileScope && tmp_ts2 is FileScope
+                                t is FileScope && tmp_ts2 is FileScope &&
+                                ((t as FileScope).elementType == null) == ((tmp_ts2 as FileScope).elementType == null)
                                 )
                             {
                                 lst.AddRange(extension_methods[t]);
@@ -441,7 +442,8 @@ namespace CodeCompletion
                                 if (t.GenericTypeDefinition == int_ts2.GenericTypeDefinition || t.IsEqual(int_ts2) ||
                                         (t is ArrayScope && int_ts2.IsArray && t.Rank == int_ts2.Rank) ||
                                         (int_ts2 is ArrayScope && t.IsArray && int_ts2.Rank == t.Rank) ||
-                                        t is FileScope && int_ts2 is FileScope)
+                                        t is FileScope && int_ts2 is FileScope && 
+                                        ((t as FileScope).elementType == null) == ((int_ts2 as FileScope).elementType == null))
                                 {
                                     lst.AddRange(extension_methods[t]);
                                     //break;
@@ -1436,6 +1438,8 @@ namespace CodeCompletion
 
         public override List<SymScope> FindOverloadNames(string name)
         {
+            if (string.Compare(si.name, name, true) == 0)
+                return new List<SymScope>() { this };
             List<SymScope> names = sc.FindOverloadNames(name);
             if (topScope != null)
                 names.AddRange(topScope.FindOverloadNames(name));
@@ -2921,7 +2925,11 @@ namespace CodeCompletion
 
         public override List<SymScope> FindOverloadNames(string name)
         {
-            return actType.FindOverloadNames(name);
+            List<SymScope> names = actType.FindOverloadNames(name);
+            if (names.Count > 0)
+                return names;
+            if (topScope != null) return topScope.FindOverloadNames(name);
+            return names;
         }
 
         public override List<SymScope> FindOverloadNamesOnlyInType(string name)
@@ -4221,6 +4229,8 @@ namespace CodeCompletion
         public override bool IsEqual(SymScope ts)
         {
             bool eq = this == ts as TypeScope;
+            if (ts == null)
+                return false;
             if (ts is NullTypeScope && this.kind == SymbolKind.Class)
                 return true;
             if (eq)
@@ -4459,12 +4469,15 @@ namespace CodeCompletion
                             if (ss.is_static && ev.CheckForBaseAccess(ev.entry_scope, this))
                                 lst.Add(ss.si);
                         }
-                        else
-                            if (ss.is_static)
+                        else if (ss.is_static)
+                        {
+                            if (!((ss is ProcScope) && (ss as ProcScope).IsConstructor()))
                                 lst.Add(ss.si);
-                            else if ((ss is ProcScope) && (ss as ProcScope).IsConstructor())
-                                if (!((ss as ProcScope).parameters == null || (ss as ProcScope).parameters.Count == 0) || !called_in_base)
-                                    lst.Add(ss.si);
+                        }
+
+                        else if ((ss is ProcScope) && (ss as ProcScope).IsConstructor())
+                            if (!((ss as ProcScope).parameters == null || (ss as ProcScope).parameters.Count == 0) || !called_in_base)
+                                lst.Add(ss.si);
                     }
                     else
                     {

@@ -3714,13 +3714,29 @@ namespace PascalABCCompiler.TreeRealization
             if (_explicit_convertions_from.TryGetValue(ctn, out fn))
                 return fn;
             if (SemanticRules.PoinerRealization == PoinerRealization.VoidStar)
+            {
                 if ((this == SystemLibrary.SystemLibrary.integer_type && ctn == SystemLibrary.SystemLibrary.pointer_type) ||
-                    (this == SystemLibrary.SystemLibrary.pointer_type && ctn == SystemLibrary.SystemLibrary.integer_type))
+                    (this == SystemLibrary.SystemLibrary.pointer_type && ctn == SystemLibrary.SystemLibrary.integer_type)
+                    )
                 {
                     fn = TreeConverter.convertion_data_and_alghoritms.get_empty_conversion(ctn, this, false);
                     _explicit_convertions_from.Add(ctn, fn);
                     return fn;
                 }
+                /*else if ((this == SystemLibrary.SystemLibrary.pointer_type && ctn == SystemLibrary.SystemLibrary.int64_type))
+                {
+                    fn = SystemLibrary.SystemLibrary.int64_to_pointer;
+                    _explicit_convertions_from.Add(ctn, fn);
+                    return fn;
+                }
+                else if ((this == SystemLibrary.SystemLibrary.int64_type && ctn == SystemLibrary.SystemLibrary.pointer_type))
+                {
+                    fn = SystemLibrary.SystemLibrary.pointer_to_int64;
+                    _explicit_convertions_from.Add(ctn, fn);
+                    return fn;
+                }*/
+            }
+                
 
             //enum->int32, int32->enum
             //TODO переделать это. Наверно это делается както нетак. Enum Conversion
@@ -5002,6 +5018,17 @@ namespace PascalABCCompiler.TreeRealization
             set
             {
                 _element_type = value;
+            }
+        }
+
+        public override string PrintableName
+        {
+            get
+            {
+                if (_element_type != null)
+                    return "array of " + _element_type.PrintableName;
+                else
+                    return base.PrintableName;
             }
         }
     }

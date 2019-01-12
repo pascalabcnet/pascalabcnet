@@ -6358,7 +6358,7 @@ begin
   else if t.IsEnum then Result := f.br.ReadInt32
   else if t.IsValueType then
   begin
-    elem := Activator.CreateInstance(t);
+    elem := Activator.CreateInstance(t,true);
     fa := t.GetFields(System.Reflection.BindingFlags.GetField or System.Reflection.BindingFlags.Instance or System.Reflection.BindingFlags.Public or System.Reflection.BindingFlags.NonPublic);
     for var i := 0 to fa.Length - 1 do
       if {not fa[i].IsStatic and} not fa[i].IsLiteral then
@@ -6877,7 +6877,10 @@ begin
   //result:= Convert.ToString(integer(p), 16);
   if p = nil then
     result := 'nil'
-  else result := '$' + integer(p).ToString('X');
+  else if Environment.Is64BitProcess then 
+    result := '$' + int64(p).ToString('X')
+  else
+    result := '$' + integer(p).ToString('X')
 end;
 
 procedure Exec(filename: string);

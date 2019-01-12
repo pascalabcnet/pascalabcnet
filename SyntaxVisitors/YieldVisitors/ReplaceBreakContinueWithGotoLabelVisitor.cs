@@ -41,11 +41,11 @@ namespace SyntaxVisitors
                 var pcName = pcIdent.name.ToLower();
                 if (pcName == "break")
                 {
-                    Replace(pc, this.GotoBreak);
+                    ReplaceUsingParent(pc, this.GotoBreak);
                 }
                 else if (pcName == "continue")
                 {
-                    Replace(pc, this.GotoContinue);
+                    ReplaceUsingParent(pc, this.GotoContinue);
                 }
             }
         }

@@ -1337,42 +1337,6 @@ namespace PascalABCCompiler.SyntaxTree
 		///<returns> Return value is void </returns>
 		void visit(double_question_node _double_question_node);
 		///<summary>
-		///Method to visit typeclass_restriction.
-		///</summary>
-		///<param name="_typeclass_restriction">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(typeclass_restriction _typeclass_restriction);
-		///<summary>
-		///Method to visit instance_definition.
-		///</summary>
-		///<param name="_instance_definition">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(instance_definition _instance_definition);
-		///<summary>
-		///Method to visit typeclass_definition.
-		///</summary>
-		///<param name="_typeclass_definition">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(typeclass_definition _typeclass_definition);
-		///<summary>
-		///Method to visit where_typeclass_constraint.
-		///</summary>
-		///<param name="_where_typeclass_constraint">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(where_typeclass_constraint _where_typeclass_constraint);
-		///<summary>
-		///Method to visit typeclass_param_list.
-		///</summary>
-		///<param name="_typeclass_param_list">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(typeclass_param_list _typeclass_param_list);
-		///<summary>
-		///Method to visit typeclass_reference.
-		///</summary>
-		///<param name="_typeclass_reference">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(typeclass_reference _typeclass_reference);
-		///<summary>
 		///Method to visit pattern_node.
 		///</summary>
 		///<param name="_pattern_node">Node to visit</param>

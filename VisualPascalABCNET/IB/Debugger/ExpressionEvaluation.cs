@@ -4954,7 +4954,20 @@ namespace VisualPascalABC
                 NamedValue global_nv = null;
                 NamedValue disp_nv = null;
                 nvc = debuggedProcess.SelectedFunction.LocalVariables;
-                foreach (NamedValue nv in nvc)
+                List<NamedValue> val_list = new List<NamedValue>();
+                foreach (NamedValue nv in nvc)//smotrim sredi lokalnyh peremennyh
+                {
+                    if (nv.Name.IndexOf("<>local_variables") == -1)
+                        val_list.Add(nv);
+                    else
+                    {
+                        foreach (NamedValue nv2 in nv.GetMembers())//smotrim sredi lokalnyh peremennyh
+                        {
+                            val_list.Add(nv2);
+                        }
+                    }
+                }
+                foreach (NamedValue nv in val_list)
                 {
                     if (nv.Name.IndexOf(':') != -1)
                     {

@@ -122,8 +122,9 @@ namespace TreeConverter.LambdaExpressions.Closure
         {
             if (newExpr.params_list != null && newExpr.params_list.expressions != null)
             {
-                foreach (var expr in newExpr.params_list.expressions)
+                for (int i = 0; i < newExpr.params_list.expressions.Count; i++)
                 {
+                    expression expr = newExpr.params_list.expressions[i];
                     ProcessNode(expr);
                 }
             }
@@ -142,11 +143,11 @@ namespace TreeConverter.LambdaExpressions.Closure
             
             if (si == null)
             {
-                if (InLambdaContext)
+                /*if (InLambdaContext)
                 {
                     _visitor.AddError(new ThisTypeOfVariablesCannotBeCaptured(_visitor.get_location(id)));
                     return;
-                }
+                }*/
                 return;
             }
 
@@ -604,6 +605,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 {
                     var varType = lambdaDefinition.formal_parameters.params_list[i].vars_type is lambda_inferred_type ?
                         LambdaHelper.ConvertSemanticTypeToSyntaxType((type_node)((lambda_inferred_type)lambdaDefinition.formal_parameters.params_list[i].vars_type).real_type) :
+                        //new semantic_type_node(((lambda_inferred_type)lambdaDefinition.formal_parameters.params_list[i].vars_type).real_type): // SSM 29/12/18 поменял - пробую - не получилось
                         lambdaDefinition.formal_parameters.params_list[i].vars_type;
                     
                     for (var j = 0; j < lambdaDefinition.formal_parameters.params_list[i].idents.idents.Count; j++)
