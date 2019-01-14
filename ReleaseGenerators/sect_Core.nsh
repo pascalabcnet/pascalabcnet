@@ -35,7 +35,19 @@
     File "copyright.txt"
 	File "..\bin\pabcnetc.exe.config"
 	File "..\bin\pabcnetcclear.exe.config"
-	File "..\bin\PascalABCNET.exe.config"
+
+
+; main config - only .NET 4.7.1 and above
+	DotNetChecker::IsDotNet471Installed
+	Pop $0
+
+	${If} $0 == "false"
+	${OrIf} $0 == "f"  ; if script is compiled in ANSI mode then we get only an "f"  https://github.com/ReVolly/NsisDotNetChecker/issues/4
+	${Else}
+	    File "..\bin\PascalABCNET.exe.config"
+	    ${AddFile} "PascalABCNET.exe.config"
+	${EndIf}
+	
 	
 	;dobavljaem fajly v uninst.log
 	${AddFile} "Compiler.dll"
@@ -57,7 +69,7 @@
     ${AddFile} "copyright.txt"
 	${AddFile} "pabcnetc.exe.config"
 	${AddFile} "pabcnetcclear.exe.config"
-	${AddFile} "PascalABCNET.exe.config"
+
     Delete "$INSTDIR\Lib\*.pas"
     SetOutPath "$INSTDIR\Lib"
     ;File ..\bin\Lib\*.pcu; eto ploho nuzhno kazhdyj pcu raspisyvat
