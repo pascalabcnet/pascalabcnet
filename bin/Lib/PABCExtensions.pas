@@ -11,14 +11,14 @@ uses PABCSystem;
 //>>     Подпрограммы для работы с типизированными файлами # Subroutines for typed files
 // -----------------------------------------------------
 
-/// Открывает типизированный файл и возвращает значение для инициализации файловой переменной
-function OpenBinary<T>(fname: string): file of T;
+/// Открывает бестиповой файл и возвращает значение для инициализации файловой переменной
+function OpenBinary(fname: string): file;
 begin
   PABCSystem.Reset(Result, fname);
 end;
 
-/// Создаёт или обнуляет типизированный файл и возвращает значение для инициализации файловой переменной
-function CreateBinary<T>(fname: string): file of T;
+/// Создаёт или обнуляет бестиповой файл и возвращает значение для инициализации файловой переменной
+function CreateBinary(fname: string): file;
 begin
   PABCSystem.Rewrite(Result, fname);
 end;
@@ -64,7 +64,7 @@ end;
 /// Открывает типизированный файл, записывает в него последовательность элементов ss и закрывает его
 procedure WriteElements<T>(fname: string; ss: sequence of T);
 begin
-  var f := CreateBinary&<T>(fname);
+  var f := CreateFile&<T>(fname);
   foreach var x in ss do
     f.Write(x);
   f.Close
@@ -119,7 +119,7 @@ end;
 /// Открывает типизированный файл, возвращает последовательность его элементов и закрывает его
 function ReadElements<T>(fname: string): sequence of T;
 begin
-  var f := OpenBinary&<T>(fname);
+  var f := OpenFile&<T>(fname);
   while not f.Eof do
   begin
     var x := f.Read;

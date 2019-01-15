@@ -488,8 +488,10 @@ type
     ///- f.Write(a,b,...)
     /// Выводит значения a,b,... в двоичный файл
     procedure Write(params vals: array of object);
-    /// Устанавливает файловый указатель на начало файла
+    /// Открывает существующий двоичный файл на чтение и запись. Устанавливает файловый указатель на начало файла
     procedure Reset;
+    /// Открывает двоичный файл на чтение и запись. Если файл не существовал, он создаётся, если существовал, он обнуляется
+    procedure Rewrite;
     /// Возвращает имя файла
     function Name: string;
     /// Возвращает полное имя файла
@@ -529,7 +531,11 @@ type
     /// Устанавливает текущую позицию файлового указателя в бестиповом файле на элемент с номером n
     procedure Seek(n: int64);
     /// Возвращает или устанавливает текущую позицию файлового указателя в бестиповом файле
-    property Position: int64 read GetFilePos write Seek; 
+    property Position: int64 read GetFilePos write Seek;
+    /// Записывает данные из байтового массива в бестиповой файл
+    procedure WriteBytes(a: array of byte);
+    /// Считывает указанное количество байтов из бестипового файла в байтовый массив
+    function ReadBytes(count: integer): array of byte;
   end;
 
 //{{{doc: Начало секции интерфейса для документации }}} 
@@ -5593,6 +5599,11 @@ begin
   PABCSystem.Reset(Self);
 end;
 
+procedure AbstractBinaryFile.Rewrite;
+begin
+  PABCSystem.Rewrite(Self);
+end;
+
 function AbstractBinaryFile.Name: string;
 begin
   Result := fi.Name  
@@ -5619,6 +5630,24 @@ function BinaryFile.GetFilePos: int64 := PABCSystem.FilePos(Self);
 function BinaryFile.Size: int64 := PABCSystem.FileSize(Self);
 
 procedure BinaryFile.Seek(n: int64) := PABCSystem.Seek(Self, n);
+
+procedure BinaryFile.WriteBytes(a: array of byte);
+begin
+  if Self.fi = nil then
+    raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
+  if Self.fs = nil then
+    raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED));
+  Self.bw.Write(a);
+end;
+
+function BinaryFile.ReadBytes(count: integer): array of byte;
+begin
+  if Self.fi = nil then
+    raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
+  if Self.fs = nil then
+    raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED));
+  Result := Self.br.ReadBytes(count)
+end;
 
 // -----------------------------------------------------
 //                  Eoln - Eof
