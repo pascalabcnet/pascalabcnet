@@ -11,7 +11,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Подпрограммы для работы с типизированными файлами</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> CreateBinary(fname: string): file;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создаёт или обнуляет двоичный файл и возвращает значение для инициализации файловой переменной</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создаёт или обнуляет бестиповой файл и возвращает значение для инициализации файловой переменной</td></tr>
 <tr><td><code><b>function</b> CreateFile&lt;T&gt;(fname: string):  <b>file</b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создаёт или обнуляет типизированный файл и возвращает значение для инициализации файловой переменной</td></tr>
 <tr><td><code><b>function</b> CreateFileInteger(fname: string):  <b>file</b>  <b>of</b> integer;</code>
@@ -19,7 +19,7 @@
 <tr><td><code><b>function</b> CreateFileReal(fname: string):  <b>file</b>  <b>of</b> real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создаёт или обнуляет типизированный файл вещественных и возвращает значение для инициализации файловой переменной</td></tr>
 <tr><td><code><b>function</b> OpenBinary(fname: string): file;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает двоичный файл и возвращает значение для инициализации файловой переменной</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает бестиповой файл и возвращает значение для инициализации файловой переменной</td></tr>
 <tr><td><code><b>function</b> OpenFile&lt;T&gt;(fname: string):  <b>file</b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает типизированный файл и возвращает значение для инициализации файловой переменной</td></tr>
 <tr><td><code><b>function</b> OpenFileInteger(fname: string):  <b>file</b>  <b>of</b> integer;</code>

@@ -6397,10 +6397,14 @@ begin
   else
   if t = typeof(string) then
   begin
-    var len := f.br.ReadByte();
-    var chh := f.br.ReadChars(len);
+    if f is TypedFile then
+    begin
+      var len := f.br.ReadByte();
+      var chh := f.br.ReadChars(len);
     
-    Result := new string(chh);
+      Result := new string(chh);
+    end
+    else Result := f.br.ReadString();
     if (f is TypedFile) and ((f as TypedFile).offsets <> nil) and ((f as TypedFile).offsets.Length > 0) then
     begin
       f.br.BaseStream.Seek((f as TypedFile).offsets[ind] - (Result as string).Length, SeekOrigin.Current);
@@ -6490,8 +6494,12 @@ begin
   else if t = typeof(string) then
   begin
     //var tmp := f.bw.BaseStream.Position;
-    f.bw.Write(byte(string(val).Length));
-    f.bw.Write(string(val).ToArray);
+    if f is TypedFile then
+    begin
+      f.bw.Write(byte(string(val).Length));
+      f.bw.Write(string(val).ToArray);
+    end
+    else f.bw.Write(string(val));
     if (f is TypedFile) and ((f as TypedFile).offsets <> nil) and ((f as TypedFile).offsets.Length > 0) then
     begin
       f.bw.Write(new byte[(f as TypedFile).offsets[ind] - (val as string).Length]);
