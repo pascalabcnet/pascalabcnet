@@ -121,6 +121,7 @@
 %type <stn> array_defaultproperty 
 %type <stn> meth_modificators optional_method_modificators optional_method_modificators1  
 %type <id> meth_modificator property_modificator 
+%type <ex> optional_property_initialization
 %type <stn> proc_call  
 %type <stn> proc_func_constr_destr_decl proc_func_decl inclass_proc_func_decl inclass_proc_func_decl_noclass constr_destr_decl inclass_constr_destr_decl
 %type <stn> method_decl proc_func_constr_destr_decl_with_attr proc_func_decl_noclass  
@@ -1960,18 +1961,25 @@ simple_property_definition
         { 
 			parsertools.AddErrorFromResource("STATIC_PROPERTIES_CANNOT_HAVE_ATTRBUTE_{0}",@7,$7.name);        	
         }
-	| tkAuto tkProperty qualified_identifier property_interface tkSemiColon
+	| tkAuto tkProperty qualified_identifier property_interface optional_property_initialization tkSemiColon
 		{
 			$$ = NewSimplePropertyDefinition($3 as method_name, $4 as property_interface, null, proc_attribute.attr_none, null, @$);
 			($$ as simple_property).is_auto = true;
+			($$ as simple_property).initial_value = $5;
 		}
-	| class_or_static tkAuto tkProperty qualified_identifier property_interface tkSemiColon
+	| class_or_static tkAuto tkProperty qualified_identifier property_interface optional_property_initialization tkSemiColon
 		{
 			$$ = NewSimplePropertyDefinition($4 as method_name, $5 as property_interface, null, proc_attribute.attr_none, null, @$);
 			($$ as simple_property).is_auto = true;
 			($$ as simple_property).attr = definition_attribute.Static;
+			($$ as simple_property).initial_value = $6;
 		}
     ;
+
+optional_property_initialization
+	: tkAssign expr { $$ = $2; }
+	| { $$ = null; }
+	;
 
 array_defaultproperty
     :  

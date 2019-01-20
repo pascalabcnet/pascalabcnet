@@ -2222,6 +2222,15 @@ namespace PascalABCCompiler.SyntaxTree
 			bw.Write((byte)_simple_property.attr);
 			bw.Write((byte)_simple_property.virt_over_none_attr);
 			bw.Write(_simple_property.is_auto);
+			if (_simple_property.initial_value == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_simple_property.initial_value.visit(this);
+			}
 		}
 
 

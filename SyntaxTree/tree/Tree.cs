@@ -16294,7 +16294,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public simple_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,bool _is_auto)
+		public simple_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,bool _is_auto,expression _initial_value)
 		{
 			this._property_name=_property_name;
 			this._property_type=_property_type;
@@ -16305,13 +16305,14 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr=_attr;
 			this._virt_over_none_attr=_virt_over_none_attr;
 			this._is_auto=_is_auto;
+			this._initial_value=_initial_value;
 			FillParentsInDirectChilds();
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public simple_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,bool _is_auto,SourceContext sc)
+		public simple_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,bool _is_auto,expression _initial_value,SourceContext sc)
 		{
 			this._property_name=_property_name;
 			this._property_type=_property_type;
@@ -16322,6 +16323,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr=_attr;
 			this._virt_over_none_attr=_virt_over_none_attr;
 			this._is_auto=_is_auto;
+			this._initial_value=_initial_value;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
@@ -16334,6 +16336,7 @@ namespace PascalABCCompiler.SyntaxTree
 		protected definition_attribute _attr;
 		protected proc_attribute _virt_over_none_attr;
 		protected bool _is_auto;
+		protected expression _initial_value;
 
 		///<summary>
 		///
@@ -16482,6 +16485,23 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+		///<summary>
+		///
+		///</summary>
+		public expression initial_value
+		{
+			get
+			{
+				return _initial_value;
+			}
+			set
+			{
+				_initial_value=value;
+				if (_initial_value != null)
+					_initial_value.Parent = this;
+			}
+		}
+
 
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -16528,6 +16548,11 @@ namespace PascalABCCompiler.SyntaxTree
 			copy.attr = attr;
 			copy.virt_over_none_attr = virt_over_none_attr;
 			copy.is_auto = is_auto;
+			if (initial_value != null)
+			{
+				copy.initial_value = (expression)initial_value.Clone();
+				copy.initial_value.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -16554,6 +16579,8 @@ namespace PascalABCCompiler.SyntaxTree
 				array_default.Parent = this;
 			if (parameter_list != null)
 				parameter_list.Parent = this;
+			if (initial_value != null)
+				initial_value.Parent = this;
 		}
 
 		///<summary> Заполняет поля Parent во всем поддереве </summary>
@@ -16567,6 +16594,7 @@ namespace PascalABCCompiler.SyntaxTree
 			accessors?.FillParentsInAllChilds();
 			array_default?.FillParentsInAllChilds();
 			parameter_list?.FillParentsInAllChilds();
+			initial_value?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -16576,7 +16604,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 6;
+				return 7;
 			}
 		}
 		///<summary>
@@ -16586,7 +16614,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 6;
+				return 7;
 			}
 		}
 		///<summary>
@@ -16612,6 +16640,8 @@ namespace PascalABCCompiler.SyntaxTree
 						return array_default;
 					case 5:
 						return parameter_list;
+					case 6:
+						return initial_value;
 				}
 				return null;
 			}
@@ -16638,6 +16668,9 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 					case 5:
 						parameter_list = (property_parameter_list)value;
+						break;
+					case 6:
+						initial_value = (expression)value;
 						break;
 				}
 			}
@@ -16694,7 +16727,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public index_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,bool _is_auto,formal_parameters _property_parametres,default_indexer_property_node _is_default)
+		public index_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,bool _is_auto,expression _initial_value,formal_parameters _property_parametres,default_indexer_property_node _is_default)
 		{
 			this._property_name=_property_name;
 			this._property_type=_property_type;
@@ -16705,6 +16738,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr=_attr;
 			this._virt_over_none_attr=_virt_over_none_attr;
 			this._is_auto=_is_auto;
+			this._initial_value=_initial_value;
 			this._property_parametres=_property_parametres;
 			this._is_default=_is_default;
 			FillParentsInDirectChilds();
@@ -16713,7 +16747,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public index_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,bool _is_auto,formal_parameters _property_parametres,default_indexer_property_node _is_default,SourceContext sc)
+		public index_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr,proc_attribute _virt_over_none_attr,bool _is_auto,expression _initial_value,formal_parameters _property_parametres,default_indexer_property_node _is_default,SourceContext sc)
 		{
 			this._property_name=_property_name;
 			this._property_type=_property_type;
@@ -16724,6 +16758,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr=_attr;
 			this._virt_over_none_attr=_virt_over_none_attr;
 			this._is_auto=_is_auto;
+			this._initial_value=_initial_value;
 			this._property_parametres=_property_parametres;
 			this._is_default=_is_default;
 			source_context = sc;
@@ -16812,6 +16847,11 @@ namespace PascalABCCompiler.SyntaxTree
 			copy.attr = attr;
 			copy.virt_over_none_attr = virt_over_none_attr;
 			copy.is_auto = is_auto;
+			if (initial_value != null)
+			{
+				copy.initial_value = (expression)initial_value.Clone();
+				copy.initial_value.Parent = copy;
+			}
 			if (property_parametres != null)
 			{
 				copy.property_parametres = (formal_parameters)property_parametres.Clone();
@@ -16848,6 +16888,8 @@ namespace PascalABCCompiler.SyntaxTree
 				array_default.Parent = this;
 			if (parameter_list != null)
 				parameter_list.Parent = this;
+			if (initial_value != null)
+				initial_value.Parent = this;
 			if (property_parametres != null)
 				property_parametres.Parent = this;
 			if (is_default != null)
@@ -16865,6 +16907,7 @@ namespace PascalABCCompiler.SyntaxTree
 			accessors?.FillParentsInAllChilds();
 			array_default?.FillParentsInAllChilds();
 			parameter_list?.FillParentsInAllChilds();
+			initial_value?.FillParentsInAllChilds();
 			property_parametres?.FillParentsInAllChilds();
 			is_default?.FillParentsInAllChilds();
 		}
@@ -16876,7 +16919,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 8;
+				return 9;
 			}
 		}
 		///<summary>
@@ -16886,7 +16929,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 8;
+				return 9;
 			}
 		}
 		///<summary>
@@ -16913,8 +16956,10 @@ namespace PascalABCCompiler.SyntaxTree
 					case 5:
 						return parameter_list;
 					case 6:
-						return property_parametres;
+						return initial_value;
 					case 7:
+						return property_parametres;
+					case 8:
 						return is_default;
 				}
 				return null;
@@ -16944,9 +16989,12 @@ namespace PascalABCCompiler.SyntaxTree
 						parameter_list = (property_parameter_list)value;
 						break;
 					case 6:
-						property_parametres = (formal_parameters)value;
+						initial_value = (expression)value;
 						break;
 					case 7:
+						property_parametres = (formal_parameters)value;
+						break;
+					case 8:
 						is_default = (default_indexer_property_node)value;
 						break;
 				}

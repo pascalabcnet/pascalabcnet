@@ -108,7 +108,7 @@ namespace SyntaxVisitors.SugarVisitors
             var var_def_statement = new var_def_statement(
                 new ident_list(l, simple_property.source_context),
                 simple_property.property_type,
-                null,
+                simple_property.initial_value,
                 def_attribute,
                 false,
                 simple_property.source_context);

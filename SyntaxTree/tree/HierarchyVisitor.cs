@@ -2547,6 +2547,7 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(simple_property.accessors);
 			visit(simple_property.array_default);
 			visit(simple_property.parameter_list);
+			visit(simple_property.initial_value);
 			post_do_visit(_simple_property);
 		}
 
