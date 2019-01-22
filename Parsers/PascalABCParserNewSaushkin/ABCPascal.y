@@ -176,6 +176,8 @@
 %type <ti> tkAssignOrEqual
 %type <stn> pattern pattern_optional_var match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var 
 %type <ob> pattern_out_param_list pattern_out_param_list_optional_var
+%type <ex> const_pattern_expression
+
 %%
 
 parse_goal                
@@ -3282,11 +3284,16 @@ pattern_optional_var
         { 
             $$ = new deconstructor_pattern($3 as List<pattern_deconstructor_parameter>, $1, @$); 
         }
-	| literal_or_number 
+	| const_pattern_expression  
 		{
 			$$ = new const_pattern($1, @$); 
 		}
-    ;    
+    ;  
+	
+const_pattern_expression
+	: literal_or_number  { $$ = $1; }
+	| tuple { $$ = $1; }
+	;
     
 pattern_out_param_list_optional_var
     : pattern_out_param_optional_var
