@@ -1552,6 +1552,12 @@ namespace PascalABCCompiler.NETGenerator
                 if (icfn != null)
                 {
                     FldInfo fldinfo = helper.GetField(icfn);
+#if DEBUG
+                    /*if (fldinfo == null)
+                    {
+                        fldinfo = fldinfo;
+                    } */
+#endif
                     if (!(fldinfo is GenericFldInfo))
                     {
                         FieldInfo finfo = fldinfo.fi;

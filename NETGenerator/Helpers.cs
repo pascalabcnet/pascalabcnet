@@ -688,21 +688,25 @@ namespace PascalABCCompiler.NETGenerator {
 		public FldInfo AddField(ICommonClassFieldNode f, FieldInfo fb)
 		{
 			FldInfo fi = new FldInfo(fb);
+#if DEBUG
             /*if (f.name == "XYZW")
             {
                 var y = f.GetHashCode();
             } */
-			defs[f] = fi;
-			return fi;
+#endif
+            defs[f] = fi;
+            return fi;
 		}
 		
         public FldInfo AddGenericField(ICommonClassFieldNode f, FieldInfo fb, Type field_type)
         {
             FldInfo fi = new GenericFldInfo(fb, field_type);
+#if DEBUG
             /*if (f.name == "XYZW")
             {
                 var y = f.GetHashCode();
-            } */
+            }*/
+#endif
             defs[f] = fi;
             return fi;
         }
@@ -710,11 +714,22 @@ namespace PascalABCCompiler.NETGenerator {
         //получение поля
 		public FldInfo GetField(ICommonClassFieldNode f)
 		{
+            var r = (FldInfo)defs[f];
+#if DEBUG
             /*if (f.name == "XYZW")
             {
                 var y = f.GetHashCode();
-            } */
-            return (FldInfo)defs[f];
+            }*/
+            /*if (r == null && f.name == "XYZW")
+            {
+                foreach (var k in defs.Keys)
+                {
+                    if ((k is ICommonClassFieldNode) && (k as ICommonClassFieldNode).name == "XYZW")
+                        return (FldInfo)defs[k];
+                }
+            }*/
+#endif
+            return r;
 		}
 		
         //добавление типа

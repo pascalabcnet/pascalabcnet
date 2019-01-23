@@ -644,14 +644,31 @@ function ReadReal3: (real, real, real);
 function ReadChar3: (char, char, char);
 /// Возвращает кортеж из трёх значений типа string, введенных с клавиатуры
 function ReadString3: (string, string, string);
-/// Возвращает кортеж из двух значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода
+/// Возвращает кортеж из трёх значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода
 function ReadlnInteger3: (integer, integer, integer);
-/// Возвращает кортеж из двух значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода
+/// Возвращает кортеж из трёх значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода
 function ReadlnReal3: (real, real, real);
-/// Возвращает кортеж из двух значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода
+/// Возвращает кортеж из трёх значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода
 function ReadlnChar3: (char, char, char);
-/// Возвращает кортеж из двух значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода
+/// Возвращает кортеж из трёх значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода
 function ReadlnString3: (string, string, string);
+
+/// Возвращает кортеж из четырёх значений типа integer, введенных с клавиатуры
+function ReadInteger4: (integer, integer, integer, integer);
+/// Возвращает кортеж из четырёх значений типа real, введенных с клавиатуры
+function ReadReal4: (real, real, real, real);
+/// Возвращает кортеж из четырёх значений типа char, введенных с клавиатуры
+function ReadChar4: (char, char, char, char);
+/// Возвращает кортеж из четырёх значений типа string, введенных с клавиатуры
+function ReadString4: (string, string, string, string);
+/// Возвращает кортеж из четырёх значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода
+function ReadlnInteger4: (integer, integer, integer, integer);
+/// Возвращает кортеж из четырёх значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода
+function ReadlnReal4: (real, real, real, real);
+/// Возвращает кортеж из четырёх значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода
+function ReadlnChar4: (char, char, char, char);
+/// Возвращает кортеж из четырёх значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода
+function ReadlnString4: (string, string, string, string);
 
 /// Возвращает кортеж из двух значений типа integer, введенных с клавиатуры
 function ReadInteger2(prompt: string): (integer, integer);
@@ -678,15 +695,31 @@ function ReadReal3(prompt: string): (real, real, real);
 function ReadChar3(prompt: string): (char, char, char);
 /// Возвращает кортеж из трёх значений типа string, введенных с клавиатуры
 function ReadString3(prompt: string): (string, string, string);
-/// Возвращает кортеж из двух значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода
+/// Возвращает кортеж из трёх значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода
 function ReadlnInteger3(prompt: string): (integer, integer, integer);
-/// Возвращает кортеж из двух значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода
+/// Возвращает кортеж из трёх значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода
 function ReadlnReal3(prompt: string): (real, real, real);
-/// Возвращает кортеж из двух значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода
+/// Возвращает кортеж из трёх значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода
 function ReadlnChar3(prompt: string): (char, char, char);
-/// Возвращает кортеж из двух значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода
+/// Возвращает кортеж из трёх значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода
 function ReadlnString3(prompt: string): (string, string, string);
 
+/// Возвращает кортеж из четырёх значений типа integer, введенных с клавиатуры
+function ReadInteger4(prompt: string): (integer, integer, integer, integer);
+/// Возвращает кортеж из четырёх значений типа real, введенных с клавиатуры
+function ReadReal4(prompt: string): (real, real, real, real);
+/// Возвращает кортеж из четырёх значений типа char, введенных с клавиатуры
+function ReadChar4(prompt: string): (char, char, char, char);
+/// Возвращает кортеж из четырёх значений типа string, введенных с клавиатуры
+function ReadString4(prompt: string): (string, string, string, string);
+/// Возвращает кортеж из четырёх значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода
+function ReadlnInteger4(prompt: string): (integer, integer, integer, integer);
+/// Возвращает кортеж из четырёх значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода
+function ReadlnReal4(prompt: string): (real, real, real, real);
+/// Возвращает кортеж из четырёх значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода
+function ReadlnChar4(prompt: string): (char, char, char, char);
+/// Возвращает кортеж из четырёх значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода
+function ReadlnString4(prompt: string): (string, string, string, string);
 
 /// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры
 function ReadInteger(prompt: string): integer;
@@ -4997,6 +5030,7 @@ function ReadlnChar2 := (ReadChar, ReadlnChar);
 
 function ReadlnString2 := (ReadString, ReadlnString);
 
+
 function ReadInteger3 := (ReadInteger, ReadInteger, ReadInteger);
 
 function ReadReal3 := (ReadReal, ReadReal, ReadReal);
@@ -5012,6 +5046,24 @@ function ReadlnReal3 := (ReadReal, ReadReal, ReadlnReal);
 function ReadlnChar3 := (ReadChar, ReadChar, ReadlnChar);
 
 function ReadlnString3 := (ReadString, ReadString, ReadlnString);
+
+
+function ReadInteger4 := (ReadInteger, ReadInteger, ReadInteger, ReadInteger);
+
+function ReadReal4 := (ReadReal, ReadReal, ReadReal, ReadReal);
+
+function ReadChar4 := (ReadChar, ReadChar, ReadChar, ReadChar);
+
+function ReadString4 := (ReadString, ReadString, ReadString, ReadString);
+
+function ReadlnInteger4 := (ReadInteger, ReadInteger, ReadInteger, ReadlnInteger);
+
+function ReadlnReal4 := (ReadReal, ReadReal, ReadReal, ReadlnReal);
+
+function ReadlnChar4 := (ReadChar, ReadChar, ReadChar, ReadlnChar);
+
+function ReadlnString4 := (ReadString, ReadString, ReadString, ReadlnString);
+
 
 function ReadInteger2(prompt: string) := (ReadInteger(prompt), ReadInteger);
 
@@ -5029,6 +5081,7 @@ function ReadlnChar2(prompt: string) := (ReadChar(prompt), ReadlnChar);
 
 function ReadlnString2(prompt: string) := (ReadString(prompt), ReadlnString);
 
+
 function ReadInteger3(prompt: string) := (ReadInteger(prompt), ReadInteger, ReadInteger);
 
 function ReadReal3(prompt: string) := (ReadReal(prompt), ReadReal, ReadReal);
@@ -5045,6 +5098,22 @@ function ReadlnChar3(prompt: string) := (ReadChar(prompt), ReadChar, ReadlnChar)
 
 function ReadlnString3(prompt: string) := (ReadString(prompt), ReadString, ReadlnString);
 
+
+function ReadInteger4(prompt: string) := (ReadInteger(prompt), ReadInteger, ReadInteger, ReadInteger);
+
+function ReadReal4(prompt: string) := (ReadReal(prompt), ReadReal, ReadReal, ReadReal);
+
+function ReadChar4(prompt: string) := (ReadChar(prompt), ReadChar, ReadChar, ReadChar);
+
+function ReadString4(prompt: string) := (ReadString(prompt), ReadString, ReadString, ReadString);
+
+function ReadlnInteger4(prompt: string) := (ReadInteger(prompt), ReadInteger, ReadInteger, ReadlnInteger);
+
+function ReadlnReal4(prompt: string) := (ReadReal(prompt), ReadReal, ReadReal, ReadlnReal);
+
+function ReadlnChar4(prompt: string) := (ReadChar(prompt), ReadChar, ReadChar, ReadlnChar);
+
+function ReadlnString4(prompt: string) := (ReadString(prompt), ReadString, ReadString, ReadlnString);
 
 // Read with prompt
 

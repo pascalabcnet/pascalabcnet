@@ -115,6 +115,10 @@
 				<param name="Local" value="LangGuide\Types\string.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="&Dstrok;&agrave;&ccedil;&igrave;&aring;&eth;&iacute;&ucirc;&aring; &ntilde;&ograve;&eth;&icirc;&ecirc;&egrave;">
+				<param name="Local" value="LangGuide\Types\valuestrings.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="&Ecirc;&euml;&agrave;&ntilde;&ntilde; string">
 				<param name="Local" value="LangGuide\Types\stringmembers.html">
 				</OBJECT>
@@ -123,12 +127,12 @@
 				<param name="Local" value="LangGuide\Types\arrays.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="&Ntilde;&ograve;&agrave;&ograve;&egrave;&divide;&aring;&ntilde;&ecirc;&egrave;&aring; &igrave;&agrave;&ntilde;&ntilde;&egrave;&acirc;&ucirc;">
-				<param name="Local" value="LangGuide\Types\staticarrays.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="&Auml;&egrave;&iacute;&agrave;&igrave;&egrave;&divide;&aring;&ntilde;&ecirc;&egrave;&aring; &igrave;&agrave;&ntilde;&ntilde;&egrave;&acirc;&ucirc;">
 				<param name="Local" value="LangGuide\Types\dynamicarrays.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="&Ntilde;&ograve;&agrave;&ograve;&egrave;&divide;&aring;&ntilde;&ecirc;&egrave;&aring; &igrave;&agrave;&ntilde;&ntilde;&egrave;&acirc;&ucirc;">
+				<param name="Local" value="LangGuide\Types\staticarrays.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="&Ccedil;&agrave;&iuml;&egrave;&ntilde;&egrave;">
