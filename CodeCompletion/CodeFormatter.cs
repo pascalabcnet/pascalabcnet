@@ -572,8 +572,10 @@ namespace CodeFormatters
                     else if (comm.StartsWith("array") || comm.StartsWith("set") || comm.StartsWith("sequence"))
                         comm = RemoveOverSpaces(comm);
                     else if ((comm.StartsWith("class") || comm.StartsWith("interface")) && comm.EndsWith("("))
-                        comm = comm.Replace(" ","");
+                        comm = comm.Replace(" ", "");
                     else if ((comm.StartsWith("auto") || comm.StartsWith("sealed") || comm.StartsWith("abstract")) && comm.EndsWith("("))
+                        comm = RemoveOverSpaces(comm);
+                    else if (comm.TrimEnd(' ').EndsWith("property"))
                         comm = RemoveOverSpaces(comm);
                 }
                 WriteCommentWithIndent(comm, true);
@@ -1866,28 +1868,12 @@ namespace CodeFormatters
         public override void visit(simple_property _simple_property)
         {
             multiline_stack_push(_simple_property);
-
-            string keyword_with_spaces = "property";
+            
             var property_keyword = "property";
-            if (_simple_property.is_auto)
-            {
-                property_keyword = property_keyword.Insert(0, "auto ");
-                var name_pos = GetPosition(
-                    _simple_property.property_name.source_context.begin_position.line_num,
-                    _simple_property.property_name.source_context.begin_position.column_num);
-                var property_start_pos = GetPosition(
-                    _simple_property.source_context.begin_position.line_num,
-                    _simple_property.source_context.begin_position.column_num);
-
-                keyword_with_spaces = Text.Substring(
-                    property_start_pos, name_pos - property_start_pos - 1);
-                keyword_with_spaces.Trim();
-            }
-
-            if (_simple_property.attr != definition_attribute.Static)
+            if (_simple_property.attr != definition_attribute.Static && !_simple_property.is_auto)
             {
                 sb.Append(property_keyword);
-                SetKeywordOffset(keyword_with_spaces);
+                SetKeywordOffset(property_keyword);
             }
 
             visit_node(_simple_property.property_name);
@@ -1900,6 +1886,11 @@ namespace CodeFormatters
             add_space_after = true;
             if (_simple_property.accessors != null)
                 visit_node(_simple_property.accessors);
+            if (_simple_property.initial_value != null)
+            {
+                add_space_before = true;
+                visit_node(_simple_property.initial_value);
+            }
             if (_simple_property.array_default != null)
                 visit_node(_simple_property.array_default);
             add_space_before = false;
