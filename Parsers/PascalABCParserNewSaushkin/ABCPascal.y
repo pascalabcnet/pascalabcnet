@@ -174,9 +174,9 @@
 %type <stn> full_lambda_fp_list lambda_simple_fp_sect lambda_function_body lambda_procedure_body common_lambda_body optional_full_lambda_fp_list
 %type <ob> field_in_unnamed_object list_fields_in_unnamed_object func_class_name_ident_list rem_lambda variable_list var_ident_list
 %type <ti> tkAssignOrEqual
-%type <stn> pattern pattern_optional_var match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var 
+%type <stn> pattern pattern_optional_var match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var tuple_pattern_expr_list
 %type <ob> pattern_out_param_list pattern_out_param_list_optional_var
-%type <ex> const_pattern_expression
+%type <ex> const_pattern_expression tuple_pattern tuple_pattern_expr
 
 %%
 
@@ -3292,9 +3292,40 @@ pattern_optional_var
 	
 const_pattern_expression
 	: literal_or_number  { $$ = $1; }
-	| tuple { $$ = $1; }
+	| tuple_pattern { $$ = $1; }
 	;
     
+tuple_pattern
+	: tkRoundOpen tuple_pattern_expr tkComma tuple_pattern_expr_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose
+		{
+			/*if ($5 != null) 
+				parsertools.AddErrorFromResource("BAD_TUPLE",@5);
+			if ($6 != null) 
+				parsertools.AddErrorFromResource("BAD_TUPLE",@6);*/
+
+			if (($4 as expression_list).Count>6) 
+				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",@$);
+            ($4 as expression_list).Insert(0,$2);
+			$$ = new tuple_node($4 as expression_list,@$);
+		}	
+    ; 
+
+tuple_pattern_expr
+	: tkQuestion { $$ = null; } 
+	| expr_l1 { $$ = $1; }
+	;
+
+tuple_pattern_expr_list
+	: tuple_pattern_expr
+		{ 
+			$$ = new expression_list($1, @$); 
+		}
+	| tuple_pattern_expr_list tkComma tuple_pattern_expr
+		{
+			$$ = ($1 as expression_list).Add($3, @$); 
+		}
+	;
+
 pattern_out_param_list_optional_var
     : pattern_out_param_optional_var
         {
