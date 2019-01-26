@@ -3,6 +3,7 @@
 <head>
 <object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="class">
+<param name="Keyword" value="sealed">
 </object>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Классы и объекты: обзор</title>
@@ -57,7 +58,7 @@
 	Print;<br><b>&nbsp;&nbsp;&nbsp; property</b> Name: string read fName;<br><b>&nbsp;&nbsp;&nbsp; 
 	property</b> Age: integer read fAge;<b><br>&nbsp; end</b>;<br><strong><br>
 	procedure</strong> Person.Print;<br><strong>begin</strong><br>&nbsp; 
-	writelnFormat('Имя: {0} Возраст: {1}', Name, Age);<br><strong>end</strong>;</code></p>
+	Writeln($'Имя: {Name} Возраст: {Age}');<br><strong>end</strong>;</code></p>
 </blockquote>
 <p>После слова <code><b>class</b></code> 
 в скобках может быть указано имя класса-предка (см. <A href="inheritance.html">
@@ -90,10 +91,10 @@
 	<p><code>Print(p.Name,p.Age);<br>p.Print;</code></p>
 </blockquote>
 <h2>Вывод переменной типа класс</h2>
-<p>По умолчанию процедура <code>write</code> для переменной типа класс выводит 
+<p>По умолчанию процедура <code>Write</code> для переменной типа класс выводит 
 содержимое её публичных полей и свойств в круглых скобках через запятую:</p>
 <blockquote>
-	<p><code>write(p); // Иванов 20</code></p>
+	<p><code>Write(p); // Иванов 20</code></p>
 </blockquote>
 <p>Чтобы изменить это поведение, в классе следует 
 <A href="../Classes/virtual.html">переопределить</A> виртуальный метод
@@ -109,13 +110,12 @@
 	string; <b>override</b>;<br>
 	<b>&nbsp;&nbsp;&nbsp; begin</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result :=  
 	   
-	string.Format('Имя: {0}&nbsp; Возраст: {1}',
-	Name, Age); <br>
+	$'Имя: {Name} Возраст: {Age}'; <br>
 	<b>&nbsp;&nbsp;&nbsp; end</b>;<br>
 	<b>&nbsp; end</b>;<br>
 	&nbsp; ...<br>
 	<b>var</b> p: Person := new Person('Иванов',20);<br>
-	writeln(p); // Имя: Иванов&nbsp; Возраст: 20</code></p>
+	Writeln(p); // Имя: Иванов&nbsp; Возраст: 20</code></p>
 </blockquote>
 <h2>Присваивание и передача в качестве параметров подпрограмм</h2>
 <p>Переменная типа класс является ссылкой и хранит ссылку на объект, создаваемый 

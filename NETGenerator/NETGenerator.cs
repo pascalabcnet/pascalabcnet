@@ -1498,7 +1498,7 @@ namespace PascalABCCompiler.NETGenerator
                     Type ftype = GetTypeOfGenericInstanceField(t, icfn.compiled_field);
                     FieldInfo fi = TypeBuilder.GetField(t, icfn.compiled_field);
 
-                    helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, ftype);
+                    helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, ftype, null);
                     continue;
                 }
             }
@@ -1562,14 +1562,44 @@ namespace PascalABCCompiler.NETGenerator
                     {
                         FieldInfo finfo = fldinfo.fi;
                         Type ftype = GetTypeOfGenericInstanceField(t, finfo);
-                        FieldInfo fi = TypeBuilder.GetField(t, finfo);
-                        helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, ftype);
+                        FieldInfo fi = TypeBuilder.GetField(t, finfo); // возвращает fi: FieldOnTypeBuilderInstantiation
+                        helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, ftype, finfo); // передаю также старое finfo чтобы на следующей итерации вызовом TypeBuilder.GetField(t, finfo) сконструировать правильное fi
                     }
                     else
                     {
-                        FieldInfo finfo = fldinfo.fi;
-                        FieldInfo fi = finfo;
-                        helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, (fldinfo as GenericFldInfo).field_type);
+                        /* Вот этот код не выполняется ни в одном тесте и в примере 
+                          type
+                          Base<T> = class
+                            XYZW: T;
+                          end;
+  
+                          Derived<T1> = class(Base<T1>)
+                          end;
+
+                        begin
+                          var a := new Derived<integer>;
+                          a.XYZW := 2;
+                        end.
+                        срабатывает неправильно !!!
+
+                        Исправил, введя доп. поле в GenericFldInfo, которое хранит FieldBuilder и позволяет конструировать fi на следующей итерации
+                        */
+
+                        FieldInfo finfo = (fldinfo as GenericFldInfo).prev_fi;
+                        FieldInfo fi = TypeBuilder.GetField(t, finfo);
+                        helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, (fldinfo as GenericFldInfo).field_type, finfo); 
+                        //FieldInfo finfo = fldinfo.fi;
+                        //FieldInfo fi = finfo;
+                        //helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, (fldinfo as GenericFldInfo).field_type, finfo); 
+                        //#if DEBUG
+
+                        /*{
+                            var f = File.AppendText("d:\\aa.txt");
+                            f.WriteLine(DateTime.Now);
+                            f.WriteLine($"{value.used_members[dn] as ICommonClassFieldNode}  {fi}  {(fldinfo as GenericFldInfo).field_type}");
+                            f.Close();
+                        }*/
+                        //#endif
                     }
                     continue;
                 }
