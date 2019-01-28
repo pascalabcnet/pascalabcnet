@@ -1445,7 +1445,7 @@ namespace PascalABCCompiler.TreeRealization
                 _members.Add(original, converted);
                 _member_definitions.Add(converted, original);
             }
-            else // SSM 30.12.18 bug fix #907
+            else // SSM 30.12.18 bug fix #907 - транзитивно заменяем T->T1->Anything на T->Anything
             {
                 object kk = null;
                 foreach (System.Collections.DictionaryEntry x in _members)

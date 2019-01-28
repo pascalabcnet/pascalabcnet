@@ -688,7 +688,7 @@ begin
   BottomPanel.Controls.Add(groupBoxExState);
   BottomPanel.Dock := DockStyle.Bottom;
   BottomPanel.Location := new Point(0, 407);
-  BottomPanel.Size := new Size(679, 83);
+  BottomPanel.Size := new Size(679, 83)*ScreenScale;
   // 
   // panelBottomLeft
   // 
@@ -699,43 +699,49 @@ begin
   panelBottomLeft.Controls.Add(buttonStart);
   panelBottomLeft.Controls.Add(tableLayoutPanelBottom);
   panelBottomLeft.Location := new Point(0, 0);
-  panelBottomLeft.Size := new Size(474, 83);
-  // 
-  // buttonHelp
-  // 
-  buttonHelp.FlatStyle := System.Windows.Forms.FlatStyle.System;
-  buttonHelp.Location := new Point(359, 18);
-  buttonHelp.Size := new Size(107, 24);
-  buttonHelp.TabStop := false;
-  buttonHelp.Text := 'Справка (F1)';
-//  buttonHelp.UseVisualStyleBackColor := true;
-  // 
-  // buttonExit
-  // 
-  buttonExit.FlatStyle := System.Windows.Forms.FlatStyle.System;
-  buttonExit.Location := new System.Drawing.Point(241, 18);
-  buttonExit.Size := new System.Drawing.Size(107, 24);
-  buttonExit.TabStop := false;
-  buttonExit.Text := 'Выход (Esc)';
-//  buttonExit.UseVisualStyleBackColor := true;
-  // 
-  // buttonStep
-  // 
-  buttonStep.FlatStyle := FlatStyle.System;
-  buttonStep.Location := new Point(123, 18);
-  buttonStep.Size := new Size(107, 24);
-  buttonStep.TabStop := false;
-  buttonStep.Text := 'Шаг (Space)';
-//  buttonStep.UseVisualStyleBackColor := true;
+  panelBottomLeft.Size := new Size(474, 83)*ScreenScale;
+  
+  var x := 10;
+  var h := 116;
   // 
   // buttonStart
   // 
-  buttonStart.FlatStyle := FlatStyle.System;
-  buttonStart.Location := new Point(5, 18);
-  buttonStart.Size := new Size(107, 24);
+  //buttonStart.FlatStyle := FlatStyle.System;
+  buttonStart.Location := new Point(x, 14)*ScreenScale;
+  buttonStart.Size := new Size(107, 24)*ScreenScale;
   buttonStart.TabStop := false;
   buttonStart.Text := 'Пуск (Enter)';
 //  buttonStart.UseVisualStyleBackColor := true;
+  x += h;
+  // 
+  // buttonStep
+  // 
+  //buttonStep.FlatStyle := FlatStyle.System;
+  buttonStep.Location := new Point(x, 14)*ScreenScale;
+  buttonStep.Size := new Size(107, 24)*ScreenScale;
+  buttonStep.TabStop := false;
+  buttonStep.Text := 'Шаг (Space)';
+//  buttonStep.UseVisualStyleBackColor := true;
+  x += h;
+  // 
+  // buttonExit
+  // 
+  //buttonExit.FlatStyle := System.Windows.Forms.FlatStyle.System;
+  buttonExit.Location := new System.Drawing.Point(x, 14)*ScreenScale;
+  buttonExit.Size := new System.Drawing.Size(107, 24)*ScreenScale;
+  buttonExit.TabStop := false;
+  buttonExit.Text := 'Выход (Esc)';
+//  buttonExit.UseVisualStyleBackColor := true;
+  x += h;
+  // 
+  // buttonHelp
+  // 
+  //buttonHelp.FlatStyle := System.Windows.Forms.FlatStyle.System;
+  buttonHelp.Location := new Point(x, 14)*ScreenScale;
+  buttonHelp.Size := new Size(107, 24)*ScreenScale;
+  buttonHelp.TabStop := false;
+  buttonHelp.Text := 'Справка (F1)';
+//  buttonHelp.UseVisualStyleBackColor := true;
   // 
   // tableLayoutPanelBottom
   // 
@@ -745,21 +751,22 @@ begin
   tableLayoutPanelBottom.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
   tableLayoutPanelBottom.Controls.Add(labelExState);
   tableLayoutPanelBottom.ForeColor := System.Drawing.Color.White;
-  tableLayoutPanelBottom.Location := new Point(4, 52);
+  tableLayoutPanelBottom.Location := new Point(9, 49)*ScreenScale;
   tableLayoutPanelBottom.RowCount := 1;
   tableLayoutPanelBottom.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
-  tableLayoutPanelBottom.Size := new Size(463, 23);
+  tableLayoutPanelBottom.Size := new Size(457, 23)*ScreenScale;
+  //tableLayoutPanelBottom.AutoSize := True;
   // 
   // labelExState
   // 
   labelExState.AutoEllipsis := true;
   labelExState.AutoSize := true;
   labelExState.Dock := DockStyle.Fill;
-  labelExState.FlatStyle := FlatStyle.System;
-  labelExState.Font := new System.Drawing.Font('Microsoft Sans Serif', 8, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+  //labelExState.FlatStyle := FlatStyle.System;
+  labelExState.Font := new System.Drawing.Font('Microsoft Sans Serif', 8, System.Drawing.FontStyle.Bold{, System.Drawing.GraphicsUnit.Point, ((byte)(204))});
   labelExState.Location := new Point(5, 2);
-  labelExState.Margin := new Padding(3, 0, 3, 3);
-  labelExState.Size := new Size(453, 15);
+  labelExState.Margin := new Padding(3, 3, 3, 3);
+  labelExState.Size := new Size(453, 15)*ScreenScale;
   labelExState.Text := 'Чертежник: Готов';
   labelExState.TextAlign := ContentAlignment.MiddleCenter;
   // 
@@ -771,8 +778,8 @@ begin
   groupBoxExState.Controls.Add(trackBarSpeed);
   groupBoxExState.Controls.Add(labelSpeed);
   groupBoxExState.Dock := DockStyle.Right;
-  groupBoxExState.Location := new Point(475, 0);
-  groupBoxExState.Size := new Size(204, 83);
+  groupBoxExState.Location := new Point(475, 0)*ScreenScale;
+  groupBoxExState.Size := new Size(204, 83)*ScreenScale;
   groupBoxExState.TabStop := false;
   // 
   // tableLayoutPanel1
@@ -781,43 +788,43 @@ begin
   tableLayoutPanel1.CellBorderStyle := TableLayoutPanelCellBorderStyle.Outset;
   tableLayoutPanel1.ColumnCount := 1;
   tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(System.Windows.Forms.SizeType.Percent, 50));
-  tableLayoutPanel1.Location := new Point(91, 52);
+  tableLayoutPanel1.Location := new Point(78, 50)*ScreenScale;
   tableLayoutPanel1.RowCount := 1;
   tableLayoutPanel1.RowStyles.Add(new RowStyle(System.Windows.Forms.SizeType.Percent, 50));
-  tableLayoutPanel1.Size := new Size(22, 22);
+  tableLayoutPanel1.Size := new Size(22, 22)*ScreenScale;
   // 
   // labelState
   // 
   labelState.AutoSize := true;
-  labelState.Location := new Point(6, 54);
+  labelState.Location := new Point(6, 54)*ScreenScale;
   labelState.Margin := new Padding(0);
-  labelState.Size := new Size(83, 17);
+  labelState.Size := new Size(83, 17)*ScreenScale;
   labelState.Text := 'Состояние:';
   // 
   // labelStep
   // 
   labelStep.BackColor := SystemColors.Control;
-  labelStep.Font := new System.Drawing.Font('Microsoft Sans Serif', 8, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+  //labelStep.Font := new System.Drawing.Font('Microsoft Sans Serif', 8, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
   labelStep.ForeColor := System.Drawing.Color.Black;
-  labelStep.Location := new Point(130, 54);
-  labelStep.Size := new Size(66, 18);
+  labelStep.Location := new Point(130, 54)*ScreenScale;
+  labelStep.Size := new Size(66, 18)*ScreenScale;
   labelStep.Text := 'Шаг: 0';
-  labelStep.TextAlign := ContentAlignment.MiddleLeft;
+  //labelStep.TextAlign := ContentAlignment.MiddleLeft;
   // 
   // trackBarSpeed
   // 
   trackBarSpeed.CausesValidation := false;
   trackBarSpeed.LargeChange := 1;
-  trackBarSpeed.Location := new Point(80, 11);
-  trackBarSpeed.Size := new Size(121, 53);
+  trackBarSpeed.Location := new Point(72, 11)*ScreenScale;
+  trackBarSpeed.Size := new Size(121, 53)*ScreenScale;
   trackBarSpeed.TabStop := false;
   // 
   // labelSpeed
   // 
   labelSpeed.AutoSize := true;
-  labelSpeed.Location := new Point(6, 16);
+  labelSpeed.Location := new Point(6, 16)*ScreenScale;
   labelSpeed.Margin := new Padding(0);
-  labelSpeed.Size := new Size(73, 17);
+  labelSpeed.Size := new Size(73, 17)*ScreenScale;
   labelSpeed.Text := 'Скорость:';
   // 
   // tableLayoutPanelTop
@@ -831,29 +838,37 @@ begin
   tableLayoutPanelTop.Location := new Point(0, 0);
   tableLayoutPanelTop.RowCount := 1;
   tableLayoutPanelTop.RowStyles.Add(new RowStyle(System.Windows.Forms.SizeType.Percent, 50));
-  tableLayoutPanelTop.Size := new Size(679, 23);
+  tableLayoutPanelTop.AutoSize := True;
+  tableLayoutPanelTop.Size := new Size(679, 23)*ScreenScale;
   // 
   // labelZad
   // 
   labelZad.AutoEllipsis := true;
-  labelZad.AutoSize := true;
+  //labelZad.AutoSize := true;
   labelZad.Dock := DockStyle.Fill;
-  labelZad.FlatStyle := FlatStyle.System;
-  labelZad.Font := new System.Drawing.Font('Microsoft Sans Serif', 8, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+  //labelZad.FlatStyle := FlatStyle.System;
+  labelZad.Font := new System.Drawing.Font('Microsoft Sans Serif', 8, System.Drawing.FontStyle.Bold{, System.Drawing.GraphicsUnit.Point, ((byte)(204))});
   labelZad.ForeColor := SystemColors.HotTrack;
   labelZad.Location := new Point(6, 3);
   labelZad.Margin := new Padding(4, 1, 3, 0);
-  labelZad.Size := new Size(668, 14);
+  labelZad.Size := new Size(668, 14)*ScreenScale;
   labelZad.Text := 'Задание';
   labelZad.TextAlign := ContentAlignment.MiddleLeft;
   // 
   // ExecutorForm
   // 
   MainForm.BackColor := SystemColors.Control;
-//  MainForm.ClientSize := new Size(679, 490);
+//  MainWindow.ClientSize := new Size(679, 490);
   MainForm.Controls.Add(tableLayoutPanelTop);
   MainForm.Controls.Add(BottomPanel);
-  MainForm.MinimumSize := new Size(687, 240);
+  
+  var ssz := 692;
+  var sw := ScreenSize.Width;
+  var ww := ssz*ScreenScale;
+  if ww>sw then 
+    ssz := Round(sw/ScreenScale) - 10;
+
+  MainForm.MinimumSize := new Size(ssz, 240)*ScreenScale; // Уменьшить до размера экрана!!!
   MainForm.Text := 'Исполнитель Чертежник';
   BottomPanel.ResumeLayout(false);
   panelBottomLeft.ResumeLayout(false);
