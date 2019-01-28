@@ -1901,6 +1901,14 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(tuple_wild_card _tuple_wild_card)
+		{
+		}
+
+		public virtual void post_do_visit(tuple_wild_card _tuple_wild_card)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -3934,8 +3942,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_const_pattern);
 			pre_do_visit(_const_pattern);
-			visit(const_pattern.pattern_expression);
+			visit(const_pattern.pattern_expressions);
 			post_do_visit(_const_pattern);
+		}
+
+		public override void visit(tuple_wild_card _tuple_wild_card)
+		{
+			DefaultVisit(_tuple_wild_card);
+			pre_do_visit(_tuple_wild_card);
+			post_do_visit(_tuple_wild_card);
 		}
 	}
 

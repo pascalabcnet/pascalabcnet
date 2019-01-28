@@ -174,7 +174,7 @@
 %type <stn> full_lambda_fp_list lambda_simple_fp_sect lambda_function_body lambda_procedure_body common_lambda_body optional_full_lambda_fp_list
 %type <ob> field_in_unnamed_object list_fields_in_unnamed_object func_class_name_ident_list rem_lambda variable_list var_ident_list
 %type <ti> tkAssignOrEqual
-%type <stn> pattern pattern_optional_var match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var tuple_pattern_expr_list
+%type <stn> pattern pattern_optional_var match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var tuple_pattern_expr_list const_pattern_expr_list
 %type <ob> pattern_out_param_list pattern_out_param_list_optional_var
 %type <ex> const_pattern_expression tuple_pattern tuple_pattern_expr
 
@@ -3284,15 +3284,26 @@ pattern_optional_var
         { 
             $$ = new deconstructor_pattern($3 as List<pattern_deconstructor_parameter>, $1, @$); 
         }
-	| const_pattern_expression  
+	| const_pattern_expr_list
 		{
-			$$ = new const_pattern($1, @$); 
+			$$ = new const_pattern($1 as expression_list, @$); 
 		}
     ;  
-	
+
+const_pattern_expr_list
+	: const_pattern_expression 
+		{ 
+			$$ = new expression_list($1, @$); 
+		}
+	| const_pattern_expr_list tkComma const_pattern_expression 
+		{ 
+			$$ = ($1 as expression_list).Add($3, @$);
+		}
+	;
+
 const_pattern_expression
-	: literal_or_number  { $$ = $1; }
-	| tuple_pattern { $$ = $1; }
+	: literal_or_number  { $$ = $1;  }
+	| tuple_pattern { $$ = $1;  }
 	;
     
 tuple_pattern
@@ -3311,8 +3322,8 @@ tuple_pattern
     ; 
 
 tuple_pattern_expr
-	: tkQuestion { $$ = null; } 
-	| expr_l1 { $$ = $1; }
+	: tkQuestion { $$ = new tuple_wild_card(); } 
+	| literal_or_number { $$ = $1; }
 	;
 
 tuple_pattern_expr_list

@@ -3189,7 +3189,7 @@ namespace CodeFormatters
 
         public override void visit(const_pattern _const_pattern)
         {
-            visit_node(_const_pattern.pattern_expression);
+            visit_node(_const_pattern.pattern_expressions);
             add_space_after = false;
         }
 

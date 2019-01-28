@@ -1192,6 +1192,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_const_pattern);
 		}
+
+		public virtual void visit(tuple_wild_card _tuple_wild_card)
+		{
+			DefaultVisit(_tuple_wild_card);
+		}
 	}
 
 

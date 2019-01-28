@@ -1426,6 +1426,12 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_const_pattern">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(const_pattern _const_pattern);
+		///<summary>
+		///Method to visit tuple_wild_card.
+		///</summary>
+		///<param name="_tuple_wild_card">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(tuple_wild_card _tuple_wild_card);
 	}
 
 

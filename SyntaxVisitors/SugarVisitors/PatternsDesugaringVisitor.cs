@@ -159,20 +159,33 @@ namespace SyntaxVisitors.SugarVisitors
         void DesugarConstPatternCase(expression matchingExpression, pattern_case patternCase)
         {
             Debug.Assert(patternCase.pattern is const_pattern);
+            var patternExpressionNode = patternCase.pattern as const_pattern;
+            //var tuple_pattern_case = patternExpressionNode.pattern_expression as method_call;
 
-            var eqParams = new expression_list(
-                new List<expression>()
-                {
+            var equalCalls = new List<method_call>();
+            foreach (var patternExpression in patternExpressionNode.pattern_expressions.expressions)
+            {
+                var eqParams = new expression_list(
+                    new List<expression>()
+                    {
                     matchingExpression,
-                    (patternCase.pattern as const_pattern).pattern_expression
-                }
-            );
-            var equalsCallNode = new method_call(
-            new dot_node(new ident("object"), new ident("Equals")),
-            eqParams,
-            patternCase.source_context);
-            
-            var ifCondition = patternCase.condition == null ? (expression)equalsCallNode : bin_expr.LogicalAnd(equalsCallNode, patternCase.condition);
+                    patternExpression
+                    }
+                );
+                equalCalls.Add(
+                    new method_call(
+                        new dot_node(new ident("object"), new ident("Equals")),
+                        eqParams,
+                        patternCase.source_context
+                    )
+                );
+            }
+            expression orPatternCases = equalCalls[0];
+            for (int i = 1; i < equalCalls.Count; ++i)
+            {
+                orPatternCases = bin_expr.LogicalOr(orPatternCases, equalCalls[i]);
+            }
+            var ifCondition = patternCase.condition == null ? orPatternCases : bin_expr.LogicalAnd(orPatternCases, patternCase.condition);
             var ifCheck = SubtreeCreator.CreateIf(ifCondition, patternCase.case_action);
 
             // Добавляем полученные statements в результат

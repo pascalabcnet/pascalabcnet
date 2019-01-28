@@ -494,6 +494,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new semantic_check_sugared_var_def_statement_node();
 				case 236:
 					return new const_pattern();
+				case 237:
+					return new tuple_wild_card();
 			}
 			return null;
 		}
@@ -4188,7 +4190,18 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_const_pattern(const_pattern _const_pattern)
 		{
 			read_pattern_node(_const_pattern);
-			_const_pattern.pattern_expression = _read_node() as expression;
+			_const_pattern.pattern_expressions = _read_node() as expression_list;
+		}
+
+
+		public void visit(tuple_wild_card _tuple_wild_card)
+		{
+			read_tuple_wild_card(_tuple_wild_card);
+		}
+
+		public void read_tuple_wild_card(tuple_wild_card _tuple_wild_card)
+		{
+			read_expression(_tuple_wild_card);
 		}
 
 	}

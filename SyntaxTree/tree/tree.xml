@@ -3057,7 +3057,7 @@
     </SyntaxNode>
     <SyntaxNode Name="const_pattern" BaseName="pattern_node">
       <Fields>
-        <SyntaxField Name="pattern_expression" SyntaxType="expression" />
+        <SyntaxField Name="pattern_expressions" SyntaxType="expression_list" />
       </Fields>
       <Methods />
       <Tags>
@@ -3067,6 +3067,14 @@
         <TagIndices>
           <TagIndex>11</TagIndex>
         </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="tuple_wild_card" BaseName="expression">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
       </Tags>
     </SyntaxNode>
   </SyntaxNodes>
@@ -3373,6 +3381,7 @@
       <HelpData Key="const_node" Value="Константа" />
       <HelpData Key="const_pattern" Value="паттерн для константного матчинга" />
       <HelpData Key="const_pattern.pattern_expression" Value="" />
+      <HelpData Key="const_pattern.pattern_expressions" Value="" />
       <HelpData Key="constructor" Value="" />
       <HelpData Key="constructor.constructor(formal_parameters fp): this(fp, null)" Value="" />
       <HelpData Key="constructor.constructor(formal_parameters fp,SourceContext sc): this(null, fp, new procedure_attributes_list(proc_attribute.attr_overload), null, false, false, null, null)" Value="" />
@@ -4296,6 +4305,7 @@
       <HelpData Key="tuple_node.el" Value="" />
       <HelpData Key="tuple_node_for_formatter" Value="" />
       <HelpData Key="tuple_node_for_formatter.el" Value="" />
+      <HelpData Key="tuple_wild_card" Value="" />
       <HelpData Key="type_declaration" Value="" />
       <HelpData Key="type_declaration.type_declaration(string name, type_definition type): this(new ident(name),type)" Value="" />
       <HelpData Key="type_declaration.type_declaration(string name, type_definition type, SourceContext sc): this(new ident(name),type,sc)" Value="" />

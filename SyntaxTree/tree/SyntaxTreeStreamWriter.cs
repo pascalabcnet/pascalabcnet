@@ -6584,15 +6584,27 @@ namespace PascalABCCompiler.SyntaxTree
 		public void write_const_pattern(const_pattern _const_pattern)
 		{
 			write_pattern_node(_const_pattern);
-			if (_const_pattern.pattern_expression == null)
+			if (_const_pattern.pattern_expressions == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				_const_pattern.pattern_expression.visit(this);
+				_const_pattern.pattern_expressions.visit(this);
 			}
+		}
+
+
+		public void visit(tuple_wild_card _tuple_wild_card)
+		{
+			bw.Write((Int16)237);
+			write_tuple_wild_card(_tuple_wild_card);
+		}
+
+		public void write_tuple_wild_card(tuple_wild_card _tuple_wild_card)
+		{
+			write_expression(_tuple_wild_card);
 		}
 
 	}
