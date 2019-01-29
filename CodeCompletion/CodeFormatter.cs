@@ -581,9 +581,11 @@ namespace CodeFormatters
                     else if (comm.StartsWith("var") && comm.EndsWith("("))
                         comm = RemoveOverSpaces(comm);
                     else if (trimed_comm.StartsWith("[") && trimed_comm.EndsWith("]"))
-                        comm = RemoveOverSpaces(comm).Replace("[ ","[").Replace(" ]", "]");
+                        comm = RemoveOverSpaces(comm).Replace("[ ", "[").Replace(" ]", "]");
                     else if ((comm.StartsWith("auto") || comm.StartsWith("sealed") || comm.StartsWith("abstract") || comm.StartsWith("static")) && (trimed_comm.EndsWith("class") || trimed_comm.EndsWith("record")))
                         comm = RemoveOverSpaces(comm);
+                    else if (trimed_comm.StartsWith("]") && trimed_comm.EndsWith(":"))
+                        comm = comm.Replace(" ", "");
                 }
                 WriteCommentWithIndent(comm, true);
                 read_from_beg_pos = false;
