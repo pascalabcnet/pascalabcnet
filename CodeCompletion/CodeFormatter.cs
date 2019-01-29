@@ -577,6 +577,8 @@ namespace CodeFormatters
                         comm = RemoveOverSpaces(comm);
                     else if (comm.TrimEnd(' ').EndsWith("property"))
                         comm = RemoveOverSpaces(comm);
+                    else if (comm.StartsWith("var") && comm.EndsWith("("))
+                        comm = RemoveOverSpaces(comm);
                 }
                 WriteCommentWithIndent(comm, true);
                 read_from_beg_pos = false;
