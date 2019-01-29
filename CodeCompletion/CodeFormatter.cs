@@ -524,6 +524,7 @@ namespace CodeFormatters
                 string comm = Text.Substring(prev_pos, pos - prev_pos);
                 if (options.AggressiveMode == 1)
                 {
+                    string trimed_comm = comm.Trim();
                     if (comm.EndsWith(" ") && comm.IndexOf("\n") == -1)
                     {
                         comm = comm.TrimEnd(' ');
@@ -538,7 +539,7 @@ namespace CodeFormatters
                     }
                     if (comm.StartsWith(" "))
                     {
-                        string trimed_comm = comm.Trim();
+                        
                         if (trimed_comm == "then" || trimed_comm == "do")
                         {
                             comm = comm.TrimStart(' ');
@@ -579,6 +580,10 @@ namespace CodeFormatters
                         comm = RemoveOverSpaces(comm);
                     else if (comm.StartsWith("var") && comm.EndsWith("("))
                         comm = RemoveOverSpaces(comm);
+                    else if (trimed_comm.StartsWith("[") && trimed_comm.EndsWith("]"))
+                    {
+                        comm = RemoveOverSpaces(comm).Replace("[ ","[").Replace(" ]", "]");
+                    }
                 }
                 WriteCommentWithIndent(comm, true);
                 read_from_beg_pos = false;
