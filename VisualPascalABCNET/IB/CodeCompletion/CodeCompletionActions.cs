@@ -571,6 +571,8 @@ namespace VisualPascalABC
     {
         public override void Execute(TextArea textArea)
         {
+            if (WorkbenchServiceFactory.DebuggerManager.IsRunning)
+                return;
             WorkbenchServiceFactory.Workbench.ErrorsListWindow.ClearErrorList();
             VisualPABCSingleton.MainForm.CurrentCodeFileDocument.DeselectAll();
             CodeFormatters.CodeFormatter cf = new CodeFormatters.CodeFormatter(VisualPABCSingleton.MainForm.UserOptions.TabIndent);
