@@ -648,6 +648,10 @@ namespace CodeFormatters
                     if (trimedstr.StartsWith("."))
                         comm = trimedstr;
                 }
+                else if (sn is simple_property)
+                {
+                    comm = RemoveOverSpaces(comm).Replace(" ;", ";");
+                }
                 if (comm.StartsWith(" "))
                     add_space_before = true;
                 if (comm != "()")
