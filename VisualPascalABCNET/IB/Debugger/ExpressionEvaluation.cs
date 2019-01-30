@@ -5596,6 +5596,22 @@ namespace VisualPascalABC
                     break;
                 case "concat":
                     break;
+                case "integer":
+                case "byte":
+                case "shortint":
+                case "smallint":
+                case "word":
+                case "longword":
+                case "int64":
+                case "uint64":
+                case "real":
+                case "single":
+                case "char":
+                case "string":
+                case "boolean":
+                    if (pars.Length != 1)
+                        throw new WrongNumberArguments(name);
+                    break;
                 default:
                     throw new UnknownName(name);
             }
@@ -5817,8 +5833,60 @@ namespace VisualPascalABC
                             else
                                 throw new WrongTypeOfArgument(name);
                         }
-                    //case "uppercase" : return char.ToUpper(Convert.ToChar(pars[0]));
-                    //case "lowercase" : return char.ToLower(Convert.ToChar(pars[0]));
+                    case "integer":
+                        {
+                            return Convert.ToInt32(pars[0]);
+                        }
+                    case "byte":
+                        {
+                            return Convert.ToByte(pars[0]);
+                        }
+                    case "shortint":
+                        {
+                            return Convert.ToSByte(pars[0]);
+                        }
+                    case "smallint":
+                        {
+                            return Convert.ToInt16(pars[0]);
+                        }
+                    case "word":
+                        {
+                            return Convert.ToUInt16(pars[0]);
+                        }
+                    case "longword":
+                        {
+                            return Convert.ToUInt32(pars[0]);
+                        }
+                    case "int64":
+                        {
+                            return Convert.ToInt64(pars[0]);
+                        }
+                    case "uint64":
+                        {
+                            return Convert.ToUInt64(pars[0]);
+                        }
+                    case "real":
+                        {
+                            return Convert.ToDouble(pars[0]);
+                        }
+                    case "single":
+                        {
+                            return Convert.ToSingle(pars[0]);
+                        }
+                    case "char":
+                        {
+                            return Convert.ToChar(pars[0]);
+                        }
+                    case "string":
+                        {
+                            return Convert.ToString(pars[0]);
+                        }
+                    case "boolean":
+                        {
+                            return Convert.ToBoolean(pars[0]);
+                        }
+                        //case "uppercase" : return char.ToUpper(Convert.ToChar(pars[0]));
+                        //case "lowercase" : return char.ToLower(Convert.ToChar(pars[0]));
 
                 }
             }
