@@ -997,7 +997,7 @@ namespace CodeCompletion
                     ps.is_reintroduce = true;
         }
 
-        private ProcScope select_function_definition(ProcScope ps, formal_parameters prms, TypeScope return_type, TypeScope declType, bool function=false)
+        private ProcScope select_function_definition(ProcScope ps, formal_parameters prms, TypeScope return_type, TypeScope declType, bool function=false, bool static_constructor=false)
         {
             SymScope tmp = returned_scope;
             List<ElementScope> lst = new List<ElementScope>();
@@ -1070,6 +1070,15 @@ namespace CodeCompletion
             {
                 while (ps != null)
                 {
+                    if (ps.is_constructor && ps.is_static != static_constructor)
+                    {
+                        ps = ps.nextProc;
+                        continue;
+                    }
+                    else if (ps.is_constructor && ps.is_static && static_constructor)
+                    {
+                        return ps;
+                    }
                     if (ps.parameters == null || ps.parameters.Count == 0)
                     {
                         if (function && ps.return_type != null && return_type == null)
@@ -3855,7 +3864,7 @@ namespace CodeCompletion
                             ps.head_loc = loc;
                         }
                         else
-                            ps = select_function_definition(ps, _constructor.parameters, topScope as TypeScope, topScope as TypeScope);
+                            ps = select_function_definition(ps, _constructor.parameters, topScope as TypeScope, topScope as TypeScope, false, _constructor.class_keyword);
                         //while (ps != null && ps.already_defined) ps = ps.nextProc;
                         if (ps == null)
                         {

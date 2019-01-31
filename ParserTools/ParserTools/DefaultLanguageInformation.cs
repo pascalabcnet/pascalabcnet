@@ -2449,6 +2449,10 @@ namespace PascalABCCompiler.Parsers
 			int i=0;
         	bool is_cnstr = false;
         	StringBuilder sb = new StringBuilder();
+            if (meth.StartsWith("static "))
+                meth = meth.Remove(0, "static ".Length);
+            else if (meth.StartsWith("class "))
+                meth = meth.Remove(0, "class ".Length);
             if (scope.IsStatic)
                 sb.Append("static ");
         	while (i < meth.Length && char.IsLetterOrDigit(meth[i]))
