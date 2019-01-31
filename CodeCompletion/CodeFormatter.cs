@@ -619,7 +619,7 @@ namespace CodeFormatters
             {
                 string comm = Text.Substring(prev_pos, pos - prev_pos);
                 string trimedstr = comm.TrimStart();
-                if (sn is loop_stmt || sn is case_node || sn is if_node || sn is while_node || sn is foreach_stmt)
+                if (sn is loop_stmt || sn is case_node || sn is if_node || sn is while_node || sn is foreach_stmt || sn is for_node)
                 {
 
                     if (trimedstr == "do" || trimedstr == "of" || trimedstr == "then")
