@@ -831,6 +831,8 @@ namespace PascalABCCompiler.NETGenerator {
                 foreach (Type gt in t.GetGenericArguments())
                     if (IsConstructedGenericType(gt))
                         return true;
+            if (t.IsArray)
+                return IsConstructedGenericType(t.GetElementType());
             return false;
         }
 
