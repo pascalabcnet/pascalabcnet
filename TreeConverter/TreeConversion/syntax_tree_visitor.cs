@@ -1114,7 +1114,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (name == "+" && right_type == SystemLibrary.SystemLibrary.char_type && left_type != SystemLibrary.SystemLibrary.string_type)
                 no_search_in_extension_methods = false;
-            List<SymbolInfo> sil = left_type.find_in_type(name, left_type.Scope, no_search_in_extension_methods);
+            List<SymbolInfo> sil = left_type.find_in_type(name, left_type.Scope, null, no_search_in_extension_methods);
             int added_symbols = -1;
             List<SymbolInfo> sil2 = null;
             if (left_type != right_type && !one_way_operation(name))
@@ -1124,7 +1124,7 @@ namespace PascalABCCompiler.TreeConverter
                     sil = new List<SymbolInfo>(sil);
                 if (name == "+" && right_type != SystemLibrary.SystemLibrary.string_type && left_type == SystemLibrary.SystemLibrary.char_type)
                     no_search_in_extension_methods = false;
-                sil2 = right_type.find_in_type(name, right_type.Scope, no_search_in_extension_methods);
+                sil2 = right_type.find_in_type(name, right_type.Scope, null, no_search_in_extension_methods);
                 if ((sil != null) && (sil2 != null))
                 {
                     //Важная проверка. Возможно один и тот же оператор с одними и теми же типами определен в двух разных классах.

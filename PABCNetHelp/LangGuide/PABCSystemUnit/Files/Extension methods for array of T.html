@@ -13,6 +13,8 @@
 <param name="Keyword" value="IndexesOf">
 <param name="Keyword" value="IndexMax">
 <param name="Keyword" value="IndexOf">
+<param name="Keyword" value="Indices">
+<param name="Keyword" value="IndicesOf">
 <param name="Keyword" value="LastIndexMax">
 <param name="Keyword" value="LastIndexMin">
 <param name="Keyword" value="LastIndexOf">
@@ -64,6 +66,12 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого вхождения элемента или -1 если элемент не найден</td></tr>
 <tr><td><code><b>function</b> IndexOf&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; x: T; start: integer): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого вхождения элемента начиная с индекса start или -1 если элемент не найден</td></tr>
+<tr><td><code><b>function</b> Indices&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): <b>sequence </b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов одномерного массива</td></tr>
+<tr><td><code><b>function</b> IndicesOf&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; cond: T-&gt;boolean): <b>sequence </b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов элементов одномерного массива, удовлетворяющих условию</td></tr>
+<tr><td><code><b>function</b> IndicesOf&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; cond: (T,integer) -&gt;boolean): <b>sequence </b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов элементов одномерного массива, удовлетворяющих условию</td></tr>
 <tr><td><code><b>function</b> LastIndexMax&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего минимального элемента</td></tr>
 <tr><td><code><b>function</b> LastIndexMax&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; index: integer): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>

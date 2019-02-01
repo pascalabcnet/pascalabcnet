@@ -3510,12 +3510,12 @@ end;
 
 function ScreenWidth: integer;
 begin
-  Result := Round(Screen.PrimaryScreen.Bounds.Width*ScreenScale);
+  Result := Round(Screen.PrimaryScreen.Bounds.Width);
 end;
 
 function ScreenHeight: integer;
 begin
-  Result := Round(Screen.PrimaryScreen.Bounds.Height*ScreenScale);
+  Result := Round(Screen.PrimaryScreen.Bounds.Height);
 end;
 
 procedure CenterWindow;

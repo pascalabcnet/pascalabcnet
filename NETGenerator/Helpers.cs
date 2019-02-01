@@ -513,7 +513,7 @@ namespace PascalABCCompiler.NETGenerator {
 	}
 	
 	public class Helper {
-		private Hashtable defs=new Hashtable();
+		public Hashtable defs=new Hashtable();
         private Hashtable processing_types = new Hashtable();
 		private MethodInfo arr_mi=null;
 		private Hashtable pas_defs = new Hashtable();
@@ -691,10 +691,10 @@ namespace PascalABCCompiler.NETGenerator {
 		{
 			FldInfo fi = new FldInfo(fb);
 #if DEBUG
-            /*if (f.name == "XYZW")
+            if (f.name == "XYZW")
             {
                 var y = f.GetHashCode();
-            } */
+            } 
 #endif
             defs[f] = fi;
             return fi;
@@ -704,10 +704,10 @@ namespace PascalABCCompiler.NETGenerator {
         {
             FldInfo fi = new GenericFldInfo(fb, field_type, prev_fi); // prev_fi - чтобы сконструировать на последнем этапе fi 
 #if DEBUG
-            /*if (f.name == "XYZW")
+            if (f.name == "XYZW")
             {
                 var y = f.GetHashCode();
-            } */
+            }
 #endif
             defs[f] = fi;
             return fi;
@@ -718,11 +718,13 @@ namespace PascalABCCompiler.NETGenerator {
 		{
             var r = (FldInfo)defs[f];
 #if DEBUG
-            /*if (f.name == "XYZW")
+            if (f.name == "XYZW")
             {
                 var y = f.GetHashCode();
-            }
-            if (r == null && f.name == "XYZW")
+            } 
+#endif
+#if DEBUG
+            /*if (r == null && f.name == "XYZW")
             {
                 foreach (var k in defs.Keys)
                 {

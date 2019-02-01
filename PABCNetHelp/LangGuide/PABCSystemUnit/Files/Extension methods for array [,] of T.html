@@ -7,8 +7,11 @@
 <param name="Keyword" value="ElementsByCol">
 <param name="Keyword" value="ElementsByRow">
 <param name="Keyword" value="ElementsWithIndexes">
+<param name="Keyword" value="ElementsWithIndices">
 <param name="Keyword" value="Fill">
 <param name="Keyword" value="ForEach">
+<param name="Keyword" value="IndexesOf">
+<param name="Keyword" value="IndicesOf">
 <param name="Keyword" value="Print">
 <param name="Keyword" value="Println">
 <param name="Keyword" value="Row">
@@ -40,12 +43,18 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает по заданному двумерному массиву последовательность его элементов по строкам</td></tr>
 <tr><td><code><b>function</b> ElementsWithIndexes&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>sequence </b>  <b>of</b> (T, integer, integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает по заданному двумерному массиву последовательность (a[i,j],i,j)</td></tr>
+<tr><td><code><b>function</b> ElementsWithIndices&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>sequence </b>  <b>of</b> (T, integer, integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает по заданному двумерному массиву последовательность (a[i,j],i,j)</td></tr>
 <tr><td><code><b>procedure</b> Fill&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; f: (integer,integer) -&gt;T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;«аполн€ет элементы двумерного массива значени€ми, вычисл€емыми по некоторому правилу</td></tr>
 <tr><td><code><b>procedure</b> ForEach&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; act: T -&gt; ());</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕримен€ет действие к каждому элементу двумерного массива</td></tr>
 <tr><td><code><b>procedure</b> ForEach&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; act: (T,integer,integer) -&gt; ());</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕримен€ет действие к каждому элементу двумерного массива</td></tr>
+<tr><td><code><b>function</b> IndexesOf&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; cond: T -&gt; boolean): <b>sequence </b>  <b>of</b> (integer, integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает по заданному двумерному массиву последовательность индексов элементов, удовлетвор€ющих заданному условию</td></tr>
+<tr><td><code><b>function</b> IndicesOf&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; cond: T -&gt; boolean): <b>sequence </b>  <b>of</b> (integer, integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает по заданному двумерному массиву последовательность индексов элементов, удовлетвор€ющих заданному условию</td></tr>
 <tr><td><code><b>function</b> Print&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; w: integer := 4): <b>array</b> [,]  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬ывод двумерного массива, w - ширина пол€ вывода</td></tr>
 <tr><td><code><b>function</b> Print(Self: <b>array</b> [,]  <b>of</b> real; w: integer := 7; f: integer := 2): <b>array</b> [,]  <b>of</b> real;</code>

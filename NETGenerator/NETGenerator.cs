@@ -5314,6 +5314,12 @@ namespace PascalABCCompiler.NETGenerator
             value.obj.visit(this);
             is_addr = temp_is_addr;
             FldInfo fi_info = helper.GetField(value.field);
+#if DEBUG
+            if (value.field.name == "XYZW")
+            {
+                var y = value.field.GetHashCode();
+            }
+#endif
             FieldInfo fi = fi_info.fi;
             if (!is_addr)
             {
@@ -7884,11 +7890,13 @@ namespace PascalABCCompiler.NETGenerator
         private void AssignToField(IExpressionNode to, IExpressionNode from)
         {
             ICommonClassFieldReferenceNode value = (ICommonClassFieldReferenceNode)to;
-            FldInfo fi_info = helper.GetField(value.field);
-            /*if (value.field.name == "XYZW")
+#if DEBUG
+            if (value.field.name == "XYZW")
             {
                 var y = value.field.GetHashCode();
-            } */
+            }
+#endif
+            FldInfo fi_info = helper.GetField(value.field);
             FieldInfo fi = fi_info.fi;
             is_dot_expr = true;
             has_dereferences = false;
