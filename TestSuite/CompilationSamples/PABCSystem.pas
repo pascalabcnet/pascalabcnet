@@ -1023,6 +1023,23 @@ procedure Rewrite(f: AbstractBinaryFile);
 /// Связывает файловую переменную f с файлом name на диске и открывает двоичный файл на чтение и запись, при этом обнуляя его содержимое.
 ///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
 procedure Rewrite(f: AbstractBinaryFile; name: string);
+
+///- procedure Reset(f: двоичный файл; en: Encoding);
+/// Открывает двоичный файл на чтение и запись в заданной кодировке.
+///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
+procedure Reset(f: AbstractBinaryFile; en: Encoding);
+///- procedure Reset(f: двоичный файл; name: string; en: Encoding);
+/// Связывает файловую переменную f с файлом name на диске и открывает двоичный файл на чтение и запись в заданной кодировке.
+///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
+procedure Reset(f: AbstractBinaryFile; name: string; en: Encoding);
+///- procedure Rewrite(f: двоичный файл; en: Encoding);
+/// Открывает двоичный файл на чтение и запись в заданной кодировке, при этом обнуляя его содержимое. Если файл существовал, он обнуляется.
+///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
+procedure Rewrite(f: AbstractBinaryFile; en: Encoding);
+///- procedure Rewrite(f: двоичный файл; name: string; en: Encoding);
+/// Связывает файловую переменную f с файлом name на диске и открывает двоичный файл на чтение и запись в заданной кодировке, при этом обнуляя его содержимое.
+///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
+procedure Rewrite(f: AbstractBinaryFile; name: string; en: Encoding);
 ///- procedure Truncate(f: двоичный файл);
 /// Усекает двоичный файл, отбрасывая все элементы с позиции файлового указателя.
 ///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
@@ -2274,6 +2291,7 @@ const
   PARAMETER_TO_OUT_OF_RANGE = 'Параметр to за пределами диапазона!!The to parameter out of bounds';
   ARR_LENGTH_MUST_BE_MATCH_TO_MATR_SIZE = 'Размер одномерного массива не согласован с размером двумерного массива!!The 1-dim array length does not match 2-dim array size';
   INITELEM_COUNT_MUST_BE_EQUAL_TO_MATRIX_ELEMS_COUNT = 'Количество инициализирующих элементов не совпадает с количеством элементов матрицы!!The number of elements in init list must be equal to the number of elements in matrix';
+  TYPED_FILE_CANBE_OPENED_IN_SINGLEBYTE_ENCODING_ONLY = 'При открытии типизированного файла можно указывать только однобайтную кодировку!!Typed file can be opened in single byte encoding only';
 
 // -----------------------------------------------------
 //                  WINAPI
@@ -5998,10 +6016,7 @@ begin
     f.sr := new StreamReader(f.fi.FullName, DefaultEncoding);
 end;
 
-procedure AssignFile(f: Text; name: string);
-begin
-  Assign(f, name);
-end;
+procedure AssignFile(f: Text; name: string) := Assign(f, name);
 
 procedure Close(f: Text);
 begin
@@ -6024,15 +6039,9 @@ begin
   else raise new IOException(GetTranslation(FILE_NOT_OPENED));
 end;
 
-procedure CloseFile(f: Text);
-begin
-  Close(f);
-end;
+procedure CloseFile(f: Text) := Close(f);
 
-procedure Reset(f: Text);
-begin
-  Reset(f, DefaultEncoding)
-end;
+procedure Reset(f: Text) := Reset(f, DefaultEncoding);
 
 procedure Reset(f: Text; en: Encoding);
 begin
@@ -6054,15 +6063,12 @@ begin
   end;
 end;
 
-procedure Reset(f: Text; name: string);
-begin
-  Reset(f, name, DefaultEncoding)
-end;
+procedure Reset(f: Text; name: string) := Reset(f, name, DefaultEncoding);
 
 procedure Reset(f: Text; name: string; en: Encoding);
 begin
-  assign(f, name);
-  reset(f, en);
+  Assign(f, name);
+  Reset(f, en);
 end;
 
 procedure Rewrite(f: Text);
@@ -6100,10 +6106,7 @@ begin
   Rewrite(f, en);
 end;
 
-procedure Append(f: Text);
-begin
-  Append(f, DefaultEncoding)
-end;
+procedure Append(f: Text) := Append(f, DefaultEncoding);
 
 procedure Append(f: Text; en: Encoding);
 begin
@@ -6112,10 +6115,7 @@ begin
   f.sw := new StreamWriter(f.fi.FullName, True, en);
 end;
 
-procedure Append(f: Text; name: string);
-begin
-  Append(f, name, DefaultEncoding)
-end;
+procedure Append(f: Text; name: string) := Append(f, name, DefaultEncoding);
 
 procedure Append(f: Text; name: string; en: Encoding);
 begin
@@ -6123,10 +6123,7 @@ begin
   Append(f, en);
 end;
 
-function OpenRead(fname: string): Text;
-begin
-  Result := OpenRead(fname, DefaultEncoding)
-end;
+function OpenRead(fname: string): Text := OpenRead(fname, DefaultEncoding);
 
 function OpenRead(fname: string; en: Encoding): Text;
 begin
@@ -6135,10 +6132,7 @@ begin
   Result := f;
 end;
 
-function OpenWrite(fname: string): Text;
-begin
-  Result := OpenWrite(fname, DefaultEncoding)
-end;
+function OpenWrite(fname: string): Text := OpenWrite(fname, DefaultEncoding);
 
 function OpenWrite(fname: string; en: Encoding): Text;
 begin
@@ -6147,10 +6141,7 @@ begin
   Result := f;
 end;
 
-function OpenAppend(fname: string): Text;
-begin
-  Result := OpenAppend(fname, DefaultEncoding)
-end;
+function OpenAppend(fname: string): Text := OpenAppend(fname, DefaultEncoding);
 
 function OpenAppend(fname: string; en: Encoding): Text;
 begin
@@ -6308,10 +6299,7 @@ begin
   f.fi := System.IO.FileInfo.Create(name);
 end;
 
-procedure AssignFile(f: AbstractBinaryFile; name: string);
-begin
-  Assign(f, name);
-end;
+procedure AssignFile(f: AbstractBinaryFile; name: string) := Assign(f, name);
 
 procedure Close(f: AbstractBinaryFile);
 begin
@@ -6329,10 +6317,7 @@ begin
   end;
 end;
 
-procedure CloseFile(f: AbstractBinaryFile);
-begin
-  Close(f);
-end;
+procedure CloseFile(f: AbstractBinaryFile) := Close(f);
 
 procedure Reset(f: AbstractBinaryFile; en: Encoding);
 begin
@@ -6364,6 +6349,8 @@ end;
 
 procedure Rewrite(f: AbstractBinaryFile; en: Encoding);
 begin
+  if (f is TypedFile) and not en.IsSingleByte then
+    raise new System.IO.IOException(GetTranslation(TYPED_FILE_CANBE_OPENED_IN_SINGLEBYTE_ENCODING_ONLY));
   if f.fi = nil then
     raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
   if f.fs = nil then
@@ -11108,7 +11095,7 @@ begin
       TypeCode.UInt64: Result := sizeof(UInt64);
       TypeCode.SByte: Result := sizeof(SByte);
       TypeCode.Single: Result := sizeof(Single);
-    else if t.IsEnum then result := sizeof(integer);
+    else if t.IsEnum then Result := sizeof(integer);
     end//;
   //end 
   else

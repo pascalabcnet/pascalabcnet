@@ -3,6 +3,11 @@
 <head>
 <object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="property">
+<param name="Keyword" value="read">
+<param name="Keyword" value="write">
+<param name="Keyword" value="Свойства">
+<param name="Keyword" value="Расширенные свойства">
+<param name="Keyword" value="value">
 </object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title>
@@ -12,83 +17,162 @@
 <body>
 <H1>Свойства</H1>
 <p>Свойство внешне выглядит как поле 
-класса, однако, при доступе к нему на чтение или запись позволяет выполнять некоторые действия. Свойство описывается в классе следующим образом:</p>
+класса, однако, при доступе к нему на чтение или запись позволяет выполнять некоторые действия. Свойство описывается в классе 
+или записи следующим образом:</p>
 <blockquote>
 	<p><code><b>property</b> Prop: <code class="codeit">тип</code> <b>read</b>
-	<code class="codeit">имя функции чтения</code> <b>
-	write</b> <code class="codeit">имя процедуры записи</code>;</code></p>
+	<code class="codeit">PropertyReader</code> <b>
+	write</b> <code class="codeit">PropertyWriter</code>;</code></p>
 </blockquote>
+<p>В качестве <code><code class="codeit">PropertyReader</code></code> может 
+выступать: </p>
+<ul>
+	<li><em>имя функции чтения свойства</em>;</li>
+	<li><em>поле</em> соответствующего типа;</li>
+	<li><em>выражение</em> соответствующего типа (в этом случае свойство 
+	называется <em>расширенным</em>). </li>
+</ul>
+<p>В качестве <code><code class="codeit">PropertyWriter</code></code> может 
+выступать: </p>
+<ul>
+	<li><em>имя процедуры записи свойства</em>;</li>
+	<li><em>поле</em> соответствующего типа;</li>
+	<li><em>оператор</em> (в этом случае свойство называется <em>расширенным</em>). 
+	В операторе доступна предопределённая переменная value, в которую помещается 
+	значение для изменения свойства.</li>
+</ul>
+<p>Одна из секций - read или write - может быть опущена, в этом случае мы имеем 
+свойство с доступом только на запись или только на чтение соответственно.</p>
+<p>При доступе к свойству на чтение вызывается <code><code class="codeit">
+PropertyReader</code></code>, при доступе на запись - <code>
+<code class="codeit">PropertyWriter</code></code>.</p>
 <p>Как правило, каждое свойство связано с некоторым полем класса 
 и возвращает значение этого поля с помощью <i>функции чтения</i>, а меняет - с 
-помощью <i>процедуры записи</i>. Функция чтения и 
-процедура записи должны быть методами этого класса и иметь следующий вид:</p>
+помощью <i>процедуры записи</i>. Функция чтения и процедура записи должны быть 
+методами этого класса и иметь следующий вид:</p>
 <blockquote>
 	<p><code><b>function</b> getProp: <code class="codeit">
 	тип</code>;<b><br>
-	procedure</b> setProp(v: <code class="codeit">тип</code>);</code></p>
+	procedure</b> setProp(value: <code class="codeit">тип</code>);</code>&nbsp;</p>
 </blockquote>
-<p>Кроме этого, в PascalABC.NET имеются <a href="properties_extended.html">расширенные свойства</a>, имеющие следующий 
-вид:</p>
-<blockquote>
-	<p><code><b>property</b> Prop: <code class="codeit">тип</code> <b>read</b>
-	<em>выражение</em> <b>
-	write</b> <em>оператор</em>;</code></p>
-</blockquote>
-<p>Они были введены в язык чтобы не писать отдельно функцию чтения или процедуру 
-записи как у обычного свойства. Подробнее о <a href="properties_extended.html">расширенных свойствах</a> можно прочитать здесь. Далее речь на этой 
-странице идет об обычных свойствах.</p>
+<p>Если функция чтения свойства просто возвращает значение некоторого поля, то 
+вместо её имени можно указать имя этого поля. Аналогично если процедура записи 
+просто присваивает значение некоторому полю, то вместо её имени можно указать 
+имя этого поля.</p>
+<p>Любая из секций <code><b>read</b></code> 
+или <code><b>write</b></code> может быть опущена, в этом 
+случае мы получаем свойство с доступом только на запись или с доступом только на чтение. </p>
 <p>Обычно функция чтения и процедура записи описываются в 
 приватной секции класса. Они могут быть виртуальными, в этом случае их уместно 
 описывать в защищенной секции класса.</p>
-<p>Вместо <code>
-	<code class="codeit">имени функции чтения</code></code> 
-и <code> <code class="codeit">имени процедуры записи</code></code> 
-может фигурировать имя поля, с которым данное свойство связано. Любая из секций <code><b>read</b></code> 
-или <code><b>write</b></code> может быть опущена, в этом 
-случае мы получаем свойство с доступом только на запись или только на чтение.
-</p>
-<p>Например:</p>
+<p>Для начала рассмотрим пример, в котором используются функция чтения и 
+процедура записи свойства:</p>
 <blockquote>
 	<p><code><b>type</b> <br>
 	&nbsp; Person =<b> class<br>
 &nbsp; private<br>
-	&nbsp;&nbsp;&nbsp; </b>nm: string;<br>&nbsp; 
-	&nbsp; ag: integer; <br>
-	<b>&nbsp;&nbsp;&nbsp; procedure</b> setAge(a: integer);<br>&nbsp; <b>&nbsp; begin</b><br>&nbsp;&nbsp;&nbsp; 
-	<b>&nbsp; if</b> a&gt;=0 <b>then</b> <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ag := a<br>&nbsp; &nbsp;&nbsp;&nbsp; <b>else</b> 
-	<b>raise</b> new Exception('Возраст не может быть 
-	отрицательным');<br>
-	&nbsp; <b>&nbsp; end</b>;<br>
+	&nbsp;&nbsp;&nbsp; </b>fName: string;<br>&nbsp; 
+	&nbsp; fAge: integer; <br>
+	<b>&nbsp;&nbsp;&nbsp; procedure</b> setAge(value: integer);<br>&nbsp; <b>&nbsp; begin</b><br>&nbsp;&nbsp;&nbsp; 
+	<b>&nbsp; if</b> value&lt;0 <b>then</b> <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; value := 0;<br>&nbsp; &nbsp;&nbsp;&nbsp; 
+	fAge := value&nbsp; <br><b>&nbsp;&nbsp;&nbsp; end</b>;<br>
+&nbsp;&nbsp;&nbsp; <b>function</b> getAge: integer;<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result := fAge;<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+&nbsp;&nbsp;&nbsp; <b>function</b> getName: string;<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result := fName;<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
 &nbsp;&nbsp;&nbsp; <b>function</b> getId: string;<br>
 &nbsp;&nbsp;&nbsp; <b>begin</b><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result := nm + ag.ToString;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result := fName + fAge.ToString;<br>
 &nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+	<b>&nbsp; public<br>
+	&nbsp;&nbsp;&nbsp; constructor
+	</b>(name: string; age: integer);<br>
+	<b>&nbsp;&nbsp;&nbsp; begin<br>
+	</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fName := name;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	fAge := age;<br>
+	<b>&nbsp;&nbsp;&nbsp; end</b>;<b><br>
+	</b>&nbsp; <b>&nbsp; property</b> Age: integer <b>read</b> getAge <b>write</b> setAge;<br>&nbsp; &nbsp; <b>property</b> 
+	Name: string <b>read</b> getName;<br>&nbsp; <b>&nbsp; property</b> Id: string <b>read</b> 
+	getId;<br><b>&nbsp; end</b>;</code></p>
+	<p><code><b>begin<br>&nbsp; var</b> p: Person;<br>
 	&nbsp;
-	<b>public<br>
-	&nbsp; ...<br>
-	</b>&nbsp; <b>property</b> Age: integer <b>read</b> аg <b>write</b> setAge;<br>&nbsp; <b>property</b> 
-	Name: string <b>read</b> nm;<br>&nbsp; <b>property</b> Id: string <b>read</b> 
-	getId;<br><b>end</b>;</code></p>
-	<p><code><b>var</b> p: Person;<br>
-	p := new Person('Иванов',20);<br>p.Age := -3; // 
-	генерируется исключение<br>
-	<b>var</b>
-	i: integer := p.Age;<br>
-	writeln(p.Id); </code></p>
+	p := new Person('Иванов',20);<br>&nbsp; p.Age := -3; // p.Age = 0 !<br>
+	&nbsp; p.Age := p.Age + 1; // компилятор заменяет этот код на p.setAge(p.getAge 
+	+ 1);<br>
+	&nbsp;
+	writeln(p.Id); <br><strong>end</strong>.</code></p>
 </blockquote>
 <p>Всякий раз, когда мы присваиваем свойству <code>Age</code> 
 новое значение, 
 вызывается процедура <code>setAge</code> с 
 соответствующим параметром. Всякий раз, когда мы считываем значение свойства
-<code>Age</code>, происходит обращение к полю <code>ag</code>.
-Поле nm<code> </code>доступно только на 
-чтение. Наконец, свойство <code>Id</code> осуществляет 
-доступ на чтение к информации, находящейся в двух полях.</p>
-<p>Обычно для доступа к полю на чтение в секции <code><b>
-read</b></code> свойства указывается именно поле, 
-так как обычно при чтении поля никаких дополнительных действий производить не 
-требуется.</p>
+<code>Age</code>, вызывается функция <code>getAge</code>. </p>
+<p>Как уже отмечалось, в тривиальных случаях имя процедуры в секции <code> <b>write</b></code> 
+свойства и имя функции в секции <code> <b>read</b></code> свойства можно 
+заменить на имена соответствующих полей. Приведём код с учётом этого замечания:</p>
+<blockquote>
+	<p><code><b>type</b> <br>
+	&nbsp; Person =<b> class<br>
+&nbsp; private<br>
+	&nbsp;&nbsp;&nbsp; </b>fName: string;<br>&nbsp; 
+	&nbsp; fAge: integer; <br>
+	<b>&nbsp;&nbsp;&nbsp; procedure</b> setAge(value: integer);<br>&nbsp; <b>&nbsp; begin</b><br>&nbsp;&nbsp;&nbsp; 
+	<b>&nbsp; if</b> value&lt;0 <b>then</b> <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; value := 0;<br>&nbsp; &nbsp;&nbsp;&nbsp; 
+	fAge := value&nbsp; <br><b>&nbsp;&nbsp;&nbsp; end</b>;<br>
+&nbsp;&nbsp;&nbsp; <b>function</b> getId: string;<br>
+&nbsp;&nbsp;&nbsp; <b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result := fName + fAge.ToString;<br>
+&nbsp;&nbsp;&nbsp; <b>end</b>;<br>
+	<b>&nbsp; public<br>
+	&nbsp;&nbsp;&nbsp; constructor
+	</b>(name: string; age: integer) := (fName,fAge) := (name,age);<br><b>&nbsp;&nbsp;&nbsp; 
+	property</b> Age: integer <strong>read</strong> fAge <strong>write</strong> 
+	setAge;<b><br>&nbsp;&nbsp;&nbsp; property</b> Name: string <strong>read</strong> 
+	fName;<b><br>&nbsp;&nbsp;&nbsp; property</b> Id: string <strong>read
+	</strong>getId;<b><br>&nbsp; end</b>;</code></p>
+</blockquote>
+<p>Наконец, воспользуемся <em>расширенными свойствами</em>, заменив <code>getId</code> 
+на выражение <code>fName + fAge.ToString</code>, а <code>setAge</code> - на 
+оператор, реализующий тело этой процедуры:</p>
+<blockquote>
+	<p><code><b>type</b> <br>
+	&nbsp; Person =<b> class<br>
+&nbsp; private<br>
+	&nbsp;&nbsp;&nbsp; </b>fName: string;<br>&nbsp; 
+	&nbsp; fAge: integer; <br>
+	<b>&nbsp; public<br>
+	&nbsp;&nbsp;&nbsp; constructor
+	</b>(name: string; age: integer) := (fName,fAge) := (name,age);<br>&nbsp;&nbsp;&nbsp;
+	<strong>property </strong>Age: integer <strong>read</strong> fAge <strong>
+	write</strong> fAge := value&lt;0 ? 0 : value;<br>&nbsp;&nbsp; <strong>&nbsp;property</strong> 
+	Name: string <strong>read</strong> fName;<br>&nbsp;&nbsp;&nbsp; <strong>
+	property</strong> Id: string <strong>read</strong> fName + fAge.ToString;<br>
+	<b>&nbsp; end</b>;</code></p>
+</blockquote>
+<p>Заметим, что расширенные свойства имеются только в PascalABC.NET, введены в 
+язык чтобы не писать отдельно функцию чтения или процедуру записи и отсутстуют в 
+других версиях Паскаля.</p>
+<p>Расширенные свойства удобно использовать во многих ситуациях. Например, когда 
+обычные свойства рализованы обращением к аналогичным свойствам поля этого 
+класса:</p>
+<blockquote>
+	<p><code><strong>type</strong><br>&nbsp; MyList&lt;T&gt; = <strong>class</strong><br>&nbsp;
+	<strong>private</strong> <br>&nbsp;&nbsp;&nbsp; l := new List&lt;T&gt;;<br>&nbsp;
+	<strong>public</strong> <br>&nbsp;&nbsp;&nbsp; <strong>property</strong> 
+	Capacity: integer <strong>read</strong> l.Capacity <strong>write</strong> 
+	l.Capacity := <em>value</em>;<br>&nbsp; <strong>end</strong>;</code></p>
+	<p><code><strong>begin</strong><br><b>&nbsp; var</b> ml := new 
+	MyList&lt;integer&gt;;<br>
+	&nbsp; ml.Capacity := 5; // доступ на запись: значение 5 копируется в 
+	переменную <em>value</em><br>
+	&nbsp; Println(ml.Capacity); // доступ на чтение<br><strong>end</strong>.</code></p>
+</blockquote>
 <p>Свойства не могут передаваться по ссылке в процедуры и функции. Например, 
 следующий код ошибочен:</p>
 <blockquote>
@@ -116,19 +200,19 @@ Button</code>,
 <blockquote>
 	<p><code>b1.Width := 100;</code></p>
 </blockquote>
-<p>Процедура для записи этого свойства в приватное поле <code>fwidth</code> будет выглядеть примерно так:</p>
+<p>Процедура для записи этого свойства в приватное поле <code>fWidth</code> будет выглядеть примерно так:</p>
 <blockquote>
 	<p><code><b>procedure</b> SetWidth(w: integer);<br>
 	<b>begin</b><br>
-&nbsp; <b>if</b> (w&gt;0) <b>and</b> (w&lt;&gt;fwidth) <b>then</b> <br>
+&nbsp; <b>if</b> (w&gt;0) <b>and</b> (w&lt;&gt;fWidth) <b>then</b> <br>
 &nbsp; <b>begin</b><br>
-&nbsp;&nbsp;&nbsp; fwidth := w;<br>
+&nbsp;&nbsp;&nbsp; fWidth := w;<br>
 	</code>&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<i>код перерисовки кнопки</i><br>
 	<code>&nbsp; <b>end</b><br>
 	<b>end</b>;</code></p>
 </blockquote>
 <p>Следует обратить внимание на вторую часть условия в операторе
-<code><b>if</b></code>: <code>w&lt;&gt;fwidth</code>. 
+<code><b>if</b></code>: <code>w&lt;&gt;fWidth</code>. 
 Добавление этой проверки позволяет избежать лишней перерисовки кнопки в случае, 
 если ее ширина не меняется.</p>
 <p>&nbsp;</p>

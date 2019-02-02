@@ -1827,5 +1827,14 @@ namespace PascalABCCompiler.SyntaxTree
     {
         public override string ToString() => pattern.ToString();
     }
-}
+
+    public partial class typecast_node
+    {
+        public override string ToString()
+        {
+            return "" + this.expr + " " + this.cast_op + " " + this.type_def;
+        }
+    }
+
+    }
 

@@ -5315,10 +5315,10 @@ namespace PascalABCCompiler.NETGenerator
             is_addr = temp_is_addr;
             FldInfo fi_info = helper.GetField(value.field);
 #if DEBUG
-            if (value.field.name == "XYZW")
+            /*if (value.field.name == "XYZW")
             {
                 var y = value.field.GetHashCode();
-            }
+            } */
 #endif
             FieldInfo fi = fi_info.fi;
             if (!is_addr)
@@ -7891,10 +7891,10 @@ namespace PascalABCCompiler.NETGenerator
         {
             ICommonClassFieldReferenceNode value = (ICommonClassFieldReferenceNode)to;
 #if DEBUG
-            if (value.field.name == "XYZW")
+            /*if (value.field.name == "XYZW")
             {
                 var y = value.field.GetHashCode();
-            }
+            } */
 #endif
             FldInfo fi_info = helper.GetField(value.field);
             FieldInfo fi = fi_info.fi;

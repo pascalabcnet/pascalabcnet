@@ -1442,10 +1442,10 @@ namespace PascalABCCompiler.TreeRealization
         {
             var cf = original as class_field;
 #if DEBUG
-            if (cf != null && cf.name == "XYZW")
+            /*if (cf != null && cf.name == "XYZW")
             {
                 cf = cf;
-            }
+            } */
 #endif         
             // Этот код дает перекрестные ошибки далее поэтому эта идея неправильна. Комментирую
             /*if (cf != null) // значит это поле и заменять original на соответствующее поле оригинального класса
@@ -1909,10 +1909,10 @@ namespace PascalABCCompiler.TreeRealization
                 return sil1;
             }*/
 #if DEBUG
-            if (name == "XYZW")
+            /*if (name == "XYZW")
             {
                 var y = name;
-            }
+            } */
 #endif
             sil = _original_generic.find_in_type(name, CurrentScope, _original_generic); // передача _original_generic - это костыль для устранения бага #1674. 
             // параметр _original_generic - фиктивный: если он не null (это только здесь), то в common_type_node выполнение в одном месте идет по другой ветке

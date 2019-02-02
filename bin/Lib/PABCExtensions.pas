@@ -23,6 +23,18 @@ begin
   PABCSystem.Rewrite(Result, fname);
 end;
 
+/// Открывает бестиповой файл в заданной кодировке и возвращает значение для инициализации файловой переменной
+function OpenBinary(fname: string; en: Encoding): file;
+begin
+  PABCSystem.Reset(Result, fname, en);
+end;
+
+/// Создаёт или обнуляет бестиповой файл в заданной кодировке и возвращает значение для инициализации файловой переменной
+function CreateBinary(fname: string; en: Encoding): file;
+begin
+  PABCSystem.Rewrite(Result, fname, en);
+end;
+
 /// Открывает типизированный файл и возвращает значение для инициализации файловой переменной
 function OpenFile<T>(fname: string): file of T;
 begin
@@ -34,6 +46,20 @@ function CreateFile<T>(fname: string): file of T;
 begin
   var res: file of T;
   PABCSystem.Rewrite(res, fname);
+  Result := res;
+end;
+
+/// Открывает типизированный файл в заданной кодировке и возвращает значение для инициализации файловой переменной
+function OpenFile<T>(fname: string; en: Encoding): file of T;
+begin
+  PABCSystem.Reset(Result, fname, en);
+end;
+
+/// Создаёт или обнуляет типизированный файл в заданной кодировке и возвращает значение для инициализации файловой переменной
+function CreateFile<T>(fname: string; en: Encoding): file of T;
+begin
+  var res: file of T;
+  PABCSystem.Rewrite(res, fname, en);
   Result := res;
 end;
 
