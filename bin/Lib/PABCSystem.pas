@@ -6323,6 +6323,8 @@ procedure Reset(f: AbstractBinaryFile; en: Encoding);
 begin
   if f.fi = nil then
     raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
+  if (f is TypedFile) and not en.IsSingleByte then
+    raise new System.IO.IOException(GetTranslation(TYPED_FILE_CANBE_OPENED_IN_SINGLEBYTE_ENCODING_ONLY));
   if f.fs = nil then 
   begin
     f.fs := new FileStream(f.fi.FullName, FileMode.Open);
@@ -6349,10 +6351,10 @@ end;
 
 procedure Rewrite(f: AbstractBinaryFile; en: Encoding);
 begin
-  if (f is TypedFile) and not en.IsSingleByte then
-    raise new System.IO.IOException(GetTranslation(TYPED_FILE_CANBE_OPENED_IN_SINGLEBYTE_ENCODING_ONLY));
   if f.fi = nil then
     raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
+  if (f is TypedFile) and not en.IsSingleByte then
+    raise new System.IO.IOException(GetTranslation(TYPED_FILE_CANBE_OPENED_IN_SINGLEBYTE_ENCODING_ONLY));
   if f.fs = nil then
   begin
     f.fs := new FileStream(f.fi.FullName, FileMode.Create);
