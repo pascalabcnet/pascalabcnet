@@ -5612,7 +5612,25 @@ namespace VisualPascalABC
                     if (pars.Length != 1)
                         throw new WrongNumberArguments(name);
                     break;
+
                 default:
+                    Type t = AssemblyHelper.GetType(name);
+                    if (t != null)
+                    {
+                        if (pars.Length != 1)
+                            throw new WrongNumberArguments(name);
+                        if (pars[0] is Value)
+                        {
+                            Value v = pars[0] as Value;
+                            DebugType dt = DebugUtils.GetDebugType(t);
+                            if (dt == v.Type || v.Type.IsSubclassOf(dt))
+                                return v;
+                            else
+                                throw new InvalidCastException();
+                        }
+                        else
+                            throw new InvalidCastException();
+                    }
                     throw new UnknownName(name);
             }
             try
@@ -5894,10 +5912,10 @@ namespace VisualPascalABC
             {
                 throw new WrongTypeOfArgument(name);
             }
-            catch (System.InvalidCastException)
+            /*catch (System.InvalidCastException)
             {
                 throw new WrongTypeOfArgument(name);
-            }
+            }*/
             return null;
         }
 
@@ -6664,6 +6682,11 @@ namespace VisualPascalABC
                             args.Add(GetSimpleValue(rv));
                         }
                     res.prim_val = EvalStandFuncWithParam(id.name, args.ToArray());
+                    if (res.prim_val is Value)
+                    {
+                        res.obj_val = res.prim_val as Value;
+                        res.prim_val = null;
+                    }
                 }
                 eval_stack.Push(res);
             }
