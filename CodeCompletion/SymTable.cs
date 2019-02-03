@@ -1789,6 +1789,47 @@ namespace CodeCompletion
             }
         }
 
+        private ProcScope beginInvokeMethod;
+        private ProcScope endInvokeMethod;
+
+        public ProcScope BeginInvokeMethod
+        {
+            get
+            {
+                if (beginInvokeMethod == null)
+                {
+                    beginInvokeMethod = new ProcScope("BeginInvoke", target);
+                    beginInvokeMethod.declaringType = parent;
+                    beginInvokeMethod.parameters = new List<ElementScope>();
+                    beginInvokeMethod.parameters.Add(new ElementScope(new SymInfo("callback",SymbolKind.Parameter,"callback"), TypeTable.get_compiled_type(typeof(AsyncCallback)),beginInvokeMethod));
+                    beginInvokeMethod.parameters.Add(new ElementScope(new SymInfo("object", SymbolKind.Parameter, "object"), TypeTable.obj_type, beginInvokeMethod));
+                    beginInvokeMethod.return_type = TypeTable.get_compiled_type(typeof(IAsyncResult));
+                    beginInvokeMethod.is_virtual = true;
+                    beginInvokeMethod.Complete();
+                }
+                return beginInvokeMethod;
+            }
+        }
+
+        public ProcScope EndInvokeMethod
+        {
+            get
+            {
+                if (endInvokeMethod == null)
+                {
+                    endInvokeMethod = new ProcScope("EndInvoke", target);
+                    endInvokeMethod.declaringType = parent;
+                    endInvokeMethod.parameters = new List<ElementScope>();
+                    endInvokeMethod.parameters.Add(new ElementScope(new SymInfo("result", SymbolKind.Parameter, "result"), TypeTable.get_compiled_type(typeof(IAsyncResult)), endInvokeMethod));
+                   
+                    //endInvokeMethod.return_type = TypeTable.get_compiled_type(typeof(IAsyncResult));
+                    endInvokeMethod.is_virtual = true;
+                    endInvokeMethod.Complete();
+                }
+                return endInvokeMethod;
+            }
+        }
+
         public override TypeScope GetInstance(List<TypeScope> gen_args, bool exact = false)
         {
             return this;
@@ -1797,8 +1838,12 @@ namespace CodeCompletion
         public override List<SymScope> FindOverloadNames(string name)
         {
             List<SymScope> lst = new List<SymScope>();
-            if (string.Compare(name, InvokeMethod.name, true) == 0)
+            if (string.Compare(name, "Invoke", true) == 0)
                 lst.Add(InvokeMethod);
+            else if (string.Compare(name, "BeginInvoke", true) == 0)
+                lst.Add(BeginInvokeMethod);
+            else if (string.Compare(name, "EndInvoke", true) == 0)
+                lst.Add(EndInvokeMethod);
             else
                 lst.AddRange(parent.FindOverloadNames(name));
             return lst;
@@ -1807,8 +1852,12 @@ namespace CodeCompletion
         public override List<SymScope> FindOverloadNamesOnlyInType(string name)
         {
             List<SymScope> lst = new List<SymScope>();
-            if (string.Compare(name, InvokeMethod.name, true) == 0)
+            if (string.Compare(name, "Invoke", true) == 0)
                 lst.Add(InvokeMethod);
+            else if (string.Compare(name, "BeginInvoke", true) == 0)
+                lst.Add(BeginInvokeMethod);
+            else if (string.Compare(name, "EndInvoke", true) == 0)
+                lst.Add(EndInvokeMethod);
             else
                 lst.AddRange(parent.FindOverloadNamesOnlyInType(name));
             return lst;
@@ -1818,6 +1867,8 @@ namespace CodeCompletion
         {
             List<SymInfo> lst = new List<SymInfo>();
             lst.Add(InvokeMethod.si);
+            lst.Add(BeginInvokeMethod.si);
+            lst.Add(EndInvokeMethod.si);
             lst.AddRange(parent.GetNames());
             return lst.ToArray();
         }
@@ -1846,6 +1897,8 @@ namespace CodeCompletion
         {
             List<SymInfo> lst = new List<SymInfo>();
             lst.Add(InvokeMethod.si);
+            lst.Add(BeginInvokeMethod.si);
+            lst.Add(EndInvokeMethod.si);
             lst.AddRange(parent.GetNamesAsInObject());
             return lst.ToArray();
         }
@@ -1854,6 +1907,8 @@ namespace CodeCompletion
         {
             List<SymInfo> lst = new List<SymInfo>();
             lst.Add(InvokeMethod.si);
+            lst.Add(BeginInvokeMethod.si);
+            lst.Add(EndInvokeMethod.si);
             lst.AddRange(parent.GetNamesAsInObject(ev));
             return lst.ToArray();
         }
