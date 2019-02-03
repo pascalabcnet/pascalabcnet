@@ -261,5 +261,22 @@ namespace PascalABCCompiler.TreeConverter
 
             AddError(get_location(matchedExpression), "EXPRESSION_OF_TYPE_{0}_CANNOT_BE_MATCHED_AGAINST_PATTERN_WITH_TYPE_{1}", expression.name, type.name);
         }
+        
+        private void CheckIfCanBeMatched(expression matchedExpression, expression patternExpression)
+        {
+            var patternType = convert_strong(patternExpression).type;
+            var expressionType = convert_strong(matchedExpression).type;
+
+            var expressionTypeName = expressionType.name;
+            var patternTypeName = patternType.name;
+
+            if (type_table.is_derived(patternType, expressionType) ||
+                type_table.is_derived(expressionType, patternType) ||
+                AreTheSameType(patternType, expressionType) ||
+                (expressionTypeName.StartsWith("Tuple") && patternTypeName.StartsWith("Tuple")))
+                return;
+
+            AddError(get_location(matchedExpression), "EXPRESSION_OF_TYPE_{0}_CANNOT_BE_MATCHED_AGAINST_PATTERN_WITH_TYPE_{1}", expressionType.name, patternType.name);
+        }
     }
 }

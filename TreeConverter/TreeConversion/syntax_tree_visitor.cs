@@ -20012,6 +20012,12 @@ namespace PascalABCCompiler.TreeConverter
                 var type = st.lst[1] as type_definition;
                 CheckIfCanBeMatched(expr, type);
             }
+            else if (st.typ is SemanticCheckType.MatchedExpressionAndExpression)
+            {
+                var matchedExpr = st.lst[0] as expression;
+                var patternExpr = st.lst[1] as expression;
+                CheckIfCanBeMatched(matchedExpr, patternExpr);
+            }
             // !Patterns
             else
             {

@@ -74,8 +74,10 @@ namespace SyntaxVisitors.SugarVisitors
 
         private if_node _previousIf;
         private statement desugaredMatchWith;
-
         private List<if_node> processedIfNodes = new List<if_node>();
+
+        //const matching
+        private List<statement> typeChecks = new List<statement>();
 
         public static PatternsDesugaringVisitor New => new PatternsDesugaringVisitor();
 
@@ -129,6 +131,11 @@ namespace SyntaxVisitors.SugarVisitors
             if (desugaredMatchWith == null)
                 desugaredMatchWith = new empty_statement();
 
+            if (typeChecks.Count != 0)
+            {
+                typeChecks.Add(desugaredMatchWith);
+                desugaredMatchWith = new statement_list(typeChecks);
+            }
             // Замена выражения match with на новое несахарное поддерево и его обход
             ReplaceUsingParent(matchWith, desugaredMatchWith);
             visit(desugaredMatchWith);
@@ -162,6 +169,7 @@ namespace SyntaxVisitors.SugarVisitors
             var patternExpressionNode = patternCase.pattern as const_pattern;
             //var tuple_pattern_case = patternExpressionNode.pattern_expression as method_call;
 
+            var statementsToAdd = new List<statement>();
             var equalCalls = new List<method_call>();
             foreach (var patternExpression in patternExpressionNode.pattern_expressions.expressions)
             {
@@ -179,7 +187,9 @@ namespace SyntaxVisitors.SugarVisitors
                         patternCase.source_context
                     )
                 );
+                statementsToAdd.Add(GetTypeCompatibilityCheck(matchingExpression, patternExpression));
             }
+            typeChecks.AddRange(statementsToAdd);
             expression orPatternCases = equalCalls[0];
             for (int i = 1; i < equalCalls.Count; ++i)
             {
@@ -187,7 +197,18 @@ namespace SyntaxVisitors.SugarVisitors
             }
             var ifCondition = patternCase.condition == null ? orPatternCases : bin_expr.LogicalAnd(orPatternCases, patternCase.condition);
             var ifCheck = SubtreeCreator.CreateIf(ifCondition, patternCase.case_action);
-
+            /*
+            if (_previousIf != null)
+            {
+                AddDefinitionsInUpperStatementList(ifCheck, statementsToAdd);
+            }
+            else
+            {
+                statement emptySt = new empty_statement();
+                ConvertIfNode(ifCheck, statementsToAdd, out emptySt);
+                ifCheck = processedIfNodes[0];
+            }
+            */
             // Добавляем полученные statements в результат
             AddDesugaredCaseToResult(ifCheck, ifCheck);
         }
@@ -340,6 +361,9 @@ namespace SyntaxVisitors.SugarVisitors
 
         private semantic_check_sugared_statement_node GetTypeCompatibilityCheck(is_pattern_expr expression) =>
             new semantic_check_sugared_statement_node(SemanticCheckType.MatchedExpressionAndType, new List<syntax_tree_node>() { expression.left, (expression.right as deconstructor_pattern).type });
+
+        private semantic_check_sugared_statement_node GetTypeCompatibilityCheck(expression expression1, expression expression2) =>
+            new semantic_check_sugared_statement_node(SemanticCheckType.MatchedExpressionAndExpression, new List<syntax_tree_node>() { expression1, expression2 });
 
         private statement_list ConvertIfNode(if_node ifNode, List<statement> statementsBeforeIf, out statement elseBody)
         {
