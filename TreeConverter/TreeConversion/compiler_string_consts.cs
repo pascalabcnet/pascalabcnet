@@ -371,6 +371,8 @@ namespace PascalABCCompiler.TreeConverter
         public static string set_name = "TypedSet";
         public const string deconstruct_method_name = "deconstruct";
         public const string is_test_function_name = "__TypeCheckAndAssignForIsMatch";
+        public const string wild_cards_tuple_equal_function_name = "__WildCardsTupleEqual";
+        public const string seq_function_name = "Seq";
 
         public static string bounded_array_printable_name_template = "array [{0}..{1}] of {2}";
         public static string array_printable_name_template = "array of {0}";

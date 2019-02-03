@@ -66,6 +66,8 @@ namespace SyntaxVisitors.SugarVisitors
 
         private const string DeconstructMethodName = compiler_string_consts.deconstruct_method_name;
         private const string IsTestMethodName = compiler_string_consts.is_test_function_name;
+        private const string WildCardsTupleEqualFunctionName = compiler_string_consts.wild_cards_tuple_equal_function_name;
+        private const string SeqFunctionName = compiler_string_consts.seq_function_name;
         private const string GeneratedPatternNamePrefix = "<>pattern";
 
         private int generalVariableCounter = 0;
@@ -167,12 +169,53 @@ namespace SyntaxVisitors.SugarVisitors
         {
             Debug.Assert(patternCase.pattern is const_pattern);
             var patternExpressionNode = patternCase.pattern as const_pattern;
-            //var tuple_pattern_case = patternExpressionNode.pattern_expression as method_call;
 
             var statementsToAdd = new List<statement>();
             var equalCalls = new List<method_call>();
+            
             foreach (var patternExpression in patternExpressionNode.pattern_expressions.expressions)
             {
+                statementsToAdd.Add(GetTypeCompatibilityCheck(matchingExpression, patternExpression));
+
+                // Matching tuples
+                var possibleTupleCase = patternExpression as method_call;
+                if (possibleTupleCase != null)
+                {
+                    var possibleTupleDotNode = (possibleTupleCase.dereferencing_value as dot_node);
+                    if (possibleTupleDotNode != null)
+                    {
+                        var possibleTupleCallString = possibleTupleDotNode.ToString();
+                        if (possibleTupleCallString.Contains("System.Tuple.Create")) {
+                            var elemsToCompare = new List<expression>();
+                            for (int currentInd = 0; currentInd < possibleTupleCase.parameters.Count; ++currentInd)
+                            {
+                                var tupleElem = possibleTupleCase.parameters.expressions[currentInd];
+                                if (!(tupleElem is tuple_wild_card))
+                                {
+                                    elemsToCompare.Add(currentInd);
+                                } else
+                                {
+                                    //possibleTupleCase.parameters.ReplaceInList(possibleTupleCase.parameters.expressions[currentInd], new nil_const());
+                                    possibleTupleCase.parameters[currentInd] = new int32_const(0, patternCase.source_context);
+                                }
+                            }
+                            var seqCall = SubtreeCreator.CreateSystemFunctionCall(
+                                SeqFunctionName, elemsToCompare.ToArray());
+
+                            var tupleEqualsCall = SubtreeCreator.
+                                CreateSystemFunctionCall(
+                                    WildCardsTupleEqualFunctionName,
+                                    possibleTupleCase, 
+                                    matchingExpression,
+                                    seqCall
+                                    );
+                            equalCalls.Add(tupleEqualsCall);
+                            continue;
+                        }
+                    }
+                }
+
+                // Matching not tuples
                 var eqParams = new expression_list(
                     new List<expression>()
                     {
@@ -187,7 +230,6 @@ namespace SyntaxVisitors.SugarVisitors
                         patternCase.source_context
                     )
                 );
-                statementsToAdd.Add(GetTypeCompatibilityCheck(matchingExpression, patternExpression));
             }
             typeChecks.AddRange(statementsToAdd);
             expression orPatternCases = equalCalls[0];
@@ -197,18 +239,7 @@ namespace SyntaxVisitors.SugarVisitors
             }
             var ifCondition = patternCase.condition == null ? orPatternCases : bin_expr.LogicalAnd(orPatternCases, patternCase.condition);
             var ifCheck = SubtreeCreator.CreateIf(ifCondition, patternCase.case_action);
-            /*
-            if (_previousIf != null)
-            {
-                AddDefinitionsInUpperStatementList(ifCheck, statementsToAdd);
-            }
-            else
-            {
-                statement emptySt = new empty_statement();
-                ConvertIfNode(ifCheck, statementsToAdd, out emptySt);
-                ifCheck = processedIfNodes[0];
-            }
-            */
+            
             // Добавляем полученные statements в результат
             AddDesugaredCaseToResult(ifCheck, ifCheck);
         }
