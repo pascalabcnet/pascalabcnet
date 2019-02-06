@@ -9663,27 +9663,21 @@ end;
 procedure SetCol<T>(Self: array [,] of T; k: integer; a: sequence of T); extensionmethod := Self.SetCol(k,a.ToArray);
 
 /// Возвращает по заданному двумерному массиву последовательность (a[i,j],i,j)
-function ElementsWithIndexes<T>(Self: array [,] of T): sequence of (T, integer, integer); extensionmethod;
+function ElementsWithIndices<T>(Self: array [,] of T): sequence of (T, integer, integer); extensionmethod;
 begin
   for var i := 0 to Self.RowCount - 1 do
     for var j := 0 to Self.ColCount - 1 do
       yield (Self[i, j], i, j)
 end;
 
-/// Возвращает по заданному двумерному массиву последовательность (a[i,j],i,j)
-function ElementsWithIndices<T>(Self: array [,] of T): sequence of (T, integer, integer); extensionmethod := Self.ElementsWithIndexes;
-
 /// Возвращает по заданному двумерному массиву последовательность индексов элементов, удовлетворяющих заданному условию 
-function IndexesOf<T>(Self: array [,] of T; cond: T -> boolean): sequence of (integer, integer); extensionmethod;
+function Indices<T>(Self: array [,] of T; cond: T -> boolean): sequence of (integer, integer); extensionmethod;
 begin
   for var i := 0 to Self.RowCount - 1 do
     for var j := 0 to Self.ColCount - 1 do
       if cond(Self[i,j]) then 
         yield (i, j)
 end;
-
-/// Возвращает по заданному двумерному массиву последовательность индексов элементов, удовлетворяющих заданному условию 
-function IndicesOf<T>(Self: array [,] of T; cond: T -> boolean): sequence of (integer, integer); extensionmethod := Self.IndexesOf(cond);
 
 /// Возвращает по заданному двумерному массиву последовательность его элементов по строкам
 function ElementsByRow<T>(Self: array [,] of T): sequence of T; extensionmethod;
@@ -10145,13 +10139,10 @@ function High(Self: System.Array); extensionmethod := High(Self);
 function Low(Self: System.Array); extensionmethod := Low(Self);
 
 /// Возвращает последовательность индексов одномерного массива
-function Indexes<T>(Self: array of T): sequence of integer; extensionmethod := Range(0, Self.Length - 1);
-
-/// Возвращает последовательность индексов одномерного массива
-function Indices<T>(Self: array of T): sequence of integer; extensionmethod := Self.Indexes;
+function Indices<T>(Self: array of T): sequence of integer; extensionmethod := Range(0, Self.Length - 1);
 
 /// Возвращает последовательность индексов элементов одномерного массива, удовлетворяющих условию
-function IndexesOf<T>(Self: array of T; cond: T->boolean): sequence of integer; extensionmethod;
+function Indices<T>(Self: array of T; cond: T->boolean): sequence of integer; extensionmethod;
 begin
   for var i := 0 to Self.High do
     if cond(Self[i]) then
@@ -10159,18 +10150,12 @@ begin
 end;
 
 /// Возвращает последовательность индексов элементов одномерного массива, удовлетворяющих условию
-function IndicesOf<T>(Self: array of T; cond: T->boolean): sequence of integer; extensionmethod := Self.IndexesOf(cond);
-
-/// Возвращает последовательность индексов элементов одномерного массива, удовлетворяющих условию
-function IndexesOf<T>(Self: array of T; cond: (T,integer) ->boolean): sequence of integer; extensionmethod;
+function Indices<T>(Self: array of T; cond: (T,integer) ->boolean): sequence of integer; extensionmethod;
 begin
   for var i := 0 to Self.High do
     if cond(Self[i], i) then
       yield i;
 end;
-
-/// Возвращает последовательность индексов элементов одномерного массива, удовлетворяющих условию
-function IndicesOf<T>(Self: array of T; cond: (T,integer) ->boolean): sequence of integer; extensionmethod := Self.IndexesOf(cond);
 
 ///-- 
 function CreateSliceFromArrayInternal<T>(Self: array of T; from, step, count: integer): array of T;

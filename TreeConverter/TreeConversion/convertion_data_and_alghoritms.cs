@@ -816,6 +816,13 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return true;
             }
+            /*var comptn1 = t1 as compiled_type_node;
+            var comptn2 = t2 as compiled_type_node;
+            if (comptn1 != null && comptn2 != null)
+            {
+                if (comptn1.compiled_type == comptn2.compiled_type) // увы - тут типы Type разные и хеш-коды у них разные
+                    return true;
+            } */
             if (!t1.depended_from_indefinite && !t2.depended_from_indefinite)
             {
                 return false;

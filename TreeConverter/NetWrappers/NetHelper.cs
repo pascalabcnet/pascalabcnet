@@ -225,6 +225,10 @@ namespace PascalABCCompiler.NetHelper
             }
             return null;
         }
+        public override string ToString()
+        {
+            return Assembly.ToString();
+        }
     }
 	
 	public class NetTypeScope : SymbolTable.DotNETScope {
