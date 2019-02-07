@@ -12095,6 +12095,10 @@ namespace PascalABCCompiler.TreeConverter
 
         private void check_cycle_interface_inheritance(common_type_node cnode, type_node base_of_cnode, List<common_type_node> interfaces)
         {
+            // Для интерфейсов всё это излишне. Поскольку нельзя использовать предописанные интерфейсы в списке наследования, то 
+            // циклически интерфейс может наследовать только от себя. Поэтому достаточно проверять нерекурсивно свой список ImplementingInterfaces и если там есть этот интерфейс, то ошибка
+            if (!cnode.IsInterface)
+                return;
             interfaces.Add(cnode);
             common_type_node bt = base_of_cnode as common_type_node;
             if (bt != null && bt.original_generic != null)
