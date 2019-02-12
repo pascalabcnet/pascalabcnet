@@ -5268,15 +5268,7 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_function_lambda_definition.proc_body.visit(this);
 			}
-			if (_function_lambda_definition.proc_definition == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_function_lambda_definition.proc_definition.visit(this);
-			}
+			bw.Write((byte)_function_lambda_definition.proc_definition);
 			if (_function_lambda_definition.parameters == null)
 			{
 				bw.Write((byte)0);

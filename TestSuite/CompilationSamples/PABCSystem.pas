@@ -1231,24 +1231,24 @@ function Abs(x: uint64): uint64;
 function Abs(x: real): real;
 ///--
 function Abs(x: single): single;
-/// Возвращает синус числа x
+/// Возвращает синус угла x, измеряемого в радианах
 function Sin(x: real): real;
-/// Возвращает гиперболический синус числа x
+/// Возвращает гиперболический синус угла x, измеряемого в радианах
 function Sinh(x: real): real;
-/// Возвращает косинус числа x
+/// Возвращает косинус угла x, измеряемого в радианах
 /// !! Returns the cosine of number x
 function Cos(x: real): real;
-/// Возвращает гиперболический косинус числа x
+/// Возвращает гиперболический косинус угла x, измеряемого в радианах
 function Cosh(x: real): real;
-/// Возвращает тангенс числа x
+/// Возвращает тангенс угла x, измеряемого в радианах
 function Tan(x: real): real;
-/// Возвращает гиперболический тангенс числа x
+/// Возвращает гиперболический тангенс угла x, измеряемого в радианах
 function Tanh(x: real): real;
-/// Возвращает арксинус числа x
+/// Возвращает угол в радианах, синус которого равен x, -1<=x<=1
 function ArcSin(x: real): real;
-/// Возвращает арккосинус числа x
+/// Возвращает угол в радианах, косинус которого равен x, -1<=x<=1
 function ArcCos(x: real): real;
-/// Возвращает арктангенс числа x
+/// Возвращает угол в радианах, тангенс которого равен x
 function ArcTan(x: real): real;
 /// Возвращает экспоненту числа x
 function Exp(x: real): real;
@@ -9201,7 +9201,7 @@ begin
 end;
 
 /// Возвращает индекс первого минимального элемента начиная с позиции index
-function IndexMin<T>(Self: IList<T>; index: integer := 0): integer; extensionmethod; where T: IComparable<T>;
+function IndexMin<T>(Self: List<T>; index: integer := 0): integer; extensionmethod; where T: IComparable<T>;
 begin
   var min := Self[index];
   Result := index;
@@ -9214,7 +9214,7 @@ begin
 end;
 
 /// Возвращает индекс первого максимального элемента начиная с позиции index
-function IndexMax<T>(self: IList<T>; index: integer := 0): integer; extensionmethod; where T: System.IComparable<T>;
+function IndexMax<T>(Self: List<T>; index: integer := 0): integer; extensionmethod; where T: System.IComparable<T>;
 begin
   var max := Self[index];
   Result := index;
@@ -9226,12 +9226,12 @@ begin
     end;
 end;
 
-/// Возвращает индекс последнего минимального элемента
-function LastIndexMin<T>(Self: IList<T>): integer; extensionmethod; where T: System.IComparable<T>;
+/// Возвращает индекс первого минимального элемента начиная с позиции index
+function IndexMin<T>(Self: array of T; index: integer := 0): integer; extensionmethod; where T: IComparable<T>;
 begin
-  var min := Self[Self.Count - 1];
-  Result := Self.Count - 1;
-  for var i := Self.Count - 2 downto 0 do
+  var min := Self[index];
+  Result := index;
+  for var i := index + 1 to Self.Count - 1 do
     if Self[i].CompareTo(min) < 0 then 
     begin
       Result := i;
@@ -9239,8 +9239,21 @@ begin
     end;
 end;
 
+/// Возвращает индекс первого максимального элемента начиная с позиции index
+function IndexMax<T>(Self: array of T; index: integer := 0): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var max := Self[index];
+  Result := index;
+  for var i := index + 1 to Self.Count - 1 do
+    if Self[i].CompareTo(max) > 0 then 
+    begin
+      Result := i;
+      max := Self[i];
+    end;
+end;
+
 /// Возвращает индекс последнего минимального элемента в диапазоне [0,index-1] 
-function LastIndexMin<T>(Self: IList<T>; index: integer): integer; extensionmethod; where T: System.IComparable<T>;
+function LastIndexMin<T>(Self: List<T>; index: integer): integer; extensionmethod; where T: System.IComparable<T>;
 begin
   var min := Self[index];
   Result := index;
@@ -9252,21 +9265,33 @@ begin
     end;
 end;
 
-/// Возвращает индекс последнего максимального элемента
-function LastIndexMax<T>(Self: IList<T>): integer; extensionmethod; where T: System.IComparable<T>;
+/// Возвращает индекс последнего минимального элемента в диапазоне [0,index-1] 
+function LastIndexMin<T>(Self: array of T; index: integer): integer; extensionmethod; where T: System.IComparable<T>;
 begin
-  var max := Self[Self.Count - 1];
-  Result := Self.Count - 1;
-  for var i := Self.Count - 2 downto 0 do
-    if Self[i].CompareTo(max) > 0 then 
+  var min := Self[index];
+  Result := index;
+  for var i := index - 1 downto 0 do
+    if Self[i].CompareTo(min) < 0 then 
     begin
       Result := i;
-      max := Self[i];
+      min := Self[i];
     end;
 end;
 
+/// Возвращает индекс последнего минимального элемента
+function LastIndexMin<T>(Self: List<T>): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  Result := Self.LastIndexMin(Self.Count - 1);
+end;  
+
+/// Возвращает индекс последнего минимального элемента
+function LastIndexMin<T>(Self: array of T): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  Result := Self.LastIndexMin(Self.Count - 1);
+end;  
+
 /// Возвращает индекс последнего минимального элемента в диапазоне [0,index-1]
-function LastIndexMax<T>(Self: IList<T>; index: integer): integer; extensionmethod; where T: System.IComparable<T>;
+function LastIndexMax<T>(Self: List<T>; index: integer): integer; extensionmethod; where T: System.IComparable<T>;
 begin
   var max := Self[index];
   Result := index;
@@ -9277,6 +9302,31 @@ begin
       max := Self[i];
     end;
 end;
+
+/// Возвращает индекс последнего минимального элемента в диапазоне [0,index-1]
+function LastIndexMax<T>(Self: array of T; index: integer): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var max := Self[index];
+  Result := index;
+  for var i := index - 1 downto 0 do
+    if Self[i].CompareTo(max) > 0 then 
+    begin
+      Result := i;
+      max := Self[i];
+    end;
+end;
+
+/// Возвращает индекс последнего максимального элемента
+function LastIndexMax<T>(Self: List<T>): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  Result := Self.LastIndexMax(Self.Count - 1);
+end;  
+
+/// Возвращает индекс последнего максимального элемента
+function LastIndexMax<T>(Self: array of T): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  Result := Self.LastIndexMax(Self.Count - 1);
+end;  
 
 /// Заменяет в массиве или списке все вхождения одного значения на другое
 procedure Replace<T>(Self: IList<T>; oldValue, newValue: T); extensionmethod;
@@ -9663,27 +9713,21 @@ end;
 procedure SetCol<T>(Self: array [,] of T; k: integer; a: sequence of T); extensionmethod := Self.SetCol(k,a.ToArray);
 
 /// Возвращает по заданному двумерному массиву последовательность (a[i,j],i,j)
-function ElementsWithIndexes<T>(Self: array [,] of T): sequence of (T, integer, integer); extensionmethod;
+function ElementsWithIndices<T>(Self: array [,] of T): sequence of (T, integer, integer); extensionmethod;
 begin
   for var i := 0 to Self.RowCount - 1 do
     for var j := 0 to Self.ColCount - 1 do
       yield (Self[i, j], i, j)
 end;
 
-/// Возвращает по заданному двумерному массиву последовательность (a[i,j],i,j)
-function ElementsWithIndices<T>(Self: array [,] of T): sequence of (T, integer, integer); extensionmethod := Self.ElementsWithIndexes;
-
 /// Возвращает по заданному двумерному массиву последовательность индексов элементов, удовлетворяющих заданному условию 
-function IndexesOf<T>(Self: array [,] of T; cond: T -> boolean): sequence of (integer, integer); extensionmethod;
+function Indices<T>(Self: array [,] of T; cond: T -> boolean): sequence of (integer, integer); extensionmethod;
 begin
   for var i := 0 to Self.RowCount - 1 do
     for var j := 0 to Self.ColCount - 1 do
       if cond(Self[i,j]) then 
         yield (i, j)
 end;
-
-/// Возвращает по заданному двумерному массиву последовательность индексов элементов, удовлетворяющих заданному условию 
-function IndicesOf<T>(Self: array [,] of T; cond: T -> boolean): sequence of (integer, integer); extensionmethod := Self.IndexesOf(cond);
 
 /// Возвращает по заданному двумерному массиву последовательность его элементов по строкам
 function ElementsByRow<T>(Self: array [,] of T): sequence of T; extensionmethod;
@@ -10145,13 +10189,10 @@ function High(Self: System.Array); extensionmethod := High(Self);
 function Low(Self: System.Array); extensionmethod := Low(Self);
 
 /// Возвращает последовательность индексов одномерного массива
-function Indexes<T>(Self: array of T): sequence of integer; extensionmethod := Range(0, Self.Length - 1);
-
-/// Возвращает последовательность индексов одномерного массива
-function Indices<T>(Self: array of T): sequence of integer; extensionmethod := Self.Indexes;
+function Indices<T>(Self: array of T): sequence of integer; extensionmethod := Range(0, Self.Length - 1);
 
 /// Возвращает последовательность индексов элементов одномерного массива, удовлетворяющих условию
-function IndexesOf<T>(Self: array of T; cond: T->boolean): sequence of integer; extensionmethod;
+function Indices<T>(Self: array of T; cond: T->boolean): sequence of integer; extensionmethod;
 begin
   for var i := 0 to Self.High do
     if cond(Self[i]) then
@@ -10159,18 +10200,12 @@ begin
 end;
 
 /// Возвращает последовательность индексов элементов одномерного массива, удовлетворяющих условию
-function IndicesOf<T>(Self: array of T; cond: T->boolean): sequence of integer; extensionmethod := Self.IndexesOf(cond);
-
-/// Возвращает последовательность индексов элементов одномерного массива, удовлетворяющих условию
-function IndexesOf<T>(Self: array of T; cond: (T,integer) ->boolean): sequence of integer; extensionmethod;
+function Indices<T>(Self: array of T; cond: (T,integer) ->boolean): sequence of integer; extensionmethod;
 begin
   for var i := 0 to Self.High do
     if cond(Self[i], i) then
       yield i;
 end;
-
-/// Возвращает последовательность индексов элементов одномерного массива, удовлетворяющих условию
-function IndicesOf<T>(Self: array of T; cond: (T,integer) ->boolean): sequence of integer; extensionmethod := Self.IndexesOf(cond);
 
 ///-- 
 function CreateSliceFromArrayInternal<T>(Self: array of T; from, step, count: integer): array of T;

@@ -691,10 +691,10 @@ namespace PascalABCCompiler.NETGenerator {
 		{
 			FldInfo fi = new FldInfo(fb);
 #if DEBUG
-            if (f.name == "XYZW")
+            /*if (f.name == "XYZW")
             {
                 var y = f.GetHashCode();
-            } 
+            } */
 #endif
             defs[f] = fi;
             return fi;
@@ -718,10 +718,10 @@ namespace PascalABCCompiler.NETGenerator {
 		{
             var r = (FldInfo)defs[f];
 #if DEBUG
-            if (f.name == "XYZW")
+            /*if (f.name == "XYZW")
             {
                 var y = f.GetHashCode();
-            } 
+            } */
 #endif
 #if DEBUG
             /*if (r == null && f.name == "XYZW")

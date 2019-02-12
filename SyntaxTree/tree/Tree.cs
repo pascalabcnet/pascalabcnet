@@ -40368,7 +40368,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public function_lambda_definition(ident_list _ident_list,type_definition _return_type,formal_parameters _formal_parameters,statement _proc_body,procedure_definition _proc_definition,expression_list _parameters,string _lambda_name,List<declaration> _defs,LambdaVisitMode _lambda_visit_mode,syntax_tree_node _substituting_node,int _usedkeyword)
+		public function_lambda_definition(ident_list _ident_list,type_definition _return_type,formal_parameters _formal_parameters,statement _proc_body,object _proc_definition,expression_list _parameters,string _lambda_name,List<declaration> _defs,LambdaVisitMode _lambda_visit_mode,syntax_tree_node _substituting_node,int _usedkeyword)
 		{
 			this._ident_list=_ident_list;
 			this._return_type=_return_type;
@@ -40387,7 +40387,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public function_lambda_definition(ident_list _ident_list,type_definition _return_type,formal_parameters _formal_parameters,statement _proc_body,procedure_definition _proc_definition,expression_list _parameters,string _lambda_name,List<declaration> _defs,LambdaVisitMode _lambda_visit_mode,syntax_tree_node _substituting_node,int _usedkeyword,SourceContext sc)
+		public function_lambda_definition(ident_list _ident_list,type_definition _return_type,formal_parameters _formal_parameters,statement _proc_body,object _proc_definition,expression_list _parameters,string _lambda_name,List<declaration> _defs,LambdaVisitMode _lambda_visit_mode,syntax_tree_node _substituting_node,int _usedkeyword,SourceContext sc)
 		{
 			this._ident_list=_ident_list;
 			this._return_type=_return_type;
@@ -40413,7 +40413,7 @@ namespace PascalABCCompiler.SyntaxTree
 		protected type_definition _return_type;
 		protected formal_parameters _formal_parameters;
 		protected statement _proc_body;
-		protected procedure_definition _proc_definition;
+		protected object _proc_definition;
 		protected expression_list _parameters;
 		protected string _lambda_name;
 		protected List<declaration> _defs=new List<declaration>();
@@ -40492,7 +40492,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///
 		///</summary>
-		public procedure_definition proc_definition
+		public object proc_definition
 		{
 			get
 			{
@@ -40501,8 +40501,6 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_proc_definition=value;
-				if (_proc_definition != null)
-					_proc_definition.Parent = this;
 			}
 		}
 
@@ -40781,11 +40779,7 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.proc_body = (statement)proc_body.Clone();
 				copy.proc_body.Parent = copy;
 			}
-			if (proc_definition != null)
-			{
-				copy.proc_definition = (procedure_definition)proc_definition.Clone();
-				copy.proc_definition.Parent = copy;
-			}
+			copy.proc_definition = proc_definition;
 			if (parameters != null)
 			{
 				copy.parameters = (expression_list)parameters.Clone();
@@ -40834,8 +40828,6 @@ namespace PascalABCCompiler.SyntaxTree
 				formal_parameters.Parent = this;
 			if (proc_body != null)
 				proc_body.Parent = this;
-			if (proc_definition != null)
-				proc_definition.Parent = this;
 			if (parameters != null)
 				parameters.Parent = this;
 			if (defs != null)
@@ -40857,7 +40849,6 @@ namespace PascalABCCompiler.SyntaxTree
 			return_type?.FillParentsInAllChilds();
 			formal_parameters?.FillParentsInAllChilds();
 			proc_body?.FillParentsInAllChilds();
-			proc_definition?.FillParentsInAllChilds();
 			parameters?.FillParentsInAllChilds();
 			if (defs != null)
 			{
@@ -40874,7 +40865,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 7;
+				return 6;
 			}
 		}
 		///<summary>
@@ -40884,7 +40875,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 7 + (defs == null ? 0 : defs.Count);
+				return 6 + (defs == null ? 0 : defs.Count);
 			}
 		}
 		///<summary>
@@ -40907,13 +40898,11 @@ namespace PascalABCCompiler.SyntaxTree
 					case 3:
 						return proc_body;
 					case 4:
-						return proc_definition;
-					case 5:
 						return parameters;
-					case 6:
+					case 5:
 						return substituting_node;
 				}
-				Int32 index_counter=ind - 7;
+				Int32 index_counter=ind - 6;
 				if(defs != null)
 				{
 					if(index_counter < defs.Count)
@@ -40942,16 +40931,13 @@ namespace PascalABCCompiler.SyntaxTree
 						proc_body = (statement)value;
 						break;
 					case 4:
-						proc_definition = (procedure_definition)value;
-						break;
-					case 5:
 						parameters = (expression_list)value;
 						break;
-					case 6:
+					case 5:
 						substituting_node = (syntax_tree_node)value;
 						break;
 				}
-				Int32 index_counter=ind - 7;
+				Int32 index_counter=ind - 6;
 				if(defs != null)
 				{
 					if(index_counter < defs.Count)

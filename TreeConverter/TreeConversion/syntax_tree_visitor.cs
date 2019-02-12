@@ -827,6 +827,11 @@ namespace PascalABCCompiler.TreeConverter
 
         internal expression_node convert_strong(SyntaxTree.expression expr)
         {
+#if DEBUG
+            //var s = expr + "\n";
+            //System.IO.File.AppendAllText("d:\\bb17.txt", s);
+#endif
+
 #if (DEBUG)
             if (expr == null)
             {
@@ -19266,8 +19271,17 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
+        int ccc = 0;
         public override void visit(SyntaxTree.function_lambda_definition _function_lambda_definition)
         {
+#if DEBUG
+            /*if (lambdaProcessingState == LambdaProcessingState.ClosuresProcessingPhase)
+            {
+                var s = new string (' ',ccc)+"begin " + _function_lambda_definition.lambda_name + " " + _function_lambda_definition.parameters.expressions[0] + "\n";
+                ccc += 2;
+                System.IO.File.AppendAllText("d:\\bb3.txt", s);
+            } */
+#endif
             MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition(_function_lambda_definition);
 
             _function_lambda_definition.RealSemTypeOfResExpr = null; // После первого присваивания Result она будет содержать тип type_node в правой части Result
@@ -19400,6 +19414,10 @@ namespace PascalABCCompiler.TreeConverter
                         }
                     case LambdaProcessingState.ClosuresProcessingPhase:
                         {
+#if DEBUG
+                            //var s = "begin "+_function_lambda_definition.lambda_name + " "+ _function_lambda_definition.parameters.expressions[0] + "\n";
+                            //System.IO.File.AppendAllText("d:\\bb17.txt", s);
+#endif
                             makeProcedureForLambdaAndVisit(_function_lambda_definition, null, null);
                             LambdaHelper.RemoveLambdaInfoFromCompilationContext(context, _function_lambda_definition);
                             ret.return_value((semantic_node)LambdaHelper.GetTempFunctionNodeForTypeInference(_function_lambda_definition, this));
@@ -19425,6 +19443,14 @@ namespace PascalABCCompiler.TreeConverter
             finally
             {
                 stflambda.Pop();
+#if DEBUG
+                /*if (lambdaProcessingState == LambdaProcessingState.ClosuresProcessingPhase)
+                {
+                    ccc -= 2;
+                    var s = new string(' ', ccc) + "end " + _function_lambda_definition.lambda_name + " " + _function_lambda_definition.parameters.expressions[0] + "\n";
+                    System.IO.File.AppendAllText("d:\\bb3.txt", s);
+                }*/
+#endif
             }
         }
 

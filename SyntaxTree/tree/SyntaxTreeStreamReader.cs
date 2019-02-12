@@ -3426,7 +3426,7 @@ namespace PascalABCCompiler.SyntaxTree
 			_function_lambda_definition.return_type = _read_node() as type_definition;
 			_function_lambda_definition.formal_parameters = _read_node() as formal_parameters;
 			_function_lambda_definition.proc_body = _read_node() as statement;
-			_function_lambda_definition.proc_definition = _read_node() as procedure_definition;
+			_function_lambda_definition.proc_definition = (object)br.ReadByte();
 			_function_lambda_definition.parameters = _read_node() as expression_list;
 			if (br.ReadByte() == 0)
 			{

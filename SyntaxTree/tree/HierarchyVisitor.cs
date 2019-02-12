@@ -3503,7 +3503,6 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(function_lambda_definition.return_type);
 			visit(function_lambda_definition.formal_parameters);
 			visit(function_lambda_definition.proc_body);
-			visit(function_lambda_definition.proc_definition);
 			visit(function_lambda_definition.parameters);
 			for (int i = 0; i < defs.Count; i++)
 				visit(function_lambda_definition.defs[i]);
