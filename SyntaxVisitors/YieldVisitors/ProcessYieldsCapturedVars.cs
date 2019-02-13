@@ -96,8 +96,8 @@ namespace SyntaxVisitors
             if (fh == null)
                 throw new SyntaxError("Only functions can contain yields", "", pd.proc_header.source_context, pd.proc_header);
             var seqt = fh.return_type as sequence_type;
-            if (seqt == null)
-                throw new SyntaxError("Functions with yields must return sequences", "", fh.return_type.source_context, fh.return_type);
+            /*if (seqt == null)
+                throw new SyntaxError("Functions with yields must return sequences", "", fh.return_type.source_context, fh.return_type);*/
 
             // Теперь на месте функции генерируем класс
 
