@@ -40,6 +40,10 @@ namespace SyntaxVisitors
             {
                 throw new SyntaxVisitorError("YIELDS_INSIDE_WITH_ARE_ILLEGAL", ws.source_context);
             }
+            if (ws.DescendantNodes().OfType<yield_sequence_node>().Count() > 0)
+            {
+                throw new SyntaxVisitorError("YIELDSEQUENCES_INSIDE_WITH_ARE_ILLEGAL", ws.source_context);
+            }
             base.visit(ws);
         }
 
