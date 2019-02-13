@@ -704,10 +704,10 @@ namespace PascalABCCompiler.NETGenerator {
         {
             FldInfo fi = new GenericFldInfo(fb, field_type, prev_fi); // prev_fi - чтобы сконструировать на последнем этапе fi 
 #if DEBUG
-            if (f.name == "XYZW")
+            /*if (f.name == "XYZW")
             {
                 var y = f.GetHashCode();
-            }
+            }*/
 #endif
             defs[f] = fi;
             return fi;

@@ -7239,7 +7239,7 @@ end;
 
 function Power(x: BigInteger; y: integer) := BigInteger.Pow(x, y);
 
-function Round(x: real) := Convert.ToInt32(Math.Round(x));
+function Round(x: real) := Convert.ToInt32(x);
 
 function Round(x: real; digits: integer) := Math.Round(x,digits);
 
@@ -7310,132 +7310,57 @@ function Random3(a, b: real) := (Random(a, b), Random(a, b), Random(a, b));
 function Random3 := (Random, Random, Random);
 
 
-function Max(a, b: byte): byte;
-begin
-  Result := Math.Max(a, b);
-end;
+function Max(a, b: byte) := Math.Max(a, b);
 
-function Max(a, b: shortint): shortint;
-begin
-  Result := Math.Max(a, b);
-end;
+function Max(a, b: shortint) := Math.Max(a, b);
 
-function Max(a, b: word): word;
-begin
-  Result := Math.Max(a, b);
-end;
+function Max(a, b: word) := Math.Max(a, b);
 
-function Max(a, b: smallint): smallint;
-begin
-  Result := Math.Max(a, b);
-end;
+function Max(a, b: smallint) := Math.Max(a, b);
 
-function Max(a, b: integer): integer;
-begin
-  Result := Math.Max(a, b);
-end;
+function Max(a, b: integer) := Math.Max(a, b);
 
-function Max(a, b: BigInteger): BigInteger;
-begin
-  Result := BigInteger.Max(a, b);
-end;
+function Max(a, b: BigInteger) := BigInteger.Max(a, b);
 
-function Max(a, b: longword): longword;
-begin
-  Result := Math.Max(a, b);
-end;
+function Max(a, b: longword) := Math.Max(a, b);
 
-function Max(a, b: int64): int64;
-begin
-  Result := Math.Max(a, b);
-end;
+function Max(a, b: int64) := Math.Max(a, b);
 
-function Max(a, b: uint64): uint64;
-begin
-  Result := Math.Max(a, b);
-end;
+function Max(a, b: uint64) := Math.Max(a, b);
 
-function Max(a, b: real): real;
-begin
-  Result := Math.Max(a, b);
-end;
+function Max(a, b: real) := Math.Max(a, b);
 
-function Min(a, b: byte): byte;
-begin
-  Result := Math.Min(a, b);
-end;
+function Min(a, b: byte) := Math.Min(a, b);
 
-function Min(a, b: shortint): shortint;
-begin
-  Result := Math.Min(a, b);
-end;
+function Min(a, b: shortint) := Math.Min(a, b);
 
-function Min(a, b: word): word;
-begin
-  Result := Math.Min(a, b);
-end;
+function Min(a, b: word) := Math.Min(a, b);
 
-function Min(a, b: smallint): smallint;
-begin
-  Result := Math.Min(a, b);
-end;
+function Min(a, b: smallint) := Math.Min(a, b);
 
-function Min(a, b: integer): integer;
-begin
-  Result := Math.Min(a, b);
-end;
+function Min(a, b: integer) := Math.Min(a, b);
 
-function Min(a, b: BigInteger): BigInteger;
-begin
-  Result := BigInteger.Min(a, b);
-end;
+function Min(a, b: BigInteger) := BigInteger.Min(a, b);
 
-function Min(a, b: longword): longword;
-begin
-  Result := Math.Min(a, b);
-end;
+function Min(a, b: longword) := Math.Min(a, b);
 
-function Min(a, b: int64): int64;
-begin
-  Result := Math.Min(a, b);
-end;
+function Min(a, b: int64) := Math.Min(a, b);
 
-function Min(a, b: uint64): uint64;
-begin
-  Result := Math.Min(a, b);
-end;
+function Min(a, b: uint64) := Math.Min(a, b);
 
-function Min(a, b: real): real;
-begin
-  Result := Math.Min(a, b);
-end;
+function Min(a, b: real) := Math.Min(a, b);
 
-function Odd(i: byte): boolean;
-begin
-  result := (i mod 2) <> 0;
-end;
+function Odd(i: byte) := (i mod 2) <> 0;
 
-function Odd(i: shortint): boolean;
-begin
-  result := (i mod 2) <> 0;
-end;
+function Odd(i: shortint) := (i mod 2) <> 0;
 
-function Odd(i: word): boolean;
-begin
-  result := (i mod 2) <> 0;
-end;
+function Odd(i: word) := (i mod 2) <> 0;
 
-function Odd(i: smallint): boolean;
-begin
-  result := (i mod 2) <> 0;
-end;
+function Odd(i: smallint) := (i mod 2) <> 0;
 
 function Odd(i: integer) := (i mod 2) <> 0;
 
-function Odd(i: BigInteger): boolean;
-begin
-  Result := not i.IsEven;
-end;
+function Odd(i: BigInteger) := not i.IsEven;
 
 function Odd(i: longword) := (i mod 2) <> 0;
 
@@ -8290,17 +8215,17 @@ end;
 
 //------------------------------------------------------------------------------
 //PRED-SUCC
-function succ(x: boolean): boolean;
+function Succ(x: boolean): boolean;
 begin
   Result := not x;
 end;
 
-function succ(x: byte): byte;
+function Succ(x: byte): byte;
 begin
   Result := x + 1;
 end;
 
-function succ(x: shortint): shortint;
+function Succ(x: shortint): shortint;
 begin
   Result := x + 1;
 end;
@@ -8310,82 +8235,82 @@ begin
   Result := x + 1;
 end;
 
-function succ(x: word): word;
+function Succ(x: word): word;
 begin
   Result := x + 1;
 end;
 
-function succ(x: integer): integer;
+function Succ(x: integer): integer;
 begin
   Result := x + 1;
 end;
 
-function succ(x: longword): longword;
+function Succ(x: longword): longword;
 begin
   Result := x + 1;
 end;
 
-function succ(x: int64): int64;
+function Succ(x: int64): int64;
 begin
   Result := x + 1;
 end;
 
-function succ(x: uint64): uint64;
+function Succ(x: uint64): uint64;
 begin
   Result := x + 1;
 end;
 
-function succ(x: char): char;
+function Succ(x: char): char;
 begin
   Result := System.Convert.ToChar(System.Convert.ToUInt16(x) + 1);
 end;
 
-function pred(x: boolean): boolean;
+function Pred(x: boolean): boolean;
 begin
   Result := not x;
 end;
 
-function pred(x: byte): byte;
+function Pred(x: byte): byte;
 begin
   Result := x - 1;
 end;
 
-function pred(x: shortint): shortint;
+function Pred(x: shortint): shortint;
 begin
   Result := x - 1;
 end;
 
-function pred(x: smallint): smallint;
+function Pred(x: smallint): smallint;
 begin
   Result := x - 1;
 end;
 
-function pred(x: word): word;
+function Pred(x: word): word;
 begin
   Result := x - 1;
 end;
 
-function pred(x: integer): integer;
+function Pred(x: integer): integer;
 begin
   Result := x - 1;
 end;
 
-function pred(x: longword): longword;
+function Pred(x: longword): longword;
 begin
   Result := x - 1;
 end;
 
-function pred(x: int64): int64;
+function Pred(x: int64): int64;
 begin
   Result := x - 1;
 end;
 
-function pred(x: uint64): uint64;
+function Pred(x: uint64): uint64;
 begin
   Result := x - 1;
 end;
 
-function pred(x: char): char;
+function Pred(x: char): char;
 begin
   Result := System.Convert.ToChar(System.Convert.ToUInt16(x) - 1);
 end;

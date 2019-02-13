@@ -6892,7 +6892,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (en is SyntaxTree.function_lambda_definition)
                     {
                         lambdas_are_in_parameters = true;
-                        ((SyntaxTree.function_lambda_definition)en).lambda_visit_mode = LambdaVisitMode.VisitForInitialMethodCallProcessing;
+                        ((SyntaxTree.function_lambda_definition)en).lambda_visit_mode = LambdaVisitMode .VisitForInitialMethodCallProcessing;
                     }
                     //lroman//
                     #endregion
@@ -19275,12 +19275,12 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.function_lambda_definition _function_lambda_definition)
         {
 #if DEBUG
-            /*if (lambdaProcessingState == LambdaProcessingState.ClosuresProcessingPhase)
+            if (lambdaProcessingState == LambdaProcessingState.ClosuresProcessingPhase)
             {
                 var s = new string (' ',ccc)+"begin " + _function_lambda_definition.lambda_name + " " + _function_lambda_definition.parameters.expressions[0] + "\n";
                 ccc += 2;
                 System.IO.File.AppendAllText("d:\\bb3.txt", s);
-            } */
+            } 
 #endif
             MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition(_function_lambda_definition);
 
@@ -19444,12 +19444,12 @@ namespace PascalABCCompiler.TreeConverter
             {
                 stflambda.Pop();
 #if DEBUG
-                /*if (lambdaProcessingState == LambdaProcessingState.ClosuresProcessingPhase)
+                if (lambdaProcessingState == LambdaProcessingState.ClosuresProcessingPhase)
                 {
                     ccc -= 2;
                     var s = new string(' ', ccc) + "end " + _function_lambda_definition.lambda_name + " " + _function_lambda_definition.parameters.expressions[0] + "\n";
                     System.IO.File.AppendAllText("d:\\bb3.txt", s);
-                }*/
+                }
 #endif
             }
         }

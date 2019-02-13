@@ -751,8 +751,8 @@
 				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for text files.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="&Iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc; &auml;&euml;&yuml; &eth;&agrave;&aacute;&icirc;&ograve;&ucirc; &ntilde; &ograve;&egrave;&iuml;&egrave;&ccedil;&egrave;&eth;&icirc;&acirc;&agrave;&iacute;&iacute;&ucirc;&igrave;&egrave; &ocirc;&agrave;&eacute;&euml;&agrave;&igrave;&egrave;">
-				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for typed files.html">
+				<param name="Name" value="&Iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc; &auml;&euml;&yuml; &eth;&agrave;&aacute;&icirc;&ograve;&ucirc; &ntilde; &ograve;&egrave;&iuml;&egrave;&ccedil;&egrave;&eth;&icirc;&acirc;&agrave;&iacute;&iacute;&ucirc;&igrave;&egrave; &egrave; &aacute;&aring;&ntilde;&ograve;&egrave;&iuml;&icirc;&acirc;&ucirc;&igrave;&egrave; &ocirc;&agrave;&eacute;&euml;&agrave;&igrave;&egrave;">
+				<param name="Local" value="LangGuide\PABCSystemUnit\Files\Subroutines for typed and untyped files.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="&Iuml;&icirc;&auml;&iuml;&eth;&icirc;&atilde;&eth;&agrave;&igrave;&igrave;&ucirc; &auml;&euml;&yuml; &eth;&agrave;&aacute;&icirc;&ograve;&ucirc; &ntilde; &auml;&acirc;&icirc;&egrave;&divide;&iacute;&ucirc;&igrave;&egrave; &ocirc;&agrave;&eacute;&euml;&agrave;&igrave;&egrave;">
