@@ -1,7 +1,7 @@
 ﻿// Syntax tree conversion errors
 %PREFIX%=SYNTAXTREEVISITORSERROR_
 
-YIELD_FUNC_MUST_RETURN_SEQUENCE=Функции с yield должны возвращать последовательность
+YIELD_FUNC_MUST_RETURN_SEQUENCE=Функции с yield должны непосредственно возвращать тип sequence of T или IEnumerable<T>
 YIELD_FUNC_CANNOT_RETURN_SEQUENCE_OF_ANONYMOUS_DELEGATES=Функции с yield не могут возвращать последовательность анонимных делегатов
 ONLY_FUNCTIONS_CAN_CONTAIN_YIELDS=Только функции могут содержать yield
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_VAR_CONST_PARAMS_MODIFIERS=В параметрах функции с yield не должно быть модификаторов 'var', 'const' или 'params'
