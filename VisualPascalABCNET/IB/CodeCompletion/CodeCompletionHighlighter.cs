@@ -61,6 +61,8 @@ namespace VisualPascalABC
                     {
                         if (!isTypeDeclaration(beg_off, textArea))
                             return;
+                        if (isClassPredefinition(end_off, textArea))
+                            return;
                     }
                     TmpPos end_pos = null;
                     if (string.Compare(word, "repeat", true) != 0)
