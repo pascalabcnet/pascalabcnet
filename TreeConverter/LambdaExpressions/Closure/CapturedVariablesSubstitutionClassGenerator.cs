@@ -312,7 +312,7 @@ namespace TreeConverter.LambdaExpressions.Closure
 
                             if (
                                 _capturedVarsClassDefs[nextNodeWhereVarsAreCaptured.ScopeIndex]
-                                    .AssignNodeForUpperClassFieldInitialization == null)
+                                    .AssignNodeForUpperClassFieldInitialization == null && !(ClassField != null && ClassField.IsStatic))
                             {
                                 var fieldType =
                                     SyntaxTreeBuilder.BuildSimpleType(upperScopeWhereVarsAreCapturedClass.type_name.name);
