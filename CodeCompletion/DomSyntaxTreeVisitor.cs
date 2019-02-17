@@ -2248,19 +2248,21 @@ namespace CodeCompletion
                 is_extensions_unit = true;
             }
             CodeCompletionController.comp_modules[_unit_module.file_name] = this.converter;
+            foreach (string s in namespaces)
+            {
+                if (!ns_cache.ContainsKey(s))
+                {
+                    NamespaceScope ns_scope = new NamespaceScope(s);
+                    entry_scope.AddName(s, ns_scope);
+                    ns_cache[s] = s;
+                }
+            }
             DateTime start_time = DateTime.Now;
+
             System.Diagnostics.Debug.WriteLine("intellisense parsing interface started " + System.Convert.ToInt32((DateTime.Now - start_time).TotalMilliseconds));
             _unit_module.interface_part.visit(this);
             System.Diagnostics.Debug.WriteLine("intellisense parsing interface ended " + System.Convert.ToInt32((DateTime.Now - start_time).TotalMilliseconds));
-            foreach (string s in namespaces)
-            {
-            	if (!ns_cache.ContainsKey(s))
-            	{
-                  NamespaceScope ns_scope = new NamespaceScope(s);
-                  entry_scope.AddName(s,ns_scope);
-                  ns_cache[s] = s;
-            	}
-            }
+            
             start_time = DateTime.Now;
             System.Diagnostics.Debug.WriteLine("intellisense parsing implementation started "+ System.Convert.ToInt32((DateTime.Now - start_time).TotalMilliseconds));
             if (_unit_module.implementation_part != null)
