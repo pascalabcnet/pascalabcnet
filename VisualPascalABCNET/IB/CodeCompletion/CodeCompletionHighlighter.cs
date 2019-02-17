@@ -303,12 +303,7 @@ namespace VisualPascalABC
                 {
                     return null;
                 }
-                else if (c == '{')//nachalo kommentarija, propuskaem ego
-                {
-                    end_off++;
-                    while (end_off < text.Length && text[end_off] != '}')
-                        end_off++;
-                }
+                
                 else if (c == '\'')//nachalo kavychek, propuskaem
                 {
                     end_off++;
@@ -339,6 +334,12 @@ namespace VisualPascalABC
                         }
                     }
                     sb.Remove(0, sb.Length);
+                    if (c == '{')
+                    {
+                        end_off++;
+                        while (end_off < text.Length && text[end_off] != '}')
+                            end_off++;
+                    }
                 }
                 end_off++;
             }
@@ -368,12 +369,6 @@ namespace VisualPascalABC
                 else if (c == '}')//okazalis vnutri kommentarija
                 {
                     return null;
-                }
-                else if (c == '{')//nachalo kommentarija, propuskaem ego
-                {
-                    end_off++;
-                    while (end_off < text.Length && text[end_off] != '}')
-                        end_off++;
                 }
                 else if (c == '\'')//nachalo kavychek, propuskaem
                 {
@@ -407,6 +402,12 @@ namespace VisualPascalABC
                         }
                     }
                     sb.Remove(0, sb.Length);
+                    if (c == '{')
+                    {
+                        end_off++;
+                        while (end_off < text.Length && text[end_off] != '}')
+                            end_off++;
+                    }
                 }
                 end_off++;
             }
