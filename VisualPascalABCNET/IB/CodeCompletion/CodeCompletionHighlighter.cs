@@ -310,11 +310,6 @@ namespace VisualPascalABC
                     while (end_off < text.Length && text[end_off] != '\'')
                         end_off++;
                 }
-                else if (c == '/' && end_off < text.Length - 1 && text[end_off + 1] == '/')
-                {
-                    while (end_off < text.Length && text[end_off] != '\n')
-                        end_off++;
-                }
                 else
                 {
                     string word = sb.ToString();
@@ -338,6 +333,11 @@ namespace VisualPascalABC
                     {
                         end_off++;
                         while (end_off < text.Length && text[end_off] != '}')
+                            end_off++;
+                    }
+                    else if (c == '/' && end_off < text.Length - 1 && text[end_off + 1] == '/')
+                    {
+                        while (end_off < text.Length && text[end_off] != '\n')
                             end_off++;
                     }
                 }
@@ -376,11 +376,6 @@ namespace VisualPascalABC
                     while (end_off < text.Length && text[end_off] != '\'')
                         end_off++;
                 }
-                else if (c == '/' && end_off < text.Length - 1 && text[end_off + 1] == '/')
-                {
-                    while (end_off < text.Length && text[end_off] != '\n')
-                        end_off++;
-                }
                 else
                 {
                     string word = sb.ToString();
@@ -406,6 +401,11 @@ namespace VisualPascalABC
                     {
                         end_off++;
                         while (end_off < text.Length && text[end_off] != '}')
+                            end_off++;
+                    }
+                    else if (c == '/' && end_off < text.Length - 1 && text[end_off + 1] == '/')
+                    {
+                        while (end_off < text.Length && text[end_off] != '\n')
                             end_off++;
                     }
                 }
