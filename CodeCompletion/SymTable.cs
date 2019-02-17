@@ -4666,6 +4666,7 @@ namespace CodeCompletion
             if (sc == null && implemented_interfaces != null)
                 foreach (TypeScope ts in implemented_interfaces)
                 {
+                    if (ts != this)
                     sc = ts.FindNameOnlyInType(name);
                     if (sc != null)
                         break;
