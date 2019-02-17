@@ -135,7 +135,7 @@ namespace SyntaxVisitors
             if (pars != null)
                 foreach (var ps in pars.params_list)
                 {
-                    if (ps.param_kind != parametr_kind.none)
+                    if (ps.param_kind != parametr_kind.none && ps.param_kind != parametr_kind.params_parametr)
                         throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_VAR_CONST_PARAMS_MODIFIERS", pars.source_context);
                     if (ps.inital_value != null)
                         throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_DEFAULT_PARAMETERS", pars.source_context);
