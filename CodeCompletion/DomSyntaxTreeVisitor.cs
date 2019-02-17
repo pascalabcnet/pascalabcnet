@@ -131,6 +131,16 @@ namespace CodeCompletion
                         return true;
                 }
             }
+            else if (node is new_expr)
+            {
+                new_expr ne = node as new_expr;
+                if (ne.params_list != null)
+                    foreach (expression e in ne.params_list.expressions)
+                    {
+                        if (has_lambdas(e))
+                            return true;
+                    }
+            }
             else if (node is tuple_node)
             {
                 tuple_node tn = node as tuple_node;
@@ -4837,7 +4847,8 @@ namespace CodeCompletion
         public override void visit(expression_as_statement _expression_as_statement)
         {
             //throw new Exception("The method or operation is not implemented.");
-            
+            if (has_lambdas(_expression_as_statement.expr))
+                _expression_as_statement.expr.visit(this);
         }
 
         public override void visit(c_scalar_type _c_scalar_type)
