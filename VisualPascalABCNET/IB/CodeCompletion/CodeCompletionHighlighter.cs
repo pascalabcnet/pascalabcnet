@@ -229,7 +229,7 @@ namespace VisualPascalABC
             }
             
                 
-            if (c == 't' || c == 'd' || c == 'o')
+            if (c == 't' || c == 'd' || c == 'o' || c == 'c')
             {
                 StringBuilder keyword = new StringBuilder();
                 
@@ -241,10 +241,13 @@ namespace VisualPascalABC
                         break;
                     c = textArea.Document.TextContent[off];
                 }
-                if (keyword.ToString().ToLower() == "sealed" || keyword.ToString().ToLower() == "abstract" || keyword.ToString().ToLower() == "auto")
+                string keywordstr = keyword.ToString().ToLower();
+                if (keywordstr == "sealed" || keywordstr == "abstract" || keywordstr == "auto")
                 {
                     return isClassMember(off, textArea);
                 }
+                if (keywordstr == "public" || keywordstr == "protected")
+                    return true;
                 return false;
             }
             return false;
