@@ -587,6 +587,8 @@ end;
 
 procedure buttonStartClick(o: Object; e: EventArgs);
 begin
+  if t=nil then 
+    exit;
   if t.ThreadState = System.Threading.ThreadState.Suspended then
   begin
     DMField.StepFlag := False;
@@ -604,6 +606,8 @@ end;
 
 procedure buttonStepClick(o: Object; e: EventArgs);
 begin
+  if t=nil then 
+    exit;
   DMField.StepFlag := True;
   t.Resume;
   (GraphABCControl as Control).Focus;

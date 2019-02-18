@@ -299,12 +299,12 @@ var Sz,Z,Dim: integer;
 begin
   Sz:=CellSize;
   Z:=max(Sz div 12,2);
-  if Sz>64 then Dim:=10
+  {if Sz>64 then Dim:=10
   else if Sz>56 then Dim:=9
   else if Sz>48 then Dim:=8
   else if Sz>40 then Dim:=8
   else if Sz>34 then Dim:=7
-  else if Sz>28 then Dim:=6
+  else} if Sz>28 then Dim:=Round((Sz+20)/8)
   else if Sz>22 then Dim:=5
   else if Sz>12 then Dim:=4
   else Dim:=3;
@@ -316,13 +316,21 @@ begin
 end;
 
 procedure TRobotField.DrawTag(x,y: integer);
-var Sz,sz2: integer;
+var sz2: integer;
 begin
-  Sz:=CellSize;
-  if Sz>80 then sz2:=Sz div 2 - 4
-    else if Sz>52 then sz2:=Sz div 2 - 3
-      else if Sz>12 then sz2:=Sz div 2 - 2
-        else sz2:=Sz div 2 - 1;
+  var Sz:=CellSize;
+  var s2 := Sz div 2;
+  {if Sz>172 then 
+    sz2:=S2 - 6
+  else} if Sz>132 then 
+    sz2:=S2 - 5
+  else if Sz>92 then 
+    sz2:=S2 - 4
+  else if Sz>52 then 
+    sz2:=S2 - 3
+  else if Sz>12 then 
+    sz2:=S2 - 2
+  else sz2:=S2 - 1;
 
   if (RobotX=x) and (RobotY=y)
     then Brush.Color:=clLightGray
@@ -417,10 +425,9 @@ begin
 end;
 
 procedure TRobotField.MoveRobot(x,y: integer);
-var vx,vy: integer;
 begin
-  vx:=RobotX;                                  
-  vy:=RobotY;
+  var vx:=RobotX;                                  
+  var vy:=RobotY;
   RobotX:=x;
   RobotY:=y;
   DrawCell(vx,vy);
@@ -716,6 +723,8 @@ procedure MainWindowClose := SaveIni;
 
 procedure buttonStartClick(o: Object; e: EventArgs);
 begin
+  if t=nil then 
+    exit;
   if t.ThreadState = System.Threading.ThreadState.Suspended then
   begin
     robField.StepFlag := False;
@@ -733,6 +742,8 @@ end;
 
 procedure buttonStepClick(o: Object; e: EventArgs);
 begin
+  if t=nil then 
+    exit;
   robField.StepFlag := True;
   t.Resume;
   (GraphABCControl as Control).Focus;
@@ -768,12 +779,11 @@ begin
 end;
 
 procedure CorrectWHLT;
-var mw,mh: integer;
 begin
   if (RobField.DimX=0) or (RobField.DimY=0) then
     exit;
-  mw := (GraphABCControl.Width - 30) div RobField.DimX;
-  mh := (GraphABCControl.Height - 20) div RobField.DimY;
+  var mw := (GraphABCControl.Width - 30) div RobField.DimX;
+  var mh := (GraphABCControl.Height - 20) div RobField.DimY;
   RobField.CellSize := min(mw,mh);
   if RobField.CellSize mod 2 = 1 then 
     RobField.CellSize := RobField.CellSize - 1;
@@ -1106,6 +1116,7 @@ begin
 
   Brush.Color := MainForm.BackColor;
   FillRectangle(0,0,1280,1024);
+  Pen.RoundCap := True;
   
   LoadIni(settings);
   MainForm.Invoke(SetWindowBounds, new System.Drawing.Rectangle(settings.Left,settings.Top,settings.Width,settings.Height));
