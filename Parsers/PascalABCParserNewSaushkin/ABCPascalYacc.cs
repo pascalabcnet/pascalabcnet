@@ -1,9 +1,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-IF20NRO
-// DateTime: 1/25/2019 9:59:07 AM
-// UserName: FatCow
+// Machine:  DESKTOP-G8V08V4
+// DateTime: 22.02.2019 19:09:58
+// UserName: ?????????
 // Input file <ABCPascal.y>
 
 // options: no-lines gplex
@@ -5423,6 +5423,8 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 600: // field_in_unnamed_object -> identifier, tkAssign, relop_expr
 {
+		    if (ValueStack[ValueStack.Depth-1].ex is nil_const)
+				parsertools.AddErrorFromResource("NIL_IN_UNNAMED_OBJECT",CurrentLocationSpan);		    
 			CurrentSemanticValue.ob = new name_assign_expr(ValueStack[ValueStack.Depth-3].id,ValueStack[ValueStack.Depth-1].ex,CurrentLocationSpan);
 		}
         break;

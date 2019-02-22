@@ -3209,6 +3209,8 @@ new_expr
 field_in_unnamed_object
 	: identifier tkAssign relop_expr
 		{
+		    if ($3 is nil_const)
+				parsertools.AddErrorFromResource("NIL_IN_UNNAMED_OBJECT",@$);		    
 			$$ = new name_assign_expr($1,$3,@$);
 		}
 	| relop_expr
