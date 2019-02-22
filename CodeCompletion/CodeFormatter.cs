@@ -267,7 +267,7 @@ namespace CodeFormatters
             {
                 int start_pos = GetPosition(sn.source_context.begin_position.line_num, sn.source_context.begin_position.column_num);
                 int end_pos = GetPosition(sn.source_context.end_position.line_num, sn.source_context.end_position.column_num);
-                sb.Append(Text.Substring(start_pos, end_pos - start_pos + 1));
+                sb.Append(Text.Substring(start_pos, Math.Max(end_pos - start_pos + 1,0)));
             }
         }
 
