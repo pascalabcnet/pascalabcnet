@@ -15951,7 +15951,14 @@ namespace PascalABCCompiler.TreeConverter
             if (_var_def_statement.vars_type == null && _var_def_statement.inital_value is SyntaxTree.function_lambda_definition)
                 AddError(get_location(_var_def_statement.inital_value), "IMPOSSIBLE_TO_INFER_TYPES_IN_LAMBDA");  //lroman//
 
-			bool is_event = _var_def_statement.is_event;
+            if (_var_def_statement.vars_type == null && _var_def_statement.inital_value is SyntaxTree.pascal_set_constant pc)
+            {
+                if (pc.values==null || pc.values.Count == 0)
+                    AddError(get_location(_var_def_statement.inital_value), "IMPOSSIBLE_TO_INFER_SET_TYPE");
+            }
+                
+
+            bool is_event = _var_def_statement.is_event;
 
             if (context.converting_block() == block_type.type_block &&
                 context.converted_type.IsInterface && !is_event)
