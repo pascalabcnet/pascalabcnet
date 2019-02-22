@@ -4701,7 +4701,7 @@ end;
 procedure Read(var x: integer);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4714,7 +4714,7 @@ end;
 procedure Read(var x: real);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4727,7 +4727,7 @@ end;
 procedure Read(var x: char);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4740,7 +4740,7 @@ end;
 procedure Read(var x: string);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4753,7 +4753,7 @@ end;
 procedure Read(var x: byte);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4766,7 +4766,7 @@ end;
 procedure Read(var x: shortint);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4779,7 +4779,7 @@ end;
 procedure Read(var x: smallint);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4792,7 +4792,7 @@ end;
 procedure Read(var x: word);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4805,7 +4805,7 @@ end;
 procedure Read(var x: longword);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4818,7 +4818,7 @@ end;
 procedure Read(var x: int64);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4831,7 +4831,7 @@ end;
 procedure Read(var x: uint64);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4844,7 +4844,7 @@ end;
 procedure Read(var x: single);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4857,7 +4857,7 @@ end;
 procedure Read(var x: boolean);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -5767,7 +5767,7 @@ begin
   p := ptr;
 end;
 
-procedure write;
+procedure Write;
 begin
 end;
 
@@ -5781,7 +5781,7 @@ begin
   writeln(output);
 end;
 
-procedure write(obj: object);
+procedure Write(obj: object);
 begin
   if output.sw <> nil then
     write_in_output(obj)
@@ -5793,7 +5793,7 @@ end;
 //  CurrentIOSystem.Write(ptr);
 //end;
 
-procedure write(obj1, obj2: object);
+procedure Write(obj1, obj2: object);
 begin
   if output.sw <> nil then
   begin
@@ -5807,7 +5807,7 @@ begin
   end;
 end;
 
-procedure write(params args: array of object);
+procedure Write(params args: array of object);
 begin
   for var i := 0 to args.length - 1 do
     if output.sw <> nil then
@@ -5816,7 +5816,7 @@ begin
       CurrentIOSystem.Write(args[i]);
 end;
 
-procedure writeln(obj: object);
+procedure Writeln(obj: object);
 begin
   if output.sw <> nil then
   begin
@@ -5836,7 +5836,7 @@ end;
 //  CurrentIOSystem.Writeln;
 //end;
 
-procedure writeln(obj1, obj2: object);
+procedure Writeln(obj1, obj2: object);
 begin
   if output.sw <> nil then
   begin
@@ -5852,14 +5852,14 @@ begin
   end
 end;
 
-procedure writeln;
+procedure Writeln;
 begin
   if output.sw <> nil then
     writeln_in_output
   else CurrentIOSystem.Writeln;
 end;
 
-procedure writeln(params args: array of object);
+procedure Writeln(params args: array of object);
 begin
   if output.sw <> nil then
   begin
@@ -5875,11 +5875,11 @@ begin
   end;
 end;
 
-procedure write(f: Text);
+procedure Write(f: Text);
 begin
 end;
 
-procedure write(f: Text; val: object);
+procedure Write(f: Text; val: object);
 begin
   if f.fi = nil then
     raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
@@ -5902,13 +5902,13 @@ begin
   end;}
 end;
 
-procedure write(f: Text; params args: array of object);
+procedure Write(f: Text; params args: array of object);
 begin
   for var i := 0 to args.length - 1 do
     write(f, args[i]);
 end;
 
-procedure writeln(f: Text);
+procedure Writeln(f: Text);
 begin
   if f.fi = nil then
     raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
@@ -5918,13 +5918,13 @@ begin
   f.sw.WriteLine;
 end;
 
-procedure writeln(f: Text; val: object);
+procedure Writeln(f: Text; val: object);
 begin
   write(f, val);
   writeln(f);
 end;
 
-procedure writeln(f: Text; params args: array of object);
+procedure Writeln(f: Text; params args: array of object);
 begin
   for var i := 0 to args.length - 1 do
     write(f, args[i]);

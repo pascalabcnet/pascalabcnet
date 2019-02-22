@@ -74,8 +74,9 @@ namespace VisualPascalABC
                 //w += ttimg.Width*2;
                 if (w > maxwid)
                     maxwid = w;
-                if (e.ItemHeight > 20)
-                    e.ItemHeight = 20;
+                var ss = ScreenScale.Calc();
+                if (e.ItemHeight > Convert.ToInt32(20 * ss))
+                    e.ItemHeight = Convert.ToInt32(20 * ss);
             }
 
 
