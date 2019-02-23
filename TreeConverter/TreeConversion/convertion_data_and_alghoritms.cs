@@ -2454,17 +2454,22 @@ namespace PascalABCCompiler.TreeConverter
 			}
 		}
 
-        public type_node select_base_type(type_node_list types)
+        public type_node select_base_type(type_node_list types, bool only_implicit = false)
         {
             type_node ret_type = null;
             if (types.Count > 0) ret_type = types[0];
             for (int i = 1; i<types.Count; i++)
             {
                 if (types[i] == ret_type) continue;
-                type_compare tc = type_table.compare_types_in_specific_order(types[i], ret_type);
+                type_compare tc = type_table.compare_types_in_specific_order(types[i], ret_type, only_implicit);
                 if (tc == type_compare.greater_type && ret_type != SystemLibrary.SystemLibrary.object_type) ret_type = types[i];
-                else if (tc == type_compare.non_comparable_type) 
-                	ret_type = SystemLibrary.SystemLibrary.object_type;
+                else if (tc == type_compare.non_comparable_type)
+                {
+                    //ret_type = SystemLibrary.SystemLibrary.object_type;
+                    ret_type = null;
+                    //AddError(new SimpleSemanticError(loc, ""));
+                }
+                	
             }
             return ret_type;
         }

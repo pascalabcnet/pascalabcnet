@@ -4735,7 +4735,9 @@ namespace PascalABCCompiler.TreeConverter
             type_node_list tnl = new type_node_list();
             tnl.AddElement(left.type);
             tnl.AddElement(right.type);
-            elem_type = convertion_data_and_alghoritms.select_base_type(tnl);
+            elem_type = convertion_data_and_alghoritms.select_base_type(tnl,true);
+            if (elem_type == null)
+                AddError(new SimpleSemanticError(get_location(_diapason_expr), "IMPOSSIBLE_TO_INFER_SET_TYPE"));
             expression_node l = convertion_data_and_alghoritms.explicit_convert_type(left, PascalABCCompiler.SystemLibrary.SystemLibrary.integer_type);
             expression_node r = convertion_data_and_alghoritms.explicit_convert_type(right, PascalABCCompiler.SystemLibrary.SystemLibrary.integer_type);
             if (PascalABCCompiler.SystemLibrary.SystemLibInitializer.CreateDiapason.sym_info is common_namespace_function_node)
@@ -4785,7 +4787,7 @@ namespace PascalABCCompiler.TreeConverter
             expressions_list consts = new expressions_list();
             type_node el_type = null;
             type_node_list types = new type_node_list();
-            if (_pascal_set_constant.values != null && _pascal_set_constant.values != null)
+            if (_pascal_set_constant.values != null && _pascal_set_constant.values.expressions != null)
                 foreach (SyntaxTree.expression e in _pascal_set_constant.values.expressions)
                 {
             		if (e is SyntaxTree.nil_const)
@@ -4793,7 +4795,8 @@ namespace PascalABCCompiler.TreeConverter
             		else
             		if (e is SyntaxTree.diapason_expr)
                     {
-                        consts.AddElement(convert_diap_for_set((e as SyntaxTree.diapason_expr), out el_type));
+                        expression_node en = convert_diap_for_set((e as SyntaxTree.diapason_expr), out el_type); 
+                        consts.AddElement(en);
                         if (el_type.IsPointer)
                             ErrorsList.Add(new SimpleSemanticError(get_location(e), "POINTERS_IN_SETS_NOT_ALLOWED"));
                         types.AddElement(el_type);
@@ -4813,7 +4816,10 @@ namespace PascalABCCompiler.TreeConverter
             type_node ctn = null;
             if (consts.Count > 0)
             {
-                el_type = convertion_data_and_alghoritms.select_base_type(types);
+                el_type = convertion_data_and_alghoritms.select_base_type(types, true);
+                if (el_type == null)
+                    AddError(new SimpleSemanticError(get_location(_pascal_set_constant), "IMPOSSIBLE_TO_INFER_SET_TYPE"));
+
                 ctn = context.create_set_type(el_type, get_location(_pascal_set_constant));
 
             }
