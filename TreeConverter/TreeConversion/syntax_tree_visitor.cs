@@ -4736,8 +4736,8 @@ namespace PascalABCCompiler.TreeConverter
             tnl.AddElement(left.type);
             tnl.AddElement(right.type);
             elem_type = convertion_data_and_alghoritms.select_base_type(tnl,true);
-            if (elem_type == null)
-                AddError(new SimpleSemanticError(get_location(_diapason_expr), "IMPOSSIBLE_TO_INFER_SET_TYPE"));
+            if (elem_type == SystemLibrary.SystemLibrary.object_type)
+                AddError(new SimpleSemanticError(get_location(_diapason_expr), "BAD_DIAPASON_IN_SET_TYPE"));
             expression_node l = convertion_data_and_alghoritms.explicit_convert_type(left, PascalABCCompiler.SystemLibrary.SystemLibrary.integer_type);
             expression_node r = convertion_data_and_alghoritms.explicit_convert_type(right, PascalABCCompiler.SystemLibrary.SystemLibrary.integer_type);
             if (PascalABCCompiler.SystemLibrary.SystemLibInitializer.CreateDiapason.sym_info is common_namespace_function_node)
