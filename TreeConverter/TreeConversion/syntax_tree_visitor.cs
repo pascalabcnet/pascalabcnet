@@ -8549,7 +8549,8 @@ namespace PascalABCCompiler.TreeConverter
             	expression_node expr = sn as expression_node;
             	if (expr is null_const_node)
                     AddError(expr.location, "NIL_IN_THIS_CONTEXT_NOT_ALLOWED");
-                if (expr is typed_expression) expr = convert_typed_expression_to_function_call(expr as typed_expression);
+                if (expr is typed_expression)
+                    expr = convert_typed_expression_to_function_call(expr as typed_expression);
                 if (expr != null)
                 {
                     if (expr.type is generic_instance_type_node)
@@ -8594,7 +8595,9 @@ namespace PascalABCCompiler.TreeConverter
                 else if (sn is type_node)
                 {
                 	type_node tn = sn as type_node;
-                	Withs.Add(tn.Scope);
+                    if (tn.IsInterface)
+                        AddError(get_location(s_expr), "UNEXPECTED_EXPRESSION_IN_WITH");
+                    Withs.Add(tn.Scope);
                 	while (tn != null)
                 	{
                 		if (tn.Scope == null && tn is compiled_type_node)
