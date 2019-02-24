@@ -571,7 +571,7 @@ namespace PascalABCCompiler.TreeRealization
             type_intersection_node[] tins = get_type_intersections_in_specific_order(left, right);
             if (only_implicit)
             {
-                tins = tins.Where(t => t.this_to_another != null && t.this_to_another.is_explicit == false).ToArray();
+                tins = tins.Where(t => (t.this_to_another != null && t.this_to_another.is_explicit == false) || (t.another_to_this != null && t.another_to_this.is_explicit == false)).ToArray();
             }
             if (tins.Length == 0)
             {
