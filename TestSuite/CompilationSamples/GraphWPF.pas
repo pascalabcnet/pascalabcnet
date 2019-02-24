@@ -296,8 +296,8 @@ procedure DrawImage(x,y: real; fname: string);
 procedure DrawImage(x,y,w,h: real; fname: string);
 /// Рисует немасштабированное изображение из файла fname в позиции (x,y)
 procedure DrawImageUnscaled(x,y: real; fname: string);
-/// Выводит видеоиз файла fname в позицию (x,y)
-procedure DrawVideo(x,y: real; fname: string);
+/// Выводит видео из файла fname в позицию (x,y) размера (w,h)
+procedure DrawVideo(x,y,w,h: real; fname: string);
 
 /// Ширина изображения в пикселах
 function ImageWidth(fname: string): integer;
@@ -758,8 +758,6 @@ function ImageWidth(fname: string) := Invoke&<integer>(ImHelper.Create(fname).IW
 function ImageHeight(fname: string) := Invoke&<integer>(ImHelper.Create(fname).IH);
 function ImageSize(fname: string) := Invoke&<(integer,integer)>(ImHelper.Create(fname).ISz);
 
-
-// Нет свойств посмотреть размеры видео!
 procedure DrawVideoP(x,y,w,h: real; fname: string);
 begin
   var dc := GetDC();
@@ -939,7 +937,7 @@ procedure FillPolygon(points: array of Point; c: GColor) := InvokeVisual(FillPol
 procedure DrawImage(x,y: real; fname: string) := InvokeVisual(DrawImageP,x,y,fname);
 procedure DrawImage(x,y,w,h: real; fname: string) := InvokeVisual(DrawImageWHP,x,y,w,h,fname);
 procedure DrawImageUnscaled(x,y: real; fname: string) := InvokeVisual(DrawImageUnscaledP,x,y,fname);
-procedure DrawVideo(x,y: real; fname: string) := InvokeVisual(DrawVideoP,x,y,fname);
+procedure DrawVideo(x,y,w,h: real; fname: string) := InvokeVisual(DrawVideoP,x,y,w,h,fname);
 
 /// Ширина текста при выводе
 function TextWidth(text: string) := InvokeReal(TextV.Create(text).TextWidth);

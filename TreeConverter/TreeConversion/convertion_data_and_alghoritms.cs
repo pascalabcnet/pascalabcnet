@@ -2465,9 +2465,8 @@ namespace PascalABCCompiler.TreeConverter
                 if (tc == type_compare.greater_type && ret_type != SystemLibrary.SystemLibrary.object_type) ret_type = types[i];
                 else if (tc == type_compare.non_comparable_type)
                 {
-                    //ret_type = SystemLibrary.SystemLibrary.object_type;
-                    ret_type = null;
-                    //AddError(new SimpleSemanticError(loc, ""));
+                    ret_type = SystemLibrary.SystemLibrary.object_type;
+                    //ret_type = null;
                 }
                 	
             }
