@@ -22,15 +22,15 @@
 специальным именем <b><code>operator</code></b> <i>
 ЗнакОперации</i>. Перегрузка специальных операций <code>+=</code>, <code>
 -=</code>, <code>*=</code>, <code>/=</code> 
-	осуществляется с помощью статической (классовой) процедуры-метода, первый параметр 
+	осуществляется с помощью статической процедуры-метода, первый параметр 
 которой передается по ссылке.</p>
 <p>Например:</p>
 <blockquote>
 	<p><code><b>type</b> <br>&nbsp; Complex = <b>record</b><br>&nbsp;&nbsp;&nbsp; re,im: real;<br>&nbsp;&nbsp;&nbsp; 
-	<b><span lang="en-us">class </span>function</b> <b>operator</b>+(a,b: Complex): Complex; <br>&nbsp;&nbsp;&nbsp; 
+	<strong>static</strong><b><span lang="en-us"> </span>function</b> <b>operator</b>+(a,b: Complex): Complex; <br>&nbsp;&nbsp;&nbsp; 
 	<b>begin</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result.re := a.re + b.re;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result.im := a.im + b.im;
 	<br>&nbsp;&nbsp;&nbsp; <b>end</b>; <br>&nbsp;&nbsp;&nbsp;  
-	<b><span lang="en-us">class </span>function</b> <b>operator</b>=(a,b: Complex): boolean; <br>&nbsp;&nbsp;&nbsp; <b>begin</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result := (a.re = b.re)
+	<strong>static</strong><b><span lang="en-us"> </span>function</b> <b>operator</b>=(a,b: Complex): boolean; <br>&nbsp;&nbsp;&nbsp; <b>begin</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result := (a.re = b.re)
 	<b>and</b> (a.im = b.im);<br>&nbsp;&nbsp;&nbsp; <b>end</b>; <br>&nbsp; <b>end</b>;</code></p>
 </blockquote>
 <p>Для перегрузки операций действуют следующие правила:</p>
@@ -55,8 +55,6 @@
 	операция, второй - передается по значению и совместим по присваиванию с 
 	первым. Перегрузка остальных операций осуществляется с помощью статических 
 	функций-методов. </li>
-	<li>Типы интерфейсов не могут быть типами параметров. 
-	Причина: типы параметров должны вычисляться на этапе компиляции.</li>
 	<li>Операции приведения типа <span lang="ru">задаются статическими 
 	функциями, у которых </span>вместо имени <span lang="ru">используется </span>
 	<code><b>operator</b></code> <code><b>implicit</b></code> <span lang="ru">
@@ -68,19 +66,18 @@
 <blockquote>
 	<p><code><b>type</b> <br>&nbsp; Complex = <b>record</b><br>&nbsp;&nbsp;&nbsp; 
 	...<br>&nbsp;&nbsp;&nbsp;  
-	<b><span lang="en-us">class </span>function</b> <b>operator implicit</b>(d: real): Complex;<br>&nbsp;&nbsp;&nbsp; 
+	<strong>static</strong><b><span lang="en-us"> </span>function</b> <b>operator implicit</b>(d: real): Complex;<br>&nbsp;&nbsp;&nbsp; 
 	<b>begin</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result.re := d;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result.im := 0;<br>&nbsp;&nbsp;&nbsp; 
 	<b>end</b>; <br>&nbsp; &nbsp;  
-	<b><span lang="en-us">class </span>function</b> <b>operator explicit</b>(c: Complex): string;<br>&nbsp;&nbsp;&nbsp; 
+	<strong>static</strong><b><span lang="en-us"> </span>function</b> <b>operator explicit</b>(c: Complex): string;<br>&nbsp;&nbsp;&nbsp; 
 	<b>begin</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result := Format('({0},{1})',c.re,c.im);<br>&nbsp;&nbsp;&nbsp; 
 	<b>end</b>;<br>&nbsp;&nbsp;&nbsp;  
-	<b><span lang="en-us">class </span>procedure</b> <b>operator</b>+=(<b>var</b> c: Complex; 
+	<strong>static</strong><b><span lang="en-us"> </span>procedure</b> <b>operator</b>+=(<b>var</b> c: Complex; 
 value: Complex);<br>&nbsp;&nbsp;&nbsp; <b>begin</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
 	c.re += value.re; 
 	<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; c.im += value.im;<br>&nbsp;&nbsp;&nbsp; 
 	<b>end</b>;<br>&nbsp;&nbsp;&nbsp;  
-	<span lang="en-us">  
-	<b>class </b> </span><b>function</b> <b>operator</b>+(c,c1: Complex): 
+	<strong>static</strong><span lang="en-us"><b> </b> </span><b>function</b> <b>operator</b>+(c,c1: Complex): 
 	Complex;<br>&nbsp;&nbsp;&nbsp; <b>begin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
 	Result.re := c.re + c1.re; 
 	<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
@@ -88,12 +85,12 @@ value: Complex);<br>&nbsp;&nbsp;&nbsp; <b>begin</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&
 	<br>&nbsp;&nbsp;&nbsp; 
 	<b>end</b>;<br>&nbsp; <b>end</b>;</code></p>
 </blockquote>
-<p>Можно перегружать операции с помощью методов расширения - в этом случае при 
+<p>Можно перегружать операции с помощью <a href="extensionmethods.html">методов расширения</a> - в этом случае при 
 описании подпрограммы не следует писать слово class. Например, так в системном модуле 
 реализовано добавление числа к строке:</p>
 <blockquote>
-	<p><code><strong>function</strong> string.operator+(str: string; n: 
-	integer): string;<br><strong>begin</strong><br>&nbsp; result := str + 
+	<p><code><strong>function</strong> operator+(str: string; n: 
+	integer): string; <strong>extensionmethod</strong>;<br><strong>begin</strong><br>&nbsp; result := str + 
 	n.ToString;<br><strong>end</strong>;</code></p>
 </blockquote>
 </body>

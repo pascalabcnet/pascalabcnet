@@ -4954,7 +4954,20 @@ namespace VisualPascalABC
                 NamedValue global_nv = null;
                 NamedValue disp_nv = null;
                 nvc = debuggedProcess.SelectedFunction.LocalVariables;
-                foreach (NamedValue nv in nvc)
+                List<NamedValue> val_list = new List<NamedValue>();
+                foreach (NamedValue nv in nvc)//smotrim sredi lokalnyh peremennyh
+                {
+                    if (nv.Name.IndexOf("<>local_variables") == -1)
+                        val_list.Add(nv);
+                    else
+                    {
+                        foreach (NamedValue nv2 in nv.GetMembers())//smotrim sredi lokalnyh peremennyh
+                        {
+                            val_list.Add(nv2);
+                        }
+                    }
+                }
+                foreach (NamedValue nv in val_list)
                 {
                     if (nv.Name.IndexOf(':') != -1)
                     {
@@ -5583,7 +5596,41 @@ namespace VisualPascalABC
                     break;
                 case "concat":
                     break;
+                case "integer":
+                case "byte":
+                case "shortint":
+                case "smallint":
+                case "word":
+                case "longword":
+                case "int64":
+                case "uint64":
+                case "real":
+                case "single":
+                case "char":
+                case "string":
+                case "boolean":
+                    if (pars.Length != 1)
+                        throw new WrongNumberArguments(name);
+                    break;
+
                 default:
+                    Type t = AssemblyHelper.GetType(name);
+                    if (t != null)
+                    {
+                        if (pars.Length != 1)
+                            throw new WrongNumberArguments(name);
+                        if (pars[0] is Value)
+                        {
+                            Value v = pars[0] as Value;
+                            DebugType dt = DebugUtils.GetDebugType(t);
+                            if (dt == v.Type || v.Type.IsSubclassOf(dt))
+                                return v;
+                            else
+                                throw new InvalidCastException();
+                        }
+                        else
+                            throw new InvalidCastException();
+                    }
                     throw new UnknownName(name);
             }
             try
@@ -5804,8 +5851,60 @@ namespace VisualPascalABC
                             else
                                 throw new WrongTypeOfArgument(name);
                         }
-                    //case "uppercase" : return char.ToUpper(Convert.ToChar(pars[0]));
-                    //case "lowercase" : return char.ToLower(Convert.ToChar(pars[0]));
+                    case "integer":
+                        {
+                            return Convert.ToInt32(pars[0]);
+                        }
+                    case "byte":
+                        {
+                            return Convert.ToByte(pars[0]);
+                        }
+                    case "shortint":
+                        {
+                            return Convert.ToSByte(pars[0]);
+                        }
+                    case "smallint":
+                        {
+                            return Convert.ToInt16(pars[0]);
+                        }
+                    case "word":
+                        {
+                            return Convert.ToUInt16(pars[0]);
+                        }
+                    case "longword":
+                        {
+                            return Convert.ToUInt32(pars[0]);
+                        }
+                    case "int64":
+                        {
+                            return Convert.ToInt64(pars[0]);
+                        }
+                    case "uint64":
+                        {
+                            return Convert.ToUInt64(pars[0]);
+                        }
+                    case "real":
+                        {
+                            return Convert.ToDouble(pars[0]);
+                        }
+                    case "single":
+                        {
+                            return Convert.ToSingle(pars[0]);
+                        }
+                    case "char":
+                        {
+                            return Convert.ToChar(pars[0]);
+                        }
+                    case "string":
+                        {
+                            return Convert.ToString(pars[0]);
+                        }
+                    case "boolean":
+                        {
+                            return Convert.ToBoolean(pars[0]);
+                        }
+                        //case "uppercase" : return char.ToUpper(Convert.ToChar(pars[0]));
+                        //case "lowercase" : return char.ToLower(Convert.ToChar(pars[0]));
 
                 }
             }
@@ -5813,10 +5912,10 @@ namespace VisualPascalABC
             {
                 throw new WrongTypeOfArgument(name);
             }
-            catch (System.InvalidCastException)
+            /*catch (System.InvalidCastException)
             {
                 throw new WrongTypeOfArgument(name);
-            }
+            }*/
             return null;
         }
 
@@ -6583,6 +6682,11 @@ namespace VisualPascalABC
                             args.Add(GetSimpleValue(rv));
                         }
                     res.prim_val = EvalStandFuncWithParam(id.name, args.ToArray());
+                    if (res.prim_val is Value)
+                    {
+                        res.obj_val = res.prim_val as Value;
+                        res.prim_val = null;
+                    }
                 }
                 eval_stack.Push(res);
             }

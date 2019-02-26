@@ -667,10 +667,13 @@ namespace CodeCompletion
                 {
                     if (ss.loc != null)
                     {
-                        pos.line = ss.loc.begin_line_num;
-                        pos.column = ss.loc.begin_column_num;
-                        pos.file_name = ss.loc.doc.file_name;
-                        poses.Add(pos);
+                        if (!(ss.is_static && ss is ProcScope && (ss as ProcScope).is_constructor))
+                        {
+                            pos.line = ss.loc.begin_line_num;
+                            pos.column = ss.loc.begin_column_num;
+                            pos.file_name = ss.loc.doc.file_name;
+                            poses.Add(pos);
+                        }  
                     }
                     else if (ss is ProcScope && (ss as ProcScope).is_constructor)
                     {
@@ -968,6 +971,8 @@ namespace CodeCompletion
                         else if (ss is ProcScope)
                         {
                             ProcScope ps = ss as ProcScope;
+                            if (ps.is_constructor && ps.is_static)
+                                return null;
                             if (ps.original_function != null)
                                 ps = ps.original_function;
                             if (ps is CompiledMethodScope)

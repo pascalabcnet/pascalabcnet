@@ -4,14 +4,16 @@
 <param name="Keyword" value="FileSize">
 <param name="Keyword" value="Seek">
 <param name="Keyword" value="Truncate">
+<param name="Keyword" value="WriteBytes">
+<param name="Keyword" value="ReadBytes">
 </object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title>
 <link rel="StyleSheet" href="../../default.css">
 </head>
 <body>
-<H1>Методы двоичных файлов</H1>
-<p>Для двоичных файлов <code><strong>file</strong></code> 
+<H1>Методы бестиповых двоичных файлов</H1>
+<p>Для бестиповых двоичных файлов <code><strong>file</strong></code> 
 определены следующие методы:</p>
 &nbsp;<table border=0 CELLPADDING=5>
 	<tr>
@@ -37,5 +39,16 @@
 		<code><strong>procedure</strong> Truncate; </code><br>
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Усекает двоичный файл, отбрасывая все элементы с позиции 
 		файлового указателя</tr>
+	<tr>
+		<td>
+		<code><strong>procedure</strong> WriteBytes(a: <strong>array of</strong> 
+		byte);</code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Записывает данные из байтового массива в бестиповой файл</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadBytes(count: integer): <strong>array 
+		of</strong> byte; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает указанное количество байтов из бестипового файла в 
+		байтовый массив</tr>
 	</table>
 </body></html>

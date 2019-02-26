@@ -35,7 +35,19 @@
     File "copyright.txt"
 	File "..\bin\pabcnetc.exe.config"
 	File "..\bin\pabcnetcclear.exe.config"
-	File "..\bin\PascalABCNET.exe.config"
+
+
+; main config - only .NET 4.7.1 and above
+	DotNetChecker::IsDotNet471Installed
+	Pop $0
+
+	${If} $0 == "false"
+	${OrIf} $0 == "f"  ; if script is compiled in ANSI mode then we get only an "f"  https://github.com/ReVolly/NsisDotNetChecker/issues/4
+	${Else}
+	    File "..\bin\PascalABCNET.exe.config"
+	    ${AddFile} "PascalABCNET.exe.config"
+	${EndIf}
+	
 	
 	;dobavljaem fajly v uninst.log
 	${AddFile} "Compiler.dll"
@@ -57,7 +69,7 @@
     ${AddFile} "copyright.txt"
 	${AddFile} "pabcnetc.exe.config"
 	${AddFile} "pabcnetcclear.exe.config"
-	${AddFile} "PascalABCNET.exe.config"
+
     Delete "$INSTDIR\Lib\*.pas"
     SetOutPath "$INSTDIR\Lib"
     ;File ..\bin\Lib\*.pcu; eto ploho nuzhno kazhdyj pcu raspisyvat
@@ -85,6 +97,7 @@
     File ..\bin\Lib\GraphWPFBase.pcu
     File ..\bin\Lib\GraphWPF.pcu
     File ..\bin\Lib\WPFObjects.pcu
+    File ..\bin\Lib\Controls.pcu
     File ..\bin\Lib\Countries.pcu
     File ..\bin\Lib\Graph3D.pcu
     File ..\bin\Lib\GraphABCHelper.pcu
@@ -146,6 +159,7 @@
     ${AddFile} "GraphWPFBase.pcu"
     ${AddFile} "GraphWPF.pcu"
     ${AddFile} "WPFObjects.pcu"
+    ${AddFile} "Controls.pcu"
     ${AddFile} "Countries.pcu"
     ${AddFile} "Graph3D.pcu"
     ${AddFile} "GraphABCHelper.pcu"
@@ -216,6 +230,7 @@
     File ..\bin\Lib\GraphWPFBase.pas
     File ..\bin\Lib\GraphWPF.pas
     File ..\bin\Lib\WPFObjects.pas
+    File ..\bin\Lib\Controls.pas
     File ..\bin\Lib\Countries.pas
     File ..\bin\Lib\Graph3D.pas
     File ..\bin\Lib\GraphABCHelper.pas
@@ -272,6 +287,7 @@
     ${AddFile} "GraphWPFBase.pas"
     ${AddFile} "GraphWPF.pas"
     ${AddFile} "WPFObjects.pas"
+    ${AddFile} "Controls.pas"
     ${AddFile} "Countries.pas"
     ${AddFile} "Graph3D.pas"
     ${AddFile} "GraphABCHelper.pas"

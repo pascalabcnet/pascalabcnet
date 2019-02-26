@@ -407,7 +407,8 @@ namespace CodeCompletion
                                 (t is ArrayScope && tmp_ts2.IsArray && t.Rank == tmp_ts2.Rank) || 
                                 ( tmp_ts2 is ArrayScope && t.IsArray && tmp_ts2.Rank == t.Rank) || 
                                 (t is TemplateParameterScope || t is UnknownScope) ||
-                                t is FileScope && tmp_ts2 is FileScope
+                                t is FileScope && tmp_ts2 is FileScope &&
+                                ((t as FileScope).elementType == null) == ((tmp_ts2 as FileScope).elementType == null)
                                 )
                             {
                                 lst.AddRange(extension_methods[t]);
@@ -441,7 +442,8 @@ namespace CodeCompletion
                                 if (t.GenericTypeDefinition == int_ts2.GenericTypeDefinition || t.IsEqual(int_ts2) ||
                                         (t is ArrayScope && int_ts2.IsArray && t.Rank == int_ts2.Rank) ||
                                         (int_ts2 is ArrayScope && t.IsArray && int_ts2.Rank == t.Rank) ||
-                                        t is FileScope && int_ts2 is FileScope)
+                                        t is FileScope && int_ts2 is FileScope && 
+                                        ((t as FileScope).elementType == null) == ((int_ts2 as FileScope).elementType == null))
                                 {
                                     lst.AddRange(extension_methods[t]);
                                     //break;
@@ -1436,6 +1438,8 @@ namespace CodeCompletion
 
         public override List<SymScope> FindOverloadNames(string name)
         {
+            if (string.Compare(si.name, name, true) == 0)
+                return new List<SymScope>() { this };
             List<SymScope> names = sc.FindOverloadNames(name);
             if (topScope != null)
                 names.AddRange(topScope.FindOverloadNames(name));
@@ -1785,6 +1789,47 @@ namespace CodeCompletion
             }
         }
 
+        private ProcScope beginInvokeMethod;
+        private ProcScope endInvokeMethod;
+
+        public ProcScope BeginInvokeMethod
+        {
+            get
+            {
+                if (beginInvokeMethod == null)
+                {
+                    beginInvokeMethod = new ProcScope("BeginInvoke", target);
+                    beginInvokeMethod.declaringType = parent;
+                    beginInvokeMethod.parameters = new List<ElementScope>();
+                    beginInvokeMethod.parameters.Add(new ElementScope(new SymInfo("callback",SymbolKind.Parameter,"callback"), TypeTable.get_compiled_type(typeof(AsyncCallback)),beginInvokeMethod));
+                    beginInvokeMethod.parameters.Add(new ElementScope(new SymInfo("object", SymbolKind.Parameter, "object"), TypeTable.obj_type, beginInvokeMethod));
+                    beginInvokeMethod.return_type = TypeTable.get_compiled_type(typeof(IAsyncResult));
+                    beginInvokeMethod.is_virtual = true;
+                    beginInvokeMethod.Complete();
+                }
+                return beginInvokeMethod;
+            }
+        }
+
+        public ProcScope EndInvokeMethod
+        {
+            get
+            {
+                if (endInvokeMethod == null)
+                {
+                    endInvokeMethod = new ProcScope("EndInvoke", target);
+                    endInvokeMethod.declaringType = parent;
+                    endInvokeMethod.parameters = new List<ElementScope>();
+                    endInvokeMethod.parameters.Add(new ElementScope(new SymInfo("result", SymbolKind.Parameter, "result"), TypeTable.get_compiled_type(typeof(IAsyncResult)), endInvokeMethod));
+                   
+                    //endInvokeMethod.return_type = TypeTable.get_compiled_type(typeof(IAsyncResult));
+                    endInvokeMethod.is_virtual = true;
+                    endInvokeMethod.Complete();
+                }
+                return endInvokeMethod;
+            }
+        }
+
         public override TypeScope GetInstance(List<TypeScope> gen_args, bool exact = false)
         {
             return this;
@@ -1793,8 +1838,12 @@ namespace CodeCompletion
         public override List<SymScope> FindOverloadNames(string name)
         {
             List<SymScope> lst = new List<SymScope>();
-            if (string.Compare(name, InvokeMethod.name, true) == 0)
+            if (string.Compare(name, "Invoke", true) == 0)
                 lst.Add(InvokeMethod);
+            else if (string.Compare(name, "BeginInvoke", true) == 0)
+                lst.Add(BeginInvokeMethod);
+            else if (string.Compare(name, "EndInvoke", true) == 0)
+                lst.Add(EndInvokeMethod);
             else
                 lst.AddRange(parent.FindOverloadNames(name));
             return lst;
@@ -1803,8 +1852,12 @@ namespace CodeCompletion
         public override List<SymScope> FindOverloadNamesOnlyInType(string name)
         {
             List<SymScope> lst = new List<SymScope>();
-            if (string.Compare(name, InvokeMethod.name, true) == 0)
+            if (string.Compare(name, "Invoke", true) == 0)
                 lst.Add(InvokeMethod);
+            else if (string.Compare(name, "BeginInvoke", true) == 0)
+                lst.Add(BeginInvokeMethod);
+            else if (string.Compare(name, "EndInvoke", true) == 0)
+                lst.Add(EndInvokeMethod);
             else
                 lst.AddRange(parent.FindOverloadNamesOnlyInType(name));
             return lst;
@@ -1814,6 +1867,8 @@ namespace CodeCompletion
         {
             List<SymInfo> lst = new List<SymInfo>();
             lst.Add(InvokeMethod.si);
+            lst.Add(BeginInvokeMethod.si);
+            lst.Add(EndInvokeMethod.si);
             lst.AddRange(parent.GetNames());
             return lst.ToArray();
         }
@@ -1842,6 +1897,8 @@ namespace CodeCompletion
         {
             List<SymInfo> lst = new List<SymInfo>();
             lst.Add(InvokeMethod.si);
+            lst.Add(BeginInvokeMethod.si);
+            lst.Add(EndInvokeMethod.si);
             lst.AddRange(parent.GetNamesAsInObject());
             return lst.ToArray();
         }
@@ -1850,6 +1907,8 @@ namespace CodeCompletion
         {
             List<SymInfo> lst = new List<SymInfo>();
             lst.Add(InvokeMethod.si);
+            lst.Add(BeginInvokeMethod.si);
+            lst.Add(EndInvokeMethod.si);
             lst.AddRange(parent.GetNamesAsInObject(ev));
             return lst.ToArray();
         }
@@ -2921,7 +2980,11 @@ namespace CodeCompletion
 
         public override List<SymScope> FindOverloadNames(string name)
         {
-            return actType.FindOverloadNames(name);
+            List<SymScope> names = actType.FindOverloadNames(name);
+            if (names.Count > 0)
+                return names;
+            if (topScope != null) return topScope.FindOverloadNames(name);
+            return names;
         }
 
         public override List<SymScope> FindOverloadNamesOnlyInType(string name)
@@ -4221,6 +4284,8 @@ namespace CodeCompletion
         public override bool IsEqual(SymScope ts)
         {
             bool eq = this == ts as TypeScope;
+            if (ts == null)
+                return false;
             if (ts is NullTypeScope && this.kind == SymbolKind.Class)
                 return true;
             if (eq)
@@ -4459,12 +4524,15 @@ namespace CodeCompletion
                             if (ss.is_static && ev.CheckForBaseAccess(ev.entry_scope, this))
                                 lst.Add(ss.si);
                         }
-                        else
-                            if (ss.is_static)
+                        else if (ss.is_static)
+                        {
+                            if (!((ss is ProcScope) && (ss as ProcScope).IsConstructor()))
                                 lst.Add(ss.si);
-                            else if ((ss is ProcScope) && (ss as ProcScope).IsConstructor())
-                                if (!((ss as ProcScope).parameters == null || (ss as ProcScope).parameters.Count == 0) || !called_in_base)
-                                    lst.Add(ss.si);
+                        }
+
+                        else if ((ss is ProcScope) && (ss as ProcScope).IsConstructor())
+                            if (!((ss as ProcScope).parameters == null || (ss as ProcScope).parameters.Count == 0) || !called_in_base)
+                                lst.Add(ss.si);
                     }
                     else
                     {
@@ -4598,6 +4666,7 @@ namespace CodeCompletion
             if (sc == null && implemented_interfaces != null)
                 foreach (TypeScope ts in implemented_interfaces)
                 {
+                    if (ts != this)
                     sc = ts.FindNameOnlyInType(name);
                     if (sc != null)
                         break;

@@ -2222,6 +2222,15 @@ namespace PascalABCCompiler.SyntaxTree
 			bw.Write((byte)_simple_property.attr);
 			bw.Write((byte)_simple_property.virt_over_none_attr);
 			bw.Write(_simple_property.is_auto);
+			if (_simple_property.initial_value == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_simple_property.initial_value.visit(this);
+			}
 		}
 
 
@@ -5259,15 +5268,7 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_function_lambda_definition.proc_body.visit(this);
 			}
-			if (_function_lambda_definition.proc_definition == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_function_lambda_definition.proc_definition.visit(this);
-			}
+			bw.Write((byte)_function_lambda_definition.proc_definition);
 			if (_function_lambda_definition.parameters == null)
 			{
 				bw.Write((byte)0);

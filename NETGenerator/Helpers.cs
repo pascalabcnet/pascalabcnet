@@ -194,6 +194,7 @@ namespace PascalABCCompiler.NETGenerator {
     public class GenericFldInfo : FldInfo
     {
         private Type _field_type;
+        public FieldInfo prev_fi; // передаю чтобы на третьем этапе в NegGenerator.cs (примерно 1586) можно было сконструировать правильный тип. Костыль для #1632
 
         public override Type field_type
         {
@@ -203,10 +204,11 @@ namespace PascalABCCompiler.NETGenerator {
             }
         }
 
-        public GenericFldInfo(FieldInfo fi, Type field_type)
+        public GenericFldInfo(FieldInfo fi, Type field_type, FieldInfo prev_fi)
             : base(fi)
         {
             _field_type = field_type;
+            this.prev_fi = prev_fi;
         }
 	}
 	
@@ -511,7 +513,7 @@ namespace PascalABCCompiler.NETGenerator {
 	}
 	
 	public class Helper {
-		private Hashtable defs=new Hashtable();
+		public Hashtable defs=new Hashtable();
         private Hashtable processing_types = new Hashtable();
 		private MethodInfo arr_mi=null;
 		private Hashtable pas_defs = new Hashtable();
@@ -688,13 +690,25 @@ namespace PascalABCCompiler.NETGenerator {
 		public FldInfo AddField(ICommonClassFieldNode f, FieldInfo fb)
 		{
 			FldInfo fi = new FldInfo(fb);
-			defs[f] = fi;
-			return fi;
+#if DEBUG
+            /*if (f.name == "XYZW")
+            {
+                var y = f.GetHashCode();
+            } */
+#endif
+            defs[f] = fi;
+            return fi;
 		}
 		
-        public FldInfo AddGenericField(ICommonClassFieldNode f, FieldInfo fb, Type field_type)
+        public FldInfo AddGenericField(ICommonClassFieldNode f, FieldInfo fb, Type field_type, FieldInfo prev_fi)
         {
-            FldInfo fi = new GenericFldInfo(fb, field_type);
+            FldInfo fi = new GenericFldInfo(fb, field_type, prev_fi); // prev_fi - чтобы сконструировать на последнем этапе fi 
+#if DEBUG
+            /*if (f.name == "XYZW")
+            {
+                var y = f.GetHashCode();
+            }*/
+#endif
             defs[f] = fi;
             return fi;
         }
@@ -702,7 +716,24 @@ namespace PascalABCCompiler.NETGenerator {
         //получение поля
 		public FldInfo GetField(ICommonClassFieldNode f)
 		{
-			return (FldInfo)defs[f];
+            var r = (FldInfo)defs[f];
+#if DEBUG
+            /*if (f.name == "XYZW")
+            {
+                var y = f.GetHashCode();
+            } */
+#endif
+#if DEBUG
+            /*if (r == null && f.name == "XYZW")
+            {
+                foreach (var k in defs.Keys)
+                {
+                    if ((k is ICommonClassFieldNode) && (k as ICommonClassFieldNode).name == "XYZW")
+                        return (FldInfo)defs[k];
+                }
+            } */
+#endif
+            return r;
 		}
 		
         //добавление типа
@@ -800,6 +831,8 @@ namespace PascalABCCompiler.NETGenerator {
                 foreach (Type gt in t.GetGenericArguments())
                     if (IsConstructedGenericType(gt))
                         return true;
+            if (t.IsArray)
+                return IsConstructedGenericType(t.GetElementType());
             return false;
         }
 
@@ -892,7 +925,8 @@ namespace PascalABCCompiler.NETGenerator {
 			{
 				if (type.type_special_kind == type_special_kind.text_file) 
 					ti.is_text_file = true;
-				if (!ti.is_set && !ti.is_typed_file && !ti.is_text_file) return ti;
+				if (!ti.is_set && !ti.is_typed_file && !ti.is_text_file)
+                    return ti;
 				if (ti.clone_meth == null && !ti.is_typed_file && !ti.is_text_file)
                 {
                     if (type is ICommonTypeNode)

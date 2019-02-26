@@ -145,16 +145,15 @@ type
     ob: FrameworkElement;
     gr: Grid; // Grid связан только с текстом
     t: TextBlock;
-    r: RotateTransform;
-    _dx,_dy: real;
+    rot: RotateTransform;
 
     ChildrenWPF := new List<ObjectWPF>;
     procedure InitOb(x,y,w,h: real; o: FrameworkElement; SetWH: boolean := True);
   public
     /// Направление движения по оси X. Используется методом Move
-    property Dx: real read _dx write _dx;
+    auto property Dx: real;
     /// Направление движения по оси Y. Используется методом Move
-    property Dy: real read _dy write _dy;
+    auto property Dy: real;
     /// Отступ графического объекта от левого края 
     property Left: real read InvokeReal(()->Canvas.GetLeft(can)) write Invoke(procedure->Canvas.SetLeft(can,value)); 
     /// Отступ графического объекта от верхнего края 
@@ -163,6 +162,8 @@ type
     property Width: real read InvokeReal(()->gr.Width) write Invoke(procedure->begin gr.Width := value; ob.Width := value end); virtual;
     /// Высота графического объекта
     property Height: real read InvokeReal(()->gr.Height) write Invoke(procedure->begin gr.Height := value; ob.Height := value end); virtual;
+    /// Прямоугольник графического объекта
+    property Bounds: GRect read Invoke&<GRect>(()->begin Result := new GRect(Canvas.GetLeft(can),Canvas.GetTop(can),gr.Width,gr.Height); end); 
     /// Текст внутри графического объекта
     property Text: string read InvokeString(()->t.Text) write Invoke(procedure->t.Text := value);
     /// Целое число, выводимое в центре графического объекта. Используется свойство Text
@@ -188,11 +189,15 @@ type
     begin
       Result := GetInternalGeometry;
       var g := new TransformGroup();
-      g.Children.Add(r);
+      g.Children.Add(rot);
       g.Children.Add(new TranslateTransform(Left,Top));
       Result.Transform := g; // версия
     end;
   public
+    /// Видимость графического объекта
+    property Visible: boolean 
+      read InvokeBoolean(()->ob.Visibility = Visibility.Visible)
+      write Invoke(procedure -> if value then ob.Visibility := Visibility.Visible else ob.Visibility := Visibility.Hidden);
     /// Выравнивание текста внутри графического объекта
     property TextAlignment: Alignment write Invoke(WTA,Value);
     /// Размер текста внутри графического объекта
@@ -216,11 +221,11 @@ type
     /// Правый нижний угол графического объекта
     property RightBottom: Point read Pnt(Left + Height,Top + Height);
     /// Угол поворота графического объекта (по часовой стрелке)
-    property RotateAngle: real read InvokeReal(()->r.Angle) write Invoke(procedure->r.Angle := value);
+    property RotateAngle: real read InvokeReal(()->rot.Angle) write Invoke(procedure->rot.Angle := value);
     /// Центр поворота графического объекта
     property RotateCenter: Point 
-      read Invoke&<Point>(()->new Point(r.CenterX,r.CenterY))
-      write Invoke(procedure->begin r.CenterX := value.X; r.CenterY := value.Y; end);
+      read Invoke&<Point>(()->new Point(rot.CenterX,rot.CenterY))
+      write Invoke(procedure->begin rot.CenterX := value.X; rot.CenterY := value.Y; end);
     /// Цвет графического объекта
     property Color: GColor 
       read RGB(0,0,0) 
@@ -237,7 +242,7 @@ type
     /// Перемещает графический объект на вектор (a,b)
     procedure MoveOn(a,b: real) := MoveTo(Left+a,Top+b);
     /// Перемещает графический объект на вектор (dx,dy)
-    procedure Move := MoveOn(dx,dy);
+    procedure Move; virtual := MoveOn(dx,dy);
     /// Поворачивает графический объект по часовой стрелке на угол da
     procedure Rotate(da: real) := RotateAngle += da;
     /// Добавляет к графическому объекту дочерний
@@ -282,7 +287,12 @@ type
     end;
     procedure EF(value: GColor) := Element.Fill := new SolidColorBrush(Value);
     procedure ES(value: GColor) := Element.Stroke := new SolidColorBrush(Value);
-    procedure EST(value: real) := Element.StrokeThickness := Value;
+    procedure EST(value: real);
+    begin
+      Element.StrokeThickness := Value;
+      if Element.Stroke = nil then
+        Element.Stroke := new SolidColorBrush(Colors.Black)
+    end;  
     function WithNoBorderP: BoundedObjectWPF;
     begin
       Element.Stroke := nil;
@@ -935,6 +945,12 @@ procedure SetLeft(Self: UIElement; l: integer) := Self.SetLeft(l);
 procedure SetTop(Self: UIElement; t: integer) := Self.SetTop(t);
 
 
+function MoveOn(Self: Point; vx,vy: real): Point; extensionmethod;
+begin
+  Result.X := Self.X + vx;
+  Result.Y := Self.Y + vy;
+end;
+
 {procedure MoveTo(Self: UIElement; l,t: integer); extensionmethod;
 begin
   Canvas.SetLeft(Self,l);
@@ -975,10 +991,10 @@ procedure ObjectWPF.InitOb(x,y,w,h: real; o: FrameworkElement; SetWH: boolean);
 begin
   can := new Canvas;
   gr := new Grid;
-  r := new RotateTransform(0);
-  r.CenterX := w / 2;
-  r.CenterY := h / 2;
-  can.RenderTransform := r;
+  rot := new RotateTransform(0);
+  rot.CenterX := w / 2;
+  rot.CenterY := h / 2;
+  can.RenderTransform := rot;
   ob := o;
   if SetWH then 
     (ob.Width,ob.Height) := (w,h);

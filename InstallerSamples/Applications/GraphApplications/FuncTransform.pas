@@ -1,5 +1,5 @@
-uses
-  GraphABC;
+﻿uses
+  GraphWPF;
 
 var
   h := 0.01;
@@ -20,32 +20,31 @@ end;
 
 procedure DrawGraphic(f: real -> real);
 begin
-  Draw(f, -boundx, boundx, -boundy, boundy); 
+  Window.Clear;
+  DrawGraph(f, -boundx, boundx, -boundy, boundy); 
   Window.Title := Format('mx={0:f2}  my={1:f2}  dx={2:f2}  dy={3:f2}', mx, my, dx, dy);
-  Redraw;
 end;
 
-procedure KeyDown(key: integer);
-const
-  ArrowKeys: set of integer = [vk_Left, vk_Right, vk_Up, vk_Down, vk_Home, vk_End, vk_PageUp, vk_PageDown];
+var ArrowKeys := HSet(Key.Left, Key.Right, Key.Up, Key.Down, Key.Home, Key.&End, Key.PageUp, Key.PageDown);
+
+procedure KeyDown(k: Key);
 begin
   var g := Transform(f);
-  case key of
-    vk_Left:     my -= h;
-    vk_Right:    my += h;
-    vk_Up:       mx -= h;
-    vk_Down:     mx += h;
-    vk_Home:     dx += h;
-    vk_PageUp:   dx -= h;
-    vk_PageDown: dy += h;
-    vk_End:      dy -= h;
+  case k of
+    Key.Left:     my -= h;
+    Key.Right:    my += h;
+    Key.Up:       mx -= h;
+    Key.Down:     mx += h;
+    Key.Home:     dx += h;
+    Key.PageUp:   dx -= h;
+    Key.PageDown: dy += h;
+    Key.End:      dy -= h;
   end;
-  if key in ArrowKeys then
+  if k in ArrowKeys then
     DrawGraphic(g);
 end;
 
 begin
   DrawGraphic(Transform(f));
-  LockDrawing;
   OnKeyDown := KeyDown;
 end.

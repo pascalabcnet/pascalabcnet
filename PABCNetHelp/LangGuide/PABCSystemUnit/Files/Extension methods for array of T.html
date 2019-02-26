@@ -9,10 +9,9 @@
 <param name="Keyword" value="FindLast">
 <param name="Keyword" value="FindLastIndex">
 <param name="Keyword" value="High">
-<param name="Keyword" value="Indexes">
-<param name="Keyword" value="IndexesOf">
 <param name="Keyword" value="IndexMax">
 <param name="Keyword" value="IndexOf">
+<param name="Keyword" value="Indices">
 <param name="Keyword" value="LastIndexMax">
 <param name="Keyword" value="LastIndexMin">
 <param name="Keyword" value="LastIndexOf">
@@ -52,18 +51,18 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет поиск индекса последнего элемента в массиве, удовлетворяющего предикату, в диапазоне индексов от 0 до start. Если не найден, возвращается -1</td></tr>
 <tr><td><code><b>function</b> High(Self: System.Array);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего элемента массива</td></tr>
-<tr><td><code><b>function</b> Indexes&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): <b>sequence </b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов одномерного массива</td></tr>
-<tr><td><code><b>function</b> IndexesOf&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; cond: T-&gt;boolean): <b>sequence </b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов элементов одномерного массива, удовлетворяющих условию</td></tr>
-<tr><td><code><b>function</b> IndexesOf&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; cond: (T,integer) -&gt;boolean): <b>sequence </b>  <b>of</b> integer;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов элементов одномерного массива, удовлетворяющих условию</td></tr>
 <tr><td><code><b>function</b> IndexMax&lt;T&gt;(self: <b>array</b>  <b>of</b> T; index: integer := 0): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого максимального элемента начиная с позиции index</td></tr>
 <tr><td><code><b>function</b> IndexOf&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; x: T): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого вхождения элемента или -1 если элемент не найден</td></tr>
 <tr><td><code><b>function</b> IndexOf&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; x: T; start: integer): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого вхождения элемента начиная с индекса start или -1 если элемент не найден</td></tr>
+<tr><td><code><b>function</b> Indices&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): <b>sequence </b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов одномерного массива</td></tr>
+<tr><td><code><b>function</b> Indices&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; cond: T-&gt;boolean): <b>sequence </b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов элементов одномерного массива, удовлетворяющих условию</td></tr>
+<tr><td><code><b>function</b> Indices&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; cond: (T,integer) -&gt;boolean): <b>sequence </b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов элементов одномерного массива, удовлетворяющих условию</td></tr>
 <tr><td><code><b>function</b> LastIndexMax&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего минимального элемента</td></tr>
 <tr><td><code><b>function</b> LastIndexMax&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; index: integer): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
@@ -78,13 +77,13 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего вхождения элемента начиная с индекса start или -1 если элемент не найден</td></tr>
 <tr><td><code><b>function</b> Low(Self: System.Array);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого элемента массива</td></tr>
-<tr><td><code><b>function</b> Max&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): T; <b>where</b> T: IComparable&lt;T&gt;;</code>
+<tr><td><code><b>function</b> Max&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): T;  <b>where</b> T: IComparable&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает максимальный элемент</td></tr>
 <tr><td><code><b>function</b> Max(Self: <b>array</b>  <b>of</b> integer): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает максимальный элемент</td></tr>
 <tr><td><code><b>function</b> Max(Self: <b>array</b>  <b>of</b> real): real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает максимальный элемент</td></tr>
-<tr><td><code><b>function</b> Min&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): T; <b>where</b> T: IComparable&lt;T&gt;;</code>
+<tr><td><code><b>function</b> Min&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): T;  <b>where</b> T: IComparable&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает минимальный элемент</td></tr>
 <tr><td><code><b>function</b> Min(Self: <b>array</b>  <b>of</b> integer): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает минимальный элемент</td></tr>

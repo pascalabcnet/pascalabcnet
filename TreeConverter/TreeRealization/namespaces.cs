@@ -30,10 +30,12 @@ namespace PascalABCCompiler.TreeRealization
         /// <returns>Информация о найденном символе. null, если ни чего не найдено.</returns>
 		public abstract List<SymbolInfo> find(string name);
 
+        public abstract List<SymbolInfo> findOnlyInNamespace(string name);
+
         /// <summary>
         /// Имя пространства имен.
         /// </summary>
-		public abstract string namespace_name
+        public abstract string namespace_name
 		{
 			get;
 		}
@@ -466,9 +468,10 @@ namespace PascalABCCompiler.TreeRealization
             var temp = _scope.FindOnlyInScope(name);//c,cc,c,cc
             return temp?.First();
         }
-        public List<SymbolInfo> findOnlyInNamespace(string name)
+        public override List<SymbolInfo> findOnlyInNamespace(string name)
         {
-            return _scope.FindOnlyInScope(name);//c,cc,c,cc
+            List<SymbolInfo> si_list = _scope.FindOnlyInScope(name);//c,cc,c,cc
+            return si_list;
         }
 
         /// <summary>
@@ -694,6 +697,11 @@ namespace PascalABCCompiler.TreeRealization
             {
                 _common_namespace = value;
             }
+        }
+
+        public override List<SymbolInfo> findOnlyInNamespace(string name)
+        {
+            return find(name);
         }
 
         /// <summary>

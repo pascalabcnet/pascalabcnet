@@ -268,7 +268,7 @@ namespace VisualPascalABC.Utils
             //\ssyy
             if (attachDebugger)
             {
-            	WorkbenchServiceFactory.DebuggerManager.Attach((uint)process.Id,command,!fictive_attach,false);
+                WorkbenchServiceFactory.DebuggerManager.Attach((uint)process.Id,command,!fictive_attach,false);
             }
             if (redirectIO)
             process.StandardInput.WriteLine("GO");

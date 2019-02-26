@@ -865,7 +865,7 @@ namespace PascalABCCompiler.SyntaxTree
                 CompareInternal(left.ident_list, right.ident_list);
                 CompareInternal(left.parameters, right.parameters);
                 CompareInternal(left.formal_parameters, right.formal_parameters);
-                CompareInternal(left.proc_definition, right.proc_definition);
+                CompareInternal(left.proc_definition as procedure_definition, right.proc_definition as procedure_definition);
                 CompareInternal(left.proc_body, right.proc_body);
                 CompareInternal(left.return_type, right.return_type);
             }

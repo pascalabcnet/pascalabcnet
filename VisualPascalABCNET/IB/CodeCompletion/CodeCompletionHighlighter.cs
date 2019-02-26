@@ -61,6 +61,8 @@ namespace VisualPascalABC
                     {
                         if (!isTypeDeclaration(beg_off, textArea))
                             return;
+                        if (isClassPredefinition(end_off, textArea))
+                            return;
                     }
                     TmpPos end_pos = null;
                     if (string.Compare(word, "repeat", true) != 0)
@@ -221,13 +223,13 @@ namespace VisualPascalABC
                 c = textArea.Document.TextContent[off];
             }
             c = char.ToLower(c);
-            if (c != '=' && c != 't' && c != 'd' && c != 'o' && c != '{')
+            if (c != '=' && c != 't' && c != 'd' && c != 'o' && c != '{' && c != 'c')
             {
                 return true;
             }
             
                 
-            if (c == 't' || c == 'd' || c == 'o')
+            if (c == 't' || c == 'd' || c == 'o' || c == 'c')
             {
                 StringBuilder keyword = new StringBuilder();
                 
@@ -239,10 +241,13 @@ namespace VisualPascalABC
                         break;
                     c = textArea.Document.TextContent[off];
                 }
-                if (keyword.ToString().ToLower() == "sealed" || keyword.ToString().ToLower() == "abstract" || keyword.ToString().ToLower() == "auto")
+                string keywordstr = keyword.ToString().ToLower();
+                if (keywordstr == "sealed" || keywordstr == "abstract" || keywordstr == "auto")
                 {
                     return isClassMember(off, textArea);
                 }
+                if (keywordstr == "public" || keywordstr == "protected")
+                    return true;
                 return false;
             }
             return false;
@@ -303,21 +308,11 @@ namespace VisualPascalABC
                 {
                     return null;
                 }
-                else if (c == '{')//nachalo kommentarija, propuskaem ego
-                {
-                    end_off++;
-                    while (end_off < text.Length && text[end_off] != '}')
-                        end_off++;
-                }
+                
                 else if (c == '\'')//nachalo kavychek, propuskaem
                 {
                     end_off++;
                     while (end_off < text.Length && text[end_off] != '\'')
-                        end_off++;
-                }
-                else if (c == '/' && end_off < text.Length - 1 && text[end_off + 1] == '/')
-                {
-                    while (end_off < text.Length && text[end_off] != '\n')
                         end_off++;
                 }
                 else
@@ -339,6 +334,17 @@ namespace VisualPascalABC
                         }
                     }
                     sb.Remove(0, sb.Length);
+                    if (c == '{')
+                    {
+                        end_off++;
+                        while (end_off < text.Length && text[end_off] != '}')
+                            end_off++;
+                    }
+                    else if (c == '/' && end_off < text.Length - 1 && text[end_off + 1] == '/')
+                    {
+                        while (end_off < text.Length && text[end_off] != '\n')
+                            end_off++;
+                    }
                 }
                 end_off++;
             }
@@ -361,7 +367,7 @@ namespace VisualPascalABC
             while (end_off < text.Length)
             {
                 char c = text[end_off];
-                if (char.IsLetterOrDigit(c) || c == '_' || c == '&')
+                if (char.IsLetterOrDigit(c) || c == '_' || c == '&' || c == '.')
                 {
                     sb.Append(c);
                 }
@@ -369,21 +375,10 @@ namespace VisualPascalABC
                 {
                     return null;
                 }
-                else if (c == '{')//nachalo kommentarija, propuskaem ego
-                {
-                    end_off++;
-                    while (end_off < text.Length && text[end_off] != '}')
-                        end_off++;
-                }
                 else if (c == '\'')//nachalo kavychek, propuskaem
                 {
                     end_off++;
                     while (end_off < text.Length && text[end_off] != '\'')
-                        end_off++;
-                }
-                else if (c == '/' && end_off < text.Length - 1 && text[end_off + 1] == '/')
-                {
-                    while (end_off < text.Length && text[end_off] != '\n')
                         end_off++;
                 }
                 else
@@ -407,12 +402,27 @@ namespace VisualPascalABC
                         }
                     }
                     sb.Remove(0, sb.Length);
+                    if (c == '{')
+                    {
+                        end_off++;
+                        while (end_off < text.Length && text[end_off] != '}')
+                            end_off++;
+                    }
+                    else if (c == '/' && end_off < text.Length - 1 && text[end_off + 1] == '/')
+                    {
+                        while (end_off < text.Length && text[end_off] != '\n')
+                            end_off++;
+                    }
                 }
                 end_off++;
             }
             if (string.Compare(sb.ToString(), "end", true) == 0 && beg_stack.Count > 0)
             {
                 return new TmpPos(end_off - 3, 3);
+            }
+            else if (string.Compare(sb.ToString(), "end.", true) == 0 && beg_stack.Count > 0)
+            {
+                return new TmpPos(end_off - 4, 3);
             }
             return null;
         }
@@ -430,7 +440,7 @@ namespace VisualPascalABC
             while (beg_off >= 0)
             {
                 char c = text[beg_off];
-                if (char.IsLetterOrDigit(c) || c == '_' || c == '&')
+                if (char.IsLetterOrDigit(c) || c == '_' || c == '&' || c == '.')
                 {
                     sb.Insert(0, c);
                 }
@@ -642,7 +652,7 @@ namespace VisualPascalABC
                 end_off = -1;
                 return "";
             }
-            if (off >= 1 && (off >= text.Length || !(char.IsLetterOrDigit(text[off]) || text[off] == '&' || text[off] == '_')) && (char.IsLetterOrDigit(text[off - 1]) || text[off - 1] == '&' || text[off - 1] == '_'))
+            if (off >= 1 && (off >= text.Length || !(char.IsLetterOrDigit(text[off]) || text[off] == '&' || text[off] == '_' || text[off] == '.')) && (char.IsLetterOrDigit(text[off - 1]) || text[off - 1] == '&' || text[off - 1] == '_' || text[off - 1] == '.'))
                 off--;
             if (off < 0 || !(char.IsLetterOrDigit(text[off]) || text[off] == '&' || text[off] == '_'))
             {
@@ -650,7 +660,7 @@ namespace VisualPascalABC
                 end_off = -1;
                 return "";
             }
-            while (off >= 0 && off < text.Length && (char.IsLetterOrDigit(text[off]) || text[off] == '&' || text[off] == '_'))
+            while (off >= 0 && off < text.Length && (char.IsLetterOrDigit(text[off]) || text[off] == '&' || text[off] == '_' || text[off] == '.'))
             {
                 off--;
             }

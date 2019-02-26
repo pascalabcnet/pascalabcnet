@@ -20,3 +20,5 @@ PROGRAM_NAME_FOR_TYPE_NAME_IS_PROHIBITED=Имя 'program' запрещено в 
 DEFAULT_PARAMS_IN_DELEGATE_TYPE=В процедурном типе не могут быть параметры по умолчанию
 CONSTRUCTOR_CALL_FOR_DELEGATE_TYPES_IS_FORBIDDEN=Для типов делегатов запрещен вызов конструктора. Вместо этого присвойте делегату имя подпрограммы или имя другого делегата
 SELF_NOT_ALLOWED_IN_METHOD_PARAMS=Параметр метода не может иметь имя Self
+IMPOSSIBLE_TO_INFER_SET_TYPE=Нельзя вычислить тип множества
+BAD_DIAPASON_IN_SET_TYPE=Границы диапазона в константе-множестве должны иметь один тип

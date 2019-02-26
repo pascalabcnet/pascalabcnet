@@ -1202,9 +1202,18 @@ namespace PascalABCCompiler.TreeRealization
                 {
                     delegate_internal_interface dii = formal_type.get_internal_interface(internal_interface_kind.delegate_interface) as delegate_internal_interface;
                     delegated_methods dm = fact_type as delegated_methods;
+                    function_node fact_func = null;
                     if (dm != null && dm.proper_methods.Count == 1)
+                        fact_func = dm.proper_methods[0].simple_function_node;
+                    else if (fact_type.IsDelegate)
                     {
-                        function_node fact_func = dm.proper_methods[0].simple_function_node;
+                        var sil = fact_type.find_in_type("Invoke");
+                        if (sil != null && sil.Count > 0)
+                            fact_func = sil[0].sym_info as function_node;
+                    }
+                        
+                    if (fact_func != null)
+                    {
                         if (fact_func.parameters.Count != dii.parameters.Count)
                         {
                             goto eq_cmp;
@@ -1496,8 +1505,51 @@ namespace PascalABCCompiler.TreeRealization
 
         protected void AddMember(object original, object converted)
         {
-            _members.Add(original, converted);
-            _member_definitions.Add(converted, original);
+            var cf = original as class_field;
+#if DEBUG
+            /*if (cf != null && cf.name == "XYZW")
+            {
+                cf = cf;
+            } */
+#endif         
+            // Этот код дает перекрестные ошибки далее поэтому эта идея неправильна. Комментирую
+            /*if (cf != null) // значит это поле и заменять original на соответствующее поле оригинального класса
+            {
+                var or = this.original_generic as common_type_node;
+                original = or.fields.First(f => f.name == cf.name);
+                if (original==null)
+                {
+                    original = original;
+                }
+            } */
+            if (!_members.ContainsValue(original))  // SSM 30.12.18 bug fix #907
+            {
+                // Если это поле и T1->Anything, то как-то надо находить оригинальный класс Base и заменять на T->Anything
+                // Вторая версия - делать это в GetMember - там доступны все _members
+                // Закомментировал всё кроме того что было - изменение вместо добавления срабатывает только если мы в предыдущем коде меняли original, а именно эта идея признана ошибочной
+                //if (!_members.ContainsKey(original))
+                //{ 
+                _members.Add(original, converted);
+                _member_definitions.Add(converted, original);
+                //}
+                /*else
+                { 
+                    _members[original] = converted;
+                    _member_definitions[original] = converted;
+                } */
+            }
+            else // SSM 30.12.18 bug fix #907 
+            {
+                object kk = null;
+                foreach (System.Collections.DictionaryEntry x in _members)
+                {
+                    if (x.Value == original)
+                        kk = x.Key;
+                }
+                _members[kk] = converted;
+                _member_definitions.Remove(original);
+                _member_definitions[converted] = kk;
+            }
         }
 
         protected parameter_list make_parameters(parameter_list orig_pl, common_function_node fn)
@@ -1857,6 +1909,13 @@ namespace PascalABCCompiler.TreeRealization
                     default:
                         throw new CompilerInternalError("Unexpected definition_node.");
                 }
+                /*if (orig_node is class_field cf)
+                {
+                    if (cf.type.name == "T1")
+                        orig_node = orig_node;
+                    else AddMember(orig_node, rez_node);
+                }
+                else*/
                 AddMember(orig_node, rez_node);
             }
             return rez_node;
@@ -1900,7 +1959,7 @@ namespace PascalABCCompiler.TreeRealization
             return sil;
         }
 
-        public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, bool no_search_in_extension_methods = false)
+        public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, type_node orig_generic_or_null = null, bool no_search_in_extension_methods = false)
         {
             //var or = generic_convertions.determine_type(_original_generic,this.instance_params,false); // циклится
             List<SymbolInfo> sil = null;
@@ -1914,7 +1973,14 @@ namespace PascalABCCompiler.TreeRealization
                     sil1.InsertRange(0,sil);
                 return sil1;
             }*/
-            sil = _original_generic.find_in_type(name, CurrentScope);
+#if DEBUG
+            /*if (name == "XYZW")
+            {
+                var y = name;
+            } */
+#endif
+            sil = _original_generic.find_in_type(name, CurrentScope, _original_generic); // передача _original_generic - это костыль для устранения бага #1674. 
+            // параметр _original_generic - фиктивный: если он не null (это только здесь), то в common_type_node выполнение в одном месте идет по другой ветке
             sil = ConvertSymbolInfo(sil);
             return sil;
         }

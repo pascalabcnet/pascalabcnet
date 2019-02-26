@@ -478,7 +478,7 @@ namespace PascalABCCompiler.TreeRealization
             return find_first_in_type(name);
         }
         public abstract List<SymbolInfo> find_in_type(string name, bool no_search_in_extension_methods = false);   
-        public virtual List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, bool no_search_in_extension_methods = false)
+        public virtual List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, type_node orig_generic_or_null = null, bool no_search_in_extension_methods = false)
         {
             return find_in_type(name);
         }
@@ -648,7 +648,7 @@ namespace PascalABCCompiler.TreeRealization
             return null;
         }
 
-        public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, bool no_search_in_extension_methods = false)
+        public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, type_node orig_generic_or_null = null, bool no_search_in_extension_methods = false)
         {
             return null;
         }
@@ -980,7 +980,7 @@ namespace PascalABCCompiler.TreeRealization
             return find_in_additional_names(name);
         }
 
-        public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, bool no_search_in_extension_methods = false)
+        public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, type_node orig_generic_or_null = null, bool no_search_in_extension_methods = false)
         {
             return find_in_additional_names(name);
         }
@@ -2021,13 +2021,14 @@ namespace PascalABCCompiler.TreeRealization
             return Scope.FindOnlyInType(name, null);//:=,create,x
         }
 
-        public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, bool no_search_in_extension_methods = false)
+        public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, type_node orig_generic_or_null = null, bool no_search_in_extension_methods = false)
         {
             List<SymbolInfo> sil = Scope.FindOnlyInType(name, CurrentScope);//:=,create,x
 
             // SSM 2018.04.05 
             if (base_type is compiled_generic_instance_type_node)
             {
+                // Если эту строчку раскомментировать, ложатся тесты inheritanceFromListInt.pas inheritanceFromListStudent.pas where6.pas 
                 //sil = (base_type as compiled_generic_instance_type_node).original_generic.find_in_type(name, CurrentScope);
                 return sil;
             }
@@ -2086,7 +2087,20 @@ namespace PascalABCCompiler.TreeRealization
             {
                 //if (name == "IndexOf" || name == "Add") SSM 5/05/18 Proba
                 //    return sil;
-                return base_generic_instance.ConvertSymbolInfo(sil);
+#if DEBUG
+                /*if (name == "XYZW" || name == "Add")
+                {
+                    var y = name;
+                } */
+#endif
+                var bsil = base_generic_instance.ConvertSymbolInfo(sil);
+                // Здесь водораздел. Если возвращать bsil, то старые тесты проходят, а новый ложится
+                // Если возвращать sil, то новый тест проходит, а два старых ложатся
+                if (orig_generic_or_null == null)  // Для устранения бага #1674 пришлось передать доппараметр orig_generic_or_null - он фиктивный. 
+                    // Везде он null, а здесь если не null, то не лезем в base_generic_instance - возвращаем sil
+                    return bsil;
+                else
+                    return sil; // это имеет смысл делать ТОЛЬКО для generic-полей, но только для них эта ветка и вызывается!
             }
             else // if (sil == null)
             {
@@ -2577,7 +2591,7 @@ namespace PascalABCCompiler.TreeRealization
             return SystemLibrary.SystemLibrary.string_type.find_in_type(name);
         }
 
-        public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, bool no_search_in_extension_methods = false)
+        public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, type_node orig_generic_or_null = null, bool no_search_in_extension_methods = false)
         {
             //return this.find_in_additional_names(name);
             //SymbolInfo si = _scope.FindOnlyInType(name, CurrentScope);
@@ -3499,7 +3513,7 @@ namespace PascalABCCompiler.TreeRealization
             return find(name, no_search_in_extension_methods);
         }
 
-        public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, bool no_search_in_extension_methods = false)
+        public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, type_node orig_generic_or_null = null, bool no_search_in_extension_methods = false)
         {
             //return find(name);
             List<SymbolInfo> result = find(name, no_search_in_extension_methods);
@@ -3933,7 +3947,7 @@ namespace PascalABCCompiler.TreeRealization
             return _scope.FindOnlyInType(name, null);
 		}
 
-        public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, bool no_search_in_extension_methods = false)
+        public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, type_node orig_generic_or_null = null, bool no_search_in_extension_methods = false)
         {
             //return this.find_in_additional_names(name);
             return _scope.FindOnlyInType(name, CurrentScope);
@@ -4186,7 +4200,7 @@ namespace PascalABCCompiler.TreeRealization
             return _scope.FindOnlyInScope(name);
         }
         
-        public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, bool no_search_in_extension_methods = false)
+        public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, type_node orig_generic_or_null = null, bool no_search_in_extension_methods = false)
         {
             return _scope.FindOnlyInScope(name);
         }
@@ -4650,7 +4664,7 @@ namespace PascalABCCompiler.TreeRealization
             return compiled_type_node.get_type_node(typeof(Delegate)).find(name);
             //return null;
         }
-        public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, bool no_search_in_extension_methods = false)
+        public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, type_node orig_generic_or_null = null, bool no_search_in_extension_methods = false)
         {
             return find_in_type(name);
         }
@@ -5018,6 +5032,17 @@ namespace PascalABCCompiler.TreeRealization
             set
             {
                 _element_type = value;
+            }
+        }
+
+        public override string PrintableName
+        {
+            get
+            {
+                if (_element_type != null)
+                    return "array of " + _element_type.PrintableName;
+                else
+                    return base.PrintableName;
             }
         }
     }

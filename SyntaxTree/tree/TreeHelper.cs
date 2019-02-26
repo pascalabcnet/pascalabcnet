@@ -1094,7 +1094,7 @@ namespace PascalABCCompiler.SyntaxTree
     public partial class simple_property
     {
         public simple_property(ident name, type_definition type, property_accessors accessors, SourceContext sc = null) 
-            : this(name, type, null, accessors, null, null, definition_attribute.None,proc_attribute.attr_none,false,sc)
+            : this(name, type, null, accessors, null, null, definition_attribute.None,proc_attribute.attr_none,false, null, sc)
         { }
     }
 
@@ -1827,5 +1827,14 @@ namespace PascalABCCompiler.SyntaxTree
     {
         public override string ToString() => pattern.ToString();
     }
-}
+
+    public partial class typecast_node
+    {
+        public override string ToString()
+        {
+            return "" + this.expr + " " + this.cast_op + " " + this.type_def;
+        }
+    }
+
+    }
 

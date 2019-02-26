@@ -2,6 +2,7 @@
 %PREFIX%=SYNTAXTREEVISITORSERROR_
 
 YIELD_FUNC_MUST_RETURN_SEQUENCE=Functions with yield must return sequences
+YIELD_FUNC_CANNOT_RETURN_SEQUENCE_OF_ANONYMOUS_DELEGATES=Functions with yield cannot return sequence of anonymous delegates
 ONLY_FUNCTIONS_CAN_CONTAIN_YIELDS=Only functions can contain yield
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_VAR_CONST_PARAMS_MODIFIERS=Functions with yield cannot contain 'var', 'const' or 'params' modifiers
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_DEFAULT_PARAMETERS=Functions with yield cannot have default parameters
@@ -12,6 +13,7 @@ FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_NESTED_SUBROUTINES=Functions with yield can
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCAL_TYPE_DEFINITIONS=Functions with yield cannot contain local type definitions
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_INHERITED_CALLS=Functions with yield cannot contain calls of inherited methods
 YIELDS_INSIDE_WITH_ARE_ILLEGAL=with statement cannot contain yields
+YIELDSEQUENCES_INSIDE_WITH_ARE_ILLEGAL=with statement cannot contain yield sequence 
 LAMBDA_EXPRESSIONS_CANNOT_CONTAIN_YIELD=Lambda-expressions cannot contain yields
 
 PATTERN_MATHING_IS_NOT_SUPPORTED_IN_THIS_CONTEXT=Pattern matching is not supported in this context

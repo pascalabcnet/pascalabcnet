@@ -310,17 +310,17 @@ namespace PascalABCCompiler.PCU
 
         public override List<SymbolInfo> find_in_type(string name, bool no_search_in_extension_methods = false)
         {
-            return find_in_type(name, null, no_search_in_extension_methods);
+            return find_in_type(name, null, null, no_search_in_extension_methods);
         }
-        public override List<SymbolInfo> find_in_type(string name, Scope CurrentScope, bool no_search_in_extension_methods = false)
+        public override List<SymbolInfo> find_in_type(string name, Scope CurrentScope, type_node orig_generic_or_null = null, bool no_search_in_extension_methods = false)
         {
             List<SymbolInfo> sil = scope.FindOnlyInType(name, CurrentScope);
             if (sil == null)
             {
                 if (base_type != null && base_type.IsDelegate)
-                    return base_type.find_in_type(name, CurrentScope, no_search_in_extension_methods);
+                    return base_type.find_in_type(name, CurrentScope, null, no_search_in_extension_methods);
                 else if (name == compiler_string_consts.deconstruct_method_name)
-                    return SystemLibrary.SystemLibrary.object_type.find_in_type(name, CurrentScope, no_search_in_extension_methods);
+                    return SystemLibrary.SystemLibrary.object_type.find_in_type(name, CurrentScope, null, no_search_in_extension_methods);
                 return sil;
             }
                 

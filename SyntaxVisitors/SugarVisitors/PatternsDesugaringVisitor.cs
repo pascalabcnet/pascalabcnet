@@ -98,7 +98,8 @@ namespace SyntaxVisitors.SugarVisitors
                 if (patternCase.pattern is deconstructor_pattern)
                 {
                     // Проверяем встречался ли уже такой тип при деконструкции
-                    var deconstructionType = (patternCase.pattern as deconstructor_pattern).
+                    // SSM 02.01.19 пока закомментировал этот кусок т.к. при этом коде падает стандартный пример ArithmSimplify.cs. #1408 снова открыл
+                    /*var deconstructionType = (patternCase.pattern as deconstructor_pattern).
                         type as named_type_reference;
                     if (deconstructionType != null &&
                         deconstructionType.names != null &&
@@ -111,7 +112,7 @@ namespace SyntaxVisitors.SugarVisitors
                                                          patternCase.pattern.source_context);
                         }
                         usedDeconstructionTypes.Add(deconstructionTypeName);
-                    }
+                    } */
 
                     DesugarDeconstructorPatternCase(matchWith.expr, patternCase);
                 }

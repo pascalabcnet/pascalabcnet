@@ -183,7 +183,12 @@ namespace PascalABCSavParser
             else
                 prefix = StringResources.Get("FOUNDEOF");
 
-
+            if (this.build_tree_for_format_strings && prefix == StringResources.Get("FOUNDEOF"))
+            {
+                yytext = "}";
+                prefix = StringResources.Get("FOUND{0}");
+            }
+                
             // Преобразовали в список строк - хорошо
             List<string> tokens = new List<string>(args.Skip(1).Cast<string>());
 

@@ -82,7 +82,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             {
 
                 System.IO.File.AppendAllText(@"d:\\zzz4.txt",e.Message);
-            } */
+            }*/ 
 
 
 #endif
