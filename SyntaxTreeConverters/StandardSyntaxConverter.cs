@@ -24,14 +24,14 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
             // type classes - пока закомментировал SSM 20/10/18. Грязный кусок кода. FillParentsInAllChilds вызывается повторно
 
-            /*{
+            {
                 var typeclasses = SyntaxVisitors.TypeclassVisitors.FindTypeclassesVisitor.New;
                 typeclasses.ProcessNode(root);
                 var instancesAndRestrictedFunctions = SyntaxVisitors.TypeclassVisitors.FindInstancesAndRestrictedFunctionsVisitor.New(typeclasses.typeclasses);
                 instancesAndRestrictedFunctions.ProcessNode(root);
                 SyntaxVisitors.TypeclassVisitors.ReplaceTypeclassVisitor.New(instancesAndRestrictedFunctions).ProcessNode(root);
-            }*/
-            //root.FillParentsInAllChilds();
+            }
+            root.FillParentsInAllChilds();
 #if DEBUG
             //new SimplePrettyPrinterVisitor("E:/projs/out.txt").ProcessNode(root);
 #endif
