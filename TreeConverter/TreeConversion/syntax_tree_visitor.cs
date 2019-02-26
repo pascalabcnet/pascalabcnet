@@ -1085,17 +1085,15 @@ namespace PascalABCCompiler.TreeConverter
                     AddError(right.location, "NIL_WITH_VALUE_TYPES_NOT_ALLOWED");
             	right = null_const_node.get_const_node_with_type(left.type, (null_const_node)right);
             }
-
+            
             // voloshinbogdan Typeclasses 21.05.2018
-            var testTopFunctionForTypeclassRestriction = context.func_stack.top()?.attributes?.Any(x => x.AttributeType.name == "__TypeclassRestrictedFunctionAttribute");
-            if (testTopFunctionForTypeclassRestriction.HasValue && testTopFunctionForTypeclassRestriction.Value)
+            if (TypeclassHelper.HasRestrictions(context.func_stack.top()))
             {
                 var func = context.func_stack.top();
-                var typeclasses = func.generic_params.Where(x => x.Attributes != null && x.Attributes.Any(attr => attr.AttributeType.name == "__TypeclassGenericParameterAttribute"));
-                foreach (var item in typeclasses)
+                foreach (var item in TypeclassHelper.GetRestrictedGenerics(func))
                 {
                     var args = item.Attributes.First(x => x.AttributeType.name == "__TypeclassGenericParameterAttribute").Arguments;
-                    var silTmp = (item as type_node)?.find_in_type("$typeclass" + name, context.CurrentScope);
+                    var silTmp = (item as type_node)?.find_in_type(TypeclassHelper.OperatorName(name), context.CurrentScope);
                     if (silTmp != null)
                     {
                         var dn = new ident((args.First() as string_const_node).constant_value);
@@ -1105,17 +1103,15 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
             }
-
-            var testIsTypeclass = context._ctn?.Attributes?.Any(x => x.AttributeType.name == "__TypeclassAttribute");
-            var testIsInstance = context._ctn?.Attributes?.Any(x => x.AttributeType.name == "__TypeclassInstanceAttribute");
-            if (testIsTypeclass.HasValue && testIsTypeclass.Value && !(testIsInstance.HasValue && testIsInstance.Value))
+            
+            if (TypeclassHelper.IsTypeclass(context._ctn) && !TypeclassHelper.IsInstance(context._ctn))
             {
                 var type = context._ctn;
 
-                var silTmp = (type.ImplementingInterfaces[0] as type_node)?.find_in_type("$typeclass" + name, context.CurrentScope);
+                var silTmp = (type.ImplementingInterfaces[0] as type_node)?.find_in_type(TypeclassHelper.OperatorName(name), context.CurrentScope);
                 if (silTmp != null)
                 {
-                    var methodName = convert_strong(new ident("$typeclass" + name));
+                    var methodName = convert_strong(new ident(TypeclassHelper.OperatorName(name)));
                     var thisNode = convert_strong(new ident("self"));
                     var exp = convertion_data_and_alghoritms.create_method_call(silTmp[0].sym_info as function_node, null, thisNode, left, right);
 
@@ -3559,8 +3555,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.class_definition _class_definition)
         {
-            var testIsTypeclassInstance = context._ctn?.Attributes?.Any(a => a.AttributeType.name == "__TypeclassInstanceAttribute");
-            if (testIsTypeclassInstance.HasValue && testIsTypeclassInstance.Value)
+            if (TypeclassHelper.IsInstance(context._ctn))
             {
                 context.typeclassInstances.Add(context._ctn);
             }
@@ -5147,12 +5142,10 @@ namespace PascalABCCompiler.TreeConverter
                     // Typeclasses voloshinbogdan 2018.21.05 - search methods at typeclasses
                     if (sil == null)
                     {
-                        var testTopFunctionForTypeclassRestriction = context.func_stack.top()?.attributes?.Any(x => x.AttributeType.name == "__TypeclassRestrictedFunctionAttribute");
-                        if (testTopFunctionForTypeclassRestriction.HasValue && testTopFunctionForTypeclassRestriction.Value && sil == null)
+                        if (TypeclassHelper.HasRestrictions(context.func_stack.top()) && sil == null)
                         {
                             var func = context.func_stack.top();
-                            var typeclasses = func.generic_params.Where(x => x.Attributes != null && x.Attributes.Any(attr => attr.AttributeType.name == "__TypeclassGenericParameterAttribute"));
-                            foreach (var item in typeclasses)
+                            foreach (var item in TypeclassHelper.GetRestrictedGenerics(func))
                             {
                                 var args = item.Attributes.First(x => x.AttributeType.name == "__TypeclassGenericParameterAttribute").Arguments;
                                 var silTmp = (item as type_node)?.find_in_type(id.name, context.CurrentScope);
@@ -13057,8 +13050,8 @@ namespace PascalABCCompiler.TreeConverter
                 if (context.top_function is common_method_node)
                 {
                     common_method_node cmmn = context.top_function as common_method_node;
-                    var testIsTypeclass = context._ctn?.Attributes?.Any(x => x.AttributeType.name == "__TypeclassAttribute");
-                    if (cmmn.polymorphic_state != SemanticTree.polymorphic_state.ps_static && !(testIsTypeclass.HasValue && testIsTypeclass.Value))
+                    var isTypeclass = TypeclassHelper.IsTypeclass(context._ctn);
+                    if (cmmn.polymorphic_state != SemanticTree.polymorphic_state.ps_static && !isTypeclass)
                     {
                         AddError(get_location(_function_header), "OVERLOADED_OPERATOR_MUST_BE_STATIC_FUNCTION");
                     }
@@ -13103,7 +13096,7 @@ namespace PascalABCCompiler.TreeConverter
                             if (ptn == cmmn.cont_type)
                                 has_types = true;
                         }
-                        if (!has_types && !(testIsTypeclass.HasValue && testIsTypeclass.Value))
+                        if (!has_types && !isTypeclass)
                             AddError(new SimpleSemanticError(cmmn.loc, "LEAST_ONE_PARAMETER_TYPE_SHOULD_EQ_DECLARING_TYPE_{0}",cmmn.cont_type.name));
                     }
                 }
@@ -13741,8 +13734,7 @@ namespace PascalABCCompiler.TreeConverter
             first_param = false;
             common_method_node cnode = context.top_function as common_method_node;
             // Typeclasses voloshinbogdan 2018.05.21
-            var testIsTypeclass = context._ctn?.Attributes?.Any(x => x.AttributeType.name == "__TypeclassAttribute");
-            if (cnode != null && cnode.IsOperator && !(testIsTypeclass.HasValue && testIsTypeclass.Value))
+            if (cnode != null && cnode.IsOperator && !TypeclassHelper.IsTypeclass(context._ctn))
             {
                 parameter_list pars = context.top_function.parameters;
                 if (cnode.name != compiler_string_consts.implicit_operator_name && cnode.name != compiler_string_consts.explicit_operator_name)
@@ -16943,11 +16935,8 @@ namespace PascalABCCompiler.TreeConverter
             expression_node right = convert_strong(_bin_expr.right);
             expression_node res = find_operator(_bin_expr.operation_type, left, right, get_location(_bin_expr));
             // voloshinbogdan 22.05.2018 Typeclasses
-            var testTopFunctionForTypeclassRestriction = context.func_stack.top()?.attributes?.Any(x => x.AttributeType.name == "__TypeclassRestrictedFunctionAttribute");
-            var testIsTypeclass = context._ctn?.Attributes?.Any(x => x.AttributeType.name == "__TypeclassAttribute");
-            if (
-                (testTopFunctionForTypeclassRestriction.HasValue && testTopFunctionForTypeclassRestriction.Value) ||
-                (testIsTypeclass.HasValue && testIsTypeclass.Value))
+            if (TypeclassHelper.HasRestrictions(context.func_stack.top()) ||
+                TypeclassHelper.IsTypeclass(context._ctn))
             {
                 return_value(res);
                 return;

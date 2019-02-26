@@ -837,9 +837,8 @@ namespace PascalABCCompiler.TreeRealization
             var continue_trying_to_infer_types = true; 
             Dictionary<string, delegate_internal_interface> formal_delegates = null;
 
-            var testIsTypeclassRestricted = func.Attributes?.Any(x => x.AttributeType.name == "__TypeclassRestrictedFunctionAttribute");
-            var isTypeclassRestricted = testIsTypeclassRestricted.HasValue && testIsTypeclassRestricted.Value;
-            var typeclasses = func.get_generic_params_list().Where(t => t.Attributes != null && t.Attributes.Any(a => a.AttributeType != null && a.AttributeType.name == "__TypeclassGenericParameterAttribute")); // Typeclasses
+            var isTypeclassRestricted = TypeclassHelper.HasRestrictions(func);
+            var typeclasses = TypeclassHelper.GetRestrictedGenerics(func);
             while (continue_trying_to_infer_types) //Продолжаем пытаться вычислить типы до тех пор пока состояние о выведенных типах не будет отличаться от состояния на предыдущей итерации
             {
                 var previous_deduce_state = deduced // Текущее состояние выведенных на данный момент типов. Простой список индексов с уже выведенными типами из массива deduced
