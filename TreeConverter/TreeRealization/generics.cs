@@ -924,32 +924,7 @@ namespace PascalABCCompiler.TreeRealization
 
                 if (isTypeclassRestricted)
                 {
-                    foreach (var tc in typeclasses)
-                    {
-                        var instances = context.typeclassInstances.Where(ti =>
-                            (ti.ImplementingInterfaces[0] as common_generic_instance_type_node).original_generic ==
-                            (tc.ImplementingInterfaces[0] as common_generic_instance_type_node).original_generic);
-
-                        var appropriateInstances = instances.Where(ti =>
-                            (ti.ImplementingInterfaces[0] as common_generic_instance_type_node).instance_params.SequenceEqual(
-                                (tc.ImplementingInterfaces[0] as common_generic_instance_type_node).instance_params.Select(ip => deduced[ip.generic_param_index])));
-
-                        if (appropriateInstances.Count() == 1)
-                        {
-                            var foundInstance = appropriateInstances.First() as common_type_node;
-                            if (foundInstance.generic_params?.Count > 0 is true)
-                            {
-                                type_node[] deducedInstances = new type_node[foundInstance.generic_params.Count];
-                                DeduceTypeclassInstances(context, deducedInstances, foundInstance.generic_params.OfType<type_node>());
-
-                                deduced[tc.generic_param_index] = foundInstance.get_instance(deducedInstances.ToList());
-                            }
-                            else
-                            {
-                                deduced[tc.generic_param_index] = appropriateInstances.First();
-                            }
-                        }
-                    }
+                    DeduceTypeclassInstances(context, deduced, typeclasses, loc);
                 }
 
                 var current_deduce_state = deduced               //текущее состояние выведенных типов
@@ -1019,7 +994,7 @@ namespace PascalABCCompiler.TreeRealization
             return func.get_instance(deduced_list, alone, loc);
         }
 
-        private static void DeduceTypeclassInstances(compilation_context context, type_node[] deduced, IEnumerable<type_node> typeclasses)
+        private static void DeduceTypeclassInstances(compilation_context context, type_node[] deduced, IEnumerable<type_node> typeclasses, location loc)
         {
             foreach (var tc in typeclasses)
             {
@@ -1029,15 +1004,24 @@ namespace PascalABCCompiler.TreeRealization
 
                 var appropriateInstances = instances.Where(ti =>
                     (ti.ImplementingInterfaces[0] as common_generic_instance_type_node).instance_params.SequenceEqual(
-                        (tc.ImplementingInterfaces[0] as common_generic_instance_type_node).instance_params));
+                        (tc.ImplementingInterfaces[0] as common_generic_instance_type_node).instance_params.Select(ip =>
+                        {
+                            if (ip.is_generic_parameter)
+                                return deduced[ip.generic_param_index];
+                            else
+                                return ip;
+                        })));
 
                 if (appropriateInstances.Count() == 1)
                 {
                     var foundInstance = appropriateInstances.First() as common_type_node;
                     if (foundInstance.generic_params?.Count > 0 is true)
                     {
-                        List<type_node> instanceTypes = null;
-                        deduced[tc.generic_param_index] = foundInstance.get_instance(instanceTypes);
+                        type_node[] instanceTypes = new type_node[foundInstance.generic_params.Count];
+
+                        DeduceTypeclassInstances(context, instanceTypes, foundInstance.generic_params.OfType<type_node>(), loc);
+
+                        deduced[tc.generic_param_index] = foundInstance.get_instance(instanceTypes.ToList());
                     }
                     else
                     {
@@ -1046,7 +1030,14 @@ namespace PascalABCCompiler.TreeRealization
                 }
                 else
                 {
-                    // TODO: typeclasses add error message 
+                    if (appropriateInstances.Count() == 0)
+                    {
+                        throw new SimpleSemanticError(loc, "NO_INSTANCES_FOR_TYPECLASS_{0}", null/*TypeclassHelper.GetTypeclassName(tc)*/);
+                    }
+                    else
+                    {
+                        throw new SimpleSemanticError(loc, "TC_SEVERAL_INSTANCES_FOR_TYPECLASS_{0}", null /*TypeclassHelper.GetTypeclassName(tc)*/);
+                    }
                 }
             }
         }
