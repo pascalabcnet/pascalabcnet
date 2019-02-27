@@ -21,15 +21,6 @@ uses System.Threading;
 uses System.Windows.Shapes;
 uses System.Windows.Threading;
 
-var 
-  CountVisuals := 0;
-
-{procedure Invoke(d: System.Delegate; params args: array of object);
-procedure Invoke(d: ()->());
-function Invoke<T>(d: Func0<T>): T;
-function InvokeReal(f: ()->real): real;
-function InvokeString(f: ()->string): string;}
-
 //{{{doc: Начало секции 1 }}} 
 
 type 
@@ -193,6 +184,12 @@ type
 // -----------------------------------------------------
 //>>     Графические примитивы # GraphWPF primitives
 // -----------------------------------------------------
+/// Рисует пиксел в точке (x,y) цветом c
+procedure SetPixels(x,y: real; w,h: integer; f: (integer,integer)->Color);
+/// Рисует пиксел в точке (x,y) цветом c
+procedure SetPixel(x,y: real; c: Color);
+/// Рисует двумерный массив пикселов с координатами левой верхней вершины (x,y)
+procedure DrawPixels(x,y: real; a: array [,] of Color);
 /// Рисует эллипс с центром в точке (x,y) и радиусами rx и ry
 procedure Ellipse(x,y,rx,ry: real);
 /// Рисует контур эллипса с центром в точке (x,y) и радиусами rx и ry
@@ -329,6 +326,9 @@ function Rect(x,y,w,h: real): GRect;
 function ColorBrush(c: Color): GBrush;
 /// Возвращает однотонное цветное перо, заданное цветом
 function ColorPen(c: Color): GPen;
+/// Процедура синхронизации вывода графики
+procedure Invoke(d: ()->());
+
 
 // -----------------------------------------------------
 //>>     Процедуры покадровой анимации # GraphWPF FrameBasedAnimation functions
@@ -463,7 +463,6 @@ var OnKeyPress: procedure(ch: char);
 /// Событие изменения размера графического окна
 var OnResize: procedure;
 
-
 //{{{--doc: Конец секции 3 }}} 
 
 {procedure AddRightPanel(Width: real := 200; c: Color := Colors.LightGray);
@@ -472,10 +471,14 @@ procedure AddTopPanel(Height: real := 100; c: Color := Colors.LightGray);
 procedure AddBottomPanel(Height: real := 100; c: Color := Colors.LightGray);
 
 procedure AddStatusBar(Height: real := 24);}
+
 procedure __InitModule__;
 procedure __FinalizeModule__;
 
 implementation
+
+procedure Invoke(d: ()->()) := app.Dispatcher.Invoke(d);
+function getApp: Application := app;
 
 function RGB(r,g,b: byte) := Color.Fromrgb(r, g, b);
 function ARGB(a,r,g,b: byte) := Color.FromArgb(a, r, g, b);
@@ -490,21 +493,9 @@ function ColorPen(c: Color) := new GPen(ColorBrush(c),Pen.Width);
 
 procedure InvokeVisual(d: System.Delegate; params args: array of object);
 begin
-  if CountVisuals <= 1000000 then
-    app.Dispatcher.Invoke(d,args)
-  else
-  begin
-    //Print(CountVisuals);
-    app.Dispatcher.Invoke(d,DispatcherPriority.Background,args);
-    Sleep(10);    
-  end;
+  app.Dispatcher.Invoke(d,args)
 end;
 
-{procedure MoveTo(Self: UIElement; l,t: integer); extensionmethod;
-begin
-  Canvas.SetLeft(Self,l);
-  Canvas.SetTop(Self,t);
-end;}
 type 
   MyVisualHost = class(Canvas) // мб Canvas - тогда можно размещать другие элементы!
   public  
@@ -525,7 +516,10 @@ type
     property VisualChildrenCount: integer read get_VisualChildrenCount; override;
   end;
 
-var Host: MyVisualHost;
+var 
+  Host: MyVisualHost;
+  RTbmap: RenderTargetBitmap;
+  rtbmapIsCleared := True;
 
 var 
   XOrigin := 0.0;
@@ -533,33 +527,22 @@ var
   GlobalScale := 1.0;
   CurrentCoordType: CoordType := StandardCoords;
 
-{procedure ProbaAnimP;
-begin
-  var dv := Host.children[0] as DrawingVisual;
-  
-  var animation := new VectorAnimation();
-  animation.From := new Vector(20,20);
-  animation.To := new Vector(100,200);
-  animation.Duration := System.TimeSpan.FromSeconds(5);
-  dv.BeginAnimation(OffsetProperty, animation);
-  
-  var geo := dv.Drawing.Children[0] as GeometryDrawing;
-  geo.Pen := ColorPen(Colors.Green);
-  var rg := geo.Geometry as RectangleGeometry;
-  
-  //Print(geo.Geometry.);
-  //geo.Brush := Brushes.Blue;
-  dv.Offset := new Vector(200,40);
-end;
-
-procedure ProbaAnim := Invoke(ProbaAnimP);}
-
 function GetDC: DrawingContext;
 begin
   var visual := new DrawingVisual();
   Host.children.Add(visual);
-  CountVisuals += 1;
   Result := visual.RenderOpen();
+end;
+
+procedure ReleaseDC(dc: DrawingContext);
+begin
+  dc.Close;
+  if host.Children.Count > 1000 then
+  begin
+    rtBmap.Render(host);
+    rtbmapIsCleared := False;
+    host.Children.Clear;
+  end;
 end;
 
 function GetDC(t: Transform): DrawingContext;
@@ -567,7 +550,6 @@ begin
   var visual := new DrawingVisual();
   visual.Transform := t;
   Host.children.Add(visual);
-  CountVisuals += 1;
   Result := visual.RenderOpen();
 end;
 
@@ -592,7 +574,7 @@ procedure EllipsePFull(x,y,r1,r2: real; b: GBrush; p: GPen);
 begin
   var dc := GetDC();
   dc.DrawEllipse(b, p, Pnt(x, y), r1, r2);
-  dc.Close();
+  ReleaseDC(dc);
 end;
 
 type VE = auto class
@@ -603,7 +585,7 @@ procedure DrawGeometryP(g: VE);
 begin
   var dc := GetDC();
   dc.DrawGeometry(Brush.BrushConstruct,Pen.PenConstruct,g.g());
-  dc.Close();
+  ReleaseDC(dc);
 end;
 
 procedure RectanglePFull(x,y,w,h: real; b: GBrush; p: GPen);
@@ -620,17 +602,33 @@ begin
   end;
   var dc := GetDC();
   dc.DrawRectangle(b, p, Rect(x,y,w,h));
-  dc.Close();
-  //var f := Host.children[0] as DrawingVisual;
-  {var geo := f.Drawing.Children[0] as GeometryDrawing;
-  geo.Brush := Brushes.Blue;}
+  ReleaseDC(dc);
 end;
 
+procedure SetPixelP(x,y: real; c: Color);
+begin
+  var dc := GetDC();
+  dc.DrawRectangle(new SolidColorBrush(c), nil, Rect(x,y,1,1));
+  ReleaseDC(dc);
+end;
+
+
+procedure SetPixelsP(x,y: real; w,h: integer; f: (integer,integer)->Color);
+begin
+  var dc := GetDC();
+  for var ix:=0 to w-1 do
+  for var iy:=0 to h-1 do
+  begin
+    dc.DrawRectangle(ColorBrush(f(ix,iy)), nil, Rect(x+ix,y+iy,1,1));
+  end;  
+  ReleaseDC(dc);
+end;
+  
 procedure LinePFull(x,y,x1,y1: real; p: GPen);
 begin
   var dc := GetDC();
   dc.DrawLine(p, Pnt(x,y), Pnt(x1,y1));
-  dc.Close();
+  ReleaseDC(dc);
 end;
 
 function FormText(text: string) := 
@@ -679,7 +677,7 @@ begin
     dc.Pop();
   end;
   //dc.DrawRectangle(Brushes.White,nil,new GRect(new Point(x,y),TextV.Create(text).TextSize));
-  dc.Close();
+  ReleaseDC(dc);
 end;
 
 procedure TextPFull(x,y: real; text: string; angle,x0,y0: real; c: Color);
@@ -706,7 +704,7 @@ begin
     dc.Pop();
   end;  
   //dc.DrawRectangle(Brushes.White,nil,new GRect(new Point(x,y),TextV.Create(text).TextSize));
-  dc.Close();
+  ReleaseDC(dc);
 end;
 
 var dpic := new Dictionary<string, BitmapImage>;
@@ -718,12 +716,41 @@ begin
   Result := dpic[fname];
 end;
 
+procedure DrawPixelsP(x,y: real; a: array [,] of Color);
+begin
+  var (scalex,scaley) := ScaleToDevice;
+  var sw := a.ColCount;
+  var sh := a.RowCount;
+  var bitmap := new WriteableBitmap(sw, sh, 96*scalex, 96*scaley, PixelFormats.Bgra32, nil);
+  var stride := sw * (bitmap.Format.BitsPerPixel div 8); // stride - это длина одной строки
+  
+  var pixels := new byte[a.RowCount*a.ColCount*4];
+  var p := 0;
+  for var i := 0 to a.RowCount-1 do
+  for var j := 0 to a.ColCount-1 do
+  begin
+    pixels[p] := a[i,j].B;
+    p += 1;
+    pixels[p] := a[i,j].G;
+    p += 1;
+    pixels[p] := a[i,j].R;
+    p += 1;
+    pixels[p] := a[i,j].A;
+    p += 1;
+  end;
+  bitmap.WritePixels(new Int32Rect(0, 0, sw, sh), pixels, stride, 0);
+  
+  var dc := GetDC();
+  dc.DrawImage(bitmap, Rect(x, y, bitmap.PixelWidth, bitmap.PixelHeight));
+  ReleaseDC(dc);
+end;
+
 procedure DrawImageP(x,y: real; fname: string);
 begin
   var dc := GetDC();
   var img := GetBitmapImage(fname);
   dc.DrawImage(img, Rect(x, y, img.PixelWidth, img.PixelHeight));
-  dc.Close();
+  ReleaseDC(dc);
 end;
 
 procedure DrawImageWHP(x,y,w,h: real; fname: string);
@@ -731,7 +758,7 @@ begin
   var dc := GetDC();
   var img := GetBitmapImage(fname);
   dc.DrawImage(img, Rect(x, y, w, h));
-  dc.Close();
+  ReleaseDC(dc);
 end;
 
 procedure DrawImageUnscaledP(x,y: real; fname: string);
@@ -740,7 +767,7 @@ begin
   var (scalex,scaley) := ScaleToDevice;
   var img := GetBitmapImage(fname);
   dc.DrawImage(img, Rect(x, y, img.PixelWidth/scalex, img.PixelHeight/scaley));
-  dc.Close();
+  ReleaseDC(dc);
 end;
 
 function ImageWidthP(fname: string) := GetBitmapImage(fname).PixelWidth;
@@ -767,7 +794,7 @@ begin
   pl.Open(new System.Uri(fname, System.UriKind.Relative));
   pl.Play();
   dc.DrawVideo(pl, Rect(x, y, w, h));
-  dc.Close();
+  ReleaseDC(dc);
 end;
 
 // А теперь займёмся полигонами...
@@ -795,14 +822,14 @@ procedure PolyLinePFull(points: array of Point; p: GPen);
 begin
   var dc := GetDC();
   dc.DrawPolyline(p, points);
-  dc.Close();
+  ReleaseDC(dc);
 end;
 
 procedure PolygonPFull(points: array of Point; b: GBrush; p: GPen);
 begin
   var dc := GetDC();
   dc.DrawPolygon(b, p, points);
-  dc.Close();
+  ReleaseDC(dc);
 end;
 
 procedure ArcSectorPFull(x, y, r, angle1, angle2: real; b: GBrush; p: GPen; issector: boolean);
@@ -829,8 +856,15 @@ begin
   end;
   
   dc.DrawGeometry(b,p,geo);
-  dc.Close;
+  ReleaseDC(dc);
 end;
+
+procedure SetPixel(x,y: real; c: Color) := InvokeVisual(SetPixelP, x, y, c);
+
+procedure SetPixels(x,y: real; w,h: integer; f: (integer,integer)->Color)
+  := InvokeVisual(SetPixelsP, x, y, w, h, f);
+  
+procedure DrawPixels(x,y: real; a: array [,] of Color) := InvokeVisual(DrawPixelsP,x,y,a);
 
 procedure ArcPFull(x, y, r, angle1, angle2: real; p: GPen) := ArcSectorPFull(x, y, r, angle1, angle2, nil, p, false);
 
@@ -883,7 +917,7 @@ procedure DrawEllipse(x,y,rx,ry: real) := InvokeVisual(DrawEllipseP,x,y,rx,ry);
 procedure FillEllipse(x,y,rx,ry: real) := InvokeVisual(FillEllipseP,x,y,rx,ry);
 procedure Ellipse(x,y,rx,ry: real; c: GColor) := InvokeVisual(EllipsePC,x,y,rx,ry,c);
 procedure DrawEllipse(x,y,rx,ry: real; c: GColor) := InvokeVisual(DrawEllipsePC,x,y,rx,ry,c);
-procedure FillEllipse(x,y,rx,ry: real; c: GColor) := InvokeVisual(FillEllipsePC,x,y,rx,ry,c);
+procedure FillEllipse(x,y,rx,ry: real; c: GColor) := app.Dispatcher.Invoke(()->FillEllipsePC(x,y,rx,ry,c));
 
 procedure Circle(x,y,r: real) := InvokeVisual(EllipseP,x,y,r,r);
 procedure DrawCircle(x,y,r: real) := InvokeVisual(DrawEllipseP,x,y,r,r);
@@ -1252,7 +1286,16 @@ procedure WindowTypeWPF.Save(fname: string) := GraphWindow.Save(fname);
 
 procedure WindowTypeWPF.Load(fname: string) := GraphWindow.Load(fname);
 
-procedure WindowTypeClearP := begin Host.children.Clear; CountVisuals := 0; end;
+procedure WindowTypeClearP;
+begin 
+  Host.children.Clear; 
+  if not rtbmapIsCleared then
+  begin
+    rtbmap.Clear; 
+    rtbmapIsCleared := True;
+  end;  
+end;
+
 procedure WindowTypeWPF.Clear := Invoke(WindowTypeClearP);
 
 function XMin := -XOrigin/GlobalScale;
@@ -1436,12 +1479,12 @@ begin
     else LastUpdatedTime := e1;  
     FrameNum += 1;
     Window.Clear;
-    CountVisuals := integer.MinValue; // чтобы не было паузы после 1000 объектов
+    //CountVisuals := integer.MinValue; // чтобы не было паузы после 1000 объектов
+    if OnDraw<>nil then
+      OnDraw() 
+    else if OnDraw1<>nil then
+      OnDraw1(FrameNum);
   end;  
-  if OnDraw<>nil then
-    OnDraw() 
-  else if OnDraw1<>nil then
-    OnDraw1(FrameNum);
 end;
 
 procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer);
@@ -1462,7 +1505,7 @@ end;
 
 procedure EndFrameBasedAnimation;
 begin
-  CountVisuals := 0;
+  //CountVisuals := 0;
   OnDraw := nil;
   OnDraw1 := nil;
   FrameRate := 60;
@@ -1488,16 +1531,33 @@ GraphWPFWindow = class(GMainWindow)
 public
   procedure InitMainGraphControl; override;
   begin
+    var host1 := new Canvas;
     host := new MyVisualHost();
-    //host.ClipToBounds := True;
-    host.SizeChanged += (s,e) ->
+    host1.SizeChanged += (s,e) ->
     begin
       var sz := e.NewSize;
       host.DataContext := sz;
     end;
     // Всегда последнее
     var g := Content as DockPanel;
-    g.children.Add(host);
+    
+    
+    var dpiXProperty := typeof(SystemParameters).GetProperty('DpiX', BindingFlags.NonPublic or BindingFlags.Static);
+    var dpiYProperty := typeof(SystemParameters).GetProperty('Dpi', BindingFlags.NonPublic or BindingFlags.Static);
+    
+    var dpiX := integer(dpiXProperty.GetValue(nil, nil));
+    var dpiY := integer(dpiYProperty.GetValue(nil, nil));
+  
+    var im := new Image();
+    
+    var (scalex, scaley) := (dpiX/96,dpiY/96);
+    RTbmap := new RenderTargetBitmap(Round(SystemParameters.PrimaryScreenWidth * scalex), Round(SystemParameters.PrimaryScreenHeight * scaley), dpiX, dpiY, PixelFormats.Pbgra32);
+    im.Source := RTbmap;
+    
+    host1.Children.Add(im); 
+    host1.Children.Add(host);
+    
+    g.children.Add(host1);
   end;
 
   procedure InitWindowProperties; override;
@@ -1533,118 +1593,10 @@ public
     
     Loaded += (o,e) -> mre.Set();
 
-    {PreviewMouseDown += (o,e) -> SystemOnMouseDown(o,e);  
-    PreviewMouseUp += (o,e) -> SystemOnMouseUp(o,e);  
-    PreviewMouseMove += (o,e) -> SystemOnMouseMove(o,e);  
-  
-    PreviewKeyDown += (o,e)-> SystemOnKeyDown(o,e);
-    PreviewKeyUp += (o,e)-> SystemOnKeyUp(o,e);
-
-    Closed += procedure(sender, e) -> begin Halt; end;}
   end;
 
-
-  /// --- SystemKeyEvents
-  (*procedure SystemOnKeyDown(sender: Object; e: System.Windows.Input.KeyEventArgs);
-  begin
-    if GraphWPF.OnKeyDown <> nil then
-      GraphWPF.OnKeyDown(e.Key);
-    e.Handled := True;
-  end;
-  
-  procedure SystemOnKeyUp(sender: Object; e: System.Windows.Input.KeyEventArgs);
-  begin
-    if GraphWPF.OnKeyUp <> nil then
-      GraphWPF.OnKeyUp(e.Key);
-    e.Handled := True;
-  end;    
-  
-  /// --- SystemMouseEvents
-  procedure SystemOnMouseDown(sender: Object; e: System.Windows.Input.MouseButtonEventArgs);
-  begin
-    var mb := 0;
-    var p := e.GetPosition(nil{hvp});
-    if e.LeftButton = MouseButtonState.Pressed then
-      mb := 1
-    else if e.RightButton = MouseButtonState.Pressed then
-      mb := 2;
-    if GraphWPF.OnMouseDown <> nil then  
-     GraphWPF.OnMouseDown(p.x, p.y, mb);
-  end;
-  
-  procedure SystemOnMouseUp(sender: Object; e: MouseButtonEventArgs);
-  begin
-    var mb := 0;
-    var p := e.GetPosition(nil{hvp});
-    if e.LeftButton = MouseButtonState.Pressed then
-      mb := 1
-    else if e.RightButton = MouseButtonState.Pressed then
-      mb := 2;
-    if GraphWPF.OnMouseUp <> nil then  
-      GraphWPF.OnMouseUp(p.x, p.y, mb);
-  end;
-  
-  procedure SystemOnMouseMove(sender: Object; e: MouseEventArgs);
-  begin
-    var mb := 0;
-    var p := e.GetPosition(nil{hvp});
-    if e.LeftButton = MouseButtonState.Pressed then
-      mb := 1
-    else if e.RightButton = MouseButtonState.Pressed then
-      mb := 2;
-    if GraphWPF.OnMouseMove <> nil then  
-      GraphWPF.OnMouseMove(p.x, p.y, mb);
-  end;*)
-  
 end;
 
-
-{procedure InitApp1;
-begin
-  app := new Application();
-  
-  app.Dispatcher.UnhandledException += (o,e) -> begin 
-    Println(e.Exception.InnerException); 
-    halt; 
-  end;
-  MainWindow := new GWindow;
-  
-  MainDockPanelF := new DockPanel;
-  MainDockPanelF.LastChildFill := True;
-  MainWindow.Content := MainDockPanelF; 
-
-  AddGraphWindow;
-  
-  host := new MyVisualHost();
-  MainWindow.Content := host;
-
-  Brush := new BrushType;
-  Pen := new PenType;
-  Font := new FontType;
-  Window := new WindowType;
-  GraphWindow := new GraphWindowType;
-
-  MainWindow.Title := 'Графика WPF';
-  var (w,h) := (800,600);
-  
-  (MainWindow.Width, MainWindow.Height) := (w + wplus, h + hplus);
-  MainWindow.WindowStartupLocation := WindowStartupLocation.CenterScreen;
-  
-  //MainWindow.Show;
-  MainWindow.Closed += procedure(sender,e) -> begin Halt; end;
-  MainWindow.MouseDown += SystemOnMouseDown;
-  MainWindow.MouseUp += SystemOnMouseUp;
-  MainWindow.MouseMove += SystemOnMouseMove;
-  MainWindow.KeyDown += SystemOnKeyDown;
-  MainWindow.KeyUp += SystemOnKeyUp;
-  MainWindow.SizeChanged += SystemOnResize;
-  
-  CompositionTarget.Rendering += RenderFrame;
-  
-  MainWindow.Loaded += (o,e) -> mre.Set();
-
-  app.Run(MainWindow);
-end;}
 
 procedure InitApp;
 begin

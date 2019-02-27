@@ -145,7 +145,7 @@ type
     ob: FrameworkElement;
     gr: Grid; // Grid связан только с текстом
     t: TextBlock;
-    r: RotateTransform;
+    rot: RotateTransform;
 
     ChildrenWPF := new List<ObjectWPF>;
     procedure InitOb(x,y,w,h: real; o: FrameworkElement; SetWH: boolean := True);
@@ -189,7 +189,7 @@ type
     begin
       Result := GetInternalGeometry;
       var g := new TransformGroup();
-      g.Children.Add(r);
+      g.Children.Add(rot);
       g.Children.Add(new TranslateTransform(Left,Top));
       Result.Transform := g; // версия
     end;
@@ -221,11 +221,11 @@ type
     /// Правый нижний угол графического объекта
     property RightBottom: Point read Pnt(Left + Height,Top + Height);
     /// Угол поворота графического объекта (по часовой стрелке)
-    property RotateAngle: real read InvokeReal(()->r.Angle) write Invoke(procedure->r.Angle := value);
+    property RotateAngle: real read InvokeReal(()->rot.Angle) write Invoke(procedure->rot.Angle := value);
     /// Центр поворота графического объекта
     property RotateCenter: Point 
-      read Invoke&<Point>(()->new Point(r.CenterX,r.CenterY))
-      write Invoke(procedure->begin r.CenterX := value.X; r.CenterY := value.Y; end);
+      read Invoke&<Point>(()->new Point(rot.CenterX,rot.CenterY))
+      write Invoke(procedure->begin rot.CenterX := value.X; rot.CenterY := value.Y; end);
     /// Цвет графического объекта
     property Color: GColor 
       read RGB(0,0,0) 
@@ -287,7 +287,12 @@ type
     end;
     procedure EF(value: GColor) := Element.Fill := new SolidColorBrush(Value);
     procedure ES(value: GColor) := Element.Stroke := new SolidColorBrush(Value);
-    procedure EST(value: real) := Element.StrokeThickness := Value;
+    procedure EST(value: real);
+    begin
+      Element.StrokeThickness := Value;
+      if Element.Stroke = nil then
+        Element.Stroke := new SolidColorBrush(Colors.Black)
+    end;  
     function WithNoBorderP: BoundedObjectWPF;
     begin
       Element.Stroke := nil;
@@ -940,6 +945,12 @@ procedure SetLeft(Self: UIElement; l: integer) := Self.SetLeft(l);
 procedure SetTop(Self: UIElement; t: integer) := Self.SetTop(t);
 
 
+function MoveOn(Self: Point; vx,vy: real): Point; extensionmethod;
+begin
+  Result.X := Self.X + vx;
+  Result.Y := Self.Y + vy;
+end;
+
 {procedure MoveTo(Self: UIElement; l,t: integer); extensionmethod;
 begin
   Canvas.SetLeft(Self,l);
@@ -980,10 +991,10 @@ procedure ObjectWPF.InitOb(x,y,w,h: real; o: FrameworkElement; SetWH: boolean);
 begin
   can := new Canvas;
   gr := new Grid;
-  r := new RotateTransform(0);
-  r.CenterX := w / 2;
-  r.CenterY := h / 2;
-  can.RenderTransform := r;
+  rot := new RotateTransform(0);
+  rot.CenterX := w / 2;
+  rot.CenterY := h / 2;
+  can.RenderTransform := rot;
   ob := o;
   if SetWH then 
     (ob.Width,ob.Height) := (w,h);

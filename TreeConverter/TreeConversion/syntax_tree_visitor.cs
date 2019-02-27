@@ -4736,8 +4736,8 @@ namespace PascalABCCompiler.TreeConverter
             tnl.AddElement(left.type);
             tnl.AddElement(right.type);
             elem_type = convertion_data_and_alghoritms.select_base_type(tnl,true);
-            if (elem_type == null)
-                AddError(new SimpleSemanticError(get_location(_diapason_expr), "IMPOSSIBLE_TO_INFER_SET_TYPE"));
+            if (elem_type == SystemLibrary.SystemLibrary.object_type)
+                AddError(new SimpleSemanticError(get_location(_diapason_expr), "BAD_DIAPASON_IN_SET_TYPE"));
             expression_node l = convertion_data_and_alghoritms.explicit_convert_type(left, PascalABCCompiler.SystemLibrary.SystemLibrary.integer_type);
             expression_node r = convertion_data_and_alghoritms.explicit_convert_type(right, PascalABCCompiler.SystemLibrary.SystemLibrary.integer_type);
             if (PascalABCCompiler.SystemLibrary.SystemLibInitializer.CreateDiapason.sym_info is common_namespace_function_node)
@@ -8549,7 +8549,8 @@ namespace PascalABCCompiler.TreeConverter
             	expression_node expr = sn as expression_node;
             	if (expr is null_const_node)
                     AddError(expr.location, "NIL_IN_THIS_CONTEXT_NOT_ALLOWED");
-                if (expr is typed_expression) expr = convert_typed_expression_to_function_call(expr as typed_expression);
+                if (expr is typed_expression)
+                    expr = convert_typed_expression_to_function_call(expr as typed_expression);
                 if (expr != null)
                 {
                     if (expr.type is generic_instance_type_node)
@@ -8594,7 +8595,9 @@ namespace PascalABCCompiler.TreeConverter
                 else if (sn is type_node)
                 {
                 	type_node tn = sn as type_node;
-                	Withs.Add(tn.Scope);
+                    if (tn.IsInterface)
+                        AddError(get_location(s_expr), "UNEXPECTED_EXPRESSION_IN_WITH");
+                    Withs.Add(tn.Scope);
                 	while (tn != null)
                 	{
                 		if (tn.Scope == null && tn is compiled_type_node)

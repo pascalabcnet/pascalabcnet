@@ -1,3 +1,3 @@
 ﻿begin
-  var s := [1,'3'];
+  var s := [1..'d'];
 end.

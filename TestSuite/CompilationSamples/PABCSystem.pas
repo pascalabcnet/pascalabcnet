@@ -2283,8 +2283,9 @@ const
   SEEKEOF_FOR_TEXT_WRITEOPENED = 'Функция SeekEof не может быть вызвана для текстового файла, открытого на запись!!SeekEof function can''t be called for file, opened on writing';
   SEEKEOLN_FOR_TEXT_WRITEOPENED = 'Функция SeekEoln не может быть вызвана для текстового файла, открытого на запись!!SeekEoln function can''t be called for file, opened on writing';
   BAD_TYPE_IN_RUNTIMESIZEOF = 'Bad Type in RunTimeSizeOf';
-  PARAMETER_COUNT_MUST_BE_GREATER_0 = 'Параметр count должен быть > 0!!Parameter count must be > 0';
-  PARAMETER_COUNT_MUST_BE_GREATER_1 = 'Параметр count должен быть > 1!!Parameter count must be > 1';
+  PARAMETER_MUST_BE_GREATER_EQUAL_0 = 'Параметр должен быть >= 0!!Parameter must be >= 0';
+  PARAMETER_MUST_BE_GREATER_0 = 'Параметр должен быть > 0!!Parameter must be > 0';
+  PARAMETER_MUST_BE_GREATER_1 = 'Параметр должен быть > 1!!Parameter must be > 1';
   PARAMETER_STEP_MUST_BE_NOT_EQUAL_0 = 'Параметр step не может быть равен 0!!The step parameter must be not equal to 0';
   PARAMETER_STEP_MUST_BE_GREATER_0 = 'Параметр step должен быть > 0!!The step parameter must be not greater than 0';
   PARAMETER_FROM_OUT_OF_RANGE = 'Параметр from за пределами диапазона!!The from parameter out of bounds';
@@ -4105,14 +4106,14 @@ end;
 function SeqGen<T>(count: integer; first: T; next: T->T): sequence of T;
 begin
   if count < 1 then
-    raise new System.ArgumentOutOfRangeException('count', count, GetTranslation(PARAMETER_COUNT_MUST_BE_GREATER_0));
+    raise new System.ArgumentOutOfRangeException('count', count, GetTranslation(PARAMETER_MUST_BE_GREATER_0));
   Result := Iterate(first, next).Take(count);
 end;
 
 function SeqGen<T>(count: integer; first, second: T; next: (T,T) ->T): sequence of T;
 begin
   if count < 1 then
-    raise new System.ArgumentOutOfRangeException('count', count, GetTranslation(PARAMETER_COUNT_MUST_BE_GREATER_0));
+    raise new System.ArgumentOutOfRangeException('count', count, GetTranslation(PARAMETER_MUST_BE_GREATER_0));
   Result := Iterate(first, second, next).Take(count);
 end;
 
@@ -4129,7 +4130,7 @@ end;
 function ArrGen<T>(count: integer; first: T; next: T->T): array of T;
 begin
   if count < 1 then
-    raise new System.ArgumentOutOfRangeException('count', count, GetTranslation(PARAMETER_COUNT_MUST_BE_GREATER_0));
+    raise new System.ArgumentOutOfRangeException('count', count, GetTranslation(PARAMETER_MUST_BE_GREATER_0));
   var a := new T[count];
   a[0] := first;
   for var i := 1 to a.Length - 1 do
@@ -4140,7 +4141,7 @@ end;
 function ArrGen<T>(count: integer; first, second: T; next: (T,T) ->T): array of T;
 begin
   if count < 2 then
-    raise new System.ArgumentOutOfRangeException('count', count, GetTranslation(PARAMETER_COUNT_MUST_BE_GREATER_1));
+    raise new System.ArgumentOutOfRangeException('count', count, GetTranslation(PARAMETER_MUST_BE_GREATER_1));
   var a := new T[count];
   a[0] := first;
   a[1] := second;
@@ -4700,7 +4701,7 @@ end;
 procedure Read(var x: integer);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4713,7 +4714,7 @@ end;
 procedure Read(var x: real);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4726,7 +4727,7 @@ end;
 procedure Read(var x: char);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4739,7 +4740,7 @@ end;
 procedure Read(var x: string);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4752,7 +4753,7 @@ end;
 procedure Read(var x: byte);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4765,7 +4766,7 @@ end;
 procedure Read(var x: shortint);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4778,7 +4779,7 @@ end;
 procedure Read(var x: smallint);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4791,7 +4792,7 @@ end;
 procedure Read(var x: word);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4804,7 +4805,7 @@ end;
 procedure Read(var x: longword);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4817,7 +4818,7 @@ end;
 procedure Read(var x: int64);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4830,7 +4831,7 @@ end;
 procedure Read(var x: uint64);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4843,7 +4844,7 @@ end;
 procedure Read(var x: single);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -4856,7 +4857,7 @@ end;
 procedure Read(var x: boolean);
 begin
   if input.sr <> nil then
-    read(input, x)
+    Read(input, x)
   else 
     try
       CurrentIOSystem.read(x)
@@ -5766,7 +5767,7 @@ begin
   p := ptr;
 end;
 
-procedure write;
+procedure Write;
 begin
 end;
 
@@ -5780,7 +5781,7 @@ begin
   writeln(output);
 end;
 
-procedure write(obj: object);
+procedure Write(obj: object);
 begin
   if output.sw <> nil then
     write_in_output(obj)
@@ -5792,7 +5793,7 @@ end;
 //  CurrentIOSystem.Write(ptr);
 //end;
 
-procedure write(obj1, obj2: object);
+procedure Write(obj1, obj2: object);
 begin
   if output.sw <> nil then
   begin
@@ -5806,7 +5807,7 @@ begin
   end;
 end;
 
-procedure write(params args: array of object);
+procedure Write(params args: array of object);
 begin
   for var i := 0 to args.length - 1 do
     if output.sw <> nil then
@@ -5815,7 +5816,7 @@ begin
       CurrentIOSystem.Write(args[i]);
 end;
 
-procedure writeln(obj: object);
+procedure Writeln(obj: object);
 begin
   if output.sw <> nil then
   begin
@@ -5835,7 +5836,7 @@ end;
 //  CurrentIOSystem.Writeln;
 //end;
 
-procedure writeln(obj1, obj2: object);
+procedure Writeln(obj1, obj2: object);
 begin
   if output.sw <> nil then
   begin
@@ -5851,14 +5852,14 @@ begin
   end
 end;
 
-procedure writeln;
+procedure Writeln;
 begin
   if output.sw <> nil then
     writeln_in_output
   else CurrentIOSystem.Writeln;
 end;
 
-procedure writeln(params args: array of object);
+procedure Writeln(params args: array of object);
 begin
   if output.sw <> nil then
   begin
@@ -5874,11 +5875,11 @@ begin
   end;
 end;
 
-procedure write(f: Text);
+procedure Write(f: Text);
 begin
 end;
 
-procedure write(f: Text; val: object);
+procedure Write(f: Text; val: object);
 begin
   if f.fi = nil then
     raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
@@ -5901,13 +5902,13 @@ begin
   end;}
 end;
 
-procedure write(f: Text; params args: array of object);
+procedure Write(f: Text; params args: array of object);
 begin
   for var i := 0 to args.length - 1 do
     write(f, args[i]);
 end;
 
-procedure writeln(f: Text);
+procedure Writeln(f: Text);
 begin
   if f.fi = nil then
     raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
@@ -5917,13 +5918,13 @@ begin
   f.sw.WriteLine;
 end;
 
-procedure writeln(f: Text; val: object);
+procedure Writeln(f: Text; val: object);
 begin
   write(f, val);
   writeln(f);
 end;
 
-procedure writeln(f: Text; params args: array of object);
+procedure Writeln(f: Text; params args: array of object);
 begin
   for var i := 0 to args.length - 1 do
     write(f, args[i]);
@@ -8728,14 +8729,76 @@ end;
 /// Возвращает последние count элементов последовательности
 function TakeLast<T>(Self: sequence of T; count: integer): sequence of T; extensionmethod;
 begin
-  Result := Self.Reverse.Take(count).Reverse;
+  if count < 0 then
+    raise new System.ArgumentOutOfRangeException('count', count, GetTranslation(PARAMETER_MUST_BE_GREATER_EQUAL_0));
+  if Self is IList<T> then
+  begin
+    var lst := Self as IList<T>;
+    var ind := lst.Count - count;
+    if ind<0 then ind := 0;
+    for var i:=ind to lst.Count-1 do
+      yield lst[i];
+    exit;  
+  end;
+  
+  var buf := new List<T>;
+  var p := 0;
+  
+  foreach var x in Self do
+    if buf.Count<count then
+      buf.Add(x)
+    else
+    begin
+      buf[p] := x;
+      p := (p+1) mod count;      
+    end;
+  
+  for var i:=0 to buf.Count do
+  begin
+    yield buf[p];    
+    p := (p+1) mod count;      
+  end;  
 end;
 
+{function TakeLast<T>(Self: sequence of T; count: integer): sequence of T; extensionmethod;
+begin
+  Result := Self.Reverse.Take(count).Reverse;
+end;}
+
 /// Возвращает последовательность без последних count элементов 
-function SkipLast<T>(self: sequence of T; count: integer := 1): sequence of T; extensionmethod;
+function SkipLast<T>(Self: sequence of T; count: integer): sequence of T; extensionmethod;
+begin
+  if count < 0 then
+    raise new System.ArgumentOutOfRangeException('count', count, GetTranslation(PARAMETER_MUST_BE_GREATER_EQUAL_0));
+  if Self is IList<T> then
+  begin
+    var lst := Self as IList<T>;
+    for var i:=0 to lst.Count - count - 1 do
+      yield lst[i];
+    exit;  
+  end;
+
+  var buf := new List<T>(count);
+  var p := 0;
+  
+  foreach var x in Self do
+    if buf.Count<count then
+      buf.Add(x)
+    else
+    begin
+      yield buf[p];    
+      buf[p] := x;
+      p := (p+1) mod count;      
+    end;
+end;
+
+function SkipLast<T>(Self: sequence of T): sequence of T; extensionmethod := 
+  Self.SkipLast(1);
+
+{function SkipLast<T>(self: sequence of T; count: integer := 1): sequence of T; extensionmethod;
 begin
   Result := Self.Reverse.Skip(count).Reverse;
-end;
+end;}
 
 /// Декартово произведение последовательностей
 function Cartesian<T, T1>(Self: sequence of T; b: sequence of T1): sequence of (T, T1); extensionmethod;
@@ -9302,7 +9365,7 @@ begin
     raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
   
   if count < 0 then
-    raise new ArgumentException(GetTranslation(PARAMETER_COUNT_MUST_BE_GREATER_0));
+    raise new System.ArgumentOutOfRangeException('count', count, GetTranslation(PARAMETER_MUST_BE_GREATER_EQUAL_0));
   
   if (from < 0) or (from > Len - 1) then
     raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
