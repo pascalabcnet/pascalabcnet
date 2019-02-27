@@ -543,16 +543,18 @@ namespace CodeFormatters
                     if (comm.StartsWith(" "))
                     {
                         
-                        if (trimed_comm == "then" || trimed_comm == "do")
+                        if (trimed_comm == "then" || trimed_comm == "do" || trimed_comm == "of")
                         {
                             comm = comm.TrimStart(' ');
                             if (comm.Length == 0 || char.IsLetterOrDigit(comm[0]) || add_space_after)
                                 comm = " " + comm;
                         }
                     }
-                    if (comm.EndsWith(" ") && (comm.TrimEnd(' ').EndsWith("class") || comm.TrimEnd(' ').EndsWith("static")))
+                    if (comm.EndsWith(" "))
                     {
-                        comm = comm.TrimEnd(' ')+" ";
+                        string trimed_end = comm.TrimEnd(' ');
+                        if (trimed_end.EndsWith("class") || trimed_end.EndsWith("static") || trimed_end.EndsWith("else"))
+                            comm = comm.TrimEnd(' ')+" ";
                     }
                     if (comm.Replace(" ","") == "():")//special case: functions with no parameters
                     {
@@ -589,6 +591,7 @@ namespace CodeFormatters
                         comm = RemoveOverSpaces(comm);
                     else if (trimed_comm.StartsWith("]") && trimed_comm.EndsWith(":"))
                         comm = comm.Replace(" ", "");
+                    
                 }
                 WriteCommentWithIndent(comm, true);
                 read_from_beg_pos = false;
