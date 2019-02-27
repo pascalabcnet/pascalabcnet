@@ -261,13 +261,16 @@ namespace CodeFormatters
             return sb.ToString();
         }
 
-        private void WriteNode(syntax_tree_node sn)
+        private void WriteNode(syntax_tree_node sn, bool remove_spaces = false)
         {
             if (sn.source_context != null)
             {
                 int start_pos = GetPosition(sn.source_context.begin_position.line_num, sn.source_context.begin_position.column_num);
                 int end_pos = GetPosition(sn.source_context.end_position.line_num, sn.source_context.end_position.column_num);
-                sb.Append(Text.Substring(start_pos, Math.Max(end_pos - start_pos + 1,0)));
+                string node_text = Text.Substring(start_pos, Math.Max(end_pos - start_pos + 1, 0));
+                if (remove_spaces && !node_text.Contains("{"))
+                    node_text = node_text.Replace(" ", "");
+                sb.Append(node_text);
             }
         }
 
@@ -1799,7 +1802,7 @@ namespace CodeFormatters
                 visit_node(_pascal_set_constant.values);
             }
             else
-                WriteNode(_pascal_set_constant);
+                WriteNode(_pascal_set_constant, true);
             //sb.Append("]");
         }
 
