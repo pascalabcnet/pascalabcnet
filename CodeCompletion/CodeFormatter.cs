@@ -575,6 +575,8 @@ namespace CodeFormatters
                     }
                     else if (comm.StartsWith(":") && comm.EndsWith(":") && comm.Replace(" ", "") == "::")
                         comm = "::";
+                    else if (comm.StartsWith("[") && comm.EndsWith(":"))
+                        comm = comm.Replace(" ", "");
                     else if (comm.StartsWith("array") || comm.StartsWith("set") || comm.StartsWith("sequence"))
                         comm = RemoveOverSpaces(comm);
                     else if ((comm.StartsWith("class") || comm.StartsWith("interface")) && comm.EndsWith("("))
@@ -638,6 +640,8 @@ namespace CodeFormatters
                 if (trimedstr.Length >= 2 && trimedstr[0] == '(' && trimedstr[trimedstr.Length - 1] == ')' && trimedstr.Replace("(", "").Replace(")", "").Trim() == "")
                     comm = "()";
                 else if (trimedstr.Length >= 2 && trimedstr[0] == '(' && trimedstr[trimedstr.Length - 1] == ';')
+                    comm = trimedstr.Replace(" ", "");
+                else if (trimedstr.StartsWith("[") || trimedstr.EndsWith("]"))
                     comm = trimedstr.Replace(" ", "");
                 if (trimedstr.StartsWith(";  "))
                 {
