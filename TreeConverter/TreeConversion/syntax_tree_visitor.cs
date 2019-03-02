@@ -3519,6 +3519,37 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.class_definition _class_definition)
         {
+            if (_class_definition.keyword == class_keyword.Record && _class_definition.Parent is var_def_statement) // безымянная запись
+            {
+                if (_class_definition.class_parents != null && _class_definition.class_parents.Count>0)
+                    AddError(new SimpleSemanticError(get_location(_class_definition), "UNNAMED_RECORD_CANNOT_IMPLEMENT_INTERFACE"));
+                var pds = _class_definition.DescendantNodes().OfType<procedure_definition>();
+                if (pds.Count()>0)
+                    AddError(new SimpleSemanticError(get_location(pds.First()), "UNNAMED_RECORD_CANNOT_CONTAIN_METHODS"));
+
+                /*var cds = _class_definition.DescendantNodes().OfType<constructor>();
+                if (cds.Count() > 0)
+                    AddError(new SimpleSemanticError(get_location(cds.First()), "UNNAMED_RECORD_CANNOT_CONTAIN_CONSTRUCTORS"));*/
+                if (_class_definition.body.class_def_blocks.First().access_mod.access_level != access_modifer.public_modifer)
+                {
+                    var f = _class_definition.body.class_def_blocks.First();
+                    var loc = get_location(f);
+                    if (loc == null)
+                        loc = get_location(_class_definition);
+                    AddError(new SimpleSemanticError(loc, "UNNAMED_RECORD_CAN_CONTAIN_ONLY_ONE_PUBLIC_VISIBILITY_SECTION"));
+                }
+                    
+                if (_class_definition.body.class_def_blocks.Count > 1)
+                {
+                    var el1 = _class_definition.body.class_def_blocks.ElementAt(1);
+                    var loc = get_location(el1.access_mod);
+                    if (loc == null)
+                        loc = get_location(_class_definition);
+                    AddError(new SimpleSemanticError(loc, "UNNAMED_RECORD_CANNOT_CONTAIN_SEVERAL_VISIBILITY_SECTIONS"));
+                }
+                    
+            }                                                                                                                                                                          
+
             if (_class_definition.attribute != class_attribute.None && _class_definition.body == null)
                 AddError(new SimpleSemanticError(get_location(_class_definition), "CLASS_ATTRIBUTE_NOT_ALLOWED_IN_CLASS_PREDEFINTIONS"));
             if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Sealed) == SyntaxTree.class_attribute.Sealed)

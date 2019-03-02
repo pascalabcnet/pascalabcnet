@@ -5,7 +5,7 @@ unit WPFObjects;
 
 interface
 
-uses GraphWPFBase;
+uses GraphWPFBase,GraphWPF;
 
 uses System.Windows; 
 uses System.Windows.Controls;
@@ -81,27 +81,6 @@ procedure Invoke(p: ()->());
 
 //{{{doc: Начало секции 2 }}} 
 type
-// -----------------------------------------------------
-//>>     Класс графического окна # Class GraphWindowType
-// -----------------------------------------------------
-  /// Класс графического окна
-  GraphWindowType = class
-  private
-    function GetTop: real;
-    function GetLeft: real;
-    function GetWidth: real;
-    function GetHeight: real;
-  public  
-    /// Отступ графического окна от левого края главного окна  
-    property Left: real read GetLeft;
-    /// Отступ графического окна от верхнего края главного окна   
-    property Top: real read GetTop;
-    /// Ширина графического окна
-    property Width: real read GetWidth;
-    /// Высота графического окна
-    property Height: real read GetHeight;
-  end;
-  
   ObjectWPF = class;
 // -----------------------------------------------------
 //>>     Класс списка графических объектов # Class List of objects
@@ -1133,7 +1112,6 @@ begin
   end;
 end;
 
-
 type ObHelper = auto class
   o1,o2: ObjectWPF;
   function f: boolean := ObjectsIntersectP(o1,o2);
@@ -1151,99 +1129,32 @@ function ObjectsIntersect(o1,o2: ObjectWPF)
 function IntersectionList(Self: ObjectWPF): List<ObjectWPF>; extensionmethod
   := Invoke&<List<ObjectWPF>>(OLHelper.Create(Self).f);
 
-//---------------------------------------------------------------------------  
-function GraphWindowTypeGetLeftP: real;
-begin
-  Result := 0;
-  foreach var p in MainDockPanel.Children do
-    if (p is FrameworkElement) and (p<>host) then
-    begin
-      var d := DockPanel.GetDock(FrameworkElement(p));
-      if d=Dock.Left then
-        Result += FrameworkElement(p).Width;
-    end;
-end;
+var
+  ///--
+  __initialized := false;
 
-function GraphWindowTypeGetTopP: real;
-begin
-  Result := 0;
-  foreach var p in MainDockPanel.Children do
-    if (p is FrameworkElement) and (p<>host) then
-    begin
-      var d := DockPanel.GetDock(FrameworkElement(p));
-      if d=Dock.Top then
-        Result += FrameworkElement(p).Height;
-    end;
-end;
-
-function GraphWindowType.GetLeft := InvokeReal(GraphWindowTypeGetLeftP);
-function GraphWindowType.GetTop := InvokeReal(GraphWindowTypeGetTopP);
-
-function GraphWindowTypeGetWidthP: real;
-begin
-  {if host.DataContext = nil then
-    Result := 0
-  else Result := Size(host.DataContext).Width;}
-  Result := Window.Width;
-  foreach var p in MainDockPanel.Children do
-    if (p is FrameworkElement) and (p<>host) then
-    begin
-      var d := DockPanel.GetDock(FrameworkElement(p));
-      if (d=Dock.Left) or (d=Dock.Right) then
-        Result -= FrameworkElement(p).Width;
-    end;
-end;
-function GraphWindowType.GetWidth := InvokeReal(GraphWindowTypeGetWidthP);
-
-function GraphWindowTypeGetHeightP: real;
-begin
-  {if host.DataContext = nil then
-    Result := 0
-  else Result := Size(host.DataContext).Height;}
-  Result := Window.Height;
-  foreach var p in MainDockPanel.Children do
-    if (p is FrameworkElement) and (p<>host) then
-    begin
-      var d := DockPanel.GetDock(FrameworkElement(p));
-      if (d=Dock.Top) or (d=Dock.Bottom) then
-        Result -= FrameworkElement(p).Height;
-    end;
-end;
-function GraphWindowType.GetHeight := InvokeReal(GraphWindowTypeGetHeightP);
+var
+  ///--
+  __finalized := false;
 
 /// --- SystemMouseEvents
 procedure SystemOnMouseDown(sender: Object; e: MouseButtonEventArgs);
 begin
-  var mb := 0;
-  var p := e.GetPosition(host);
-  if e.LeftButton = MouseButtonState.Pressed then
-    mb := 1
-  else if e.RightButton = MouseButtonState.Pressed then
-    mb := 2;
+  var (p,mb) := GetMouseArgs(e);
   if OnMouseDown <> nil then  
     OnMouseDown(p.x, p.y, mb);
 end;
 
 procedure SystemOnMouseUp(sender: Object; e: MouseButtonEventArgs);
 begin
-  var mb := 0;
-  var p := e.GetPosition(host);
-  if e.LeftButton = MouseButtonState.Pressed then
-    mb := 1
-  else if e.RightButton = MouseButtonState.Pressed then
-    mb := 2;
+  var (p,mb) := GetMouseArgs(e);
   if OnMouseUp <> nil then  
     OnMouseUp(p.x, p.y, mb);
 end;
 
 procedure SystemOnMouseMove(sender: Object; e: MouseEventArgs);
 begin
-  var mb := 0;
-  var p := e.GetPosition(host);
-  if e.LeftButton = MouseButtonState.Pressed then
-    mb := 1
-  else if e.RightButton = MouseButtonState.Pressed then
-    mb := 2;
+  var (p,mb) := GetMouseArgs(e);
   if OnMouseMove <> nil then  
     OnMouseMove(p.x, p.y, mb);
 end;
@@ -1258,103 +1169,41 @@ procedure SystemOnKeyUp(sender: Object; e: KeyEventArgs) :=
     OnKeyUp(e.Key);
     
 procedure SystemOnKeyPress(sender: Object; e: TextCompositionEventArgs) := 
-begin
   if (OnKeyPress<>nil) and (e.Text<>nil) and (e.Text.Length>0) then
     OnKeyPress(e.Text[1]);
-end;    
     
 procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) := 
   if OnResize<>nil then
     OnResize();
 
-var mre := new ManualResetEvent(false);
-
-type 
-GraphWPFWindow = class(GMainWindow)
-public
-  procedure InitMainGraphControl; override;
+procedure __InitModule;
+begin
+  AdditionalInit := procedure ->
   begin
+    MainWindow.Title := 'Графика WPF';
+    // Свои события. Без этого не работают
+    MainWindow.MouseDown += SystemOnMouseDown;
+    MainWindow.MouseUp += SystemOnMouseUp;
+    MainWindow.MouseMove += SystemOnMouseMove;
+    MainWindow.KeyDown += SystemOnKeyDown;
+    MainWindow.KeyUp += SystemOnKeyUp;
+    MainWindow.TextInput += SystemOnKeyPress;
+    MainWindow.SizeChanged += SystemOnResize;
+    
+    Objects := new ObjectsType;
+    Window := GraphWPF.Window;
+    GraphWindow := GraphWPF.GraphWindow;
+
     host := new Canvas();
-    host.SizeChanged += (s,e) ->
+    {host.SizeChanged += (s,e) ->
     begin
       var sz := e.NewSize;
       host.DataContext := sz;
-    end;
-    // Всегда последнее
-    var g := Content as DockPanel;
-    g.children.Add(host);
+    end;}
+    var g := MainWindow.Content as DockPanel;
+    g.children.Add(host); // Слой графики WPF - последний
   end;
-
-  procedure InitWindowProperties; override;
-  begin
-    Title := 'WPF объекты';
-    var (w,h) := (800,600);
-    
-    (Width, Height) := (w + wplus, h + hplus);
-    WindowStartupLocation := System.Windows.WindowStartupLocation.CenterScreen;
-  end;
-
-  procedure InitGlobals; override;
-  begin
-    Window := new WindowType;
-    GraphWindow := new GraphWindowType;
-    Objects := new ObjectsType;
-  end;
-  
-  procedure InitHandlers; override;
-  begin
-    Closed += procedure(sender,e) -> begin Halt; end;
-    MouseDown += SystemOnMouseDown;
-    MouseUp += SystemOnMouseUp;
-    MouseMove += SystemOnMouseMove;
-    KeyDown += SystemOnKeyDown;
-    KeyUp += SystemOnKeyUp;
-    TextInput += SystemOnKeyPress;
-    SizeChanged += SystemOnResize;
-    
-    Loaded += (o,e) -> mre.Set();
-  end;
-
-end;
-
-procedure InitApp;
-begin
-  app := new Application;
-  
-  app.Dispatcher.UnhandledException += (o, e) -> begin
-    Println(e.Exception.Message); 
-    if e.Exception.InnerException<>nil then
-      Println(e.Exception.InnerException.Message); 
-    halt; 
-  end;
-  
-  MainWindow := new GraphWPFWindow;
-
-  mre.Set();
-  
-  app.Run(MainWindow);
-end;
-
-procedure InitMainThread;
-begin
-  var MainFormThread := new System.Threading.Thread(InitApp);
-  MainFormThread.SetApartmentState(ApartmentState.STA);
-  MainFormThread.Start;
-  
-  mre.WaitOne; // Основная программа не начнется пока не будут инициализированы все компоненты приложения
-end;
-
-var
-  ///--
-  __initialized := false;
-
-var
-  ///--
-  __finalized := false;
-
-procedure __InitModule;
-begin
-  InitMainThread;
+  app.Dispatcher.Invoke(AdditionalInit);
 end;
 
 ///--
@@ -1363,7 +1212,7 @@ begin
   if not __initialized then
   begin
     __initialized := true;
-    GraphWPFBase.__InitModule__;
+    GraphWPF.__InitModule__;
     __InitModule;
   end;
 end;
