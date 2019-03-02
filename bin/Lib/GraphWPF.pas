@@ -1455,10 +1455,6 @@ procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) :=
 
 ///----------------------------------------------------------------------
 
-{procedure RenderFrame(s: Object; e: System.EventArgs);
-begin
-end;}
-
 var OnDraw: procedure := nil;
 var OnDraw1: procedure(frame: integer) := nil;
 
@@ -1479,7 +1475,6 @@ begin
     else LastUpdatedTime := e1;  
     FrameNum += 1;
     Window.Clear;
-    //CountVisuals := integer.MinValue; // чтобы не было паузы после 1000 объектов
     if OnDraw<>nil then
       OnDraw() 
     else if OnDraw1<>nil then
@@ -1540,7 +1535,6 @@ public
     end;
     // Всегда последнее
     var g := Content as DockPanel;
-    
     
     var dpiXProperty := typeof(SystemParameters).GetProperty('DpiX', BindingFlags.NonPublic or BindingFlags.Static);
     var dpiYProperty := typeof(SystemParameters).GetProperty('Dpi', BindingFlags.NonPublic or BindingFlags.Static);

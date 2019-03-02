@@ -1275,7 +1275,6 @@ public
   procedure InitMainGraphControl; override;
   begin
     host := new Canvas();
-    //host.ClipToBounds := True;
     host.SizeChanged += (s,e) ->
     begin
       var sz := e.NewSize;
@@ -1314,15 +1313,6 @@ public
     SizeChanged += SystemOnResize;
     
     Loaded += (o,e) -> mre.Set();
-
-    {PreviewMouseDown += (o,e) -> SystemOnMouseDown(o,e);  
-    PreviewMouseUp += (o,e) -> SystemOnMouseUp(o,e);  
-    PreviewMouseMove += (o,e) -> SystemOnMouseMove(o,e);  
-  
-    PreviewKeyDown += (o,e)-> SystemOnKeyDown(o,e);
-    PreviewKeyUp += (o,e)-> SystemOnKeyUp(o,e);
-
-    Closed += procedure(sender, e) -> begin Halt; end;}
   end;
 
 end;

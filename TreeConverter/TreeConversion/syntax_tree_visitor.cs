@@ -11072,6 +11072,12 @@ namespace PascalABCCompiler.TreeConverter
             if (context.converted_type != null && context.converted_func_stack.Empty)
             	if (!constant_in_class_valid(cdn.const_value.type))
                     AddError(get_location(_simple_const_definition), "CLASS_CONSTANT_CAN_HAVE_ONLY_PRIMITIVE_VALUE");
+
+            if (_simple_const_definition.const_value is SyntaxTree.pascal_set_constant pc)
+            {
+                if (pc.values == null || pc.values.Count == 0)
+                    AddError(get_location(_simple_const_definition.const_value), "IMPOSSIBLE_TO_INFER_SET_TYPE");
+            }
         }
 
         public override void visit(SyntaxTree.type_declarations _type_declarations)
