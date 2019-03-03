@@ -397,8 +397,18 @@ type
     function FullName: string;
     /// Возвращает в виде строки содержимое файла от текущего положения до конца
     function ReadToEnd: string;
-    /// Устанавливает файловый указатель на начало файла
+    /// Открывает текстовый файл на чтение в кодировке Windows
     procedure Reset;
+    /// Открывает текстовый файл на чтение в указанной кодировке
+    procedure Reset(en: Encoding);
+    /// Открывает текстовый файл на запись в кодировке Windows
+    procedure Rewrite;
+    /// Открывает текстовый файл на запись в указанной кодировке
+    procedure Rewrite(en: Encoding);
+    /// Открывает текстовый файл на дополнение в кодировке Windows
+    procedure Append;
+    /// Открывает текстовый файл на дополнение в указанной кодировке
+    procedure Append(en: Encoding);
   end;
   
   /// Тип текстового файла
@@ -524,11 +534,16 @@ type
   BinaryFile = sealed class(AbstractBinaryFile)
   private 
     function GetFilePos: int64;
+    procedure InternalCheck;
   public 
     function ToString: string; override;
+    /// Открывает существующий бестиповой файл на чтение и запись в указанной кодировке 
+    procedure Reset(en: Encoding);
+    /// Открывает существующий бестиповой файл на чтение и запись в указанной кодировке. Если файл не существовал, он создаётся, если существовал, он обнуляется
+    procedure Rewrite(en: Encoding);
     /// Возвращает количество байт в бестиповом файле
     function Size: int64;
-    /// Устанавливает текущую позицию файлового указателя в бестиповом файле на элемент с номером n
+    /// Устанавливает текущую позицию файлового указателя в бестиповом файле на байт с номером n
     procedure Seek(n: int64);
     /// Возвращает или устанавливает текущую позицию файлового указателя в бестиповом файле
     property Position: int64 read GetFilePos write Seek;
@@ -536,6 +551,18 @@ type
     procedure WriteBytes(a: array of byte);
     /// Считывает указанное количество байтов из бестипового файла в байтовый массив
     function ReadBytes(count: integer): array of byte;
+    /// Считывает целое из бестипового файла
+    function ReadInteger: integer;
+    /// Считывает логическое из бестипового файла
+    function ReadBoolean: boolean;
+    /// Считывает байт из бестипового файла
+    function ReadByte: byte;
+    /// Считывает символ из бестипового файла
+    function ReadChar: char;
+    /// Считывает вещественное из бестипового файла
+    function ReadReal: real;
+    /// Считывает строку из бестипового файла
+    function ReadString: string;
   end;
 
 //{{{doc: Начало секции интерфейса для документации }}} 
@@ -5493,75 +5520,33 @@ end;
 // -----------------------------------------------------
 //                   TextFile methods
 // -----------------------------------------------------
-function Text.ReadInteger: integer;
-begin
-  Result := PABCSystem.ReadInteger(Self);
-end;
+function Text.ReadInteger := PABCSystem.ReadInteger(Self);
 
-function Text.ReadReal: real;
-begin
-  Result := PABCSystem.ReadReal(Self);
-end;
+function Text.ReadReal := PABCSystem.ReadReal(Self);
 
-function Text.ReadChar: char;
-begin
-  Result := PABCSystem.ReadChar(Self);
-end;
+function Text.ReadChar := PABCSystem.ReadChar(Self);
 
-function Text.ReadString: string;
-begin
-  Result := PABCSystem.ReadString(Self);
-end;
+function Text.ReadString := PABCSystem.ReadString(Self);
 
-function Text.ReadWord: string;
-begin
-  Result := read_lexem(Self);
-end;
+function Text.ReadWord := read_lexem(Self);
 
-function Text.ReadBoolean: boolean;
-begin
-  Result := PABCSystem.ReadBoolean(Self);
-end;
+function Text.ReadBoolean := PABCSystem.ReadBoolean(Self);
 
-function Text.ReadlnInteger: integer;
-begin
-  Result := PABCSystem.ReadlnInteger(Self);
-end;
+function Text.ReadlnInteger := PABCSystem.ReadlnInteger(Self);
 
-function Text.ReadlnReal: real;
-begin
-  Result := PABCSystem.ReadlnReal(Self);
-end;
+function Text.ReadlnReal := PABCSystem.ReadlnReal(Self);
 
-function Text.ReadlnChar: char;
-begin
-  Result := PABCSystem.ReadlnChar(Self);
-end;
+function Text.ReadlnChar := PABCSystem.ReadlnChar(Self);
 
-function Text.ReadlnString: string;
-begin
-  Result := PABCSystem.ReadlnString(Self);
-end;
+function Text.ReadlnString := PABCSystem.ReadlnString(Self);
 
-function Text.ReadlnBoolean: boolean;
-begin
-  Result := PABCSystem.ReadlnBoolean(Self);
-end;
+function Text.ReadlnBoolean := PABCSystem.ReadlnBoolean(Self);
 
-procedure Text.Readln;
-begin
-  PABCSystem.Readln(Self);  
-end;
+procedure Text.Readln := PABCSystem.Readln(Self);  
 
-procedure Text.Write(params o: array of Object);
-begin
-  PABCSystem.Write(Self, o);
-end;
+procedure Text.Write(params o: array of Object) := PABCSystem.Write(Self, o);
 
-procedure Text.Writeln(params o: array of Object);
-begin
-  PABCSystem.Writeln(Self, o);
-end;
+procedure Text.Writeln(params o: array of Object) := PABCSystem.Writeln(Self, o);
 
 procedure Text.Print(params o: array of Object);
 begin
@@ -5588,120 +5573,63 @@ begin
   PABCSystem.Writeln(Self);
 end;
 
-function Text.Eof: boolean;
-begin
-  Result := PABCSystem.Eof(Self);
-end;
+function Text.Eof := PABCSystem.Eof(Self);
 
-function Text.Eoln: boolean;
-begin
-  Result := PABCSystem.Eoln(Self);
-end;
+function Text.Eoln := PABCSystem.Eoln(Self);
 
-procedure Text.Close;
-begin
-  PABCSystem.Close(Self);
-end;
+procedure Text.Close := PABCSystem.Close(Self);
 
-function Text.SeekEof: boolean;
-begin
-  Result := PABCSystem.SeekEof(Self);
-end;
+function Text.SeekEof := PABCSystem.SeekEof(Self);
 
-function Text.SeekEoln: boolean;
-begin
-  Result := PABCSystem.SeekEoln(Self);
-end;
+function Text.SeekEoln := PABCSystem.SeekEoln(Self);
 
-procedure Text.Flush;
-begin
-  PABCSystem.Flush(Self);
-end;
+procedure Text.Flush := PABCSystem.Flush(Self);
 
-procedure Text.Erase;
-begin
-  PABCSystem.Erase(Self);
-end;
+procedure Text.Erase := PABCSystem.Erase(Self);
 
-procedure Text.Rename(newname: string);
-begin
-  PABCSystem.Rename(Self, newname);
-end;
+procedure Text.Rename(newname: string) := PABCSystem.Rename(Self, newname);
 
-function Text.Name: string;
-begin
-  Result := fi.Name
-end;
+function Text.Name := fi.Name;
 
-function Text.FullName: string;
-begin
-  Result := fi.FullName
-end;
+function Text.FullName := fi.FullName;
 
-function Text.ReadToEnd: string;
-begin
-  Result := sr.ReadToEnd
-end;
+function Text.ReadToEnd := sr.ReadToEnd;
 
-procedure Text.Reset;
-begin
-  PABCSystem.Reset(Self);
-end;
+procedure Text.Reset := PABCSystem.Reset(Self);
+
+procedure Text.Reset(en: Encoding) := PABCSystem.Reset(Self,en);
+
+procedure Text.Rewrite := PABCSystem.Rewrite(Self);
+
+procedure Text.Rewrite(en: Encoding) := PABCSystem.Rewrite(Self,en);
+
+procedure Text.Append := PABCSystem.Append(Self);
+
+procedure Text.Append(en: Encoding) := PABCSystem.Append(Self,en);
 
 
 // -----------------------------------------------------
 //                AbstractBinaryFile methods
 // -----------------------------------------------------
-procedure AbstractBinaryFile.Close;
-begin
-  PABCSystem.Close(Self);
-end;
+procedure AbstractBinaryFile.Close := PABCSystem.Close(Self);
 
-procedure AbstractBinaryFile.Truncate;
-begin
-  PABCSystem.Truncate(Self);
-end;
+procedure AbstractBinaryFile.Truncate := PABCSystem.Truncate(Self);
 
-function AbstractBinaryFile.Eof: boolean;
-begin
-  Result := PABCSystem.Eof(Self);
-end;
+function AbstractBinaryFile.Eof := PABCSystem.Eof(Self);
 
-procedure AbstractBinaryFile.Erase;
-begin
-  PABCSystem.Erase(Self);
-end;
+procedure AbstractBinaryFile.Erase := PABCSystem.Erase(Self);
 
-procedure AbstractBinaryFile.Rename(newname: string);
-begin
-  PABCSystem.Rename(Self, newname);
-end;
+procedure AbstractBinaryFile.Rename(newname: string) := PABCSystem.Rename(Self, newname);
 
-procedure AbstractBinaryFile.Write(params vals: array of object);
-begin
-  PABCSystem.Write(Self, vals);
-end;
+procedure AbstractBinaryFile.Write(params vals: array of object) := PABCSystem.Write(Self, vals);
 
-procedure AbstractBinaryFile.Reset;
-begin
-  PABCSystem.Reset(Self);
-end;
+procedure AbstractBinaryFile.Reset := PABCSystem.Reset(Self);
 
-procedure AbstractBinaryFile.Rewrite;
-begin
-  PABCSystem.Rewrite(Self);
-end;
+procedure AbstractBinaryFile.Rewrite := PABCSystem.Rewrite(Self);
 
-function AbstractBinaryFile.Name: string;
-begin
-  Result := fi.Name  
-end;
+function AbstractBinaryFile.Name := fi.Name;
 
-function AbstractBinaryFile.FullName: string;
-begin
-  Result := fi.FullName  
-end;
-
+function AbstractBinaryFile.FullName := fi.FullName;
 
 
 // -----------------------------------------------------
@@ -5713,28 +5641,70 @@ function TypedFile.GetFilePos: int64 := PABCSystem.FilePos(Self);
 
 procedure TypedFile.Seek(n: int64) := PABCSystem.Seek(Self, n); 
 
+procedure BinaryFile.Reset(en: Encoding) := PABCSystem.Reset(Self,en);
+
+procedure BinaryFile.Rewrite(en: Encoding) := PABCSystem.Rewrite(Self,en);
+
 function BinaryFile.GetFilePos: int64 := PABCSystem.FilePos(Self);
 
 function BinaryFile.Size: int64 := PABCSystem.FileSize(Self);
 
 procedure BinaryFile.Seek(n: int64) := PABCSystem.Seek(Self, n);
 
-procedure BinaryFile.WriteBytes(a: array of byte);
+procedure BinaryFile.InternalCheck;
 begin
   if Self.fi = nil then
     raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
   if Self.fs = nil then
     raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED));
+end;
+
+procedure BinaryFile.WriteBytes(a: array of byte);
+begin
+  InternalCheck;
   Self.bw.Write(a);
 end;
 
 function BinaryFile.ReadBytes(count: integer): array of byte;
 begin
-  if Self.fi = nil then
-    raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
-  if Self.fs = nil then
-    raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED));
+  InternalCheck;
   Result := Self.br.ReadBytes(count)
+end;
+
+function BinaryFile.ReadInteger: integer;
+begin
+  InternalCheck;
+  Result := Self.br.ReadInt32;  
+end;
+
+function BinaryFile.ReadBoolean: boolean;
+begin
+  InternalCheck;
+  Result := Self.br.ReadBoolean;  
+end;
+
+function BinaryFile.ReadByte: byte;
+begin
+  InternalCheck;
+  Result := Self.br.ReadByte;  
+end;
+
+function BinaryFile.ReadChar: char;
+begin
+  InternalCheck;
+  Result := Self.br.ReadChar;  
+end;
+
+function BinaryFile.ReadReal: real;
+begin
+  InternalCheck;
+  Result := Self.br.ReadDouble;  
+end;
+
+function BinaryFile.ReadString: string;
+begin
+  InternalCheck;
+  Result := Self.br.ReadString;  
 end;
 
 // -----------------------------------------------------
