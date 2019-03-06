@@ -130,8 +130,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\configuration\globalassemblyinfo.cs">
-      <Link>Config\globalassemblyinfo.cs</Link>
+    <Compile Include="..\Configuration\GlobalAssemblyInfo.cs">
+      <Link>Config\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Config\AssemblyInfo.cs" />
     <Compile Include="NETGenegratorTools.cs" />

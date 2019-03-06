@@ -47,7 +47,7 @@ namespace PascalABCCompiler
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
             Console.ForegroundColor = ConsoleColor.Gray;
-            if (command == "") return false;
+            if (command == "" || command == null) return false;
             if (command.ToLower().IndexOf("cd ") == 0)
             {
                 try
