@@ -1026,10 +1026,10 @@ array_const
         { 
 			$$ = new array_const($2 as expression_list, @$); 
 		}
-    | tkRoundOpen record_const tkRoundClose    
-        { $$ = $2; }
-    | tkRoundOpen array_const tkRoundClose     
-        { $$ = $2; }
+//    | tkRoundOpen record_const tkRoundClose    
+//        { $$ = $2; }
+//    | tkRoundOpen array_const tkRoundClose     
+//        { $$ = $2; }
     ;
 
 typed_const_list
