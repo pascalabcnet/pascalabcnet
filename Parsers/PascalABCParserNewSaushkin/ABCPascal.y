@@ -1187,6 +1187,20 @@ simple_type_question
                 $$ = new template_type_reference(new named_type_reference(l), new template_param_list($1), @$);
             }
 		}
+	| template_type tkQuestion
+		{
+            if (parsertools.build_tree_for_formatter)
+   			{
+                $$ = $1;
+            }
+            else
+            {
+                var l = new List<ident>();
+                l.Add(new ident("System"));
+                l.Add(new ident("Nullable"));
+                $$ = new template_type_reference(new named_type_reference(l), new template_param_list($1), @$);
+            }
+		}
 	;	
 
 type_ref
