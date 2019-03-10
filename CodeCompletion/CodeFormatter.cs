@@ -633,7 +633,7 @@ namespace CodeFormatters
             {
                 string comm = Text.Substring(prev_pos, pos - prev_pos);
                 string trimedstr = comm.TrimStart();
-                if (sn is loop_stmt || sn is case_node || sn is if_node || sn is while_node || sn is foreach_stmt || sn is for_node)
+                if (sn is loop_stmt || sn is case_node || sn is if_node || sn is while_node || sn is foreach_stmt || sn is for_node || sn is lock_stmt)
                 {
 
                     if (trimedstr == "do" || trimedstr == "of" || trimedstr == "then")
@@ -2814,8 +2814,9 @@ namespace CodeFormatters
         {
             sb.Append("lock");
             SetKeywordOffset("lock");
+            multiline_stack_push(_lock_stmt.lock_object);
             visit_node(_lock_stmt.lock_object);
-            add_newline_after = true;
+            multiline_stack_pop(_lock_stmt.lock_object);
             add_space_before = true;
             bool need_off = !(_lock_stmt.stmt is statement_list);
             if (!in_one_row(_lock_stmt.stmt))
