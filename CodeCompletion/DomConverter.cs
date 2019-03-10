@@ -738,12 +738,14 @@ namespace CodeCompletion
                         pos.full_metadata_title = cfs.CompiledField.DeclaringType.FullName + "." + cfs.CompiledField.Name;
                         poses.Add(pos);
                     }
-                    else if (ss is CompiledMethodScope)
+                    else if (ss is CompiledMethodScope || ss is ProcScope && (ss as ProcScope).original_function is CompiledMethodScope)
                     {
                         pos.from_metadata = true;
                         pos.line = 1;
                         pos.column = 1;
                         CompiledMethodScope cms = ss as CompiledMethodScope;
+                        if (cms == null)
+                            cms = (ss as ProcScope).original_function as CompiledMethodScope;
                         pos.metadata_title = prepare_file_name(cms.CompiledMethod.DeclaringType.Name);
                         pos.metadata_type = MetadataType.Method;
                         if (!only_check)
