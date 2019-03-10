@@ -655,6 +655,8 @@ namespace CodeFormatters
                 }
                 else if (trimedstr == ".")
                     comm = trimedstr;
+                else if (trimedstr.StartsWith(",") && trimedstr.EndsWith(">"))
+                    comm = ",>";
                 //else if (sn is uses_closure || sn is formal_parameters || sn is type_declaration)
                 //    comm = comm.TrimStart();
                 if (sn is program_module || sn is unit_module)
@@ -2632,7 +2634,8 @@ namespace CodeFormatters
             sb.Append("<");
             for (int i = 0; i < _template_param_list.params_list.Count; i++)
             {
-                if (i > 0)
+                if (i > 0 && !(_template_param_list.params_list[i] is named_type_reference && (_template_param_list.params_list[i] as named_type_reference).names.Count > 0 
+                    && (_template_param_list.params_list[i] as named_type_reference).names[0].name == ""))
                     add_space_after = true;
                 visit_node(_template_param_list.params_list[i]);
             }
