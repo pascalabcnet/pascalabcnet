@@ -17458,7 +17458,7 @@ namespace PascalABCCompiler.TreeConverter
                 if (tn == null || tn is null_type_node || tn.ImplementingInterfaces == null)
                     return false;
 
-                if (tn.element_type != null) // еще может быть множество set of T - 22.02.16 SSM
+                if (tn.element_type != null && tn.type_special_kind != SemanticTree.type_special_kind.typed_file) // еще может быть множество set of T - 22.02.16 SSM
                 {
                     elem_type = tn.element_type;
                     return true;
