@@ -653,7 +653,7 @@ namespace CodeFormatters
                 {
                     comm = "; " + trimedstr.Substring(1).TrimStart(' ', '\t');
                 }
-                else if (trimedstr == ".")
+                else if (trimedstr == "." || trimedstr == "^")
                     comm = trimedstr;
                 else if (trimedstr.StartsWith(",") && trimedstr.EndsWith(">"))
                     comm = ",>";
