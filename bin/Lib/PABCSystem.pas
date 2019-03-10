@@ -409,6 +409,8 @@ type
     procedure Append;
     /// Открывает текстовый файл на дополнение в указанной кодировке
     procedure Append(en: Encoding);
+    /// Возвращает последовательность строк открытого текстового файла 
+    function Lines: sequence of string;
   end;
   
   /// Тип текстового файла
@@ -5606,6 +5608,14 @@ procedure Text.Rewrite(en: Encoding) := PABCSystem.Rewrite(Self,en);
 procedure Text.Append := PABCSystem.Append(Self);
 
 procedure Text.Append(en: Encoding) := PABCSystem.Append(Self,en);
+
+function Text.Lines: sequence of string;
+begin
+  Self.sr.BaseStream.Position := 0;
+  while not Eof do
+    yield ReadlnString;
+end;
+
 
 
 // -----------------------------------------------------

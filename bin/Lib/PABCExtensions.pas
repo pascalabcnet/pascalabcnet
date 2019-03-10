@@ -142,6 +142,14 @@ begin
   end;
 end;
 
+/// Возвращает последовательность элементов открытого типизированного файла
+function Elements<T>(Self: file of T): sequence of T; extensionmethod;
+begin
+  Reset(Self); // Если файл открыт, то файловый указатель просто устанавливается на 0 позицию
+  Result := Self.ReadElements;
+end;
+
+
 /// Открывает типизированный файл, возвращает последовательность его элементов и закрывает его
 function ReadElements<T>(fname: string): sequence of T;
 begin
