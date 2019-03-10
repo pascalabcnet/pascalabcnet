@@ -13296,7 +13296,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 SyntaxTree.procedure_attribute pa = new SyntaxTree.procedure_attribute(PascalABCCompiler.SyntaxTree.proc_attribute.attr_static);
                 pa.source_context = _procedure_header.source_context;
-                _procedure_header.proc_attributes.proc_attributes.Add(pa);
+                _procedure_header.proc_attributes.proc_attributes.Insert(0, pa);
             }
             weak_node_test_and_visit(_procedure_header.proc_attributes);
 			with_class_name = false;
