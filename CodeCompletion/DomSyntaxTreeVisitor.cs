@@ -4853,7 +4853,7 @@ namespace CodeCompletion
         public override void visit(expression_as_statement _expression_as_statement)
         {
             //throw new Exception("The method or operation is not implemented.");
-            if (has_lambdas(_expression_as_statement.expr))
+            if (has_lambdas(_expression_as_statement.expr) || _expression_as_statement.expr is unnamed_type_object)
                 _expression_as_statement.expr.visit(this);
         }
 
