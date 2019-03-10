@@ -3282,6 +3282,7 @@ namespace CodeCompletion
                         element_type = TypeTable.obj_type;
                         break;
                     }
+                    //else element_type = TypeTable.obj_type;
                 }
             }
             
