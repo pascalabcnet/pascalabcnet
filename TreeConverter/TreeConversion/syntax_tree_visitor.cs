@@ -11096,6 +11096,11 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.simple_const_definition _simple_const_definition)
         {
+            if (context.converting_block() == block_type.type_block &&
+                context.converted_type.IsInterface)
+            {
+                AddError(get_location(_simple_const_definition), "INVALID_INTERFACE_MEMBER");
+            }
             constant_definition_node cdn = context.add_const_definition(_simple_const_definition.const_name.name, get_location(_simple_const_definition.const_name));
             cdn.const_value = convert_strong_to_constant_node(_simple_const_definition.const_value);
             cdn.const_value.SetType(DeduceType(cdn.const_value.type, cdn.const_value.location));
