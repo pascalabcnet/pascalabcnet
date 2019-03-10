@@ -692,8 +692,9 @@ namespace CodeCompletion
                     else
                         returned_scope = null;
                 }
-                else
-            	    returned_scope = returned_scope.GetElementType();
+                else if (returned_scope.GetElementType() != null)
+                    returned_scope = returned_scope.GetElementType();
+            	    
             }
         }
 
