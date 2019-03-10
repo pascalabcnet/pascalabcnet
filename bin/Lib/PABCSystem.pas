@@ -8653,8 +8653,6 @@ function MinBy<T, TKey>(Self: sequence of T; selector: T->TKey): T; extensionmet
 begin
   if selector = nil then
     raise new ArgumentNullException('selector');
-  if not Self.Any() then
-    raise new InvalidOperationException('Empty sequence');
   
   var comp := Comparer&<TKey>.Default;
   Result := Self.Aggregate((min, x)-> comp.Compare(selector(x), selector(min)) < 0 ? x : min);
@@ -8665,8 +8663,6 @@ function MaxBy<T, TKey>(Self: sequence of T; selector: T->TKey): T; extensionmet
 begin
   if selector = nil then
     raise new ArgumentNullException('selector');
-  if not Self.Any() then
-    raise new InvalidOperationException('Empty sequence');
   
   var comp := Comparer&<TKey>.Default;
   Result := Self.Aggregate((max, x)-> comp.Compare(selector(x), selector(max)) > 0 ? x : max);
@@ -8677,8 +8673,6 @@ function LastMinBy<T, TKey>(Self: sequence of T; selector: T->TKey): T; extensio
 begin
   if selector = nil then
     raise new ArgumentNullException('selector');
-  if not Self.Any() then
-    raise new InvalidOperationException('Empty sequence');
   
   var comp := Comparer&<TKey>.Default;
   Result := Self.Aggregate((min, x)-> comp.Compare(selector(x), selector(min)) <= 0 ? x : min);
@@ -8689,8 +8683,6 @@ function LastMaxBy<T, TKey>(Self: sequence of T; selector: T->TKey): T; extensio
 begin
   if selector = nil then
     raise new ArgumentNullException('selector');
-  if not Self.Any() then
-    raise new InvalidOperationException('Empty sequence');
   
   var comp := Comparer&<TKey>.Default;
   Result := Self.Aggregate((max, x)-> comp.Compare(selector(x), selector(max)) >= 0 ? x : max);
