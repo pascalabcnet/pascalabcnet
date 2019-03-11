@@ -410,7 +410,7 @@ procedure Put(param: boolean);
 procedure Put(param: PNode);
 procedure Put(param: Node);
 
-{
+
 //Ввод этих данных не поддерживается
 ///- read(a,b,...)
 /// Вводит значения a,b,... из окна электронного задачника
@@ -447,7 +447,6 @@ procedure Read(var val: Node);
 procedure Read(var val: PNode);
 ///--
 procedure Readln;
-}
 
 procedure Print(params args: array of object);
 procedure Println(params args: array of object);
