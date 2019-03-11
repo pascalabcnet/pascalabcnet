@@ -2558,7 +2558,7 @@
         </TagIndices>
       </Tags>
     </SyntaxNode>
-    <SyntaxNode Name="unnamed_type_object" BaseName="expression">
+    <SyntaxNode Name="unnamed_type_object" BaseName="addressed_value">
       <Fields>
         <SyntaxField Name="ne_list" SyntaxType="name_assign_expr_list" />
         <ExtendedField Name="is_class" Type="bool" CreateVariable="false" DeleteVariable="false" />
@@ -4398,7 +4398,7 @@
       <HelpData Key="unknown_ident.UnknownID" Value="" />
       <HelpData Key="unknown_type" Value="" />
       <HelpData Key="unknown_type.context" Value="" />
-      <HelpData Key="unnamed_type_object" Value="Это - сахарная конструкция.&#xD;&#xA;/// Объект безымянного класса. Например: new class(Name := 'Иванов'; Age := 25);&#xD;&#xA;/// new_ex - это узел для генерации кода, основной узел предназначен для форматирования" />
+      <HelpData Key="unnamed_type_object" Value="Это - сахарная конструкция.&#xD;&#xA;/// Объект безымянного класса. Например: new class(Name := 'Иванов'; Age := 25);&#xD;&#xA;/// new_ex - это узел для генерации кода, основной узел предназначен для форматирования&#xD;&#xA;&#xD;&#xA;/// Сделал потомком addressed_value из-за #1843" />
       <HelpData Key="unnamed_type_object.is_class" Value="" />
       <HelpData Key="unnamed_type_object.ne" Value="" />
       <HelpData Key="unnamed_type_object.ne_list" Value="" />

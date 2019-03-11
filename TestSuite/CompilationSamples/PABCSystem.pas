@@ -409,6 +409,8 @@ type
     procedure Append;
     /// Открывает текстовый файл на дополнение в указанной кодировке
     procedure Append(en: Encoding);
+    /// Возвращает последовательность строк открытого текстового файла 
+    function Lines: sequence of string;
   end;
   
   /// Тип текстового файла
@@ -5607,6 +5609,14 @@ procedure Text.Append := PABCSystem.Append(Self);
 
 procedure Text.Append(en: Encoding) := PABCSystem.Append(Self,en);
 
+function Text.Lines: sequence of string;
+begin
+  Self.sr.BaseStream.Position := 0;
+  while not Eof do
+    yield ReadlnString;
+end;
+
+
 
 // -----------------------------------------------------
 //                AbstractBinaryFile methods
@@ -8653,8 +8663,6 @@ function MinBy<T, TKey>(Self: sequence of T; selector: T->TKey): T; extensionmet
 begin
   if selector = nil then
     raise new ArgumentNullException('selector');
-  if not Self.Any() then
-    raise new InvalidOperationException('Empty sequence');
   
   var comp := Comparer&<TKey>.Default;
   Result := Self.Aggregate((min, x)-> comp.Compare(selector(x), selector(min)) < 0 ? x : min);
@@ -8665,8 +8673,6 @@ function MaxBy<T, TKey>(Self: sequence of T; selector: T->TKey): T; extensionmet
 begin
   if selector = nil then
     raise new ArgumentNullException('selector');
-  if not Self.Any() then
-    raise new InvalidOperationException('Empty sequence');
   
   var comp := Comparer&<TKey>.Default;
   Result := Self.Aggregate((max, x)-> comp.Compare(selector(x), selector(max)) > 0 ? x : max);
@@ -8677,8 +8683,6 @@ function LastMinBy<T, TKey>(Self: sequence of T; selector: T->TKey): T; extensio
 begin
   if selector = nil then
     raise new ArgumentNullException('selector');
-  if not Self.Any() then
-    raise new InvalidOperationException('Empty sequence');
   
   var comp := Comparer&<TKey>.Default;
   Result := Self.Aggregate((min, x)-> comp.Compare(selector(x), selector(min)) <= 0 ? x : min);
@@ -8689,8 +8693,6 @@ function LastMaxBy<T, TKey>(Self: sequence of T; selector: T->TKey): T; extensio
 begin
   if selector = nil then
     raise new ArgumentNullException('selector');
-  if not Self.Any() then
-    raise new InvalidOperationException('Empty sequence');
   
   var comp := Comparer&<TKey>.Default;
   Result := Self.Aggregate((max, x)-> comp.Compare(selector(x), selector(max)) >= 0 ? x : max);

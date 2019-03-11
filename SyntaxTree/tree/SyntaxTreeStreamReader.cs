@@ -3569,7 +3569,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_unnamed_type_object(unnamed_type_object _unnamed_type_object)
 		{
-			read_expression(_unnamed_type_object);
+			read_addressed_value(_unnamed_type_object);
 			_unnamed_type_object.ne_list = _read_node() as name_assign_expr_list;
 			_unnamed_type_object.is_class = br.ReadBoolean();
 			_unnamed_type_object.new_ex = _read_node() as new_expr;
