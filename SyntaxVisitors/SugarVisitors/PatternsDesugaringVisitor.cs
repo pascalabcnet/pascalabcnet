@@ -69,7 +69,7 @@ namespace SyntaxVisitors.SugarVisitors
         private const string WildCardsTupleEqualFunctionName = compiler_string_consts.wild_cards_tuple_equal_function_name;
         private const string SeqFunctionName = compiler_string_consts.seq_function_name;
         private const string GeneratedPatternNamePrefix = "<>pattern";
-        private const string GeneratedConstPatternParamPrefix = "<>constPatternParam";
+        private const string GeneratedDeconstructParamPrefix = "<>deconstructParam";
 
         private int generalVariableCounter = 0;
         private int successVariableCounter = 0;
@@ -154,17 +154,29 @@ namespace SyntaxVisitors.SugarVisitors
             DesugarIsExpression(isPatternExpr);
         }
 
-        void DesugarDeconstructorPatternCase(expression matchingExpression, pattern_case patternCase)
+        private void DesugarDeconstructorPatternCase(expression matchingExpression, pattern_case patternCase)
         {
             Debug.Assert(patternCase.pattern is deconstructor_pattern);
-            var pattern = patternCase.pattern as deconstructor_pattern;
+            var paramCheckExpr = DesugarDeconstructorPatternParameters(patternCase.pattern as deconstructor_pattern);
+
+            var isExpression = new is_pattern_expr(matchingExpression, patternCase.pattern);
+            paramCheckExpr = paramCheckExpr == null ? (expression)isExpression : bin_expr.LogicalAnd(isExpression, paramCheckExpr);
+            var ifCondition = patternCase.condition == null ? paramCheckExpr : bin_expr.LogicalAnd(paramCheckExpr, patternCase.condition);
+            var ifCheck = SubtreeCreator.CreateIf(ifCondition, patternCase.case_action);
+
+            // Добавляем полученные statements в результат
+            AddDesugaredCaseToResult(ifCheck, ifCheck);
+        }
+
+        private expression DesugarDeconstructorPatternParameters(deconstructor_pattern pattern)
+        {
             expression paramCheckExpr = null;
 
             for (int i = 0; i < pattern.parameters.Count; ++i)
             {
                 if (pattern.parameters[i] is const_deconstructor_parameter constPattern)
                 {
-                    var constParamIdent = new ident(NewConstParamId(), pattern.parameters[i].source_context);
+                    var constParamIdent = new ident(NewDeconstructParamId(), pattern.parameters[i].source_context);
 
                     var eqParams = new expression_list(
                         new List<expression>()
@@ -177,28 +189,42 @@ namespace SyntaxVisitors.SugarVisitors
                     var constParamCheck = new method_call(
                         new dot_node(new ident("object"), new ident("Equals")),
                         eqParams,
-                        patternCase.source_context
+                        pattern.source_context
                     );
-                    
+
                     pattern.parameters[i] = new var_deconstructor_parameter(
-                        constParamIdent, 
-                        null, 
+                        constParamIdent,
+                        null,
                         pattern.parameters[i].source_context);
 
                     paramCheckExpr = paramCheckExpr == null ? (expression)constParamCheck : bin_expr.LogicalAnd(paramCheckExpr, constParamCheck);
                 }
+
+                if (pattern.parameters[i] is wild_card_deconstructor_parameter)
+                {
+                    var wildCardGeneratedParamIdent = new ident(NewDeconstructParamId(), pattern.parameters[i].source_context);
+
+                    pattern.parameters[i] = new var_deconstructor_parameter(
+                        wildCardGeneratedParamIdent,
+                        null,
+                        pattern.parameters[i].source_context);
+                }
+
+                if (pattern.parameters[i] is recursive_deconstructor_parameter deconstructor_param)
+                {
+                    if (deconstructor_param.pattern is deconstructor_pattern deconstructor_pattern)
+                    {
+                        var recursiveChecks = DesugarDeconstructorPatternParameters(deconstructor_pattern);
+                        paramCheckExpr = paramCheckExpr == null ? 
+                                         recursiveChecks : 
+                                         bin_expr.LogicalAnd(paramCheckExpr, recursiveChecks);
+                    }
+                }
             }
-
-            var isExpression = new is_pattern_expr(matchingExpression, patternCase.pattern);
-            paramCheckExpr = paramCheckExpr == null ? (expression)isExpression : bin_expr.LogicalAnd(isExpression, paramCheckExpr);
-            var ifCondition = patternCase.condition == null ? paramCheckExpr : bin_expr.LogicalAnd(paramCheckExpr, patternCase.condition);
-            var ifCheck = SubtreeCreator.CreateIf(ifCondition, patternCase.case_action);
-
-            // Добавляем полученные statements в результат
-            AddDesugaredCaseToResult(ifCheck, ifCheck);
+            return paramCheckExpr;
         }
 
-        void DesugarConstPatternCase(expression matchingExpression, pattern_case patternCase)
+        private void DesugarConstPatternCase(expression matchingExpression, pattern_case patternCase)
         {
             Debug.Assert(patternCase.pattern is const_pattern);
             var patternExpressionNode = patternCase.pattern as const_pattern;
@@ -352,7 +378,7 @@ namespace SyntaxVisitors.SugarVisitors
         private void DesugarIsExpression(is_pattern_expr isPatternExpr)
         {
             Debug.Assert(isPatternExpr.right is deconstructor_pattern);
-
+            var constParamChecks = DesugarDeconstructorPatternParameters(isPatternExpr.right as deconstructor_pattern);
             var patternLocation = GetLocation(isPatternExpr);
             
             var pattern = isPatternExpr.right as deconstructor_pattern;
@@ -569,9 +595,9 @@ namespace SyntaxVisitors.SugarVisitors
 
         //random id generator
         private int postfix = 0;
-        private string NewConstParamId()
+        private string NewDeconstructParamId()
         {
-            return GeneratedConstPatternParamPrefix + postfix++.ToString();
+            return GeneratedDeconstructParamPrefix + postfix++.ToString();
         }
     }
 }
