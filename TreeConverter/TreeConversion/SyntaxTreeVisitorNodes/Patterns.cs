@@ -267,13 +267,17 @@ namespace PascalABCCompiler.TreeConverter
             var patternType = convert_strong(patternExpression).type;
             var expressionType = convert_strong(matchedExpression).type;
 
-            var expressionTypeName = expressionType.name;
-            var patternTypeName = patternType.name;
+            var expressionTypeName = expressionType.BaseFullName;
+            var patternTypeName = patternType.BaseFullName;
 
+            var tupleName = "System.Tuple";
             if (type_table.is_derived(patternType, expressionType) ||
                 type_table.is_derived(expressionType, patternType) ||
                 AreTheSameType(patternType, expressionType) ||
-                (expressionTypeName.StartsWith("Tuple") && patternTypeName.StartsWith("Tuple")))
+                (expressionTypeName.StartsWith(tupleName) && 
+                patternTypeName.StartsWith(tupleName) &&
+                int.Parse(expressionTypeName.Substring(tupleName.Length + 1, 1)) == 
+                int.Parse(patternTypeName.Substring(tupleName.Length + 1, 1))))
                 return;
 
             AddError(get_location(matchedExpression), "EXPRESSION_OF_TYPE_{0}_CANNOT_BE_MATCHED_AGAINST_PATTERN_WITH_TYPE_{1}", expressionType.name, patternType.name);
