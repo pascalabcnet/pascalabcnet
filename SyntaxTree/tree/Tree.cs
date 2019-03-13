@@ -48391,25 +48391,28 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public is_pattern_expr(expression _left,pattern_node _right)
+		public is_pattern_expr(expression _left,pattern_node _right,expression _constDeconstructorParamCheck)
 		{
 			this._left=_left;
 			this._right=_right;
+			this._constDeconstructorParamCheck=_constDeconstructorParamCheck;
 			FillParentsInDirectChilds();
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public is_pattern_expr(expression _left,pattern_node _right,SourceContext sc)
+		public is_pattern_expr(expression _left,pattern_node _right,expression _constDeconstructorParamCheck,SourceContext sc)
 		{
 			this._left=_left;
 			this._right=_right;
+			this._constDeconstructorParamCheck=_constDeconstructorParamCheck;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
 		protected expression _left;
 		protected pattern_node _right;
+		protected expression _constDeconstructorParamCheck;
 
 		///<summary>
 		///
@@ -48445,6 +48448,23 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+		///<summary>
+		///
+		///</summary>
+		public expression constDeconstructorParamCheck
+		{
+			get
+			{
+				return _constDeconstructorParamCheck;
+			}
+			set
+			{
+				_constDeconstructorParamCheck=value;
+				if (_constDeconstructorParamCheck != null)
+					_constDeconstructorParamCheck.Parent = this;
+			}
+		}
+
 
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -48468,6 +48488,11 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.right = (pattern_node)right.Clone();
 				copy.right.Parent = copy;
 			}
+			if (constDeconstructorParamCheck != null)
+			{
+				copy.constDeconstructorParamCheck = (expression)constDeconstructorParamCheck.Clone();
+				copy.constDeconstructorParamCheck.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -48486,6 +48511,8 @@ namespace PascalABCCompiler.SyntaxTree
 				left.Parent = this;
 			if (right != null)
 				right.Parent = this;
+			if (constDeconstructorParamCheck != null)
+				constDeconstructorParamCheck.Parent = this;
 		}
 
 		///<summary> Заполняет поля Parent во всем поддереве </summary>
@@ -48495,6 +48522,7 @@ namespace PascalABCCompiler.SyntaxTree
 			attributes?.FillParentsInAllChilds();
 			left?.FillParentsInAllChilds();
 			right?.FillParentsInAllChilds();
+			constDeconstructorParamCheck?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -48504,7 +48532,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 3;
 			}
 		}
 		///<summary>
@@ -48514,7 +48542,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 3;
 			}
 		}
 		///<summary>
@@ -48532,6 +48560,8 @@ namespace PascalABCCompiler.SyntaxTree
 						return left;
 					case 1:
 						return right;
+					case 2:
+						return constDeconstructorParamCheck;
 				}
 				return null;
 			}
@@ -48546,6 +48576,9 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 					case 1:
 						right = (pattern_node)value;
+						break;
+					case 2:
+						constDeconstructorParamCheck = (expression)value;
 						break;
 				}
 			}

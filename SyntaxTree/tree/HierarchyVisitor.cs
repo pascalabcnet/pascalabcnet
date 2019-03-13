@@ -3854,6 +3854,7 @@ namespace PascalABCCompiler.SyntaxTree
 			pre_do_visit(_is_pattern_expr);
 			visit(is_pattern_expr.left);
 			visit(is_pattern_expr.right);
+			visit(is_pattern_expr.constDeconstructorParamCheck);
 			post_do_visit(_is_pattern_expr);
 		}
 

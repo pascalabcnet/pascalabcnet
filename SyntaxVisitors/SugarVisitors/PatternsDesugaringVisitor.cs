@@ -159,9 +159,8 @@ namespace SyntaxVisitors.SugarVisitors
             Debug.Assert(patternCase.pattern is deconstructor_pattern);
             var paramCheckExpr = DesugarDeconstructorPatternParameters(patternCase.pattern as deconstructor_pattern);
 
-            var isExpression = new is_pattern_expr(matchingExpression, patternCase.pattern);
-            paramCheckExpr = paramCheckExpr == null ? (expression)isExpression : bin_expr.LogicalAnd(isExpression, paramCheckExpr);
-            var ifCondition = patternCase.condition == null ? paramCheckExpr : bin_expr.LogicalAnd(paramCheckExpr, patternCase.condition);
+            var isExpression = new is_pattern_expr(matchingExpression, patternCase.pattern, paramCheckExpr);
+            var ifCondition = patternCase.condition == null ? (expression)isExpression : bin_expr.LogicalAnd(isExpression, patternCase.condition);
             var ifCheck = SubtreeCreator.CreateIf(ifCondition, patternCase.case_action);
 
             // Добавляем полученные statements в результат
@@ -347,7 +346,7 @@ namespace SyntaxVisitors.SugarVisitors
             _previousIf = newIf;
         }
 
-        private DeconstructionDesugaringResult DesugarPattern(deconstructor_pattern pattern, expression matchingExpression)
+        private DeconstructionDesugaringResult DesugarPattern(deconstructor_pattern pattern, expression matchingExpression, expression constParamCheck)
         {
             Debug.Assert(!pattern.IsRecursive, "All recursive patterns should be desugared into simple patterns at this point");
 
@@ -360,6 +359,10 @@ namespace SyntaxVisitors.SugarVisitors
 
             // делегирование проверки паттерна функции IsTest
             desugarResult.TypeCastCheck = SubtreeCreator.CreateSystemFunctionCall(IsTestMethodName, matchingExpression, castVariableName);
+            if (constParamCheck != null)
+            {
+                desugarResult.TypeCastCheck = bin_expr.LogicalAnd(desugarResult.TypeCastCheck, constParamCheck);
+            }
 
             var parameters = pattern.parameters.Cast<var_deconstructor_parameter>();
             foreach (var deconstructedVariable in parameters)
@@ -378,7 +381,8 @@ namespace SyntaxVisitors.SugarVisitors
         private void DesugarIsExpression(is_pattern_expr isPatternExpr)
         {
             Debug.Assert(isPatternExpr.right is deconstructor_pattern);
-            var constParamChecks = DesugarDeconstructorPatternParameters(isPatternExpr.right as deconstructor_pattern);
+            var constParamCheck = DesugarDeconstructorPatternParameters(isPatternExpr.right as deconstructor_pattern);
+            isPatternExpr.constDeconstructorParamCheck = constParamCheck;
             var patternLocation = GetLocation(isPatternExpr);
             
             var pattern = isPatternExpr.right as deconstructor_pattern;
@@ -402,7 +406,7 @@ namespace SyntaxVisitors.SugarVisitors
         private expression DesugarRecursiveDeconstructor(expression expression, deconstructor_pattern pattern)
         {
             List<pattern_deconstructor_parameter> parameters = pattern.parameters;
-            expression conjunction = new is_pattern_expr(expression, pattern);
+            expression conjunction = new is_pattern_expr(expression, pattern, null);
             for (int i = 0; i < parameters.Count; i++)
             {
                 if (parameters[i] is recursive_deconstructor_parameter parameter)
@@ -422,7 +426,7 @@ namespace SyntaxVisitors.SugarVisitors
         private void DesugarIsExpressionInAssignment(is_pattern_expr isExpression)
         {
             var pattern = isExpression.right as deconstructor_pattern;
-            var desugaringResult = DesugarPattern(pattern, isExpression.left);
+            var desugaringResult = DesugarPattern(pattern, isExpression.left, isExpression.constDeconstructorParamCheck);
             ReplaceUsingParent(isExpression, desugaringResult.SuccessVariable);
             
             var statementsToAdd = desugaringResult.GetDeconstructionDefinitions(pattern.source_context);
@@ -436,7 +440,7 @@ namespace SyntaxVisitors.SugarVisitors
         private void DesugarIsExpressionInIfCondition(is_pattern_expr isExpression)
         {
             var pattern = isExpression.right as deconstructor_pattern;
-            var desugaringResult = DesugarPattern(pattern, isExpression.left);
+            var desugaringResult = DesugarPattern(pattern, isExpression.left, isExpression.constDeconstructorParamCheck);
             ReplaceUsingParent(isExpression, desugaringResult.SuccessVariable);
 
             var statementsToAdd = desugaringResult.GetDeconstructionDefinitions(pattern.source_context);

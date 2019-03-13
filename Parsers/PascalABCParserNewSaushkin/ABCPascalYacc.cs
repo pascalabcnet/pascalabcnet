@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-IF20NRO
-// DateTime: 3/13/2019 10:42:00 AM
+// DateTime: 3/13/2019 12:33:33 PM
 // UserName: FatCow
 // Input file <ABCPascal.y>
 
@@ -5525,7 +5525,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 {
             var isTypeCheck = ValueStack[ValueStack.Depth-4].ex as typecast_node;
             var deconstructorPattern = new deconstructor_pattern(ValueStack[ValueStack.Depth-2].ob as List<pattern_deconstructor_parameter>, isTypeCheck.type_def, CurrentLocationSpan); 
-            CurrentSemanticValue.ex = new is_pattern_expr(isTypeCheck.expr, deconstructorPattern, CurrentLocationSpan);
+            CurrentSemanticValue.ex = new is_pattern_expr(isTypeCheck.expr, deconstructorPattern, null, CurrentLocationSpan);
         }
         break;
       case 609: // pattern -> simple_or_template_type_reference, tkRoundOpen, 

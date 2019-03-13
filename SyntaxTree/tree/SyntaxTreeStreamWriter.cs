@@ -6247,6 +6247,15 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_is_pattern_expr.right.visit(this);
 			}
+			if (_is_pattern_expr.constDeconstructorParamCheck == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_is_pattern_expr.constDeconstructorParamCheck.visit(this);
+			}
 		}
 
 

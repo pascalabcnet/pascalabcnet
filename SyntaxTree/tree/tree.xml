@@ -2894,6 +2894,7 @@
       <Fields>
         <SyntaxField Name="left" SyntaxType="expression" />
         <SyntaxField Name="right" SyntaxType="pattern_node" />
+        <SyntaxField Name="constDeconstructorParamCheck" SyntaxType="expression" />
       </Fields>
       <Methods />
       <Tags>
@@ -3763,6 +3764,7 @@
       <HelpData Key="interface_node.uses_modules" Value="" />
       <HelpData Key="interface_node.using_namespaces" Value="" />
       <HelpData Key="is_pattern_expr" Value="" />
+      <HelpData Key="is_pattern_expr.constDeconstructorParamCheck" Value="" />
       <HelpData Key="is_pattern_expr.left" Value="" />
       <HelpData Key="is_pattern_expr.right" Value="" />
       <HelpData Key="jump_stmt" Value="" />

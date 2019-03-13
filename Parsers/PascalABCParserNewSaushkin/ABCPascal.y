@@ -3276,7 +3276,7 @@ relop_expr
         {
             var isTypeCheck = $1 as typecast_node;
             var deconstructorPattern = new deconstructor_pattern($3 as List<pattern_deconstructor_parameter>, isTypeCheck.type_def, @$); 
-            $$ = new is_pattern_expr(isTypeCheck.expr, deconstructorPattern, @$);
+            $$ = new is_pattern_expr(isTypeCheck.expr, deconstructorPattern, null, @$);
         }
     ;
     

@@ -3997,6 +3997,7 @@ namespace PascalABCCompiler.SyntaxTree
 			read_expression(_is_pattern_expr);
 			_is_pattern_expr.left = _read_node() as expression;
 			_is_pattern_expr.right = _read_node() as pattern_node;
+			_is_pattern_expr.constDeconstructorParamCheck = _read_node() as expression;
 		}
 
 
