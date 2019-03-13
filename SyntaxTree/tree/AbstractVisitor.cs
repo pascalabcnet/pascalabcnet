@@ -1197,6 +1197,16 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_tuple_wild_card);
 		}
+
+		public virtual void visit(const_deconstructor_parameter _const_deconstructor_parameter)
+		{
+			DefaultVisit(_const_deconstructor_parameter);
+		}
+
+		public virtual void visit(wild_card_deconstructor_parameter _wild_card_deconstructor_parameter)
+		{
+			DefaultVisit(_wild_card_deconstructor_parameter);
+		}
 	}
 
 

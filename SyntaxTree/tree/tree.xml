@@ -3077,6 +3077,32 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="const_deconstructor_parameter" BaseName="pattern_deconstructor_parameter">
+      <Fields>
+        <SyntaxField Name="const_param" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>11</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="wild_card_deconstructor_parameter" BaseName="pattern_deconstructor_parameter">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>11</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3104,7 +3130,7 @@
         <Tag Name="Yield" ReferenceCount="8" />
         <Tag Name="Patterns" ReferenceCount="12" />
         <Tag Name="Typeclasses" ReferenceCount="13" />
-        <Tag Name="patterns" ReferenceCount="5" />
+        <Tag Name="patterns" ReferenceCount="7" />
       </Tags>
     </FilterCategory>
   </TagCategories>
@@ -3140,6 +3166,7 @@
       <HelpData Key=".from" Value="" />
       <HelpData Key=".guardstats" Value="" />
       <HelpData Key=".handlers" Value="" />
+      <HelpData Key=".i" Value="" />
       <HelpData Key=".left" Value="" />
       <HelpData Key=".lists" Value="" />
       <HelpData Key=".listunitsections" Value="" />
@@ -3369,6 +3396,10 @@
       <HelpData Key="compiler_directive_list.compiler_directive_list Add(compiler_directive _compiler_directive, SourceContext sc)" Value="" />
       <HelpData Key="compiler_directive_list.compiler_directive_list(compiler_directive _compiler_directive, SourceContext sc)" Value="" />
       <HelpData Key="compiler_directive_list.directives" Value="" />
+      <HelpData Key="const_deconstructor_parameter" Value="" />
+      <HelpData Key="const_deconstructor_parameter.const_param" Value="" />
+      <HelpData Key="const_deconstructor_parameter.i" Value="" />
+      <HelpData Key="const_deconstructor_parameter.value" Value="" />
       <HelpData Key="const_definition" Value="" />
       <HelpData Key="const_definition.const_name" Value="" />
       <HelpData Key="const_definition.const_value" Value="" />
@@ -4563,6 +4594,9 @@
       <HelpData Key="while_node.statements" Value="Тело цикла" />
       <HelpData Key="while_type_specificator_list" Value="" />
       <HelpData Key="while_type_specificator_list.defs" Value="" />
+      <HelpData Key="wild_card_deconstructor_parameter" Value="" />
+      <HelpData Key="wild_card_deconstructor_parameter.exp" Value="" />
+      <HelpData Key="wildcard_deconstructor_parameter" Value="" />
       <HelpData Key="with_statement" Value="Представление оператора with в синтаксическом дереве." />
       <HelpData Key="with_statement." Value="" />
       <HelpData Key="with_statement.do_with" Value="Список объектов, с которыми производить действия." />

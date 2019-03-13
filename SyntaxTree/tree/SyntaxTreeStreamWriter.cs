@@ -6607,6 +6607,39 @@ namespace PascalABCCompiler.SyntaxTree
 			write_expression(_tuple_wild_card);
 		}
 
+
+		public void visit(const_deconstructor_parameter _const_deconstructor_parameter)
+		{
+			bw.Write((Int16)238);
+			write_const_deconstructor_parameter(_const_deconstructor_parameter);
+		}
+
+		public void write_const_deconstructor_parameter(const_deconstructor_parameter _const_deconstructor_parameter)
+		{
+			write_pattern_deconstructor_parameter(_const_deconstructor_parameter);
+			if (_const_deconstructor_parameter.const_param == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_const_deconstructor_parameter.const_param.visit(this);
+			}
+		}
+
+
+		public void visit(wild_card_deconstructor_parameter _wild_card_deconstructor_parameter)
+		{
+			bw.Write((Int16)239);
+			write_wild_card_deconstructor_parameter(_wild_card_deconstructor_parameter);
+		}
+
+		public void write_wild_card_deconstructor_parameter(wild_card_deconstructor_parameter _wild_card_deconstructor_parameter)
+		{
+			write_pattern_deconstructor_parameter(_wild_card_deconstructor_parameter);
+		}
+
 	}
 
 

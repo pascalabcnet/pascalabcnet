@@ -69,6 +69,7 @@ namespace SyntaxVisitors.SugarVisitors
         private const string WildCardsTupleEqualFunctionName = compiler_string_consts.wild_cards_tuple_equal_function_name;
         private const string SeqFunctionName = compiler_string_consts.seq_function_name;
         private const string GeneratedPatternNamePrefix = "<>pattern";
+        private const string GeneratedConstPatternParamPrefix = "<>constPatternParam";
 
         private int generalVariableCounter = 0;
         private int successVariableCounter = 0;
@@ -156,9 +157,41 @@ namespace SyntaxVisitors.SugarVisitors
         void DesugarDeconstructorPatternCase(expression matchingExpression, pattern_case patternCase)
         {
             Debug.Assert(patternCase.pattern is deconstructor_pattern);
-            
+            var pattern = patternCase.pattern as deconstructor_pattern;
+            expression paramCheckExpr = null;
+
+            for (int i = 0; i < pattern.parameters.Count; ++i)
+            {
+                if (pattern.parameters[i] is const_deconstructor_parameter constPattern)
+                {
+                    var constParamIdent = new ident(NewConstParamId(), pattern.parameters[i].source_context);
+
+                    var eqParams = new expression_list(
+                        new List<expression>()
+                        {
+                            constPattern.const_param,
+                            constParamIdent
+                        }
+                    );
+
+                    var constParamCheck = new method_call(
+                        new dot_node(new ident("object"), new ident("Equals")),
+                        eqParams,
+                        patternCase.source_context
+                    );
+                    
+                    pattern.parameters[i] = new var_deconstructor_parameter(
+                        constParamIdent, 
+                        null, 
+                        pattern.parameters[i].source_context);
+
+                    paramCheckExpr = paramCheckExpr == null ? (expression)constParamCheck : bin_expr.LogicalAnd(paramCheckExpr, constParamCheck);
+                }
+            }
+
             var isExpression = new is_pattern_expr(matchingExpression, patternCase.pattern);
-            var ifCondition = patternCase.condition == null ? (expression)isExpression : bin_expr.LogicalAnd(isExpression, patternCase.condition);
+            paramCheckExpr = paramCheckExpr == null ? (expression)isExpression : bin_expr.LogicalAnd(isExpression, paramCheckExpr);
+            var ifCondition = patternCase.condition == null ? paramCheckExpr : bin_expr.LogicalAnd(paramCheckExpr, patternCase.condition);
             var ifCheck = SubtreeCreator.CreateIf(ifCondition, patternCase.case_action);
 
             // Добавляем полученные statements в результат
@@ -172,7 +205,8 @@ namespace SyntaxVisitors.SugarVisitors
 
             var statementsToAdd = new List<statement>();
             var equalCalls = new List<method_call>();
-            
+
+            var matchingWithFullWildCardTuple = false;
             foreach (var patternExpression in patternExpressionNode.pattern_expressions.expressions)
             {
                 statementsToAdd.Add(GetTypeCompatibilityCheck(matchingExpression, patternExpression));
@@ -198,6 +232,11 @@ namespace SyntaxVisitors.SugarVisitors
                                     //possibleTupleCase.parameters.ReplaceInList(possibleTupleCase.parameters.expressions[currentInd], new nil_const());
                                     possibleTupleCase.parameters[currentInd] = new int32_const(0, patternCase.source_context);
                                 }
+                            }
+                            matchingWithFullWildCardTuple = elemsToCompare.Count == 0;
+                            if (matchingWithFullWildCardTuple)
+                            {
+                                break;
                             }
                             var seqCall = SubtreeCreator.CreateSystemFunctionCall(
                                 SeqFunctionName, elemsToCompare.ToArray());
@@ -232,10 +271,20 @@ namespace SyntaxVisitors.SugarVisitors
                 );
             }
             typeChecks.AddRange(statementsToAdd);
-            expression orPatternCases = equalCalls[0];
-            for (int i = 1; i < equalCalls.Count; ++i)
+
+            expression orPatternCases = null;
+            // Если в одном из выражений есть тапл со всеми wild-card'ами (напр. (?, ?, ?))
+            if (matchingWithFullWildCardTuple)
             {
-                orPatternCases = bin_expr.LogicalOr(orPatternCases, equalCalls[i]);
+                orPatternCases = new bool_const(true, patternCase.source_context);
+            }
+            else
+            {
+                orPatternCases = equalCalls[0];
+                for (int i = 1; i < equalCalls.Count; ++i)
+                {
+                    orPatternCases = bin_expr.LogicalOr(orPatternCases, equalCalls[i]);
+                }
             }
             var ifCondition = patternCase.condition == null ? orPatternCases : bin_expr.LogicalAnd(orPatternCases, patternCase.condition);
             var ifCheck = SubtreeCreator.CreateIf(ifCondition, patternCase.case_action);
@@ -349,7 +398,7 @@ namespace SyntaxVisitors.SugarVisitors
             var pattern = isExpression.right as deconstructor_pattern;
             var desugaringResult = DesugarPattern(pattern, isExpression.left);
             ReplaceUsingParent(isExpression, desugaringResult.SuccessVariable);
-
+            
             var statementsToAdd = desugaringResult.GetDeconstructionDefinitions(pattern.source_context);
             statementsToAdd.Add(GetMatchedExpressionCheck(isExpression.left));
             statementsToAdd.Add(GetTypeCompatibilityCheck(isExpression));
@@ -516,6 +565,13 @@ namespace SyntaxVisitors.SugarVisitors
             }
 
             return null;
+        }
+
+        //random id generator
+        private int postfix = 0;
+        private string NewConstParamId()
+        {
+            return GeneratedConstPatternParamPrefix + postfix++.ToString();
         }
     }
 }

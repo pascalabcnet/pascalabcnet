@@ -1909,6 +1909,22 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(const_deconstructor_parameter _const_deconstructor_parameter)
+		{
+		}
+
+		public virtual void post_do_visit(const_deconstructor_parameter _const_deconstructor_parameter)
+		{
+		}
+
+		public virtual void pre_do_visit(wild_card_deconstructor_parameter _wild_card_deconstructor_parameter)
+		{
+		}
+
+		public virtual void post_do_visit(wild_card_deconstructor_parameter _wild_card_deconstructor_parameter)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -3951,6 +3967,21 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_tuple_wild_card);
 			pre_do_visit(_tuple_wild_card);
 			post_do_visit(_tuple_wild_card);
+		}
+
+		public override void visit(const_deconstructor_parameter _const_deconstructor_parameter)
+		{
+			DefaultVisit(_const_deconstructor_parameter);
+			pre_do_visit(_const_deconstructor_parameter);
+			visit(const_deconstructor_parameter.const_param);
+			post_do_visit(_const_deconstructor_parameter);
+		}
+
+		public override void visit(wild_card_deconstructor_parameter _wild_card_deconstructor_parameter)
+		{
+			DefaultVisit(_wild_card_deconstructor_parameter);
+			pre_do_visit(_wild_card_deconstructor_parameter);
+			post_do_visit(_wild_card_deconstructor_parameter);
 		}
 	}
 

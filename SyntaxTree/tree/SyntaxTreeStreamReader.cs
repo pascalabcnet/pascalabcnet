@@ -496,6 +496,10 @@ namespace PascalABCCompiler.SyntaxTree
 					return new const_pattern();
 				case 237:
 					return new tuple_wild_card();
+				case 238:
+					return new const_deconstructor_parameter();
+				case 239:
+					return new wild_card_deconstructor_parameter();
 			}
 			return null;
 		}
@@ -4202,6 +4206,29 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_tuple_wild_card(tuple_wild_card _tuple_wild_card)
 		{
 			read_expression(_tuple_wild_card);
+		}
+
+
+		public void visit(const_deconstructor_parameter _const_deconstructor_parameter)
+		{
+			read_const_deconstructor_parameter(_const_deconstructor_parameter);
+		}
+
+		public void read_const_deconstructor_parameter(const_deconstructor_parameter _const_deconstructor_parameter)
+		{
+			read_pattern_deconstructor_parameter(_const_deconstructor_parameter);
+			_const_deconstructor_parameter.const_param = _read_node() as expression;
+		}
+
+
+		public void visit(wild_card_deconstructor_parameter _wild_card_deconstructor_parameter)
+		{
+			read_wild_card_deconstructor_parameter(_wild_card_deconstructor_parameter);
+		}
+
+		public void read_wild_card_deconstructor_parameter(wild_card_deconstructor_parameter _wild_card_deconstructor_parameter)
+		{
+			read_pattern_deconstructor_parameter(_wild_card_deconstructor_parameter);
 		}
 
 	}

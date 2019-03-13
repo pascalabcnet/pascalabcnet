@@ -32,7 +32,7 @@
 
 %start parse_goal
 
-%token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkQuestionPoint tkDoubleQuestion tkQuestionSquareOpen
+%token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkUnderscore tkQuestionPoint tkDoubleQuestion tkQuestionSquareOpen
 %token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkStatic tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction tkMatch tkWhen
 %token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
@@ -174,7 +174,7 @@
 %type <stn> full_lambda_fp_list lambda_simple_fp_sect lambda_function_body lambda_procedure_body common_lambda_body optional_full_lambda_fp_list
 %type <ob> field_in_unnamed_object list_fields_in_unnamed_object func_class_name_ident_list rem_lambda variable_list var_ident_list
 %type <ti> tkAssignOrEqual
-%type <stn> pattern pattern_optional_var match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var tuple_pattern_expr_list const_pattern_expr_list
+%type <stn> pattern pattern_optional_var const_pattern match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var tuple_pattern_expr_list const_pattern_expr_list
 %type <ob> pattern_out_param_list pattern_out_param_list_optional_var
 %type <ex> const_pattern_expression tuple_pattern tuple_pattern_expr
 
@@ -2790,6 +2790,14 @@ pattern_case
         {
             $$ = new pattern_case($1 as pattern_node, $3 as statement, null, @$);
         }  
+	| const_pattern tkWhen expr_l1 tkColon unlabelled_stmt
+		{
+			$$ = new pattern_case($1 as pattern_node, $5 as statement, $3, @$);
+		}
+	| const_pattern tkColon unlabelled_stmt
+		{
+			$$ = new pattern_case($1 as pattern_node, $3 as statement, null, @$);
+		}
     ;
     
 case_stmt
@@ -3284,11 +3292,14 @@ pattern_optional_var
         { 
             $$ = new deconstructor_pattern($3 as List<pattern_deconstructor_parameter>, $1, @$); 
         }
-	| const_pattern_expr_list
+    ;  
+
+const_pattern
+	: const_pattern_expr_list
 		{
 			$$ = new const_pattern($1 as expression_list, @$); 
 		}
-    ;  
+	;
 
 const_pattern_expr_list
 	: const_pattern_expression 
@@ -3322,7 +3333,7 @@ tuple_pattern
     ; 
 
 tuple_pattern_expr
-	: tkQuestion { $$ = new tuple_wild_card(); } 
+	: tkUnderscore { $$ = new tuple_wild_card(); } 
 	| literal_or_number { $$ = $1; }
 	;
 
@@ -3378,7 +3389,15 @@ pattern_out_param_list
     ;    
     
 pattern_out_param
-    : tkVar identifier tkColon type_ref
+    : tkUnderscore
+		{
+			$$ = new wild_card_deconstructor_parameter();
+		}
+	| literal_or_number
+		{
+			$$ = new const_deconstructor_parameter($1, @$);
+		}
+	| tkVar identifier tkColon type_ref
         {
             $$ = new var_deconstructor_parameter($2, $4, @$);
         }
@@ -3393,7 +3412,15 @@ pattern_out_param
     ;    
     
 pattern_out_param_optional_var
-    : identifier tkColon type_ref
+	: tkUnderscore
+		{
+			$$ = new wild_card_deconstructor_parameter();
+		}
+	| literal_or_number
+		{
+			$$ = new const_deconstructor_parameter($1, @$);
+		}
+    | identifier tkColon type_ref
         {
             $$ = new var_deconstructor_parameter($1, $3, @$);
         }
