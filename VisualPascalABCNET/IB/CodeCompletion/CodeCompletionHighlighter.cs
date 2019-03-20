@@ -401,6 +401,14 @@ namespace VisualPascalABC
                                 return null;
                         }
                     }
+                    else if (string.Compare(word, "end.", true) == 0)
+                    {
+                        string s = beg_stack.Pop();
+                        if (beg_stack.Count == 0 && (string.Compare(s, "begin", true) == 0 || highlighted_keywords[s] != null))
+                            return new TmpPos(end_off - 4, word.Length - 1);
+                        if (beg_stack.Count == 0 && ignored_keywords[s] != null)
+                            return null;
+                    }
                     sb.Remove(0, sb.Length);
                     if (c == '{')
                     {

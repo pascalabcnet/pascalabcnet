@@ -1,4 +1,5 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Elements">
 <param name="Keyword" value="Read">
 <param name="Keyword" value="Read2">
 <param name="Keyword" value="Read3">
@@ -9,7 +10,9 @@
 <param name="Keyword" value="Write"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Методы расширения типизированных файлов</H1>
-<table border=0 cellpadding=5><tr><td><code><b>function</b> Read&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T): T;</code>
+<table border=0 cellpadding=5><tr><td><code><b>function</b> Elements&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность элементов открытого типизированного файла</td></tr>
+<tr><td><code><b>function</b> Read&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T): T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает и возвращает следующий элемент типизированного файла</td></tr>
 <tr><td><code><b>function</b> Read2&lt;T&gt;(Self:  <b>file</b>  <b>of</b> T): (T,T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает и возвращает два следующих элемента типизированного файла в виде кортежа</td></tr>

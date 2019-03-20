@@ -174,6 +174,8 @@ type
     procedure Load(fname: string);
     /// Очищает графическое окно белым цветом
     procedure Clear; override;
+    /// Очищает графическое окно цветом c
+    procedure Clear(c: Color); override;
   end;
 
 //{{{--doc: Конец секции 2 }}} 
@@ -464,6 +466,10 @@ var OnKeyPress: procedure(ch: char);
 var OnResize: procedure;
 
 //{{{--doc: Конец секции 3 }}} 
+
+// Для WPFObjects
+var AdditionalInit: procedure;
+function GetMouseArgs(e: MouseEventArgs): (Point,integer);
 
 {procedure AddRightPanel(Width: real := 200; c: Color := Colors.LightGray);
 procedure AddLeftPanel(Width: real := 200; c: Color := Colors.LightGray);
@@ -1296,7 +1302,22 @@ begin
   end;  
 end;
 
+procedure WindowTypeClearPC(c: Color);
+begin 
+  Host.children.Clear; 
+  if not rtbmapIsCleared then
+  begin
+    rtbmap.Clear; 
+    rtbmapIsCleared := True;
+  end;  
+  FillRectangle(0,0,Window.Width,Window.Height,c)
+end;
+
+
 procedure WindowTypeWPF.Clear := Invoke(WindowTypeClearP);
+
+procedure WindowTypeWPF.Clear(c: Color) := Invoke(WindowTypeClearPC,c);
+
 
 function XMin := -XOrigin/GlobalScale;
 function XMax := (Window.Width-XOrigin)/GlobalScale;
@@ -1397,8 +1418,8 @@ begin
 end; 
 procedure SetStandardCoordsSharpLines(x0,y0: real) := Invoke(SetStandardCoordsSharpLinesP,x0,y0);
 
-/// --- SystemMouseEvents
-procedure SystemOnMouseDown(sender: Object; e: MouseButtonEventArgs);
+
+function GetMouseArgs(e: MouseEventArgs): (Point,integer);
 begin
   var mb := 0;
   var p := e.GetPosition(host);
@@ -1406,30 +1427,27 @@ begin
     mb := 1
   else if e.RightButton = MouseButtonState.Pressed then
     mb := 2;
+  Result := (p,mb);  
+end;
+
+/// --- SystemMouseEvents
+procedure SystemOnMouseDown(sender: Object; e: MouseButtonEventArgs);
+begin
+  var (p,mb) := GetMouseArgs(e);
   if OnMouseDown <> nil then  
     OnMouseDown(p.x, p.y, mb);
 end;
 
 procedure SystemOnMouseUp(sender: Object; e: MouseButtonEventArgs);
 begin
-  var mb := 0;
-  var p := e.GetPosition(host);
-  if e.LeftButton = MouseButtonState.Pressed then
-    mb := 1
-  else if e.RightButton = MouseButtonState.Pressed then
-    mb := 2;
+  var (p,mb) := GetMouseArgs(e);
   if OnMouseUp <> nil then  
     OnMouseUp(p.x, p.y, mb);
 end;
 
 procedure SystemOnMouseMove(sender: Object; e: MouseEventArgs);
 begin
-  var mb := 0;
-  var p := e.GetPosition(host);
-  if e.LeftButton = MouseButtonState.Pressed then
-    mb := 1
-  else if e.RightButton = MouseButtonState.Pressed then
-    mb := 2;
+  var (p,mb) := GetMouseArgs(e);
   if OnMouseMove <> nil then  
     OnMouseMove(p.x, p.y, mb);
 end;
@@ -1444,20 +1462,14 @@ procedure SystemOnKeyUp(sender: Object; e: KeyEventArgs) :=
     OnKeyUp(e.Key);
     
 procedure SystemOnKeyPress(sender: Object; e: TextCompositionEventArgs) := 
-begin
   if (OnKeyPress<>nil) and (e.Text<>nil) and (e.Text.Length>0) then
     OnKeyPress(e.Text[1]);
-end;    
     
 procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) := 
   if OnResize<>nil then
     OnResize();
 
 ///----------------------------------------------------------------------
-
-{procedure RenderFrame(s: Object; e: System.EventArgs);
-begin
-end;}
 
 var OnDraw: procedure := nil;
 var OnDraw1: procedure(frame: integer) := nil;
@@ -1479,7 +1491,6 @@ begin
     else LastUpdatedTime := e1;  
     FrameNum += 1;
     Window.Clear;
-    //CountVisuals := integer.MinValue; // чтобы не было паузы после 1000 объектов
     if OnDraw<>nil then
       OnDraw() 
     else if OnDraw1<>nil then
@@ -1511,19 +1522,6 @@ begin
   FrameRate := 60;
 end;  
 
-{procedure AddGraphWindow;
-begin
-  host := new MyVisualHost();
-  host.ClipToBounds := True;
-  host.SizeChanged += (s,e) ->
-  begin
-    var sz := e.NewSize;
-    host.DataContext := sz;
-  end;
-  // Всегда последнее
-  MainDockPanel.children.Add(host);
-end;}
-
 var mre := new ManualResetEvent(false);
 
 type 
@@ -1540,7 +1538,6 @@ public
     end;
     // Всегда последнее
     var g := Content as DockPanel;
-    
     
     var dpiXProperty := typeof(SystemParameters).GetProperty('DpiX', BindingFlags.NonPublic or BindingFlags.Static);
     var dpiYProperty := typeof(SystemParameters).GetProperty('Dpi', BindingFlags.NonPublic or BindingFlags.Static);
@@ -1592,11 +1589,9 @@ public
     CompositionTarget.Rendering += RenderFrame;
     
     Loaded += (o,e) -> mre.Set();
-
   end;
 
 end;
-
 
 procedure InitApp;
 begin

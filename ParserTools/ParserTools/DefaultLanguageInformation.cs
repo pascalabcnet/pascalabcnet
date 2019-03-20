@@ -2717,6 +2717,8 @@ namespace PascalABCCompiler.Parsers
                             {
                                 sb.Insert(0, Text[j]);
                             }
+                            if (sb.ToString().Trim() == "new")
+                                return "";
                             i = bound;
                             continue;
                         }
@@ -3140,6 +3142,7 @@ namespace PascalABCCompiler.Parsers
         public virtual KeywordKind TestForKeyword(string Text, int i)
         {
             StringBuilder sb = new StringBuilder();
+            int orig_i = i;
             int j = i;
             bool in_keyw = false;
             while (j >= 0 && Text[j] != '\n')
@@ -3217,6 +3220,14 @@ namespace PascalABCCompiler.Parsers
                     i--;
                 }
             string s = sb.ToString().ToLower();
+            /*if (s == "new")
+            {
+                i = orig_i + 1;
+                while (i < Text.Length && char.IsWhiteSpace(Text[i]))
+                    i++;
+                if (i < Text.Length && Text[i] != '(')
+                    return KeywordKind.Punkt;
+            }*/
 
             return GetKeywordKind(s);
         }

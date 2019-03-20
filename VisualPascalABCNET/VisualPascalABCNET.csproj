@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>VisualPascalABC</RootNamespace>
     <AssemblyName>PascalABCNET</AssemblyName>
-    <ApplicationIcon>ABCNET32.ico</ApplicationIcon>
+    <ApplicationIcon>_ABC13.ico</ApplicationIcon>
     <TargetZone>LocalIntranet</TargetZone>
     <GenerateManifests>false</GenerateManifests>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
@@ -668,6 +668,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ABCNET32.ico" />
+    <Content Include="_ABC13.ico" />
     <None Include="Resources\AlignObjectsBottomHS.png" />
     <None Include="Resources\AlignObjectsCenteredHorizontalHS.png" />
     <None Include="Resources\AlignObjectsCenteredVerticalHS.png" />

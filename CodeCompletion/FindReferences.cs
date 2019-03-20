@@ -765,7 +765,7 @@ namespace CodeCompletion
             if (for_refactoring)
             {
                 IBaseScope ss = entry_scope.FindScopeByLocation(_simple_property.source_context.begin_position.line_num, _simple_property.source_context.begin_position.column_num);
-                if (ss != null && ss.IsEqual(founded_scope))
+                if (ss != null && (ss.IsEqual(founded_scope) || ss is IProcScope && ss.Name.StartsWith("#getset") && string.Compare(ss.Name.Replace("#getset",""), founded_scope.Name, true) == 0))
                     pos_list.Add(get_position(_simple_property.property_name));
             }
             if (_simple_property.parameter_list != null)

@@ -692,8 +692,9 @@ namespace CodeCompletion
                     else
                         returned_scope = null;
                 }
-                else
-            	    returned_scope = returned_scope.GetElementType();
+                else if (returned_scope.GetElementType() != null)
+                    returned_scope = returned_scope.GetElementType();
+            	    
             }
         }
 
@@ -3282,6 +3283,7 @@ namespace CodeCompletion
                         element_type = TypeTable.obj_type;
                         break;
                     }
+                    //else element_type = TypeTable.obj_type;
                 }
             }
             
@@ -4630,6 +4632,8 @@ namespace CodeCompletion
                 if (returned_scope != null)
                 {
                     cur_scope = stmt_scope;
+                    if (returned_scope is ProcScope)
+                        returned_scope = new ProcType(returned_scope as ProcScope);
                     ElementScope es = new ElementScope(new SymInfo(_foreach_stmt.identifier.name, SymbolKind.Variable, _foreach_stmt.identifier.name), returned_scope, cur_scope);
                     es.loc = get_location(_foreach_stmt.identifier);
                     stmt_scope.AddName(_foreach_stmt.identifier.name, es);
@@ -4849,7 +4853,7 @@ namespace CodeCompletion
         public override void visit(expression_as_statement _expression_as_statement)
         {
             //throw new Exception("The method or operation is not implemented.");
-            if (has_lambdas(_expression_as_statement.expr))
+            if (has_lambdas(_expression_as_statement.expr) || _expression_as_statement.expr is unnamed_type_object)
                 _expression_as_statement.expr.visit(this);
         }
 

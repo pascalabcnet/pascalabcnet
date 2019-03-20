@@ -1,11 +1,19 @@
 <html><head>
 <object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
-<param name="Keyword" value="FilePos">
-<param name="Keyword" value="FileSize">
+<param name="Keyword" value="Reset">
+<param name="Keyword" value="Rewrite">
+<param name="Keyword" value="Position">
+<param name="Keyword" value="Size">
 <param name="Keyword" value="Seek">
 <param name="Keyword" value="Truncate">
 <param name="Keyword" value="WriteBytes">
 <param name="Keyword" value="ReadBytes">
+<param name="Keyword" value="ReadInteger">
+<param name="Keyword" value="ReadBoolean">
+<param name="Keyword" value="ReadByte">
+<param name="Keyword" value="ReadChar">
+<param name="Keyword" value="ReadReal">
+<param name="Keyword" value="ReadString">
 </object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title>
@@ -18,26 +26,53 @@
 &nbsp;<table border=0 CELLPADDING=5>
 	<tr>
 		<td>
+		<code><strong>procedure</strong> Reset; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает существующий бестиповой файл на чтение и запись
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>procedure</strong> Rewrite; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает существующий бестиповой файл на чтение и запись. Если файл не существовал, он создаётся, если 
+		существовал, он обнуляется</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>procedure</strong> Reset(en: Encoding); </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает существующий бестиповой файл на чтение и запись в 
+		указанной кодировке
+</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>procedure</strong> Rewrite(en: Encoding); </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает существующий бестиповой файл на чтение и запись в 
+		указанной кодировке. Если файл не существовал, он создаётся, если 
+		существовал, он обнуляется</td>
+	</tr>
+	<tr>
+		<td>
 		<code><strong>function</strong> Position: int64; </code><br>
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает или 
-		устанавливает текущую позицию файлового указателя в двоичном файле
+		устанавливает текущую позицию файлового указателя в бестиповом файле
 </td>
 	</tr>
 	<tr>
 		<td>
 		<code><strong>function</strong> Size: int64; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество элементов в двоичном файле</td>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает количество байт в бестиповом файле</td>
 	</tr>
 	<tr>
 		<td>
 		<code><strong>procedure</strong> Seek(n: int64); </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает текущую позицию файлового указателя в двоичном 
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает текущую позицию файлового указателя в бестиповом 
 		файле на байт с номером n</td>
 	</tr>
 	<tr>
 		<td>
 		<code><strong>procedure</strong> Truncate; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Усекает двоичный файл, отбрасывая все элементы с позиции 
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Усекает 
+		бестиповой файл, отбрасывая все элементы с позиции 
 		файлового указателя</tr>
 	<tr>
 		<td>
@@ -50,5 +85,30 @@
 		of</strong> byte; </code><br>
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает указанное количество байтов из бестипового файла в 
 		байтовый массив</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadInteger: integer; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает целое из бестипового файла</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadBoolean: boolean; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает логическое из бестипового файла</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadByte: byte; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает байт из бестипового файла</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadChar: char; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает символ из бестипового файла</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadReal: real; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает 
+		вещественное из бестипового файла</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> ReadString: string; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает строку из бестипового файла</tr>
 	</table>
 </body></html>

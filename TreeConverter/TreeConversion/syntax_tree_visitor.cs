@@ -3519,6 +3519,37 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.class_definition _class_definition)
         {
+            if (_class_definition.keyword == class_keyword.Record && _class_definition.Parent is var_def_statement) // безымянная запись
+            {
+                if (_class_definition.class_parents != null && _class_definition.class_parents.Count>0)
+                    AddError(new SimpleSemanticError(get_location(_class_definition), "UNNAMED_RECORD_CANNOT_IMPLEMENT_INTERFACE"));
+                var pds = _class_definition.DescendantNodes().OfType<procedure_definition>();
+                if (pds.Count()>0)
+                    AddError(new SimpleSemanticError(get_location(pds.First()), "UNNAMED_RECORD_CANNOT_CONTAIN_METHODS"));
+
+                /*var cds = _class_definition.DescendantNodes().OfType<constructor>();
+                if (cds.Count() > 0)
+                    AddError(new SimpleSemanticError(get_location(cds.First()), "UNNAMED_RECORD_CANNOT_CONTAIN_CONSTRUCTORS"));*/
+                if (_class_definition.body.class_def_blocks.First().access_mod.access_level != access_modifer.public_modifer)
+                {
+                    var f = _class_definition.body.class_def_blocks.First();
+                    var loc = get_location(f);
+                    if (loc == null)
+                        loc = get_location(_class_definition);
+                    AddError(new SimpleSemanticError(loc, "UNNAMED_RECORD_CAN_CONTAIN_ONLY_ONE_PUBLIC_VISIBILITY_SECTION"));
+                }
+                    
+                if (_class_definition.body.class_def_blocks.Count > 1)
+                {
+                    var el1 = _class_definition.body.class_def_blocks.ElementAt(1);
+                    var loc = get_location(el1.access_mod);
+                    if (loc == null)
+                        loc = get_location(_class_definition);
+                    AddError(new SimpleSemanticError(loc, "UNNAMED_RECORD_CANNOT_CONTAIN_SEVERAL_VISIBILITY_SECTIONS"));
+                }
+                    
+            }                                                                                                                                                                          
+
             if (_class_definition.attribute != class_attribute.None && _class_definition.body == null)
                 AddError(new SimpleSemanticError(get_location(_class_definition), "CLASS_ATTRIBUTE_NOT_ALLOWED_IN_CLASS_PREDEFINTIONS"));
             if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Sealed) == SyntaxTree.class_attribute.Sealed)
@@ -11065,6 +11096,11 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.simple_const_definition _simple_const_definition)
         {
+            if (context.converting_block() == block_type.type_block &&
+                context.converted_type.IsInterface)
+            {
+                AddError(get_location(_simple_const_definition), "INVALID_INTERFACE_MEMBER");
+            }
             constant_definition_node cdn = context.add_const_definition(_simple_const_definition.const_name.name, get_location(_simple_const_definition.const_name));
             cdn.const_value = convert_strong_to_constant_node(_simple_const_definition.const_value);
             cdn.const_value.SetType(DeduceType(cdn.const_value.type, cdn.const_value.location));
@@ -11072,6 +11108,12 @@ namespace PascalABCCompiler.TreeConverter
             if (context.converted_type != null && context.converted_func_stack.Empty)
             	if (!constant_in_class_valid(cdn.const_value.type))
                     AddError(get_location(_simple_const_definition), "CLASS_CONSTANT_CAN_HAVE_ONLY_PRIMITIVE_VALUE");
+
+            if (_simple_const_definition.const_value is SyntaxTree.pascal_set_constant pc)
+            {
+                if (pc.values == null || pc.values.Count == 0)
+                    AddError(get_location(_simple_const_definition.const_value), "IMPOSSIBLE_TO_INFER_SET_TYPE");
+            }
         }
 
         public override void visit(SyntaxTree.type_declarations _type_declarations)
@@ -13254,7 +13296,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 SyntaxTree.procedure_attribute pa = new SyntaxTree.procedure_attribute(PascalABCCompiler.SyntaxTree.proc_attribute.attr_static);
                 pa.source_context = _procedure_header.source_context;
-                _procedure_header.proc_attributes.proc_attributes.Add(pa);
+                _procedure_header.proc_attributes.proc_attributes.Insert(0, pa);
             }
             weak_node_test_and_visit(_procedure_header.proc_attributes);
 			with_class_name = false;
@@ -17416,7 +17458,7 @@ namespace PascalABCCompiler.TreeConverter
                 if (tn == null || tn is null_type_node || tn.ImplementingInterfaces == null)
                     return false;
 
-                if (tn.element_type != null) // еще может быть множество set of T - 22.02.16 SSM
+                if (tn.element_type != null && tn.type_special_kind != SemanticTree.type_special_kind.typed_file) // еще может быть множество set of T - 22.02.16 SSM
                 {
                     elem_type = tn.element_type;
                     return true;

@@ -106,7 +106,7 @@ type
     /// Очищает графическое окно белым цветом
     procedure Clear; virtual;
     /// Очищает графическое окно цветом c
-    procedure Clear(c: GColor);
+    procedure Clear(c: GColor); virtual;
     /// Устанавливает размеры клиентской части главного окна 
     procedure SetSize(w, h: real);
     /// Устанавливает отступ главного окна от левого верхнего края экрана 
