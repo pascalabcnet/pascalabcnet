@@ -1,5 +1,5 @@
 ﻿uses GraphWPF;
-
+ 
 begin
   Window.Title := 'Рисование эллипсов';
   Pen.Width := 1;
