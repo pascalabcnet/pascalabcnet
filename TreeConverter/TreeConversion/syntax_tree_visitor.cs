@@ -1881,18 +1881,19 @@ namespace PascalABCCompiler.TreeConverter
                 statement_node finally_stmt = convert_strong(try_hndlr_finally.stmt_list);
                 context.leave_code_block();
                 stm.statements.AddElement(finally_stmt);
+                
                 basic_function_call bfc = new basic_function_call(SystemLibrary.SystemLibrary.bool_not as basic_function_node,null);
                 bfc.parameters.AddElement(new local_block_variable_reference(tmp_var,null));
                 stm.statements.AddElement(new if_node(bfc,new rethrow_statement_node(null),null,null));
             	exception_filter ef = new exception_filter(filter_type, lvr, stm, null);
-                efl.AddElement(ef);
+                //efl.AddElement(ef);
                 bfc = new basic_function_call(SystemLibrary.SystemLibrary.bool_assign as basic_function_node,null);
                 bfc.parameters.AddElement(new local_block_variable_reference(tmp_var,null));
                 bfc.parameters.AddElement(new bool_const_node(true,null));
                 
-                (try_statements as statements_list).statements.AddElement(bfc);
-                (try_statements as statements_list).statements.AddElement(new throw_statement_node(current_catch_excep,null));
-                return_value(new try_block(try_statements, null, efl, loc));
+                //(try_statements as statements_list).statements.AddElement(bfc);
+                //(try_statements as statements_list).statements.AddElement(new throw_statement_node(current_catch_excep,null));
+                return_value(new try_block(try_statements, finally_stmt, efl, loc));
                 context.leave_exception_handlers();
                 return;
             }
