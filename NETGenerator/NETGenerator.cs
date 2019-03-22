@@ -1766,7 +1766,8 @@ namespace PascalABCCompiler.NETGenerator
             //ivan
             if (ti.tp.IsEnum || !(ti.tp is TypeBuilder)) return;
             TypeBuilder tb = (TypeBuilder)ti.tp;
-            if (tb.IsValueType) BuildCloseTypeOrder(value, tb);
+            if (tb.IsValueType)
+                BuildCloseTypeOrder(value, tb);
             //сохраняем контекст
             TypeInfo tmp_ti = cur_ti;
             cur_ti = ti;

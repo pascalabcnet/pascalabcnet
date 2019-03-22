@@ -478,6 +478,11 @@ procedure AddBottomPanel(Height: real := 100; c: Color := Colors.LightGray);
 
 procedure AddStatusBar(Height: real := 24);}
 
+{function GetDC: DrawingContext;
+procedure ReleaseDC(dc: DrawingContext);
+procedure FastDraw(d: DrawingContext->());
+procedure FastClear(var dc: DrawingContext);}
+
 procedure __InitModule__;
 procedure __FinalizeModule__;
 
@@ -549,6 +554,23 @@ begin
     rtbmapIsCleared := False;
     host.Children.Clear;
   end;
+end;
+
+procedure FastDraw(d: DrawingContext->());
+begin
+  Invoke(()->
+  begin
+    var dc := GetDC;
+    d(dc);  
+    ReleaseDC(dc);
+  end);
+end;
+
+procedure FastClear(var dc: DrawingContext);
+begin
+  ReleaseDC(dc);
+  Window.Clear;
+  dc := GetDC;
 end;
 
 function GetDC(t: Transform): DrawingContext;
@@ -1312,7 +1334,6 @@ begin
   end;  
   FillRectangle(0,0,Window.Width,Window.Height,c)
 end;
-
 
 procedure WindowTypeWPF.Clear := Invoke(WindowTypeClearP);
 

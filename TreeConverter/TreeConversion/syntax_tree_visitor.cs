@@ -4842,8 +4842,6 @@ namespace PascalABCCompiler.TreeConverter
                         types.AddElement(en.type);
                     }
                 }
-            expressions_list consts_copy = new expressions_list();
-            consts_copy.AddRange(consts);
             type_node ctn = null;
             if (consts.Count > 0)
             {
@@ -4855,7 +4853,22 @@ namespace PascalABCCompiler.TreeConverter
 
             }
             else ctn = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node;
+
+            /*if (el_type == SystemLibrary.SystemLibrary.string_type)
+            {
+                for (int i = 0; i < consts.Count; i++)
+                    if (consts[i].type == SystemLibrary.SystemLibrary.char_type)
+                    {
+                        consts[i] = convertion_data_and_alghoritms.convert_type(consts[i], el_type);
+                    }
+            } */ // Не работает ! SSM 19.03.19
+
+            expressions_list consts_copy = new expressions_list();
+            consts_copy.AddRange(consts);
+
             function_node fn = convertion_data_and_alghoritms.select_function(consts, SystemLibrary.SystemLibInitializer.CreateSetProcedure.SymbolInfo, (SystemLibrary.SystemLibInitializer.CreateSetProcedure.sym_info is common_namespace_function_node)?(SystemLibrary.SystemLibInitializer.CreateSetProcedure.sym_info as common_namespace_function_node).loc:null);
+
+
             if (fn is common_namespace_function_node)
             {
                 common_namespace_function_call cnfc = new common_namespace_function_call(fn as common_namespace_function_node, get_location(_pascal_set_constant));
@@ -17458,7 +17471,7 @@ namespace PascalABCCompiler.TreeConverter
                 if (tn == null || tn is null_type_node || tn.ImplementingInterfaces == null)
                     return false;
 
-                if (tn.element_type != null) // еще может быть множество set of T - 22.02.16 SSM
+                if (tn.element_type != null && tn.type_special_kind != SemanticTree.type_special_kind.typed_file) // еще может быть множество set of T - 22.02.16 SSM
                 {
                     elem_type = tn.element_type;
                     return true;

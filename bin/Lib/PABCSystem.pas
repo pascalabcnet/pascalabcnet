@@ -409,6 +409,8 @@ type
     procedure Append;
     /// Открывает текстовый файл на дополнение в указанной кодировке
     procedure Append(en: Encoding);
+    /// Возвращает последовательность строк открытого текстового файла 
+    function Lines: sequence of string;
   end;
   
   /// Тип текстового файла
@@ -3029,7 +3031,7 @@ begin
   Result.high := high;
 end;
 
-[System.Diagnostics.DebuggerStepThrough]
+//[System.Diagnostics.DebuggerStepThrough]
 function CreateObjDiapason(low, high: object): Diapason;
 begin
   Result.clow := low;
@@ -3039,9 +3041,39 @@ end;
 [System.Diagnostics.DebuggerStepThrough]
 function CreateSet(params elems: array of object): TypedSet;
 begin
+  var chars := false;
+  var strings := false;
+  var others := false;
+  foreach var x in elems do
+  begin
+    if (x is char) or (x is Diapason) and (Diapason(x).clow is char) then
+      chars := true
+    else if x is string then
+      strings := true
+    else 
+    begin
+      others := true;
+      break
+    end;  
+  end;
+  
   Result := new TypedSet();
-  for var i := 0 to elems.Length - 1 do
-    Result.IncludeElement(elems[i]);
+  
+  if chars and strings and not others then
+    foreach var x in elems do
+      if x is char then
+        Result.IncludeElement(x.ToString)
+      else if (x is Diapason) and (Diapason(x).clow is char) then
+      begin
+        var c1 := char(Diapason(x).clow);
+        var c2 := char(Diapason(x).chigh);
+        for var cc := c1 to c2 do
+          Result.IncludeElement(cc.ToString)
+      end
+      else Result.IncludeElement(x)
+  else    
+    foreach var x in elems do
+      Result.IncludeElement(x);
 end;
 
 [System.Diagnostics.DebuggerStepThrough]
@@ -5606,6 +5638,14 @@ procedure Text.Rewrite(en: Encoding) := PABCSystem.Rewrite(Self,en);
 procedure Text.Append := PABCSystem.Append(Self);
 
 procedure Text.Append(en: Encoding) := PABCSystem.Append(Self,en);
+
+function Text.Lines: sequence of string;
+begin
+  Self.sr.BaseStream.Position := 0;
+  while not Eof do
+    yield ReadlnString;
+end;
+
 
 
 // -----------------------------------------------------
@@ -8653,8 +8693,6 @@ function MinBy<T, TKey>(Self: sequence of T; selector: T->TKey): T; extensionmet
 begin
   if selector = nil then
     raise new ArgumentNullException('selector');
-  if not Self.Any() then
-    raise new InvalidOperationException('Empty sequence');
   
   var comp := Comparer&<TKey>.Default;
   Result := Self.Aggregate((min, x)-> comp.Compare(selector(x), selector(min)) < 0 ? x : min);
@@ -8665,8 +8703,6 @@ function MaxBy<T, TKey>(Self: sequence of T; selector: T->TKey): T; extensionmet
 begin
   if selector = nil then
     raise new ArgumentNullException('selector');
-  if not Self.Any() then
-    raise new InvalidOperationException('Empty sequence');
   
   var comp := Comparer&<TKey>.Default;
   Result := Self.Aggregate((max, x)-> comp.Compare(selector(x), selector(max)) > 0 ? x : max);
@@ -8677,8 +8713,6 @@ function LastMinBy<T, TKey>(Self: sequence of T; selector: T->TKey): T; extensio
 begin
   if selector = nil then
     raise new ArgumentNullException('selector');
-  if not Self.Any() then
-    raise new InvalidOperationException('Empty sequence');
   
   var comp := Comparer&<TKey>.Default;
   Result := Self.Aggregate((min, x)-> comp.Compare(selector(x), selector(min)) <= 0 ? x : min);
@@ -8689,8 +8723,6 @@ function LastMaxBy<T, TKey>(Self: sequence of T; selector: T->TKey): T; extensio
 begin
   if selector = nil then
     raise new ArgumentNullException('selector');
-  if not Self.Any() then
-    raise new InvalidOperationException('Empty sequence');
   
   var comp := Comparer&<TKey>.Default;
   Result := Self.Aggregate((max, x)-> comp.Compare(selector(x), selector(max)) >= 0 ? x : max);

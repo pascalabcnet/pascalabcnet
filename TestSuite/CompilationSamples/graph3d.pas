@@ -757,7 +757,8 @@ type
   Group3D = class(ObjectWithChildren3D)
   protected 
     function CreateObject: Object3D; override := new Group3D(X, Y, Z);
-  public 
+  //public 
+  protected 
     constructor(x, y, z: real) := CreateBase0(new ModelVisual3D, x, y, z);
     
     constructor(x, y, z: real; lst: sequence of Object3D);
