@@ -1,10 +1,11 @@
 ﻿/// Модуль электронного задачника PT for Exam
 unit PT4Exam;
 
+
 //------------------------------------------------------------------------------
 // Модуль для подключения задачника PT for Exam
-// Версия 1.2
-// Copyright (©) 2014-2017 М.Э.Абрамян
+// Версия 2.3
+// Copyright © 2014-2019 М.Э.Абрамян
 //------------------------------------------------------------------------------
 
 
@@ -13,27 +14,42 @@ interface
 procedure Task(name: string);
 procedure FinExam;
 
-//1.2
-procedure Show(S: string); 
-procedure Show(S: string; A: Integer; W: Integer); 
-procedure Show(S: string; A: Real; W: Integer); 
-procedure Show(S: string; A: Integer); 
-procedure Show(S: string; A: Real); 
-procedure Show(A: Integer; W: Integer); 
-procedure Show(A: Real; W: Integer); 
-procedure Show(A: Integer); 
-procedure Show(A: Real); 
-procedure ShowLine; 
-procedure ShowLine(S: string); 
-procedure ShowLine(S: string; A: Integer; W: Integer); 
-procedure ShowLine(S: string; A: Real; W: Integer); 
-procedure ShowLine(S: string; A: Integer); 
-procedure ShowLine(S: string; A: Real); 
-procedure ShowLine(A: Integer; W: Integer); 
-procedure ShowLine(A: Real; W: Integer); 
-procedure ShowLine(A: Integer); 
-procedure ShowLine(A: Real); 
+/// Выводит строку S в разделе отладки окна задачника
+procedure Show(S: string);
+
+/// Выводит набор данных в разделе отладки окна задачника.
+/// Вещественные числа выводятся в формате, настроенном
+/// с помощью функции SetPrecision (по умолчанию 2 дробных знака).
+/// Если аргументом является последовательность, то после вывода
+/// ее элементов выполняется автоматический переход на новую строку.
+procedure Show(params args: array of object);
+
+/// Выполняет переход на новую экранную строку
+/// в разделе отладки окна задачника
+procedure ShowLine;
+
+/// Выводит набор данных в разделе отладки окна задачника,
+/// после чего выполняет переход на новую экранную строку.
+/// Вещественные числа выводятся в формате, настроенном
+/// с помощью функции SetPrecision (по умолчанию 2 дробных знака).
+/// Если аргументом является последовательность, то после вывода
+/// ее элементов выполняется автоматический переход на новую строку.
+procedure ShowLine(params args: array of object);
+
+/// Задает ширину W области вывода для числовых и строковых данных
+/// в разделе отладки. Влияет на последующие вызовы функций
+/// Show и ShowLine. 
+procedure SetWidth(W: Integer);
+
+/// Настраивает формат вывода вещественных чисел в разделе отладки
+/// окна задачника. Если N > 0, то число выводится в формате
+/// с фиксированной точкой и N дробными знаками. Если N = 0,
+/// то число выводится в экспоненциальном формате, число дробных
+/// знаков определяется шириной поля вывода
 procedure SetPrecision(N: integer);
+
+/// Обеспечивает автоматическое скрытие всех разделов
+/// окна задачника, кроме раздела отладки
 procedure HideTask;
 
 
@@ -76,7 +92,9 @@ begin
     Close(f);
   end;
   if s2 = '' then
+  begin
     s2 := 'null2.tst';
+  end;  
   Assign(input, s1);
   Reset(input);
   Assign(output, s2);
@@ -85,6 +103,7 @@ end;
 
 procedure FinExam;
 begin
+  Sleep(100);
   Close(input);
   Close(output);
   if s1 = 'null1.tst' then
@@ -94,56 +113,19 @@ begin
   else  
     ToWin(s2);
   NextTask := false;  
+  Sleep(100);
 end;
+
+// == Версия 1.3. Дополнения ==
 
 procedure Show(S: string);
 begin
   PT4.Show(S);
 end;
 
-procedure Show(S: string; A: Integer; W: Integer);
+procedure Show(params args: array of object);
 begin
-  PT4.Show(S, A, W);
-end;
-
-procedure Show(S: string; A: Real; W: Integer);
-begin
-  PT4.Show(S, A, W);
-end;
-
-procedure Show(S: string; A: Integer);
-begin
-  PT4.Show(S, A);
-end;
-
-procedure Show(S: string; A: Real);
-begin
-  PT4.Show(S, A);
-end;
-
-procedure Show(A: Integer; W: Integer);
-begin
-  PT4.Show(A, W);
-end;
-
-procedure Show(A: Real; W: Integer);
-begin
-  PT4.Show(A, W);
-end;
-
-procedure Show(A: Integer);
-begin
-  PT4.Show(A);
-end;
-
-procedure Show(A: Real);
-begin
-  PT4.Show(A);
-end;
-
-procedure ShowLine(S: string);
-begin
-  PT4.ShowLine(S);
+  PT4.Show(args);
 end;
 
 procedure ShowLine;
@@ -151,44 +133,14 @@ begin
   PT4.ShowLine;
 end;
 
-procedure ShowLine(S: string; A: Integer; W: Integer);
+procedure ShowLine(params args: array of object);
 begin
-  PT4.ShowLine(S, A, W);
+  PT4.ShowLine(args);
 end;
 
-procedure ShowLine(S: string; A: Real; W: Integer);
+procedure SetWidth(W: Integer);
 begin
-  PT4.ShowLine(S, A, W);
-end;
-
-procedure ShowLine(S: string; A: Integer);
-begin
-  PT4.ShowLine(S, A);
-end;
-
-procedure ShowLine(S: string; A: Real);
-begin
-  PT4.ShowLine(S, A);
-end;
-
-procedure ShowLine(A: Integer; W: Integer);
-begin
-  PT4.ShowLine(A, W);
-end;
-
-procedure ShowLine(A: Real; W: Integer);
-begin
-  PT4.ShowLine(A, W);
-end;
-
-procedure ShowLine(A: Integer);
-begin
-  PT4.ShowLine(A);
-end;
-
-procedure ShowLine(A: Real);
-begin
-  PT4.ShowLine(A);
+  PT4.SetWidth(W);
 end;
 
 procedure HideTask;

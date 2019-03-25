@@ -143,7 +143,10 @@ namespace VisualPascalABC
 		public QuickClassBrowserPanel(CodeFileDocumentTextEditorControl textAreaControl)
 		{
 			InitializeComponent();
-			this.membersComboBox.MaxDropDownItems = 20;
+            this.membersComboBox.DropDownHeight = Convert.ToInt32(this.membersComboBox.DropDownHeight * ScreenScale.Calc());
+            this.classComboBox.DropDownHeight = Convert.ToInt32(this.classComboBox.DropDownHeight * ScreenScale.Calc());
+
+            this.membersComboBox.MaxDropDownItems = 20;
 			
 			base.Dock = DockStyle.Top;
 			this.textAreaControl = textAreaControl;
@@ -816,7 +819,7 @@ namespace VisualPascalABC
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -836,12 +839,14 @@ namespace VisualPascalABC
                 {
 
                     ComboBoxItem item = (ComboBoxItem)comboBox.Items[e.Index];
-
+                    var dx = Convert.ToInt32(Math.Round(2 * ScreenScale.Calc()));
                     e.Graphics.DrawImage(CodeCompletionProvider.ImagesProvider.ImageList.Images[item.IconIndex],
-                                                 new Point(e.Bounds.X, e.Bounds.Y + (e.Bounds.Height - CodeCompletionProvider.ImagesProvider.ImageList.ImageSize.Height) / 2));
-                    Rectangle drawingRect = new Rectangle(e.Bounds.X + CodeCompletionProvider.ImagesProvider.ImageList.ImageSize.Width,
+                         e.Bounds.X + dx, e.Bounds.Y, // + (e.Bounds.Height - CodeCompletionProvider.ImagesProvider.ImageList.ImageSize.Height) / 2
+                         e.Bounds.Height, e.Bounds.Height
+                         );
+                    Rectangle drawingRect = new Rectangle(e.Bounds.X + dx + e.Bounds.Height/*CodeCompletionProvider.ImagesProvider.ImageList.ImageSize.Width*/,
                                                           e.Bounds.Y,
-                                                          e.Bounds.Width - CodeCompletionProvider.ImagesProvider.ImageList.ImageSize.Width,
+                                                          e.Bounds.Width - dx - e.Bounds.Height/*CodeCompletionProvider.ImagesProvider.ImageList.ImageSize.Width*/,
                                                           e.Bounds.Height);
 
                     Brush drawItemBrush = SystemBrushes.WindowText;

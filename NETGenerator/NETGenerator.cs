@@ -1498,7 +1498,7 @@ namespace PascalABCCompiler.NETGenerator
                     Type ftype = GetTypeOfGenericInstanceField(t, icfn.compiled_field);
                     FieldInfo fi = TypeBuilder.GetField(t, icfn.compiled_field);
 
-                    helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, ftype);
+                    helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, ftype, null);
                     continue;
                 }
             }
@@ -1552,18 +1552,54 @@ namespace PascalABCCompiler.NETGenerator
                 if (icfn != null)
                 {
                     FldInfo fldinfo = helper.GetField(icfn);
+#if DEBUG
+                    /*if (fldinfo == null)
+                    {
+                        fldinfo = fldinfo;
+                    } */
+#endif
                     if (!(fldinfo is GenericFldInfo))
                     {
                         FieldInfo finfo = fldinfo.fi;
                         Type ftype = GetTypeOfGenericInstanceField(t, finfo);
-                        FieldInfo fi = TypeBuilder.GetField(t, finfo);
-                        helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, ftype);
+                        FieldInfo fi = TypeBuilder.GetField(t, finfo); // возвращает fi: FieldOnTypeBuilderInstantiation
+                        helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, ftype, finfo); // передаю также старое finfo чтобы на следующей итерации вызовом TypeBuilder.GetField(t, finfo) сконструировать правильное fi
                     }
                     else
                     {
-                        FieldInfo finfo = fldinfo.fi;
-                        FieldInfo fi = finfo;
-                        helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, (fldinfo as GenericFldInfo).field_type);
+                        /* Вот этот код не выполняется ни в одном тесте и в примере 
+                          type
+                          Base<T> = class
+                            XYZW: T;
+                          end;
+  
+                          Derived<T1> = class(Base<T1>)
+                          end;
+
+                        begin
+                          var a := new Derived<integer>;
+                          a.XYZW := 2;
+                        end.
+                        срабатывает неправильно !!!
+
+                        Исправил, введя доп. поле в GenericFldInfo, которое хранит FieldBuilder и позволяет конструировать fi на следующей итерации
+                        */
+
+                        FieldInfo finfo = (fldinfo as GenericFldInfo).prev_fi;
+                        FieldInfo fi = TypeBuilder.GetField(t, finfo);
+                        helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, (fldinfo as GenericFldInfo).field_type, finfo); 
+                        //FieldInfo finfo = fldinfo.fi;
+                        //FieldInfo fi = finfo;
+                        //helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, (fldinfo as GenericFldInfo).field_type, finfo); 
+                        //#if DEBUG
+
+                        /*{
+                            var f = File.AppendText("d:\\aa.txt");
+                            f.WriteLine(DateTime.Now);
+                            f.WriteLine($"{value.used_members[dn] as ICommonClassFieldNode}  {fi}  {(fldinfo as GenericFldInfo).field_type}");
+                            f.Close();
+                        }*/
+                        //#endif
                     }
                     continue;
                 }
@@ -1730,7 +1766,8 @@ namespace PascalABCCompiler.NETGenerator
             //ivan
             if (ti.tp.IsEnum || !(ti.tp is TypeBuilder)) return;
             TypeBuilder tb = (TypeBuilder)ti.tp;
-            if (tb.IsValueType) BuildCloseTypeOrder(value, tb);
+            if (tb.IsValueType)
+                BuildCloseTypeOrder(value, tb);
             //сохраняем контекст
             TypeInfo tmp_ti = cur_ti;
             cur_ti = ti;
@@ -5278,6 +5315,12 @@ namespace PascalABCCompiler.NETGenerator
             value.obj.visit(this);
             is_addr = temp_is_addr;
             FldInfo fi_info = helper.GetField(value.field);
+#if DEBUG
+            /*if (value.field.name == "XYZW")
+            {
+                var y = value.field.GetHashCode();
+            } */
+#endif
             FieldInfo fi = fi_info.fi;
             if (!is_addr)
             {
@@ -7848,11 +7891,13 @@ namespace PascalABCCompiler.NETGenerator
         private void AssignToField(IExpressionNode to, IExpressionNode from)
         {
             ICommonClassFieldReferenceNode value = (ICommonClassFieldReferenceNode)to;
-            FldInfo fi_info = helper.GetField(value.field);
+#if DEBUG
             /*if (value.field.name == "XYZW")
             {
                 var y = value.field.GetHashCode();
             } */
+#endif
+            FldInfo fi_info = helper.GetField(value.field);
             FieldInfo fi = fi_info.fi;
             is_dot_expr = true;
             has_dereferences = false;

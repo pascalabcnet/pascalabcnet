@@ -5,7 +5,7 @@ unit WPFObjects;
 
 interface
 
-uses GraphWPFBase;
+uses GraphWPFBase,GraphWPF;
 
 uses System.Windows; 
 uses System.Windows.Controls;
@@ -40,12 +40,14 @@ type
   GColor = System.Windows.Media.Color;
   /// Тип прямоугольника
   GRect = System.Windows.Rect;
+  /// Тип размера
+  GSize = System.Windows.Size;
+  /// Тип точки
+  GPoint = System.Windows.Point;
   /// Тип окна
   GWindow = System.Windows.Window;
   /// Тип пера
   GPen = System.Windows.Media.Pen;
-  /// Тип точки
-  GPoint = System.Windows.Point;
   /// Тип кисти
   GBrush = System.Windows.Media.Brush;
   /// Тип стиля шрифта
@@ -81,34 +83,13 @@ procedure Invoke(p: ()->());
 
 //{{{doc: Начало секции 2 }}} 
 type
-// -----------------------------------------------------
-//>>     Класс графического окна # Class GraphWindowType
-// -----------------------------------------------------
-  /// Класс графического окна
-  GraphWindowType = class
-  private
-    function GetTop: real;
-    function GetLeft: real;
-    function GetWidth: real;
-    function GetHeight: real;
-  public  
-    /// Отступ графического окна от левого края главного окна  
-    property Left: real read GetLeft;
-    /// Отступ графического окна от верхнего края главного окна   
-    property Top: real read GetTop;
-    /// Ширина графического окна
-    property Width: real read GetWidth;
-    /// Высота графического окна
-    property Height: real read GetHeight;
-  end;
-  
   ObjectWPF = class;
 // -----------------------------------------------------
 //>>     Класс списка графических объектов # Class List of objects
 // -----------------------------------------------------
   ///!#
   /// Класс списка графических объектов
-  ObjectsType = class
+  ObjectsType = class//(IEnumerable<ObjectWPF>)
   private
     l := new List<ObjectWPF>;
     d := new Dictionary<FrameworkElement,ObjectWPF>;
@@ -129,6 +110,16 @@ type
     property Count: integer read l.Count;
     /// Возвращает или устанавливает i-тый объект ObjectWPF
     property Items[i: integer]: ObjectWPF read GetItem write SetItem; default;
+  
+    function Seq: sequence of ObjectWPF := l;
+    {function GetEnumerator: IEnumerator<ObjectWPF>;
+    begin
+      Result := l.GetEnumerator;
+    end;
+    function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator;
+    begin
+      Result := l.GetEnumerator;
+    end;}
   end;
 
 
@@ -145,7 +136,9 @@ type
     ob: FrameworkElement;
     gr: Grid; // Grid связан только с текстом
     t: TextBlock;
-    r: RotateTransform;
+    rot: RotateTransform;
+    sca: ScaleTransform;
+    trans: TranslateTransform;
 
     ChildrenWPF := new List<ObjectWPF>;
     procedure InitOb(x,y,w,h: real; o: FrameworkElement; SetWH: boolean := True);
@@ -155,13 +148,22 @@ type
     /// Направление движения по оси Y. Используется методом Move
     auto property Dy: real;
     /// Отступ графического объекта от левого края 
-    property Left: real read InvokeReal(()->Canvas.GetLeft(can)) write Invoke(procedure->Canvas.SetLeft(can,value)); 
+    property Left: real read InvokeReal(()->trans.X{Canvas.GetLeft(can)}) write Invoke(procedure->trans.X := value{Canvas.SetLeft(can,value)}); 
     /// Отступ графического объекта от верхнего края 
-    property Top: real read InvokeReal(()->Canvas.GetTop(can)) write Invoke(procedure->Canvas.SetTop(can,value)); 
+    property Top: real read InvokeReal(()->trans.Y{Canvas.GetTop(can)}) write Invoke(procedure->trans.Y := value{Canvas.SetTop(can,value)}); 
     /// Ширина графического объекта 
     property Width: real read InvokeReal(()->gr.Width) write Invoke(procedure->begin gr.Width := value; ob.Width := value end); virtual;
     /// Высота графического объекта
     property Height: real read InvokeReal(()->gr.Height) write Invoke(procedure->begin gr.Height := value; ob.Height := value end); virtual;
+    /// Отмасштабированная ширина графического объекта 
+    property ScaledWidth: real read Width*ScaleFactor;
+    /// Отмасштабированная высота графического объекта
+    property ScaledHeight: real read Height*ScaleFactor;
+    /// Размер графического объекта
+    property Size: GSize read Invoke&<GSize>(()->new GSize(gr.Width,gr.Height)) 
+      write Invoke(procedure->begin gr.Width := value.Width; ob.Width := value.Width; gr.Height := value.Height; ob.Height := value.Height end); virtual;
+    /// Отмасштабированный размер графического объекта
+    property ScaledSize: GSize read new GSize(ScaledWidth,ScaledHeight);
     /// Прямоугольник графического объекта
     property Bounds: GRect read Invoke&<GRect>(()->begin Result := new GRect(Canvas.GetLeft(can),Canvas.GetTop(can),gr.Width,gr.Height); end); 
     /// Текст внутри графического объекта
@@ -189,7 +191,7 @@ type
     begin
       Result := GetInternalGeometry;
       var g := new TransformGroup();
-      g.Children.Add(r);
+      g.Children.Add(rot);
       g.Children.Add(new TranslateTransform(Left,Top));
       Result.Transform := g; // версия
     end;
@@ -221,11 +223,13 @@ type
     /// Правый нижний угол графического объекта
     property RightBottom: Point read Pnt(Left + Height,Top + Height);
     /// Угол поворота графического объекта (по часовой стрелке)
-    property RotateAngle: real read InvokeReal(()->r.Angle) write Invoke(procedure->r.Angle := value);
-    /// Центр поворота графического объекта
-    property RotateCenter: Point 
-      read Invoke&<Point>(()->new Point(r.CenterX,r.CenterY))
-      write Invoke(procedure->begin r.CenterX := value.X; r.CenterY := value.Y; end);
+    property RotateAngle: real read InvokeReal(()->rot.Angle) write Invoke(procedure->rot.Angle := value);
+    /// Множитель масштабирования объекта  
+    property ScaleFactor: real read InvokeReal(()->sca.ScaleX) write Invoke(()->begin (sca.ScaleX, sca.ScaleY) := (value,value) end);
+    // Центр поворота графического объекта - запретил, т.к. это будет сбивать координаты объекта
+    {property RotateCenter: Point 
+      read Invoke&<Point>(()->new Point(rot.CenterX,rot.CenterY))
+      write Invoke(procedure->begin rot.CenterX := value.X; rot.CenterY := value.Y; end);}
     /// Цвет графического объекта
     property Color: GColor 
       read RGB(0,0,0) 
@@ -243,8 +247,58 @@ type
     procedure MoveOn(a,b: real) := MoveTo(Left+a,Top+b);
     /// Перемещает графический объект на вектор (dx,dy)
     procedure Move; virtual := MoveOn(dx,dy);
-    /// Поворачивает графический объект по часовой стрелке на угол da
-    procedure Rotate(da: real) := RotateAngle += da;
+    /// Поворачивает графический объект по часовой стрелке на угол a
+    procedure Rotate(a: real) := RotateAngle += a;
+    /// Масштабирует графический объект в r раз относительно текущего размера
+    procedure ScaleOn(r: real) := ScaleFactor *= r;
+    
+    procedure AnimMoveOnP(a,b,sec: real);
+    begin
+      var ax := new DoubleAnimation(a + trans.X, System.TimeSpan.FromSeconds(sec));
+      var ay := new DoubleAnimation(b + trans.Y, System.TimeSpan.FromSeconds(sec));
+      trans.BeginAnimation(TranslateTransform.XProperty, ax, HandoffBehavior.Compose);
+      trans.BeginAnimation(TranslateTransform.YProperty, ay, HandoffBehavior.Compose);
+    end;
+    /// Анимирует перемещение графического объекта на вектор (a,b) в течение sec секунд
+    procedure AnimMoveOn(a,b,sec: real) := Invoke(AnimMoveOnP,a,b,sec);
+
+    procedure AnimMoveToP(x,y,sec: real);
+    begin
+      var ax := new DoubleAnimation(x, System.TimeSpan.FromSeconds(sec));
+      var ay := new DoubleAnimation(y, System.TimeSpan.FromSeconds(sec));
+      trans.BeginAnimation(TranslateTransform.XProperty, ax, HandoffBehavior.Compose);
+      trans.BeginAnimation(TranslateTransform.YProperty, ay, HandoffBehavior.Compose);
+    end;
+    /// Анимирует перемещение графического объекта к точке (x,y) в течение sec секунд
+    procedure AnimMoveTo(x,y,sec: real) := Invoke(AnimMoveToP,x,y,sec);
+
+    procedure AnimMoveEndP;
+    begin
+      var animation := new DoubleAnimation();
+      animation.BeginTime := nil;
+      trans.BeginAnimation(TranslateTransform.XProperty, animation);
+      trans.BeginAnimation(TranslateTransform.YProperty, animation);
+    end;
+    /// Завершает анимацию перемещения
+    procedure AnimMoveEnd := Invoke(AnimMoveEndP);
+
+    procedure AnimRotateP(a,sec: real);
+    begin
+      var an := new DoubleAnimation(a, System.TimeSpan.FromSeconds(sec));
+      rot.BeginAnimation(RotateTransform.AngleProperty, an, HandoffBehavior.Compose);
+    end;
+    /// Анимирует вращение графического объекта на угол a в течение sec секунд
+    procedure AnimRotate(a,sec: real) := Invoke(AnimRotateP,a,sec);
+
+    procedure AnimScaleP(a,sec: real);
+    begin
+      var an := new DoubleAnimation(a, System.TimeSpan.FromSeconds(sec));
+      sca.BeginAnimation(ScaleTransform.ScaleXProperty, an, HandoffBehavior.Compose);
+      sca.BeginAnimation(ScaleTransform.ScaleYProperty, an, HandoffBehavior.Compose);
+    end;
+    /// Анимирует масштабирование графического объекта на величину a в течение sec секунд
+    procedure AnimScale(a,sec: real) := Invoke(AnimScaleP,a,sec);
+        
     /// Добавляет к графическому объекту дочерний
     procedure AddChild(ch: ObjectWPF) := Invoke(AddChildP,ch);
     /// Удаляет из графического объекта дочерний
@@ -287,7 +341,12 @@ type
     end;
     procedure EF(value: GColor) := Element.Fill := new SolidColorBrush(Value);
     procedure ES(value: GColor) := Element.Stroke := new SolidColorBrush(Value);
-    procedure EST(value: real) := Element.StrokeThickness := Value;
+    procedure EST(value: real);
+    begin
+      Element.StrokeThickness := Value;
+      if Element.Stroke = nil then
+        Element.Stroke := new SolidColorBrush(Colors.Black)
+    end;  
     function WithNoBorderP: BoundedObjectWPF;
     begin
       Element.Stroke := nil;
@@ -713,8 +772,8 @@ type
     end;  
     function ChangePointCollection(r,rint: real; n: integer): PointCollection; 
     begin
-      var pp1 := PartitionPoints(0,2*Pi,n).Select(phi->Pnt(r+r*cos(phi-Pi/2),r+r*sin(phi-Pi/2)));
-      var pp2 := PartitionPoints(0+Pi/n,2*Pi+Pi/n,n).Select(phi->Pnt(r+rint*cos(phi-Pi/2),r+rint*sin(phi-Pi/2)));
+      var pp1 := PartitionPoints(0+2*Pi/n,2*Pi,n-1).Select(phi->Pnt(r+r*cos(phi-Pi/2),r+r*sin(phi-Pi/2)));
+      var pp2 := PartitionPoints(0+3*Pi/n,2*Pi+Pi/n,n-1).Select(phi->Pnt(r+rint*cos(phi-Pi/2),r+rint*sin(phi-Pi/2)));
       Result := new PointCollection(pp1.Interleave(pp2).ToArray);
     end;
     function CreatePolygon(r,rint: real; n: integer): System.Windows.Shapes.Polygon;
@@ -760,6 +819,10 @@ type
     property InternalRadius: real 
       read rint 
       write Invoke(IntRad,Value);
+    /// Количество вершин
+    property Count: integer
+      read InvokeInteger(()->n) 
+      write Invoke(Cnt,Value);
     /// Декоратор включения границы объекта
     function WithBorder(w: real := -1): StarWPF 
       := inherited WithBorder(w) as StarWPF;
@@ -940,6 +1003,12 @@ procedure SetLeft(Self: UIElement; l: integer) := Self.SetLeft(l);
 procedure SetTop(Self: UIElement; t: integer) := Self.SetTop(t);
 
 
+function MoveOn(Self: Point; vx,vy: real): Point; extensionmethod;
+begin
+  Result.X := Self.X + vx;
+  Result.Y := Self.Y + vy;
+end;
+
 {procedure MoveTo(Self: UIElement; l,t: integer); extensionmethod;
 begin
   Canvas.SetLeft(Self,l);
@@ -980,10 +1049,16 @@ procedure ObjectWPF.InitOb(x,y,w,h: real; o: FrameworkElement; SetWH: boolean);
 begin
   can := new Canvas;
   gr := new Grid;
-  r := new RotateTransform(0);
-  r.CenterX := w / 2;
-  r.CenterY := h / 2;
-  can.RenderTransform := r;
+  rot := new RotateTransform(0);
+  sca := new ScaleTransform;
+  trans := new TranslateTransform;
+  var tt := new TransformGroup;
+  tt.Children.Add(rot);
+  tt.Children.Add(sca);
+  tt.Children.Add(trans);
+  rot.CenterX := w / 2;
+  rot.CenterY := h / 2;
+  can.RenderTransform := tt;
   ob := o;
   if SetWH then 
     (ob.Width,ob.Height) := (w,h);
@@ -1122,7 +1197,6 @@ begin
   end;
 end;
 
-
 type ObHelper = auto class
   o1,o2: ObjectWPF;
   function f: boolean := ObjectsIntersectP(o1,o2);
@@ -1140,99 +1214,32 @@ function ObjectsIntersect(o1,o2: ObjectWPF)
 function IntersectionList(Self: ObjectWPF): List<ObjectWPF>; extensionmethod
   := Invoke&<List<ObjectWPF>>(OLHelper.Create(Self).f);
 
-//---------------------------------------------------------------------------  
-function GraphWindowTypeGetLeftP: real;
-begin
-  Result := 0;
-  foreach var p in MainDockPanel.Children do
-    if (p is FrameworkElement) and (p<>host) then
-    begin
-      var d := DockPanel.GetDock(FrameworkElement(p));
-      if d=Dock.Left then
-        Result += FrameworkElement(p).Width;
-    end;
-end;
+var
+  ///--
+  __initialized := false;
 
-function GraphWindowTypeGetTopP: real;
-begin
-  Result := 0;
-  foreach var p in MainDockPanel.Children do
-    if (p is FrameworkElement) and (p<>host) then
-    begin
-      var d := DockPanel.GetDock(FrameworkElement(p));
-      if d=Dock.Top then
-        Result += FrameworkElement(p).Height;
-    end;
-end;
-
-function GraphWindowType.GetLeft := InvokeReal(GraphWindowTypeGetLeftP);
-function GraphWindowType.GetTop := InvokeReal(GraphWindowTypeGetTopP);
-
-function GraphWindowTypeGetWidthP: real;
-begin
-  {if host.DataContext = nil then
-    Result := 0
-  else Result := Size(host.DataContext).Width;}
-  Result := Window.Width;
-  foreach var p in MainDockPanel.Children do
-    if (p is FrameworkElement) and (p<>host) then
-    begin
-      var d := DockPanel.GetDock(FrameworkElement(p));
-      if (d=Dock.Left) or (d=Dock.Right) then
-        Result -= FrameworkElement(p).Width;
-    end;
-end;
-function GraphWindowType.GetWidth := InvokeReal(GraphWindowTypeGetWidthP);
-
-function GraphWindowTypeGetHeightP: real;
-begin
-  {if host.DataContext = nil then
-    Result := 0
-  else Result := Size(host.DataContext).Height;}
-  Result := Window.Height;
-  foreach var p in MainDockPanel.Children do
-    if (p is FrameworkElement) and (p<>host) then
-    begin
-      var d := DockPanel.GetDock(FrameworkElement(p));
-      if (d=Dock.Top) or (d=Dock.Bottom) then
-        Result -= FrameworkElement(p).Height;
-    end;
-end;
-function GraphWindowType.GetHeight := InvokeReal(GraphWindowTypeGetHeightP);
+var
+  ///--
+  __finalized := false;
 
 /// --- SystemMouseEvents
 procedure SystemOnMouseDown(sender: Object; e: MouseButtonEventArgs);
 begin
-  var mb := 0;
-  var p := e.GetPosition(host);
-  if e.LeftButton = MouseButtonState.Pressed then
-    mb := 1
-  else if e.RightButton = MouseButtonState.Pressed then
-    mb := 2;
+  var (p,mb) := GetMouseArgs(e);
   if OnMouseDown <> nil then  
     OnMouseDown(p.x, p.y, mb);
 end;
 
 procedure SystemOnMouseUp(sender: Object; e: MouseButtonEventArgs);
 begin
-  var mb := 0;
-  var p := e.GetPosition(host);
-  if e.LeftButton = MouseButtonState.Pressed then
-    mb := 1
-  else if e.RightButton = MouseButtonState.Pressed then
-    mb := 2;
+  var (p,mb) := GetMouseArgs(e);
   if OnMouseUp <> nil then  
     OnMouseUp(p.x, p.y, mb);
 end;
 
 procedure SystemOnMouseMove(sender: Object; e: MouseEventArgs);
 begin
-  var mb := 0;
-  var p := e.GetPosition(host);
-  if e.LeftButton = MouseButtonState.Pressed then
-    mb := 1
-  else if e.RightButton = MouseButtonState.Pressed then
-    mb := 2;
+  var (p,mb) := GetMouseArgs(e);
   if OnMouseMove <> nil then  
     OnMouseMove(p.x, p.y, mb);
 end;
@@ -1247,113 +1254,41 @@ procedure SystemOnKeyUp(sender: Object; e: KeyEventArgs) :=
     OnKeyUp(e.Key);
     
 procedure SystemOnKeyPress(sender: Object; e: TextCompositionEventArgs) := 
-begin
   if (OnKeyPress<>nil) and (e.Text<>nil) and (e.Text.Length>0) then
     OnKeyPress(e.Text[1]);
-end;    
     
 procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) := 
   if OnResize<>nil then
     OnResize();
 
-var mre := new ManualResetEvent(false);
-
-type 
-GraphWPFWindow = class(GMainWindow)
-public
-  procedure InitMainGraphControl; override;
+procedure __InitModule;
+begin
+  AdditionalInit := procedure ->
   begin
+    MainWindow.Title := 'Графика WPF';
+    // Свои события. Без этого не работают
+    MainWindow.MouseDown += SystemOnMouseDown;
+    MainWindow.MouseUp += SystemOnMouseUp;
+    MainWindow.MouseMove += SystemOnMouseMove;
+    MainWindow.KeyDown += SystemOnKeyDown;
+    MainWindow.KeyUp += SystemOnKeyUp;
+    MainWindow.TextInput += SystemOnKeyPress;
+    MainWindow.SizeChanged += SystemOnResize;
+    
+    Objects := new ObjectsType;
+    Window := GraphWPF.Window;
+    GraphWindow := GraphWPF.GraphWindow;
+
     host := new Canvas();
-    //host.ClipToBounds := True;
-    host.SizeChanged += (s,e) ->
+    {host.SizeChanged += (s,e) ->
     begin
       var sz := e.NewSize;
       host.DataContext := sz;
-    end;
-    // Всегда последнее
-    var g := Content as DockPanel;
-    g.children.Add(host);
+    end;}
+    var g := MainWindow.Content as DockPanel;
+    g.children.Add(host); // Слой графики WPF - последний
   end;
-
-  procedure InitWindowProperties; override;
-  begin
-    Title := 'WPF объекты';
-    var (w,h) := (800,600);
-    
-    (Width, Height) := (w + wplus, h + hplus);
-    WindowStartupLocation := System.Windows.WindowStartupLocation.CenterScreen;
-  end;
-
-  procedure InitGlobals; override;
-  begin
-    Window := new WindowType;
-    GraphWindow := new GraphWindowType;
-    Objects := new ObjectsType;
-  end;
-  
-  procedure InitHandlers; override;
-  begin
-    Closed += procedure(sender,e) -> begin Halt; end;
-    MouseDown += SystemOnMouseDown;
-    MouseUp += SystemOnMouseUp;
-    MouseMove += SystemOnMouseMove;
-    KeyDown += SystemOnKeyDown;
-    KeyUp += SystemOnKeyUp;
-    TextInput += SystemOnKeyPress;
-    SizeChanged += SystemOnResize;
-    
-    Loaded += (o,e) -> mre.Set();
-
-    {PreviewMouseDown += (o,e) -> SystemOnMouseDown(o,e);  
-    PreviewMouseUp += (o,e) -> SystemOnMouseUp(o,e);  
-    PreviewMouseMove += (o,e) -> SystemOnMouseMove(o,e);  
-  
-    PreviewKeyDown += (o,e)-> SystemOnKeyDown(o,e);
-    PreviewKeyUp += (o,e)-> SystemOnKeyUp(o,e);
-
-    Closed += procedure(sender, e) -> begin Halt; end;}
-  end;
-
-end;
-
-procedure InitApp;
-begin
-  app := new Application;
-  
-  app.Dispatcher.UnhandledException += (o, e) -> begin
-    Println(e.Exception.Message); 
-    if e.Exception.InnerException<>nil then
-      Println(e.Exception.InnerException.Message); 
-    halt; 
-  end;
-  
-  MainWindow := new GraphWPFWindow;
-
-  mre.Set();
-  
-  app.Run(MainWindow);
-end;
-
-procedure InitMainThread;
-begin
-  var MainFormThread := new System.Threading.Thread(InitApp);
-  MainFormThread.SetApartmentState(ApartmentState.STA);
-  MainFormThread.Start;
-  
-  mre.WaitOne; // Основная программа не начнется пока не будут инициализированы все компоненты приложения
-end;
-
-var
-  ///--
-  __initialized := false;
-
-var
-  ///--
-  __finalized := false;
-
-procedure __InitModule;
-begin
-  InitMainThread;
+  app.Dispatcher.Invoke(AdditionalInit);
 end;
 
 ///--
@@ -1362,7 +1297,7 @@ begin
   if not __initialized then
   begin
     __initialized := true;
-    GraphWPFBase.__InitModule__;
+    GraphWPF.__InitModule__;
     __InitModule;
   end;
 end;

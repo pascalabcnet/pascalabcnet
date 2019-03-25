@@ -816,6 +816,13 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return true;
             }
+            /*var comptn1 = t1 as compiled_type_node;
+            var comptn2 = t2 as compiled_type_node;
+            if (comptn1 != null && comptn2 != null)
+            {
+                if (comptn1.compiled_type == comptn2.compiled_type) // увы - тут типы Type разные и хеш-коды у них разные
+                    return true;
+            } */
             if (!t1.depended_from_indefinite && !t2.depended_from_indefinite)
             {
                 return false;
@@ -2447,17 +2454,21 @@ namespace PascalABCCompiler.TreeConverter
 			}
 		}
 
-        public type_node select_base_type(type_node_list types)
+        public type_node select_base_type(type_node_list types, bool only_implicit = false)
         {
             type_node ret_type = null;
             if (types.Count > 0) ret_type = types[0];
             for (int i = 1; i<types.Count; i++)
             {
                 if (types[i] == ret_type) continue;
-                type_compare tc = type_table.compare_types_in_specific_order(types[i], ret_type);
+                type_compare tc = type_table.compare_types_in_specific_order(types[i], ret_type, only_implicit);
                 if (tc == type_compare.greater_type && ret_type != SystemLibrary.SystemLibrary.object_type) ret_type = types[i];
-                else if (tc == type_compare.non_comparable_type) 
-                	ret_type = SystemLibrary.SystemLibrary.object_type;
+                else if (tc == type_compare.non_comparable_type)
+                {
+                    ret_type = SystemLibrary.SystemLibrary.object_type;
+                    //ret_type = null;
+                }
+                	
             }
             return ret_type;
         }

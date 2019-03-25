@@ -3,6 +3,7 @@
 using System;
 using PascalABCCompiler.Errors;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace PascalABCCompiler
@@ -38,8 +39,77 @@ namespace PascalABCCompiler
             }
         }
 
+        public static bool CheckAndSplitDirective(string directive, out string name, out string value)
+        {
+            System.Diagnostics.Debug.Assert(directive[0] == '/');
+            directive = directive.Remove(0, 1);
+
+            name = null;
+            value = null;
+            var ss = directive.Split(':');
+            if (ss.Length>2)
+            {
+                Console.WriteLine("Directive can contain only one ':' sign");
+                return false;
+            }
+            name = ss[0].ToLower();
+            if (ss.Length > 1)
+                value = ss[1].ToLower();
+
+            return true;
+        }
+
+        public static bool ApplyDirective(string name, string value, CompilerOptions co)
+        {
+            switch (name)
+            {
+                case "debug":
+                    switch (value)
+                    {
+                        case "0":
+                            co.Debug = false;
+                            co.Optimise = true;
+                            return true;
+                        case "1":
+                            co.Debug = true;
+                            return true;
+                        default:
+                            Console.WriteLine("Bad value in 'Debug' directive '{0}'. Acceptable values are 0 or 1", value);
+                            return false;
+                    }
+                default:
+                    Console.WriteLine("No such directive name: '{0}'", name);
+                    return false;
+            }
+        }
+
+        public static bool CheckAndApplyDirective(string directive, CompilerOptions co)
+        {
+            string name, value;
+            var b = CheckAndSplitDirective(directive,out name, out value);
+            if (!b)
+                return false;
+
+            b = ApplyDirective(name, value, co);
+            return b;
+        }
+
+        public static void OutputHelp()
+        {
+            Console.WriteLine("Command line: ");
+            Console.WriteLine("pabcnetcclear /directive1:value1 /directive2:value2 ... [inputfile]\n");
+            Console.WriteLine("Available directives:\n  /Help  /H  /?\n  /Debug:0(1)\n");
+            Console.WriteLine("/Debug:0 generates code with all .NET optimizations!");
+        }
+
         public static int Main(string[] args)
 		{
+            // SSM 18.03.19 Делаю параметры командной строки. Формат: pabcnetc.exe /Dir1=value1 /Dir2=value2 ... fname dir
+            // dir - это пережиток старого - так можно было задавать каталог раньше. Пока - увы - пусть останется
+            // Пока сделаю только директивы /Help /H /? и /Debug=0(1)
+            // Имя директивы - это одно слово. Равенства может не быть - тогда value директивы равно null
+            // Вычленяем первое равенство и делим директиву: до него - name, после него - value. Если name или value - пустые строки, то ошибка
+
             DateTime ldt = DateTime.Now;
             PascalABCCompiler.StringResourcesLanguage.LoadDefaultConfig();
 
@@ -47,32 +117,71 @@ namespace PascalABCCompiler
             StringResourcesLanguage.CurrentLanguageName = StringResourcesLanguage.AccessibleLanguages[0];
             //Console.WriteLine("OK {0}ms", (DateTime.Now - ldt).TotalMilliseconds);
             ldt = DateTime.Now;
-            
+
             //ShowConnectedParsers();
 
-            if (args.Length == 0)
+            var n = args.Length;
+            if (n == 0)
             {
-                Console.WriteLine(StringResourcesGet("COMMANDLINEISABSENT"));
+                //Console.WriteLine(StringResourcesGet("COMMANDLINEISABSENT"));
+                OutputHelp();
                 return 2;
             }
 
-            FileName = args[0];
+            var n1 = args.TakeWhile(a => a[0] == '/').Count(); // количество директив
+
+            if (n1<n-2)
+            {
+                Console.WriteLine("Error in argument {0}", args[n1+2]);
+                Console.WriteLine("Command line cannot contain any arguments after filename '{0}' and outdirname '{1}'", args[n1], args[n1 + 1]);
+                return 4;
+            }
+
+            if (n1 == n) // только директивы
+            {
+                string name, value;
+                var b = CheckAndSplitDirective(args[0], out name, out value);
+                if (!b) // Сообщение уже будет выдано
+                    return 4;
+                switch (name)
+                {
+                    case "help":
+                    case "h":
+                    case "?":
+                        OutputHelp();
+                        return 0;
+                    default:
+                        Console.WriteLine("Filename is absent. Nothing to compile");
+                        return 4;
+                }
+            }
+
+            FileName = args[n1]; // следующий аргумент за директивами - имя файла
             if (!File.Exists(FileName))
             {
-                Console.WriteLine(StringResourcesGet("FILEISABSENT{0}"),FileName);
+                Console.WriteLine(StringResourcesGet("FILEISABSENT{0}"), "'" + FileName + "'");
                 return 3;
             }
+
             outputType = CompilerOptions.OutputType.ConsoleApplicaton;
 
             CompilerOptions co = new CompilerOptions(FileName, outputType);
             if (FileName.ToLower().EndsWith(".pabcproj"))
                 co.ProjectCompiled = true;
-            if (args.Length==1)
+            if (n1 == n - 1)
                 co.OutputDirectory = "";
-            else co.OutputDirectory = args[1];
+            else co.OutputDirectory = args[n - 1];
             co.Rebuild = false;
-            co.Debug = true;
+            co.Debug = false;
             co.UseDllForSystemUnits = false;
+
+            for (var i = 0; i < n1; i++)
+            {
+                var b = CheckAndApplyDirective(args[i], co);
+                if (!b)
+                    return 4;
+            }
+
 
             bool success = true;
             if (Compiler.Compile(co) != null)

@@ -12,8 +12,8 @@ ERROR_PARSERS_NOT_FOUND=Error: Parsers not found!
 CONNECTED_PARSERS=Connected parsers: 
 CONNECTED_CONVERSIONS=Connected conversions: 
 STARTING=Starting...
-COMMANDLINEISABSENT=Command line is absent
-FILEISABSENT{0}=File {0} is absent
+COMMANDLINEISABSENT=Command line is empty
+FILEISABSENT{0}=File {0} not found
 COMPILEERRORS=Compile errors:
 
 HELP=16LINES

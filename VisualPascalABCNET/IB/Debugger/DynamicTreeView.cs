@@ -13,6 +13,20 @@ using Debugger;
 
 namespace VisualPascalABC
 {
+    public static class ScreenScale
+    {
+        private static double scale = -1;
+        public static double Calc()
+        {
+            if (scale > 0)
+                return scale;
+            var dpiXProperty = typeof(System.Windows.SystemParameters).GetProperty("DpiX", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            var dpiX = (int)dpiXProperty.GetValue(null, null);
+            scale = (double)dpiX / 96;
+            return scale;
+        }
+    }
+
     public class DynamicTreeDebuggerRow : DynamicTreeRow
     {
         // Columns:
@@ -95,7 +109,8 @@ namespace VisualPascalABC
         {
             if (image != null)
             {
-                e.Graphics.DrawImageUnscaled(image, e.ClipRectangle);
+                // SSM 21.01.19 High dpi
+                e.Graphics.DrawImage/*Unscaled*/(image, e.ClipRectangle);
             }
         }
 
@@ -215,7 +230,8 @@ namespace VisualPascalABC
             // default is allowgrow = true and autosize = false
             columns[0].AllowGrow = false;
             columns[1].AllowGrow = false;
-            columns[1].Width = 18;
+            // SSM 21.01.19 High DPI
+            columns[1].Width = 16 + Convert.ToInt32(16 * (ScreenScale.Calc()-1));
             columns[1].ColumnSeperatorColor = Color.Transparent;
             columns[1].ColumnSeperatorColorInactive = Color.Transparent;
             columns[2].AutoSize = true;
@@ -379,7 +395,9 @@ namespace VisualPascalABC
         protected virtual void OnPlusPaint(object sender, ItemPaintEventArgs e)
         {
             Rectangle r = e.ClipRectangle;
-            r.Inflate(-4, -4);
+            var sc = ScreenScale.Calc();
+            var infl = Convert.ToInt32(4 * sc);
+            r.Inflate(-infl, -infl);
             DrawPlusSign(e.Graphics, r, expandedIn != null && expandedIn.Contains(e.List));
         }
 
@@ -838,7 +856,7 @@ namespace VisualPascalABC
     }
     public class DynamicListRow
     {
-        int height = 16;
+        int height = Convert.ToInt32(16 * ScreenScale.Calc());
 
         public int Height
         {
@@ -1716,6 +1734,8 @@ namespace VisualPascalABC
             }
             if (text.Length > 0)
             {
+                // SSM 21.01.19 High DPI
+                textFormat.LineAlignment = StringAlignment.Center;
                 g.DrawString(text, font, textBrush, rectangle, textFormat);
             }
         }
@@ -2133,7 +2153,8 @@ namespace VisualPascalABC
 
     public class DynamicListColumn : ICloneable
     {
-        public const int DefaultWidth = 16;
+        // SSM 21.01.19 High DPI
+        public static int DefaultWidth = Convert.ToInt32(16 * ScreenScale.Calc());
 
         int width = DefaultWidth;
         int minimumWidth = DefaultWidth;

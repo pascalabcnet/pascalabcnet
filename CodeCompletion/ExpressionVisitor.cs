@@ -853,18 +853,19 @@ namespace CodeCompletion
                                 returned_scope = CheckForAccess(left_scope as TypeScope, returned_scope as ElementScope);
                             return;
                         }
-                        if (returned_scope != null && returned_scope is ProcScope && !((returned_scope as ProcScope).IsStatic && tmp_tn is ElementScope))
+                        ProcScope ps = returned_scope as ProcScope;
+                        if (ps != null && !(ps.IsStatic && tmp_tn is ElementScope))
                         {
-                            if ((returned_scope as ProcScope).return_type == null)
+                            if (ps.return_type == null || ps.parameters != null && ps.parameters.Count > 0)
                             {
                                 method_call mc = new method_call(_dot_node, new expression_list());
                                 mc.visit(this);
                                 return;
                             }
-                            if ((returned_scope as ProcScope).return_type != null)
+                            if (ps.return_type != null)
                             {
                                 CompiledMethodScope tmp_sc = returned_scope as CompiledMethodScope;
-                                returned_scope = new ElementScope(returned_scope as ProcScope);
+                                returned_scope = new ElementScope(ps);
                                 if (tmp_sc != null)
                                     returned_scope.topScope = tmp_sc.topScope;
                                 if (left_scope is ElementScope)
@@ -879,11 +880,11 @@ namespace CodeCompletion
                             List<ProcScope> procs = stv.entry_scope.GetExtensionMethods((_dot_node.right as ident).name, (tmp_tn as ElementScope).sc as TypeScope);
                             if (procs.Count > 0)
                             {
-                                foreach (ProcScope ps in procs)
+                                foreach (ProcScope proc in procs)
                                 {
-                                    if (ps.parameters.Count == 0 || ps.parameters.Count == 1 && ps.is_extension && string.Compare(ps.parameters[0].Name, "self", true) == 0)
+                                    if (proc.parameters.Count == 0 || proc.parameters.Count == 1 && proc.is_extension && string.Compare(proc.parameters[0].Name, "self", true) == 0)
                                     {
-                                        returned_scope = ps;
+                                        returned_scope = proc;
                                         return;
                                     }
                                 }

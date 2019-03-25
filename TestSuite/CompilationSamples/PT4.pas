@@ -11,7 +11,8 @@ unit PT4;
 // Copyright © 2016 М.Э.Абрамян, дополнения к версии 4.15
 // Copyright © 2017 М.Э.Абрамян, дополнения к версии 4.17
 // Copyright © 2018 М.Э.Абрамян, дополнения к версии 4.18
-// Электронный задачник Programming Taskbook Copyright (c)М.Э.Абрамян, 1998-2018
+// Copyright © 2019 М.Э.Абрамян, дополнения к версии 4.19
+// Электронный задачник Programming Taskbook Copyright (c)М.Э.Абрамян, 1998-2019
 //------------------------------------------------------------------------------
 
 {$apptype windows}
@@ -84,6 +85,8 @@ type
 /// Вывести формулировку задания
 procedure Task(name: string);
 
+
+{
 /// Ввести и вернуть значение целого типа
 function GetInt: integer;
 /// Ввести и вернуть значение целого типа
@@ -104,6 +107,7 @@ function GetBoolean: boolean;
 function GetNode: Node;
 /// Ввести и вернуть значение типа PNode 
 function GetPNode: PNode;
+}
 
 /// Возвращает введенное значение типа integer
 function ReadInteger: integer;
@@ -237,6 +241,33 @@ function ReadlnBoolean3: (boolean, boolean, boolean);
 /// Возвращает кортеж из трех введенных значений типа Node
 function ReadlnNode3: (Node, Node, Node);
 
+/// Возвращает кортеж из четырех введенных значений типа integer
+function ReadInteger4: (integer, integer, integer, integer);
+/// Возвращает кортеж из четырех введенных значений типа real
+function ReadReal4: (real, real, real, real);
+/// Возвращает кортеж из четырех введенных значений типа char
+function ReadChar4: (char, char, char, char);
+/// Возвращает кортеж из четырех введенных значений типа string
+function ReadString4: (string, string, string, string);
+/// Возвращает кортеж из четырех введенных значений типа boolean
+function ReadBoolean4: (boolean, boolean, boolean, boolean);
+/// Возвращает кортеж из четырех введенных значений типа Node
+function ReadNode4: (Node, Node, Node, Node);
+
+/// Возвращает кортеж из четырех введенных значений типа integer
+function ReadlnInteger4: (integer, integer, integer, integer);
+/// Возвращает кортеж из четырех введенных значений типа real
+function ReadlnReal4: (real, real, real, real);
+/// Возвращает кортеж из четырех введенных значений типа char
+function ReadlnChar4: (char, char, char, char);
+/// Возвращает кортеж из четырех введенных значений типа string
+function ReadlnString4: (string, string, string, string);
+/// Возвращает кортеж из четырех введенных значений типа boolean
+function ReadlnBoolean4: (boolean, boolean, boolean, boolean);
+/// Возвращает кортеж из четырех введенных значений типа Node
+function ReadlnNode4: (Node, Node, Node, Node);
+
+
 /// Возвращает кортеж из двух введенных значений типа integer.
 /// Строковое приглашение prompt игнорируется
 function ReadInteger2(prompt: string): (integer, integer);
@@ -313,6 +344,43 @@ function ReadlnBoolean3(prompt: string): (boolean, boolean, boolean);
 /// Строковое приглашение prompt игнорируется
 function ReadlnNode3(prompt: string): (Node, Node, Node);
 
+/// Возвращает кортеж из четырех введенных значений типа integer.
+/// Строковое приглашение prompt игнорируется
+function ReadInteger4(prompt: string): (integer, integer, integer, integer);
+/// Возвращает кортеж из четырех введенных значений типа real.
+/// Строковое приглашение prompt игнорируется
+function ReadReal4(prompt: string): (real, real, real, real);
+/// Возвращает кортеж из четырех введенных значений типа char.
+/// Строковое приглашение prompt игнорируется
+function ReadChar4(prompt: string): (char, char, char, char);
+/// Возвращает кортеж из четырех введенных значений типа string.
+/// Строковое приглашение prompt игнорируется
+function ReadString4(prompt: string): (string, string, string, string);
+/// Возвращает кортеж из четырех введенных значений типа boolean.
+/// Строковое приглашение prompt игнорируется
+function ReadBoolean4(prompt: string): (boolean, boolean, boolean, boolean);
+/// Возвращает кортеж из четырех введенных значений типа Node.
+/// Строковое приглашение prompt игнорируется
+function ReadNode4(prompt: string): (Node, Node, Node, Node);
+
+/// Возвращает кортеж из четырех введенных значений типа integer.
+/// Строковое приглашение prompt игнорируется
+function ReadlnInteger4(prompt: string): (integer, integer, integer, integer);
+/// Возвращает кортеж из четырех введенных значений типа real.
+/// Строковое приглашение prompt игнорируется
+function ReadlnReal4(prompt: string): (real, real, real, real);
+/// Возвращает кортеж из четырех введенных значений типа char.
+/// Строковое приглашение prompt игнорируется
+function ReadlnChar4(prompt: string): (char, char, char, char);
+/// Возвращает кортеж из четырех введенных значений типа string.
+/// Строковое приглашение prompt игнорируется
+function ReadlnString4(prompt: string): (string, string, string, string);
+/// Возвращает кортеж из четырех введенных значений типа boolean.
+/// Строковое приглашение prompt игнорируется
+function ReadlnBoolean4(prompt: string): (boolean, boolean, boolean, boolean);
+/// Возвращает кортеж из четырех введенных значений типа Node.
+/// Строковое приглашение prompt игнорируется
+function ReadlnNode4(prompt: string): (Node, Node, Node, Node);
 
 // == Версия 4.17. Конец дополнений ==
 
@@ -341,6 +409,7 @@ procedure Put(param: string);
 procedure Put(param: boolean);
 procedure Put(param: PNode);
 procedure Put(param: Node);
+
 
 //Ввод этих данных не поддерживается
 ///- read(a,b,...)
@@ -784,96 +853,6 @@ begin
   DisposeP(IntPtr(p));
 end;
 
-procedure GetS(var param: string);
-begin
-  param := GetString();
-end;
-
-procedure GetB(var param: boolean);
-begin
-  param := GetBoolean();
-end;
-
-procedure PutB(param: boolean);
-begin
-  PutBoolean(param);
-end;
-
-procedure GetP(var param: PNode);
-begin
-  param := GetPNode();
-end;
-
-procedure GetP(var param: Node);
-begin
-  param := GetNode();
-end;
-
-procedure PutP(param: PNode);
-begin
-  PutPNode(param);
-end;
-
-procedure PutP(param: Node);
-begin
-  PutNode(param);
-end;
-
-procedure Put(params args: array of Object);
-begin
-  foreach x: Object in args do
-  begin
-    if x.GetType = typeof(integer) then
-      Put(integer(x))
-    else if x.GetType = typeof(real) then
-      Put(real(x)) 
-    else if x.GetType = typeof(char) then
-      Put(char(x)) 
-    else if x.GetType = typeof(string) then
-      Put(string(x)) 
-    else if x.GetType = typeof(boolean) then
-      Put(boolean(x)) 
-    else if x.GetType = typeof(Node) then
-      Put(Node(x)) 
-//    else if x.GetType = typeof(PNode) then
-//      Put(PNode(x)) 
-  end;
-end;
-
-procedure Put(param: real);
-begin
-  PutR(param);  
-end;
-
-procedure Put(param: integer);
-begin
-  PutN(param);  
-end;
-
-procedure Put(param: char);
-begin
-  PutC(param);  
-end;
-
-procedure Put(param: string);
-begin
-  PutS(param);  
-end;
-
-procedure Put(param: boolean);
-begin
-  PutB(param);  
-end;
-
-procedure Put(param: PNode);
-begin
-  PutP(param);  
-end;
-
-procedure Put(param: Node);
-begin
-  PutP(param);  
-end;
 
 // -----------------------------------------------------
 //                         Node
@@ -1664,6 +1643,221 @@ begin
   Result := (GetNode, GetNode, GetNode);
 end;
 
+
+function ReadInteger4: (integer, integer, integer, integer);
+begin
+  Result := (GetInt, GetInt, GetInt, GetInt);
+end;
+
+function ReadReal4: (real, real, real, real);
+begin
+  Result := (GetReal, GetReal, GetReal, GetReal);
+end;
+
+function ReadChar4: (char, char, char, char);
+begin
+  Result := (GetChar, GetChar, GetChar, GetChar);
+end;
+
+function ReadString4: (string, string, string, string);
+begin
+  Result := (GetString, GetString, GetString, GetString);
+end;
+
+function ReadBoolean4: (boolean, boolean, boolean, boolean);
+begin
+  Result := (GetBool, GetBool, GetBool, GetBool);
+end;
+
+function ReadNode4: (Node, Node, Node, Node);
+begin
+  Result := (GetNode, GetNode, GetNode, GetNode);
+end;
+
+function ReadlnInteger4: (integer, integer, integer, integer);
+begin
+  Result := (GetInt, GetInt, GetInt, GetInt);
+end;
+
+function ReadlnReal4: (real, real, real, real);
+begin
+  Result := (GetReal, GetReal, GetReal, GetReal);
+end;
+
+function ReadlnChar4: (char, char, char, char);
+begin
+  Result := (GetChar, GetChar, GetChar, GetChar);
+end;
+
+function ReadlnString4: (string, string, string, string);
+begin
+  Result := (GetString, GetString, GetString, GetString);
+end;
+
+function ReadlnBoolean4: (boolean, boolean, boolean, boolean);
+begin
+  Result := (GetBool, GetBool, GetBool, GetBool);
+end;
+
+function ReadlnNode4: (Node, Node, Node, Node);
+begin
+  Result := (GetNode, GetNode, GetNode, GetNode);
+end;
+
+function ReadInteger4(prompt: string): (integer, integer, integer, integer);
+begin
+  Result := (GetInt, GetInt, GetInt, GetInt);
+end;
+
+function ReadReal4(prompt: string): (real, real, real, real);
+begin
+  Result := (GetReal, GetReal, GetReal, GetReal);
+end;
+
+function ReadChar4(prompt: string): (char, char, char, char);
+begin
+  Result := (GetChar, GetChar, GetChar, GetChar);
+end;
+
+function ReadString4(prompt: string): (string, string, string, string);
+begin
+  Result := (GetString, GetString, GetString, GetString);
+end;
+
+function ReadBoolean4(prompt: string): (boolean, boolean, boolean, boolean);
+begin
+  Result := (GetBool, GetBool, GetBool, GetBool);
+end;
+
+function ReadNode4(prompt: string): (Node, Node, Node, Node);
+begin
+  Result := (GetNode, GetNode, GetNode, GetNode);
+end;
+
+function ReadlnInteger4(prompt: string): (integer, integer, integer, integer);
+begin
+  Result := (GetInt, GetInt, GetInt, GetInt);
+end;
+
+function ReadlnReal4(prompt: string): (real, real, real, real);
+begin
+  Result := (GetReal, GetReal, GetReal, GetReal);
+end;
+
+function ReadlnChar4(prompt: string): (char, char, char, char);
+begin
+  Result := (GetChar, GetChar, GetChar, GetChar);
+end;
+
+function ReadlnString4(prompt: string): (string, string, string, string);
+begin
+  Result := (GetString, GetString, GetString, GetString);
+end;
+
+function ReadlnBoolean4(prompt: string): (boolean, boolean, boolean, boolean);
+begin
+  Result := (GetBool, GetBool, GetBool, GetBool);
+end;
+
+function ReadlnNode4(prompt: string): (Node, Node, Node, Node);
+begin
+  Result := (GetNode, GetNode, GetNode, GetNode);
+end;
+
+
+procedure GetS(var param: string);
+begin
+  param := GetString();
+end;
+
+procedure GetB(var param: boolean);
+begin
+  param := GetBoolean();
+end;
+
+procedure PutB(param: boolean);
+begin
+  PutBoolean(param);
+end;
+
+procedure GetP(var param: PNode);
+begin
+  param := GetPNode();
+end;
+
+procedure GetP(var param: Node);
+begin
+  param := GetNode();
+end;
+
+procedure PutP(param: PNode);
+begin
+  PutPNode(param);
+end;
+
+procedure PutP(param: Node);
+begin
+  PutNode(param);
+end;
+
+procedure Put(params args: array of Object);
+begin
+  foreach x: Object in args do
+  begin
+    if x.GetType = typeof(integer) then
+      Put(integer(x))
+    else if x.GetType = typeof(real) then
+      Put(real(x)) 
+    else if x.GetType = typeof(char) then
+      Put(char(x)) 
+    else if x.GetType = typeof(string) then
+      Put(string(x)) 
+    else if x.GetType = typeof(boolean) then
+      Put(boolean(x)) 
+    else if x.GetType = typeof(Node) then
+      Put(Node(x)) 
+//    else if x.GetType = typeof(PNode) then
+//      Put(PNode(x)) 
+  end;
+end;
+
+procedure Put(param: real);
+begin
+  PutR(param);  
+end;
+
+procedure Put(param: integer);
+begin
+  PutN(param);  
+end;
+
+procedure Put(param: char);
+begin
+  PutC(param);  
+end;
+
+procedure Put(param: string);
+begin
+  PutS(param);  
+end;
+
+procedure Put(param: boolean);
+begin
+  PutB(param);  
+end;
+
+procedure Put(param: PNode);
+begin
+  PutP(param);  
+end;
+
+procedure Put(param: Node);
+begin
+  PutP(param);  
+end;
+
+
+
 // == Версия 4.17. Конец дополнений ==
 
 
@@ -2178,29 +2372,39 @@ var LineBreak := false;
 procedure ShowArray(a: System.Array; indexes: array of integer; i: integer); forward;
 var spaces := 0;
 
+function GetNullBasedArray(arr: object): System.Array;
+var
+  fi: System.Reflection.FieldInfo;
+begin
+  fi := arr.GetType.GetField('NullBasedArray');
+  if fi <> nil then
+    Result := System.Array(fi.GetValue(arr))
+  else
+    Result := nil;
+end;
+
 procedure Show(params args: array of object);
 begin
-//  SHowStr('!!!!');
   var b := false;
   for var i:=0 to args.length-1 do
   begin
-    if args[i] = nil              then Show('nil') else
-    if args[i] is integer then Show(integer(args[i])) else
-    if args[i] is shortint then ShowStr(shortint(args[i]).ToString.PadLeft(_Width)) else
-    if args[i] is smallint then ShowStr(smallint(args[i]).ToString.PadLeft(_Width)) else
-    if args[i] is int64 then ShowStr(int64(args[i]).ToString.PadLeft(_Width)) else
-    if args[i] is byte then ShowStr(byte(args[i]).ToString.PadLeft(_Width)) else
-    if args[i] is word then ShowStr(word(args[i]).ToString.PadLeft(_Width)) else
-    if args[i] is longword then ShowStr(longword(args[i]).ToString.PadLeft(_Width)) else
-    if args[i] is uint64 then ShowStr(uint64(args[i]).ToString.PadLeft(_Width)) else
-
-    if args[i] is real          then Show(real(args[i])) else
-          if args[i] is char            then Show(char(args[i])) else
-        if args[i] is string    then Show(string(args[i])) else
-        if args[i] is boolean then Show(boolean(args[i]).ToString) else
-        if args[i] is Node      then Show('Node') else
-        if args[i] is PointerOutput     then 
+    if args[i] = nil then begin Show('nil'); LineBreak := false end else
+    if args[i] is integer then begin Show(integer(args[i])); LineBreak := false end else
+    if args[i] is shortint then begin ShowStr(shortint(args[i]).ToString.PadLeft(_Width)); LineBreak := false end else
+    if args[i] is smallint then begin ShowStr(smallint(args[i]).ToString.PadLeft(_Width)); LineBreak := false end else
+    if args[i] is int64 then begin ShowStr(int64(args[i]).ToString.PadLeft(_Width)); LineBreak := false end else
+    if args[i] is byte then begin ShowStr(byte(args[i]).ToString.PadLeft(_Width)); LineBreak := false end else
+    if args[i] is word then begin ShowStr(word(args[i]).ToString.PadLeft(_Width)); LineBreak := false end else
+    if args[i] is longword then begin ShowStr(longword(args[i]).ToString.PadLeft(_Width)); LineBreak := false end else
+    if args[i] is uint64 then begin ShowStr(uint64(args[i]).ToString.PadLeft(_Width)); LineBreak := false end else
+    if args[i] is real then begin Show(real(args[i])); LineBreak := false end else
+    if args[i] is char then begin Show(char(args[i])); LineBreak := false end else
+    if args[i] is string then begin Show(string(args[i])); LineBreak := false end else
+    if args[i] is boolean then begin Show(boolean(args[i]).ToString); LineBreak := false end else
+    if args[i] is Node then begin Show('Node'); LineBreak := false end else
+    if args[i] is PointerOutput then 
         begin
+          LineBreak := false;
           var ip := IntPtr(PointerOutput(args[i]).p);
           ShowStr(ip.ToString.PadLeft(_Width));
         end  
@@ -2274,11 +2478,17 @@ begin
     end      
     else 
     begin
+      var nba := GetNullBasedArray(args[i]);
+      if nba <> nil then
+        Show(nba)
+      else
+      begin
       var res := PrintAttributeString(args[i]);
       if res <> nil then
           Show(res)
       else 
           Show(args[i].ToString);
+      end;    
     end;
     end;
 end;

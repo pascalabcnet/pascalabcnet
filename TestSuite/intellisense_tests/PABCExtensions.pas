@@ -11,16 +11,28 @@ uses PABCSystem;
 //>>     Подпрограммы для работы с типизированными файлами # Subroutines for typed files
 // -----------------------------------------------------
 
-/// Открывает типизированный файл и возвращает значение для инициализации файловой переменной
-function OpenBinary<T>(fname: string): file of T;
+/// Открывает бестиповой файл и возвращает значение для инициализации файловой переменной
+function OpenBinary(fname: string): file;
 begin
   PABCSystem.Reset(Result, fname);
 end;
 
-/// Создаёт или обнуляет типизированный файл и возвращает значение для инициализации файловой переменной
-function CreateBinary<T>(fname: string): file of T;
+/// Создаёт или обнуляет бестиповой файл и возвращает значение для инициализации файловой переменной
+function CreateBinary(fname: string): file;
 begin
   PABCSystem.Rewrite(Result, fname);
+end;
+
+/// Открывает бестиповой файл в заданной кодировке и возвращает значение для инициализации файловой переменной
+function OpenBinary(fname: string; en: Encoding): file;
+begin
+  PABCSystem.Reset(Result, fname, en);
+end;
+
+/// Создаёт или обнуляет бестиповой файл в заданной кодировке и возвращает значение для инициализации файловой переменной
+function CreateBinary(fname: string; en: Encoding): file;
+begin
+  PABCSystem.Rewrite(Result, fname, en);
 end;
 
 /// Открывает типизированный файл и возвращает значение для инициализации файловой переменной
@@ -32,7 +44,23 @@ end;
 /// Создаёт или обнуляет типизированный файл и возвращает значение для инициализации файловой переменной
 function CreateFile<T>(fname: string): file of T;
 begin
-  PABCSystem.Rewrite(Result, fname);
+  var res: file of T;
+  PABCSystem.Rewrite(res, fname);
+  Result := res;
+end;
+
+/// Открывает типизированный файл в заданной кодировке и возвращает значение для инициализации файловой переменной
+function OpenFile<T>(fname: string; en: Encoding): file of T;
+begin
+  PABCSystem.Reset(Result, fname, en);
+end;
+
+/// Создаёт или обнуляет типизированный файл в заданной кодировке и возвращает значение для инициализации файловой переменной
+function CreateFile<T>(fname: string; en: Encoding): file of T;
+begin
+  var res: file of T;
+  PABCSystem.Rewrite(res, fname, en);
+  Result := res;
 end;
 
 /// Открывает типизированный файл целых и возвращает значение для инициализации файловой переменной
@@ -59,10 +87,10 @@ begin
   Result := CreateFile&<real>(fname);
 end;
 
-/// Открывает типизированный файл, возвращает последовательность его элементов и закрывает его
+/// Открывает типизированный файл, записывает в него последовательность элементов ss и закрывает его
 procedure WriteElements<T>(fname: string; ss: sequence of T);
 begin
-  var f := CreateBinary&<T>(fname);
+  var f := CreateFile&<T>(fname);
   foreach var x in ss do
     f.Write(x);
   f.Close
@@ -117,7 +145,7 @@ end;
 /// Открывает типизированный файл, возвращает последовательность его элементов и закрывает его
 function ReadElements<T>(fname: string): sequence of T;
 begin
-  var f := OpenBinary&<T>(fname);
+  var f := OpenFile&<T>(fname);
   while not f.Eof do
   begin
     var x := f.Read;

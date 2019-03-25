@@ -17,22 +17,34 @@ string
 [bo]
 boolean
 
+[l]
+loop 10 do
+  |
+
+[lb]
+loop 10 do
+begin
+  |
+end;
+
 [f]
-for var |:= to do
+for var i:=1 to 10 do
+  |
 
 [fb]
-for var |:= to do
+for var i:=1 to 10 do
 begin
-
+  |
 end;
 
 [fore]
-foreach var |:  in  do
+foreach var x in a do
+  |
 
 [foreb]
-foreach var |:  in  do
+foreach var x in a do
 begin
-
+  |
 end;
 
 [if]
@@ -77,6 +89,12 @@ end;
 repeat
   |
 until ;
+
+[p]
+Print(|);
+
+[pln]
+Println(|);
 
 [pr]
 procedure |();
@@ -140,7 +158,7 @@ begin
 end.
 
 [gr]
-uses GraphABC;
+uses GraphWPF;
 
 begin
   |
