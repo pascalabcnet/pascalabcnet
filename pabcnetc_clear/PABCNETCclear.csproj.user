@@ -36,7 +36,7 @@
     <RemoteDebugMachine>
     </RemoteDebugMachine>
     <StartAction>Project</StartAction>
-    <StartArguments>a.pas</StartArguments>
+    <StartArguments>d:\a.pas</StartArguments>
     <StartPage>
     </StartPage>
     <StartProgram>

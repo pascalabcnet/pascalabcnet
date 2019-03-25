@@ -1691,6 +1691,7 @@ namespace PascalABCCompiler.SyntaxTree
 			_simple_property.attr = (definition_attribute)br.ReadByte();
 			_simple_property.virt_over_none_attr = (proc_attribute)br.ReadByte();
 			_simple_property.is_auto = br.ReadBoolean();
+			_simple_property.initial_value = _read_node() as expression;
 		}
 
 
@@ -3425,7 +3426,7 @@ namespace PascalABCCompiler.SyntaxTree
 			_function_lambda_definition.return_type = _read_node() as type_definition;
 			_function_lambda_definition.formal_parameters = _read_node() as formal_parameters;
 			_function_lambda_definition.proc_body = _read_node() as statement;
-			_function_lambda_definition.proc_definition = _read_node() as procedure_definition;
+			_function_lambda_definition.proc_definition = (object)br.ReadByte();
 			_function_lambda_definition.parameters = _read_node() as expression_list;
 			if (br.ReadByte() == 0)
 			{
@@ -3568,7 +3569,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_unnamed_type_object(unnamed_type_object _unnamed_type_object)
 		{
-			read_expression(_unnamed_type_object);
+			read_addressed_value(_unnamed_type_object);
 			_unnamed_type_object.ne_list = _read_node() as name_assign_expr_list;
 			_unnamed_type_object.is_class = br.ReadBoolean();
 			_unnamed_type_object.new_ex = _read_node() as new_expr;

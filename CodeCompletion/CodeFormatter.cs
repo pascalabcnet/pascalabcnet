@@ -261,13 +261,16 @@ namespace CodeFormatters
             return sb.ToString();
         }
 
-        private void WriteNode(syntax_tree_node sn)
+        private void WriteNode(syntax_tree_node sn, bool remove_spaces = false)
         {
             if (sn.source_context != null)
             {
                 int start_pos = GetPosition(sn.source_context.begin_position.line_num, sn.source_context.begin_position.column_num);
                 int end_pos = GetPosition(sn.source_context.end_position.line_num, sn.source_context.end_position.column_num);
-                sb.Append(Text.Substring(start_pos, end_pos - start_pos + 1));
+                string node_text = Text.Substring(start_pos, Math.Max(end_pos - start_pos + 1, 0));
+                if (remove_spaces && !node_text.Contains("{"))
+                    node_text = node_text.Replace(" ", "");
+                sb.Append(node_text);
             }
         }
 
@@ -524,6 +527,7 @@ namespace CodeFormatters
                 string comm = Text.Substring(prev_pos, pos - prev_pos);
                 if (options.AggressiveMode == 1)
                 {
+                    string trimed_comm = comm.Trim();
                     if (comm.EndsWith(" ") && comm.IndexOf("\n") == -1)
                     {
                         comm = comm.TrimEnd(' ');
@@ -538,17 +542,19 @@ namespace CodeFormatters
                     }
                     if (comm.StartsWith(" "))
                     {
-                        string trimed_comm = comm.Trim();
-                        if (trimed_comm == "then" || trimed_comm == "do")
+                        
+                        if (trimed_comm == "then" || trimed_comm == "do" || trimed_comm == "of")
                         {
                             comm = comm.TrimStart(' ');
                             if (comm.Length == 0 || char.IsLetterOrDigit(comm[0]) || add_space_after)
                                 comm = " " + comm;
                         }
                     }
-                    if (comm.EndsWith(" ") && (comm.TrimEnd(' ').EndsWith("class") || comm.TrimEnd(' ').EndsWith("static")))
+                    if (comm.EndsWith(" "))
                     {
-                        comm = comm.TrimEnd(' ')+" ";
+                        string trimed_end = comm.TrimEnd(' ');
+                        if (trimed_end.EndsWith("class") || trimed_end.EndsWith("static") || trimed_end.EndsWith("else"))
+                            comm = comm.TrimEnd(' ')+" ";
                     }
                     if (comm.Replace(" ","") == "():")//special case: functions with no parameters
                     {
@@ -569,12 +575,31 @@ namespace CodeFormatters
                     }
                     else if (comm.StartsWith(":") && comm.EndsWith(":") && comm.Replace(" ", "") == "::")
                         comm = "::";
+                    else if (comm.StartsWith("[") && comm.EndsWith(":"))
+                        comm = comm.Replace(" ", "");
+                    else if (comm.StartsWith("( ") && comm.TrimEnd().EndsWith("var"))
+                        comm = comm.Replace(" ", "")+" ";
+                    else if (trimed_comm.StartsWith(", ") && comm.TrimEnd().EndsWith("var"))
+                        comm = RemoveOverSpaces(comm);
+                    else if (trimed_comm.StartsWith(",var"))
+                        comm = ", var"+ trimed_comm.Replace(",var", "");
                     else if (comm.StartsWith("array") || comm.StartsWith("set") || comm.StartsWith("sequence"))
                         comm = RemoveOverSpaces(comm);
                     else if ((comm.StartsWith("class") || comm.StartsWith("interface")) && comm.EndsWith("("))
-                        comm = comm.Replace(" ","");
+                        comm = comm.Replace(" ", "");
                     else if ((comm.StartsWith("auto") || comm.StartsWith("sealed") || comm.StartsWith("abstract")) && comm.EndsWith("("))
                         comm = RemoveOverSpaces(comm);
+                    else if (comm.TrimEnd(' ').EndsWith("property"))
+                        comm = RemoveOverSpaces(comm);
+                    else if (comm.StartsWith("var") && comm.EndsWith("("))
+                        comm = RemoveOverSpaces(comm);
+                    else if (trimed_comm.StartsWith("[") && trimed_comm.EndsWith("]"))
+                        comm = RemoveOverSpaces(comm).Replace("[ ", "[").Replace(" ]", "]");
+                    else if ((comm.StartsWith("auto") || comm.StartsWith("sealed") || comm.StartsWith("abstract") || comm.StartsWith("static")) && (trimed_comm.EndsWith("class") || trimed_comm.EndsWith("record")))
+                        comm = RemoveOverSpaces(comm);
+                    else if (trimed_comm.StartsWith("]") && trimed_comm.EndsWith(":"))
+                        comm = comm.Replace(" ", "");
+                    
                 }
                 WriteCommentWithIndent(comm, true);
                 read_from_beg_pos = false;
@@ -608,7 +633,7 @@ namespace CodeFormatters
             {
                 string comm = Text.Substring(prev_pos, pos - prev_pos);
                 string trimedstr = comm.TrimStart();
-                if (sn is loop_stmt || sn is case_node || sn is if_node || sn is while_node || sn is foreach_stmt)
+                if (sn is loop_stmt || sn is case_node || sn is if_node || sn is while_node || sn is foreach_stmt || sn is for_node || sn is lock_stmt)
                 {
 
                     if (trimedstr == "do" || trimedstr == "of" || trimedstr == "then")
@@ -622,12 +647,16 @@ namespace CodeFormatters
                     comm = "()";
                 else if (trimedstr.Length >= 2 && trimedstr[0] == '(' && trimedstr[trimedstr.Length - 1] == ';')
                     comm = trimedstr.Replace(" ", "");
+                else if (trimedstr.StartsWith("[") || trimedstr.EndsWith("]"))
+                    comm = trimedstr.Replace(" ", "");
                 if (trimedstr.StartsWith(";  "))
                 {
                     comm = "; " + trimedstr.Substring(1).TrimStart(' ', '\t');
                 }
-                else if (trimedstr == ".")
+                else if (trimedstr == "." || trimedstr == "^")
                     comm = trimedstr;
+                else if (trimedstr.StartsWith(",") && trimedstr.EndsWith(">"))
+                    comm = ",>";
                 //else if (sn is uses_closure || sn is formal_parameters || sn is type_declaration)
                 //    comm = comm.TrimStart();
                 if (sn is program_module || sn is unit_module)
@@ -636,6 +665,10 @@ namespace CodeFormatters
                     trimedstr = comm.TrimStart();
                     if (trimedstr.StartsWith("."))
                         comm = trimedstr;
+                }
+                else if (sn is simple_property)
+                {
+                    comm = RemoveOverSpaces(comm).Replace(" ;", ";");
                 }
                 if (comm.StartsWith(" "))
                     add_space_before = true;
@@ -1784,7 +1817,7 @@ namespace CodeFormatters
                 visit_node(_pascal_set_constant.values);
             }
             else
-                WriteNode(_pascal_set_constant);
+                WriteNode(_pascal_set_constant, true);
             //sb.Append("]");
         }
 
@@ -1866,28 +1899,12 @@ namespace CodeFormatters
         public override void visit(simple_property _simple_property)
         {
             multiline_stack_push(_simple_property);
-
-            string keyword_with_spaces = "property";
+            
             var property_keyword = "property";
-            if (_simple_property.is_auto)
-            {
-                property_keyword = property_keyword.Insert(0, "auto ");
-                var name_pos = GetPosition(
-                    _simple_property.property_name.source_context.begin_position.line_num,
-                    _simple_property.property_name.source_context.begin_position.column_num);
-                var property_start_pos = GetPosition(
-                    _simple_property.source_context.begin_position.line_num,
-                    _simple_property.source_context.begin_position.column_num);
-
-                keyword_with_spaces = Text.Substring(
-                    property_start_pos, name_pos - property_start_pos - 1);
-                keyword_with_spaces.Trim();
-            }
-
-            if (_simple_property.attr != definition_attribute.Static)
+            if (_simple_property.attr != definition_attribute.Static && !_simple_property.is_auto)
             {
                 sb.Append(property_keyword);
-                SetKeywordOffset(keyword_with_spaces);
+                SetKeywordOffset(property_keyword);
             }
 
             visit_node(_simple_property.property_name);
@@ -1900,6 +1917,11 @@ namespace CodeFormatters
             add_space_after = true;
             if (_simple_property.accessors != null)
                 visit_node(_simple_property.accessors);
+            if (_simple_property.initial_value != null)
+            {
+                add_space_before = true;
+                visit_node(_simple_property.initial_value);
+            }
             if (_simple_property.array_default != null)
                 visit_node(_simple_property.array_default);
             add_space_before = false;
@@ -2612,7 +2634,8 @@ namespace CodeFormatters
             sb.Append("<");
             for (int i = 0; i < _template_param_list.params_list.Count; i++)
             {
-                if (i > 0)
+                if (i > 0 && !(_template_param_list.params_list[i] is named_type_reference && (_template_param_list.params_list[i] as named_type_reference).names.Count > 0 
+                    && (_template_param_list.params_list[i] as named_type_reference).names[0].name == ""))
                     add_space_after = true;
                 visit_node(_template_param_list.params_list[i]);
             }
@@ -2794,8 +2817,9 @@ namespace CodeFormatters
         {
             sb.Append("lock");
             SetKeywordOffset("lock");
+            multiline_stack_push(_lock_stmt.lock_object);
             visit_node(_lock_stmt.lock_object);
-            add_newline_after = true;
+            multiline_stack_pop(_lock_stmt.lock_object);
             add_space_before = true;
             bool need_off = !(_lock_stmt.stmt is statement_list);
             if (!in_one_row(_lock_stmt.stmt))

@@ -250,7 +250,7 @@ namespace PascalABCCompiler.PCU
                 
                 //TODO сохранить в PCU
                 cun.scope.CaseSensitive = false;
-                if (string.Compare(unit_name,PascalABCCompiler.TreeConverter.compiler_string_consts.system_unit_file_name)==0)
+                if (string.Compare(unit_name,PascalABCCompiler.TreeConverter.compiler_string_consts.system_unit_file_name, true)==0)
                 	PascalABCCompiler.TreeConverter.syntax_tree_visitor.init_system_module(cun);
                 //ssyy
                 //Создаём область видимости для implementation - части

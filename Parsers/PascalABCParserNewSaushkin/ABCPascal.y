@@ -121,6 +121,7 @@
 %type <stn> array_defaultproperty 
 %type <stn> meth_modificators optional_method_modificators optional_method_modificators1  
 %type <id> meth_modificator property_modificator 
+%type <ex> optional_property_initialization
 %type <stn> proc_call  
 %type <stn> proc_func_constr_destr_decl proc_func_decl inclass_proc_func_decl inclass_proc_func_decl_noclass constr_destr_decl inclass_constr_destr_decl
 %type <stn> method_decl proc_func_constr_destr_decl_with_attr proc_func_decl_noclass  
@@ -609,10 +610,6 @@ label_name
         { 
 			$$ = new ident($1.ToString(), @$);
 		}
-    | tkFloat                              
-        { 
-			$$ = new ident($1.ToString(), @$);  
-		}
     | identifier
 		{ 
 			$$ = $1; 
@@ -1025,10 +1022,10 @@ array_const
         { 
 			$$ = new array_const($2 as expression_list, @$); 
 		}
-    | tkRoundOpen record_const tkRoundClose    
-        { $$ = $2; }
-    | tkRoundOpen array_const tkRoundClose     
-        { $$ = $2; }
+//    | tkRoundOpen record_const tkRoundClose    
+//        { $$ = $2; }
+//    | tkRoundOpen array_const tkRoundClose     
+//        { $$ = $2; }
     ;
 
 typed_const_list
@@ -1173,6 +1170,20 @@ type_decl_type
 
 simple_type_question
 	: simple_type tkQuestion
+		{
+            if (parsertools.build_tree_for_formatter)
+   			{
+                $$ = $1;
+            }
+            else
+            {
+                var l = new List<ident>();
+                l.Add(new ident("System"));
+                l.Add(new ident("Nullable"));
+                $$ = new template_type_reference(new named_type_reference(l), new template_param_list($1), @$);
+            }
+		}
+	| template_type tkQuestion
 		{
             if (parsertools.build_tree_for_formatter)
    			{
@@ -1960,18 +1971,25 @@ simple_property_definition
         { 
 			parsertools.AddErrorFromResource("STATIC_PROPERTIES_CANNOT_HAVE_ATTRBUTE_{0}",@7,$7.name);        	
         }
-	| tkAuto tkProperty qualified_identifier property_interface tkSemiColon
+	| tkAuto tkProperty qualified_identifier property_interface optional_property_initialization tkSemiColon
 		{
 			$$ = NewSimplePropertyDefinition($3 as method_name, $4 as property_interface, null, proc_attribute.attr_none, null, @$);
 			($$ as simple_property).is_auto = true;
+			($$ as simple_property).initial_value = $5;
 		}
-	| class_or_static tkAuto tkProperty qualified_identifier property_interface tkSemiColon
+	| class_or_static tkAuto tkProperty qualified_identifier property_interface optional_property_initialization tkSemiColon
 		{
 			$$ = NewSimplePropertyDefinition($4 as method_name, $5 as property_interface, null, proc_attribute.attr_none, null, @$);
 			($$ as simple_property).is_auto = true;
 			($$ as simple_property).attr = definition_attribute.Static;
+			($$ as simple_property).initial_value = $6;
 		}
     ;
+
+optional_property_initialization
+	: tkAssign expr { $$ = $2; }
+	| { $$ = null; }
+	;
 
 array_defaultproperty
     :  
@@ -3201,6 +3219,8 @@ new_expr
 field_in_unnamed_object
 	: identifier tkAssign relop_expr
 		{
+		    if ($3 is nil_const)
+				parsertools.AddErrorFromResource("NIL_IN_UNNAMED_OBJECT",@$);		    
 			$$ = new name_assign_expr($1,$3,@$);
 		}
 	| relop_expr

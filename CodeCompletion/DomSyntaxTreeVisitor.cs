@@ -131,6 +131,16 @@ namespace CodeCompletion
                         return true;
                 }
             }
+            else if (node is new_expr)
+            {
+                new_expr ne = node as new_expr;
+                if (ne.params_list != null)
+                    foreach (expression e in ne.params_list.expressions)
+                    {
+                        if (has_lambdas(e))
+                            return true;
+                    }
+            }
             else if (node is tuple_node)
             {
                 tuple_node tn = node as tuple_node;
@@ -682,8 +692,9 @@ namespace CodeCompletion
                     else
                         returned_scope = null;
                 }
-                else
-            	    returned_scope = returned_scope.GetElementType();
+                else if (returned_scope.GetElementType() != null)
+                    returned_scope = returned_scope.GetElementType();
+            	    
             }
         }
 
@@ -997,7 +1008,7 @@ namespace CodeCompletion
                     ps.is_reintroduce = true;
         }
 
-        private ProcScope select_function_definition(ProcScope ps, formal_parameters prms, TypeScope return_type, TypeScope declType, bool function=false)
+        private ProcScope select_function_definition(ProcScope ps, formal_parameters prms, TypeScope return_type, TypeScope declType, bool function=false, bool static_constructor=false)
         {
             SymScope tmp = returned_scope;
             List<ElementScope> lst = new List<ElementScope>();
@@ -1070,6 +1081,15 @@ namespace CodeCompletion
             {
                 while (ps != null)
                 {
+                    if (ps.is_constructor && ps.is_static != static_constructor)
+                    {
+                        ps = ps.nextProc;
+                        continue;
+                    }
+                    else if (ps.is_constructor && ps.is_static && static_constructor)
+                    {
+                        return ps;
+                    }
                     if (ps.parameters == null || ps.parameters.Count == 0)
                     {
                         if (function && ps.return_type != null && return_type == null)
@@ -2229,19 +2249,21 @@ namespace CodeCompletion
                 is_extensions_unit = true;
             }
             CodeCompletionController.comp_modules[_unit_module.file_name] = this.converter;
+            foreach (string s in namespaces)
+            {
+                if (!ns_cache.ContainsKey(s))
+                {
+                    NamespaceScope ns_scope = new NamespaceScope(s);
+                    entry_scope.AddName(s, ns_scope);
+                    ns_cache[s] = s;
+                }
+            }
             DateTime start_time = DateTime.Now;
+
             System.Diagnostics.Debug.WriteLine("intellisense parsing interface started " + System.Convert.ToInt32((DateTime.Now - start_time).TotalMilliseconds));
             _unit_module.interface_part.visit(this);
             System.Diagnostics.Debug.WriteLine("intellisense parsing interface ended " + System.Convert.ToInt32((DateTime.Now - start_time).TotalMilliseconds));
-            foreach (string s in namespaces)
-            {
-            	if (!ns_cache.ContainsKey(s))
-            	{
-                  NamespaceScope ns_scope = new NamespaceScope(s);
-                  entry_scope.AddName(s,ns_scope);
-                  ns_cache[s] = s;
-            	}
-            }
+            
             start_time = DateTime.Now;
             System.Diagnostics.Debug.WriteLine("intellisense parsing implementation started "+ System.Convert.ToInt32((DateTime.Now - start_time).TotalMilliseconds));
             if (_unit_module.implementation_part != null)
@@ -3261,6 +3283,7 @@ namespace CodeCompletion
                         element_type = TypeTable.obj_type;
                         break;
                     }
+                    //else element_type = TypeTable.obj_type;
                 }
             }
             
@@ -3855,7 +3878,7 @@ namespace CodeCompletion
                             ps.head_loc = loc;
                         }
                         else
-                            ps = select_function_definition(ps, _constructor.parameters, topScope as TypeScope, topScope as TypeScope);
+                            ps = select_function_definition(ps, _constructor.parameters, topScope as TypeScope, topScope as TypeScope, false, _constructor.class_keyword);
                         //while (ps != null && ps.already_defined) ps = ps.nextProc;
                         if (ps == null)
                         {
@@ -4609,6 +4632,8 @@ namespace CodeCompletion
                 if (returned_scope != null)
                 {
                     cur_scope = stmt_scope;
+                    if (returned_scope is ProcScope)
+                        returned_scope = new ProcType(returned_scope as ProcScope);
                     ElementScope es = new ElementScope(new SymInfo(_foreach_stmt.identifier.name, SymbolKind.Variable, _foreach_stmt.identifier.name), returned_scope, cur_scope);
                     es.loc = get_location(_foreach_stmt.identifier);
                     stmt_scope.AddName(_foreach_stmt.identifier.name, es);
@@ -4828,7 +4853,8 @@ namespace CodeCompletion
         public override void visit(expression_as_statement _expression_as_statement)
         {
             //throw new Exception("The method or operation is not implemented.");
-            
+            if (has_lambdas(_expression_as_statement.expr) || _expression_as_statement.expr is unnamed_type_object)
+                _expression_as_statement.expr.visit(this);
         }
 
         public override void visit(c_scalar_type _c_scalar_type)

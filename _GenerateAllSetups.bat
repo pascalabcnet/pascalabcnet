@@ -46,7 +46,6 @@ ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 cd ..\bin
-REM MPGORunner.exe
 TestRunner.exe
 
 cd ..\ReleaseGenerators

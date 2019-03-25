@@ -40,6 +40,10 @@ namespace SyntaxVisitors
             {
                 throw new SyntaxVisitorError("YIELDS_INSIDE_WITH_ARE_ILLEGAL", ws.source_context);
             }
+            if (ws.DescendantNodes().OfType<yield_sequence_node>().Count() > 0)
+            {
+                throw new SyntaxVisitorError("YIELDSEQUENCES_INSIDE_WITH_ARE_ILLEGAL", ws.source_context);
+            }
             base.visit(ws);
         }
 
@@ -147,6 +151,15 @@ namespace SyntaxVisitors
             var fh = (pd.proc_header as function_header);
             if (fh == null)
                 throw new SyntaxVisitorError("ONLY_FUNCTIONS_CAN_CONTAIN_YIELDS", pd.proc_header.source_context);
+
+            var ttr = fh.return_type as template_type_reference;
+            if (ttr != null)
+            { 
+                if (ttr.name.names.Count == 1 && ttr.name.names[0].name.ToLower() == "ienumerable" && ttr.params_list.Count == 1)
+                    fh.return_type = new sequence_type(ttr.params_list.params_list[0]);
+                else if (ttr.name.names.Count == 4 && ttr.name.names[0].name.ToLower() == "system" && ttr.name.names[1].name.ToLower() == "collections" && ttr.name.names[2].name.ToLower() == "generic" && ttr.name.names[3].name.ToLower() == "ienumerable" && ttr.params_list.Count == 1)
+                    fh.return_type = new sequence_type(ttr.params_list.params_list[0]);
+            }
             var seqt = fh.return_type as sequence_type;
             if (seqt == null)
                 throw new SyntaxVisitorError("YIELD_FUNC_MUST_RETURN_SEQUENCE", fh.source_context);
@@ -156,10 +169,10 @@ namespace SyntaxVisitors
             if (pars != null)
                 foreach (var ps in pars.params_list)
                 {
-                    if (ps.param_kind != parametr_kind.none)
+                    if (ps.param_kind != parametr_kind.none && ps.param_kind != parametr_kind.params_parametr)
                         throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_VAR_CONST_PARAMS_MODIFIERS", pars.source_context);
-                    if (ps.inital_value != null)
-                        throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_DEFAULT_PARAMETERS", pars.source_context);
+                    /*if (ps.inital_value != null)
+                        throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_DEFAULT_PARAMETERS", pars.source_context);*/
                 }
 
             HasYields = true;

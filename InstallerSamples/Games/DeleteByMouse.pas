@@ -22,7 +22,7 @@ end;
 procedure MyMouseDown(x,y: real; mb: integer);
 begin
   var ob := ObjectUnderPoint(x,y);
-  if (ob<>nil) and (ob is RectangleWPF) then
+  if (ob<>nil) and (ob is RectangleWPF) and (ob<>StatusRect) then
     if ob.Number=CurrentDigit then
     begin
       ob.Destroy;

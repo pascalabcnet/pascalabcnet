@@ -144,11 +144,13 @@ namespace SyntaxVisitors.SugarVisitors
         {
             addressed_value right = dqn.right;
 
-            var eq = new bin_expr(new ident(name), new nil_const(), Operators.Equal, dqn.left.source_context);
+            var eq = new bin_expr(new ident(name,dqn.source_context), new nil_const(), Operators.Equal, dqn.left.source_context);
 
             var nr = Into(new ident(name), right);
-
-            var q = new question_colon_expression(eq, new nil_const(), nr, dqn.source_context);
+            nr.source_context = dqn.source_context;
+            var nc = new nil_const();
+            nc.source_context = dqn.source_context;
+            var q = new question_colon_expression(eq, nc, nr, dqn.source_context);
             nr.Parent = q;
             return q;
         }
@@ -161,7 +163,7 @@ namespace SyntaxVisitors.SugarVisitors
             if (st == null)
                 throw new SyntaxVisitorError("?._CANNOT_BE_IN_THIS_CONTEXT", dqn.source_context);
             var tname = "#dqn_temp" + UniqueNumStr();
-            var tt = new var_statement(new ident(tname), dqn.left);
+            var tt = new var_statement(new ident(tname), dqn.left, dqn.source_context);
             tt.var_def.Parent = tt;
             var l = new List<statement>();
             l.Add(tt);

@@ -1,0 +1,3 @@
+﻿begin
+  var x := [];
+end.

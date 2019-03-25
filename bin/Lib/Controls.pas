@@ -77,23 +77,31 @@ type
   TextLabelT = class(CommonControl)
   protected
     function b: GTextBlock := element as GTextBlock;
-    function GetText: string := InvokeString(()->b.Text);
-    procedure SetTextP(t: string) := b.Text := t;
-    procedure SetText(t: string) := Invoke(SetTextP,t);
     procedure CreateP(Txt: string);
     begin
-      element := new GTextBlock;
+      var tb := new GTextBlock;
+      element := tb;
       //element.Margin := new Thickness(0,0,0,8);
       //element.Margin := new Thickness(5,5,5,0);
       Text := Txt;
       ActivePanel.Children.Add(b);
     end;
-  public 
-    constructor Create(Txt: string);
+    procedure CreatePXY(x,y: real; Txt: string);
     begin
-      Invoke(CreateP,Txt);
+      var tb := new GTextBlock;
+      element := tb;
+      tb.Background := new SolidColorBrush(Colors.White);
+      tb.FontSize := 20;
+      tb.Opacity := 0.7;
+      Canvas.SetLeft(element,x);
+      Canvas.SetTop(element,y);
+      Text := Txt;
+      ActivePanel.Children.Add(b);
     end;
-    property Text: string read GetText write SetText;
+  public 
+    constructor Create(Txt: string) := Invoke(CreateP,Txt);
+    constructor Create(x,y: real; Txt: string) := Invoke(CreatePXY,x,y,Txt);
+    property Text: string read InvokeString(()->b.Text) write Invoke(procedure(t: string) -> b.Text := t,value);
   end;
   
   ///!#
@@ -241,16 +249,18 @@ type
   end;
 
   
-  function Button(Txt: string): ButtonT;
-  function TextLabel(Txt: string): TextLabelT;
-  function TextBox(Txt: string := ''; w: real := 0): TextBoxT;
-  function IntegerBox(w: real := 0): IntegerBoxT;
-  function Slider(min: real := 0; max: real := 10; val: real := 0): SliderT;
-  
-  procedure EmptyBlock(sz: integer := 16);
+function Button(Txt: string): ButtonT;
+function TextLabel(Txt: string): TextLabelT;
+function TextLabel(x,y: real; Txt: string): TextLabelT;
+function TextBox(Txt: string := ''; w: real := 0): TextBoxT;
+function IntegerBox(w: real := 0): IntegerBoxT;
+function Slider(min: real := 0; max: real := 10; val: real := 0): SliderT;
+
+procedure EmptyBlock(sz: integer := 16);
 
 implementation
 
+uses GraphWPF;
 uses System.Windows; 
 uses System.Windows.Controls;
 uses System.Windows.Controls.Primitives;
@@ -314,6 +324,7 @@ procedure AddStatusBar(Height: real) := Invoke(AddStatusBarP,Height);
 
 function Button(Txt: string): ButtonT := ButtonT.Create(Txt);
 function TextLabel(Txt: string): TextLabelT := TextLabelT.Create(Txt);
+function TextLabel(x,y: real; Txt: string): TextLabelT := TextLabelT.Create(x,y,Txt);
 function TextBox(Txt: string; w: real): TextBoxT := TextBoxT.Create(Txt,w);
 function IntegerBox(w: real): IntegerBoxT := IntegerBoxT.Create(w);
 function Slider(min,max,val: real): SliderT := SliderT.Create(min,max,val);
@@ -325,6 +336,11 @@ begin
   e.Width:= sz;
 end;
 
+procedure SetActivePanelInit;
+begin
+  ActivePanel := MainWindow.MainPanel.Children[0] as Panel
+end;
 
 begin
+  Invoke(SetActivePanelInit);
 end.
