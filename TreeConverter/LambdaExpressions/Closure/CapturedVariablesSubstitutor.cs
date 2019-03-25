@@ -95,8 +95,18 @@ namespace TreeConverter.LambdaExpressions.Closure
             _visitor = visitor;
         }
 
+        public override void visit(function_lambda_definition fld)
+        {
+            // Пробуем не обходить proc_definition - сделали её object в NodesGenerator
+            DefaultVisit(fld); // Это решило проблему с вложенными лямбдами без var a := lambda
+        }
+
         public override void visit(statement_list stmtList)
         {
+/*#if DEBUG
+            var s = stmtList.subnodes.Count + " " + stmtList.subnodes[0].ToString() + "\n";
+            System.IO.File.AppendAllText("d:\\bb3.txt", s);
+#endif*/
             _syntaxTreeNodeStack.Push(stmtList);
             base.visit(stmtList);
             _syntaxTreeNodeStack.Pop();

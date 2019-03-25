@@ -4,29 +4,37 @@
 <param name="Keyword" value="ReadChar">
 <param name="Keyword" value="ReadChar2">
 <param name="Keyword" value="ReadChar3">
+<param name="Keyword" value="ReadChar4">
 <param name="Keyword" value="ReadInteger">
 <param name="Keyword" value="ReadInteger2">
 <param name="Keyword" value="ReadInteger3">
+<param name="Keyword" value="ReadInteger4">
 <param name="Keyword" value="Readln">
 <param name="Keyword" value="ReadlnBoolean">
 <param name="Keyword" value="ReadlnChar">
 <param name="Keyword" value="ReadlnChar2">
 <param name="Keyword" value="ReadlnChar3">
+<param name="Keyword" value="ReadlnChar4">
 <param name="Keyword" value="ReadlnInteger">
 <param name="Keyword" value="ReadlnInteger2">
 <param name="Keyword" value="ReadlnInteger3">
+<param name="Keyword" value="ReadlnInteger4">
 <param name="Keyword" value="ReadlnReal">
 <param name="Keyword" value="ReadlnReal2">
 <param name="Keyword" value="ReadlnReal3">
+<param name="Keyword" value="ReadlnReal4">
 <param name="Keyword" value="ReadlnString">
 <param name="Keyword" value="ReadlnString2">
 <param name="Keyword" value="ReadlnString3">
+<param name="Keyword" value="ReadlnString4">
 <param name="Keyword" value="ReadReal">
 <param name="Keyword" value="ReadReal2">
 <param name="Keyword" value="ReadReal3">
+<param name="Keyword" value="ReadReal4">
 <param name="Keyword" value="ReadString">
 <param name="Keyword" value="ReadString2">
 <param name="Keyword" value="ReadString3">
+<param name="Keyword" value="ReadString4">
 <param name="Keyword" value="TryRead"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Подпрограммы ввода</H1>
@@ -54,6 +62,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа char, введенных с клавиатуры</td></tr>
 <tr><td><code><b>function</b> ReadChar3(prompt: string): (char, char, char);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа char, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadChar4: (char, char, char, char);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа char, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadChar4(prompt: string): (char, char, char, char);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа char, введенных с клавиатуры</td></tr>
 <tr><td><code><b>function</b> ReadInteger: integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа integer, введенное с клавиатуры</td></tr>
 <tr><td><code><b>function</b> ReadInteger(prompt: string): integer;</code>
@@ -68,6 +80,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа integer, введенных с клавиатуры</td></tr>
 <tr><td><code><b>function</b> ReadInteger3(prompt: string): (integer, integer, integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа integer, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadInteger4: (integer, integer, integer, integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа integer, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadInteger4(prompt: string): (integer, integer, integer, integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа integer, введенных с клавиатуры</td></tr>
 <tr><td><code><b>procedure</b> Readln(a,b,...);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вводит значения a,b,... с клавиатуры и осуществляет переход на следующую строку</td></tr>
 <tr><td><code><b>procedure</b> Readln(f: Text; a,b,...);</code>
@@ -89,9 +105,13 @@
 <tr><td><code><b>function</b> ReadlnChar2(prompt: string): (char, char);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
 <tr><td><code><b>function</b> ReadlnChar3: (char, char, char);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
 <tr><td><code><b>function</b> ReadlnChar3(prompt: string): (char, char, char);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnChar4: (char, char, char, char);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnChar4(prompt: string): (char, char, char, char);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
 <tr><td><code><b>function</b> ReadlnInteger: integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа integer, введенное с клавиатуры, и переходит на следующую строку ввода</td></tr>
 <tr><td><code><b>function</b> ReadlnInteger(prompt: string): integer;</code>
@@ -103,9 +123,13 @@
 <tr><td><code><b>function</b> ReadlnInteger2(prompt: string): (integer, integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
 <tr><td><code><b>function</b> ReadlnInteger3: (integer, integer, integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
 <tr><td><code><b>function</b> ReadlnInteger3(prompt: string): (integer, integer, integer);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnInteger4: (integer, integer, integer, integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnInteger4(prompt: string): (integer, integer, integer, integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
 <tr><td><code><b>function</b> ReadlnReal: real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа real, введенное с клавиатуры, и переходит на следующую строку ввода</td></tr>
 <tr><td><code><b>function</b> ReadlnReal(prompt: string): real;</code>
@@ -117,9 +141,13 @@
 <tr><td><code><b>function</b> ReadlnReal2(prompt: string): (real, real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
 <tr><td><code><b>function</b> ReadlnReal3: (real, real, real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
 <tr><td><code><b>function</b> ReadlnReal3(prompt: string): (real, real, real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnReal4: (real, real, real, real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnReal4(prompt: string): (real, real, real, real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
 <tr><td><code><b>function</b> ReadlnString: string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа string, введенное с клавиатуры, и переходит на следующую строку ввода</td></tr>
 <tr><td><code><b>function</b> ReadlnString(prompt: string): string;</code>
@@ -131,9 +159,13 @@
 <tr><td><code><b>function</b> ReadlnString2(prompt: string): (string, string);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
 <tr><td><code><b>function</b> ReadlnString3: (string, string, string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
 <tr><td><code><b>function</b> ReadlnString3(prompt: string): (string, string, string);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из двух значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnString4: (string, string, string, string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnString4(prompt: string): (string, string, string, string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
 <tr><td><code><b>function</b> ReadReal: real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа real, введенное с клавиатуры</td></tr>
 <tr><td><code><b>function</b> ReadReal(prompt: string): real;</code>
@@ -148,6 +180,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа real, введенных с клавиатуры</td></tr>
 <tr><td><code><b>function</b> ReadReal3(prompt: string): (real, real, real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа real, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadReal4: (real, real, real, real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа real, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadReal4(prompt: string): (real, real, real, real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа real, введенных с клавиатуры</td></tr>
 <tr><td><code><b>function</b> ReadString: string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа string, введенное с клавиатуры</td></tr>
 <tr><td><code><b>function</b> ReadString(prompt: string): string;</code>
@@ -162,6 +198,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа string, введенных с клавиатуры</td></tr>
 <tr><td><code><b>function</b> ReadString3(prompt: string): (string, string, string);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из трёх значений типа string, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadString4: (string, string, string, string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа string, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadString4(prompt: string): (string, string, string, string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа string, введенных с клавиатуры</td></tr>
 <tr><td><code><b>function</b> TryRead(<b>var</b> x: integer): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вводит числовое значение x клавиатуры. Возвращает False если при вводе произошла ошибка</td></tr>
 </table>

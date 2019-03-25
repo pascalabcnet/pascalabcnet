@@ -1,6 +1,6 @@
 #!/bin/sh
-MONO_IOMAP=case xbuild /p:Configuration=release pabcnetc.sln
-MONO_IOMAP=case xbuild /p:Configuration=release CodeCompletion/CodeCompletion.csproj
+MONO_IOMAP=case msbuild /p:Configuration=release pabcnetc.sln
+MONO_IOMAP=case msbuild /p:Configuration=release CodeCompletion/CodeCompletion.csproj
 mono --aot bin/pabcnetc.exe
 mono --aot bin/NETGenerator.dll
 mono --aot bin/TreeConverter.dll

@@ -106,7 +106,7 @@ type
     /// Очищает графическое окно белым цветом
     procedure Clear; virtual;
     /// Очищает графическое окно цветом c
-    procedure Clear(c: GColor);
+    procedure Clear(c: GColor); virtual;
     /// Устанавливает размеры клиентской части главного окна 
     procedure SetSize(w, h: real);
     /// Устанавливает отступ главного окна от левого верхнего края экрана 
@@ -125,6 +125,7 @@ type
     function Center: Point;
     /// Возвращает прямоугольник клиентской области окна
     function ClientRect: GRect;
+    private procedure CenterOnScreenP;
   end;
 //{{{--doc: Конец секции 1 }}} 
   
@@ -197,8 +198,14 @@ procedure WindowType.Maximize := Invoke(WindowTypeMaximizeP);
 procedure WindowTypeNormalizeP := MainWindow.WindowState := WindowState.Normal;
 procedure WindowType.Normalize := Invoke(WindowTypeNormalizeP);
 
-procedure WindowTypeCenterOnScreenP := MainWindow.WindowStartupLocation := WindowStartupLocation.CenterScreen;
-procedure WindowType.CenterOnScreen := Invoke(WindowTypeCenterOnScreenP);
+procedure WindowType.CenterOnScreenP;
+begin
+  var w := SystemParameters.PrimaryScreenWidth - MainWindow.Width;
+  var h := SystemParameters.PrimaryScreenHeight - Mainwindow.Height;
+  SetPos(w/2,h/2);
+end;
+ 
+procedure WindowType.CenterOnScreen := Invoke(CenterOnScreenP);
 
 function Pnt(x,y: real) := new Point(x,y);
 function Rect(x,y,w,h: real) := new System.Windows.Rect(x,y,w,h);
@@ -211,6 +218,11 @@ function operator implicit(Self: (integer, integer)): Point; extensionmethod := 
 function operator implicit(Self: (integer, real)): Point; extensionmethod := new Point(Self[0], Self[1]);
 function operator implicit(Self: (real, integer)): Point; extensionmethod := new Point(Self[0], Self[1]);
 function operator implicit(Self: (real, real)): Point; extensionmethod := new Point(Self[0], Self[1]);
+
+function operator implicit(Self: (integer, integer)): Size; extensionmethod := new Size(Self[0], Self[1]);
+function operator implicit(Self: (integer, real)): Size; extensionmethod := new Size(Self[0], Self[1]);
+function operator implicit(Self: (real, integer)): Size; extensionmethod := new Size(Self[0], Self[1]);
+function operator implicit(Self: (real, real)): Size; extensionmethod := new Size(Self[0], Self[1]);
 
 function operator implicit(Self: array of (real, real)): array of Point; extensionmethod := 
   Self.Select(t->new Point(t[0],t[1])).ToArray;

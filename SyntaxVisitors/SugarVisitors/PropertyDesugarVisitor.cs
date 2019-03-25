@@ -1,6 +1,7 @@
 ﻿using PascalABCCompiler.SyntaxTree;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -13,7 +14,18 @@ namespace SyntaxVisitors.SugarVisitors
             get { return new PropertyDesugarVisitor(); }
         }
 
-        public override void visit(simple_property _simple_property)
+        public override void visit(class_members _class_members)
+        {
+            foreach (var member in _class_members.members)
+            {
+                if (member is simple_property)
+                {
+                    Desugar(member as simple_property);
+                }
+            }
+        }
+
+        private void Desugar(simple_property _simple_property)
         {
             var property_parent_node = _simple_property.Parent;
             while (property_parent_node != null && property_parent_node.GetType() != typeof(class_members))
@@ -108,7 +120,7 @@ namespace SyntaxVisitors.SugarVisitors
             var var_def_statement = new var_def_statement(
                 new ident_list(l, simple_property.source_context),
                 simple_property.property_type,
-                null,
+                simple_property.initial_value,
                 def_attribute,
                 false,
                 simple_property.source_context);

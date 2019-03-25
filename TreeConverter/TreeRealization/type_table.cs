@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections;
+using System.Linq;
+
 
 namespace PascalABCCompiler.TreeRealization
 {
@@ -564,13 +566,18 @@ namespace PascalABCCompiler.TreeRealization
             return true;
         }
 
-        private static type_compare get_table_type_compare_in_specific_order(type_node left, type_node right)
+        private static type_compare get_table_type_compare_in_specific_order(type_node left, type_node right, bool only_implicit = false)
         {
             type_intersection_node[] tins = get_type_intersections_in_specific_order(left, right);
+            if (only_implicit)
+            {
+                tins = tins.Where(t => (t.this_to_another != null && t.this_to_another.is_explicit == false) || (t.another_to_this != null && t.another_to_this.is_explicit == false)).ToArray();
+            }
             if (tins.Length == 0)
             {
                 return type_compare.non_comparable_type;
             }
+
             if (tins.Length == 1)
             {
                 return tins[0].type_compare;
@@ -632,9 +639,9 @@ namespace PascalABCCompiler.TreeRealization
             return type_compare.non_comparable_type;
         }
 
-        public static type_compare compare_types_in_specific_order(type_node left, type_node right)
+        public static type_compare compare_types_in_specific_order(type_node left, type_node right, bool only_implicit = false)
         {
-            type_compare ret = get_table_type_compare_in_specific_order(left, right);
+            type_compare ret = get_table_type_compare_in_specific_order(left, right, only_implicit);
             if (ret != type_compare.non_comparable_type)
             {
                 return ret;

@@ -827,6 +827,11 @@ namespace PascalABCCompiler.TreeConverter
 
         internal expression_node convert_strong(SyntaxTree.expression expr)
         {
+#if DEBUG
+            //var s = expr + "\n";
+            //System.IO.File.AppendAllText("d:\\bb17.txt", s);
+#endif
+
 #if (DEBUG)
             if (expr == null)
             {
@@ -1114,7 +1119,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (name == "+" && right_type == SystemLibrary.SystemLibrary.char_type && left_type != SystemLibrary.SystemLibrary.string_type)
                 no_search_in_extension_methods = false;
-            List<SymbolInfo> sil = left_type.find_in_type(name, left_type.Scope, no_search_in_extension_methods);
+            List<SymbolInfo> sil = left_type.find_in_type(name, left_type.Scope, null, no_search_in_extension_methods);
             int added_symbols = -1;
             List<SymbolInfo> sil2 = null;
             if (left_type != right_type && !one_way_operation(name))
@@ -1124,7 +1129,7 @@ namespace PascalABCCompiler.TreeConverter
                     sil = new List<SymbolInfo>(sil);
                 if (name == "+" && right_type != SystemLibrary.SystemLibrary.string_type && left_type == SystemLibrary.SystemLibrary.char_type)
                     no_search_in_extension_methods = false;
-                sil2 = right_type.find_in_type(name, right_type.Scope, no_search_in_extension_methods);
+                sil2 = right_type.find_in_type(name, right_type.Scope, null, no_search_in_extension_methods);
                 if ((sil != null) && (sil2 != null))
                 {
                     //Важная проверка. Возможно один и тот же оператор с одними и теми же типами определен в двух разных классах.
@@ -1876,18 +1881,19 @@ namespace PascalABCCompiler.TreeConverter
                 statement_node finally_stmt = convert_strong(try_hndlr_finally.stmt_list);
                 context.leave_code_block();
                 stm.statements.AddElement(finally_stmt);
+                
                 basic_function_call bfc = new basic_function_call(SystemLibrary.SystemLibrary.bool_not as basic_function_node,null);
                 bfc.parameters.AddElement(new local_block_variable_reference(tmp_var,null));
                 stm.statements.AddElement(new if_node(bfc,new rethrow_statement_node(null),null,null));
             	exception_filter ef = new exception_filter(filter_type, lvr, stm, null);
-                efl.AddElement(ef);
+                //efl.AddElement(ef);
                 bfc = new basic_function_call(SystemLibrary.SystemLibrary.bool_assign as basic_function_node,null);
                 bfc.parameters.AddElement(new local_block_variable_reference(tmp_var,null));
                 bfc.parameters.AddElement(new bool_const_node(true,null));
                 
-                (try_statements as statements_list).statements.AddElement(bfc);
-                (try_statements as statements_list).statements.AddElement(new throw_statement_node(current_catch_excep,null));
-                return_value(new try_block(try_statements, null, efl, loc));
+                //(try_statements as statements_list).statements.AddElement(bfc);
+                //(try_statements as statements_list).statements.AddElement(new throw_statement_node(current_catch_excep,null));
+                return_value(new try_block(try_statements, finally_stmt, efl, loc));
                 context.leave_exception_handlers();
                 return;
             }
@@ -3514,6 +3520,37 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.class_definition _class_definition)
         {
+            if (_class_definition.keyword == class_keyword.Record && _class_definition.Parent is var_def_statement) // безымянная запись
+            {
+                if (_class_definition.class_parents != null && _class_definition.class_parents.Count>0)
+                    AddError(new SimpleSemanticError(get_location(_class_definition), "UNNAMED_RECORD_CANNOT_IMPLEMENT_INTERFACE"));
+                var pds = _class_definition.DescendantNodes().OfType<procedure_definition>();
+                if (pds.Count()>0)
+                    AddError(new SimpleSemanticError(get_location(pds.First()), "UNNAMED_RECORD_CANNOT_CONTAIN_METHODS"));
+
+                /*var cds = _class_definition.DescendantNodes().OfType<constructor>();
+                if (cds.Count() > 0)
+                    AddError(new SimpleSemanticError(get_location(cds.First()), "UNNAMED_RECORD_CANNOT_CONTAIN_CONSTRUCTORS"));*/
+                if (_class_definition.body.class_def_blocks.First().access_mod.access_level != access_modifer.public_modifer)
+                {
+                    var f = _class_definition.body.class_def_blocks.First();
+                    var loc = get_location(f);
+                    if (loc == null)
+                        loc = get_location(_class_definition);
+                    AddError(new SimpleSemanticError(loc, "UNNAMED_RECORD_CAN_CONTAIN_ONLY_ONE_PUBLIC_VISIBILITY_SECTION"));
+                }
+                    
+                if (_class_definition.body.class_def_blocks.Count > 1)
+                {
+                    var el1 = _class_definition.body.class_def_blocks.ElementAt(1);
+                    var loc = get_location(el1.access_mod);
+                    if (loc == null)
+                        loc = get_location(_class_definition);
+                    AddError(new SimpleSemanticError(loc, "UNNAMED_RECORD_CANNOT_CONTAIN_SEVERAL_VISIBILITY_SECTIONS"));
+                }
+                    
+            }                                                                                                                                                                          
+
             if (_class_definition.attribute != class_attribute.None && _class_definition.body == null)
                 AddError(new SimpleSemanticError(get_location(_class_definition), "CLASS_ATTRIBUTE_NOT_ALLOWED_IN_CLASS_PREDEFINTIONS"));
             if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Sealed) == SyntaxTree.class_attribute.Sealed)
@@ -4730,7 +4767,9 @@ namespace PascalABCCompiler.TreeConverter
             type_node_list tnl = new type_node_list();
             tnl.AddElement(left.type);
             tnl.AddElement(right.type);
-            elem_type = convertion_data_and_alghoritms.select_base_type(tnl);
+            elem_type = convertion_data_and_alghoritms.select_base_type(tnl,true);
+            if (elem_type == SystemLibrary.SystemLibrary.object_type)
+                AddError(new SimpleSemanticError(get_location(_diapason_expr), "BAD_DIAPASON_IN_SET_TYPE"));
             expression_node l = convertion_data_and_alghoritms.explicit_convert_type(left, PascalABCCompiler.SystemLibrary.SystemLibrary.integer_type);
             expression_node r = convertion_data_and_alghoritms.explicit_convert_type(right, PascalABCCompiler.SystemLibrary.SystemLibrary.integer_type);
             if (PascalABCCompiler.SystemLibrary.SystemLibInitializer.CreateDiapason.sym_info is common_namespace_function_node)
@@ -4780,7 +4819,7 @@ namespace PascalABCCompiler.TreeConverter
             expressions_list consts = new expressions_list();
             type_node el_type = null;
             type_node_list types = new type_node_list();
-            if (_pascal_set_constant.values != null && _pascal_set_constant.values != null)
+            if (_pascal_set_constant.values != null && _pascal_set_constant.values.expressions != null)
                 foreach (SyntaxTree.expression e in _pascal_set_constant.values.expressions)
                 {
             		if (e is SyntaxTree.nil_const)
@@ -4788,7 +4827,8 @@ namespace PascalABCCompiler.TreeConverter
             		else
             		if (e is SyntaxTree.diapason_expr)
                     {
-                        consts.AddElement(convert_diap_for_set((e as SyntaxTree.diapason_expr), out el_type));
+                        expression_node en = convert_diap_for_set((e as SyntaxTree.diapason_expr), out el_type); 
+                        consts.AddElement(en);
                         if (el_type.IsPointer)
                             ErrorsList.Add(new SimpleSemanticError(get_location(e), "POINTERS_IN_SETS_NOT_ALLOWED"));
                         types.AddElement(el_type);
@@ -4803,17 +4843,33 @@ namespace PascalABCCompiler.TreeConverter
                         types.AddElement(en.type);
                     }
                 }
-            expressions_list consts_copy = new expressions_list();
-            consts_copy.AddRange(consts);
             type_node ctn = null;
             if (consts.Count > 0)
             {
-                el_type = convertion_data_and_alghoritms.select_base_type(types);
+                el_type = convertion_data_and_alghoritms.select_base_type(types, true);
+                if (el_type == null)
+                    AddError(new SimpleSemanticError(get_location(_pascal_set_constant), "IMPOSSIBLE_TO_INFER_SET_TYPE"));
+
                 ctn = context.create_set_type(el_type, get_location(_pascal_set_constant));
 
             }
             else ctn = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node;
+
+            /*if (el_type == SystemLibrary.SystemLibrary.string_type)
+            {
+                for (int i = 0; i < consts.Count; i++)
+                    if (consts[i].type == SystemLibrary.SystemLibrary.char_type)
+                    {
+                        consts[i] = convertion_data_and_alghoritms.convert_type(consts[i], el_type);
+                    }
+            } */ // Не работает ! SSM 19.03.19
+
+            expressions_list consts_copy = new expressions_list();
+            consts_copy.AddRange(consts);
+
             function_node fn = convertion_data_and_alghoritms.select_function(consts, SystemLibrary.SystemLibInitializer.CreateSetProcedure.SymbolInfo, (SystemLibrary.SystemLibInitializer.CreateSetProcedure.sym_info is common_namespace_function_node)?(SystemLibrary.SystemLibInitializer.CreateSetProcedure.sym_info as common_namespace_function_node).loc:null);
+
+
             if (fn is common_namespace_function_node)
             {
                 common_namespace_function_call cnfc = new common_namespace_function_call(fn as common_namespace_function_node, get_location(_pascal_set_constant));
@@ -6887,7 +6943,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (en is SyntaxTree.function_lambda_definition)
                     {
                         lambdas_are_in_parameters = true;
-                        ((SyntaxTree.function_lambda_definition)en).lambda_visit_mode = LambdaVisitMode.VisitForInitialMethodCallProcessing;
+                        ((SyntaxTree.function_lambda_definition)en).lambda_visit_mode = LambdaVisitMode .VisitForInitialMethodCallProcessing;
                     }
                     //lroman//
                     #endregion
@@ -8538,7 +8594,8 @@ namespace PascalABCCompiler.TreeConverter
             	expression_node expr = sn as expression_node;
             	if (expr is null_const_node)
                     AddError(expr.location, "NIL_IN_THIS_CONTEXT_NOT_ALLOWED");
-                if (expr is typed_expression) expr = convert_typed_expression_to_function_call(expr as typed_expression);
+                if (expr is typed_expression)
+                    expr = convert_typed_expression_to_function_call(expr as typed_expression);
                 if (expr != null)
                 {
                     if (expr.type is generic_instance_type_node)
@@ -8583,7 +8640,9 @@ namespace PascalABCCompiler.TreeConverter
                 else if (sn is type_node)
                 {
                 	type_node tn = sn as type_node;
-                	Withs.Add(tn.Scope);
+                    if (tn.IsInterface)
+                        AddError(get_location(s_expr), "UNEXPECTED_EXPRESSION_IN_WITH");
+                    Withs.Add(tn.Scope);
                 	while (tn != null)
                 	{
                 		if (tn.Scope == null && tn is compiled_type_node)
@@ -11051,6 +11110,11 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.simple_const_definition _simple_const_definition)
         {
+            if (context.converting_block() == block_type.type_block &&
+                context.converted_type.IsInterface)
+            {
+                AddError(get_location(_simple_const_definition), "INVALID_INTERFACE_MEMBER");
+            }
             constant_definition_node cdn = context.add_const_definition(_simple_const_definition.const_name.name, get_location(_simple_const_definition.const_name));
             cdn.const_value = convert_strong_to_constant_node(_simple_const_definition.const_value);
             cdn.const_value.SetType(DeduceType(cdn.const_value.type, cdn.const_value.location));
@@ -11058,6 +11122,12 @@ namespace PascalABCCompiler.TreeConverter
             if (context.converted_type != null && context.converted_func_stack.Empty)
             	if (!constant_in_class_valid(cdn.const_value.type))
                     AddError(get_location(_simple_const_definition), "CLASS_CONSTANT_CAN_HAVE_ONLY_PRIMITIVE_VALUE");
+
+            if (_simple_const_definition.const_value is SyntaxTree.pascal_set_constant pc)
+            {
+                if (pc.values == null || pc.values.Count == 0)
+                    AddError(get_location(_simple_const_definition.const_value), "IMPOSSIBLE_TO_INFER_SET_TYPE");
+            }
         }
 
         public override void visit(SyntaxTree.type_declarations _type_declarations)
@@ -12095,6 +12165,10 @@ namespace PascalABCCompiler.TreeConverter
 
         private void check_cycle_interface_inheritance(common_type_node cnode, type_node base_of_cnode, List<common_type_node> interfaces)
         {
+            // Для интерфейсов всё это излишне. Поскольку нельзя использовать предописанные интерфейсы в списке наследования, то 
+            // циклически интерфейс может наследовать только от себя. Поэтому достаточно проверять нерекурсивно свой список ImplementingInterfaces и если там есть этот интерфейс, то ошибка
+            if (!cnode.IsInterface)
+                return;
             interfaces.Add(cnode);
             common_type_node bt = base_of_cnode as common_type_node;
             if (bt != null && bt.original_generic != null)
@@ -13236,7 +13310,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 SyntaxTree.procedure_attribute pa = new SyntaxTree.procedure_attribute(PascalABCCompiler.SyntaxTree.proc_attribute.attr_static);
                 pa.source_context = _procedure_header.source_context;
-                _procedure_header.proc_attributes.proc_attributes.Add(pa);
+                _procedure_header.proc_attributes.proc_attributes.Insert(0, pa);
             }
             weak_node_test_and_visit(_procedure_header.proc_attributes);
 			with_class_name = false;
@@ -15942,7 +16016,14 @@ namespace PascalABCCompiler.TreeConverter
             if (_var_def_statement.vars_type == null && _var_def_statement.inital_value is SyntaxTree.function_lambda_definition)
                 AddError(get_location(_var_def_statement.inital_value), "IMPOSSIBLE_TO_INFER_TYPES_IN_LAMBDA");  //lroman//
 
-			bool is_event = _var_def_statement.is_event;
+            if (_var_def_statement.vars_type == null && _var_def_statement.inital_value is SyntaxTree.pascal_set_constant pc)
+            {
+                if (pc.values==null || pc.values.Count == 0)
+                    AddError(get_location(_var_def_statement.inital_value), "IMPOSSIBLE_TO_INFER_SET_TYPE");
+            }
+                
+
+            bool is_event = _var_def_statement.is_event;
 
             if (context.converting_block() == block_type.type_block &&
                 context.converted_type.IsInterface && !is_event)
@@ -17391,7 +17472,7 @@ namespace PascalABCCompiler.TreeConverter
                 if (tn == null || tn is null_type_node || tn.ImplementingInterfaces == null)
                     return false;
 
-                if (tn.element_type != null) // еще может быть множество set of T - 22.02.16 SSM
+                if (tn.element_type != null && tn.type_special_kind != SemanticTree.type_special_kind.typed_file) // еще может быть множество set of T - 22.02.16 SSM
                 {
                     elem_type = tn.element_type;
                     return true;
@@ -19262,8 +19343,17 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
+        int ccc = 0;
         public override void visit(SyntaxTree.function_lambda_definition _function_lambda_definition)
         {
+#if DEBUG
+            /*if (lambdaProcessingState == LambdaProcessingState.ClosuresProcessingPhase)
+            {
+                var s = new string (' ',ccc)+"begin " + _function_lambda_definition.lambda_name + " " + _function_lambda_definition.parameters.expressions[0] + "\n";
+                ccc += 2;
+                System.IO.File.AppendAllText("d:\\bb3.txt", s);
+            }*/ 
+#endif
             MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition(_function_lambda_definition);
 
             _function_lambda_definition.RealSemTypeOfResExpr = null; // После первого присваивания Result она будет содержать тип type_node в правой части Result
@@ -19396,6 +19486,10 @@ namespace PascalABCCompiler.TreeConverter
                         }
                     case LambdaProcessingState.ClosuresProcessingPhase:
                         {
+#if DEBUG
+                            //var s = "begin "+_function_lambda_definition.lambda_name + " "+ _function_lambda_definition.parameters.expressions[0] + "\n";
+                            //System.IO.File.AppendAllText("d:\\bb17.txt", s);
+#endif
                             makeProcedureForLambdaAndVisit(_function_lambda_definition, null, null);
                             LambdaHelper.RemoveLambdaInfoFromCompilationContext(context, _function_lambda_definition);
                             ret.return_value((semantic_node)LambdaHelper.GetTempFunctionNodeForTypeInference(_function_lambda_definition, this));
@@ -19421,6 +19515,14 @@ namespace PascalABCCompiler.TreeConverter
             finally
             {
                 stflambda.Pop();
+#if DEBUG
+                /*if (lambdaProcessingState == LambdaProcessingState.ClosuresProcessingPhase)
+                {
+                    ccc -= 2;
+                    var s = new string(' ', ccc) + "end " + _function_lambda_definition.lambda_name + " " + _function_lambda_definition.parameters.expressions[0] + "\n";
+                    System.IO.File.AppendAllText("d:\\bb3.txt", s);
+                }*/
+#endif
             }
         }
 

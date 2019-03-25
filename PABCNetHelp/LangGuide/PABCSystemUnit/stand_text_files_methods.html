@@ -22,6 +22,8 @@
 <param name="Keyword" value="SeekEoln">
 <param name="Keyword" value="Flush">
 <param name="Keyword" value="Reset">
+<param name="Keyword" value="Rewrite">
+<param name="Keyword" value="Append">
 <param name="Keyword" value="Close">
 <param name="Keyword" value="ReadToEnd">
 <param name="Keyword" value="Name">
@@ -167,7 +169,36 @@
 	<tr>
 		<td>
 		<code><strong>procedure</strong> Reset; </code><br>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает файловый указатель на начало файла</td>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает текстовый файл на чтение в кодировке Windows</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>procedure</strong> Reset(en: Encoding); </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает текстовый файл на чтение в указанной кодировке</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>procedure</strong> Rewrite; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает текстовый файл на 
+		запись в кодировке Windows</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>procedure</strong> Rewrite; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает текстовый файл на 
+		запись в указанной кодировке</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>procedure</strong> Append; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает текстовый файл на 
+		дополнение в кодировке Windows</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>procedure</strong> Append; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Открывает текстовый файл на 
+		дополнение в указанной кодировке</td>
 	</tr>
 	<tr>
 		<td>
@@ -195,6 +226,12 @@
 		<code><strong>procedure</strong> Rename(newname: string); </code><br>
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переименовывает файл, давая ему имя newname (файл должен быть 
 		закрыт)</td>
+	</tr>
+	<tr>
+		<td>
+		<code><strong>function</strong> Lines: <strong>sequence of</strong> 
+		string; </code><br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность строк открытого текстового файла</td>
 	</tr>
 	</table>
 </body></html>

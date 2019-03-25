@@ -61,6 +61,8 @@ namespace VisualPascalABC
                     {
                         if (!isTypeDeclaration(beg_off, textArea))
                             return;
+                        if (isClassPredefinition(end_off, textArea))
+                            return;
                     }
                     TmpPos end_pos = null;
                     if (string.Compare(word, "repeat", true) != 0)
@@ -227,7 +229,7 @@ namespace VisualPascalABC
             }
             
                 
-            if (c == 't' || c == 'd' || c == 'o')
+            if (c == 't' || c == 'd' || c == 'o' || c == 'c')
             {
                 StringBuilder keyword = new StringBuilder();
                 
@@ -239,10 +241,13 @@ namespace VisualPascalABC
                         break;
                     c = textArea.Document.TextContent[off];
                 }
-                if (keyword.ToString().ToLower() == "sealed" || keyword.ToString().ToLower() == "abstract" || keyword.ToString().ToLower() == "auto")
+                string keywordstr = keyword.ToString().ToLower();
+                if (keywordstr == "sealed" || keywordstr == "abstract" || keywordstr == "auto")
                 {
                     return isClassMember(off, textArea);
                 }
+                if (keywordstr == "public" || keywordstr == "protected")
+                    return true;
                 return false;
             }
             return false;
@@ -303,21 +308,11 @@ namespace VisualPascalABC
                 {
                     return null;
                 }
-                else if (c == '{')//nachalo kommentarija, propuskaem ego
-                {
-                    end_off++;
-                    while (end_off < text.Length && text[end_off] != '}')
-                        end_off++;
-                }
+                
                 else if (c == '\'')//nachalo kavychek, propuskaem
                 {
                     end_off++;
                     while (end_off < text.Length && text[end_off] != '\'')
-                        end_off++;
-                }
-                else if (c == '/' && end_off < text.Length - 1 && text[end_off + 1] == '/')
-                {
-                    while (end_off < text.Length && text[end_off] != '\n')
                         end_off++;
                 }
                 else
@@ -339,6 +334,17 @@ namespace VisualPascalABC
                         }
                     }
                     sb.Remove(0, sb.Length);
+                    if (c == '{')
+                    {
+                        end_off++;
+                        while (end_off < text.Length && text[end_off] != '}')
+                            end_off++;
+                    }
+                    else if (c == '/' && end_off < text.Length - 1 && text[end_off + 1] == '/')
+                    {
+                        while (end_off < text.Length && text[end_off] != '\n')
+                            end_off++;
+                    }
                 }
                 end_off++;
             }
@@ -369,21 +375,10 @@ namespace VisualPascalABC
                 {
                     return null;
                 }
-                else if (c == '{')//nachalo kommentarija, propuskaem ego
-                {
-                    end_off++;
-                    while (end_off < text.Length && text[end_off] != '}')
-                        end_off++;
-                }
                 else if (c == '\'')//nachalo kavychek, propuskaem
                 {
                     end_off++;
                     while (end_off < text.Length && text[end_off] != '\'')
-                        end_off++;
-                }
-                else if (c == '/' && end_off < text.Length - 1 && text[end_off + 1] == '/')
-                {
-                    while (end_off < text.Length && text[end_off] != '\n')
                         end_off++;
                 }
                 else
@@ -406,7 +401,26 @@ namespace VisualPascalABC
                                 return null;
                         }
                     }
+                    else if (string.Compare(word, "end.", true) == 0)
+                    {
+                        string s = beg_stack.Pop();
+                        if (beg_stack.Count == 0 && (string.Compare(s, "begin", true) == 0 || highlighted_keywords[s] != null))
+                            return new TmpPos(end_off - 4, word.Length - 1);
+                        if (beg_stack.Count == 0 && ignored_keywords[s] != null)
+                            return null;
+                    }
                     sb.Remove(0, sb.Length);
+                    if (c == '{')
+                    {
+                        end_off++;
+                        while (end_off < text.Length && text[end_off] != '}')
+                            end_off++;
+                    }
+                    else if (c == '/' && end_off < text.Length - 1 && text[end_off + 1] == '/')
+                    {
+                        while (end_off < text.Length && text[end_off] != '\n')
+                            end_off++;
+                    }
                 }
                 end_off++;
             }

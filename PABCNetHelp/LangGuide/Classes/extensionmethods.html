@@ -39,9 +39,9 @@ HashSet&lt;T&gt; и SortedSet&lt;T&gt;),
 	Self <strong>do</strong><br>&nbsp;&nbsp;&nbsp; action(x);<br><strong>end</strong>;</code></blockquote>
 <p>С помощью методов расширения можно <a href="operoverloading.html">перегружать 
 операции</a>:</p>
-<blockquote><code><strong>function operator</strong>+=&lt;T&gt;(a: List&lt;T&gt;; x: T): 
+<blockquote><code><strong>procedure operator</strong>+=&lt;T&gt;(a: List&lt;T&gt;; x: T): 
 	List&lt;T&gt;; <strong>extensionmethod</strong>;<br><strong>begin</strong><br>&nbsp; 
-	a.Add(x);<br>&nbsp; Result := a;<br><strong>end</strong>;</code></blockquote>
+	a.Add(x);<br><strong>end</strong>;</code></blockquote>
 <p>В этом случае первый параметр не обязан иметь имя Self.</p>
 <p>Для методов расширения имеется ряд ограничений:</p>
 <ul>

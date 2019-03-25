@@ -3,6 +3,7 @@
 <param name="Keyword" value="Circle">
 <param name="Keyword" value="DrawCircle">
 <param name="Keyword" value="DrawEllipse">
+<param name="Keyword" value="DrawPixels">
 <param name="Keyword" value="DrawPolygon">
 <param name="Keyword" value="DrawRectangle">
 <param name="Keyword" value="DrawSector">
@@ -23,7 +24,9 @@
 <param name="Keyword" value="Polygon">
 <param name="Keyword" value="PolyLine">
 <param name="Keyword" value="Rectangle">
-<param name="Keyword" value="Sector"></object>
+<param name="Keyword" value="Sector">
+<param name="Keyword" value="SetPixel">
+<param name="Keyword" value="SetPixels"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Графические примитивы</H1>
 <table border=0 cellpadding=5><tr><td><code><b>procedure</b> Arc(x, y, r, angle1, angle2: real);</code>
@@ -42,6 +45,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур эллипса с центром в точке (x,y) и радиусами rx и ry</td></tr>
 <tr><td><code><b>procedure</b> DrawEllipse(x,y,rx,ry: real; c: Color);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур эллипса с центром в точке (x,y), радиусами rx и ry и цветом c</td></tr>
+<tr><td><code><b>procedure</b> DrawPixels(x,y: real; a: <b>array</b> [,]  <b>of</b> Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует двумерный массив пикселов с координатами левой верхней вершины (x,y)</td></tr>
 <tr><td><code><b>procedure</b> DrawPolygon(points: <b>array</b>  <b>of</b> Point);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур многоугольника, заданного массивом точек</td></tr>
 <tr><td><code><b>procedure</b> DrawPolygon(points: <b>array</b>  <b>of</b> Point; c: GColor);</code>
@@ -112,5 +117,9 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует сектор окружности с центром в точке (x,y) и радиусом r, заключенный между двумя лучами, образующими углы angle1 и angle2 с осью OX</td></tr>
 <tr><td><code><b>procedure</b> Sector(x, y, r, angle1, angle2: real; c: Color);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует сектор окружности с центром в точке (x,y) и радиусом r, заключенный между двумя лучами, образующими углы angle1 и angle2 с осью OX, цветом c</td></tr>
+<tr><td><code><b>procedure</b> SetPixel(x,y: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует пиксел в точке (x,y) цветом c</td></tr>
+<tr><td><code><b>procedure</b> SetPixels(x,y: real; w,h: integer; f: (integer,integer)-&gt;Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует пиксел в точке (x,y) цветом c</td></tr>
 </table>
 </body></HTML>

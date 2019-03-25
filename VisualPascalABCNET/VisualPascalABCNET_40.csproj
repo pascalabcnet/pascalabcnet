@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>VisualPascalABC</RootNamespace>
     <AssemblyName>PascalABCNET</AssemblyName>
-    <ApplicationIcon>ABCNET32.ico</ApplicationIcon>
+    <ApplicationIcon>_ABC13.ico</ApplicationIcon>
     <TargetZone>LocalIntranet</TargetZone>
     <GenerateManifests>false</GenerateManifests>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
@@ -73,6 +73,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
+  <PropertyGroup />
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>

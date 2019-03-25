@@ -1,0 +1,39 @@
+<html>
+
+<head>
+<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="shortstring">
+<param name="Keyword" value="Короткие строки">
+</object>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title></title>
+<link rel="StyleSheet" href="../../default.css">
+</head>
+
+<body>
+<H1>Короткие строки</H1>
+<p>Для совместимости с Delphi Object Pascal в <b>PascalABC.NET</b> 
+реализованы короткие строки. Для их описания используется тип <code>
+string[n]</code>, где <code>n</code> - константа целого типа, указывающая длину 
+строки (n &lt;= 255). Для совместимости с Delphi Object Pascal в стандартном модуле 
+описан тип
+<code>shortstring=string[255]</code>.</p>
+<p>Короткие строки ведут себя как <a href="string.html">обычные</a> за исключением нескольких моментов.</p>
+<ol>
+	<li>Короткие строки, в отличие от обычных, можно использовать как 
+	компоненты <a href="files.html">типизированных файлов</a>. </li>
+	<li>Если короткой строке присваивается строка, превосходящая её по размеру, 
+	то она обрезается до размера исходной строки. Например:</li>
+<blockquote>
+	<p><code><b>var</b> s: string[3] := 'ABCD';<br>
+	Print(s); // ABC</code></p>
+</blockquote>
+	<li>Короткой строке в отличие от обычной нельзя присвоить nil.</li>
+	<li>Для эффективности короткие строки следует передавать в подпрограмму по 
+	ссылке, используя модификатор <code><b>var</b></code> или <code><b>const</b></code>.</li>
+</ol>
+<p><a href="../PABCSystemUnit/Files/Subroutines%20for%20string.html">Стандартные подпрограммы работы со строками</a>.</p>
+<p><a href="stringmembers.html">Члены класса <code>string</code></a>. </p>
+</body>
+
+</html>

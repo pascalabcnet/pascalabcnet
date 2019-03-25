@@ -11,7 +11,7 @@
 
 	<RuleSets>
 		<RuleSet ignorecase="true">
-			<Delimiters>&amp;&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
+			<Delimiters>&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
             <Span name = "LineBigComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
 			   	<Begin>////</Begin>
 		  	</Span>

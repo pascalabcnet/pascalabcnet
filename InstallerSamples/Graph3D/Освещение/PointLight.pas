@@ -9,6 +9,4 @@ begin
   Rectangle3D(0,0,-0.01,15,15,OrtZ,OrtX,ImageMaterial('трава.jpg',0.2,0.2));
   Sleep(2000);
   Lights.AddPointLight(GrayColor(64),p);
-  Lights.Proba;
-  //Rectangle3D(0,0,-0.01,15,15,OrtZ,OrtX,Colors.Green);
 end.
