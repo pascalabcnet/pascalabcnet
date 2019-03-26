@@ -875,9 +875,9 @@ type
         var pp := value;
         // ширина и высота будут некорректно. Надо переопределить на чтение
         var x1 := pp.Min(p->p.x);
-        var x2 := pp.Max(p->p.x);
+        //var x2 := pp.Max(p->p.x);
         var y1 := pp.Min(p->p.y);
-        var y2 := pp.Max(p->p.y);
+        //var y2 := pp.Max(p->p.y);
         var a := pp.Select(p->Pnt(p.x-x1,p.y-y1)).ToArray;
         MoveTo(x1,y1);
         //(gr.Width,gr.Height) := (x2-x1,y2-y1);
@@ -978,6 +978,14 @@ var
 function ObjectUnderPoint(x,y: real): ObjectWPF;
 /// Возвращает True если графические объекты пересекаются
 function ObjectsIntersect(o1,o2: ObjectWPF): boolean;
+
+// -----------------------------------------------------
+//>>     Другие подпрограммы# Other functions
+// -----------------------------------------------------
+/// Перемещает объект на передний план 
+procedure ToFront(o: ObjectWPF);
+/// Перемещает объект на задний план
+procedure ToBack(o: ObjectWPF);
 
 ///--
 procedure __InitModule__;
@@ -1213,6 +1221,14 @@ function ObjectsIntersect(o1,o2: ObjectWPF)
   
 function IntersectionList(Self: ObjectWPF): List<ObjectWPF>; extensionmethod
   := Invoke&<List<ObjectWPF>>(OLHelper.Create(Self).f);
+
+procedure ToFront(o: ObjectWPF) := Objects.ToFront(o);
+
+procedure ToBack(o: ObjectWPF) := Objects.ToBack(o);
+
+procedure ToFront(Self: ObjectWPF); extensionmethod := Objects.ToFront(Self);
+
+procedure ToBack(Self: ObjectWPF); extensionmethod := Objects.ToBack(Self);
 
 var
   ///--
