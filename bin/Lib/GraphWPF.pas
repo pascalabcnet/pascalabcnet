@@ -79,10 +79,21 @@ type
     c: Color := Colors.Black;
     th: real := 1;
     fx,fy: real;
+    rc: boolean := false;
     function PenConstruct: GPen;
     begin
       Result := new GPen(new SolidColorBrush(c),th);
       Result.LineJoin := PenLineJoin.Round;
+      if rc then 
+      begin
+        Result.StartLineCap := PenLineCap.Round;
+        Result.EndLineCap := PenLineCap.Round;
+      end
+      else
+      begin
+        Result.StartLineCap := PenLineCap.Flat;
+        Result.EndLineCap := PenLineCap.Flat;
+      end;
     end;
   public  
     /// Цвет пера
@@ -93,6 +104,8 @@ type
     property X: real read fx;
     /// Текущая координата Y пера
     property Y: real read fy;
+    /// Скругление пера на концах линий
+    property RoundCap: boolean read rc write rc;
   end;
 
 // -----------------------------------------------------
@@ -1396,6 +1409,7 @@ begin
   if drawgrid then
     DrawGridP
 end;
+
 procedure SetMathematicCoordsP1(x1,x2,ymin: real; drawgrid: boolean);
 begin
   if CurrentCoordType = StandardCoords then
@@ -1413,6 +1427,7 @@ begin
   if drawgrid then
     DrawGridP
 end;
+
 procedure SetMathematicCoords(x1: real; x2: real; drawgrid: boolean) := Invoke(SetMathematicCoordsP,x1,x2,drawgrid);
 procedure SetMathematicCoords(x1,x2,ymin: real; drawgrid: boolean) := Invoke(SetMathematicCoordsP1,x1,x2,ymin,drawgrid);
 
@@ -1429,7 +1444,9 @@ begin
   Host.RenderTransform := m;
   //Pen.Width := Pen.Width * scale; // нет!
 end;
+
 procedure SetStandardCoords(scale,x0,y0: real) := Invoke(SetStandardCoordsP,scale,x0,y0);
+
 procedure SetStandardCoordsSharpLinesP(x0,y0: real);
 begin
   var (sx,sy) := ScaleToDevice;
@@ -1438,7 +1455,6 @@ begin
   else SetStandardCoordsP(1/sx,x0/sx,y0/sy) 
 end; 
 procedure SetStandardCoordsSharpLines(x0,y0: real) := Invoke(SetStandardCoordsSharpLinesP,x0,y0);
-
 
 function GetMouseArgs(e: MouseEventArgs): (Point,integer);
 begin
