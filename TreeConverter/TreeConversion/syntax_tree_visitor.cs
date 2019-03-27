@@ -2584,7 +2584,7 @@ namespace PascalABCCompiler.TreeConverter
                 foreach (var_def_statement vds in vd.list)
                 {
                     var lambdaSearcher = new LambdaSearcher(vds);
-                    if (lambdaSearcher.CheckIfContainsLambdas() && !(vds.inital_value is function_lambda_definition)) // SSM 27/10/17
+                    if (lambdaSearcher.CheckIfContainsLambdas() && !(vds.inital_value is function_lambda_definition) && vds.inital_value != null) // SSM 27/10/17
                     {
                         procedure_definition func = 
                             new short_func_definition(
