@@ -14071,6 +14071,24 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     AddError(new OrdinalTypeExpected(get_location(td)));
                 }
+                if (tn.IsEnum && tn is common_type_node)
+                {
+                    common_type_node enum_ctn = tn as common_type_node;
+                    int c = 0;
+                    for (int i = 0; i < enum_ctn.const_defs.Count; i++)
+                    {
+                        class_constant_definition ccdn = enum_ctn.const_defs[i];
+                        if (ccdn.constant_value != null)
+                        {
+                            int nextc = Convert.ToInt32(ccdn.constant_value.value);
+                            if (nextc - c != 1 && i != 0)
+                                AddError(get_location(td), "ENUM_MUST_HAVE_SEQUENCED_VALUES");
+                            else if (nextc != 0 && i == 0)
+                                AddError(get_location(td), "ENUM_MUST_HAVE_SEQUENCED_VALUES");
+                            c = nextc;
+                        }
+                    }
+                }
                 if (tn.type_special_kind == SemanticTree.type_special_kind.diap_type)
                 {
                 	if (tn.base_type == SystemLibrary.SystemLibrary.uint_type || tn.base_type == SystemLibrary.SystemLibrary.int64_type || 
