@@ -12349,7 +12349,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         type_node spec_type = ret.visit(ntr);
                         if (spec_type is ref_type_node || spec_type == SystemLibrary.SystemLibrary.void_type || spec_type == SystemLibrary.SystemLibrary.pointer_type)
-                            ErrorsList.Add(new SimpleSemanticError(get_location(specificators[i]), "INAVLID_TYPE"));
+                            AddError(new SimpleSemanticError(get_location(specificators[i]), "INAVLID_TYPE"));
                         if (spec_type.IsInterface)
                         {
                             if (used_interfs[spec_type] != null)
@@ -12380,6 +12380,8 @@ namespace PascalABCCompiler.TreeConverter
                                 {
                                     AddError(get_location(specificators[i]), "ENUM_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR");
                                 }
+                                if (spec_type.IsStatic)
+                                    AddError(get_location(specificators[i]), "STATIC_CLASS_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR");
                                 check_cycle_inheritance(param, spec_type);
                                 param.SetBaseType(spec_type);
                             }
