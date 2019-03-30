@@ -6673,6 +6673,48 @@ namespace PascalABCCompiler.SyntaxTree
 			write_pattern_parameter(_collection_pattern_gap_parameter);
 		}
 
+
+		public void visit(collection_pattern_wild_card _collection_pattern_wild_card)
+		{
+			bw.Write((Int16)242);
+			write_collection_pattern_wild_card(_collection_pattern_wild_card);
+		}
+
+		public void write_collection_pattern_wild_card(collection_pattern_wild_card _collection_pattern_wild_card)
+		{
+			write_pattern_parameter(_collection_pattern_wild_card);
+		}
+
+
+		public void visit(collection_pattern_var_parameter _collection_pattern_var_parameter)
+		{
+			bw.Write((Int16)243);
+			write_collection_pattern_var_parameter(_collection_pattern_var_parameter);
+		}
+
+		public void write_collection_pattern_var_parameter(collection_pattern_var_parameter _collection_pattern_var_parameter)
+		{
+			write_pattern_parameter(_collection_pattern_var_parameter);
+			if (_collection_pattern_var_parameter.identifier == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_collection_pattern_var_parameter.identifier.visit(this);
+			}
+			if (_collection_pattern_var_parameter.type == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_collection_pattern_var_parameter.type.visit(this);
+			}
+		}
+
 	}
 
 

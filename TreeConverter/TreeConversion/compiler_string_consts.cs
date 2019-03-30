@@ -373,7 +373,7 @@ namespace PascalABCCompiler.TreeConverter
         public const string is_test_function_name = "__TypeCheckAndAssignForIsMatch";
         public const string wild_cards_tuple_equal_function_name = "__WildCardsTupleEqual";
         public const string seq_function_name = "Seq";
-
+        public const string count_property_name = "Count";
         public static string bounded_array_printable_name_template = "array [{0}..{1}] of {2}";
         public static string array_printable_name_template = "array of {0}";
         public static string multi_dim_array_printable_name_template = "array [{0}] of {1}";

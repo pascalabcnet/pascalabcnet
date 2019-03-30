@@ -1456,6 +1456,18 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_collection_pattern_gap_parameter">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(collection_pattern_gap_parameter _collection_pattern_gap_parameter);
+		///<summary>
+		///Method to visit collection_pattern_wild_card.
+		///</summary>
+		///<param name="_collection_pattern_wild_card">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(collection_pattern_wild_card _collection_pattern_wild_card);
+		///<summary>
+		///Method to visit collection_pattern_var_parameter.
+		///</summary>
+		///<param name="_collection_pattern_var_parameter">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(collection_pattern_var_parameter _collection_pattern_var_parameter);
 	}
 
 

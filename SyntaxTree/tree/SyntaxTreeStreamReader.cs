@@ -504,6 +504,10 @@ namespace PascalABCCompiler.SyntaxTree
 					return new collection_pattern();
 				case 241:
 					return new collection_pattern_gap_parameter();
+				case 242:
+					return new collection_pattern_wild_card();
+				case 243:
+					return new collection_pattern_var_parameter();
 			}
 			return null;
 		}
@@ -4256,6 +4260,30 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_collection_pattern_gap_parameter(collection_pattern_gap_parameter _collection_pattern_gap_parameter)
 		{
 			read_pattern_parameter(_collection_pattern_gap_parameter);
+		}
+
+
+		public void visit(collection_pattern_wild_card _collection_pattern_wild_card)
+		{
+			read_collection_pattern_wild_card(_collection_pattern_wild_card);
+		}
+
+		public void read_collection_pattern_wild_card(collection_pattern_wild_card _collection_pattern_wild_card)
+		{
+			read_pattern_parameter(_collection_pattern_wild_card);
+		}
+
+
+		public void visit(collection_pattern_var_parameter _collection_pattern_var_parameter)
+		{
+			read_collection_pattern_var_parameter(_collection_pattern_var_parameter);
+		}
+
+		public void read_collection_pattern_var_parameter(collection_pattern_var_parameter _collection_pattern_var_parameter)
+		{
+			read_pattern_parameter(_collection_pattern_var_parameter);
+			_collection_pattern_var_parameter.identifier = _read_node() as ident;
+			_collection_pattern_var_parameter.type = _read_node() as type_definition;
 		}
 
 	}

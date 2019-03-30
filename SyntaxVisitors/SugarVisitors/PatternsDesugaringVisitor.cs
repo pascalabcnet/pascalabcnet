@@ -60,6 +60,15 @@ namespace SyntaxVisitors.SugarVisitors
         }
     }
 
+    public class CollectionDesugaringResult
+    {
+        public List<statement> VarParametersDeclarations { get; set; } = new List<statement>();
+
+        public expression SuccessMatchingCheck { get; set; }
+
+        public List<statement> VarParametersAssignments { get; set; } = new List<statement>();
+    }
+
     public class PatternsDesugaringVisitor : BaseChangeVisitor
     {
         private enum PatternLocation { Unknown, IfCondition, Assign }
@@ -68,6 +77,7 @@ namespace SyntaxVisitors.SugarVisitors
         private const string IsTestMethodName = compiler_string_consts.is_test_function_name;
         private const string WildCardsTupleEqualFunctionName = compiler_string_consts.wild_cards_tuple_equal_function_name;
         private const string SeqFunctionName = compiler_string_consts.seq_function_name;
+        private const string CountPropertyName = compiler_string_consts.count_property_name;
         private const string GeneratedPatternNamePrefix = "<>pattern";
         private const string GeneratedDeconstructParamPrefix = "<>deconstructParam";
 
@@ -252,7 +262,8 @@ namespace SyntaxVisitors.SugarVisitors
                     if (possibleTupleDotNode != null)
                     {
                         var possibleTupleCallString = possibleTupleDotNode.ToString();
-                        if (possibleTupleCallString.Contains("System.Tuple.Create")) {
+                        if (possibleTupleCallString.Contains("System.Tuple.Create"))
+                        {
                             var elemsToCompare = new List<expression>();
                             for (int currentInd = 0; currentInd < possibleTupleCase.parameters.Count; ++currentInd)
                             {
@@ -260,7 +271,8 @@ namespace SyntaxVisitors.SugarVisitors
                                 if (!(tupleElem is tuple_wild_card))
                                 {
                                     elemsToCompare.Add(currentInd);
-                                } else
+                                }
+                                else
                                 {
                                     possibleTupleCase.parameters[currentInd] = new int32_const(0, patternCase.source_context);
                                 }
@@ -325,18 +337,20 @@ namespace SyntaxVisitors.SugarVisitors
             AddDesugaredCaseToResult(ifCheck, ifCheck);
         }
 
-        private expression GetCollectionItemsEqualCheckBeforeGap(addressed_value matchingExpression, List<pattern_parameter> toCompare)
+        private expression GetCollectionItemsEqualCheckBeforeGap(addressed_value matchingExpression, 
+                                                                 List<pattern_parameter> toCompare, 
+                                                                 CollectionDesugaringResult desugaringResult)
         {
             var fromIndex = 0;
             expression equalChecks = null;
             foreach (var param in toCompare)
             {
-                if (param is const_pattern_parameter const_params)
+                if (param is const_pattern_parameter constParam)
                 {
                     var indexerCall = new indexer(
                         matchingExpression,
                         new expression_list(
-                            new int32_const(fromIndex++, matchingExpression.source_context),
+                            new int32_const(fromIndex, matchingExpression.source_context),
                             matchingExpression.source_context),
                         matchingExpression.source_context);
 
@@ -344,7 +358,7 @@ namespace SyntaxVisitors.SugarVisitors
                         new List<expression>()
                         {
                             indexerCall,
-                            const_params.const_param
+                            constParam.const_param
                         }
                     );
 
@@ -358,19 +372,27 @@ namespace SyntaxVisitors.SugarVisitors
 
                     equalChecks = equalChecks == null ? (expression)equalCall : bin_expr.LogicalAnd(equalChecks, equalCall);
                 }
+
+                if (param is collection_pattern_var_parameter varParam)
+                {
+                    desugaringResult.VarParametersDeclarations.Add(
+                        new var_statement(varParam.identifier, 
+                        GetIndexerCallForCollectionPattern(matchingExpression as addressed_value, fromIndex)));
+                }
+                ++fromIndex;
             }
             return equalChecks;
         }
 
-        private expression GetCollectionItemsEqualCheckAfterGap(addressed_value matchingExpression, List<pattern_parameter> toCompare)
+        private expression GetCollectionItemsEqualCheckAfterGap(addressed_value matchingExpression,
+                                                                 List<pattern_parameter> toCompare,
+                                                                 CollectionDesugaringResult desugaringResult)
         {
             var elemFromTail = 1;
             expression equalChecks = null;
             foreach (var param in toCompare)
             {
-                if (param is const_pattern_parameter const_param)
-                {
-                    var indexerCall = new indexer(
+                var indexerCall = new indexer(
                         matchingExpression,
                         new expression_list(
                             new bin_expr(
@@ -379,16 +401,18 @@ namespace SyntaxVisitors.SugarVisitors
                                         matchingExpression,
                                         new ident("Count", matchingExpression.source_context)),
                                     new expression_list()),
-                                new int32_const(elemFromTail++, matchingExpression.source_context),
+                                new int32_const(elemFromTail, matchingExpression.source_context),
                                 Operators.Minus),
                             matchingExpression.source_context),
                         matchingExpression.source_context);
 
+                if (param is const_pattern_parameter constParam)
+                {
                     var eqParams = new expression_list(
                         new List<expression>()
                         {
                         indexerCall,
-                        const_param.const_param
+                        constParam.const_param
                         }
                     );
 
@@ -402,8 +426,21 @@ namespace SyntaxVisitors.SugarVisitors
 
                     equalChecks = equalChecks == null ? (expression)equalCall : bin_expr.LogicalAnd(equalChecks, equalCall);
                 }
+
+                if (param is collection_pattern_var_parameter varParam)
+                {
+                    desugaringResult.VarParametersDeclarations.Add(
+                        new var_statement(varParam.identifier, indexerCall));
+                }
+                ++elemFromTail;
             }
             return equalChecks;
+        }
+
+        private expression GetIndexerCallForCollectionPattern(addressed_value matchingExpression, int ind)
+        {
+            var indexerCall = new indexer(matchingExpression, new int32_const(ind), matchingExpression.source_context);
+            return indexerCall;
         }
 
         private ident NewGeneralName() => new ident(GeneratedPatternNamePrefix + "GenVar" + generalVariableCounter++);
@@ -462,10 +499,11 @@ namespace SyntaxVisitors.SugarVisitors
             return desugarResult;
         }
 
-        private expression DesugarCollectionPattern(collection_pattern pattern, expression matchingExpression)
+        private CollectionDesugaringResult DesugarCollectionPattern(collection_pattern pattern, expression matchingExpression)
         {
             Debug.Assert(!pattern.IsRecursive, "All recursive patterns should be desugared into simple patterns at this point");
-            
+
+            var desugaringResult = new CollectionDesugaringResult();
             var collectionItems = pattern.parameters;
             var gapItemMet = false;
             var gapIndex = 0;
@@ -495,14 +533,37 @@ namespace SyntaxVisitors.SugarVisitors
                 }
             }
 
-            var itemsEqualCalls = GetCollectionItemsEqualCheckBeforeGap(matchingExpression as addressed_value, exprBeforeGap);
+            var successMatchingCheck = GetCollectionItemsEqualCheckBeforeGap(
+                matchingExpression as addressed_value, exprBeforeGap, desugaringResult);
+
             if (gapItemMet && exprAfterGap.Count != 0)
             {
-                var afterGapEqual = GetCollectionItemsEqualCheckAfterGap(matchingExpression as addressed_value, exprAfterGap);
-                itemsEqualCalls = itemsEqualCalls == null ? afterGapEqual : bin_expr.LogicalAnd(itemsEqualCalls, afterGapEqual);
+                var afterGapEqual = GetCollectionItemsEqualCheckAfterGap(
+                    matchingExpression as addressed_value, exprAfterGap, desugaringResult);
+
+                if (afterGapEqual != null)
+                {
+                    successMatchingCheck = successMatchingCheck == null ?
+                                           afterGapEqual :
+                                           bin_expr.LogicalAnd(successMatchingCheck, afterGapEqual);
+                }
             }
             
-            return itemsEqualCalls;
+            var collectionLengthCheck = new bin_expr(
+                new dot_node(matchingExpression as addressed_value, new ident(CountPropertyName), pattern.source_context),
+                new int32_const(exprBeforeGap.Count + exprAfterGap.Count),
+                Operators.GreaterEqual,
+                pattern.source_context
+            );
+
+            successMatchingCheck = successMatchingCheck == null ?
+                                   collectionLengthCheck :
+                                   bin_expr.LogicalAnd(collectionLengthCheck, successMatchingCheck);
+
+            desugaringResult.SuccessMatchingCheck = successMatchingCheck == null ?
+                                                    new bool_const(true) :
+                                                    successMatchingCheck;
+            return desugaringResult;
         }
 
         private void DesugarIsExpression(is_pattern_expr isPatternExpr)
@@ -516,29 +577,16 @@ namespace SyntaxVisitors.SugarVisitors
             }
             var patternLocation = GetLocation(isPatternExpr);
 
-            switch (isPatternExpr.right)
+            if (isPatternExpr.right is deconstructor_pattern pattern)
             {
-                case deconstructor_pattern pattern:
-                    {
-                        var constParamCheck = DesugarDeconstructorPatternParameters(isPatternExpr.right as deconstructor_pattern);
-                        pattern.const_params_check = constParamCheck;
-                        
-                        //AddDefinitionsInUpperStatementList(isPatternExpr, new[] { GetTypeCompatibilityCheck(isPatternExpr) });
-                        switch (patternLocation)
-                        {
-                            case PatternLocation.IfCondition: DesugarIsExpressionInIfCondition(isPatternExpr); break;
-                            case PatternLocation.Assign: DesugarIsExpressionInAssignment(isPatternExpr); break;
-                        }
-                        break;
-                    }
-                case collection_pattern pattern:
-                    {
-                        switch (patternLocation)
-                        {
-                            case PatternLocation.IfCondition: DesugarIsExpressionInIfCondition(isPatternExpr); break;
-                        }
-                        break;
-                    }
+                var constParamCheck = DesugarDeconstructorPatternParameters(isPatternExpr.right as deconstructor_pattern);
+                pattern.const_params_check = constParamCheck;
+            }
+            //AddDefinitionsInUpperStatementList(isPatternExpr, new[] { GetTypeCompatibilityCheck(isPatternExpr) });
+            switch (patternLocation)
+            {
+                case PatternLocation.IfCondition: DesugarIsExpressionInIfCondition(isPatternExpr); break;
+                case PatternLocation.Assign: DesugarIsExpressionInAssignment(isPatternExpr); break;
             }
         }
 
@@ -563,6 +611,7 @@ namespace SyntaxVisitors.SugarVisitors
 
         private void DesugarIsExpressionInAssignment(is_pattern_expr isExpression)
         {
+            Debug.Assert(isExpression.right is deconstructor_pattern, "Only deconstructor patterns can be used in assignment");
             var statementsToAdd = ProcessDesugaringForDeconstructorPattern(isExpression);
             AddDefinitionsInUpperStatementList(isExpression, statementsToAdd);
         }
@@ -576,8 +625,8 @@ namespace SyntaxVisitors.SugarVisitors
                 case deconstructor_pattern dp:
                     if (dp.const_params_check != null)
                     {
-                        var ifToAddConstParamsCheck = GetAscendant<if_node>(isExpression);
-                        ifToAddConstParamsCheck.condition = bin_expr.LogicalAnd(ifToAddConstParamsCheck.condition, dp.const_params_check);
+                        var ifToAddConstParamsCheckTo = GetAscendant<if_node>(isExpression);
+                        ifToAddConstParamsCheckTo.condition = bin_expr.LogicalAnd(ifToAddConstParamsCheckTo.condition, dp.const_params_check);
                     }
                     statementsToAdd = ProcessDesugaringForDeconstructorPattern(isExpression);
                     break;
@@ -620,10 +669,12 @@ namespace SyntaxVisitors.SugarVisitors
         private List<statement> ProcessDesugaringForCollectionPattern(is_pattern_expr isExpression)
         {
             var pattern = isExpression.right as collection_pattern;
-            var successCheck = DesugarCollectionPattern(pattern, isExpression.left);
-            ReplaceUsingParent(isExpression, successCheck);
+            var desugaringResult = DesugarCollectionPattern(pattern, isExpression.left);
+            ReplaceUsingParent(isExpression, desugaringResult.SuccessMatchingCheck);
 
             var statementsToAdd = new List<statement>();
+            statementsToAdd.AddRange(desugaringResult.VarParametersDeclarations);
+            //statementsToAdd.AddRange(desugaringResult.VarParametersAssignments);
 
             return statementsToAdd;
         }
@@ -734,12 +785,12 @@ namespace SyntaxVisitors.SugarVisitors
         private PatternLocation GetLocation(syntax_tree_node node)
         {
             var firstStatement = GetAscendant<statement>(node);
-            
+
             switch (firstStatement)
             {
                 case if_node _: return PatternLocation.IfCondition;
                 case var_statement _: return PatternLocation.Assign;
-                case assign _ : return PatternLocation.Assign;
+                case assign _: return PatternLocation.Assign;
                 default: return PatternLocation.Unknown;
             }
         }
@@ -758,7 +809,7 @@ namespace SyntaxVisitors.SugarVisitors
 
             return null;
         }
-        
+
         private string NewDeconstructParamId()
         {
             return GeneratedPatternNamePrefix + "DeconstructParam" + deconstructParamVariableCounter++.ToString();

@@ -174,7 +174,7 @@
 %type <stn> full_lambda_fp_list lambda_simple_fp_sect lambda_function_body lambda_procedure_body common_lambda_body optional_full_lambda_fp_list
 %type <ob> field_in_unnamed_object list_fields_in_unnamed_object func_class_name_ident_list rem_lambda variable_list var_ident_list
 %type <ti> tkAssignOrEqual
-%type <stn> pattern pattern_optional_var const_pattern collection_pattern collection_pattern_list_item match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var tuple_pattern_expr_list const_pattern_expr_list 
+%type <stn> pattern pattern_optional_var const_pattern collection_pattern collection_pattern_list_item collection_pattern_var_item match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var tuple_pattern_expr_list const_pattern_expr_list 
 %type <ob> pattern_out_param_list pattern_out_param_list_optional_var collection_pattern_expr_list
 %type <ex> const_pattern_expression tuple_pattern tuple_pattern_expr
 
@@ -3279,7 +3279,7 @@ relop_expr
     | is_type_expr tkRoundOpen pattern_out_param_list tkRoundClose
         {
             var isTypeCheck = $1 as typecast_node;
-            var deconstructorPattern = new deconstructor_pattern($3 as List<pattern_parameter>, isTypeCheck.type_def, @$); 
+            var deconstructorPattern = new deconstructor_pattern($3 as List<pattern_parameter>, isTypeCheck.type_def, null, @$); 
             $$ = new is_pattern_expr(isTypeCheck.expr, deconstructorPattern, @$);
         }
 	
@@ -3292,14 +3292,14 @@ relop_expr
 pattern
     : simple_or_template_type_reference tkRoundOpen pattern_out_param_list tkRoundClose
         { 
-            $$ = new deconstructor_pattern($3 as List<pattern_parameter>, $1, @$); 
+            $$ = new deconstructor_pattern($3 as List<pattern_parameter>, $1, null, @$); 
         }
     ;
 
 pattern_optional_var
     : simple_or_template_type_reference tkRoundOpen pattern_out_param_list_optional_var tkRoundClose
         { 
-            $$ = new deconstructor_pattern($3 as List<pattern_parameter>, $1, @$); 
+            $$ = new deconstructor_pattern($3 as List<pattern_parameter>, $1, null, @$); 
         }
     ;  
 
@@ -3329,10 +3329,18 @@ collection_pattern_list_item
 		{
 			$$ = new const_pattern_parameter($1, @$);
 		}
-	| pattern 
+	| collection_pattern_var_item
+		{
+			$$ = $1;
+		}
+	| tkUnderscore
+		{
+			$$ = new collection_pattern_wild_card();
+		}
+	/*| pattern 
         {
             $$ = new recursive_deconstructor_parameter($1 as pattern_node, @$);
-        }
+        }*/
 	| pattern_optional_var
         {
             $$ = new recursive_deconstructor_parameter($1 as pattern_node, @$);
@@ -3342,6 +3350,25 @@ collection_pattern_list_item
 			$$ = new collection_pattern_gap_parameter();
 		}
 	;
+
+collection_pattern_var_item
+	: tkVar identifier tkColon type_ref
+        {
+            $$ = new collection_pattern_var_parameter($2, $4, @$);
+        }
+    | tkVar identifier
+        {
+            $$ = new collection_pattern_var_parameter($2, null, @$);
+        }
+    | identifier tkColon type_ref 
+        {
+            $$ = new collection_pattern_var_parameter($1, $3, @$);
+        }
+	| identifier
+		{
+			$$ = new collection_pattern_var_parameter($1, null, @$);
+		}
+    ;   
 
 const_pattern
 	: const_pattern_expr_list

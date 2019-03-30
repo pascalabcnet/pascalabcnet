@@ -1941,6 +1941,22 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(collection_pattern_wild_card _collection_pattern_wild_card)
+		{
+		}
+
+		public virtual void post_do_visit(collection_pattern_wild_card _collection_pattern_wild_card)
+		{
+		}
+
+		public virtual void pre_do_visit(collection_pattern_var_parameter _collection_pattern_var_parameter)
+		{
+		}
+
+		public virtual void post_do_visit(collection_pattern_var_parameter _collection_pattern_var_parameter)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -4013,6 +4029,22 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_collection_pattern_gap_parameter);
 			pre_do_visit(_collection_pattern_gap_parameter);
 			post_do_visit(_collection_pattern_gap_parameter);
+		}
+
+		public override void visit(collection_pattern_wild_card _collection_pattern_wild_card)
+		{
+			DefaultVisit(_collection_pattern_wild_card);
+			pre_do_visit(_collection_pattern_wild_card);
+			post_do_visit(_collection_pattern_wild_card);
+		}
+
+		public override void visit(collection_pattern_var_parameter _collection_pattern_var_parameter)
+		{
+			DefaultVisit(_collection_pattern_var_parameter);
+			pre_do_visit(_collection_pattern_var_parameter);
+			visit(collection_pattern_var_parameter.identifier);
+			visit(collection_pattern_var_parameter.type);
+			post_do_visit(_collection_pattern_var_parameter);
 		}
 	}
 

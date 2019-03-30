@@ -1217,6 +1217,16 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_collection_pattern_gap_parameter);
 		}
+
+		public virtual void visit(collection_pattern_wild_card _collection_pattern_wild_card)
+		{
+			DefaultVisit(_collection_pattern_wild_card);
+		}
+
+		public virtual void visit(collection_pattern_var_parameter _collection_pattern_var_parameter)
+		{
+			DefaultVisit(_collection_pattern_var_parameter);
+		}
 	}
 
 
