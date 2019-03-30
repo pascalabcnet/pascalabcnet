@@ -321,29 +321,6 @@ namespace GPPGParserScanner
             return naie;
         }
 
-        public method_call NewIsObjectExpr(syntax_tree_node left_term, syntax_tree_node right_term, LexLocation loc)
-        {
-            var eq_params = new expression_list(
-                new List<expression>()
-                {
-                    (addressed_value)left_term,
-                    (addressed_value)right_term
-                }
-            );
-            var equals_call_node = new method_call(
-            new dot_node(new ident("object"), new ident("Equals")),
-            eq_params,
-            loc);
-
-            if (!(left_term is addressed_value))
-                parsertools.errors.Add(new bad_operand_type(parsertools.CurrentFileName, left_term.source_context, equals_call_node));
-
-            if (!(right_term is addressed_value))
-                parsertools.errors.Add(new bad_operand_type(parsertools.CurrentFileName, right_term.source_context, equals_call_node));
-
-            return equals_call_node;
-        }
-
         public function_lambda_call NewFactor(ident func_decl_lambda, expression_list expr_list, LexLocation loc)
         {
             var fld = parsertools.find_pascalABC_lambda_name(func_decl_lambda.name);

@@ -6187,6 +6187,27 @@ namespace PascalABCCompiler.SyntaxTree
 		public void write_pattern_node(pattern_node _pattern_node)
 		{
 			write_syntax_tree_node(_pattern_node);
+			if (_pattern_node.parameters == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				bw.Write(_pattern_node.parameters.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _pattern_node.parameters.Count; ssyy_i++)
+				{
+					if (_pattern_node.parameters[ssyy_i] == null)
+					{
+						bw.Write((byte)0);
+					}
+					else
+					{
+						bw.Write((byte)1);
+						_pattern_node.parameters[ssyy_i].visit(this);
+					}
+				}
+			}
 		}
 
 
@@ -6246,15 +6267,6 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				bw.Write((byte)1);
 				_is_pattern_expr.right.visit(this);
-			}
-			if (_is_pattern_expr.constDeconstructorParamCheck == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_is_pattern_expr.constDeconstructorParamCheck.visit(this);
 			}
 		}
 
@@ -6379,27 +6391,6 @@ namespace PascalABCCompiler.SyntaxTree
 		public void write_deconstructor_pattern(deconstructor_pattern _deconstructor_pattern)
 		{
 			write_pattern_node(_deconstructor_pattern);
-			if (_deconstructor_pattern.parameters == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				bw.Write(_deconstructor_pattern.parameters.Count);
-				for(Int32 ssyy_i = 0; ssyy_i < _deconstructor_pattern.parameters.Count; ssyy_i++)
-				{
-					if (_deconstructor_pattern.parameters[ssyy_i] == null)
-					{
-						bw.Write((byte)0);
-					}
-					else
-					{
-						bw.Write((byte)1);
-						_deconstructor_pattern.parameters[ssyy_i].visit(this);
-					}
-				}
-			}
 			if (_deconstructor_pattern.type == null)
 			{
 				bw.Write((byte)0);
@@ -6409,18 +6400,27 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_deconstructor_pattern.type.visit(this);
 			}
+			if (_deconstructor_pattern.const_params_check == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_deconstructor_pattern.const_params_check.visit(this);
+			}
 		}
 
 
-		public void visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		public void visit(pattern_parameter _pattern_parameter)
 		{
 			bw.Write((Int16)229);
-			write_pattern_deconstructor_parameter(_pattern_deconstructor_parameter);
+			write_pattern_parameter(_pattern_parameter);
 		}
 
-		public void write_pattern_deconstructor_parameter(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		public void write_pattern_parameter(pattern_parameter _pattern_parameter)
 		{
-			write_syntax_tree_node(_pattern_deconstructor_parameter);
+			write_syntax_tree_node(_pattern_parameter);
 		}
 
 
@@ -6462,7 +6462,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_var_deconstructor_parameter(var_deconstructor_parameter _var_deconstructor_parameter)
 		{
-			write_pattern_deconstructor_parameter(_var_deconstructor_parameter);
+			write_pattern_parameter(_var_deconstructor_parameter);
 			if (_var_deconstructor_parameter.identifier == null)
 			{
 				bw.Write((byte)0);
@@ -6492,7 +6492,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_recursive_deconstructor_parameter(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
 		{
-			write_pattern_deconstructor_parameter(_recursive_deconstructor_parameter);
+			write_pattern_parameter(_recursive_deconstructor_parameter);
 			if (_recursive_deconstructor_parameter.pattern == null)
 			{
 				bw.Write((byte)0);
@@ -6617,23 +6617,23 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(const_deconstructor_parameter _const_deconstructor_parameter)
+		public void visit(const_pattern_parameter _const_pattern_parameter)
 		{
 			bw.Write((Int16)238);
-			write_const_deconstructor_parameter(_const_deconstructor_parameter);
+			write_const_pattern_parameter(_const_pattern_parameter);
 		}
 
-		public void write_const_deconstructor_parameter(const_deconstructor_parameter _const_deconstructor_parameter)
+		public void write_const_pattern_parameter(const_pattern_parameter _const_pattern_parameter)
 		{
-			write_pattern_deconstructor_parameter(_const_deconstructor_parameter);
-			if (_const_deconstructor_parameter.const_param == null)
+			write_pattern_parameter(_const_pattern_parameter);
+			if (_const_pattern_parameter.const_param == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				_const_deconstructor_parameter.const_param.visit(this);
+				_const_pattern_parameter.const_param.visit(this);
 			}
 		}
 
@@ -6646,7 +6646,31 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_wild_card_deconstructor_parameter(wild_card_deconstructor_parameter _wild_card_deconstructor_parameter)
 		{
-			write_pattern_deconstructor_parameter(_wild_card_deconstructor_parameter);
+			write_pattern_parameter(_wild_card_deconstructor_parameter);
+		}
+
+
+		public void visit(collection_pattern _collection_pattern)
+		{
+			bw.Write((Int16)240);
+			write_collection_pattern(_collection_pattern);
+		}
+
+		public void write_collection_pattern(collection_pattern _collection_pattern)
+		{
+			write_pattern_node(_collection_pattern);
+		}
+
+
+		public void visit(collection_pattern_gap_parameter _collection_pattern_gap_parameter)
+		{
+			bw.Write((Int16)241);
+			write_collection_pattern_gap_parameter(_collection_pattern_gap_parameter);
+		}
+
+		public void write_collection_pattern_gap_parameter(collection_pattern_gap_parameter _collection_pattern_gap_parameter)
+		{
+			write_pattern_parameter(_collection_pattern_gap_parameter);
 		}
 
 	}

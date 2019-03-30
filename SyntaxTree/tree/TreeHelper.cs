@@ -1818,9 +1818,12 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class deconstructor_pattern
     {
-        public bool IsRecursive => parameters.Any(x => x is recursive_deconstructor_parameter);
-
         public override string ToString() => $"{type}({string.Join(", ", parameters.Select(x => x.ToString()))})";
+    }
+
+    public partial class pattern_node
+    {
+        public bool IsRecursive => parameters.Any(x => x is recursive_deconstructor_parameter);
     }
 
     public partial class var_deconstructor_parameter

@@ -2313,7 +2313,7 @@ namespace PascalABCCompiler.SyntaxTree
             }
         }
 
-        public void CompareInternal(pattern_deconstructor_parameter left, pattern_deconstructor_parameter right)
+        public void CompareInternal(pattern_parameter left, pattern_parameter right)
         {
             if (left == null && right != null || left != null && right == null)
                 throw_not_equal(left, right);

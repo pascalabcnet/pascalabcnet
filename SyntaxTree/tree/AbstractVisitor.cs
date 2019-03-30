@@ -1153,9 +1153,9 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_deconstructor_pattern);
 		}
 
-		public virtual void visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		public virtual void visit(pattern_parameter _pattern_parameter)
 		{
-			DefaultVisit(_pattern_deconstructor_parameter);
+			DefaultVisit(_pattern_parameter);
 		}
 
 		public virtual void visit(desugared_deconstruction _desugared_deconstruction)
@@ -1198,14 +1198,24 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_tuple_wild_card);
 		}
 
-		public virtual void visit(const_deconstructor_parameter _const_deconstructor_parameter)
+		public virtual void visit(const_pattern_parameter _const_pattern_parameter)
 		{
-			DefaultVisit(_const_deconstructor_parameter);
+			DefaultVisit(_const_pattern_parameter);
 		}
 
 		public virtual void visit(wild_card_deconstructor_parameter _wild_card_deconstructor_parameter)
 		{
 			DefaultVisit(_wild_card_deconstructor_parameter);
+		}
+
+		public virtual void visit(collection_pattern _collection_pattern)
+		{
+			DefaultVisit(_collection_pattern);
+		}
+
+		public virtual void visit(collection_pattern_gap_parameter _collection_pattern_gap_parameter)
+		{
+			DefaultVisit(_collection_pattern_gap_parameter);
 		}
 	}
 

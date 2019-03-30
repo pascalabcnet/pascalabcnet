@@ -1837,11 +1837,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
-		public virtual void pre_do_visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		public virtual void pre_do_visit(pattern_parameter _pattern_parameter)
 		{
 		}
 
-		public virtual void post_do_visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		public virtual void post_do_visit(pattern_parameter _pattern_parameter)
 		{
 		}
 
@@ -1909,11 +1909,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
-		public virtual void pre_do_visit(const_deconstructor_parameter _const_deconstructor_parameter)
+		public virtual void pre_do_visit(const_pattern_parameter _const_pattern_parameter)
 		{
 		}
 
-		public virtual void post_do_visit(const_deconstructor_parameter _const_deconstructor_parameter)
+		public virtual void post_do_visit(const_pattern_parameter _const_pattern_parameter)
 		{
 		}
 
@@ -1922,6 +1922,22 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public virtual void post_do_visit(wild_card_deconstructor_parameter _wild_card_deconstructor_parameter)
+		{
+		}
+
+		public virtual void pre_do_visit(collection_pattern _collection_pattern)
+		{
+		}
+
+		public virtual void post_do_visit(collection_pattern _collection_pattern)
+		{
+		}
+
+		public virtual void pre_do_visit(collection_pattern_gap_parameter _collection_pattern_gap_parameter)
+		{
+		}
+
+		public virtual void post_do_visit(collection_pattern_gap_parameter _collection_pattern_gap_parameter)
 		{
 		}
 
@@ -3836,6 +3852,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_pattern_node);
 			pre_do_visit(_pattern_node);
+			for (int i = 0; i < parameters.Count; i++)
+				visit(pattern_node.parameters[i]);
 			post_do_visit(_pattern_node);
 		}
 
@@ -3854,7 +3872,6 @@ namespace PascalABCCompiler.SyntaxTree
 			pre_do_visit(_is_pattern_expr);
 			visit(is_pattern_expr.left);
 			visit(is_pattern_expr.right);
-			visit(is_pattern_expr.constDeconstructorParamCheck);
 			post_do_visit(_is_pattern_expr);
 		}
 
@@ -3891,17 +3908,16 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_deconstructor_pattern);
 			pre_do_visit(_deconstructor_pattern);
-			for (int i = 0; i < parameters.Count; i++)
-				visit(deconstructor_pattern.parameters[i]);
 			visit(deconstructor_pattern.type);
+			visit(deconstructor_pattern.const_params_check);
 			post_do_visit(_deconstructor_pattern);
 		}
 
-		public override void visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		public override void visit(pattern_parameter _pattern_parameter)
 		{
-			DefaultVisit(_pattern_deconstructor_parameter);
-			pre_do_visit(_pattern_deconstructor_parameter);
-			post_do_visit(_pattern_deconstructor_parameter);
+			DefaultVisit(_pattern_parameter);
+			pre_do_visit(_pattern_parameter);
+			post_do_visit(_pattern_parameter);
 		}
 
 		public override void visit(desugared_deconstruction _desugared_deconstruction)
@@ -3970,12 +3986,12 @@ namespace PascalABCCompiler.SyntaxTree
 			post_do_visit(_tuple_wild_card);
 		}
 
-		public override void visit(const_deconstructor_parameter _const_deconstructor_parameter)
+		public override void visit(const_pattern_parameter _const_pattern_parameter)
 		{
-			DefaultVisit(_const_deconstructor_parameter);
-			pre_do_visit(_const_deconstructor_parameter);
-			visit(const_deconstructor_parameter.const_param);
-			post_do_visit(_const_deconstructor_parameter);
+			DefaultVisit(_const_pattern_parameter);
+			pre_do_visit(_const_pattern_parameter);
+			visit(const_pattern_parameter.const_param);
+			post_do_visit(_const_pattern_parameter);
 		}
 
 		public override void visit(wild_card_deconstructor_parameter _wild_card_deconstructor_parameter)
@@ -3983,6 +3999,20 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_wild_card_deconstructor_parameter);
 			pre_do_visit(_wild_card_deconstructor_parameter);
 			post_do_visit(_wild_card_deconstructor_parameter);
+		}
+
+		public override void visit(collection_pattern _collection_pattern)
+		{
+			DefaultVisit(_collection_pattern);
+			pre_do_visit(_collection_pattern);
+			post_do_visit(_collection_pattern);
+		}
+
+		public override void visit(collection_pattern_gap_parameter _collection_pattern_gap_parameter)
+		{
+			DefaultVisit(_collection_pattern_gap_parameter);
+			pre_do_visit(_collection_pattern_gap_parameter);
+			post_do_visit(_collection_pattern_gap_parameter);
 		}
 	}
 

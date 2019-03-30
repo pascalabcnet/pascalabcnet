@@ -759,7 +759,7 @@ namespace CodeCompletion
             }
             else
             {
-                foreach (pattern_deconstructor_parameter pdp in _deconstructor_pattern.parameters)
+                foreach (pattern_parameter pdp in _deconstructor_pattern.parameters)
                 {
                     if (pdp is var_deconstructor_parameter)
                     {
