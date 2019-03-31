@@ -508,6 +508,10 @@ namespace PascalABCCompiler.SyntaxTree
 					return new collection_pattern_wild_card();
 				case 243:
 					return new collection_pattern_var_parameter();
+				case 244:
+					return new recursive_collection_parameter();
+				case 245:
+					return new recursive_pattern_parameter();
 			}
 			return null;
 		}
@@ -4130,8 +4134,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_recursive_deconstructor_parameter(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
 		{
-			read_pattern_parameter(_recursive_deconstructor_parameter);
-			_recursive_deconstructor_parameter.pattern = _read_node() as pattern_node;
+			read_recursive_pattern_parameter(_recursive_deconstructor_parameter);
 		}
 
 
@@ -4284,6 +4287,29 @@ namespace PascalABCCompiler.SyntaxTree
 			read_pattern_parameter(_collection_pattern_var_parameter);
 			_collection_pattern_var_parameter.identifier = _read_node() as ident;
 			_collection_pattern_var_parameter.type = _read_node() as type_definition;
+		}
+
+
+		public void visit(recursive_collection_parameter _recursive_collection_parameter)
+		{
+			read_recursive_collection_parameter(_recursive_collection_parameter);
+		}
+
+		public void read_recursive_collection_parameter(recursive_collection_parameter _recursive_collection_parameter)
+		{
+			read_recursive_pattern_parameter(_recursive_collection_parameter);
+		}
+
+
+		public void visit(recursive_pattern_parameter _recursive_pattern_parameter)
+		{
+			read_recursive_pattern_parameter(_recursive_pattern_parameter);
+		}
+
+		public void read_recursive_pattern_parameter(recursive_pattern_parameter _recursive_pattern_parameter)
+		{
+			read_pattern_parameter(_recursive_pattern_parameter);
+			_recursive_pattern_parameter.pattern = _read_node() as pattern_node;
 		}
 
 	}

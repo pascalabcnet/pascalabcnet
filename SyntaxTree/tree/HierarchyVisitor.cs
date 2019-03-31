@@ -1957,6 +1957,22 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(recursive_collection_parameter _recursive_collection_parameter)
+		{
+		}
+
+		public virtual void post_do_visit(recursive_collection_parameter _recursive_collection_parameter)
+		{
+		}
+
+		public virtual void pre_do_visit(recursive_pattern_parameter _recursive_pattern_parameter)
+		{
+		}
+
+		public virtual void post_do_visit(recursive_pattern_parameter _recursive_pattern_parameter)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -3958,7 +3974,6 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_recursive_deconstructor_parameter);
 			pre_do_visit(_recursive_deconstructor_parameter);
-			visit(recursive_deconstructor_parameter.pattern);
 			post_do_visit(_recursive_deconstructor_parameter);
 		}
 
@@ -4045,6 +4060,21 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(collection_pattern_var_parameter.identifier);
 			visit(collection_pattern_var_parameter.type);
 			post_do_visit(_collection_pattern_var_parameter);
+		}
+
+		public override void visit(recursive_collection_parameter _recursive_collection_parameter)
+		{
+			DefaultVisit(_recursive_collection_parameter);
+			pre_do_visit(_recursive_collection_parameter);
+			post_do_visit(_recursive_collection_parameter);
+		}
+
+		public override void visit(recursive_pattern_parameter _recursive_pattern_parameter)
+		{
+			DefaultVisit(_recursive_pattern_parameter);
+			pre_do_visit(_recursive_pattern_parameter);
+			visit(recursive_pattern_parameter.pattern);
+			post_do_visit(_recursive_pattern_parameter);
 		}
 	}
 

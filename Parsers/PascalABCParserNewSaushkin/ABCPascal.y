@@ -3345,6 +3345,10 @@ collection_pattern_list_item
         {
             $$ = new recursive_deconstructor_parameter($1 as pattern_node, @$);
         }
+	| collection_pattern
+		{
+			$$ = new recursive_collection_parameter($1 as pattern_node, @$);
+		}
 	| tkDotDot
 		{
 			$$ = new collection_pattern_gap_parameter();
@@ -3485,6 +3489,10 @@ pattern_out_param
         {
             $$ = new recursive_deconstructor_parameter($1 as pattern_node, @$);
         }
+	| collection_pattern
+		{
+			$$ = new recursive_collection_parameter($1 as pattern_node, @$);
+		}
     ;    
     
 pattern_out_param_optional_var
@@ -3516,6 +3524,10 @@ pattern_out_param_optional_var
         {
             $$ = new recursive_deconstructor_parameter($1 as pattern_node, @$);
         }
+	| collection_pattern
+		{
+			$$ = new recursive_collection_parameter($1 as pattern_node, @$);
+		}
     ;
     
 simple_expr_or_nothing

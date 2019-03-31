@@ -6492,16 +6492,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_recursive_deconstructor_parameter(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
 		{
-			write_pattern_parameter(_recursive_deconstructor_parameter);
-			if (_recursive_deconstructor_parameter.pattern == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_recursive_deconstructor_parameter.pattern.visit(this);
-			}
+			write_recursive_pattern_parameter(_recursive_deconstructor_parameter);
 		}
 
 
@@ -6712,6 +6703,39 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				bw.Write((byte)1);
 				_collection_pattern_var_parameter.type.visit(this);
+			}
+		}
+
+
+		public void visit(recursive_collection_parameter _recursive_collection_parameter)
+		{
+			bw.Write((Int16)244);
+			write_recursive_collection_parameter(_recursive_collection_parameter);
+		}
+
+		public void write_recursive_collection_parameter(recursive_collection_parameter _recursive_collection_parameter)
+		{
+			write_recursive_pattern_parameter(_recursive_collection_parameter);
+		}
+
+
+		public void visit(recursive_pattern_parameter _recursive_pattern_parameter)
+		{
+			bw.Write((Int16)245);
+			write_recursive_pattern_parameter(_recursive_pattern_parameter);
+		}
+
+		public void write_recursive_pattern_parameter(recursive_pattern_parameter _recursive_pattern_parameter)
+		{
+			write_pattern_parameter(_recursive_pattern_parameter);
+			if (_recursive_pattern_parameter.pattern == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_recursive_pattern_parameter.pattern.visit(this);
 			}
 		}
 

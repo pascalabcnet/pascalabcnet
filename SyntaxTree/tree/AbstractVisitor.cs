@@ -1227,6 +1227,16 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_collection_pattern_var_parameter);
 		}
+
+		public virtual void visit(recursive_collection_parameter _recursive_collection_parameter)
+		{
+			DefaultVisit(_recursive_collection_parameter);
+		}
+
+		public virtual void visit(recursive_pattern_parameter _recursive_pattern_parameter)
+		{
+			DefaultVisit(_recursive_pattern_parameter);
+		}
 	}
 
 

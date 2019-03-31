@@ -50349,7 +50349,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Параметр-паттерн. Часть рекурсивного паттерна.
 	///</summary>
 	[Serializable]
-	public partial class recursive_deconstructor_parameter : pattern_parameter
+	public partial class recursive_deconstructor_parameter : recursive_pattern_parameter
 	{
 
 		///<summary>
@@ -50359,6 +50359,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 
 		}
+
 
 		///<summary>
 		///Конструктор с параметрами.
@@ -50378,26 +50379,6 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
-		protected pattern_node _pattern;
-
-		///<summary>
-		///
-		///</summary>
-		public pattern_node pattern
-		{
-			get
-			{
-				return _pattern;
-			}
-			set
-			{
-				_pattern=value;
-				if (_pattern != null)
-					_pattern.Parent = this;
-			}
-		}
-
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -52480,6 +52461,285 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 					case 1:
 						type = (type_definition)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///Рекурсивный паттерн-параметр. 
+	///</summary>
+	[Serializable]
+	public partial class recursive_collection_parameter : recursive_pattern_parameter
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public recursive_collection_parameter()
+		{
+
+		}
+
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public recursive_collection_parameter(pattern_node _pattern)
+		{
+			this._pattern=_pattern;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public recursive_collection_parameter(pattern_node _pattern,SourceContext sc)
+		{
+			this._pattern=_pattern;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			recursive_collection_parameter copy = new recursive_collection_parameter();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (pattern != null)
+			{
+				copy.pattern = (pattern_node)pattern.Clone();
+				copy.pattern.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new recursive_collection_parameter TypedClone()
+		{
+			return Clone() as recursive_collection_parameter;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (pattern != null)
+				pattern.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			pattern?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return pattern;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						pattern = (pattern_node)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///Рекурсивный паттерн-параметр.
+	///</summary>
+	[Serializable]
+	public partial class recursive_pattern_parameter : pattern_parameter
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public recursive_pattern_parameter()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public recursive_pattern_parameter(pattern_node _pattern)
+		{
+			this._pattern=_pattern;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public recursive_pattern_parameter(pattern_node _pattern,SourceContext sc)
+		{
+			this._pattern=_pattern;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected pattern_node _pattern;
+
+		///<summary>
+		///
+		///</summary>
+		public pattern_node pattern
+		{
+			get
+			{
+				return _pattern;
+			}
+			set
+			{
+				_pattern=value;
+				if (_pattern != null)
+					_pattern.Parent = this;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			recursive_pattern_parameter copy = new recursive_pattern_parameter();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (pattern != null)
+			{
+				copy.pattern = (pattern_node)pattern.Clone();
+				copy.pattern.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new recursive_pattern_parameter TypedClone()
+		{
+			return Clone() as recursive_pattern_parameter;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (pattern != null)
+				pattern.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			pattern?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return pattern;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						pattern = (pattern_node)value;
 						break;
 				}
 			}

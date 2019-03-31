@@ -3010,10 +3010,8 @@
         </TagIndices>
       </Tags>
     </SyntaxNode>
-    <SyntaxNode Name="recursive_deconstructor_parameter" BaseName="pattern_parameter">
-      <Fields>
-        <SyntaxField Name="pattern" SyntaxType="pattern_node" />
-      </Fields>
+    <SyntaxNode Name="recursive_deconstructor_parameter" BaseName="recursive_pattern_parameter">
+      <Fields />
       <Methods />
       <Tags>
         <CategoryIndices>
@@ -3160,6 +3158,32 @@
         </TagIndices>
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="recursive_collection_parameter" BaseName="recursive_pattern_parameter">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="recursive_pattern_parameter" BaseName="pattern_parameter">
+      <Fields>
+        <SyntaxField Name="pattern" SyntaxType="pattern_node" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3185,7 +3209,7 @@
         <Tag Name="Важнейшие" ReferenceCount="207" />
         <Tag Name="Method_Procedure_Call" ReferenceCount="2" />
         <Tag Name="Yield" ReferenceCount="8" />
-        <Tag Name="Patterns" ReferenceCount="20" />
+        <Tag Name="Patterns" ReferenceCount="22" />
         <Tag Name="Typeclasses" ReferenceCount="13" />
       </Tags>
     </FilterCategory>
@@ -4211,8 +4235,14 @@
       <HelpData Key="record_type_parts" Value="" />
       <HelpData Key="record_type_parts.fixed_part" Value="" />
       <HelpData Key="record_type_parts.variant_part" Value="" />
+      <HelpData Key="recursive_collection_parameter" Value="Рекурсивный паттерн-параметр. " />
+      <HelpData Key="recursive_collection_parameter.pattern" Value="" />
+      <HelpData Key="recursive_collection_pattern" Value="Рекурсивный паттерн-параметр. " />
+      <HelpData Key="recursive_collection_pattern.pattern" Value="" />
       <HelpData Key="recursive_deconstructor_parameter" Value="Параметр-паттерн. Часть рекурсивного паттерна." />
       <HelpData Key="recursive_deconstructor_parameter.pattern" Value="" />
+      <HelpData Key="recursive_pattern_parameter" Value="Рекурсивный паттерн-параметр." />
+      <HelpData Key="recursive_pattern_parameter.pattern" Value="" />
       <HelpData Key="ref_type" Value="" />
       <HelpData Key="ref_type.pointed_to" Value="" />
       <HelpData Key="repeat_node" Value="Цикл с постусловием (repeat)" />

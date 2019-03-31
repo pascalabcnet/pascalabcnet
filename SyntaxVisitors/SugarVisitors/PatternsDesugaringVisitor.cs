@@ -66,6 +66,8 @@ namespace SyntaxVisitors.SugarVisitors
 
         public expression SuccessMatchingCheck { get; set; }
 
+        public expression CollectionLengthCheck { get; set; }
+
         public List<statement> VarParametersAssignments { get; set; } = new List<statement>();
     }
 
@@ -548,17 +550,26 @@ namespace SyntaxVisitors.SugarVisitors
                                            bin_expr.LogicalAnd(successMatchingCheck, afterGapEqual);
                 }
             }
-            
-            var collectionLengthCheck = new bin_expr(
+            // Спросить у С.С. - если добавлять в and, то все равно ран тайм эррор, будто вычисляет все, даже если первое = false
+            desugaringResult.CollectionLengthCheck = new bin_expr(
                 new dot_node(matchingExpression as addressed_value, new ident(CountPropertyName), pattern.source_context),
                 new int32_const(exprBeforeGap.Count + exprAfterGap.Count),
                 Operators.GreaterEqual,
                 pattern.source_context
             );
-
-            successMatchingCheck = successMatchingCheck == null ?
-                                   collectionLengthCheck :
-                                   bin_expr.LogicalAnd(collectionLengthCheck, successMatchingCheck);
+            
+            if (!gapItemMet)
+            {
+                var lengthWithoutGapCheck = new bin_expr(
+                    new dot_node(matchingExpression as addressed_value, new ident(CountPropertyName), pattern.source_context),
+                    new int32_const(exprBeforeGap.Count),
+                    Operators.Equal,
+                    pattern.source_context
+                );
+                successMatchingCheck = successMatchingCheck == null ? 
+                                       lengthWithoutGapCheck :
+                                       bin_expr.LogicalAnd(lengthWithoutGapCheck, successMatchingCheck);
+            }
 
             desugaringResult.SuccessMatchingCheck = successMatchingCheck == null ?
                                                     new bool_const(true) :
@@ -596,11 +607,19 @@ namespace SyntaxVisitors.SugarVisitors
             expression conjunction = new is_pattern_expr(expression, pattern, pattern.source_context);
             for (int i = 0; i < parameters.Count; i++)
             {
-                if (parameters[i] is recursive_deconstructor_parameter parameter)
+                if (parameters[i] is recursive_pattern_parameter parameter)
                 {
                     //var parameterType = (parameter.pattern as deconstructor_pattern).type;
                     var newName = NewGeneralName();
-                    var varParameter = new var_deconstructor_parameter(newName, null);
+                    pattern_parameter varParameter = null;
+                    if (pattern is deconstructor_pattern)
+                    {
+                        varParameter = new var_deconstructor_parameter(newName, null);
+                    }
+                    else if (pattern is collection_pattern)
+                    {
+                        varParameter = new collection_pattern_var_parameter(newName, null);
+                    }
                     parameters[i] = varParameter;
                     varParameter.Parent = parameters[i];
                     conjunction = bin_expr.LogicalAnd(conjunction, DesugarRecursiveDeconstructor(newName, parameter.pattern));

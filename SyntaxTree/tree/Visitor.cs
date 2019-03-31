@@ -1468,6 +1468,18 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_collection_pattern_var_parameter">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(collection_pattern_var_parameter _collection_pattern_var_parameter);
+		///<summary>
+		///Method to visit recursive_collection_parameter.
+		///</summary>
+		///<param name="_recursive_collection_parameter">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(recursive_collection_parameter _recursive_collection_parameter);
+		///<summary>
+		///Method to visit recursive_pattern_parameter.
+		///</summary>
+		///<param name="_recursive_pattern_parameter">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(recursive_pattern_parameter _recursive_pattern_parameter);
 	}
 
 

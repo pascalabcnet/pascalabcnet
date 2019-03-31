@@ -1823,7 +1823,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class pattern_node
     {
-        public bool IsRecursive => parameters.Any(x => x is recursive_deconstructor_parameter);
+        public bool IsRecursive => parameters.Any(x => x is recursive_pattern_parameter);
     }
 
     public partial class var_deconstructor_parameter
