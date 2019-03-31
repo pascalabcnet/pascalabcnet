@@ -13341,6 +13341,7 @@ namespace PascalABCCompiler.TreeConverter
                     context.top_function.scope.AddSymbol(compiler_string_consts.self_word, new SymbolInfo(cp));
                 }
             }
+
             if (_procedure_header is SyntaxTree.constructor)
             {
                 common_method_node cmnode = context.top_function as common_method_node;
@@ -13729,9 +13730,10 @@ namespace PascalABCCompiler.TreeConverter
             }
             first_param = false;
             common_method_node cnode = context.top_function as common_method_node;
+            parameter_list pars = context.top_function.parameters;
             if (cnode != null && cnode.IsOperator)
             {
-                parameter_list pars = context.top_function.parameters;
+                
                 if (cnode.name != compiler_string_consts.implicit_operator_name && cnode.name != compiler_string_consts.explicit_operator_name)
                 {
                     bool all_types_mismatch = true;
@@ -13753,14 +13755,18 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     AddError(convertion_data_and_alghoritms.get_location(pars[pars.Count - 1]), "PARAMS_IN_OPERATOR");
                 }
-                int pcount = name_reflector.get_params_count(cnode.name);
+                
+            }
+            if (context.top_function.IsOperator)
+            {
+                int pcount = name_reflector.get_params_count(context.top_function.name);
                 if (pcount != pars.Count)
                 {
-                    if (cnode.name != compiler_string_consts.minus_name && cnode.name != compiler_string_consts.plus_name)
-                        AddError(cnode.loc, "OPERATOR_{0}_PARAMETERS_COUNT_MUST_EQUAL_{1}", cnode.name, pcount);
+                    if (context.top_function.name != compiler_string_consts.minus_name && context.top_function.name != compiler_string_consts.plus_name)
+                        AddError(context.top_function.loc, "OPERATOR_{0}_PARAMETERS_COUNT_MUST_EQUAL_{1}", context.top_function.name, pcount);
                     else
                     if (pars.Count != 1 && pars.Count != 2)
-                        AddError(cnode.loc, "OPERATOR_{0}_PARAMETERS_COUNT_MUST_EQUAL_{1}", cnode.name, pcount);
+                        AddError(context.top_function.loc, "OPERATOR_{0}_PARAMETERS_COUNT_MUST_EQUAL_{1}", context.top_function.name, pcount);
                 }
             }
         }
