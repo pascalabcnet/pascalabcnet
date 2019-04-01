@@ -100,12 +100,27 @@ type
     function GetItem(i: integer): ObjectWPF := l[i];
     procedure SetItem(i: integer; value: ObjectWPF) := l[i] := value;
     procedure Add(ob: ObjectWPF) := Invoke(AddP,ob);
-    procedure Destroy(ob: ObjectWPF) := Invoke(DeleteP,ob);
+    procedure Destroy(ob: ObjectWPF);
+    begin
+      if not l.Contains(ob) then
+        raise new Exception('Нельзя удалить дочерний объект');
+      Invoke(DeleteP,ob);
+    end;  
   public
     /// Перемещает объект на задний план
-    procedure ToBack(ob: ObjectWPF) := Invoke(ToBackP,ob);
+    procedure ToBack(ob: ObjectWPF);
+    begin
+      if not l.Contains(ob) then
+        raise new Exception('На задний план нельзя переносить дочерние объекты');
+      Invoke(ToBackP,ob);
+    end;
     /// Перемещает объект на передний план
-    procedure ToFront(ob: ObjectWPF) := Invoke(ToFrontP,ob);
+    procedure ToFront(ob: ObjectWPF);
+    begin
+      if not l.Contains(ob) then
+        raise new Exception('На передний план нельзя переносить дочерние объекты');
+      Invoke(ToFrontP,ob);
+    end;
     /// Возвращает количество объектов ObjectWPF
     property Count: integer read l.Count;
     /// Возвращает или устанавливает i-тый объект ObjectWPF
@@ -260,7 +275,7 @@ type
       trans.BeginAnimation(TranslateTransform.YProperty, ay, HandoffBehavior.Compose);
     end;
     /// Анимирует перемещение графического объекта на вектор (a,b) в течение sec секунд
-    procedure AnimMoveOn(a,b,sec: real) := Invoke(AnimMoveOnP,a,b,sec);
+    procedure AnimMoveOn(a,b: real; sec: real := 1) := Invoke(AnimMoveOnP,a,b,sec);
 
     procedure AnimMoveToP(x,y,sec: real);
     begin
@@ -270,7 +285,7 @@ type
       trans.BeginAnimation(TranslateTransform.YProperty, ay, HandoffBehavior.Compose);
     end;
     /// Анимирует перемещение графического объекта к точке (x,y) в течение sec секунд
-    procedure AnimMoveTo(x,y,sec: real) := Invoke(AnimMoveToP,x,y,sec);
+    procedure AnimMoveTo(x,y: real; sec: real := 1) := Invoke(AnimMoveToP,x,y,sec);
 
     procedure AnimMoveEndP;
     begin
@@ -288,7 +303,7 @@ type
       rot.BeginAnimation(RotateTransform.AngleProperty, an, HandoffBehavior.Compose);
     end;
     /// Анимирует вращение графического объекта на угол a в течение sec секунд
-    procedure AnimRotate(a,sec: real) := Invoke(AnimRotateP,a,sec);
+    procedure AnimRotate(a: real; sec: real := 1) := Invoke(AnimRotateP,a,sec);
 
     procedure AnimScaleP(a,sec: real);
     begin
@@ -297,18 +312,25 @@ type
       sca.BeginAnimation(ScaleTransform.ScaleYProperty, an, HandoffBehavior.Compose);
     end;
     /// Анимирует масштабирование графического объекта на величину a в течение sec секунд
-    procedure AnimScale(a,sec: real) := Invoke(AnimScaleP,a,sec);
+    procedure AnimScale(a: real; sec: real := 1) := Invoke(AnimScaleP,a,sec);
         
     /// Добавляет к графическому объекту дочерний
-    procedure AddChild(ch: ObjectWPF) := Invoke(AddChildP,ch);
+    procedure AddChild(ch: ObjectWPF);
     /// Удаляет из графического объекта дочерний
-    procedure DeleteChild(ch: ObjectWPF) := Invoke(DeleteChildP,ch);
+    procedure DeleteChild(ch: ObjectWPF);
+    begin
+      if not ChildrenWPF.Contains(ch) then
+        raise new Exception('Удаляемый объект не является дочерним для данного');
+      Invoke(DeleteChildP,ch);
+    end;  
     /// Удаляет графический объект
     procedure Destroy;
     /// Переносит графический объект на передний план
     procedure ToFront;
     /// Переносит графический объект на задний план
     procedure ToBack;
+    /// Определяет, пересекается ли объект с объектом ob
+    function Intersects(ob: ObjectWPF): boolean;
     /// Декоратор текста объекта
     function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): ObjectWPF;
     begin
@@ -875,9 +897,9 @@ type
         var pp := value;
         // ширина и высота будут некорректно. Надо переопределить на чтение
         var x1 := pp.Min(p->p.x);
-        var x2 := pp.Max(p->p.x);
+        //var x2 := pp.Max(p->p.x);
         var y1 := pp.Min(p->p.y);
-        var y2 := pp.Max(p->p.y);
+        //var y2 := pp.Max(p->p.y);
         var a := pp.Select(p->Pnt(p.x-x1,p.y-y1)).ToArray;
         MoveTo(x1,y1);
         //(gr.Width,gr.Height) := (x2-x1,y2-y1);
@@ -979,6 +1001,14 @@ function ObjectUnderPoint(x,y: real): ObjectWPF;
 /// Возвращает True если графические объекты пересекаются
 function ObjectsIntersect(o1,o2: ObjectWPF): boolean;
 
+// -----------------------------------------------------
+//>>     Другие подпрограммы# Other functions
+// -----------------------------------------------------
+/// Перемещает объект на передний план 
+procedure ToFront(o: ObjectWPF);
+/// Перемещает объект на задний план
+procedure ToBack(o: ObjectWPF);
+
 ///--
 procedure __InitModule__;
 ///--
@@ -1001,7 +1031,6 @@ procedure Invoke(p: ()->()) := GraphWPFBase.Invoke(p);
 
 procedure SetLeft(Self: UIElement; l: integer) := Self.SetLeft(l);
 procedure SetTop(Self: UIElement; t: integer) := Self.SetTop(t);
-
 
 function MoveOn(Self: Point; vx,vy: real): Point; extensionmethod;
 begin
@@ -1045,6 +1074,19 @@ begin
   host.Children.Add(ob.can)
 end;
 
+procedure ObjectWPF.AddChild(ch: ObjectWPF);
+begin
+  if not Objects.l.Contains(ch) then
+    raise new Exception('Добавляемый объект уже является дочерним');
+  Invoke(AddChildP,ch);
+end;  
+
+function ObjectWPF.Intersects(ob: ObjectWPF): boolean;
+begin
+  Result := ObjectsIntersect(Self,ob);
+end;
+
+
 procedure ObjectWPF.InitOb(x,y,w,h: real; o: FrameworkElement; SetWH: boolean);
 begin
   can := new Canvas;
@@ -1083,7 +1125,6 @@ end;
 procedure ObjectWPF.AddChildP(ch: ObjectWPF);
 begin
   ChildrenWPF.Add(ch);
-  //host.Children.Remove(ch.can);
   Objects.Destroy(ch);
   can.Children.Add(ch.can);
 end;
@@ -1091,7 +1132,6 @@ end;
 procedure ObjectWPF.DeleteChildP(ch: ObjectWPF);
 begin
   ChildrenWPF.Remove(ch);
-  //host.Children.Remove(ch.gr);
 end;
 
 procedure ObjectWPF.Destroy;
@@ -1213,6 +1253,14 @@ function ObjectsIntersect(o1,o2: ObjectWPF)
   
 function IntersectionList(Self: ObjectWPF): List<ObjectWPF>; extensionmethod
   := Invoke&<List<ObjectWPF>>(OLHelper.Create(Self).f);
+
+procedure ToFront(o: ObjectWPF) := Objects.ToFront(o);
+
+procedure ToBack(o: ObjectWPF) := Objects.ToBack(o);
+
+procedure ToFront(Self: ObjectWPF); extensionmethod := Objects.ToFront(Self);
+
+procedure ToBack(Self: ObjectWPF); extensionmethod := Objects.ToBack(Self);
 
 var
   ///--

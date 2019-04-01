@@ -79,12 +79,21 @@ type
     c: Color := Colors.Black;
     th: real := 1;
     fx,fy: real;
+    rc: boolean := false;
     function PenConstruct: GPen;
     begin
       Result := new GPen(new SolidColorBrush(c),th);
       Result.LineJoin := PenLineJoin.Round;
-      //Result.StartLineCap := PenLineCap.Round;
-      //Result.EndLineCap := PenLineCap.Round;
+      if rc then 
+      begin
+        Result.StartLineCap := PenLineCap.Round;
+        Result.EndLineCap := PenLineCap.Round;
+      end
+      else
+      begin
+        Result.StartLineCap := PenLineCap.Flat;
+        Result.EndLineCap := PenLineCap.Flat;
+      end;
     end;
   public  
     /// Цвет пера
@@ -95,6 +104,8 @@ type
     property X: real read fx;
     /// Текущая координата Y пера
     property Y: real read fy;
+    /// Скругление пера на концах линий
+    property RoundCap: boolean read rc write rc;
   end;
 
 // -----------------------------------------------------

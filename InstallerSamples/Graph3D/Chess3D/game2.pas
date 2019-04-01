@@ -93,7 +93,8 @@ begin
     d -= 2;
   end;
   View3D.ShowGridLines := False;
-  FileModel3D(0,0,0,'board.obj',GrayColor(100));
+  var f := FileModel3D(0,0,0,'board.obj',GrayColor(100));
+  f.Rotate(OrtZ,90);
 end;
 
 procedure StartupPosition;
