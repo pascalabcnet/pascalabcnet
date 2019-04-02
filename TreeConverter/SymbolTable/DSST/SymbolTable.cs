@@ -314,6 +314,9 @@ namespace SymbolTable
 	{
         public ClassScope PartialScope;
 
+        public PascalABCCompiler.TreeRealization.common_type_node class_type = null; 
+        // SSM 02.04.19 - буду присваивать это поле только для создаваемых пользователем классов. Понадобилось для доступа к членам NET-класса из его потомка - обычного класса
+
         public Scope BaseClassScope;
 
         public ClassScope(DSSymbolTable vSymbolTable,Scope TopScope,Scope BaseClassScope, string Name):
@@ -816,6 +819,7 @@ namespace SymbolTable
             ClassScope cl = (ClassScope)ClassArea;
 
             if (!OnlyInThisClass)
+            { 
                 while (cl.BaseClassScope != null)
                 {
                     tn = cl.BaseClassScope.Symbols.Find(name);
@@ -830,6 +834,14 @@ namespace SymbolTable
                     }
                     cl = (ClassScope)cl.BaseClassScope;
                 }
+                /*if (cl.BaseClassScope == null && cl.class_type.base_type is PascalABCCompiler.TreeRealization.compiled_type_node ctn)
+                {
+                    Result = ctn.find(name);
+                    return;
+                }*/
+
+
+            }
         }
 
         private Scope FindUnitInterfaceScope(Scope scope)
