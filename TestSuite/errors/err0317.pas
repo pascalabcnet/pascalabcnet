@@ -1,7 +1,3 @@
-﻿type
-  T = class
-    procedure operator+=(a, b:T) := exit;
-  end;
-
-begin
+﻿begin
+  Writeln(1 mod 0);
 end.

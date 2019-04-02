@@ -1836,5 +1836,10 @@ namespace PascalABCCompiler.SyntaxTree
         }
     }
 
+    public partial class semantic_check_sugared_statement_node
+    {
+        public bool visited = false;
+    }
+
     }
 

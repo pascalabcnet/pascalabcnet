@@ -20122,6 +20122,9 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.semantic_check_sugared_statement_node st)
         {
+            if (st.visited)
+                return;
+            st.visited = true;
             if (st.typ as System.Type == typeof(SyntaxTree.assign_tuple))
             {
                 var vars = st.lst[0] as SyntaxTree.addressed_value_list;
