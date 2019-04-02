@@ -42397,9 +42397,11 @@ namespace PascalABCCompiler.SyntaxTree
 	///Это - сахарная конструкция.
 /// Объект безымянного класса. Например: new class(Name := 'Иванов'; Age := 25);
 /// new_ex - это узел для генерации кода, основной узел предназначен для форматирования
+
+/// Сделал потомком addressed_value из-за #1843
 	///</summary>
 	[Serializable]
-	public partial class unnamed_type_object : expression
+	public partial class unnamed_type_object : addressed_value
 	{
 
 		///<summary>

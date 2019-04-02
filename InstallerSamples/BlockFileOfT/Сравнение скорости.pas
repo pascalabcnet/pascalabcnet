@@ -35,14 +35,13 @@ type
       
       //надо заблокировать массив на 1 месте в памяти, чтоб сборщик мусора не двигал пока мы копируем
       var hnd := GCHandle.Alloc(a, GCHandleType.Pinned);	
-//      try
+      try
         var ptr: ^CharArr255Body := pointer(hnd.AddrOfPinnedObject);	
         Result.body := ptr^;
-//      finally
+      finally
         hnd.Free;//в finally, чтоб если возникнет какая то ошибка - блокировку всё равно сняло
                  //иначе получим утечку памяти, потому что блокировка запрещает сборщику мусора освобождать память
-                 //Но пока что я убрал, потому что github.com/pascalabcnet/pascalabcnet/issues/1267
-//      end;	
+      end;	
     end;
     
     public class function operator explicit(s: string): CharArr255 :=
@@ -56,12 +55,12 @@ type
       var temp := new char[CharArr255Body.MaxLength];	
       
       var hnd := GCHandle.Alloc(temp, GCHandleType.Pinned);	
-//      try
+      try
         var ptr: ^CharArr255Body := pointer(hnd.AddrOfPinnedObject);	
         ptr^ := a.body;
-//      finally
+      finally
         hnd.Free;	
-//      end;
+      end;
       
       if a.length = CharArr255Body.MaxLength then
       begin

@@ -796,7 +796,12 @@ namespace PascalABCCompiler.TreeRealization
                             //Проверяем фактические, попадающие под params...
                             if (!DeduceInstanceTypes(last_params_type, fact[i].type, deduced, nils))
                             {
-                                if (alone)
+                                if (alone && fact[i].type is delegated_methods && (fact[i].type as delegated_methods).empty_param_method != null)
+                                {
+                                    if (DeduceInstanceTypes(last_params_type, (fact[i].type as delegated_methods).empty_param_method.type, deduced, nils))
+                                        continue;
+                                }
+                                else
                                     throw new SimpleSemanticError(loc, "GENERIC_FUNCTION_{0}_CAN_NOT_BE_CALLED_WITH_THESE_PARAMETERS", func.name);
                                 return null;
                             }

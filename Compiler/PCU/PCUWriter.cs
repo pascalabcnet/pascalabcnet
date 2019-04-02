@@ -2180,7 +2180,11 @@ namespace PascalABCCompiler.PCU
 		{
 			bw.Write(cur_cnn.non_template_types.Count);
 			for (int i=0; i<cur_cnn.non_template_types.Count; i++)
+                if (cur_cnn.non_template_types[i].type_special_kind != SemanticTree.type_special_kind.array_wrapper)
 				VisitTypeDefinition(cur_cnn.non_template_types[i]);
+            for (int i = 0; i < cur_cnn.non_template_types.Count; i++)
+                if (cur_cnn.non_template_types[i].type_special_kind == SemanticTree.type_special_kind.array_wrapper)
+                    VisitTypeDefinition(cur_cnn.non_template_types[i]);
             bw.Write(cur_cnn.runtime_types.Count);
 			for (int i=0; i<cur_cnn.runtime_types.Count; i++)
 				VisitCompiledTypeDefinition(cur_cnn.runtime_types[i]);

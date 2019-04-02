@@ -5651,6 +5651,8 @@ namespace CodeCompletion
                     if (code1 != TypeCode.String && code1 != TypeCode.Object)
                         if (code1 == TypeCode.Double && code2 != TypeCode.Single)
                             return false;
+                        else if (strong && code1 == TypeCode.Char && code2 != TypeCode.Char && code2 != TypeCode.String)
+                            return false;
                         else
                             return true;
                 }

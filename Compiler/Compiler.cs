@@ -1948,12 +1948,19 @@ namespace PascalABCCompiler
                                 ErrorsList.Add(new ResourceFileNotFound(cd.directive));
                                 continue;
                             }
-                                
-                            string fileName = Path.Combine(cd.location.doc.file_name, cd.directive);
-                            if (File.Exists(fileName))
-                                ResourceFiles.Add(fileName);
-                            else
+
+                            try
+                            {
+                                string fileName = Path.Combine(cd.location.doc.file_name, cd.directive);
+                                if (File.Exists(fileName))
+                                    ResourceFiles.Add(fileName);
+                                else
+                                    ErrorsList.Add(new ResourceFileNotFound(cd.directive, cd.location));
+                            }
+                            catch (Exception e)
+                            {
                                 ErrorsList.Add(new ResourceFileNotFound(cd.directive, cd.location));
+                            }
                         }
                         else
                             ResourceFiles.Add(cd.directive);

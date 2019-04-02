@@ -79,10 +79,21 @@ type
     c: Color := Colors.Black;
     th: real := 1;
     fx,fy: real;
+    rc: boolean := false;
     function PenConstruct: GPen;
     begin
       Result := new GPen(new SolidColorBrush(c),th);
       Result.LineJoin := PenLineJoin.Round;
+      if rc then 
+      begin
+        Result.StartLineCap := PenLineCap.Round;
+        Result.EndLineCap := PenLineCap.Round;
+      end
+      else
+      begin
+        Result.StartLineCap := PenLineCap.Flat;
+        Result.EndLineCap := PenLineCap.Flat;
+      end;
     end;
   public  
     /// Цвет пера
@@ -93,6 +104,8 @@ type
     property X: real read fx;
     /// Текущая координата Y пера
     property Y: real read fy;
+    /// Скругление пера на концах линий
+    property RoundCap: boolean read rc write rc;
   end;
 
 // -----------------------------------------------------
@@ -174,6 +187,8 @@ type
     procedure Load(fname: string);
     /// Очищает графическое окно белым цветом
     procedure Clear; override;
+    /// Очищает графическое окно цветом c
+    procedure Clear(c: Color); override;
   end;
 
 //{{{--doc: Конец секции 2 }}} 
@@ -465,12 +480,21 @@ var OnResize: procedure;
 
 //{{{--doc: Конец секции 3 }}} 
 
+// Для WPFObjects
+var AdditionalInit: procedure;
+function GetMouseArgs(e: MouseEventArgs): (Point,integer);
+
 {procedure AddRightPanel(Width: real := 200; c: Color := Colors.LightGray);
 procedure AddLeftPanel(Width: real := 200; c: Color := Colors.LightGray);
 procedure AddTopPanel(Height: real := 100; c: Color := Colors.LightGray);
 procedure AddBottomPanel(Height: real := 100; c: Color := Colors.LightGray);
 
 procedure AddStatusBar(Height: real := 24);}
+
+{function GetDC: DrawingContext;
+procedure ReleaseDC(dc: DrawingContext);
+procedure FastDraw(d: DrawingContext->());
+procedure FastClear(var dc: DrawingContext);}
 
 procedure __InitModule__;
 procedure __FinalizeModule__;
@@ -543,6 +567,23 @@ begin
     rtbmapIsCleared := False;
     host.Children.Clear;
   end;
+end;
+
+procedure FastDraw(d: DrawingContext->());
+begin
+  Invoke(()->
+  begin
+    var dc := GetDC;
+    d(dc);  
+    ReleaseDC(dc);
+  end);
+end;
+
+procedure FastClear(var dc: DrawingContext);
+begin
+  ReleaseDC(dc);
+  Window.Clear;
+  dc := GetDC;
 end;
 
 function GetDC(t: Transform): DrawingContext;
@@ -1296,7 +1337,21 @@ begin
   end;  
 end;
 
+procedure WindowTypeClearPC(c: Color);
+begin 
+  Host.children.Clear; 
+  if not rtbmapIsCleared then
+  begin
+    rtbmap.Clear; 
+    rtbmapIsCleared := True;
+  end;  
+  FillRectangle(0,0,Window.Width,Window.Height,c)
+end;
+
 procedure WindowTypeWPF.Clear := Invoke(WindowTypeClearP);
+
+procedure WindowTypeWPF.Clear(c: Color) := Invoke(WindowTypeClearPC,c);
+
 
 function XMin := -XOrigin/GlobalScale;
 function XMax := (Window.Width-XOrigin)/GlobalScale;
@@ -1354,6 +1409,7 @@ begin
   if drawgrid then
     DrawGridP
 end;
+
 procedure SetMathematicCoordsP1(x1,x2,ymin: real; drawgrid: boolean);
 begin
   if CurrentCoordType = StandardCoords then
@@ -1371,6 +1427,7 @@ begin
   if drawgrid then
     DrawGridP
 end;
+
 procedure SetMathematicCoords(x1: real; x2: real; drawgrid: boolean) := Invoke(SetMathematicCoordsP,x1,x2,drawgrid);
 procedure SetMathematicCoords(x1,x2,ymin: real; drawgrid: boolean) := Invoke(SetMathematicCoordsP1,x1,x2,ymin,drawgrid);
 
@@ -1387,7 +1444,9 @@ begin
   Host.RenderTransform := m;
   //Pen.Width := Pen.Width * scale; // нет!
 end;
+
 procedure SetStandardCoords(scale,x0,y0: real) := Invoke(SetStandardCoordsP,scale,x0,y0);
+
 procedure SetStandardCoordsSharpLinesP(x0,y0: real);
 begin
   var (sx,sy) := ScaleToDevice;
@@ -1397,8 +1456,7 @@ begin
 end; 
 procedure SetStandardCoordsSharpLines(x0,y0: real) := Invoke(SetStandardCoordsSharpLinesP,x0,y0);
 
-/// --- SystemMouseEvents
-procedure SystemOnMouseDown(sender: Object; e: MouseButtonEventArgs);
+function GetMouseArgs(e: MouseEventArgs): (Point,integer);
 begin
   var mb := 0;
   var p := e.GetPosition(host);
@@ -1406,30 +1464,27 @@ begin
     mb := 1
   else if e.RightButton = MouseButtonState.Pressed then
     mb := 2;
+  Result := (p,mb);  
+end;
+
+/// --- SystemMouseEvents
+procedure SystemOnMouseDown(sender: Object; e: MouseButtonEventArgs);
+begin
+  var (p,mb) := GetMouseArgs(e);
   if OnMouseDown <> nil then  
     OnMouseDown(p.x, p.y, mb);
 end;
 
 procedure SystemOnMouseUp(sender: Object; e: MouseButtonEventArgs);
 begin
-  var mb := 0;
-  var p := e.GetPosition(host);
-  if e.LeftButton = MouseButtonState.Pressed then
-    mb := 1
-  else if e.RightButton = MouseButtonState.Pressed then
-    mb := 2;
+  var (p,mb) := GetMouseArgs(e);
   if OnMouseUp <> nil then  
     OnMouseUp(p.x, p.y, mb);
 end;
 
 procedure SystemOnMouseMove(sender: Object; e: MouseEventArgs);
 begin
-  var mb := 0;
-  var p := e.GetPosition(host);
-  if e.LeftButton = MouseButtonState.Pressed then
-    mb := 1
-  else if e.RightButton = MouseButtonState.Pressed then
-    mb := 2;
+  var (p,mb) := GetMouseArgs(e);
   if OnMouseMove <> nil then  
     OnMouseMove(p.x, p.y, mb);
 end;
@@ -1444,20 +1499,14 @@ procedure SystemOnKeyUp(sender: Object; e: KeyEventArgs) :=
     OnKeyUp(e.Key);
     
 procedure SystemOnKeyPress(sender: Object; e: TextCompositionEventArgs) := 
-begin
   if (OnKeyPress<>nil) and (e.Text<>nil) and (e.Text.Length>0) then
     OnKeyPress(e.Text[1]);
-end;    
     
 procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) := 
   if OnResize<>nil then
     OnResize();
 
 ///----------------------------------------------------------------------
-
-{procedure RenderFrame(s: Object; e: System.EventArgs);
-begin
-end;}
 
 var OnDraw: procedure := nil;
 var OnDraw1: procedure(frame: integer) := nil;
@@ -1479,7 +1528,6 @@ begin
     else LastUpdatedTime := e1;  
     FrameNum += 1;
     Window.Clear;
-    //CountVisuals := integer.MinValue; // чтобы не было паузы после 1000 объектов
     if OnDraw<>nil then
       OnDraw() 
     else if OnDraw1<>nil then
@@ -1511,19 +1559,6 @@ begin
   FrameRate := 60;
 end;  
 
-{procedure AddGraphWindow;
-begin
-  host := new MyVisualHost();
-  host.ClipToBounds := True;
-  host.SizeChanged += (s,e) ->
-  begin
-    var sz := e.NewSize;
-    host.DataContext := sz;
-  end;
-  // Всегда последнее
-  MainDockPanel.children.Add(host);
-end;}
-
 var mre := new ManualResetEvent(false);
 
 type 
@@ -1540,7 +1575,6 @@ public
     end;
     // Всегда последнее
     var g := Content as DockPanel;
-    
     
     var dpiXProperty := typeof(SystemParameters).GetProperty('DpiX', BindingFlags.NonPublic or BindingFlags.Static);
     var dpiYProperty := typeof(SystemParameters).GetProperty('Dpi', BindingFlags.NonPublic or BindingFlags.Static);
@@ -1592,11 +1626,9 @@ public
     CompositionTarget.Rendering += RenderFrame;
     
     Loaded += (o,e) -> mre.Set();
-
   end;
 
 end;
-
 
 procedure InitApp;
 begin

@@ -5500,7 +5500,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_unnamed_type_object(unnamed_type_object _unnamed_type_object)
 		{
-			write_expression(_unnamed_type_object);
+			write_addressed_value(_unnamed_type_object);
 			if (_unnamed_type_object.ne_list == null)
 			{
 				bw.Write((byte)0);

@@ -71,7 +71,7 @@
     <Compile Include="ParserTools\DefaultLanguageInformation.cs" />
     <Compile Include="ParserTools\Errors.cs" />
     <Compile Include="ParserTools\IPreprocessor.cs" />
-    <Compile Include="ParserTools\Keyword.cs" />
+    <Compile Include="ParserTools\KeyWord.cs" />
     <Compile Include="ParserTools\LanguageInformation.cs" />
     <Compile Include="ParserTools\ParserTools.cs" />
     <Compile Include="ParserTools\SourceContextMap.cs" />
@@ -115,7 +115,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
