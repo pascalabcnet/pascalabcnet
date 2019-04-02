@@ -13357,6 +13357,17 @@ namespace PascalABCCompiler.TreeConverter
                     AddError(get_location(_procedure_header), "EXTENSION_CONSTRUCTOR_NOT_ALLOWED");
             }
 
+            if (context.top_function.IsOperator)
+            {
+                if (context.top_function is common_method_node)
+                {
+                    common_method_node cmmn = context.top_function as common_method_node;
+                    if (cmmn.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
+                    {
+                        AddError(get_location(_procedure_header), "OVERLOADED_OPERATOR_MUST_BE_STATIC_FUNCTION");
+                    }
+                }
+            }
             bool unique = context.close_function_params(body_exists);
 
             if (context.converted_type != null && context.converted_type.IsInterface)
