@@ -1709,6 +1709,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class expression
     {
+        //public object semantic_ex;
         public expression Plus(expression e)
         {
             return new bin_expr(this, e, Operators.Plus);

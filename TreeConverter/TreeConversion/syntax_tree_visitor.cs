@@ -848,7 +848,10 @@ namespace PascalABCCompiler.TreeConverter
             motivation_keeper.reset(); // Это можно закомментировать - все тесты проходят SSM 2/1/17
             //\ssyy
             expression_node en = ret.visit(expr);
-            //expr.semantic_ex = en; // SSM 3.1.17 кешируем для последующего обращения
+
+            //if (lambdaProcessingState == LambdaProcessingState.FinishPhase)
+            //    expr.semantic_ex = en; // SSM 3.1.17 кешируем для последующего обращения
+
             if (en == null)
                 AddError(get_location(expr), "EXPRESSION_EXPECTED");
             //en.loc=get_location(expr);
@@ -20160,6 +20163,7 @@ namespace PascalABCCompiler.TreeConverter
                 AddError(get_location(st), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", (st.typ as System.Type)?.Name ?? "Unknown");
             }
             ret.reset(); // обязательно очистить - этот узел в семантику ничего не должен приносить!
+            ReplaceUsingParent(st, new PascalABCCompiler.SyntaxTree.empty_statement());
         }
 
         public override void visit(SyntaxTree.semantic_check_sugared_var_def_statement_node st)
