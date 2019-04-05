@@ -33,7 +33,7 @@ begin
   
   // match .. with
   match a with
-    Person('Вася', 12, CardInfo('12345678', var cv)): Println(cv);
+    Person(1, 12, CardInfo('12345678', var cv)): Println(cv); // Нет проверки соответсвия типов при деконструировании - добавить.
     Person('Вася', _, CardInfo(cardNum, 324)): Println(cardNum);
     Person(_, _, CardInfo(_, x)): Println(x);
   end;
