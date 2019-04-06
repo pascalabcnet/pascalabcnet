@@ -753,7 +753,17 @@ var dpic := new Dictionary<string, BitmapImage>;
 function GetBitmapImage(fname: string): BitmapImage;
 begin
   if not dpic.ContainsKey(fname) then 
-    dpic[fname] := new BitmapImage(new System.Uri(fname,System.UriKind.Relative));
+  begin
+    var b := new BitmapImage();
+    var s := System.IO.File.OpenRead(fname);
+    b.BeginInit();
+    b.CacheOption := BitmapCacheOption.OnLoad;
+    b.StreamSource := s;
+    b.EndInit();
+    s.Close();    
+    //dpic[fname] := new BitmapImage(new System.Uri(fname,System.UriKind.Relative));
+    dpic[fname] := b;
+  end;  
   Result := dpic[fname];
 end;
 

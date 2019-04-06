@@ -151,9 +151,10 @@ type
     ob: FrameworkElement;
     gr: Grid; // Grid связан только с текстом
     t: TextBlock;
+    transfgroup: TransformGroup;
     rot: RotateTransform;
     sca: ScaleTransform;
-    trans: TranslateTransform;
+    transl: TranslateTransform;
 
     ChildrenWPF := new List<ObjectWPF>;
     procedure InitOb(x,y,w,h: real; o: FrameworkElement; SetWH: boolean := True);
@@ -163,9 +164,9 @@ type
     /// Направление движения по оси Y. Используется методом Move
     auto property Dy: real;
     /// Отступ графического объекта от левого края 
-    property Left: real read InvokeReal(()->trans.X{Canvas.GetLeft(can)}) write Invoke(procedure->trans.X := value{Canvas.SetLeft(can,value)}); 
+    property Left: real read InvokeReal(()->transl.X{Canvas.GetLeft(can)}) write Invoke(procedure->transl.X := value{Canvas.SetLeft(can,value)}); 
     /// Отступ графического объекта от верхнего края 
-    property Top: real read InvokeReal(()->trans.Y{Canvas.GetTop(can)}) write Invoke(procedure->trans.Y := value{Canvas.SetTop(can,value)}); 
+    property Top: real read InvokeReal(()->transl.Y{Canvas.GetTop(can)}) write Invoke(procedure->transl.Y := value{Canvas.SetTop(can,value)}); 
     /// Ширина графического объекта 
     property Width: real read InvokeReal(()->gr.Width) write Invoke(procedure->begin gr.Width := value; ob.Width := value end); virtual;
     /// Высота графического объекта
@@ -180,7 +181,7 @@ type
     /// Отмасштабированный размер графического объекта
     property ScaledSize: GSize read new GSize(ScaledWidth,ScaledHeight);
     /// Прямоугольник графического объекта
-    property Bounds: GRect read Invoke&<GRect>(()->begin Result := new GRect(Canvas.GetLeft(can),Canvas.GetTop(can),gr.Width,gr.Height); end); 
+    property Bounds: GRect read Invoke&<GRect>(()->begin Result := new GRect(transl.X,transl.Y,gr.Width,gr.Height); end); 
     /// Текст внутри графического объекта
     property Text: string read InvokeString(()->t.Text) write Invoke(procedure->t.Text := value);
     /// Целое число, выводимое в центре графического объекта. Используется свойство Text
@@ -202,15 +203,17 @@ type
     procedure AddChildP(ch: ObjectWPF);
     procedure DeleteChildP(ch: ObjectWPF);
     function GetInternalGeometry: Geometry; virtual := nil;
+  public
     function GetGeometry: Geometry; virtual;
     begin
       Result := GetInternalGeometry;
       var g := new TransformGroup();
       g.Children.Add(rot);
-      g.Children.Add(new TranslateTransform(Left,Top));
-      Result.Transform := g; // версия
+      g.Children.Add(sca);
+      g.Children.Add(transl);
+      //g.Children.Add(new TranslateTransform(Left,Top));
+      Result.Transform := g; 
     end;
-  public
     /// Видимость графического объекта
     property Visible: boolean 
       read InvokeBoolean(()->ob.Visibility = Visibility.Visible)
@@ -240,7 +243,7 @@ type
     /// Угол поворота графического объекта (по часовой стрелке)
     property RotateAngle: real read InvokeReal(()->rot.Angle) write Invoke(procedure->rot.Angle := value);
     /// Множитель масштабирования объекта  
-    property ScaleFactor: real read InvokeReal(()->sca.ScaleX) write Invoke(()->begin (sca.ScaleX, sca.ScaleY) := (value,value) end);
+    property ScaleFactor: real read InvokeReal(()->sca.ScaleX) write Invoke(()->begin (sca.ScaleX, sca.ScaleY) := (value,value); end);
     // Центр поворота графического объекта - запретил, т.к. это будет сбивать координаты объекта
     {property RotateCenter: Point 
       read Invoke&<Point>(()->new Point(rot.CenterX,rot.CenterY))
@@ -265,14 +268,14 @@ type
     /// Поворачивает графический объект по часовой стрелке на угол a
     procedure Rotate(a: real) := RotateAngle += a;
     /// Масштабирует графический объект в r раз относительно текущего размера
-    procedure ScaleOn(r: real) := ScaleFactor *= r;
+    procedure Scale(r: real) := ScaleFactor *= r;
     
     procedure AnimMoveOnP(a,b,sec: real);
     begin
-      var ax := new DoubleAnimation(a + trans.X, System.TimeSpan.FromSeconds(sec));
-      var ay := new DoubleAnimation(b + trans.Y, System.TimeSpan.FromSeconds(sec));
-      trans.BeginAnimation(TranslateTransform.XProperty, ax, HandoffBehavior.Compose);
-      trans.BeginAnimation(TranslateTransform.YProperty, ay, HandoffBehavior.Compose);
+      var ax := new DoubleAnimation(a + transl.X, System.TimeSpan.FromSeconds(sec));
+      var ay := new DoubleAnimation(b + transl.Y, System.TimeSpan.FromSeconds(sec));
+      transl.BeginAnimation(TranslateTransform.XProperty, ax, HandoffBehavior.Compose);
+      transl.BeginAnimation(TranslateTransform.YProperty, ay, HandoffBehavior.Compose);
     end;
     /// Анимирует перемещение графического объекта на вектор (a,b) в течение sec секунд
     procedure AnimMoveOn(a,b: real; sec: real := 1) := Invoke(AnimMoveOnP,a,b,sec);
@@ -281,8 +284,8 @@ type
     begin
       var ax := new DoubleAnimation(x, System.TimeSpan.FromSeconds(sec));
       var ay := new DoubleAnimation(y, System.TimeSpan.FromSeconds(sec));
-      trans.BeginAnimation(TranslateTransform.XProperty, ax, HandoffBehavior.Compose);
-      trans.BeginAnimation(TranslateTransform.YProperty, ay, HandoffBehavior.Compose);
+      transl.BeginAnimation(TranslateTransform.XProperty, ax, HandoffBehavior.Compose);
+      transl.BeginAnimation(TranslateTransform.YProperty, ay, HandoffBehavior.Compose);
     end;
     /// Анимирует перемещение графического объекта к точке (x,y) в течение sec секунд
     procedure AnimMoveTo(x,y: real; sec: real := 1) := Invoke(AnimMoveToP,x,y,sec);
@@ -291,8 +294,8 @@ type
     begin
       var animation := new DoubleAnimation();
       animation.BeginTime := nil;
-      trans.BeginAnimation(TranslateTransform.XProperty, animation);
-      trans.BeginAnimation(TranslateTransform.YProperty, animation);
+      transl.BeginAnimation(TranslateTransform.XProperty, animation);
+      transl.BeginAnimation(TranslateTransform.YProperty, animation);
     end;
     /// Завершает анимацию перемещения
     procedure AnimMoveEnd := Invoke(AnimMoveEndP);
@@ -744,7 +747,7 @@ type
       n := value;
       Element.Points := ChangePointCollection(Radius,value);
     end;  
-    function GetInternalGeometry: Geometry; override := new EllipseGeometry(Center,Width/2,Height/2);  
+    function GetInternalGeometry: Geometry; override := (ob as Shape).RenderedGeometry;//new EllipseGeometry(Center,Width/2,Height/2);  
   public
     /// Создает правильный многоугольник заданного цвета с координатами центра (x,y) и радиусом описанной окружности r
     constructor (x,y,r: real; n: integer; c: GColor) := Invoke(InitOb2,x,y,r,n,c);
@@ -946,7 +949,12 @@ type
       var b := CreateBitmapImage(fname);
       Rest(x,y,b.Width,b.Height,b);
     end;
-    function GetInternalGeometry: Geometry; override := new RectangleGeometry(Rect(Left,Top,Width,Height));  
+    function GetInternalGeometry: Geometry; override;
+    begin
+      var r := Rect(0,0,Width,Height);
+      Println(r);
+      Result := new RectangleGeometry(r);
+    end;  
   public
     /// Создает рисунок из файла fname с координатами левого верхнего угла (x,y)
     constructor (x,y: real; fname: string) := Invoke(InitOb2,x,y,fname);
@@ -1093,14 +1101,14 @@ begin
   gr := new Grid;
   rot := new RotateTransform(0);
   sca := new ScaleTransform;
-  trans := new TranslateTransform;
-  var tt := new TransformGroup;
-  tt.Children.Add(rot);
-  tt.Children.Add(sca);
-  tt.Children.Add(trans);
+  transl := new TranslateTransform;
+  transfgroup := new TransformGroup;
+  transfgroup.Children.Add(rot);
+  transfgroup.Children.Add(sca);
+  transfgroup.Children.Add(transl);
   rot.CenterX := w / 2;
   rot.CenterY := h / 2;
-  can.RenderTransform := tt;
+  can.RenderTransform := transfgroup;
   ob := o;
   if SetWH then 
     (ob.Width,ob.Height) := (w,h);
@@ -1239,7 +1247,7 @@ end;
 
 type ObHelper = auto class
   o1,o2: ObjectWPF;
-  function f: boolean := ObjectsIntersectP(o1,o2);
+  function IntersectP: boolean := ObjectsIntersectP(o1,o2);
 end;
 
 type OLHelper = auto class
@@ -1249,7 +1257,7 @@ end;
 
 
 function ObjectsIntersect(o1,o2: ObjectWPF) 
-  := Invoke&<boolean>(ObHelper.Create(o1,o2).f);
+  := Invoke&<boolean>(ObHelper.Create(o1,o2).IntersectP);
   
 function IntersectionList(Self: ObjectWPF): List<ObjectWPF>; extensionmethod
   := Invoke&<List<ObjectWPF>>(OLHelper.Create(Self).f);
