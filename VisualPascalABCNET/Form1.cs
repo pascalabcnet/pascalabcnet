@@ -220,7 +220,9 @@ namespace VisualPascalABC
                 DesignerUseable = false;
                 //DebuggerVisible = false;
             }
-        	PascalABCCompiler.StringResourcesLanguage.LoadDefaultConfig();
+
+            PascalABCCompiler.StringResourcesLanguage.LoadDefaultConfig();
+            
             //if (PascalABCCompiler.StringResourcesLanguage.AccessibleLanguages.Count > 0)
             //    PascalABCCompiler.StringResourcesLanguage.CurrentLanguageName = PascalABCCompiler.StringResourcesLanguage.AccessibleLanguages[0];
            

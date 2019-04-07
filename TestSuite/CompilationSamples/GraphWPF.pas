@@ -349,9 +349,9 @@ procedure Invoke(d: ()->());
 //>>     Процедуры покадровой анимации # GraphWPF FrameBasedAnimation functions
 // -----------------------------------------------------
 /// Начинает анимацию, основанную на кадре. Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw
-procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer := 60);
+procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer := 61);
 /// Начинает анимацию, основанную на кадре Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw с параметром, равным номеру кадра
-procedure BeginFrameBasedAnimation(Draw: procedure(frame: integer); frate: integer := 60);
+procedure BeginFrameBasedAnimation(Draw: procedure(frame: integer); frate: integer := 61);
 /// Завершает анимацию, основанную на кадре
 procedure EndFrameBasedAnimation;
 
@@ -1521,7 +1521,7 @@ procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) :=
 var OnDraw: procedure := nil;
 var OnDraw1: procedure(frame: integer) := nil;
 
-var FrameRate := 60; // кадров в секунду. Можно меньше!
+var FrameRate := 61; // кадров в секунду. Можно меньше!
 var LastUpdatedTime := new System.TimeSpan(integer.MinValue); 
 
 var FrameNum := 0;
@@ -1566,7 +1566,7 @@ begin
   //CountVisuals := 0;
   OnDraw := nil;
   OnDraw1 := nil;
-  FrameRate := 60;
+  FrameRate := 61;
 end;  
 
 var mre := new ManualResetEvent(false);
