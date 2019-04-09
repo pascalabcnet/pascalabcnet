@@ -478,10 +478,11 @@ namespace VisualPascalABC
                         {
                             if (string.Compare(word, "class", true) == 0)
                             {
-                                if (isClassMember(beg_off, textArea))
+                                if (isClassMember(c == '}' ? beg_off + 1: beg_off, textArea))
                                 {
                                     sb.Remove(0, sb.Length);
-                                    beg_off--;
+                                    if (c != '}')
+                                        beg_off--;
                                     continue;
                                 }
                             }
