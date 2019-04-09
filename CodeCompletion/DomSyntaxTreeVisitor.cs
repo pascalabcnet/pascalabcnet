@@ -2432,7 +2432,7 @@ namespace CodeCompletion
                     {
                         if (cur_scope.regions == null)
                             cur_scope.regions = new List<Position>();
-                        regions_stack.Push(new Position(dir.source_context.begin_position.line_num, dir.source_context.begin_position.column_num, dir.source_context.end_position.line_num, dir.source_context.end_position.column_num, dir.source_context.FileName));
+                        regions_stack.Push(new Position(dir.source_context.begin_position.line_num, dir.source_context.begin_position.column_num, dir.source_context.end_position.line_num, dir.source_context.end_position.column_num, dir.source_context.FileName, dir.Directive.text));
                     }
                     else if (dir.Name.text.ToLower() == "endregion")
                     {
@@ -2441,7 +2441,7 @@ namespace CodeCompletion
                             Position pos = regions_stack.Pop();
                             if (cur_scope.regions != null)
                             {
-                                cur_scope.regions.Add(new Position(pos.end_line, pos.end_column, dir.source_context.end_position.line_num, dir.source_context.end_position.column_num, pos.file_name));
+                                cur_scope.regions.Add(new Position(pos.line, pos.column - 1, dir.source_context.end_position.line_num, dir.source_context.end_position.column_num, pos.file_name, pos.fold_text));
                             }
                         }
                     }
