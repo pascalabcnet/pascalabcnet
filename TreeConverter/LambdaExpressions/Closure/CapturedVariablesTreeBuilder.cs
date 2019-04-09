@@ -135,13 +135,13 @@ namespace TreeConverter.LambdaExpressions.Closure
 
         public override void visit(exception_handler eh)
         {
-            _visitor.context.add_var_definition(eh.variable.name, _visitor.get_location(eh.variable), _visitor.convert_strong(eh.type_name), PascalABCCompiler.SemanticTree.polymorphic_state.ps_common, true);
-            SymbolInfo si = _visitor.context.find_first(eh.variable.name);
-            var csi = new CapturedVariablesTreeNode.CapturedSymbolInfo(eh, si);
+            //_visitor.context.add_var_definition(eh.variable.name, _visitor.get_location(eh.variable), _visitor.convert_strong(eh.type_name), PascalABCCompiler.SemanticTree.polymorphic_state.ps_common, true);
+            //SymbolInfo si = _visitor.context.find_first(eh.variable.name);
+            //var csi = new CapturedVariablesTreeNode.CapturedSymbolInfo(eh, si);
             //_currentTreeNode.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(eh, si));
-            _pendingCapturedSymbols.Add(csi);
+            //_pendingCapturedSymbols.Add(csi);
             ProcessNode(eh.statements);
-            _pendingCapturedSymbols.Remove(csi);
+            //_pendingCapturedSymbols.Remove(csi);
         }
 
         public override void visit(ident id)
