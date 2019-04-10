@@ -196,6 +196,13 @@ namespace CodeCompletion
 
         public override void visit(assign _assign)
         {
+            visit_is_patterns(_assign.from);
+            if (pending_is_pattern_vars.Count > 0)
+            {
+                foreach (var_def_statement vds in pending_is_pattern_vars)
+                    vds.visit(this);
+                pending_is_pattern_vars.Clear();
+            }
             if (_assign.from is function_lambda_definition)
             {
                 _assign.to.visit(this);
@@ -847,7 +854,14 @@ namespace CodeCompletion
         public override void visit(PascalABCCompiler.SyntaxTree.if_node _if_node)
         {
             visit_is_patterns(_if_node.condition);
-            statement then_stmt = merge_with_is_variables(_if_node.then_body);
+            statement then_stmt = _if_node.then_body;
+            if (pending_is_pattern_vars.Count > 0 && then_stmt != null)
+            {
+                statement_list slist = new statement_list();
+                slist.source_context = _if_node.source_context;
+                slist.Add(then_stmt);
+                then_stmt = merge_with_is_variables(slist);
+            }
             if (then_stmt != null)
                 then_stmt.visit(this);
             if (_if_node.else_body != null)
