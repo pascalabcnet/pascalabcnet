@@ -144,9 +144,9 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
-        private bool AreTheSameType(type_node type1, type_node type2) => 
-            type1 != null && 
-            type2 != null && 
+        private bool AreTheSameType(type_node type1, type_node type2) =>
+            type1 != null &&
+            type2 != null &&
             convertion_data_and_alghoritms.possible_equal_types(type1, type2);
 
         private bool IsSelfParameter(parameter parameter) => parameter.name.ToLower() == compiler_string_consts.self_word;
@@ -209,7 +209,7 @@ namespace PascalABCCompiler.TreeConverter
 
             if (node is generic_instance_type_node genericNode)
                 foreach (var index in genericNode.instance_params.Aggregate(
-                    Enumerable.Empty<int>(), 
+                    Enumerable.Empty<int>(),
                     (indices, nextNode) => indices.Concat(GenericParameterIndices(nextNode)))
                     .Distinct())
                     yield return index;
@@ -261,7 +261,7 @@ namespace PascalABCCompiler.TreeConverter
 
             AddError(get_location(matchedExpression), "EXPRESSION_OF_TYPE_{0}_CANNOT_BE_MATCHED_AGAINST_PATTERN_WITH_TYPE_{1}", expression.name, type.name);
         }
-        
+
         private void CheckIfCanBeMatched(expression matchedExpression, expression patternExpression)
         {
             var patternType = convert_strong(patternExpression).type;
@@ -274,13 +274,27 @@ namespace PascalABCCompiler.TreeConverter
             if (type_table.is_derived(patternType, expressionType) ||
                 type_table.is_derived(expressionType, patternType) ||
                 AreTheSameType(patternType, expressionType) ||
-                (expressionTypeName.StartsWith(tupleName) && 
+                (expressionTypeName.StartsWith(tupleName) &&
                 patternTypeName.StartsWith(tupleName) &&
-                int.Parse(expressionTypeName.Substring(tupleName.Length + 1, 1)) == 
+                int.Parse(expressionTypeName.Substring(tupleName.Length + 1, 1)) ==
                 int.Parse(patternTypeName.Substring(tupleName.Length + 1, 1))))
                 return;
 
             AddError(get_location(matchedExpression), "EXPRESSION_OF_TYPE_{0}_CANNOT_BE_MATCHED_AGAINST_PATTERN_WITH_TYPE_{1}", expressionType.name, patternType.name);
+        }
+
+        private void CheckIfCanBeMatched(expression tuple, int32_const length)
+        {
+            var expressionType = convert_strong(tuple).type;
+            var expressionTypeName = expressionType.BaseFullName;
+
+            var tupleName = "System.Tuple";
+            if (expressionTypeName.StartsWith(tupleName) &&
+                int.Parse(expressionTypeName.Substring(tupleName.Length + 1, 1)) == length.val)
+                return;
+
+            AddError(get_location(tuple),
+                "EXPRESSION_OF_TYPE_{0}_CANNOT_BE_MATCHED_AGAINST_PATTERN_WITH_TYPE_{1}", expressionType.name, "Tuple`" + length.val);
         }
     }
 }

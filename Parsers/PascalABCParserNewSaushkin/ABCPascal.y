@@ -174,9 +174,9 @@
 %type <stn> full_lambda_fp_list lambda_simple_fp_sect lambda_function_body lambda_procedure_body common_lambda_body optional_full_lambda_fp_list
 %type <ob> field_in_unnamed_object list_fields_in_unnamed_object func_class_name_ident_list rem_lambda variable_list var_ident_list
 %type <ti> tkAssignOrEqual
-%type <stn> pattern pattern_optional_var const_pattern collection_pattern collection_pattern_list_item collection_pattern_var_item match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var tuple_pattern_expr_list const_pattern_expr_list 
-%type <ob> pattern_out_param_list pattern_out_param_list_optional_var collection_pattern_expr_list
-%type <ex> const_pattern_expression tuple_pattern tuple_pattern_expr
+%type <stn> pattern pattern_optional_var const_pattern collection_pattern tuple_pattern collection_pattern_list_item tuple_pattern_item collection_pattern_var_item match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var const_pattern_expr_list 
+%type <ob> pattern_out_param_list pattern_out_param_list_optional_var collection_pattern_expr_list tuple_pattern_item_list
+%type <ex> const_pattern_expression
 
 %%
 
@@ -2802,6 +2802,10 @@ pattern_case
 		{
 			$$ = new pattern_case($1 as pattern_node, $3 as statement, null, @$);
 		}
+	| tuple_pattern tkColon unlabelled_stmt
+		{
+			$$ = new pattern_case($1 as pattern_node, $3 as statement, null, @$);
+		}
     ;
     
 case_stmt
@@ -3287,6 +3291,10 @@ relop_expr
         {
             $$ = new is_pattern_expr($1, $3 as pattern_node, @$);
         }
+	| term tkIs tuple_pattern
+        {
+            $$ = new is_pattern_expr($1, $3 as pattern_node, @$);
+        }
     ;
     
 pattern
@@ -3349,6 +3357,10 @@ collection_pattern_list_item
 		{
 			$$ = new recursive_collection_parameter($1 as pattern_node, @$);
 		}
+	| tuple_pattern
+		{
+			$$ = new recursive_tuple_parameter($1 as pattern_node, @$);
+		}
 	| tkDotDot
 		{
 			$$ = new collection_pattern_gap_parameter();
@@ -3393,38 +3405,68 @@ const_pattern_expr_list
 	;
 
 const_pattern_expression
-	: literal_or_number  { $$ = $1;  }
-	| tuple_pattern { $$ = $1;  }
+	: literal_or_number  { $$ = $1; }
 	;
     
 tuple_pattern
-	: tkRoundOpen tuple_pattern_expr tkComma tuple_pattern_expr_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose
+	: tkRoundOpen tuple_pattern_item_list tkRoundClose
 		{
-			/*if ($5 != null) 
-				parsertools.AddErrorFromResource("BAD_TUPLE",@5);
-			if ($6 != null) 
-				parsertools.AddErrorFromResource("BAD_TUPLE",@6);*/
-
-			if (($4 as expression_list).Count>6) 
+			if (($2 as List<pattern_parameter>).Count>6) 
 				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",@$);
-            ($4 as expression_list).Insert(0,$2);
-			$$ = new tuple_node($4 as expression_list,@$);
+			$$ = new tuple_pattern($2 as List<pattern_parameter>, @$);
 		}	
     ; 
 
-tuple_pattern_expr
-	: tkUnderscore { $$ = new tuple_wild_card(); } 
-	| literal_or_number { $$ = $1; }
+tuple_pattern_item
+	: tkUnderscore 
+		{ 
+			$$ = new tuple_pattern_wild_card(); 
+		} 
+	| literal_or_number 
+		{ 
+			$$ = new const_pattern_parameter($1, @$);
+		}
+	| tkVar identifier tkColon type_ref
+        {
+            $$ = new tuple_pattern_var_parameter($2, $4, @$);
+        }
+    | tkVar identifier
+        {
+            $$ = new tuple_pattern_var_parameter($2, null, @$);
+        }
+    | identifier tkColon type_ref 
+        {
+            $$ = new tuple_pattern_var_parameter($1, $3, @$);
+        }
+	| identifier
+		{
+			$$ = new tuple_pattern_var_parameter($1, null, @$);
+		}
+	| pattern_optional_var
+        {
+            $$ = new recursive_deconstructor_parameter($1 as pattern_node, @$);
+        }
+	| collection_pattern
+		{
+			$$ = new recursive_collection_parameter($1 as pattern_node, @$);
+		}
+	| tuple_pattern
+		{
+			$$ = new recursive_tuple_parameter($1 as pattern_node, @$);
+		}
 	;
 
-tuple_pattern_expr_list
-	: tuple_pattern_expr
+tuple_pattern_item_list
+	: tuple_pattern_item
 		{ 
-			$$ = new expression_list($1, @$); 
+			$$ = new List<pattern_parameter>();
+            ($$ as List<pattern_parameter>).Add($1 as pattern_parameter);
 		}
-	| tuple_pattern_expr_list tkComma tuple_pattern_expr
+	| tuple_pattern_item_list tkComma tuple_pattern_item
 		{
-			$$ = ($1 as expression_list).Add($3, @$); 
+			var list = $1 as List<pattern_parameter>;
+            list.Add($3 as pattern_parameter);
+            $$ = list;
 		}
 	;
 
@@ -3493,6 +3535,10 @@ pattern_out_param
 		{
 			$$ = new recursive_collection_parameter($1 as pattern_node, @$);
 		}
+	| tuple_pattern
+		{
+			$$ = new recursive_tuple_parameter($1 as pattern_node, @$);
+		}
     ;    
     
 pattern_out_param_optional_var
@@ -3527,6 +3573,10 @@ pattern_out_param_optional_var
 	| collection_pattern
 		{
 			$$ = new recursive_collection_parameter($1 as pattern_node, @$);
+		}
+	| tuple_pattern
+		{
+			$$ = new recursive_tuple_parameter($1 as pattern_node, @$);
 		}
     ;
     

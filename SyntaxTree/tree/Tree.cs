@@ -51623,13 +51623,13 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public partial class tuple_wild_card : expression
+	public partial class tuple_pattern_wild_card : pattern_parameter
 	{
 
 		///<summary>
 		///Конструктор без параметров.
 		///</summary>
-		public tuple_wild_card()
+		public tuple_pattern_wild_card()
 		{
 
 		}
@@ -51637,36 +51637,28 @@ namespace PascalABCCompiler.SyntaxTree
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
-			tuple_wild_card copy = new tuple_wild_card();
+			tuple_pattern_wild_card copy = new tuple_pattern_wild_card();
 			copy.Parent = this.Parent;
 			if (source_context != null)
 				copy.source_context = new SourceContext(source_context);
-			if (attributes != null)
-			{
-				copy.attributes = (attribute_list)attributes.Clone();
-				copy.attributes.Parent = copy;
-			}
 			return copy;
 		}
 
 		/// <summary> Получает копию данного узла корректного типа </summary>
-		public new tuple_wild_card TypedClone()
+		public new tuple_pattern_wild_card TypedClone()
 		{
-			return Clone() as tuple_wild_card;
+			return Clone() as tuple_pattern_wild_card;
 		}
 
 		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
 		public override void FillParentsInDirectChilds()
 		{
-			if (attributes != null)
-				attributes.Parent = this;
 		}
 
 		///<summary> Заполняет поля Parent во всем поддереве </summary>
 		public override void FillParentsInAllChilds()
 		{
 			FillParentsInDirectChilds();
-			attributes?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -52680,6 +52672,470 @@ namespace PascalABCCompiler.SyntaxTree
 		public new recursive_pattern_parameter TypedClone()
 		{
 			return Clone() as recursive_pattern_parameter;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (pattern != null)
+				pattern.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			pattern?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return pattern;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						pattern = (pattern_node)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class tuple_pattern : pattern_node
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public tuple_pattern()
+		{
+
+		}
+
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public tuple_pattern(List<pattern_parameter> _parameters)
+		{
+			this._parameters=_parameters;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public tuple_pattern(List<pattern_parameter> _parameters,SourceContext sc)
+		{
+			this._parameters=_parameters;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			tuple_pattern copy = new tuple_pattern();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (parameters != null)
+			{
+				foreach (pattern_parameter elem in parameters)
+				{
+					if (elem != null)
+					{
+						copy.Add((pattern_parameter)elem.Clone());
+						copy.Last().Parent = copy;
+					}
+					else
+						copy.Add(null);
+				}
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new tuple_pattern TypedClone()
+		{
+			return Clone() as tuple_pattern;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (parameters != null)
+			{
+				foreach (var child in parameters)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (parameters != null)
+			{
+				foreach (var child in parameters)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 0 + (parameters == null ? 0 : parameters.Count);
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				Int32 index_counter=ind - 0;
+				if(parameters != null)
+				{
+					if(index_counter < parameters.Count)
+					{
+						return parameters[index_counter];
+					}
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				Int32 index_counter=ind - 0;
+				if(parameters != null)
+				{
+					if(index_counter < parameters.Count)
+					{
+						parameters[index_counter]= (pattern_parameter)value;
+						return;
+					}
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class tuple_pattern_var_parameter : pattern_parameter
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public tuple_pattern_var_parameter()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public tuple_pattern_var_parameter(ident _identifier,type_definition _type)
+		{
+			this._identifier=_identifier;
+			this._type=_type;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public tuple_pattern_var_parameter(ident _identifier,type_definition _type,SourceContext sc)
+		{
+			this._identifier=_identifier;
+			this._type=_type;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected ident _identifier;
+		protected type_definition _type;
+
+		///<summary>
+		///
+		///</summary>
+		public ident identifier
+		{
+			get
+			{
+				return _identifier;
+			}
+			set
+			{
+				_identifier=value;
+				if (_identifier != null)
+					_identifier.Parent = this;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public type_definition type
+		{
+			get
+			{
+				return _type;
+			}
+			set
+			{
+				_type=value;
+				if (_type != null)
+					_type.Parent = this;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			tuple_pattern_var_parameter copy = new tuple_pattern_var_parameter();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (identifier != null)
+			{
+				copy.identifier = (ident)identifier.Clone();
+				copy.identifier.Parent = copy;
+			}
+			if (type != null)
+			{
+				copy.type = (type_definition)type.Clone();
+				copy.type.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new tuple_pattern_var_parameter TypedClone()
+		{
+			return Clone() as tuple_pattern_var_parameter;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (identifier != null)
+				identifier.Parent = this;
+			if (type != null)
+				type.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			identifier?.FillParentsInAllChilds();
+			type?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return identifier;
+					case 1:
+						return type;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						identifier = (ident)value;
+						break;
+					case 1:
+						type = (type_definition)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///Рекурсивный паттерн-параметр.
+	///</summary>
+	[Serializable]
+	public partial class recursive_tuple_parameter : recursive_pattern_parameter
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public recursive_tuple_parameter()
+		{
+
+		}
+
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public recursive_tuple_parameter(pattern_node _pattern)
+		{
+			this._pattern=_pattern;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public recursive_tuple_parameter(pattern_node _pattern,SourceContext sc)
+		{
+			this._pattern=_pattern;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			recursive_tuple_parameter copy = new recursive_tuple_parameter();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (pattern != null)
+			{
+				copy.pattern = (pattern_node)pattern.Clone();
+				copy.pattern.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new recursive_tuple_parameter TypedClone()
+		{
+			return Clone() as recursive_tuple_parameter;
 		}
 
 		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>

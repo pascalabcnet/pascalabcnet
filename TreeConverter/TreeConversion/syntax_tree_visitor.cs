@@ -20018,6 +20018,12 @@ namespace PascalABCCompiler.TreeConverter
                 var patternExpr = st.lst[1] as expression;
                 CheckIfCanBeMatched(matchedExpr, patternExpr);
             }
+            else if (st.typ is SemanticCheckType.MatchedTuple)
+            {
+                var tuple = st.lst[0] as expression;
+                var length = st.lst[1] as int32_const;
+                CheckIfCanBeMatched(tuple, length);
+            }
             // !Patterns
             else
             {

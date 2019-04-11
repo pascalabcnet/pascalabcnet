@@ -495,7 +495,7 @@ namespace PascalABCCompiler.SyntaxTree
 				case 236:
 					return new const_pattern();
 				case 237:
-					return new tuple_wild_card();
+					return new tuple_pattern_wild_card();
 				case 238:
 					return new const_pattern_parameter();
 				case 239:
@@ -512,6 +512,12 @@ namespace PascalABCCompiler.SyntaxTree
 					return new recursive_collection_parameter();
 				case 245:
 					return new recursive_pattern_parameter();
+				case 246:
+					return new tuple_pattern();
+				case 247:
+					return new tuple_pattern_var_parameter();
+				case 248:
+					return new recursive_tuple_parameter();
 			}
 			return null;
 		}
@@ -4210,14 +4216,14 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(tuple_wild_card _tuple_wild_card)
+		public void visit(tuple_pattern_wild_card _tuple_pattern_wild_card)
 		{
-			read_tuple_wild_card(_tuple_wild_card);
+			read_tuple_pattern_wild_card(_tuple_pattern_wild_card);
 		}
 
-		public void read_tuple_wild_card(tuple_wild_card _tuple_wild_card)
+		public void read_tuple_pattern_wild_card(tuple_pattern_wild_card _tuple_pattern_wild_card)
 		{
-			read_expression(_tuple_wild_card);
+			read_pattern_parameter(_tuple_pattern_wild_card);
 		}
 
 
@@ -4310,6 +4316,41 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_pattern_parameter(_recursive_pattern_parameter);
 			_recursive_pattern_parameter.pattern = _read_node() as pattern_node;
+		}
+
+
+		public void visit(tuple_pattern _tuple_pattern)
+		{
+			read_tuple_pattern(_tuple_pattern);
+		}
+
+		public void read_tuple_pattern(tuple_pattern _tuple_pattern)
+		{
+			read_pattern_node(_tuple_pattern);
+		}
+
+
+		public void visit(tuple_pattern_var_parameter _tuple_pattern_var_parameter)
+		{
+			read_tuple_pattern_var_parameter(_tuple_pattern_var_parameter);
+		}
+
+		public void read_tuple_pattern_var_parameter(tuple_pattern_var_parameter _tuple_pattern_var_parameter)
+		{
+			read_pattern_parameter(_tuple_pattern_var_parameter);
+			_tuple_pattern_var_parameter.identifier = _read_node() as ident;
+			_tuple_pattern_var_parameter.type = _read_node() as type_definition;
+		}
+
+
+		public void visit(recursive_tuple_parameter _recursive_tuple_parameter)
+		{
+			read_recursive_tuple_parameter(_recursive_tuple_parameter);
+		}
+
+		public void read_recursive_tuple_parameter(recursive_tuple_parameter _recursive_tuple_parameter)
+		{
+			read_recursive_pattern_parameter(_recursive_tuple_parameter);
 		}
 
 	}

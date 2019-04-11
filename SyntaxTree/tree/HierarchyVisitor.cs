@@ -1901,11 +1901,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
-		public virtual void pre_do_visit(tuple_wild_card _tuple_wild_card)
+		public virtual void pre_do_visit(tuple_pattern_wild_card _tuple_pattern_wild_card)
 		{
 		}
 
-		public virtual void post_do_visit(tuple_wild_card _tuple_wild_card)
+		public virtual void post_do_visit(tuple_pattern_wild_card _tuple_pattern_wild_card)
 		{
 		}
 
@@ -1970,6 +1970,30 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public virtual void post_do_visit(recursive_pattern_parameter _recursive_pattern_parameter)
+		{
+		}
+
+		public virtual void pre_do_visit(tuple_pattern _tuple_pattern)
+		{
+		}
+
+		public virtual void post_do_visit(tuple_pattern _tuple_pattern)
+		{
+		}
+
+		public virtual void pre_do_visit(tuple_pattern_var_parameter _tuple_pattern_var_parameter)
+		{
+		}
+
+		public virtual void post_do_visit(tuple_pattern_var_parameter _tuple_pattern_var_parameter)
+		{
+		}
+
+		public virtual void pre_do_visit(recursive_tuple_parameter _recursive_tuple_parameter)
+		{
+		}
+
+		public virtual void post_do_visit(recursive_tuple_parameter _recursive_tuple_parameter)
 		{
 		}
 
@@ -4010,11 +4034,11 @@ namespace PascalABCCompiler.SyntaxTree
 			post_do_visit(_const_pattern);
 		}
 
-		public override void visit(tuple_wild_card _tuple_wild_card)
+		public override void visit(tuple_pattern_wild_card _tuple_pattern_wild_card)
 		{
-			DefaultVisit(_tuple_wild_card);
-			pre_do_visit(_tuple_wild_card);
-			post_do_visit(_tuple_wild_card);
+			DefaultVisit(_tuple_pattern_wild_card);
+			pre_do_visit(_tuple_pattern_wild_card);
+			post_do_visit(_tuple_pattern_wild_card);
 		}
 
 		public override void visit(const_pattern_parameter _const_pattern_parameter)
@@ -4075,6 +4099,29 @@ namespace PascalABCCompiler.SyntaxTree
 			pre_do_visit(_recursive_pattern_parameter);
 			visit(recursive_pattern_parameter.pattern);
 			post_do_visit(_recursive_pattern_parameter);
+		}
+
+		public override void visit(tuple_pattern _tuple_pattern)
+		{
+			DefaultVisit(_tuple_pattern);
+			pre_do_visit(_tuple_pattern);
+			post_do_visit(_tuple_pattern);
+		}
+
+		public override void visit(tuple_pattern_var_parameter _tuple_pattern_var_parameter)
+		{
+			DefaultVisit(_tuple_pattern_var_parameter);
+			pre_do_visit(_tuple_pattern_var_parameter);
+			visit(tuple_pattern_var_parameter.identifier);
+			visit(tuple_pattern_var_parameter.type);
+			post_do_visit(_tuple_pattern_var_parameter);
+		}
+
+		public override void visit(recursive_tuple_parameter _recursive_tuple_parameter)
+		{
+			DefaultVisit(_recursive_tuple_parameter);
+			pre_do_visit(_recursive_tuple_parameter);
+			post_do_visit(_recursive_tuple_parameter);
 		}
 	}
 

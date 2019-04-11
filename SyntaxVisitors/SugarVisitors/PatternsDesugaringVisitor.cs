@@ -67,8 +67,15 @@ namespace SyntaxVisitors.SugarVisitors
         public expression SuccessMatchingCheck { get; set; }
 
         public expression CollectionLengthCheck { get; set; }
+    }
 
-        public List<statement> VarParametersAssignments { get; set; } = new List<statement>();
+    public class TupleDesugaringResult
+    {
+        public List<statement> VarParametersDeclarations { get; set; } = new List<statement>();
+
+        public expression SuccessMatchingCheck { get; set; }
+
+        public statement TupleLengthCheck { get; set; }
     }
 
     public class PatternsDesugaringVisitor : BaseChangeVisitor
@@ -143,6 +150,11 @@ namespace SyntaxVisitors.SugarVisitors
                             break;
                         }
                     case collection_pattern p:
+                        {
+                            DesugarDeconstructorPatternCase(matchWith.expr, patternCase);
+                            break;
+                        }
+                    case tuple_pattern p:
                         {
                             DesugarDeconstructorPatternCase(matchWith.expr, patternCase);
                             break;
@@ -251,54 +263,9 @@ namespace SyntaxVisitors.SugarVisitors
             var statementsToAdd = new List<statement>();
             var equalCalls = new List<method_call>();
 
-            var matchingWithFullWildCardTuple = false;
             foreach (var patternExpression in patternExpressionNode.pattern_expressions.expressions)
             {
                 statementsToAdd.Add(GetTypeCompatibilityCheck(matchingExpression, patternExpression));
-
-                // Matching tuples
-                var possibleTupleCase = patternExpression as method_call;
-                if (possibleTupleCase != null)
-                {
-                    var possibleTupleDotNode = (possibleTupleCase.dereferencing_value as dot_node);
-                    if (possibleTupleDotNode != null)
-                    {
-                        var possibleTupleCallString = possibleTupleDotNode.ToString();
-                        if (possibleTupleCallString.Contains("System.Tuple.Create"))
-                        {
-                            var elemsToCompare = new List<expression>();
-                            for (int currentInd = 0; currentInd < possibleTupleCase.parameters.Count; ++currentInd)
-                            {
-                                var tupleElem = possibleTupleCase.parameters.expressions[currentInd];
-                                if (!(tupleElem is tuple_wild_card))
-                                {
-                                    elemsToCompare.Add(currentInd);
-                                }
-                                else
-                                {
-                                    possibleTupleCase.parameters[currentInd] = new int32_const(0, patternCase.source_context);
-                                }
-                            }
-                            matchingWithFullWildCardTuple = elemsToCompare.Count == 0;
-                            if (matchingWithFullWildCardTuple)
-                            {
-                                break;
-                            }
-                            var seqCall = SubtreeCreator.CreateSystemFunctionCall(
-                                SeqFunctionName, elemsToCompare.ToArray());
-
-                            var tupleEqualsCall = SubtreeCreator.
-                                CreateSystemFunctionCall(
-                                    WildCardsTupleEqualFunctionName,
-                                    possibleTupleCase,
-                                    matchingExpression,
-                                    seqCall
-                                    );
-                            equalCalls.Add(tupleEqualsCall);
-                            continue;
-                        }
-                    }
-                }
 
                 // Matching not tuples
                 var eqParams = new expression_list(
@@ -318,19 +285,10 @@ namespace SyntaxVisitors.SugarVisitors
             }
             typeChecks.AddRange(statementsToAdd);
 
-            expression orPatternCases = null;
-            // Если в одном из выражений есть тапл со всеми wild-card'ами (напр. (?, ?, ?))
-            if (matchingWithFullWildCardTuple)
+            expression orPatternCases = equalCalls[0];
+            for (int i = 1; i < equalCalls.Count; ++i)
             {
-                orPatternCases = new bool_const(true, patternCase.source_context);
-            }
-            else
-            {
-                orPatternCases = equalCalls[0];
-                for (int i = 1; i < equalCalls.Count; ++i)
-                {
-                    orPatternCases = bin_expr.LogicalOr(orPatternCases, equalCalls[i]);
-                }
+                orPatternCases = bin_expr.LogicalOr(orPatternCases, equalCalls[i]);
             }
             var ifCondition = patternCase.condition == null ? orPatternCases : bin_expr.LogicalAnd(orPatternCases, patternCase.condition);
             var ifCheck = SubtreeCreator.CreateIf(ifCondition, patternCase.case_action);
@@ -550,7 +508,7 @@ namespace SyntaxVisitors.SugarVisitors
                                            bin_expr.LogicalAnd(successMatchingCheck, afterGapEqual);
                 }
             }
-            // Спросить у С.С. - если добавлять в and, то все равно ран тайм эррор, будто вычисляет все, даже если первое = false
+            // если добавлять в and, то все равно ран тайм эррор, будто вычисляет все, даже если первое = false
             desugaringResult.CollectionLengthCheck = new bin_expr(
                 new dot_node(matchingExpression as addressed_value, new ident(CountPropertyName), pattern.source_context),
                 new int32_const(exprBeforeGap.Count + exprAfterGap.Count),
@@ -577,11 +535,66 @@ namespace SyntaxVisitors.SugarVisitors
             return desugaringResult;
         }
 
+        private TupleDesugaringResult DesugarTuplePattern(tuple_pattern pattern, expression matchingExpression)
+        {
+            Debug.Assert(!pattern.IsRecursive, "All recursive patterns should be desugared into simple patterns at this point");
+            var desugaringResult = new TupleDesugaringResult();
+            var tupleItems = pattern.parameters;
+
+            for (int i = 0; i < tupleItems.Count; ++i)
+            {
+                if (tupleItems[i] is tuple_pattern_var_parameter varParam)
+                {
+                    desugaringResult.VarParametersDeclarations.Add(
+                        new var_statement(
+                            varParam.identifier,
+                            new dot_node(
+                                matchingExpression as addressed_value,
+                                new ident("Item" + (i+1).ToString()),
+                                matchingExpression.source_context),
+                            matchingExpression.source_context
+                        )
+                    );
+                }
+
+                if (tupleItems[i] is const_pattern_parameter constParam)
+                {
+                    var eqParams = new expression_list(
+                        new List<expression>()
+                        {
+                            new dot_node(
+                                matchingExpression as addressed_value,
+                                new ident("Item" + (i+1).ToString()),
+                                matchingExpression.source_context),
+                            constParam.const_param
+                        }
+                    );
+                    var equalCall = new method_call(
+                        new dot_node(new ident("object"), new ident("Equals")),
+                        eqParams,
+                        pattern.source_context
+                    );
+
+                    desugaringResult.SuccessMatchingCheck = desugaringResult.SuccessMatchingCheck == null ?
+                                                            (expression)equalCall :
+                                                            bin_expr.LogicalAnd(desugaringResult.SuccessMatchingCheck, equalCall);
+                }
+                // TODO: добавить узел для проверки типа элемента тапла
+            }
+            desugaringResult.TupleLengthCheck = GetTypeCompatibilityCheck(matchingExpression, new int32_const(tupleItems.Count));
+            
+            if (desugaringResult.SuccessMatchingCheck == null)
+            {
+                desugaringResult.SuccessMatchingCheck = new bool_const(true);
+            }
+            return desugaringResult;
+        }
+
         private void DesugarIsExpression(is_pattern_expr isPatternExpr)
         {
             if (isPatternExpr.right.IsRecursive)
             {
-                var desugaredRecursiveIs = DesugarRecursiveDeconstructor(isPatternExpr.left, isPatternExpr.right);
+                var desugaredRecursiveIs = DesugarRecursiveParameters(isPatternExpr.left, isPatternExpr.right);
                 ReplaceUsingParent(isPatternExpr, desugaredRecursiveIs);
                 desugaredRecursiveIs.visit(this);
                 return;
@@ -601,7 +614,7 @@ namespace SyntaxVisitors.SugarVisitors
             }
         }
 
-        private expression DesugarRecursiveDeconstructor(expression expression, pattern_node pattern)
+        private expression DesugarRecursiveParameters(expression expression, pattern_node pattern)
         {
             List<pattern_parameter> parameters = pattern.parameters;
             expression conjunction = new is_pattern_expr(expression, pattern, pattern.source_context);
@@ -620,9 +633,13 @@ namespace SyntaxVisitors.SugarVisitors
                     {
                         varParameter = new collection_pattern_var_parameter(newName, null);
                     }
+                    else if (pattern is tuple_pattern)
+                    {
+                        varParameter = new tuple_pattern_var_parameter(newName, null);
+                    }
                     parameters[i] = varParameter;
                     varParameter.Parent = parameters[i];
-                    conjunction = bin_expr.LogicalAnd(conjunction, DesugarRecursiveDeconstructor(newName, parameter.pattern));
+                    conjunction = bin_expr.LogicalAnd(conjunction, DesugarRecursiveParameters(newName, parameter.pattern));
                 }
             }
             return conjunction;
@@ -651,6 +668,9 @@ namespace SyntaxVisitors.SugarVisitors
                     break;
                 case collection_pattern cp:
                     statementsToAdd = ProcessDesugaringForCollectionPattern(isExpression);
+                    break;
+                case tuple_pattern cp:
+                    statementsToAdd = ProcessDesugaringForTuplePattern(isExpression);
                     break;
             }
 
@@ -693,7 +713,19 @@ namespace SyntaxVisitors.SugarVisitors
 
             var statementsToAdd = new List<statement>();
             statementsToAdd.AddRange(desugaringResult.VarParametersDeclarations);
-            //statementsToAdd.AddRange(desugaringResult.VarParametersAssignments);
+
+            return statementsToAdd;
+        }
+
+        private List<statement> ProcessDesugaringForTuplePattern(is_pattern_expr isExpression)
+        {
+            var pattern = isExpression.right as tuple_pattern;
+            var desugaringResult = DesugarTuplePattern(pattern, isExpression.left);
+            ReplaceUsingParent(isExpression, desugaringResult.SuccessMatchingCheck);
+
+            var statementsToAdd = new List<statement>();
+            statementsToAdd.Add(desugaringResult.TupleLengthCheck);
+            statementsToAdd.AddRange(desugaringResult.VarParametersDeclarations);
 
             return statementsToAdd;
         }
@@ -706,6 +738,10 @@ namespace SyntaxVisitors.SugarVisitors
 
         private semantic_check_sugared_statement_node GetTypeCompatibilityCheck(expression expression1, expression expression2) =>
             new semantic_check_sugared_statement_node(SemanticCheckType.MatchedExpressionAndExpression, new List<syntax_tree_node>() { expression1, expression2 });
+
+        private semantic_check_sugared_statement_node GetTypeCompatibilityCheck(expression tuple, int32_const length) =>
+            new semantic_check_sugared_statement_node(SemanticCheckType.MatchedTuple, new List<syntax_tree_node>() { tuple, length });
+
 
         private statement_list ConvertIfNode(if_node ifNode, List<statement> statementsBeforeIf, out statement elseBody)
         {

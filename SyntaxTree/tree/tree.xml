@@ -3069,7 +3069,7 @@
         </TagIndices>
       </Tags>
     </SyntaxNode>
-    <SyntaxNode Name="tuple_wild_card" BaseName="expression">
+    <SyntaxNode Name="tuple_pattern_wild_card" BaseName="pattern_parameter">
       <Fields />
       <Methods />
       <Tags>
@@ -3184,6 +3184,45 @@
         </TagIndices>
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="tuple_pattern" BaseName="pattern_node">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="tuple_pattern_var_parameter" BaseName="pattern_parameter">
+      <Fields>
+        <SyntaxField Name="identifier" SyntaxType="ident" />
+        <SyntaxField Name="type" SyntaxType="type_definition" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="recursive_tuple_parameter" BaseName="recursive_pattern_parameter">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>9</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3209,7 +3248,7 @@
         <Tag Name="Важнейшие" ReferenceCount="207" />
         <Tag Name="Method_Procedure_Call" ReferenceCount="2" />
         <Tag Name="Yield" ReferenceCount="8" />
-        <Tag Name="Patterns" ReferenceCount="22" />
+        <Tag Name="Patterns" ReferenceCount="25" />
         <Tag Name="Typeclasses" ReferenceCount="13" />
       </Tags>
     </FilterCategory>
@@ -4243,6 +4282,7 @@
       <HelpData Key="recursive_deconstructor_parameter.pattern" Value="" />
       <HelpData Key="recursive_pattern_parameter" Value="Рекурсивный паттерн-параметр." />
       <HelpData Key="recursive_pattern_parameter.pattern" Value="" />
+      <HelpData Key="recursive_tuple_parameter" Value="Рекурсивный паттерн-параметр." />
       <HelpData Key="ref_type" Value="" />
       <HelpData Key="ref_type.pointed_to" Value="" />
       <HelpData Key="repeat_node" Value="Цикл с постусловием (repeat)" />
@@ -4442,6 +4482,11 @@
       <HelpData Key="tuple_node.el" Value="" />
       <HelpData Key="tuple_node_for_formatter" Value="" />
       <HelpData Key="tuple_node_for_formatter.el" Value="" />
+      <HelpData Key="tuple_pattern" Value="" />
+      <HelpData Key="tuple_pattern_var_parameter" Value="" />
+      <HelpData Key="tuple_pattern_var_parameter.identifier" Value="" />
+      <HelpData Key="tuple_pattern_var_parameter.type" Value="" />
+      <HelpData Key="tuple_pattern_wild_card" Value="" />
       <HelpData Key="tuple_wild_card" Value="" />
       <HelpData Key="type_declaration" Value="" />
       <HelpData Key="type_declaration.type_declaration(string name, type_definition type): this(new ident(name),type)" Value="" />

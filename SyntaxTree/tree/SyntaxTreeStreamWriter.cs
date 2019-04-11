@@ -6596,15 +6596,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(tuple_wild_card _tuple_wild_card)
+		public void visit(tuple_pattern_wild_card _tuple_pattern_wild_card)
 		{
 			bw.Write((Int16)237);
-			write_tuple_wild_card(_tuple_wild_card);
+			write_tuple_pattern_wild_card(_tuple_pattern_wild_card);
 		}
 
-		public void write_tuple_wild_card(tuple_wild_card _tuple_wild_card)
+		public void write_tuple_pattern_wild_card(tuple_pattern_wild_card _tuple_pattern_wild_card)
 		{
-			write_expression(_tuple_wild_card);
+			write_pattern_parameter(_tuple_pattern_wild_card);
 		}
 
 
@@ -6737,6 +6737,60 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_recursive_pattern_parameter.pattern.visit(this);
 			}
+		}
+
+
+		public void visit(tuple_pattern _tuple_pattern)
+		{
+			bw.Write((Int16)246);
+			write_tuple_pattern(_tuple_pattern);
+		}
+
+		public void write_tuple_pattern(tuple_pattern _tuple_pattern)
+		{
+			write_pattern_node(_tuple_pattern);
+		}
+
+
+		public void visit(tuple_pattern_var_parameter _tuple_pattern_var_parameter)
+		{
+			bw.Write((Int16)247);
+			write_tuple_pattern_var_parameter(_tuple_pattern_var_parameter);
+		}
+
+		public void write_tuple_pattern_var_parameter(tuple_pattern_var_parameter _tuple_pattern_var_parameter)
+		{
+			write_pattern_parameter(_tuple_pattern_var_parameter);
+			if (_tuple_pattern_var_parameter.identifier == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_tuple_pattern_var_parameter.identifier.visit(this);
+			}
+			if (_tuple_pattern_var_parameter.type == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_tuple_pattern_var_parameter.type.visit(this);
+			}
+		}
+
+
+		public void visit(recursive_tuple_parameter _recursive_tuple_parameter)
+		{
+			bw.Write((Int16)248);
+			write_recursive_tuple_parameter(_recursive_tuple_parameter);
+		}
+
+		public void write_recursive_tuple_parameter(recursive_tuple_parameter _recursive_tuple_parameter)
+		{
+			write_recursive_pattern_parameter(_recursive_tuple_parameter);
 		}
 
 	}

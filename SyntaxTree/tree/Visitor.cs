@@ -1427,11 +1427,11 @@ namespace PascalABCCompiler.SyntaxTree
 		///<returns> Return value is void </returns>
 		void visit(const_pattern _const_pattern);
 		///<summary>
-		///Method to visit tuple_wild_card.
+		///Method to visit tuple_pattern_wild_card.
 		///</summary>
-		///<param name="_tuple_wild_card">Node to visit</param>
+		///<param name="_tuple_pattern_wild_card">Node to visit</param>
 		///<returns> Return value is void </returns>
-		void visit(tuple_wild_card _tuple_wild_card);
+		void visit(tuple_pattern_wild_card _tuple_pattern_wild_card);
 		///<summary>
 		///Method to visit const_pattern_parameter.
 		///</summary>
@@ -1480,6 +1480,24 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_recursive_pattern_parameter">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(recursive_pattern_parameter _recursive_pattern_parameter);
+		///<summary>
+		///Method to visit tuple_pattern.
+		///</summary>
+		///<param name="_tuple_pattern">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(tuple_pattern _tuple_pattern);
+		///<summary>
+		///Method to visit tuple_pattern_var_parameter.
+		///</summary>
+		///<param name="_tuple_pattern_var_parameter">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(tuple_pattern_var_parameter _tuple_pattern_var_parameter);
+		///<summary>
+		///Method to visit recursive_tuple_parameter.
+		///</summary>
+		///<param name="_recursive_tuple_parameter">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(recursive_tuple_parameter _recursive_tuple_parameter);
 	}
 
 

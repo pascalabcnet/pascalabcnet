@@ -1193,9 +1193,9 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_const_pattern);
 		}
 
-		public virtual void visit(tuple_wild_card _tuple_wild_card)
+		public virtual void visit(tuple_pattern_wild_card _tuple_pattern_wild_card)
 		{
-			DefaultVisit(_tuple_wild_card);
+			DefaultVisit(_tuple_pattern_wild_card);
 		}
 
 		public virtual void visit(const_pattern_parameter _const_pattern_parameter)
@@ -1236,6 +1236,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public virtual void visit(recursive_pattern_parameter _recursive_pattern_parameter)
 		{
 			DefaultVisit(_recursive_pattern_parameter);
+		}
+
+		public virtual void visit(tuple_pattern _tuple_pattern)
+		{
+			DefaultVisit(_tuple_pattern);
+		}
+
+		public virtual void visit(tuple_pattern_var_parameter _tuple_pattern_var_parameter)
+		{
+			DefaultVisit(_tuple_pattern_var_parameter);
+		}
+
+		public virtual void visit(recursive_tuple_parameter _recursive_tuple_parameter)
+		{
+			DefaultVisit(_recursive_tuple_parameter);
 		}
 	}
 
