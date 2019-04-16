@@ -1719,6 +1719,27 @@ namespace PascalABCCompiler.NETGenerator
             }
         }
 
+        private void MakeAttribute(ICommonParameterNode prm)
+        {
+            ParameterBuilder pb = (ParameterBuilder)helper.GetParameter(prm).pb;
+            IAttributeNode[] attrs = prm.Attributes;
+            for (int i = 0; i < attrs.Length; i++)
+            {
+                try
+                {
+                    CustomAttributeBuilder cab = new CustomAttributeBuilder
+                    ((attrs[i].AttributeConstructor is ICompiledConstructorNode) ? (attrs[i].AttributeConstructor as ICompiledConstructorNode).constructor_info : helper.GetConstructor(attrs[i].AttributeConstructor).cnstr, get_constants(attrs[i].Arguments),
+                    get_named_properties(attrs[i].PropertyNames), get_constants(attrs[i].PropertyInitializers),
+                    get_named_fields(attrs[i].FieldNames), get_constants(attrs[i].FieldInitializers));
+                    pb.SetCustomAttribute(cab);
+                }
+                catch (ArgumentException ex)
+                {
+                    throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message.Replace("System.ArgumentException: ", ""), attrs[i].Location.document.file_name, attrs[i].Location.begin_line_num, attrs[i].Location.begin_column_num);
+                }
+            }
+        }
+
         private void MakeAttribute(ICommonFunctionNode func)
         {
             MethodBuilder mb = helper.GetMethod(func).mi as MethodBuilder;
@@ -2171,7 +2192,8 @@ namespace PascalABCCompiler.NETGenerator
                         ParameterAttributes pars = ParameterAttributes.None;
                         //if (func.parameters[j].parameter_type == parameter_type.var)
                         //  pars = ParameterAttributes.Out;
-                        methb.DefineParameter(j + 1, pars, parameters[j].name);
+                        ParameterBuilder pb = methb.DefineParameter(j + 1, pars, parameters[j].name);
+                        helper.AddParameter(parameters[j], pb);
                     }
                 }
                 else
@@ -2197,7 +2219,8 @@ namespace PascalABCCompiler.NETGenerator
                             ParameterAttributes pars = ParameterAttributes.None;
                             //if (func.parameters[j].parameter_type == parameter_type.var)
                             //  pars = ParameterAttributes.Out;
-                            methb.DefineParameter(j + 1, pars, parameters[j].name);
+                            ParameterBuilder pb = methb.DefineParameter(j + 1, pars, parameters[j].name);
+                            helper.AddParameter(parameters[j], pb);
                         }
                     }
                     else
