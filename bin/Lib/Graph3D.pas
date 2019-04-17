@@ -1240,7 +1240,8 @@ type
     procedure Hand(o: object; e: System.EventArgs);
     begin
       var rot := el.Rotation as AxisAngleRotation3D;
-      Element.RotateAt(rot.Axis, angle, center);
+      if not da.AutoReverse then
+        Element.RotateAt(rot.Axis, angle, center);
       Element.transfgroup.Children.Remove(el);
       if Completed <> nil then 
         Completed();
