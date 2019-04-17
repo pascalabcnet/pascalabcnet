@@ -79,10 +79,21 @@ type
     c: Color := Colors.Black;
     th: real := 1;
     fx,fy: real;
+    rc: boolean := false;
     function PenConstruct: GPen;
     begin
       Result := new GPen(new SolidColorBrush(c),th);
       Result.LineJoin := PenLineJoin.Round;
+      if rc then 
+      begin
+        Result.StartLineCap := PenLineCap.Round;
+        Result.EndLineCap := PenLineCap.Round;
+      end
+      else
+      begin
+        Result.StartLineCap := PenLineCap.Flat;
+        Result.EndLineCap := PenLineCap.Flat;
+      end;
     end;
   public  
     /// Цвет пера
@@ -93,6 +104,8 @@ type
     property X: real read fx;
     /// Текущая координата Y пера
     property Y: real read fy;
+    /// Скругление пера на концах линий
+    property RoundCap: boolean read rc write rc;
   end;
 
 // -----------------------------------------------------
@@ -336,9 +349,9 @@ procedure Invoke(d: ()->());
 //>>     Процедуры покадровой анимации # GraphWPF FrameBasedAnimation functions
 // -----------------------------------------------------
 /// Начинает анимацию, основанную на кадре. Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw
-procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer := 60);
+procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer := 61);
 /// Начинает анимацию, основанную на кадре Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw с параметром, равным номеру кадра
-procedure BeginFrameBasedAnimation(Draw: procedure(frame: integer); frate: integer := 60);
+procedure BeginFrameBasedAnimation(Draw: procedure(frame: integer); frate: integer := 61);
 /// Завершает анимацию, основанную на кадре
 procedure EndFrameBasedAnimation;
 
@@ -478,6 +491,11 @@ procedure AddBottomPanel(Height: real := 100; c: Color := Colors.LightGray);
 
 procedure AddStatusBar(Height: real := 24);}
 
+{function GetDC: DrawingContext;
+procedure ReleaseDC(dc: DrawingContext);
+procedure FastDraw(d: DrawingContext->());
+procedure FastClear(var dc: DrawingContext);}
+
 procedure __InitModule__;
 procedure __FinalizeModule__;
 
@@ -549,6 +567,23 @@ begin
     rtbmapIsCleared := False;
     host.Children.Clear;
   end;
+end;
+
+procedure FastDraw(d: DrawingContext->());
+begin
+  Invoke(()->
+  begin
+    var dc := GetDC;
+    d(dc);  
+    ReleaseDC(dc);
+  end);
+end;
+
+procedure FastClear(var dc: DrawingContext);
+begin
+  ReleaseDC(dc);
+  Window.Clear;
+  dc := GetDC;
 end;
 
 function GetDC(t: Transform): DrawingContext;
@@ -718,7 +753,17 @@ var dpic := new Dictionary<string, BitmapImage>;
 function GetBitmapImage(fname: string): BitmapImage;
 begin
   if not dpic.ContainsKey(fname) then 
-    dpic[fname] := new BitmapImage(new System.Uri(fname,System.UriKind.Relative));
+  begin
+    var b := new BitmapImage();
+    var s := System.IO.File.OpenRead(fname);
+    b.BeginInit();
+    b.CacheOption := BitmapCacheOption.OnLoad;
+    b.StreamSource := s;
+    b.EndInit();
+    s.Close();    
+    //dpic[fname] := new BitmapImage(new System.Uri(fname,System.UriKind.Relative));
+    dpic[fname] := b;
+  end;  
   Result := dpic[fname];
 end;
 
@@ -1313,7 +1358,6 @@ begin
   FillRectangle(0,0,Window.Width,Window.Height,c)
 end;
 
-
 procedure WindowTypeWPF.Clear := Invoke(WindowTypeClearP);
 
 procedure WindowTypeWPF.Clear(c: Color) := Invoke(WindowTypeClearPC,c);
@@ -1375,6 +1419,7 @@ begin
   if drawgrid then
     DrawGridP
 end;
+
 procedure SetMathematicCoordsP1(x1,x2,ymin: real; drawgrid: boolean);
 begin
   if CurrentCoordType = StandardCoords then
@@ -1392,6 +1437,7 @@ begin
   if drawgrid then
     DrawGridP
 end;
+
 procedure SetMathematicCoords(x1: real; x2: real; drawgrid: boolean) := Invoke(SetMathematicCoordsP,x1,x2,drawgrid);
 procedure SetMathematicCoords(x1,x2,ymin: real; drawgrid: boolean) := Invoke(SetMathematicCoordsP1,x1,x2,ymin,drawgrid);
 
@@ -1408,7 +1454,9 @@ begin
   Host.RenderTransform := m;
   //Pen.Width := Pen.Width * scale; // нет!
 end;
+
 procedure SetStandardCoords(scale,x0,y0: real) := Invoke(SetStandardCoordsP,scale,x0,y0);
+
 procedure SetStandardCoordsSharpLinesP(x0,y0: real);
 begin
   var (sx,sy) := ScaleToDevice;
@@ -1417,7 +1465,6 @@ begin
   else SetStandardCoordsP(1/sx,x0/sx,y0/sy) 
 end; 
 procedure SetStandardCoordsSharpLines(x0,y0: real) := Invoke(SetStandardCoordsSharpLinesP,x0,y0);
-
 
 function GetMouseArgs(e: MouseEventArgs): (Point,integer);
 begin
@@ -1474,7 +1521,7 @@ procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) :=
 var OnDraw: procedure := nil;
 var OnDraw1: procedure(frame: integer) := nil;
 
-var FrameRate := 60; // кадров в секунду. Можно меньше!
+var FrameRate := 61; // кадров в секунду. Можно меньше!
 var LastUpdatedTime := new System.TimeSpan(integer.MinValue); 
 
 var FrameNum := 0;
@@ -1519,7 +1566,7 @@ begin
   //CountVisuals := 0;
   OnDraw := nil;
   OnDraw1 := nil;
-  FrameRate := 60;
+  FrameRate := 61;
 end;  
 
 var mre := new ManualResetEvent(false);

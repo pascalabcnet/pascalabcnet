@@ -644,7 +644,7 @@ function ObjectsCount: integer;
 function ObjectUnderPoint(x,y: integer): ObjectABC;
 /// Графический объект под точкой p
 function ObjectUnderPoint(p: Point): ObjectABC;
-/// Поменять позиции графических олбъектов o1 и o2
+/// Поменять позиции графических объектов o1 и o2
 procedure SwapPositions(o1,o2: ObjectABC);
 
 /// Элемент управления ABCObject под точкой (x,y)

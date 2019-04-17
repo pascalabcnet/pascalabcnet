@@ -1326,6 +1326,8 @@ namespace PascalABCCompiler.TreeConverter
             }
 			common_type_node tctn=new common_type_node(name,SemanticTree.type_access_level.tal_public,_cmn,
                 scope,def_loc);
+            (scope as SymbolTable.ClassScope).class_type = tctn; // SSM 02.04.19 - каждый Scope пользовательского класса хранит свой type_node
+
             tctn.IsPartial = is_partial;
             if (partial_class != null)
             {

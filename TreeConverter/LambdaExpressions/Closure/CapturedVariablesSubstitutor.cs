@@ -348,7 +348,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                     else
                     {
                         var si = forScope.SymbolInfoLoopVar;
-                        if (!_capturedVarsTreeNodesDictionary.ContainsKey(si.scope.ScopeNum))
+                        if (si.scope == null || !_capturedVarsTreeNodesDictionary.ContainsKey(si.scope.ScopeNum))
                             return;
                         var scopeWhereVarDefined = _capturedVarsTreeNodesDictionary[si.scope.ScopeNum];
                         var idRef = scopeWhereVarDefined
@@ -403,6 +403,8 @@ namespace TreeConverter.LambdaExpressions.Closure
                     else
                     {
                         var si = forEachScope.SymbolInfoLoopVar;
+                        if (si.scope == null)
+                            return;
                         var scopeWhereVarDefined = _capturedVarsTreeNodesDictionary[si.scope.ScopeNum];
                         var idRef = scopeWhereVarDefined
                             .VariablesDefinedInScope

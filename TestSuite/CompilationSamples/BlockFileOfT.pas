@@ -597,12 +597,15 @@ begin
   if str = nil then raise new FileNotOpenedException(fi.FullName);
   var a := new byte[sz];
   var gc_hnd := GCHandle.Alloc(a, GCHandleType.Pinned);
-  System.Buffer.MemoryCopy(
-    @o,
-    gc_hnd.AddrOfPinnedObject.ToPointer,
-    sz,sz
-  );
-  gc_hnd.Free;
+  try
+    System.Buffer.MemoryCopy(
+      @o,
+      gc_hnd.AddrOfPinnedObject.ToPointer,
+      sz,sz
+    );
+  finally
+    gc_hnd.Free;
+  end;
   bw.Write(a);
 end;
 
@@ -614,14 +617,20 @@ begin
   var bl := sz*o.Length;
   var a := new byte[bl];
   var gc_hnd1 := GCHandle.Alloc(o, GCHandleType.Pinned);
-  var gc_hnd2 := GCHandle.Alloc(a, GCHandleType.Pinned);
-  System.Buffer.MemoryCopy(
-    gc_hnd1.AddrOfPinnedObject.ToPointer,
-    gc_hnd2.AddrOfPinnedObject.ToPointer,
-    bl,bl
-  );
-  gc_hnd1.Free;
-  gc_hnd2.Free;
+  try
+    var gc_hnd2 := GCHandle.Alloc(a, GCHandleType.Pinned);
+    try
+      System.Buffer.MemoryCopy(
+        gc_hnd1.AddrOfPinnedObject.ToPointer,
+        gc_hnd2.AddrOfPinnedObject.ToPointer,
+        bl,bl
+      );
+    finally
+      gc_hnd2.Free;
+    end;
+  finally
+    gc_hnd1.Free;
+  end;
   bw.Write(a);
 end;
 
@@ -639,17 +648,20 @@ begin
   
   var a := new byte[sz*o.Count];
   var gc_hnd := GCHandle.Alloc(a, GCHandleType.Pinned);
-  var hnd := gc_hnd.AddrOfPinnedObject;
-  foreach var el in o do
-  begin
-    System.Buffer.MemoryCopy(
-      @el,
-      hnd.ToPointer,
-      sz,sz
-    );
-    System.IntPtr.Add(hnd, sz);
+  try
+    var hnd := gc_hnd.AddrOfPinnedObject;
+    foreach var el in o do
+    begin
+      System.Buffer.MemoryCopy(
+        @el,
+        hnd.ToPointer,
+        sz,sz
+      );
+      System.IntPtr.Add(hnd, sz);
+    end;
+  finally
+    gc_hnd.Free;
   end;
-  gc_hnd.Free;
   bw.Write(a);
 end;
 
@@ -667,14 +679,20 @@ begin
   var bl := sz*count;
   var a := new byte[bl];
   var gc_hnd1 := GCHandle.Alloc(o, GCHandleType.Pinned);
-  var gc_hnd2 := GCHandle.Alloc(a, GCHandleType.Pinned);
-  System.Buffer.MemoryCopy(
-    System.IntPtr.Add(gc_hnd1.AddrOfPinnedObject, from * sz).ToPointer,
-    gc_hnd2.AddrOfPinnedObject.ToPointer,
-    bl,bl
-  );
-  gc_hnd1.Free;
-  gc_hnd2.Free;
+  try
+    var gc_hnd2 := GCHandle.Alloc(a, GCHandleType.Pinned);
+    try
+      System.Buffer.MemoryCopy(
+        System.IntPtr.Add(gc_hnd1.AddrOfPinnedObject, from * sz).ToPointer,
+        gc_hnd2.AddrOfPinnedObject.ToPointer,
+        bl,bl
+      );
+    finally
+      gc_hnd2.Free;
+    end;
+  finally
+    gc_hnd1.Free;
+  end;
   bw.Write(a);
 end;
 
@@ -692,20 +710,23 @@ begin
   
   var a := new byte[sz*o.Count];
   var gc_hnd := GCHandle.Alloc(a, GCHandleType.Pinned);
-  var hnd := gc_hnd.AddrOfPinnedObject;
-  foreach var el in o do
-    if from > 0 then from -= 1 else
-    if count > 0 then
-    begin
-      System.Buffer.MemoryCopy(
-        @el,
-        hnd.ToPointer,
-        sz,sz
-      );
-      hnd := System.IntPtr.Add(hnd, sz);
-      count -= 1;
-    end;
-  gc_hnd.Free;
+  try
+    var hnd := gc_hnd.AddrOfPinnedObject;
+    foreach var el in o do
+      if from > 0 then from -= 1 else
+      if count > 0 then
+      begin
+        System.Buffer.MemoryCopy(
+          @el,
+          hnd.ToPointer,
+          sz,sz
+        );
+        hnd := System.IntPtr.Add(hnd, sz);
+        count -= 1;
+      end;
+  finally
+    gc_hnd.Free;
+  end;
   bw.Write(a);
 end;
 
@@ -726,12 +747,15 @@ begin
   
   var a := br.ReadBytes(sz);
   var gc_hnd := GCHandle.Alloc(a, GCHandleType.Pinned);
-  System.Buffer.MemoryCopy(
-    gc_hnd.AddrOfPinnedObject.ToPointer,
-    @Result,
-    sz,sz
-  );
-  gc_hnd.Free;
+  try
+    System.Buffer.MemoryCopy(
+      gc_hnd.AddrOfPinnedObject.ToPointer,
+      @Result,
+      sz,sz
+    );
+  finally
+    gc_hnd.Free;
+  end;
 end;
 
 function BlockFileOf<T>.Read(count: integer): array of T;
@@ -744,14 +768,20 @@ begin
   var a := br.ReadBytes(bl);
   Result := new T[count];
   var gc_hnd1 := GCHandle.Alloc(a, GCHandleType.Pinned);
-  var gc_hnd2 := GCHandle.Alloc(Result, GCHandleType.Pinned);
-  System.Buffer.MemoryCopy(
-    gc_hnd1.AddrOfPinnedObject.ToPointer,
-    gc_hnd2.AddrOfPinnedObject.ToPointer,
-    bl,bl
-  );
-  gc_hnd1.Free;
-  gc_hnd2.Free;
+  try
+    var gc_hnd2 := GCHandle.Alloc(Result, GCHandleType.Pinned);
+    try
+      System.Buffer.MemoryCopy(
+        gc_hnd1.AddrOfPinnedObject.ToPointer,
+        gc_hnd2.AddrOfPinnedObject.ToPointer,
+        bl,bl
+      );
+    finally
+      gc_hnd2.Free;
+    end;
+  finally
+    gc_hnd1.Free;
+  end;
 end;
 
 function BlockFileOf<T>.Read(start_elm, count:integer): array of T;

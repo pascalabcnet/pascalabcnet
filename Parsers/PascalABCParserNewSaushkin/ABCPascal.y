@@ -610,10 +610,6 @@ label_name
         { 
 			$$ = new ident($1.ToString(), @$);
 		}
-    | tkFloat                              
-        { 
-			$$ = new ident($1.ToString(), @$);  
-		}
     | identifier
 		{ 
 			$$ = $1; 

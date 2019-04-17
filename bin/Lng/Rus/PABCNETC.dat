@@ -14,7 +14,7 @@ CONNECTED_PARSERS=Подключены парсеры:
 CONNECTED_CONVERSIONS=Подключены преобразования: 
 STARTING=Запуск...
 COMMANDLINEISABSENT=Отсутствует командная строка
-FILEISABSENT{0}=Отсутствует файл {0}
+FILEISABSENT{0}=Файл {0} не найден
 COMPILEERRORS=Ошибки компиляции:
 
 HELP=17LINES

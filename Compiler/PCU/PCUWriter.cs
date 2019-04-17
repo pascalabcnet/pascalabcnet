@@ -2180,7 +2180,13 @@ namespace PascalABCCompiler.PCU
 		{
 			bw.Write(cur_cnn.non_template_types.Count);
 			for (int i=0; i<cur_cnn.non_template_types.Count; i++)
-				VisitTypeDefinition(cur_cnn.non_template_types[i]);
+                if (!(cur_cnn.non_template_types[i].type_special_kind == SemanticTree.type_special_kind.array_wrapper && 
+                    cur_cnn.non_template_types[i].name.StartsWith("$") && cur_cnn.non_template_types[i].element_type is common_type_node && cur_cnn.non_template_types[i].element_type.is_class))
+                    VisitTypeDefinition(cur_cnn.non_template_types[i]);
+            for (int i = 0; i < cur_cnn.non_template_types.Count; i++)
+                if (cur_cnn.non_template_types[i].type_special_kind == SemanticTree.type_special_kind.array_wrapper && 
+                    cur_cnn.non_template_types[i].name.StartsWith("$") && cur_cnn.non_template_types[i].element_type is common_type_node && cur_cnn.non_template_types[i].element_type.is_class)
+                    VisitTypeDefinition(cur_cnn.non_template_types[i]);
             bw.Write(cur_cnn.runtime_types.Count);
 			for (int i=0; i<cur_cnn.runtime_types.Count; i++)
 				VisitCompiledTypeDefinition(cur_cnn.runtime_types[i]);
