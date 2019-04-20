@@ -24,6 +24,21 @@ namespace VisualPascalABC
             Workbench.BeginInvoke(new SetTextDelegate(RunnerManager_Started_Sync), fileName);
         }
 
+        void ButtonsEnableDisable_RunStart()
+        {
+            Workbench.WidgetController.SetStopEnabled(true);
+            Workbench.WidgetController.SetCompilingButtonsEnabled(false);
+            Workbench.WidgetController.SetDebugButtonsEnabled(false);
+            Workbench.WidgetController.SetOptionsEnabled(false);
+        }
+
+        void ButtonsEnableDisable_RunStop()
+        {
+            Workbench.WidgetController.SetStopEnabled(false);
+            Workbench.WidgetController.SetCompilingButtonsEnabled(true);
+            Workbench.WidgetController.SetDebugButtonsEnabled(true);
+            Workbench.WidgetController.SetOptionsEnabled(true);
+        }
         void RunnerManager_Started_Sync(string fileName)
         {
             if (!ProjectFactory.Instance.ProjectLoaded)
@@ -31,10 +46,7 @@ namespace VisualPascalABC
                 fileName = Tools.FileNameToLower(fileName);
                 if (Tools.FileNameToLower(Workbench.CurrentEXEFileName) == fileName)
                 {
-                    Workbench.WidgetController.SetStopEnabled(true);
-                    Workbench.WidgetController.SetCompilingButtonsEnabled(false);
-                    Workbench.WidgetController.SetDebugButtonsEnabled(false);
-                    Workbench.WidgetController.SetOptionsEnabled(false);
+                    ButtonsEnableDisable_RunStart();
                 }
                 RunTabs[fileName].Run = true;
                 WorkbenchServiceFactory.DocumentService.SetTabPageText(RunTabs[fileName]);
@@ -42,10 +54,7 @@ namespace VisualPascalABC
             else
             {
                 fileName = Tools.FileNameToLower(fileName);
-                Workbench.WidgetController.SetStopEnabled(true);
-                Workbench.WidgetController.SetCompilingButtonsEnabled(false);
-                Workbench.WidgetController.SetDebugButtonsEnabled(false);
-                Workbench.WidgetController.SetOptionsEnabled(false);
+                ButtonsEnableDisable_RunStart();
                 RunTabs[fileName].Run = true;
             }
         }
@@ -74,20 +83,12 @@ namespace VisualPascalABC
             {
                 if (Tools.FileNameToLower(WorkbenchServiceFactory.Workbench.CurrentEXEFileName) == fileName)
                 {
-                    Workbench.WidgetController.SetStopEnabled(false);
-                    Workbench.WidgetController.SetCompilingButtonsEnabled(true);
-                    Workbench.WidgetController.SetDebugButtonsEnabled(true);
-                    //if (IsOneProgramStarted())
-                        Workbench.WidgetController.SetOptionsEnabled(true);
+                    ButtonsEnableDisable_RunStop();
                 }
             }
             else
             {
-                Workbench.WidgetController.SetStopEnabled(false);
-                Workbench.WidgetController.SetCompilingButtonsEnabled(true);
-                Workbench.WidgetController.SetDebugButtonsEnabled(true);
-                //if (IsOneProgramStarted())
-                    Workbench.WidgetController.SetOptionsEnabled(true);
+                ButtonsEnableDisable_RunStop();
             }
             RunTabs[fileName].Run = false;
             WorkbenchServiceFactory.DocumentService.SetTabPageText(RunTabs[fileName]);

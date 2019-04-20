@@ -107,6 +107,7 @@ namespace VisualPascalABC
             }
             catch (Exception e)
             {
+                // Ёто ужасно! Ќадо обрабатывать все исключени€ раньше - чтобы оболочка не закрывалась!
                 MessageBox.Show(e.ToString());
             }
         }
