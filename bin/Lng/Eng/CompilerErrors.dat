@@ -14,6 +14,7 @@ RESOURCEFILE_{0}_NOT_FOUND=Resource file '{0}' not found
 DUPLICATE_USES_UNIT{0}=Duplicate identifier '{0}' in uses section
 MAINRESOURCE_NOT_ALLOWED=mainresource can not be used with the directives: product, version, company, trademark
 DUPLICATE_DIRECTIVE{0}=Duplicate directive {0}
+FILE_{0}_NOT_FOUND=File '{0}' not found
 
 %PREFIX%=
 COMPILER_INTERNAL_ERROR_IN_UNIT_{0}_:{1}=Internal compiler error in module {0} :'{1}'

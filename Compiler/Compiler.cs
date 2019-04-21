@@ -2758,10 +2758,21 @@ namespace PascalABCCompiler
                     {
                         string dir = Path.Combine(Path.GetDirectoryName(Unit.SyntaxTree.file_name), directive.Replace(Path.DirectorySeparatorChar + "*.pas", ""));
                         foreach (string file in Directory.EnumerateFiles(dir, "*.pas"))
+                        {
+                            if (!File.Exists(file))
+                                throw new FileNotFound(file, cd.location);
                             files.Add(file);
+                        }
+                            
                     }
                     else
-                        files.Add(Path.Combine(Path.GetDirectoryName(Unit.SyntaxTree.file_name), directive));
+                    {
+                        string file = Path.Combine(Path.GetDirectoryName(Unit.SyntaxTree.file_name), directive);
+                        if (!File.Exists(file))
+                            throw new FileNotFound(file, cd.location);
+                        files.Add(file);
+                    }
+                       
 
 
                 }
@@ -2770,8 +2781,7 @@ namespace PascalABCCompiler
             List<SyntaxTree.unit_or_namespace> namespace_modules = new List<SyntaxTree.unit_or_namespace>();
             foreach (string file in files)
             {
-                if (!File.Exists(file))
-                    throw new FileNotFound(file);
+                
                 SyntaxTree.compilation_unit tree = GetNamespaceSyntaxTree(file);
                 if (!(tree is SyntaxTree.unit_module))
                     throw new NamespaceModuleExpected(tree.source_context);

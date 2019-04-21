@@ -14,6 +14,7 @@ RESOURCEFILE_{0}_NOT_FOUND=Файл '{0}' не найден
 DUPLICATE_USES_UNIT{0}=Повторное подключение модуля {0} в секции uses
 MAINRESOURCE_NOT_ALLOWED=Недопустимо совместное использование директивы mainresource и директив product, version, company, trademark
 DUPLICATE_DIRECTIVE{0}=Повторное объявление директивы {0}
+FILE_{0}_NOT_FOUND=Файл '{0}' не найден
 
 %PREFIX%=
 COMPILER_INTERNAL_ERROR_IN_UNIT_{0}_:{1}=Внутренняя ошибка компилятора в модуле {0} :'{1}'
