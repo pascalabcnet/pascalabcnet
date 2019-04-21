@@ -8591,7 +8591,11 @@ namespace PascalABCCompiler.NETGenerator
                             mi = ti.tp.GetMethod("get_HasValue");
                         il.Emit(OpCodes.Call, mi);
                         if (ft == basic_function_type.objeq)
-                            il.Emit(OpCodes.Not);
+                        {
+                            il.Emit(OpCodes.Ldc_I4_0);
+                            il.Emit(OpCodes.Ceq);
+                        }
+                            
                         return;
                     }
                     else if (real_parameters[1].type.is_nullable_type && real_parameters[0] is INullConstantNode)
@@ -8608,7 +8612,10 @@ namespace PascalABCCompiler.NETGenerator
                             mi = ti.tp.GetMethod("get_HasValue");
                         il.Emit(OpCodes.Call, mi);
                         if (ft == basic_function_type.objeq)
-                            il.Emit(OpCodes.Not);
+                        {
+                            il.Emit(OpCodes.Ldc_I4_0);
+                            il.Emit(OpCodes.Ceq);
+                        }
                         return;
                     }
                     else if (real_parameters[0].type.is_nullable_type && real_parameters[1].type.is_nullable_type)
