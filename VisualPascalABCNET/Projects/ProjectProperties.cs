@@ -51,6 +51,7 @@ namespace VisualPascalABC
             this.tbCompany.Text = prj.Company;
             this.tbTradeMark.Text = prj.Trademark;
             this.tbCopyright.Text = prj.Copyright;
+            //this.tbTitle.Text = prj.Title;
         }
 
         public void SetOptions(PascalABCCompiler.IProjectInfo prj)
@@ -78,6 +79,7 @@ namespace VisualPascalABC
             prj.Company = this.tbCompany.Text;
             prj.Trademark = this.tbTradeMark.Text;
             prj.Copyright = this.tbCopyright.Text;
+            //prj.Title = this.tbTitle.Text;
         }
 
         private void ProjectProperties_FormClosing(object sender, FormClosingEventArgs e)

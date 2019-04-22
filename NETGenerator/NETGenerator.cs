@@ -86,6 +86,13 @@ namespace PascalABCCompiler.NETGenerator
             get { return _TradeMark; }
             set { _TradeMark = value; NeedDefineVersionInfo = true; }
         }
+        private string _Title = "";
+
+        public string Title
+        {
+            get { return _Title; }
+            set { _Title = value; NeedDefineVersionInfo = true; }
+        }
 
         public string MainResourceFileName = null;
 
@@ -895,6 +902,8 @@ namespace PascalABCCompiler.NETGenerator
                 }
             ab.SetCustomAttribute(typeof(System.Runtime.CompilerServices.CompilationRelaxationsAttribute).GetConstructor(new Type[1] { TypeFactory.Int32Type }),
                                   new byte[] { 0x01, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00 });
+
+            ab.SetCustomAttribute(new CustomAttributeBuilder(typeof(System.Reflection.AssemblyTitleAttribute).GetConstructor(new Type[] { typeof(string) }), new object[] { options.Title }));
 
             if (RunOnly)
             {

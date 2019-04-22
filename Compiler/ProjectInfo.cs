@@ -29,6 +29,7 @@ namespace PascalABCCompiler
         private string _company;
         private string _trademark;
         private string _copyright;
+        private string _title;
 		private PascalABCCompiler.ProjectType _project_type;
 		private List<SourceCodeFileInfo> _source_files = new List<SourceCodeFileInfo>();
 		private List<ReferenceInfo> _references = new List<ReferenceInfo>();
@@ -190,7 +191,19 @@ namespace PascalABCCompiler
             }
         }
 
-		public string path
+        public string title
+        {
+            get
+            {
+                return _title;
+            }
+            set
+            {
+                _title = value;
+            }
+        }
+
+        public string path
 		{
 			get
 			{
@@ -467,6 +480,7 @@ namespace PascalABCCompiler
             writer.WriteAttributeString("Company", company);
             writer.WriteAttributeString("Trademark", trademark);
             writer.WriteAttributeString("Copyright", copyright);
+            writer.WriteAttributeString("Title", title);
             writer.WriteAttributeString("MajorVersion", Convert.ToString(major_version));
             writer.WriteAttributeString("MinorVersion", Convert.ToString(minor_version));
             writer.WriteAttributeString("BuildVersion", Convert.ToString(build_version));
@@ -532,6 +546,8 @@ namespace PascalABCCompiler
             company = reader.GetAttribute("Company");
             trademark = reader.GetAttribute("Trademark");
             copyright = reader.GetAttribute("Copyright");
+            title = reader.GetAttribute("Title");
+            if (title == null) title = ""; //Проверка на null, так как раньше этого атрибута не было
             major_version = Convert.ToInt32(reader.GetAttribute("MajorVersion"));
             minor_version = Convert.ToInt32(reader.GetAttribute("MinorVersion"));
             build_version = Convert.ToInt32(reader.GetAttribute("BuildVersion"));
@@ -729,6 +745,18 @@ namespace PascalABCCompiler
             set
             {
                 _copyright = value;
+            }
+        }
+
+        public string Title
+        {
+            get
+            {
+                return _title;
+            }
+            set
+            {
+                _title = value;
             }
         }
     }
