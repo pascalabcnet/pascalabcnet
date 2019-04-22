@@ -21,7 +21,8 @@ namespace VisualPascalABC
 
         void RunnerManager_Started(string fileName)
         {
-            Workbench.BeginInvoke(new SetTextDelegate(RunnerManager_Started_Sync), fileName);
+            RunnerManager_Started_Sync(fileName);
+            //Workbench.BeginInvoke(new SetTextDelegate(RunnerManager_Started_Sync), fileName);
         }
 
         void ButtonsEnableDisable_RunStart()
@@ -59,11 +60,6 @@ namespace VisualPascalABC
             }
         }
 
-        void RunnerManager_Started_Sync_Thread(object fileName)
-        {
-            RunnerManager_Started_Sync(fileName as string);
-        }
-
         void RunnerManager_OutputStringReceived(string fileName, RunManager.StreamType streamType, string text)
         {
             WorkbenchServiceFactory.OperationsService.AddTextToOutputWindowSync(fileName, text);
@@ -74,11 +70,22 @@ namespace VisualPascalABC
             fileName = Tools.FileNameToLower(fileName);
             if (!RunTabs.ContainsKey(fileName))
             {
-                string s = fileName + " ";
+                string s = "Closing: "+fileName + " \nRunTabs: ";
                 foreach (string ss in RunTabs.Keys)
                     s += ss + " ";
                 throw new Exception(s);
             }
+            RunTabs[fileName].Run = false;
+            WorkbenchServiceFactory.DocumentService.SetTabPageText(RunTabs[fileName]);
+            if (ReadRequests.ContainsKey(RunTabs[fileName]))
+                ReadRequests.Remove(RunTabs[fileName]);
+            UpdateReadRequest(false);
+            WorkbenchServiceFactory.EditorService.SetFocusToEditor();
+            //if (TerminateAllPrograms)
+                WaitCallback_DeleteEXEAndPDB(fileName); // сделал всё синхронно - теперь WaitCallback_DeleteEXEAndPDB не должен работать медленно!
+            //else
+            //    System.Threading.ThreadPool.QueueUserWorkItem(WaitCallback_DeleteEXEAndPDB, fileName); // в потоке - не синхронизировано! Надо запретить запускать что-то до окончания!
+
             if (!ProjectFactory.Instance.ProjectLoaded)
             {
                 if (Tools.FileNameToLower(WorkbenchServiceFactory.Workbench.CurrentEXEFileName) == fileName)
@@ -89,17 +96,7 @@ namespace VisualPascalABC
             else
             {
                 ButtonsEnableDisable_RunStop();
-            }
-            RunTabs[fileName].Run = false;
-            WorkbenchServiceFactory.DocumentService.SetTabPageText(RunTabs[fileName]);
-            if (ReadRequests.ContainsKey(RunTabs[fileName]))
-                ReadRequests.Remove(RunTabs[fileName]);
-            UpdateReadRequest(false);
-            WorkbenchServiceFactory.EditorService.SetFocusToEditor();
-            if (TerminateAllPrograms)
-                WaitCallback_DeleteEXEAndPDB(fileName);
-            else
-                System.Threading.ThreadPool.QueueUserWorkItem(WaitCallback_DeleteEXEAndPDB, fileName);
+            } // SSM 22/04/19 - этот код перенесен в конец WaitCallback_DeleteEXEAndPDB - нет, там исключение
         }
 
         void RunnerManager_RunnerManagerUnhanledRuntimeException(string id, string ExceptionType, string ExceptionMessage, string StackTraceData, List<RunManager.StackTraceItem> StackTrace)
@@ -152,21 +149,35 @@ namespace VisualPascalABC
 
         void WaitCallback_DeleteEXEAndPDB(object state)
         {
-            int i = 0;
+            //int i = 0;
             string fileName = (string)state;
-            while (i < 20)
+            //while (i < 20) // 20 раз пытаться удалять! Это сильно!
+            //{
+            try
             {
-                try
+                if (Workbench.UserOptions.DeleteEXEAfterExecute && File.Exists(fileName))
+                    File.Delete(fileName);
+            }
+            catch
+            {
+                WorkbenchServiceFactory.OperationsService.AddTextToCompilerMessagesSync("Не удалось удалить EXE-файл");
+            }
+            try
+            {
+                if (Workbench.UserOptions.DeletePDBAfterExecute)
                 {
-                    if (Workbench.UserOptions.DeleteEXEAfterExecute && File.Exists(fileName))
-                        File.Delete(fileName);
-                    if (Workbench.UserOptions.DeletePDBAfterExecute)
-                    {
-                        string pdbFileName = Path.ChangeExtension(fileName, ".pdb");
-                        if (File.Exists(pdbFileName) && File.Exists(pdbFileName))
-                            File.Delete(pdbFileName);
-                    }
-                    if (RunnerManager.TempBatFiles.ContainsKey(fileName))
+                    string pdbFileName = Path.ChangeExtension(fileName, ".pdb");
+                    if (File.Exists(pdbFileName))
+                        File.Delete(pdbFileName);
+                }
+            }
+            catch
+            {
+                WorkbenchServiceFactory.OperationsService.AddTextToCompilerMessagesSync("Не удалось удалить PDB-файл");
+            }
+            try
+            {
+                if (RunnerManager.TempBatFiles.ContainsKey(fileName))
                     {
                         string batname = RunnerManager.TempBatFiles[fileName];
                         if (File.Exists(batname))
@@ -175,14 +186,27 @@ namespace VisualPascalABC
                             RunnerManager.TempBatFiles.Remove(fileName);
                         }
                     }
-                    return;
-                }
-                catch
-                {
-                }
-                System.Threading.Thread.Sleep(20);
-                i++;
             }
+            catch
+            {
+                WorkbenchServiceFactory.OperationsService.AddTextToCompilerMessagesSync("Не удалось удалить bat-файл из словаря RunnerManager.TempBatFiles");
+            }
+            // SSM 22/04/19 - этот код перенесён сюда из RunnerManager_Exited_Sync - нет, тут исключение!
+            /*if (!ProjectFactory.Instance.ProjectLoaded)
+            {
+                if (Tools.FileNameToLower(WorkbenchServiceFactory.Workbench.CurrentEXEFileName) == fileName)
+                {
+                    ButtonsEnableDisable_RunStop();
+                }
+            }
+            else
+            {
+                ButtonsEnableDisable_RunStop();
+            }*/
+            //return;
+            //System.Threading.Thread.Sleep(20);
+            //i++;
+            //}
         }
 
         void ReadStringRequest(string ForId)
