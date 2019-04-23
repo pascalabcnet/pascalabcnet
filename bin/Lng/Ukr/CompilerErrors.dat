@@ -12,7 +12,7 @@ CYCLIC_UNIT_REFERENCE_WITH_UNIT_{0}=Циклічний зв'язок з моду
 UNDEFINED_SEMANTIC_ERROR{0}=Невизначена семантична помилка : {0} 
 RESOURCEFILE_{0}_NOT_FOUND=Файл '{0}' не знайдено
 DUPLICATE_USES_UNIT{0}=Повторне підключення модуля {0} в секції uses
-MAINRESOURCE_NOT_ALLOWED=Неприпустимо сумісне використання директиви mainresource і директив product, version, company, trademark, title
+MAINRESOURCE_NOT_ALLOWED=Неприпустимо сумісне використання директиви mainresource і директив product, version, company, trademark, title, description
 DUPLICATE_DIRECTIVE{0}=Повторное объявление директивы {0}
 FILE_{0}_NOT_FOUND=Файл '{0}' не знайдено
 

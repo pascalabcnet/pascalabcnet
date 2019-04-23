@@ -93,6 +93,13 @@ namespace PascalABCCompiler.NETGenerator
             get { return _Title; }
             set { _Title = value; NeedDefineVersionInfo = true; }
         }
+        private string _Description = "";
+
+        public string Description
+        {
+            get { return _Description; }
+            set { _Description = value; NeedDefineVersionInfo = true; }
+        }
 
         public string MainResourceFileName = null;
 
@@ -904,6 +911,8 @@ namespace PascalABCCompiler.NETGenerator
                                   new byte[] { 0x01, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00 });
 
             ab.SetCustomAttribute(new CustomAttributeBuilder(typeof(System.Reflection.AssemblyTitleAttribute).GetConstructor(new Type[] { typeof(string) }), new object[] { options.Title }));
+
+            ab.SetCustomAttribute(new CustomAttributeBuilder(typeof(System.Reflection.AssemblyDescriptionAttribute).GetConstructor(new Type[] { typeof(string) }), new object[] { options.Description }));
 
             if (RunOnly)
             {

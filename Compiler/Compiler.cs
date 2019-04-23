@@ -1923,13 +1923,18 @@ namespace PascalABCCompiler
                 {
                     cdo.Title = cds[0].directive;
                 }
+                if (compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.description_string, out cds))
+                {
+                    cdo.Description = cds[0].directive;
+                }
                 if (compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.main_resource_string, out cds))
                 {
                     if (compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.product_string) ||
                         compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.version_string) ||
                         compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.company_string) ||
                         compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.trademark_string) ||
-                        compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.title_string))
+                        compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.title_string) ||
+                        compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.description_string))
                     {
                         ErrorsList.Add(new MainResourceNotAllowed(cds[0].location));
                     }
@@ -1985,6 +1990,8 @@ namespace PascalABCCompiler
                         cdo.Copyright = project.copyright;
                     if (!string.IsNullOrEmpty(project.title))
                         cdo.Title = project.title;
+                    if (!string.IsNullOrEmpty(project.description))
+                        cdo.Description = project.description;
                     if (!string.IsNullOrEmpty(project.app_icon) && false)
                     {
                         //cdo.MainResourceFileName = project.app_icon;
@@ -2009,7 +2016,7 @@ namespace PascalABCCompiler
                             sw.WriteLine("VALUE \"ProductName\"," + "\"" + cdo.Product + "\"");
                             sw.WriteLine("VALUE \"FileVersion\"," + "\"" + ver + "\"");
                             sw.WriteLine("VALUE \"ProductVersion\"," + "\"" + ver + "\"");
-                            sw.WriteLine("VALUE \"FileDescription\"," + "\"" + "" + "\"");
+                            sw.WriteLine("VALUE \"FileDescription\"," + "\"" + cdo.Description + "\"");
                             sw.WriteLine("VALUE \"OriginalFileName\"," + "\"" + Path.GetFileName(CompilerOptions.OutputFileName) + "\"");
                             sw.WriteLine("VALUE \"InternalName\"," + "\"" + Path.GetFileNameWithoutExtension(CompilerOptions.OutputFileName) + "\"");
                             sw.WriteLine("VALUE \"CompanyName\"," + "\"" + cdo.Company + "\"");

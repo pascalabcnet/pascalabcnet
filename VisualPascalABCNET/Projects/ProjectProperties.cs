@@ -79,7 +79,8 @@ namespace VisualPascalABC
             prj.Company = this.tbCompany.Text;
             prj.Trademark = this.tbTradeMark.Text;
             prj.Copyright = this.tbCopyright.Text;
-            //prj.Title = this.tbTitle.Text;
+            //if (!string.IsNullOrEmpty(prj.Title)) prj.Title = this.tbTitle.Text;
+            //if (!string.IsNullOrEmpty(prj.Description)) prj.Description = this.tbDescription.Text;
         }
 
         private void ProjectProperties_FormClosing(object sender, FormClosingEventArgs e)

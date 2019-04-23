@@ -470,6 +470,7 @@ namespace VisualPascalABC
         private System.Windows.Forms.TextBox tbTradeMark;
         private System.Windows.Forms.TextBox tbCopyright;
         //private System.Windows.Forms.TextBox tbTitle;
+        //private System.Windows.Forms.TextBox tbDescription;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;

@@ -107,6 +107,12 @@ namespace PascalABCCompiler
             set;
         }
 
+        string Description
+        {
+            get;
+            set;
+        }
+
         string CommandLineArguments
         {
             get;
