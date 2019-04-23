@@ -142,8 +142,6 @@ type
 // -----------------------------------------------------
 //>>     Класс ObjectWPF # Class ObjectWPF 
 // -----------------------------------------------------
-  // Перечислимый тип выравнивания текста в свойстве Text или Number
-  //Alignment = (LeftTop,CenterTop,RightTop,LeftCenter,Center,RightCenter,LeftBottom,CenterBottom,RightBottom);
   ///!#
   /// Базовый класс графических объектов
   ObjectWPF = class
