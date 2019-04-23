@@ -57,6 +57,7 @@ namespace VisualPascalABC
                 curVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
                 if ((new Version(curVersion)).CompareTo(new Version(newVersion)) == -1)
                     status = 0;
+                
             }
             catch
             {
@@ -74,7 +75,8 @@ namespace VisualPascalABC
                         PascalABCCompiler.StringResources.Get("VP_MF_UPDATE_CHECK"), 
                         MessageBoxButtons.YesNo) == DialogResult.Yes)
                     {
-                        WorkbenchServiceFactory.OperationsService.AddTabWithUrl("PascalABC.NET", PascalABCCompiler.StringResources.Get("VP_MF_PABC_DOWNLOAD_PAGE"));
+                        System.Diagnostics.Process.Start(PascalABCCompiler.StringResources.Get("VP_MF_PABC_DOWNLOAD_PAGE"));
+                        //WorkbenchServiceFactory.OperationsService.AddTabWithUrl("PascalABC.NET", PascalABCCompiler.StringResources.Get("VP_MF_PABC_DOWNLOAD_PAGE"));
                     }
                     break;
                 case -1:
