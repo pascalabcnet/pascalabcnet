@@ -51,7 +51,8 @@ namespace VisualPascalABC
             this.tbCompany.Text = prj.Company;
             this.tbTradeMark.Text = prj.Trademark;
             this.tbCopyright.Text = prj.Copyright;
-            //this.tbTitle.Text = prj.Title;
+            //if (prj.Title != null) { this.tbTitle.Text = prj.Description; } else { this.tbTitle.Text = ""; };
+            //if (prj.Description != null) { this.tbDescription.Text = prj.Description; } else { this.tbDescription.Text = ""; };
         }
 
         public void SetOptions(PascalABCCompiler.IProjectInfo prj)
@@ -79,8 +80,8 @@ namespace VisualPascalABC
             prj.Company = this.tbCompany.Text;
             prj.Trademark = this.tbTradeMark.Text;
             prj.Copyright = this.tbCopyright.Text;
-            //if (!string.IsNullOrEmpty(prj.Title)) prj.Title = this.tbTitle.Text;
-            //if (!string.IsNullOrEmpty(prj.Description)) prj.Description = this.tbDescription.Text;
+            //prj.Title = this.tbTitle.Text;
+            //prj.Description = this.tbDescription.Text;
         }
 
         private void ProjectProperties_FormClosing(object sender, FormClosingEventArgs e)
