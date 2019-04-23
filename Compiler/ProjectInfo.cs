@@ -29,7 +29,9 @@ namespace PascalABCCompiler
         private string _company;
         private string _trademark;
         private string _copyright;
-		private PascalABCCompiler.ProjectType _project_type;
+        private string _title;
+        private string _description;
+        private PascalABCCompiler.ProjectType _project_type;
 		private List<SourceCodeFileInfo> _source_files = new List<SourceCodeFileInfo>();
 		private List<ReferenceInfo> _references = new List<ReferenceInfo>();
 		private List<ResourceInfo> _resources = new List<ResourceInfo>();
@@ -190,7 +192,31 @@ namespace PascalABCCompiler
             }
         }
 
-		public string path
+        public string title
+        {
+            get
+            {
+                return _title;
+            }
+            set
+            {
+                _title = value;
+            }
+        }
+
+        public string description
+        {
+            get
+            {
+                return _description;
+            }
+            set
+            {
+                _description = value;
+            }
+        }
+
+        public string path
 		{
 			get
 			{
@@ -467,6 +493,8 @@ namespace PascalABCCompiler
             writer.WriteAttributeString("Company", company);
             writer.WriteAttributeString("Trademark", trademark);
             writer.WriteAttributeString("Copyright", copyright);
+            writer.WriteAttributeString("Title", title);
+            writer.WriteAttributeString("Description", description);
             writer.WriteAttributeString("MajorVersion", Convert.ToString(major_version));
             writer.WriteAttributeString("MinorVersion", Convert.ToString(minor_version));
             writer.WriteAttributeString("BuildVersion", Convert.ToString(build_version));
@@ -532,6 +560,8 @@ namespace PascalABCCompiler
             company = reader.GetAttribute("Company");
             trademark = reader.GetAttribute("Trademark");
             copyright = reader.GetAttribute("Copyright");
+            title = reader.GetAttribute("Title");
+            description = reader.GetAttribute("Description");
             major_version = Convert.ToInt32(reader.GetAttribute("MajorVersion"));
             minor_version = Convert.ToInt32(reader.GetAttribute("MinorVersion"));
             build_version = Convert.ToInt32(reader.GetAttribute("BuildVersion"));
@@ -729,6 +759,30 @@ namespace PascalABCCompiler
             set
             {
                 _copyright = value;
+            }
+        }
+
+        public string Title
+        {
+            get
+            {
+                return _title;
+            }
+            set
+            {
+                _title = value;
+            }
+        }
+
+        public string Description
+        {
+            get
+            {
+                return _description;
+            }
+            set
+            {
+                _description = value;
             }
         }
     }
