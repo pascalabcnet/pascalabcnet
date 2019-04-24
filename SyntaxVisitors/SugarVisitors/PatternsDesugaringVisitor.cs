@@ -67,6 +67,8 @@ namespace SyntaxVisitors.SugarVisitors
         public expression SuccessMatchingCheck { get; set; }
 
         public expression CollectionLengthCheck { get; set; }
+
+        public List<semantic_check_sugared_statement_node> ElemTypeChecks { get; set; } = new List<semantic_check_sugared_statement_node>();
     }
 
     public class TupleDesugaringResult
@@ -76,6 +78,8 @@ namespace SyntaxVisitors.SugarVisitors
         public expression SuccessMatchingCheck { get; set; }
 
         public statement TupleLengthCheck { get; set; }
+
+        public List<semantic_check_sugared_statement_node> ElemTypeChecks { get; set; } = new List<semantic_check_sugared_statement_node>();
     }
 
     public class PatternsDesugaringVisitor : BaseChangeVisitor
@@ -199,6 +203,24 @@ namespace SyntaxVisitors.SugarVisitors
             // Добавляем полученные statements в результат
             AddDesugaredCaseToResult(ifCheck, ifCheck);
         }
+        
+        private type_definition GetTypeDefinitionForConstParam(expression constParamExpr)
+        {
+            switch (constParamExpr)
+            {
+                case string_const type:
+                    return new named_type_reference("string");
+                case char_const type:
+                    return new named_type_reference("char");
+                case int32_const type:
+                    return new named_type_reference("integer");
+                case int64_const type:
+                    return new named_type_reference("integer");
+                case double_const type:
+                    return new named_type_reference("double");
+            }
+            return null;
+        }
 
         private expression DesugarDeconstructorPatternParameters(deconstructor_pattern pattern)
         {
@@ -226,7 +248,7 @@ namespace SyntaxVisitors.SugarVisitors
 
                     pattern.parameters[i] = new var_deconstructor_parameter(
                         constParamIdent,
-                        null,
+                        GetTypeDefinitionForConstParam(constPattern.const_param),
                         pattern.parameters[i].source_context);
 
                     paramCheckExpr = paramCheckExpr == null ? (expression)constParamCheck : bin_expr.LogicalAnd(paramCheckExpr, constParamCheck);
@@ -331,6 +353,7 @@ namespace SyntaxVisitors.SugarVisitors
                     );
 
                     equalChecks = equalChecks == null ? (expression)equalCall : bin_expr.LogicalAnd(equalChecks, equalCall);
+                    desugaringResult.ElemTypeChecks.Add(GetTypeCompatibilityCheck(constParam.const_param, indexerCall));
                 }
 
                 if (param is collection_pattern_var_parameter varParam)
@@ -385,6 +408,7 @@ namespace SyntaxVisitors.SugarVisitors
                     );
 
                     equalChecks = equalChecks == null ? (expression)equalCall : bin_expr.LogicalAnd(equalChecks, equalCall);
+                    desugaringResult.ElemTypeChecks.Add(GetTypeCompatibilityCheck(constParam.const_param, indexerCall));
                 }
 
                 if (param is collection_pattern_var_parameter varParam)
@@ -392,6 +416,7 @@ namespace SyntaxVisitors.SugarVisitors
                     desugaringResult.VarParametersDeclarations.Add(
                         new var_statement(varParam.identifier, indexerCall));
                 }
+
                 ++elemFromTail;
             }
             return equalChecks;
@@ -543,15 +568,16 @@ namespace SyntaxVisitors.SugarVisitors
 
             for (int i = 0; i < tupleItems.Count; ++i)
             {
+                var tupleItemCall = new dot_node(
+                                matchingExpression as addressed_value,
+                                new ident("Item" + (i + 1).ToString()),
+                                matchingExpression.source_context);
                 if (tupleItems[i] is tuple_pattern_var_parameter varParam)
                 {
                     desugaringResult.VarParametersDeclarations.Add(
                         new var_statement(
                             varParam.identifier,
-                            new dot_node(
-                                matchingExpression as addressed_value,
-                                new ident("Item" + (i+1).ToString()),
-                                matchingExpression.source_context),
+                            tupleItemCall,
                             matchingExpression.source_context
                         )
                     );
@@ -562,10 +588,7 @@ namespace SyntaxVisitors.SugarVisitors
                     var eqParams = new expression_list(
                         new List<expression>()
                         {
-                            new dot_node(
-                                matchingExpression as addressed_value,
-                                new ident("Item" + (i+1).ToString()),
-                                matchingExpression.source_context),
+                            tupleItemCall,
                             constParam.const_param
                         }
                     );
@@ -578,9 +601,10 @@ namespace SyntaxVisitors.SugarVisitors
                     desugaringResult.SuccessMatchingCheck = desugaringResult.SuccessMatchingCheck == null ?
                                                             (expression)equalCall :
                                                             bin_expr.LogicalAnd(desugaringResult.SuccessMatchingCheck, equalCall);
+                    desugaringResult.ElemTypeChecks.Add(GetTypeCompatibilityCheck(constParam.const_param, tupleItemCall));
                 }
-                // TODO: добавить узел для проверки типа элемента тапла
             }
+
             desugaringResult.TupleLengthCheck = GetTypeCompatibilityCheck(matchingExpression, new int32_const(tupleItems.Count));
             
             if (desugaringResult.SuccessMatchingCheck == null)
@@ -713,7 +737,7 @@ namespace SyntaxVisitors.SugarVisitors
 
             var statementsToAdd = new List<statement>();
             statementsToAdd.AddRange(desugaringResult.VarParametersDeclarations);
-
+            statementsToAdd.AddRange(desugaringResult.ElemTypeChecks);
             return statementsToAdd;
         }
 
@@ -726,6 +750,7 @@ namespace SyntaxVisitors.SugarVisitors
             var statementsToAdd = new List<statement>();
             statementsToAdd.Add(desugaringResult.TupleLengthCheck);
             statementsToAdd.AddRange(desugaringResult.VarParametersDeclarations);
+            statementsToAdd.AddRange(desugaringResult.ElemTypeChecks);
 
             return statementsToAdd;
         }
