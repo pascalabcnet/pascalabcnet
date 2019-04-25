@@ -142,8 +142,6 @@ type
 // -----------------------------------------------------
 //>>     Класс ObjectWPF # Class ObjectWPF 
 // -----------------------------------------------------
-  // Перечислимый тип выравнивания текста в свойстве Text или Number
-  //Alignment = (LeftTop,CenterTop,RightTop,LeftCenter,Center,RightCenter,LeftBottom,CenterBottom,RightBottom);
   ///!#
   /// Базовый класс графических объектов
   ObjectWPF = class
@@ -242,7 +240,7 @@ type
     /// Правый нижний угол графического объекта
     property RightBottom: Point read Pnt(Left + Height,Top + Height);
     /// Угол поворота графического объекта (по часовой стрелке)
-    property RotateAngle: real read InvokeReal(()->rot.Angle) write Invoke(procedure->rot.Angle := value);
+    property RotateAngle: real read InvokeReal(()->rot.Angle) write Invoke(procedure->begin rot.CenterX := Width/2; rot.CenterY := Height/2; rot.Angle := value end);
     /// Множитель масштабирования объекта  
     property ScaleFactor: real read InvokeReal(()->sca.ScaleX) write Invoke(()->begin (sca.ScaleX, sca.ScaleY) := (value,value); end);
     // Центр поворота графического объекта - запретил, т.к. это будет сбивать координаты объекта
@@ -439,13 +437,24 @@ type
   CircleWPF = class(BoundedObjectWPF)
   private
     procedure InitOb2(x,y,r: real; c: GColor) := InitOb1(x-r,y-r,2*r,2*r,c,new System.Windows.Shapes.Ellipse());
-    procedure WT(value: real) := (ob.Width,ob.Height) := (value,value);
-    procedure HT(value: real) := (ob.Width,ob.Height) := (value,value);
+    procedure WT(value: real) := begin (ob.Width,ob.Height) := (value,value); (gr.Width,gr.Height) := (value,value); end;
+    procedure HT(value: real) := begin (ob.Width,ob.Height) := (value,value); (gr.Width,gr.Height) := (value,value); end;
+    
+    {procedure Rad(value: real); 
+    begin
+      var delta := value - gr.Width/2;
+      Left -= delta;
+      Top -= delta;
+      (gr.Width,gr.Height) := (value*2,value*2);
+      Element.Points := ChangePointCollection(value,n);
+    end;}
+
     procedure Rad(value: real);
     begin
       //(ob as Ellipse).RenderedGeometry
-      Left -= value - ob.Width/2;
-      Top -= value - ob.Width/2;
+      Left -= value - gr.Width/2;
+      Top -= value - gr.Width/2;
+      (gr.Width,gr.Height) := (value*2,value*2);
       (ob.Width,ob.Height) := (value*2,value*2);
     end;  
     function GetInternalGeometry: Geometry; override := (ob as Shape).RenderedGeometry;
@@ -662,7 +671,7 @@ type
       write Invoke(()->begin Self.Element.bc := value; Self.Element.RecreateFormText; ob.InvalidateVisual end);
     /// Текст графического объекта
     property Text: string read InvokeString(()->Element.Text) 
-      write Invoke(procedure->begin Self.Element.Text := value; Self.Element.RecreateFormText; ; Width := Self.Element.Width; Height := Self.Element.Height; ob.InvalidateVisual end); override;
+      write Invoke(procedure->begin Self.Element.Text := value; Self.Element.RecreateFormText; Width := Self.Element.Width; Height := Self.Element.Height; ob.InvalidateVisual end); override;
     /// Декоратор поворота объекта
     function WithRotate(da: real): TextWPF := inherited WithRotate(da) as TextWPF;
   end;

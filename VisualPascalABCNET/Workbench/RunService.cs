@@ -188,7 +188,10 @@ namespace VisualPascalABC
                         }
                         catch (System.Exception e)
                         {
-                            throw;
+                            // SSM 22/04/19 - исправляю вылет оболочки при отсутствии exe файла
+                            this.RunnerManager_Exited(OutputFileName);
+                            WorkbenchServiceFactory.OperationsService.AddTextToOutputWindowSync(OutputFileName,"Произошла непредвиденная ошибка. Вероятно, на диске отсутствует .exe-файл. Повторите запуск");
+                            //throw;
                         }
                         if (!ProjectFactory.Instance.ProjectLoaded)
                             DocumentService.ActiveCodeFileDocument = tabPage;

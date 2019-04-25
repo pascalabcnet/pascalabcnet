@@ -108,7 +108,13 @@ namespace PascalABCCompiler.TreeConverter
         public void semantic_check_dot_question(SyntaxTree.question_colon_expression qce)
         {
             var av = convert_strong((qce.condition as bin_expr).left);
-            if (!av.type.is_class)
+            Type t = null;
+            if (av.type is compiled_generic_instance_type_node ctn2)
+                t = ctn2.compiled_original_generic.compiled_type;
+            else if (av.type is compiled_type_node ctn1)
+                t = ctn1.compiled_type;
+
+            if (!av.type.is_class && !(t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>)))
                 AddError(av.location, "OPERATOR_DQ_MUST_BE_USED_WITH_A_REFERENCE_TYPE_VALUETYPE");
         }
 
