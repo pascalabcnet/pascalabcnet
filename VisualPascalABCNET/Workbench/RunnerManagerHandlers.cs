@@ -21,8 +21,8 @@ namespace VisualPascalABC
 
         void RunnerManager_Started(string fileName)
         {
-            RunnerManager_Started_Sync(fileName);
-            //Workbench.BeginInvoke(new SetTextDelegate(RunnerManager_Started_Sync), fileName);
+            //RunnerManager_Started_Sync(fileName); - ни в коем случае этого не делать! Кнопка Run продолжает оставаться активной!!!
+            Workbench.BeginInvoke(new SetTextDelegate(RunnerManager_Started_Sync), fileName);
         }
 
         void ButtonsEnableDisable_RunStart()
