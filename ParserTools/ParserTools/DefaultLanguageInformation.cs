@@ -588,7 +588,7 @@ namespace PascalABCCompiler.Parsers
             }
             else
                 sb.Append(prepare_member_name(t.Name));
-            sb.Append(" = " + GetClassKeyword(t));
+            sb.Append(" = " + (t.IsSealed && t.IsAbstract ? "static ":"")+GetClassKeyword(t));
             bool bracket = false;
             if (t.IsEnum)
             {
