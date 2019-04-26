@@ -720,6 +720,25 @@ namespace SyntaxVisitors.SugarVisitors
         {
             var pattern = isExpression.right as deconstructor_pattern;
             var desugaringResult = DesugarDeconstructorPattern(pattern, isExpression.left);
+            /*
+            var isParent = isExpression.Parent;
+            expression isReplacement = isExpression;
+
+            while (!(isParent is if_node))
+            {
+                if (isParent is bin_expr binParent)
+                {
+                    if (binParent.right == isReplacement)
+                    {
+                        isReplacement = new bin_expr(binParent.left, binParent.right, binParent.operation_type, binParent.source_context);
+                    }
+                    if (binParent.left == isReplacement)
+                    {
+                        isReplacement = binParent.left;
+                    }
+                } 
+                isParent = isParent.Parent;
+            }*/
             ReplaceUsingParent(isExpression, desugaringResult.SuccessVariable);
             var statementsToAdd = desugaringResult.GetDeconstructionDefinitions(pattern.source_context);
             statementsToAdd.Add(GetMatchedExpressionCheck(isExpression.left));

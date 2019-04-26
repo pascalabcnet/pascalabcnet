@@ -3368,22 +3368,10 @@ collection_pattern_list_item
 	;
 
 collection_pattern_var_item
-	: tkVar identifier tkColon type_ref
-        {
-            $$ = new collection_pattern_var_parameter($2, $4, @$);
-        }
-    | tkVar identifier
+    : tkVar identifier
         {
             $$ = new collection_pattern_var_parameter($2, null, @$);
         }
-    | identifier tkColon type_ref 
-        {
-            $$ = new collection_pattern_var_parameter($1, $3, @$);
-        }
-	| identifier
-		{
-			$$ = new collection_pattern_var_parameter($1, null, @$);
-		}
     ;   
 
 const_pattern
@@ -3426,22 +3414,10 @@ tuple_pattern_item
 		{ 
 			$$ = new const_pattern_parameter($1, @$);
 		}
-	| tkVar identifier tkColon type_ref
-        {
-            $$ = new tuple_pattern_var_parameter($2, $4, @$);
-        }
     | tkVar identifier
         {
             $$ = new tuple_pattern_var_parameter($2, null, @$);
         }
-    | identifier tkColon type_ref 
-        {
-            $$ = new tuple_pattern_var_parameter($1, $3, @$);
-        }
-	| identifier
-		{
-			$$ = new tuple_pattern_var_parameter($1, null, @$);
-		}
 	| pattern_optional_var
         {
             $$ = new recursive_deconstructor_parameter($1 as pattern_node, @$);
