@@ -449,16 +449,18 @@ namespace SymbolTable
 	{
         public Scope DefScope;
 
-        public Scope LambdaDefScope;
+        // aab 26.04.19 Добавил для исправления захвата переменных в лямбде
+        // Для лямбды нужен обратный порядок поиска звхваченных переменных: сначала в месте определения, потом в классе
+        public Scope CurrentLambdaDefScope;
 
-		public ClassMethodScope(DSSymbolTable vSymbolTable, Scope TopScope, Scope DefScope, Scope LambdaDefScope, string Name):
+		public ClassMethodScope(DSSymbolTable vSymbolTable, Scope TopScope, Scope DefScope, Scope CurrentLambdaDefScope, string Name):
 			base(vSymbolTable,TopScope, Name)
 		{
             this.Name = Name;
             this.DefScope = null;
             if (DefScope != null)
                 this.DefScope = DefScope;
-            this.LambdaDefScope = LambdaDefScope;
+            this.CurrentLambdaDefScope = CurrentLambdaDefScope;
 		}
 	}
 	#endregion
@@ -686,9 +688,9 @@ namespace SymbolTable
 		{
 			return new UnitImplementationScope(this, InterfaceScope, UsedUnits, Name);
 		}
-		public ClassMethodScope CreateClassMethodScope(Scope TopScope, Scope DefScope, Scope LambdaDefScope = null, string Name = "")
+		public ClassMethodScope CreateClassMethodScope(Scope TopScope, Scope DefScope, Scope CurrentLambdaDefScope = null, string Name = "")
 		{
-			return new ClassMethodScope(this, TopScope, DefScope, LambdaDefScope, Name);
+			return new ClassMethodScope(this, TopScope, DefScope, CurrentLambdaDefScope, Name);
 		}
 		#endregion
 
@@ -1130,16 +1132,19 @@ namespace SymbolTable
                         }
                         if (CurrentArea is ClassMethodScope)//мы очутились в методе класса
                         {
-                            var lambdaDefScope = (CurrentArea as ClassMethodScope).LambdaDefScope;
-                            if (lambdaDefScope != null)
+                            // aab 26.04.19 begin
+                            // Сначала ищем в скоупе где была объявлена лямбда
+                            var currentLambdaDefScope = (CurrentArea as ClassMethodScope).CurrentLambdaDefScope;
+                            if (currentLambdaDefScope != null)
                             {
-                                var defScopeRes = FindAll(lambdaDefScope, Name, OnlyInType, OnlyInThisClass, lambdaDefScope);
+                                var defScopeRes = FindAll(currentLambdaDefScope, Name, OnlyInType, OnlyInThisClass, currentLambdaDefScope);
 
                                 if (defScopeRes != null && defScopeRes.Count > 0)
                                 {
                                     return defScopeRes;
                                 }
                             }
+                            // aab 26.04.19 end
 
                             FindAllInClass(Name, (CurrentArea as ClassMethodScope).TopScope, OnlyInThisClass, Result);//надо сделать поиск по его классу
 
