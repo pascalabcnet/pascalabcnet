@@ -1175,7 +1175,12 @@ namespace PascalABCCompiler.TreeConverter
             if (_ctn != null)
             {
                 common_method_node cmmn;
+
+                // aab 26.04.19
+                // Здесь topScope записывается именно в CurrentLambdaDefScope, а не в DefScope
+                // Во всех остальных случаях записывается в DefScope
                 SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.Scope, null, topScope, "lambda " + name);
+
                 //TODO:сделать static и virtual.
                 //TODO: interface and implementation scopes.
                 cmmn = new common_method_node(name, def_loc, _ctn, SemanticTree.polymorphic_state.ps_common, _fal, scope);
