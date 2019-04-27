@@ -1022,7 +1022,7 @@ namespace PascalABCCompiler.TreeConverter
         	SymbolInfo si = _ctn.find_first_in_type(compiler_string_consts.noteq_name);
         	if (si.sym_info is common_method_node)
         		return;
-        	SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.scope, _cmn.scope, si.ToString());
+        	SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.scope, _cmn.scope, null, si.ToString());
         	common_method_node cmn = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.noteq_name),SystemLibrary.SystemLibrary.bool_type,null,_ctn,
         	                                                SemanticTree.polymorphic_state.ps_static,SemanticTree.field_access_level.fal_public,scope);
         	cmn.IsOperator = true;
@@ -1056,7 +1056,7 @@ namespace PascalABCCompiler.TreeConverter
         	SymbolInfo si = _ctn.find_first_in_type(compiler_string_consts.eq_name);
         	if (si.sym_info is common_method_node)
         		return;
-        	SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope( _ctn.scope, _cmn.scope,  si.ToString());
+        	SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope( _ctn.scope, _cmn.scope, null,  si.ToString());
         	common_method_node cmn = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.eq_name),SystemLibrary.SystemLibrary.bool_type,null,_ctn,
         	                                                SemanticTree.polymorphic_state.ps_static,SemanticTree.field_access_level.fal_public,scope);
         	cmn.IsOperator = true;
@@ -1175,7 +1175,12 @@ namespace PascalABCCompiler.TreeConverter
             if (_ctn != null)
             {
                 common_method_node cmmn;
-                SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.Scope, topScope, "lambda " + name);
+
+                // aab 26.04.19
+                // Здесь topScope записывается именно в CurrentLambdaDefScope, а не в DefScope
+                // Во всех остальных случаях записывается в DefScope
+                SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.Scope, null, topScope, "lambda " + name);
+
                 //TODO:сделать static и virtual.
                 //TODO: interface and implementation scopes.
                 cmmn = new common_method_node(name, def_loc, _ctn, SemanticTree.polymorphic_state.ps_common, _fal, scope);
@@ -1235,7 +1240,8 @@ namespace PascalABCCompiler.TreeConverter
                     if (!extension_method)
                     {
                         common_method_node cmmn;
-                        SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.Scope, _cmn.scope, name=="create"? "constructor " + _ctn.Scope : "method " + name);
+                        SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.Scope, /*name.ToLower() == "create" ? _ctn.Scope :*/ _cmn.scope, null,
+                            name.ToLower() == "create" ? "constructor " + _ctn.Scope : "method " + name);
                         //TODO:сделать static и virtual.
                         //TODO: interface and implementation scopes.
                         cmmn = new common_method_node(name, def_loc, _ctn, SemanticTree.polymorphic_state.ps_common, _fal, scope);
@@ -1250,7 +1256,7 @@ namespace PascalABCCompiler.TreeConverter
                     else
                     {
                         common_namespace_function_node cnfnn;
-                        SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.scope, _cmn.scope, name);
+                        SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.scope, _cmn.scope, null, name);
                         cnfnn = new common_namespace_function_node(name, def_loc, _cmn, scope);
                         //_cmn.functions.AddElement(cnfnn);
                         syntax_tree_visitor.compiled_unit.namespaces[0].functions.AddElement(cnfnn);
@@ -1266,7 +1272,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     //string cname = compiler_string_consts.GetConnectedFunctionName(_compiled_tn.name, name);
                     common_namespace_function_node cnfnn;
-                    SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_compiled_tn.scope, _cmn.scope, name);
+                    SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_compiled_tn.scope, _cmn.scope, null, name);
                     cnfnn = new common_namespace_function_node(name, def_loc, _cmn, scope);
                     //_cmn.functions.AddElement(cnfnn);
                     syntax_tree_visitor.compiled_unit.namespaces[0].functions.AddElement(cnfnn);
