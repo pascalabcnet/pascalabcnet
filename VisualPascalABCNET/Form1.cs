@@ -1476,15 +1476,16 @@ namespace VisualPascalABC
             __showhelpinqueue();
         }
 
-        private void __checkforupdate(object state)
+        /*private void __checkforupdate(object state)
         {
             WorkbenchServiceFactory.UpdateService.CheckForUpdates();
-        }
+        }*/
 
         private void miCheckUpdates_Click(object sender, EventArgs e)
         {
-            if (!ThreadPool.QueueUserWorkItem(__checkforupdate))
-                __checkforupdate(null);
+            WorkbenchServiceFactory.UpdateService.CheckForUpdates();
+            //if (!ThreadPool.QueueUserWorkItem(__checkforupdate))
+            //    __checkforupdate(null);
         }
 
         private void cmCollapseRegions_Click(object sender, EventArgs e)

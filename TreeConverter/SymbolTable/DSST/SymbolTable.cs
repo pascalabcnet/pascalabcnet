@@ -449,13 +449,18 @@ namespace SymbolTable
 	{
         public Scope DefScope;
 
-		public ClassMethodScope(DSSymbolTable vSymbolTable, Scope TopScope, Scope DefScope, string Name):
+        // aab 26.04.19 Добавил для исправления захвата переменных в лямбде
+        // Для лямбды нужен обратный порядок поиска звхваченных переменных: сначала в месте определения, потом в классе
+        public Scope CurrentLambdaDefScope;
+
+		public ClassMethodScope(DSSymbolTable vSymbolTable, Scope TopScope, Scope DefScope, Scope CurrentLambdaDefScope, string Name):
 			base(vSymbolTable,TopScope, Name)
 		{
             this.Name = Name;
             this.DefScope = null;
             if (DefScope != null)
                 this.DefScope = DefScope;
+            this.CurrentLambdaDefScope = CurrentLambdaDefScope;
 		}
 	}
 	#endregion
@@ -683,9 +688,9 @@ namespace SymbolTable
 		{
 			return new UnitImplementationScope(this, InterfaceScope, UsedUnits, Name);
 		}
-		public ClassMethodScope CreateClassMethodScope(Scope TopScope, Scope DefScope, string Name = "")
+		public ClassMethodScope CreateClassMethodScope(Scope TopScope, Scope DefScope, Scope CurrentLambdaDefScope = null, string Name = "")
 		{
-			return new ClassMethodScope(this, TopScope, DefScope, Name);
+			return new ClassMethodScope(this, TopScope, DefScope, CurrentLambdaDefScope, Name);
 		}
 		#endregion
 
@@ -1127,12 +1132,36 @@ namespace SymbolTable
                         }
                         if (CurrentArea is ClassMethodScope)//мы очутились в методе класса
                         {
+                            // aab 26.04.19 begin
+                            // Сначала ищем в скоупе где была объявлена лямбда
+                            var currentLambdaDefScope = (CurrentArea as ClassMethodScope).CurrentLambdaDefScope;
+                            if (currentLambdaDefScope != null)
+                            {
+                                var defScopeRes = FindAll(currentLambdaDefScope, Name, OnlyInType, OnlyInThisClass, currentLambdaDefScope);
+
+                                if (defScopeRes != null && defScopeRes.Count > 0)
+                                {
+                                    return defScopeRes;
+                                }
+                            }
+                            // aab 26.04.19 end
+
                             FindAllInClass(Name, (CurrentArea as ClassMethodScope).TopScope, OnlyInThisClass, Result);//надо сделать поиск по его классу
+
 
                             if (Result.Count > 0) //если что-то нашли то заканчиваем
                                 return Result;
-                            CurrentArea = (CurrentArea as ClassMethodScope).DefScope;
-                            continue;
+
+                            var defScope = (CurrentArea as ClassMethodScope).DefScope;
+                            if (defScope != null)
+                            {
+                                var defScopeRes = FindAll(defScope, Name, OnlyInType, OnlyInThisClass, defScope);
+
+                                if (defScopeRes != null && defScopeRes.Count > 0)
+                                {
+                                    return defScopeRes;
+                                }
+                            }
                         }
                     }
                     CurrentArea = CurrentArea.TopScope;//Пошли вверх
