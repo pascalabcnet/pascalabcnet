@@ -203,8 +203,10 @@ type
 procedure SetPixels(x,y: real; w,h: integer; f: (integer,integer)->Color);
 /// Рисует пиксел в точке (x,y) цветом c
 procedure SetPixel(x,y: real; c: Color);
-/// Рисует двумерный массив пикселов с координатами левой верхней вершины (x,y)
+/// Рисует двумерный массив пикселей, левым верхнум углом на координатах окна (x;y)
 procedure DrawPixels(x,y: real; a: array [,] of Color);
+/// Рисует прямоугольную область (ax;ay;w;h) из двумерного массива пикселей, левым верхнум углом на координатах окна (x;y)
+procedure DrawPixels(x,y: real; ax,ay, w,h: integer; a: array [,] of Color);
 /// Рисует эллипс с центром в точке (x,y) и радиусами rx и ry
 procedure Ellipse(x,y,rx,ry: real);
 /// Рисует контур эллипса с центром в точке (x,y) и радиусами rx и ry
@@ -767,32 +769,45 @@ begin
   Result := dpic[fname];
 end;
 
-procedure DrawPixelsP(x,y: real; a: array [,] of Color);
+procedure DrawPixelsP(x,y:real; ax,ay, w,h: integer; a: array [,] of Color);
 begin
   var (scalex,scaley) := ScaleToDevice;
-  var sw := a.ColCount;
-  var sh := a.RowCount;
-  var bitmap := new WriteableBitmap(sw, sh, 96*scalex, 96*scaley, PixelFormats.Bgra32, nil);
-  var stride := sw * (bitmap.Format.BitsPerPixel div 8); // stride - это длина одной строки
+  var bitmap := new WriteableBitmap(w, h, 96*scalex, 96*scaley, PixelFormats.Bgra32, nil);
   
-  var pixels := new byte[a.RowCount*a.ColCount*4];
-  var p := 0;
-  for var i := 0 to a.RowCount-1 do
-  for var j := 0 to a.ColCount-1 do
-  begin
-    pixels[p] := a[i,j].B;
-    p += 1;
-    pixels[p] := a[i,j].G;
-    p += 1;
-    pixels[p] := a[i,j].R;
-    p += 1;
-    pixels[p] := a[i,j].A;
-    p += 1;
-  end;
-  bitmap.WritePixels(new Int32Rect(0, 0, sw, sh), pixels, stride, 0);
+  var stride := w*4; // stride - это размер одной строки в байтах
+  var size := stride*h;
+  
+  
+//  var pixels := new byte[w*h*4];
+//  var p := 0;
+//  for var dy := ay to ay+h-1 do
+//    for var dx := ax to ax+w-1 do
+//    begin
+//      pixels[p] := a[dx,dy].B; p += 1;
+//      pixels[p] := a[dx,dy].G; p += 1;
+//      pixels[p] := a[dx,dy].R; p += 1;
+//      pixels[p] := a[dx,dy].A; p += 1;
+//    end;
+//  bitmap.WritePixels(new Int32Rect(0, 0, w, h), pixels, stride, 0);
+  
+  
+  //так на 10-20% быстрее
+  var pixels := System.Runtime.InteropServices.Marshal.AllocHGlobal(size);
+  var curr_ptr := pixels;
+  for var dy := ay to ay+h-1 do
+    for var dx := ax to ax+w-1 do
+    begin
+      var c := a[dx,dy];
+      PByte(curr_ptr.ToPointer)^ := c.B; curr_ptr := curr_ptr + 1;
+      PByte(curr_ptr.ToPointer)^ := c.G; curr_ptr := curr_ptr + 1;
+      PByte(curr_ptr.ToPointer)^ := c.R; curr_ptr := curr_ptr + 1;
+      PByte(curr_ptr.ToPointer)^ := c.A; curr_ptr := curr_ptr + 1;
+    end;
+  bitmap.WritePixels(new Int32Rect(0, 0, w, h), pixels, size, stride);
+  System.Runtime.InteropServices.Marshal.FreeHGlobal(pixels);
   
   var dc := GetDC();
-  dc.DrawImage(bitmap, Rect(x, y, bitmap.PixelWidth, bitmap.PixelHeight));
+  dc.DrawImage(bitmap, Rect(x, y, w, h));
   ReleaseDC(dc);
 end;
 
@@ -915,7 +930,9 @@ procedure SetPixel(x,y: real; c: Color) := InvokeVisual(SetPixelP, x, y, c);
 procedure SetPixels(x,y: real; w,h: integer; f: (integer,integer)->Color)
   := InvokeVisual(SetPixelsP, x, y, w, h, f);
   
-procedure DrawPixels(x,y: real; a: array [,] of Color) := InvokeVisual(DrawPixelsP,x,y,a);
+procedure DrawPixels(x,y: real; a: array [,] of Color) := InvokeVisual(DrawPixelsP,x,y,0,0,a.GetLength(0),a.GetLength(1),a);
+
+procedure DrawPixels(x,y: real; ax,ay, w,h: integer; a: array [,] of Color) := InvokeVisual(DrawPixelsP,x,y,ax,ay,w,h,a);
 
 procedure ArcPFull(x, y, r, angle1, angle2: real; p: GPen) := ArcSectorPFull(x, y, r, angle1, angle2, nil, p, false);
 
