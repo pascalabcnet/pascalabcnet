@@ -220,7 +220,9 @@ namespace VisualPascalABC
                 DesignerUseable = false;
                 //DebuggerVisible = false;
             }
-        	PascalABCCompiler.StringResourcesLanguage.LoadDefaultConfig();
+
+            PascalABCCompiler.StringResourcesLanguage.LoadDefaultConfig();
+            
             //if (PascalABCCompiler.StringResourcesLanguage.AccessibleLanguages.Count > 0)
             //    PascalABCCompiler.StringResourcesLanguage.CurrentLanguageName = PascalABCCompiler.StringResourcesLanguage.AccessibleLanguages[0];
            
@@ -1474,9 +1476,16 @@ namespace VisualPascalABC
             __showhelpinqueue();
         }
 
+        /*private void __checkforupdate(object state)
+        {
+            WorkbenchServiceFactory.UpdateService.CheckForUpdates();
+        }*/
+
         private void miCheckUpdates_Click(object sender, EventArgs e)
         {
             WorkbenchServiceFactory.UpdateService.CheckForUpdates();
+            //if (!ThreadPool.QueueUserWorkItem(__checkforupdate))
+            //    __checkforupdate(null);
         }
 
         private void cmCollapseRegions_Click(object sender, EventArgs e)

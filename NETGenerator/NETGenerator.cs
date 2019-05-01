@@ -86,6 +86,20 @@ namespace PascalABCCompiler.NETGenerator
             get { return _TradeMark; }
             set { _TradeMark = value; NeedDefineVersionInfo = true; }
         }
+        private string _Title = "";
+
+        public string Title
+        {
+            get { return _Title; }
+            set { _Title = value; NeedDefineVersionInfo = true; }
+        }
+        private string _Description = "";
+
+        public string Description
+        {
+            get { return _Description; }
+            set { _Description = value; NeedDefineVersionInfo = true; }
+        }
 
         public string MainResourceFileName = null;
 
@@ -895,6 +909,10 @@ namespace PascalABCCompiler.NETGenerator
                 }
             ab.SetCustomAttribute(typeof(System.Runtime.CompilerServices.CompilationRelaxationsAttribute).GetConstructor(new Type[1] { TypeFactory.Int32Type }),
                                   new byte[] { 0x01, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00 });
+
+            ab.SetCustomAttribute(new CustomAttributeBuilder(typeof(System.Reflection.AssemblyTitleAttribute).GetConstructor(new Type[] { typeof(string) }), new object[] { options.Title }));
+
+            ab.SetCustomAttribute(new CustomAttributeBuilder(typeof(System.Reflection.AssemblyDescriptionAttribute).GetConstructor(new Type[] { typeof(string) }), new object[] { options.Description }));
 
             if (RunOnly)
             {
@@ -1719,6 +1737,27 @@ namespace PascalABCCompiler.NETGenerator
             }
         }
 
+        private void MakeAttribute(ICommonParameterNode prm)
+        {
+            ParameterBuilder pb = (ParameterBuilder)helper.GetParameter(prm).pb;
+            IAttributeNode[] attrs = prm.Attributes;
+            for (int i = 0; i < attrs.Length; i++)
+            {
+                try
+                {
+                    CustomAttributeBuilder cab = new CustomAttributeBuilder
+                    ((attrs[i].AttributeConstructor is ICompiledConstructorNode) ? (attrs[i].AttributeConstructor as ICompiledConstructorNode).constructor_info : helper.GetConstructor(attrs[i].AttributeConstructor).cnstr, get_constants(attrs[i].Arguments),
+                    get_named_properties(attrs[i].PropertyNames), get_constants(attrs[i].PropertyInitializers),
+                    get_named_fields(attrs[i].FieldNames), get_constants(attrs[i].FieldInitializers));
+                    pb.SetCustomAttribute(cab);
+                }
+                catch (ArgumentException ex)
+                {
+                    throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message.Replace("System.ArgumentException: ", ""), attrs[i].Location.document.file_name, attrs[i].Location.begin_line_num, attrs[i].Location.begin_column_num);
+                }
+            }
+        }
+
         private void MakeAttribute(ICommonFunctionNode func)
         {
             MethodBuilder mb = helper.GetMethod(func).mi as MethodBuilder;
@@ -2171,7 +2210,8 @@ namespace PascalABCCompiler.NETGenerator
                         ParameterAttributes pars = ParameterAttributes.None;
                         //if (func.parameters[j].parameter_type == parameter_type.var)
                         //  pars = ParameterAttributes.Out;
-                        methb.DefineParameter(j + 1, pars, parameters[j].name);
+                        ParameterBuilder pb = methb.DefineParameter(j + 1, pars, parameters[j].name);
+                        helper.AddParameter(parameters[j], pb);
                     }
                 }
                 else
@@ -2197,7 +2237,8 @@ namespace PascalABCCompiler.NETGenerator
                             ParameterAttributes pars = ParameterAttributes.None;
                             //if (func.parameters[j].parameter_type == parameter_type.var)
                             //  pars = ParameterAttributes.Out;
-                            methb.DefineParameter(j + 1, pars, parameters[j].name);
+                            ParameterBuilder pb = methb.DefineParameter(j + 1, pars, parameters[j].name);
+                            helper.AddParameter(parameters[j], pb);
                         }
                     }
                     else
@@ -8568,7 +8609,11 @@ namespace PascalABCCompiler.NETGenerator
                             mi = ti.tp.GetMethod("get_HasValue");
                         il.Emit(OpCodes.Call, mi);
                         if (ft == basic_function_type.objeq)
-                            il.Emit(OpCodes.Not);
+                        {
+                            il.Emit(OpCodes.Ldc_I4_0);
+                            il.Emit(OpCodes.Ceq);
+                        }
+                            
                         return;
                     }
                     else if (real_parameters[1].type.is_nullable_type && real_parameters[0] is INullConstantNode)
@@ -8585,7 +8630,10 @@ namespace PascalABCCompiler.NETGenerator
                             mi = ti.tp.GetMethod("get_HasValue");
                         il.Emit(OpCodes.Call, mi);
                         if (ft == basic_function_type.objeq)
-                            il.Emit(OpCodes.Not);
+                        {
+                            il.Emit(OpCodes.Ldc_I4_0);
+                            il.Emit(OpCodes.Ceq);
+                        }
                         return;
                     }
                     else if (real_parameters[0].type.is_nullable_type && real_parameters[1].type.is_nullable_type)

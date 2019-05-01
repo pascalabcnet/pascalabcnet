@@ -53,6 +53,7 @@ CANNOT_DECLARED_POINTER_TO_STRING_OR_ARRAY_TYPE=Cannot declare pointer to shorts
 OPERATOR_{0}_CAN_NOT_BE_APPLIED_TO_POINTER_TYPE=Operator '{0}' can not be applied to pointer type
 TYPE_NOT_DEFINED=The type is not defined
 ENUMENTAR_TYPE_VALUE_OVERFLOW=Arithmetic overflow
+DIVIDE_BY_ZERO_EXCEPTION=Divide by zero
 ONE_VARIABLE_ONE_INITIALIZATOR=Variable initializer can be used for only one variable
 NOT_OVERLOADED_OPERATOR=This operator can not be overloaded
 INAVLID_TYPE=Type is invalid

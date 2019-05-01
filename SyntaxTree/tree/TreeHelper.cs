@@ -1709,6 +1709,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class expression
     {
+        //public object semantic_ex;
         public expression Plus(expression e)
         {
             return new bin_expr(this, e, Operators.Plus);
@@ -1834,6 +1835,11 @@ namespace PascalABCCompiler.SyntaxTree
         {
             return "" + this.expr + " " + this.cast_op + " " + this.type_def;
         }
+    }
+
+    public partial class semantic_check_sugared_statement_node
+    {
+        public bool visited = false;
     }
 
     }

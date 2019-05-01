@@ -12,8 +12,9 @@ namespace VisualPascalABC
 
         //public static string DefaultWorkingDirectory = SystemDirectoryIdent + @"\WorkDirectory";
         public static string DefaultWorkingDirectory =
-            !Tools.IsUnix()?(System.IO.Path.GetPathRoot(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Windows)) + "PABCWork.NET"):
-            System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + "/" + "PABCWork.NET";
+            !Tools.IsUnix() ? 
+                (System.IO.Path.GetPathRoot(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Windows)) + "PABCWork.NET") :
+                System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + "/" + "PABCWork.NET";
         public static string DefaultOutputDirectory = DefaultWorkingDirectory + @"\Output";
 
         public static string DefaultLibSourceDirectory = SystemDirectoryIdent + @"\LibSource";
@@ -53,11 +54,15 @@ namespace VisualPascalABC
                 string PABCWorkIniFile = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName) + @"\pabcworknet.ini";
                 //System.Windows.Forms.MessageBox.Show(PABCWorkIniFile);
                 if (File.Exists(PABCWorkIniFile))
-                { 
-                    DefaultWorkingDirectory = File.ReadAllText(PABCWorkIniFile);
-                    HelpExamplesDirectory = DefaultWorkingDirectory + @"\Samples";
-                    HelpTutorialExamplesDirectory = DefaultWorkingDirectory + @"\Samples\!Tutorial";
-                    DefaultOutputDirectory = DefaultWorkingDirectory + @"\Output";
+                {
+                    var d = File.ReadAllText(PABCWorkIniFile);
+                    if (Directory.Exists(d))
+                    {
+                        DefaultWorkingDirectory = d;
+                        HelpExamplesDirectory = DefaultWorkingDirectory + @"\Samples";
+                        HelpTutorialExamplesDirectory = DefaultWorkingDirectory + @"\Samples\!Tutorial";
+                        DefaultOutputDirectory = DefaultWorkingDirectory + @"\Output";
+                    }
                 }   
             }
         }

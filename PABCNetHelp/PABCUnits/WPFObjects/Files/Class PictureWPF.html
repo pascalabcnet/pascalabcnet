@@ -33,7 +33,7 @@
 <tr><td><code><b>property</b> FontName: string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Имя шрифта текста внутри графического объекта</td></tr>
 <tr><td><code><b>property</b> FontSize: real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Размер текста внутри графического объекта</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Размер шрифта текста внутри графического объекта</td></tr>
 <tr><td><code><b>property</b> Height: real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Высота графического объекта</td></tr>
 <tr><td><code><b>property</b> Left: real;</code>
@@ -50,8 +50,16 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Правый верхний угол графического объекта</td></tr>
 <tr><td><code><b>property</b> RotateAngle: real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Угол поворота графического объекта (по часовой стрелке)</td></tr>
-<tr><td><code><b>property</b> RotateCenter: Point;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Центр поворота графического объекта</td></tr>
+<tr><td><code><b>property</b> ScaledHeight: real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отмасштабированная высота графического объекта</td></tr>
+<tr><td><code><b>property</b> ScaledSize: GSize;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отмасштабированный размер графического объекта</td></tr>
+<tr><td><code><b>property</b> ScaledWidth: real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отмасштабированная ширина графического объекта</td></tr>
+<tr><td><code><b>property</b> ScaleFactor: real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Множитель масштабирования объекта</td></tr>
+<tr><td><code><b>property</b> Size: GSize;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Размер графического объекта</td></tr>
 <tr><td><code><b>property</b> Text: string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Текст внутри графического объекта</td></tr>
 <tr><td><code><b>property</b> TextAlignment: Alignment;</code>
@@ -64,8 +72,18 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ширина графического объекта</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы базового класса ObjectWPF</font></td></tr>
 
-<tr><tr><td><code><b>procedure</b> AddChild(ch: ObjectWPF);</code>
+<tr><tr><td><code><b>procedure</b> AddChild(ch: ObjectWPF; al: Alignment := Alignment.LeftTop);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Добавляет к графическому объекту дочерний</td></tr>
+<tr><td><code><b>procedure</b> AnimMoveEnd;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Завершает анимацию перемещения</td></tr>
+<tr><td><code><b>procedure</b> AnimMoveOn(a,b: real; sec: real := 1);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Анимирует перемещение графического объекта на вектор (a,b) в течение sec секунд</td></tr>
+<tr><td><code><b>procedure</b> AnimMoveTo(x,y: real; sec: real := 1);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Анимирует перемещение графического объекта к точке (x,y) в течение sec секунд</td></tr>
+<tr><td><code><b>procedure</b> AnimRotate(a: real; sec: real := 1);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Анимирует вращение графического объекта на угол a в течение sec секунд</td></tr>
+<tr><td><code><b>procedure</b> AnimScale(a: real; sec: real := 1);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Анимирует масштабирование графического объекта на величину a в течение sec секунд</td></tr>
 <tr><td><code><b>procedure</b> DeleteChild(ch: ObjectWPF);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет из графического объекта дочерний</td></tr>
 <tr><td><code><b>procedure</b> Destroy;</code>
@@ -78,14 +96,18 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает графический объект на вектор (a,b)</td></tr>
 <tr><td><code><b>procedure</b> MoveTo(x,y: real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает левый верхний угол графического объекта к точке (x,y)</td></tr>
-<tr><td><code><b>procedure</b> Rotate(da: real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Поворачивает графический объект по часовой стрелке на угол da</td></tr>
+<tr><td><code><b>procedure</b> Rotate(a: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Поворачивает графический объект по часовой стрелке на угол a</td></tr>
+<tr><td><code><b>procedure</b> Scale(r: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Масштабирует графический объект в r раз относительно текущего размера</td></tr>
 <tr><td><code><b>procedure</b> ToBack;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переносит графический объект на задний план</td></tr>
 <tr><td><code><b>procedure</b> ToFront;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переносит графический объект на передний план</td></tr>
 </tr>
-<tr><tr><td><code><b>function</b> WithRotate(da: real): ObjectWPF;</code>
+<tr><tr><td><code><b>function</b> Intersects(ob: ObjectWPF): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Определяет, пересекается ли объект с объектом ob</td></tr>
+<tr><td><code><b>function</b> WithRotate(da: real): ObjectWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор поворота объекта</td></tr>
 <tr><td><code><b>function</b> WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): ObjectWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор текста объекта</td></tr>

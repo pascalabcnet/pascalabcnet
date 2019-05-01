@@ -848,7 +848,10 @@ namespace PascalABCCompiler.TreeConverter
             motivation_keeper.reset(); // Это можно закомментировать - все тесты проходят SSM 2/1/17
             //\ssyy
             expression_node en = ret.visit(expr);
-            //expr.semantic_ex = en; // SSM 3.1.17 кешируем для последующего обращения
+
+            //if (lambdaProcessingState == LambdaProcessingState.FinishPhase)
+            //    expr.semantic_ex = en; // SSM 3.1.17 кешируем для последующего обращения
+
             if (en == null)
                 AddError(get_location(expr), "EXPRESSION_EXPECTED");
             //en.loc=get_location(expr);
@@ -1104,6 +1107,9 @@ namespace PascalABCCompiler.TreeConverter
             if (right_type.semantic_node_type == semantic_node_type.delegated_method && !left_type.IsDelegate && left_type.semantic_node_type != semantic_node_type.delegated_method)
             {
                 try_convert_typed_expression_to_function_call(ref right);
+                if (name != compiler_string_consts.plusassign_name && name != compiler_string_consts.minusassign_name)
+                    try_convert_typed_expression_to_function_call(ref left);
+
                 right_type = right.type;
             }
             if (right_type.semantic_node_type == semantic_node_type.delegated_method && name != compiler_string_consts.plusassign_name && name != compiler_string_consts.minusassign_name)
@@ -2584,7 +2590,7 @@ namespace PascalABCCompiler.TreeConverter
                 foreach (var_def_statement vds in vd.list)
                 {
                     var lambdaSearcher = new LambdaSearcher(vds);
-                    if (lambdaSearcher.CheckIfContainsLambdas() && !(vds.inital_value is function_lambda_definition)) // SSM 27/10/17
+                    if (lambdaSearcher.CheckIfContainsLambdas() && !(vds.inital_value is function_lambda_definition) && vds.inital_value != null) // SSM 27/10/17
                     {
                         procedure_definition func = 
                             new short_func_definition(
@@ -12349,7 +12355,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         type_node spec_type = ret.visit(ntr);
                         if (spec_type is ref_type_node || spec_type == SystemLibrary.SystemLibrary.void_type || spec_type == SystemLibrary.SystemLibrary.pointer_type)
-                            ErrorsList.Add(new SimpleSemanticError(get_location(specificators[i]), "INAVLID_TYPE"));
+                            AddError(new SimpleSemanticError(get_location(specificators[i]), "INAVLID_TYPE"));
                         if (spec_type.IsInterface)
                         {
                             if (used_interfs[spec_type] != null)
@@ -12380,6 +12386,8 @@ namespace PascalABCCompiler.TreeConverter
                                 {
                                     AddError(get_location(specificators[i]), "ENUM_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR");
                                 }
+                                if (spec_type.IsStatic)
+                                    AddError(get_location(specificators[i]), "STATIC_CLASS_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR");
                                 check_cycle_inheritance(param, spec_type);
                                 param.SetBaseType(spec_type);
                             }
@@ -13339,6 +13347,7 @@ namespace PascalABCCompiler.TreeConverter
                     context.top_function.scope.AddSymbol(compiler_string_consts.self_word, new SymbolInfo(cp));
                 }
             }
+
             if (_procedure_header is SyntaxTree.constructor)
             {
                 common_method_node cmnode = context.top_function as common_method_node;
@@ -13354,6 +13363,17 @@ namespace PascalABCCompiler.TreeConverter
                     AddError(get_location(_procedure_header), "EXTENSION_CONSTRUCTOR_NOT_ALLOWED");
             }
 
+            if (context.top_function.IsOperator)
+            {
+                if (context.top_function is common_method_node)
+                {
+                    common_method_node cmmn = context.top_function as common_method_node;
+                    if (cmmn.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
+                    {
+                        AddError(get_location(_procedure_header), "OVERLOADED_OPERATOR_MUST_BE_STATIC_FUNCTION");
+                    }
+                }
+            }
             bool unique = context.close_function_params(body_exists);
 
             if (context.converted_type != null && context.converted_type.IsInterface)
@@ -13727,9 +13747,10 @@ namespace PascalABCCompiler.TreeConverter
             }
             first_param = false;
             common_method_node cnode = context.top_function as common_method_node;
+            parameter_list pars = context.top_function.parameters;
             if (cnode != null && cnode.IsOperator)
             {
-                parameter_list pars = context.top_function.parameters;
+                
                 if (cnode.name != compiler_string_consts.implicit_operator_name && cnode.name != compiler_string_consts.explicit_operator_name)
                 {
                     bool all_types_mismatch = true;
@@ -13751,14 +13772,18 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     AddError(convertion_data_and_alghoritms.get_location(pars[pars.Count - 1]), "PARAMS_IN_OPERATOR");
                 }
-                int pcount = name_reflector.get_params_count(cnode.name);
+                
+            }
+            if (context.top_function.IsOperator)
+            {
+                int pcount = name_reflector.get_params_count(context.top_function.name);
                 if (pcount != pars.Count)
                 {
-                    if (cnode.name != compiler_string_consts.minus_name && cnode.name != compiler_string_consts.plus_name)
-                        AddError(cnode.loc, "OPERATOR_{0}_PARAMETERS_COUNT_MUST_EQUAL_{1}", cnode.name, pcount);
+                    if (context.top_function.name != compiler_string_consts.minus_name && context.top_function.name != compiler_string_consts.plus_name)
+                        AddError(context.top_function.loc, "OPERATOR_{0}_PARAMETERS_COUNT_MUST_EQUAL_{1}", context.top_function.name, pcount);
                     else
                     if (pars.Count != 1 && pars.Count != 2)
-                        AddError(cnode.loc, "OPERATOR_{0}_PARAMETERS_COUNT_MUST_EQUAL_{1}", cnode.name, pcount);
+                        AddError(context.top_function.loc, "OPERATOR_{0}_PARAMETERS_COUNT_MUST_EQUAL_{1}", context.top_function.name, pcount);
                 }
             }
         }
@@ -14068,6 +14093,24 @@ namespace PascalABCCompiler.TreeConverter
                 if (ii == null)
                 {
                     AddError(new OrdinalTypeExpected(get_location(td)));
+                }
+                if (tn.IsEnum && tn is common_type_node)
+                {
+                    common_type_node enum_ctn = tn as common_type_node;
+                    int c = 0;
+                    for (int i = 0; i < enum_ctn.const_defs.Count; i++)
+                    {
+                        class_constant_definition ccdn = enum_ctn.const_defs[i];
+                        if (ccdn.constant_value != null)
+                        {
+                            int nextc = Convert.ToInt32(ccdn.constant_value.value);
+                            if (nextc - c != 1 && i != 0)
+                                AddError(get_location(td), "ENUM_MUST_HAVE_SEQUENCED_VALUES");
+                            else if (nextc != 0 && i == 0)
+                                AddError(get_location(td), "ENUM_MUST_HAVE_SEQUENCED_VALUES");
+                            c = nextc;
+                        }
+                    }
                 }
                 if (tn.type_special_kind == SemanticTree.type_special_kind.diap_type)
                 {
@@ -20085,6 +20128,9 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.semantic_check_sugared_statement_node st)
         {
+            /*if (st.visited)
+                return;
+            st.visited = true;*/
             if (st.typ as System.Type == typeof(SyntaxTree.assign_tuple))
             {
                 var vars = st.lst[0] as SyntaxTree.addressed_value_list;
@@ -20120,6 +20166,7 @@ namespace PascalABCCompiler.TreeConverter
                 AddError(get_location(st), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", (st.typ as System.Type)?.Name ?? "Unknown");
             }
             ret.reset(); // обязательно очистить - этот узел в семантику ничего не должен приносить!
+            ReplaceUsingParent(st, new PascalABCCompiler.SyntaxTree.empty_statement());
         }
 
         public override void visit(SyntaxTree.semantic_check_sugared_var_def_statement_node st)
