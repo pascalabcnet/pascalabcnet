@@ -211,7 +211,7 @@ namespace VisualPascalABC.Utils
             //return null;
         }
         public string TempBatFile = null;
-        public void Start(string command, string arguments, bool redirectIO, bool redirectErrors, bool RunWithPause, bool attachDebugger, bool fictive_attach)
+        public void Start(string command, string arguments, bool redirectIO, bool redirectErrors, bool RunWithPause, bool attachDebugger, bool fictive_attach, WorkbenchRunService wbrs)
 		{
             RedirectIO=redirectIO;
 			process = new Process();
@@ -266,6 +266,9 @@ namespace VisualPascalABC.Utils
             //ssyy
             process.PriorityClass = ProcessPriorityClass.BelowNormal;
             //\ssyy
+
+            wbrs.crstate = CompileRunState.None;
+
             if (attachDebugger)
             {
                 WorkbenchServiceFactory.DebuggerManager.Attach((uint)process.Id,command,!fictive_attach,false);
