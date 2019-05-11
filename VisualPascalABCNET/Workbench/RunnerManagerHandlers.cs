@@ -96,7 +96,7 @@ namespace VisualPascalABC
             else
             {
                 ButtonsEnableDisable_RunStop();
-            } 
+            } // SSM 22/04/19 - этот код перенесен в конец WaitCallback_DeleteEXEAndPDB - нет, там исключение
         }
 
         void RunnerManager_RunnerManagerUnhanledRuntimeException(string id, string ExceptionType, string ExceptionMessage, string StackTraceData, List<RunManager.StackTraceItem> StackTrace)
@@ -147,16 +147,16 @@ namespace VisualPascalABC
             }
         }
 
-        void WaitCallback_DeleteEXEAndPDB(string fileName)
+        void WaitCallback_DeleteEXEAndPDB(object state)
         {
             //int i = 0;
+            string fileName = (string)state;
             //while (i < 20) // 20 раз пытаться удалять! Это сильно!
             //{
             try
             {
-                if (crstate == CompileRunState.None) // а если компилируется или запускается, то ничего не делать
-                    if (Workbench.UserOptions.DeleteEXEAfterExecute && File.Exists(fileName))
-                        File.Delete(fileName);
+                if (Workbench.UserOptions.DeleteEXEAfterExecute && File.Exists(fileName))
+                    File.Delete(fileName);
             }
             catch
             {
@@ -191,6 +191,18 @@ namespace VisualPascalABC
             {
                 WorkbenchServiceFactory.OperationsService.AddTextToCompilerMessagesSync("Не удалось удалить bat-файл из словаря RunnerManager.TempBatFiles");
             }
+            // SSM 22/04/19 - этот код перенесён сюда из RunnerManager_Exited_Sync - нет, тут исключение!
+            /*if (!ProjectFactory.Instance.ProjectLoaded)
+            {
+                if (Tools.FileNameToLower(WorkbenchServiceFactory.Workbench.CurrentEXEFileName) == fileName)
+                {
+                    ButtonsEnableDisable_RunStop();
+                }
+            }
+            else
+            {
+                ButtonsEnableDisable_RunStop();
+            }*/
             //return;
             //System.Threading.Thread.Sleep(20);
             //i++;

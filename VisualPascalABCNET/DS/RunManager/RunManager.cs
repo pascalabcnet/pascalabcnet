@@ -270,7 +270,7 @@ namespace VisualPascalABC
         public Dictionary<string, string> TempBatFiles = new Dictionary<string, string>();
 
 
-        public void Run(string fileName,string args,bool redirectIO,bool redirectErrors, bool RunWithPause, string WorkingDirectory, bool attachDebugger, bool fictive_attach, WorkbenchRunService wbrs)
+        public void Run(string fileName,string args,bool redirectIO,bool redirectErrors, bool RunWithPause, string WorkingDirectory, bool attachDebugger, bool fictive_attach)
         {
             Utils.ProcessRunner PRunner = new Utils.ProcessRunner();
             PRunner.ProcessExited += new EventHandler(PRunner_ProcessExited);
@@ -283,7 +283,7 @@ namespace VisualPascalABC
                 Starting(fileName);
             try
             {
-                PRunner.Start(fileName, args, redirectIO, redirectErrors, RunWithPause, attachDebugger, fictive_attach, wbrs);
+                PRunner.Start(fileName, args, redirectIO, redirectErrors, RunWithPause, attachDebugger, fictive_attach);
                 if ((PRunner.TempBatFile != null) && !TempBatFiles.ContainsKey(fileName))
                     TempBatFiles.Add(fileName, PRunner.TempBatFile);
                 if (redirectIO)
@@ -350,18 +350,18 @@ namespace VisualPascalABC
             pr.process.StandardInput.BaseStream.BeginWrite(buffer, 0, buffer.Length, Write_Callback, so);
         }
 
-        /*public void Run(string fileName, bool redirectIO, string ModeName, bool RunWithPause, string WorkingDirectory, bool attachDebugger, bool fictive_attach)
+        public void Run(string fileName, bool redirectIO, string ModeName, bool RunWithPause, string WorkingDirectory, bool attachDebugger, bool fictive_attach)
         {
             if (ModeName == null) 
                 ModeName = string.Empty;
             Run(fileName, ModeName, redirectIO, redirectIO, RunWithPause, WorkingDirectory, attachDebugger, fictive_attach);
-        }*/
+        }
 
-        public void Run(string fileName, bool redirectIO, string ModeName, bool RunWithPause, string WorkingDirectory, string CommandLineArguments, bool attachDebugger, bool fictive_attach, WorkbenchRunService wbrs)
+        public void Run(string fileName, bool redirectIO, string ModeName, bool RunWithPause, string WorkingDirectory, string CommandLineArguments, bool attachDebugger, bool fictive_attach)
         {
             if (ModeName == null)
                 ModeName = string.Empty;
-            Run(fileName, ModeName+(string.IsNullOrEmpty(CommandLineArguments)?"":" "+CommandLineArguments), redirectIO, redirectIO, RunWithPause, WorkingDirectory, attachDebugger, fictive_attach, wbrs);
+            Run(fileName, ModeName+(string.IsNullOrEmpty(CommandLineArguments)?"":" "+CommandLineArguments), redirectIO, redirectIO, RunWithPause, WorkingDirectory, attachDebugger, fictive_attach);
         }
 
         void PRunner_ProcessExited(object sender, EventArgs e)
