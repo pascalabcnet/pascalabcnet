@@ -200,13 +200,13 @@ type
 //>>     Графические примитивы # GraphWPF primitives
 // -----------------------------------------------------
 /// Рисует пиксел в точке (x,y) цветом c
-procedure SetPixels(x,y: real; w,h: integer; f: (integer,integer)->Color);
-/// Рисует пиксел в точке (x,y) цветом c
 procedure SetPixel(x,y: real; c: Color);
-/// Рисует двумерный массив пикселей, левым верхнум углом на координатах окна (x;y)
-procedure DrawPixels(x,y: real; a: array [,] of Color);
-/// Рисует прямоугольную область (ax;ay;w;h) из двумерного массива пикселей, левым верхнум углом на координатах окна (x;y)
-procedure DrawPixels(x,y: real; ax,ay, w,h: integer; a: array [,] of Color);
+/// Рисует прямоугольник пикселей размера (w,h), задаваемых отображением f, начиная с левого верхнего угла с координатами (x,y)
+procedure SetPixels(x,y: real; w,h: integer; f: (integer,integer)->Color);
+/// Рисует двумерный массив пикселей pixels начиная с левого верхнего угла с координатами (x,y)
+procedure DrawPixels(x,y: real; pixels: array [,] of Color);
+/// Рисует прямоугольную область (px,py,pw,ph) двумерного массива пикселей pixels начиная с левого верхнего угла с координатами (x,y)
+procedure DrawPixels(x,y: real; pixels: array [,] of Color; px,py,pw,ph: integer);
 /// Рисует эллипс с центром в точке (x,y) и радиусами rx и ry
 procedure Ellipse(x,y,rx,ry: real);
 /// Рисует контур эллипса с центром в точке (x,y) и радиусами rx и ry
@@ -769,13 +769,13 @@ begin
   Result := dpic[fname];
 end;
 
-procedure DrawPixelsP(x,y:real; ax,ay, w,h: integer; a: array [,] of Color);
+procedure DrawPixelsP(x,y:real; px,py,pw,ph: integer; a: array [,] of Color);
 begin
   var (scalex,scaley) := ScaleToDevice;
-  var bitmap := new WriteableBitmap(w, h, 96*scalex, 96*scaley, PixelFormats.Bgra32, nil);
+  var bitmap := new WriteableBitmap(pw, ph, 96*scalex, 96*scaley, PixelFormats.Bgra32, nil);
   
-  var stride := w*4; // stride - это размер одной строки в байтах
-  var size := stride*h;
+  var stride := pw*4; // stride - это размер одной строки в байтах
+  var size := stride*ph;
   
   
 //  var pixels := new byte[w*h*4];
@@ -794,8 +794,8 @@ begin
   //так на 10-20% быстрее
   var pixels := System.Runtime.InteropServices.Marshal.AllocHGlobal(size);
   var curr_ptr := pixels;
-  for var dy := ay to ay+h-1 do
-    for var dx := ax to ax+w-1 do
+  for var dy := py to py+ph-1 do
+    for var dx := px to px+pw-1 do
     begin
       var c := a[dx,dy];
       PByte(curr_ptr.ToPointer)^ := c.B; curr_ptr := curr_ptr + 1;
@@ -803,11 +803,11 @@ begin
       PByte(curr_ptr.ToPointer)^ := c.R; curr_ptr := curr_ptr + 1;
       PByte(curr_ptr.ToPointer)^ := c.A; curr_ptr := curr_ptr + 1;
     end;
-  bitmap.WritePixels(new Int32Rect(0, 0, w, h), pixels, size, stride);
+  bitmap.WritePixels(new Int32Rect(0, 0, pw, ph), pixels, size, stride);
   System.Runtime.InteropServices.Marshal.FreeHGlobal(pixels);
   
   var dc := GetDC();
-  dc.DrawImage(bitmap, Rect(x, y, w, h));
+  dc.DrawImage(bitmap, Rect(x, y, pw, ph));
   ReleaseDC(dc);
 end;
 
@@ -930,9 +930,9 @@ procedure SetPixel(x,y: real; c: Color) := InvokeVisual(SetPixelP, x, y, c);
 procedure SetPixels(x,y: real; w,h: integer; f: (integer,integer)->Color)
   := InvokeVisual(SetPixelsP, x, y, w, h, f);
   
-procedure DrawPixels(x,y: real; a: array [,] of Color) := InvokeVisual(DrawPixelsP,x,y,0,0,a.GetLength(0),a.GetLength(1),a);
+procedure DrawPixels(x,y: real; pixels: array [,] of Color) := InvokeVisual(DrawPixelsP,x,y,0,0,pixels.GetLength(0),pixels.GetLength(1),pixels);
 
-procedure DrawPixels(x,y: real; ax,ay, w,h: integer; a: array [,] of Color) := InvokeVisual(DrawPixelsP,x,y,ax,ay,w,h,a);
+procedure DrawPixels(x,y: real; pixels: array [,] of Color; px,py,pw,ph: integer) := InvokeVisual(DrawPixelsP,x,y,px,py,pw,ph,pixels);
 
 procedure ArcPFull(x, y, r, angle1, angle2: real; p: GPen) := ArcSectorPFull(x, y, r, angle1, angle2, nil, p, false);
 
