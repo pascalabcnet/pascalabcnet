@@ -1179,7 +1179,7 @@ namespace PascalABCCompiler.TreeConverter
                 // aab 26.04.19
                 // Здесь topScope записывается именно в CurrentLambdaDefScope, а не в DefScope
                 // Во всех остальных случаях записывается в DefScope
-                SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.Scope, null, topScope, "lambda " + name);
+                SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.Scope, topScope, null, "lambda " + name); // aab 09.05.19 Временно вернул обратно
 
                 //TODO:сделать static и virtual.
                 //TODO: interface and implementation scopes.

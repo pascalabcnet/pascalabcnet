@@ -13,7 +13,7 @@ namespace VisualPascalABC
         public bool EnableFolding = false; // SSM 4.09.08
         public bool ShowMathBraket = false;
         public bool ConverTabsToSpaces = true;
-        public bool deleteEXEAfterExecute = true;
+        public bool deleteEXEAfterExecute = false;
         public bool deletePDBAfterExecute = true;
         public bool UseOutputDirectory = false;
         public string OutputDirectory = null;
