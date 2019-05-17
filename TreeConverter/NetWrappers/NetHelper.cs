@@ -447,7 +447,8 @@ namespace PascalABCCompiler.NetHelper
                         //if (namespaces[s] == null) ns_ht.Add(s,s);
                         ns_ht[s] = s;
                         namespaces[s] = t;
-                        if (pos != -1)
+                        // SSM 17.05.19 Пробую запретить uses Reflection: https://github.com/pascalabcnet/pascalabcnet/issues/1941
+                        /*if (pos != -1)
                         {
                             string[] sub_ns_arr = s.Split('.');
                             string sub_ns_str = sub_ns_arr[sub_ns_arr.Length - 1];
@@ -459,7 +460,7 @@ namespace PascalABCCompiler.NetHelper
                                 sub_ns_str = sub_ns_arr[ind] + "." + sub_ns_str;
                                 ind--;
                             }
-                        }
+                        }*/
                         while (pos != -1)
                         {
                             s = s.Substring(0, pos);
