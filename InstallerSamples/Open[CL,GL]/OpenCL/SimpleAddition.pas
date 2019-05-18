@@ -1,4 +1,4 @@
-﻿uses POpenCL;
+﻿uses OpenCL;
 uses System;
 uses System.Runtime.InteropServices;
 
@@ -44,7 +44,7 @@ begin
   
   var mem := Marshal.AllocHGlobal(40);
   Marshal.Copy(ArrFill(10,1),0,mem,10);
-  var memobj := cl.CreateBuffer(context, MemoryFlags(MemoryFlags.READ_WRITE or MemoryFlags.USE_HOST_PTR), new UIntPtr(40), pointer(mem), ec); // USE_HOST_PTR значит что нужно скопировать память из mem в memobj
+  var memobj := cl.CreateBuffer(context, MemoryFlags.READ_WRITE or MemoryFlags.USE_HOST_PTR, new UIntPtr(40), mem, ec); // USE_HOST_PTR значит что нужно скопировать память из mem в memobj
   ec.RaiseIfError;
   
   cl.SetKernelArg(kernel, 0, new UIntPtr(UIntPtr.Size), memobj).RaiseIfError;

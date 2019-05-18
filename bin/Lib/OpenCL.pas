@@ -5,7 +5,7 @@
 ///Справка:
 ///www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_API.html
 ///
-unit POpenCL;
+unit OpenCL;
 
 interface
 
@@ -354,19 +354,23 @@ type
     
     {$region Buffer}
     
-    static function CreateBuffer(context: cl_context; flags: MemoryFlags; size: UIntPtr; host_ptr: pointer; var errcode_ret: ErrorCode): cl_mem;
+    static function CreateBuffer(context: cl_context; flags: MemoryFlags; size: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateBuffer';
     static function CreateBuffer(context: cl_context; flags: MemoryFlags; size: UIntPtr; host_ptr: pointer; errcode_ret: ^ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateBuffer';
     
-    static function EnqueueReadBuffer(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: cl_bool; offset: UIntPtr; size: UIntPtr; ptr: pointer; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    static function EnqueueReadBuffer(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: cl_bool; offset: UIntPtr; size: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReadBuffer';
+    static function EnqueueReadBuffer(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: cl_bool; offset: UIntPtr; size: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueReadBuffer';
     static function EnqueueReadBuffer(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: cl_bool; offset: UIntPtr; size: UIntPtr; ptr: pointer; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueReadBuffer';
     
-    static function EnqueueWriteBuffer(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: cl_bool; offset: UIntPtr; size: UIntPtr; ptr: ^void; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    static function EnqueueWriteBuffer(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: cl_bool; offset: UIntPtr; size: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueWriteBuffer';
-    static function EnqueueWriteBuffer(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: cl_bool; offset: UIntPtr; size: UIntPtr; ptr: ^void; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    static function EnqueueWriteBuffer(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: cl_bool; offset: UIntPtr; size: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueWriteBuffer';
+    static function EnqueueWriteBuffer(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: cl_bool; offset: UIntPtr; size: UIntPtr; ptr: pointer; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueWriteBuffer';
     
     static function EnqueueCopyBuffer(command_queue: cl_command_queue; src_buffer: cl_mem; dst_buffer: cl_mem; src_offset: UIntPtr; dst_offset: UIntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
