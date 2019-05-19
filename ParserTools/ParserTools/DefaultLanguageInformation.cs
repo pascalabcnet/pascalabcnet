@@ -520,19 +520,17 @@ namespace PascalABCCompiler.Parsers
 
         private bool enum_out_of_order(FieldInfo[] fields) //возвращает true, если значения полей этого enum'а идут не по порядку или не с нуля (IDE issue #117)
         {
-            bool result = false;
             for (int i = 0; i < fields.Length; i++)
             {
                 if (fields[i].Name != "value__")
                 {
                     if (i - 1 != (int)fields[i].GetRawConstantValue())
                     {
-                        result = true;
-                        break;
+                        return true;
                     }
                 }
             }
-            return result;
+            return false;
         }
 
         private string get_enum_constants(Type t)
