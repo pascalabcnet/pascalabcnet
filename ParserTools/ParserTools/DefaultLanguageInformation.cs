@@ -518,9 +518,27 @@ namespace PascalABCCompiler.Parsers
             return sb.ToString();
         }
 
+        private bool enum_out_of_order(FieldInfo[] fields) //возвращает true, если значения полей этого enum'а идут не по порядку или не с нуля (IDE issue #117)
+        {
+            bool result = false;
+            for (int i = 0; i < fields.Length; i++)
+            {
+                if (fields[i].Name != "value__")
+                {
+                    if (i - 1 != (int)fields[i].GetRawConstantValue())
+                    {
+                        result = true;
+                        break;
+                    }
+                }
+            }
+            return result;
+        }
+
         private string get_enum_constants(Type t)
         {
             FieldInfo[] fields = t.GetFields(BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static);
+            bool outoforder = enum_out_of_order(fields);
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("(");
             for (int i = 0; i < fields.Length; i++)
@@ -529,8 +547,11 @@ namespace PascalABCCompiler.Parsers
                 {
                     sb.Append(' ', 4);
                     sb.Append(fields[i].Name);
-                    sb.Append(" = ");
-                    sb.Append(fields[i].GetRawConstantValue());
+                    if (outoforder)
+                    {
+                        sb.Append(" = ");
+                        sb.Append(fields[i].GetRawConstantValue());
+                    }
                     if (i < fields.Length - 1)
                         sb.AppendLine(",");
                     else
