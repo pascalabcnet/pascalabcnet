@@ -529,6 +529,8 @@ namespace PascalABCCompiler.Parsers
                 {
                     sb.Append(' ', 4);
                     sb.Append(fields[i].Name);
+                    sb.Append(" = ");
+                    sb.Append(fields[i].GetRawConstantValue());
                     if (i < fields.Length - 1)
                         sb.AppendLine(",");
                     else
