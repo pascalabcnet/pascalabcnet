@@ -6481,6 +6481,7 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_var_deconstructor_parameter.type.visit(this);
 			}
+			bw.Write(_var_deconstructor_parameter.var_keyword_used);
 		}
 
 

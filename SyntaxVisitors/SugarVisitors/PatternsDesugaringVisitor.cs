@@ -249,6 +249,7 @@ namespace SyntaxVisitors.SugarVisitors
                     pattern.parameters[i] = new var_deconstructor_parameter(
                         constParamIdent,
                         GetTypeDefinitionForConstParam(constPattern.const_param),
+                        false,
                         pattern.parameters[i].source_context);
 
                     paramCheckExpr = paramCheckExpr == null ? (expression)constParamCheck : bin_expr.LogicalAnd(paramCheckExpr, constParamCheck);
@@ -260,6 +261,7 @@ namespace SyntaxVisitors.SugarVisitors
                     pattern.parameters[i] = new var_deconstructor_parameter(
                         wildCardGeneratedParamIdent,
                         null,
+                        false,
                         pattern.parameters[i].source_context);
                 }
 
@@ -651,7 +653,7 @@ namespace SyntaxVisitors.SugarVisitors
                     pattern_parameter varParameter = null;
                     if (pattern is deconstructor_pattern)
                     {
-                        varParameter = new var_deconstructor_parameter(newName, null);
+                        varParameter = new var_deconstructor_parameter(newName, null, false);
                     }
                     else if (pattern is collection_pattern)
                     {
@@ -671,6 +673,7 @@ namespace SyntaxVisitors.SugarVisitors
 
         private void DesugarIsExpressionInAssignment(is_pattern_expr isExpression)
         {
+            // Кинуть тут эксепшн
             Debug.Assert(isExpression.right is deconstructor_pattern, "Only deconstructor patterns can be used in assignment");
             var statementsToAdd = ProcessDesugaringForDeconstructorPattern(isExpression);
             AddDefinitionsInUpperStatementList(isExpression, statementsToAdd);

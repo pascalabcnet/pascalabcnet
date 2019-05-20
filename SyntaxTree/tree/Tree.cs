@@ -50181,25 +50181,28 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public var_deconstructor_parameter(ident _identifier,type_definition _type)
+		public var_deconstructor_parameter(ident _identifier,type_definition _type,bool _var_keyword_used)
 		{
 			this._identifier=_identifier;
 			this._type=_type;
+			this._var_keyword_used=_var_keyword_used;
 			FillParentsInDirectChilds();
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public var_deconstructor_parameter(ident _identifier,type_definition _type,SourceContext sc)
+		public var_deconstructor_parameter(ident _identifier,type_definition _type,bool _var_keyword_used,SourceContext sc)
 		{
 			this._identifier=_identifier;
 			this._type=_type;
+			this._var_keyword_used=_var_keyword_used;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
 		protected ident _identifier;
 		protected type_definition _type;
+		protected bool _var_keyword_used;
 
 		///<summary>
 		///
@@ -50235,6 +50238,21 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+		///<summary>
+		///
+		///</summary>
+		public bool var_keyword_used
+		{
+			get
+			{
+				return _var_keyword_used;
+			}
+			set
+			{
+				_var_keyword_used=value;
+			}
+		}
+
 
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -50253,6 +50271,7 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.type = (type_definition)type.Clone();
 				copy.type.Parent = copy;
 			}
+			copy.var_keyword_used = var_keyword_used;
 			return copy;
 		}
 

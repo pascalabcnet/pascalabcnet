@@ -3497,11 +3497,11 @@ pattern_out_param
 		}
 	| tkVar identifier tkColon type_ref
         {
-            $$ = new var_deconstructor_parameter($2, $4, @$);
+            $$ = new var_deconstructor_parameter($2, $4, true, @$);
         }
     | tkVar identifier
         {
-            $$ = new var_deconstructor_parameter($2, null, @$);
+            $$ = new var_deconstructor_parameter($2, null, true, @$);
         }
     | pattern 
         {
@@ -3528,19 +3528,19 @@ pattern_out_param_optional_var
 		}
     | identifier tkColon type_ref
         {
-            $$ = new var_deconstructor_parameter($1, $3, @$);
+            $$ = new var_deconstructor_parameter($1, $3, false, @$);
         }
     | identifier
         {
-            $$ = new var_deconstructor_parameter($1, null, @$);
+            $$ = new var_deconstructor_parameter($1, null, false, @$);
         }
     | tkVar identifier tkColon type_ref
         {
-            $$ = new var_deconstructor_parameter($2, $4, @$);
+            $$ = new var_deconstructor_parameter($2, $4, true, @$);
         }
     | tkVar identifier
         {
-            $$ = new var_deconstructor_parameter($2, null, @$);
+            $$ = new var_deconstructor_parameter($2, null, true, @$);
         }
     | pattern_optional_var
         {

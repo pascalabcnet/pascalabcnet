@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-IF20NRO
-// DateTime: 4/25/2019 5:35:12 PM
+// DateTime: 5/20/2019 1:17:16 PM
 // UserName: FatCow
 // Input file <ABCPascal.y>
 
@@ -5796,12 +5796,12 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 647: // pattern_out_param -> tkVar, identifier, tkColon, type_ref
 {
-            CurrentSemanticValue.stn = new var_deconstructor_parameter(ValueStack[ValueStack.Depth-3].id, ValueStack[ValueStack.Depth-1].td, CurrentLocationSpan);
+            CurrentSemanticValue.stn = new var_deconstructor_parameter(ValueStack[ValueStack.Depth-3].id, ValueStack[ValueStack.Depth-1].td, true, CurrentLocationSpan);
         }
         break;
       case 648: // pattern_out_param -> tkVar, identifier
 {
-            CurrentSemanticValue.stn = new var_deconstructor_parameter(ValueStack[ValueStack.Depth-1].id, null, CurrentLocationSpan);
+            CurrentSemanticValue.stn = new var_deconstructor_parameter(ValueStack[ValueStack.Depth-1].id, null, true, CurrentLocationSpan);
         }
         break;
       case 649: // pattern_out_param -> pattern
@@ -5831,22 +5831,22 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 654: // pattern_out_param_optional_var -> identifier, tkColon, type_ref
 {
-            CurrentSemanticValue.stn = new var_deconstructor_parameter(ValueStack[ValueStack.Depth-3].id, ValueStack[ValueStack.Depth-1].td, CurrentLocationSpan);
+            CurrentSemanticValue.stn = new var_deconstructor_parameter(ValueStack[ValueStack.Depth-3].id, ValueStack[ValueStack.Depth-1].td, false, CurrentLocationSpan);
         }
         break;
       case 655: // pattern_out_param_optional_var -> identifier
 {
-            CurrentSemanticValue.stn = new var_deconstructor_parameter(ValueStack[ValueStack.Depth-1].id, null, CurrentLocationSpan);
+            CurrentSemanticValue.stn = new var_deconstructor_parameter(ValueStack[ValueStack.Depth-1].id, null, false, CurrentLocationSpan);
         }
         break;
       case 656: // pattern_out_param_optional_var -> tkVar, identifier, tkColon, type_ref
 {
-            CurrentSemanticValue.stn = new var_deconstructor_parameter(ValueStack[ValueStack.Depth-3].id, ValueStack[ValueStack.Depth-1].td, CurrentLocationSpan);
+            CurrentSemanticValue.stn = new var_deconstructor_parameter(ValueStack[ValueStack.Depth-3].id, ValueStack[ValueStack.Depth-1].td, true, CurrentLocationSpan);
         }
         break;
       case 657: // pattern_out_param_optional_var -> tkVar, identifier
 {
-            CurrentSemanticValue.stn = new var_deconstructor_parameter(ValueStack[ValueStack.Depth-1].id, null, CurrentLocationSpan);
+            CurrentSemanticValue.stn = new var_deconstructor_parameter(ValueStack[ValueStack.Depth-1].id, null, true, CurrentLocationSpan);
         }
         break;
       case 658: // pattern_out_param_optional_var -> pattern_optional_var

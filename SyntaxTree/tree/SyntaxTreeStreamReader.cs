@@ -4130,6 +4130,7 @@ namespace PascalABCCompiler.SyntaxTree
 			read_pattern_parameter(_var_deconstructor_parameter);
 			_var_deconstructor_parameter.identifier = _read_node() as ident;
 			_var_deconstructor_parameter.type = _read_node() as type_definition;
+			_var_deconstructor_parameter.var_keyword_used = br.ReadBoolean();
 		}
 
 

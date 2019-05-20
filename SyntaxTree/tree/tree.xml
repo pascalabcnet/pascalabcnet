@@ -2999,6 +2999,7 @@
       <Fields>
         <SyntaxField Name="identifier" SyntaxType="ident" />
         <SyntaxField Name="type" SyntaxType="type_definition" />
+        <ExtendedField Name="var_keyword_used" Type="bool" CreateVariable="false" DeleteVariable="false" />
       </Fields>
       <Methods />
       <Tags>
@@ -4652,6 +4653,7 @@
       <HelpData Key="var_deconstructor_parameter" Value="Параметр-объявление переменной (возможно без типа)" />
       <HelpData Key="var_deconstructor_parameter.identifier" Value="" />
       <HelpData Key="var_deconstructor_parameter.type" Value="" />
+      <HelpData Key="var_deconstructor_parameter.var_keyword_used" Value="" />
       <HelpData Key="var_def_list" Value="" />
       <HelpData Key="var_def_list.var_def_list Add(var_def_statement _var_def_statement)" Value="" />
       <HelpData Key="var_def_list.var_def_list Add(var_def_statement _var_def_statement, SourceContext sc)" Value="" />
