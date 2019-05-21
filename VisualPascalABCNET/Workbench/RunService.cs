@@ -184,7 +184,12 @@ namespace VisualPascalABC
                         try
                         {
                             RunTabsAdd(Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.OutputFileName, tabPage);
-                            RunnerManager.Run(Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.OutputFileName, Workbench.UserOptions.RedirectConsoleIO, ModeName, RunWithPause, Path.GetDirectoryName(Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.OutputFileName), RunArgumentsTable[tabPage.FileName.ToLower()], attachdbg, fictive_attach);
+                            RunnerManager.Run(Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.OutputFileName, 
+                                Workbench.UserOptions.RedirectConsoleIO, ModeName, RunWithPause,
+                                // Path.GetDirectoryName(Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.OutputFileName), // SSM 21.05.19 - исправил. Теперь текущим является каталог, в котором расположен исходник. 
+                                // Если компилировать программы на сетевом диске, а exe создавать локально, то работает шустро
+                                Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SourceFileDirectory,
+                                RunArgumentsTable[tabPage.FileName.ToLower()], attachdbg, fictive_attach);
                         }
                         catch (System.Exception e)
                         {
