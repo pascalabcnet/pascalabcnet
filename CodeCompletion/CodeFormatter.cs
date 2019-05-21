@@ -3142,7 +3142,11 @@ namespace CodeFormatters
             if (_is_pattern_expr.left != null)
                 visit_node(_is_pattern_expr.left);
 
-            sb.Append(" is ");
+            if (_is_pattern_expr.right == null || 
+                !(_is_pattern_expr.right is collection_pattern) && !(_is_pattern_expr.right is tuple_pattern))
+                sb.Append(" is ");
+            else
+                add_space_before = true;
 
             if (_is_pattern_expr.right != null)
                 visit_node(_is_pattern_expr.right);
@@ -3201,7 +3205,7 @@ namespace CodeFormatters
 
         public override void visit(wild_card_deconstructor_parameter _wild_card_deconstructor_parameter)
         {
-            add_space_after = false;
+            add_space_after = true;
         }
 
         public override void visit(tuple_pattern_var_parameter _tuple_pattern_var_parameter)
@@ -3214,11 +3218,13 @@ namespace CodeFormatters
 
         public override void visit(tuple_pattern_wild_card _tuple_pattern_wild_card)
         {
-            add_space_after = false;
+            sb.Append("_");
+            add_space_after = true;
         }
 
         public override void visit(tuple_pattern _tuple_pattern)
         {
+            sb.Append("(");
             foreach (var parameter in _tuple_pattern.parameters)
             {
                 visit_node(parameter);
@@ -3229,6 +3235,7 @@ namespace CodeFormatters
 
         public override void visit(collection_pattern _collection_pattern)
         {
+            sb.Append("[");
             foreach (var parameter in _collection_pattern.parameters)
             {
                 visit_node(parameter);
@@ -3239,7 +3246,8 @@ namespace CodeFormatters
 
         public override void visit(collection_pattern_gap_parameter _collection_pattern_gap_parameter)
         {
-            add_space_after = false;
+            sb.Append("..");
+            add_space_after = true;
         }
 
         public override void visit(collection_pattern_var_parameter _collection_pattern_var_parameter)
@@ -3252,7 +3260,8 @@ namespace CodeFormatters
 
         public override void visit(collection_pattern_wild_card _collection_pattern_wild_card)
         {
-            add_space_after = false;
+            sb.Append("_");
+            add_space_after = true;
         }
 
         public override void visit(deconstructor_pattern _deconstructor_pattern)

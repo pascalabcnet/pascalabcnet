@@ -3343,7 +3343,7 @@ collection_pattern_list_item
 		}
 	| tkUnderscore
 		{
-			$$ = new collection_pattern_wild_card();
+			$$ = new collection_pattern_wild_card(@$);
 		}
 	/*| pattern 
         {
@@ -3363,7 +3363,7 @@ collection_pattern_list_item
 		}
 	| tkDotDot
 		{
-			$$ = new collection_pattern_gap_parameter();
+			$$ = new collection_pattern_gap_parameter(@$);
 		}
 	;
 
@@ -3408,7 +3408,7 @@ tuple_pattern
 tuple_pattern_item
 	: tkUnderscore 
 		{ 
-			$$ = new tuple_pattern_wild_card(); 
+			$$ = new tuple_pattern_wild_card(@$); 
 		} 
 	| literal_or_number 
 		{ 
@@ -3489,7 +3489,7 @@ pattern_out_param_list
 pattern_out_param
     : tkUnderscore
 		{
-			$$ = new wild_card_deconstructor_parameter();
+			$$ = new wild_card_deconstructor_parameter(@$);
 		}
 	| literal_or_number
 		{

@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-IF20NRO
-// DateTime: 5/20/2019 1:17:16 PM
+// DateTime: 5/21/2019 1:27:52 PM
 // UserName: FatCow
 // Input file <ABCPascal.y>
 
@@ -5642,7 +5642,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 620: // collection_pattern_list_item -> tkUnderscore
 {
-			CurrentSemanticValue.stn = new collection_pattern_wild_card();
+			CurrentSemanticValue.stn = new collection_pattern_wild_card(CurrentLocationSpan);
 		}
         break;
       case 621: // collection_pattern_list_item -> pattern_optional_var
@@ -5662,7 +5662,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 624: // collection_pattern_list_item -> tkDotDot
 {
-			CurrentSemanticValue.stn = new collection_pattern_gap_parameter();
+			CurrentSemanticValue.stn = new collection_pattern_gap_parameter(CurrentLocationSpan);
 		}
         break;
       case 625: // collection_pattern_var_item -> tkVar, identifier
@@ -5698,7 +5698,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 631: // tuple_pattern_item -> tkUnderscore
 { 
-			CurrentSemanticValue.stn = new tuple_pattern_wild_card(); 
+			CurrentSemanticValue.stn = new tuple_pattern_wild_card(CurrentLocationSpan); 
 		}
         break;
       case 632: // tuple_pattern_item -> literal_or_number
@@ -5786,7 +5786,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 645: // pattern_out_param -> tkUnderscore
 {
-			CurrentSemanticValue.stn = new wild_card_deconstructor_parameter();
+			CurrentSemanticValue.stn = new wild_card_deconstructor_parameter(CurrentLocationSpan);
 		}
         break;
       case 646: // pattern_out_param -> literal_or_number

@@ -1835,5 +1835,49 @@ namespace PascalABCCompiler.SyntaxTree
     {
         public override string ToString() => pattern.ToString();
     }
+
+    public partial class tuple_pattern_wild_card
+    {
+        ///<summary>
+        ///Конструктор c параметрами
+        ///</summary>
+        public tuple_pattern_wild_card(SourceContext sc)
+        {
+            this.source_context = sc;
+        }
+    }
+
+    public partial class collection_pattern_wild_card
+    {
+        ///<summary>
+        ///Конструктор c параметрами
+        ///</summary>
+        public collection_pattern_wild_card(SourceContext sc)
+        {
+            this.source_context = sc;
+        }
+    }
+
+    public partial class collection_pattern_gap_parameter
+    {
+        ///<summary>
+        ///Конструктор c параметрами
+        ///</summary>
+        public collection_pattern_gap_parameter(SourceContext sc)
+        {
+            this.source_context = sc;
+        }
+    }
+
+    public partial class wild_card_deconstructor_parameter
+    {
+        ///<summary>
+        ///Конструктор c параметрами
+        ///</summary>
+        public wild_card_deconstructor_parameter(SourceContext sc)
+        {
+            this.source_context = sc;
+        }
+    }
 }
 
