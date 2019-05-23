@@ -338,6 +338,8 @@ namespace PascalABCCompiler.TreeConverter
         public static string copyright_string = "copyright";
         public static string trademark_string = "trademark";
         public static string main_resource_string = "mainresource";
+        public static string title_string = "title";
+        public static string description_string = "description";
 
         public static string system_unit_marker = "__IS_SYSTEM_MODULE";
         public static string system_unit_file_name = "PABCSystem";

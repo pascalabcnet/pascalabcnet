@@ -1098,8 +1098,8 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class simple_property
     {
-        public simple_property(ident name, type_definition type, property_accessors accessors, SourceContext sc = null) 
-            : this(name, type, null, accessors, null, null, definition_attribute.None,proc_attribute.attr_none,false,sc)
+        public simple_property(ident name, type_definition type, property_accessors accessors, SourceContext sc = null)
+            : this(name, type, null, accessors, null, null, definition_attribute.None, proc_attribute.attr_none, false, null, sc)
         { }
     }
 
@@ -1714,6 +1714,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class expression
     {
+        //public object semantic_ex; 
         public expression Plus(expression e)
         {
             return new bin_expr(this, e, Operators.Plus);
@@ -1824,6 +1825,19 @@ namespace PascalABCCompiler.SyntaxTree
     public partial class pattern_node
     {
         public bool IsRecursive => parameters.Any(x => x is recursive_pattern_parameter);
+    }
+
+    public partial class typecast_node
+    {
+        public override string ToString()
+        {
+            return "" + this.expr + " " + this.cast_op + " " + this.type_def;
+        }
+    }
+
+    public partial class semantic_check_sugared_statement_node
+    {
+        public bool visited = false;
     }
 
     public partial class var_deconstructor_parameter
