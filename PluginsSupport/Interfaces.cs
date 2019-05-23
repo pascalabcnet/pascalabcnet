@@ -396,6 +396,7 @@ namespace VisualPascalABCPlugins
         void WriteToOutputBox(string message, bool is_exc);
         void ClearOutputTextBoxForTabPage(ICodeFileDocument tabPage);
         void AddTabWithUrl(string title, string url);
+        void AddTextToCompilerMessagesSync(string text);
     }
 
     public interface IWorkbenchOptionService

@@ -30,42 +30,42 @@ namespace PascalABCCompiler.SemanticTree
     public enum type_special_kind { none_kind, not_set_kind, array_kind, enum_kind, typed_file, binary_file, short_string, array_wrapper, record, set_type, base_set_type, diap_type, text_file };
 	
     public enum attribute_qualifier_kind {none_kind, return_kind, assembly_kind, param_kind, type_kind, field_kind, event_kind, property_kind, method_kind}
-	//Тип передачи параметра - по ссылке или по значению.
-	public enum parameter_type {value,var,cnst};
+    //Тип передачи параметра - по ссылке или по значению.
+    public enum parameter_type { value, var, cnst };
 
-	//Тип базовой функции.
-	public enum basic_function_type 
-	{
-		none,
-		iadd,isub,imul,idiv,imod, igr,ism,igreq,ismeq,ieq,inoteq, ishl,ishr,ior,inot,ixor,iand, iunmin, iinc, idec, isinc, isdec, iassign,  //signed integer (4 byte)
+    //Тип базовой функции.
+    public enum basic_function_type
+    {
+        none,
+        iadd, isub, imul, idiv, imod, igr, ism, igreq, ismeq, ieq, inoteq, ishl, ishr, ior, inot, ixor, iand, iunmin, iinc, idec, isinc, isdec, iassign,  //signed integer (4 byte)
         uiadd, uisub, uimul, uidiv, uimod, uigr, uism, uigreq, uismeq, uieq, uinoteq, uishl, uishr, uior, uinot, uixor, uiand, uiunmin, uiinc, uidec, uisinc, uisdec, uiassign, //unsigned integer (4 byte)
         badd, bsub, bmul, bdiv, bmod, bgr, bsm, bgreq, bsmeq, beq, bnoteq, bshl, bshr, bor, bnot, bxor, band, bunmin, binc, bdec, bsinc, bsdec, bassign, //unsigned byte
         sbadd, sbsub, sbmul, sbdiv, sbmod, sbgr, sbsm, sbgreq, sbsmeq, sbeq, sbnoteq, sbshl, sbshr, sbor, sbnot, sbxor, sband, sbunmin, sbinc, sbdec, sbsinc, sbsdec, sbassign, //signed byte
-		sadd,ssub,smul,sdiv,smod, sgr,ssm,sgreq,ssmeq,seq,snoteq, sshl,sshr,sor,snot,sxor,sand, sunmin, sinc, sdec, ssinc, ssdec, sassign, //short (2-byte)
+        sadd, ssub, smul, sdiv, smod, sgr, ssm, sgreq, ssmeq, seq, snoteq, sshl, sshr, sor, snot, sxor, sand, sunmin, sinc, sdec, ssinc, ssdec, sassign, //short (2-byte)
         usadd, ussub, usmul, usdiv, usmod, usgr, ussm, usgreq, ussmeq, useq, usnoteq, usshl, usshr, usor, usnot, usxor, usand, usunmin, usinc, usdec, ussinc, ussdec, usassign, //unsigned short (2 byte)
-        ladd,lsub,lmul,ldiv,lmod, lgr,lsm,lgreq,lsmeq,leq,lnoteq, lshl,lshr,lor,lnot,lxor,land, lunmin, linc, ldec, lsinc, lsdec, lassign, //long (8 byte)
+        ladd, lsub, lmul, ldiv, lmod, lgr, lsm, lgreq, lsmeq, leq, lnoteq, lshl, lshr, lor, lnot, lxor, land, lunmin, linc, ldec, lsinc, lsdec, lassign, //long (8 byte)
         uladd, ulsub, ulmul, uldiv, ulmod, ulgr, ulsm, ulgreq, ulsmeq, uleq, ulnoteq, ulshl, ulshr, ulor, ulnot, ulxor, uland, ulunmin, ulinc, uldec, ulsinc, ulsdec, ulassign, //unsigned long (8 byte)
-		fadd,fsub,fmul,fdiv,      fgr,fsm,fgreq,fsmeq,feq,fnoteq,                               funmin, fassign,//float
-		dadd,dsub,dmul,ddiv,      dgr,dsm,dgreq,dsmeq,deq,dnoteq,                               dunmin,  dassign,//double
-		boolgr,boolsm,boolgreq,boolsmeq,booleq,boolnoteq,boolor,boolnot,boolxor,booland, boolassign,  //boolean
-		chargr,charsm,chargreq,charsmeq,chareq,charnoteq, cinc, cdec, csinc, csdec, charassign,  //char
-		chartous,chartoi,chartoui,chartol,chartoul,chartof,chartod,    chartob,chartosb,chartos,
-		btos,btous,btoi,btoui,btol,btoul,btof,btod,     btosb,btochar, //byte to ...
-        sbtos,sbtoi,sbtol,sbtof,sbtod,                  sbtob,sbtous,sbtoui,sbtoul,sbtochar,//signed byte to short, int, long, float, double
-		stoi,stol,stof,stod,                            stob,stosb,stous,stoui,stoul,stochar, //short to ...
-        ustoi,ustoui,ustol,ustoul,ustof,ustod,          ustob,ustosb,ustos,ustochar,  //unsigned short to ...
-		itol,itof,itod,                                 itob,itosb,itos,itous,itoui,itoul,itochar,     //integer to ...
-        uitol,uitoul,                                   uitob,uitosb,uitos,uitous,uitoi,uitof,uitod,uitochar,    //uint to ...
-		ltof,ltod,                                      ltob,ltosb,ltos,ltous,ltoi,ltoui,ltoul,ltochar,     //long to ...
-                                                        ultob,ultosb,ultos,ultous,ultoi,ultoui,ultol,ultochar,ultof,ultod, //ulong to ...
-		ftod,                                           ftob,ftosb,ftos,ftous,ftoi,ftoui,ftol,ftoul,ftochar, //float to ...
-        dtob,dtosb,dtos,dtous,dtoi,dtoui,dtol,dtoul,dtof,   dtochar,
-		objassign,objeq,objnoteq, //присваивание и эквивалентность объектов по ссылке.
-		//write,writei,writed,writec,writeb,read,readi,readd,readc,readb,expd,absd,absi //temporary functions (Нужны только на начальном этапе отладки. Потом обязательно удалить.)
+        fadd, fsub, fmul, fdiv, fgr, fsm, fgreq, fsmeq, feq, fnoteq, funmin, fassign,//float
+        dadd, dsub, dmul, ddiv, dgr, dsm, dgreq, dsmeq, deq, dnoteq, dunmin, dassign,//double
+        boolgr, boolsm, boolgreq, boolsmeq, booleq, boolnoteq, boolor, boolnot, boolxor, booland, boolassign,  //boolean
+        chargr, charsm, chargreq, charsmeq, chareq, charnoteq, cinc, cdec, csinc, csdec, charassign,  //char
+        chartous, chartoi, chartoui, chartol, chartoul, chartof, chartod, chartob, chartosb, chartos,
+        btos, btous, btoi, btoui, btol, btoul, btof, btod, btosb, btochar, //byte to ...
+        sbtos, sbtoi, sbtol, sbtof, sbtod, sbtob, sbtous, sbtoui, sbtoul, sbtochar,//signed byte to short, int, long, float, double
+        stoi, stol, stof, stod, stob, stosb, stous, stoui, stoul, stochar, //short to ...
+        ustoi, ustoui, ustol, ustoul, ustof, ustod, ustob, ustosb, ustos, ustochar,  //unsigned short to ...
+        itol, itof, itod, itob, itosb, itos, itous, itoui, itoul, itochar,     //integer to ...
+        uitol, uitoul, uitob, uitosb, uitos, uitous, uitoi, uitof, uitod, uitochar,    //uint to ...
+        ltof, ltod, ltob, ltosb, ltos, ltous, ltoi, ltoui, ltoul, ltochar,     //long to ...
+        ultob, ultosb, ultos, ultous, ultoi, ultoui, ultol, ultochar, ultof, ultod, //ulong to ...
+        ftod, ftob, ftosb, ftos, ftous, ftoi, ftoui, ftol, ftoul, ftochar, //float to ...
+        dtob, dtosb, dtos, dtous, dtoi, dtoui, dtol, dtoul, dtof, dtochar,
+        objassign, objeq, objnoteq, //присваивание и эквивалентность объектов по ссылке.
+                                    //write,writei,writed,writec,writeb,read,readi,readd,readc,readb,expd,absd,absi //temporary functions (Нужны только на начальном этапе отладки. Потом обязательно удалить.)
         objtoobj, boolinc, booldec, boolsinc, boolsdec, booltoi, enumgr, enumgreq, enumsm, enumsmeq,
         booltob, booltosb, booltos, booltous, booltoui, booltol, booltoul,
         ltop, ptol
-	};
+    };
 
     public enum runtime_statement_type { invoke_delegate, ctor_delegate, begin_invoke_delegate, end_invoke_delegate };
 

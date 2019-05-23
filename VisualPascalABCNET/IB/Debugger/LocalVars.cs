@@ -1147,7 +1147,9 @@ namespace VisualPascalABC
             	{
                 	try
                 	{
-                    	list.Add(new ValueItem(v,this.DebugType));
+                        if (v is MemberValue && (v as MemberValue).MemberInfo is PropertyInfo && ((v as MemberValue).MemberInfo as PropertyInfo).GetGetMethod().ParameterCount > 0)
+                            continue;
+                        list.Add(new ValueItem(v,this.DebugType));
                 	}
                 	catch (System.Exception e)
                 	{

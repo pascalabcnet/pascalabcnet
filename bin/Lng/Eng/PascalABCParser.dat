@@ -72,3 +72,4 @@ ATTRIBUTE_REDECLARED=This attribute has been already applied to type
 STATIC_PROPERTIES_CANNOT_HAVE_ATTRBUTE_{0}=Static properties cannot have attribute '{0}'
 RESULT_IDENT_NOT_EXPECTED_IN_THIS_CONTEXT=Result identifier is not allowed in this context
 NESTED_RECORD_DEFINITIONS_ARE_ARE_FORBIDDEN=Nested record definitions are forbidden
+NIL_IN_UNNAMED_OBJECT=Anonymous class field cannot be initialized by nil constant

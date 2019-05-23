@@ -2651,6 +2651,7 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(simple_property.accessors);
 			visit(simple_property.array_default);
 			visit(simple_property.parameter_list);
+			visit(simple_property.initial_value);
 			post_do_visit(_simple_property);
 		}
 
@@ -3606,7 +3607,6 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(function_lambda_definition.return_type);
 			visit(function_lambda_definition.formal_parameters);
 			visit(function_lambda_definition.proc_body);
-			visit(function_lambda_definition.proc_definition);
 			visit(function_lambda_definition.parameters);
 			for (int i = 0; i < defs.Count; i++)
 				visit(function_lambda_definition.defs[i]);

@@ -796,7 +796,12 @@ namespace PascalABCCompiler.TreeRealization
                             //Проверяем фактические, попадающие под params...
                             if (!DeduceInstanceTypes(last_params_type, fact[i].type, deduced, nils))
                             {
-                                if (alone)
+                                if (alone && fact[i].type is delegated_methods && (fact[i].type as delegated_methods).empty_param_method != null)
+                                {
+                                    if (DeduceInstanceTypes(last_params_type, (fact[i].type as delegated_methods).empty_param_method.type, deduced, nils))
+                                        continue;
+                                }
+                                else if (alone)
                                     throw new SimpleSemanticError(loc, "GENERIC_FUNCTION_{0}_CAN_NOT_BE_CALLED_WITH_THESE_PARAMETERS", func.name);
                                 return null;
                             }
@@ -1440,12 +1445,40 @@ namespace PascalABCCompiler.TreeRealization
 
         protected void AddMember(object original, object converted)
         {
+            var cf = original as class_field;
+#if DEBUG
+            /*if (cf != null && cf.name == "XYZW")
+            {
+                cf = cf;
+            } */
+#endif         
+            // Этот код дает перекрестные ошибки далее поэтому эта идея неправильна. Комментирую
+            /*if (cf != null) // значит это поле и заменять original на соответствующее поле оригинального класса
+            {
+                var or = this.original_generic as common_type_node;
+                original = or.fields.First(f => f.name == cf.name);
+                if (original==null)
+                {
+                    original = original;
+                }
+            } */
             if (!_members.ContainsValue(original))  // SSM 30.12.18 bug fix #907
             {
+                // Если это поле и T1->Anything, то как-то надо находить оригинальный класс Base и заменять на T->Anything
+                // Вторая версия - делать это в GetMember - там доступны все _members
+                // Закомментировал всё кроме того что было - изменение вместо добавления срабатывает только если мы в предыдущем коде меняли original, а именно эта идея признана ошибочной
+                //if (!_members.ContainsKey(original))
+                //{ 
                 _members.Add(original, converted);
                 _member_definitions.Add(converted, original);
+                //}
+                /*else
+                { 
+                    _members[original] = converted;
+                    _member_definitions[original] = converted;
+                } */
             }
-            else // SSM 30.12.18 bug fix #907
+            else // SSM 30.12.18 bug fix #907 
             {
                 object kk = null;
                 foreach (System.Collections.DictionaryEntry x in _members)
@@ -1866,7 +1899,7 @@ namespace PascalABCCompiler.TreeRealization
             return sil;
         }
 
-        public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, bool no_search_in_extension_methods = false)
+        public override List<SymbolInfo> find_in_type(string name, SymbolTable.Scope CurrentScope, type_node orig_generic_or_null = null, bool no_search_in_extension_methods = false)
         {
             //var or = generic_convertions.determine_type(_original_generic,this.instance_params,false); // циклится
             List<SymbolInfo> sil = null;
@@ -1880,7 +1913,14 @@ namespace PascalABCCompiler.TreeRealization
                     sil1.InsertRange(0,sil);
                 return sil1;
             }*/
-            sil = _original_generic.find_in_type(name, CurrentScope);
+#if DEBUG
+            /*if (name == "XYZW")
+            {
+                var y = name;
+            } */
+#endif
+            sil = _original_generic.find_in_type(name, CurrentScope, _original_generic); // передача _original_generic - это костыль для устранения бага #1674. 
+            // параметр _original_generic - фиктивный: если он не null (это только здесь), то в common_type_node выполнение в одном месте идет по другой ветке
             sil = ConvertSymbolInfo(sil);
             return sil;
         }

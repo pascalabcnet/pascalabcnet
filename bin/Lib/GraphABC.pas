@@ -609,6 +609,12 @@ function Rect(x1, y1, x2, y2: integer): System.Drawing.Rectangle;
 /// Возвращает прямоугольник клиентской части главного окна
 function ClientRectangle: System.Drawing.Rectangle;
 
+/// Коэффициент масштабирования экрана
+function ScreenScale: real;
+
+/// Размер экрана в пикселах
+function ScreenSize: System.Drawing.Size;
+
 //------------------------------------------
 ////        Рисование графиков функций 
 //------------------------------------------
@@ -1121,6 +1127,16 @@ type
   end;
 
 function SetProcessDPIAware(): boolean; external 'user32.dll';
+
+function operator*(s: Size; r: real): Size; extensionmethod;
+begin
+  Result := new Size(Round(s.Width*r),Round(s.Height*r))
+end;
+
+function operator*(p: Point; r: real): Point; extensionmethod;
+begin
+  Result := new Point(Round(p.X*r),Round(p.Y*r))
+end;
 
 var
   // строка-буфер ввода
@@ -3471,14 +3487,35 @@ begin
   Halt;
 end;
 
+var scale: real := -1;
+
+function ScreenScale: real;
+begin
+  if scale <= 0 then
+    try
+      var dpiXProperty := typeof(System.Windows.SystemParameters).GetProperty('DpiX', System.Reflection.BindingFlags.NonPublic or System.Reflection.BindingFlags.Static);
+      var dpiX := integer(dpiXProperty.GetValue(nil, nil));
+      scale := dpiX / 96;
+    except
+      scale := 1;
+    end;
+  Result := scale
+end;
+
+function ScreenSize: System.Drawing.Size;
+begin
+  var (w,h) := (System.Windows.SystemParameters.PrimaryScreenWidth,System.Windows.SystemParameters.PrimaryScreenHeight);
+  Result := new System.Drawing.Size(Round(w*ScreenScale),Round(h*ScreenScale))
+end;
+
 function ScreenWidth: integer;
 begin
-  Result := Screen.PrimaryScreen.Bounds.Width;
+  Result := Round(Screen.PrimaryScreen.Bounds.Width);
 end;
 
 function ScreenHeight: integer;
 begin
-  Result := Screen.PrimaryScreen.Bounds.Height;
+  Result := Round(Screen.PrimaryScreen.Bounds.Height);
 end;
 
 procedure CenterWindow;
@@ -3537,6 +3574,7 @@ begin
     gr.Transform := m;
   end;  
   Monitor.Exit(f);
+  tempbmp.Dispose();
 end;
 
 procedure FullRedraw;

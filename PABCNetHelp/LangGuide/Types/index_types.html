@@ -23,9 +23,8 @@
 <p>Типы в 
 <b>PascalABC.NET</b> подразделяются на простые, 
 структурированные, типы <a href="pointers.html">указателей</a>, 
-<a href="proctype.html">процедурные</a> типы, <a href="sequences.html">
-последовательности</a> и 
-<a href="../Classes/index_classes.html">классы</a>.</p>
+<a href="proctype.html">процедурные</a> типы и <a href="sequences.html">
+последовательности</a>.</p>
 <p>К <i><b><font color="#FF0000">простым</font></b></i> относятся <a href="integer.html">целые</a> 
 и 
 <a href="real.html">вещественные</a> типы, 
@@ -52,12 +51,17 @@
 <p>Все типы, 
 кроме типов указателей, являются производными от типа <code>Object</code>. 
 Каждый тип в 
-<b>PascalABC.NET</b>&nbsp; имеет <a href="typesprojection.html">отображение на тип .NET</a>. Тип 
+<b>PascalABC.NET</b>&nbsp;имеет <a href="typesprojection.html">отображение на тип .NET</a>. Тип 
 указателя принадлежит к неуправляемому коду и моделируется типом <code>void*</code>.</p>
-<p>Все типы в <strong>PascalABC.NET</strong> подразделяются на две большие группы: <i><b>
-<a href="value_ref_types.html">размерные</a></b></i><a href="value_ref_types.html"> и 
-<b> 
-<i>ссылочные</i></b></a>. </p>
+<p>Большинство типов в <strong>PascalABC.NET</strong> подразделяются на 
+размерные, ссылочные и типы указателей. Сравнение размерных и ссылочных типов 
+дано <a href="value_ref_types.html">здесь</a>.</p>
+<p>Кроме того, в PascalABC.NET имеется несколько типов, унаследованных от Delphi 
+Object Pascal, которые трудно отнести к размерному или ссылочному типу. Это
+<a href="staticarrays.html">статические массивы</a>, <a href="sets.html">
+множества</a>, <a href="valuestrings.html">размерные строки</a> и
+<a href="files.html">файлы</a>. По представлению в памяти они относятся к 
+ссылочному типу, но по поведению - к размерному.</p>
 </body>
 
 </html>

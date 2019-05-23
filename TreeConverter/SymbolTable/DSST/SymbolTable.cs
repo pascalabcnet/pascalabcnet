@@ -314,6 +314,9 @@ namespace SymbolTable
 	{
         public ClassScope PartialScope;
 
+        public PascalABCCompiler.TreeRealization.common_type_node class_type = null; 
+        // SSM 02.04.19 - буду присваивать это поле только для создаваемых пользователем классов. Понадобилось для доступа к членам NET-класса из его потомка - обычного класса
+
         public Scope BaseClassScope;
 
         public ClassScope(DSSymbolTable vSymbolTable,Scope TopScope,Scope BaseClassScope, string Name):
@@ -446,13 +449,18 @@ namespace SymbolTable
 	{
         public Scope DefScope;
 
-		public ClassMethodScope(DSSymbolTable vSymbolTable, Scope TopScope, Scope DefScope, string Name):
+        // aab 26.04.19 Добавил для исправления захвата переменных в лямбде
+        // Для лямбды нужен обратный порядок поиска звхваченных переменных: сначала в месте определения, потом в классе
+        public Scope CurrentLambdaDefScope;
+
+		public ClassMethodScope(DSSymbolTable vSymbolTable, Scope TopScope, Scope DefScope, Scope CurrentLambdaDefScope, string Name):
 			base(vSymbolTable,TopScope, Name)
 		{
             this.Name = Name;
             this.DefScope = null;
             if (DefScope != null)
                 this.DefScope = DefScope;
+            this.CurrentLambdaDefScope = CurrentLambdaDefScope;
 		}
 	}
 	#endregion
@@ -680,9 +688,9 @@ namespace SymbolTable
 		{
 			return new UnitImplementationScope(this, InterfaceScope, UsedUnits, Name);
 		}
-		public ClassMethodScope CreateClassMethodScope(Scope TopScope, Scope DefScope, string Name = "")
+		public ClassMethodScope CreateClassMethodScope(Scope TopScope, Scope DefScope, Scope CurrentLambdaDefScope = null, string Name = "")
 		{
-			return new ClassMethodScope(this, TopScope, DefScope, Name);
+			return new ClassMethodScope(this, TopScope, DefScope, CurrentLambdaDefScope, Name);
 		}
 		#endregion
 
@@ -816,6 +824,7 @@ namespace SymbolTable
             ClassScope cl = (ClassScope)ClassArea;
 
             if (!OnlyInThisClass)
+            { 
                 while (cl.BaseClassScope != null)
                 {
                     tn = cl.BaseClassScope.Symbols.Find(name);
@@ -830,6 +839,14 @@ namespace SymbolTable
                     }
                     cl = (ClassScope)cl.BaseClassScope;
                 }
+                /*if (cl.BaseClassScope == null && cl.class_type.base_type is PascalABCCompiler.TreeRealization.compiled_type_node ctn)
+                {
+                    Result = ctn.find(name);
+                    return;
+                }*/
+
+
+            }
         }
 
         private Scope FindUnitInterfaceScope(Scope scope)
@@ -1019,7 +1036,16 @@ namespace SymbolTable
                 while (scope != null && !(scope is UnitInterfaceScope))
                 {
                     if (scope is ClassMethodScope)
-                        scope = (scope as ClassMethodScope).DefScope;
+                    {
+                        // aab 17.05.19 begin
+                        // Поправил приоритет поиска для ?System
+                        var classMethodScope = scope as ClassMethodScope;
+                        if (classMethodScope.DefScope != null)
+                            scope = classMethodScope.DefScope;
+                        else
+                            scope = classMethodScope.CurrentLambdaDefScope;
+                        // aab 17.05.19 end
+                    }
                     else scope = scope.TopScope;
                 }
                 if (scope != null)
@@ -1115,12 +1141,32 @@ namespace SymbolTable
                         }
                         if (CurrentArea is ClassMethodScope)//мы очутились в методе класса
                         {
+                            // aab 26.04.19 begin
+                            // Сначала ищем в скоупе где была объявлена лямбда
+                            var currentLambdaDefScope = (CurrentArea as ClassMethodScope).CurrentLambdaDefScope;
+                            if (currentLambdaDefScope != null)
+                            {
+                                var defScopeRes = FindAll(currentLambdaDefScope, Name, OnlyInType, OnlyInThisClass, currentLambdaDefScope);
+
+                                if (defScopeRes != null && defScopeRes.Count > 0)
+                                {
+                                    return defScopeRes;
+                                }
+                            }
+                            // aab 26.04.19 end
+
                             FindAllInClass(Name, (CurrentArea as ClassMethodScope).TopScope, OnlyInThisClass, Result);//надо сделать поиск по его классу
+
 
                             if (Result.Count > 0) //если что-то нашли то заканчиваем
                                 return Result;
-                            CurrentArea = (CurrentArea as ClassMethodScope).DefScope;
-                            continue;
+
+                            var defScope = (CurrentArea as ClassMethodScope).DefScope;
+                            if (defScope != null)
+                            {
+                                CurrentArea = defScope;
+                                continue;
+                            }
                         }
                     }
                     CurrentArea = CurrentArea.TopScope;//Пошли вверх

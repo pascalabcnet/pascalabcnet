@@ -131,6 +131,16 @@ namespace CodeCompletion
                         return true;
                 }
             }
+            else if (node is new_expr)
+            {
+                new_expr ne = node as new_expr;
+                if (ne.params_list != null)
+                    foreach (expression e in ne.params_list.expressions)
+                    {
+                        if (has_lambdas(e))
+                            return true;
+                    }
+            }
             else if (node is tuple_node)
             {
                 tuple_node tn = node as tuple_node;
@@ -186,6 +196,13 @@ namespace CodeCompletion
 
         public override void visit(assign _assign)
         {
+            visit_is_patterns(_assign.from);
+            if (pending_is_pattern_vars.Count > 0)
+            {
+                foreach (var_def_statement vds in pending_is_pattern_vars)
+                    vds.visit(this);
+                pending_is_pattern_vars.Clear();
+            }
             if (_assign.from is function_lambda_definition)
             {
                 _assign.to.visit(this);
@@ -682,8 +699,9 @@ namespace CodeCompletion
                     else
                         returned_scope = null;
                 }
-                else
-            	    returned_scope = returned_scope.GetElementType();
+                else if (returned_scope.GetElementType() != null)
+                    returned_scope = returned_scope.GetElementType();
+            	    
             }
         }
 
@@ -836,7 +854,14 @@ namespace CodeCompletion
         public override void visit(PascalABCCompiler.SyntaxTree.if_node _if_node)
         {
             visit_is_patterns(_if_node.condition);
-            statement then_stmt = merge_with_is_variables(_if_node.then_body);
+            statement then_stmt = _if_node.then_body;
+            if (pending_is_pattern_vars.Count > 0 && then_stmt != null)
+            {
+                statement_list slist = new statement_list();
+                slist.source_context = _if_node.source_context;
+                slist.Add(then_stmt);
+                then_stmt = merge_with_is_variables(slist);
+            }
             if (then_stmt != null)
                 then_stmt.visit(this);
             if (_if_node.else_body != null)
@@ -997,7 +1022,7 @@ namespace CodeCompletion
                     ps.is_reintroduce = true;
         }
 
-        private ProcScope select_function_definition(ProcScope ps, formal_parameters prms, TypeScope return_type, TypeScope declType, bool function=false)
+        private ProcScope select_function_definition(ProcScope ps, formal_parameters prms, TypeScope return_type, TypeScope declType, bool function=false, bool static_constructor=false)
         {
             SymScope tmp = returned_scope;
             List<ElementScope> lst = new List<ElementScope>();
@@ -1070,6 +1095,15 @@ namespace CodeCompletion
             {
                 while (ps != null)
                 {
+                    if (ps.is_constructor && ps.is_static != static_constructor)
+                    {
+                        ps = ps.nextProc;
+                        continue;
+                    }
+                    else if (ps.is_constructor && ps.is_static && static_constructor)
+                    {
+                        return ps;
+                    }
                     if (ps.parameters == null || ps.parameters.Count == 0)
                     {
                         if (function && ps.return_type != null && return_type == null)
@@ -2229,19 +2263,21 @@ namespace CodeCompletion
                 is_extensions_unit = true;
             }
             CodeCompletionController.comp_modules[_unit_module.file_name] = this.converter;
+            foreach (string s in namespaces)
+            {
+                if (!ns_cache.ContainsKey(s))
+                {
+                    NamespaceScope ns_scope = new NamespaceScope(s);
+                    entry_scope.AddName(s, ns_scope);
+                    ns_cache[s] = s;
+                }
+            }
             DateTime start_time = DateTime.Now;
+
             System.Diagnostics.Debug.WriteLine("intellisense parsing interface started " + System.Convert.ToInt32((DateTime.Now - start_time).TotalMilliseconds));
             _unit_module.interface_part.visit(this);
             System.Diagnostics.Debug.WriteLine("intellisense parsing interface ended " + System.Convert.ToInt32((DateTime.Now - start_time).TotalMilliseconds));
-            foreach (string s in namespaces)
-            {
-            	if (!ns_cache.ContainsKey(s))
-            	{
-                  NamespaceScope ns_scope = new NamespaceScope(s);
-                  entry_scope.AddName(s,ns_scope);
-                  ns_cache[s] = s;
-            	}
-            }
+            
             start_time = DateTime.Now;
             System.Diagnostics.Debug.WriteLine("intellisense parsing implementation started "+ System.Convert.ToInt32((DateTime.Now - start_time).TotalMilliseconds));
             if (_unit_module.implementation_part != null)
@@ -2410,7 +2446,7 @@ namespace CodeCompletion
                     {
                         if (cur_scope.regions == null)
                             cur_scope.regions = new List<Position>();
-                        regions_stack.Push(new Position(dir.source_context.begin_position.line_num, dir.source_context.begin_position.column_num, dir.source_context.end_position.line_num, dir.source_context.end_position.column_num, dir.source_context.FileName));
+                        regions_stack.Push(new Position(dir.source_context.begin_position.line_num, dir.source_context.begin_position.column_num, dir.source_context.end_position.line_num, dir.source_context.end_position.column_num, dir.source_context.FileName, dir.Directive.text));
                     }
                     else if (dir.Name.text.ToLower() == "endregion")
                     {
@@ -2419,7 +2455,7 @@ namespace CodeCompletion
                             Position pos = regions_stack.Pop();
                             if (cur_scope.regions != null)
                             {
-                                cur_scope.regions.Add(new Position(pos.end_line, pos.end_column, dir.source_context.end_position.line_num, dir.source_context.end_position.column_num, pos.file_name));
+                                cur_scope.regions.Add(new Position(pos.line, pos.column - 1, dir.source_context.end_position.line_num, dir.source_context.end_position.column_num, pos.file_name, pos.fold_text));
                             }
                         }
                     }
@@ -3261,6 +3297,7 @@ namespace CodeCompletion
                         element_type = TypeTable.obj_type;
                         break;
                     }
+                    //else element_type = TypeTable.obj_type;
                 }
             }
             
@@ -3855,7 +3892,7 @@ namespace CodeCompletion
                             ps.head_loc = loc;
                         }
                         else
-                            ps = select_function_definition(ps, _constructor.parameters, topScope as TypeScope, topScope as TypeScope);
+                            ps = select_function_definition(ps, _constructor.parameters, topScope as TypeScope, topScope as TypeScope, false, _constructor.class_keyword);
                         //while (ps != null && ps.already_defined) ps = ps.nextProc;
                         if (ps == null)
                         {
@@ -4609,6 +4646,8 @@ namespace CodeCompletion
                 if (returned_scope != null)
                 {
                     cur_scope = stmt_scope;
+                    if (returned_scope is ProcScope)
+                        returned_scope = new ProcType(returned_scope as ProcScope);
                     ElementScope es = new ElementScope(new SymInfo(_foreach_stmt.identifier.name, SymbolKind.Variable, _foreach_stmt.identifier.name), returned_scope, cur_scope);
                     es.loc = get_location(_foreach_stmt.identifier);
                     stmt_scope.AddName(_foreach_stmt.identifier.name, es);
@@ -4828,7 +4867,8 @@ namespace CodeCompletion
         public override void visit(expression_as_statement _expression_as_statement)
         {
             //throw new Exception("The method or operation is not implemented.");
-            
+            if (has_lambdas(_expression_as_statement.expr) || _expression_as_statement.expr is unnamed_type_object)
+                _expression_as_statement.expr.visit(this);
         }
 
         public override void visit(c_scalar_type _c_scalar_type)

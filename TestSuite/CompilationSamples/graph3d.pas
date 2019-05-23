@@ -757,7 +757,8 @@ type
   Group3D = class(ObjectWithChildren3D)
   protected 
     function CreateObject: Object3D; override := new Group3D(X, Y, Z);
-  public 
+  //public 
+  protected 
     constructor(x, y, z: real) := CreateBase0(new ModelVisual3D, x, y, z);
     
     constructor(x, y, z: real; lst: sequence of Object3D);
@@ -1129,10 +1130,13 @@ type
     el: ScaleTransform3D;
     procedure Hand(o: object; e: System.EventArgs);
     begin
-      var el0 := Element.scaletransform;
-      el0.ScaleX += el.ScaleX;
-      el0.ScaleY += el.ScaleY;
-      el0.ScaleZ += el.ScaleZ;
+      if not dax.AutoReverse then
+      begin
+        var el0 := Element.scaletransform;
+        el0.ScaleX += el.ScaleX;
+        el0.ScaleY += el.ScaleY;
+        el0.ScaleZ += el.ScaleZ;
+      end;
       Element.transfgroup.Children.Remove(el);
       if Completed <> nil then 
         Completed();
@@ -1163,8 +1167,11 @@ type
     el: ScaleTransform3D;
     procedure Hand(o: object; e: System.EventArgs);
     begin
-      var el0 := Element.scaletransform;
-      el0.ScaleX += el.ScaleX;
+      if not da.AutoReverse then
+      begin
+        var el0 := Element.scaletransform;
+        el0.ScaleX += el.ScaleX;
+      end;  
       Element.transfgroup.Children.Remove(el);
       if Completed <> nil then 
         Completed();
@@ -1191,8 +1198,11 @@ type
   private 
     procedure Hand(o: object; e: System.EventArgs);
     begin
-      var el0 := Element.scaletransform;
-      el0.ScaleY += el.ScaleY;
+      if not da.AutoReverse then
+      begin
+        var el0 := Element.scaletransform;
+        el0.ScaleY += el.ScaleY;
+      end;  
       Element.transfgroup.Children.Remove(el);
       if Completed <> nil then 
         Completed();
@@ -1213,8 +1223,11 @@ type
   private 
     procedure Hand(o: object; e: System.EventArgs);
     begin
-      var el0 := Element.scaletransform;
-      el0.ScaleZ += el.ScaleZ;
+      if not da.AutoReverse then
+      begin
+        var el0 := Element.scaletransform;
+        el0.ScaleZ += el.ScaleZ;
+      end;  
       Element.transfgroup.Children.Remove(el);
       if Completed <> nil then 
         Completed();
@@ -1239,7 +1252,8 @@ type
     procedure Hand(o: object; e: System.EventArgs);
     begin
       var rot := el.Rotation as AxisAngleRotation3D;
-      Element.RotateAt(rot.Axis, angle, center);
+      if not da.AutoReverse then
+        Element.RotateAt(rot.Axis, angle, center);
       Element.transfgroup.Children.Remove(el);
       if Completed <> nil then 
         Completed();

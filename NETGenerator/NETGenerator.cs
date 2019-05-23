@@ -86,6 +86,20 @@ namespace PascalABCCompiler.NETGenerator
             get { return _TradeMark; }
             set { _TradeMark = value; NeedDefineVersionInfo = true; }
         }
+        private string _Title = "";
+
+        public string Title
+        {
+            get { return _Title; }
+            set { _Title = value; NeedDefineVersionInfo = true; }
+        }
+        private string _Description = "";
+
+        public string Description
+        {
+            get { return _Description; }
+            set { _Description = value; NeedDefineVersionInfo = true; }
+        }
 
         public string MainResourceFileName = null;
 
@@ -896,6 +910,10 @@ namespace PascalABCCompiler.NETGenerator
             ab.SetCustomAttribute(typeof(System.Runtime.CompilerServices.CompilationRelaxationsAttribute).GetConstructor(new Type[1] { TypeFactory.Int32Type }),
                                   new byte[] { 0x01, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00 });
 
+            ab.SetCustomAttribute(new CustomAttributeBuilder(typeof(System.Reflection.AssemblyTitleAttribute).GetConstructor(new Type[] { typeof(string) }), new object[] { options.Title }));
+
+            ab.SetCustomAttribute(new CustomAttributeBuilder(typeof(System.Reflection.AssemblyDescriptionAttribute).GetConstructor(new Type[] { typeof(string) }), new object[] { options.Description }));
+
             if (RunOnly)
             {
                 object main_class = ab.CreateInstance(cur_unit + ".Program");
@@ -1498,7 +1516,7 @@ namespace PascalABCCompiler.NETGenerator
                     Type ftype = GetTypeOfGenericInstanceField(t, icfn.compiled_field);
                     FieldInfo fi = TypeBuilder.GetField(t, icfn.compiled_field);
 
-                    helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, ftype);
+                    helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, ftype, null);
                     continue;
                 }
             }
@@ -1552,18 +1570,54 @@ namespace PascalABCCompiler.NETGenerator
                 if (icfn != null)
                 {
                     FldInfo fldinfo = helper.GetField(icfn);
+#if DEBUG
+                    /*if (fldinfo == null)
+                    {
+                        fldinfo = fldinfo;
+                    } */
+#endif
                     if (!(fldinfo is GenericFldInfo))
                     {
                         FieldInfo finfo = fldinfo.fi;
                         Type ftype = GetTypeOfGenericInstanceField(t, finfo);
-                        FieldInfo fi = TypeBuilder.GetField(t, finfo);
-                        helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, ftype);
+                        FieldInfo fi = TypeBuilder.GetField(t, finfo); // возвращает fi: FieldOnTypeBuilderInstantiation
+                        helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, ftype, finfo); // передаю также старое finfo чтобы на следующей итерации вызовом TypeBuilder.GetField(t, finfo) сконструировать правильное fi
                     }
                     else
                     {
-                        FieldInfo finfo = fldinfo.fi;
-                        FieldInfo fi = finfo;
-                        helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, (fldinfo as GenericFldInfo).field_type);
+                        /* Вот этот код не выполняется ни в одном тесте и в примере 
+                          type
+                          Base<T> = class
+                            XYZW: T;
+                          end;
+  
+                          Derived<T1> = class(Base<T1>)
+                          end;
+
+                        begin
+                          var a := new Derived<integer>;
+                          a.XYZW := 2;
+                        end.
+                        срабатывает неправильно !!!
+
+                        Исправил, введя доп. поле в GenericFldInfo, которое хранит FieldBuilder и позволяет конструировать fi на следующей итерации
+                        */
+
+                        FieldInfo finfo = (fldinfo as GenericFldInfo).prev_fi;
+                        FieldInfo fi = TypeBuilder.GetField(t, finfo);
+                        helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, (fldinfo as GenericFldInfo).field_type, finfo); 
+                        //FieldInfo finfo = fldinfo.fi;
+                        //FieldInfo fi = finfo;
+                        //helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, (fldinfo as GenericFldInfo).field_type, finfo); 
+                        //#if DEBUG
+
+                        /*{
+                            var f = File.AppendText("d:\\aa.txt");
+                            f.WriteLine(DateTime.Now);
+                            f.WriteLine($"{value.used_members[dn] as ICommonClassFieldNode}  {fi}  {(fldinfo as GenericFldInfo).field_type}");
+                            f.Close();
+                        }*/
+                        //#endif
                     }
                     continue;
                 }
@@ -1683,6 +1737,27 @@ namespace PascalABCCompiler.NETGenerator
             }
         }
 
+        private void MakeAttribute(ICommonParameterNode prm)
+        {
+            ParameterBuilder pb = (ParameterBuilder)helper.GetParameter(prm).pb;
+            IAttributeNode[] attrs = prm.Attributes;
+            for (int i = 0; i < attrs.Length; i++)
+            {
+                try
+                {
+                    CustomAttributeBuilder cab = new CustomAttributeBuilder
+                    ((attrs[i].AttributeConstructor is ICompiledConstructorNode) ? (attrs[i].AttributeConstructor as ICompiledConstructorNode).constructor_info : helper.GetConstructor(attrs[i].AttributeConstructor).cnstr, get_constants(attrs[i].Arguments),
+                    get_named_properties(attrs[i].PropertyNames), get_constants(attrs[i].PropertyInitializers),
+                    get_named_fields(attrs[i].FieldNames), get_constants(attrs[i].FieldInitializers));
+                    pb.SetCustomAttribute(cab);
+                }
+                catch (ArgumentException ex)
+                {
+                    throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message.Replace("System.ArgumentException: ", ""), attrs[i].Location.document.file_name, attrs[i].Location.begin_line_num, attrs[i].Location.begin_column_num);
+                }
+            }
+        }
+
         private void MakeAttribute(ICommonFunctionNode func)
         {
             MethodBuilder mb = helper.GetMethod(func).mi as MethodBuilder;
@@ -1730,7 +1805,8 @@ namespace PascalABCCompiler.NETGenerator
             //ivan
             if (ti.tp.IsEnum || !(ti.tp is TypeBuilder)) return;
             TypeBuilder tb = (TypeBuilder)ti.tp;
-            if (tb.IsValueType) BuildCloseTypeOrder(value, tb);
+            if (tb.IsValueType)
+                BuildCloseTypeOrder(value, tb);
             //сохраняем контекст
             TypeInfo tmp_ti = cur_ti;
             cur_ti = ti;
@@ -2134,7 +2210,8 @@ namespace PascalABCCompiler.NETGenerator
                         ParameterAttributes pars = ParameterAttributes.None;
                         //if (func.parameters[j].parameter_type == parameter_type.var)
                         //  pars = ParameterAttributes.Out;
-                        methb.DefineParameter(j + 1, pars, parameters[j].name);
+                        ParameterBuilder pb = methb.DefineParameter(j + 1, pars, parameters[j].name);
+                        helper.AddParameter(parameters[j], pb);
                     }
                 }
                 else
@@ -2160,7 +2237,8 @@ namespace PascalABCCompiler.NETGenerator
                             ParameterAttributes pars = ParameterAttributes.None;
                             //if (func.parameters[j].parameter_type == parameter_type.var)
                             //  pars = ParameterAttributes.Out;
-                            methb.DefineParameter(j + 1, pars, parameters[j].name);
+                            ParameterBuilder pb = methb.DefineParameter(j + 1, pars, parameters[j].name);
+                            helper.AddParameter(parameters[j], pb);
                         }
                     }
                     else
@@ -5278,6 +5356,12 @@ namespace PascalABCCompiler.NETGenerator
             value.obj.visit(this);
             is_addr = temp_is_addr;
             FldInfo fi_info = helper.GetField(value.field);
+#if DEBUG
+            /*if (value.field.name == "XYZW")
+            {
+                var y = value.field.GetHashCode();
+            } */
+#endif
             FieldInfo fi = fi_info.fi;
             if (!is_addr)
             {
@@ -7848,11 +7932,13 @@ namespace PascalABCCompiler.NETGenerator
         private void AssignToField(IExpressionNode to, IExpressionNode from)
         {
             ICommonClassFieldReferenceNode value = (ICommonClassFieldReferenceNode)to;
-            FldInfo fi_info = helper.GetField(value.field);
+#if DEBUG
             /*if (value.field.name == "XYZW")
             {
                 var y = value.field.GetHashCode();
             } */
+#endif
+            FldInfo fi_info = helper.GetField(value.field);
             FieldInfo fi = fi_info.fi;
             is_dot_expr = true;
             has_dereferences = false;
@@ -8523,7 +8609,11 @@ namespace PascalABCCompiler.NETGenerator
                             mi = ti.tp.GetMethod("get_HasValue");
                         il.Emit(OpCodes.Call, mi);
                         if (ft == basic_function_type.objeq)
-                            il.Emit(OpCodes.Not);
+                        {
+                            il.Emit(OpCodes.Ldc_I4_0);
+                            il.Emit(OpCodes.Ceq);
+                        }
+                            
                         return;
                     }
                     else if (real_parameters[1].type.is_nullable_type && real_parameters[0] is INullConstantNode)
@@ -8540,7 +8630,10 @@ namespace PascalABCCompiler.NETGenerator
                             mi = ti.tp.GetMethod("get_HasValue");
                         il.Emit(OpCodes.Call, mi);
                         if (ft == basic_function_type.objeq)
-                            il.Emit(OpCodes.Not);
+                        {
+                            il.Emit(OpCodes.Ldc_I4_0);
+                            il.Emit(OpCodes.Ceq);
+                        }
                         return;
                     }
                     else if (real_parameters[0].type.is_nullable_type && real_parameters[1].type.is_nullable_type)

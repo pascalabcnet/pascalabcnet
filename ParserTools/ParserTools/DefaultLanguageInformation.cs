@@ -588,7 +588,7 @@ namespace PascalABCCompiler.Parsers
             }
             else
                 sb.Append(prepare_member_name(t.Name));
-            sb.Append(" = " + GetClassKeyword(t));
+            sb.Append(" = " + (t.IsSealed && t.IsAbstract ? "static ":"")+GetClassKeyword(t));
             bool bracket = false;
             if (t.IsEnum)
             {
@@ -2449,6 +2449,10 @@ namespace PascalABCCompiler.Parsers
 			int i=0;
         	bool is_cnstr = false;
         	StringBuilder sb = new StringBuilder();
+            if (meth.StartsWith("static "))
+                meth = meth.Remove(0, "static ".Length);
+            else if (meth.StartsWith("class "))
+                meth = meth.Remove(0, "class ".Length);
             if (scope.IsStatic)
                 sb.Append("static ");
         	while (i < meth.Length && char.IsLetterOrDigit(meth[i]))
@@ -2713,6 +2717,8 @@ namespace PascalABCCompiler.Parsers
                             {
                                 sb.Insert(0, Text[j]);
                             }
+                            if (sb.ToString().Trim() == "new")
+                                return "";
                             i = bound;
                             continue;
                         }
@@ -3136,6 +3142,7 @@ namespace PascalABCCompiler.Parsers
         public virtual KeywordKind TestForKeyword(string Text, int i)
         {
             StringBuilder sb = new StringBuilder();
+            int orig_i = i;
             int j = i;
             bool in_keyw = false;
             while (j >= 0 && Text[j] != '\n')
@@ -3213,6 +3220,14 @@ namespace PascalABCCompiler.Parsers
                     i--;
                 }
             string s = sb.ToString().ToLower();
+            /*if (s == "new")
+            {
+                i = orig_i + 1;
+                while (i < Text.Length && char.IsWhiteSpace(Text[i]))
+                    i++;
+                if (i < Text.Length && Text[i] != '(')
+                    return KeywordKind.Punkt;
+            }*/
 
             return GetKeywordKind(s);
         }

@@ -28,7 +28,7 @@ var
   LabelGoodEndColor: Color;
   
   HelpStr := 
-'Разработчик  исполнителя  Робот:  Михалкович С.С., 2002-17  '#10#13#10#13+
+'Разработчик  исполнителя  Робот:  Михалкович С.С., 2002-19  '#10#13#10#13+
     'Команды  исполнителя  Робот:'#10#13+
     '    Right - вправо'#10#13+
     '    Left - влево'#10#13
@@ -299,12 +299,12 @@ var Sz,Z,Dim: integer;
 begin
   Sz:=CellSize;
   Z:=max(Sz div 12,2);
-  if Sz>64 then Dim:=10
+  {if Sz>64 then Dim:=10
   else if Sz>56 then Dim:=9
   else if Sz>48 then Dim:=8
   else if Sz>40 then Dim:=8
   else if Sz>34 then Dim:=7
-  else if Sz>28 then Dim:=6
+  else} if Sz>28 then Dim:=Round((Sz+20)/8)
   else if Sz>22 then Dim:=5
   else if Sz>12 then Dim:=4
   else Dim:=3;
@@ -316,13 +316,21 @@ begin
 end;
 
 procedure TRobotField.DrawTag(x,y: integer);
-var Sz,sz2: integer;
+var sz2: integer;
 begin
-  Sz:=CellSize;
-  if Sz>80 then sz2:=Sz div 2 - 4
-    else if Sz>52 then sz2:=Sz div 2 - 3
-      else if Sz>12 then sz2:=Sz div 2 - 2
-        else sz2:=Sz div 2 - 1;
+  var Sz:=CellSize;
+  var s2 := Sz div 2;
+  {if Sz>172 then 
+    sz2:=S2 - 6
+  else} if Sz>132 then 
+    sz2:=S2 - 5
+  else if Sz>92 then 
+    sz2:=S2 - 4
+  else if Sz>52 then 
+    sz2:=S2 - 3
+  else if Sz>12 then 
+    sz2:=S2 - 2
+  else sz2:=S2 - 1;
 
   if (RobotX=x) and (RobotY=y)
     then Brush.Color:=clLightGray
@@ -417,10 +425,9 @@ begin
 end;
 
 procedure TRobotField.MoveRobot(x,y: integer);
-var vx,vy: integer;
 begin
-  vx:=RobotX;                                  
-  vy:=RobotY;
+  var vx:=RobotX;                                  
+  var vy:=RobotY;
   RobotX:=x;
   RobotY:=y;
   DrawCell(vx,vy);
@@ -663,16 +670,16 @@ end;
 procedure LoadIni(var settings: IniSettings);
 begin
   var Ini := new TIniFile(IniFileName);
-  settings.Width := Ini.ReadInteger('RobotWindow','Width',679);
-  settings.Height := Ini.ReadInteger('RobotWindow','Height',490);
+  settings.Width := Ini.ReadInteger('RobotWindow','Width',Round(679*ScreenScale));
+  settings.Height := Ini.ReadInteger('RobotWindow','Height',Round(490*ScreenScale));
   settings.Left := Ini.ReadInteger('RobotWindow','Left',(Screen.PrimaryScreen.Bounds.Width-settings.Width) div 2);
   settings.Top := Ini.ReadInteger('RobotWindow','Top',(Screen.PrimaryScreen.Bounds.Height-settings.Height) div 2);
   
-  if settings.Width>screen.PrimaryScreen.Bounds.Width then 
-    settings.Width := Screen.PrimaryScreen.Bounds.Width;
+  if settings.Width>ScreenSize.Width then 
+    settings.Width := ScreenSize.Width;
     
-  if settings.Height>Screen.PrimaryScreen.Bounds.Height then 
-    settings.Height := Screen.PrimaryScreen.Bounds.Height;
+  if settings.Height>ScreenSize.Height then 
+    settings.Height := ScreenSize.Height;
     
   if settings.Left < 0 then 
     settings.Left := 0;
@@ -680,8 +687,8 @@ begin
   if settings.Top < 0 then 
     settings.Top := 0;
     
-  if (settings.Left > Screen.PrimaryScreen.Bounds.Width - 10) or 
-     (settings.Top > Screen.PrimaryScreen.Bounds.Height - 10) then
+  if (settings.Left > ScreenSize.Width - 10) or 
+     (settings.Top > ScreenSize.Height - 10) then
   begin
     settings.Left := 0;
     settings.Top := 0;
@@ -716,6 +723,8 @@ procedure MainWindowClose := SaveIni;
 
 procedure buttonStartClick(o: Object; e: EventArgs);
 begin
+  if t=nil then 
+    exit;
   if t.ThreadState = System.Threading.ThreadState.Suspended then
   begin
     robField.StepFlag := False;
@@ -733,6 +742,8 @@ end;
 
 procedure buttonStepClick(o: Object; e: EventArgs);
 begin
+  if t=nil then 
+    exit;
   robField.StepFlag := True;
   t.Resume;
   (GraphABCControl as Control).Focus;
@@ -768,12 +779,11 @@ begin
 end;
 
 procedure CorrectWHLT;
-var mw,mh: integer;
 begin
   if (RobField.DimX=0) or (RobField.DimY=0) then
     exit;
-  mw := (GraphABCControl.Width - 30) div RobField.DimX;
-  mh := (GraphABCControl.Height - 20) div RobField.DimY;
+  var mw := (GraphABCControl.Width - 30) div RobField.DimX;
+  var mh := (GraphABCControl.Height - 20) div RobField.DimY;
   RobField.CellSize := min(mw,mh);
   if RobField.CellSize mod 2 = 1 then 
     RobField.CellSize := RobField.CellSize - 1;
@@ -818,7 +828,7 @@ begin
   BottomPanel.Controls.Add(groupBoxExState);
   BottomPanel.Dock := DockStyle.Bottom;
   BottomPanel.Location := new Point(0, 407);
-  BottomPanel.Size := new Size(679, 83);
+  BottomPanel.Size := new Size(679, 83)*ScreenScale;
   // 
   // panelBottomLeft
   // 
@@ -829,43 +839,49 @@ begin
   panelBottomLeft.Controls.Add(buttonStart);
   panelBottomLeft.Controls.Add(tableLayoutPanelBottom);
   panelBottomLeft.Location := new Point(0, 0);
-  panelBottomLeft.Size := new Size(474, 83);
-  // 
-  // buttonHelp
-  // 
-  buttonHelp.FlatStyle := System.Windows.Forms.FlatStyle.System;
-  buttonHelp.Location := new Point(359, 18);
-  buttonHelp.Size := new Size(107, 24);
-  buttonHelp.TabStop := false;
-  buttonHelp.Text := 'Справка (F1)';
-//  buttonHelp.UseVisualStyleBackColor := true;
-  // 
-  // buttonExit
-  // 
-  buttonExit.FlatStyle := System.Windows.Forms.FlatStyle.System;
-  buttonExit.Location := new System.Drawing.Point(241, 18);
-  buttonExit.Size := new System.Drawing.Size(107, 24);
-  buttonExit.TabStop := false;
-  buttonExit.Text := 'Выход (Esc)';
-//  buttonExit.UseVisualStyleBackColor := true;
-  // 
-  // buttonStep
-  // 
-  buttonStep.FlatStyle := FlatStyle.System;
-  buttonStep.Location := new Point(123, 18);
-  buttonStep.Size := new Size(107, 24);
-  buttonStep.TabStop := false;
-  buttonStep.Text := 'Шаг (Space)';
-//  buttonStep.UseVisualStyleBackColor := true;
+  panelBottomLeft.Size := new Size(474, 83)*ScreenScale;
+  
+  var x := 10;
+  var h := 116;
   // 
   // buttonStart
   // 
-  buttonStart.FlatStyle := FlatStyle.System;
-  buttonStart.Location := new Point(5, 18);
-  buttonStart.Size := new Size(107, 24);
+  //buttonStart.FlatStyle := FlatStyle.System;
+  buttonStart.Location := new Point(x, 14)*ScreenScale;
+  buttonStart.Size := new Size(107, 24)*ScreenScale;
   buttonStart.TabStop := false;
   buttonStart.Text := 'Пуск (Enter)';
 //  buttonStart.UseVisualStyleBackColor := true;
+  x += h;
+  // 
+  // buttonStep
+  // 
+  //buttonStep.FlatStyle := FlatStyle.System;
+  buttonStep.Location := new Point(x, 14)*ScreenScale;
+  buttonStep.Size := new Size(107, 24)*ScreenScale;
+  buttonStep.TabStop := false;
+  buttonStep.Text := 'Шаг (Space)';
+//  buttonStep.UseVisualStyleBackColor := true;
+  x += h;
+  // 
+  // buttonExit
+  // 
+  //buttonExit.FlatStyle := System.Windows.Forms.FlatStyle.System;
+  buttonExit.Location := new System.Drawing.Point(x, 14)*ScreenScale;
+  buttonExit.Size := new System.Drawing.Size(107, 24)*ScreenScale;
+  buttonExit.TabStop := false;
+  buttonExit.Text := 'Выход (Esc)';
+//  buttonExit.UseVisualStyleBackColor := true;
+  x += h;
+  // 
+  // buttonHelp
+  // 
+  //buttonHelp.FlatStyle := System.Windows.Forms.FlatStyle.System;
+  buttonHelp.Location := new Point(x, 14)*ScreenScale;
+  buttonHelp.Size := new Size(107, 24)*ScreenScale;
+  buttonHelp.TabStop := false;
+  buttonHelp.Text := 'Справка (F1)';
+//  buttonHelp.UseVisualStyleBackColor := true;
   // 
   // tableLayoutPanelBottom
   // 
@@ -875,21 +891,22 @@ begin
   tableLayoutPanelBottom.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
   tableLayoutPanelBottom.Controls.Add(labelExState);
   tableLayoutPanelBottom.ForeColor := System.Drawing.Color.White;
-  tableLayoutPanelBottom.Location := new Point(4, 52);
+  tableLayoutPanelBottom.Location := new Point(9, 49)*ScreenScale;
   tableLayoutPanelBottom.RowCount := 1;
   tableLayoutPanelBottom.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
-  tableLayoutPanelBottom.Size := new Size(463, 23);
+  tableLayoutPanelBottom.Size := new Size(457, 23)*ScreenScale;
+  //tableLayoutPanelBottom.AutoSize := True;
   // 
   // labelExState
   // 
   labelExState.AutoEllipsis := true;
   labelExState.AutoSize := true;
   labelExState.Dock := DockStyle.Fill;
-  labelExState.FlatStyle := FlatStyle.System;
-  labelExState.Font := new System.Drawing.Font('Microsoft Sans Serif', 8, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+  //labelExState.FlatStyle := FlatStyle.System;
+  labelExState.Font := new System.Drawing.Font('Microsoft Sans Serif', 8, System.Drawing.FontStyle.Bold{, System.Drawing.GraphicsUnit.Point, ((byte)(204))});
   labelExState.Location := new Point(5, 2);
-  labelExState.Margin := new Padding(3, 0, 3, 3);
-  labelExState.Size := new Size(453, 15);
+  labelExState.Margin := new Padding(3, 3, 3, 3);
+  labelExState.Size := new Size(453, 15)*ScreenScale;
   labelExState.Text := 'Робот: Готов';
   labelExState.TextAlign := ContentAlignment.MiddleCenter;
   // 
@@ -901,8 +918,8 @@ begin
   groupBoxExState.Controls.Add(trackBarSpeed);
   groupBoxExState.Controls.Add(labelSpeed);
   groupBoxExState.Dock := DockStyle.Right;
-  groupBoxExState.Location := new Point(475, 0);
-  groupBoxExState.Size := new Size(204, 83);
+  groupBoxExState.Location := new Point(475, 0)*ScreenScale;
+  groupBoxExState.Size := new Size(204, 83)*ScreenScale;
   groupBoxExState.TabStop := false;
   // 
   // tableLayoutPanel1
@@ -911,43 +928,43 @@ begin
   tableLayoutPanel1.CellBorderStyle := TableLayoutPanelCellBorderStyle.Outset;
   tableLayoutPanel1.ColumnCount := 1;
   tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(System.Windows.Forms.SizeType.Percent, 50));
-  tableLayoutPanel1.Location := new Point(91, 52);
+  tableLayoutPanel1.Location := new Point(78, 50)*ScreenScale;
   tableLayoutPanel1.RowCount := 1;
   tableLayoutPanel1.RowStyles.Add(new RowStyle(System.Windows.Forms.SizeType.Percent, 50));
-  tableLayoutPanel1.Size := new Size(22, 22);
+  tableLayoutPanel1.Size := new Size(22, 22)*ScreenScale;
   // 
   // labelState
   // 
   labelState.AutoSize := true;
-  labelState.Location := new Point(6, 54);
+  labelState.Location := new Point(6, 54)*ScreenScale;
   labelState.Margin := new Padding(0);
-  labelState.Size := new Size(83, 17);
+  labelState.Size := new Size(83, 17)*ScreenScale;
   labelState.Text := 'Состояние:';
   // 
   // labelStep
   // 
   labelStep.BackColor := SystemColors.Control;
-  labelStep.Font := new System.Drawing.Font('Microsoft Sans Serif', 8, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+  //labelStep.Font := new System.Drawing.Font('Microsoft Sans Serif', 8, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
   labelStep.ForeColor := System.Drawing.Color.Black;
-  labelStep.Location := new Point(130, 54);
-  labelStep.Size := new Size(66, 18);
+  labelStep.Location := new Point(130, 54)*ScreenScale;
+  labelStep.Size := new Size(66, 18)*ScreenScale;
   labelStep.Text := 'Шаг: 0';
-  labelStep.TextAlign := ContentAlignment.MiddleLeft;
+  //labelStep.TextAlign := ContentAlignment.MiddleLeft;
   // 
   // trackBarSpeed
   // 
   trackBarSpeed.CausesValidation := false;
   trackBarSpeed.LargeChange := 1;
-  trackBarSpeed.Location := new Point(80, 11);
-  trackBarSpeed.Size := new Size(121, 53);
+  trackBarSpeed.Location := new Point(72, 11)*ScreenScale;
+  trackBarSpeed.Size := new Size(121, 53)*ScreenScale;
   trackBarSpeed.TabStop := false;
   // 
   // labelSpeed
   // 
   labelSpeed.AutoSize := true;
-  labelSpeed.Location := new Point(6, 16);
+  labelSpeed.Location := new Point(6, 16)*ScreenScale;
   labelSpeed.Margin := new Padding(0);
-  labelSpeed.Size := new Size(73, 17);
+  labelSpeed.Size := new Size(73, 17)*ScreenScale;
   labelSpeed.Text := 'Скорость:';
   // 
   // tableLayoutPanelTop
@@ -961,19 +978,20 @@ begin
   tableLayoutPanelTop.Location := new Point(0, 0);
   tableLayoutPanelTop.RowCount := 1;
   tableLayoutPanelTop.RowStyles.Add(new RowStyle(System.Windows.Forms.SizeType.Percent, 50));
-  tableLayoutPanelTop.Size := new Size(679, 23);
+  tableLayoutPanelTop.AutoSize := True;
+  tableLayoutPanelTop.Size := new Size(679, 23)*ScreenScale;
   // 
   // labelZad
   // 
   labelZad.AutoEllipsis := true;
-  labelZad.AutoSize := true;
+  //labelZad.AutoSize := true;
   labelZad.Dock := DockStyle.Fill;
-  labelZad.FlatStyle := FlatStyle.System;
-  labelZad.Font := new System.Drawing.Font('Microsoft Sans Serif', 8, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+  //labelZad.FlatStyle := FlatStyle.System;
+  labelZad.Font := new System.Drawing.Font('Microsoft Sans Serif', 8, System.Drawing.FontStyle.Bold{, System.Drawing.GraphicsUnit.Point, ((byte)(204))});
   labelZad.ForeColor := SystemColors.HotTrack;
   labelZad.Location := new Point(6, 3);
   labelZad.Margin := new Padding(4, 1, 3, 0);
-  labelZad.Size := new Size(668, 14);
+  labelZad.Size := new Size(668, 14)*ScreenScale;
   labelZad.Text := 'Задание';
   labelZad.TextAlign := ContentAlignment.MiddleLeft;
   // 
@@ -983,7 +1001,14 @@ begin
 //  MainWindow.ClientSize := new Size(679, 490);
   MainForm.Controls.Add(tableLayoutPanelTop);
   MainForm.Controls.Add(BottomPanel);
-  MainForm.MinimumSize := new Size(687, 240);
+  
+  var ssz := 692;
+  var sw := ScreenSize.Width;
+  var ww := ssz*ScreenScale;
+  if ww>sw then 
+    ssz := Round(sw/ScreenScale) - 10;
+
+  MainForm.MinimumSize := new Size(ssz, 240)*ScreenScale; // Уменьшить до размера экрана!!!
   MainForm.Text := 'Исполнитель Робот';
   BottomPanel.ResumeLayout(false);
   panelBottomLeft.ResumeLayout(false);
@@ -1091,21 +1116,23 @@ begin
 
   Brush.Color := MainForm.BackColor;
   FillRectangle(0,0,1280,1024);
-  //MainWindow.Hide;
-  //InitControls;
-  MainForm.Invoke(InitControls);
+  Pen.RoundCap := True;
   
+  LoadIni(settings);
+  MainForm.Invoke(SetWindowBounds, new System.Drawing.Rectangle(settings.Left,settings.Top,settings.Width,settings.Height));
+
+  //var (sw,sh) := ScreenSize;
+  MainForm.Invoke(InitControls);
+
   OnClose := MainWindowClose; 
 
 //  CenterWindow;
 
   RobField := new TRobotField(0,0,50);
-//  RobField.DrawCentered;
+
   t := System.Threading.Thread.CurrentThread;  
-  LoadIni(settings);
   robField.SetSpeed(settings.Speed);
   //MainWindow.Bounds := new System.Drawing.Rectangle(settings.Left,settings.Top,settings.Width,settings.Height);
-  MainForm.Invoke(SetWindowBounds, new System.Drawing.Rectangle(settings.Left,settings.Top,settings.Width,settings.Height));
   var del : procedure := MainForm.Show;
   MainForm.Invoke(del);
 end;
@@ -1136,19 +1163,6 @@ end;
 
 initialization
   __InitModule;
-  //MainForm.Show;
 finalization
-  {buttonStart.Enabled := False;  
-  buttonStep.Enabled := False;
-  if (robField.DimX*robField.DimY=0) then
-    RobotError('Робот: Не вызвана процедура Task','Задание отсутствует')
-  else if robField.IsSolution then
-  begin
-    tableLayoutPanel1.BackColor := LabelGoodEndColor;
-    labelExState.BackColor := LabelGoodEndColor;
-    tableLayoutPanelBottom.BackColor := LabelGoodEndColor;
-    labelExState.Text := 'Робот: Задание выполнено';
-  end
-  else labelExState.Text := 'Робот: Работа окончена, задание не выполнено';}
   __FinalizeModule;
 end.

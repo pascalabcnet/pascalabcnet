@@ -571,6 +571,8 @@ namespace VisualPascalABC
     {
         public override void Execute(TextArea textArea)
         {
+            if (WorkbenchServiceFactory.DebuggerManager.IsRunning)
+                return;
             WorkbenchServiceFactory.Workbench.ErrorsListWindow.ClearErrorList();
             VisualPABCSingleton.MainForm.CurrentCodeFileDocument.DeselectAll();
             CodeFormatters.CodeFormatter cf = new CodeFormatters.CodeFormatter(VisualPABCSingleton.MainForm.UserOptions.TabIndent);
@@ -597,7 +599,7 @@ namespace VisualPascalABC
                                 new PascalABCCompiler.SourceLocation(VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName, cf.Line, cf.Column, cf.Line, cf.Column), VisualPascalABCPlugins.SourceLocationAction.GotoBeg);
                 }
             }
-            else
+            else if (!(Errors[0] is PascalABCCompiler.Errors.ParserBadFileExtension))
             {
                 WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.ExecuteAction(VisualPascalABCPlugins.VisualEnvironmentCompilerAction.AddMessageToErrorListWindow, new List<PascalABCCompiler.Errors.Error>(new PascalABCCompiler.Errors.Error[] { Errors[0] }));
             }

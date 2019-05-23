@@ -7,12 +7,29 @@
 %using PascalABCCompiler.SyntaxTree;
 %using QUT.Gppg;
 
+DotChr [^\r\n]
+OneLineCmnt  \/\/{DotChr}*
+STRINGNUM \'([^\'\n]|\'\')*\'
+
+
 DIRECTIVE [^\}]+
 NODIRECTIVE [.|\n]+
 
 %x INSIDEDIRECTIVE
+%x COMMENT
+%x COMMENT1
+%x COMMENTONELINE
+
 
 %%
+
+{STRINGNUM} {
+
+}
+
+{OneLineCmnt} {
+	
+}
 
 "{$" { 
   BEGIN(INSIDEDIRECTIVE);
@@ -34,6 +51,29 @@ NODIRECTIVE [.|\n]+
 {NODIRECTIVE} {
   return (int)Tokens.NODIRECTIVE;
 }
+
+"{" { 
+  BEGIN(COMMENT);
+}
+
+<COMMENT> "}" { 
+  BEGIN(INITIAL);
+}
+
+<COMMENT>.|\n {
+}
+
+"(*" { 
+  BEGIN(COMMENT1);
+}
+
+<COMMENT1> "*)" { 
+  BEGIN(INITIAL);
+}
+
+<COMMENT1>.|\n {
+}
+
 
 %{
   yylloc = new LexLocation(tokLin, tokCol, tokELin, tokECol);

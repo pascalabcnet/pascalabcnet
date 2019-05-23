@@ -3,8 +3,6 @@
 <head>
 <object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="string">
-<param name="Keyword" value="shortstring">
-<param name="Keyword" value="Короткие строки">
 <param name="Keyword" value="Лексикографическое сравнение строк">
 </object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
@@ -47,8 +45,8 @@
 </blockquote>
 <p>Строка может складываться с числом, при этом число предварительно 
 преобразуется к строковому представлению:</p>
-<p class="auto-style1"><code>s := 'Ширина: '+15; // s = 'Ширина: 15'<br>s := 
-20.5+''; // s = '20.5'<br>s += 1; // s = '20.51' </code> </p>
+<p class="auto-style1"><code>s := 'Ширина: ' + 15; // s = 'Ширина: 15'<br>s := 
+20.5 + ''; // s = '20.5'<br>s += 1; // s = '20.51' </code> </p>
 <p>Над строками и целыми определена операция <span class="auto-style2">*</span>:
 <span class="auto-style2">s*n</span> и <span class="auto-style2">n*s</span> 
 означает строку, образованную из строки <span class="auto-style2">s</span>, 
@@ -56,6 +54,8 @@
 <p><code class="auto-style1">s := '*'*10; // s = '**********'<br>&nbsp;&nbsp;&nbsp; 
 s := 5*'ab' // s = 'ababababab'<br>&nbsp;&nbsp;&nbsp; s := 'd'; s *= 3; // s = 
 'ddd'&nbsp;&nbsp;&nbsp; </code> </p>
+<p>Над строками определена также <a href="../Operations_Expressions/Slice.html">
+операция взятия среза</a>.</p>
 <p>Строки реализуются типом <code>System.String</code>
 платформы .NET и представляют собой ссылочный тип.
 Таким образом, все операции над строками унаследованы от типа <code>
@@ -77,13 +77,9 @@ System.String</code>. Однако, в отличие от .NET -
 <p><span lang="ru">По умолчанию строки инициализируются пустой строкой (в .NET - 
 значением nil). Однако, строке можно присвоить </span><code>nil</code><span lang="ru">, 
 что необходимо для работы с </span>NET-<span lang="ru">кодом.</span></p>
-<p>Кроме того, в <b>PascalABC.NET</b> 
-реализованы <em>размерные строки</em>. Для их описания используется тип <code>
-string[n]</code>, где <code>n</code> - 
-константа целого типа, указывающая длину строки. Размерные строки, в отличие от обычных, можно использовать как 
-компоненты <a href="files.html">типизированных файлов</a>. Для совместимости с
-Delphi Object Pascal в стандартном модуле описан тип
-<code>shortstring=string[255]</code>.</p>
+<p>Кроме того, для совместимости с Delphi Object Pascal в <b>PascalABC.NET</b> 
+реализованы <a href="valuestrings.html">короткие строки</a> вида <code>
+string[n]</code>.</p>
 <p><a href="../PABCSystemUnit/Files/Subroutines%20for%20string.html">Стандартные подпрограммы работы со строками</a>.</p>
 <p><a href="stringmembers.html">Члены класса <code>string</code></a>. </p>
 </body>

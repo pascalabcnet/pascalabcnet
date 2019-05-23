@@ -1022,6 +1022,7 @@
         <ExtendedField Name="attr" Type="definition_attribute" CreateVariable="false" DeleteVariable="false" />
         <ExtendedField Name="virt_over_none_attr" Type="proc_attribute" CreateVariable="false" DeleteVariable="false" />
         <ExtendedField Name="is_auto" Type="bool" CreateVariable="false" DeleteVariable="false" />
+        <SyntaxField Name="initial_value" SyntaxType="expression" />
       </Fields>
       <Methods />
       <Tags>
@@ -2459,7 +2460,7 @@
         <SyntaxField Name="return_type" SyntaxType="type_definition" />
         <SyntaxField Name="formal_parameters" SyntaxType="formal_parameters" />
         <SyntaxField Name="proc_body" SyntaxType="statement" />
-        <SyntaxField Name="proc_definition" SyntaxType="procedure_definition" />
+        <ExtendedField Name="proc_definition" Type="object" CreateVariable="false" DeleteVariable="false" />
         <SyntaxField Name="parameters" SyntaxType="expression_list" />
         <ExtendedField Name="lambda_name" Type="string" CreateVariable="false" DeleteVariable="false" />
         <ExtendedField Name="defs" Type="List&lt;declaration&gt;" CreateVariable="true" DeleteVariable="false" />
@@ -2557,7 +2558,7 @@
         </TagIndices>
       </Tags>
     </SyntaxNode>
-    <SyntaxNode Name="unnamed_type_object" BaseName="expression">
+    <SyntaxNode Name="unnamed_type_object" BaseName="addressed_value">
       <Fields>
         <SyntaxField Name="ne_list" SyntaxType="name_assign_expr_list" />
         <ExtendedField Name="is_class" Type="bool" CreateVariable="false" DeleteVariable="false" />
@@ -4358,6 +4359,7 @@
       <HelpData Key="simple_property.array_default" Value="" />
       <HelpData Key="simple_property.attr" Value="" />
       <HelpData Key="simple_property.index_expression" Value="" />
+      <HelpData Key="simple_property.initial_value" Value="" />
       <HelpData Key="simple_property.is_auto" Value="" />
       <HelpData Key="simple_property.parameter_list" Value="" />
       <HelpData Key="simple_property.property_name" Value="" />
@@ -4607,7 +4609,7 @@
       <HelpData Key="unknown_ident.UnknownID" Value="" />
       <HelpData Key="unknown_type" Value="" />
       <HelpData Key="unknown_type.context" Value="" />
-      <HelpData Key="unnamed_type_object" Value="Это - сахарная конструкция.&#xD;&#xA;/// Объект безымянного класса. Например: new class(Name := 'Иванов'; Age := 25);&#xD;&#xA;/// new_ex - это узел для генерации кода, основной узел предназначен для форматирования" />
+      <HelpData Key="unnamed_type_object" Value="Это - сахарная конструкция.&#xD;&#xA;/// Объект безымянного класса. Например: new class(Name := 'Иванов'; Age := 25);&#xD;&#xA;/// new_ex - это узел для генерации кода, основной узел предназначен для форматирования&#xD;&#xA;&#xD;&#xA;/// Сделал потомком addressed_value из-за #1843" />
       <HelpData Key="unnamed_type_object.is_class" Value="" />
       <HelpData Key="unnamed_type_object.ne" Value="" />
       <HelpData Key="unnamed_type_object.ne_list" Value="" />

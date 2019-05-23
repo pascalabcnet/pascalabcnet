@@ -64,6 +64,7 @@
     <DebugType>Full</DebugType>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <DefineConstants>DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\bin\</OutputPath>
@@ -129,8 +130,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\configuration\globalassemblyinfo.cs">
-      <Link>Config\globalassemblyinfo.cs</Link>
+    <Compile Include="..\Configuration\GlobalAssemblyInfo.cs">
+      <Link>Config\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Config\AssemblyInfo.cs" />
     <Compile Include="NETGenegratorTools.cs" />

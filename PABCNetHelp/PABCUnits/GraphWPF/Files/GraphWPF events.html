@@ -1,20 +1,26 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
-<param name="Keyword" value="Событие"></object>
+<param name="Keyword" value="OnKeyDown">
+<param name="Keyword" value="OnKeyPress">
+<param name="Keyword" value="OnKeyUp">
+<param name="Keyword" value="OnMouseDown">
+<param name="Keyword" value="OnMouseMove">
+<param name="Keyword" value="OnMouseUp">
+<param name="Keyword" value="OnResize"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>События модуля GraphWPF</H1>
-<table border=0 cellpadding=5><tr><td><code>/// Событие нажатия на кнопку мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
-<tr><td><code>/// Событие отжатия кнопки мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если отжата левая кнопка мыши, и 2, если отжата правая кнопка мыши;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ouseDown: procedure(x, y: real; mousebutton: integer);</td></tr>
-<tr><td><code>/// Событие перемещения мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 0, если кнопка мыши не нажата, 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ouseUp: procedure(x, y: real; mousebutton: integer);</td></tr>
-<tr><td><code>/// Событие нажатия клавиши;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ouseMove: procedure(x, y: real; mousebutton: integer);</td></tr>
-<tr><td><code>/// Событие отжатия клавиши;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eyDown: procedure(k: Key);</td></tr>
-<tr><td><code>/// Событие нажатия символьной клавиши;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eyUp: procedure(k: Key);</td></tr>
-<tr><td><code>/// Событие изменения размера графического окна;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eyPress: procedure(ch: char);</td></tr>
+<table border=0 cellpadding=5><tr><td><code>OnMouseDown: <b>procedure</b>(x, y: real; mousebutton: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие нажатия на кнопку мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши</td></tr>
+<tr><td><code>OnMouseUp: <b>procedure</b>(x, y: real; mousebutton: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие отжатия кнопки мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если отжата левая кнопка мыши, и 2, если отжата правая кнопка мыши</td></tr>
+<tr><td><code>OnMouseMove: <b>procedure</b>(x, y: real; mousebutton: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие перемещения мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 0, если кнопка мыши не нажата, 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши</td></tr>
+<tr><td><code>OnKeyDown: <b>procedure</b>(k: Key);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие нажатия клавиши</td></tr>
+<tr><td><code>OnKeyUp: <b>procedure</b>(k: Key);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие отжатия клавиши</td></tr>
+<tr><td><code>OnKeyPress: <b>procedure</b>(ch: char);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие нажатия символьной клавиши</td></tr>
+<tr><td><code>OnResize: <b>procedure</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие изменения размера графического окна</td></tr>
 </table>
 </body></HTML>
