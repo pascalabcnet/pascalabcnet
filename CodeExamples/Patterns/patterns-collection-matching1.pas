@@ -1,13 +1,13 @@
 ﻿type
   CardInfo = auto class
-  public
+  public 
     cardNumber: string;
     cv: integer;
   end;
   
   Person = class
   
-  public
+  public 
     name: string;
     age: integer;
     card: CardInfo;
@@ -28,16 +28,16 @@
   end;
 
 begin
-  var a := Arr(1,9,8,7,2,3,4,5); 
+  var a := Arr(1, 9, 8, 7, 2, 3, 4, 5); 
   
   // Расширенный is
-  if a is [1,..,x,_,5] then // a is [1,..,1,1,1,1,1,1,1,1,1,1] - ран тайм эррор - 
-    Println(x); //в расширенном is короткое вычисление логических выражений не работает (#1508)
+  if a is [1, .., var x, _, 5] then
+    Println(x);
   
   // match .. with
   match a with
-    [1,9,8,'str',2]: print(1); //Нет проверки соответствия типов в для коллекций - добавить.
-    [..,4,x]: print(x);
+    [1, 9, 8, _, 2]: print(1);
+    [.., var y, var x]: print(x + y);
     [_, .., _]: print(3);
   end;
 end.

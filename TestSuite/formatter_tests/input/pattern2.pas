@@ -34,13 +34,13 @@ begin
   var personArr := Arr(p1, p2, p3);
   
   // Расширенный is
-  if personArr is [Person(name1, 11, CardInfo(_, cv)), _, Person(name2, 13, _)] then 
+  if personArr is [  Person(name1  ,   11, CardInfo(   _, cv)),   _, Person(   name2,   13,    _)] then 
     assert(name1.Equals('Вася') and (cv = 321) and name2.Equals('Маша'));
   
   // match .. with
   match personArr with
-    [_, _, Person('Вася', var age, _)]: assert(false);
-    [var p, .., Person('Маша', _, _)]: assert((p as Person).name.Equals('Вася'));
-    [..]: assert(false);
+    [   _, _, Person('Вася',    var age, _)]: assert(false);
+    [   var p, ..    , Person('Маша',    _,   _)]: assert((p as Person).name.Equals('Вася'));
+    [    ..   ]: assert(false); 
   end;
 end.

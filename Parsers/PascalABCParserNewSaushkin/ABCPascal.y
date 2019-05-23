@@ -3520,7 +3520,7 @@ pattern_out_param
 pattern_out_param_optional_var
 	: tkUnderscore
 		{
-			$$ = new wild_card_deconstructor_parameter();
+			$$ = new wild_card_deconstructor_parameter(@$);
 		}
 	| literal_or_number
 		{

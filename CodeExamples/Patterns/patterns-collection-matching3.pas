@@ -1,6 +1,6 @@
 ﻿type
   CardInfo = auto class
-  public
+  public 
     cardNumber: string;
     cv: integer;
   end;
@@ -37,7 +37,7 @@ begin
   // match .. with
   match p with
     Person('Петя', _, _): print('Петя');
-    Person('Вася', _, [_, _, x]): print(x);
+    Person('Вася', _, [_, _, var x]): print(x);
     Person(name, _, [CardInfo(_, 321), .., CardInfo(_, 324)]): print(name);
   end;
 end.

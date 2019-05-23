@@ -3205,6 +3205,7 @@ namespace CodeFormatters
 
         public override void visit(wild_card_deconstructor_parameter _wild_card_deconstructor_parameter)
         {
+            sb.Append("_");
             add_space_after = true;
         }
 

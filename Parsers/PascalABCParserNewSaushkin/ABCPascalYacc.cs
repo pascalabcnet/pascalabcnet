@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-IF20NRO
-// DateTime: 5/21/2019 1:27:52 PM
+// DateTime: 5/23/2019 10:14:29 AM
 // UserName: FatCow
 // Input file <ABCPascal.y>
 
@@ -5821,7 +5821,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 652: // pattern_out_param_optional_var -> tkUnderscore
 {
-			CurrentSemanticValue.stn = new wild_card_deconstructor_parameter();
+			CurrentSemanticValue.stn = new wild_card_deconstructor_parameter(CurrentLocationSpan);
 		}
         break;
       case 653: // pattern_out_param_optional_var -> literal_or_number

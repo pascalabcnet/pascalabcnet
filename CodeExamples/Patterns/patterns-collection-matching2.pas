@@ -1,13 +1,13 @@
 ﻿type
   CardInfo = auto class
-  public
+  public 
     cardNumber: string;
     cv: integer;
   end;
   
   Person = class
   
-  public
+  public 
     name: string;
     age: integer;
     card: CardInfo;
@@ -39,8 +39,8 @@ begin
   
   // match .. with
   match personArr with
-    [_,_,Person('Вася', age, _)]: print(age);
-    [p, .., Person('Маша', _, _)]: print((p as Person).name);
+    [_, _, Person('Вася', age, _)]: print(age);
+    [var p, .., Person('Маша', _, _)]: print((p as Person).name);
     [..]: print(1);
   end;
 end.

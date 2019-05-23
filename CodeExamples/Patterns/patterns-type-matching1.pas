@@ -1,6 +1,6 @@
 ﻿type
   CardInfo = auto class
-  public
+  public 
     cardNumber: string;
     cv: integer;
   end;
@@ -29,11 +29,11 @@ begin
   var a := new Person('Вася', 11, new CardInfo('12345678', 324));
   
   // Расширенный is
-  if a is Person('Вася', var age, CardInfo(_, var cv)) then Println(age, cv);
+  if a is Person(_, var age, CardInfo(_, var cv)) then Println(age, cv);
   
   // match .. with
   match a with
-    Person(1, 12, CardInfo('12345678', var cv)): Println(cv); // Нет проверки соответсвия типов при деконструировании - добавить.
+    Person('Петя', 12, CardInfo('12345678', var cv)): Println(cv); 
     Person('Вася', _, CardInfo(cardNum, 324)): Println(cardNum);
     Person(_, _, CardInfo(_, x)): Println(x);
   end;

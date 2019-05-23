@@ -1,6 +1,6 @@
 ﻿type
   CardInfo = auto class
-  public
+  public 
     cardNumber: string;
     cv: integer;
   end;

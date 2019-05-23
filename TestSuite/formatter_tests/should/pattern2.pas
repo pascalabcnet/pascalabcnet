@@ -41,6 +41,6 @@ begin
   match personArr with
     [_, _, Person('Вася', var age, _)]: assert(false);
     [var p, .., Person('Маша', _, _)]: assert((p as Person).name.Equals('Вася'));
-    [..]: assert(false);
+    [..]: assert(false); 
   end;
 end.
