@@ -673,8 +673,10 @@ namespace SyntaxVisitors.SugarVisitors
 
         private void DesugarIsExpressionInAssignment(is_pattern_expr isExpression)
         {
-            // TODO: Кинуть тут эксепшн
-            Debug.Assert(isExpression.right is deconstructor_pattern, "Only deconstructor patterns can be used in assignment");
+            if (!(isExpression.right is deconstructor_pattern))
+            {
+                throw new SyntaxVisitorError("MATCHING_ASSIGN_NOT_SUPPORTED", isExpression.right.source_context);
+            }
             var statementsToAdd = ProcessDesugaringForDeconstructorPattern(isExpression);
             AddDefinitionsInUpperStatementList(isExpression, statementsToAdd);
         }
