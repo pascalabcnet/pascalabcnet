@@ -3,7 +3,8 @@ uses System;
 uses System.Runtime.InteropServices;
 
 const
-  MatrW = 5;
+  MatrW = 4; // можно поменять на любое положительное значение
+  
   MatrL = MatrW*MatrW;
   MatrByteSize = MatrL*8;
 
@@ -30,12 +31,12 @@ begin
   cl.GetPlatformIDs(1, @platform, nil).RaiseIfError;
   
   var device: cl_device_id;
-  cl.GetDeviceIDs(platform, DeviceType.Default, 1, @device, nil).RaiseIfError;
+  cl.GetDeviceIDs(platform, DeviceTypeFlags.Default, 1, @device, nil).RaiseIfError;
   
   var context := cl.CreateContext(nil, 1, @device, nil, nil, @ec);
   ec.RaiseIfError;
   
-  var command_queue := cl.CreateCommandQueue(context, device, CommandQueueProperties.NONE, ec);
+  var command_queue := cl.CreateCommandQueue(context, device, CommandQueuePropertyFlags.NONE, ec);
   ec.RaiseIfError;
   
   // Чтение и компиляция .cl файла

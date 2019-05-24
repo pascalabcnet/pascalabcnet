@@ -14,17 +14,17 @@ begin
   cl.GetPlatformIDs(1, @platform, nil).RaiseIfError;
   
   var device: cl_device_id;
-  cl.GetDeviceIDs(platform, DeviceType.Default, 1, @device, nil).RaiseIfError;
+  cl.GetDeviceIDs(platform, DeviceTypeFlags.Default, 1, @device, nil).RaiseIfError;
   
   var context := cl.CreateContext(nil, 1, @device, nil, nil, @ec);
   ec.RaiseIfError;
   
-  var command_queue := cl.CreateCommandQueue(context, device, CommandQueueProperties.NONE, ec);
+  var command_queue := cl.CreateCommandQueue(context, device, CommandQueuePropertyFlags.NONE, ec);
   ec.RaiseIfError;
   
   // Чтение и компиляция .cl файла
   
-  {$resource SimpleAddition.cl} // эта строчка засовывает ArrayAdd.cl внутрь .exe, чтоб он не нужен был для запуска .exe
+  {$resource SimpleAddition.cl} // эта строчка засовывает SimpleAddition.cl внутрь .exe, чтоб он не нужен был для запуска .exe
   var prog_str := System.IO.StreamReader.Create(GetResourceStream('SimpleAddition.cl')).ReadToEnd;
   var prog := cl.CreateProgramWithSource(
     context,

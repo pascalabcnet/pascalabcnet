@@ -9,7 +9,7 @@ __kernel void MatrMltMatr(__global double* A, __global double* B, __global doubl
 	
 	double sum = 0.0;
 	for (int i=0; i<W; i++)
-		sum += A[cX + i*W] * B[i + cY*W];
+		sum += A[i + cX*W] * B[cY + i*W];
 	
 	C[cX + cY*W] = sum;
 }
