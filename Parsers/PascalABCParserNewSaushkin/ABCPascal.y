@@ -32,7 +32,7 @@
 
 %start parse_goal
 
-%token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkQuestionPoint tkDoubleQuestion tkQuestionSquareOpen
+%token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkUnderscore tkQuestionPoint tkDoubleQuestion tkQuestionSquareOpen
 %token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkStatic tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction tkMatch tkWhen
 %token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
@@ -146,7 +146,7 @@
 %type <stn> simple_property_definition
 %type <stn> stmt_or_expression unlabelled_stmt stmt case_item
 %type <td> set_type  
-%type <ex> as_is_expr as_is_constexpr is_expr as_expr power_expr power_constexpr
+%type <ex> as_is_expr as_is_constexpr is_type_expr as_expr power_expr power_constexpr
 %type <td> unsized_array_type simple_type_or_ simple_type simple_type_question/*array_name_for_new_expr*/ foreach_stmt_ident_dype_opt fptype type_ref fptype_noproctype array_type 
 %type <td> template_param template_empty_param structured_type unpacked_structured_type empty_template_type_reference simple_or_template_type_reference type_ref_or_secific for_stmt_decl_or_assign type_decl_type
 %type <stn> type_ref_and_secific_list  
@@ -175,8 +175,10 @@
 %type <stn> full_lambda_fp_list lambda_simple_fp_sect lambda_function_body lambda_procedure_body common_lambda_body optional_full_lambda_fp_list
 %type <ob> field_in_unnamed_object list_fields_in_unnamed_object func_class_name_ident_list rem_lambda variable_list var_ident_list
 %type <ti> tkAssignOrEqual
-%type <stn> pattern pattern_optional_var match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var 
-%type <ob> pattern_out_param_list pattern_out_param_list_optional_var
+%type <stn> pattern pattern_optional_var const_pattern collection_pattern tuple_pattern collection_pattern_list_item tuple_pattern_item collection_pattern_var_item match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var const_pattern_expr_list 
+%type <ob> pattern_out_param_list pattern_out_param_list_optional_var collection_pattern_expr_list tuple_pattern_item_list
+%type <ex> const_pattern_expression
+
 %%
 
 parse_goal                
@@ -2806,6 +2808,22 @@ pattern_case
         {
             $$ = new pattern_case($1 as pattern_node, $3 as statement, null, @$);
         }  
+	| const_pattern tkWhen expr_l1 tkColon unlabelled_stmt
+		{
+			$$ = new pattern_case($1 as pattern_node, $5 as statement, $3, @$);
+		}
+	| const_pattern tkColon unlabelled_stmt
+		{
+			$$ = new pattern_case($1 as pattern_node, $3 as statement, null, @$);
+		}
+	| collection_pattern tkColon unlabelled_stmt
+		{
+			$$ = new pattern_case($1 as pattern_node, $3 as statement, null, @$);
+		}
+	| tuple_pattern tkColon unlabelled_stmt
+		{
+			$$ = new pattern_case($1 as pattern_node, $3 as statement, null, @$);
+		}
     ;
     
 case_stmt
@@ -3282,44 +3300,188 @@ relop_expr
         { 
 			$$ = new bin_expr($1, $3, $2.type, @$); 
 		}
-    | is_expr tkRoundOpen pattern_out_param_list tkRoundClose
+    | is_type_expr tkRoundOpen pattern_out_param_list tkRoundClose
         {
             var isTypeCheck = $1 as typecast_node;
-            var deconstructorPattern = new deconstructor_pattern($3 as List<pattern_deconstructor_parameter>, isTypeCheck.type_def, @$); 
+            var deconstructorPattern = new deconstructor_pattern($3 as List<pattern_parameter>, isTypeCheck.type_def, null, @$); 
             $$ = new is_pattern_expr(isTypeCheck.expr, deconstructorPattern, @$);
+        }
+	
+	| term tkIs collection_pattern
+        {
+            $$ = new is_pattern_expr($1, $3 as pattern_node, @$);
+        }
+	| term tkIs tuple_pattern
+        {
+            $$ = new is_pattern_expr($1, $3 as pattern_node, @$);
         }
     ;
     
 pattern
     : simple_or_template_type_reference tkRoundOpen pattern_out_param_list tkRoundClose
         { 
-            $$ = new deconstructor_pattern($3 as List<pattern_deconstructor_parameter>, $1, @$); 
+            $$ = new deconstructor_pattern($3 as List<pattern_parameter>, $1, null, @$); 
         }
     ;
 
 pattern_optional_var
     : simple_or_template_type_reference tkRoundOpen pattern_out_param_list_optional_var tkRoundClose
         { 
-            $$ = new deconstructor_pattern($3 as List<pattern_deconstructor_parameter>, $1, @$); 
+            $$ = new deconstructor_pattern($3 as List<pattern_parameter>, $1, null, @$); 
         }
-    ;    
+    ;  
+
+collection_pattern
+	: tkSquareOpen collection_pattern_expr_list tkSquareClose
+		{
+			$$ = new collection_pattern($2 as List<pattern_parameter>, @$);
+		}
+	;
+
+collection_pattern_expr_list
+	: collection_pattern_list_item
+		{
+			$$ = new List<pattern_parameter>();
+            ($$ as List<pattern_parameter>).Add($1 as pattern_parameter);
+		}
+	| collection_pattern_expr_list tkComma collection_pattern_list_item
+		{
+			var list = $1 as List<pattern_parameter>;
+            list.Add($3 as pattern_parameter);
+            $$ = list;
+		}
+	;
+
+collection_pattern_list_item
+	: literal_or_number
+		{
+			$$ = new const_pattern_parameter($1, @$);
+		}
+	| collection_pattern_var_item
+		{
+			$$ = $1;
+		}
+	| tkUnderscore
+		{
+			$$ = new collection_pattern_wild_card(@$);
+		}
+	/*| pattern 
+        {
+            $$ = new recursive_deconstructor_parameter($1 as pattern_node, @$);
+        }*/
+	| pattern_optional_var
+        {
+            $$ = new recursive_deconstructor_parameter($1 as pattern_node, @$);
+        }
+	| collection_pattern
+		{
+			$$ = new recursive_collection_parameter($1 as pattern_node, @$);
+		}
+	| tuple_pattern
+		{
+			$$ = new recursive_tuple_parameter($1 as pattern_node, @$);
+		}
+	| tkDotDot
+		{
+			$$ = new collection_pattern_gap_parameter(@$);
+		}
+	;
+
+collection_pattern_var_item
+    : tkVar identifier
+        {
+            $$ = new collection_pattern_var_parameter($2, null, @$);
+        }
+    ;   
+
+const_pattern
+	: const_pattern_expr_list
+		{
+			$$ = new const_pattern($1 as expression_list, @$); 
+		}
+	;
+
+const_pattern_expr_list
+	: const_pattern_expression 
+		{ 
+			$$ = new expression_list($1, @$); 
+		}
+	| const_pattern_expr_list tkComma const_pattern_expression 
+		{ 
+			$$ = ($1 as expression_list).Add($3, @$);
+		}
+	;
+
+const_pattern_expression
+	: literal_or_number  { $$ = $1; }
+	;
     
+tuple_pattern
+	: tkRoundOpen tuple_pattern_item_list tkRoundClose
+		{
+			if (($2 as List<pattern_parameter>).Count>6) 
+				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",@$);
+			$$ = new tuple_pattern($2 as List<pattern_parameter>, @$);
+		}	
+    ; 
+
+tuple_pattern_item
+	: tkUnderscore 
+		{ 
+			$$ = new tuple_pattern_wild_card(@$); 
+		} 
+	| literal_or_number 
+		{ 
+			$$ = new const_pattern_parameter($1, @$);
+		}
+    | tkVar identifier
+        {
+            $$ = new tuple_pattern_var_parameter($2, null, @$);
+        }
+	| pattern_optional_var
+        {
+            $$ = new recursive_deconstructor_parameter($1 as pattern_node, @$);
+        }
+	| collection_pattern
+		{
+			$$ = new recursive_collection_parameter($1 as pattern_node, @$);
+		}
+	| tuple_pattern
+		{
+			$$ = new recursive_tuple_parameter($1 as pattern_node, @$);
+		}
+	;
+
+tuple_pattern_item_list
+	: tuple_pattern_item
+		{ 
+			$$ = new List<pattern_parameter>();
+            ($$ as List<pattern_parameter>).Add($1 as pattern_parameter);
+		}
+	| tuple_pattern_item_list tkComma tuple_pattern_item
+		{
+			var list = $1 as List<pattern_parameter>;
+            list.Add($3 as pattern_parameter);
+            $$ = list;
+		}
+	;
+
 pattern_out_param_list_optional_var
     : pattern_out_param_optional_var
         {
-            $$ = new List<pattern_deconstructor_parameter>();
-            ($$ as List<pattern_deconstructor_parameter>).Add($1 as pattern_deconstructor_parameter);
+            $$ = new List<pattern_parameter>();
+            ($$ as List<pattern_parameter>).Add($1 as pattern_parameter);
         }
     | pattern_out_param_list_optional_var tkSemiColon pattern_out_param_optional_var
         {
-            var list = $1 as List<pattern_deconstructor_parameter>;
-            list.Add($3 as pattern_deconstructor_parameter);
+            var list = $1 as List<pattern_parameter>;
+            list.Add($3 as pattern_parameter);
             $$ = list;
         }
     | pattern_out_param_list_optional_var tkComma pattern_out_param_optional_var
         {
-            var list = $1 as List<pattern_deconstructor_parameter>;
-            list.Add($3 as pattern_deconstructor_parameter);
+            var list = $1 as List<pattern_parameter>;
+            list.Add($3 as pattern_parameter);
             $$ = list;
         }
     ;
@@ -3327,59 +3489,91 @@ pattern_out_param_list_optional_var
 pattern_out_param_list
     : pattern_out_param
         {
-            $$ = new List<pattern_deconstructor_parameter>();
-            ($$ as List<pattern_deconstructor_parameter>).Add($1 as pattern_deconstructor_parameter);
+            $$ = new List<pattern_parameter>();
+            ($$ as List<pattern_parameter>).Add($1 as pattern_parameter);
         }
     | pattern_out_param_list tkSemiColon pattern_out_param
         {
-            var list = $1 as List<pattern_deconstructor_parameter>;
-            list.Add($3 as pattern_deconstructor_parameter);
+            var list = $1 as List<pattern_parameter>;
+            list.Add($3 as pattern_parameter);
             $$ = list;
         }
     | pattern_out_param_list tkComma pattern_out_param
         {
-            var list = $1 as List<pattern_deconstructor_parameter>;
-            list.Add($3 as pattern_deconstructor_parameter);
+            var list = $1 as List<pattern_parameter>;
+            list.Add($3 as pattern_parameter);
             $$ = list;
         }
     ;    
     
 pattern_out_param
-    : tkVar identifier tkColon type_ref
+    : tkUnderscore
+		{
+			$$ = new wild_card_deconstructor_parameter(@$);
+		}
+	| literal_or_number
+		{
+			$$ = new const_pattern_parameter($1, @$);
+		}
+	| tkVar identifier tkColon type_ref
         {
-            $$ = new var_deconstructor_parameter($2, $4, @$);
+            $$ = new var_deconstructor_parameter($2, $4, true, @$);
         }
     | tkVar identifier
         {
-            $$ = new var_deconstructor_parameter($2, null, @$);
+            $$ = new var_deconstructor_parameter($2, null, true, @$);
         }
     | pattern 
         {
             $$ = new recursive_deconstructor_parameter($1 as pattern_node, @$);
         }
+	| collection_pattern
+		{
+			$$ = new recursive_collection_parameter($1 as pattern_node, @$);
+		}
+	| tuple_pattern
+		{
+			$$ = new recursive_tuple_parameter($1 as pattern_node, @$);
+		}
     ;    
     
 pattern_out_param_optional_var
-    : identifier tkColon type_ref
+	: tkUnderscore
+		{
+			$$ = new wild_card_deconstructor_parameter(@$);
+		}
+	| literal_or_number
+		{
+			$$ = new const_pattern_parameter($1, @$);
+		}
+    | identifier tkColon type_ref
         {
-            $$ = new var_deconstructor_parameter($1, $3, @$);
+            $$ = new var_deconstructor_parameter($1, $3, false, @$);
         }
     | identifier
         {
-            $$ = new var_deconstructor_parameter($1, null, @$);
+            $$ = new var_deconstructor_parameter($1, null, false, @$);
         }
     | tkVar identifier tkColon type_ref
         {
-            $$ = new var_deconstructor_parameter($2, $4, @$);
+            $$ = new var_deconstructor_parameter($2, $4, true, @$);
         }
     | tkVar identifier
         {
-            $$ = new var_deconstructor_parameter($2, null, @$);
+            $$ = new var_deconstructor_parameter($2, null, true, @$);
         }
     | pattern_optional_var
         {
             $$ = new recursive_deconstructor_parameter($1 as pattern_node, @$);
         }
+	| collection_pattern
+		{
+			$$ = new recursive_collection_parameter($1 as pattern_node, @$);
+		}
+	| tuple_pattern
+		{
+			$$ = new recursive_tuple_parameter($1 as pattern_node, @$);
+		}
     ;
     
 simple_expr_or_nothing
@@ -3494,7 +3688,7 @@ typecast_op
     ;
 
 as_is_expr
-    : is_expr   
+    : is_type_expr   
         { $$ = $1; }
     | as_expr
         { $$ = $1; }
@@ -3507,7 +3701,7 @@ as_expr
         }
     ;
     
-is_expr
+is_type_expr
     : term tkIs simple_or_template_type_reference
         {
             $$ = NewAsIsExpr($1, op_typecast.is_op, $3, @$);
