@@ -264,12 +264,17 @@ namespace PascalABCCompiler.TreeConverter
 
         private void CheckIfCanBeMatched(expression matchedExpression, expression patternExpression)
         {
-            var patternType = convert_strong(patternExpression).type;
+            var patternNode = convert_strong(patternExpression);
+            var patternType = patternNode.type;
             var expressionType = convert_strong(matchedExpression).type;
 
+            if ((patternExpression is ident) && !(patternNode is constant_node))
+            {
+                AddError(get_location(patternExpression), "MATCHING_WITH_NON_CONST");
+            }
+            
             var expressionTypeName = expressionType.BaseFullName;
             var patternTypeName = patternType.BaseFullName;
-
             var tupleName = "System.Tuple";
             if (type_table.is_derived(patternType, expressionType) ||
                 type_table.is_derived(expressionType, patternType) ||

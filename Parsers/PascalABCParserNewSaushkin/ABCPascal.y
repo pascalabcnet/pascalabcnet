@@ -3414,6 +3414,12 @@ const_pattern_expr_list
 
 const_pattern_expression
 	: literal_or_number  { $$ = $1; }
+	| identifier { $$ = $1; }
+	| tkNil 
+		{ 
+			$$ = new nil_const();  
+			$$.source_context = @$;
+		}
 	;
     
 tuple_pattern
