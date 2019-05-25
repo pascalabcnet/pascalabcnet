@@ -58,7 +58,7 @@
 %type <stn> attribute_declarations  
 %type <stn> ot_visibility_specifier  
 %type <stn> one_attribute attribute_variable 
-%type <ex> const_factor const_variable_2 const_term const_variable const_pattern_variable const_pattern_variable_2 literal_or_number unsigned_number variable_or_literal_or_number 
+%type <ex> const_factor const_variable_2 const_term const_variable const_pattern_variable_2 const_pattern_variable literal_or_number unsigned_number variable_or_literal_or_number 
 %type <stn> program_block  
 %type <ob> optional_var class_attribute class_attributes class_attributes1 
 %type <stn> member_list_section optional_component_list_seq_end  
@@ -889,6 +889,51 @@ sign
 		{ $$ = $1; }
     | tkMinus
 		{ $$ = $1; }
+    ;
+
+const_pattern_variable
+    : identifier
+		{ $$ = $1; }
+    | sizeof_expr
+		{ $$ = $1; }
+    | typeof_expr
+		{ $$ = $1; }
+    | const_pattern_variable const_pattern_variable_2        
+        {
+			$$ = NewConstVariable($1, $2, @$);
+        }
+    | const_pattern_variable tkAmpersend template_type_params                
+        {
+			$$ = new ident_with_templateparams($1 as addressed_value, $3 as template_param_list, @$);
+        }
+    | const_pattern_variable tkSquareOpen format_const_expr tkSquareClose
+        { 
+    		var fe = $3 as format_expr;
+            if (!parsertools.build_tree_for_formatter)
+            {
+                if (fe.expr == null)
+                    fe.expr = new int32_const(int.MaxValue,@3);
+                if (fe.format1 == null)
+                    fe.format1 = new int32_const(int.MaxValue,@3);
+            }
+    		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
+		}
+    ;
+
+const_pattern_variable_2
+    : tkPoint identifier_or_keyword                               
+        { 
+			$$ = new dot_node(null, $2 as addressed_value, @$); 
+		}
+    | tkDeref                                            
+        { 
+			$$ = new roof_dereference();  
+			$$.source_context = @$;
+		}
+    | tkSquareOpen const_elem_list tkSquareClose     
+        { 
+			$$ = new indexer($2 as expression_list, @$);  
+		}
     ;
 
 const_variable
@@ -3421,39 +3466,6 @@ const_pattern_expression
 			$$.source_context = @$;
 		}
 	;
-    
-const_pattern_variable
-    : identifier
-		{ $$ = $1; }
-    | sizeof_expr
-		{ $$ = $1; }
-    | typeof_expr
-		{ $$ = $1; }
-    | const_pattern_variable const_pattern_variable_2        
-        {
-			$$ = NewConstVariable($1, $2, @$);
-        }
-    | const_pattern_variable tkAmpersend template_type_params                
-        {
-			$$ = new ident_with_templateparams($1 as addressed_value, $3 as template_param_list, @$);
-        }
-    ;
-
-const_pattern_variable_2
-    : tkPoint identifier_or_keyword                               
-        { 
-			$$ = new dot_node(null, $2 as addressed_value, @$); 
-		}
-    | tkDeref                                            
-        { 
-			$$ = new roof_dereference();  
-			$$.source_context = @$;
-		}
-    | tkSquareOpen const_elem_list tkSquareClose     
-        { 
-			$$ = new indexer($2 as expression_list, @$);  
-		}
-    ;
 
 tuple_pattern
 	: tkRoundOpen tuple_pattern_item_list tkRoundClose
