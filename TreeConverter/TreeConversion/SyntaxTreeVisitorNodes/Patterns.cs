@@ -266,23 +266,28 @@ namespace PascalABCCompiler.TreeConverter
         {
             var patternNode = convert_strong(patternExpression);
             var patternType = patternNode.type;
-            var expressionType = convert_strong(matchedExpression).type;
+            var expressionNode = convert_strong(matchedExpression);
+            var expressionType = expressionNode.type;
 
-            if ((patternExpression is ident) && !(patternNode is constant_node))
+            if (!(patternNode is constant_node))
             {
                 AddError(get_location(patternExpression), "MATCHING_WITH_NON_CONST");
             }
-            
+
+            var possible_convertion = type_table.get_convertions(patternType, expressionType);
             var expressionTypeName = expressionType.BaseFullName;
             var patternTypeName = patternType.BaseFullName;
             var tupleName = "System.Tuple";
             if (type_table.is_derived(patternType, expressionType) ||
                 type_table.is_derived(expressionType, patternType) ||
+                possible_convertion.first != null ||
                 AreTheSameType(patternType, expressionType) ||
                 (expressionTypeName.StartsWith(tupleName) &&
                 patternTypeName.StartsWith(tupleName) &&
                 int.Parse(expressionTypeName.Substring(tupleName.Length + 1, 1)) ==
-                int.Parse(patternTypeName.Substring(tupleName.Length + 1, 1))))
+                int.Parse(patternTypeName.Substring(tupleName.Length + 1, 1))) ||
+                (expressionType.IsPointer && patternNode is null_const_node) ||
+                (patternType.IsPointer && expressionNode is null_const_node))
                 return;
 
             AddError(get_location(matchedExpression), "EXPRESSION_OF_TYPE_{0}_CANNOT_BE_MATCHED_AGAINST_PATTERN_WITH_TYPE_{1}", expressionType.name, patternType.name);

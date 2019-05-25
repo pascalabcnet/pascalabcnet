@@ -285,25 +285,14 @@ namespace SyntaxVisitors.SugarVisitors
             var patternExpressionNode = patternCase.pattern as const_pattern;
 
             var statementsToAdd = new List<statement>();
-            var equalCalls = new List<method_call>();
+            var equalCalls = new List<bin_expr>();
 
             foreach (var patternExpression in patternExpressionNode.pattern_expressions.expressions)
             {
                 statementsToAdd.Add(GetTypeCompatibilityCheck(matchingExpression, patternExpression));
-
-                // Matching not tuples
-                var eqParams = new expression_list(
-                    new List<expression>()
-                    {
-                    matchingExpression,
-                    patternExpression
-                    }
-                );
+                
                 equalCalls.Add(
-                    new method_call(
-                        new dot_node(new ident("object"), new ident("Equals")),
-                        eqParams,
-                        patternCase.source_context
+                    new bin_expr(matchingExpression, patternExpression, Operators.Equal, patternCase.source_context
                     )
                 );
             }
@@ -355,7 +344,7 @@ namespace SyntaxVisitors.SugarVisitors
                     );
 
                     equalChecks = equalChecks == null ? (expression)equalCall : bin_expr.LogicalAnd(equalChecks, equalCall);
-                    desugaringResult.ElemTypeChecks.Add(GetTypeCompatibilityCheck(constParam.const_param, indexerCall));
+                    desugaringResult.ElemTypeChecks.Add(GetTypeCompatibilityCheck(indexerCall, constParam.const_param));
                 }
 
                 if (param is collection_pattern_var_parameter varParam)
@@ -410,7 +399,7 @@ namespace SyntaxVisitors.SugarVisitors
                     );
 
                     equalChecks = equalChecks == null ? (expression)equalCall : bin_expr.LogicalAnd(equalChecks, equalCall);
-                    desugaringResult.ElemTypeChecks.Add(GetTypeCompatibilityCheck(constParam.const_param, indexerCall));
+                    desugaringResult.ElemTypeChecks.Add(GetTypeCompatibilityCheck(indexerCall, constParam.const_param));
                 }
 
                 if (param is collection_pattern_var_parameter varParam)
@@ -603,7 +592,7 @@ namespace SyntaxVisitors.SugarVisitors
                     desugaringResult.SuccessMatchingCheck = desugaringResult.SuccessMatchingCheck == null ?
                                                             (expression)equalCall :
                                                             bin_expr.LogicalAnd(desugaringResult.SuccessMatchingCheck, equalCall);
-                    desugaringResult.ElemTypeChecks.Add(GetTypeCompatibilityCheck(constParam.const_param, tupleItemCall));
+                    desugaringResult.ElemTypeChecks.Add(GetTypeCompatibilityCheck(tupleItemCall, constParam.const_param));
                 }
             }
 

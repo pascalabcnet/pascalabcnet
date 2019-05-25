@@ -58,7 +58,7 @@
 %type <stn> attribute_declarations  
 %type <stn> ot_visibility_specifier  
 %type <stn> one_attribute attribute_variable 
-%type <ex> const_factor const_variable_2 const_term const_variable literal_or_number unsigned_number variable_or_literal_or_number 
+%type <ex> const_factor const_variable_2 const_term const_variable const_pattern_variable const_pattern_variable_2 literal_or_number unsigned_number variable_or_literal_or_number 
 %type <stn> program_block  
 %type <ob> optional_var class_attribute class_attributes class_attributes1 
 %type <stn> member_list_section optional_component_list_seq_end  
@@ -3414,7 +3414,7 @@ const_pattern_expr_list
 
 const_pattern_expression
 	: literal_or_number  { $$ = $1; }
-	| identifier { $$ = $1; }
+	| const_pattern_variable { $$ = $1; }
 	| tkNil 
 		{ 
 			$$ = new nil_const();  
@@ -3422,6 +3422,39 @@ const_pattern_expression
 		}
 	;
     
+const_pattern_variable
+    : identifier
+		{ $$ = $1; }
+    | sizeof_expr
+		{ $$ = $1; }
+    | typeof_expr
+		{ $$ = $1; }
+    | const_pattern_variable const_pattern_variable_2        
+        {
+			$$ = NewConstVariable($1, $2, @$);
+        }
+    | const_pattern_variable tkAmpersend template_type_params                
+        {
+			$$ = new ident_with_templateparams($1 as addressed_value, $3 as template_param_list, @$);
+        }
+    ;
+
+const_pattern_variable_2
+    : tkPoint identifier_or_keyword                               
+        { 
+			$$ = new dot_node(null, $2 as addressed_value, @$); 
+		}
+    | tkDeref                                            
+        { 
+			$$ = new roof_dereference();  
+			$$.source_context = @$;
+		}
+    | tkSquareOpen const_elem_list tkSquareClose     
+        { 
+			$$ = new indexer($2 as expression_list, @$);  
+		}
+    ;
+
 tuple_pattern
 	: tkRoundOpen tuple_pattern_item_list tkRoundClose
 		{
