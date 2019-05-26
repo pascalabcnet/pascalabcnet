@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Text;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
@@ -545,6 +546,8 @@ namespace PascalABCCompiler.Parsers
         {
             FieldInfo[] fields = t.GetFields(BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static);
             bool outoforder = enum_out_of_order(fields);
+			bool is_flags = Attribute.IsDefined(t, typeof(FlagsAttribute));
+			int max_name_len = fields.Max(fi => fi.Name.Length);
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("(");
             for (int i = 0; i < fields.Length; i++)
@@ -553,10 +556,13 @@ namespace PascalABCCompiler.Parsers
                 {
                     sb.Append(' ', 4);
                     sb.Append(fields[i].Name);
+                    sb.Append(' ', max_name_len - fields[i].Name.Length);
                     if (outoforder)
                     {
                         sb.Append(" = ");
-                        sb.Append(fields[i].GetRawConstantValue());
+                        if (is_flags)
+							sb.Append('$' + Convert.ToInt64(fields[i].GetRawConstantValue()).ToString("X")); else
+							sb.Append(fields[i].GetRawConstantValue());
                     }
                     if (i < fields.Length - 1)
                         sb.AppendLine(",");
