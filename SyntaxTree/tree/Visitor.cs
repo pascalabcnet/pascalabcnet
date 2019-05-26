@@ -1379,11 +1379,11 @@ namespace PascalABCCompiler.SyntaxTree
 		///<returns> Return value is void </returns>
 		void visit(deconstructor_pattern _deconstructor_pattern);
 		///<summary>
-		///Method to visit pattern_deconstructor_parameter.
+		///Method to visit pattern_parameter.
 		///</summary>
-		///<param name="_pattern_deconstructor_parameter">Node to visit</param>
+		///<param name="_pattern_parameter">Node to visit</param>
 		///<returns> Return value is void </returns>
-		void visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter);
+		void visit(pattern_parameter _pattern_parameter);
 		///<summary>
 		///Method to visit desugared_deconstruction.
 		///</summary>
@@ -1420,6 +1420,84 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_semantic_check_sugared_var_def_statement_node">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(semantic_check_sugared_var_def_statement_node _semantic_check_sugared_var_def_statement_node);
+		///<summary>
+		///Method to visit const_pattern.
+		///</summary>
+		///<param name="_const_pattern">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(const_pattern _const_pattern);
+		///<summary>
+		///Method to visit tuple_pattern_wild_card.
+		///</summary>
+		///<param name="_tuple_pattern_wild_card">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(tuple_pattern_wild_card _tuple_pattern_wild_card);
+		///<summary>
+		///Method to visit const_pattern_parameter.
+		///</summary>
+		///<param name="_const_pattern_parameter">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(const_pattern_parameter _const_pattern_parameter);
+		///<summary>
+		///Method to visit wild_card_deconstructor_parameter.
+		///</summary>
+		///<param name="_wild_card_deconstructor_parameter">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(wild_card_deconstructor_parameter _wild_card_deconstructor_parameter);
+		///<summary>
+		///Method to visit collection_pattern.
+		///</summary>
+		///<param name="_collection_pattern">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(collection_pattern _collection_pattern);
+		///<summary>
+		///Method to visit collection_pattern_gap_parameter.
+		///</summary>
+		///<param name="_collection_pattern_gap_parameter">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(collection_pattern_gap_parameter _collection_pattern_gap_parameter);
+		///<summary>
+		///Method to visit collection_pattern_wild_card.
+		///</summary>
+		///<param name="_collection_pattern_wild_card">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(collection_pattern_wild_card _collection_pattern_wild_card);
+		///<summary>
+		///Method to visit collection_pattern_var_parameter.
+		///</summary>
+		///<param name="_collection_pattern_var_parameter">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(collection_pattern_var_parameter _collection_pattern_var_parameter);
+		///<summary>
+		///Method to visit recursive_collection_parameter.
+		///</summary>
+		///<param name="_recursive_collection_parameter">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(recursive_collection_parameter _recursive_collection_parameter);
+		///<summary>
+		///Method to visit recursive_pattern_parameter.
+		///</summary>
+		///<param name="_recursive_pattern_parameter">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(recursive_pattern_parameter _recursive_pattern_parameter);
+		///<summary>
+		///Method to visit tuple_pattern.
+		///</summary>
+		///<param name="_tuple_pattern">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(tuple_pattern _tuple_pattern);
+		///<summary>
+		///Method to visit tuple_pattern_var_parameter.
+		///</summary>
+		///<param name="_tuple_pattern_var_parameter">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(tuple_pattern_var_parameter _tuple_pattern_var_parameter);
+		///<summary>
+		///Method to visit recursive_tuple_parameter.
+		///</summary>
+		///<param name="_recursive_tuple_parameter">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(recursive_tuple_parameter _recursive_tuple_parameter);
 	}
 
 

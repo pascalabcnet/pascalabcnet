@@ -40,23 +40,28 @@ namespace VisualPascalABC
             Workbench.WidgetController.SetDebugButtonsEnabled(true);
             Workbench.WidgetController.SetOptionsEnabled(true);
         }
+
+        Object o = new Object();
         void RunnerManager_Started_Sync(string fileName)
         {
-            if (!ProjectFactory.Instance.ProjectLoaded)
+            lock (o)
             {
-                fileName = Tools.FileNameToLower(fileName);
-                if (Tools.FileNameToLower(Workbench.CurrentEXEFileName) == fileName)
+                if (!ProjectFactory.Instance.ProjectLoaded)
                 {
-                    ButtonsEnableDisable_RunStart();
+                    fileName = Tools.FileNameToLower(fileName);
+                    if (Tools.FileNameToLower(Workbench.CurrentEXEFileName) == fileName)
+                    {
+                        ButtonsEnableDisable_RunStart();
+                    }
+                    RunTabs[fileName].Run = true;
+                    WorkbenchServiceFactory.DocumentService.SetTabPageText(RunTabs[fileName]);
                 }
-                RunTabs[fileName].Run = true;
-                WorkbenchServiceFactory.DocumentService.SetTabPageText(RunTabs[fileName]);
-            }
-            else
-            {
-                fileName = Tools.FileNameToLower(fileName);
-                ButtonsEnableDisable_RunStart();
-                RunTabs[fileName].Run = true;
+                else
+                {
+                    fileName = Tools.FileNameToLower(fileName);
+                    ButtonsEnableDisable_RunStart();
+                    RunTabs[fileName].Run = true;
+                }
             }
         }
 
@@ -67,36 +72,39 @@ namespace VisualPascalABC
 
         void RunnerManager_Exited_Sync(string fileName)
         {
-            fileName = Tools.FileNameToLower(fileName);
-            if (!RunTabs.ContainsKey(fileName))
+            lock (o)
             {
-                string s = "Closing: "+fileName + " \nRunTabs: ";
-                foreach (string ss in RunTabs.Keys)
-                    s += ss + " ";
-                throw new Exception(s);
-            }
-            RunTabs[fileName].Run = false;
-            WorkbenchServiceFactory.DocumentService.SetTabPageText(RunTabs[fileName]);
-            if (ReadRequests.ContainsKey(RunTabs[fileName]))
-                ReadRequests.Remove(RunTabs[fileName]);
-            UpdateReadRequest(false);
-            WorkbenchServiceFactory.EditorService.SetFocusToEditor();
-            //if (TerminateAllPrograms)
+                fileName = Tools.FileNameToLower(fileName);
+                if (!RunTabs.ContainsKey(fileName))
+                {
+                    string s = "Closing: " + fileName + " \nRunTabs: ";
+                    foreach (string ss in RunTabs.Keys)
+                        s += ss + " ";
+                    throw new Exception(s);
+                }
+                RunTabs[fileName].Run = false;
+                WorkbenchServiceFactory.DocumentService.SetTabPageText(RunTabs[fileName]);
+                if (ReadRequests.ContainsKey(RunTabs[fileName]))
+                    ReadRequests.Remove(RunTabs[fileName]);
+                UpdateReadRequest(false);
+                WorkbenchServiceFactory.EditorService.SetFocusToEditor();
+                //if (TerminateAllPrograms)
                 WaitCallback_DeleteEXEAndPDB(fileName); // сделал всё синхронно - теперь WaitCallback_DeleteEXEAndPDB не должен работать медленно!
-            //else
-            //    System.Threading.ThreadPool.QueueUserWorkItem(WaitCallback_DeleteEXEAndPDB, fileName); // в потоке - не синхронизировано! Надо запретить запускать что-то до окончания!
+                                                        //else
+                                                        //    System.Threading.ThreadPool.QueueUserWorkItem(WaitCallback_DeleteEXEAndPDB, fileName); // в потоке - не синхронизировано! Надо запретить запускать что-то до окончания!
 
-            if (!ProjectFactory.Instance.ProjectLoaded)
-            {
-                if (Tools.FileNameToLower(WorkbenchServiceFactory.Workbench.CurrentEXEFileName) == fileName)
+                if (!ProjectFactory.Instance.ProjectLoaded)
+                {
+                    if (Tools.FileNameToLower(WorkbenchServiceFactory.Workbench.CurrentEXEFileName) == fileName)
+                    {
+                        ButtonsEnableDisable_RunStop();
+                    }
+                }
+                else
                 {
                     ButtonsEnableDisable_RunStop();
-                }
+                } // SSM 22/04/19 - этот код перенесен в конец WaitCallback_DeleteEXEAndPDB - нет, там исключение
             }
-            else
-            {
-                ButtonsEnableDisable_RunStop();
-            } // SSM 22/04/19 - этот код перенесен в конец WaitCallback_DeleteEXEAndPDB - нет, там исключение
         }
 
         void RunnerManager_RunnerManagerUnhanledRuntimeException(string id, string ExceptionType, string ExceptionMessage, string StackTraceData, List<RunManager.StackTraceItem> StackTrace)

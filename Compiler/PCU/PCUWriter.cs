@@ -2106,6 +2106,7 @@ namespace PascalABCCompiler.PCU
             else
                 bw.Write(cnst.name);
             bw.Write(GetUnitReference(cnst.comprehensive_namespace));
+            WriteTypeReference(cnst.type);
             SaveExpressionAndOffset(cnst.const_value);
             bw.Write(0);
             //VisitExpression(cnst.const_value);

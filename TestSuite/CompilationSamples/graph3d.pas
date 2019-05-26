@@ -892,6 +892,11 @@ type
       Self.AnimationCompleted := act;
       Result := Self;
     end;
+    
+    function Clone: AnimationBase; virtual;
+    begin
+      Result := Self;
+    end;
   
   private 
     procedure BeginT; 
@@ -957,6 +962,8 @@ type
       v := value;
     end;
     
+    function Clone: AnimationBase; override := new Double1AnimationBase(Element,Seconds,v,nil);
+    
     function AutoReverse: AnimationBase; override;
     begin
       ApplyDecorators.Add(()-> begin
@@ -1002,6 +1009,8 @@ type
       inherited Create(e, sec, Completed);
       (x, y, z) := (xx, yy, zz);
     end;
+    
+    function Clone: AnimationBase; override := new Double3AnimationBase(Element,Seconds,x,y,z,nil);    
     
     function AutoReverse: AnimationBase; override;
     begin
@@ -1072,6 +1081,7 @@ type
       daz.Completed += Hand;  
     end;
   public 
+    function Clone: AnimationBase; override := new OffsetAnimationOn(Element,Seconds,x,y,z,nil);    
   end;
   
   OffsetAnimation = class(OffsetAnimationOn)
@@ -1087,6 +1097,7 @@ type
       daz.Completed += Hand;  
     end;
   public
+    function Clone: AnimationBase; override := new OffsetAnimation(Element,Seconds,x,y,z,nil);    
   end;
   
   OffsetAnimationUsingKeyframes = class(Double3AnimationBase)
@@ -1122,6 +1133,8 @@ type
       inherited Create(e, sec, Completed);
       a := aa;
     end;
+    
+    function Clone: AnimationBase; override := new OffsetAnimationUsingKeyframes(Element,Seconds,a,nil);    
   end;
   
   ScaleAnimation = class(Double3AnimationBase)
@@ -1159,6 +1172,7 @@ type
       inherited Create(e, sec, Completed);
       scale := sc;
     end;
+    function Clone: AnimationBase; override := new ScaleAnimation(Element,Seconds,scale,nil);    
   end;
   
   ScaleXAnimation = class(Double1AnimationBase)
@@ -1192,6 +1206,7 @@ type
       inherited Create(e, sec, Completed);
       scale := sc;
     end;
+    function Clone: AnimationBase; override := new ScaleXAnimation(Element,Seconds,scale,nil);    
   end;
   
   ScaleYAnimation = class(ScaleXAnimation)
@@ -1217,6 +1232,8 @@ type
       da := AddDoubleAnimByName(sb, scale, seconds, ttname, ScaleTransform3D.ScaleYProperty);
       da.Completed += Hand;
     end;
+  public 
+    function Clone: AnimationBase; override := new ScaleYAnimation(Element,Seconds,scale,nil);    
   end;
   
   ScaleZAnimation = class(ScaleXAnimation)
@@ -1242,6 +1259,8 @@ type
       da := AddDoubleAnimByName(sb, scale, seconds, ttname, ScaleTransform3D.ScaleZProperty);
       da.Completed += Hand;
     end;
+  public 
+    function Clone: AnimationBase; override := new ScaleZAnimation(Element,Seconds,scale,nil);    
   end;
   
   RotateAtAnimation = class(Double1AnimationBase)
@@ -1289,6 +1308,8 @@ type
       inherited Create(e, sec, Completed);
       (vx, vy, vz, angle, center) := (vvx, vvy, vvz, a, c)
     end;
+  public 
+    function Clone: AnimationBase; override := new RotateAtAnimation(Element,Seconds,vx,vy,vz,angle,center,nil);    
   end;
   
   CompositeAnimation = class(AnimationBase)
@@ -1334,7 +1355,8 @@ type
       Result := a;
     end;
     procedure BeginT;
-    begin
+    begin 
+      //Println(Self.GetType+' '+ll.Count); 
       for var ii:=0 to ll.Count-2 do
       begin
         var i := ii; // параметр цикла неправильно захватывается лямбдой  
@@ -1342,14 +1364,24 @@ type
 
         // Если ll[i] - CompositeAnimation, то надо повесить Completed на самую правую не CompositeAnimation
         var lf := ll[i];
+        var llf := ll;
+        var lli := i;
         while lf is CompositeAnimation do
         begin
           var ca := lf as CompositeAnimation;
           lf := ca.ll[ca.ll.Count-1];
+          llf := ca.ll;
+          lli := ca.ll.Count-1;
         end;
         
+        // lf надо в любом случае клонировать
+        // Клонируем. Надо еще списки клонировать! А то в a+a во втором списке последний элемент - клонированный - в обоих списках!
+        lf := lf.Clone;
+        llf[lli] := lf;
         lf.Completed += procedure -> 
         begin
+          //Print('Completed '+lf.GetType.ToString); 
+          //Println(i+1);
           lll[i+1].Begin;
         end;  
       end;
