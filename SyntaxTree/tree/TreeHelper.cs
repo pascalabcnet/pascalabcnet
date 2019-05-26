@@ -33,7 +33,7 @@ namespace PascalABCCompiler.SyntaxTree
         DirectDescendants
     }
 
-    public enum SemanticCheckType { MatchedExpression, MatchedExpressionAndType }
+    public enum SemanticCheckType { MatchedExpression, MatchedExpressionAndType, MatchedExpressionAndExpression, MatchedTuple }
 
     public partial class syntax_tree_node
     {
@@ -391,6 +391,11 @@ namespace PascalABCCompiler.SyntaxTree
         public static bin_expr LogicalAnd(expression left, expression right)
         {
             return new bin_expr(left, right, Operators.LogicalAND);
+        }
+
+        public static bin_expr LogicalOr(expression left, expression right)
+        {
+            return new bin_expr(left, right, Operators.LogicalOR);
         }
 
         public override string ToString()
@@ -1093,8 +1098,8 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class simple_property
     {
-        public simple_property(ident name, type_definition type, property_accessors accessors, SourceContext sc = null) 
-            : this(name, type, null, accessors, null, null, definition_attribute.None,proc_attribute.attr_none,false, null, sc)
+        public simple_property(ident name, type_definition type, property_accessors accessors, SourceContext sc = null)
+            : this(name, type, null, accessors, null, null, definition_attribute.None, proc_attribute.attr_none, false, null, sc)
         { }
     }
 
@@ -1709,7 +1714,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class expression
     {
-        //public object semantic_ex;
+        //public object semantic_ex; 
         public expression Plus(expression e)
         {
             return new bin_expr(this, e, Operators.Plus);
@@ -1814,19 +1819,12 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class deconstructor_pattern
     {
-        public bool IsRecursive => parameters.Any(x => x is recursive_deconstructor_parameter);
-
         public override string ToString() => $"{type}({string.Join(", ", parameters.Select(x => x.ToString()))})";
     }
 
-    public partial class var_deconstructor_parameter
+    public partial class pattern_node
     {
-        public override string ToString() => identifier.ToString() + (type == null ? "" : $": {type}");
-    }
-
-    public partial class recursive_deconstructor_parameter
-    {
-        public override string ToString() => pattern.ToString();
+        public bool IsRecursive => parameters.Any(x => x is recursive_pattern_parameter);
     }
 
     public partial class typecast_node
@@ -1842,5 +1840,58 @@ namespace PascalABCCompiler.SyntaxTree
         public bool visited = false;
     }
 
+    public partial class var_deconstructor_parameter
+    {
+        public override string ToString() => identifier.ToString() + (type == null ? "" : $": {type}");
     }
+
+    public partial class recursive_deconstructor_parameter
+    {
+        public override string ToString() => pattern.ToString();
+    }
+
+    public partial class tuple_pattern_wild_card
+    {
+        ///<summary>
+        ///Конструктор c параметрами
+        ///</summary>
+        public tuple_pattern_wild_card(SourceContext sc)
+        {
+            this.source_context = sc;
+        }
+    }
+
+    public partial class collection_pattern_wild_card
+    {
+        ///<summary>
+        ///Конструктор c параметрами
+        ///</summary>
+        public collection_pattern_wild_card(SourceContext sc)
+        {
+            this.source_context = sc;
+        }
+    }
+
+    public partial class collection_pattern_gap_parameter
+    {
+        ///<summary>
+        ///Конструктор c параметрами
+        ///</summary>
+        public collection_pattern_gap_parameter(SourceContext sc)
+        {
+            this.source_context = sc;
+        }
+    }
+
+    public partial class wild_card_deconstructor_parameter
+    {
+        ///<summary>
+        ///Конструктор c параметрами
+        ///</summary>
+        public wild_card_deconstructor_parameter(SourceContext sc)
+        {
+            this.source_context = sc;
+        }
+    }
+}
 

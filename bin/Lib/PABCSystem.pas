@@ -1971,6 +1971,37 @@ function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 
 function __TypeCheckAndAssignForIsMatch<T>(obj: object; var res: T): boolean;
 
+function __WildCardsTupleEqual<T1, T2, T3, T4>(
+    first: Tuple<T1, T2>; 
+    second: Tuple<T3, T4>;
+    elemsToCompare: sequence of integer): boolean;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6>(
+    first: Tuple<T1, T2, T3>; 
+    second: Tuple<T4, T5, T6>;
+    elemsToCompare: sequence of integer): boolean;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8>(
+    first: Tuple<T1, T2, T3, T4>; 
+    second: Tuple<T5, T6, T7, T8>;
+    elemsToCompare: sequence of integer): boolean;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
+    first: Tuple<T1, T2, T3, T4, T5>; 
+    second: Tuple<T6, T7, T8, T9, T10>;
+    elemsToCompare: sequence of integer): boolean;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
+    first: Tuple<T1, T2, T3, T4, T5, T6>; 
+    second: Tuple<T7, T8, T9, T10, T11, T12>;
+    elemsToCompare: sequence of integer): boolean;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
+    first: Tuple<T1, T2, T3, T4, T5, T6, T7>; 
+    second: Tuple<T8, T9, T10, T11, T12, T13, T14>;
+    elemsToCompare: sequence of integer): boolean;
+
+
 // -----------------------------------------------------
 //     Стандартные классы исключений
 // -----------------------------------------------------
@@ -4485,6 +4516,112 @@ begin
     Result := false;
   end;
 end;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4>(
+    first: Tuple<T1, T2>; 
+    second: Tuple<T3, T4>;
+    elemsToCompare: sequence of integer): boolean;
+begin
+Result := True;
+foreach var ind in elemsToCompare do
+begin
+  case ind of
+  0: Result := Result and first.Item1.Equals(second.Item1);
+  1: Result := Result and first.Item2.Equals(second.Item2);
+  end;
+end;
+end;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6>(
+    first: Tuple<T1, T2, T3>; 
+    second: Tuple<T4, T5, T6>;
+    elemsToCompare: sequence of integer): boolean;
+begin
+Result := True;
+foreach var ind in elemsToCompare do
+begin
+  case ind of
+  0: Result := Result and first.Item1.Equals(second.Item1);
+  1: Result := Result and first.Item2.Equals(second.Item2);
+  2: Result := Result and first.Item3.Equals(second.Item3);
+  end;
+end;
+end;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8>(
+    first: Tuple<T1, T2, T3, T4>; 
+    second: Tuple<T5, T6, T7, T8>;
+    elemsToCompare: sequence of integer): boolean;
+begin
+Result := True;
+foreach var ind in elemsToCompare do
+begin
+  case ind of
+  0: Result := Result and first.Item1.Equals(second.Item1);
+  1: Result := Result and first.Item2.Equals(second.Item2);
+  2: Result := Result and first.Item3.Equals(second.Item3);
+  3: Result := Result and first.Item4.Equals(second.Item4);
+  end;
+end;
+end;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
+    first: Tuple<T1, T2, T3, T4, T5>; 
+    second: Tuple<T6, T7, T8, T9, T10>;
+    elemsToCompare: sequence of integer): boolean;
+begin
+Result := True;
+foreach var ind in elemsToCompare do
+begin
+  case ind of
+  0: Result := Result and first.Item1.Equals(second.Item1);
+  1: Result := Result and first.Item2.Equals(second.Item2);
+  2: Result := Result and first.Item3.Equals(second.Item3);
+  3: Result := Result and first.Item4.Equals(second.Item4);
+  4: Result := Result and first.Item5.Equals(second.Item5);
+  end;
+end;
+end;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
+    first: Tuple<T1, T2, T3, T4, T5, T6>; 
+    second: Tuple<T7, T8, T9, T10, T11, T12>;
+    elemsToCompare: sequence of integer): boolean;
+begin
+Result := True;
+foreach var ind in elemsToCompare do
+begin
+  case ind of
+  0: Result := Result and first.Item1.Equals(second.Item1);
+  1: Result := Result and first.Item2.Equals(second.Item2);
+  2: Result := Result and first.Item3.Equals(second.Item3);
+  3: Result := Result and first.Item4.Equals(second.Item4);
+  4: Result := Result and first.Item5.Equals(second.Item5);
+  5: Result := Result and first.Item6.Equals(second.Item6);
+  end;
+end;
+end;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
+    first: Tuple<T1, T2, T3, T4, T5, T6, T7>; 
+    second: Tuple<T8, T9, T10, T11, T12, T13, T14>;
+    elemsToCompare: sequence of integer): boolean;
+begin
+Result := True;
+foreach var ind in elemsToCompare do
+begin
+  case ind of
+  0: Result := Result and first.Item1.Equals(second.Item1);
+  1: Result := Result and first.Item2.Equals(second.Item2);
+  2: Result := Result and first.Item3.Equals(second.Item3);
+  3: Result := Result and first.Item4.Equals(second.Item4);
+  4: Result := Result and first.Item5.Equals(second.Item5);
+  5: Result := Result and first.Item6.Equals(second.Item6);
+  6: Result := Result and first.Item7.Equals(second.Item7);
+  end;
+end;
+end;
+
 
 ///--
 procedure Deconstruct<T>(self: T; var res: T); extensionmethod;
@@ -7968,8 +8105,8 @@ function StrToReal(s: string) := Convert.ToDouble(s, nfi);
 function StrToFloat(s: string) := StrToReal(s);
 
 function TryStrToInt64(s: string; var value: int64) := int64.TryParse(s, value);
-function TryStrToReal(s: string; var value: real) := real.TryParse(s,System.Globalization.NumberStyles.Float,new Globalization.NumberFormatInfo,value);
-function TryStrToSingle(s: string; var value: single) := single.TryParse(s,System.Globalization.NumberStyles.Float,new Globalization.NumberFormatInfo,value);
+function TryStrToReal(s: string; var value: real) := real.TryParse(s,System.Globalization.NumberStyles.Float,new System.Globalization.NumberFormatInfo,value);
+function TryStrToSingle(s: string; var value: single) := single.TryParse(s,System.Globalization.NumberStyles.Float,new System.Globalization.NumberFormatInfo,value);
 function TryStrToFloat(s: string; var value: real) := TryStrToReal(s, value);
 function TryStrToFloat(s: string; var value: single) := TryStrToSingle(s, value);
 
@@ -11562,7 +11699,7 @@ var
 
 function ExecuteAssemlyIsDll: boolean;
 begin
-  Result := not __from_dll and (IO.Path.GetExtension(System.Reflection.Assembly.GetExecutingAssembly.ManifestModule.FullyQualifiedName).ToLower = '.dll');
+  Result := not __from_dll and (System.IO.Path.GetExtension(System.Reflection.Assembly.GetExecutingAssembly.ManifestModule.FullyQualifiedName).ToLower = '.dll');
 end;
 
 function IsUnix: boolean;

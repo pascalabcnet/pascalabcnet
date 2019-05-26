@@ -46,7 +46,7 @@ namespace SyntaxVisitors.SugarVisitors
         {
             var result = new List<statement>();
             result.Add(CastVariableDefinition);
-            result.Add(new desugared_deconstruction(DeconstructionVariables, CastVariable, patternContext)); 
+            result.Add(new desugared_deconstruction(DeconstructionVariables, CastVariable, patternContext));
             result.Add(SuccessVariableDefinition);
 
             return result;
@@ -60,22 +60,51 @@ namespace SyntaxVisitors.SugarVisitors
         }
     }
 
+    public class CollectionDesugaringResult
+    {
+        public List<statement> VarParametersDeclarations { get; set; } = new List<statement>();
+
+        public expression SuccessMatchingCheck { get; set; }
+
+        public expression CollectionLengthCheck { get; set; }
+
+        public List<semantic_check_sugared_statement_node> ElemTypeChecks { get; set; } = new List<semantic_check_sugared_statement_node>();
+    }
+
+    public class TupleDesugaringResult
+    {
+        public List<statement> VarParametersDeclarations { get; set; } = new List<statement>();
+
+        public expression SuccessMatchingCheck { get; set; }
+
+        public statement TupleLengthCheck { get; set; }
+
+        public List<semantic_check_sugared_statement_node> ElemTypeChecks { get; set; } = new List<semantic_check_sugared_statement_node>();
+    }
+
     public class PatternsDesugaringVisitor : BaseChangeVisitor
     {
         private enum PatternLocation { Unknown, IfCondition, Assign }
 
         private const string DeconstructMethodName = compiler_string_consts.deconstruct_method_name;
         private const string IsTestMethodName = compiler_string_consts.is_test_function_name;
+        private const string WildCardsTupleEqualFunctionName = compiler_string_consts.wild_cards_tuple_equal_function_name;
+        private const string SeqFunctionName = compiler_string_consts.seq_function_name;
+        private const string CountPropertyName = compiler_string_consts.count_property_name;
         private const string GeneratedPatternNamePrefix = "<>pattern";
+        private const string GeneratedDeconstructParamPrefix = "<>deconstructParam";
 
         private int generalVariableCounter = 0;
         private int successVariableCounter = 0;
         private int labelVariableCounter = 0;
+        private int deconstructParamVariableCounter = 0;
 
         private if_node _previousIf;
         private statement desugaredMatchWith;
-
         private List<if_node> processedIfNodes = new List<if_node>();
+
+        //const matching
+        private List<statement> typeChecks = new List<statement>();
 
         public static PatternsDesugaringVisitor New => new PatternsDesugaringVisitor();
 
@@ -95,26 +124,45 @@ namespace SyntaxVisitors.SugarVisitors
                 if (patternCase == null)
                     continue;
 
-                if (patternCase.pattern is deconstructor_pattern)
+                switch (patternCase.pattern)
                 {
-                    // Проверяем встречался ли уже такой тип при деконструкции
-                    // SSM 02.01.19 пока закомментировал этот кусок т.к. при этом коде падает стандартный пример ArithmSimplify.cs. #1408 снова открыл
-                    /*var deconstructionType = (patternCase.pattern as deconstructor_pattern).
-                        type as named_type_reference;
-                    if (deconstructionType != null &&
-                        deconstructionType.names != null &&
-                        deconstructionType.names.Count != 0)
-                    {
-                        var deconstructionTypeName = deconstructionType.names[0].name;
-                        if (usedDeconstructionTypes.Contains(deconstructionTypeName))
+                    case deconstructor_pattern pattern:
                         {
-                            throw new SyntaxVisitorError("REPEATED_DECONSTRUCTION_TYPE",
-                                                         patternCase.pattern.source_context);
-                        }
-                        usedDeconstructionTypes.Add(deconstructionTypeName);
-                    } */
+                            // Проверяем встречался ли уже такой тип при деконструкции
+                            // SSM 02.01.19 пока закомментировал этот кусок т.к. при этом коде падает стандартный пример ArithmSimplify.cs. #1408 снова открыл
+                            /*var deconstructionType = (patternCase.pattern as deconstructor_pattern).
+                                type as named_type_reference;
+                            if (deconstructionType != null &&
+                                deconstructionType.names != null &&
+                                deconstructionType.names.Count != 0)
+                            {
+                                var deconstructionTypeName = deconstructionType.names[0].name;
+                                if (usedDeconstructionTypes.Contains(deconstructionTypeName))
+                                {
+                                    throw new SyntaxVisitorError("REPEATED_DECONSTRUCTION_TYPE",
+                                                                 patternCase.pattern.source_context);
+                                }
+                                usedDeconstructionTypes.Add(deconstructionTypeName);
+                            } */
 
-                    DesugarDeconstructorPatternCase(matchWith.expr, patternCase);
+                            DesugarDeconstructorPatternCase(matchWith.expr, patternCase);
+                            break;
+                        }
+                    case const_pattern p:
+                        {
+                            DesugarConstPatternCase(matchWith.expr, patternCase);
+                            break;
+                        }
+                    case collection_pattern p:
+                        {
+                            DesugarDeconstructorPatternCase(matchWith.expr, patternCase);
+                            break;
+                        }
+                    case tuple_pattern p:
+                        {
+                            DesugarDeconstructorPatternCase(matchWith.expr, patternCase);
+                            break;
+                        }
                 }
             }
 
@@ -124,6 +172,11 @@ namespace SyntaxVisitors.SugarVisitors
             if (desugaredMatchWith == null)
                 desugaredMatchWith = new empty_statement();
 
+            if (typeChecks.Count != 0)
+            {
+                typeChecks.Add(desugaredMatchWith);
+                desugaredMatchWith = new statement_list(typeChecks);
+            }
             // Замена выражения match with на новое несахарное поддерево и его обход
             ReplaceUsingParent(matchWith, desugaredMatchWith);
             visit(desugaredMatchWith);
@@ -135,20 +188,235 @@ namespace SyntaxVisitors.SugarVisitors
                 throw new SyntaxVisitorError("PATTERN_MATHING_IS_NOT_SUPPORTED_IN_THIS_CONTEXT", isPatternExpr.source_context);
 
             Debug.Assert(GetAscendant<statement_list>(isPatternExpr) != null, "Couldn't find statement list in upper nodes");
-            
+
             DesugarIsExpression(isPatternExpr);
         }
 
-        void DesugarDeconstructorPatternCase(expression matchingExpression, pattern_case patternCase)
+        private void DesugarDeconstructorPatternCase(expression matchingExpression, pattern_case patternCase)
         {
-            Debug.Assert(patternCase.pattern is deconstructor_pattern);
-            
-            var isExpression = new is_pattern_expr(matchingExpression, patternCase.pattern);
+            //var paramCheckExpr = DesugarDeconstructorPatternParameters(patternCase.pattern as deconstructor_pattern);
+
+            var isExpression = new is_pattern_expr(matchingExpression, patternCase.pattern, patternCase.source_context);
             var ifCondition = patternCase.condition == null ? (expression)isExpression : bin_expr.LogicalAnd(isExpression, patternCase.condition);
             var ifCheck = SubtreeCreator.CreateIf(ifCondition, patternCase.case_action);
 
             // Добавляем полученные statements в результат
             AddDesugaredCaseToResult(ifCheck, ifCheck);
+        }
+        
+        private type_definition GetTypeDefinitionForConstParam(expression constParamExpr)
+        {
+            switch (constParamExpr)
+            {
+                case string_const type:
+                    return new named_type_reference("string");
+                case char_const type:
+                    return new named_type_reference("char");
+                case int32_const type:
+                    return new named_type_reference("integer");
+                case int64_const type:
+                    return new named_type_reference("integer");
+                case double_const type:
+                    return new named_type_reference("double");
+            }
+            return null;
+        }
+
+        private expression DesugarDeconstructorPatternParameters(deconstructor_pattern pattern)
+        {
+            expression paramCheckExpr = null;
+
+            for (int i = 0; i < pattern.parameters.Count; ++i)
+            {
+                if (pattern.parameters[i] is const_pattern_parameter constPattern)
+                {
+                    var constParamIdent = new ident(NewDeconstructParamId(), pattern.parameters[i].source_context);
+
+                    var eqParams = new expression_list(
+                        new List<expression>()
+                        {
+                            constPattern.const_param,
+                            constParamIdent
+                        }
+                    );
+
+                    var constParamCheck = new method_call(
+                        new dot_node(new ident("object"), new ident("Equals")),
+                        eqParams,
+                        pattern.source_context
+                    );
+
+                    pattern.parameters[i] = new var_deconstructor_parameter(
+                        constParamIdent,
+                        GetTypeDefinitionForConstParam(constPattern.const_param),
+                        false,
+                        pattern.parameters[i].source_context);
+
+                    paramCheckExpr = paramCheckExpr == null ? (expression)constParamCheck : bin_expr.LogicalAnd(paramCheckExpr, constParamCheck);
+                }
+
+                if (pattern.parameters[i] is wild_card_deconstructor_parameter)
+                {
+                    var wildCardGeneratedParamIdent = new ident(NewDeconstructParamId(), pattern.parameters[i].source_context);
+                    pattern.parameters[i] = new var_deconstructor_parameter(
+                        wildCardGeneratedParamIdent,
+                        null,
+                        false,
+                        pattern.parameters[i].source_context);
+                }
+
+                if (pattern.parameters[i] is recursive_deconstructor_parameter deconstructor_param)
+                {
+                    if (deconstructor_param.pattern is deconstructor_pattern deconstructor_pattern)
+                    {
+                        var recursiveChecks = DesugarDeconstructorPatternParameters(deconstructor_pattern);
+                        paramCheckExpr = paramCheckExpr == null ?
+                                         recursiveChecks :
+                                         bin_expr.LogicalAnd(paramCheckExpr, recursiveChecks);
+                    }
+                }
+            }
+            return paramCheckExpr;
+        }
+
+        private void DesugarConstPatternCase(expression matchingExpression, pattern_case patternCase)
+        {
+            Debug.Assert(patternCase.pattern is const_pattern);
+            var patternExpressionNode = patternCase.pattern as const_pattern;
+
+            var statementsToAdd = new List<statement>();
+            var equalCalls = new List<bin_expr>();
+
+            foreach (var patternExpression in patternExpressionNode.pattern_expressions.expressions)
+            {
+                statementsToAdd.Add(GetTypeCompatibilityCheck(matchingExpression, patternExpression));
+                
+                equalCalls.Add(
+                    new bin_expr(matchingExpression, patternExpression, Operators.Equal, patternCase.source_context
+                    )
+                );
+            }
+            typeChecks.AddRange(statementsToAdd);
+
+            expression orPatternCases = equalCalls[0];
+            for (int i = 1; i < equalCalls.Count; ++i)
+            {
+                orPatternCases = bin_expr.LogicalOr(orPatternCases, equalCalls[i]);
+            }
+            var ifCondition = patternCase.condition == null ? orPatternCases : bin_expr.LogicalAnd(orPatternCases, patternCase.condition);
+            var ifCheck = SubtreeCreator.CreateIf(ifCondition, patternCase.case_action);
+
+            // Добавляем полученные statements в результат
+            AddDesugaredCaseToResult(ifCheck, ifCheck);
+        }
+
+        private expression GetCollectionItemsEqualCheckBeforeGap(addressed_value matchingExpression, 
+                                                                 List<pattern_parameter> toCompare, 
+                                                                 CollectionDesugaringResult desugaringResult)
+        {
+            var fromIndex = 0;
+            expression equalChecks = null;
+            foreach (var param in toCompare)
+            {
+                if (param is const_pattern_parameter constParam)
+                {
+                    var indexerCall = new indexer(
+                        matchingExpression,
+                        new expression_list(
+                            new int32_const(fromIndex, matchingExpression.source_context),
+                            matchingExpression.source_context),
+                        matchingExpression.source_context);
+
+                    var eqParams = new expression_list(
+                        new List<expression>()
+                        {
+                            indexerCall,
+                            constParam.const_param
+                        }
+                    );
+
+                    var equalCall = new method_call(
+                        new dot_node(
+                            new ident("object"),
+                            new ident("Equals")),
+                        eqParams,
+                        matchingExpression.source_context
+                    );
+
+                    equalChecks = equalChecks == null ? (expression)equalCall : bin_expr.LogicalAnd(equalChecks, equalCall);
+                    desugaringResult.ElemTypeChecks.Add(GetTypeCompatibilityCheck(indexerCall, constParam.const_param));
+                }
+
+                if (param is collection_pattern_var_parameter varParam)
+                {
+                    desugaringResult.VarParametersDeclarations.Add(
+                        new var_statement(varParam.identifier, 
+                        GetIndexerCallForCollectionPattern(matchingExpression as addressed_value, fromIndex)));
+                }
+                ++fromIndex;
+            }
+            return equalChecks;
+        }
+
+        private expression GetCollectionItemsEqualCheckAfterGap(addressed_value matchingExpression,
+                                                                 List<pattern_parameter> toCompare,
+                                                                 CollectionDesugaringResult desugaringResult)
+        {
+            var elemFromTail = 1;
+            expression equalChecks = null;
+            foreach (var param in toCompare)
+            {
+                var indexerCall = new indexer(
+                        matchingExpression,
+                        new expression_list(
+                            new bin_expr(
+                                new method_call(
+                                    new dot_node(
+                                        matchingExpression,
+                                        new ident("Count", matchingExpression.source_context)),
+                                    new expression_list()),
+                                new int32_const(elemFromTail, matchingExpression.source_context),
+                                Operators.Minus),
+                            matchingExpression.source_context),
+                        matchingExpression.source_context);
+
+                if (param is const_pattern_parameter constParam)
+                {
+                    var eqParams = new expression_list(
+                        new List<expression>()
+                        {
+                        indexerCall,
+                        constParam.const_param
+                        }
+                    );
+
+                    var equalCall = new method_call(
+                        new dot_node(
+                            new ident("object"),
+                            new ident("Equals")),
+                        eqParams,
+                        matchingExpression.source_context
+                    );
+
+                    equalChecks = equalChecks == null ? (expression)equalCall : bin_expr.LogicalAnd(equalChecks, equalCall);
+                    desugaringResult.ElemTypeChecks.Add(GetTypeCompatibilityCheck(indexerCall, constParam.const_param));
+                }
+
+                if (param is collection_pattern_var_parameter varParam)
+                {
+                    desugaringResult.VarParametersDeclarations.Add(
+                        new var_statement(varParam.identifier, indexerCall));
+                }
+
+                ++elemFromTail;
+            }
+            return equalChecks;
+        }
+
+        private expression GetIndexerCallForCollectionPattern(addressed_value matchingExpression, int ind)
+        {
+            var indexerCall = new indexer(matchingExpression, new int32_const(ind), matchingExpression.source_context);
+            return indexerCall;
         }
 
         private ident NewGeneralName() => new ident(GeneratedPatternNamePrefix + "GenVar" + generalVariableCounter++);
@@ -179,7 +447,7 @@ namespace SyntaxVisitors.SugarVisitors
             _previousIf = newIf;
         }
 
-        private DeconstructionDesugaringResult DesugarPattern(deconstructor_pattern pattern, expression matchingExpression)
+        private DeconstructionDesugaringResult DesugarDeconstructorPattern(deconstructor_pattern pattern, expression matchingExpression)
         {
             Debug.Assert(!pattern.IsRecursive, "All recursive patterns should be desugared into simple patterns at this point");
 
@@ -207,23 +475,153 @@ namespace SyntaxVisitors.SugarVisitors
             return desugarResult;
         }
 
+        private CollectionDesugaringResult DesugarCollectionPattern(collection_pattern pattern, expression matchingExpression)
+        {
+            Debug.Assert(!pattern.IsRecursive, "All recursive patterns should be desugared into simple patterns at this point");
+
+            var desugaringResult = new CollectionDesugaringResult();
+            var collectionItems = pattern.parameters;
+            var gapItemMet = false;
+            var gapIndex = 0;
+            var exprBeforeGap = new List<pattern_parameter>();
+            var exprAfterGap = new List<pattern_parameter>();
+            for (int i = 0; i < collectionItems.Count; ++i)
+            {
+                if (collectionItems[i] is collection_pattern_gap_parameter)
+                {
+                    if (gapItemMet)
+                    {
+                        throw new SyntaxVisitorError("REPEATED_DOTDOT_COLLECTION_PATTERN_EXPR",
+                                                     pattern.source_context);
+                    }
+                    gapItemMet = true;
+                    gapIndex = i;
+                    continue;
+                }
+
+                if (gapItemMet)
+                {
+                    exprAfterGap.Insert(0, collectionItems[i]);
+                }
+                else
+                {
+                    exprBeforeGap.Add(collectionItems[i]);
+                }
+            }
+
+            var successMatchingCheck = GetCollectionItemsEqualCheckBeforeGap(
+                matchingExpression as addressed_value, exprBeforeGap, desugaringResult);
+
+            if (gapItemMet && exprAfterGap.Count != 0)
+            {
+                var afterGapEqual = GetCollectionItemsEqualCheckAfterGap(
+                    matchingExpression as addressed_value, exprAfterGap, desugaringResult);
+
+                if (afterGapEqual != null)
+                {
+                    successMatchingCheck = successMatchingCheck == null ?
+                                           afterGapEqual :
+                                           bin_expr.LogicalAnd(successMatchingCheck, afterGapEqual);
+                }
+            }
+            // если добавлять в and, то все равно ран тайм эррор, будто вычисляет все, даже если первое = false
+            desugaringResult.CollectionLengthCheck = new bin_expr(
+                new dot_node(matchingExpression as addressed_value, new ident(CountPropertyName), pattern.source_context),
+                new int32_const(exprBeforeGap.Count + exprAfterGap.Count),
+                Operators.GreaterEqual,
+                pattern.source_context
+            );
+            
+            if (!gapItemMet)
+            {
+                var lengthWithoutGapCheck = new bin_expr(
+                    new dot_node(matchingExpression as addressed_value, new ident(CountPropertyName), pattern.source_context),
+                    new int32_const(exprBeforeGap.Count),
+                    Operators.Equal,
+                    pattern.source_context
+                );
+                successMatchingCheck = successMatchingCheck == null ? 
+                                       lengthWithoutGapCheck :
+                                       bin_expr.LogicalAnd(lengthWithoutGapCheck, successMatchingCheck);
+            }
+
+            desugaringResult.SuccessMatchingCheck = successMatchingCheck == null ?
+                                                    new bool_const(true) :
+                                                    successMatchingCheck;
+            return desugaringResult;
+        }
+
+        private TupleDesugaringResult DesugarTuplePattern(tuple_pattern pattern, expression matchingExpression)
+        {
+            Debug.Assert(!pattern.IsRecursive, "All recursive patterns should be desugared into simple patterns at this point");
+            var desugaringResult = new TupleDesugaringResult();
+            var tupleItems = pattern.parameters;
+
+            for (int i = 0; i < tupleItems.Count; ++i)
+            {
+                var tupleItemCall = new dot_node(
+                                matchingExpression as addressed_value,
+                                new ident("Item" + (i + 1).ToString()),
+                                matchingExpression.source_context);
+                if (tupleItems[i] is tuple_pattern_var_parameter varParam)
+                {
+                    desugaringResult.VarParametersDeclarations.Add(
+                        new var_statement(
+                            varParam.identifier,
+                            tupleItemCall,
+                            matchingExpression.source_context
+                        )
+                    );
+                }
+
+                if (tupleItems[i] is const_pattern_parameter constParam)
+                {
+                    var eqParams = new expression_list(
+                        new List<expression>()
+                        {
+                            tupleItemCall,
+                            constParam.const_param
+                        }
+                    );
+                    var equalCall = new method_call(
+                        new dot_node(new ident("object"), new ident("Equals")),
+                        eqParams,
+                        pattern.source_context
+                    );
+
+                    desugaringResult.SuccessMatchingCheck = desugaringResult.SuccessMatchingCheck == null ?
+                                                            (expression)equalCall :
+                                                            bin_expr.LogicalAnd(desugaringResult.SuccessMatchingCheck, equalCall);
+                    desugaringResult.ElemTypeChecks.Add(GetTypeCompatibilityCheck(tupleItemCall, constParam.const_param));
+                }
+            }
+
+            desugaringResult.TupleLengthCheck = GetTypeCompatibilityCheck(matchingExpression, new int32_const(tupleItems.Count));
+            
+            if (desugaringResult.SuccessMatchingCheck == null)
+            {
+                desugaringResult.SuccessMatchingCheck = new bool_const(true);
+            }
+            return desugaringResult;
+        }
+
         private void DesugarIsExpression(is_pattern_expr isPatternExpr)
         {
-            Debug.Assert(isPatternExpr.right is deconstructor_pattern);
-
-            var patternLocation = GetLocation(isPatternExpr);
-            
-            var pattern = isPatternExpr.right as deconstructor_pattern;
-
-            //AddDefinitionsInUpperStatementList(isPatternExpr, new[] { GetTypeCompatibilityCheck(isPatternExpr) });
-            if (pattern.IsRecursive)
+            if (isPatternExpr.right.IsRecursive)
             {
-                var desugaredRecursiveIs = DesugarRecursiveDeconstructor(isPatternExpr.left, pattern);
+                var desugaredRecursiveIs = DesugarRecursiveParameters(isPatternExpr.left, isPatternExpr.right);
                 ReplaceUsingParent(isPatternExpr, desugaredRecursiveIs);
                 desugaredRecursiveIs.visit(this);
                 return;
             }
+            var patternLocation = GetLocation(isPatternExpr);
 
+            if (isPatternExpr.right is deconstructor_pattern pattern)
+            {
+                var constParamCheck = DesugarDeconstructorPatternParameters(isPatternExpr.right as deconstructor_pattern);
+                pattern.const_params_check = constParamCheck;
+            }
+            //AddDefinitionsInUpperStatementList(isPatternExpr, new[] { GetTypeCompatibilityCheck(isPatternExpr) });
             switch (patternLocation)
             {
                 case PatternLocation.IfCondition: DesugarIsExpressionInIfCondition(isPatternExpr); break;
@@ -231,54 +629,72 @@ namespace SyntaxVisitors.SugarVisitors
             }
         }
 
-        private expression DesugarRecursiveDeconstructor(expression expression, deconstructor_pattern pattern)
+        private expression DesugarRecursiveParameters(expression expression, pattern_node pattern)
         {
-            List<pattern_deconstructor_parameter> parameters = pattern.parameters;
-            expression conjunction = new is_pattern_expr(expression, pattern);
+            List<pattern_parameter> parameters = pattern.parameters;
+            expression conjunction = new is_pattern_expr(expression, pattern, pattern.source_context);
             for (int i = 0; i < parameters.Count; i++)
             {
-                if (parameters[i] is recursive_deconstructor_parameter parameter)
+                if (parameters[i] is recursive_pattern_parameter parameter)
                 {
                     //var parameterType = (parameter.pattern as deconstructor_pattern).type;
                     var newName = NewGeneralName();
-                    var varParameter = new var_deconstructor_parameter(newName, null);
+                    pattern_parameter varParameter = null;
+                    if (pattern is deconstructor_pattern)
+                    {
+                        varParameter = new var_deconstructor_parameter(newName, null, false);
+                    }
+                    else if (pattern is collection_pattern)
+                    {
+                        varParameter = new collection_pattern_var_parameter(newName, null);
+                    }
+                    else if (pattern is tuple_pattern)
+                    {
+                        varParameter = new tuple_pattern_var_parameter(newName, null);
+                    }
                     parameters[i] = varParameter;
                     varParameter.Parent = parameters[i];
-                    conjunction = bin_expr.LogicalAnd(conjunction, DesugarRecursiveDeconstructor(newName, parameter.pattern as deconstructor_pattern));
+                    conjunction = bin_expr.LogicalAnd(conjunction, DesugarRecursiveParameters(newName, parameter.pattern));
                 }
             }
-
             return conjunction;
         }
 
         private void DesugarIsExpressionInAssignment(is_pattern_expr isExpression)
         {
-            var pattern = isExpression.right as deconstructor_pattern;
-            var desugaringResult = DesugarPattern(pattern, isExpression.left);
-            ReplaceUsingParent(isExpression, desugaringResult.SuccessVariable);
-
-            var statementsToAdd = desugaringResult.GetDeconstructionDefinitions(pattern.source_context);
-            statementsToAdd.Add(GetMatchedExpressionCheck(isExpression.left));
-            statementsToAdd.Add(GetTypeCompatibilityCheck(isExpression));
-            statementsToAdd.Add(desugaringResult.GetPatternCheckWithDeconstrunctorCall());
-
+            if (!(isExpression.right is deconstructor_pattern))
+            {
+                throw new SyntaxVisitorError("MATCHING_ASSIGN_NOT_SUPPORTED", isExpression.right.source_context);
+            }
+            var statementsToAdd = ProcessDesugaringForDeconstructorPattern(isExpression);
             AddDefinitionsInUpperStatementList(isExpression, statementsToAdd);
         }
 
         private void DesugarIsExpressionInIfCondition(is_pattern_expr isExpression)
         {
-            var pattern = isExpression.right as deconstructor_pattern;
-            var desugaringResult = DesugarPattern(pattern, isExpression.left);
-            ReplaceUsingParent(isExpression, desugaringResult.SuccessVariable);
+            List<statement> statementsToAdd = null;
 
-            var statementsToAdd = desugaringResult.GetDeconstructionDefinitions(pattern.source_context);
-            statementsToAdd.Add(GetMatchedExpressionCheck(isExpression.left));
-            statementsToAdd.Add(GetTypeCompatibilityCheck(isExpression));
-            statementsToAdd.Add(desugaringResult.GetPatternCheckWithDeconstrunctorCall());
+            switch (isExpression.right)
+            {
+                case deconstructor_pattern dp:
+                    if (dp.const_params_check != null)
+                    {
+                        var ifToAddConstParamsCheckTo = GetAscendant<if_node>(isExpression);
+                        ifToAddConstParamsCheckTo.condition = bin_expr.LogicalAnd(ifToAddConstParamsCheckTo.condition, dp.const_params_check);
+                    }
+                    statementsToAdd = ProcessDesugaringForDeconstructorPattern(isExpression);
+                    break;
+                case collection_pattern cp:
+                    statementsToAdd = ProcessDesugaringForCollectionPattern(isExpression);
+                    break;
+                case tuple_pattern cp:
+                    statementsToAdd = ProcessDesugaringForTuplePattern(isExpression);
+                    break;
+            }
 
             var enclosingIf = GetAscendant<if_node>(isExpression);
             // Если уже обрабатывался ранее (второй встретившийся в том же условии is), то не изменяем if
-            if (processedIfNodes.Contains(enclosingIf)) 
+            if (processedIfNodes.Contains(enclosingIf))
                 AddDefinitionsInUpperStatementList(isExpression, statementsToAdd);
             // Иначе помещаем определения и if-then в отдельный блок, а else после этого блока
             else
@@ -294,11 +710,76 @@ namespace SyntaxVisitors.SugarVisitors
             }
         }
 
+        private List<statement> ProcessDesugaringForDeconstructorPattern(is_pattern_expr isExpression)
+        {
+            var pattern = isExpression.right as deconstructor_pattern;
+            var desugaringResult = DesugarDeconstructorPattern(pattern, isExpression.left);
+            /*
+            var isParent = isExpression.Parent;
+            expression isReplacement = isExpression;
+
+            while (!(isParent is if_node))
+            {
+                if (isParent is bin_expr binParent)
+                {
+                    if (binParent.right == isReplacement)
+                    {
+                        isReplacement = new bin_expr(binParent.left, binParent.right, binParent.operation_type, binParent.source_context);
+                    }
+                    if (binParent.left == isReplacement)
+                    {
+                        isReplacement = binParent.left;
+                    }
+                } 
+                isParent = isParent.Parent;
+            }*/
+            ReplaceUsingParent(isExpression, desugaringResult.SuccessVariable);
+            var statementsToAdd = desugaringResult.GetDeconstructionDefinitions(pattern.source_context);
+            statementsToAdd.Add(GetMatchedExpressionCheck(isExpression.left));
+            statementsToAdd.Add(GetTypeCompatibilityCheck(isExpression));
+            statementsToAdd.Add(desugaringResult.GetPatternCheckWithDeconstrunctorCall());
+
+            return statementsToAdd;
+        }
+
+        private List<statement> ProcessDesugaringForCollectionPattern(is_pattern_expr isExpression)
+        {
+            var pattern = isExpression.right as collection_pattern;
+            var desugaringResult = DesugarCollectionPattern(pattern, isExpression.left);
+            ReplaceUsingParent(isExpression, desugaringResult.SuccessMatchingCheck);
+
+            var statementsToAdd = new List<statement>();
+            statementsToAdd.AddRange(desugaringResult.VarParametersDeclarations);
+            statementsToAdd.AddRange(desugaringResult.ElemTypeChecks);
+            return statementsToAdd;
+        }
+
+        private List<statement> ProcessDesugaringForTuplePattern(is_pattern_expr isExpression)
+        {
+            var pattern = isExpression.right as tuple_pattern;
+            var desugaringResult = DesugarTuplePattern(pattern, isExpression.left);
+            ReplaceUsingParent(isExpression, desugaringResult.SuccessMatchingCheck);
+
+            var statementsToAdd = new List<statement>();
+            statementsToAdd.Add(desugaringResult.TupleLengthCheck);
+            statementsToAdd.AddRange(desugaringResult.VarParametersDeclarations);
+            statementsToAdd.AddRange(desugaringResult.ElemTypeChecks);
+
+            return statementsToAdd;
+        }
+
         private semantic_check_sugared_statement_node GetMatchedExpressionCheck(expression matchedExpression)
         => new semantic_check_sugared_statement_node(SemanticCheckType.MatchedExpression, new List<syntax_tree_node>() { matchedExpression });
 
         private semantic_check_sugared_statement_node GetTypeCompatibilityCheck(is_pattern_expr expression) =>
             new semantic_check_sugared_statement_node(SemanticCheckType.MatchedExpressionAndType, new List<syntax_tree_node>() { expression.left, (expression.right as deconstructor_pattern).type });
+
+        private semantic_check_sugared_statement_node GetTypeCompatibilityCheck(expression expression1, expression expression2) =>
+            new semantic_check_sugared_statement_node(SemanticCheckType.MatchedExpressionAndExpression, new List<syntax_tree_node>() { expression1, expression2 });
+
+        private semantic_check_sugared_statement_node GetTypeCompatibilityCheck(expression tuple, int32_const length) =>
+            new semantic_check_sugared_statement_node(SemanticCheckType.MatchedTuple, new List<syntax_tree_node>() { tuple, length });
+
 
         private statement_list ConvertIfNode(if_node ifNode, List<statement> statementsBeforeIf, out statement elseBody)
         {
@@ -397,12 +878,12 @@ namespace SyntaxVisitors.SugarVisitors
         private PatternLocation GetLocation(syntax_tree_node node)
         {
             var firstStatement = GetAscendant<statement>(node);
-            
+
             switch (firstStatement)
             {
                 case if_node _: return PatternLocation.IfCondition;
                 case var_statement _: return PatternLocation.Assign;
-                case assign _ : return PatternLocation.Assign;
+                case assign _: return PatternLocation.Assign;
                 default: return PatternLocation.Unknown;
             }
         }
@@ -420,6 +901,11 @@ namespace SyntaxVisitors.SugarVisitors
             }
 
             return null;
+        }
+
+        private string NewDeconstructParamId()
+        {
+            return GeneratedPatternNamePrefix + "DeconstructParam" + deconstructParamVariableCounter++.ToString();
         }
     }
 }
