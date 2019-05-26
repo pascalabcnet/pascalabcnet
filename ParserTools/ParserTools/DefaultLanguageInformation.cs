@@ -518,9 +518,33 @@ namespace PascalABCCompiler.Parsers
             return sb.ToString();
         }
 
+        private bool enum_out_of_order(FieldInfo[] fields) //возвращает true, если значения полей этого enum'а идут не по порядку или не с нуля (IDE issue #117)
+        {
+            for (int i = 0; i < fields.Length; i++)
+            {
+                if (fields[i].Name != "value__")
+                {
+                    object o = fields[i].GetRawConstantValue(); //ошибка была здесь, так как я не знал, что у констант enum'а может быть другой тип помимо int
+                    switch (o)
+                    {
+                        case byte b: if (b != i - 1) return true; break;
+                        case sbyte b: if (b != i - 1) return true; break;
+                        case short b: if (b != i - 1) return true; break;
+                        case ushort b: if (b != i - 1) return true; break;
+                        case int b: if (b != i - 1) return true; break;
+                        case uint b: return true; break;
+                        case long b: return true; break;
+                        case ulong b: return true; break;
+                    }
+                }
+            }
+            return false;
+        }
+
         private string get_enum_constants(Type t)
         {
             FieldInfo[] fields = t.GetFields(BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static);
+            bool outoforder = enum_out_of_order(fields);
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("(");
             for (int i = 0; i < fields.Length; i++)
@@ -529,6 +553,11 @@ namespace PascalABCCompiler.Parsers
                 {
                     sb.Append(' ', 4);
                     sb.Append(fields[i].Name);
+                    if (outoforder)
+                    {
+                        sb.Append(" = ");
+                        sb.Append(fields[i].GetRawConstantValue());
+                    }
                     if (i < fields.Length - 1)
                         sb.AppendLine(",");
                     else
