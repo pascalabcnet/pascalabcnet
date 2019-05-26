@@ -2993,30 +2993,30 @@ namespace PascalABCCompiler.TreeConverter
 
         //(ssyy) "Я" бывают разные :)
 
-		//Я хочу модифицировать этот метод так, чтобы в случае предописания наличия метода
-		//он не выкидывал исключение, а понимал все правильно
-		//Этот метод вызывается только для функций с телом
+        //Я хочу модифицировать этот метод так, чтобы в случае предописания наличия метода
+        //он не выкидывал исключение, а понимал все правильно
+        //Этот метод вызывается только для функций с телом
 
         /// <summary>
         /// Ищет предописание функции, производя необходимые проверки. Возвращает true-уникальная, false-предописанная
         /// </summary>
         /// <param name="fn">Проверяемая функция</param>
         /// <returns></returns>
-		private bool check_unique_or_predefined(common_function_node fn)
-		{
+        private bool check_unique_or_predefined(common_function_node fn)
+        {
             List<SymbolInfo> si_list = null;
             bool in_unit = false;
-			if (_func_stack.size<=1)
-			{
+            if (_func_stack.size <= 1)
+            {
                 if (_explicit_interface_type != null)
                 {
                     si_list = _explicit_interface_type.find_in_type(fn.name);
                 }
-				else if (_ctn!=null)
-				{
-					si_list = _ctn.Scope.FindOnlyInScope(fn.name);
+                else if (_ctn != null)
+                {
+                    si_list = _ctn.Scope.FindOnlyInScope(fn.name);
                     if (_ctn is compiled_generic_instance_type_node && fn is common_namespace_function_node)
-                    { 
+                    {
                         si_list = (_ctn as compiled_generic_instance_type_node).compiled_original_generic.find_in_type(fn.name);
                         if (si_list != null)
                         {
@@ -3052,43 +3052,39 @@ namespace PascalABCCompiler.TreeConverter
                     si_list = _cmn.scope.FindOnlyInScope(fn.name);
                 }
             }
-			else
-			{
-				common_function_node temp=_func_stack.pop();
+            else
+            {
+                common_function_node temp = _func_stack.pop();
                 si_list = _func_stack.top().scope.FindOnlyInScope(fn.name);
-				_func_stack.push(temp);
-			}
+                _func_stack.push(temp);
+            }
             bool predef_find = false;
             int overloads = 0;
-            if(si_list != null)
+            if (si_list != null)
                 foreach (var tmp_si in si_list)
                 {
                     if (tmp_si.sym_info != fn && !(si_list != null && si_list.FirstOrDefault().sym_info is basic_function_node))
                         overloads++;
                 }
-            if(si_list != null)
-                foreach(var tmp_si in si_list)
-			    {
-				    if (tmp_si.sym_info==fn)
-					    continue;
+            if (si_list != null)
+                foreach (var tmp_si in si_list)
+                {
+                    if (tmp_si.sym_info == fn)
+                        continue;
                     if (tmp_si.sym_info.general_node_type != general_node_type.function_node)
                     {
                         TreeRealization.BasePCUReader.RestoreSymbols(si_list, fn.name);
                     }
-    #if (DEBUG)
-				    if (tmp_si.sym_info.general_node_type!=general_node_type.function_node)
-				    {
-                        throw new CompilerInternalError("Function name is used to define not function.");
-				    }
-    #endif
+                    if (tmp_si.sym_info.general_node_type != general_node_type.function_node)
+                        AddError(new FunctionNameIsUsedToDefineSomethigElse(fn.loc, tmp_si.sym_info));
                     if (tmp_si.sym_info is basic_function_node || tmp_si.sym_info is compiled_function_node)
                     {
                         continue;
                     }
-				    //compar - найденная функция
-				    common_function_node compar=((common_function_node)(tmp_si.sym_info));
-				
-				    //Проверяем, если мы нашли не предописание
+                    //compar - найденная функция
+                    common_function_node compar = ((common_function_node)(tmp_si.sym_info));
+
+                    //Проверяем, если мы нашли не предописание
                     if (compar.function_code != null || is_order_independed_method_description)
                     {
                         if (compar.is_overload == false)
@@ -3097,12 +3093,12 @@ namespace PascalABCCompiler.TreeConverter
                         }
                         if (convertion_data_and_alghoritms.function_eq_params(fn, compar, false) && fn.is_extension_method == compar.is_extension_method)
                         {
-                    	    if (fn.IsOperator && (fn.name == compiler_string_consts.explicit_operator_name || fn.name == compiler_string_consts.implicit_operator_name))
-                    	    {
-                    		    if (convertion_data_and_alghoritms.function_eq_params_and_result(fn,compar))
-                    			    AddError(new FunctionDuplicateDefinition(compar, fn));
-                    	    }
-                    	    else
+                            if (fn.IsOperator && (fn.name == compiler_string_consts.explicit_operator_name || fn.name == compiler_string_consts.implicit_operator_name))
+                            {
+                                if (convertion_data_and_alghoritms.function_eq_params_and_result(fn, compar))
+                                    AddError(new FunctionDuplicateDefinition(compar, fn));
+                            }
+                            else
                             {
                                 if (fn is common_method_node && compar is common_method_node)
                                 {
@@ -3112,33 +3108,33 @@ namespace PascalABCCompiler.TreeConverter
                                         AddError(new FunctionDuplicateDefinition(compar, fn));
                                 }
                                 else
-                                { 
+                                {
                                     AddError(new FunctionDuplicateDefinition(compar, fn));
                                 }
                             }
                         }
                         continue;
                     }
-               
-				    bool is_find_predefinition=false;
 
-				    if (compar.is_overload==false || overloads == 1 && in_unit)
-				    {
-					    //Если нет параметров в описании тела функции
-					    if (fn.parameters.Count==0)
-					    {
-                        
-						    is_find_predefinition=true;
-					    }
-					    else
-					    {
-						    is_find_predefinition=is_predefinition(compar,fn,true);
-					    }
-				    }
-				    else
-				    {
-					    is_find_predefinition=is_predefinition(compar,fn,false);
-				    }
+                    bool is_find_predefinition = false;
+
+                    if (compar.is_overload == false || overloads == 1 && in_unit)
+                    {
+                        //Если нет параметров в описании тела функции
+                        if (fn.parameters.Count == 0)
+                        {
+
+                            is_find_predefinition = true;
+                        }
+                        else
+                        {
+                            is_find_predefinition = is_predefinition(compar, fn, true);
+                        }
+                    }
+                    else
+                    {
+                        is_find_predefinition = is_predefinition(compar, fn, false);
+                    }
 
                     if (!is_find_predefinition)
                     {
@@ -3156,7 +3152,7 @@ namespace PascalABCCompiler.TreeConverter
                         }
                     }
 
-                    if (compar.function_code!=null)
+                    if (compar.function_code != null)
                     {
                         AddError(fn.loc, "FUNCTION_{0}_ALREADY_HAVE_A_BODY", fn.name);
                     }
@@ -3179,23 +3175,23 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(compiled_meth.loc, "CONSTRUCTOR_MUST_BE_REALIZED_WITH_CONSTRUCTOR_KEYWORD");
                             }
                             compiled_meth.return_value_type = finded_method.return_value_type;
-                            convertion_data_and_alghoritms.create_function_return_variable(finded_method,null);
+                            convertion_data_and_alghoritms.create_function_return_variable(finded_method, null);
                         }
                     }
 
-				    if (!convertion_data_and_alghoritms.eq_type_nodes(compar.return_value_type,fn.return_value_type) && fn.return_value_type != null && !(fn.return_value_type is undefined_type))
-				    {
-					    AddError(fn.loc, "FUNCTION_PREDEFINITION_AND_DEFINITION_HAVE_DIFFERENT_RESULT_TYPES");
-				    }
+                    if (!convertion_data_and_alghoritms.eq_type_nodes(compar.return_value_type, fn.return_value_type) && fn.return_value_type != null && !(fn.return_value_type is undefined_type))
+                    {
+                        AddError(fn.loc, "FUNCTION_PREDEFINITION_AND_DEFINITION_HAVE_DIFFERENT_RESULT_TYPES");
+                    }
 
-				    //НУЖЕН СПИСОК ФУНКЦИЙ С ПРЕДОПРЕДЕЛЕНИЯМИ, ЧТОБЫ ОБНАРУЖИТЬ ОПИСАННЫЕ НО НЕ ОПРЕДЕЛЕННЫЕ
-				    //Или не нужен???
+                    //НУЖЕН СПИСОК ФУНКЦИЙ С ПРЕДОПРЕДЕЛЕНИЯМИ, ЧТОБЫ ОБНАРУЖИТЬ ОПИСАННЫЕ НО НЕ ОПРЕДЕЛЕННЫЕ
+                    //Или не нужен???
 
-				    //TODO: СИНХРОНИЗИРОВАТЬ АТТРИБУТЫ!!!!!
-				    if (fn.is_overload)
-				    {
-					    compar.is_overload=true;
-				    }
+                    //TODO: СИНХРОНИЗИРОВАТЬ АТТРИБУТЫ!!!!!
+                    if (fn.is_overload)
+                    {
+                        compar.is_overload = true;
+                    }
 
                     //TODO: Внимательно проверить следующий if.
                     if (compar.is_overload)
@@ -3203,11 +3199,11 @@ namespace PascalABCCompiler.TreeConverter
                         fn.is_overload = true;
                         last_created_function.symbol_kind = symbol_kind.sk_overload_function;
                     }
-				
-				    common_function_node cfn11=_func_stack.pop();
+
+                    common_function_node cfn11 = _func_stack.pop();
                     compar.scope = cfn11.scope;
 
-                    common_method_node cmnode=compar as common_method_node;
+                    common_method_node cmnode = compar as common_method_node;
                     if (cmnode != null)
                     {
                         List<SymbolInfo> si_local = cfn11.scope.FindOnlyInScope(compiler_string_consts.self_word);
@@ -3219,40 +3215,40 @@ namespace PascalABCCompiler.TreeConverter
 
                     //Удаляем текущую функцию
                     List<SymbolInfo> siint = null;
-				    switch(converting_block())
-				    {
-					    case block_type.function_block:
-					    {
-						    _func_stack.top().functions_nodes_list.remove((common_in_function_function_node)fn);
-                            siint = _func_stack.top().scope.FindOnlyInScope(fn.name);
-						    break;
-					    }
-					    case block_type.namespace_block:
-					    {
-						    _cmn.functions.remove((common_namespace_function_node)fn);
-                            siint = _cmn.scope.FindOnlyInScope(fn.name);
-						    break;
-					    }
-					    case block_type.type_block:
-					    {
-                            //TODO: Доделать описание методов класса.
-                            _ctn.methods.remove((common_method_node)fn);
-                            siint = _ctn.scope.FindOnlyInScope(fn.name);
-						    break;
-					    }
+                    switch (converting_block())
+                    {
+                        case block_type.function_block:
+                            {
+                                _func_stack.top().functions_nodes_list.remove((common_in_function_function_node)fn);
+                                siint = _func_stack.top().scope.FindOnlyInScope(fn.name);
+                                break;
+                            }
+                        case block_type.namespace_block:
+                            {
+                                _cmn.functions.remove((common_namespace_function_node)fn);
+                                siint = _cmn.scope.FindOnlyInScope(fn.name);
+                                break;
+                            }
+                        case block_type.type_block:
+                            {
+                                //TODO: Доделать описание методов класса.
+                                _ctn.methods.remove((common_method_node)fn);
+                                siint = _ctn.scope.FindOnlyInScope(fn.name);
+                                break;
+                            }
                         case block_type.compiled_type_block:
-                        {
-                            if (syntax_tree_visitor.compiled_unit.namespaces[0].functions.Contains((common_namespace_function_node)fn))
-                                syntax_tree_visitor.compiled_unit.namespaces[0].functions.remove((common_namespace_function_node)fn);
-                            siint = _compiled_tn.find_in_type(fn.name);
-                            break;
-                        }
+                            {
+                                if (syntax_tree_visitor.compiled_unit.namespaces[0].functions.Contains((common_namespace_function_node)fn))
+                                    syntax_tree_visitor.compiled_unit.namespaces[0].functions.remove((common_namespace_function_node)fn);
+                                siint = _compiled_tn.find_in_type(fn.name);
+                                break;
+                            }
 
-					    default:
-					    {
-						    throw new CompilerInternalError("Undefined block type");
-					    }
-				    }
+                        default:
+                            {
+                                throw new CompilerInternalError("Undefined block type");
+                            }
+                    }
                     bool compar_not_assign = true;
                     if (siint != null)
                     {
@@ -3286,7 +3282,7 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             foreach (common_parameter pr in compar.parameters)
                             {
-                                List<SymbolInfo> par_sim_info = fn.scope.FindOnlyInScope(pr.name); 
+                                List<SymbolInfo> par_sim_info = fn.scope.FindOnlyInScope(pr.name);
                                 par_sim_info.FirstOrDefault().sym_info = pr;
                             }
                         }
@@ -3338,17 +3334,17 @@ namespace PascalABCCompiler.TreeConverter
                         }
                     }
 
-				    _func_stack.push(compar);
-				    compar.attributes.AddRange(fn.attributes);
-				    //si_list.sym_info=fn;
-				    break;
-			    }
+                    _func_stack.push(compar);
+                    compar.attributes.AddRange(fn.attributes);
+                    //si_list.sym_info=fn;
+                    break;
+                }
             if (fn is common_method_node && !predef_find && syntax_tree_visitor.current_converted_method_not_in_class_defined && _explicit_interface_type == null)
             {
                 AddError(new NoMethodInClassWithThisParams(fn as common_method_node, (fn as common_method_node).cont_type, fn.loc));
             }
             return !predef_find;
-		}
+        }
 
 		//Этот метод вызывается для предописания функции (только для предописания)
 		private void check_function_not_exists(common_function_node fn)
