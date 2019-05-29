@@ -1318,6 +1318,13 @@ type
   public 
     constructor(params l: array of AnimationBase) := ll := Lst(l);
     constructor(l: List<AnimationBase>) := ll := l;
+    function Clone: AnimationBase; override;
+    begin
+      var r := new CompositeAnimation(new List<AnimationBase>());
+      for var i := 0 to ll.Count-1 do
+        r.ll.Add(ll[i].Clone);
+      Result := r;  
+    end;  
   end;  
   
   GroupAnimation = class(CompositeAnimation)
@@ -1376,7 +1383,7 @@ type
         
         // lf надо в любом случае клонировать
         // Клонируем. Надо еще списки клонировать! А то в a+a во втором списке последний элемент - клонированный - в обоих списках!
-        lf := lf.Clone;
+        //lf := lf.Clone;
         llf[lli] := lf;
         lf.Completed += procedure -> 
         begin
