@@ -433,17 +433,17 @@ namespace TreeConverter.LambdaExpressions.Closure
                                     Tuple<string, class_field, semantic_node> publicProperty;
                                     if (classScope.NonPublicMembersNamesMapping.TryGetValue(varName, out publicProperty))
                                     {
-                                        dotnode1 = new dot_node(dotnode1, new ident(publicProperty.Item1, sourceCtxt), sourceCtxt);
+                                        dotnode1 = new dot_node(dotnode1.left, new ident(publicProperty.Item1, sourceCtxt), sourceCtxt); // SSM #869 добавил .left - была ошибка
                                     }
                                     else
                                     {
                                         if (!(ClassField != null && ClassField.IsStatic))
-                                            dotnode1 = new dot_node(dotnode1, new ident(varName, sourceCtxt), sourceCtxt);
+                                            dotnode1 = new dot_node(dotnode1, new ident(varName, sourceCtxt), sourceCtxt); // ?? dotnode1.left ??
                                     }
                                 }
                                 else
                                 {
-                                    dotnode1 = new dot_node(dotnode1, new ident(varName, sourceCtxt), sourceCtxt);
+                                    dotnode1 = new dot_node(dotnode1, new ident(varName, sourceCtxt), sourceCtxt); // ?? dotnode1.left ??
                                 }
                             }
                             _lambdaIdReferences.Add(new LambdaReferencesSubstitutionInfo
