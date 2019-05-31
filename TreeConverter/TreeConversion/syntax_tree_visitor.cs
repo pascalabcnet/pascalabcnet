@@ -3224,7 +3224,8 @@ namespace PascalABCCompiler.TreeConverter
                 if (id != null)
                 {
                     mc = new SyntaxTree.method_call();
-                    mc.dereferencing_value = id;
+                    mc.dereferencing_value = id; // дело в том, что это присваивание перенаправляет Parent на method_call, которого нет в синтаксическом дереве. 
+                    id.Parent = _procedure_call; // fix #891 вернули Parent назад
                     //DarkStar Add
                     //Добавил т.к. нужно для генерации отладочной инфы
                     mc.source_context = id.source_context;
@@ -3236,6 +3237,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         mc = new SyntaxTree.method_call();
                         mc.dereferencing_value = adrv;
+                        adrv.Parent = _procedure_call; // fix #891
                         //DarkStar Add
                         //Добавил т.к. нужно для генерации отладочной инфы
                         mc.source_context = adrv.source_context;
