@@ -9817,7 +9817,8 @@ namespace PascalABCCompiler.TreeConverter
             if (_dot_node.left is closure_substituting_node)
             {
                 var left = (closure_substituting_node)_dot_node.left;
-                var dotNodeToVisit = new dot_node(left.substitution, _dot_node.right);
+                var dotNodeToVisit = new dot_node(left.substitution, _dot_node.right); // Подменить dot_node в этот момент на этапе семантики
+                dotNodeToVisit.Parent = _dot_node.Parent; // SSM 01.06.19
                 visit(dotNodeToVisit);
                 return;
             }
