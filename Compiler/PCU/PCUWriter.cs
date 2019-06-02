@@ -3793,7 +3793,10 @@ namespace PascalABCCompiler.PCU
 		{
 			bw.Write((System.Int16)expr.function_node.basic_function_type);
             WriteTypeReference(expr.ret_type);
-            WriteTypeReference(expr.conversion_type);
+            if (expr.conversion_type is delegated_methods)
+                WriteTypeReference(null);
+            else
+                WriteTypeReference(expr.conversion_type);
             bw.Write(expr.parameters.Count);
 			for (int i=0; i<expr.parameters.Count; i++)
 			    VisitExpression(expr.parameters[i]);
