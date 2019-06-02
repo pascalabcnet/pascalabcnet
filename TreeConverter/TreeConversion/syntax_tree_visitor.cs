@@ -16667,8 +16667,12 @@ namespace PascalABCCompiler.TreeConverter
                     }
             	case semantic_node_type.compiled_variable_definition:
             		{
-            			return new static_compiled_variable_reference((compiled_variable_definition)dn,lloc);
-            		}
+                        compiled_variable_definition cvd = dn as compiled_variable_definition;
+                        if (cvd.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
+            			    return new static_compiled_variable_reference(cvd, lloc);
+                        expression_node obj = GetCurrentObjectReference(cvd.cont_type.Scope, cvd, lloc); //new this_node(context.converted_type, lloc);
+                        return new compiled_variable_reference(cvd, obj, lloc);
+                    }
                 default: throw new NotSupportedError(lloc);
             }
             return null;
