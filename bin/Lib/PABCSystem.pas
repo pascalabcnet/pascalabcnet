@@ -1232,30 +1232,38 @@ function Sign(x: smallint): integer;
 ///--
 function Sign(x: integer): integer;
 ///--
-function Sign(x: BigInteger): integer;
+function Sign(x: int64): integer;
+///--
+function Sign(x: byte): integer;
+///--
+function Sign(x: word): integer;
 ///--
 function Sign(x: longword): integer;
-///--
-function Sign(x: int64): integer;
 ///--
 function Sign(x: uint64): integer;
 ///--
 function Sign(x: real): integer;
+///--
+function Sign(x: BigInteger): integer;
 ///-function Abs(x: число): число;
 /// Возвращает модуль числа x
-function Abs(x: integer): integer;
-///--
 function Abs(x: shortint): shortint;
 ///--
 function Abs(x: smallint): smallint;
 ///--
-function Abs(x: BigInteger): BigInteger;
-///--
-function Abs(x: longword): longword;
+function Abs(x: integer): integer;
 ///--
 function Abs(x: int64): int64;
 ///--
+function Abs(x: byte): byte;
+///--
+function Abs(x: word): word;
+///--
+function Abs(x: longword): longword;
+///--
 function Abs(x: uint64): uint64;
+///--
+function Abs(x: BigInteger): BigInteger;
 ///--
 function Abs(x: real): real;
 ///--
@@ -1295,19 +1303,23 @@ function LogN(base, x: real): real;
 function Sqrt(x: real): real;
 ///-function Sqr(x: число): число;
 /// Возвращает квадрат числа x
-function Sqr(x: integer): int64;
-///--
 function Sqr(x: shortint): integer;
 ///--
 function Sqr(x: smallint): integer;
 ///--
-function Sqr(x: BigInteger): BigInteger;
-///--
-function Sqr(x: longword): uint64;
+function Sqr(x: integer): int64;
 ///--
 function Sqr(x: int64): int64;
 ///--
+function Sqr(x: byte): integer;
+///--
+function Sqr(x: word): uint64;
+///--
+function Sqr(x: longword): uint64;
+///--
 function Sqr(x: uint64): uint64;
+///--
+function Sqr(x: BigInteger): BigInteger;
 ///--
 function Sqr(x: real): real;
 /// Возвращает x в степени y
@@ -7219,90 +7231,47 @@ end;
 // -----------------------------------------------------
 //                Mathematical functions: implementation
 // -----------------------------------------------------
-function Sign(x: shortint): integer;
-begin
-  Result := Math.Sign(x);
-end;
+function Sign(x: shortint): integer := Math.Sign(x);
 
-function Sign(x: smallint): integer;
-begin
-  Result := Math.Sign(x);
-end;
+function Sign(x: smallint): integer := Math.Sign(x);
 
-function Sign(x: integer): integer;
-begin
-  Result := Math.Sign(x);
-end;
+function Sign(x: integer): integer := Math.Sign(x);
 
-function Sign(x: BigInteger): integer;
-begin
-  Result := x.Sign;
-end;
+function Sign(x: BigInteger) := x.Sign;
 
-function Sign(x: int64): integer;
-begin
-  Result := Math.Sign(x);
-end;
+function Sign(x: int64) := Math.Sign(x);
 
-function Sign(x: longword): integer;
-begin
-  Result := Math.Sign(int64(x));
-end;
+function Sign(x: byte): integer := 1;
 
-function Sign(x: uint64): integer;
-begin
-  Result := Math.Sign(int64(x));
-end;
+function Sign(x: word): integer := 1;
 
-function Sign(x: real): integer;
-begin
-  Result := Math.Sign(x);
-end;
+function Sign(x: longword): integer := 1;
 
-function Abs(x: shortint): shortint;
-begin
-  Result := Math.Abs(x);
-end;
+function Sign(x: uint64): integer := 1;
 
-function Abs(x: smallint): smallint;
-begin
-  Result := Math.Abs(x);
-end;
+function Sign(x: real): integer := Math.Sign(x);
 
-function Abs(x: integer): integer;
-begin
-  Result := Math.Abs(x);
-end;
+function Abs(x: shortint): shortint := Math.Abs(x);
 
-function Abs(x: BigInteger): BigInteger;
-begin
-  Result := BigInteger.Abs(x)
-end;
+function Abs(x: smallint): smallint := Math.Abs(x);
 
-function Abs(x: int64): int64;
-begin
-  Result := Math.Abs(x);
-end;
+function Abs(x: integer): integer := Math.Abs(x);
 
-function Abs(x: longword): longword;
-begin
-  Result := Math.Abs(int64(x));
-end;
+function Abs(x: int64): int64 := Math.Abs(x);
 
-function Abs(x: uint64): uint64;
-begin
-  Result := Math.Abs(int64(x));
-end;
+function Abs(x: BigInteger): BigInteger := BigInteger.Abs(x);
 
-function Abs(x: real): real;
-begin
-  Result := Math.Abs(x);
-end;
+function Abs(x: byte): byte := x;
 
-function Abs(x: single): single;
-begin
-  Result := Math.Abs(x);
-end;
+function Abs(x: word): word := x;
+
+function Abs(x: longword): longword := x;
+
+function Abs(x: uint64): uint64 := x;
+
+function Abs(x: real): real := Math.Abs(x);
+
+function Abs(x: single): single := Math.Abs(x);
 
 function Sin(x: real) := Math.Sin(x);
 
@@ -7343,6 +7312,10 @@ function Sqr(x: shortint): integer := x * x;
 function Sqr(x: smallint): integer := x * x;
 
 function Sqr(x: BigInteger): BigInteger := x * x;
+
+function Sqr(x: byte): integer := x * x;
+
+function Sqr(x: word): uint64 := x * x;
 
 function Sqr(x: longword): uint64 := x * x;
 
