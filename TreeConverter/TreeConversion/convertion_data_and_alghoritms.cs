@@ -1736,7 +1736,7 @@ namespace PascalABCCompiler.TreeConverter
                 return AddError<function_node>(new NoFunctionWithThisName(loc));
             }
 
-            function_node_list set_of_possible_functions = new function_node_list();
+            var set_of_possible_functions = new function_node_list();
 
             bool is_alone_method_defined = (functions.Count() == 1);
             function_node first_function = functions.FirstOrDefault().sym_info as function_node;
@@ -1966,6 +1966,8 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 remove = false;
 
+                // Удаляем из всех возможных перегруженных версий функций те, которые больше какой-то. Та, которая меньше по всем параметрам, остаётся. 
+                // По идее это надо делать для каждой дистанции отдельно - тогда баг #1970 уйдёт
                 var i = 0;
                 while (i < set_of_possible_functions.Count - 1)
                 {
@@ -2124,12 +2126,14 @@ namespace PascalABCCompiler.TreeConverter
                     distances[distance] = lst;
                 }
             }
-            foreach (int dist in distances.Keys) // Дистанции упорядочены по возрастанию. Логика тут немного странная: 
+            // Оставшиеся функции отсортированы по расстояниям
+
+            foreach (int dist in distances.Keys) // Дистанции упорядочены по возрастанию. Логика тут странная и видимо неправильная: 
                                                  // если для какой-то минимальной дистанции найдется ровно одна функция, то она и выбирается
                                                  // если две и больше - то они пробрасываются и мы переходим к бОльшей дистанции
             {
                 List<function_node> funcs = distances[dist];
-                if (funcs.Count == 1)
+                if (funcs.Count == 1) // если для данной дистанции ровно одна функция, то обработать её и вернуть
                 {
                     Errors.Error err = null;
                     possible_type_convertions_list tcl = get_conversions(parameters, funcs[0].parameters, true, loc, out err);
@@ -2156,25 +2160,31 @@ namespace PascalABCCompiler.TreeConverter
                   
 
                 var ParamsCount = funcs[0].parameters.Count;
-                var b = funcs.All(f => f.parameters.Count == ParamsCount);
-                if (!b) break;
+                var b = funcs.All(f => f.parameters.Count == ParamsCount); // у всех функций с данной дистанцией должно быть одинаковое количество параметров
+                if (!b) break; // если не у всех, то выйти из цикла и вернуть ошибку о многозначности выбора функции
 
-                var bools = Enumerable.Range(1, funcs.Count()).Select(x => true).ToList();
+                // Далее остался ТОЛЬКО анализ параметров, являющихся функциями Func!
 
-                var AllOK = true;
+                var bools = Enumerable.Range(1, funcs.Count()).Select(x => true).ToList(); // bools - это фильтр оставляемых функций для данной дистанции
+                // более точно - bools контролирует только возвращаемые значения - параметры контролирует AllOK
+
+                var AllOK = true; // Это означает, что все параметры с одним номером если функциональные, то у них - одинаковое количество и типы Generic-параметров
                 for (var i=0; i < ParamsCount; i++)
                 {
                     // Хочу взять проекцию всех функций на i-тый параметр
                     var parsi = funcs.Select(f => f.parameters[i].type);
-                    if (parsi.Any(p => !IsFuncT(p))) // Если какой-то параметр не функция, то пробросим его
+                    if (parsi.Any(p => !IsFuncT(p))) // Если какой-то параметр не функция у какой-то из функций с данной дистанцией, то пропустим этот параметр! 
+                        // Это - странно! Даже если это - Action, то пропускаем! Это - очень слабая логика!
                         continue;
 
                     var argss = funcs.Select(f => get_type(f.parameters[i].type).GetGenericArguments()).ToArray(); // последовательность массивов параметров Func
                     var cnts = argss.Select(a => a.Count());
 
+                    // Теперь у всех функций i-тый параметр - функциональный
+                    // Проверяем, что у всех функций i-тый параметр будет содержать одинаковое число generic-параметров
                     var fpi = funcs[0].parameters[i];
                     var cnt = get_type(fpi.type).GetGenericArguments().Count();
-                    // Проверю, что у остальных функций столько же параметров
+                    // Проверю, что у остальных функций столько же generic параметров
                     if (cnts.Any(c => c != cnts.First())) // если нет, то - всё - это ошибка - многозначность. Хотя тут уже не должно быть
                     {
                         AllOK = false;
@@ -2182,6 +2192,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
 
                     // Цикл по параметрам Func кроме последнего
+                    // Здесь проверяется более точно - что у всех i-тых параметров не только одинаковое число generic-параметров, но и одинаковые типы
                     for (var k = 0; k < cnt - 1; k++)
                     {
                         var kpars = funcs.Select(f => get_type(f.parameters[i].type).GetGenericArguments()[k]);
@@ -2202,6 +2213,8 @@ namespace PascalABCCompiler.TreeConverter
                     var fldiResType = funcs[0].is_extension_method ? // странно, но всегда кво параметров в syntax_nodes_parameters на 1 меньше. Иначе падает
                         ((syntax_nodes_parameters[i - 1] as SyntaxTree.function_lambda_definition).RealSemTypeOfResult as compiled_type_node).compiled_type :
                         ((syntax_nodes_parameters[i - 1] as SyntaxTree.function_lambda_definition).RealSemTypeOfResult as compiled_type_node).compiled_type;
+                    // Две последние строчки одинаковы. Это странно
+                    // Получается, что fldiResType рассчитывается только если фактическими функциональными параметрами выступают лямбда-выражения. Если имена функций - это не сработает. Это - ОШИБКА!
 
                     for (int n = 0; n < bools.Count; n++)
                     {
@@ -2210,12 +2223,22 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 //var rettype_i = 
                 }
-                if (AllOK)
-                    if (bools.Count(x=>x==true) == 1) // урра! нашлась ровно одна функция! мы победили!
-                    {
-                        var ind = bools.IndexOf(true);
-                        return funcs[ind];
-                    }
+
+                // SSM 04.06.19
+                if (!AllOK) // Если у какого-то i-того функционального параметра в массиве func с данной дистанцией не все параметры совпадают по типам и количеству (возвращаемое значение не рассматривается пока), 
+                    // то непонятно, что делать. Попробую выходить с исключением, что есть 2 версии
+                    break;
+
+                //if (AllOK) // Если все функциональные параметры одинаковы по количеству и типам и по возвращаемому значению всех функциональных параметров подходит только одна функция func, то вернуть её
+                // Здесь AllOK - согласно коду выше
+                var bc = bools.Count(x => x == true);
+                if (bc == 1) // урра! нашлась ровно одна функция! мы победили!
+                {
+                    var ind = bools.IndexOf(true);
+                    return funcs[ind];
+                }
+                if (bc == 0) // SSM 04.06.19 - с этим расстоянием не осталось функций - перейти к следующему расстоянию
+                    continue;
 
                 /// Проба 15.01.18 - потом удалить
                 /*{
