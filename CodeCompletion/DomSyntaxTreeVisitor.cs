@@ -2217,7 +2217,7 @@ namespace CodeCompletion
                     	namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(assm));
                     	unit_scope.AddReferencedAssembly(assm);
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                     	
                     }

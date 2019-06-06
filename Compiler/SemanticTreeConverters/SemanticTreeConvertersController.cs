@@ -72,7 +72,7 @@ namespace PascalABCCompiler.SemanticTreeConverters
                             }
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         //ErrorList.Add(new PluginLoadingError(fi.FullName, e));
                     }

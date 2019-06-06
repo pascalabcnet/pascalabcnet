@@ -1140,7 +1140,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     //Важная проверка. Возможно один и тот же оператор с одними и теми же типами определен в двух разных классах.
                     //Возможно она занимает много времени, но, наверное, от нее нельзя отказаться.
-                    function_node_list funcs = new function_node_list();
+                    List<function_node> funcs = new List<function_node>();
                     foreach(SymbolInfo sic in sil)
                     {
                         if (sic.sym_info.general_node_type != general_node_type.function_node)
@@ -1158,7 +1158,7 @@ namespace PascalABCCompiler.TreeConverter
                         if (convertion_data_and_alghoritms.is_exist_eq_method_in_list(fn, funcs) == null)
                         {
                             //break;
-                            funcs.AddElement(fn);
+                            funcs.Add(fn);
                         }
                     }
                     //TODO: Разобраться с зацикливанием.
@@ -1356,7 +1356,7 @@ namespace PascalABCCompiler.TreeConverter
         	return false;
         }
         
-        private base_function_call_list convert_functions_to_calls(expression_node obj, function_node_list fnl, location loc, bool is_static)
+        private base_function_call_list convert_functions_to_calls(expression_node obj, List<function_node> fnl, location loc, bool is_static)
         {
             base_function_call_list ret = new base_function_call_list();
             foreach (function_node fnode in fnl)
@@ -1529,7 +1529,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return new base_function_call_list();
             }
-            function_node_list fnl = new function_node_list();
+            var fnl = new List<function_node>();
             foreach(SymbolInfo si in sil)
             {
                 function_node fn = si.sym_info as function_node;
@@ -1548,12 +1548,12 @@ namespace PascalABCCompiler.TreeConverter
                         if (fn.is_extension_method)
                         {
                             if (obj != null && (fn.parameters[0].type == obj.type || type_table.compare_types(fn.parameters[0].type, obj.type) == type_compare.greater_type))
-                                fnl.AddElementFirst(fn);
+                                fnl.Insert(0,fn);
                             else
-                                fnl.AddElement(fn);
+                                fnl.Add(fn);
                         }
                         else
-                            fnl.AddElement(fn);
+                            fnl.Add(fn);
                     }
                 }
                 else
@@ -1566,8 +1566,8 @@ namespace PascalABCCompiler.TreeConverter
 
         private base_function_call_list create_possible_delegates_list(expression_node obj, function_node func, location loc, bool is_static)
         {
-            function_node_list fnl = new function_node_list();
-            fnl.AddElement(func);
+            var fnl = new List<function_node>();
+            fnl.Add(func);
             return convert_functions_to_calls(obj, fnl, loc, is_static);
         }
 
@@ -5328,7 +5328,7 @@ namespace PascalABCCompiler.TreeConverter
                                         {
                                             LambdaHelper.processingLambdaParametersForTypeInference++;
                                             // SSM 21.05.14 - попытка обработать перегруженные функции с параметрами-лямбдами с различными возвращаемыми значениями
-                                            function_node_list spf = null;
+                                            List<function_node> spf = null;
                                             try
                                             {
                                                 ThrowCompilationError = false;
@@ -5791,7 +5791,7 @@ namespace PascalABCCompiler.TreeConverter
                                         {
                                             LambdaHelper.processingLambdaParametersForTypeInference++;
                                             // SSM 21.05.14 - попытка обработать перегруженные функции с параметрами-лямбдами с различными возвращаемыми значениями
-                                            function_node_list spf = null;
+                                            List<function_node> spf = null;
                                             try
                                             {
                                                 function_node ffn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc, syntax_nodes_parameters);
@@ -6086,7 +6086,7 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 LambdaHelper.processingLambdaParametersForTypeInference++;
                                 // SSM 21.05.14 - попытка обработать перегруженные функции с параметрами-лямбдами с различными возвращаемыми значениями
-                                function_node_list spf = null;
+                                List<function_node> spf = null;
                                 try
                                 {
                                     function_node ffn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc, syntax_nodes_parameters);
@@ -7004,7 +7004,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         LambdaHelper.processingLambdaParametersForTypeInference++;
                         // SSM 21.05.14 - попытка обработать перегруженные функции с параметрами-лямбдами с различными возвращаемыми значениями
-                        function_node_list spf = null;
+                        List<function_node> spf = null;
                         try
                         {
                             function_node fn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc2, syntax_nodes_parameters);
@@ -18143,7 +18143,7 @@ namespace PascalABCCompiler.TreeConverter
                     var syntax_nodes_parameters = lambdas_info.Item2;
 
                     // SSM 21.05.14 - попытка обработать перегруженные функции с параметрами-лямбдами с различными возвращаемыми значениями
-                    function_node_list spf = null;
+                    List<function_node> spf = null;
                     try
                     {
                         function_node fn = convertion_data_and_alghoritms.select_function(exprs, sil, loc,

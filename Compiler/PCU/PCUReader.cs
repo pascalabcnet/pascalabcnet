@@ -287,7 +287,7 @@ namespace PascalABCCompiler.PCU
                 ChangeState(this, PCUReaderWriterState.EndReadTree, unit);
                 return unit;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 CloseUnit();
                 throw;
