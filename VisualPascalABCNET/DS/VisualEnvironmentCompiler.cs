@@ -383,7 +383,7 @@ namespace VisualPascalABC
                     {
                         if (Compiler == sender)
                         {
-                            SetCompilingButtonsEnabled(true);
+                            SetCompilingButtonsEnabled(true); 
                         }
                     }
                     break;

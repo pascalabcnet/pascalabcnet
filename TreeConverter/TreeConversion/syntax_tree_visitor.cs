@@ -3224,7 +3224,8 @@ namespace PascalABCCompiler.TreeConverter
                 if (id != null)
                 {
                     mc = new SyntaxTree.method_call();
-                    mc.dereferencing_value = id;
+                    mc.dereferencing_value = id; // дело в том, что это присваивание перенаправляет Parent на method_call, которого нет в синтаксическом дереве. 
+                    id.Parent = _procedure_call; // fix #891 вернули Parent назад
                     //DarkStar Add
                     //Добавил т.к. нужно для генерации отладочной инфы
                     mc.source_context = id.source_context;
@@ -3236,6 +3237,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         mc = new SyntaxTree.method_call();
                         mc.dereferencing_value = adrv;
+                        adrv.Parent = _procedure_call; // fix #891
                         //DarkStar Add
                         //Добавил т.к. нужно для генерации отладочной инфы
                         mc.source_context = adrv.source_context;
@@ -5883,8 +5885,10 @@ namespace PascalABCCompiler.TreeConverter
                                                                 var fl = fld.lambda_visit_mode;
 
                                                                 // запомнили типы параметров лямбды - SSM
-                                                                object[] realparamstype = new object[fld.formal_parameters.params_list.Count]; // здесь хранятся выведенные типы лямбд или null если типы явно заданы
-                                                                for (var k = 0; k < fld.formal_parameters.params_list.Count; k++)
+                                                                var fld_formal_parameters_Count = fld.formal_parameters == null ? 0 : fld.formal_parameters.params_list.Count;
+
+                                                                object[] realparamstype = new object[fld_formal_parameters_Count]; // здесь хранятся выведенные типы лямбд или null если типы явно заданы
+                                                                for (var k = 0; k < fld_formal_parameters_Count; k++)
                                                                 {
                                                                     var laminftypeK = fld.formal_parameters.params_list[k].vars_type as SyntaxTree.lambda_inferred_type;
                                                                     if (laminftypeK == null)
@@ -5939,7 +5943,7 @@ namespace PascalABCCompiler.TreeConverter
                                                                     if (restype != null)
                                                                         restype.real_type = realrestype;
                                                                     // восстанавливаем сохраненные типы параметров лямбды, которые не были заданы явно
-                                                                    for (var k = 0; k < fld.formal_parameters.params_list.Count; k++)
+                                                                    for (var k = 0; k < fld_formal_parameters_Count; k++)
                                                                     {
                                                                         var laminftypeK = fld.formal_parameters.params_list[k].vars_type as SyntaxTree.lambda_inferred_type;
                                                                         if (laminftypeK != null)
@@ -9813,7 +9817,8 @@ namespace PascalABCCompiler.TreeConverter
             if (_dot_node.left is closure_substituting_node)
             {
                 var left = (closure_substituting_node)_dot_node.left;
-                var dotNodeToVisit = new dot_node(left.substitution, _dot_node.right);
+                var dotNodeToVisit = new dot_node(left.substitution, _dot_node.right); // Подменить dot_node в этот момент на этапе семантики
+                dotNodeToVisit.Parent = _dot_node.Parent; // SSM 01.06.19
                 visit(dotNodeToVisit);
                 return;
             }
@@ -16662,8 +16667,12 @@ namespace PascalABCCompiler.TreeConverter
                     }
             	case semantic_node_type.compiled_variable_definition:
             		{
-            			return new static_compiled_variable_reference((compiled_variable_definition)dn,lloc);
-            		}
+                        compiled_variable_definition cvd = dn as compiled_variable_definition;
+                        if (cvd.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
+            			    return new static_compiled_variable_reference(cvd, lloc);
+                        expression_node obj = GetCurrentObjectReference(cvd.cont_type.Scope, cvd, lloc); //new this_node(context.converted_type, lloc);
+                        return new compiled_variable_reference(cvd, obj, lloc);
+                    }
                 default: throw new NotSupportedError(lloc);
             }
             return null;
@@ -20159,6 +20168,18 @@ namespace PascalABCCompiler.TreeConverter
                 var expr = st.lst[0] as expression;
                 var type = st.lst[1] as type_definition;
                 CheckIfCanBeMatched(expr, type);
+            }
+            else if (st.typ is SemanticCheckType.MatchedExpressionAndExpression)
+            {
+                var matchedExpr = st.lst[0] as expression;
+                var patternExpr = st.lst[1] as expression;
+                CheckIfCanBeMatched(matchedExpr, patternExpr);
+            }
+            else if (st.typ is SemanticCheckType.MatchedTuple)
+            {
+                var tuple = st.lst[0] as expression;
+                var length = st.lst[1] as int32_const;
+                CheckIfCanBeMatched(tuple, length);
             }
             // !Patterns
             else

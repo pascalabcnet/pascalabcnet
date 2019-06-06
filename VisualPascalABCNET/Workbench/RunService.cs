@@ -67,146 +67,154 @@ namespace VisualPascalABC
 
         public bool Run(ICodeFileDocument tabPage, bool forDebugging, bool startWithGoto, bool needFirstBreakpoint)
         {
-            bool attachdbg = forDebugging || startWithGoto || needFirstBreakpoint; //|| WorkbenchServiceFactory.DebuggerManager.HasBreakpoints();
-            bool fictive_attach = false;
-            BuildService.CompilerOptions.UseDllForSystemUnits = false;
-            BuildService.CompilerOptions.OutputFileType = PascalABCCompiler.CompilerOptions.OutputType.ConsoleApplicaton;
-            if (ProjectFactory.Instance.ProjectLoaded)
-                tabPage = DocumentService.GetTabPageForMainFile();
-            if (attachdbg && !Workbench.UserOptions.AlwaysAttachDebuggerAtStart)
-                fictive_attach = !startWithGoto && !needFirstBreakpoint && !DebuggerManager.HasBreakpoints();
-            WorkbenchServiceFactory.OperationsService.ClearOutputTextBoxForTabPage(tabPage);
-            Workbench.ErrorsListWindow.ClearErrorList();
-            DesignerService.GenerateAllDesignersCode();
-            string runtimeModule;
-            string ModeName;
-            bool RunWithPause = false;
-            if (Workbench.UserOptions.RedirectConsoleIO || forDebugging)
+            lock (o)
             {
-                runtimeModule = RedirectIOModeModuleName;
-                ModeName = RedirectIOModeName;
-                if (Workbench.UserOptions.UseDllForSystemUnits && !Workbench.UserOptions.PABCDllChecked)
+                bool attachdbg = forDebugging || startWithGoto || needFirstBreakpoint; //|| WorkbenchServiceFactory.DebuggerManager.HasBreakpoints();
+                bool fictive_attach = false;
+                BuildService.CompilerOptions.UseDllForSystemUnits = false;
+                BuildService.CompilerOptions.OutputFileType = PascalABCCompiler.CompilerOptions.OutputType.ConsoleApplicaton;
+                if (ProjectFactory.Instance.ProjectLoaded)
+                    tabPage = DocumentService.GetTabPageForMainFile();
+                if (attachdbg && !Workbench.UserOptions.AlwaysAttachDebuggerAtStart)
+                    fictive_attach = !startWithGoto && !needFirstBreakpoint && !DebuggerManager.HasBreakpoints();
+                WorkbenchServiceFactory.OperationsService.ClearOutputTextBoxForTabPage(tabPage);
+                Workbench.ErrorsListWindow.ClearErrorList();
+                DesignerService.GenerateAllDesignersCode();
+                string runtimeModule;
+                string ModeName;
+                bool RunWithPause = false;
+                if (Workbench.UserOptions.RedirectConsoleIO || forDebugging)
                 {
-                    if (typeof(System.Runtime.CompilerServices.ExtensionAttribute).Assembly != typeof(int).Assembly || PascalABCCompiler.Compiler.get_assembly_path("PABCRtl.dll", false) == null)
-                        Workbench.UserOptions.UseDllForSystemUnits = false;
-                    Workbench.UserOptions.PABCDllChecked = true;
+                    runtimeModule = RedirectIOModeModuleName;
+                    ModeName = RedirectIOModeName;
+                    if (Workbench.UserOptions.UseDllForSystemUnits && !Workbench.UserOptions.PABCDllChecked)
+                    {
+                        if (typeof(System.Runtime.CompilerServices.ExtensionAttribute).Assembly != typeof(int).Assembly || PascalABCCompiler.Compiler.get_assembly_path("PABCRtl.dll", false) == null)
+                            Workbench.UserOptions.UseDllForSystemUnits = false;
+                        Workbench.UserOptions.PABCDllChecked = true;
+                    }
+                    if (Workbench.UserOptions.DeleteEXEAfterExecute && Workbench.UserOptions.UseDllForSystemUnits && !startWithGoto && !needFirstBreakpoint)
+                        BuildService.CompilerOptions.UseDllForSystemUnits = true;
                 }
-                if (Workbench.UserOptions.DeleteEXEAfterExecute && Workbench.UserOptions.UseDllForSystemUnits && !startWithGoto && !needFirstBreakpoint)
-                    BuildService.CompilerOptions.UseDllForSystemUnits = true;
-            }
-            else
-            {
-                runtimeModule = RunModeModuleName;
-                ModeName = RunModeName;
-                RunWithPause = Workbench.UserOptions.PauseInRunModeIfConsole;
-            }
-            bool debug = BuildService.CompilerOptions.Debug;
-            if (forDebugging)
-            {
-                BuildService.CompilerOptions.Debug = true;
-                BuildService.CompilerOptions.ForDebugging = true;
-                Workbench.UserOptions.RedirectConsoleIO = true;
-            }
-            string OutputFileName = null;
-            if (!forDebugging)
-            {
-                if (!ProjectFactory.Instance.ProjectLoaded)
-                    OutputFileName = BuildService.Compile(tabPage.FileName, false, runtimeModule, true, Workbench.UserOptions.RedirectConsoleIO);
                 else
-                    OutputFileName = BuildService.Compile(ProjectFactory.Instance.CurrentProject, false, runtimeModule, true, Workbench.UserOptions.RedirectConsoleIO);
-            }
-            else
-            {
-                if (!ProjectFactory.Instance.ProjectLoaded)
-                    OutputFileName = BuildService.Compile(tabPage.FileName, false, runtimeModule, true, true);
-                else
-                    OutputFileName = BuildService.Compile(ProjectFactory.Instance.CurrentProject, false, runtimeModule, true, true);
-            }
-            if (RunWithPause)
-                RunWithPause = RunWithPause && Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.OutputFileType == PascalABCCompiler.CompilerOptions.OutputType.ConsoleApplicaton;
-            if (OutputFileName != null)
-            {
-                switch (Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.OutputFileType)
                 {
-                    case PascalABCCompiler.CompilerOptions.OutputType.ClassLibrary:
-                        if (DocumentService.ActiveCodeFileDocument != null && DocumentService.ActiveCodeFileDocument != DocumentService.CurrentCodeFileDocument && !DocumentService.ActiveCodeFileDocument.Run)
-                            if (!RunActiveTabPage)
-                            {
-                                RunActiveTabPage = true;
-                                return Run(DocumentService.ActiveCodeFileDocument, forDebugging, startWithGoto, needFirstBreakpoint);
-                            }
-                        MessageBox.Show(Form1StringResources.Get("RUN_DLL_WARNING_TEXT"), PascalABCCompiler.StringResources.Get("!WARNING"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        RunActiveTabPage = false;
-                        break;
-                    case PascalABCCompiler.CompilerOptions.OutputType.PascalCompiledUnit:
-                        if (DocumentService.ActiveCodeFileDocument != null && DocumentService.ActiveCodeFileDocument != DocumentService.CurrentCodeFileDocument && !DocumentService.ActiveCodeFileDocument.Run)
-                            if (!RunActiveTabPage)
-                            {
-                                RunActiveTabPage = true;
-                                return Run(DocumentService.ActiveCodeFileDocument, forDebugging, startWithGoto, needFirstBreakpoint);
-                            }
-                        RunActiveTabPage = false;
-                        MessageBox.Show(Form1StringResources.Get("RUN_PCU_WARNING_TEXT"), PascalABCCompiler.StringResources.Get("!WARNING"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        break;
-                    case PascalABCCompiler.CompilerOptions.OutputType.ConsoleApplicaton:
-                    case PascalABCCompiler.CompilerOptions.OutputType.WindowsApplication:
-                        if (forDebugging)
-                        {
-                            BuildService.CompilerOptions.Debug = debug;
-                            BuildService.CompilerOptions.ForDebugging = false;
-                            if (startWithGoto)
-                            {
-                                DebuggerManager.ShowDebugTabs = true;
-                                DebuggerManager.UpdateBreakpoints();
-                                DebuggerManager.CurrentBreakpoint = DebuggerManager.AddBreakPoint(DocumentService.CurrentCodeFileDocument.FileName, DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.Caret.Line + 1, false);
-                                DebuggerManager.AddGoToBreakPoint(DebuggerManager.CurrentBreakpoint);
-                            }
-                            else if (needFirstBreakpoint)
-                            {
-                                DebuggerManager.ShowDebugTabs = true;
-                                DebuggerManager.UpdateBreakpoints();
-                                if (Workbench.VisualEnvironmentCompiler.Compiler.VarBeginOffset != 0)
+                    runtimeModule = RunModeModuleName;
+                    ModeName = RunModeName;
+                    RunWithPause = Workbench.UserOptions.PauseInRunModeIfConsole;
+                }
+                bool debug = BuildService.CompilerOptions.Debug;
+                if (forDebugging)
+                {
+                    BuildService.CompilerOptions.Debug = true;
+                    BuildService.CompilerOptions.ForDebugging = true;
+                    Workbench.UserOptions.RedirectConsoleIO = true;
+                }
+                string OutputFileName = null;
+                if (!forDebugging)
+                {
+                    if (!ProjectFactory.Instance.ProjectLoaded)
+                        OutputFileName = BuildService.Compile(tabPage.FileName, false, runtimeModule, true, Workbench.UserOptions.RedirectConsoleIO);
+                    else
+                        OutputFileName = BuildService.Compile(ProjectFactory.Instance.CurrentProject, false, runtimeModule, true, Workbench.UserOptions.RedirectConsoleIO);
+                }
+                else
+                {
+                    if (!ProjectFactory.Instance.ProjectLoaded)
+                        OutputFileName = BuildService.Compile(tabPage.FileName, false, runtimeModule, true, true);
+                    else
+                        OutputFileName = BuildService.Compile(ProjectFactory.Instance.CurrentProject, false, runtimeModule, true, true);
+                }
+                if (RunWithPause)
+                    RunWithPause = RunWithPause && Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.OutputFileType == PascalABCCompiler.CompilerOptions.OutputType.ConsoleApplicaton;
+                if (OutputFileName != null)
+                {
+                    switch (Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.OutputFileType)
+                    {
+                        case PascalABCCompiler.CompilerOptions.OutputType.ClassLibrary:
+                            if (DocumentService.ActiveCodeFileDocument != null && DocumentService.ActiveCodeFileDocument != DocumentService.CurrentCodeFileDocument && !DocumentService.ActiveCodeFileDocument.Run)
+                                if (!RunActiveTabPage)
                                 {
-                                    DebuggerManager.SetFirstBreakpoint(tabPage.FileName, Workbench.VisualEnvironmentCompiler.Compiler.VarBeginOffset);
-                                    DebuggerManager.AddGoToBreakPoint(tabPage.FileName, Workbench.VisualEnvironmentCompiler.Compiler.BeginOffset);
+                                    RunActiveTabPage = true;
+                                    return Run(DocumentService.ActiveCodeFileDocument, forDebugging, startWithGoto, needFirstBreakpoint);
+                                }
+                            MessageBox.Show(Form1StringResources.Get("RUN_DLL_WARNING_TEXT"), PascalABCCompiler.StringResources.Get("!WARNING"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            RunActiveTabPage = false;
+                            break;
+                        case PascalABCCompiler.CompilerOptions.OutputType.PascalCompiledUnit:
+                            if (DocumentService.ActiveCodeFileDocument != null && DocumentService.ActiveCodeFileDocument != DocumentService.CurrentCodeFileDocument && !DocumentService.ActiveCodeFileDocument.Run)
+                                if (!RunActiveTabPage)
+                                {
+                                    RunActiveTabPage = true;
+                                    return Run(DocumentService.ActiveCodeFileDocument, forDebugging, startWithGoto, needFirstBreakpoint);
+                                }
+                            RunActiveTabPage = false;
+                            MessageBox.Show(Form1StringResources.Get("RUN_PCU_WARNING_TEXT"), PascalABCCompiler.StringResources.Get("!WARNING"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            break;
+                        case PascalABCCompiler.CompilerOptions.OutputType.ConsoleApplicaton:
+                        case PascalABCCompiler.CompilerOptions.OutputType.WindowsApplication:
+                            if (forDebugging)
+                            {
+                                BuildService.CompilerOptions.Debug = debug;
+                                BuildService.CompilerOptions.ForDebugging = false;
+                                if (startWithGoto)
+                                {
+                                    DebuggerManager.ShowDebugTabs = true;
+                                    DebuggerManager.UpdateBreakpoints();
+                                    DebuggerManager.CurrentBreakpoint = DebuggerManager.AddBreakPoint(DocumentService.CurrentCodeFileDocument.FileName, DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.Caret.Line + 1, false);
+                                    DebuggerManager.AddGoToBreakPoint(DebuggerManager.CurrentBreakpoint);
+                                }
+                                else if (needFirstBreakpoint)
+                                {
+                                    DebuggerManager.ShowDebugTabs = true;
+                                    DebuggerManager.UpdateBreakpoints();
+                                    if (Workbench.VisualEnvironmentCompiler.Compiler.VarBeginOffset != 0)
+                                    {
+                                        DebuggerManager.SetFirstBreakpoint(tabPage.FileName, Workbench.VisualEnvironmentCompiler.Compiler.VarBeginOffset);
+                                        DebuggerManager.AddGoToBreakPoint(tabPage.FileName, Workbench.VisualEnvironmentCompiler.Compiler.BeginOffset);
+                                    }
+                                    else
+                                        DebuggerManager.SetFirstBreakpoint(tabPage.FileName, Workbench.VisualEnvironmentCompiler.Compiler.BeginOffset);
                                 }
                                 else
-                                    DebuggerManager.SetFirstBreakpoint(tabPage.FileName, Workbench.VisualEnvironmentCompiler.Compiler.BeginOffset);
+                                {
+                                    DebuggerManager.UpdateBreakpoints();
+                                    DebuggerManager.ShowDebugTabs = false;
+                                }
+
                             }
-                            else
+                            RunActiveTabPage = false;
+                            try
                             {
-                                DebuggerManager.UpdateBreakpoints();
-                                DebuggerManager.ShowDebugTabs = false;
+                                RunTabsAdd(Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.OutputFileName, tabPage);
+                                RunnerManager.Run(Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.OutputFileName,
+                                    Workbench.UserOptions.RedirectConsoleIO, ModeName, RunWithPause,
+                                    // Path.GetDirectoryName(Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.OutputFileName), // SSM 21.05.19 - исправил. Теперь текущим является каталог, в котором расположен исходник. 
+                                    // Если компилировать программы на сетевом диске, а exe создавать локально, то работает шустро
+                                    Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SourceFileDirectory,
+                                    RunArgumentsTable[tabPage.FileName.ToLower()], attachdbg, fictive_attach);
                             }
-                                
-                        }
-                        RunActiveTabPage = false;
-                        try
-                        {
-                            RunTabsAdd(Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.OutputFileName, tabPage);
-                            RunnerManager.Run(Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.OutputFileName, Workbench.UserOptions.RedirectConsoleIO, ModeName, RunWithPause, Path.GetDirectoryName(Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.OutputFileName), RunArgumentsTable[tabPage.FileName.ToLower()], attachdbg, fictive_attach);
-                        }
-                        catch (System.Exception e)
-                        {
-                            // SSM 22/04/19 - исправляю вылет оболочки при отсутствии exe файла
-                            this.RunnerManager_Exited(OutputFileName);
-                            WorkbenchServiceFactory.OperationsService.AddTextToOutputWindowSync(OutputFileName,"Произошла непредвиденная ошибка. Вероятно, на диске отсутствует .exe-файл. Повторите запуск");
-                            //throw;
-                        }
-                        if (!ProjectFactory.Instance.ProjectLoaded)
-                            DocumentService.ActiveCodeFileDocument = tabPage;
-                        if (forDebugging)
-                        {
-                            DebuggerOperationsService.AddDebugPage(tabPage);
-                        }
-                        WorkbenchStorage.SetCurrentTabPageIfWriteToOutputWindow = Workbench.UserOptions.RedirectConsoleIO;
-                        //if (UserOptions1.ConsoleOutput)
-                        //AddTextToOutputWindow("Ïðîãðàììà çàïóùåíà");
-                        return true;
+                            catch (System.Exception e)
+                            {
+                                // SSM 22/04/19 - исправляю вылет оболочки при отсутствии exe файла
+                                // this.RunnerManager_Exited(OutputFileName); // - это всё равно не срабатывает. Кнопки оказываются в заблокированном состоянии
+                                WorkbenchServiceFactory.OperationsService.AddTextToOutputWindowSync(OutputFileName, "Произошла непредвиденная ошибка. Вероятно, на диске отсутствует .exe-файл. Повторите запуск");
+                                //throw;
+                            }
+                            if (!ProjectFactory.Instance.ProjectLoaded)
+                                DocumentService.ActiveCodeFileDocument = tabPage;
+                            if (forDebugging)
+                            {
+                                DebuggerOperationsService.AddDebugPage(tabPage);
+                            }
+                            WorkbenchStorage.SetCurrentTabPageIfWriteToOutputWindow = Workbench.UserOptions.RedirectConsoleIO;
+                            //if (UserOptions1.ConsoleOutput)
+                            //AddTextToOutputWindow("Ïðîãðàììà çàïóùåíà");
+                            return true;
+                    }
                 }
+                RunActiveTabPage = false;
+                return false;
             }
-            RunActiveTabPage = false;
-            return false;
         }
 
         public bool Run(ICodeFileDocument tabPage)

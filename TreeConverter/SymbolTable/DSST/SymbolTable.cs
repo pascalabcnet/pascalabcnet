@@ -1036,7 +1036,16 @@ namespace SymbolTable
                 while (scope != null && !(scope is UnitInterfaceScope))
                 {
                     if (scope is ClassMethodScope)
-                        scope = (scope as ClassMethodScope).DefScope;
+                    {
+                        // aab 17.05.19 begin
+                        // Поправил приоритет поиска для ?System
+                        var classMethodScope = scope as ClassMethodScope;
+                        if (classMethodScope.DefScope != null)
+                            scope = classMethodScope.DefScope;
+                        else
+                            scope = classMethodScope.CurrentLambdaDefScope;
+                        // aab 17.05.19 end
+                    }
                     else scope = scope.TopScope;
                 }
                 if (scope != null)
@@ -1155,12 +1164,8 @@ namespace SymbolTable
                             var defScope = (CurrentArea as ClassMethodScope).DefScope;
                             if (defScope != null)
                             {
-                                var defScopeRes = FindAll(defScope, Name, OnlyInType, OnlyInThisClass, defScope);
-
-                                if (defScopeRes != null && defScopeRes.Count > 0)
-                                {
-                                    return defScopeRes;
-                                }
+                                CurrentArea = defScope;
+                                continue;
                             }
                         }
                     }

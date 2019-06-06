@@ -302,10 +302,6 @@ namespace VisualPascalABC
                 File.AppendAllText("logRun.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
 #endif
                 RemoveFromTables(fileName);
-                // перехватываю!
-                //PRunner.ProcessExited -= new EventHandler(PRunner_ProcessExited);
-                //if (Exited != null)
-                  //  Exited(fileName);
                 throw; // Это не перехватывается и приводит к вылету оболочки - SSM 22/04/19
             }
         }

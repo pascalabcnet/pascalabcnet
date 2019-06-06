@@ -2106,6 +2106,7 @@ namespace PascalABCCompiler.PCU
             else
                 bw.Write(cnst.name);
             bw.Write(GetUnitReference(cnst.comprehensive_namespace));
+            WriteTypeReference(cnst.type);
             SaveExpressionAndOffset(cnst.const_value);
             bw.Write(0);
             //VisitExpression(cnst.const_value);
@@ -3792,7 +3793,10 @@ namespace PascalABCCompiler.PCU
 		{
 			bw.Write((System.Int16)expr.function_node.basic_function_type);
             WriteTypeReference(expr.ret_type);
-            WriteTypeReference(expr.conversion_type);
+            if (expr.conversion_type is delegated_methods)
+                WriteTypeReference(null);
+            else
+                WriteTypeReference(expr.conversion_type);
             bw.Write(expr.parameters.Count);
 			for (int i=0; i<expr.parameters.Count; i++)
 			    VisitExpression(expr.parameters[i]);

@@ -1576,6 +1576,8 @@ namespace PascalABCCompiler.NETGenerator
                         fldinfo = fldinfo;
                     } */
 #endif
+                    if (fldinfo == null)
+                        continue;
                     if (!(fldinfo is GenericFldInfo))
                     {
                         FieldInfo finfo = fldinfo.fi;

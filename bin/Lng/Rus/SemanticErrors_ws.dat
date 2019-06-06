@@ -9,3 +9,4 @@ DECONSTRUCTION_PARAMETERS_SHOULD_HAVE_VAR_MODIFIER=Параметры декон
 PATTERN_MATCHING_DOESNT_SUPPORT_POINTERS=Сопоставление с образцом не поддерживает указатели в данной версии компилятора
 EXPRESSION_OF_TYPE_{0}_CANNOT_BE_MATCHED_AGAINST_PATTERN_WITH_TYPE_{1}= Выражение типа {0} не может быть сопоставлено с образцом типа {1}
 DECONSTRUCTOR_SHOULD_NOT_BE_STATIC=Деконструктор не может быть статическим
+MATCHING_WITH_NON_CONST=Выражение для сопоставления должно иметь константное значение

@@ -191,6 +191,7 @@ UNICODEARROW \x890
 "["              { return (int)Tokens.tkSquareOpen; }
 "]"              { return (int)Tokens.tkSquareClose; }
 "?"              { return (int)Tokens.tkQuestion; }
+"_"				 { return (int)Tokens.tkUnderscore; }
 "?."              { return (int)Tokens.tkQuestionPoint; }
 "??"              { return (int)Tokens.tkDoubleQuestion; }
 "?["              { return (int)Tokens.tkQuestionSquareOpen; }

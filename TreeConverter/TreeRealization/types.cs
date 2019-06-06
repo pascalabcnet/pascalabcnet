@@ -1057,7 +1057,13 @@ namespace PascalABCCompiler.TreeRealization
             }
             if (rtn == null)
             {
-            	return null;
+                if (ctn is compiled_type_node && (ctn as compiled_type_node).compiled_type.IsPointer)
+                {
+                    if (this.pointed_type == compiled_type_node.get_type_node((ctn as compiled_type_node).compiled_type.GetElementType()))
+                        return PascalABCCompiler.TreeConverter.convertion_data_and_alghoritms.get_empty_conversion(this, ctn, false);
+                    return get_implicit_conversion_to(new ref_type_node(compiled_type_node.get_type_node((ctn as compiled_type_node).compiled_type.GetElementType())));
+                }
+                return null;
             }
             if (rtn.pointed_type == null || this.pointed_type == null)
                 return null;

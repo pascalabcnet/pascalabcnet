@@ -3166,7 +3166,11 @@ namespace CodeFormatters
             if (_is_pattern_expr.left != null)
                 visit_node(_is_pattern_expr.left);
 
-            sb.Append(" is ");
+            if (_is_pattern_expr.right == null || 
+                !(_is_pattern_expr.right is collection_pattern) && !(_is_pattern_expr.right is tuple_pattern))
+                sb.Append(" is ");
+            else
+                add_space_before = true;
 
             if (_is_pattern_expr.right != null)
                 visit_node(_is_pattern_expr.right);
@@ -3211,6 +3215,80 @@ namespace CodeFormatters
             DecOffset();
         }
 
+        public override void visit(const_pattern _const_pattern)
+        {
+            visit_node(_const_pattern.pattern_expressions);
+            add_space_after = false;
+        }
+
+        public override void visit(const_pattern_parameter _const_parameter)
+        {
+            visit_node(_const_parameter.const_param);
+            add_space_after = false;
+        }
+
+        public override void visit(wild_card_deconstructor_parameter _wild_card_deconstructor_parameter)
+        {
+            sb.Append("_");
+            add_space_after = true;
+        }
+
+        public override void visit(tuple_pattern_var_parameter _tuple_pattern_var_parameter)
+        {
+            sb.Append("var");
+            SetKeywordOffset("var");
+            read_from_beg_pos = true;
+            visit_node(_tuple_pattern_var_parameter.identifier);
+        }
+
+        public override void visit(tuple_pattern_wild_card _tuple_pattern_wild_card)
+        {
+            sb.Append("_");
+            add_space_after = true;
+        }
+
+        public override void visit(tuple_pattern _tuple_pattern)
+        {
+            sb.Append("(");
+            foreach (var parameter in _tuple_pattern.parameters)
+            {
+                visit_node(parameter);
+                add_space_after = true;
+            }
+            add_space_after = false;
+        }
+
+        public override void visit(collection_pattern _collection_pattern)
+        {
+            sb.Append("[");
+            foreach (var parameter in _collection_pattern.parameters)
+            {
+                visit_node(parameter);
+                add_space_after = true;
+            }
+            add_space_after = false;
+        }
+
+        public override void visit(collection_pattern_gap_parameter _collection_pattern_gap_parameter)
+        {
+            sb.Append("..");
+            add_space_after = true;
+        }
+
+        public override void visit(collection_pattern_var_parameter _collection_pattern_var_parameter)
+        {
+            sb.Append("var");
+            SetKeywordOffset("var");
+            read_from_beg_pos = true;
+            visit_node(_collection_pattern_var_parameter.identifier);
+        }
+
+        public override void visit(collection_pattern_wild_card _collection_pattern_wild_card)
+        {
+            sb.Append("_");
+            add_space_after = true;
+        }
+
         public override void visit(deconstructor_pattern _deconstructor_pattern)
         {
             visit_node(_deconstructor_pattern.type);
@@ -3224,17 +3302,33 @@ namespace CodeFormatters
 
         public override void visit(var_deconstructor_parameter _var_deconstructor_parameter)
         {
-            sb.Append("var");
-            SetKeywordOffset("var");
-            read_from_beg_pos = true;
+            if (_var_deconstructor_parameter.var_keyword_used)
+            {
+                sb.Append("var");
+                SetKeywordOffset("var");
+                read_from_beg_pos = true;
+            }
             visit_node(_var_deconstructor_parameter.identifier);
             if (_var_deconstructor_parameter.type != null)
                 visit_node(_var_deconstructor_parameter.type);
         }
 
+        public override void visit(recursive_pattern_parameter _recursive_pattern_parameter)
+        {
+            visit_node(_recursive_pattern_parameter.pattern);
+        }
+
         public override void visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
         {
             visit_node(_recursive_deconstructor_parameter.pattern);
+        }
+        public override void visit(recursive_tuple_parameter _recursive_tuple_parameter)
+        {
+            visit_node(_recursive_tuple_parameter.pattern);
+        }
+        public override void visit(recursive_collection_parameter _recursive_collection_parameter)
+        {
+            visit_node(_recursive_collection_parameter.pattern);
         }
 
         public override void visit(var_tuple_def_statement _var_tuple_def_statement)
