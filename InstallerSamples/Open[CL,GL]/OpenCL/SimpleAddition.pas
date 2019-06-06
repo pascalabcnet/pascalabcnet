@@ -24,7 +24,7 @@ begin
   
   // Чтение и компиляция .cl файла
   
-  {$resource SimpleAddition.cl} // эта строчка засовывает SimpleAddition.cl внутрь .exe, чтоб он не нужен был для запуска .exe
+  {$resource SimpleAddition.cl} // эта строчка засовывает SimpleAddition.cl внутрь .exe, чтоб не надо было таскать его вместе с .exe
   var prog_str := System.IO.StreamReader.Create(GetResourceStream('SimpleAddition.cl')).ReadToEnd;
   var prog := cl.CreateProgramWithSource(
     context,
