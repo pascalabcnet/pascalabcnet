@@ -13,7 +13,7 @@
    RobotTaskMaker, RobotZadan, Sockets, Utils, VCL, Timers, PT4Exam, PT4TaskMakerNET, RBDMUtils,
    Collections, Arrays, Core, FormsABC, MPI, ClientServer, OpenGL, Speech, Sounds, Countries,
    ABCDatabases,BlockFileOfT,Controls,
-   OpenCL
+   OpenCL, OpenCLABC
    ;
    
 begin

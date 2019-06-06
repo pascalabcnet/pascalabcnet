@@ -128,6 +128,7 @@
     File ..\bin\Lib\Sounds.pcu
     File ..\bin\Lib\BlockFileOfT.pcu
     File ..\bin\Lib\OpenCL.pcu
+    File ..\bin\Lib\OpenCLABC.pcu
 
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\PABCRtl32.dll
@@ -191,6 +192,7 @@
     ${AddFile} "Sounds.pcu"
     ${AddFile} "BlockFileOfT.pcu"
     ${AddFile} "OpenCL.pcu"
+    ${AddFile} "OpenCLABC.pcu"
     ${AddFile} "PABCRtl.dll"
     ${AddFile} "HelixToolkit.Wpf.dll"
     ${AddFile} "HelixToolkit.dll"
@@ -263,6 +265,7 @@
     File ..\bin\Lib\Sounds.pas
     File ..\bin\Lib\BlockFileOfT.pas
     File ..\bin\Lib\OpenCL.pas
+    File ..\bin\Lib\OpenCLABC.pas
 	File ..\bin\Lib\__RedirectIOMode.vb
 	File ..\bin\Lib\VBSystem.vb
 	
@@ -321,6 +324,7 @@
     ${AddFile} "Sounds.pas"
     ${AddFile} "BlockFileOfT.pas"
     ${AddFile} "OpenCL.pas"
+    ${AddFile} "OpenCLABC.pas"
 	${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"
 	
