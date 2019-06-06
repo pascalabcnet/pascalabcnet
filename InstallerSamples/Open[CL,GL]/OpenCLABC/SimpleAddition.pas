@@ -26,9 +26,9 @@ begin
       
       A.NewQueue.WriteData(
         ArrFill(10,1)
-      )
+      ) as CommandQueue<KernelArg>
       
-    );
+    ) as CommandQueue<Kernel>;
   
   // Выполнение
   

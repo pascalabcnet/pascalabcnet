@@ -48,11 +48,11 @@ begin
   
   var Calc_C_Q :=
     code['MatrMltMatr'].NewQueue.Exec(MatrW, MatrW,
-      A.NewQueue.WriteData(A_Mart),
-      B.NewQueue.WriteData(B_Mart),
+      A.NewQueue.WriteData(A_Mart) as CommandQueue<KernelArg>,
+      B.NewQueue.WriteData(B_Mart) as CommandQueue<KernelArg>,
       C,
-      KernelArg.ValueQueue(MatrW)
-    );
+      KernelArg.ValueQueue(MatrW) as CommandQueue<KernelArg>
+    ) as CommandQueue<Kernel>;
   
   var Otp_C_Q :=
     HFQ(
@@ -66,15 +66,15 @@ begin
           writeln;
         end;
       end
-    );
+    ) as CommandQueue<array[,] of real>;
   
   var Calc_V2_Q :=
     code['MatrMltVec'].NewQueue.Exec(MatrW,
       C,
-      V1.NewQueue.WriteData(V1_Arr),
+      V1.NewQueue.WriteData(V1_Arr) as CommandQueue<KernelArg>,
       V2,
-      KernelArg.ValueQueue(MatrW)
-    );
+      KernelArg.ValueQueue(MatrW) as CommandQueue<KernelArg>
+    ) as CommandQueue<Kernel>;
   
   var Otp_V2_Q :=
     HFQ(
@@ -88,7 +88,7 @@ begin
           writeln;
         end;
       end
-    );
+    ) as CommandQueue<array of real>;
   
   // Выполнение всего и сразу асинхронный вывод
   
