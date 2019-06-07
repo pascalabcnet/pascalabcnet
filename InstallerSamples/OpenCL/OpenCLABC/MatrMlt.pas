@@ -55,18 +55,18 @@ begin
     ) as CommandQueue<Kernel>;
   
   var Otp_C_Q :=
-    HFQ(
+    HPQ(
       ()->
       begin
-        Result := C.GetArray&<array[,] of real>(MatrW,MatrW);
+        var C_Matr := C.GetArray&<array[,] of real>(MatrW,MatrW);
         lock output do
         begin
           'Матрица С = A*B:'.Println;
-          Result.Println;
+          C_Matr.Println;
           writeln;
         end;
       end
-    ) as CommandQueue<array[,] of real>;
+    ) as CommandQueue<object>;
   
   var Calc_V2_Q :=
     code['MatrMltVec'].NewQueue.Exec(MatrW,
@@ -77,18 +77,18 @@ begin
     ) as CommandQueue<Kernel>;
   
   var Otp_V2_Q :=
-    HFQ(
+    HPQ(
       ()->
       begin
-        Result := V2.GetArray&<array of real>(MatrW);
+        var V2_Arr := V2.GetArray&<array of real>(MatrW);
         lock output do
         begin
           'Вектор V2 = C*V1:'.Println;
-          Result.Println;
+          V2_Arr.Println;
           writeln;
         end;
       end
-    ) as CommandQueue<array of real>;
+    ) as CommandQueue<object>;
   
   // Выполнение всего и сразу асинхронный вывод
   

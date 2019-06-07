@@ -16,20 +16,15 @@ begin
   
   var A := new KernelArg(40);
   
-  // Подготовка очередей выполнения
-  
-  var prog_Q :=
-    prog['TEST'].NewQueue.Exec(10,
-      
-      A.NewQueue.WriteData(
-        ArrFill(10,1)
-      ) as CommandQueue<KernelArg>
-      
-    ) as CommandQueue<Kernel>;
-  
   // Выполнение
   
-  Context.Default.SyncInvoke(prog_Q);
+  prog['TEST'].Exec(10,
+    
+    A.NewQueue.WriteData(
+      ArrFill(10,1)
+    ) as CommandQueue<KernelArg>
+    
+  );
   
   // Чтение и вывод результата
   

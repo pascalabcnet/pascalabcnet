@@ -349,7 +349,7 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    public static property REGION: CommandQueueInfoType read new CommandQueueInfoType($1220);
+    public static property REGION: BufferCreateType read new BufferCreateType($1220);
     
   end;
   
