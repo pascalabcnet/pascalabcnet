@@ -28,13 +28,11 @@ uses System;
 uses System.Threading.Tasks;
 uses System.Runtime.InteropServices;
 
-//ToDo RaiseIfError в тасках - не хорошо. Надо передавать ErrorCode потоку, вызвавшему Invoke
-// - но это не точно, Task.Wait снова вызывает все исключения
-// - надо только чтоб все внутренние таски тоже получали Wait
-// - возможно, заставить Invoke возвращать yield sequence of Task?
-
 //ToDo CommandQueueHostFunc при создании из o: T - заполнять сразу res, а функция пусть будет nil
 // - сразу минус костыли и + скорость выполнения
+
+//ToDo копирование буферов
+//ToDo создание под-буфера
 
 //ToDo issue компилятора:
 // - #1880
@@ -63,7 +61,7 @@ type
     protected procedure ClearEvent :=
     if self.ev<>cl_event.Zero then cl.ReleaseEvent(self.ev).RaiseIfError;
     
-    protected procedure Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event); abstract;
+    protected function Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event): sequence of Task; abstract;
     
     protected function GetRes: object; abstract;
     
@@ -100,7 +98,7 @@ type
     
     private костыль_для_prev_ev: cl_event; //ToDo #1881
     
-    protected procedure Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event); override;
+    protected function Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event): sequence of Task; override;
     
     public procedure Finalize; override :=
     ClearEvent;
@@ -114,8 +112,9 @@ type
   KernelArgCommandQueue = abstract class(CommandQueue<KernelArg>)
     protected org: KernelArg;
     protected prev: KernelArgCommandQueue;
-    
     private val_ptr: IntPtr;
+    
+    {$region constructor's}
     
     protected constructor(org: KernelArg);
     begin
@@ -133,35 +132,21 @@ type
     
     public static function Wrap(arg: KernelArg): KernelArgCommandQueue;
     
+    {$endregion constructor's}
     
+    {$region Write}
     
     public function WriteData(ptr: CommandQueue<IntPtr>): KernelArgCommandQueue;
     public function WriteData(ptr: CommandQueue<IntPtr>; offset, len: CommandQueue<integer>): KernelArgCommandQueue;
+    
+    public function WriteData(ptr: pointer) := WriteData(IntPtr(ptr));
+    public function WriteData(ptr: pointer; offset, len: CommandQueue<integer>) := WriteData(IntPtr(ptr), offset, len);
     
     public function WriteData(a: CommandQueue<&Array>): KernelArgCommandQueue;
     public function WriteData(a: CommandQueue<&Array>; offset, len: CommandQueue<integer>): KernelArgCommandQueue;
     
     public function WriteData(a: &Array) := WriteData(new CommandQueueHostFunc<&Array>(a));
     public function WriteData(a: &Array; offset, len: CommandQueue<integer>) := WriteData(new CommandQueueHostFunc&<&Array>(a), offset, len);
-    
-    public function WriteData(ptr: pointer) := WriteData(IntPtr(ptr));
-    public function WriteData(ptr: pointer; offset, len: CommandQueue<integer>) := WriteData(IntPtr(ptr), offset, len);
-    
-    
-    
-    public function ReadData(ptr: CommandQueue<IntPtr>): KernelArgCommandQueue;
-    public function ReadData(ptr: CommandQueue<IntPtr>; offset, len: CommandQueue<integer>): KernelArgCommandQueue;
-    
-    public function ReadData(a: CommandQueue<&Array>): KernelArgCommandQueue;
-    public function ReadData(a: CommandQueue<&Array>; offset, len: CommandQueue<integer>): KernelArgCommandQueue;
-    
-    public function ReadData(a: &Array) := ReadData(new CommandQueueHostFunc<&Array>(a));
-    public function ReadData(a: &Array; offset, len: CommandQueue<integer>) := ReadData(new CommandQueueHostFunc&<&Array>(a), offset, len);
-    
-    public function ReadData(ptr: pointer) := ReadData(IntPtr(ptr));
-    public function ReadData(ptr: pointer; offset, len: CommandQueue<integer>) := ReadData(IntPtr(ptr), offset, len);
-    
-    
     
     public function WriteValue<TRecord>(val: TRecord; offset: CommandQueue<integer> := 0): KernelArgCommandQueue; where TRecord: record;
     begin
@@ -173,10 +158,68 @@ type
       Result.val_ptr := ptr;
     end;
     
+    {$endregion Write}
+    
+    {$region Read}
+    
+    public function ReadData(ptr: CommandQueue<IntPtr>): KernelArgCommandQueue;
+    public function ReadData(ptr: CommandQueue<IntPtr>; offset, len: CommandQueue<integer>): KernelArgCommandQueue;
+    
+    public function ReadData(ptr: pointer) := ReadData(IntPtr(ptr));
+    public function ReadData(ptr: pointer; offset, len: CommandQueue<integer>) := ReadData(IntPtr(ptr), offset, len);
+    
+    public function ReadData(a: CommandQueue<&Array>): KernelArgCommandQueue;
+    public function ReadData(a: CommandQueue<&Array>; offset, len: CommandQueue<integer>): KernelArgCommandQueue;
+    
+    public function ReadData(a: &Array) := ReadData(new CommandQueueHostFunc<&Array>(a));
+    public function ReadData(a: &Array; offset, len: CommandQueue<integer>) := ReadData(new CommandQueueHostFunc&<&Array>(a), offset, len);
+    
     public function ReadValue<TRecord>(var val: TRecord; offset: CommandQueue<integer> := 0): KernelArgCommandQueue; where TRecord: record;
     begin
-      Result := WriteData(@val, offset, Marshal.SizeOf&<TRecord>);
+      Result := ReadData(@val, offset, Marshal.SizeOf&<TRecord>);
     end;
+    
+    {$endregion Read}
+    
+    {$region Fill}
+    
+    public function PatternFill(ptr: CommandQueue<IntPtr>; pattern_len: CommandQueue<integer>): KernelArgCommandQueue;
+    public function PatternFill(ptr: CommandQueue<IntPtr>; pattern_len, offset, len: CommandQueue<integer>): KernelArgCommandQueue;
+    
+    public function PatternFill(ptr: pointer; pattern_len: CommandQueue<integer>) := PatternFill(IntPtr(ptr), pattern_len);
+    public function PatternFill(ptr: pointer; pattern_len, offset, len: CommandQueue<integer>) := PatternFill(IntPtr(ptr), pattern_len, offset, len);
+    
+    public function PatternFill(a: CommandQueue<&Array>): KernelArgCommandQueue;
+    public function PatternFill(a: CommandQueue<&Array>; offset, len: CommandQueue<integer>): KernelArgCommandQueue;
+    
+    public function PatternFill(a: &Array) := PatternFill(new CommandQueueHostFunc<&Array>(a));
+    public function PatternFill(a: &Array; offset, len: CommandQueue<integer>) := PatternFill(new CommandQueueHostFunc&<&Array>(a), offset, len);
+    
+    public function PatternFill<TRecord>(val: TRecord): KernelArgCommandQueue; where TRecord: record;
+    begin
+      var sz := Marshal.SizeOf&<TRecord>;
+      var ptr := Marshal.AllocHGlobal(sz);
+      var typed_ptr: ^TRecord := pointer(ptr);
+      typed_ptr^ := val;
+      Result := PatternFill(ptr, sz);
+      Result.val_ptr := ptr;
+    end;
+    
+    public function PatternFill<TRecord>(val: TRecord; offset, len: CommandQueue<integer>): KernelArgCommandQueue; where TRecord: record;
+    begin
+      var sz := Marshal.SizeOf&<TRecord>;
+      var ptr := Marshal.AllocHGlobal(sz);
+      var typed_ptr: ^TRecord := pointer(ptr);
+      typed_ptr^ := val;
+      Result := PatternFill(ptr, sz, offset, len);
+      Result.val_ptr := ptr;
+    end;
+    
+    {$endregion Fill}
+    
+    {$region }
+    
+    {$endregion }
     
     public procedure Finalize; override :=
     if self.val_ptr<>IntPtr.Zero then Marshal.FreeHGlobal(val_ptr);
@@ -204,6 +247,14 @@ type
     
     {$endregion constructor's}
     
+    {$region property's}
+    
+    public property Size: UIntPtr read sz;
+    public property Size32: UInt32 read sz.ToUInt32;
+    public property Size64: UInt64 read sz.ToUInt64;
+    
+    {$endregion property's}
+    
     {$region Queue's}
     
     public function NewQueue :=
@@ -218,11 +269,15 @@ type
     
     {$endregion Queue's}
     
+    {$region Non-Queue IO}
+    
     public function GetValue<TRecord>: TRecord;
     where TRecord: record;
     
     public function GetArray<TArray>(params szs: array of integer): TArray;
     where TArray: &Array;
+    
+    {$endregion Non-Queue IO}
     
   end;
   
@@ -290,9 +345,10 @@ type
   
   Context = sealed class
     private static _platform: cl_platform_id;
+    private static _def_cont: Context;
+    
     private _device: cl_device_id;
     private _context: cl_context;
-    private static _def_cont: Context;
     
     public static property &Default: Context read _def_cont;
     
@@ -332,7 +388,7 @@ type
       var cq := cl.CreateCommandQueue(_context, _device, CommandQueuePropertyFlags.QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, ec);
       ec.RaiseIfError;
       
-      q.Invoke(self, cq, cl_event.Zero);
+      foreach var tsk in q.Invoke(self, cq, cl_event.Zero).ToList do tsk.Wait;
       if q.ev<>cl_event.Zero then cl.WaitForEvents(1, @q.ev).RaiseIfError;
       
       cl.ReleaseCommandQueue(cq).RaiseIfError;
@@ -470,9 +526,8 @@ type
 
 function Context.BeginInvoke<T>(q: CommandQueue<T>): Task<T>;
 begin
-  var k := new КостыльType1<T>(self,q); //лишнее предупреждение это #1948
-  Result := new Task<T>(k.lambda1);
-  Result.Start;
+  var k := new КостыльType1<T>(self,q);
+  Result := Task&<T>.Run(k.lambda1);
 end;
 
 {$endregion Костыль#1947, #1952}
@@ -481,7 +536,7 @@ end;
 
 {$region HostFunc}
 
-procedure CommandQueueHostFunc<T>.Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event);
+function CommandQueueHostFunc<T>.Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event): sequence of Task;
 begin
   var ec: ErrorCode;
   
@@ -490,7 +545,7 @@ begin
   ec.RaiseIfError;
   
   костыль_для_prev_ev := prev_ev;
-  Task.Run(()->
+  yield Task.Run(()->
   begin
     if костыль_для_prev_ev<>cl_event.Zero then cl.WaitForEvents(1,@костыль_для_prev_ev).RaiseIfError;
     self.res := f();
@@ -513,7 +568,7 @@ type
     
     private костыль_для_prev_ev: cl_event; //ToDo #1881
     
-    public procedure Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event); override;
+    protected function Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event): sequence of Task; override;
     begin
       var ec: ErrorCode;
       
@@ -521,14 +576,15 @@ type
       self.ev := cl.CreateUserEvent(c._context, ec);
       ec.RaiseIfError;
       
+      var task_lst := new List<Task>(lst.Count);
       foreach var sq in lst do
       begin
-        sq.Invoke(c, cq, prev_ev);
+        yield sequence sq.Invoke(c, cq, prev_ev);
         prev_ev := sq.ev;
       end;
       
       костыль_для_prev_ev := prev_ev;
-      Task.Run(()->
+      yield Task.Run(()->
       begin
         if костыль_для_prev_ev<>cl_event.Zero then cl.WaitForEvents(1,@костыль_для_prev_ev).RaiseIfError;
         self.res := T(lst[lst.Count-1].GetRes);
@@ -567,7 +623,7 @@ type
   CommandQueueAsyncList<T> = sealed class(CommandQueue<T>)
     public lst := new List<CommandQueueBase>;
     
-    public procedure Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event); override;
+    protected function Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event): sequence of Task; override;
     begin
       var ec: ErrorCode;
       
@@ -575,17 +631,18 @@ type
       self.ev := cl.CreateUserEvent(c._context, ec);
       ec.RaiseIfError;
       
-      foreach var sq in lst do sq.Invoke(c, cq, prev_ev);
+      var task_lst := new List<Task>(lst.Count);
+      foreach var sq in lst do yield sequence sq.Invoke(c, cq, prev_ev);
       
       var p: Action0 := ()-> //ToDo #1958
       begin
-        var evs := lst.Select(cq->cq.ev).Where(ev->ev<>cl_event.Zero).ToArray;
+        var evs := lst.Select(q->q.ev).Where(ev->ev<>cl_event.Zero).ToArray;
         if evs.Length<>0 then cl.WaitForEvents(evs.Length,evs).RaiseIfError;
         self.res := T(lst[lst.Count-1].GetRes);
         cl.SetUserEventStatus(self.ev, CommandExecutionStatus.COMPLETE).RaiseIfError;
       end;
       
-      Task.Run(p);
+      yield Task.Run(p);
       
     end;
     
@@ -623,10 +680,11 @@ type
     public constructor(arg: KernelArg) :=
     inherited Create(arg);
     
-    protected procedure Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event); override;
+    protected function Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event): sequence of Task; override;
     begin
       self.ev := prev_ev;
       if org.memobj=cl_mem.Zero then org.Init(c);
+      Result := System.Linq.Enumerable.Empty&<Task>;
     end;
     
   end;
@@ -654,16 +712,16 @@ type
     private костыль_для_cq: cl_event; //ToDo #1881
     private костыль_для_ev_lst: List<cl_event>; //ToDo #1880
     
-    protected procedure Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event); override;
+    protected function Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event): sequence of Task; override;
     begin
       var ec: ErrorCode;
       
-      prev  .Invoke(c, cq, prev_ev);
+      yield sequence prev  .Invoke(c, cq, prev_ev);
       
       var ev_lst := new List<cl_event>;
-      ptr   .Invoke(c, cq, cl_event.Zero); if ptr   .ev<>cl_event.Zero then ev_lst += ptr.ev;
-      offset.Invoke(c, cq, cl_event.Zero); if offset.ev<>cl_event.Zero then ev_lst += offset.ev;
-      len   .Invoke(c, cq, cl_event.Zero); if len   .ev<>cl_event.Zero then ev_lst += len.ev;
+      yield sequence ptr   .Invoke(c, cq, cl_event.Zero); if ptr   .ev<>cl_event.Zero then ev_lst += ptr.ev;
+      yield sequence offset.Invoke(c, cq, cl_event.Zero); if offset.ev<>cl_event.Zero then ev_lst += offset.ev;
+      yield sequence len   .Invoke(c, cq, cl_event.Zero); if len   .ev<>cl_event.Zero then ev_lst += len.ev;
       
       ClearEvent;
       self.ev := cl.CreateUserEvent(c._context, ec);
@@ -671,7 +729,7 @@ type
       
       костыль_для_cq := cq;
       костыль_для_ev_lst := ev_lst;
-      Task.Run(()->
+      yield Task.Run(()->
       begin
         if костыль_для_ev_lst.Count<>0 then cl.WaitForEvents(костыль_для_ev_lst.Count, костыль_для_ev_lst.ToArray).RaiseIfError;
         
@@ -708,16 +766,16 @@ type
     private костыль_для_cq: cl_event; //ToDo #1881
     private костыль_для_ev_lst: List<cl_event>; //ToDo #1880
     
-    protected procedure Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event); override;
+    protected function Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event): sequence of Task; override;
     begin
       var ev_lst := new List<cl_event>;
       var ec: ErrorCode;
       
-      prev  .Invoke(c, cq,       prev_ev);
+      yield sequence prev  .Invoke(c, cq,       prev_ev);
       
-      a     .Invoke(c, cq, cl_event.Zero);
-      offset.Invoke(c, cq, cl_event.Zero); if offset.ev<>cl_event.Zero then ev_lst += offset.ev;
-      len   .Invoke(c, cq, cl_event.Zero); if len   .ev<>cl_event.Zero then ev_lst += len.ev;
+      yield sequence a     .Invoke(c, cq, cl_event.Zero);
+      yield sequence offset.Invoke(c, cq, cl_event.Zero); if offset.ev<>cl_event.Zero then ev_lst += offset.ev;
+      yield sequence len   .Invoke(c, cq, cl_event.Zero); if len   .ev<>cl_event.Zero then ev_lst += len.ev;
       
       ClearEvent;
       self.ev := cl.CreateUserEvent(c._context, ec);
@@ -725,7 +783,7 @@ type
       
       костыль_для_cq := cq;
       костыль_для_ev_lst := ev_lst;
-      Task.Run(()->
+      yield Task.Run(()->
       begin
         if a.ev<>cl_event.Zero then cl.WaitForEvents(1,@a.ev).RaiseIfError;
         var gchnd := GCHandle.Alloc(a.res, GCHandleType.Pinned);
@@ -781,16 +839,16 @@ type
     private костыль_для_cq: cl_event; //ToDo #1881
     private костыль_для_ev_lst: List<cl_event>; //ToDo #1880
     
-    protected procedure Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event); override;
+    protected function Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event): sequence of Task; override;
     begin
       var ec: ErrorCode;
       
-      prev  .Invoke(c, cq, prev_ev);
+      yield sequence prev  .Invoke(c, cq, prev_ev);
       
       var ev_lst := new List<cl_event>;
-      ptr   .Invoke(c, cq, cl_event.Zero); if ptr   .ev<>cl_event.Zero then ev_lst += ptr.ev;
-      offset.Invoke(c, cq, cl_event.Zero); if offset.ev<>cl_event.Zero then ev_lst += offset.ev;
-      len   .Invoke(c, cq, cl_event.Zero); if len   .ev<>cl_event.Zero then ev_lst += len.ev;
+      yield sequence ptr   .Invoke(c, cq, cl_event.Zero); if ptr   .ev<>cl_event.Zero then ev_lst += ptr.ev;
+      yield sequence offset.Invoke(c, cq, cl_event.Zero); if offset.ev<>cl_event.Zero then ev_lst += offset.ev;
+      yield sequence len   .Invoke(c, cq, cl_event.Zero); if len   .ev<>cl_event.Zero then ev_lst += len.ev;
       
       ClearEvent;
       self.ev := cl.CreateUserEvent(c._context, ec);
@@ -798,7 +856,7 @@ type
       
       костыль_для_cq := cq;
       костыль_для_ev_lst := ev_lst;
-      Task.Run(()->
+      yield Task.Run(()->
       begin
         if костыль_для_ev_lst.Count<>0 then cl.WaitForEvents(костыль_для_ev_lst.Count, костыль_для_ev_lst.ToArray).RaiseIfError;
         
@@ -835,16 +893,16 @@ type
     private костыль_для_cq: cl_event; //ToDo #1881
     private костыль_для_ev_lst: List<cl_event>; //ToDo #1880
     
-    protected procedure Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event); override;
+    protected function Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event): sequence of Task; override;
     begin
       var ev_lst := new List<cl_event>;
       var ec: ErrorCode;
       
-      prev  .Invoke(c, cq,       prev_ev);
+      yield sequence prev  .Invoke(c, cq,       prev_ev);
       
-      a     .Invoke(c, cq, cl_event.Zero);
-      offset.Invoke(c, cq, cl_event.Zero); if offset.ev<>cl_event.Zero then ev_lst += offset.ev;
-      len   .Invoke(c, cq, cl_event.Zero); if len   .ev<>cl_event.Zero then ev_lst += len.ev;
+      yield sequence a     .Invoke(c, cq, cl_event.Zero);
+      yield sequence offset.Invoke(c, cq, cl_event.Zero); if offset.ev<>cl_event.Zero then ev_lst += offset.ev;
+      yield sequence len   .Invoke(c, cq, cl_event.Zero); if len   .ev<>cl_event.Zero then ev_lst += len.ev;
       
       ClearEvent;
       self.ev := cl.CreateUserEvent(c._context, ec);
@@ -852,7 +910,7 @@ type
       
       костыль_для_cq := cq;
       костыль_для_ev_lst := ev_lst;
-      Task.Run(()->
+      yield Task.Run(()->
       begin
         if a.ev<>cl_event.Zero then cl.WaitForEvents(1,@a.ev).RaiseIfError;
         var gchnd := GCHandle.Alloc(a.res, GCHandleType.Pinned);
@@ -890,6 +948,136 @@ function KernelArgCommandQueue.ReadData(a: CommandQueue<&Array>) := ReadData(a, 
 
 {$endregion ReadData}
 
+{$region PatternFill}
+
+type
+  KernelArgQueueDataFill = sealed class(KernelArgCommandQueue)
+    public ptr: CommandQueue<IntPtr>;
+    public pattern_len, offset, len: CommandQueue<integer>;
+    
+    public constructor(arg: KernelArgCommandQueue; ptr: CommandQueue<IntPtr>; pattern_len, offset, len: CommandQueue<integer>);
+    begin
+      inherited Create(arg);
+      self.ptr := ptr;
+      self.pattern_len := pattern_len;
+      self.offset := offset;
+      self.len := len;
+    end;
+    
+    private костыль_для_cq: cl_event; //ToDo #1881
+    private костыль_для_ev_lst: List<cl_event>; //ToDo #1880
+    
+    protected function Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event): sequence of Task; override;
+    begin
+      var ec: ErrorCode;
+      
+      yield sequence prev  .Invoke(c, cq, prev_ev);
+      
+      var ev_lst := new List<cl_event>;
+      yield sequence ptr         .Invoke(c, cq, cl_event.Zero); if ptr         .ev<>cl_event.Zero then ev_lst += ptr.ev;
+      yield sequence pattern_len .Invoke(c, cq, cl_event.Zero); if pattern_len .ev<>cl_event.Zero then ev_lst += pattern_len.ev;
+      yield sequence offset      .Invoke(c, cq, cl_event.Zero); if offset      .ev<>cl_event.Zero then ev_lst += offset.ev;
+      yield sequence len         .Invoke(c, cq, cl_event.Zero); if len         .ev<>cl_event.Zero then ev_lst += len.ev;
+      
+      ClearEvent;
+      self.ev := cl.CreateUserEvent(c._context, ec);
+      ec.RaiseIfError;
+      
+      костыль_для_cq := cq;
+      костыль_для_ev_lst := ev_lst;
+      yield Task.Run(()->
+      begin
+        if костыль_для_ev_lst.Count<>0 then cl.WaitForEvents(костыль_для_ev_lst.Count, костыль_для_ev_lst.ToArray).RaiseIfError;
+        
+        var buff_ev: cl_event;
+        if prev.ev=cl_event.Zero then
+          cl.EnqueueFillBuffer(костыль_для_cq, org.memobj, ptr.res,new UIntPtr(pattern_len.res), new UIntPtr(offset.res),new UIntPtr(len.res), 0,nil,@buff_ev).RaiseIfError else
+          cl.EnqueueFillBuffer(костыль_для_cq, org.memobj, ptr.res,new UIntPtr(pattern_len.res), new UIntPtr(offset.res),new UIntPtr(len.res), 1,@prev.ev,@buff_ev).RaiseIfError;
+        cl.WaitForEvents(1, @buff_ev).RaiseIfError;
+        
+        cl.SetUserEventStatus(self.ev, CommandExecutionStatus.COMPLETE);
+      end);
+      
+    end;
+    
+    public procedure Finalize; override;
+    begin
+      inherited Finalize;
+      ClearEvent;
+    end;
+    
+  end;
+  KernelArgQueueArrayFill = sealed class(KernelArgCommandQueue)
+    public a: CommandQueue<&Array>;
+    public offset, len: CommandQueue<integer>;
+    
+    public constructor(arg: KernelArgCommandQueue; a: CommandQueue<&Array>; offset, len: CommandQueue<integer>);
+    begin
+      inherited Create(arg);
+      self.a := a;
+      self.offset := offset;
+      self.len := len;
+    end;
+    
+    private костыль_для_cq: cl_event; //ToDo #1881
+    private костыль_для_ev_lst: List<cl_event>; //ToDo #1880
+    
+    protected function Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event): sequence of Task; override;
+    begin
+      var ev_lst := new List<cl_event>;
+      var ec: ErrorCode;
+      
+      yield sequence prev  .Invoke(c, cq,       prev_ev);
+      
+      yield sequence a     .Invoke(c, cq, cl_event.Zero);
+      yield sequence offset.Invoke(c, cq, cl_event.Zero); if offset.ev<>cl_event.Zero then ev_lst += offset.ev;
+      yield sequence len   .Invoke(c, cq, cl_event.Zero); if len   .ev<>cl_event.Zero then ev_lst += len.ev;
+      
+      ClearEvent;
+      self.ev := cl.CreateUserEvent(c._context, ec);
+      ec.RaiseIfError;
+      
+      костыль_для_cq := cq;
+      костыль_для_ev_lst := ev_lst;
+      yield Task.Run(()->
+      begin
+        if a.ev<>cl_event.Zero then cl.WaitForEvents(1,@a.ev).RaiseIfError;
+        var gchnd := GCHandle.Alloc(a.res, GCHandleType.Pinned);
+        var pattern_sz := Marshal.SizeOf(a.res.GetType.GetElementType) * a.res.Length;
+        
+        if костыль_для_ev_lst.Count<>0 then cl.WaitForEvents(костыль_для_ev_lst.Count, костыль_для_ev_lst.ToArray).RaiseIfError;
+        
+        var buff_ev: cl_event;
+        if prev.ev=cl_event.Zero then
+          cl.EnqueueFillBuffer(костыль_для_cq, org.memobj, gchnd.AddrOfPinnedObject,new UIntPtr(pattern_sz), new UIntPtr(offset.res),new UIntPtr(len.res), 0,nil,@buff_ev).RaiseIfError else
+          cl.EnqueueFillBuffer(костыль_для_cq, org.memobj, gchnd.AddrOfPinnedObject,new UIntPtr(pattern_sz), new UIntPtr(offset.res),new UIntPtr(len.res), 1,@prev.ev,@buff_ev).RaiseIfError;
+        cl.WaitForEvents(1,@buff_ev).RaiseIfError;
+        
+        cl.SetUserEventStatus(self.ev, CommandExecutionStatus.COMPLETE).RaiseIfError;
+        gchnd.Free;
+      end);
+      
+    end;
+    
+    public procedure Finalize; override;
+    begin
+      inherited Finalize;
+      ClearEvent;
+    end;
+    
+  end;
+  
+function KernelArgCommandQueue.PatternFill(ptr: CommandQueue<IntPtr>; pattern_len, offset, len: CommandQueue<integer>) :=
+new KernelArgQueueDataFill(self, ptr,pattern_len, offset,len);
+
+function KernelArgCommandQueue.PatternFill(a: CommandQueue<&Array>; offset, len: CommandQueue<integer>) :=
+new KernelArgQueueArrayFill(self, a, offset,len);
+
+function KernelArgCommandQueue.PatternFill(ptr: CommandQueue<IntPtr>; pattern_len: CommandQueue<integer>) := PatternFill(ptr,pattern_len, 0,integer(org.sz.ToUInt32));
+function KernelArgCommandQueue.PatternFill(a: CommandQueue<&Array>) := PatternFill(a, 0,integer(org.sz.ToUInt32));
+
+{$endregion PatternFill}
+
 {$endregion KernelArg}
 
 {$region Kernel}
@@ -905,9 +1093,10 @@ type
       self.res := org;
     end;
     
-    protected procedure Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event); override;
+    protected function Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event): sequence of Task; override;
     begin
       self.ev := prev_ev;
+      Result := System.Linq.Enumerable.Empty&<Task>;
     end;
     
   end;
@@ -935,18 +1124,18 @@ type
     private костыль_для_cq: cl_event; //ToDo #1881
     private костыль_для_ev_lst: List<cl_event>; //ToDo #1880
     
-    protected procedure Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event); override;
+    protected function Invoke(c: Context; cq: cl_command_queue; prev_ev: cl_event): sequence of Task; override;
     begin
       var ev_lst := new List<cl_event>;
       var ec: ErrorCode;
       
-      prev.Invoke(c, cq, prev_ev);
+      yield sequence prev.Invoke(c, cq, prev_ev);
       if prev.ev<>cl_event.Zero then
         ev_lst += prev.ev;
       
       foreach var arg_q in args_q do
       begin
-        arg_q.Invoke(c, cq, cl_event.Zero);
+        yield sequence arg_q.Invoke(c, cq, cl_event.Zero);
         if arg_q.ev<>cl_event.Zero then
           ev_lst += arg_q.ev;
       end;
@@ -958,9 +1147,8 @@ type
       костыль_для_c := c;
       костыль_для_cq := cq;
       костыль_для_ev_lst := ev_lst;
-      Task.Run(()->
+      yield Task.Run(()->
       begin
-      try
         if костыль_для_ev_lst.Count<>0 then cl.WaitForEvents(костыль_для_ev_lst.Count,костыль_для_ev_lst.ToArray);
         
         for var i := 0 to args_q.Length-1 do
@@ -974,9 +1162,6 @@ type
         cl.WaitForEvents(1,@kernel_ev).RaiseIfError;
         
         cl.SetUserEventStatus(self.ev, CommandExecutionStatus.COMPLETE);
-      except
-        on e: Exception do Writeln(e);
-      end;
       end);
       
     end;

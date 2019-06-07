@@ -1616,6 +1616,10 @@ type
     external 'opencl.dll' name 'clEnqueueFillBuffer';
     static function EnqueueFillBuffer(command_queue: cl_command_queue; buffer: cl_mem; [MarshalAs(UnmanagedType.LPArray)] pattern: array of byte; pattern_size: UIntPtr; offset: UIntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueFillBuffer';
+    static function EnqueueFillBuffer(command_queue: cl_command_queue; buffer: cl_mem; pattern: IntPtr; pattern_size: UIntPtr; offset: UIntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueFillBuffer';
+    static function EnqueueFillBuffer(command_queue: cl_command_queue; buffer: cl_mem; pattern: IntPtr; pattern_size: UIntPtr; offset: UIntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueFillBuffer';
     static function EnqueueFillBuffer(command_queue: cl_command_queue; buffer: cl_mem; pattern: pointer; pattern_size: UIntPtr; offset: UIntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueFillBuffer';
     static function EnqueueFillBuffer(command_queue: cl_command_queue; buffer: cl_mem; pattern: pointer; pattern_size: UIntPtr; offset: UIntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
