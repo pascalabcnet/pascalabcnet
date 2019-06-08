@@ -26,7 +26,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
         public override void visit(foreach_stmt fe)
         {
-            if (fe.in_what.DescendantNodes().OfType<function_lambda_definition>().Count() > 0)
+            if (fe.DescendantNodes().OfType<function_lambda_definition>().Count() > 0)
             {
                 var id = GenIdentName();
                 id.Parent = fe;
