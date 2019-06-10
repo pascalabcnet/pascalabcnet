@@ -680,7 +680,7 @@ namespace VisualPascalABC
                     		breakpoints_conditions.Remove(breakpoints[breakpoint]);
                         	WorkbenchServiceFactory.DebuggerManager.RemoveBreakpoint(breakpoints[breakpoint]);
                         }
-                        catch (System.Exception e)
+                        catch (System.Exception)
                         {
                         }
                         breakpoints.Remove(breakpoint);

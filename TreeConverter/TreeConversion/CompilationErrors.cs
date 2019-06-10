@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 //Все типы семантических ошибок компилятора.
 using System;
+using System.Collections.Generic;
 
 using PascalABCCompiler.SemanticTree;
 
@@ -471,9 +472,9 @@ namespace PascalABCCompiler.TreeConverter
     public class SeveralFunctionsCanBeCalled : CompilationError
     {
         private readonly ILocation _loc;
-        private readonly function_node_list _possible_functions;
+        private readonly List<function_node> _possible_functions;
 
-        public SeveralFunctionsCanBeCalled(ILocation loc, function_node_list set_of_possible_functions)
+        public SeveralFunctionsCanBeCalled(ILocation loc, List<function_node> set_of_possible_functions)
         {
             _loc = loc;
             _possible_functions = set_of_possible_functions;
@@ -487,7 +488,7 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
-        public function_node_list set_of_possible_functions
+        public List<function_node> set_of_possible_functions
         {
             get
             {

@@ -670,7 +670,7 @@ namespace VisualPascalABC
                 DebugWatchListWindow.RefreshWatch();
                 AdvancedDataGridView.TreeGridNode.UpdateNodesForLocalList(DebugVariablesListWindow.watchList, DebugVariablesListWindow.watchList.Nodes, items);
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
 
             }

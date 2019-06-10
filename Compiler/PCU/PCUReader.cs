@@ -287,7 +287,7 @@ namespace PascalABCCompiler.PCU
                 ChangeState(this, PCUReaderWriterState.EndReadTree, unit);
                 return unit;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 CloseUnit();
                 throw;
@@ -1688,6 +1688,7 @@ namespace PascalABCCompiler.PCU
             type_node type = GetTypeReference();
             common_type_node cont = (common_type_node)GetTypeReference(br.ReadInt32());
             constant_node expr = (constant_node)CreateExpressionWithOffset();
+            expr.type = type;
             SemanticTree.field_access_level fal = (SemanticTree.field_access_level)br.ReadByte();
             location loc = ReadDebugInfo();
             ccd = new class_constant_definition(name, expr, loc, cont, fal);
@@ -2961,7 +2962,9 @@ namespace PascalABCCompiler.PCU
             br.ReadBoolean();
             br.ReadInt32();
             br.ReadInt32();//namespace
+            type_node tn = GetTypeReference();
             constant_node en = (constant_node)CreateExpressionWithOffset();
+            en.type = tn;
             location loc = ReadDebugInfo();
             ncd = new namespace_constant_definition(name,en,loc,cun.namespaces[0]);
             cun.namespaces[0].constants.AddElement(ncd);
@@ -2991,7 +2994,9 @@ namespace PascalABCCompiler.PCU
                 name = br.ReadString();
             }
             br.ReadInt32();//namespace
+            type_node cnst_type = GetTypeReference();
             constant_node en = (constant_node)CreateExpressionWithOffset();
+            en.type = cnst_type;
             location loc = ReadDebugInfo();
             ncd = new namespace_constant_definition(name, en, loc, cun.namespaces[(is_interface)?0:1]);
             cun.namespaces[(is_interface) ? 0 : 1].constants.AddElement(ncd);        

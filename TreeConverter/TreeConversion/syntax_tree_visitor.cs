@@ -1140,7 +1140,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     //Важная проверка. Возможно один и тот же оператор с одними и теми же типами определен в двух разных классах.
                     //Возможно она занимает много времени, но, наверное, от нее нельзя отказаться.
-                    function_node_list funcs = new function_node_list();
+                    List<function_node> funcs = new List<function_node>();
                     foreach(SymbolInfo sic in sil)
                     {
                         if (sic.sym_info.general_node_type != general_node_type.function_node)
@@ -1158,7 +1158,7 @@ namespace PascalABCCompiler.TreeConverter
                         if (convertion_data_and_alghoritms.is_exist_eq_method_in_list(fn, funcs) == null)
                         {
                             //break;
-                            funcs.AddElement(fn);
+                            funcs.Add(fn);
                         }
                     }
                     //TODO: Разобраться с зацикливанием.
@@ -1356,7 +1356,7 @@ namespace PascalABCCompiler.TreeConverter
         	return false;
         }
         
-        private base_function_call_list convert_functions_to_calls(expression_node obj, function_node_list fnl, location loc, bool is_static)
+        private base_function_call_list convert_functions_to_calls(expression_node obj, List<function_node> fnl, location loc, bool is_static)
         {
             base_function_call_list ret = new base_function_call_list();
             foreach (function_node fnode in fnl)
@@ -1529,7 +1529,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return new base_function_call_list();
             }
-            function_node_list fnl = new function_node_list();
+            var fnl = new List<function_node>();
             foreach(SymbolInfo si in sil)
             {
                 function_node fn = si.sym_info as function_node;
@@ -1548,12 +1548,12 @@ namespace PascalABCCompiler.TreeConverter
                         if (fn.is_extension_method)
                         {
                             if (obj != null && (fn.parameters[0].type == obj.type || type_table.compare_types(fn.parameters[0].type, obj.type) == type_compare.greater_type))
-                                fnl.AddElementFirst(fn);
+                                fnl.Insert(0,fn);
                             else
-                                fnl.AddElement(fn);
+                                fnl.Add(fn);
                         }
                         else
-                            fnl.AddElement(fn);
+                            fnl.Add(fn);
                     }
                 }
                 else
@@ -1566,8 +1566,8 @@ namespace PascalABCCompiler.TreeConverter
 
         private base_function_call_list create_possible_delegates_list(expression_node obj, function_node func, location loc, bool is_static)
         {
-            function_node_list fnl = new function_node_list();
-            fnl.AddElement(func);
+            var fnl = new List<function_node>();
+            fnl.Add(func);
             return convert_functions_to_calls(obj, fnl, loc, is_static);
         }
 
@@ -3048,7 +3048,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
-                if (tp.is_generic_parameter && !tp.is_class)
+                if (tp.is_generic_parameter && !tp.is_class && !(tp.base_type != null && tp.base_type.is_class))
                     AddError(get_location(node.type_def), "OPERATOR_AS_CAN_NOT_BE_USED_WITH_GENERIC_PARAMETER_{0}_WITHOUT_CLASS_CONSTRAINT", tp.name);
                 if (tp.is_value_type)
                     AddError(get_location(node.type_def), "OPERATOR_AS_MUST_BE_USED_WITCH_A_REFERENCE_TYPE_VALUETYPE{0}", tp.PrintableName);
@@ -3224,7 +3224,8 @@ namespace PascalABCCompiler.TreeConverter
                 if (id != null)
                 {
                     mc = new SyntaxTree.method_call();
-                    mc.dereferencing_value = id;
+                    mc.dereferencing_value = id; // дело в том, что это присваивание перенаправляет Parent на method_call, которого нет в синтаксическом дереве. 
+                    id.Parent = _procedure_call; // fix #891 вернули Parent назад
                     //DarkStar Add
                     //Добавил т.к. нужно для генерации отладочной инфы
                     mc.source_context = id.source_context;
@@ -3236,6 +3237,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         mc = new SyntaxTree.method_call();
                         mc.dereferencing_value = adrv;
+                        adrv.Parent = _procedure_call; // fix #891
                         //DarkStar Add
                         //Добавил т.к. нужно для генерации отладочной инфы
                         mc.source_context = adrv.source_context;
@@ -5326,7 +5328,7 @@ namespace PascalABCCompiler.TreeConverter
                                         {
                                             LambdaHelper.processingLambdaParametersForTypeInference++;
                                             // SSM 21.05.14 - попытка обработать перегруженные функции с параметрами-лямбдами с различными возвращаемыми значениями
-                                            function_node_list spf = null;
+                                            List<function_node> spf = null;
                                             try
                                             {
                                                 ThrowCompilationError = false;
@@ -5789,7 +5791,7 @@ namespace PascalABCCompiler.TreeConverter
                                         {
                                             LambdaHelper.processingLambdaParametersForTypeInference++;
                                             // SSM 21.05.14 - попытка обработать перегруженные функции с параметрами-лямбдами с различными возвращаемыми значениями
-                                            function_node_list spf = null;
+                                            List<function_node> spf = null;
                                             try
                                             {
                                                 function_node ffn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc, syntax_nodes_parameters);
@@ -5883,8 +5885,10 @@ namespace PascalABCCompiler.TreeConverter
                                                                 var fl = fld.lambda_visit_mode;
 
                                                                 // запомнили типы параметров лямбды - SSM
-                                                                object[] realparamstype = new object[fld.formal_parameters.params_list.Count]; // здесь хранятся выведенные типы лямбд или null если типы явно заданы
-                                                                for (var k = 0; k < fld.formal_parameters.params_list.Count; k++)
+                                                                var fld_formal_parameters_Count = fld.formal_parameters == null ? 0 : fld.formal_parameters.params_list.Count;
+
+                                                                object[] realparamstype = new object[fld_formal_parameters_Count]; // здесь хранятся выведенные типы лямбд или null если типы явно заданы
+                                                                for (var k = 0; k < fld_formal_parameters_Count; k++)
                                                                 {
                                                                     var laminftypeK = fld.formal_parameters.params_list[k].vars_type as SyntaxTree.lambda_inferred_type;
                                                                     if (laminftypeK == null)
@@ -5939,7 +5943,7 @@ namespace PascalABCCompiler.TreeConverter
                                                                     if (restype != null)
                                                                         restype.real_type = realrestype;
                                                                     // восстанавливаем сохраненные типы параметров лямбды, которые не были заданы явно
-                                                                    for (var k = 0; k < fld.formal_parameters.params_list.Count; k++)
+                                                                    for (var k = 0; k < fld_formal_parameters_Count; k++)
                                                                     {
                                                                         var laminftypeK = fld.formal_parameters.params_list[k].vars_type as SyntaxTree.lambda_inferred_type;
                                                                         if (laminftypeK != null)
@@ -6082,7 +6086,7 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 LambdaHelper.processingLambdaParametersForTypeInference++;
                                 // SSM 21.05.14 - попытка обработать перегруженные функции с параметрами-лямбдами с различными возвращаемыми значениями
-                                function_node_list spf = null;
+                                List<function_node> spf = null;
                                 try
                                 {
                                     function_node ffn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc, syntax_nodes_parameters);
@@ -7000,7 +7004,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         LambdaHelper.processingLambdaParametersForTypeInference++;
                         // SSM 21.05.14 - попытка обработать перегруженные функции с параметрами-лямбдами с различными возвращаемыми значениями
-                        function_node_list spf = null;
+                        List<function_node> spf = null;
                         try
                         {
                             function_node fn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc2, syntax_nodes_parameters);
@@ -9813,7 +9817,8 @@ namespace PascalABCCompiler.TreeConverter
             if (_dot_node.left is closure_substituting_node)
             {
                 var left = (closure_substituting_node)_dot_node.left;
-                var dotNodeToVisit = new dot_node(left.substitution, _dot_node.right);
+                var dotNodeToVisit = new dot_node(left.substitution, _dot_node.right); // Подменить dot_node в этот момент на этапе семантики
+                dotNodeToVisit.Parent = _dot_node.Parent; // SSM 01.06.19
                 visit(dotNodeToVisit);
                 return;
             }
@@ -12356,6 +12361,8 @@ namespace PascalABCCompiler.TreeConverter
                         type_node spec_type = ret.visit(ntr);
                         if (spec_type is ref_type_node || spec_type == SystemLibrary.SystemLibrary.void_type || spec_type == SystemLibrary.SystemLibrary.pointer_type)
                             AddError(new SimpleSemanticError(get_location(specificators[i]), "INAVLID_TYPE"));
+                        //if (spec_type.is_class)
+                        //    param.is_class = true;
                         if (spec_type.IsInterface)
                         {
                             if (used_interfs[spec_type] != null)
@@ -16662,8 +16669,12 @@ namespace PascalABCCompiler.TreeConverter
                     }
             	case semantic_node_type.compiled_variable_definition:
             		{
-            			return new static_compiled_variable_reference((compiled_variable_definition)dn,lloc);
-            		}
+                        compiled_variable_definition cvd = dn as compiled_variable_definition;
+                        if (cvd.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
+            			    return new static_compiled_variable_reference(cvd, lloc);
+                        expression_node obj = GetCurrentObjectReference(cvd.cont_type.Scope, cvd, lloc); //new this_node(context.converted_type, lloc);
+                        return new compiled_variable_reference(cvd, obj, lloc);
+                    }
                 default: throw new NotSupportedError(lloc);
             }
             return null;
@@ -18134,7 +18145,7 @@ namespace PascalABCCompiler.TreeConverter
                     var syntax_nodes_parameters = lambdas_info.Item2;
 
                     // SSM 21.05.14 - попытка обработать перегруженные функции с параметрами-лямбдами с различными возвращаемыми значениями
-                    function_node_list spf = null;
+                    List<function_node> spf = null;
                     try
                     {
                         function_node fn = convertion_data_and_alghoritms.select_function(exprs, sil, loc,
@@ -20159,6 +20170,18 @@ namespace PascalABCCompiler.TreeConverter
                 var expr = st.lst[0] as expression;
                 var type = st.lst[1] as type_definition;
                 CheckIfCanBeMatched(expr, type);
+            }
+            else if (st.typ is SemanticCheckType.MatchedExpressionAndExpression)
+            {
+                var matchedExpr = st.lst[0] as expression;
+                var patternExpr = st.lst[1] as expression;
+                CheckIfCanBeMatched(matchedExpr, patternExpr);
+            }
+            else if (st.typ is SemanticCheckType.MatchedTuple)
+            {
+                var tuple = st.lst[0] as expression;
+                var length = st.lst[1] as int32_const;
+                CheckIfCanBeMatched(tuple, length);
             }
             // !Patterns
             else

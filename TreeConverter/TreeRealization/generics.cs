@@ -145,7 +145,7 @@ namespace PascalABCCompiler.TreeRealization
             {
                 generic_parameter_eliminations gpe = gpe_list[i];
                 type_node tn = tparams[i];
-                if (gpe.is_class && !tn.is_class)
+                if (gpe.is_class && !tn.is_class && !(tn.base_type != null && tn.base_type.is_class))
                 {
                     return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_REFERENCE_TYPE", tn.PrintableName);
                 }

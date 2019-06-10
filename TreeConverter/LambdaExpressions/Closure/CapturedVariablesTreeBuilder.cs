@@ -164,7 +164,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 si.sym_info.semantic_node_type == semantic_node_type.common_namespace_function_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.namespace_constant_definition ||
                 si.sym_info.semantic_node_type == semantic_node_type.compiled_function_node ||
-                si.sym_info.semantic_node_type == semantic_node_type.common_method_node || // SSM bug fix  #167
+                //si.sym_info.semantic_node_type == semantic_node_type.common_method_node || // SSM bug fix  #167 - SSM 30.05.19 эта строчка не влияет на #167 и я её закомментировал
                 si.sym_info.semantic_node_type == semantic_node_type.compiled_namespace_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.compiled_variable_definition ||
                 si.sym_info.semantic_node_type == semantic_node_type.common_type_node ||
@@ -242,13 +242,13 @@ namespace TreeConverter.LambdaExpressions.Closure
                 var prScope = scope as CapturedVariablesTreeNodeProcedureScope;
                 if (prScope != null && acceptableVarType)
                 {
-                    if (si.sym_info.semantic_node_type == semantic_node_type.local_variable)
+                    /*if (si.sym_info.semantic_node_type == semantic_node_type.local_variable)
                     {
                         if (!(idName == compiler_string_consts.self_word && si.scope is SymbolTable.ClassMethodScope && _classScope != null) && InLambdaContext)
                         {
                             _visitor.AddError(new ThisTypeOfVariablesCannotBeCaptured(_visitor.get_location(id)));
                         }
-                    }
+                    }*/
                     if (si.sym_info.semantic_node_type == semantic_node_type.common_parameter && prScope.FunctionNode.parameters.First(v => v.name.ToLower() == idName).parameter_type != parameter_type.value && InLambdaContext)
                     {
                         _visitor.AddError(new CannotCaptureNonValueParameters(_visitor.get_location(id)));
