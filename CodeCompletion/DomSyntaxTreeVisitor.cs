@@ -1970,6 +1970,12 @@ namespace CodeCompletion
                     ts.topScope = cur_scope;
                     ts.declaringUnit = entry_scope;
                     //ts.si.describe = "type "+ret_tn.si.name+" = "+ret_tn.si.describe;
+                    if (_type_declaration.type_def is enum_type_definition && ts.loc.begin_line_num != ts.loc.end_line_num)
+                    {
+                        location loc = get_location(_type_declaration.type_def);
+                        ts.head_loc = new location(loc.begin_line_num, loc.begin_column_num, loc.begin_line_num, loc.begin_column_num, doc);
+                        ts.body_loc = loc;
+                    }
                     cur_scope.AddName(_type_declaration.type_name.name, ts);
                     if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_type_declaration))
                         ts.AddDocumentation(this.converter.controller.docs[_type_declaration]);
