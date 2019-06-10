@@ -242,13 +242,13 @@ namespace TreeConverter.LambdaExpressions.Closure
                 var prScope = scope as CapturedVariablesTreeNodeProcedureScope;
                 if (prScope != null && acceptableVarType)
                 {
-                    if (si.sym_info.semantic_node_type == semantic_node_type.local_variable)
+                    /*if (si.sym_info.semantic_node_type == semantic_node_type.local_variable)
                     {
                         if (!(idName == compiler_string_consts.self_word && si.scope is SymbolTable.ClassMethodScope && _classScope != null) && InLambdaContext)
                         {
                             _visitor.AddError(new ThisTypeOfVariablesCannotBeCaptured(_visitor.get_location(id)));
                         }
-                    }
+                    }*/
                     if (si.sym_info.semantic_node_type == semantic_node_type.common_parameter && prScope.FunctionNode.parameters.First(v => v.name.ToLower() == idName).parameter_type != parameter_type.value && InLambdaContext)
                     {
                         _visitor.AddError(new CannotCaptureNonValueParameters(_visitor.get_location(id)));
