@@ -12,6 +12,7 @@ begin
   var b: t1;
   a := b as T;
   p2&<t1>(b);
+  p2&<T>(a);
   assert(a = nil);
 end;
 

@@ -3048,7 +3048,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
-                if (tp.is_generic_parameter && !tp.is_class)
+                if (tp.is_generic_parameter && !tp.is_class && !(tp.base_type != null && tp.base_type.is_class))
                     AddError(get_location(node.type_def), "OPERATOR_AS_CAN_NOT_BE_USED_WITH_GENERIC_PARAMETER_{0}_WITHOUT_CLASS_CONSTRAINT", tp.name);
                 if (tp.is_value_type)
                     AddError(get_location(node.type_def), "OPERATOR_AS_MUST_BE_USED_WITCH_A_REFERENCE_TYPE_VALUETYPE{0}", tp.PrintableName);
@@ -12361,8 +12361,8 @@ namespace PascalABCCompiler.TreeConverter
                         type_node spec_type = ret.visit(ntr);
                         if (spec_type is ref_type_node || spec_type == SystemLibrary.SystemLibrary.void_type || spec_type == SystemLibrary.SystemLibrary.pointer_type)
                             AddError(new SimpleSemanticError(get_location(specificators[i]), "INAVLID_TYPE"));
-                        if (spec_type.is_class)
-                            param.is_class = true;
+                        //if (spec_type.is_class)
+                        //    param.is_class = true;
                         if (spec_type.IsInterface)
                         {
                             if (used_interfs[spec_type] != null)
