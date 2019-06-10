@@ -12361,6 +12361,8 @@ namespace PascalABCCompiler.TreeConverter
                         type_node spec_type = ret.visit(ntr);
                         if (spec_type is ref_type_node || spec_type == SystemLibrary.SystemLibrary.void_type || spec_type == SystemLibrary.SystemLibrary.pointer_type)
                             AddError(new SimpleSemanticError(get_location(specificators[i]), "INAVLID_TYPE"));
+                        if (spec_type.is_class)
+                            param.is_class = true;
                         if (spec_type.IsInterface)
                         {
                             if (used_interfs[spec_type] != null)
