@@ -189,11 +189,22 @@ namespace TreeConverter.LambdaExpressions.Closure
                                     ;
             //trjuk, chtoby ne perelopachivat ves kod. zamenjaem ident na self.ident
             // Использую этот трюк для нестатических полей предков - они не захватываются из-за плохого алгоритма захвата
-            if ((si.sym_info.semantic_node_type == semantic_node_type.class_field && !(si.sym_info as class_field).IsStatic 
-                || si.sym_info.semantic_node_type == semantic_node_type.common_method_node && !(si.sym_info as common_method_node).IsStatic
+            // aab 12.06.19 begin
+            // Добавил такое же переименование для статичесских полей класса. Теперь захват работает
+            if ((si.sym_info.semantic_node_type == semantic_node_type.class_field || si.sym_info.semantic_node_type == semantic_node_type.common_method_node
                 || si.sym_info.semantic_node_type == semantic_node_type.common_event || si.sym_info.semantic_node_type == semantic_node_type.common_property_node) && InLambdaContext)
             {
-                dot_node dn = new dot_node(new ident("self", id.source_context), new ident(id.name, id.source_context), id.source_context);
+                dot_node dn = null;
+                if (si.sym_info.semantic_node_type == semantic_node_type.class_field && (si.sym_info as class_field).IsStatic
+                || si.sym_info.semantic_node_type == semantic_node_type.common_method_node && (si.sym_info as common_method_node).IsStatic)
+                {
+                    dn = new dot_node(new ident(si.scope.Name.Remove(0, 6), id.source_context), new ident(id.name, id.source_context), id.source_context);
+                }
+                else
+                {
+                    dn = new dot_node(new ident("self", id.source_context), new ident(id.name, id.source_context), id.source_context);
+                }
+                // aab 12.06.19 end
                 bool ok = true;
                 try
                 {
