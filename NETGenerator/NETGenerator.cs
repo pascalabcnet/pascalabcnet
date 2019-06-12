@@ -5433,8 +5433,9 @@ namespace PascalABCCompiler.NETGenerator
                     {
                         if (lb.LocalType.IsGenericParameter)
                         {
-                            il.Emit(OpCodes.Ldloc, lb);
-                            il.Emit(OpCodes.Box, lb.LocalType);
+                            //il.Emit(OpCodes.Ldloc, lb);
+                            //il.Emit(OpCodes.Box, lb.LocalType);
+                            il.Emit(OpCodes.Ldloca, lb); // #1986
                         }
                         else
                             if (lb.LocalType.IsValueType)
