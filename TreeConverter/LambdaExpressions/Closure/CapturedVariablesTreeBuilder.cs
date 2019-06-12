@@ -164,7 +164,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 si.sym_info.semantic_node_type == semantic_node_type.common_namespace_function_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.namespace_constant_definition ||
                 si.sym_info.semantic_node_type == semantic_node_type.compiled_function_node ||
-                //si.sym_info.semantic_node_type == semantic_node_type.common_method_node || // SSM bug fix  #167 - SSM 30.05.19 эта строчка не влияет на #167 и я её закомментировал
+                //si.sym_info.semantic_node_type == semantic_node_type.common_method_node || // SSM bug fix  #1991 11.06.19  конкурирует с #891
                 si.sym_info.semantic_node_type == semantic_node_type.compiled_namespace_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.compiled_variable_definition ||
                 si.sym_info.semantic_node_type == semantic_node_type.common_type_node ||
@@ -212,6 +212,48 @@ namespace TreeConverter.LambdaExpressions.Closure
                     return;
                 }
             }
+
+            if (si.sym_info.semantic_node_type == semantic_node_type.common_method_node && (si.sym_info as common_method_node).IsStatic)
+            {
+                // надо дописывать к идентификатору имя типа. Подниматься по синтаксическому дереву конечно долго ))
+                syntax_tree_node sn = id;
+                ident cname = null;
+                while (!(sn is procedure_definition) && sn != null) // Это если метод класса определен вне интерфейса класса
+                    sn = sn.Parent;
+                if (sn != null)
+                {
+                    var pd = sn as procedure_definition;
+                    var ph = pd.proc_header;
+                    if (ph.name.class_name != null)
+                    {
+                        cname = ph.name.class_name;
+                        addressed_value id1 = null;
+                        if (cname is template_type_name ttn)
+                        {
+                            var tpl = new template_param_list(ttn.template_args.idents.Select(l => SyntaxTreeBuilder.BuildSimpleType(l.name)).ToList(), ttn.template_args.source_context);
+                            id1 = new ident_with_templateparams(new ident(ttn.name, ttn.source_context), tpl,ttn.source_context);
+                        }
+                        else id1 = new ident(cname.name, cname.source_context);
+                        dot_node dn = new dot_node(id1, new ident(id.name, id.source_context), id.source_context);
+                        id.Parent.ReplaceDescendantUnsafe(id, dn);
+                        ProcessNode(id.Parent);
+                        return;
+                    }
+                }
+                while (!(sn is class_definition) && sn != null)
+                    sn = sn.Parent;
+                if (sn != null)
+                {
+                    var cd = sn as class_definition;
+                    cname = (cd.Parent as type_declaration).type_name;
+                    dot_node dn = new dot_node(new ident(cname.name, cname.source_context), new ident(id.name, id.source_context), id.source_context);
+                    id.Parent.ReplaceDescendantUnsafe(id, dn);
+                    ProcessNode(id.Parent);
+                }
+                return;
+            }
+                
+
             if (!(acceptableVarType) && InLambdaContext) 
             {
                 _visitor.AddError(new ThisTypeOfVariablesCannotBeCaptured(_visitor.get_location(id)));
