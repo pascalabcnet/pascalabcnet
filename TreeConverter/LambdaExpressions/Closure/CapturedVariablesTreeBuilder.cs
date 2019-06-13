@@ -195,10 +195,29 @@ namespace TreeConverter.LambdaExpressions.Closure
                 || si.sym_info.semantic_node_type == semantic_node_type.common_event || si.sym_info.semantic_node_type == semantic_node_type.common_property_node) && InLambdaContext)
             {
                 dot_node dn = null;
-                if (si.sym_info.semantic_node_type == semantic_node_type.class_field && (si.sym_info as class_field).IsStatic
-                || si.sym_info.semantic_node_type == semantic_node_type.common_method_node && (si.sym_info as common_method_node).IsStatic)
+                // Поменял принцип добавления имени класса для статических полей и функций
+                Func<common_type_node, addressed_value> getClassIdent = (classNode) =>
                 {
-                    dn = new dot_node(new ident(si.scope.Name.Remove(0, 6), id.source_context), new ident(id.name, id.source_context), id.source_context);
+                    if (classNode.name.Contains("<"))
+                    {
+                        var classIdent = new ident(classNode.name.Remove(classNode.name.IndexOf("<")));
+                        var templateParams = new template_param_list(classNode.instance_params.Select(x => x.name).Aggregate("", (acc, elem) => acc += elem));
+                        return new ident_with_templateparams(classIdent, templateParams);
+                    }
+                    else
+                    {
+                        return new ident(classNode.name);
+                    }
+                };
+                if (si.sym_info is class_field classField && classField.IsStatic)
+                {
+                    dn = new dot_node(getClassIdent(classField.cont_type),
+                        new ident(id.name, id.source_context), id.source_context);
+                }
+                else if (si.sym_info is common_method_node commonMethodNode && commonMethodNode.IsStatic)
+                {
+                    dn = new dot_node(getClassIdent(commonMethodNode.cont_type),
+                        new ident(id.name, id.source_context), id.source_context);
                 }
                 else
                 {
