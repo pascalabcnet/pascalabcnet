@@ -18,11 +18,18 @@ using System.Text;
 
 namespace PascalABCCompiler.SyntaxTree
 {
-    public partial class CollectLightSymInfoVisitor : BaseEnterExitVisitor
+    public partial class CollectLightSymInfoVisitor
     {
-        public void AddSymbol(ident name, SymKind kind, type_definition td = null, Attributes attr = 0)
+        public virtual void AddSymbol(ident name, SymKind kind, type_definition td = null, Attributes attr = 0)
         {
             Current.Symbols.Add(new SymInfoSyntax(name, kind, td, attr));
+        }
+        public void AddSymbols(List<ident> names, SymKind kind, type_definition td = null, Attributes attr = 0)
+        {
+            foreach (var n in names)
+            {
+                AddSymbol(n, kind, td, attr);
+            }
         }
         public string Spaces(int n) => new string(' ', n);
         public void OutputString(string s) => System.IO.File.AppendAllText(fname, s);
