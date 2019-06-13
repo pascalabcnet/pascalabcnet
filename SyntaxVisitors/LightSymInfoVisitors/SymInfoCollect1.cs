@@ -23,6 +23,9 @@ namespace PascalABCCompiler.SyntaxTree
     public partial class CollectLightSymInfoVisitor : BaseEnterExitVisitor
     {
         public ScopeSyntax Root;
+        /// <summary>
+        /// Текущее пространство имен
+        /// </summary>
         public ScopeSyntax Current;
 
         public static CollectLightSymInfoVisitor New => new CollectLightSymInfoVisitor();
@@ -124,19 +127,14 @@ namespace PascalABCCompiler.SyntaxTree
             var attr = vd.var_attr == definition_attribute.Static ? Attributes.class_attr : 0;
             if (vd == null || vd.vars == null || vd.vars.list == null)
                 return;
-            var type = vd.vars_type;
-            var q = vd.vars.list.Select(x => new SymInfoSyntax(x, SymKind.var, type, attr));
-            if (q.Count() > 0)
-                Current.Symbols.AddRange(q);
+            AddSymbols(vd.vars.list, SymKind.var, vd.vars_type, attr);
             base.visit(vd);
         }
         public override void visit(formal_parameters fp)
         {
             foreach (var pg in fp.params_list)
             {
-                var type = pg.vars_type;
-                var q = pg.idents.idents.Select(x => new SymInfoSyntax(x, SymKind.param, type));
-                Current.Symbols.AddRange(q);
+                AddSymbols(pg.idents.idents, SymKind.param, pg.vars_type);
             }
             base.visit(fp);
         }
