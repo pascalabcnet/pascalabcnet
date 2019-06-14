@@ -203,7 +203,7 @@ namespace CodeCompletionTools
                     return xdoc.GetDocumentation("T:" + t.FullName, false);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
             }

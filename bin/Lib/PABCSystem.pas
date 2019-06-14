@@ -1922,7 +1922,7 @@ function MatrRandomInteger(m: integer := 5; n: integer := 5; a: integer := 0; b:
 function MatrRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real := 10): array [,] of real;
 /// Возвращает двумерный массив размера m x n, заполненный элементами x 
 function MatrFill<T>(m, n: integer; x: T): array [,] of T;
-/// Возвращает двумерный массив размера m x n, заполненный элементами x 
+/// Возвращает двумерный массив размера m x n, заполненный элементами gen(i,j) 
 function MatrGen<T>(m, n: integer; gen: (integer,integer)->T): array [,] of T;
 /// Транспонирует двумерный массив 
 function Transpose<T>(a: array [,] of T): array [,] of T;

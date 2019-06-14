@@ -1151,7 +1151,7 @@ namespace VisualPascalABC
                             continue;
                         list.Add(new ValueItem(v,this.DebugType));
                 	}
-                	catch (System.Exception e)
+                	catch (System.Exception)
                 	{
                 	}
             	}

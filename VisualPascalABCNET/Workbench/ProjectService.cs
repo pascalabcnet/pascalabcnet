@@ -141,7 +141,7 @@ namespace VisualPascalABC
             {
                 MessageBox.Show(Form1StringResources.Get("TOO_OLD_PROJECT_FILE_VERSION"), PascalABCCompiler.StringResources.Get("!ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 MessageBox.Show(Form1StringResources.Get("ERROR_OPEN_PROJECT"), PascalABCCompiler.StringResources.Get("!ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
