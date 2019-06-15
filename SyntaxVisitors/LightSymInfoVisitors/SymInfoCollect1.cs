@@ -41,15 +41,18 @@ namespace PascalABCCompiler.SyntaxTree
                     break;
                 case procedure_definition p:
                     var name = p.proc_header?.name?.meth_name;
+                    if (name == null)
+                        name = "create";
                     var attr = p.proc_header.class_keyword ? Attributes.class_attr : 0;
-                    if (p.proc_header is function_header && name != null)
-                        AddSymbol(name, SymKind.funcname,null, attr);
-                    else AddSymbol(name, SymKind.procname, null, attr);
+                    if (name != null)
+                        if (p.proc_header is function_header)
+                            AddSymbol(name, SymKind.funcname,null, attr);
+                        else AddSymbol(name, SymKind.procname, null, attr);
                     t = new ProcScopeSyntax(name);
                     break;
-                case formal_parameters p:
-                    t = new ParamsScopeSyntax();
-                    break;
+                //case formal_parameters p:// Это неправильный Scope - он закрывался при выходе из секции формальных параметров, что неправильно
+                //    t = new ParamsScopeSyntax();
+                //    break;
                 case statement_list p:
                     t = new StatListScopeSyntax();
                     break;
@@ -103,13 +106,17 @@ namespace PascalABCCompiler.SyntaxTree
                 }
             }
         }
+        public virtual void PreExitScope(syntax_tree_node st)
+        {
+
+        }
         public override void Exit(syntax_tree_node st)
         {
             switch (st)
             {
                 case program_module p:
                 case procedure_definition pd:
-                case formal_parameters fp:
+                //case formal_parameters fp:
                 case statement_list stl:
                 case for_node f:
                 case foreach_stmt fe:
@@ -118,6 +125,7 @@ namespace PascalABCCompiler.SyntaxTree
                 case function_lambda_definition fld:
                 //case repeat_node rep:
                 case case_node cas:
+                    PreExitScope(st);
                     Current = Current.Parent;
                     break;
             }

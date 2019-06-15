@@ -54,6 +54,12 @@ namespace PascalABCCompiler
         {
             warns.Add(new GenericWarning(message, loc));
         }
+        private void AddWarningAssignWithoutUsing(string name, location loc)
+        {
+            if (name.Contains("$"))
+                return;
+            warns.Add(new AssignWithoutUsing(name,loc));
+        }
 
         private void AddHint(string message, location loc)
         {
@@ -91,7 +97,7 @@ namespace PascalABCCompiler
                 		namespace_variable vdn = vdn2 as namespace_variable;
                 		VarInfo vi = helper.GetVariable(vdn);
                     	if (isUnused(vi, vdn)) warns.Add(new UnusedVariable(vdn.name, vdn.loc));
-                   	 	if (vi.num_ass > 0 && vi.act_num_use == 0) warns.Add(new AssignWithoutUsing(vdn.name, vi.last_ass_loc));
+                   	 	if (vi.num_ass > 0 && vi.act_num_use == 0) AddWarningAssignWithoutUsing(vdn.name, vi.last_ass_loc);
                     //if (vi.num_ass == 0 && vi.act_num_use > 0) helper.AddRealWarning(vdn, warns);
                 	}
                 	else if (vdn2 is local_block_variable)
@@ -99,7 +105,7 @@ namespace PascalABCCompiler
                 		local_block_variable vdn = vdn2 as local_block_variable;
                 		VarInfo vi = helper.GetVariable(vdn);
                         if (isUnused(vi, vdn)) warns.Add(new UnusedVariable(vdn.name, vdn.loc));
-                    	if (vi.num_ass > 0 && vi.act_num_use == 0) warns.Add(new AssignWithoutUsing(vdn.name, vi.last_ass_loc));
+                    	if (vi.num_ass > 0 && vi.act_num_use == 0) AddWarningAssignWithoutUsing(vdn.name, vi.last_ass_loc);
                 	}
                 }
                 foreach (common_type_node ctn in cnn.types)
@@ -285,7 +291,7 @@ namespace PascalABCCompiler
                             !helper.IsExternal(cnfn))
                         warns.Add(new UndefinedReturnValue(cnfn.name, cnfn.function_code.location));
                 	if (vi.num_ass > 0 && vi.act_num_use == 0 && !vdn.is_special_name)
-                        warns.Add(new AssignWithoutUsing(vdn.name, vi.last_ass_loc));
+                        AddWarningAssignWithoutUsing(vdn.name, vi.last_ass_loc);
             	}
             	else if (vdn2 is local_block_variable)
             	{
@@ -303,7 +309,7 @@ namespace PascalABCCompiler
                              !helper.IsExternal(cnfn))
                         warns.Add(new UndefinedReturnValue(cnfn.name, cnfn.function_code.location));
                 	if (vi.num_ass > 0 && vi.act_num_use == 0 && !vdn.is_special_name)
-                        warns.Add(new AssignWithoutUsing(vdn.name, vi.last_ass_loc));
+                        AddWarningAssignWithoutUsing(vdn.name, vi.last_ass_loc);
             	}
             	if (vdn2.inital_value != null)
                     VisitExpression(vdn2.inital_value);
@@ -354,14 +360,14 @@ namespace PascalABCCompiler
                              !helper.IsExternal(cnfn))
                         warns.Add(new UndefinedReturnValue(cnfn.name, cnfn.function_code.location));
                 	if (vi.num_ass > 0 && vi.act_num_use == 0 && !vdn.is_special_name)
-                        warns.Add(new AssignWithoutUsing(vdn.name, vi.last_ass_loc));
+                        AddWarningAssignWithoutUsing(vdn.name, vi.last_ass_loc);
             	}
             	else if (vdn2 is local_block_variable)
             	{
             		local_block_variable vdn = vdn2 as local_block_variable;
             		VarInfo vi = helper.GetVariable(vdn);
                     if (isUnused(vi, vdn))
-                        warns.Add(new UnusedVariable(vdn.name, vdn.loc));
+                        AddWarningAssignWithoutUsing(vdn.name, vdn.loc);
                     else if (vi.num_ass == 0 && 
                              vdn.is_ret_value && 
                              !cnfn.name.StartsWith("<") && 
@@ -371,7 +377,7 @@ namespace PascalABCCompiler
                              !helper.IsExternal(cnfn))
                         warns.Add(new UndefinedReturnValue(cnfn.name, cnfn.function_code.location));
                 	if (vi.num_ass > 0 && vi.act_num_use == 0 && !vdn.is_special_name)
-                        warns.Add(new AssignWithoutUsing(vdn.name, vi.last_ass_loc));
+                        AddWarningAssignWithoutUsing(vdn.name, vi.last_ass_loc);
             	}
             	if (vdn2.inital_value != null)
                     VisitExpression(vdn2.inital_value);
@@ -579,8 +585,8 @@ namespace PascalABCCompiler
                 if (isUnused(vi, vdn))
                     warns.Add(new UnusedVariable(vdn.name, vdn.loc));
                 	
-                if (vi.num_ass > 0 && vi.act_num_use == 0 && !vdn.is_special_name) 
-                	warns.Add(new AssignWithoutUsing(vdn.name, vi.last_ass_loc));
+                if (vi.num_ass > 0 && vi.act_num_use == 0 && !vdn.is_special_name)
+                    AddWarningAssignWithoutUsing(vdn.name, vi.last_ass_loc);
             }
         }
 
