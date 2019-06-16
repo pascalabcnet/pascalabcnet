@@ -130,6 +130,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                     expression expr = newExpr.params_list.expressions[i];
                     ProcessNode(expr);
                 }
+                ProcessNode(newExpr.array_init_expr);
             }
         }
 

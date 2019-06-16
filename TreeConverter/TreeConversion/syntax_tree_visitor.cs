@@ -2743,7 +2743,7 @@ namespace PascalABCCompiler.TreeConverter
                     while (context._cmn.functions.Count > 0 && context._cmn.functions[context._cmn.functions.Count-1].function_code == null && context._cmn.functions[context._cmn.functions.Count - 1].name.StartsWith("<>lambda") && !context._cmn.functions[context._cmn.functions.Count - 1].name.StartsWith("<>lambda_initializer"))
                     {
 #if DEBUG
-                        System.IO.File.AppendAllText("d:\\aa.txt", context._cmn.functions[context._cmn.functions.Count - 1].name+"\n");
+                        System.IO.File.AppendAllText("aa.txt", context._cmn.functions[context._cmn.functions.Count - 1].name+"\n");
 #endif
                         context._cmn.functions.remove_at(context._cmn.functions.Count - 1);
 
