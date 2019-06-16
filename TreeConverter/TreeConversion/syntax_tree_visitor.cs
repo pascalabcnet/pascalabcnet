@@ -2739,6 +2739,16 @@ namespace PascalABCCompiler.TreeConverter
                     lambdaProcessingState = LambdaProcessingState.TypeInferencePhase;
                     visit_program_code(_block.program_code);
 
+                    // Грубо - удаление мусора при разборе лямбд. Происходит исключение - заголовок разбирается, тело остается пустым - и из-за этого была ошибка #1270.
+                    while (context._cmn.functions.Count > 0 && context._cmn.functions[context._cmn.functions.Count-1].function_code == null && context._cmn.functions[context._cmn.functions.Count - 1].name.StartsWith("<>lambda") && !context._cmn.functions[context._cmn.functions.Count - 1].name.StartsWith("<>lambda_initializer"))
+                    {
+#if DEBUG
+                        System.IO.File.AppendAllText("d:\\aa.txt", context._cmn.functions[context._cmn.functions.Count - 1].name+"\n");
+#endif
+                        context._cmn.functions.remove_at(context._cmn.functions.Count - 1);
+
+                    }
+
                     lambdaProcessingState = LambdaProcessingState.ClosuresProcessingPhase;
                     CapturedVariablesSubstitutionsManager.Substitute(this, _block.defs, _block.program_code);
                     
@@ -19397,6 +19407,47 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
+        public expression ProcedureForLambdaAndVisit(function_lambda_definition lambdaDefinition, ident_list tempParsList, where_definition_list whereSection)
+        {
+            var procDecl = LambdaHelper.ConvertLambdaNodeToProcDefNode(lambdaDefinition);
+
+            if (tempParsList != null)
+            {
+                procDecl.proc_header.template_args = tempParsList;
+            }
+
+            if (whereSection != null && whereSection.defs != null && whereSection.defs.Count != 0)
+            {
+                procDecl.proc_header.where_defs = whereSection;
+            }
+
+            if (!context.func_stack.Empty && context.func_stack.top().polymorphic_state == SemanticTree.polymorphic_state.ps_static
+            || context.converted_type != null && context.converted_type.IsStatic)
+            {
+                procDecl.proc_header.class_keyword = true;
+                if (procDecl.proc_header.proc_attributes == null)
+                    procDecl.proc_header.proc_attributes = new SyntaxTree.procedure_attributes_list();
+                procDecl.proc_header.proc_attributes.proc_attributes.Add(new SyntaxTree.procedure_attribute(PascalABCCompiler.SyntaxTree.proc_attribute.attr_static));
+            }
+
+            try
+            {
+                visit(procDecl);
+            }
+            catch
+            {
+                context.remove_lambda_function(procDecl.proc_header.name.meth_name.name, true);
+                throw;
+            }
+
+            context.remove_lambda_function(procDecl.proc_header.name.meth_name.name, false);
+
+            return tempParsList == null ?
+                (expression)procDecl.proc_header.name.meth_name :
+                (expression)new ident_with_templateparams(procDecl.proc_header.name.meth_name, new template_param_list(tempParsList.idents.Select(l => SyntaxTreeBuilder.BuildSimpleType(l.name)).ToList()));
+
+        }
+
         int ccc = 0;
         public override void visit(SyntaxTree.function_lambda_definition _function_lambda_definition)
         {
@@ -19432,47 +19483,7 @@ namespace PascalABCCompiler.TreeConverter
                     return;
                 }
 
-                Func<function_lambda_definition, ident_list, where_definition_list, expression> makeProcedureForLambdaAndVisit =
-                    (lambdaDefinition, tempParsList, whereSection) =>
-                    {
-                        var procDecl = LambdaHelper.ConvertLambdaNodeToProcDefNode(lambdaDefinition);
-
-                        if (tempParsList != null)
-                        {
-                            procDecl.proc_header.template_args = tempParsList;
-                        }
-
-                        if (whereSection != null && whereSection.defs != null && whereSection.defs.Count != 0)
-                        {
-                            procDecl.proc_header.where_defs = whereSection;
-                        }
-
-                        if (!context.func_stack.Empty && context.func_stack.top().polymorphic_state == SemanticTree.polymorphic_state.ps_static
-                        || context.converted_type != null && context.converted_type.IsStatic)
-                        {
-                            procDecl.proc_header.class_keyword = true;
-                            if (procDecl.proc_header.proc_attributes == null)
-                                procDecl.proc_header.proc_attributes = new SyntaxTree.procedure_attributes_list();
-                            procDecl.proc_header.proc_attributes.proc_attributes.Add(new SyntaxTree.procedure_attribute(PascalABCCompiler.SyntaxTree.proc_attribute.attr_static));
-                        }
-
-                        try
-                        {
-                            visit(procDecl);
-                        }
-                        catch
-                        {
-                            context.remove_lambda_function(procDecl.proc_header.name.meth_name.name, true);
-                            throw;
-                        }
-
-                        context.remove_lambda_function(procDecl.proc_header.name.meth_name.name, false);
-
-                        return tempParsList == null ?
-                            (expression)procDecl.proc_header.name.meth_name :
-                            (expression)new ident_with_templateparams(procDecl.proc_header.name.meth_name, new template_param_list(tempParsList.idents.Select(l => SyntaxTreeBuilder.BuildSimpleType(l.name)).ToList()));
-                    };
-
+                Func<function_lambda_definition, ident_list, where_definition_list, expression> makeProcedureForLambdaAndVisit = ProcedureForLambdaAndVisit;
 
                 switch (lambdaProcessingState)
                 {
