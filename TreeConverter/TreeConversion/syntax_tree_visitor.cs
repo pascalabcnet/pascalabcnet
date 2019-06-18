@@ -19438,7 +19438,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 visit(procDecl);
             }
-            catch
+            catch (Exception e)
             {
                 context.remove_lambda_function(procDecl.proc_header.name.meth_name.name, true);
                 throw;
