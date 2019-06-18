@@ -19394,7 +19394,11 @@ namespace PascalABCCompiler.TreeConverter
                 if (!stl.expr_lambda_body) // SSM 26.11.18
                   // значит, первый и единственный оператор - не присваивание и это лямбда - процедура!
                 {
-                    _function_lambda_definition.return_type = null;
+                    var rns = new LambdaHelper.ResultNodesSearcher(_function_lambda_definition.proc_body);
+                    if (rns.exprList.Count == 0) // Значит, это процедура, т.к. в блоке begin-end нет ни одного result := ...
+                    {
+                        _function_lambda_definition.return_type = null;
+                    }
                 }
             }
             else if (_function_lambda_definition.return_type is lambda_inferred_type && stl != null && stl.list.Count > 1 && _function_lambda_definition.usedkeyword == 0)

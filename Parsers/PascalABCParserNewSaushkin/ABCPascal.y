@@ -4675,14 +4675,10 @@ common_lambda_body
 		{
 			$$ = new statement_list($1 as statement, @$);
 		}
-	| yield_stmt
+	/*| yield_stmt
 		{
 			$$ = new statement_list($1 as statement, @$);
-		}
-	| raise_stmt
-		{
-			$$ = new statement_list($1 as statement, @$);
-		}
+		}*/
 	;
 
 
@@ -4710,6 +4706,10 @@ lambda_procedure_body
 			$$ = new statement_list($1 as statement, @$);
 		}
 	| assignment
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| raise_stmt
 		{
 			$$ = new statement_list($1 as statement, @$);
 		}
