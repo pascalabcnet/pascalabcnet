@@ -747,7 +747,7 @@ namespace TreeConverter.LambdaExpressions.Closure
         
         public override void visit(PascalABCCompiler.SyntaxTree.goto_statement _goto_statement)
         {
-        	if (_goto_statement.source_context != null)
+        	if (_goto_statement.source_context != null) // видимо, это сделано для того чтобы сахарные конструкции всё же можно было использовать с лямбдами. То есть, это какое-то искусственное ограничение
             	_visitor.AddError(_visitor.get_location(_goto_statement), "GOTO_AND_LAMBDAS_NOT_ALLOWED");
         	else
         		base.visit(_goto_statement);
