@@ -4677,10 +4677,14 @@ common_lambda_body
 		{
 			$$ = new statement_list($1 as statement, @$);
 		}
-	/*| yield_stmt
+	| raise_stmt
 		{
 			$$ = new statement_list($1 as statement, @$);
-		}*/
+		}
+	| yield_stmt
+		{
+			parsertools.AddErrorFromResource("YIELD_STATEMENT_CANNOT_BE_USED_IN_LAMBDA_BODY", @$);
+		}
 	;
 
 
@@ -4708,10 +4712,6 @@ lambda_procedure_body
 			$$ = new statement_list($1 as statement, @$);
 		}
 	| assignment
-		{
-			$$ = new statement_list($1 as statement, @$);
-		}
-	| raise_stmt
 		{
 			$$ = new statement_list($1 as statement, @$);
 		}
