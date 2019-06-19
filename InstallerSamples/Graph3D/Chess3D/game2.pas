@@ -93,7 +93,8 @@ begin
     d -= 2;
   end;
   View3D.ShowGridLines := False;
-  FileModel3D(0,0,0,'board.obj',GrayColor(100));
+  var f := FileModel3D(0,0,0,'board.obj',GrayColor(100));
+  f.Rotate(OrtZ,90);
 end;
 
 procedure StartupPosition;
@@ -101,8 +102,8 @@ begin
   Rock(0,0,White);
   Horse(1,0,White);
   Bishop(2,0,White);
-  King(3,0,White);
-  Queen(4,0,White);
+  Queen(3,0,White);
+  King(4,0,White);
   Bishop(5,0,White);
   Horse(6,0,White);
   Rock(7,0,White);
@@ -112,8 +113,8 @@ begin
   Rock(0,7,Black);
   Horse(1,7,Black);
   Bishop(2,7,Black);
-  King(3,7,Black);
-  Queen(4,7,Black);
+  Queen(3,7,Black);
+  King(4,7,Black);
   Bishop(5,7,Black);
   Horse(6,7,Black);
   Rock(7,7,Black);

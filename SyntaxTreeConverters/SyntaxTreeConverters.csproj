@@ -37,7 +37,6 @@
     <Compile Include="ISyntaxTreeConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StandardSyntaxConverter.cs" />
-    <Compile Include="StandOutExprWithLambdaInForeachSequenceVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Errors\Errors.csproj">

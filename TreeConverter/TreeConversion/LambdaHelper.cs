@@ -407,6 +407,9 @@ namespace PascalABCCompiler.TreeConverter
                     exprList.Add(value.from);
                 }
             }
+            /*public override void visit(function_lambda_definition fld)
+            {
+            }*/
         }
         #endregion
 

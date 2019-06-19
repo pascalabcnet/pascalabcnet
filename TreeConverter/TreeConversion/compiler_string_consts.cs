@@ -338,6 +338,8 @@ namespace PascalABCCompiler.TreeConverter
         public static string copyright_string = "copyright";
         public static string trademark_string = "trademark";
         public static string main_resource_string = "mainresource";
+        public static string title_string = "title";
+        public static string description_string = "description";
 
         public static string system_unit_marker = "__IS_SYSTEM_MODULE";
         public static string system_unit_file_name = "PABCSystem";
@@ -371,7 +373,9 @@ namespace PascalABCCompiler.TreeConverter
         public static string set_name = "TypedSet";
         public const string deconstruct_method_name = "deconstruct";
         public const string is_test_function_name = "__TypeCheckAndAssignForIsMatch";
-
+        public const string wild_cards_tuple_equal_function_name = "__WildCardsTupleEqual";
+        public const string seq_function_name = "Seq";
+        public const string count_property_name = "Count";
         public static string bounded_array_printable_name_template = "array [{0}..{1}] of {2}";
         public static string array_printable_name_template = "array of {0}";
         public static string multi_dim_array_printable_name_template = "array [{0}] of {1}";

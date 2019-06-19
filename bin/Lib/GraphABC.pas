@@ -3574,6 +3574,7 @@ begin
     gr.Transform := m;
   end;  
   Monitor.Exit(f);
+  tempbmp.Dispose();
 end;
 
 procedure FullRedraw;

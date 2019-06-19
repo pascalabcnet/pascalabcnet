@@ -29,10 +29,10 @@ function Simplify1(e: Expr): Expr;
 begin
   match e with
     Mult(Cons(c),Cons(c1)): Result := ConsC(c*c1);
-    Mult(Cons(c),ex) when c=1: Result := Simplify(ex);
-    Mult(Cons(c),ex) when c=0: Result := ConsC(0);
-    Add(Cons(c),ex) when c=0: Result := Simplify(ex);
-    Add(ex,Cons(c)) when c=0: Result := Simplify(ex);
+    Mult(Cons(1.0),ex): Result := Simplify(ex);
+    Mult(Cons(0.0),ex): Result := ConsC(0);
+    Add(Cons(0.0),ex): Result := Simplify(ex);
+    Add(ex,Cons(0.0)): Result := Simplify(ex);
     Add(Cons(c),Cons(c1)): Result := ConsC(c+c1); 
     Add(Cons(c),ex): Result := AddC(ex,ConsC(c)); // константы - в хвосте!
     Mult(Cons(c),ex): Result := MultC(ex,ConsC(c));

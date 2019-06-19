@@ -457,13 +457,7 @@ namespace VisualPascalABC
                     if (!was_comment)
                         return null;
                 }
-                else if (c == '}')//nachalo kommenta
-                {
-                    beg_off--;
-                    was_comment = true;
-                    while (beg_off >= 0 && text[beg_off] != '{')
-                        beg_off--;
-                }
+                
                 else if (c == '\'')
                 {
                     beg_off--;
@@ -484,10 +478,11 @@ namespace VisualPascalABC
                         {
                             if (string.Compare(word, "class", true) == 0)
                             {
-                                if (isClassMember(beg_off, textArea))
+                                if (isClassMember(c == '}' ? beg_off + 1: beg_off, textArea))
                                 {
                                     sb.Remove(0, sb.Length);
-                                    beg_off--;
+                                    if (c != '}')
+                                        beg_off--;
                                     continue;
                                 }
                             }
@@ -501,6 +496,13 @@ namespace VisualPascalABC
                         }
                     }
                     sb.Remove(0, sb.Length);
+                    if (c == '}')//nachalo kommenta
+                    {
+                        beg_off--;
+                        was_comment = true;
+                        while (beg_off >= 0 && text[beg_off] != '{')
+                            beg_off--;
+                    }
                 }
                 beg_off--;
             }
@@ -534,13 +536,6 @@ namespace VisualPascalABC
                     if (!was_comment)
                         return null;
                 }
-                else if (c == '}')//nachalo kommenta
-                {
-                    beg_off--;
-                    was_comment = true;
-                    while (beg_off >= 0 && text[beg_off] != '{')
-                        beg_off--;
-                }
                 else if (c == '\'')
                 {
                     beg_off--;
@@ -569,6 +564,13 @@ namespace VisualPascalABC
                         }
                     }
                     sb.Remove(0, sb.Length);
+                    if (c == '}')//nachalo kommenta
+                    {
+                        beg_off--;
+                        was_comment = true;
+                        while (beg_off >= 0 && text[beg_off] != '{')
+                            beg_off--;
+                    }
                 }
                 beg_off--;
             }

@@ -54,6 +54,7 @@ OPERATOR_{0}_CAN_NOT_BE_APPLIED_TO_POINTER_TYPE=Операция {0} не при
 TYPE_NOT_DEFINED=Тип не определен
 GENERIC_NOT_SUPPORTED=Generic-шаблоны пока не поддерживаются данной версией компилятора. Для использования обычных шаблонов используйте синтаксис: template class<...>
 ENUMENTAR_TYPE_VALUE_OVERFLOW=Переполнение в арифметической операции
+DIVIDE_BY_ZERO_EXCEPTION=Деление на 0
 ONE_VARIABLE_ONE_INITIALIZATOR=Инициализатор переменной можно использовать только для инициализации одной переменной
 NOT_OVERLOADED_OPERATOR=Этот оператор нельзя перегрузить
 INAVLID_TYPE=Недопустимый тип

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.Linq;
 using PascalABCCompiler.SemanticTree;
 using System.Threading;
 using System.Reflection;
@@ -85,6 +86,20 @@ namespace PascalABCCompiler.NETGenerator
         {
             get { return _TradeMark; }
             set { _TradeMark = value; NeedDefineVersionInfo = true; }
+        }
+        private string _Title = "";
+
+        public string Title
+        {
+            get { return _Title; }
+            set { _Title = value; NeedDefineVersionInfo = true; }
+        }
+        private string _Description = "";
+
+        public string Description
+        {
+            get { return _Description; }
+            set { _Description = value; NeedDefineVersionInfo = true; }
         }
 
         public string MainResourceFileName = null;
@@ -896,6 +911,10 @@ namespace PascalABCCompiler.NETGenerator
             ab.SetCustomAttribute(typeof(System.Runtime.CompilerServices.CompilationRelaxationsAttribute).GetConstructor(new Type[1] { TypeFactory.Int32Type }),
                                   new byte[] { 0x01, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00 });
 
+            ab.SetCustomAttribute(new CustomAttributeBuilder(typeof(System.Reflection.AssemblyTitleAttribute).GetConstructor(new Type[] { typeof(string) }), new object[] { options.Title }));
+
+            ab.SetCustomAttribute(new CustomAttributeBuilder(typeof(System.Reflection.AssemblyDescriptionAttribute).GetConstructor(new Type[] { typeof(string) }), new object[] { options.Description }));
+
             if (RunOnly)
             {
                 object main_class = ab.CreateInstance(cur_unit + ".Program");
@@ -1558,6 +1577,8 @@ namespace PascalABCCompiler.NETGenerator
                         fldinfo = fldinfo;
                     } */
 #endif
+                    if (fldinfo == null)
+                        continue;
                     if (!(fldinfo is GenericFldInfo))
                     {
                         FieldInfo finfo = fldinfo.fi;
@@ -1711,6 +1732,27 @@ namespace PascalABCCompiler.NETGenerator
                     get_named_properties(attrs[i].PropertyNames), get_constants(attrs[i].PropertyInitializers),
                     get_named_fields(attrs[i].FieldNames), get_constants(attrs[i].FieldInitializers));
                     fb.SetCustomAttribute(cab);
+                }
+                catch (ArgumentException ex)
+                {
+                    throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message.Replace("System.ArgumentException: ", ""), attrs[i].Location.document.file_name, attrs[i].Location.begin_line_num, attrs[i].Location.begin_column_num);
+                }
+            }
+        }
+
+        private void MakeAttribute(ICommonParameterNode prm)
+        {
+            ParameterBuilder pb = (ParameterBuilder)helper.GetParameter(prm).pb;
+            IAttributeNode[] attrs = prm.Attributes;
+            for (int i = 0; i < attrs.Length; i++)
+            {
+                try
+                {
+                    CustomAttributeBuilder cab = new CustomAttributeBuilder
+                    ((attrs[i].AttributeConstructor is ICompiledConstructorNode) ? (attrs[i].AttributeConstructor as ICompiledConstructorNode).constructor_info : helper.GetConstructor(attrs[i].AttributeConstructor).cnstr, get_constants(attrs[i].Arguments),
+                    get_named_properties(attrs[i].PropertyNames), get_constants(attrs[i].PropertyInitializers),
+                    get_named_fields(attrs[i].FieldNames), get_constants(attrs[i].FieldInitializers));
+                    pb.SetCustomAttribute(cab);
                 }
                 catch (ArgumentException ex)
                 {
@@ -2171,7 +2213,8 @@ namespace PascalABCCompiler.NETGenerator
                         ParameterAttributes pars = ParameterAttributes.None;
                         //if (func.parameters[j].parameter_type == parameter_type.var)
                         //  pars = ParameterAttributes.Out;
-                        methb.DefineParameter(j + 1, pars, parameters[j].name);
+                        ParameterBuilder pb = methb.DefineParameter(j + 1, pars, parameters[j].name);
+                        helper.AddParameter(parameters[j], pb);
                     }
                 }
                 else
@@ -2197,7 +2240,8 @@ namespace PascalABCCompiler.NETGenerator
                             ParameterAttributes pars = ParameterAttributes.None;
                             //if (func.parameters[j].parameter_type == parameter_type.var)
                             //  pars = ParameterAttributes.Out;
-                            methb.DefineParameter(j + 1, pars, parameters[j].name);
+                            ParameterBuilder pb = methb.DefineParameter(j + 1, pars, parameters[j].name);
+                            helper.AddParameter(parameters[j], pb);
                         }
                     }
                     else
@@ -5390,8 +5434,9 @@ namespace PascalABCCompiler.NETGenerator
                     {
                         if (lb.LocalType.IsGenericParameter)
                         {
-                            il.Emit(OpCodes.Ldloc, lb);
-                            il.Emit(OpCodes.Box, lb.LocalType);
+                            //il.Emit(OpCodes.Ldloc, lb);
+                            //il.Emit(OpCodes.Box, lb.LocalType);
+                            il.Emit(OpCodes.Ldloca, lb); // #1986
                         }
                         else
                             if (lb.LocalType.IsValueType)
@@ -7320,25 +7365,31 @@ namespace PascalABCCompiler.NETGenerator
             MethInfo meth = helper.GetMethod(value.namespace_function);
             IExpressionNode[] real_parameters = value.real_parameters;
             //если это стандартная (New или Dispose)
-            if (meth == null || meth.stand == true)
+            if (meth == null || meth.stand)
             {
                 if (GenerateStandardFuncCall(value, il))
                     return;
                 if (meth == null)
                     meth = MakeStandardFunc(value);
-                IRefTypeNode rtn = (IRefTypeNode)real_parameters[0].type;
-                TypeInfo ti = helper.GetTypeReference(rtn.pointed_type);
-                //int size = 0;
-                //if (ti.tp.IsPointer == true) size = Marshal.SizeOf(TypeFactory.Int32Type);
-                //else size = GetTypeSize(ti.tp, rtn.pointed_type);
+                Type ptrt = null;
+                TypeInfo ti = null;
+                if (real_parameters[0].type is IRefTypeNode)
+                {
+                    IRefTypeNode rtn = (IRefTypeNode)real_parameters[0].type;
+                    ti = helper.GetTypeReference(rtn.pointed_type);
+                    ptrt = ti.tp;
+                }
+                else
+                {
+                    ti = helper.GetTypeReference(real_parameters[0].type);
+                    ptrt = ti.tp.GetElementType();
+                }
                 is_addr = true;
                 real_parameters[0].visit(this);
                 is_addr = false;
-                //il.Emit(OpCodes.Ldc_I4, size);
-                //NETGeneratorTools.LdcIntConst(il, size);
-                PushSize(ti.tp);
+                PushSize(ptrt);
                 il.Emit(OpCodes.Call, meth.mi);
-                if (value.namespace_function.SpecialFunctionKind == SpecialFunctionKind.New)
+                if (value.namespace_function.SpecialFunctionKind == SpecialFunctionKind.New && real_parameters[0].type is IRefTypeNode)
                 {
                     ITypeNode tn = (real_parameters[0].type as IRefTypeNode).pointed_type;
                     if (tn.type_special_kind == type_special_kind.array_wrapper)
@@ -8568,7 +8619,11 @@ namespace PascalABCCompiler.NETGenerator
                             mi = ti.tp.GetMethod("get_HasValue");
                         il.Emit(OpCodes.Call, mi);
                         if (ft == basic_function_type.objeq)
-                            il.Emit(OpCodes.Not);
+                        {
+                            il.Emit(OpCodes.Ldc_I4_0);
+                            il.Emit(OpCodes.Ceq);
+                        }
+                            
                         return;
                     }
                     else if (real_parameters[1].type.is_nullable_type && real_parameters[0] is INullConstantNode)
@@ -8585,7 +8640,10 @@ namespace PascalABCCompiler.NETGenerator
                             mi = ti.tp.GetMethod("get_HasValue");
                         il.Emit(OpCodes.Call, mi);
                         if (ft == basic_function_type.objeq)
-                            il.Emit(OpCodes.Not);
+                        {
+                            il.Emit(OpCodes.Ldc_I4_0);
+                            il.Emit(OpCodes.Ceq);
+                        }
                         return;
                     }
                     else if (real_parameters[0].type.is_nullable_type && real_parameters[1].type.is_nullable_type)

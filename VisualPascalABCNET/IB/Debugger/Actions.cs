@@ -38,7 +38,7 @@ namespace VisualPascalABC
                     WorkbenchServiceFactory.DebuggerOperationsService.AddVariable(var, true);
                 }
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
                 WorkbenchServiceFactory.DebuggerOperationsService.GotoWatch();
             }

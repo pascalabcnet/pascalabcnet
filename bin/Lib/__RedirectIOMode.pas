@@ -9,9 +9,9 @@ unit __RedirectIOMode;
 // Функции:
 //    1. Посылка в поток ErrorStream сигнала [READLNSIGNAL]
 //    2. Перехват исключений по AppDomain.CurrentDomain.UnhandledException и 
-//       пердача их в поток ErrorStream
+//       передача их в поток ErrorStream
 //    3. Перехват исключений по Application.ThreadException и 
-//       пердача их в поток ErrorStream  
+//       передача их в поток ErrorStream  
 //------------------------------------------------------------------------------
 
 {$reference 'System.Windows.Forms.dll'}

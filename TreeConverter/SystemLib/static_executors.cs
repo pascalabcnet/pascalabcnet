@@ -2487,6 +2487,10 @@ namespace PascalABCCompiler.SystemLibrary
             {
                 throw new SimpleSemanticError(call_location, "ENUMENTAR_TYPE_VALUE_OVERFLOW");
             }
+            catch (System.DivideByZeroException)
+            {
+                throw new SimpleSemanticError(right.location, "DIVIDE_BY_ZERO_EXCEPTION");
+            }
             return (make_int_const(result, call_location));
         }
 

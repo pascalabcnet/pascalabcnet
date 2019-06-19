@@ -3,11 +3,11 @@
 namespace PascalABCCompiler
 {
 
-	public class FileNotFound : TreeConverter.CompilationError
+	public class FileNotFound : TreeConverter.CompilationErrorWithLocation
 	{
 		private string _file_name;
 
-		public FileNotFound(string file_name)
+		public FileNotFound(string file_name, TreeRealization.location loc):base(loc)
 		{
 			_file_name=file_name;
 		}
@@ -22,8 +22,8 @@ namespace PascalABCCompiler
 
 		public override string ToString()
 		{
-			return ("File: "+_file_name+" not found");
-		}
+			return string.Format(StringResources.Get("COMPILATIONERROR_FILE_{0}_NOT_FOUND"), _file_name);
+        }
 
 	}
 

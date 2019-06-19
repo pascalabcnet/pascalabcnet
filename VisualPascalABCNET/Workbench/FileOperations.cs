@@ -392,7 +392,7 @@ namespace VisualPascalABC
                 if (TbPage == CurrentCodeFileDocument)
                     UpdateSaveButtonsEnabled();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 MessageBox.Show(String.Format(Form1StringResources.Get("SAVE_FILE_ERROR_TEXT{0}"), FileName), PascalABCCompiler.StringResources.Get("!ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

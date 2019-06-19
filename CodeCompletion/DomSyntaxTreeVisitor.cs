@@ -196,6 +196,13 @@ namespace CodeCompletion
 
         public override void visit(assign _assign)
         {
+            visit_is_patterns(_assign.from);
+            if (pending_is_pattern_vars.Count > 0)
+            {
+                foreach (var_def_statement vds in pending_is_pattern_vars)
+                    vds.visit(this);
+                pending_is_pattern_vars.Clear();
+            }
             if (_assign.from is function_lambda_definition)
             {
                 _assign.to.visit(this);
@@ -770,7 +777,7 @@ namespace CodeCompletion
             }
             else
             {
-                foreach (pattern_deconstructor_parameter pdp in _deconstructor_pattern.parameters)
+                foreach (pattern_parameter pdp in _deconstructor_pattern.parameters)
                 {
                     if (pdp is var_deconstructor_parameter)
                     {
@@ -847,7 +854,14 @@ namespace CodeCompletion
         public override void visit(PascalABCCompiler.SyntaxTree.if_node _if_node)
         {
             visit_is_patterns(_if_node.condition);
-            statement then_stmt = merge_with_is_variables(_if_node.then_body);
+            statement then_stmt = _if_node.then_body;
+            if (pending_is_pattern_vars.Count > 0 && then_stmt != null)
+            {
+                statement_list slist = new statement_list();
+                slist.source_context = _if_node.source_context;
+                slist.Add(then_stmt);
+                then_stmt = merge_with_is_variables(slist);
+            }
             if (then_stmt != null)
                 then_stmt.visit(this);
             if (_if_node.else_body != null)
@@ -1956,6 +1970,12 @@ namespace CodeCompletion
                     ts.topScope = cur_scope;
                     ts.declaringUnit = entry_scope;
                     //ts.si.describe = "type "+ret_tn.si.name+" = "+ret_tn.si.describe;
+                    if (_type_declaration.type_def is enum_type_definition && ts.loc.begin_line_num != ts.loc.end_line_num)
+                    {
+                        location loc = get_location(_type_declaration.type_def);
+                        ts.head_loc = new location(loc.begin_line_num, loc.begin_column_num, loc.begin_line_num, loc.begin_column_num, doc);
+                        ts.body_loc = loc;
+                    }
                     cur_scope.AddName(_type_declaration.type_name.name, ts);
                     if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_type_declaration))
                         ts.AddDocumentation(this.converter.controller.docs[_type_declaration]);
@@ -2203,7 +2223,7 @@ namespace CodeCompletion
                     	namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(assm));
                     	unit_scope.AddReferencedAssembly(assm);
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                     	
                     }
@@ -2432,7 +2452,7 @@ namespace CodeCompletion
                     {
                         if (cur_scope.regions == null)
                             cur_scope.regions = new List<Position>();
-                        regions_stack.Push(new Position(dir.source_context.begin_position.line_num, dir.source_context.begin_position.column_num, dir.source_context.end_position.line_num, dir.source_context.end_position.column_num, dir.source_context.FileName));
+                        regions_stack.Push(new Position(dir.source_context.begin_position.line_num, dir.source_context.begin_position.column_num, dir.source_context.end_position.line_num, dir.source_context.end_position.column_num, dir.source_context.FileName, dir.Directive.text));
                     }
                     else if (dir.Name.text.ToLower() == "endregion")
                     {
@@ -2441,7 +2461,7 @@ namespace CodeCompletion
                             Position pos = regions_stack.Pop();
                             if (cur_scope.regions != null)
                             {
-                                cur_scope.regions.Add(new Position(pos.end_line, pos.end_column, dir.source_context.end_position.line_num, dir.source_context.end_position.column_num, pos.file_name));
+                                cur_scope.regions.Add(new Position(pos.line, pos.column - 1, dir.source_context.end_position.line_num, dir.source_context.end_position.column_num, pos.file_name, pos.fold_text));
                             }
                         }
                     }

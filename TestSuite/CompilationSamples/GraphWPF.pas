@@ -79,12 +79,21 @@ type
     c: Color := Colors.Black;
     th: real := 1;
     fx,fy: real;
+    rc: boolean := false;
     function PenConstruct: GPen;
     begin
       Result := new GPen(new SolidColorBrush(c),th);
       Result.LineJoin := PenLineJoin.Round;
-      //Result.StartLineCap := PenLineCap.Round;
-      //Result.EndLineCap := PenLineCap.Round;
+      if rc then 
+      begin
+        Result.StartLineCap := PenLineCap.Round;
+        Result.EndLineCap := PenLineCap.Round;
+      end
+      else
+      begin
+        Result.StartLineCap := PenLineCap.Flat;
+        Result.EndLineCap := PenLineCap.Flat;
+      end;
     end;
   public  
     /// Цвет пера
@@ -95,6 +104,8 @@ type
     property X: real read fx;
     /// Текущая координата Y пера
     property Y: real read fy;
+    /// Скругление пера на концах линий
+    property RoundCap: boolean read rc write rc;
   end;
 
 // -----------------------------------------------------
@@ -189,11 +200,13 @@ type
 //>>     Графические примитивы # GraphWPF primitives
 // -----------------------------------------------------
 /// Рисует пиксел в точке (x,y) цветом c
-procedure SetPixels(x,y: real; w,h: integer; f: (integer,integer)->Color);
-/// Рисует пиксел в точке (x,y) цветом c
 procedure SetPixel(x,y: real; c: Color);
-/// Рисует двумерный массив пикселов с координатами левой верхней вершины (x,y)
-procedure DrawPixels(x,y: real; a: array [,] of Color);
+/// Рисует прямоугольник пикселей размера (w,h), задаваемых отображением f, начиная с левого верхнего угла с координатами (x,y)
+procedure SetPixels(x,y: real; w,h: integer; f: (integer,integer)->Color);
+/// Рисует двумерный массив пикселей pixels начиная с левого верхнего угла с координатами (x,y)
+procedure DrawPixels(x,y: real; pixels: array [,] of Color);
+/// Рисует прямоугольную область (px,py,pw,ph) двумерного массива пикселей pixels начиная с левого верхнего угла с координатами (x,y)
+procedure DrawPixels(x,y: real; pixels: array [,] of Color; px,py,pw,ph: integer);
 /// Рисует эллипс с центром в точке (x,y) и радиусами rx и ry
 procedure Ellipse(x,y,rx,ry: real);
 /// Рисует контур эллипса с центром в точке (x,y) и радиусами rx и ry
@@ -338,9 +351,9 @@ procedure Invoke(d: ()->());
 //>>     Процедуры покадровой анимации # GraphWPF FrameBasedAnimation functions
 // -----------------------------------------------------
 /// Начинает анимацию, основанную на кадре. Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw
-procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer := 60);
+procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer := 61);
 /// Начинает анимацию, основанную на кадре Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw с параметром, равным номеру кадра
-procedure BeginFrameBasedAnimation(Draw: procedure(frame: integer); frate: integer := 60);
+procedure BeginFrameBasedAnimation(Draw: procedure(frame: integer); frate: integer := 61);
 /// Завершает анимацию, основанную на кадре
 procedure EndFrameBasedAnimation;
 
@@ -742,36 +755,59 @@ var dpic := new Dictionary<string, BitmapImage>;
 function GetBitmapImage(fname: string): BitmapImage;
 begin
   if not dpic.ContainsKey(fname) then 
-    dpic[fname] := new BitmapImage(new System.Uri(fname,System.UriKind.Relative));
+  begin
+    var b := new BitmapImage();
+    var s := System.IO.File.OpenRead(fname);
+    b.BeginInit();
+    b.CacheOption := BitmapCacheOption.OnLoad;
+    b.StreamSource := s;
+    b.EndInit();
+    s.Close();    
+    //dpic[fname] := new BitmapImage(new System.Uri(fname,System.UriKind.Relative));
+    dpic[fname] := b;
+  end;  
   Result := dpic[fname];
 end;
 
-procedure DrawPixelsP(x,y: real; a: array [,] of Color);
+procedure DrawPixelsP(x,y:real; px,py,pw,ph: integer; a: array [,] of Color);
 begin
   var (scalex,scaley) := ScaleToDevice;
-  var sw := a.ColCount;
-  var sh := a.RowCount;
-  var bitmap := new WriteableBitmap(sw, sh, 96*scalex, 96*scaley, PixelFormats.Bgra32, nil);
-  var stride := sw * (bitmap.Format.BitsPerPixel div 8); // stride - это длина одной строки
+  var bitmap := new WriteableBitmap(pw, ph, 96*scalex, 96*scaley, PixelFormats.Bgra32, nil);
   
-  var pixels := new byte[a.RowCount*a.ColCount*4];
-  var p := 0;
-  for var i := 0 to a.RowCount-1 do
-  for var j := 0 to a.ColCount-1 do
-  begin
-    pixels[p] := a[i,j].B;
-    p += 1;
-    pixels[p] := a[i,j].G;
-    p += 1;
-    pixels[p] := a[i,j].R;
-    p += 1;
-    pixels[p] := a[i,j].A;
-    p += 1;
-  end;
-  bitmap.WritePixels(new Int32Rect(0, 0, sw, sh), pixels, stride, 0);
+  var stride := pw*4; // stride - это размер одной строки в байтах
+  var size := stride*ph;
+  
+  
+//  var pixels := new byte[w*h*4];
+//  var p := 0;
+//  for var dy := ay to ay+h-1 do
+//    for var dx := ax to ax+w-1 do
+//    begin
+//      pixels[p] := a[dx,dy].B; p += 1;
+//      pixels[p] := a[dx,dy].G; p += 1;
+//      pixels[p] := a[dx,dy].R; p += 1;
+//      pixels[p] := a[dx,dy].A; p += 1;
+//    end;
+//  bitmap.WritePixels(new Int32Rect(0, 0, w, h), pixels, stride, 0);
+  
+  
+  //так на 10-20% быстрее
+  var pixels := System.Runtime.InteropServices.Marshal.AllocHGlobal(size);
+  var curr_ptr := pixels;
+  for var dy := py to py+ph-1 do
+    for var dx := px to px+pw-1 do
+    begin
+      var c := a[dx,dy];
+      PByte(curr_ptr.ToPointer)^ := c.B; curr_ptr := curr_ptr + 1;
+      PByte(curr_ptr.ToPointer)^ := c.G; curr_ptr := curr_ptr + 1;
+      PByte(curr_ptr.ToPointer)^ := c.R; curr_ptr := curr_ptr + 1;
+      PByte(curr_ptr.ToPointer)^ := c.A; curr_ptr := curr_ptr + 1;
+    end;
+  bitmap.WritePixels(new Int32Rect(0, 0, pw, ph), pixels, size, stride);
+  System.Runtime.InteropServices.Marshal.FreeHGlobal(pixels);
   
   var dc := GetDC();
-  dc.DrawImage(bitmap, Rect(x, y, bitmap.PixelWidth, bitmap.PixelHeight));
+  dc.DrawImage(bitmap, Rect(x, y, pw, ph));
   ReleaseDC(dc);
 end;
 
@@ -894,7 +930,9 @@ procedure SetPixel(x,y: real; c: Color) := InvokeVisual(SetPixelP, x, y, c);
 procedure SetPixels(x,y: real; w,h: integer; f: (integer,integer)->Color)
   := InvokeVisual(SetPixelsP, x, y, w, h, f);
   
-procedure DrawPixels(x,y: real; a: array [,] of Color) := InvokeVisual(DrawPixelsP,x,y,a);
+procedure DrawPixels(x,y: real; pixels: array [,] of Color) := InvokeVisual(DrawPixelsP,x,y,0,0,pixels.GetLength(0),pixels.GetLength(1),pixels);
+
+procedure DrawPixels(x,y: real; pixels: array [,] of Color; px,py,pw,ph: integer) := InvokeVisual(DrawPixelsP,x,y,px,py,pw,ph,pixels);
 
 procedure ArcPFull(x, y, r, angle1, angle2: real; p: GPen) := ArcSectorPFull(x, y, r, angle1, angle2, nil, p, false);
 
@@ -1500,7 +1538,7 @@ procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) :=
 var OnDraw: procedure := nil;
 var OnDraw1: procedure(frame: integer) := nil;
 
-var FrameRate := 60; // кадров в секунду. Можно меньше!
+var FrameRate := 61; // кадров в секунду. Можно меньше!
 var LastUpdatedTime := new System.TimeSpan(integer.MinValue); 
 
 var FrameNum := 0;
@@ -1545,7 +1583,7 @@ begin
   //CountVisuals := 0;
   OnDraw := nil;
   OnDraw1 := nil;
-  FrameRate := 60;
+  FrameRate := 61;
 end;  
 
 var mre := new ManualResetEvent(false);
