@@ -1970,6 +1970,12 @@ namespace CodeCompletion
                     ts.topScope = cur_scope;
                     ts.declaringUnit = entry_scope;
                     //ts.si.describe = "type "+ret_tn.si.name+" = "+ret_tn.si.describe;
+                    if (_type_declaration.type_def is enum_type_definition && ts.loc.begin_line_num != ts.loc.end_line_num)
+                    {
+                        location loc = get_location(_type_declaration.type_def);
+                        ts.head_loc = new location(loc.begin_line_num, loc.begin_column_num, loc.begin_line_num, loc.begin_column_num, doc);
+                        ts.body_loc = loc;
+                    }
                     cur_scope.AddName(_type_declaration.type_name.name, ts);
                     if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_type_declaration))
                         ts.AddDocumentation(this.converter.controller.docs[_type_declaration]);
@@ -2191,7 +2197,7 @@ namespace CodeCompletion
             }
             //add_standart_types_simple();
             Stack<Position> regions_stack = new Stack<Position>();
-            if (CodeCompletionController.comp.CompilerOptions.CurrentProject != null && CodeCompletionController.comp.CompilerOptions.CurrentProject.ContainsSourceFile(_unit_module.file_name))
+            if (CodeCompletionController.comp != null && CodeCompletionController.comp.CompilerOptions.CurrentProject != null && CodeCompletionController.comp.CompilerOptions.CurrentProject.ContainsSourceFile(_unit_module.file_name))
             {
             	IReferenceInfo[] refs = CodeCompletionController.comp.CompilerOptions.CurrentProject.References;
             	if (_unit_module.compiler_directives == null)
@@ -2217,7 +2223,7 @@ namespace CodeCompletion
                     	namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(assm));
                     	unit_scope.AddReferencedAssembly(assm);
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                     	
                     }
@@ -2401,7 +2407,7 @@ namespace CodeCompletion
             cur_scope = unit_scope = new InterfaceUnitScope(new SymInfo("", SymbolKind.Namespace, "program"), null);
             CodeCompletionController.comp_modules[_program_module.file_name] = this.converter;
             Stack<Position> regions_stack = new Stack<Position>();
-            if (CodeCompletionController.comp.CompilerOptions.CurrentProject != null && CodeCompletionController.comp.CompilerOptions.CurrentProject.ContainsSourceFile(_program_module.file_name))
+            if (CodeCompletionController.comp != null && CodeCompletionController.comp.CompilerOptions.CurrentProject != null && CodeCompletionController.comp.CompilerOptions.CurrentProject.ContainsSourceFile(_program_module.file_name))
             {
                 IReferenceInfo[] refs = CodeCompletionController.comp.CompilerOptions.CurrentProject.References;
                 if (_program_module.compiler_directives == null)

@@ -7,6 +7,9 @@ using PascalABCCompiler.SyntaxTree;
 
 namespace PascalABCCompiler.SyntaxTreeConverters
 {
+
+    // Первое предназначение - вынести последовательность из заголовка в foreach до foreach как отдельное присваивание
+    // Второе предназначение - переименовать все переменные, совпадающие по имени с типом T обобщенного класса, в котором находится метод, содержащий лямбду
     public class StandOutExprWithLambdaInForeachSequenceVisitor : BaseChangeVisitor
     {
         public static StandOutExprWithLambdaInForeachSequenceVisitor New
@@ -18,6 +21,8 @@ namespace PascalABCCompiler.SyntaxTreeConverters
         }
 
         private int GenIdNum = 0;
+
+        //private ident_list ClassTemplateArgsOrNull = null; // если мы - в обобщенном классе, то это - его обобщенные параметры
         public ident GenIdentName()
         {
             GenIdNum++;
@@ -26,7 +31,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
         public override void visit(foreach_stmt fe)
         {
-            if (fe.in_what.DescendantNodes().OfType<function_lambda_definition>().Count() > 0)
+            //if (fe.DescendantNodes().OfType<function_lambda_definition>().Count() > 0) // из-за #1984 убрал вообще условие. Пусть будет всегда
             {
                 var id = GenIdentName();
                 id.Parent = fe;

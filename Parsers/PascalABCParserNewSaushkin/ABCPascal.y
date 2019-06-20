@@ -58,7 +58,7 @@
 %type <stn> attribute_declarations  
 %type <stn> ot_visibility_specifier  
 %type <stn> one_attribute attribute_variable 
-%type <ex> const_factor const_variable_2 const_term const_variable const_pattern_variable_2 const_pattern_variable literal_or_number unsigned_number variable_or_literal_or_number 
+%type <ex> const_factor const_variable_2 const_term const_variable const_pattern_variable literal_or_number unsigned_number variable_or_literal_or_number 
 %type <stn> program_block  
 %type <ob> optional_var class_attribute class_attributes class_attributes1 
 %type <stn> member_list_section optional_component_list_seq_end  
@@ -898,7 +898,7 @@ const_pattern_variable
 		{ $$ = $1; }
     | typeof_expr
 		{ $$ = $1; }
-    | const_pattern_variable const_pattern_variable_2        
+    /*| const_pattern_variable const_pattern_variable_2        
         {
 			$$ = NewConstVariable($1, $2, @$);
         }
@@ -917,9 +917,10 @@ const_pattern_variable
                     fe.format1 = new int32_const(int.MaxValue,@3);
             }
     		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
-		}
+		}*/
     ;
 
+/*
 const_pattern_variable_2
     : tkPoint identifier_or_keyword                               
         { 
@@ -935,6 +936,7 @@ const_pattern_variable_2
 			$$ = new indexer($2 as expression_list, @$);  
 		}
     ;
+	*/
 
 const_variable
     : identifier
@@ -4675,13 +4677,13 @@ common_lambda_body
 		{
 			$$ = new statement_list($1 as statement, @$);
 		}
-	| yield_stmt
-		{
-			$$ = new statement_list($1 as statement, @$);
-		}
 	| raise_stmt
 		{
 			$$ = new statement_list($1 as statement, @$);
+		}
+	| yield_stmt
+		{
+			parsertools.AddErrorFromResource("YIELD_STATEMENT_CANNOT_BE_USED_IN_LAMBDA_BODY", @$);
 		}
 	;
 

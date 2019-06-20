@@ -118,7 +118,7 @@ namespace VisualPascalABC
 				System.Runtime.Serialization.Formatters.Binary.BinaryFormatter bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
 				return bf.Deserialize(new FileStream(file_name, FileMode.Open)) as UserProjectSettings;
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				
 			}

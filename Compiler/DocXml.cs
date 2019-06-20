@@ -54,7 +54,7 @@ namespace PascalABCCompiler
                 xtw.WriteEndElement();
                 xtw.Flush();
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
             }

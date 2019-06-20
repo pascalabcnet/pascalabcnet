@@ -86,7 +86,7 @@ namespace CodeCompletion
             {
                 expr.visit(this);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 returned_scope = null;
             }

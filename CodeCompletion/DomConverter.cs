@@ -897,7 +897,7 @@ namespace CodeCompletion
                     ss = null;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
             }

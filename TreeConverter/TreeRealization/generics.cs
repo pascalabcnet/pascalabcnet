@@ -145,7 +145,7 @@ namespace PascalABCCompiler.TreeRealization
             {
                 generic_parameter_eliminations gpe = gpe_list[i];
                 type_node tn = tparams[i];
-                if (gpe.is_class && !tn.is_class)
+                if (gpe.is_class && !tn.is_class && !(tn.base_type != null && tn.base_type.is_class))
                 {
                     return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_REFERENCE_TYPE", tn.PrintableName);
                 }
@@ -1869,8 +1869,20 @@ namespace PascalABCCompiler.TreeRealization
             {
                 foreach (SymbolInfo si in start)
                 {
-                    definition_node dnode = ConvertMember(si.sym_info);
-                    rez_si = new SymbolInfo(dnode, si.access_level, si.symbol_kind);
+                    // aab 13.06.19 begin
+                    // Поправил странное поведение для локальных переменных, у которых не generic тип
+                    // Исправление для #1993
+                    if (si.sym_info is local_block_variable variable && !variable.type.is_generic_parameter)
+                    {
+                        rez_si = si;
+                    }
+                    else
+                    {
+                        definition_node dnode = ConvertMember(si.sym_info);
+                        rez_si = new SymbolInfo(dnode, si.access_level, si.symbol_kind);
+                        rez_si.scope = si.scope;
+                    }
+                    // aab 13.06.19 end
                     //Дополняем список SymbolInfo преобразованным значением
                     if (rez_start == null)
                     {

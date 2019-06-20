@@ -1,11 +1,49 @@
-﻿///
-///Код переведён отсюда:
-///https://github.com/KhronosGroup/OpenCL-Headers/tree/master/CL
+﻿
+//*****************************************************************************************************\\
+// Copyright (©) Cergey Latchenko ( github.com/SunSerega | forum.mmcs.sfedu.ru/u/sun_serega )
+// This code is distributed under the Unlicense
+// For details see LICENSE file or this:
+// https://github.com/SunSerega/POCGL/blob/master/LICENSE
+//*****************************************************************************************************\\
+// Copyright (©) Сергей Латченко ( github.com/SunSerega | forum.mmcs.sfedu.ru/u/sun_serega )
+// Этот код распространяется под Unlicense
+// Для деталей смотрите в файл LICENSE или это:
+// https://github.com/SunSerega/POCGL/blob/master/LICENSE
+//*****************************************************************************************************\\
+
 ///
-///Справка:
-///www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_API.html
+/// Код переведён отсюда:
+/// https://github.com/KhronosGroup/OpenCL-Headers/tree/master/CL
+///
+/// Справка:
+/// www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_API.html
+///
+/// Если чего то не хватает - писать сюда:
+/// https://github.com/SunSerega/POCGL/issues
 ///
 unit OpenCL;
+
+//ToDo расширения с котороми я не знаю что делать:
+//
+// - cl_ext.h
+// -- cl_qcom_ext_host_ptr
+// -- cl_qcom_ext_host_ptr_iocoherent
+// -- cl_qcom_ion_host_ptr
+// -- cl_qcom_android_native_buffer_host_ptr
+// -- cl_img_yuv_image
+//
+// - cl_d3d11.h
+// -- там нет функций, есть только энумы и коды ошибок. Но в чём смысл если возвращать и принимать их нечему?
+//
+// - cl_platform.h
+// -- есть только описание типов и констант, которые нигде не используются. Где они нужны?
+//
+//ToDo кто что то знает - напишите в issue, пожалуйста
+
+//ToDo .h файлы которые осталось перевести:
+// - cl_ext_intel
+// - cl_va_api_media_sharing_intel
+// - cl_dx9_media_sharing_intel
 
 uses System;
 uses System.Runtime.InteropServices;
@@ -47,55 +85,68 @@ type
     public val: Int32;
     public constructor(val: Int32) := self.val := val;
     
-    public const SUCCESS =                          -0;
+    public const SUCCESS =                                 -0;
     
-    public const DEVICE_NOT_FOUND =                 -1;
-    public const DEVICE_NOT_AVAILABLE =             -2;
-    public const COMPILER_NOT_AVAILABLE =           -3;
-    public const MEM_OBJECT_ALLOCATION_FAILURE =    -4;
-    public const OUT_OF_RESOURCES =                 -5;
-    public const OUT_OF_HOST_MEMORY =               -6;
-    public const PROFILING_INFO_NOT_AVAILABLE =     -7;
-    public const MEM_COPY_OVERLAP =                 -8;
-    public const IMAGE_FORMAT_MISMATCH =            -9;
-    public const IMAGE_FORMAT_NOT_SUPPORTED =      -10;
-    public const BUILD_PROGRAM_FAILURE =           -11;
-    public const MAP_FAILURE =                     -12;
+    public const DEVICE_NOT_FOUND =                        -1;
+    public const DEVICE_NOT_AVAILABLE =                    -2;
+    public const COMPILER_NOT_AVAILABLE =                  -3;
+    public const MEM_OBJECT_ALLOCATION_FAILURE =           -4;
+    public const OUT_OF_RESOURCES =                        -5;
+    public const OUT_OF_HOST_MEMORY =                      -6;
+    public const PROFILING_INFO_NOT_AVAILABLE =            -7;
+    public const MEM_COPY_OVERLAP =                        -8;
+    public const IMAGE_FORMAT_MISMATCH =                   -9;
+    public const IMAGE_FORMAT_NOT_SUPPORTED =             -10;
+    public const BUILD_PROGRAM_FAILURE =                  -11;
+    public const MAP_FAILURE =                            -12;
     
-    public const INVALID_VALUE =                   -30;
-    public const INVALID_DEVICE_TYPE =             -31;
-    public const INVALID_PLATFORM =                -32;
-    public const INVALID_DEVICE =                  -33;
-    public const INVALID_CONTEXT =                 -34;
-    public const INVALID_QUEUE_PROPERTIES =        -35;
-    public const INVALID_COMMAND_QUEUE =           -36;
-    public const INVALID_HOST_PTR =                -37;
-    public const INVALID_MEM_OBJECT =              -38;
-    public const INVALID_IMAGE_FORMAT_DESCRIPTOR = -39;
-    public const INVALID_IMAGE_SIZE =              -40;
-    public const INVALID_SAMPLER =                 -41;
-    public const INVALID_BINARY =                  -42;
-    public const INVALID_BUILD_OPTIONS =           -43;
-    public const INVALID_PROGRAM =                 -44;
-    public const INVALID_PROGRAM_EXECUTABLE =      -45;
-    public const INVALID_KERNEL_NAME =             -46;
-    public const INVALID_KERNEL_DEFINITION =       -47;
-    public const INVALID_KERNEL =                  -48;
-    public const INVALID_ARG_INDEX =               -49;
-    public const INVALID_ARG_VALUE =               -50;
-    public const INVALID_ARG_SIZE =                -51;
-    public const INVALID_KERNEL_ARGS =             -52;
-    public const INVALID_WORK_DIMENSION =          -53;
-    public const INVALID_WORK_GROUP_SIZE =         -54;
-    public const INVALID_WORK_ITEM_SIZE =          -55;
-    public const INVALID_GLOBAL_OFFSET =           -56;
-    public const INVALID_EVENT_WAIT_LIST =         -57;
-    public const INVALID_EVENT =                   -58;
-    public const INVALID_OPERATION =               -59;
-    public const INVALID_GL_OBJECT =               -60;
-    public const INVALID_BUFFER_SIZE =             -61;
-    public const INVALID_MIP_LEVEL =               -62;
-    public const INVALID_GLOBAL_WORK_SIZE =        -63;
+    public const INVALID_VALUE =                          -30;
+    public const INVALID_DEVICE_TYPE =                    -31;
+    public const INVALID_PLATFORM =                       -32;
+    public const INVALID_DEVICE =                         -33;
+    public const INVALID_CONTEXT =                        -34;
+    public const INVALID_QUEUE_PROPERTIES =               -35;
+    public const INVALID_COMMAND_QUEUE =                  -36;
+    public const INVALID_HOST_PTR =                       -37;
+    public const INVALID_MEM_OBJECT =                     -38;
+    public const INVALID_IMAGE_FORMAT_DESCRIPTOR =        -39;
+    public const INVALID_IMAGE_SIZE =                     -40;
+    public const INVALID_SAMPLER =                        -41;
+    public const INVALID_BINARY =                         -42;
+    public const INVALID_BUILD_OPTIONS =                  -43;
+    public const INVALID_PROGRAM =                        -44;
+    public const INVALID_PROGRAM_EXECUTABLE =             -45;
+    public const INVALID_KERNEL_NAME =                    -46;
+    public const INVALID_KERNEL_DEFINITION =              -47;
+    public const INVALID_KERNEL =                         -48;
+    public const INVALID_ARG_INDEX =                      -49;
+    public const INVALID_ARG_VALUE =                      -50;
+    public const INVALID_ARG_SIZE =                       -51;
+    public const INVALID_KERNEL_ARGS =                    -52;
+    public const INVALID_WORK_DIMENSION =                 -53;
+    public const INVALID_WORK_GROUP_SIZE =                -54;
+    public const INVALID_WORK_ITEM_SIZE =                 -55;
+    public const INVALID_GLOBAL_OFFSET =                  -56;
+    public const INVALID_EVENT_WAIT_LIST =                -57;
+    public const INVALID_EVENT =                          -58;
+    public const INVALID_OPERATION =                      -59;
+    public const INVALID_GL_OBJECT =                      -60;
+    public const INVALID_BUFFER_SIZE =                    -61;
+    public const INVALID_MIP_LEVEL =                      -62;
+    public const INVALID_GLOBAL_WORK_SIZE =               -63;
+    
+    // cl_gl
+    public const INVALID_GL_SHAREGROUP_REFERENCE_KHR =  -1000;
+    
+    // cl_ext
+    public const PLATFORM_NOT_FOUND_KHR =               -1001;
+    public const DEVICE_PARTITION_FAILED_EXT =          -1057;
+    public const INVALID_PARTITION_COUNT_EXT =          -1058;
+    public const INVALID_PARTITION_NAME_EXT =           -1059;
+    
+    // cl_egl
+    public const EGL_RESOURCE_NOT_ACQUIRED_KHR =        -1092;
+    public const INVALID_EGL_OBJECT_KHR =               -1093;
     
     public function ToString: string; override;
     begin
@@ -146,6 +197,9 @@ type
     public static property VENDOR:                PlatformInfoType read new PlatformInfoType($0903);
     public static property EXTENSIONS:            PlatformInfoType read new PlatformInfoType($0904);
     public static property HOST_TIMER_RESOLUTION: PlatformInfoType read new PlatformInfoType($0905);
+    
+    // cl_ext
+    public static property ICD_SUFFIX_KHR:        PlatformInfoType read new PlatformInfoType($0920);
     
   end;
   
@@ -201,12 +255,13 @@ type
     public static property QUEUE_ON_HOST_PROPERTIES:                DeviceInfoType read new DeviceInfoType($102A);
     public static property NAME:                                    DeviceInfoType read new DeviceInfoType($102B);
     public static property VENDOR:                                  DeviceInfoType read new DeviceInfoType($102C);
-    public static property CL_DRIVER_VERSION:                                 DeviceInfoType read new DeviceInfoType($102D);
+    public static property CL_DRIVER_VERSION:                       DeviceInfoType read new DeviceInfoType($102D);
     public static property PROFILE:                                 DeviceInfoType read new DeviceInfoType($102E);
     public static property VERSION:                                 DeviceInfoType read new DeviceInfoType($102F);
     public static property EXTENSIONS:                              DeviceInfoType read new DeviceInfoType($1030);
     public static property PLATFORM:                                DeviceInfoType read new DeviceInfoType($1031);
     public static property DOUBLE_FP_CONFIG:                        DeviceInfoType read new DeviceInfoType($1032);
+    public static property HALF_FP_CONFIG:                          DeviceInfoType read new DeviceInfoType($1033);
     public static property PREFERRED_VECTOR_WIDTH_HALF:             DeviceInfoType read new DeviceInfoType($1034);
     /// Устарело
     public static property HOST_UNIFIED_MEMORY:                     DeviceInfoType read new DeviceInfoType($1035);
@@ -251,6 +306,26 @@ type
     public static property MAX_NUM_SUB_GROUPS:                      DeviceInfoType read new DeviceInfoType($105C);
     public static property SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS:  DeviceInfoType read new DeviceInfoType($105D);
     
+    // cl_ext
+    public static property TERMINATE_CAPABILITY_KHR:                DeviceInfoType read new DeviceInfoType($2031);
+    public static property SPIR_VERSIONS:                           DeviceInfoType read new DeviceInfoType($40E0);
+    public static property COMPUTE_CAPABILITY_MAJOR_NV:             DeviceInfoType read new DeviceInfoType($4000);
+    public static property COMPUTE_CAPABILITY_MINOR_NV:             DeviceInfoType read new DeviceInfoType($4001);
+    public static property REGISTERS_PER_BLOCK_NV:                  DeviceInfoType read new DeviceInfoType($4002);
+    public static property WARP_SIZE_NV:                            DeviceInfoType read new DeviceInfoType($4003);
+    public static property GPU_OVERLAP_NV:                          DeviceInfoType read new DeviceInfoType($4004);
+    public static property KERNEL_EXEC_TIMEOUT_NV:                  DeviceInfoType read new DeviceInfoType($4005);
+    public static property INTEGRATED_MEMORY_NV:                    DeviceInfoType read new DeviceInfoType($4006);
+    public static property PROFILING_TIMER_OFFSET_AMD:              DeviceInfoType read new DeviceInfoType($4036);
+    public static property PARENT_DEVICE_EXT:                       DeviceInfoType read new DeviceInfoType($4054);
+    public static property PARTITION_TYPES_EXT:                     DeviceInfoType read new DeviceInfoType($4055);
+    public static property AFFINITY_DOMAINS_EXT:                    DeviceInfoType read new DeviceInfoType($4056);
+    public static property REFERENCE_COUNT_EXT:                     DeviceInfoType read new DeviceInfoType($4057);
+    public static property PARTITION_STYLE_EXT:                     DeviceInfoType read new DeviceInfoType($4058);
+    public static property MAX_NAMED_BARRIER_COUNT_KHR:             DeviceInfoType read new DeviceInfoType($2035);
+    public static property SVM_CAPABILITIES_ARM:                    DeviceInfoType read new DeviceInfoType($40B6);
+    public static property COMPUTE_UNITS_BITFIELD_ARM:              DeviceInfoType read new DeviceInfoType($40BF);
+    
   end;
   
   //S
@@ -276,6 +351,8 @@ type
     public static property PROPERTIES:      CommandQueueInfoType read new CommandQueueInfoType($1093);
     public static property SIZE:            CommandQueueInfoType read new CommandQueueInfoType($1094);
     public static property DEVICE_DEFAULT:  CommandQueueInfoType read new CommandQueueInfoType($1095);
+    public static property PRIORITY_KHR:    CommandQueueInfoType read new CommandQueueInfoType($1096); // cl_ext
+    public static property THROTTLE_KHR:    CommandQueueInfoType read new CommandQueueInfoType($1097); // cl_ext
     
   end;
   
@@ -284,7 +361,7 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    public static property REGION: CommandQueueInfoType read new CommandQueueInfoType($1220);
+    public static property REGION: BufferCreateType read new BufferCreateType($1220);
     
   end;
   
@@ -319,20 +396,21 @@ type
   end;
   
   //S
-  MemInfoType = record
+  MemObjInfoType = record
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    public static property &TYPE:                 MemInfoType read new MemInfoType($1100);
-    public static property FLAGS:                 MemInfoType read new MemInfoType($1101);
-    public static property SIZE:                  MemInfoType read new MemInfoType($1102);
-    public static property HOST_PTR:              MemInfoType read new MemInfoType($1103);
-    public static property MAP_COUNT:             MemInfoType read new MemInfoType($1104);
-    public static property REFERENCE_COUNT:       MemInfoType read new MemInfoType($1105);
-    public static property CONTEXT:               MemInfoType read new MemInfoType($1106);
-    public static property ASSOCIATED_MEMOBJECT:  MemInfoType read new MemInfoType($1107);
-    public static property OFFSET:                MemInfoType read new MemInfoType($1108);
-    public static property USES_SVM_POINTER:      MemInfoType read new MemInfoType($1109);
+    public static property &TYPE:                 MemObjInfoType read new MemObjInfoType($1100);
+    public static property FLAGS:                 MemObjInfoType read new MemObjInfoType($1101);
+    public static property SIZE:                  MemObjInfoType read new MemObjInfoType($1102);
+    public static property HOST_PTR:              MemObjInfoType read new MemObjInfoType($1103);
+    public static property MAP_COUNT:             MemObjInfoType read new MemObjInfoType($1104);
+    public static property REFERENCE_COUNT:       MemObjInfoType read new MemObjInfoType($1105);
+    public static property CONTEXT:               MemObjInfoType read new MemObjInfoType($1106);
+    public static property ASSOCIATED_MEMOBJECT:  MemObjInfoType read new MemObjInfoType($1107);
+    public static property OFFSET:                MemObjInfoType read new MemObjInfoType($1108);
+    public static property USES_SVM_POINTER:      MemObjInfoType read new MemObjInfoType($1109);
+    public static property USES_SVM_POINTER_ARM:  MemObjInfoType read new MemObjInfoType($40B7); // cl_ext
     
   end;
   
@@ -370,6 +448,9 @@ type
     public static property SCOPE_GLOBAL_CTORS_PRESENT:  ProgramInfoType read new ProgramInfoType($116A);
     public static property SCOPE_GLOBAL_DTORS_PRESENT:  ProgramInfoType read new ProgramInfoType($116B);
     
+    // cl_ext
+    public static property IL_KHR:                      ProgramInfoType read new ProgramInfoType($1169);
+    
   end;
   
   //S
@@ -383,6 +464,9 @@ type
     public static property BINARY_TYPE:                 ProgramBuildInfoType read new ProgramBuildInfoType($1184);
     public static property GLOBAL_VARIABLE_TOTAL_SIZE:  ProgramBuildInfoType read new ProgramBuildInfoType($1185);
     
+    // cl_ext
+    public static property BINARY_TYPE_INTERMEDIATE:    ProgramBuildInfoType read new ProgramBuildInfoType($40E1);
+    
   end;
   
   //S
@@ -392,6 +476,16 @@ type
     
     public static property SVM_PTRS:              KernelExecInfoType read new KernelExecInfoType($11B6);
     public static property SVM_FINE_GRAIN_SYSTEM: KernelExecInfoType read new KernelExecInfoType($11B7);
+    
+  end;
+  
+  //S
+  KernelExecARMInfoType = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public static property SVM_PTRS:              KernelExecARMInfoType read new KernelExecARMInfoType($40B8);
+    public static property SVM_FINE_GRAIN_SYSTEM: KernelExecARMInfoType read new KernelExecARMInfoType($40B9);
     
   end;
   
@@ -475,7 +569,41 @@ type
     
   end;
   
+  //S
+  GLTextureInfoType = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public static property TEXTURE_TARGET:  GLTextureInfoType read new GLTextureInfoType($2004);
+    public static property MIPMAP_LEVEL:    GLTextureInfoType read new GLTextureInfoType($2005);
+    public static property NUM_SAMPLES:     GLTextureInfoType read new GLTextureInfoType($2012);
+    
+  end;
+  
+  //S
+  GLContextInfoType = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public static property CURRENT_DEVICE_FOR_GL_CONTEXT_KHR: GLContextInfoType read new GLContextInfoType($2006);
+    public static property DEVICES_FOR_GL_CONTEXT_KHR:        GLContextInfoType read new GLContextInfoType($2007);
+    
+  end;
+  
   {$endregion ...InfoType}
+  
+  //S
+  ImportPropertiesARM = record
+    public val: IntPtr;
+    public constructor(val: IntPtr) := self.val := val;
+    public constructor(val: int64) := self.val := new IntPtr(val);
+    
+    public static property TYPE_ARM:      ImportPropertiesARM read new ImportPropertiesARM($40B2);
+    public static property HOST_ARM:      ImportPropertiesARM read new ImportPropertiesARM($40B3);
+    public static property DMA_BUF_ARM:   ImportPropertiesARM read new ImportPropertiesARM($40B4);
+    public static property PROTECTED_ARM: ImportPropertiesARM read new ImportPropertiesARM($40B5);
+    
+  end;
   
   //SR
   DevicePartitionProperties = record
@@ -483,15 +611,39 @@ type
     public constructor(val: IntPtr) := self.val := val;
     public constructor(val: int64) := self.val := new IntPtr(val);
     
-    public static property EQUALLY:             DevicePartitionProperties read new DevicePartitionProperties($1086);
-    public static property BY_COUNTS:           DevicePartitionProperties read new DevicePartitionProperties($1087);
-    public static property BY_COUNTS_LIST_END:  DevicePartitionProperties read new DevicePartitionProperties($0000);
-    public static property BY_AFFINITY_DOMAIN:  DevicePartitionProperties read new DevicePartitionProperties($1088);
     
-    public property IS_EQUALLY:             boolean read self = DevicePartitionProperties.EQUALLY;
-    public property IS_BY_COUNTS:           boolean read self = DevicePartitionProperties.BY_COUNTS;
-    public property IS_BY_COUNTS_LIST_END:  boolean read self = DevicePartitionProperties.BY_COUNTS_LIST_END;
-    public property IS_BY_AFFINITY_DOMAIN:  boolean read self = DevicePartitionProperties.BY_AFFINITY_DOMAIN;
+    
+    public static property EQUALLY:                 DevicePartitionProperties read new DevicePartitionProperties($1086);
+    public static property BY_COUNTS:               DevicePartitionProperties read new DevicePartitionProperties($1087);
+    public static property BY_COUNTS_LIST_END:      DevicePartitionProperties read new DevicePartitionProperties(    0);
+    public static property BY_AFFINITY_DOMAIN:      DevicePartitionProperties read new DevicePartitionProperties($1088);
+    
+    // cl_ext
+    public static property EQUALLY_EXT:             DevicePartitionProperties read new DevicePartitionProperties($4050);
+    public static property BY_COUNTS_EXT:           DevicePartitionProperties read new DevicePartitionProperties($4051);
+    public static property BY_NAMES_EXT:            DevicePartitionProperties read new DevicePartitionProperties($4052);
+    public static property BY_AFFINITY_DOMAIN_EXT:  DevicePartitionProperties read new DevicePartitionProperties($4053);
+    public static property LIST_END_EXT:            DevicePartitionProperties read new DevicePartitionProperties(    0);
+    public static property BY_COUNTS_LIST_END_EXT:  DevicePartitionProperties read new DevicePartitionProperties(    0);
+    public static property BY_NAMES_LIST_END_EXT:   DevicePartitionProperties read new DevicePartitionProperties(   -1);
+    
+    
+    
+    public property IS_EQUALLY:                 boolean read self = DevicePartitionProperties.EQUALLY;
+    public property IS_BY_COUNTS:               boolean read self = DevicePartitionProperties.BY_COUNTS;
+    public property IS_BY_COUNTS_LIST_END:      boolean read self = DevicePartitionProperties.BY_COUNTS_LIST_END;
+    public property IS_BY_AFFINITY_DOMAIN:      boolean read self = DevicePartitionProperties.BY_AFFINITY_DOMAIN;
+    
+    // cl_ext
+    public property IS_EQUALLY_EXT:             boolean read self = DevicePartitionProperties.EQUALLY_EXT;
+    public property IS_BY_COUNTS_EXT:           boolean read self = DevicePartitionProperties.BY_COUNTS_EXT;
+    public property IS_BY_NAMES_EXT:            boolean read self = DevicePartitionProperties.BY_NAMES_EXT;
+    public property IS_BY_AFFINITY_DOMAIN_EXT:  boolean read self = DevicePartitionProperties.BY_AFFINITY_DOMAIN_EXT;
+    public property IS_LIST_END_EXT:            boolean read self = DevicePartitionProperties.LIST_END_EXT;
+    public property IS_BY_COUNTS_LIST_END_EXT:  boolean read self = DevicePartitionProperties.BY_COUNTS_LIST_END_EXT;
+    public property IS_BY_NAMES_LIST_END_EXT:   boolean read self = DevicePartitionProperties.BY_NAMES_LIST_END_EXT;
+    
+    
     
     public function ToString: string; override;
     begin
@@ -509,11 +661,40 @@ type
     public constructor(val: IntPtr) := self.val := val;
     public constructor(val: int64) := self.val := new IntPtr(val);
     
-    public static property PLATFORM:          ContextProperties read new ContextProperties($1084);
-    public static property INTEROP_USER_SYNC: ContextProperties read new ContextProperties($1085);
     
-    public property IS_PLATFORM:          boolean read self = ContextProperties.PLATFORM;
-    public property IS_INTEROP_USER_SYNC: boolean read self = ContextProperties.INTEROP_USER_SYNC;
+    
+    public static property PLATFORM:              ContextProperties read new ContextProperties($1084);
+    public static property INTEROP_USER_SYNC:     ContextProperties read new ContextProperties($1085);
+    
+    // cl_ext
+    public static property TERMINATE_KHR:         ContextProperties read new ContextProperties($2032);
+    public static property PRINTF_CALLBACK_ARM:   ContextProperties read new ContextProperties($40B0);
+    public static property PRINTF_BUFFERSIZE_ARM: ContextProperties read new ContextProperties($40B1);
+    
+    // cl_gl
+    public static property GL_CONTEXT_KHR:        ContextProperties read new ContextProperties($2008);
+    public static property EGL_DISPLAY_KHR:       ContextProperties read new ContextProperties($2009);
+    public static property GLX_DISPLAY_KHR:       ContextProperties read new ContextProperties($200A);
+    public static property WGL_HDC_KHR:           ContextProperties read new ContextProperties($200B);
+    public static property CGL_SHAREGROUP_KHR:    ContextProperties read new ContextProperties($200C);
+    
+    
+    public property IS_PLATFORM:              boolean read self = ContextProperties.PLATFORM;
+    public property IS_INTEROP_USER_SYNC:     boolean read self = ContextProperties.INTEROP_USER_SYNC;
+    
+    // cl_ext
+    public property IS_TERMINATE_KHR:         boolean read self = ContextProperties.TERMINATE_KHR;
+    public property IS_PRINTF_CALLBACK_ARM:   boolean read self = ContextProperties.PRINTF_CALLBACK_ARM;
+    public property IS_PRINTF_BUFFERSIZE_ARM: boolean read self = ContextProperties.PRINTF_BUFFERSIZE_ARM;
+    
+    // cl_gl
+    public property IS_GL_CONTEXT_KHR:        boolean read self = ContextProperties.GL_CONTEXT_KHR; 
+    public property IS_EGL_DISPLAY_KHR:       boolean read self = ContextProperties.EGL_DISPLAY_KHR;
+    public property IS_GLX_DISPLAY_KHR:       boolean read self = ContextProperties.GLX_DISPLAY_KHR;
+    public property IS_WGL_HDC_KHR:           boolean read self = ContextProperties.WGL_HDC_KHR;
+    public property IS_CGL_SHAREGROUP_KHR:    boolean read self = ContextProperties.CGL_SHAREGROUP_KHR;
+    
+    
     
     public function ToString: string; override;
     begin
@@ -754,25 +935,86 @@ type
     public val: cl_bitfield;
     public constructor(val: cl_bitfield) := self.val := val;
     
-    public static property NUMA:               DeviceAffinityDomain read new DeviceAffinityDomain(1 shl 0);
-    public static property L4_CACHE:           DeviceAffinityDomain read new DeviceAffinityDomain(1 shl 1);
-    public static property L3_CACHE:           DeviceAffinityDomain read new DeviceAffinityDomain(1 shl 2);
-    public static property L2_CACHE:           DeviceAffinityDomain read new DeviceAffinityDomain(1 shl 3);
-    public static property L1_CACHE:           DeviceAffinityDomain read new DeviceAffinityDomain(1 shl 4);
-    public static property NEXT_PARTITIONABLE: DeviceAffinityDomain read new DeviceAffinityDomain(1 shl 5);
+    public static property NUMA:                    DeviceAffinityDomain read new DeviceAffinityDomain(1 shl 0);
+    public static property L4_CACHE:                DeviceAffinityDomain read new DeviceAffinityDomain(1 shl 1);
+    public static property L3_CACHE:                DeviceAffinityDomain read new DeviceAffinityDomain(1 shl 2);
+    public static property L2_CACHE:                DeviceAffinityDomain read new DeviceAffinityDomain(1 shl 3);
+    public static property L1_CACHE:                DeviceAffinityDomain read new DeviceAffinityDomain(1 shl 4);
+    public static property NEXT_PARTITIONABLE:      DeviceAffinityDomain read new DeviceAffinityDomain(1 shl 5);
     
-    public property IS_NUMA:               boolean read self.val = (1 shl 0);
-    public property IS_L4_CACHE:           boolean read self.val = (1 shl 1);
-    public property IS_L3_CACHE:           boolean read self.val = (1 shl 2);
-    public property IS_L2_CACHE:           boolean read self.val = (1 shl 3);
-    public property IS_L1_CACHE:           boolean read self.val = (1 shl 4);
-    public property IS_NEXT_PARTITIONABLE: boolean read self.val = (1 shl 5);
+    // cl_ext
+    public static property L1_CACHE_EXT:            DeviceAffinityDomain read new DeviceAffinityDomain(  $1);
+    public static property L2_CACHE_EXT:            DeviceAffinityDomain read new DeviceAffinityDomain(  $2);
+    public static property L3_CACHE_EXT:            DeviceAffinityDomain read new DeviceAffinityDomain(  $3);
+    public static property L4_CACHE_EXT:            DeviceAffinityDomain read new DeviceAffinityDomain(  $4);
+    public static property NUMA_EXT:                DeviceAffinityDomain read new DeviceAffinityDomain( $10);
+    public static property NEXT_PARTITIONABLE_EXT:  DeviceAffinityDomain read new DeviceAffinityDomain($100);
+    
+    public property IS_NUMA:                    boolean read self = DeviceAffinityDomain.NUMA;
+    public property IS_L4_CACHE:                boolean read self = DeviceAffinityDomain.L4_CACHE;
+    public property IS_L3_CACHE:                boolean read self = DeviceAffinityDomain.L3_CACHE;
+    public property IS_L2_CACHE:                boolean read self = DeviceAffinityDomain.L2_CACHE;
+    public property IS_L1_CACHE:                boolean read self = DeviceAffinityDomain.L1_CACHE;
+    public property IS_NEXT_PARTITIONABLE:      boolean read self = DeviceAffinityDomain.NEXT_PARTITIONABLE;
+    
+    public property IS_L1_CACHE_EXT:            boolean read self = DeviceAffinityDomain.L1_CACHE_EXT;
+    public property IS_L2_CACHE_EXT:            boolean read self = DeviceAffinityDomain.L2_CACHE_EXT;
+    public property IS_L3_CACHE_EXT:            boolean read self = DeviceAffinityDomain.L3_CACHE_EXT;
+    public property IS_L4_CACHE_EXT:            boolean read self = DeviceAffinityDomain.L4_CACHE_EXT;
+    public property IS_NUMA_EXT:                boolean read self = DeviceAffinityDomain.NUMA_EXT;
+    public property IS_NEXT_PARTITIONABLE_EXT:  boolean read self = DeviceAffinityDomain.NEXT_PARTITIONABLE_EXT;
     
     public function ToString: string; override;
     begin
       var res := typeof(DeviceAffinityDomain).GetProperties.Where(prop->prop.PropertyType=typeof(boolean)).Select(prop->(prop.Name,boolean(prop.GetValue(self)))).FirstOrDefault(t->t[1]);
       Result := res=nil?
         $'DeviceAffinityDomain[{self.val}]':
+        res[0].Substring(3);
+    end;
+    
+  end;
+  
+  //SR
+  CommandQueuePriority = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public static property HIGH:  CommandQueuePriority read new CommandQueuePriority(1 shl 0);
+    public static property MED:   CommandQueuePriority read new CommandQueuePriority(1 shl 1);
+    public static property LOW:   CommandQueuePriority read new CommandQueuePriority(1 shl 2);
+    
+    public property IS_HIGH:  boolean read self = CommandQueuePriority.HIGH;
+    public property IS_MED:   boolean read self = CommandQueuePriority.MED;
+    public property IS_LOW:   boolean read self = CommandQueuePriority.LOW;
+    
+    public function ToString: string; override;
+    begin
+      var res := typeof(DeviceAffinityDomain).GetProperties.Where(prop->prop.PropertyType=typeof(boolean)).Select(prop->(prop.Name,boolean(prop.GetValue(self)))).FirstOrDefault(t->t[1]);
+      Result := res=nil?
+        $'CommandQueuePriority[{self.val}]':
+        res[0].Substring(3);
+    end;
+    
+  end;
+  
+  //SR
+  CommandQueueThrottle = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public static property HIGH:  CommandQueueThrottle read new CommandQueueThrottle(1 shl 0);
+    public static property MED:   CommandQueueThrottle read new CommandQueueThrottle(1 shl 1);
+    public static property LOW:   CommandQueueThrottle read new CommandQueueThrottle(1 shl 2);
+    
+    public property IS_HIGH:  boolean read self = CommandQueueThrottle.HIGH;
+    public property IS_MED:   boolean read self = CommandQueueThrottle.MED;
+    public property IS_LOW:   boolean read self = CommandQueueThrottle.LOW;
+    
+    public function ToString: string; override;
+    begin
+      var res := typeof(DeviceAffinityDomain).GetProperties.Where(prop->prop.PropertyType=typeof(boolean)).Select(prop->(prop.Name,boolean(prop.GetValue(self)))).FirstOrDefault(t->t[1]);
+      Result := res=nil?
+        $'CommandQueueThrottle[{self.val}]':
         res[0].Substring(3);
     end;
     
@@ -875,42 +1117,83 @@ type
   CommandType = record
     public val: UInt32;
     
-    public property NDRANGE_KERNEL:       boolean read self.val = $11F0;
-    public property TASK:                 boolean read self.val = $11F1;
-    public property NATIVE_KERNEL:        boolean read self.val = $11F2;
-    public property READ_BUFFER:          boolean read self.val = $11F3;
-    public property WRITE_BUFFER:         boolean read self.val = $11F4;
-    public property COPY_BUFFER:          boolean read self.val = $11F5;
-    public property READ_IMAGE:           boolean read self.val = $11F6;
-    public property WRITE_IMAGE:          boolean read self.val = $11F7;
-    public property COPY_IMAGE:           boolean read self.val = $11F8;
-    public property COPY_IMAGE_TO_BUFFER: boolean read self.val = $11F9;
-    public property COPY_BUFFER_TO_IMAGE: boolean read self.val = $11FA;
-    public property MAP_BUFFER:           boolean read self.val = $11FB;
-    public property MAP_IMAGE:            boolean read self.val = $11FC;
-    public property UNMAP_MEM_OBJECT:     boolean read self.val = $11FD;
-    public property MARKER:               boolean read self.val = $11FE;
-    public property ACQUIRE_GL_OBJECTS:   boolean read self.val = $11FF;
-    public property RELEASE_GL_OBJECTS:   boolean read self.val = $1200;
-    public property READ_BUFFER_RECT:     boolean read self.val = $1201;
-    public property WRITE_BUFFER_RECT:    boolean read self.val = $1202;
-    public property COPY_BUFFER_RECT:     boolean read self.val = $1203;
-    public property USER:                 boolean read self.val = $1204;
-    public property BARRIER:              boolean read self.val = $1205;
-    public property MIGRATE_MEM_OBJECTS:  boolean read self.val = $1206;
-    public property FILL_BUFFER:          boolean read self.val = $1207;
-    public property FILL_IMAGE:           boolean read self.val = $1208;
-    public property SVM_FREE:             boolean read self.val = $1209;
-    public property SVM_MEMCPY:           boolean read self.val = $120A;
-    public property SVM_MEMFILL:          boolean read self.val = $120B;
-    public property SVM_MAP:              boolean read self.val = $120C;
-    public property SVM_UNMAP:            boolean read self.val = $120D;
+    public property NDRANGE_KERNEL:               boolean read self.val = $11F0;
+    public property TASK:                         boolean read self.val = $11F1;
+    public property NATIVE_KERNEL:                boolean read self.val = $11F2;
+    public property READ_BUFFER:                  boolean read self.val = $11F3;
+    public property WRITE_BUFFER:                 boolean read self.val = $11F4;
+    public property COPY_BUFFER:                  boolean read self.val = $11F5;
+    public property READ_IMAGE:                   boolean read self.val = $11F6;
+    public property WRITE_IMAGE:                  boolean read self.val = $11F7;
+    public property COPY_IMAGE:                   boolean read self.val = $11F8;
+    public property COPY_IMAGE_TO_BUFFER:         boolean read self.val = $11F9;
+    public property COPY_BUFFER_TO_IMAGE:         boolean read self.val = $11FA;
+    public property MAP_BUFFER:                   boolean read self.val = $11FB;
+    public property MAP_IMAGE:                    boolean read self.val = $11FC;
+    public property UNMAP_MEM_OBJECT:             boolean read self.val = $11FD;
+    public property MARKER:                       boolean read self.val = $11FE;
+    public property ACQUIRE_GL_OBJECTS:           boolean read self.val = $11FF;
+    public property RELEASE_GL_OBJECTS:           boolean read self.val = $1200;
+    public property READ_BUFFER_RECT:             boolean read self.val = $1201;
+    public property WRITE_BUFFER_RECT:            boolean read self.val = $1202;
+    public property COPY_BUFFER_RECT:             boolean read self.val = $1203;
+    public property USER:                         boolean read self.val = $1204;
+    public property BARRIER:                      boolean read self.val = $1205;
+    public property MIGRATE_MEM_OBJECTS:          boolean read self.val = $1206;
+    public property FILL_BUFFER:                  boolean read self.val = $1207;
+    public property FILL_IMAGE:                   boolean read self.val = $1208;
+    public property SVM_FREE:                     boolean read self.val = $1209;
+    public property SVM_MEMCPY:                   boolean read self.val = $120A;
+    public property SVM_MEMFILL:                  boolean read self.val = $120B;
+    public property SVM_MAP:                      boolean read self.val = $120C;
+    public property SVM_UNMAP:                    boolean read self.val = $120D;
+    
+    // cl_ext
+    public property ACQUIRE_GRALLOC_OBJECTS_IMG:  boolean read self.val = $40D2;
+    public property RELEASE_GRALLOC_OBJECTS_IMG:  boolean read self.val = $40D3;
+    public property SVM_FREE_ARM:                 boolean read self.val = $40BA;
+    public property SVM_MEMCPY_ARM:               boolean read self.val = $40BB;
+    public property SVM_MEMFILL_ARM:              boolean read self.val = $40BC;
+    public property SVM_MAP_ARM:                  boolean read self.val = $40BD;
+    public property SVM_UNMAP_ARM:                boolean read self.val = $40BE;
+    
+    // cl_gl_ext
+    public property GL_FENCE_SYNC_OBJECT_KHR:     boolean read self.val = $200D;
+    
+    // cl_egl
+    public property EGL_FENCE_SYNC_OBJECT_KHR:    boolean read self.val = $202F;
+    public property ACQUIRE_EGL_OBJECTS_KHR:      boolean read self.val = $202D;
+    public property RELEASE_EGL_OBJECTS_KHR:      boolean read self.val = $202E;
     
     public function ToString: string; override;
     begin
       var res := typeof(CommandType).GetProperties.Select(prop->(prop.Name,boolean(prop.GetValue(self)))).FirstOrDefault(t->t[1]);
       Result := res=nil?
         $'CommandType[{self.val}]':
+        res[0];
+    end;
+    
+  end;
+  
+  //R
+  GLObjectType = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public property BUFFER:          boolean read self.val = $2000;
+    public property TEXTURE2D:       boolean read self.val = $2001;
+    public property TEXTURE3D:       boolean read self.val = $2002;
+    public property RENDERBUFFER:    boolean read self.val = $2003;
+    public property TEXTURE2D_ARRAY: boolean read self.val = $200E;
+    public property TEXTURE1D:       boolean read self.val = $200F;
+    public property TEXTURE1D_ARRAY: boolean read self.val = $2010;
+    public property TEXTURE_BUFFER:  boolean read self.val = $2011;
+    
+    public function ToString: string; override;
+    begin
+      var res := typeof(GLObjectType).GetProperties.Select(prop->(prop.Name,boolean(prop.GetValue(self)))).FirstOrDefault(t->t[1]);
+      Result := res=nil?
+        $'GLObjectType[{self.val}]':
         res[0];
     end;
     
@@ -974,7 +1257,7 @@ type
     
     public static property NONE:              MemMigrationFlags read new MemMigrationFlags(0);
     public static property HOST:              MemMigrationFlags read new MemMigrationFlags(1 shl 0);
-    public static property CONTENT_UNDEFINED: MemMigrationFlags read new MemMigrationFlags(1 shl 0);
+    public static property CONTENT_UNDEFINED: MemMigrationFlags read new MemMigrationFlags(1 shl 1);
     
     public static function operator or(a,b: MemMigrationFlags) :=
     new MemMigrationFlags(a.val or b.val);
@@ -986,31 +1269,49 @@ type
     public val: cl_bitfield;
     public constructor(val: cl_bitfield) := self.val := val;
     
-    public static property READ_WRITE:            MemoryFlags read new MemoryFlags(1 shl 00);
-    public static property WRITE_ONLY:            MemoryFlags read new MemoryFlags(1 shl 01);
-    public static property READ_ONLY:             MemoryFlags read new MemoryFlags(1 shl 02);
-    public static property USE_HOST_PTR:          MemoryFlags read new MemoryFlags(1 shl 03);
-    public static property ALLOC_HOST_PTR:        MemoryFlags read new MemoryFlags(1 shl 04);
-    public static property COPY_HOST_PTR:         MemoryFlags read new MemoryFlags(1 shl 05);
-    public static property HOST_WRITE_ONLY:       MemoryFlags read new MemoryFlags(1 shl 07);
-    public static property HOST_READ_ONLY:        MemoryFlags read new MemoryFlags(1 shl 08);
-    public static property HOST_NO_ACCESS:        MemoryFlags read new MemoryFlags(1 shl 09);
-    public static property SVM_FINE_GRAIN_BUFFER: MemoryFlags read new MemoryFlags(1 shl 10);
-    public static property SVM_ATOMICS:           MemoryFlags read new MemoryFlags(1 shl 11);
-    public static property KERNEL_READ_AND_WRITE: MemoryFlags read new MemoryFlags(1 shl 12);
     
-    public property IS_READ_WRITE:            boolean read self.val and (1 shl 00) <> 0;
-    public property IS_WRITE_ONLY:            boolean read self.val and (1 shl 01) <> 0;
-    public property IS_READ_ONLY:             boolean read self.val and (1 shl 02) <> 0;
-    public property IS_USE_HOST_PTR:          boolean read self.val and (1 shl 03) <> 0;
-    public property IS_ALLOC_HOST_PTR:        boolean read self.val and (1 shl 04) <> 0;
-    public property IS_COPY_HOST_PTR:         boolean read self.val and (1 shl 05) <> 0;
-    public property IS_HOST_WRITE_ONLY:       boolean read self.val and (1 shl 07) <> 0;
-    public property IS_HOST_READ_ONLY:        boolean read self.val and (1 shl 08) <> 0;
-    public property IS_HOST_NO_ACCESS:        boolean read self.val and (1 shl 09) <> 0;
-    public property IS_SVM_FINE_GRAIN_BUFFER: boolean read self.val and (1 shl 10) <> 0;
-    public property IS_SVM_ATOMICS:           boolean read self.val and (1 shl 11) <> 0;
-    public property IS_KERNEL_READ_AND_WRITE: boolean read self.val and (1 shl 12) <> 0;
+    
+    public static property READ_WRITE:                  MemoryFlags read new MemoryFlags(1 shl 00);
+    public static property WRITE_ONLY:                  MemoryFlags read new MemoryFlags(1 shl 01);
+    public static property READ_ONLY:                   MemoryFlags read new MemoryFlags(1 shl 02);
+    public static property USE_HOST_PTR:                MemoryFlags read new MemoryFlags(1 shl 03);
+    public static property ALLOC_HOST_PTR:              MemoryFlags read new MemoryFlags(1 shl 04);
+    public static property COPY_HOST_PTR:               MemoryFlags read new MemoryFlags(1 shl 05);
+    public static property HOST_WRITE_ONLY:             MemoryFlags read new MemoryFlags(1 shl 07);
+    public static property HOST_READ_ONLY:              MemoryFlags read new MemoryFlags(1 shl 08);
+    public static property HOST_NO_ACCESS:              MemoryFlags read new MemoryFlags(1 shl 09);
+    public static property SVM_FINE_GRAIN_BUFFER:       MemoryFlags read new MemoryFlags(1 shl 10);
+    public static property SVM_ATOMICS:                 MemoryFlags read new MemoryFlags(1 shl 11);
+    public static property KERNEL_READ_AND_WRITE:       MemoryFlags read new MemoryFlags(1 shl 12);
+    
+    // cl_ext
+    public static property USE_UNCACHED_CPU_MEMORY_IMG: MemoryFlags read new MemoryFlags(1 shl 26);
+    public static property USE_CACHED_CPU_MEMORY_IMG:   MemoryFlags read new MemoryFlags(1 shl 27);
+    public static property CL_MEM_USE_GRALLOC_PTR_IMG:  MemoryFlags read new MemoryFlags(1 shl 28);
+    public static property EXT_HOST_PTR_QCOM:           MemoryFlags read new MemoryFlags(1 shl 29);
+    
+    
+    
+    public property IS_READ_WRITE:                  boolean read self.val and MemoryFlags.READ_WRITE                  .val <> 0;
+    public property IS_WRITE_ONLY:                  boolean read self.val and MemoryFlags.WRITE_ONLY                  .val <> 0;
+    public property IS_READ_ONLY:                   boolean read self.val and MemoryFlags.READ_ONLY                   .val <> 0;
+    public property IS_USE_HOST_PTR:                boolean read self.val and MemoryFlags.USE_HOST_PTR                .val <> 0;
+    public property IS_ALLOC_HOST_PTR:              boolean read self.val and MemoryFlags.ALLOC_HOST_PTR              .val <> 0;
+    public property IS_COPY_HOST_PTR:               boolean read self.val and MemoryFlags.COPY_HOST_PTR               .val <> 0;
+    public property IS_HOST_WRITE_ONLY:             boolean read self.val and MemoryFlags.HOST_WRITE_ONLY             .val <> 0;
+    public property IS_HOST_READ_ONLY:              boolean read self.val and MemoryFlags.HOST_READ_ONLY              .val <> 0;
+    public property IS_HOST_NO_ACCESS:              boolean read self.val and MemoryFlags.HOST_NO_ACCESS              .val <> 0;
+    public property IS_SVM_FINE_GRAIN_BUFFER:       boolean read self.val and MemoryFlags.SVM_FINE_GRAIN_BUFFER       .val <> 0;
+    public property IS_SVM_ATOMICS:                 boolean read self.val and MemoryFlags.SVM_ATOMICS                 .val <> 0;
+    public property IS_KERNEL_READ_AND_WRITE:       boolean read self.val and MemoryFlags.KERNEL_READ_AND_WRITE       .val <> 0;
+    
+    // cl_ext
+    public property IS_USE_UNCACHED_CPU_MEMORY_IMG: boolean read self.val and MemoryFlags.USE_UNCACHED_CPU_MEMORY_IMG .val <> 0;
+    public property IS_USE_CACHED_CPU_MEMORY_IMG:   boolean read self.val and MemoryFlags.USE_CACHED_CPU_MEMORY_IMG   .val <> 0;
+    public property IS_CL_MEM_USE_GRALLOC_PTR_IMG:  boolean read self.val and MemoryFlags.CL_MEM_USE_GRALLOC_PTR_IMG  .val <> 0;
+    public property IS_EXT_HOST_PTR_QCOM:           boolean read self.val and MemoryFlags.EXT_HOST_PTR_QCOM           .val <> 0;
+    
+    
     
     public static function operator or(a,b: MemoryFlags) :=
     new MemoryFlags(a.val or b.val);
@@ -1234,6 +1535,9 @@ type
     static function GetPlatformInfo(platform: cl_platform_id; param_name: PlatformInfoType; param_value_size: UIntPtr; param_value: pointer; param_value_size_ret: ^UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetPlatformInfo';
     
+    static function UnloadPlatformCompiler(platform: cl_platform_id): ErrorCode;
+    external 'opencl.dll' name 'clUnloadPlatformCompiler';
+    
     {$endregion Platform}
     
     {$region Device}
@@ -1400,6 +1704,10 @@ type
     external 'opencl.dll' name 'clEnqueueFillBuffer';
     static function EnqueueFillBuffer(command_queue: cl_command_queue; buffer: cl_mem; [MarshalAs(UnmanagedType.LPArray)] pattern: array of byte; pattern_size: UIntPtr; offset: UIntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueFillBuffer';
+    static function EnqueueFillBuffer(command_queue: cl_command_queue; buffer: cl_mem; pattern: IntPtr; pattern_size: UIntPtr; offset: UIntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueFillBuffer';
+    static function EnqueueFillBuffer(command_queue: cl_command_queue; buffer: cl_mem; pattern: IntPtr; pattern_size: UIntPtr; offset: UIntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueFillBuffer';
     static function EnqueueFillBuffer(command_queue: cl_command_queue; buffer: cl_mem; pattern: pointer; pattern_size: UIntPtr; offset: UIntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueFillBuffer';
     static function EnqueueFillBuffer(command_queue: cl_command_queue; buffer: cl_mem; pattern: pointer; pattern_size: UIntPtr; offset: UIntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
@@ -1535,9 +1843,9 @@ type
     static function EnqueueMigrateMemObjects(command_queue: cl_command_queue; num_mem_objects: UInt32; mem_objects: ^cl_mem; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueMigrateMemObjects';
     
-    static function GetMemObjectInfo(memobj: cl_mem; param_name: MemInfoType; param_value_size: UIntPtr; param_value: pointer; var param_value_size_ret: UIntPtr): ErrorCode;
+    static function GetMemObjectInfo(memobj: cl_mem; param_name: MemObjInfoType; param_value_size: UIntPtr; param_value: pointer; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetMemObjectInfo';
-    static function GetMemObjectInfo(memobj: cl_mem; param_name: MemInfoType; param_value_size: UIntPtr; param_value: pointer; param_value_size_ret: ^UIntPtr): ErrorCode;
+    static function GetMemObjectInfo(memobj: cl_mem; param_name: MemObjInfoType; param_value_size: UIntPtr; param_value: pointer; param_value_size_ret: ^UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetMemObjectInfo';
     
     {$endregion Общее}
@@ -1637,6 +1945,10 @@ type
     
     static function CreateProgramWithBinary(context: cl_context; num_devices: UInt32; [MarshalAs(UnmanagedType.LPArray)] device_list: array of cl_device_id; [MarshalAs(UnmanagedType.LPArray)] lengths: array of UIntPtr; [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPArray)] binaries: array of array of byte; [MarshalAs(UnmanagedType.LPArray)] binary_status: array of ErrorCode; var errcode_ret: ErrorCode): cl_program;
     external 'opencl.dll' name 'clCreateProgramWithBinary';
+    static function CreateProgramWithBinary(context: cl_context; num_devices: UInt32; [MarshalAs(UnmanagedType.LPArray)] device_list: array of cl_device_id; lengths: ^UIntPtr; binaries: ^^byte; binary_status: ^ErrorCode; errcode_ret: ^ErrorCode): cl_program;
+    external 'opencl.dll' name 'clCreateProgramWithBinary';
+    static function CreateProgramWithBinary(context: cl_context; num_devices: UInt32; device_list: ^cl_device_id; [MarshalAs(UnmanagedType.LPArray)] lengths: array of UIntPtr; [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPArray)] binaries: array of array of byte; [MarshalAs(UnmanagedType.LPArray)] binary_status: array of ErrorCode; var errcode_ret: ErrorCode): cl_program;
+    external 'opencl.dll' name 'clCreateProgramWithBinary';
     static function CreateProgramWithBinary(context: cl_context; num_devices: UInt32; device_list: ^cl_device_id; lengths: ^UIntPtr; binaries: ^^byte; binary_status: ^ErrorCode; errcode_ret: ^ErrorCode): cl_program;
     external 'opencl.dll' name 'clCreateProgramWithBinary';
     
@@ -1679,9 +1991,6 @@ type
     external 'opencl.dll' name 'clLinkProgram';
     static function LinkProgram(context: cl_context; num_devices: UInt32; device_list: ^cl_device_id; options: ^char; num_input_programs: UInt32; input_programs: ^cl_program; pfn_notify: Program_Callback; user_data: pointer; errcode_ret: ^ErrorCode): cl_program;
     external 'opencl.dll' name 'clLinkProgram';
-    
-    static function UnloadPlatformCompiler(platform: cl_platform_id): ErrorCode;
-    external 'opencl.dll' name 'clUnloadPlatformCompiler';
     
     static function GetProgramInfo(&program: cl_program; param_name: ProgramInfoType; param_value_size: UIntPtr; param_value: pointer; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetProgramInfo';
@@ -1821,5 +2130,221 @@ type
     {$endregion Event}
     
   end;
-
+  
+  cl_ext = static class
+    
+    {$region Misc}
+    
+    static function TerminateContextKHR(context: cl_context): ErrorCode;
+    external 'opencl.dll' name 'clTerminateContextKHR';
+    
+    static function EnqueueAcquireGrallocObjectsIMG(command_queue: cl_command_queue; num_objects: UInt32; [MarshalAs(UnmanagedType.LPArray)] mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireGrallocObjectsIMG';
+    static function EnqueueAcquireGrallocObjectsIMG(command_queue: cl_command_queue; num_objects: UInt32; [MarshalAs(UnmanagedType.LPArray)] mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireGrallocObjectsIMG';
+    static function EnqueueAcquireGrallocObjectsIMG(command_queue: cl_command_queue; num_objects: UInt32; mem_objects: ^cl_mem; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireGrallocObjectsIMG';
+    static function EnqueueAcquireGrallocObjectsIMG(command_queue: cl_command_queue; num_objects: UInt32; mem_objects: ^cl_mem; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireGrallocObjectsIMG';
+    
+    static function EnqueueReleaseGrallocObjectsIMG(command_queue: cl_command_queue; num_objects: UInt32; [MarshalAs(UnmanagedType.LPArray)] mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireGrallocObjectsIMG';
+    static function EnqueueReleaseGrallocObjectsIMG(command_queue: cl_command_queue; num_objects: UInt32; [MarshalAs(UnmanagedType.LPArray)] mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireGrallocObjectsIMG';
+    static function EnqueueReleaseGrallocObjectsIMG(command_queue: cl_command_queue; num_objects: UInt32; mem_objects: ^cl_mem; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireGrallocObjectsIMG';
+    static function EnqueueReleaseGrallocObjectsIMG(command_queue: cl_command_queue; num_objects: UInt32; mem_objects: ^cl_mem; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireGrallocObjectsIMG';
+    
+    {$endregion Misc}
+    
+    {$region ARM}
+    
+    static function ImportMemoryARM(context: cl_context; flags: MemoryFlags; [MarshalAs(UnmanagedType.LPArray)] properties: array of ImportPropertiesARM; memory: IntPtr; size: UIntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clImportMemoryARM';
+    static function ImportMemoryARM(context: cl_context; flags: MemoryFlags; properties: ^ImportPropertiesARM; memory: pointer; size: UIntPtr; errcode_ret: ^ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clImportMemoryARM';
+    
+    static function SetKernelExecInfoARM(kernel: cl_kernel; param_name: KernelExecARMInfoType; param_value_size: UIntPtr; param_value: pointer): ErrorCode;
+    external 'opencl.dll' name 'clSetKernelExecInfoARM';
+    
+    static function SVMAllocARM(context: cl_context; flags: MemoryFlags; size: UIntPtr; alignment: UInt32): IntPtr;
+    external 'opencl.dll' name 'clSVMAllocARM';
+    
+    static procedure SVMFreeARM(context: cl_context; svm_pointer: IntPtr);
+    external 'opencl.dll' name 'clSVMFreeARM';
+    
+    static function EnqueueSVMFreeARM(command_queue: cl_command_queue; num_svm_pointers: UInt32; [MarshalAs(UnmanagedType.LPArray)] svm_pointers: array of IntPtr; pfn_free_func: EnqueueSVMFree_Callback; user_data: pointer; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSVMFreeARM';
+    static function EnqueueSVMFreeARM(command_queue: cl_command_queue; num_svm_pointers: UInt32; [MarshalAs(UnmanagedType.LPArray)] svm_pointers: array of IntPtr; pfn_free_func: EnqueueSVMFree_Callback; user_data: pointer; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSVMFreeARM';
+    static function EnqueueSVMFreeARM(command_queue: cl_command_queue; num_svm_pointers: UInt32; svm_pointers: ^IntPtr; pfn_free_func: EnqueueSVMFree_Callback; user_data: pointer; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSVMFreeARM';
+    static function EnqueueSVMFreeARM(command_queue: cl_command_queue; num_svm_pointers: UInt32; svm_pointers: ^IntPtr; pfn_free_func: EnqueueSVMFree_Callback; user_data: pointer; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSVMFreeARM';
+    
+    static function EnqueueSVMMemcpyARM(command_queue: cl_command_queue; blocking_copy: cl_bool; dst_ptr: IntPtr; src_ptr: IntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSVMMemcpyARM';
+    static function EnqueueSVMMemcpyARM(command_queue: cl_command_queue; blocking_copy: cl_bool; dst_ptr: IntPtr; src_ptr: IntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSVMMemcpyARM';
+    static function EnqueueSVMMemcpyARM(command_queue: cl_command_queue; blocking_copy: cl_bool; dst_ptr: pointer; src_ptr: pointer; size: UIntPtr; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSVMMemcpyARM';
+    static function EnqueueSVMMemcpyARM(command_queue: cl_command_queue; blocking_copy: cl_bool; dst_ptr: pointer; src_ptr: pointer; size: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSVMMemcpyARM';
+    
+    static function EnqueueSVMMemFillARM(command_queue: cl_command_queue; svm_ptr: IntPtr; pattern: IntPtr; pattern_size: UIntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSVMMemFillARM';
+    static function EnqueueSVMMemFillARM(command_queue: cl_command_queue; svm_ptr: IntPtr; pattern: IntPtr; pattern_size: UIntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSVMMemFillARM';
+    static function EnqueueSVMMemFillARM(command_queue: cl_command_queue; svm_ptr: pointer; pattern: pointer; pattern_size: UIntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSVMMemFillARM';
+    static function EnqueueSVMMemFillARM(command_queue: cl_command_queue; svm_ptr: pointer; pattern: pointer; pattern_size: UIntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSVMMemFillARM';
+    
+    static function EnqueueSVMMapARM(command_queue: cl_command_queue; blocking_map: cl_bool; flags: MapFlags; svm_ptr: IntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSVMMapARM';
+    static function EnqueueSVMMapARM(command_queue: cl_command_queue; blocking_map: cl_bool; flags: MapFlags; svm_ptr: IntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSVMMapARM';
+    static function EnqueueSVMMapARM(command_queue: cl_command_queue; blocking_map: cl_bool; flags: MapFlags; svm_ptr: pointer; size: UIntPtr; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSVMMapARM';
+    static function EnqueueSVMMapARM(command_queue: cl_command_queue; blocking_map: cl_bool; flags: MapFlags; svm_ptr: pointer; size: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSVMMapARM';
+    
+    static function EnqueueSVMUnmapARM(command_queue: cl_command_queue; svm_ptr: IntPtr; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSVMUnmapARM';
+    static function EnqueueSVMUnmapARM(command_queue: cl_command_queue; svm_ptr: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSVMUnmapARM';
+    static function EnqueueSVMUnmapARM(command_queue: cl_command_queue; svm_ptr: pointer; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSVMUnmapARM';
+    static function EnqueueSVMUnmapARM(command_queue: cl_command_queue; svm_ptr: pointer; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueSVMUnmapARM';
+    
+    static function SetKernelArgSVMPointerARM(kernel: cl_kernel; arg_index: UInt32; arg_value: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clSetKernelArgSVMPointerARM';
+    static function SetKernelArgSVMPointerARM(kernel: cl_kernel; arg_index: UInt32; arg_value: pointer): ErrorCode;
+    external 'opencl.dll' name 'clSetKernelArgSVMPointerARM';
+    
+    {$endregion ARM}
+    
+  end;
+  
+  cl_gl = static class
+    
+    {$region Buffer}
+    
+    static function CreateFromGLBuffer(context: cl_context; flags: MemoryFlags; bufobj: UInt32; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateFromGLBuffer';
+    static function CreateFromGLBuffer(context: cl_context; flags: MemoryFlags; bufobj: UInt32; errcode_ret: ^ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateFromGLBuffer';
+    
+    {$endregion Buffer}
+    
+    {$region RenderBuffer}
+    
+    static function CreateFromGLRenderbuffer(context: cl_context; flags: MemoryFlags; renderbuffer: UInt32; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateFromGLRenderbuffer';
+    static function CreateFromGLRenderbuffer(context: cl_context; flags: MemoryFlags; renderbuffer: UInt32; errcode_ret: ^ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateFromGLRenderbuffer';
+    
+    {$endregion RenderBuffer}
+    
+    {$region Texture}
+    
+    static function CreateFromGLTexture(context: cl_context; flags: MemoryFlags; target: UInt32; miplevel: Int32; texture: UInt32; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateFromGLTexture';
+    static function CreateFromGLTexture(context: cl_context; flags: MemoryFlags; target: UInt32; miplevel: Int32; texture: UInt32; errcode_ret: ^ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateFromGLTexture';
+    
+    static function CreateFromGLTexture2D(context: cl_context; flags: MemoryFlags; target: UInt32; miplevel: Int32; texture: UInt32; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateFromGLTexture2D';
+    static function CreateFromGLTexture2D(context: cl_context; flags: MemoryFlags; target: UInt32; miplevel: Int32; texture: UInt32; errcode_ret: ^ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateFromGLTexture2D';
+    
+    static function CreateFromGLTexture3D(context: cl_context; flags: MemoryFlags; target: UInt32; miplevel: Int32; texture: UInt32; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateFromGLTexture3D';
+    static function CreateFromGLTexture3D(context: cl_context; flags: MemoryFlags; target: UInt32; miplevel: Int32; texture: UInt32; errcode_ret: ^ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateFromGLTexture3D';
+    
+    static function GetGLTextureInfo(memobj: cl_mem; param_name: GLTextureInfoType; param_value_size: UIntPtr; param_value: pointer; var param_value_size_ret: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetGLTextureInfo';
+    static function GetGLTextureInfo(memobj: cl_mem; param_name: GLTextureInfoType; param_value_size: UIntPtr; param_value: pointer; param_value_size_ret: ^UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetGLTextureInfo';
+    
+    {$endregion Texture}
+    
+    {$region Общее}
+    
+    static function GetGLContextInfoKHR([MarshalAs(UnmanagedType.LPArray)] properties: array of ContextProperties; param_name: GLContextInfoType; param_value_size: UIntPtr; param_value: pointer; var param_value_size_ret: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetGLContextInfoKHR';
+    static function GetGLContextInfoKHR(properties: ^ContextProperties; param_name: GLContextInfoType; param_value_size: UIntPtr; param_value: pointer; param_value_size_ret: ^UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetGLContextInfoKHR';
+    
+    static function EnqueueAcquireGLObjects(command_queue: cl_command_queue; num_objects: UInt32; [MarshalAs(UnmanagedType.LPArray)] mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireGLObjects';
+    static function EnqueueAcquireGLObjects(command_queue: cl_command_queue; num_objects: UInt32; [MarshalAs(UnmanagedType.LPArray)] mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireGLObjects';
+    static function EnqueueAcquireGLObjects(command_queue: cl_command_queue; num_objects: UInt32; mem_objects: ^cl_mem; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireGLObjects';
+    static function EnqueueAcquireGLObjects(command_queue: cl_command_queue; num_objects: UInt32; mem_objects: ^cl_mem; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireGLObjects';
+    
+    static function EnqueueReleaseGLObjects(command_queue: cl_command_queue; num_objects: UInt32; [MarshalAs(UnmanagedType.LPArray)] mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseGLObjects';
+    static function EnqueueReleaseGLObjects(command_queue: cl_command_queue; num_objects: UInt32; [MarshalAs(UnmanagedType.LPArray)] mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseGLObjects';
+    static function EnqueueReleaseGLObjects(command_queue: cl_command_queue; num_objects: UInt32; mem_objects: ^cl_mem; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseGLObjects';
+    static function EnqueueReleaseGLObjects(command_queue: cl_command_queue; num_objects: UInt32; mem_objects: ^cl_mem; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseGLObjects';
+    
+    static function GetGLObjectInfo(memobj: cl_mem; var gl_object_type: GLObjectType; var gl_object_name: UInt32): ErrorCode;
+    external 'opencl.dll' name 'clGetGLObjectInfo';
+    static function GetGLObjectInfo(memobj: cl_mem; gl_object_type: ^GLObjectType; gl_object_name: ^UInt32): ErrorCode;
+    external 'opencl.dll' name 'clGetGLObjectInfo';
+    
+    static function CreateEventFromGLsyncKHR(context: cl_context; cl_GLsync: IntPtr; var errcode_ret: ErrorCode): cl_event;
+    external 'opencl.dll' name 'clCreateEventFromGLsyncKHR';
+    static function CreateEventFromGLsyncKHR(context: cl_context; cl_GLsync: IntPtr; errcode_ret: ^ErrorCode): cl_event;
+    external 'opencl.dll' name 'clCreateEventFromGLsyncKHR';
+    
+    {$endregion Общее}
+    
+  end;
+  
+  cl_egl = static class
+    
+    {$region Разное}
+    
+    static function CreateFromEGLImageKHR(context: cl_context; egldisplay: IntPtr; eglimage: IntPtr; flags: MemoryFlags; [MarshalAs(UnmanagedType.LPArray)] properties: array of IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateFromEGLImageKHR';
+    static function CreateFromEGLImageKHR(context: cl_context; egldisplay: IntPtr; eglimage: IntPtr; flags: MemoryFlags; properties: ^IntPtr; errcode_ret: ^ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateFromEGLImageKHR';
+    
+    static function EnqueueAcquireEGLObjectsKHR(command_queue: cl_command_queue; num_objects: UInt32; [MarshalAs(UnmanagedType.LPArray)] mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireEGLObjectsKHR';
+    static function EnqueueAcquireEGLObjectsKHR(command_queue: cl_command_queue; num_objects: UInt32; [MarshalAs(UnmanagedType.LPArray)] mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireEGLObjectsKHR';
+    static function EnqueueAcquireEGLObjectsKHR(command_queue: cl_command_queue; num_objects: UInt32; mem_objects: ^cl_mem; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireEGLObjectsKHR';
+    static function EnqueueAcquireEGLObjectsKHR(command_queue: cl_command_queue; num_objects: UInt32; mem_objects: ^cl_mem; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueAcquireEGLObjectsKHR';
+    
+    static function EnqueueReleaseEGLObjectsKHR(command_queue: cl_command_queue; num_objects: UInt32; [MarshalAs(UnmanagedType.LPArray)] mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseEGLObjectsKHR';
+    static function EnqueueReleaseEGLObjectsKHR(command_queue: cl_command_queue; num_objects: UInt32; [MarshalAs(UnmanagedType.LPArray)] mem_objects: array of cl_mem; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseEGLObjectsKHR';
+    static function EnqueueReleaseEGLObjectsKHR(command_queue: cl_command_queue; num_objects: UInt32; mem_objects: ^cl_mem; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseEGLObjectsKHR';
+    static function EnqueueReleaseEGLObjectsKHR(command_queue: cl_command_queue; num_objects: UInt32; mem_objects: ^cl_mem; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    external 'opencl.dll' name 'clEnqueueReleaseEGLObjectsKHR';
+    
+    static function CreateEventFromEGLSyncKHR(context: cl_context; sync: IntPtr; display: IntPtr; var errcode_ret: ErrorCode): cl_event;
+    external 'opencl.dll' name 'clCreateEventFromEGLSyncKHR';
+    static function CreateEventFromEGLSyncKHR(context: cl_context; sync: IntPtr; display: IntPtr; errcode_ret: ^ErrorCode): cl_event;
+    external 'opencl.dll' name 'clCreateEventFromEGLSyncKHR';
+    
+    {$endregion Разное}
+    
+  end;
+  
 end.

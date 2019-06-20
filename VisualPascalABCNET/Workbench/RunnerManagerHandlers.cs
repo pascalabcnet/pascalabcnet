@@ -21,7 +21,6 @@ namespace VisualPascalABC
 
         void RunnerManager_Started(string fileName)
         {
-            //RunnerManager_Started_Sync(fileName); - ни в коем случае этого не делать! Кнопка Run продолжает оставаться активной!!!
             Workbench.BeginInvoke(new SetTextDelegate(RunnerManager_Started_Sync), fileName);
         }
 
@@ -44,7 +43,7 @@ namespace VisualPascalABC
         Object o = new Object();
         void RunnerManager_Started_Sync(string fileName)
         {
-            lock (o)
+            //lock (o)
             {
                 if (!ProjectFactory.Instance.ProjectLoaded)
                 {
@@ -88,10 +87,10 @@ namespace VisualPascalABC
                     ReadRequests.Remove(RunTabs[fileName]);
                 UpdateReadRequest(false);
                 WorkbenchServiceFactory.EditorService.SetFocusToEditor();
-                //if (TerminateAllPrograms)
-                WaitCallback_DeleteEXEAndPDB(fileName); // сделал всё синхронно - теперь WaitCallback_DeleteEXEAndPDB не должен работать медленно!
-                                                        //else
-                                                        //    System.Threading.ThreadPool.QueueUserWorkItem(WaitCallback_DeleteEXEAndPDB, fileName); // в потоке - не синхронизировано! Надо запретить запускать что-то до окончания!
+                if (TerminateAllPrograms)
+                    WaitCallback_DeleteEXEAndPDB(fileName); 
+                else
+                    System.Threading.ThreadPool.QueueUserWorkItem(WaitCallback_DeleteEXEAndPDB, fileName); 
 
                 if (!ProjectFactory.Instance.ProjectLoaded)
                 {
@@ -103,7 +102,7 @@ namespace VisualPascalABC
                 else
                 {
                     ButtonsEnableDisable_RunStop();
-                } // SSM 22/04/19 - этот код перенесен в конец WaitCallback_DeleteEXEAndPDB - нет, там исключение
+                } 
             }
         }
 
@@ -199,22 +198,6 @@ namespace VisualPascalABC
             {
                 WorkbenchServiceFactory.OperationsService.AddTextToCompilerMessagesSync("Не удалось удалить bat-файл из словаря RunnerManager.TempBatFiles");
             }
-            // SSM 22/04/19 - этот код перенесён сюда из RunnerManager_Exited_Sync - нет, тут исключение!
-            /*if (!ProjectFactory.Instance.ProjectLoaded)
-            {
-                if (Tools.FileNameToLower(WorkbenchServiceFactory.Workbench.CurrentEXEFileName) == fileName)
-                {
-                    ButtonsEnableDisable_RunStop();
-                }
-            }
-            else
-            {
-                ButtonsEnableDisable_RunStop();
-            }*/
-            //return;
-            //System.Threading.Thread.Sleep(20);
-            //i++;
-            //}
         }
 
         void ReadStringRequest(string ForId)

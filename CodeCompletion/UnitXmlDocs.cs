@@ -87,7 +87,7 @@ namespace CodeCompletion
 					}
 				}
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				
 			}

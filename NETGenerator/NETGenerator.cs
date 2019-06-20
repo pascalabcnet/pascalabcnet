@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.Linq;
 using PascalABCCompiler.SemanticTree;
 using System.Threading;
 using System.Reflection;
@@ -1576,6 +1577,8 @@ namespace PascalABCCompiler.NETGenerator
                         fldinfo = fldinfo;
                     } */
 #endif
+                    if (fldinfo == null)
+                        continue;
                     if (!(fldinfo is GenericFldInfo))
                     {
                         FieldInfo finfo = fldinfo.fi;
@@ -5431,8 +5434,9 @@ namespace PascalABCCompiler.NETGenerator
                     {
                         if (lb.LocalType.IsGenericParameter)
                         {
-                            il.Emit(OpCodes.Ldloc, lb);
-                            il.Emit(OpCodes.Box, lb.LocalType);
+                            //il.Emit(OpCodes.Ldloc, lb);
+                            //il.Emit(OpCodes.Box, lb.LocalType);
+                            il.Emit(OpCodes.Ldloca, lb); // #1986
                         }
                         else
                             if (lb.LocalType.IsValueType)
@@ -7361,25 +7365,31 @@ namespace PascalABCCompiler.NETGenerator
             MethInfo meth = helper.GetMethod(value.namespace_function);
             IExpressionNode[] real_parameters = value.real_parameters;
             //если это стандартная (New или Dispose)
-            if (meth == null || meth.stand == true)
+            if (meth == null || meth.stand)
             {
                 if (GenerateStandardFuncCall(value, il))
                     return;
                 if (meth == null)
                     meth = MakeStandardFunc(value);
-                IRefTypeNode rtn = (IRefTypeNode)real_parameters[0].type;
-                TypeInfo ti = helper.GetTypeReference(rtn.pointed_type);
-                //int size = 0;
-                //if (ti.tp.IsPointer == true) size = Marshal.SizeOf(TypeFactory.Int32Type);
-                //else size = GetTypeSize(ti.tp, rtn.pointed_type);
+                Type ptrt = null;
+                TypeInfo ti = null;
+                if (real_parameters[0].type is IRefTypeNode)
+                {
+                    IRefTypeNode rtn = (IRefTypeNode)real_parameters[0].type;
+                    ti = helper.GetTypeReference(rtn.pointed_type);
+                    ptrt = ti.tp;
+                }
+                else
+                {
+                    ti = helper.GetTypeReference(real_parameters[0].type);
+                    ptrt = ti.tp.GetElementType();
+                }
                 is_addr = true;
                 real_parameters[0].visit(this);
                 is_addr = false;
-                //il.Emit(OpCodes.Ldc_I4, size);
-                //NETGeneratorTools.LdcIntConst(il, size);
-                PushSize(ti.tp);
+                PushSize(ptrt);
                 il.Emit(OpCodes.Call, meth.mi);
-                if (value.namespace_function.SpecialFunctionKind == SpecialFunctionKind.New)
+                if (value.namespace_function.SpecialFunctionKind == SpecialFunctionKind.New && real_parameters[0].type is IRefTypeNode)
                 {
                     ITypeNode tn = (real_parameters[0].type as IRefTypeNode).pointed_type;
                     if (tn.type_special_kind == type_special_kind.array_wrapper)
@@ -10154,7 +10164,12 @@ namespace PascalABCCompiler.NETGenerator
         public void ConvertCaseVariantNode(ICaseVariantNode value, Label end_label, System.Collections.Generic.Dictionary<IConstantNode, Label> dict)
         {
             if (save_debug_info)
-                MarkSequencePoint(value.statement_to_execute.Location);
+            {
+            	if (value.statement_to_execute.Location != null)
+                	MarkSequencePoint(value.statement_to_execute.Location);
+            	else
+            		MarkSequencePoint(value.Location);
+            }
             for (int i = 0; i < value.elements.Length; i++)
                 il.MarkLabel(dict[value.elements[i]]);
             ConvertStatement(value.statement_to_execute);

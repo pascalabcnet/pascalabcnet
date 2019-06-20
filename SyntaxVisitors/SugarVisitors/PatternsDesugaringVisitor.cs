@@ -93,6 +93,7 @@ namespace SyntaxVisitors.SugarVisitors
         private const string CountPropertyName = compiler_string_consts.count_property_name;
         private const string GeneratedPatternNamePrefix = "<>pattern";
         private const string GeneratedDeconstructParamPrefix = "<>deconstructParam";
+        private const string GeneratedVisitElseBranchVariableName = "<>visitElseBranch";
 
         private int generalVariableCounter = 0;
         private int successVariableCounter = 0;
@@ -145,7 +146,7 @@ namespace SyntaxVisitors.SugarVisitors
                                 usedDeconstructionTypes.Add(deconstructionTypeName);
                             } */
 
-                            DesugarDeconstructorPatternCase(matchWith.expr, patternCase);
+                            DefaultDesugarPattern(matchWith.expr, patternCase);
                             break;
                         }
                     case const_pattern p:
@@ -155,12 +156,12 @@ namespace SyntaxVisitors.SugarVisitors
                         }
                     case collection_pattern p:
                         {
-                            DesugarDeconstructorPatternCase(matchWith.expr, patternCase);
+                            DefaultDesugarPattern(matchWith.expr, patternCase);
                             break;
                         }
                     case tuple_pattern p:
                         {
-                            DesugarDeconstructorPatternCase(matchWith.expr, patternCase);
+                            DefaultDesugarPattern(matchWith.expr, patternCase);
                             break;
                         }
                 }
@@ -177,6 +178,7 @@ namespace SyntaxVisitors.SugarVisitors
                 typeChecks.Add(desugaredMatchWith);
                 desugaredMatchWith = new statement_list(typeChecks);
             }
+
             // Замена выражения match with на новое несахарное поддерево и его обход
             ReplaceUsingParent(matchWith, desugaredMatchWith);
             visit(desugaredMatchWith);
@@ -192,7 +194,7 @@ namespace SyntaxVisitors.SugarVisitors
             DesugarIsExpression(isPatternExpr);
         }
 
-        private void DesugarDeconstructorPatternCase(expression matchingExpression, pattern_case patternCase)
+        private void DefaultDesugarPattern(expression matchingExpression, pattern_case patternCase)
         {
             //var paramCheckExpr = DesugarDeconstructorPatternParameters(patternCase.pattern as deconstructor_pattern);
 
@@ -714,25 +716,6 @@ namespace SyntaxVisitors.SugarVisitors
         {
             var pattern = isExpression.right as deconstructor_pattern;
             var desugaringResult = DesugarDeconstructorPattern(pattern, isExpression.left);
-            /*
-            var isParent = isExpression.Parent;
-            expression isReplacement = isExpression;
-
-            while (!(isParent is if_node))
-            {
-                if (isParent is bin_expr binParent)
-                {
-                    if (binParent.right == isReplacement)
-                    {
-                        isReplacement = new bin_expr(binParent.left, binParent.right, binParent.operation_type, binParent.source_context);
-                    }
-                    if (binParent.left == isReplacement)
-                    {
-                        isReplacement = binParent.left;
-                    }
-                } 
-                isParent = isParent.Parent;
-            }*/
             ReplaceUsingParent(isExpression, desugaringResult.SuccessVariable);
             var statementsToAdd = desugaringResult.GetDeconstructionDefinitions(pattern.source_context);
             statementsToAdd.Add(GetMatchedExpressionCheck(isExpression.left));
@@ -780,6 +763,27 @@ namespace SyntaxVisitors.SugarVisitors
         private semantic_check_sugared_statement_node GetTypeCompatibilityCheck(expression tuple, int32_const length) =>
             new semantic_check_sugared_statement_node(SemanticCheckType.MatchedTuple, new List<syntax_tree_node>() { tuple, length });
 
+        private bool IsNestedIfWithExtendedIs(if_node ifNode)
+        {
+            var parent = ifNode.Parent;
+            while (parent != null)
+            {
+                if (parent is statement_list stList &&
+                    IsVisitElseBranchStatementListDeclaration(stList))
+                {
+                    return true;
+                }
+                parent = parent.Parent;
+            }
+            return false;
+        }
+
+        private bool IsVisitElseBranchStatementListDeclaration(statement_list stList)
+        {
+            return stList.list != null && stList.list[0] != null &&
+                   stList.list[0] is var_statement visitElseVarStatement &&
+                   visitElseVarStatement.var_def.vars.idents[0].name.Equals(GeneratedVisitElseBranchVariableName);
+        }
 
         private statement_list ConvertIfNode(if_node ifNode, List<statement> statementsBeforeIf, out statement elseBody)
         {
@@ -788,11 +792,14 @@ namespace SyntaxVisitors.SugarVisitors
             // переводим в
             //
             // begin
-            //   statementsBeforeIf
-            //   if e then begin <then>; goto end_if end;
+            // var <>visitElseBranch := true;
+            //   begin
+            //     <>visitElseBranch := true;
+            //     statementsBeforeIf
+            //     if e then begin <then>; <>visitElseBranch := false; end;
+            //   end
+            //   if <>visitElseBranch then <else>
             // end
-            // <else>
-            // end_if: empty_statement
 
             // if e then <then>
             // 
@@ -803,9 +810,34 @@ namespace SyntaxVisitors.SugarVisitors
             //   if e then <then>
             // end
 
+            // Добавляем объявление <>visitElseBranch если мы находимся в первом в цепочке if, который не является вложенным
+            List<statement> visitElseStatList = null;
+            if (ifNode.else_body != null &&
+                !(ifNode.Parent is if_node ifParentNode &&
+                  ifParentNode.condition is ident ifParentNodeIdent &&
+                  ifParentNodeIdent.name.Equals(GeneratedVisitElseBranchVariableName)) &&
+                !IsNestedIfWithExtendedIs(ifNode))
+            {
+                visitElseStatList = new List<statement>();
+                visitElseStatList.Add(
+                    new var_statement(
+                        new ident(GeneratedVisitElseBranchVariableName, ifNode.source_context),
+                        new bool_const(true, ifNode.source_context),
+                        ifNode.source_context)
+                );
+            }
+
             // Добавляем, чтобы на конвертировать еще раз, если потребуется
             processedIfNodes.Add(ifNode);
 
+            if (ifNode.else_body != null)
+            {
+                statementsBeforeIf.Add(new assign(
+                        new ident(GeneratedVisitElseBranchVariableName, ifNode.source_context),
+                        new bool_const(true, ifNode.source_context),
+                        Operators.Assignment,
+                        ifNode.source_context));
+            }
             var statementsBeforeAndIf = new statement_list();
             statementsBeforeAndIf.AddMany(statementsBeforeIf);
             statementsBeforeAndIf.Add(ifNode);
@@ -813,6 +845,11 @@ namespace SyntaxVisitors.SugarVisitors
             if (ifNode.else_body == null)
             {
                 elseBody = null;
+                if (visitElseStatList != null)
+                {
+                    visitElseStatList.Add(statementsBeforeAndIf);
+                    statementsBeforeAndIf = new statement_list(visitElseStatList);
+                }
                 return statementsBeforeAndIf;
             }
             else
@@ -820,7 +857,7 @@ namespace SyntaxVisitors.SugarVisitors
                 var result = new statement_list();
                 result.Add(statementsBeforeAndIf);
                 var endIfLabel = NewEndIfName();
-                // добавляем метку
+
                 if (!(ifNode.then_body is statement_list))
                 {
                     ifNode.then_body = new statement_list(ifNode.then_body, ifNode.then_body.source_context);
@@ -828,16 +865,31 @@ namespace SyntaxVisitors.SugarVisitors
                 }
 
                 var thenBody = ifNode.then_body as statement_list;
-                thenBody.Add(new goto_statement(endIfLabel));
-                // добавляем else и метку за ним
-                result.Add(ifNode.else_body);
-                result.Add(new labeled_statement(endIfLabel));
+                
+                thenBody.Add(new assign(
+                    new ident(GeneratedVisitElseBranchVariableName, thenBody.source_context), 
+                    new bool_const(false, thenBody.source_context), 
+                    Operators.Assignment,
+                    thenBody.source_context));
+
+                // добавляем else
+                result.Add(
+                    new if_node(
+                        new ident(GeneratedVisitElseBranchVariableName, ifNode.else_body.source_context),
+                        ifNode.else_body,
+                        null,
+                        ifNode.else_body.source_context));
+                
                 // Возвращаем else для обхода, т.к. он уже не входит в if
                 elseBody = ifNode.else_body;
                 // удаляем else из if
                 ifNode.else_body = null;
-                // Добавляем метку
-                AddLabel(endIfLabel);
+
+                if (visitElseStatList != null)
+                {
+                    visitElseStatList.Add(result);
+                    result = new statement_list(visitElseStatList);
+                }
 
                 return result;
             }

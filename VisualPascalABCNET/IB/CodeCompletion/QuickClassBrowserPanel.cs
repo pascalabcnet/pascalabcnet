@@ -723,7 +723,7 @@ namespace VisualPascalABC
                     classComboBox.Invoke(new Invoke_del(Invoke_EndUpdate));
                 }
             }
-            catch (Exception ex)
+            catch (Exception )
             {
             }
 		}

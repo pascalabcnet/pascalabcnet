@@ -21,6 +21,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             root.FillParentsInAllChilds();
             // Выносим выражения с лямбдами из заголовка foreach
             StandOutExprWithLambdaInForeachSequenceVisitor.New.ProcessNode(root);
+            VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer.New.ProcessNode(root); // SSM bug fix #1147
 
 #if DEBUG
             //new SimplePrettyPrinterVisitor("E:/projs/out.txt").ProcessNode(root);
@@ -45,7 +46,8 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
             // Patterns
             // SingleDeconstructChecker.New.ProcessNode(root); // SSM 21.10.18 - пока разрешил множественные деконструкторы. Если будут проблемы - запретить
-            PatternsDesugaringVisitor.New.ProcessNode(root);
+            ExtendedIsDesugaringVisitor.New.ProcessNode(root); // Десахаризация расширенного is, который используется в сложных логических выражениях
+            PatternsDesugaringVisitor.New.ProcessNode(root);  // Обязательно в этом порядке.
 
             // simple_property
             PropertyDesugarVisitor.New.ProcessNode(root);
