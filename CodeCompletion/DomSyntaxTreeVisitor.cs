@@ -2197,7 +2197,7 @@ namespace CodeCompletion
             }
             //add_standart_types_simple();
             Stack<Position> regions_stack = new Stack<Position>();
-            if (CodeCompletionController.comp.CompilerOptions.CurrentProject != null && CodeCompletionController.comp.CompilerOptions.CurrentProject.ContainsSourceFile(_unit_module.file_name))
+            if (CodeCompletionController.comp != null && CodeCompletionController.comp.CompilerOptions.CurrentProject != null && CodeCompletionController.comp.CompilerOptions.CurrentProject.ContainsSourceFile(_unit_module.file_name))
             {
             	IReferenceInfo[] refs = CodeCompletionController.comp.CompilerOptions.CurrentProject.References;
             	if (_unit_module.compiler_directives == null)
@@ -2407,7 +2407,7 @@ namespace CodeCompletion
             cur_scope = unit_scope = new InterfaceUnitScope(new SymInfo("", SymbolKind.Namespace, "program"), null);
             CodeCompletionController.comp_modules[_program_module.file_name] = this.converter;
             Stack<Position> regions_stack = new Stack<Position>();
-            if (CodeCompletionController.comp.CompilerOptions.CurrentProject != null && CodeCompletionController.comp.CompilerOptions.CurrentProject.ContainsSourceFile(_program_module.file_name))
+            if (CodeCompletionController.comp != null && CodeCompletionController.comp.CompilerOptions.CurrentProject != null && CodeCompletionController.comp.CompilerOptions.CurrentProject.ContainsSourceFile(_program_module.file_name))
             {
                 IReferenceInfo[] refs = CodeCompletionController.comp.CompilerOptions.CurrentProject.References;
                 if (_program_module.compiler_directives == null)
