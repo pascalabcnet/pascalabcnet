@@ -3950,6 +3950,8 @@ end;
 
 function operator**(x: real; n: integer): real; extensionmethod := Power(x, n);
 
+function operator**(x: single; n: integer): real; extensionmethod := Power(x, n);
+
 function operator**(x, y: integer): real; extensionmethod := Power(real(x), y);
 
 function operator**(x, y: real): real; extensionmethod := Power(x, y);
