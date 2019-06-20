@@ -10164,7 +10164,12 @@ namespace PascalABCCompiler.NETGenerator
         public void ConvertCaseVariantNode(ICaseVariantNode value, Label end_label, System.Collections.Generic.Dictionary<IConstantNode, Label> dict)
         {
             if (save_debug_info)
-                MarkSequencePoint(value.statement_to_execute.Location);
+            {
+            	if (value.statement_to_execute.Location != null)
+                	MarkSequencePoint(value.statement_to_execute.Location);
+            	else
+            		MarkSequencePoint(value.Location);
+            }
             for (int i = 0; i < value.elements.Length; i++)
                 il.MarkLabel(dict[value.elements[i]]);
             ConvertStatement(value.statement_to_execute);
