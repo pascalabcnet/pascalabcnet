@@ -150,6 +150,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             var idName = id.name.ToLower();
 
             SymbolInfo si = _visitor.context.find_first(idName);
+            //var q = si.GetHashCode();
             
             if (si == null)
             {
@@ -203,7 +204,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                     {
                         var classIdent = new ident(classNode.name.Remove(classNode.name.IndexOf("<")));
                         var templateParams = new template_param_list(classNode.instance_params.Select(x => x.name).Aggregate("", (acc, elem) => acc += elem));
-                        return new ident_with_templateparams(classIdent, templateParams);
+                        return new ident_with_templateparams(classIdent,  templateParams);
                     }
                     else
                     {
@@ -342,12 +343,22 @@ namespace TreeConverter.LambdaExpressions.Closure
                     }
                     else
                     {
-                        var field = prScope.VariablesDefinedInScope.Find(var => var.SymbolInfo == si);
+                        var field = prScope.VariablesDefinedInScope.Find(var => var.SymbolInfo == si); 
 
-                        if (field == null)
+                        if (field == null) // если не было такого
                         {
-                            prScope.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(null,
-                                                                                                                 si));
+                            // local_block_variable   common_parameter - в процедуре могут быть только эти
+                            var found = false;
+                            foreach (var v in prScope.VariablesDefinedInScope) // и не было с таким же именем
+                            {
+                                if (v.SymbolInfo.sym_info is var_definition_node vdn && vdn.name.ToLower() == id.name.ToLower()) // SSM попытка бороться с #2001 - исключаю одноимённые
+                                {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found) // то добавить
+                                prScope.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(null, si)); // это было
                         }
                     }
                 }
@@ -375,14 +386,29 @@ namespace TreeConverter.LambdaExpressions.Closure
                     }
                 }
 
-                var idRef = (selfWordInClass ? _classScope : scope)
-                    .VariablesDefinedInScope
-                    .Find(var => var.SymbolInfo == si);
+                var sc = selfWordInClass ? _classScope : scope;
+                var idRef = sc.VariablesDefinedInScope.Find(var => var.SymbolInfo == si);
 
                 if (idRef == null)                                     //TODO: Осторожнее переделать
                 {
                     {
-                        return;
+                        /*var index = -1;
+                        for (var i=0; i < sc.VariablesDefinedInScope.Count; i++) 
+                        {
+                            if (sc.VariablesDefinedInScope[i].SymbolInfo.sym_info is var_definition_node vdn && vdn.name.ToLower() == id.name.ToLower()) // SSM #2001 и подобные - исключаю одноимённые
+                            {
+                                index = i;
+                                break;
+                            }
+                        }
+                        if (index == -1) // то добавить
+                        {
+                            sc.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(null, si));
+                            index = sc.VariablesDefinedInScope.Count - 1;
+                        }
+
+                        idRef = sc.VariablesDefinedInScope[index];*/
+                        return; // SSM 21/06/19 - так было
                     }
                 } 
 
