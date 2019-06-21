@@ -313,6 +313,16 @@ namespace PascalABCCompiler
             this.source_context = sc;
         }
     }
+
+    public class NamespacesCanBeCompiledOnlyInProjects: CompilerCompilationError
+    {
+        public NamespacesCanBeCompiledOnlyInProjects(SyntaxTree.SourceContext sc)
+            : base(StringResources.Get("COMPILATIONERROR_NAMESPACE_CAN_BE_COMPILED_ONLY_IN_PROJECTS"))
+        {
+            this.source_context = sc;
+        }
+    }
+
     public class UnitNotFound : CompilerCompilationError
     {
         public string UnitName;
@@ -3188,7 +3198,7 @@ namespace PascalABCCompiler
                 else
                     DefinesList.Add("DEBUG");
                 CurrentUnit.SyntaxTree = InternalParseText(UnitName, SourceText, errorsList, warnings, DefinesList);
-
+                
                 if (errorsList.Count == 0) // SSM 2/05/16 - для преобразования синтаксических деревьев извне
                 {
                     CurrentUnit.SyntaxTree = syntaxTreeConvertersController.Convert(CurrentUnit.SyntaxTree) as SyntaxTree.compilation_unit;
@@ -3205,7 +3215,12 @@ namespace PascalABCCompiler
                     }
                 }
                 if (CurrentUnit.SyntaxTree is SyntaxTree.unit_module)
+                {
+                    if ((CurrentUnit.SyntaxTree as SyntaxTree.unit_module).unit_name.HeaderKeyword == SyntaxTree.UnitHeaderKeyword.Namespace)
+                        throw new NamespacesCanBeCompiledOnlyInProjects(CurrentUnit.SyntaxTree.source_context);
                     compilerOptions.UseDllForSystemUnits = false;
+                }
+                    
                 if (is_dll(CurrentUnit.SyntaxTree))
                     compilerOptions.OutputFileType = PascalABCCompiler.CompilerOptions.OutputType.ClassLibrary;
                 CurrentUnit.CaseSensitive = ParsersController.LastParser.CaseSensitive;

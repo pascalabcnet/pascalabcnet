@@ -1061,9 +1061,10 @@ namespace CodeCompletion
         {
             UnitDocCache.AddDescribeToComplete(this);
             this.symbol_table = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
-            si.description = this.ToString();
             is_namespace = isNamespace;
             file_name = fileName;
+            si.description = this.ToString();
+            
         }
 
         ~InterfaceUnitScope()
