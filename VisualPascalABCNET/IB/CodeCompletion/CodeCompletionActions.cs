@@ -131,7 +131,7 @@ namespace VisualPascalABC
             if (expressionResult != full_expr && full_expr.StartsWith("("))
                 return new List<Position>();
             
-            if (full_expr.Contains("^"))
+            if (full_expr != null && full_expr.Contains("^"))
             	full_expr = full_expr.Replace("^","");
             List<Position> poses = ccp.GetDefinition(full_expr, textArea.MotherTextEditorControl.FileName, textArea.Caret.Line, textArea.Caret.Column, only_check);
             if (poses == null || poses.Count == 0)

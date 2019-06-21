@@ -1055,7 +1055,6 @@ namespace CodeCompletion
         private bool is_namespace;
         private List<InterfaceUnitScope> namespace_units = new List<InterfaceUnitScope>();
         private InterfaceUnitScope main_namespace_unit;
-        private string file_name;
 
         public InterfaceUnitScope(SymInfo si, SymScope topScope, bool isNamespace=false, string fileName=null)
             : base(si, topScope)
@@ -1171,6 +1170,14 @@ namespace CodeCompletion
             get
             {
                 return ScopeKind.UnitInterface;
+            }
+        }
+
+        public bool IsNamespaceUnit
+        {
+            get
+            {
+                return is_namespace;
             }
         }
 
