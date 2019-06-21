@@ -17153,9 +17153,12 @@ namespace PascalABCCompiler.TreeConverter
                     //перед этим узлом есть директива parallel sections
                     if (CurrentParallelPosition == ParallelPosition.Outside)            //входим в самый внешний параллельный sections
                     {
+                        var f = _statement_list.DescendantNodes().OfType<function_lambda_definition>().FirstOrDefault();
+                        if (f != null)
+                            AddError(get_location(f), "OPENMP_CONTROLLED_CONSTRUCTIONS_CANNOT_CONTAIN_LAMBDAS");
                         //сгенерировать сначала последовательную ветку, затем параллельную
                         //устанавливаем флаг и продолжаем конвертирование, считая, что конвертируем последовательную ветку
-                        isGenerateParallel = true;
+                            isGenerateParallel = true;
                         CurrentParallelPosition = ParallelPosition.InsideSequential;
                         //в конце за счет флага вернем состояние обратно и сгенерируем и параллельную ветку тоже
                     }
@@ -20358,7 +20361,5 @@ namespace PascalABCCompiler.TreeConverter
 
             visit(mc);*/
         }
-
-        
     }
 }
