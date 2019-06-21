@@ -392,12 +392,13 @@ namespace TreeConverter.LambdaExpressions.Closure
                 if (idRef == null)                                     //TODO: Осторожнее переделать
                 {
                     {
-                        /*var index = -1;
+                        var index = -1;
                         for (var i=0; i < sc.VariablesDefinedInScope.Count; i++) 
                         {
                             if (sc.VariablesDefinedInScope[i].SymbolInfo.sym_info is var_definition_node vdn && vdn.name.ToLower() == id.name.ToLower()) // SSM #2001 и подобные - исключаю одноимённые
                             {
                                 index = i;
+                                si = sc.VariablesDefinedInScope[i].SymbolInfo;
                                 break;
                             }
                         }
@@ -406,14 +407,16 @@ namespace TreeConverter.LambdaExpressions.Closure
                             sc.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(null, si));
                             index = sc.VariablesDefinedInScope.Count - 1;
                         }
-
-                        idRef = sc.VariablesDefinedInScope[index];*/
-                        return; // SSM 21/06/19 - так было
+                        idRef = sc.VariablesDefinedInScope[index];
+                        if (!(idRef.SymbolInfo.sym_info is IVAriableDefinitionNode))
+                          return; // SSM 21/06/19 - так было
                     }
                 } 
 
                 if (_currentTreeNode.CorrespondingSyntaxTreeNode != null)
                 {
+                    if (!(idRef.SymbolInfo.sym_info is IVAriableDefinitionNode)) // SSM 21/06/19
+                        return;
                     var varName = ((IVAriableDefinitionNode)idRef.SymbolInfo.sym_info).name;                      //TODO: случай параметров и полей класса!!!!!!!!!!!!!!!!!!
                     var substKey = new SubstitutionKey(varName, idRef.SyntaxTreeNodeWithVarDeclaration, _currentTreeNode.CorrespondingSyntaxTreeNode);
 
