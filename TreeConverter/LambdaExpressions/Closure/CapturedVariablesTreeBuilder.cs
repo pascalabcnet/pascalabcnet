@@ -71,6 +71,11 @@ namespace TreeConverter.LambdaExpressions.Closure
 
         public override void visit(var_def_statement varDefStmt)
         {
+            if (varDefStmt.inital_value != null)
+            {
+                ProcessNode(varDefStmt.inital_value);
+            }
+
             _visitor.visit(varDefStmt);
             
             foreach (var id in varDefStmt.vars.idents)
@@ -79,10 +84,6 @@ namespace TreeConverter.LambdaExpressions.Closure
                 _currentTreeNode.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(varDefStmt, si));
             }
 
-            if (varDefStmt.inital_value != null)
-            {
-                ProcessNode(varDefStmt.inital_value);
-            }
         }
 
         public override void visit(statement_list stmtList)
