@@ -2193,7 +2193,7 @@ namespace CodeCompletion
             if (_unit_module.unit_name.HeaderKeyword != UnitHeaderKeyword.Namespace || !CodeCompletionController.pabcNamespaces.TryGetValue(_unit_module.unit_name.idunit_name.name.ToLower(), out unit_scope))
             {
                 cur_scope = unit_scope = new InterfaceUnitScope(new SymInfo(_unit_module.unit_name.idunit_name.name, SymbolKind.Namespace, _unit_module.unit_name.idunit_name.name), null, _unit_module.unit_name.HeaderKeyword == UnitHeaderKeyword.Namespace, _unit_module.file_name);
-                if (_unit_module.unit_name.HeaderKeyword == UnitHeaderKeyword.Namespace && CodeCompletionController.comp != null && CodeCompletionController.comp.CompilerOptions.CurrentProject != null)
+                if (_unit_module.unit_name.HeaderKeyword == UnitHeaderKeyword.Namespace /*&& CodeCompletionController.comp != null && CodeCompletionController.comp.CompilerOptions.CurrentProject != null*/)
                 {
                     CodeCompletionController.pabcNamespaces.Add(_unit_module.unit_name.idunit_name.name.ToLower(), unit_scope);
                 }
