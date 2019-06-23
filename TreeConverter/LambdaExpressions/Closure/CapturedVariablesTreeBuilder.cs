@@ -209,7 +209,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             {
                 dot_node dn = null;
                 // Поменял принцип добавления имени класса для статических полей и функций
-                Func<common_type_node, addressed_value> getClassIdent = (classNode) =>
+                Func<common_type_node, addressed_value> getClassIdent = classNode =>
                 {
                     if (classNode.name.Contains("<"))
                     {
@@ -291,7 +291,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                     cname = (cd.Parent as type_declaration).type_name;
                     dot_node dn = new dot_node(new ident(cname.name, cname.source_context), new ident(id.name, id.source_context), id.source_context);
                     id.Parent.ReplaceDescendantUnsafe(id, dn);
-                    ProcessNode(id.Parent);
+                    ProcessNode(dn);
                 }
                 return;
             }
