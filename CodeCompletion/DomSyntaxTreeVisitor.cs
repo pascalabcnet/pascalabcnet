@@ -3652,6 +3652,8 @@ namespace CodeCompletion
                     ss.is_final = true;
                 if ((_class_definition.attribute & class_attribute.Abstract) == class_attribute.Abstract)
                     ss.is_abstract = true;
+                if (ss.baseScope == null)
+                    ss.baseScope = TypeTable.obj_type;
             }
             if ((_class_definition.attribute & class_attribute.Static) == class_attribute.Static)
                 ss.is_static = true;
