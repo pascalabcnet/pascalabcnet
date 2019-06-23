@@ -933,7 +933,7 @@ namespace CodeCompletion
                     if (string.Compare(ss.si.name, name, !CodeCompletionController.CurrentParser.LanguageInformation.CaseSensitive) == 0)
                         if (ss.loc != null && loc != null && check_for_def && cur_line != -1 && cur_col != -1)
                         {
-                            if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, true) == 0 && this != ss)
+                            if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, true) == 0 && this != ss && ss.topScope != this)
                             {
                                 if (IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
                                 {
