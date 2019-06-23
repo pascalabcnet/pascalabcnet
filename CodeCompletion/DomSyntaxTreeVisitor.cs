@@ -858,7 +858,12 @@ namespace CodeCompletion
             if (pending_is_pattern_vars.Count > 0 && then_stmt != null)
             {
                 statement_list slist = new statement_list();
-                slist.source_context = _if_node.source_context;
+                if (_if_node.then_body.source_context != null)
+                    slist.source_context = new SourceContext(_if_node.source_context.LeftSourceContext, _if_node.then_body.source_context.RightSourceContext);
+                else if (_if_node.else_body != null && _if_node.else_body.source_context != null)
+                    slist.source_context = new SourceContext(_if_node.source_context.LeftSourceContext, _if_node.else_body.source_context.LeftSourceContext);
+                else
+                    slist.source_context = _if_node.source_context;
                 slist.Add(then_stmt);
                 then_stmt = merge_with_is_variables(slist);
             }
