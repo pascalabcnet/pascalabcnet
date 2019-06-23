@@ -323,7 +323,7 @@ namespace PascalABCCompiler.TreeConverter
                         // lambdaDef.usedkeyword == 1 // function
                         var b = lambdaDef.usedkeyword == 0 && TryConvertFuncLambdaBodyWithMethodCallToProcLambdaBody(lambdaDef); // пытаться конвертировать только если мы явно не указали, что это функция
                         if (!b)
-                            throw new SimpleSemanticError(visitor.get_location(lambdaDef), "UNABLE_TO_CONVERT_FUNCTIONAL_TYPE_TO_PROCEDURAL_TYPE");
+                            visitor.AddError(visitor.get_location(lambdaDef), "UNABLE_TO_CONVERT_FUNCTIONAL_TYPE_TO_PROCEDURAL_TYPE");
                     }
                 }
             }

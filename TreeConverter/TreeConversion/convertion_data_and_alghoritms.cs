@@ -1731,7 +1731,7 @@ namespace PascalABCCompiler.TreeConverter
         // Эту функцию можно написать оптимальнее - без внешнего while. Например.
         // Запускаем алгоритм сортировки на частичном порядке. Ищем min из оставшихся и меняем его местами с текущим.
         // Потом проходимся по частично отсортированному и из пары соседних удаляем тот, что меньше
-        private void functions_delete_greater(List<function_node> set_of_possible_functions, possible_type_convertions_list_list tcll)
+        private void delete_greater_functions(List<function_node> set_of_possible_functions, possible_type_convertions_list_list tcll)
         {
             bool remove = true;
             while (remove)
@@ -1958,6 +1958,44 @@ namespace PascalABCCompiler.TreeConverter
                 Errors.Error err = null;
                 possible_type_convertions_list tc = get_conversions(parameters, set_of_possible_functions[i].parameters,
                     is_alone_method_defined, loc, out err);
+
+                var proc_func_OK_flag = true;
+                // Цикл по всем параметрам. Если формальный - процедура, а фактический - функция, то tc делать = null и взводить специальный флаг чтобы не возиться с делегатами дальше
+
+                if (set_of_possible_functions.Count >= 2 && set_of_possible_functions[i].parameters.Count == parameters.Count)
+                    for (var k = 0; k < parameters.Count; k++)
+                    {
+                        var fact = parameters[k];
+                        var formal = set_of_possible_functions[i].parameters[k];
+                        if (fact.type is delegated_methods dm)
+                        {
+                            var fact_is_function_with_return_value = dm.proper_methods.Count > 0 && dm.proper_methods[0].function.return_value_type != null;
+                            var form_is_procedure = false;
+
+                            //if (formal.type is compiled_type_node || // Это на случай System.Action или ()->()
+                            // formal.type is compiled_type_node) // Это на случай procedure
+                            {
+                                var d = formal.type.internal_interfaces;
+                                if (d != null && d.ContainsKey(internal_interface_kind.delegate_interface))
+                                {
+                                    var q = d[internal_interface_kind.delegate_interface] as delegate_internal_interface;
+                                    if (q != null && q.return_value_type == null) // Это процедура
+                                        form_is_procedure = true;
+                                }
+                            }
+                            
+                            if (fact_is_function_with_return_value && form_is_procedure)
+                            {
+                                proc_func_OK_flag = false;
+                                break;
+                            }
+                            
+                        }
+                    }
+
+                if (proc_func_OK_flag == false)
+                    tc = null;
+                // Вот здесь - если фактический параметр - функция, а формальный - процедура хотя бы в одном параметре, то надо нивелировать все преобразования и присваивать tc=null и не влазить в следующий код!!!
                 if (err != null)
                     return AddError<function_node>(err);
                 //fix dlja lambd i extension metodov (c->c.IsDigit)
@@ -2017,7 +2055,9 @@ namespace PascalABCCompiler.TreeConverter
                 return set_of_possible_functions[0];
             }
 
-            functions_delete_greater(set_of_possible_functions,tcll); // SSM 06/06/19 refactoring
+            // Если остались параметры функция и процедура - обе без параметров, но функция возвращает T, то функция будет удалена этим алгоритмом, что неправильно!
+            // Потому что не учитывается вызов - в вызове может быть функция!!
+            delete_greater_functions(set_of_possible_functions,tcll); // SSM 06/06/19 refactoring
 
             //Тупая заглушка для примитивных типов. иначе не работает +=, у нас лишком много неявных приведений
             //в дальнейшем может вызвать странное поведение, это надо проверить

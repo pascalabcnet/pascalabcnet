@@ -31,7 +31,7 @@ namespace PascalABCCompiler.TreeRealization
         private System.Collections.Generic.Dictionary<type_node, type_intersection_node> type_intersections;
             //new System.Collections.Generic.Dictionary<type_node, type_intersection_node>();
         private List<type_node> generated_type_intersections = null;//new List<type_node>();
-        private System.Collections.Generic.Dictionary<internal_interface_kind, internal_interface> internal_interfaces;
+        public System.Collections.Generic.Dictionary<internal_interface_kind, internal_interface> internal_interfaces;
         //new System.Collections.Generic.Dictionary<internal_interface_kind, internal_interface>();
 
         //private System.Collections.Generic.Dictionary<type_node, type_conversion> explicit_type_conversions =
