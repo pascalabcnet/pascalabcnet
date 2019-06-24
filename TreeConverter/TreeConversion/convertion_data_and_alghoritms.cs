@@ -448,7 +448,13 @@ namespace PascalABCCompiler.TreeConverter
                                             if (syntax_tree_visitor.inherited_ident_processing)
                                                 syntax_tree_visitor.AddError(new SimpleSemanticError(loc, "INHERITED_CONSTRUCTOR_CALL_MUST_BE_FIRST"));
                                             else
-                                                syntax_tree_visitor.AddError(new SimpleSemanticError(loc, "CAN_NOT_CALL_CONSTRUCTOR_AS_PROCEDURE"));
+                                            {
+                                                var lambdasInParameters = syntax_nodes_parameters?.Any(ex => ex is SyntaxTree.function_lambda_definition) ?? false;
+                                                if (lambdasInParameters)
+                                                    syntax_tree_visitor.AddError(new SimpleSemanticError(loc, "LAMBDAS_IN_CONSTRUCTOR_PARAMETERS_ARE_FORBIDDEN_IN_THIS_CONTEXT"));
+                                                else syntax_tree_visitor.AddError(new SimpleSemanticError(loc, "CAN_NOT_CALL_CONSTRUCTOR_AS_PROCEDURE"));
+                                            }
+                                                
                                         }
                                         cmc = ccc;
                                     }
