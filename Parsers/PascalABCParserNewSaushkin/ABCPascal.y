@@ -4689,7 +4689,7 @@ common_lambda_body
 
 
 lambda_function_body
-	: expr_l1 
+	: expr_l1_func_decl_lambda 
 		{
 		    var id = SyntaxVisitors.ExprHasNameVisitor.HasName($1, "Result"); 
             if (id != null)
