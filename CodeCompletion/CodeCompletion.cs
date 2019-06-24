@@ -41,6 +41,8 @@ namespace CodeCompletion
         public static Hashtable StandartDirectories = new Hashtable();
         public static Hashtable comp_modules = new Hashtable(StringComparer.OrdinalIgnoreCase);
         public static Hashtable parsers = new Hashtable(StringComparer.OrdinalIgnoreCase);
+        public static Dictionary<string, InterfaceUnitScope> pabcNamespaces = new Dictionary<string, InterfaceUnitScope>();
+         	
         public static string currentLanguageISO;
         static string doctagsParserExtension = ".pasdt" + PascalABCCompiler.Parsers.Controller.HideParserExtensionPostfixChar;
 		//public static PascalABCCompiler.Parsers.IParser currentParser;
@@ -53,6 +55,11 @@ namespace CodeCompletion
             currentParser = null;
 		}
 		
+        public void ResetNamespaces()
+        {
+            pabcNamespaces.Clear();
+        }
+
 		private static string get_doctagsParserExtension(string ext)
 		{
 			return ext + "dt" + PascalABCCompiler.Parsers.Controller.HideParserExtensionPostfixChar;

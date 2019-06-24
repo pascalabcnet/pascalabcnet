@@ -17,6 +17,21 @@ namespace CodeCompletion
     public struct RetValue
     {
         public object prim_val;
+
+        public string string_val
+        {
+            get
+            {
+                string s = (string)prim_val;
+                if (s != null && s.StartsWith("'") && s.EndsWith("'"))
+                    s = s.Substring(1, s.Length - 2);
+                return s;
+            }
+            set
+            {
+                prim_val = "'" + value + "'";
+            }
+        }
     }
 
     public class DomConverter : ICodeCompletionDomConverter

@@ -320,9 +320,10 @@ namespace PascalABCCompiler.TreeConverter
                         (lambdaDef.return_type as lambda_inferred_type).real_type = dii_left.return_value_type;
                     else // SSM 23/07/16 - попытка бороться с var p: Shape->() := a->a.Print()
                     {
-                        var b = TryConvertFuncLambdaBodyWithMethodCallToProcLambdaBody(lambdaDef);
+                        // lambdaDef.usedkeyword == 1 // function
+                        var b = lambdaDef.usedkeyword == 0 && TryConvertFuncLambdaBodyWithMethodCallToProcLambdaBody(lambdaDef); // пытаться конвертировать только если мы явно не указали, что это функция
                         if (!b)
-                            throw new SimpleSemanticError(visitor.get_location(lambdaDef), "UNABLE_TO_CONVERT_FUNCTIONAL_TYPE_TO_PROCEDURAL_TYPE");
+                            visitor.AddError(visitor.get_location(lambdaDef), "UNABLE_TO_CONVERT_FUNCTIONAL_TYPE_TO_PROCEDURAL_TYPE");
                     }
                 }
             }

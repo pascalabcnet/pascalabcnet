@@ -250,6 +250,7 @@ namespace VisualPascalABC
 			currentProject = null;
 			uid = 1;
 			Dirty = false;
+            GC.Collect();
 		}
 	}
 }

@@ -1869,10 +1869,10 @@ namespace PascalABCCompiler.TreeRealization
             {
                 foreach (SymbolInfo si in start)
                 {
-                    // aab 13.06.19 begin
+                    // Бурмистров Артем 13.06.19 begin
                     // Поправил странное поведение для локальных переменных, у которых не generic тип
                     // Исправление для #1993
-                    if (si.sym_info is local_block_variable variable && !variable.type.is_generic_parameter)
+                    if (si.sym_info is /*var_definition_node*/ local_block_variable vdn && !vdn.type.is_generic_parameter)
                     {
                         rez_si = si;
                     }

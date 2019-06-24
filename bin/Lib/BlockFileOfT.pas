@@ -1,14 +1,14 @@
-﻿(************************************************************************************)
+﻿//*****************************************************************************************************\\
 // Copyright (©) Cergey Latchenko ( github.com/SunSerega | forum.mmcs.sfedu.ru/u/sun_serega )
 // This code is distributed under the Unlicense
-// For details please see LICENSE.md or here:
+// For details see LICENSE.md file or this:
 // https://github.com/SunSerega/PascalABC.Net-BlockFileOfT/blob/master/LICENSE.md
-(************************************************************************************)
-// Copyright (©) Сергей латченко ( github.com/SunSerega | forum.mmcs.sfedu.ru/u/sun_serega )
+//*****************************************************************************************************\\
+// Copyright (©) Сергей Латченко ( github.com/SunSerega | forum.mmcs.sfedu.ru/u/sun_serega )
 // Этот код распространяется под Unlicense
-// Для деталей смотрите в файл LICENSE.md или сюда:
+// Для деталей смотрите в файл LICENSE.md или это:
 // https://github.com/SunSerega/PascalABC.Net-BlockFileOfT/blob/master/LICENSE.md
-(************************************************************************************)
+//*****************************************************************************************************\\
 
 ///Модуль, содержащий тип BlockFileOf<T>
 ///Тип-альтернатива стандартному file of T

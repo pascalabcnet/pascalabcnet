@@ -3223,6 +3223,7 @@ namespace PascalABCCompiler.TreeConverter
 
         private bool statement_expected = false;
         private bool procedure_wait = false;
+
         public override void visit(SyntaxTree.procedure_call _procedure_call)
         {
             procedure_wait = true;
@@ -7074,8 +7075,9 @@ namespace PascalABCCompiler.TreeConverter
                                             var fl = fld.lambda_visit_mode;
 
                                             // запомнили типы параметров лямбды - SSM
-                                            object[] realparamstype = new object[fld.formal_parameters.params_list.Count]; // здесь хранятся выведенные типы лямбд или null если типы явно заданы
-                                            for (var k = 0; k < fld.formal_parameters.params_list.Count; k++)
+                                            var cnt = fld.formal_parameters?.params_list?.Count ?? 0; // SSM 22.06.19
+                                            object[] realparamstype = new object[cnt]; // здесь хранятся выведенные типы лямбд или null если типы явно заданы
+                                            for (var k = 0; k < cnt; k++)
                                             {
                                                 var laminftypeK = fld.formal_parameters.params_list[k].vars_type as SyntaxTree.lambda_inferred_type;
                                                 if (laminftypeK == null)
@@ -7132,7 +7134,7 @@ namespace PascalABCCompiler.TreeConverter
                                                 if (restype != null)
                                                     restype.real_type = realrestype;
                                                 // восстанавливаем сохраненные типы параметров лямбды, которые не были заданы явно
-                                                for (var k = 0; k < fld.formal_parameters.params_list.Count; k++)
+                                                for (var k = 0; k < (fld.formal_parameters?.params_list?.Count ?? 0); k++)
                                                 {
                                                     var laminftypeK = fld.formal_parameters.params_list[k].vars_type as SyntaxTree.lambda_inferred_type;
                                                     if (laminftypeK != null)
@@ -17153,9 +17155,12 @@ namespace PascalABCCompiler.TreeConverter
                     //перед этим узлом есть директива parallel sections
                     if (CurrentParallelPosition == ParallelPosition.Outside)            //входим в самый внешний параллельный sections
                     {
+                        var f = _statement_list.DescendantNodes().OfType<function_lambda_definition>().FirstOrDefault();
+                        if (f != null)
+                            AddError(get_location(f), "OPENMP_CONTROLLED_CONSTRUCTIONS_CANNOT_CONTAIN_LAMBDAS");
                         //сгенерировать сначала последовательную ветку, затем параллельную
                         //устанавливаем флаг и продолжаем конвертирование, считая, что конвертируем последовательную ветку
-                        isGenerateParallel = true;
+                            isGenerateParallel = true;
                         CurrentParallelPosition = ParallelPosition.InsideSequential;
                         //в конце за счет флага вернем состояние обратно и сгенерируем и параллельную ветку тоже
                     }
@@ -20358,7 +20363,5 @@ namespace PascalABCCompiler.TreeConverter
 
             visit(mc);*/
         }
-
-        
     }
 }

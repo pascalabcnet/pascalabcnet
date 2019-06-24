@@ -275,7 +275,7 @@ namespace PascalABCCompiler.Parsers
 		
 		public virtual string GetDescriptionForModule(IInterfaceUnitScope scope)
 		{
-			return "unit "+scope.Name;
+			return (scope.IsNamespaceUnit?"namespace ":"unit ")+scope.Name;
 		}
 		
 		public virtual string GetShortName(ICompiledTypeScope scope)

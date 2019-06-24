@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using PascalABCCompiler.SemanticTree;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.TreeRealization;
@@ -180,6 +181,10 @@ namespace PascalABCCompiler.TreeConverter
                 CurrentParallelPosition = ParallelPosition.Outside;
                 if (stl != null)
                 {
+                    var f = _for_node.DescendantNodes().OfType<function_lambda_definition>().FirstOrDefault();
+                    if (f != null)
+                        AddError(get_location(f), "OPENMP_CONTROLLED_CONSTRUCTIONS_CANNOT_CONTAIN_LAMBDAS");
+
                     OpenMP.LoopVariables.Pop();
                     return_value(stl);
                     return;
