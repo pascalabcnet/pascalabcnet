@@ -401,9 +401,9 @@ namespace PascalABCCompiler.TreeConverter
         /// <param name="allow_procedure">Может ли это быть вызов процедуры. false если вызов стоит в выражении или правой части опреатора присваивания.</param>
         /// <returns>Возвращает узел вызова метода.</returns>
 		public expression_node create_full_function_call(expressions_list exprs, List<SymbolInfo> si, location loc,
-            common_type_node converted_type, common_function_node top_function, bool allow_procedure)
+            common_type_node converted_type, common_function_node top_function, bool allow_procedure, List<SyntaxTree.expression> syntax_nodes_parameters = null)
         {
-            function_node fn = select_function(exprs, si, loc);
+            function_node fn = select_function(exprs, si, loc, syntax_nodes_parameters);
 
             //allow_procedure = true;
             if ((!allow_procedure) && (fn.return_value_type == null))
@@ -1959,7 +1959,7 @@ namespace PascalABCCompiler.TreeConverter
                 possible_type_convertions_list tc = get_conversions(parameters, set_of_possible_functions[i].parameters,
                     is_alone_method_defined, loc, out err);
 
-                var proc_func_OK_flag = true;
+                var proc_func_or_lambdaAndNotDelegate_OK_flag = true;
                 // Цикл по всем параметрам. Если формальный - процедура, а фактический - функция, то tc делать = null и взводить специальный флаг чтобы не возиться с делегатами дальше
 
                 if (set_of_possible_functions.Count >= 2 && set_of_possible_functions[i].parameters.Count == parameters.Count)
@@ -1970,7 +1970,9 @@ namespace PascalABCCompiler.TreeConverter
                         if (fact.type is delegated_methods dm)
                         {
                             var fact_is_function_with_return_value = dm.proper_methods.Count > 0 && dm.proper_methods[0].function.return_value_type != null;
+                            var fact_is_lambda = syntax_nodes_parameters != null && k < syntax_nodes_parameters.Count && syntax_nodes_parameters[k] is SyntaxTree.function_lambda_definition;
                             var form_is_procedure = false;
+                            var form_is_delegate = false;
 
                             //if (formal.type is compiled_type_node || // Это на случай System.Action или ()->()
                             // formal.type is compiled_type_node) // Это на случай procedure
@@ -1979,6 +1981,8 @@ namespace PascalABCCompiler.TreeConverter
                                 if (d != null && d.ContainsKey(internal_interface_kind.delegate_interface))
                                 {
                                     var q = d[internal_interface_kind.delegate_interface] as delegate_internal_interface;
+                                    if (q != null)
+                                        form_is_delegate = true;
                                     if (q != null && q.return_value_type == null) // Это процедура
                                         form_is_procedure = true;
                                 }
@@ -1986,14 +1990,18 @@ namespace PascalABCCompiler.TreeConverter
                             
                             if (fact_is_function_with_return_value && form_is_procedure)
                             {
-                                proc_func_OK_flag = false;
+                                proc_func_or_lambdaAndNotDelegate_OK_flag = false;
                                 break;
                             }
-                            
+                            if (fact_is_lambda && ! form_is_delegate) // лямбда вместо не делегата - исключает функцию из рассмотрения
+                            {
+                                proc_func_or_lambdaAndNotDelegate_OK_flag = false;
+                                break;
+                            }
                         }
                     }
 
-                if (proc_func_OK_flag == false)
+                if (proc_func_or_lambdaAndNotDelegate_OK_flag == false)
                     tc = null;
                 // Вот здесь - если фактический параметр - функция, а формальный - процедура хотя бы в одном параметре, то надо нивелировать все преобразования и присваивать tc=null и не влазить в следующий код!!!
                 if (err != null)

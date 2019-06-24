@@ -7200,7 +7200,7 @@ namespace PascalABCCompiler.TreeConverter
                     #endregion
 
                     expr_node = convertion_data_and_alghoritms.create_full_function_call(exprs, sil, mcloc,
-                        context.converted_type, context.top_function, proc_wait);
+                        context.converted_type, context.top_function, proc_wait, _method_call.parameters?.expressions);
                 }
                 else
                 {
