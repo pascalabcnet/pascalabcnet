@@ -248,6 +248,8 @@ namespace PascalABCCompiler.TreeConverter
                     else
                         return false;
                 }
+                else
+                    return false; // Т.е. это - лямбда с коротким телом, но в результате сахарных преобразований Result := переменстился не на первое место - тогда преобразовать нельзя
             }
 
             lambdaDef.return_type = null;
