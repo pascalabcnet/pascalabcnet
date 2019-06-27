@@ -19849,9 +19849,10 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.sequence_type _sequence_type) // сахарный узел
         {
-            if (_sequence_type.elements_type is procedure_header)
+            var pt = _sequence_type.elements_type.DescendantNodes().FirstOrDefault(s => s is procedure_header);
+            if (pt != null)
             {
-                AddError(get_location(_sequence_type.elements_type), "PROCEDURE_TYPE_SHOULD_BE_REPLACED_BY_TYPE_NAME_IN_THIS_CONTEXT");
+                AddError(get_location(pt), "PROCEDURE_TYPE_SHOULD_BE_REPLACED_BY_TYPE_NAME_IN_THIS_CONTEXT");
             }
             // SSM 11/05/15 sugared node
             var l = new List<ident>();
