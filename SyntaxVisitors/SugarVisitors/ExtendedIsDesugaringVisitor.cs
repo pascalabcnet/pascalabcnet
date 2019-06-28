@@ -19,21 +19,21 @@ namespace SyntaxVisitors.SugarVisitors
                 if_node leftExprIfNode = null;
                 if (binEpxr.operation_type == Operators.LogicalAND)
                 {
-                    rightExprIfNode = new if_node(binEpxr.right, _if_node.then_body, _if_node.else_body, _if_node.source_context);
-                    leftExprIfNode = new if_node(binEpxr.left, rightExprIfNode, _if_node.else_body, _if_node.source_context);
+                    rightExprIfNode = new if_node(binEpxr.right, (statement)_if_node.then_body?.Clone(), (statement)_if_node.else_body?.Clone(), _if_node.source_context);
+                    leftExprIfNode = new if_node(binEpxr.left, rightExprIfNode, (statement)_if_node.else_body?.Clone(), _if_node.source_context);
                 }
                 else if (binEpxr.operation_type == Operators.LogicalOR)
                 {
                     rightExprIfNode = new if_node(
                         new un_expr(binEpxr.right, Operators.LogicalNOT, binEpxr.source_context),
-                        _if_node.else_body,
-                         _if_node.then_body,
+                        (statement)_if_node.else_body?.Clone(),
+                         (statement)_if_node.then_body?.Clone(),
                         _if_node.source_context);
 
                     leftExprIfNode = new if_node(
                         new un_expr(binEpxr.left, Operators.LogicalNOT, binEpxr.source_context),
                         rightExprIfNode,
-                        _if_node.then_body,
+                        (statement)_if_node.then_body?.Clone(),
                         _if_node.source_context);
                 }
                 ReplaceUsingParent(_if_node, leftExprIfNode);
