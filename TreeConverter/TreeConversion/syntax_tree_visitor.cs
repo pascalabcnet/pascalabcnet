@@ -9843,6 +9843,14 @@ namespace PascalABCCompiler.TreeConverter
                     dot_node_as_ident_dot_template_ident(id_left, _dot_node.right as ident_with_templateparams, mot);
                     return;
                 }
+                if (id_left.name != null && id_left.name.IndexOf('.') != -1)
+                {
+                    var arr = id_left.name.Split('.');
+                    var dotNodeToVisit = new dot_node(new ident(id_left.name.Substring(0, id_left.name.LastIndexOf('.')), id_left.source_context), new ident(arr[arr.Length-1],id_left.source_context));
+                    
+                    visit(new dot_node(dotNodeToVisit, id_right, _dot_node.source_context));
+                    return;
+                }
                 if (id_left is inherited_ident)
                     inherited_ident_processing = true;
                 dot_node_as_ident_dot_ident(id_left, id_right, mot);
