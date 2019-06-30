@@ -1333,7 +1333,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return method_compare.greater_method;
             }
-            if (!left_func.is_generic_function_instance && right_func.is_generic_function_instance)
+            if (!left_func.is_generic_function_instance && right_func.is_generic_function_instance) // SSM 29.06.19 Это неверно для Run<int>(Func<int>) против Run(Func<Task>)
             {
                 if (left_func is basic_function_node)
                     return method_compare.less_method;

@@ -339,7 +339,11 @@ namespace SyntaxVisitors
             bl.defs.Add(new label_definitions(gotoBreak.label, gotoContinue.label));
         }
 
-        
+        public override void visit(function_lambda_definition fld)
+        {
+            // Нельзя Lowerить содержимое лямбды !!! Баг #1641!
+        }
+
         public override void visit(for_node fn)
         {
             var b = HasStatementVisitor<yield_node>.Has(fn);

@@ -144,16 +144,23 @@ namespace TreeConverter.LambdaExpressions.Closure
 
         public override void visit(exception_handler eh)
         {
-            //_visitor.context.enter_code_block_without_bind();
-            //visitor.context.add_var_definition(eh.variable.name, _visitor.get_location(eh.variable), _visitor.convert_strong(eh.type_name), PascalABCCompiler.SemanticTree.polymorphic_state.ps_common, true);
+            // Отдельным визитором переменные в on присвою локальным переменным и переименую везде внутри блока
+            statements_list sl = new statements_list(_visitor.get_location(eh.statements));
+            _visitor.convertion_data_and_alghoritms.statement_list_stack_push(sl);
+
+            _visitor.context.enter_code_block_without_bind();
+
+            _visitor.context.add_var_definition(eh.variable.name, _visitor.get_location(eh.variable), _visitor.convert_strong(eh.type_name), PascalABCCompiler.SemanticTree.polymorphic_state.ps_common, true);
             //SymbolInfo si = _visitor.context.find_first(eh.variable.name);
             //var csi = new CapturedVariablesTreeNode.CapturedSymbolInfo(eh, si);
-            // Нужно своё ПИ для обработчиков исключений в захвате !!! Или - переименовывать все переменные
-           // _currentTreeNode.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(eh, si));
+            //_currentTreeNode.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(eh, si));
             //_pendingCapturedSymbols.Add(csi);
+            ProcessNode(eh.variable);
+
             ProcessNode(eh.statements);
+            _visitor.context.leave_code_block();
+            _visitor.convertion_data_and_alghoritms.statement_list_stack_pop();
             //_pendingCapturedSymbols.Remove(csi);
-            //_visitor.context.leave_code_block();
         }
 
         public override void visit(ident id)
