@@ -1,4 +1,5 @@
-﻿{$includenamespace 'namespaces/nstypedef1.pas'}
+﻿//nopabcrtl
+{$includenamespace 'namespaces/nstypedef1.pas'}
 {$includenamespace 'namespaces/nstypedef2.pas'}
 
 uses nstypedef;

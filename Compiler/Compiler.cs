@@ -1815,6 +1815,8 @@ namespace PascalABCCompiler
                         //Console.WriteLine("ERROR! interface not compiled "+GetUnitFileName(CurrentUnit.SyntaxUnitName));//DEBUG
                         System.Collections.Generic.List<SyntaxTree.unit_or_namespace> SyntaxUsesList = GetSyntaxImplementationUsesList(CurrentUnit.SyntaxTree);
                         CurrentUnit.PossibleNamespaces.Clear();
+                        if (HasIncludeNamespacesDirective(CurrentUnit))
+                            compilerOptions.UseDllForSystemUnits = false;
                         if (SyntaxUsesList != null)
                         {
                             for (int i = SyntaxUsesList.Count - 1; i >= 0; i--)
@@ -2771,7 +2773,6 @@ namespace PascalABCCompiler
             SyntaxTree.unit_module main_library = Unit.SyntaxTree as SyntaxTree.unit_module;
             SyntaxTree.program_module main_program = Unit.SyntaxTree as SyntaxTree.program_module;
             List<string> files = new List<string>();
-            
             foreach (TreeRealization.compiler_directive cd in directives)
             {
                 if (cd.name.ToLower() == TreeConverter.compiler_string_consts.include_namespace_directive)
@@ -2838,7 +2839,7 @@ namespace PascalABCCompiler
                         {
                             if (IsPossibleNamespace(name_space, false))
                             {
-                                ns.referenced_units.AddElement(new TreeRealization.namespace_unit_node(GetNamespace(name_space)));
+                                ns.referenced_units.AddElement(new TreeRealization.namespace_unit_node(GetNamespace(name_space), get_location_from_treenode(name_space, tree.file_name)));
                             }
                             else
                             {

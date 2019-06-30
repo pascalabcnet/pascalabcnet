@@ -10874,51 +10874,8 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     parent_scope = scope;
                 }
-                
-                context.enter_scope(scope);
-                foreach (declaration decl in _syntax_namespace_node.defs)
-                {
-                    if (decl is type_declarations)
-                    {
-                        type_declarations type_decls = decl as type_declarations;
-                        foreach (type_declaration td in type_decls.types_decl)
-                        {
-                            if (td.type_def is class_definition)
-                            {
-                                class_definition cl_def = td.type_def as class_definition;
-                                if (cl_def.body == null)
-                                    AddError(get_location(cl_def), "TYPE_PREDEFINITION_NOT_ALLOWED");
-                                common_type_node ctn = null;
-                                if (td.type_name is template_type_name)
-                                    ctn = context.advanced_create_type(td.type_name.name+"`"+(td.type_name as template_type_name).template_args.Count, get_location(td.type_name), (td.type_def as class_definition).keyword == class_keyword.Interface, false);
-                                else
-                                    ctn = context.advanced_create_type(td.type_name.name, get_location(td.type_name), (td.type_def as class_definition).keyword == class_keyword.Interface, false);
-                                ctn.ForwardDeclarationOnly = true;
-                                if ((td.type_def as class_definition).keyword == class_keyword.Interface)
-                                    ctn.IsInterface = true;
-                                context.converted_type = null;
-                                context.add_type_header(td, ctn);
-                            }
-                            else if (td.type_def is procedure_header || td.type_def is function_header || td.type_def is named_type_reference)
-                            {
-
-                            }
-                            else if (td.type_def is enum_type_definition)
-                            {
-                                hard_node_test_and_visit(td);
-                            }
-                            else
-                                AddError(get_location(decl), "NAMESPACE_SHOULD_CONTAINS_ONLY_TYPES");
-                        }
-                        
-                    }
-                    else
-                        AddError(get_location(decl), "NAMESPACE_SHOULD_CONTAINS_ONLY_TYPES");
-                }
-
-                context.leave_scope();
-                
             }
+
             foreach (syntax_namespace_node _syntax_namespace_node in namespaces)
             {
                 var cmn = dict[_syntax_namespace_node];
@@ -10939,14 +10896,70 @@ namespace PascalABCCompiler.TreeConverter
                             for (int i = 1; i < names.Length; i++)
                             {
                                 si_list = ns_scope2.Find(names[i]);
-                                ns_scope2 = (si_list.FirstOrDefault().sym_info as common_namespace_node).scope;
+                                if (si_list != null && si_list.FirstOrDefault().sym_info is common_namespace_node)
+                                    ns_scope2 = (si_list.FirstOrDefault().sym_info as common_namespace_node).scope;
+                                else
+                                    AddError(new NamespaceNotFound(nun.namespace_name.namespace_name, un.location));
                             }
                             scopes.Add(ns_scope2);
                         }
+                        else
+                            AddError(new NamespaceNotFound(nun.namespace_name.namespace_name, un.location));
                     }
                 }
                 ns_scope.TopScopeArray = scopes.ToArray();
             }
+
+            //convert type predefinitions
+            foreach (syntax_namespace_node _syntax_namespace_node in namespaces)
+            {
+                var cmn = dict[_syntax_namespace_node];
+                var scope = cmn.scope;
+                context.enter_scope(scope);
+                foreach (declaration decl in _syntax_namespace_node.defs)
+                {
+                    if (decl is type_declarations)
+                    {
+                        type_declarations type_decls = decl as type_declarations;
+                        foreach (type_declaration td in type_decls.types_decl)
+                        {
+                            if (td.type_def is class_definition)
+                            {
+                                class_definition cl_def = td.type_def as class_definition;
+                                if (cl_def.body == null)
+                                    AddError(get_location(cl_def), "TYPE_PREDEFINITION_NOT_ALLOWED");
+                                common_type_node ctn = null;
+                                if (td.type_name is template_type_name)
+                                    ctn = context.advanced_create_type(td.type_name.name + "`" + (td.type_name as template_type_name).template_args.Count, get_location(td.type_name), (td.type_def as class_definition).keyword == class_keyword.Interface, false);
+                                else
+                                    ctn = context.advanced_create_type(td.type_name.name, get_location(td.type_name), (td.type_def as class_definition).keyword == class_keyword.Interface, false);
+                                ctn.ForwardDeclarationOnly = true;
+                                if ((td.type_def as class_definition).keyword == class_keyword.Interface)
+                                    ctn.IsInterface = true;
+                                context.converted_type = null;
+                                context.add_type_header(td, ctn);
+                            }
+                            else if (td.type_def is procedure_header || td.type_def is function_header || td.type_def is named_type_reference)
+                            {
+
+                            }
+                            else if (td.type_def is enum_type_definition)
+                            {
+                                hard_node_test_and_visit(td);
+                            }
+                            else
+                                AddError(get_location(decl), "NAMESPACE_SHOULD_CONTAINS_ONLY_TYPES");
+                        }
+
+                    }
+                    else
+                        AddError(get_location(decl), "NAMESPACE_SHOULD_CONTAINS_ONLY_TYPES");
+                }
+
+                context.leave_scope();
+            }
+
+            
             foreach (syntax_namespace_node _syntax_namespace_node in namespaces)
             {
                 common_namespace_node cmn = dict[_syntax_namespace_node];
