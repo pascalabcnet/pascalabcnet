@@ -402,6 +402,10 @@ namespace PascalABCCompiler.TreeConverter
                 ProcessNode(root);
             }
 
+            public override void visit(function_lambda_definition fd)
+            {
+                // не заходить во внутренние лямбды
+            }
             public override void visit(assign value)
             {
                 var to = value.to as ident;
