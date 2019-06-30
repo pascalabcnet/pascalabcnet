@@ -10899,7 +10899,7 @@ namespace PascalABCCompiler.TreeConverter
                                 context.converted_type = null;
                                 context.add_type_header(td, ctn);
                             }
-                            else if (td.type_def is procedure_header || td.type_def is function_header)
+                            else if (td.type_def is procedure_header || td.type_def is function_header || td.type_def is named_type_reference)
                             {
 
                             }
@@ -10958,11 +10958,14 @@ namespace PascalABCCompiler.TreeConverter
                         type_declarations type_decls = decl as type_declarations;
                         foreach (type_declaration td in type_decls.types_decl)
                         { 
-                            if (td.type_def is procedure_header || td.type_def is function_header)
+                            if (td.type_def is procedure_header || td.type_def is function_header || td.type_def is named_type_reference)
                             {
                                 hard_node_test_and_visit(td);
-                                common_type_node ctn = context.converted_namespace.types[context.converted_namespace.types.Count - 1];
-                                ctn.SetName(_syntax_namespace_node.name + "." + ctn.name);
+                                if (!(td.type_def is named_type_reference))
+                                {
+                                    common_type_node ctn = context.converted_namespace.types[context.converted_namespace.types.Count - 1];
+                                    ctn.SetName(_syntax_namespace_node.name + "." + ctn.name);
+                                }
                             }
                         }
                     }
