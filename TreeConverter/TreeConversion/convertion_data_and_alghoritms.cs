@@ -2082,7 +2082,9 @@ namespace PascalABCCompiler.TreeConverter
             //Тупая заглушка для примитивных типов. иначе не работает +=, у нас лишком много неявных приведений
             //в дальнейшем может вызвать странное поведение, это надо проверить
             if (set_of_possible_functions.Count == 2 && indefinits.Count == 0)
-                if (set_of_possible_functions[0] is basic_function_node && set_of_possible_functions[1] is basic_function_node)
+                if (set_of_possible_functions[0] is basic_function_node && set_of_possible_functions[1] is basic_function_node 
+                    // добавил это условие из-за комментария. Не понимаю, почему иначе не работает +=. Все тесты проходят 01.07.19 если закомментировать вообще этот if !!!
+                    && set_of_possible_functions[0].name == "+=" && set_of_possible_functions[1].name == "+=") 
                     return set_of_possible_functions[0];
 
             if (indefinits.Count > 0)
