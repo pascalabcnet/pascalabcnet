@@ -196,6 +196,9 @@ namespace PascalABCCompiler.TreeRealization
         	}
         }
 
+        /// <summary>
+        /// В частности, процедурная переменная
+        /// </summary>
         public virtual bool IsDelegate
         {
             get
@@ -4259,8 +4262,9 @@ namespace PascalABCCompiler.TreeRealization
         }
     }
 
-
-    //Псевдотип. Не идет в выходное дерево. Используется как промежуточный при работе с делегатами.
+    /// <summary>
+    /// Псевдотип. Не идет в выходное дерево. Используется как промежуточный при работе с делегатами. Этому типу принадлежат имена функций
+    /// </summary>
     [Serializable]
     public class delegated_methods : wrapped_type
     {

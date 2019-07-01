@@ -1099,7 +1099,13 @@ namespace PascalABCCompiler.TreeConverter
 				else
 				{
                     ptc = type_table.get_convertions(factparams[i].type, formal_param_type);
-					if (ptc.first==null)
+
+                    if (factparams[i] is null_const_node && !type_table.is_with_nil_allowed(formal_param_type) && !formal_param_type.IsPointer) // SSM 01.07.19 - nil не может быть преобразована за счёт вызова функции
+                    {
+                        ptc.first = null;
+                    }
+
+                    if (ptc.first==null)
 					{
                         if (type_table.is_derived(formal_param_type, factparams[i].type))
 						{

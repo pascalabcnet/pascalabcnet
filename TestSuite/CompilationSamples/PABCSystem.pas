@@ -901,6 +901,8 @@ procedure WritelnFormat(f: Text; formatstr: string; params args: array of object
 
 ///- procedure Print(a,b,...);
 /// Выводит значения a,b,... на экран, после каждого значения выводит пробел
+procedure Print(o: object);
+///--
 procedure Print(s: string);
 ///--
 procedure Print(params args: array of object);
@@ -6125,6 +6127,14 @@ begin
     Write(s, PrintDelimDefault)
   else Write(s)  
 end;
+
+procedure Print(o: object);
+begin
+  if PrintDelimDefault<>'' then
+    Write(o, PrintDelimDefault)
+  else     
+    Write(o)
+end; 
 
 procedure Print(params args: array of object);
 begin

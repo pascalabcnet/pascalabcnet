@@ -1082,12 +1082,20 @@ namespace PascalABCCompiler.TreeConverter
                 throw new CompilerInternalError("Invalid operator name");
             }
 #endif
+            // Видимо, это сделано для присваивания, т.к. несимметрично. Но странно - f = nil должно возвращать boolean !
             if (right.semantic_node_type == semantic_node_type.null_const_node)
             {
             	if ( !type_table.is_with_nil_allowed(left.type) && !left.type.IsPointer)
                     AddError(right.location, "NIL_WITH_VALUE_TYPES_NOT_ALLOWED");
             	right = null_const_node.get_const_node_with_type(left.type, (null_const_node)right);
             }
+
+            /*if (left.semantic_node_type == semantic_node_type.null_const_node)
+            {
+                if (!type_table.is_with_nil_allowed(right.type) && !right.type.IsPointer)
+                    AddError(left.location, "NIL_WITH_VALUE_TYPES_NOT_ALLOWED");
+                left = null_const_node.get_const_node_with_type(right.type, (null_const_node)left);
+            }*/
 
             type_node left_type = left.type;
             type_node right_type = right.type;
@@ -1136,6 +1144,7 @@ namespace PascalABCCompiler.TreeConverter
                 if (name == "+" && right_type != SystemLibrary.SystemLibrary.string_type && left_type == SystemLibrary.SystemLibrary.char_type)
                     no_search_in_extension_methods = false;
                 sil2 = right_type.find_in_type(name, right_type.Scope, null, no_search_in_extension_methods);
+
                 if ((sil != null) && (sil2 != null))
                 {
                     //Важная проверка. Возможно один и тот же оператор с одними и теми же типами определен в двух разных классах.
@@ -1287,6 +1296,8 @@ namespace PascalABCCompiler.TreeConverter
                 }
                     
             }
+
+            // После этой точки right_type и left_type не используются!
 
             expressions_list pars = null;
             function_node fnsel = null;
