@@ -5262,6 +5262,7 @@ namespace CodeCompletion
         {
             ProcScope ps = new ProcScope(_function_lambda_definition.lambda_name, this.cur_scope);
             ps.loc = get_location(_function_lambda_definition);
+            ps.si.not_include = true;
             if (!disable_lambda_compilation)
                 cur_scope.AddName(_function_lambda_definition.lambda_name, ps);
             if (_function_lambda_definition.ident_list != null)

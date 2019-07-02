@@ -579,7 +579,7 @@ namespace VisualPascalABC
                     case SymbolKind.Enum:
                     case SymbolKind.Interface:
                     case SymbolKind.Delegate:
-                        if (ss.GetPosition().file_name != null && !ss.SymbolInfo.name.Contains("$"))
+                        if (ss.GetPosition().file_name != null && !ss.SymbolInfo.name.Contains("$") && !ss.SymbolInfo.name.StartsWith("<"))
                             items.Add(new ComboBoxItem(ss, ss.SymbolInfo.name, CodeCompletionProvider.ImagesProvider.GetPictureNum(ss.SymbolInfo), true, false));
                         break;
                 }
@@ -595,7 +595,7 @@ namespace VisualPascalABC
                         case SymbolKind.Enum:
                         case SymbolKind.Interface:
                         case SymbolKind.Delegate:
-                            if (ss.GetPosition().file_name != null && !ss.SymbolInfo.name.Contains("$"))
+                            if (ss.GetPosition().file_name != null && !ss.SymbolInfo.name.Contains("$") && !ss.SymbolInfo.name.StartsWith("<"))
                                 items.Add(new ComboBoxItem(ss, ss.SymbolInfo.name, CodeCompletionProvider.ImagesProvider.GetPictureNum(ss.SymbolInfo), true, false));
                             break;
                     }
