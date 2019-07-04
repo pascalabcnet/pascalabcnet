@@ -286,7 +286,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                         else id1 = new ident(cname.name, cname.source_context);
                         dot_node dn = new dot_node(id1, new ident(id.name, id.source_context), id.source_context);
                         id.Parent.ReplaceDescendantUnsafe(id, dn);
-                        ProcessNode(id.Parent);
+                        ProcessNode(dn);
                         return;
                     }
                 }
