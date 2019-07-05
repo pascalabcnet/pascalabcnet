@@ -1150,8 +1150,10 @@ function ChangeFileNameExtension(name, newext: string): string;
 /// Возвращает True, если файл с именем name существует
 function FileExists(name: string): boolean;
 
+///- procedure Assert(cond: boolean);
 /// Выводит в специальном окне стек вызовов подпрограмм если условие не выполняется
 procedure Assert(cond: boolean; sourceFile: string := ''; line: integer := 0);
+///- procedure Assert(cond: boolean; message: string);
 /// Выводит в специальном окне диагностическое сообщение и стек вызовов подпрограмм если условие не выполняется
 procedure Assert(cond: boolean; message: string; sourceFile: string := ''; line: integer := 0);
 

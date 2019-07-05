@@ -82,11 +82,11 @@ namespace SyntaxVisitors
             //if (upper is dot_node)
             //    return;
 
-            var idName = id.name;
+            var idName = id.name.ToLower();
             var idSourceContext = id.source_context;
 
             // frninja 31/03/16 - фикс селфа для extensionmethod
-            if (idName.ToLower() == "self" && !CollectedFormalParams.Contains(idName))
+            if (idName == "self" && !CollectedFormalParams.Contains(idName))
             {
                 var newSelf = new dot_node(new ident("self"), new ident(YieldConsts.Self));
                 Replace(id, newSelf);
