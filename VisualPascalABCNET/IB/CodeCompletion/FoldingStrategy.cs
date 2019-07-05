@@ -23,7 +23,7 @@ namespace VisualPascalABC
 
 	public class ParserFoldingStrategy : IFoldingStrategy
 	{
-        private List<FoldMarker> GetFoldMarkers(IDocument doc, IBaseScope root)
+        private List<FoldMarker> GetFoldMarkers(IDocument doc, IBaseScope root, string fileName)
         {
             List<FoldMarker> foldMarkers = new List<FoldMarker>();
             if (!(root is ITypeScope))
@@ -75,20 +75,22 @@ namespace VisualPascalABC
                 {
                     Position body_pos = ss.GetBodyPosition();
                     Position head_pos = ss.GetHeaderPosition();
-                    if (head_pos.file_name == null || body_pos.file_name == null) continue;
+                    if (head_pos.file_name == null || body_pos.file_name == null)
+                        continue;
                     FoldMarker newFoldMarker = new FoldMarker(doc, head_pos.end_line - 1, head_pos.end_column - 1, body_pos.end_line - 1, body_pos.end_column, FoldType.TypeBody);
                     if (newFoldMarker.Length > 0)
                     {
                         foldMarkers.Add(newFoldMarker);
                     }
-                    foldMarkers.AddRange(GetFoldMarkers(doc, ss));
+                    foldMarkers.AddRange(GetFoldMarkers(doc, ss, fileName));
                 }
                 else if (ss is IProcScope)
                 {
                     FoldType ft = FoldType.MemberBody;
                     Position head_pos = ss.GetHeaderPosition();
                     Position body_pos = ss.GetBodyPosition();
-                    if (head_pos.file_name == null || body_pos.file_name == null) continue;
+                    if (head_pos.file_name == null || body_pos.file_name == null)
+                        continue;
                     FoldMarker newFoldMarker = new FoldMarker(doc, head_pos.end_line - 1, head_pos.end_column, body_pos.end_line - 1, body_pos.end_column, ft);
                     if (newFoldMarker.Length > 0)
                     {
@@ -96,7 +98,7 @@ namespace VisualPascalABC
                     }
                 }
                 else if (ss is IImplementationUnitScope)
-                    foldMarkers.AddRange(GetFoldMarkers(doc, ss));
+                    foldMarkers.AddRange(GetFoldMarkers(doc, ss, fileName));
             }
             
             return foldMarkers;
@@ -104,7 +106,7 @@ namespace VisualPascalABC
 		
 		public List<FoldMarker> GenerateFoldMarkers(IDocument document, string fileName, object parseInfo)
 		{
-			List<FoldMarker> foldMarkers = GetFoldMarkers(document, parseInfo as IBaseScope);
+			List<FoldMarker> foldMarkers = GetFoldMarkers(document, parseInfo as IBaseScope, fileName);
 			return foldMarkers;
 		}
 		

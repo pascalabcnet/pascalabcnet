@@ -21,7 +21,8 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             root.FillParentsInAllChilds();
             // Выносим выражения с лямбдами из заголовка foreach
             StandOutExprWithLambdaInForeachSequenceVisitor.New.ProcessNode(root);
-
+            VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer.New.ProcessNode(root); // SSM bug fix #1147
+            FindOnExceptVarsAndApplyRenameVisitor.New.ProcessNode(root);
 #if DEBUG
             //new SimplePrettyPrinterVisitor("E:/projs/out.txt").ProcessNode(root);
 #endif

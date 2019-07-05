@@ -401,9 +401,9 @@ namespace PascalABCCompiler.TreeConverter
         /// <param name="allow_procedure">Может ли это быть вызов процедуры. false если вызов стоит в выражении или правой части опреатора присваивания.</param>
         /// <returns>Возвращает узел вызова метода.</returns>
 		public expression_node create_full_function_call(expressions_list exprs, List<SymbolInfo> si, location loc,
-            common_type_node converted_type, common_function_node top_function, bool allow_procedure)
+            common_type_node converted_type, common_function_node top_function, bool allow_procedure, List<SyntaxTree.expression> syntax_nodes_parameters = null)
         {
-            function_node fn = select_function(exprs, si, loc);
+            function_node fn = select_function(exprs, si, loc, syntax_nodes_parameters);
 
             //allow_procedure = true;
             if ((!allow_procedure) && (fn.return_value_type == null))
@@ -448,7 +448,13 @@ namespace PascalABCCompiler.TreeConverter
                                             if (syntax_tree_visitor.inherited_ident_processing)
                                                 syntax_tree_visitor.AddError(new SimpleSemanticError(loc, "INHERITED_CONSTRUCTOR_CALL_MUST_BE_FIRST"));
                                             else
-                                                syntax_tree_visitor.AddError(new SimpleSemanticError(loc, "CAN_NOT_CALL_CONSTRUCTOR_AS_PROCEDURE"));
+                                            {
+                                                var lambdasInParameters = syntax_nodes_parameters?.Any(ex => ex is SyntaxTree.function_lambda_definition) ?? false;
+                                                if (lambdasInParameters)
+                                                    syntax_tree_visitor.AddError(new SimpleSemanticError(loc, "LAMBDAS_IN_CONSTRUCTOR_PARAMETERS_ARE_FORBIDDEN_IN_THIS_CONTEXT"));
+                                                else syntax_tree_visitor.AddError(new SimpleSemanticError(loc, "CAN_NOT_CALL_CONSTRUCTOR_AS_PROCEDURE"));
+                                            }
+                                                
                                         }
                                         cmc = ccc;
                                     }
@@ -1093,7 +1099,13 @@ namespace PascalABCCompiler.TreeConverter
 				else
 				{
                     ptc = type_table.get_convertions(factparams[i].type, formal_param_type);
-					if (ptc.first==null)
+
+                    if (factparams[i] is null_const_node && !type_table.is_with_nil_allowed(formal_param_type) && !formal_param_type.IsPointer) // SSM 01.07.19 - nil не может быть преобразована за счёт вызова функции
+                    {
+                        ptc.first = null;
+                    }
+
+                    if (ptc.first==null)
 					{
                         if (type_table.is_derived(formal_param_type, factparams[i].type))
 						{
@@ -1327,7 +1339,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return method_compare.greater_method;
             }
-            if (!left_func.is_generic_function_instance && right_func.is_generic_function_instance)
+            if (!left_func.is_generic_function_instance && right_func.is_generic_function_instance) // SSM 29.06.19 Это неверно для Run<int>(Func<int>) против Run(Func<Task>)
             {
                 if (left_func is basic_function_node)
                     return method_compare.less_method;
@@ -1731,7 +1743,7 @@ namespace PascalABCCompiler.TreeConverter
         // Эту функцию можно написать оптимальнее - без внешнего while. Например.
         // Запускаем алгоритм сортировки на частичном порядке. Ищем min из оставшихся и меняем его местами с текущим.
         // Потом проходимся по частично отсортированному и из пары соседних удаляем тот, что меньше
-        private void functions_delete_greater(List<function_node> set_of_possible_functions, possible_type_convertions_list_list tcll)
+        private void delete_greater_functions(List<function_node> set_of_possible_functions, possible_type_convertions_list_list tcll)
         {
             bool remove = true;
             while (remove)
@@ -1958,6 +1970,52 @@ namespace PascalABCCompiler.TreeConverter
                 Errors.Error err = null;
                 possible_type_convertions_list tc = get_conversions(parameters, set_of_possible_functions[i].parameters,
                     is_alone_method_defined, loc, out err);
+
+                var proc_func_or_lambdaAndNotDelegate_OK_flag = true;
+                // Цикл по всем параметрам. Если формальный - процедура, а фактический - функция, то tc делать = null и взводить специальный флаг чтобы не возиться с делегатами дальше
+
+                if (set_of_possible_functions.Count >= 2 && set_of_possible_functions[i].parameters.Count == parameters.Count)
+                    for (var k = 0; k < parameters.Count; k++)
+                    {
+                        var fact = parameters[k];
+                        var formal = set_of_possible_functions[i].parameters[k];
+                        if (fact.type is delegated_methods dm)
+                        {
+                            var fact_is_function_with_return_value = dm.proper_methods.Count > 0 && dm.proper_methods[0].function.return_value_type != null;
+                            var fact_is_lambda = syntax_nodes_parameters != null && k < syntax_nodes_parameters.Count && syntax_nodes_parameters[k] is SyntaxTree.function_lambda_definition;
+                            var form_is_procedure = false;
+                            var form_is_delegate = false;
+
+                            //if (formal.type is compiled_type_node || // Это на случай System.Action или ()->()
+                            // formal.type is compiled_type_node) // Это на случай procedure
+                            {
+                                var d = formal.type.internal_interfaces;
+                                if (d != null && d.ContainsKey(internal_interface_kind.delegate_interface))
+                                {
+                                    var q = d[internal_interface_kind.delegate_interface] as delegate_internal_interface;
+                                    if (q != null)
+                                        form_is_delegate = true;
+                                    if (q != null && q.return_value_type == null) // Это процедура
+                                        form_is_procedure = true;
+                                }
+                            }
+                            
+                            if (fact_is_function_with_return_value && form_is_procedure)
+                            {
+                                proc_func_or_lambdaAndNotDelegate_OK_flag = false;
+                                break;
+                            }
+                            if (fact_is_lambda && ! form_is_delegate) // лямбда вместо не делегата - исключает функцию из рассмотрения
+                            {
+                                proc_func_or_lambdaAndNotDelegate_OK_flag = false;
+                                break;
+                            }
+                        }
+                    }
+
+                if (proc_func_or_lambdaAndNotDelegate_OK_flag == false)
+                    tc = null;
+                // Вот здесь - если фактический параметр - функция, а формальный - процедура хотя бы в одном параметре, то надо нивелировать все преобразования и присваивать tc=null и не влазить в следующий код!!!
                 if (err != null)
                     return AddError<function_node>(err);
                 //fix dlja lambd i extension metodov (c->c.IsDigit)
@@ -2017,12 +2075,16 @@ namespace PascalABCCompiler.TreeConverter
                 return set_of_possible_functions[0];
             }
 
-            functions_delete_greater(set_of_possible_functions,tcll); // SSM 06/06/19 refactoring
+            // Если остались параметры функция и процедура - обе без параметров, но функция возвращает T, то функция будет удалена этим алгоритмом, что неправильно!
+            // Потому что не учитывается вызов - в вызове может быть функция!!
+            delete_greater_functions(set_of_possible_functions,tcll); // SSM 06/06/19 refactoring
 
             //Тупая заглушка для примитивных типов. иначе не работает +=, у нас лишком много неявных приведений
             //в дальнейшем может вызвать странное поведение, это надо проверить
             if (set_of_possible_functions.Count == 2 && indefinits.Count == 0)
-                if (set_of_possible_functions[0] is basic_function_node && set_of_possible_functions[1] is basic_function_node)
+                if (set_of_possible_functions[0] is basic_function_node && set_of_possible_functions[1] is basic_function_node 
+                    // добавил это условие из-за комментария. Не понимаю, почему иначе не работает +=. Все тесты проходят 01.07.19 если закомментировать вообще этот if !!!
+                    && set_of_possible_functions[0].name == "+=" && set_of_possible_functions[1].name == "+=") 
                     return set_of_possible_functions[0];
 
             if (indefinits.Count > 0)

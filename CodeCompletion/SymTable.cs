@@ -773,9 +773,7 @@ namespace CodeCompletion
             return lst.ToArray();
         }
 
-        //poluchenie vseh imen vnutri Scope i vo vseh objemlushih scopah
-        //ispolzuetsja pri nazhatii ctrl+space
-        public virtual SymInfo[] GetNamesInAllTopScopes(bool all_names, ExpressionVisitor ev, bool is_static)
+        public SymInfo[] GetNamesInAllTopScopesNonVirtual(bool all_names, ExpressionVisitor ev, bool is_static)
         {
             List<SymInfo> lst = new List<SymInfo>();
             foreach (SymScope ss in members)
@@ -814,6 +812,13 @@ namespace CodeCompletion
                     lst.AddRange(used_units[i].GetNames());
                 }
             return lst.ToArray();
+        }
+
+        //poluchenie vseh imen vnutri Scope i vo vseh objemlushih scopah
+        //ispolzuetsja pri nazhatii ctrl+space
+        public virtual SymInfo[] GetNamesInAllTopScopes(bool all_names, ExpressionVisitor ev, bool is_static)
+        {
+            return GetNamesInAllTopScopesNonVirtual(all_names, ev, is_static);
         }
 
         public virtual SymInfo[] GetNamesAsInObject()
@@ -928,7 +933,7 @@ namespace CodeCompletion
                     if (string.Compare(ss.si.name, name, !CodeCompletionController.CurrentParser.LanguageInformation.CaseSensitive) == 0)
                         if (ss.loc != null && loc != null && check_for_def && cur_line != -1 && cur_col != -1)
                         {
-                            if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, true) == 0 && this != ss)
+                            if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, true) == 0 && this != ss && ss.topScope != this)
                             {
                                 if (IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
                                 {
@@ -1047,13 +1052,19 @@ namespace CodeCompletion
         public ImplementationUnitScope impl_scope;
         private List<Assembly> ref_assms;
         public location uses_source_range;
+        private bool is_namespace;
+        private List<InterfaceUnitScope> namespace_units = new List<InterfaceUnitScope>();
+        private InterfaceUnitScope main_namespace_unit;
 
-        public InterfaceUnitScope(SymInfo si, SymScope topScope)
+        public InterfaceUnitScope(SymInfo si, SymScope topScope, bool isNamespace=false, string fileName=null)
             : base(si, topScope)
         {
             UnitDocCache.AddDescribeToComplete(this);
             this.symbol_table = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
+            is_namespace = isNamespace;
+            file_name = fileName;
             si.description = this.ToString();
+            
         }
 
         ~InterfaceUnitScope()
@@ -1069,6 +1080,21 @@ namespace CodeCompletion
             }
         }
 
+        public void AddNamespaceUnit(InterfaceUnitScope unit)
+        {
+            InterfaceUnitScope to_remove = null;
+            foreach (var un in namespace_units)
+                if (un.file_name == unit.file_name)
+                {
+                    to_remove = un;
+                    break;
+                }
+            if (to_remove != null)
+                namespace_units.Remove(to_remove);
+            namespace_units.Add(unit);
+            unit.main_namespace_unit = this;
+        }
+
         public override bool InUsesRange(int line, int column)
         {
             if (this.uses_source_range != null)
@@ -1078,6 +1104,8 @@ namespace CodeCompletion
 
         public override void Clear()
         {
+            if (is_namespace)
+                return;
             base.Clear();
             if (ref_assms != null)
                 ref_assms.Clear();
@@ -1144,6 +1172,73 @@ namespace CodeCompletion
             {
                 return ScopeKind.UnitInterface;
             }
+        }
+
+        public bool IsNamespaceUnit
+        {
+            get
+            {
+                return is_namespace;
+            }
+        }
+
+        public override SymInfo[] GetNamesAsInObject(ExpressionVisitor ev)
+        {
+            SymInfo[] names = base.GetNamesAsInObject(ev);
+            if (namespace_units.Count == 0)
+                return names;
+            List<SymInfo> lst = new List<SymInfo>();
+            lst.AddRange(names);
+            foreach (var un in namespace_units)
+                lst.AddRange(un.GetNamesAsInObject(ev));
+            return lst.ToArray();
+        }
+
+        public override SymInfo[] GetNames()
+        {
+            //SortedDictionary<string,SymInfo> dict = new SortedDictionary<string,SymInfo>();
+            SymInfo[] names = base.GetNames();
+            if (namespace_units.Count == 0)
+                return names;
+            List<SymInfo> lst = new List<SymInfo>();
+            lst.AddRange(names);
+            foreach (var un in namespace_units)
+                lst.AddRange(un.GetNames());
+            return lst.ToArray();
+        }
+
+        public override SymInfo[] GetNamesInAllTopScopes(bool all_names, ExpressionVisitor ev, bool is_static)
+        {
+            SymInfo[] names = base.GetNamesInAllTopScopes(all_names, ev, is_static);
+            if (namespace_units.Count == 0 && main_namespace_unit == null)
+                return names;
+            List<SymInfo> lst = new List<SymInfo>();
+            lst.AddRange(names);
+            if (main_namespace_unit != null)
+            { 
+                foreach (var un in main_namespace_unit.namespace_units)
+                    if (un != this)
+                        lst.AddRange(un.GetNamesInAllTopScopesNonVirtual(all_names, ev, is_static));
+            }
+            else
+            {
+                foreach (var un in namespace_units)
+                    lst.AddRange(un.GetNamesInAllTopScopes(all_names, ev, is_static));
+            }
+                
+            return lst.ToArray();
+        }
+
+        public override SymInfo[] GetNamesAsInObject()
+        {
+            SymInfo[] names = base.GetNamesAsInObject();
+            if (namespace_units.Count == 0)
+                return names;
+            List<SymInfo> lst = new List<SymInfo>();
+            lst.AddRange(names);
+            foreach (var un in namespace_units)
+                lst.AddRange(un.GetNamesAsInObject());
+            return lst.ToArray();
         }
 
         public override string ToString()

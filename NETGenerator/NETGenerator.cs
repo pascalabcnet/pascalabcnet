@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.Linq;
 using PascalABCCompiler.SemanticTree;
 using System.Threading;
 using System.Reflection;
@@ -1131,7 +1132,6 @@ namespace PascalABCCompiler.NETGenerator
                             if (ctn != null)
                                 throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
                         }
-
                     }
                         
             for (int i = 0; i < enums.Count; i++)
@@ -1324,7 +1324,7 @@ namespace PascalABCCompiler.NETGenerator
         private void AddTypeWithoutConvert(ICommonTypeNode t)
         {
             if (helper.GetTypeReference(t) != null) return;
-            TypeBuilder tb = mb.DefineType(BuildTypeName(t.name), ConvertAttributes(t), null, new Type[0]);
+            TypeBuilder tb = mb.DefineType(BuildTypeName(t.name), ConvertAttributes(t), t.is_value_type?TypeFactory.ValueType:null, new Type[0]);
             helper.AddType(t, tb);
             //(ssyy) обрабатываем generics
             if (t.is_generic_type_definition)
@@ -6659,6 +6659,7 @@ namespace PascalABCCompiler.NETGenerator
 
             if (value.is_final)
             {
+                
                 attrs |= MethodAttributes.Virtual | MethodAttributes.Final;
             }
 
@@ -10163,7 +10164,12 @@ namespace PascalABCCompiler.NETGenerator
         public void ConvertCaseVariantNode(ICaseVariantNode value, Label end_label, System.Collections.Generic.Dictionary<IConstantNode, Label> dict)
         {
             if (save_debug_info)
-                MarkSequencePoint(value.statement_to_execute.Location);
+            {
+            	if (value.statement_to_execute.Location != null)
+                	MarkSequencePoint(value.statement_to_execute.Location);
+            	else
+            		MarkSequencePoint(value.Location);
+            }
             for (int i = 0; i < value.elements.Length; i++)
                 il.MarkLabel(dict[value.elements[i]]);
             ConvertStatement(value.statement_to_execute);

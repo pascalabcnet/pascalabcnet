@@ -130,7 +130,7 @@ namespace VisualPascalABC
             if (comp != null)
             {
                 Assembly a = Assembly.GetAssembly(comp.GetType());
-                dgvModules.Items.Add(MakeItem("Core", "PascalABCCompiler.Core", a.GetName().Version.ToString(), "Copyright © 2005-2018 by Ivan Bondarev, Stanislav Mihalkovich"));
+                dgvModules.Items.Add(MakeItem("Core", "PascalABCCompiler.Core", a.GetName().Version.ToString(), "Copyright © 2005-2019 by Ivan Bondarev, Stanislav Mihalkovich"));
                 foreach (PascalABCCompiler.Parsers.IParser parser in comp.ParsersController.Parsers)
                     dgvModules.Items.Add(MakeItem("Parser",parser.Name, parser.Version, parser.Copyright));
                 foreach (PascalABCCompiler.SemanticTreeConverters.ISemanticTreeConverter conv in comp.SemanticTreeConvertersController.SemanticTreeConverters)

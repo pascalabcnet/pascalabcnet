@@ -332,6 +332,11 @@ namespace PascalABCCompiler.SyntaxTree
         {
             get { return new statement_list(); }
         }
+
+        public override string ToString()
+        {
+            return "begin " + list.Select(st=>st is empty_statement ? "" : st.ToString()+"; ").Aggregate((s,x)=>s+x)+ "end";
+        }
         //-- List members end
     }
 
@@ -564,7 +569,7 @@ namespace PascalABCCompiler.SyntaxTree
                 sb.Append(" := ");
                 sb.Append(inital_value.ToString());
             }
-            sb.Append("; ");
+            //sb.Append("; ");
             return sb.ToString();
         }
     }
@@ -761,14 +766,15 @@ namespace PascalABCCompiler.SyntaxTree
             if (name != null)
                 sb.Append(name.ToString());
             else
-                sb.Append("NONAME");
+                sb.Append("");
 
             if (template_args != null)
                 sb.Append("<" + template_args.ToString() + ">");
 
             if (parameters != null)
                 sb.Append("(" + parameters.ToString() + ")");
-            sb.Append(";");
+            if (name != null)
+                sb.Append(";");
             if (this.proc_attributes != null)
                 foreach (var pa in this.proc_attributes.proc_attributes)
                     sb.Append(" " + pa.ToString() + " ");
@@ -1669,7 +1675,11 @@ namespace PascalABCCompiler.SyntaxTree
     {
         public override string ToString()
         {
-            return "" + this._ident_list.ToString() + " -> lambda_body";
+            var s = this._ident_list.ToString();
+            if (_ident_list.Count != 1)
+                s = "(" + s + ")";
+            var b = this.proc_body.ToString();
+            return "" + s + " -> "+b;
         }
     }
 
@@ -1892,6 +1902,57 @@ namespace PascalABCCompiler.SyntaxTree
         {
             this.source_context = sc;
         }
+    }
+
+    public partial class const_pattern
+    {
+        ///<summary>
+        ///Конструктор c параметрами
+        ///</summary>
+        public const_pattern(List<syntax_tree_node> pattern_nodes, SourceContext sc)
+        {
+            source_context = sc;
+            pattern_expressions = new expression_list();
+            pattern_expressions.source_context = sc;
+
+            foreach (var elem in pattern_nodes)
+            {
+                if (elem is named_type_reference type)
+                {
+                    expression pattern_expr = null;
+                    if (type.names.Count == 1)
+                    {
+                        pattern_expr = type.names[0];
+                    }
+                    else
+                    {
+                        pattern_expr = new dot_node(null, type.names[type.names.Count - 1], sc);
+                        var curr_dot_node = pattern_expr as dot_node;
+
+                        for (var i = type.names.Count - 2; i >= 1; --i)
+                        {
+                            curr_dot_node.left = new dot_node(null, type.names[i], sc);
+                            curr_dot_node = curr_dot_node.left as dot_node;
+                        }
+                        curr_dot_node.left = type.names[0];
+                    }
+                    pattern_expressions.Add(pattern_expr, type.source_context);
+                } 
+                else if (elem is expression expr)
+                {
+                    pattern_expressions.Add(expr, elem.source_context);
+                }
+            }
+        }
+    }
+
+    public partial class empty_statement
+    {
+        public override string ToString() => "<>";
+    }
+    public partial class modern_proc_type
+    {
+        public override string ToString() => "<proc_type>";
     }
 }
 

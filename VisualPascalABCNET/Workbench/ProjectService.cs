@@ -14,7 +14,7 @@ namespace VisualPascalABC
     public partial class Form1 : IWorkbenchProjectService
     {
         public List<string> LastOpenProjects;
-
+        
         public void NewProject()
         {
             NewProjectForm npf = new NewProjectForm();

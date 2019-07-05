@@ -139,6 +139,11 @@ namespace VisualPascalABC
         {
             standartCompiler = new PascalABCCompiler.Compiler(SourceFilesProvider, OnChangeCompilerState);
             CodeCompletion.CodeCompletionController.comp = new PascalABCCompiler.Compiler((PascalABCCompiler.Compiler)standartCompiler, SourceFilesProvider, OnChangeCompilerState);
+            if (ProjectFactory.Instance.CurrentProject != null)
+            {
+            	CodeCompletion.CodeCompletionController.comp.CompilerOptions.CurrentProject = ProjectFactory.Instance.CurrentProject;
+            	ProjectFactory.Instance.Dirty = true;
+            }
             CodeCompletion.CodeCompletionController.ParsersController = standartCompiler.ParsersController;
             CodeCompletion.CodeCompletionController.StandartDirectories = StandartDirectories;
 

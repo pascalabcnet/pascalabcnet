@@ -901,6 +901,8 @@ procedure WritelnFormat(f: Text; formatstr: string; params args: array of object
 
 ///- procedure Print(a,b,...);
 /// Выводит значения a,b,... на экран, после каждого значения выводит пробел
+procedure Print(o: object);
+///--
 procedure Print(s: string);
 ///--
 procedure Print(params args: array of object);
@@ -1148,8 +1150,10 @@ function ChangeFileNameExtension(name, newext: string): string;
 /// Возвращает True, если файл с именем name существует
 function FileExists(name: string): boolean;
 
+///- procedure Assert(cond: boolean);
 /// Выводит в специальном окне стек вызовов подпрограмм если условие не выполняется
 procedure Assert(cond: boolean; sourceFile: string := ''; line: integer := 0);
+///- procedure Assert(cond: boolean; message: string);
 /// Выводит в специальном окне диагностическое сообщение и стек вызовов подпрограмм если условие не выполняется
 procedure Assert(cond: boolean; message: string; sourceFile: string := ''; line: integer := 0);
 
@@ -3950,6 +3954,8 @@ end;
 
 function operator**(x: real; n: integer): real; extensionmethod := Power(x, n);
 
+function operator**(x: single; n: integer): real; extensionmethod := Power(x, n);
+
 function operator**(x, y: integer): real; extensionmethod := Power(real(x), y);
 
 function operator**(x, y: real): real; extensionmethod := Power(x, y);
@@ -6123,6 +6129,14 @@ begin
     Write(s, PrintDelimDefault)
   else Write(s)  
 end;
+
+procedure Print(o: object);
+begin
+  if PrintDelimDefault<>'' then
+    Write(o, PrintDelimDefault)
+  else     
+    Write(o)
+end; 
 
 procedure Print(params args: array of object);
 begin

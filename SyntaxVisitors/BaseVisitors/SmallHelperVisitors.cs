@@ -66,7 +66,7 @@ namespace SyntaxVisitors
         }
         public override void visit(ident i)
         {
-            if (i.name.ToLower() == varname)
+            if (i.name.ToLower() == varname.ToLower())
                 id = i;
         }
         public override void visit(dot_node dn)

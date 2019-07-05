@@ -363,7 +363,7 @@
 				</OBJECT>
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="&Igrave;&icirc;&auml;&oacute;&euml;&egrave;">
+			<param name="Name" value="&Igrave;&icirc;&auml;&oacute;&euml;&egrave; &egrave; &aacute;&egrave;&aacute;&euml;&egrave;&icirc;&ograve;&aring;&ecirc;&egrave;">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
@@ -385,6 +385,10 @@
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="&Aacute;&egrave;&aacute;&euml;&egrave;&icirc;&ograve;&aring;&ecirc;&egrave; dll">
 				<param name="Local" value="LangGuide\Modules\libraries.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="&Ntilde;&icirc;&acirc;&igrave;&aring;&ntilde;&ograve;&iacute;&icirc;&aring; &egrave;&ntilde;&iuml;&icirc;&euml;&uuml;&ccedil;&icirc;&acirc;&agrave;&iacute;&egrave;&aring; &igrave;&icirc;&auml;&oacute;&euml;&aring;&eacute; &egrave; &aacute;&egrave;&aacute;&euml;&egrave;&icirc;&ograve;&aring;&ecirc;">
+				<param name="Local" value="LangGuide\Modules\libraries_units.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="&Auml;&icirc;&ecirc;&oacute;&igrave;&aring;&iacute;&ograve;&egrave;&eth;&oacute;&thorn;&ugrave;&egrave;&aring; &ecirc;&icirc;&igrave;&igrave;&aring;&iacute;&ograve;&agrave;&eth;&egrave;&egrave;">

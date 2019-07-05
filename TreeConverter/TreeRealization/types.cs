@@ -31,7 +31,7 @@ namespace PascalABCCompiler.TreeRealization
         private System.Collections.Generic.Dictionary<type_node, type_intersection_node> type_intersections;
             //new System.Collections.Generic.Dictionary<type_node, type_intersection_node>();
         private List<type_node> generated_type_intersections = null;//new List<type_node>();
-        private System.Collections.Generic.Dictionary<internal_interface_kind, internal_interface> internal_interfaces;
+        public System.Collections.Generic.Dictionary<internal_interface_kind, internal_interface> internal_interfaces;
         //new System.Collections.Generic.Dictionary<internal_interface_kind, internal_interface>();
 
         //private System.Collections.Generic.Dictionary<type_node, type_conversion> explicit_type_conversions =
@@ -196,6 +196,9 @@ namespace PascalABCCompiler.TreeRealization
         	}
         }
 
+        /// <summary>
+        /// В частности, процедурная переменная
+        /// </summary>
         public virtual bool IsDelegate
         {
             get
@@ -4259,8 +4262,9 @@ namespace PascalABCCompiler.TreeRealization
         }
     }
 
-
-    //Псевдотип. Не идет в выходное дерево. Используется как промежуточный при работе с делегатами.
+    /// <summary>
+    /// Псевдотип. Не идет в выходное дерево. Используется как промежуточный при работе с делегатами. Этому типу принадлежат имена функций
+    /// </summary>
     [Serializable]
     public class delegated_methods : wrapped_type
     {

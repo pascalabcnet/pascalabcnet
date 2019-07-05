@@ -10,114 +10,117 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
     // Первое предназначение - вынести последовательность из заголовка в foreach до foreach как отдельное присваивание
     // Второе предназначение - переименовать все переменные, совпадающие по имени с типом T обобщенного класса, в котором находится метод, содержащий лямбду
-    public class StandOutExprWithLambdaInForeachSequenceVisitor : BaseChangeVisitor
-    {
-        public static StandOutExprWithLambdaInForeachSequenceVisitor New
-        {
-            get
-            {
-                return new StandOutExprWithLambdaInForeachSequenceVisitor();
-            }
-        }
-
-        private int GenIdNum = 0;
-
-        //private ident_list ClassTemplateArgsOrNull = null; // если мы - в обобщенном классе, то это - его обобщенные параметры
-        public ident GenIdentName()
-        {
-            GenIdNum++;
-            return new ident("$GenContFE" + GenIdNum.ToString());
-        }
-
-        public override void visit(foreach_stmt fe)
-        {
-            //if (fe.DescendantNodes().OfType<function_lambda_definition>().Count() > 0) // из-за #1984 убрал вообще условие. Пусть будет всегда
-            {
-                var id = GenIdentName();
-                id.Parent = fe;
-                var ass = new var_statement(id, fe.in_what, fe.in_what.source_context);
-                fe.in_what = id;
-                var l = new List<statement> { ass, fe };
-                //ReplaceStatement(fe, l);
-                ReplaceStatementUsingParent(fe, l);
-            }
-
-            base.visit(fe);
-        }
-    }
-
-
-    public class GivenNamesReplacer: CollectLightSymInfoVisitor
+    public class VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer: CollectLightSymInfoVisitor
     {
         /// <summary>
         /// Надо приводить к нижнему регистру
         /// </summary>
-        public List<string> NamesForReplace { get; }
+        //public List<string> NamesForReplace = new List<string>();
 
         private int LambdaNestedLevel = 0;
 
-        Dictionary<string, Stack<ScopeSyntax>> d = new Dictionary<string, Stack<ScopeSyntax>>(); // словарь скоупов для каждого имени
-        // При добавлении символа мы в словарь добавляем его ПИ (символ может быть правильно вложенным только если вначале идет локальная переменная, 
-        // потом - параметр лямбды, потом - локальная переменная вложенной лямбды и т.д.
-        public static new GivenNamesReplacer New 
+        Dictionary<string, ScopeSyntax> d = new Dictionary<string, ScopeSyntax>(); // словарь скоупов для каждого имени
+        // При входе в обобщенный класс или запись мы в словарь добавляем все его обобщенные параметры со значением nil
+        // При выходе из класса мы очищаем словарь
+        // При встрече описания переменной с именем, совпадающим с одним из ключей в словаре, мы заменяем значение null на пространство имен, в котором мы находимся
+        // Описание переменной в словарь добавляется только если она описана в методе, но вне лямбды, поскольку в лямбде конфликтов имен нет
+        // При выходе из пространства имен мы проверяем, есть ли в словаре такое значение, и если да, очищаем его, присваивая null
+        // Переименовывать будем все имена name если ключ name есть в словаре и d[name] != null
+        public static new VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer New 
         {
-            get => new GivenNamesReplacer();
+            get => new VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer();
         }
         public override void AddSymbol(ident name, SymKind kind, type_definition td = null, Attributes attr = 0)
         {
-            var n = name.name.ToLower();
-            if (LambdaNestedLevel > 0 && d[n].Count() == 0) // т.е. впервые встретилось переопределение именно в лямбде, тогда пропускать эту лямбду
-                return;
-            if (NamesForReplace.Contains(n) && (kind == SymKind.var || kind == SymKind.param)) // Добавляем не все, а только разыскиваемые и только если это - переменная
+            if (name == null || name.name == null)
             {
-                d[n].Push(this.Current);
+                return;
+            }
+            var n = name.name.ToLower();
+            //if (LambdaNestedLevel > 0) // т.е. впервые встретилось переопределение именно в лямбде, тогда пропускать эту лямбду
+            //    return;
+            if (d.ContainsKey(n) && d[n] == null && (kind == SymKind.var || kind == SymKind.param)) // Добавляем не все, а только разыскиваемые и только если это - переменная
+            {
+                d[n] = this.Current;
                 base.AddSymbol(name, kind, td, attr);
             }
         }
         public override void Enter(syntax_tree_node st)
         {
+            base.Enter(st);
             if (st is function_lambda_definition)
                 LambdaNestedLevel += 1;
             else if (st is class_definition cl)
             {
                 var td = cl.Parent as type_declaration;
+                if (td?.type_name is template_type_name ttn)
+                {
+                    foreach (var id in ttn.template_args.idents)
+                    {
+                        d[id.name.ToLower()] = null;
+                    }
+                }
             }
-            base.Enter(st);
+            else if (st is procedure_definition pd)
+            {
+                var cn = pd.proc_header.name?.class_name;
+                if (cn is template_type_name ttn)
+                {
+                    foreach (var id in ttn.template_args.idents)
+                    {
+                        d[id.name.ToLower()] = null;
+                    }
+                }
+            }
+        }
+        public override void PreExitScope(syntax_tree_node st)
+        {
+            var l = d.Keys.Where(k => d[k] == Current).ToList();
+            // Обходим все словари и смотрим у них вершину стеков
+            foreach (var k in l)
+            {
+                d[k] = null; // т.е. в этом пространстве имен мы захватили одноименное описание переменной - освобождаем его
+            }
         }
         public override void Exit(syntax_tree_node st)
         {
-            // Обходим все словари и смотрим у них вершину стеков
-            foreach (var k in d.Keys)
-            {
-                var stack = d[k];
-                if (stack.Count() > 0 && stack.Peek() == Current)
-                {
-                    stack.Pop();
-                }
-            }
             if (st is function_lambda_definition)
                 LambdaNestedLevel -= 1;
+            else if (st is class_definition) // то мы не ищем переопределение имен, поскольку мы вышли из класса
+            {
+                d.Clear();
+            }
+            else if (st is procedure_definition pd) // мы вышли из метода вида t1<t>.p
+            {
+                var cn = pd.proc_header.name?.class_name;
+                if (cn is template_type_name ttn)
+                    d.Clear();
+            }
             base.Exit(st);
         }
 
+        public override void visit(template_type_name tn)
+        {
+            // игнорировать чтобы там ничего не переименовывалось
+        }
         public override void visit(ident id)
         {
-            Process(id);
+            ReplaceNameOrNot(id);
         }
         public override void visit(dot_node dn)
         {
             if (dn.left is ident id)
-                Process(id);
+                ReplaceNameOrNot(id);
             else ProcessNode(dn.left);
         }
 
         public static int ReplaceNum = 0;
-        public void Process(ident id)
+        public void ReplaceNameOrNot(ident id)
         {
             var n = id.name.ToLower();
-            if (NamesForReplace.Contains(n) && d[n].Count() == 1) // Проблема такая - первый раз T будет описано именно в лямбде. 
+            if (d.ContainsKey(n) && d[n] != null) // Переименовываем без страха
             {
-                id.name = "$" + id.name + ReplaceNum;
+                id.name = id.name + "$Replace$" + ReplaceNum; // имя такое чтобы при выдаче сообщения об ошибке в нем можно было бы обрезать конец
             }
         }
     }
