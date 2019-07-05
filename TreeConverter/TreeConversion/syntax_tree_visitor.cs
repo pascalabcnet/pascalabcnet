@@ -9701,6 +9701,10 @@ namespace PascalABCCompiler.TreeConverter
                 AddError(new MemberIsNotDeclaredInType(id_right, get_location(id_right), en.type));
             }
             List<SymbolInfo> sil = en.type.find_in_type(id_right.name, context.CurrentScope);
+            if (en.type.IsEnum && sil != null && sil[0].sym_info is class_constant_definition) // l.A
+            {
+                AddError(get_location(id_right), "ACCESS_TO_ENUM_CONST_THROUGH_OBJECT");
+            }
             if (sil == null)
             {
                 AddError(new MemberIsNotDeclaredInType(id_right, get_location(id_right), en.type));

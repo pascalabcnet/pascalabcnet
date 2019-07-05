@@ -29,3 +29,4 @@ UNNAMED_RECORD_CANNOT_CONTAIN_SEVERAL_VISIBILITY_SECTIONS=Unnamed records can no
 OPENMP_CONTROLLED_CONSTRUCTIONS_CANNOT_CONTAIN_LAMBDAS=OpenMP-directive-based constructions cannot contain lambdas
 LAMBDAS_IN_CONSTRUCTOR_PARAMETERS_ARE_FORBIDDEN_IN_THIS_CONTEXT=Lambda-expressions as constructor parameters are forbidden in this context
 PROCEDURE_TYPE_SHOULD_BE_REPLACED_BY_TYPE_NAME_IN_THIS_CONTEXT=Procedure type should be replaced by type name in this context
+ACCESS_TO_ENUM_CONST_THROUGH_OBJECT=Enum constant can not be accessed through an object
