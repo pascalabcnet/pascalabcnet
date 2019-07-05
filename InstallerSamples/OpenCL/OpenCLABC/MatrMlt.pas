@@ -13,6 +13,10 @@ const
 begin
   Randomize(0);
   
+  // Инициализация
+  
+//  Context.Default := new Context(DeviceTypeFlags.GPU); // не нужно - это и так значение по-умолчанию
+  
   // Чтение и компиляция .cl файла
   
   {$resource MatrMlt.cl}
