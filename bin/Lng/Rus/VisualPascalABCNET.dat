@@ -37,6 +37,7 @@ M_DELETE=Удалить
 
 MR_SERVICE=Сервис
 M_OPTIONS=Настройки...
+M_AUTOINSERT_CODE=Режим автовставки кода
 
 MR_VIEW=Вид
 M_BOTTOMPANEL=Нижняя панель
