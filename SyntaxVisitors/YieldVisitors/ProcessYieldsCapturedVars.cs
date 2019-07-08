@@ -150,15 +150,15 @@ namespace SyntaxVisitors
             var stels = seqt.elements_type;
 
             var iteratorClassName = GetClassName(pd);
-            var classDef = UpperNode(3) as class_definition;
+            /*var classDef = UpperNode(3) as class_definition;
 
             var staticClass = false;
             if ((classDef.attribute & class_attribute.Static) != 0)
-                staticClass = true;
+                staticClass = true;*/
 
 
             // frninja 08/18/15 - Для захвата self
-            if (iteratorClassName != null && !staticClass)
+            if (iteratorClassName != null/* && !staticClass */)
             {
                 // frninja 20/04/16 - поддержка шаблонных классов
                 var iteratorClassRef = CreateClassReference(iteratorClassName);
