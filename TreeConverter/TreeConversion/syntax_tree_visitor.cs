@@ -2406,7 +2406,14 @@ namespace PascalABCCompiler.TreeConverter
         	location loc = get_location(_raise_stmt);
         	if (_raise_stmt.expr == null)
         	{
-                if (current_catch_excep == null) AddError(loc, "RAISE_WITHOUT_PARAMETERS_MUST_BE_IN_CATCH_BLOCK");
+                var st = _raise_stmt.Parent;
+                while (st != null && !(st is exception_block))
+                {
+                    st = st.Parent;
+                }
+                //if (current_catch_excep == null)
+                if (st == null)
+                    AddError(loc, "RAISE_WITHOUT_PARAMETERS_MUST_BE_IN_CATCH_BLOCK");
         		return_value(new rethrow_statement_node(loc));
         		return;
         	}

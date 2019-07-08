@@ -839,13 +839,13 @@ namespace SymbolTable
                     }
                     cl = (ClassScope)cl.BaseClassScope;
                 }
-                /*if (cl.BaseClassScope == null && cl.class_type.base_type is PascalABCCompiler.TreeRealization.compiled_type_node ctn)
+                if (cl.BaseClassScope == null && cl.class_type.base_type is PascalABCCompiler.TreeRealization.compiled_type_node ctn)
                 {
-                    Result = ctn.find(name);
+                    var a = ctn.find(name);
+                    if (a != null)
+                        AddToSymbolInfo(a, Result);
                     return;
-                }*/
-
-
+                }
             }
         }
 
