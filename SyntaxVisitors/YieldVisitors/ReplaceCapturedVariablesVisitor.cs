@@ -49,6 +49,7 @@ namespace SyntaxVisitors
             CapturedFormalParamsMap = new Dictionary<string, string>(formalParamsMap);
 
             IsInClassMethod = isInClassMethod;
+            IsStaticMethod = isStaticMethod;
             ClassName = className;
 
             // Methods hack
@@ -112,6 +113,7 @@ namespace SyntaxVisitors
 
 
                     //var capturedId = new dot_node(new dot_node(new ident("self"), new ident(YieldConsts.Self)), id);
+                    //var capturedId = new dot_node(ClassName, id.TypedClone());
                     //Replace(id, capturedId);
                 }
                 //else
