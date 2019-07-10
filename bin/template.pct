@@ -177,3 +177,8 @@ end.
 
 [ref]
 reference '|'
+
+[reg]
+{$region }
+  |
+{$endregion}
