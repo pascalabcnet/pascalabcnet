@@ -1720,6 +1720,10 @@ namespace PascalABCCompiler.SyntaxTree
         {
             return new SyntaxTree.dot_node(this, id, sc);
         }
+        /// <summary>
+        /// Сервисное поле для реализации механизма ?. Оно - типа question_colon_expression
+        /// </summary>
+        public object ExprToQCE = null;
     }
 
     public partial class expression

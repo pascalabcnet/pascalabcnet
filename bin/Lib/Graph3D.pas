@@ -577,6 +577,10 @@ type
     function AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real; Completed: procedure): AnimationBase;
     /// Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center, на величину angle за seconds секунд
     function AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real := 1): AnimationBase := AnimRotateAt(axis,angle,center,seconds,nil);
+    /// Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center, на величину angle за seconds секунд. В конце анимации выполняется процедура Completed
+    function AnimRotateAtAbsolute(axis: Vector3D; angle: real; center: Point3D; seconds: real; Completed: procedure): AnimationBase;
+    /// Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center, на величину angle за seconds секунд
+    function AnimRotateAtAbsolute(axis: Vector3D; angle: real; center: Point3D; seconds: real := 1): AnimationBase := AnimRotateAtAbsolute(axis,angle,center,seconds,nil);
 
     /// Клонирует 3D-объект
     function Clone: Object3D := Invoke&<Object3D>(CloneT);
@@ -673,6 +677,8 @@ type
   public  
   /// Добавить дочерний подобъект
     procedure AddChild(obj: Object3D) := Invoke(AddT, obj);
+  /// Удалить дочерний подобъект
+    procedure RemoveChild(obj: Object3D) := Invoke(RemoveT, obj);
   /// i-тый дочерний подобъект
     property Items[i: integer]: Object3D read GetObj; default;
     
@@ -766,6 +772,14 @@ type
       CreateBase0(new ModelVisual3D, x, y, z);
       foreach var xx in lst do
         AddChild(xx);
+    end;
+  public  
+    procedure UnGroup;
+    begin
+      for var i := l.Count-1 downto 0 do
+      begin
+        RemoveChild(l[i]);
+      end;  
     end;
     
   /// ВОзвращает клон группы 3D-объектов
@@ -1282,8 +1296,10 @@ type
     begin
       el := new RotateTransform3D();
       el.Rotation := new AxisAngleRotation3D();
-
-      Element.transfgroup.Children.Insert(0,el); // До основной матрицы, связанной с поворотом
+      
+      if Absolute then
+        Element.transfgroup.Children.Add(el) // После основной матрицы, связанной с поворотом
+      else Element.transfgroup.Children.Insert(0,el); // До основной матрицы, связанной с поворотом
       var rottransform := el;
       rottransform.CenterX := center.x;
       rottransform.CenterY := center.y;
@@ -1309,7 +1325,18 @@ type
       (vx, vy, vz, angle, center) := (vvx, vvy, vvz, a, c)
     end;
   public 
+    auto property Absolute: boolean; 
     function Clone: AnimationBase; override := new RotateAtAnimation(Element,Seconds,vx,vy,vz,angle,center,nil);    
+  end;
+  
+  RotateAtAbsoluteAnimation = class(RotateAtAnimation)
+  public 
+    constructor(e: Object3D; sec: real; vvx, vvy, vvz, a: real; c: Point3D; Completed: procedure := nil);
+    begin
+      inherited Create(e,sec,vvx,vvy,vvz,a,c,Completed);
+      Absolute := True;
+    end;
+    function Clone: AnimationBase; override := new RotateAtAbsoluteAnimation(Element,Seconds,vx,vy,vz,angle,center,nil);    
   end;
   
   CompositeAnimation = class(AnimationBase)
@@ -2695,6 +2722,8 @@ function Object3D.AnimScaleZ(sc, seconds: real; Completed: procedure) := new Sca
 function Object3D.AnimRotate(vx, vy, vz, angle, seconds: real; Completed: procedure) := new RotateAtAnimation(Self, seconds, vx, vy, vz, angle, P3D(0, 0, 0), Completed);
 
 function Object3D.AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real; Completed: procedure) := new RotateAtAnimation(Self, seconds, axis.X, axis.y, axis.z, angle, center, Completed);
+
+function Object3D.AnimRotateAtAbsolute(axis: Vector3D; angle: real; center: Point3D; seconds: real; Completed: procedure) := new RotateAtAbsoluteAnimation(Self, seconds, axis.X, axis.y, axis.z, angle, center, Completed);
 
 procedure Object3D.AddToObject3DList := Object3DList.Add(Self);
 
