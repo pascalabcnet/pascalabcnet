@@ -60,7 +60,7 @@ namespace SyntaxVisitors
         {
             if (first_time_visit_function_header)
             {
-                DefaultVisit(fh);
+                //DefaultVisit(fh);
                 first_time_visit_function_header = false;
             }
             // DO NOTHING
