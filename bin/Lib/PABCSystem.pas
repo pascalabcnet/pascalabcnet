@@ -8488,23 +8488,23 @@ begin
   end;
 end;
 
-/// Возвращает бесконечную последовательность целых от текущего значения с шагом step
-function Step(Self: integer; step: integer): sequence of integer; extensionmethod;
+/// Возвращает бесконечную последовательность целых от текущего значения с шагом st
+function Step(Self: integer; st: integer): sequence of integer; extensionmethod;
 begin
   while True do
   begin
     yield Self;
-    Self += step;
+    Self += st;
   end;
 end;
 
-/// Возвращает бесконечную последовательность вещественных от текущего значения с шагом step
-function Step(Self: real; step: real): sequence of real; extensionmethod;
+/// Возвращает бесконечную последовательность вещественных от текущего значения с шагом st
+function Step(Self: real; st: real): sequence of real; extensionmethod;
 begin
   while True do
   begin
     yield Self;
-    Self += step;
+    Self += st;
   end;
 end;
 
