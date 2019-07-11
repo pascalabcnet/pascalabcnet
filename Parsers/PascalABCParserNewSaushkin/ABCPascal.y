@@ -4239,6 +4239,8 @@ keyword
 		{ $$ = $1; }
     | tkElse
 		{ $$ = $1; }
+    | tkEnd
+		{ $$ = $1; }
     | tkExcept
 		{ $$ = $1; }
     | tkFile
@@ -4329,8 +4331,6 @@ keyword
 
 reserved_keyword
     : tkOperator
-		{ $$ = $1; }
-    | tkEnd
 		{ $$ = $1; }
     ;
 
