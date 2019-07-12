@@ -357,6 +357,7 @@ type
     rotatetransform := new MatrixTransform3D;
     scaletransform := new ScaleTransform3D;
     transltransform: TranslateTransform3D;
+    rotatetransform_absolute := new MatrixTransform3D;
 
     procedure AddToObject3DList;
     procedure DeleteFromObject3DList;
@@ -370,6 +371,7 @@ type
       transfgroup.Children.Add(rotatetransform);
       transfgroup.Children.Add(scaletransform); 
       transfgroup.Children.Add(transltransform);
+      transfgroup.Children.Add(rotatetransform_absolute);
       
       model.Transform := transfgroup;
       hvp.Children.Add(model);
@@ -491,7 +493,7 @@ type
       transfgroup.Children[ind] := rotatetransform;
       Result := Self;
     end);
-    /// Поворачивает объект на угол angle вокруг оси axis относительно точки center
+    /// Поворачивает объект на угол angle вокруг оси axis относительно точки center (её координаты задаются относительно центра объекта)
     function RotateAt(axis: Vector3D; angle: real; center: Point3D): Object3D :=
     Invoke&<Object3D>(()->begin
       var m := Matrix3D.Identity;
@@ -499,6 +501,16 @@ type
       var ind := transfgroup.Children.IndexOf(rotatetransform);
       rotatetransform := new MatrixTransform3D(m * rotatetransform.Value);
       transfgroup.Children[ind] := rotatetransform;
+      Result := Self;
+    end);
+    /// Поворачивает объект на угол angle вокруг оси axis относительно точки center (в абсолютных координатах)
+    function RotateAtAbsolute(axis: Vector3D; angle: real; center: Point3D): Object3D :=
+    Invoke&<Object3D>(()->begin
+      var m := Matrix3D.Identity;
+      m.RotateAt(new Quaternion(axis, angle), center);
+      var ind := transfgroup.Children.IndexOf(rotatetransform_absolute);
+      rotatetransform_absolute := new MatrixTransform3D(rotatetransform_absolute.Value * m);
+      transfgroup.Children[ind] := rotatetransform_absolute;
       Result := Self;
     end);
     /// Возвращает анимацию перемещения объекта к точке (x, y, z) за seconds секунд. В конце анимации выполняется процедура Completed
@@ -573,13 +585,13 @@ type
     /// Возвращает анимацию поворота объекта вокруг вектора v, направленного из центра объекта, на величину angle за seconds секунд
     function AnimRotate(v: Vector3D; angle: real; seconds: real := 1) := AnimRotate(v.x, v.y, v.z, angle, seconds, nil);
     
-    /// Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center, на величину angle за seconds секунд. В конце анимации выполняется процедура Completed
+    /// Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center (её координаты задаются относительно центра объекта), на величину angle за seconds секунд. В конце анимации выполняется процедура Completed
     function AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real; Completed: procedure): AnimationBase;
-    /// Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center, на величину angle за seconds секунд
+    /// Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center (её координаты задаются относительно центра объекта), на величину angle за seconds секунд
     function AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real := 1): AnimationBase := AnimRotateAt(axis,angle,center,seconds,nil);
-    /// Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center, на величину angle за seconds секунд. В конце анимации выполняется процедура Completed
+    /// Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center (в абсолютных координатах), на величину angle за seconds секунд. В конце анимации выполняется процедура Completed
     function AnimRotateAtAbsolute(axis: Vector3D; angle: real; center: Point3D; seconds: real; Completed: procedure): AnimationBase;
-    /// Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center, на величину angle за seconds секунд
+    /// Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center (в абсолютных координатах), на величину angle за seconds секунд
     function AnimRotateAtAbsolute(axis: Vector3D; angle: real; center: Point3D; seconds: real := 1): AnimationBase := AnimRotateAtAbsolute(axis,angle,center,seconds,nil);
 
     /// Клонирует 3D-объект
@@ -1286,7 +1298,12 @@ type
     begin
       var rot := el.Rotation as AxisAngleRotation3D;
       if not da.AutoReverse then
-        Element.RotateAt(rot.Axis, angle, center);
+      begin
+        if Absolute then
+          Element.RotateAtAbsolute(rot.Axis, angle, center)
+        else  
+          Element.RotateAt(rot.Axis, angle, center);
+      end;  
       Element.transfgroup.Children.Remove(el);
       if Completed <> nil then 
         Completed();
