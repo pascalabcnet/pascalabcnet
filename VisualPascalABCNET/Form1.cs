@@ -374,7 +374,7 @@ namespace VisualPascalABC
             tsAutoInsertCode.Checked = true;
             mAUTOINSERTToolStripMenuItem.Checked = true;
 
-            CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.TextArea.KeyEventHandler += TextArea_KeyEventHandler;
+            //CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.TextArea.KeyEventHandler += TextArea_KeyEventHandler;
 
             init = true;
             foreach (string FileName in VisualPascalABCProgram.CommandLineArgs)
