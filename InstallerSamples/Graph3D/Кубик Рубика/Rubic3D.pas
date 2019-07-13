@@ -1,28 +1,30 @@
 ﻿uses Graph3D;
 
+var InnerColor := RGB(70,70,70);
+var sec := 0.5;
+
 var g := new Object3D[3,3,3];
 
 procedure CreateCube;
 begin
-  var b := Box(0,0,-0.5,1,1,0.01,Colors.White);
-  var b3 := Box(0,0,0.5,1,1,0.01,Colors.Yellow);
-  
-  var b1 := Box(0.5,0,0,0.01,1,1,Colors.Red);
-  var b4 := Box(-0.5,0,0,0.01,1,1,Colors.Orange);
-
-  var b2 := Box(0,0.5,0,1,0.01,1,Colors.Green);
-  var b5 := Box(0,-0.5,0,1,0.01,1,Colors.Blue);
-
-  var g000 := Group(b,b1,b2,b3,b4,b5);
-  g[1,1,1] := g000;
-
-  var a := 1.02;
+  var a := 1.03;
 
   for var x := 0 to 2 do
   for var y := 0 to 2 do
   for var z := 0 to 2 do
     if (x,y,z) <> (1,1,1) then
-      g[x,y,z] := g000.Clone.MoveOn(a*x-a,a*y-a,a*z-a);   
+    begin
+      var b := Box(0+x*a-a,0+y*a-a,-0.5+z*a-a,1,1,0.01,z=0 ? Colors.White : InnerColor);
+      var b3 := Box(0+x*a-a,0+y*a-a,0.5+z*a-a,1,1,0.01,z=2 ? Colors.Yellow : InnerColor);
+      
+      var b1 := Box(0.5+x*a-a,0+y*a-a,0+z*a-a,0.01,1,1,x=2 ? Colors.Red : InnerColor);
+      var b4 := Box(-0.5+x*a-a,0+y*a-a,0+z*a-a,0.01,1,1,x=0 ? Colors.Orange : InnerColor);
+    
+      var b2 := Box(0+x*a-a,0.5+y*a-a,0+z*a-a,1,0.01,1,y=2 ? Colors.Green : InnerColor);
+      var b5 := Box(0+x*a-a,-0.5+y*a-a,0+z*a-a,1,0.01,1,y=0 ? Colors.Blue : InnerColor);
+    
+      g[x,y,z] := Group(b,b1,b2,b3,b4,b5);
+    end;  
 end;
 
 var IsAnimated := False;
@@ -63,7 +65,7 @@ begin
   if n = 0 then exit;
   for var x := 0 to 2 do
   for var z := 0 to 2 do
-    g[x,y,z].AnimRotateAtAbsolute(OrtY,-90*n,Origin,1*Abs(n),EndAnim).Begin;
+    g[x,y,z].AnimRotateAtAbsolute(OrtY,-90*n,Origin,sec*Abs(n),EndAnim).Begin;
   
   if n>0 then
     loop Abs(n) do
@@ -86,7 +88,7 @@ begin
   if n = 0 then exit;
   for var x := 0 to 2 do
   for var z := 0 to 2 do
-    g[x,y,z].AnimRotateAtAbsolute(OrtY,90*n,Origin,1*Abs(n),EndAnim).Begin;
+    g[x,y,z].AnimRotateAtAbsolute(OrtY,90*n,Origin,sec*Abs(n),EndAnim).Begin;
 
   if n<0 then
     loop Abs(n) do
@@ -109,7 +111,7 @@ begin
   if n = 0 then exit;
   for var x := 0 to 2 do
   for var y := 0 to 2 do
-    g[x,y,z].AnimRotateAtAbsolute(OrtZ,-90*n,Origin,1*Abs(n),EndAnim).Begin;
+    g[x,y,z].AnimRotateAtAbsolute(OrtZ,-90*n,Origin,sec*Abs(n),EndAnim).Begin;
 
   if n<0 then
     loop Abs(n) do
@@ -132,7 +134,7 @@ begin
   if n = 0 then exit;
   for var x := 0 to 2 do
   for var y := 0 to 2 do
-    g[x,y,z].AnimRotateAtAbsolute(OrtZ,90*n,Origin,1*Abs(n),EndAnim).Begin;
+    g[x,y,z].AnimRotateAtAbsolute(OrtZ,90*n,Origin,sec*Abs(n),EndAnim).Begin;
 
   if n>0 then
     loop Abs(n) do
@@ -155,7 +157,7 @@ begin
   if n = 0 then exit;
   for var y := 0 to 2 do
   for var z := 0 to 2 do
-    g[x,y,z].AnimRotateAtAbsolute(OrtX,-90*n,Origin,1*Abs(n),EndAnim).Begin;
+    g[x,y,z].AnimRotateAtAbsolute(OrtX,-90*n,Origin,sec*Abs(n),EndAnim).Begin;
 
   if n<0 then
     loop Abs(n) do
@@ -178,7 +180,7 @@ begin
   if n = 0 then exit;
   for var y := 0 to 2 do
   for var z := 0 to 2 do
-    g[x,y,z].AnimRotateAtAbsolute(OrtX,90*n,Origin,1*Abs(n),EndAnim).Begin;
+    g[x,y,z].AnimRotateAtAbsolute(OrtX,90*n,Origin,sec*Abs(n),EndAnim).Begin;
 
   if n>0 then
     loop Abs(n) do
@@ -211,6 +213,24 @@ begin
   Lights.AddDirectionalLight(Colors.Gray,V3D(0,2,0));
 end;
 
+procedure Mix;
+begin
+  sec := 0.5;
+  loop 20 do
+  begin
+    case Random(6) of
+      0: RightRotate;
+      1: LeftRotate;
+      2: UpRotate;
+      3: DownRotate;
+      4: FrontRotate;
+      5: BackRotate;
+    end;
+    //Sleep(Round((sec+0.03)*1000));
+  end;  
+  sec := 0.5;  
+end;
+
 begin
   InitScene;
   CreateCube;
@@ -224,6 +244,7 @@ begin
       Key.D: DownRotate;
       Key.F: FrontRotate;
       Key.B: BackRotate;
+      Key.M: Mix;
     end;
   end;
 end.
