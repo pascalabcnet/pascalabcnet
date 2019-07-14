@@ -1766,12 +1766,18 @@ namespace PascalABCCompiler.NETGenerator
             IAttributeNode[] attrs = func.Attributes;
             for (int i = 0; i < attrs.Length; i++)
             {
-
+                
                 CustomAttributeBuilder cab = new CustomAttributeBuilder
                     ((attrs[i].AttributeConstructor is ICompiledConstructorNode) ? (attrs[i].AttributeConstructor as ICompiledConstructorNode).constructor_info : helper.GetConstructor(attrs[i].AttributeConstructor).cnstr, get_constants(attrs[i].Arguments),
                     get_named_properties(attrs[i].PropertyNames), get_constants(attrs[i].PropertyInitializers),
                     get_named_fields(attrs[i].FieldNames), get_constants(attrs[i].FieldInitializers));
-                mb.SetCustomAttribute(cab);
+                if (attrs[i].qualifier == SemanticTree.attribute_qualifier_kind.return_kind)
+                {
+                    var constr = (attrs[i].AttributeConstructor is ICompiledConstructorNode) ? (attrs[i].AttributeConstructor as ICompiledConstructorNode).constructor_info : helper.GetConstructor(attrs[i].AttributeConstructor).cnstr;
+                    mb.SetMarshal(UnmanagedMarshal.DefineUnmanagedMarshal((UnmanagedType)attrs[i].Arguments[0].value));
+                }
+                else
+                    mb.SetCustomAttribute(cab);
             }
             foreach (IParameterNode pn in func.parameters)
             {
