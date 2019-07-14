@@ -10925,7 +10925,7 @@ namespace PascalABCCompiler.TreeConverter
                             }
                             scopes.Add(ns_scope2);
                         }
-                        else
+                        else if (si_list == null)
                             AddError(new NamespaceNotFound(nun.namespace_name.namespace_name, un.location));
                     }
                 }
