@@ -10542,10 +10542,11 @@ namespace PascalABCCompiler.NETGenerator
             Type in_what_type = helper.GetTypeReference(value.InWhatExpr.type).tp;
             Type return_type = null;
             bool is_generic = false;
+            Type[] generic_args = null;
             MethodInfo enumer_mi = null; //typeof(System.Collections.IEnumerable).GetMethod("GetEnumerator", Type.EmptyTypes);
             if (/*var_tp.IsValueType &&*/ !var_tp.IsGenericParameter && !(in_what_type.IsArray && in_what_type.GetArrayRank() > 1))
             {
-                enumer_mi = helper.GetEnumeratorMethod(in_what_type);
+                enumer_mi = helper.GetEnumeratorMethod(in_what_type, out generic_args);
                 if (enumer_mi == null)
                 {
                     enumer_mi = typeof(System.Collections.IEnumerable).GetMethod("GetEnumerator", Type.EmptyTypes);
@@ -10559,6 +10560,8 @@ namespace PascalABCCompiler.NETGenerator
                         return_type = return_type.GetGenericTypeDefinition().MakeGenericType(in_what_type.GetGenericArguments());
                     else if (in_what_type.IsArray && return_type.IsGenericType && !return_type.IsGenericTypeDefinition)
                         return_type = return_type.GetGenericTypeDefinition().MakeGenericType(in_what_type.GetElementType());
+                    else if (generic_args != null)
+                        return_type = return_type.GetGenericTypeDefinition().MakeGenericType(generic_args);
                 }
                 
             }
