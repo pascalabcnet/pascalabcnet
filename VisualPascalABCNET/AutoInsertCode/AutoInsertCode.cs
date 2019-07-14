@@ -115,7 +115,7 @@ namespace VisualPascalABC
                         // Проанализируем предыдущий оператор по первому слову
                         var pst = prev?.TrimStart().ToLower();
                         if (pst != null)
-                        if (pst.StartsWith("if") || pst.StartsWith("for") || pst.StartsWith("loop") || pst.StartsWith("with") || pst.StartsWith("on") || pst.StartsWith("while") || pst.StartsWith("else")) // потом улучшу - для нескольких выборов
+                        if (pst.StartsWith("if") || pst.StartsWith("for") || pst.StartsWith("loop") || pst.StartsWith("with") || pst.StartsWith("on") || pst.StartsWith("while") || pst.StartsWith("else") || pst.StartsWith("foreach")) // потом улучшу - для нескольких выборов
                         {
                             // Надо удалить в текущей строке пробелы чтобы выровнять begin по if
                             var iprev = Indent(prev);

@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-G8V08V4
-// DateTime: 11.07.2019 16:30:18
+// DateTime: 14.07.2019 10:48:31
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -2838,6 +2838,8 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 41: // used_unit_name -> ident_or_keyword_pointseparator_list, tkIn, tkStringLiteral
 { 
+        	if (ValueStack[ValueStack.Depth-1].stn is char_const _cc)
+        		ValueStack[ValueStack.Depth-1].stn = new string_const(_cc.cconst.ToString());
 			CurrentSemanticValue.stn = new uses_unit_in(ValueStack[ValueStack.Depth-3].stn as ident_list, ValueStack[ValueStack.Depth-1].stn as string_const, CurrentLocationSpan);
         }
         break;

@@ -360,6 +360,8 @@ used_unit_name
 		}
     | ident_or_keyword_pointseparator_list tkIn tkStringLiteral
         { 
+        	if ($3 is char_const _cc)
+        		$3 = new string_const(_cc.cconst.ToString());
 			$$ = new uses_unit_in($1 as ident_list, $3 as string_const, @$);
         }
     ;

@@ -191,6 +191,15 @@ namespace PascalABCCompiler
         }
     }
 
+    public class NamespaceCannotHaveInSection : CompilerCompilationError
+    {
+        public NamespaceCannotHaveInSection(SyntaxTree.SourceContext sc)
+            : base(string.Format(StringResources.Get("COMPILATIONERROR_NAMESPACE_CANNOT_HAVE_IN_SECTION")))
+        {
+            this.source_context = sc;
+        }
+    }
+
     public class ProgramModuleExpected : CompilerCompilationError
     {
         public ProgramModuleExpected(string FileName, SyntaxTree.SourceContext sc)
@@ -3112,6 +3121,12 @@ namespace PascalABCCompiler
             string UnitName = GetUnitFileName(SyntaxUsesUnit);
             //if (UnitName == null) throw new UnitNotFound(SyntaxUsesUnit.name,
             CompilationUnit CurrentUnit = UnitTable[UnitName];
+            if (CurrentUnit != null && CurrentUnit.SemanticTree is PascalABCCompiler.TreeRealization.dot_net_unit_node 
+                && SyntaxUsesUnit is PascalABCCompiler.SyntaxTree.uses_unit_in ui && ui.in_file != null) // значит, это пространство имен и секция in у него должна отсутствовать
+            {
+                ErrorsList.Add(new NamespaceCannotHaveInSection(ui.in_file.source_context));
+            }
+
             string name = Path.GetFileNameWithoutExtension(UnitName);
             if (Path.GetExtension(UnitName).ToLower() == CompilerOptions.CompiledUnitExtension)
             {
