@@ -752,6 +752,8 @@ namespace CodeCompletion
 
         public SymScope CheckForAccess(ElementScope ss, ElementScope es)
         {
+            if (es.is_static)
+                return null;
             if (es.acc_mod == access_modifer.none || es.acc_mod == access_modifer.public_modifer || es.acc_mod == access_modifer.published_modifer || es.acc_mod == access_modifer.internal_modifer)
                 return es;
             if (es.acc_mod == access_modifer.private_modifer)

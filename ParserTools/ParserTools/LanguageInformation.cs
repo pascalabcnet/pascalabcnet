@@ -826,6 +826,11 @@ namespace PascalABCCompiler.Parsers
         {
             get;
         }
+
+        bool IsNamespaceUnit
+        {
+            get;
+        }
     }
     
     public interface IShortStringScope : ITypeScope

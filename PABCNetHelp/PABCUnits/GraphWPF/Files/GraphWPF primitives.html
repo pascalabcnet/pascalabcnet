@@ -45,8 +45,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур эллипса с центром в точке (x,y) и радиусами rx и ry</td></tr>
 <tr><td><code><b>procedure</b> DrawEllipse(x,y,rx,ry: real; c: Color);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур эллипса с центром в точке (x,y), радиусами rx и ry и цветом c</td></tr>
-<tr><td><code><b>procedure</b> DrawPixels(x,y: real; a: <b>array</b> [,]  <b>of</b> Color);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует двумерный массив пикселов с координатами левой верхней вершины (x,y)</td></tr>
+<tr><td><code><b>procedure</b> DrawPixels(x,y: real; pixels: <b>array</b> [,]  <b>of</b> Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует двумерный массив пикселей pixels начиная с левого верхнего угла с координатами (x,y)</td></tr>
+<tr><td><code><b>procedure</b> DrawPixels(x,y: real; pixels: <b>array</b> [,]  <b>of</b> Color; px,py,pw,ph: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует прямоугольную область (px,py,pw,ph) двумерного массива пикселей pixels начиная с левого верхнего угла с координатами (x,y)</td></tr>
 <tr><td><code><b>procedure</b> DrawPolygon(points: <b>array</b>  <b>of</b> Point);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур многоугольника, заданного массивом точек</td></tr>
 <tr><td><code><b>procedure</b> DrawPolygon(points: <b>array</b>  <b>of</b> Point; c: GColor);</code>
@@ -120,6 +122,6 @@
 <tr><td><code><b>procedure</b> SetPixel(x,y: real; c: Color);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует пиксел в точке (x,y) цветом c</td></tr>
 <tr><td><code><b>procedure</b> SetPixels(x,y: real; w,h: integer; f: (integer,integer)-&gt;Color);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует пиксел в точке (x,y) цветом c</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует прямоугольник пикселей размера (w,h), задаваемых отображением f, начиная с левого верхнего угла с координатами (x,y)</td></tr>
 </table>
 </body></HTML>

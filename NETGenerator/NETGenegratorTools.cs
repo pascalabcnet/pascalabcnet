@@ -47,6 +47,7 @@ namespace PascalABCCompiler.NETGenerator
         public static Type GCHandleType = typeof(GCHandle);
         public static Type MarshalType = typeof(Marshal);
         public static Type TypeType =   typeof(Type);
+        public static Type ValueType = typeof(ValueType);
         public static Type IEnumerableType = typeof(System.Collections.IEnumerable);
         public static Type IEnumeratorType = typeof(System.Collections.IEnumerator);
         public static Type IEnumerableGenericType = typeof(System.Collections.Generic.IEnumerable<>);
@@ -110,6 +111,7 @@ namespace PascalABCCompiler.NETGenerator
             sizes[UInt64Type] = sizeof(UInt64);
             sizes[SingleType] = sizeof(Single);
             sizes[DoubleType] = sizeof(Double);
+            //sizes[UIntPtr] = sizeof(UIntPtr);
             
             //types[TypeType] = TypeType;
             ArrayCopyMethod = typeof(Array).GetMethod("Copy", new Type[3] { typeof(Array), typeof(Array), typeof(int) });

@@ -69,6 +69,20 @@ namespace TreeConverter.LambdaExpressions
             syntaxTreeVisitor.visit(varStmt);
         }
 
+        public override void visit(PascalABCCompiler.SyntaxTree.for_node fn)
+        {
+            syntaxTreeVisitor.visit(fn);
+        }
+
+        public override void visit(PascalABCCompiler.SyntaxTree.foreach_stmt fn)
+        {
+            syntaxTreeVisitor.visit(fn);
+        }
+
+        /*public override void visit(PascalABCCompiler.SyntaxTree.exception_block fn)
+        {
+            syntaxTreeVisitor.visit(fn);
+        }*/
         // Patterns
         public override void visit(desugared_deconstruction _desugared_deconstruction)
         {

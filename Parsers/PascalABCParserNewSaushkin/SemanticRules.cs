@@ -73,7 +73,7 @@ namespace GPPGParserScanner
                 if (i < nname.idents.Count - 1)
                     sb.Append(".");
             }
-            ident uname = new ident(sb.ToString());
+            ident uname = new ident(sb.ToString(), nname.source_context);
             var un = new unit_name(uname, UnitHeaderKeyword.Unit, loc);
             un.HeaderKeyword = UnitHeaderKeyword.Namespace;
             return un;

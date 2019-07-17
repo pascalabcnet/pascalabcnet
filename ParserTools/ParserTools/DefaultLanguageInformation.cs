@@ -275,7 +275,7 @@ namespace PascalABCCompiler.Parsers
 		
 		public virtual string GetDescriptionForModule(IInterfaceUnitScope scope)
 		{
-			return "unit "+scope.Name;
+			return (scope.IsNamespaceUnit?"namespace ":"unit ")+scope.Name;
 		}
 		
 		public virtual string GetShortName(ICompiledTypeScope scope)
@@ -556,9 +556,9 @@ namespace PascalABCCompiler.Parsers
                 {
                     sb.Append(' ', 4);
                     sb.Append(fields[i].Name);
-                    sb.Append(' ', max_name_len - fields[i].Name.Length);
                     if (outoforder)
                     {
+                        if (is_flags) sb.Append(' ', max_name_len - fields[i].Name.Length);
                         sb.Append(" = ");
                         if (is_flags)
 							sb.Append('$' + Convert.ToInt64(fields[i].GetRawConstantValue()).ToString("X")); else

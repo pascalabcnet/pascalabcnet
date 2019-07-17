@@ -125,6 +125,9 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="AutoInsertCode\AutoInsertCode.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="DockContent\Avalon\CodeFileDocumentTextEditorControl.cs" />
     <Compile Include="DockContent\BottomDockContentForm.cs">
       <SubType>Form</SubType>
@@ -668,6 +671,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ABCNET32.ico" />
+    <None Include="Resources\format1.png" />
     <Content Include="_ABC13.ico" />
     <None Include="Resources\AlignObjectsBottomHS.png" />
     <None Include="Resources\AlignObjectsCenteredHorizontalHS.png" />

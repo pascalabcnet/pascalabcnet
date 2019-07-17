@@ -23,6 +23,9 @@ namespace PascalABCCompiler.SyntaxTree
     public partial class CollectLightSymInfoVisitor : BaseEnterExitVisitor
     {
         public ScopeSyntax Root;
+        /// <summary>
+        /// Текущее пространство имен
+        /// </summary>
         public ScopeSyntax Current;
 
         public static CollectLightSymInfoVisitor New => new CollectLightSymInfoVisitor();
@@ -38,15 +41,18 @@ namespace PascalABCCompiler.SyntaxTree
                     break;
                 case procedure_definition p:
                     var name = p.proc_header?.name?.meth_name;
+                    if (name == null)
+                        name = "create";
                     var attr = p.proc_header.class_keyword ? Attributes.class_attr : 0;
-                    if (p.proc_header is function_header && name != null)
-                        AddSymbol(name, SymKind.funcname,null, attr);
-                    else AddSymbol(name, SymKind.procname, null, attr);
+                    if (name != null)
+                        if (p.proc_header is function_header)
+                            AddSymbol(name, SymKind.funcname,null, attr);
+                        else AddSymbol(name, SymKind.procname, null, attr);
                     t = new ProcScopeSyntax(name);
                     break;
-                case formal_parameters p:
-                    t = new ParamsScopeSyntax();
-                    break;
+                //case formal_parameters p:// Это неправильный Scope - он закрывался при выходе из секции формальных параметров, что неправильно
+                //    t = new ParamsScopeSyntax();
+                //    break;
                 case statement_list p:
                     t = new StatListScopeSyntax();
                     break;
@@ -100,13 +106,17 @@ namespace PascalABCCompiler.SyntaxTree
                 }
             }
         }
+        public virtual void PreExitScope(syntax_tree_node st)
+        {
+
+        }
         public override void Exit(syntax_tree_node st)
         {
             switch (st)
             {
                 case program_module p:
                 case procedure_definition pd:
-                case formal_parameters fp:
+                //case formal_parameters fp:
                 case statement_list stl:
                 case for_node f:
                 case foreach_stmt fe:
@@ -115,6 +125,7 @@ namespace PascalABCCompiler.SyntaxTree
                 case function_lambda_definition fld:
                 //case repeat_node rep:
                 case case_node cas:
+                    PreExitScope(st);
                     Current = Current.Parent;
                     break;
             }
@@ -124,19 +135,14 @@ namespace PascalABCCompiler.SyntaxTree
             var attr = vd.var_attr == definition_attribute.Static ? Attributes.class_attr : 0;
             if (vd == null || vd.vars == null || vd.vars.list == null)
                 return;
-            var type = vd.vars_type;
-            var q = vd.vars.list.Select(x => new SymInfoSyntax(x, SymKind.var, type, attr));
-            if (q.Count() > 0)
-                Current.Symbols.AddRange(q);
+            AddSymbols(vd.vars.list, SymKind.var, vd.vars_type, attr);
             base.visit(vd);
         }
         public override void visit(formal_parameters fp)
         {
             foreach (var pg in fp.params_list)
             {
-                var type = pg.vars_type;
-                var q = pg.idents.idents.Select(x => new SymInfoSyntax(x, SymKind.param, type));
-                Current.Symbols.AddRange(q);
+                AddSymbols(pg.idents.idents, SymKind.param, pg.vars_type);
             }
             base.visit(fp);
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using PascalABCCompiler.SemanticTree;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.TreeRealization;
@@ -80,7 +81,8 @@ namespace PascalABCCompiler.TreeConverter
                 //	AddError(new VoidNotValid(get_location(_for_node.type_name)))
                 if (_for_node.type_name != null)
                     check_for_type_allowed(tn, get_location(_for_node.type_name));
-                vdn = context.add_var_definition(_for_node.loop_variable.name, get_location(_for_node.loop_variable), tn, polymorphic_state.ps_common);
+                vdn = context.add_var_definition(_for_node.loop_variable.name, get_location(_for_node.loop_variable), tn, initialValue/*, polymorphic_state.ps_common*/);
+                vdn.polymorphic_state = polymorphic_state.ps_common;
             }
             internal_interface ii = vdn.type.get_internal_interface(internal_interface_kind.ordinal_interface);
             if (ii == null)
@@ -92,7 +94,7 @@ namespace PascalABCCompiler.TreeConverter
 
             location finishValueLocation = get_location(_for_node.finish_value);
             var_definition_node vdn_finish = context.create_for_temp_variable(vdn.type, finishValueLocation);
-            //Это должно стаять первее!
+            //Это должно стоять раньше!!
             left = create_variable_reference(vdn_finish, loopVariableLocation);
             expression_node finishValue = convert_strong(_for_node.finish_value);
             right = finishValue;
@@ -180,6 +182,10 @@ namespace PascalABCCompiler.TreeConverter
                 CurrentParallelPosition = ParallelPosition.Outside;
                 if (stl != null)
                 {
+                    var f = _for_node.DescendantNodes().OfType<function_lambda_definition>().FirstOrDefault();
+                    if (f != null)
+                        AddError(get_location(f), "OPENMP_CONTROLLED_CONSTRUCTIONS_CANNOT_CONTAIN_LAMBDAS");
+
                     OpenMP.LoopVariables.Pop();
                     return_value(stl);
                     return;

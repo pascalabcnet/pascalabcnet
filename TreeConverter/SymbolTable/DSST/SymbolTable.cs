@@ -839,13 +839,13 @@ namespace SymbolTable
                     }
                     cl = (ClassScope)cl.BaseClassScope;
                 }
-                /*if (cl.BaseClassScope == null && cl.class_type.base_type is PascalABCCompiler.TreeRealization.compiled_type_node ctn)
+                if (cl.BaseClassScope == null && cl.class_type.base_type is PascalABCCompiler.TreeRealization.compiled_type_node ctn)
                 {
-                    Result = ctn.find(name);
+                    var a = ctn.find(name);
+                    if (a != null)
+                        AddToSymbolInfo(a, Result);
                     return;
-                }*/
-
-
+                }
             }
         }
 
@@ -960,11 +960,10 @@ namespace SymbolTable
             HashSet<Assembly> assm_cache = new HashSet<Assembly>();
             foreach (Scope sc in arr)
             {
-                if (sc is DotNETScope)
+                if (sc is DotNETScope) //  /*&& name.ToLower() != "pabcsystem"*/
                 {
-                    if (sc is PascalABCCompiler.NetHelper.NetScope)
+                    if (sc is PascalABCCompiler.NetHelper.NetScope netScope)
                     {
-                        PascalABCCompiler.NetHelper.NetScope netScope = sc as PascalABCCompiler.NetHelper.NetScope;
                         if (PascalABCCompiler.NetHelper.NetHelper.PABCSystemType == null || netScope.Assembly != PascalABCCompiler.NetHelper.NetHelper.PABCSystemType.Assembly)
                         {
                             if (!assm_cache.Contains(netScope.Assembly))
@@ -973,7 +972,14 @@ namespace SymbolTable
                                 continue;
                         }
                     }
-                    AddToSymbolInfo(Result, (DotNETScope)sc, name);
+                    var netScope1 = sc as PascalABCCompiler.NetHelper.NetScope;
+                    var IsPABCSystemAssembly = false;
+                    if (PascalABCCompiler.NetHelper.NetHelper.PABCSystemType != null && netScope1 != null && netScope1.Assembly == PascalABCCompiler.NetHelper.NetHelper.PABCSystemType.Assembly)
+                        IsPABCSystemAssembly = true;
+
+                    // не добавлять если это NetScope но не PABCSystemType.Assembly
+                    if (IsPABCSystemAssembly || name.ToLower() != "pabcsystem")
+                        AddToSymbolInfo(Result, (DotNETScope)sc, name);
                     if (Result.Count > add && StopIfFind)
                         return;
                 }

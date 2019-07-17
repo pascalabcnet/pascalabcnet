@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.Linq;
 using PascalABCCompiler.SemanticTree;
 using System.Threading;
 using System.Reflection;
@@ -1131,7 +1132,6 @@ namespace PascalABCCompiler.NETGenerator
                             if (ctn != null)
                                 throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
                         }
-
                     }
                         
             for (int i = 0; i < enums.Count; i++)
@@ -1324,7 +1324,7 @@ namespace PascalABCCompiler.NETGenerator
         private void AddTypeWithoutConvert(ICommonTypeNode t)
         {
             if (helper.GetTypeReference(t) != null) return;
-            TypeBuilder tb = mb.DefineType(BuildTypeName(t.name), ConvertAttributes(t), null, new Type[0]);
+            TypeBuilder tb = mb.DefineType(BuildTypeName(t.name), ConvertAttributes(t), t.is_value_type?TypeFactory.ValueType:null, new Type[0]);
             helper.AddType(t, tb);
             //(ssyy) обрабатываем generics
             if (t.is_generic_type_definition)
@@ -1766,12 +1766,18 @@ namespace PascalABCCompiler.NETGenerator
             IAttributeNode[] attrs = func.Attributes;
             for (int i = 0; i < attrs.Length; i++)
             {
-
+                
                 CustomAttributeBuilder cab = new CustomAttributeBuilder
                     ((attrs[i].AttributeConstructor is ICompiledConstructorNode) ? (attrs[i].AttributeConstructor as ICompiledConstructorNode).constructor_info : helper.GetConstructor(attrs[i].AttributeConstructor).cnstr, get_constants(attrs[i].Arguments),
                     get_named_properties(attrs[i].PropertyNames), get_constants(attrs[i].PropertyInitializers),
                     get_named_fields(attrs[i].FieldNames), get_constants(attrs[i].FieldInitializers));
-                mb.SetCustomAttribute(cab);
+                if (attrs[i].qualifier == SemanticTree.attribute_qualifier_kind.return_kind)
+                {
+                    var constr = (attrs[i].AttributeConstructor is ICompiledConstructorNode) ? (attrs[i].AttributeConstructor as ICompiledConstructorNode).constructor_info : helper.GetConstructor(attrs[i].AttributeConstructor).cnstr;
+                    mb.SetMarshal(UnmanagedMarshal.DefineUnmanagedMarshal((UnmanagedType)attrs[i].Arguments[0].value));
+                }
+                else
+                    mb.SetCustomAttribute(cab);
             }
             foreach (IParameterNode pn in func.parameters)
             {
@@ -5433,8 +5439,9 @@ namespace PascalABCCompiler.NETGenerator
                     {
                         if (lb.LocalType.IsGenericParameter)
                         {
-                            il.Emit(OpCodes.Ldloc, lb);
-                            il.Emit(OpCodes.Box, lb.LocalType);
+                            //il.Emit(OpCodes.Ldloc, lb);
+                            //il.Emit(OpCodes.Box, lb.LocalType);
+                            il.Emit(OpCodes.Ldloca, lb); // #1986
                         }
                         else
                             if (lb.LocalType.IsValueType)
@@ -6658,6 +6665,7 @@ namespace PascalABCCompiler.NETGenerator
 
             if (value.is_final)
             {
+                
                 attrs |= MethodAttributes.Virtual | MethodAttributes.Final;
             }
 
@@ -6982,7 +6990,7 @@ namespace PascalABCCompiler.NETGenerator
             }
 
             EmitFreePinnedVariables();
-            if (tmp_dot == true)
+            if (tmp_dot)
             {
                 //MethodInfo mi = value.compiled_method.method_info;
                 if ((mi.ReturnType.IsValueType || mi.ReturnType.IsGenericParameter) && !NETGeneratorTools.IsPointer(mi.ReturnType))
@@ -7116,7 +7124,7 @@ namespace PascalABCCompiler.NETGenerator
                 //Для правильной работы шаблонов поменял условие (ssyy, 15.05.2009)
                 if ((value.method.return_value_type != null && value.method.return_value_type.is_value_type /*|| value.method.return_value_type != null && value.method.return_value_type.is_generic_parameter*/) && !NETGeneratorTools.IsPointer(mi.ReturnType))
                 {
-                    LocalBuilder lb = mi.ReturnType.IsGenericParameter ?
+                    LocalBuilder lb = (mi.ReturnType.IsGenericType || mi.ReturnType.IsGenericParameter) ?
                         il.DeclareLocal(helper.GetTypeReference(value.method.return_value_type).tp) :
                         il.DeclareLocal(mi.ReturnType);
                     il.Emit(OpCodes.Stloc, lb);
@@ -7471,7 +7479,7 @@ namespace PascalABCCompiler.NETGenerator
             {
                 if (value.namespace_function.return_value_type != null && value.namespace_function.return_value_type.is_value_type && !NETGeneratorTools.IsPointer(mi.ReturnType))
                 {
-                    LocalBuilder lb = mi.ReturnType.IsGenericParameter ?
+                    LocalBuilder lb = (mi.ReturnType.IsGenericType || mi.ReturnType.IsGenericParameter) ?
                         il.DeclareLocal(helper.GetTypeReference(value.namespace_function.return_value_type).tp) :
                         il.DeclareLocal(mi.ReturnType);
                     il.Emit(OpCodes.Stloc, lb);
@@ -10162,7 +10170,12 @@ namespace PascalABCCompiler.NETGenerator
         public void ConvertCaseVariantNode(ICaseVariantNode value, Label end_label, System.Collections.Generic.Dictionary<IConstantNode, Label> dict)
         {
             if (save_debug_info)
-                MarkSequencePoint(value.statement_to_execute.Location);
+            {
+            	if (value.statement_to_execute.Location != null)
+                	MarkSequencePoint(value.statement_to_execute.Location);
+            	else
+            		MarkSequencePoint(value.Location);
+            }
             for (int i = 0; i < value.elements.Length; i++)
                 il.MarkLabel(dict[value.elements[i]]);
             ConvertStatement(value.statement_to_execute);
@@ -10535,10 +10548,11 @@ namespace PascalABCCompiler.NETGenerator
             Type in_what_type = helper.GetTypeReference(value.InWhatExpr.type).tp;
             Type return_type = null;
             bool is_generic = false;
+            Type[] generic_args = null;
             MethodInfo enumer_mi = null; //typeof(System.Collections.IEnumerable).GetMethod("GetEnumerator", Type.EmptyTypes);
             if (/*var_tp.IsValueType &&*/ !var_tp.IsGenericParameter && !(in_what_type.IsArray && in_what_type.GetArrayRank() > 1))
             {
-                enumer_mi = helper.GetEnumeratorMethod(in_what_type);
+                enumer_mi = helper.GetEnumeratorMethod(in_what_type, out generic_args);
                 if (enumer_mi == null)
                 {
                     enumer_mi = typeof(System.Collections.IEnumerable).GetMethod("GetEnumerator", Type.EmptyTypes);
@@ -10552,6 +10566,8 @@ namespace PascalABCCompiler.NETGenerator
                         return_type = return_type.GetGenericTypeDefinition().MakeGenericType(in_what_type.GetGenericArguments());
                     else if (in_what_type.IsArray && return_type.IsGenericType && !return_type.IsGenericTypeDefinition)
                         return_type = return_type.GetGenericTypeDefinition().MakeGenericType(in_what_type.GetElementType());
+                    else if (generic_args != null)
+                        return_type = return_type.GetGenericTypeDefinition().MakeGenericType(generic_args);
                 }
                 
             }

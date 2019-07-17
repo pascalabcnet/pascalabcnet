@@ -74,3 +74,4 @@ STATIC_PROPERTIES_CANNOT_HAVE_ATTRBUTE_{0}=Статические свойств
 RESULT_IDENT_NOT_EXPECTED_IN_THIS_CONTEXT=Имя Result недопустимо в этом контексте
 NESTED_RECORD_DEFINITIONS_ARE_FORBIDDEN=Вложенные описания записей запрещены
 NIL_IN_UNNAMED_OBJECT=Поле анонимного класса не может инициализироваться константой nil
+YIELD_STATEMENT_CANNOT_BE_USED_IN_LAMBDA_BODY=Оператор yield нельзя использовать в теле лямбда-выражения

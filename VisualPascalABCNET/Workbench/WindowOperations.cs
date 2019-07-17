@@ -246,7 +246,7 @@ namespace VisualPascalABC
         private CodeFileDocumentControl AddNewProgramToTab(DockPanel tabControl, string FileName)
         {
             CodeFileDocumentControl edit = AddNewTab(tabControl);
-            
+
             edit.FileName = FileName;
             SetTabPageText(edit);
             edit.SetHighlightingStrategyForFile(FileName);
@@ -262,6 +262,8 @@ namespace VisualPascalABC
                 AddEditorHandlers(edit);
             }
             CodeCompletionKeyHandler.Attach(edit.TextEditor);
+            edit.TextEditor.ActiveTextAreaControl.TextArea.KeyEventHandler += TextArea_KeyEventHandler;
+
             //HostCallbackImplementation.Register(this);
 
             //\ivan

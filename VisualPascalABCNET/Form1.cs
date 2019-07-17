@@ -235,6 +235,7 @@ namespace VisualPascalABC
             this.mADDFILEToolStripMenuItem.Image = miNew.Image;
             this.mADDEXISTFILEToolStripMenuItem.Image = miOpen.Image;
             this.mADDFORMToolStripMenuItem.Image = new System.Drawing.Bitmap(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("VisualPascalABC.Resources.Icons.16x16.Form.png"));
+
             //toolStripPanel.Size = new Size(toolStripPanel.Size.Width, toolStrip1.Height);
             toolStripPanel.AutoSize = true;
             var gr = Graphics.FromHwnd(Handle);
@@ -369,6 +370,12 @@ namespace VisualPascalABC
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            // Автовставка кода по умолчанию включена
+            tsAutoInsertCode.Checked = true;
+            mAUTOINSERTToolStripMenuItem.Checked = true;
+
+            //CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.TextArea.KeyEventHandler += TextArea_KeyEventHandler;
+
             init = true;
             foreach (string FileName in VisualPascalABCProgram.CommandLineArgs)
             {
@@ -1496,6 +1503,12 @@ namespace VisualPascalABC
         private void tsDisassembly_Click(object sender, EventArgs e)
         {
             DisassemblyWindowVisible = true;
+        }
+
+        private void tsAutoInsertCode_Click(object sender, EventArgs e)
+        {
+            tsAutoInsertCode.Checked = !tsAutoInsertCode.Checked;
+            mAUTOINSERTToolStripMenuItem.Checked = !mAUTOINSERTToolStripMenuItem.Checked;
         }
 
         private void tsHelp_Click(object sender, EventArgs e)
