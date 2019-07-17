@@ -49,21 +49,22 @@ end;
 
 [if]
 if | then
+  
 
 [ifb]
 if | then
 begin
-
+  
 end;
 
 [ifeb]
 if | then
 begin
-
+  
 end
 else
 begin
-
+  
 end;
 
 [case]
@@ -73,22 +74,23 @@ case | of
 end;
 
 [class]
-type | = class
-end;
+| = class
   
+end;
+
 [w]
 while | do
 
 [wb]
 while | do
 begin
-
+  
 end;
 
 [r]
 repeat
-  |
-until ;
+  
+until |;
 
 [p]
 Print(|);
@@ -99,13 +101,13 @@ Println(|);
 [pr]
 procedure |();
 begin
-
+  
 end;
 
 [fu]
 function |(): ;
 begin
-
+  
 end;
 
 [ar]
@@ -115,7 +117,7 @@ array of |;
 try
   |
 except
-
+  
 end;
 
 [tryo]
@@ -129,7 +131,7 @@ end;
 try
   |
 finally
-
+  
 end;
 
 [program]
@@ -150,14 +152,18 @@ end.
 unit <filename>;
 
 interface
-  |
+
+|
+
 implementation
 
-begin
 
+
+begin
+  
 end.
 
-[gr]
+[graph]
 uses GraphWPF;
 
 begin
@@ -165,20 +171,22 @@ begin
 end.
 
 [wf]
-{$reference 'System.Windows.Forms.dll'}
-{$reference 'System.Drawing.dll'}
+{$reference System.Windows.Forms.dll}
+{$reference System.Drawing.dll}
 
-uses 
-  System, System.Windows.Forms;
+uses System.Windows.Forms;
+uses System.Drawing;
 
 begin
-  |Application.Run(new Form);
+  var MainForm := new Form;
+  |
+  Application.Run(MainForm);
 end.
 
 [ref]
-reference '|'
+{$reference '|'}
 
 [reg]
-{$region }
-  |
+{$region |}
+
 {$endregion}
