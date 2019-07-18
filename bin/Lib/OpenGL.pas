@@ -14,6 +14,7 @@
 ///
 /// Код переведён отсюда:
 /// https://github.com/KhronosGroup/OpenGL-Registry
+/// (Основная часть не_расширений - \api\GL\ )
 ///
 /// Спецификация (что то типа справки):
 /// https://www.khronos.org/registry/OpenGL/specs/gl/glspec46.core.pdf
@@ -27,18 +28,27 @@ unit OpenGL;
 // - это может бить по производительности, потому что тут матрицы хранятся строками
 // - разобраться - может там снова эта путаница и на самом деле в шейдере можно выбирать как хранится матрица
 // - возможно придётся вывернуть все матрицы наизнанку... или добавить ещё типов матриц
+//
+// - ОБНОВЛЕНИЕ:
+// - таки сделал пока что по столбцам, потому что увидел у 1 C++ библиотеки так
+// - но всё же надо нормально разобраться самому
+// - однако в конструктор значения передаются по строчкам, иначе надо вообще всё поменять
 
 //ToDo в самом конце - сделать прогу чтоб посмотреть какие константы по 2 раза, а каких вообще нет
 
 //ToDo Возможно *Name -ам сделать отдельные типы?
 
-//ToDo ^T -> pointer
-// - и сразу проверить где можно nil передать
-// - и в OpenCL тоже...
-
 //ToDo проверить получение указателя на строчку матрицы
 
 //ToDo проверить передачу external функции вместо лямбды
+
+//ToDo автоматический тестировщик
+// - особенно для матриц надо...
+// - и примеры тоже надо проверять после любых изменений
+
+//ToDo .ToString всех энумов, которые может возвращать
+// - тупо пройтись по всем энумам, посмотреть де они заюзаны
+// - там куча всего сразу проверится
 
 //ToDo issue компилятора:
 // - #2029
@@ -69,7 +79,12 @@ type
   ProgramResourceIndex          = UInt32;
   ProgramBinaryFormat           = UInt32;
   
+  GLhandleARB                   = UInt32;
+  GLeglClientBufferEXT          = IntPtr;
+  GLvdpauSurfaceNV              = IntPtr;
   HGLRC                         = UInt32; //ToDo вроде это что то для связки с GDI... если в конце окажется не нужно - удалить
+  
+  
   
   // типы для совместимости с OpenCL
   ///--
@@ -77,7 +92,8 @@ type
   ///--
   cl_event                      = IntPtr;
   
-type
+  
+  
   OpenGLException = class(Exception)
     
     constructor(text: string) :=
@@ -95,16 +111,26 @@ type
   ErrorCode = record
     public val: UInt32;
     
-    public const NO_ERROR =                                $0000;
-    public const FRAMEBUFFER_COMPLETE =                    $8CD5;
+    public const NO_ERROR =                                 0;
+    public const FRAMEBUFFER_COMPLETE =                     $8CD5;
     
-    public const INVALID_ENUM =                            $0500;
-    public const INVALID_VALUE =                           $0501;
-    public const INVALID_OPERATION =                       $0502;
-    public const STACK_OVERFLOW =                          $0503;
-    public const STACK_UNDERFLOW =                         $0504;
-    public const OUT_OF_MEMORY =                           $0505;
-    public const INVALID_FRAMEBUFFER_OPERATION =           $0506;
+    public const INVALID_ENUM =                             $0500;
+    public const INVALID_VALUE =                            $0501;
+    public const INVALID_OPERATION =                        $0502;
+    public const STACK_OVERFLOW =                           $0503;
+    public const STACK_UNDERFLOW =                          $0504;
+    public const OUT_OF_MEMORY =                            $0505;
+    public const INVALID_FRAMEBUFFER_OPERATION =            $0506;
+    public const CONTEXT_LOST =                             $0507;
+    
+    public const GUILTY_CONTEXT_RESET =                     $8253;
+    public const INNOCENT_CONTEXT_RESET =                   $8254;
+    public const UNKNOWN_CONTEXT_RESET =                    $8255;
+    
+    ///Устарело, в 3.1 уже не существует
+    public const TABLE_TOO_LARGE =                          $8031;
+    
+    
     
     public function ToString: string; override;
     begin
@@ -125,34 +151,6 @@ type
   {$endregion case Result of}
   
   {$region 1 значение}
-  
-  {$region ...Mode}
-  
-  //S
-  BeginMode = record
-    public val: UInt32;
-    public constructor(val: UInt32) := self.val := val;
-    
-    public static property POINTS:          BeginMode read new BeginMode($0000);
-    public static property LINES:           BeginMode read new BeginMode($0001);
-    public static property LINE_LOOP:       BeginMode read new BeginMode($0002);
-    public static property LINE_STRIP:      BeginMode read new BeginMode($0003);
-    public static property TRIANGLES:       BeginMode read new BeginMode($0004);
-    public static property TRIANGLE_STRIP:  BeginMode read new BeginMode($0005);
-    public static property TRIANGLE_FAN:    BeginMode read new BeginMode($0006);
-    
-  end;
-  
-  //S
-  ReservedTimeoutMode = record
-    public val: uint64;
-    public constructor(val: uint64) := self.val := val;
-    
-    public static property GL_TIMEOUT_IGNORED:  ReservedTimeoutMode read new ReservedTimeoutMode(uint64.MaxValue);
-    
-  end;
-  
-  {$endregion ...Mode}
   
   {$region ...InfoType}
   
@@ -192,9 +190,15 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    public static property ACTIVE_PROGRAM:  ProgramPipelineInfoType read new ProgramPipelineInfoType($8259);
-    public static property VALIDATE_STATUS: ProgramPipelineInfoType read new ProgramPipelineInfoType($8B83);
-    public static property INFO_LOG_LENGTH: ProgramPipelineInfoType read new ProgramPipelineInfoType($8B84);
+    public static property ACTIVE_PROGRAM:          ProgramPipelineInfoType read new ProgramPipelineInfoType($8259);
+    public static property VERTEX_SHADER:           ProgramPipelineInfoType read new ProgramPipelineInfoType($8B31);
+    public static property TESS_CONTROL_SHADER:     ProgramPipelineInfoType read new ProgramPipelineInfoType($8E88);
+    public static property TESS_EVALUATION_SHADER:  ProgramPipelineInfoType read new ProgramPipelineInfoType($8E87);
+    public static property GEOMETRY_SHADER:         ProgramPipelineInfoType read new ProgramPipelineInfoType($8DD9);
+    public static property FRAGMENT_SHADER:         ProgramPipelineInfoType read new ProgramPipelineInfoType($8B30);
+    public static property COMPUTE_SHADER:          ProgramPipelineInfoType read new ProgramPipelineInfoType($91B9);
+    public static property VALIDATE_STATUS:         ProgramPipelineInfoType read new ProgramPipelineInfoType($8B83);
+    public static property INFO_LOG_LENGTH:         ProgramPipelineInfoType read new ProgramPipelineInfoType($8B84);
     
   end;
   
@@ -260,17 +264,17 @@ type
   end;
   
   //S
-  QueryInfoType = record
+  QueryTargetType = record
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    public static property SAMPLES_PASSED:                        QueryInfoType read new QueryInfoType($8914);
-    public static property ANY_SAMPLES_PASSED:                    QueryInfoType read new QueryInfoType($8C2F);
-    public static property ANY_SAMPLES_PASSED_CONSERVATIVE:       QueryInfoType read new QueryInfoType($8D6A);
-    public static property PRIMITIVES_GENERATED:                  QueryInfoType read new QueryInfoType($8C87);
-    public static property TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN: QueryInfoType read new QueryInfoType($8C88);
-    public static property TIME_ELAPSED:                          QueryInfoType read new QueryInfoType($88BF);
-    public static property TIMESTAMP:                             QueryInfoType read new QueryInfoType($8E28);
+    public static property SAMPLES_PASSED:                        QueryTargetType read new QueryTargetType($8914);
+    public static property ANY_SAMPLES_PASSED:                    QueryTargetType read new QueryTargetType($8C2F);
+    public static property ANY_SAMPLES_PASSED_CONSERVATIVE:       QueryTargetType read new QueryTargetType($8D6A);
+    public static property PRIMITIVES_GENERATED:                  QueryTargetType read new QueryTargetType($8C87);
+    public static property TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN: QueryTargetType read new QueryTargetType($8C88);
+    public static property TIME_ELAPSED:                          QueryTargetType read new QueryTargetType($88BF);
+    public static property TIMESTAMP:                             QueryTargetType read new QueryTargetType($8E28);
     
   end;
   
@@ -315,6 +319,83 @@ type
   {$endregion ...InfoType}
   
   //S
+  CopyableImageBuffer = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public static property COLOR:   CopyableImageBuffer read new CopyableImageBuffer($1800);
+    public static property DEPTH:   CopyableImageBuffer read new CopyableImageBuffer($1801);
+    public static property STENCIL: CopyableImageBuffer read new CopyableImageBuffer($1802);
+    
+  end;
+  
+  //S
+  VertexProvokingMode = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public static property FIRST_VERTEX_CONVENTION: VertexProvokingMode read new VertexProvokingMode($8E4D);
+    public static property LAST_VERTEX_CONVENTION:  VertexProvokingMode read new VertexProvokingMode($8E4E);
+    
+  end;
+  
+  //S
+  SwizzleMode = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public static property RED:   SwizzleMode read new SwizzleMode($1903);
+    public static property GREEN: SwizzleMode read new SwizzleMode($1904);
+    public static property BLUE:  SwizzleMode read new SwizzleMode($1905);
+    public static property ALPHA: SwizzleMode read new SwizzleMode($1906);
+    public static property ZERO:  SwizzleMode read new SwizzleMode(0);
+    public static property ONE:   SwizzleMode read new SwizzleMode(1);
+    
+  end;
+  
+  //S
+  DepthStencilMode = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public static property DEPTH_COMPONENT: DepthStencilMode read new DepthStencilMode($1902);
+    public static property STENCIL_INDEX:   DepthStencilMode read new DepthStencilMode($1901);
+    
+  end;
+  
+  //S
+  PixelWrapMode = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public static property CLAMP_TO_EDGE:         PixelWrapMode read new PixelWrapMode($812F);
+    public static property &REPEAT:               PixelWrapMode read new PixelWrapMode($2901);
+    public static property CLAMP_TO_BORDER:       PixelWrapMode read new PixelWrapMode($812D);
+    public static property MIRRORED_REPEAT:       PixelWrapMode read new PixelWrapMode($8370);
+    public static property MIRROR_CLAMP_TO_EDGE:  PixelWrapMode read new PixelWrapMode($8743);
+    
+  end;
+  
+  //S
+  TextureCompareMode = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public static property NONE:                    TextureCompareMode read new TextureCompareMode(0);
+    public static property COMPARE_REF_TO_TEXTURE:  TextureCompareMode read new TextureCompareMode($884E);
+    
+  end;
+  
+  //S
+  ReservedTimeoutMode = record
+    public val: uint64;
+    public constructor(val: uint64) := self.val := val;
+    
+    public static property GL_TIMEOUT_IGNORED:  ReservedTimeoutMode read new ReservedTimeoutMode(uint64.MaxValue);
+    
+  end;
+  
+  //S
   InternalFormatInfoType = record
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
@@ -337,10 +418,10 @@ type
     public static property READ_PIXELS:                             InternalFormatInfoType read new InternalFormatInfoType($828C);
     public static property READ_PIXELS_FORMAT:                      InternalFormatInfoType read new InternalFormatInfoType($828D);
     public static property READ_PIXELS_TYPE:                        InternalFormatInfoType read new InternalFormatInfoType($828E);
+    public static property GET_TEXTURE_IMAGE_FORMAT:                InternalFormatInfoType read new InternalFormatInfoType($8291);
+    public static property GET_TEXTURE_IMAGE_TYPE:                  InternalFormatInfoType read new InternalFormatInfoType($8292);
     public static property TEXTURE_IMAGE_FORMAT:                    InternalFormatInfoType read new InternalFormatInfoType($828F);
     public static property TEXTURE_IMAGE_TYPE:                      InternalFormatInfoType read new InternalFormatInfoType($8290);
-    public static property GET__TEXTURE_IMAGE_FORMAT:               InternalFormatInfoType read new InternalFormatInfoType($8291);
-    public static property GET__TEXTURE_IMAGE_TYPE:                 InternalFormatInfoType read new InternalFormatInfoType($8292);
     public static property MIPMAP:                                  InternalFormatInfoType read new InternalFormatInfoType($8293);
     public static property GENERATE_MIPMAP:                         InternalFormatInfoType read new InternalFormatInfoType($8191);
     public static property AUTO_GENERATE_MIPMAP:                    InternalFormatInfoType read new InternalFormatInfoType($8295);
@@ -436,12 +517,26 @@ type
   end;
   
   //S
-  PixelFilterMode = record
+  PixelMagFilterMode = record
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    public static property NEAREST: PixelFilterMode read new PixelFilterMode($2600);
-    public static property LINEAR:  PixelFilterMode read new PixelFilterMode($2601);
+    public static property NEAREST: PixelMagFilterMode read new PixelMagFilterMode($2600);
+    public static property LINEAR:  PixelMagFilterMode read new PixelMagFilterMode($2601);
+    
+  end;
+  
+  //S
+  PixelMinFilterMode = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public static property NEAREST:                 PixelMinFilterMode read new PixelMinFilterMode($2600);
+    public static property LINEAR:                  PixelMinFilterMode read new PixelMinFilterMode($2601);
+    public static property NEAREST_MIPMAP_NEAREST:  PixelMinFilterMode read new PixelMinFilterMode($2700);
+    public static property NEAREST_MIPMAP_LINEAR:   PixelMinFilterMode read new PixelMinFilterMode($2702);
+    public static property LINEAR_MIPMAP_NEAREST:   PixelMinFilterMode read new PixelMinFilterMode($2701);
+    public static property LINEAR_MIPMAP_LINEAR:    PixelMinFilterMode read new PixelMinFilterMode($2703);
     
   end;
   
@@ -553,18 +648,18 @@ type
   end;
   
   //S
-  FuncActivationMode = record
+  ActivationFunc = record
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    public static property NEVER:     FuncActivationMode read new FuncActivationMode($0200);
-    public static property LESS:      FuncActivationMode read new FuncActivationMode($0201);
-    public static property LEQUAL:    FuncActivationMode read new FuncActivationMode($0203);
-    public static property GREATER:   FuncActivationMode read new FuncActivationMode($0204);
-    public static property GEQUAL:    FuncActivationMode read new FuncActivationMode($0206);
-    public static property EQUAL:     FuncActivationMode read new FuncActivationMode($0202);
-    public static property NOTEQUAL:  FuncActivationMode read new FuncActivationMode($0205);
-    public static property ALWAYS:    FuncActivationMode read new FuncActivationMode($0207);
+    public static property NEVER:     ActivationFunc read new ActivationFunc($0200);
+    public static property LESS:      ActivationFunc read new ActivationFunc($0201);
+    public static property LEQUAL:    ActivationFunc read new ActivationFunc($0203);
+    public static property GREATER:   ActivationFunc read new ActivationFunc($0204);
+    public static property GEQUAL:    ActivationFunc read new ActivationFunc($0206);
+    public static property EQUAL:     ActivationFunc read new ActivationFunc($0202);
+    public static property NOTEQUAL:  ActivationFunc read new ActivationFunc($0205);
+    public static property ALWAYS:    ActivationFunc read new ActivationFunc($0207);
     
   end;
   
@@ -1043,7 +1138,24 @@ type
     public static property FRAGMENT_SHADER:         ShaderType read new ShaderType($8B30);
     public static property COMPUTE_SHADER:          ShaderType read new ShaderType($91B9);
     
-    public static function operator implicit(st: ShaderType): ProgramPipelineInfoType := new ProgramPipelineInfoType(st.val);
+  end;
+  
+  //S
+  SyncObjectType = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public static property GL_SYNC_FENCE: SyncObjectType read new SyncObjectType($9116);
+    
+  end;
+  
+  //S
+  FenceStatus = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public static property UNSIGNALED:  FenceStatus read new FenceStatus($9118);
+    public static property SIGNALED:    FenceStatus read new FenceStatus($9119);
     
   end;
   
@@ -1610,7 +1722,7 @@ type
   FramebufferAttachmentObjectType = record
     public val: UInt32;
     
-    public property NONE:                boolean read self.val = $0000;
+    public property NONE:                boolean read self.val = 0;
     public property FRAMEBUFFER_DEFAULT: boolean read self.val = $8218;
     public property TEXTURE:             boolean read self.val = $1702;
     public property RENDERBUFFER:        boolean read self.val = $8D41;
@@ -1940,10 +2052,13 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
+//    public static property NONE:                BufferStorageFlags read new BufferStorageFlags(0); //ToDo узнать надо ли
+    public static property MAP_READ_BIT:        BufferStorageFlags read new BufferStorageFlags($0001);
+    public static property MAP_WRITE_BIT:       BufferStorageFlags read new BufferStorageFlags($0002);
+    public static property MAP_PERSISTENT_BIT:  BufferStorageFlags read new BufferStorageFlags($0040);
+    public static property MAP_COHERENT_BIT:    BufferStorageFlags read new BufferStorageFlags($0080);
     public static property DYNAMIC_STORAGE_BIT: BufferStorageFlags read new BufferStorageFlags($0100);
     public static property CLIENT_STORAGE_BIT:  BufferStorageFlags read new BufferStorageFlags($0200);
-    
-    public static function operator implicit(f: BufferMapFlags): BufferStorageFlags := new BufferStorageFlags(f.val);
     
     public static function operator or(f1,f2: BufferStorageFlags): BufferStorageFlags := new BufferStorageFlags(f1.val or f2.val);
     
@@ -1961,6 +2076,10 @@ type
   
   [UnmanagedFunctionPointer(CallingConvention.StdCall)]
   GLVULKANPROCNV = procedure;
+  
+  //ToDo category, severity - энумы
+  [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+  GLDEBUGPROCAMD = procedure(id: UInt32; category: UInt32; severity: UInt32; length: Int32; message: IntPtr; userParam: IntPtr);
   
 {$endregion Делегаты}
 
@@ -1980,19 +2099,23 @@ type
     
     private function GetValAt(i: integer): SByte;
     begin
-      case i of
-        0: Result := self.val0;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
-      end;
+      if cardinal(i) > 0 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
+      var ptr: ^SByte := pointer(new IntPtr(@self) + i*1 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: SByte);
     begin
-      case i of
-        0: self.val0 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
-      end;
+      if cardinal(i) > 0 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
+      var ptr: ^SByte := pointer(new IntPtr(@self) + i*1 );
+      ptr^ := val;
     end;
     public property val[i: integer]: SByte read GetValAt write SetValAt; default;
+    
+    public function Println: Vec1b;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec1b): Vec1b := new Vec1b(-v.val0);
     public static function operator*(v: Vec1b; k: SByte): Vec1b := new Vec1b(v.val0*k);
@@ -2011,19 +2134,23 @@ type
     
     private function GetValAt(i: integer): Byte;
     begin
-      case i of
-        0: Result := self.val0;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
-      end;
+      if cardinal(i) > 0 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
+      var ptr: ^Byte := pointer(new IntPtr(@self) + i*1 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: Byte);
     begin
-      case i of
-        0: self.val0 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
-      end;
+      if cardinal(i) > 0 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
+      var ptr: ^Byte := pointer(new IntPtr(@self) + i*1 );
+      ptr^ := val;
     end;
     public property val[i: integer]: Byte read GetValAt write SetValAt; default;
+    
+    public function Println: Vec1ub;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator*(v: Vec1ub; k: Byte): Vec1ub := new Vec1ub(v.val0*k);
     public static function operator+(v1, v2: Vec1ub): Vec1ub := new Vec1ub(v1.val0+v2.val0);
@@ -2044,19 +2171,23 @@ type
     
     private function GetValAt(i: integer): Int16;
     begin
-      case i of
-        0: Result := self.val0;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
-      end;
+      if cardinal(i) > 0 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
+      var ptr: ^Int16 := pointer(new IntPtr(@self) + i*2 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: Int16);
     begin
-      case i of
-        0: self.val0 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
-      end;
+      if cardinal(i) > 0 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
+      var ptr: ^Int16 := pointer(new IntPtr(@self) + i*2 );
+      ptr^ := val;
     end;
     public property val[i: integer]: Int16 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec1s;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec1s): Vec1s := new Vec1s(-v.val0);
     public static function operator*(v: Vec1s; k: Int16): Vec1s := new Vec1s(v.val0*k);
@@ -2081,19 +2212,23 @@ type
     
     private function GetValAt(i: integer): UInt16;
     begin
-      case i of
-        0: Result := self.val0;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
-      end;
+      if cardinal(i) > 0 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
+      var ptr: ^UInt16 := pointer(new IntPtr(@self) + i*2 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: UInt16);
     begin
-      case i of
-        0: self.val0 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
-      end;
+      if cardinal(i) > 0 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
+      var ptr: ^UInt16 := pointer(new IntPtr(@self) + i*2 );
+      ptr^ := val;
     end;
     public property val[i: integer]: UInt16 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec1us;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator*(v: Vec1us; k: UInt16): Vec1us := new Vec1us(v.val0*k);
     public static function operator+(v1, v2: Vec1us): Vec1us := new Vec1us(v1.val0+v2.val0);
@@ -2120,19 +2255,23 @@ type
     
     private function GetValAt(i: integer): Int32;
     begin
-      case i of
-        0: Result := self.val0;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
-      end;
+      if cardinal(i) > 0 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
+      var ptr: ^Int32 := pointer(new IntPtr(@self) + i*4 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: Int32);
     begin
-      case i of
-        0: self.val0 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
-      end;
+      if cardinal(i) > 0 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
+      var ptr: ^Int32 := pointer(new IntPtr(@self) + i*4 );
+      ptr^ := val;
     end;
     public property val[i: integer]: Int32 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec1i;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec1i): Vec1i := new Vec1i(-v.val0);
     public static function operator*(v: Vec1i; k: Int32): Vec1i := new Vec1i(v.val0*k);
@@ -2163,19 +2302,23 @@ type
     
     private function GetValAt(i: integer): UInt32;
     begin
-      case i of
-        0: Result := self.val0;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
-      end;
+      if cardinal(i) > 0 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
+      var ptr: ^UInt32 := pointer(new IntPtr(@self) + i*4 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: UInt32);
     begin
-      case i of
-        0: self.val0 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
-      end;
+      if cardinal(i) > 0 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
+      var ptr: ^UInt32 := pointer(new IntPtr(@self) + i*4 );
+      ptr^ := val;
     end;
     public property val[i: integer]: UInt32 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec1ui;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator*(v: Vec1ui; k: UInt32): Vec1ui := new Vec1ui(v.val0*k);
     public static function operator+(v1, v2: Vec1ui): Vec1ui := new Vec1ui(v1.val0+v2.val0);
@@ -2208,19 +2351,23 @@ type
     
     private function GetValAt(i: integer): Int64;
     begin
-      case i of
-        0: Result := self.val0;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
-      end;
+      if cardinal(i) > 0 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
+      var ptr: ^Int64 := pointer(new IntPtr(@self) + i*8 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: Int64);
     begin
-      case i of
-        0: self.val0 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
-      end;
+      if cardinal(i) > 0 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
+      var ptr: ^Int64 := pointer(new IntPtr(@self) + i*8 );
+      ptr^ := val;
     end;
     public property val[i: integer]: Int64 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec1i64;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec1i64): Vec1i64 := new Vec1i64(-v.val0);
     public static function operator*(v: Vec1i64; k: Int64): Vec1i64 := new Vec1i64(v.val0*k);
@@ -2257,19 +2404,23 @@ type
     
     private function GetValAt(i: integer): UInt64;
     begin
-      case i of
-        0: Result := self.val0;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
-      end;
+      if cardinal(i) > 0 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
+      var ptr: ^UInt64 := pointer(new IntPtr(@self) + i*8 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: UInt64);
     begin
-      case i of
-        0: self.val0 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
-      end;
+      if cardinal(i) > 0 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
+      var ptr: ^UInt64 := pointer(new IntPtr(@self) + i*8 );
+      ptr^ := val;
     end;
     public property val[i: integer]: UInt64 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec1ui64;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator*(v: Vec1ui64; k: UInt64): Vec1ui64 := new Vec1ui64(v.val0*k);
     public static function operator+(v1, v2: Vec1ui64): Vec1ui64 := new Vec1ui64(v1.val0+v2.val0);
@@ -2308,19 +2459,23 @@ type
     
     private function GetValAt(i: integer): single;
     begin
-      case i of
-        0: Result := self.val0;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
-      end;
+      if cardinal(i) > 0 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
+      var ptr: ^single := pointer(new IntPtr(@self) + i*4 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: single);
     begin
-      case i of
-        0: self.val0 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
-      end;
+      if cardinal(i) > 0 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
+      var ptr: ^single := pointer(new IntPtr(@self) + i*4 );
+      ptr^ := val;
     end;
     public property val[i: integer]: single read GetValAt write SetValAt; default;
+    
+    public function Println: Vec1f;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec1f): Vec1f := new Vec1f(-v.val0);
     public static function operator*(v: Vec1f; k: single): Vec1f := new Vec1f(v.val0*k);
@@ -2354,31 +2509,35 @@ type
   end;
   
   Vec1d = record
-    public val0: real;
+    public val0: double;
     
-    public constructor(val0: real);
+    public constructor(val0: double);
     begin
       self.val0 := val0;
     end;
     
-    private function GetValAt(i: integer): real;
+    private function GetValAt(i: integer): double;
     begin
-      case i of
-        0: Result := self.val0;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
-      end;
+      if cardinal(i) > 0 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
+      var ptr: ^double := pointer(new IntPtr(@self) + i*4 );
+      Result := ptr^;
     end;
-    private procedure SetValAt(i: integer; val: real);
+    private procedure SetValAt(i: integer; val: double);
     begin
-      case i of
-        0: self.val0 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
-      end;
+      if cardinal(i) > 0 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..0');
+      var ptr: ^double := pointer(new IntPtr(@self) + i*4 );
+      ptr^ := val;
     end;
-    public property val[i: integer]: real read GetValAt write SetValAt; default;
+    public property val[i: integer]: double read GetValAt write SetValAt; default;
+    
+    public function Println: Vec1d;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec1d): Vec1d := new Vec1d(-v.val0);
-    public static function operator*(v: Vec1d; k: real): Vec1d := new Vec1d(v.val0*k);
+    public static function operator*(v: Vec1d; k: double): Vec1d := new Vec1d(v.val0*k);
     public static function operator+(v1, v2: Vec1d): Vec1d := new Vec1d(v1.val0+v2.val0);
     public static function operator-(v1, v2: Vec1d): Vec1d := new Vec1d(v1.val0-v2.val0);
     
@@ -2426,21 +2585,23 @@ type
     
     private function GetValAt(i: integer): SByte;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
-      end;
+      if cardinal(i) > 1 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
+      var ptr: ^SByte := pointer(new IntPtr(@self) + i*1 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: SByte);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
-      end;
+      if cardinal(i) > 1 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
+      var ptr: ^SByte := pointer(new IntPtr(@self) + i*1 );
+      ptr^ := val;
     end;
     public property val[i: integer]: SByte read GetValAt write SetValAt; default;
+    
+    public function Println: Vec2b;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec2b): Vec2b := new Vec2b(-v.val0, -v.val1);
     public static function operator*(v: Vec2b; k: SByte): Vec2b := new Vec2b(v.val0*k, v.val1*k);
@@ -2491,21 +2652,23 @@ type
     
     private function GetValAt(i: integer): Byte;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
-      end;
+      if cardinal(i) > 1 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
+      var ptr: ^Byte := pointer(new IntPtr(@self) + i*1 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: Byte);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
-      end;
+      if cardinal(i) > 1 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
+      var ptr: ^Byte := pointer(new IntPtr(@self) + i*1 );
+      ptr^ := val;
     end;
     public property val[i: integer]: Byte read GetValAt write SetValAt; default;
+    
+    public function Println: Vec2ub;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator*(v: Vec2ub; k: Byte): Vec2ub := new Vec2ub(v.val0*k, v.val1*k);
     public static function operator+(v1, v2: Vec2ub): Vec2ub := new Vec2ub(v1.val0+v2.val0, v1.val1+v2.val1);
@@ -2558,21 +2721,23 @@ type
     
     private function GetValAt(i: integer): Int16;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
-      end;
+      if cardinal(i) > 1 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
+      var ptr: ^Int16 := pointer(new IntPtr(@self) + i*2 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: Int16);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
-      end;
+      if cardinal(i) > 1 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
+      var ptr: ^Int16 := pointer(new IntPtr(@self) + i*2 );
+      ptr^ := val;
     end;
     public property val[i: integer]: Int16 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec2s;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec2s): Vec2s := new Vec2s(-v.val0, -v.val1);
     public static function operator*(v: Vec2s; k: Int16): Vec2s := new Vec2s(v.val0*k, v.val1*k);
@@ -2629,21 +2794,23 @@ type
     
     private function GetValAt(i: integer): UInt16;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
-      end;
+      if cardinal(i) > 1 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
+      var ptr: ^UInt16 := pointer(new IntPtr(@self) + i*2 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: UInt16);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
-      end;
+      if cardinal(i) > 1 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
+      var ptr: ^UInt16 := pointer(new IntPtr(@self) + i*2 );
+      ptr^ := val;
     end;
     public property val[i: integer]: UInt16 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec2us;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator*(v: Vec2us; k: UInt16): Vec2us := new Vec2us(v.val0*k, v.val1*k);
     public static function operator+(v1, v2: Vec2us): Vec2us := new Vec2us(v1.val0+v2.val0, v1.val1+v2.val1);
@@ -2702,21 +2869,23 @@ type
     
     private function GetValAt(i: integer): Int32;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
-      end;
+      if cardinal(i) > 1 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
+      var ptr: ^Int32 := pointer(new IntPtr(@self) + i*4 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: Int32);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
-      end;
+      if cardinal(i) > 1 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
+      var ptr: ^Int32 := pointer(new IntPtr(@self) + i*4 );
+      ptr^ := val;
     end;
     public property val[i: integer]: Int32 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec2i;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec2i): Vec2i := new Vec2i(-v.val0, -v.val1);
     public static function operator*(v: Vec2i; k: Int32): Vec2i := new Vec2i(v.val0*k, v.val1*k);
@@ -2779,21 +2948,23 @@ type
     
     private function GetValAt(i: integer): UInt32;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
-      end;
+      if cardinal(i) > 1 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
+      var ptr: ^UInt32 := pointer(new IntPtr(@self) + i*4 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: UInt32);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
-      end;
+      if cardinal(i) > 1 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
+      var ptr: ^UInt32 := pointer(new IntPtr(@self) + i*4 );
+      ptr^ := val;
     end;
     public property val[i: integer]: UInt32 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec2ui;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator*(v: Vec2ui; k: UInt32): Vec2ui := new Vec2ui(v.val0*k, v.val1*k);
     public static function operator+(v1, v2: Vec2ui): Vec2ui := new Vec2ui(v1.val0+v2.val0, v1.val1+v2.val1);
@@ -2858,21 +3029,23 @@ type
     
     private function GetValAt(i: integer): Int64;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
-      end;
+      if cardinal(i) > 1 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
+      var ptr: ^Int64 := pointer(new IntPtr(@self) + i*8 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: Int64);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
-      end;
+      if cardinal(i) > 1 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
+      var ptr: ^Int64 := pointer(new IntPtr(@self) + i*8 );
+      ptr^ := val;
     end;
     public property val[i: integer]: Int64 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec2i64;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec2i64): Vec2i64 := new Vec2i64(-v.val0, -v.val1);
     public static function operator*(v: Vec2i64; k: Int64): Vec2i64 := new Vec2i64(v.val0*k, v.val1*k);
@@ -2941,21 +3114,23 @@ type
     
     private function GetValAt(i: integer): UInt64;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
-      end;
+      if cardinal(i) > 1 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
+      var ptr: ^UInt64 := pointer(new IntPtr(@self) + i*8 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: UInt64);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
-      end;
+      if cardinal(i) > 1 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
+      var ptr: ^UInt64 := pointer(new IntPtr(@self) + i*8 );
+      ptr^ := val;
     end;
     public property val[i: integer]: UInt64 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec2ui64;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator*(v: Vec2ui64; k: UInt64): Vec2ui64 := new Vec2ui64(v.val0*k, v.val1*k);
     public static function operator+(v1, v2: Vec2ui64): Vec2ui64 := new Vec2ui64(v1.val0+v2.val0, v1.val1+v2.val1);
@@ -3026,21 +3201,23 @@ type
     
     private function GetValAt(i: integer): single;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
-      end;
+      if cardinal(i) > 1 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
+      var ptr: ^single := pointer(new IntPtr(@self) + i*4 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: single);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
-      end;
+      if cardinal(i) > 1 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
+      var ptr: ^single := pointer(new IntPtr(@self) + i*4 );
+      ptr^ := val;
     end;
     public property val[i: integer]: single read GetValAt write SetValAt; default;
+    
+    public function Println: Vec2f;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec2f): Vec2f := new Vec2f(-v.val0, -v.val1);
     public static function operator*(v: Vec2f; k: single): Vec2f := new Vec2f(v.val0*k, v.val1*k);
@@ -3104,35 +3281,37 @@ type
   end;
   
   Vec2d = record
-    public val0: real;
-    public val1: real;
+    public val0: double;
+    public val1: double;
     
-    public constructor(val0, val1: real);
+    public constructor(val0, val1: double);
     begin
       self.val0 := val0;
       self.val1 := val1;
     end;
     
-    private function GetValAt(i: integer): real;
+    private function GetValAt(i: integer): double;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
-      end;
+      if cardinal(i) > 1 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
+      var ptr: ^double := pointer(new IntPtr(@self) + i*4 );
+      Result := ptr^;
     end;
-    private procedure SetValAt(i: integer; val: real);
+    private procedure SetValAt(i: integer; val: double);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
-      end;
+      if cardinal(i) > 1 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..1');
+      var ptr: ^double := pointer(new IntPtr(@self) + i*4 );
+      ptr^ := val;
     end;
-    public property val[i: integer]: real read GetValAt write SetValAt; default;
+    public property val[i: integer]: double read GetValAt write SetValAt; default;
+    
+    public function Println: Vec2d;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec2d): Vec2d := new Vec2d(-v.val0, -v.val1);
-    public static function operator*(v: Vec2d; k: real): Vec2d := new Vec2d(v.val0*k, v.val1*k);
+    public static function operator*(v: Vec2d; k: double): Vec2d := new Vec2d(v.val0*k, v.val1*k);
     public static function operator+(v1, v2: Vec2d): Vec2d := new Vec2d(v1.val0+v2.val0, v1.val1+v2.val1);
     public static function operator-(v1, v2: Vec2d): Vec2d := new Vec2d(v1.val0-v2.val0, v1.val1-v2.val1);
     
@@ -3212,23 +3391,23 @@ type
     
     private function GetValAt(i: integer): SByte;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        2: Result := self.val2;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
-      end;
+      if cardinal(i) > 2 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
+      var ptr: ^SByte := pointer(new IntPtr(@self) + i*1 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: SByte);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        2: self.val2 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
-      end;
+      if cardinal(i) > 2 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
+      var ptr: ^SByte := pointer(new IntPtr(@self) + i*1 );
+      ptr^ := val;
     end;
     public property val[i: integer]: SByte read GetValAt write SetValAt; default;
+    
+    public function Println: Vec3b;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec3b): Vec3b := new Vec3b(-v.val0, -v.val1, -v.val2);
     public static function operator*(v: Vec3b; k: SByte): Vec3b := new Vec3b(v.val0*k, v.val1*k, v.val2*k);
@@ -3311,23 +3490,23 @@ type
     
     private function GetValAt(i: integer): Byte;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        2: Result := self.val2;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
-      end;
+      if cardinal(i) > 2 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
+      var ptr: ^Byte := pointer(new IntPtr(@self) + i*1 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: Byte);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        2: self.val2 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
-      end;
+      if cardinal(i) > 2 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
+      var ptr: ^Byte := pointer(new IntPtr(@self) + i*1 );
+      ptr^ := val;
     end;
     public property val[i: integer]: Byte read GetValAt write SetValAt; default;
+    
+    public function Println: Vec3ub;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator*(v: Vec3ub; k: Byte): Vec3ub := new Vec3ub(v.val0*k, v.val1*k, v.val2*k);
     public static function operator+(v1, v2: Vec3ub): Vec3ub := new Vec3ub(v1.val0+v2.val0, v1.val1+v2.val1, v1.val2+v2.val2);
@@ -3412,23 +3591,23 @@ type
     
     private function GetValAt(i: integer): Int16;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        2: Result := self.val2;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
-      end;
+      if cardinal(i) > 2 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
+      var ptr: ^Int16 := pointer(new IntPtr(@self) + i*2 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: Int16);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        2: self.val2 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
-      end;
+      if cardinal(i) > 2 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
+      var ptr: ^Int16 := pointer(new IntPtr(@self) + i*2 );
+      ptr^ := val;
     end;
     public property val[i: integer]: Int16 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec3s;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec3s): Vec3s := new Vec3s(-v.val0, -v.val1, -v.val2);
     public static function operator*(v: Vec3s; k: Int16): Vec3s := new Vec3s(v.val0*k, v.val1*k, v.val2*k);
@@ -3517,23 +3696,23 @@ type
     
     private function GetValAt(i: integer): UInt16;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        2: Result := self.val2;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
-      end;
+      if cardinal(i) > 2 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
+      var ptr: ^UInt16 := pointer(new IntPtr(@self) + i*2 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: UInt16);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        2: self.val2 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
-      end;
+      if cardinal(i) > 2 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
+      var ptr: ^UInt16 := pointer(new IntPtr(@self) + i*2 );
+      ptr^ := val;
     end;
     public property val[i: integer]: UInt16 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec3us;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator*(v: Vec3us; k: UInt16): Vec3us := new Vec3us(v.val0*k, v.val1*k, v.val2*k);
     public static function operator+(v1, v2: Vec3us): Vec3us := new Vec3us(v1.val0+v2.val0, v1.val1+v2.val1, v1.val2+v2.val2);
@@ -3624,23 +3803,23 @@ type
     
     private function GetValAt(i: integer): Int32;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        2: Result := self.val2;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
-      end;
+      if cardinal(i) > 2 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
+      var ptr: ^Int32 := pointer(new IntPtr(@self) + i*4 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: Int32);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        2: self.val2 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
-      end;
+      if cardinal(i) > 2 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
+      var ptr: ^Int32 := pointer(new IntPtr(@self) + i*4 );
+      ptr^ := val;
     end;
     public property val[i: integer]: Int32 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec3i;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec3i): Vec3i := new Vec3i(-v.val0, -v.val1, -v.val2);
     public static function operator*(v: Vec3i; k: Int32): Vec3i := new Vec3i(v.val0*k, v.val1*k, v.val2*k);
@@ -3735,23 +3914,23 @@ type
     
     private function GetValAt(i: integer): UInt32;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        2: Result := self.val2;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
-      end;
+      if cardinal(i) > 2 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
+      var ptr: ^UInt32 := pointer(new IntPtr(@self) + i*4 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: UInt32);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        2: self.val2 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
-      end;
+      if cardinal(i) > 2 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
+      var ptr: ^UInt32 := pointer(new IntPtr(@self) + i*4 );
+      ptr^ := val;
     end;
     public property val[i: integer]: UInt32 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec3ui;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator*(v: Vec3ui; k: UInt32): Vec3ui := new Vec3ui(v.val0*k, v.val1*k, v.val2*k);
     public static function operator+(v1, v2: Vec3ui): Vec3ui := new Vec3ui(v1.val0+v2.val0, v1.val1+v2.val1, v1.val2+v2.val2);
@@ -3848,23 +4027,23 @@ type
     
     private function GetValAt(i: integer): Int64;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        2: Result := self.val2;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
-      end;
+      if cardinal(i) > 2 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
+      var ptr: ^Int64 := pointer(new IntPtr(@self) + i*8 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: Int64);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        2: self.val2 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
-      end;
+      if cardinal(i) > 2 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
+      var ptr: ^Int64 := pointer(new IntPtr(@self) + i*8 );
+      ptr^ := val;
     end;
     public property val[i: integer]: Int64 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec3i64;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec3i64): Vec3i64 := new Vec3i64(-v.val0, -v.val1, -v.val2);
     public static function operator*(v: Vec3i64; k: Int64): Vec3i64 := new Vec3i64(v.val0*k, v.val1*k, v.val2*k);
@@ -3965,23 +4144,23 @@ type
     
     private function GetValAt(i: integer): UInt64;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        2: Result := self.val2;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
-      end;
+      if cardinal(i) > 2 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
+      var ptr: ^UInt64 := pointer(new IntPtr(@self) + i*8 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: UInt64);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        2: self.val2 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
-      end;
+      if cardinal(i) > 2 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
+      var ptr: ^UInt64 := pointer(new IntPtr(@self) + i*8 );
+      ptr^ := val;
     end;
     public property val[i: integer]: UInt64 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec3ui64;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator*(v: Vec3ui64; k: UInt64): Vec3ui64 := new Vec3ui64(v.val0*k, v.val1*k, v.val2*k);
     public static function operator+(v1, v2: Vec3ui64): Vec3ui64 := new Vec3ui64(v1.val0+v2.val0, v1.val1+v2.val1, v1.val2+v2.val2);
@@ -4084,23 +4263,23 @@ type
     
     private function GetValAt(i: integer): single;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        2: Result := self.val2;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
-      end;
+      if cardinal(i) > 2 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
+      var ptr: ^single := pointer(new IntPtr(@self) + i*4 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: single);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        2: self.val2 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
-      end;
+      if cardinal(i) > 2 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
+      var ptr: ^single := pointer(new IntPtr(@self) + i*4 );
+      ptr^ := val;
     end;
     public property val[i: integer]: single read GetValAt write SetValAt; default;
+    
+    public function Println: Vec3f;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec3f): Vec3f := new Vec3f(-v.val0, -v.val1, -v.val2);
     public static function operator*(v: Vec3f; k: single): Vec3f := new Vec3f(v.val0*k, v.val1*k, v.val2*k);
@@ -4194,39 +4373,39 @@ type
   end;
   
   Vec3d = record
-    public val0: real;
-    public val1: real;
-    public val2: real;
+    public val0: double;
+    public val1: double;
+    public val2: double;
     
-    public constructor(val0, val1, val2: real);
+    public constructor(val0, val1, val2: double);
     begin
       self.val0 := val0;
       self.val1 := val1;
       self.val2 := val2;
     end;
     
-    private function GetValAt(i: integer): real;
+    private function GetValAt(i: integer): double;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        2: Result := self.val2;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
-      end;
+      if cardinal(i) > 2 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
+      var ptr: ^double := pointer(new IntPtr(@self) + i*4 );
+      Result := ptr^;
     end;
-    private procedure SetValAt(i: integer; val: real);
+    private procedure SetValAt(i: integer; val: double);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        2: self.val2 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
-      end;
+      if cardinal(i) > 2 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..2');
+      var ptr: ^double := pointer(new IntPtr(@self) + i*4 );
+      ptr^ := val;
     end;
-    public property val[i: integer]: real read GetValAt write SetValAt; default;
+    public property val[i: integer]: double read GetValAt write SetValAt; default;
+    
+    public function Println: Vec3d;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec3d): Vec3d := new Vec3d(-v.val0, -v.val1, -v.val2);
-    public static function operator*(v: Vec3d; k: real): Vec3d := new Vec3d(v.val0*k, v.val1*k, v.val2*k);
+    public static function operator*(v: Vec3d; k: double): Vec3d := new Vec3d(v.val0*k, v.val1*k, v.val2*k);
     public static function operator+(v1, v2: Vec3d): Vec3d := new Vec3d(v1.val0+v2.val0, v1.val1+v2.val1, v1.val2+v2.val2);
     public static function operator-(v1, v2: Vec3d): Vec3d := new Vec3d(v1.val0-v2.val0, v1.val1-v2.val1, v1.val2-v2.val2);
     
@@ -4338,25 +4517,23 @@ type
     
     private function GetValAt(i: integer): SByte;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        2: Result := self.val2;
-        3: Result := self.val3;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
-      end;
+      if cardinal(i) > 3 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
+      var ptr: ^SByte := pointer(new IntPtr(@self) + i*1 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: SByte);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        2: self.val2 := val;
-        3: self.val3 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
-      end;
+      if cardinal(i) > 3 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
+      var ptr: ^SByte := pointer(new IntPtr(@self) + i*1 );
+      ptr^ := val;
     end;
     public property val[i: integer]: SByte read GetValAt write SetValAt; default;
+    
+    public function Println: Vec4b;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec4b): Vec4b := new Vec4b(-v.val0, -v.val1, -v.val2, -v.val3);
     public static function operator*(v: Vec4b; k: SByte): Vec4b := new Vec4b(v.val0*k, v.val1*k, v.val2*k, v.val3*k);
@@ -4471,25 +4648,23 @@ type
     
     private function GetValAt(i: integer): Byte;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        2: Result := self.val2;
-        3: Result := self.val3;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
-      end;
+      if cardinal(i) > 3 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
+      var ptr: ^Byte := pointer(new IntPtr(@self) + i*1 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: Byte);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        2: self.val2 := val;
-        3: self.val3 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
-      end;
+      if cardinal(i) > 3 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
+      var ptr: ^Byte := pointer(new IntPtr(@self) + i*1 );
+      ptr^ := val;
     end;
     public property val[i: integer]: Byte read GetValAt write SetValAt; default;
+    
+    public function Println: Vec4ub;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator*(v: Vec4ub; k: Byte): Vec4ub := new Vec4ub(v.val0*k, v.val1*k, v.val2*k, v.val3*k);
     public static function operator+(v1, v2: Vec4ub): Vec4ub := new Vec4ub(v1.val0+v2.val0, v1.val1+v2.val1, v1.val2+v2.val2, v1.val3+v2.val3);
@@ -4606,25 +4781,23 @@ type
     
     private function GetValAt(i: integer): Int16;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        2: Result := self.val2;
-        3: Result := self.val3;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
-      end;
+      if cardinal(i) > 3 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
+      var ptr: ^Int16 := pointer(new IntPtr(@self) + i*2 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: Int16);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        2: self.val2 := val;
-        3: self.val3 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
-      end;
+      if cardinal(i) > 3 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
+      var ptr: ^Int16 := pointer(new IntPtr(@self) + i*2 );
+      ptr^ := val;
     end;
     public property val[i: integer]: Int16 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec4s;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec4s): Vec4s := new Vec4s(-v.val0, -v.val1, -v.val2, -v.val3);
     public static function operator*(v: Vec4s; k: Int16): Vec4s := new Vec4s(v.val0*k, v.val1*k, v.val2*k, v.val3*k);
@@ -4745,25 +4918,23 @@ type
     
     private function GetValAt(i: integer): UInt16;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        2: Result := self.val2;
-        3: Result := self.val3;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
-      end;
+      if cardinal(i) > 3 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
+      var ptr: ^UInt16 := pointer(new IntPtr(@self) + i*2 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: UInt16);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        2: self.val2 := val;
-        3: self.val3 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
-      end;
+      if cardinal(i) > 3 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
+      var ptr: ^UInt16 := pointer(new IntPtr(@self) + i*2 );
+      ptr^ := val;
     end;
     public property val[i: integer]: UInt16 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec4us;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator*(v: Vec4us; k: UInt16): Vec4us := new Vec4us(v.val0*k, v.val1*k, v.val2*k, v.val3*k);
     public static function operator+(v1, v2: Vec4us): Vec4us := new Vec4us(v1.val0+v2.val0, v1.val1+v2.val1, v1.val2+v2.val2, v1.val3+v2.val3);
@@ -4886,25 +5057,23 @@ type
     
     private function GetValAt(i: integer): Int32;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        2: Result := self.val2;
-        3: Result := self.val3;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
-      end;
+      if cardinal(i) > 3 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
+      var ptr: ^Int32 := pointer(new IntPtr(@self) + i*4 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: Int32);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        2: self.val2 := val;
-        3: self.val3 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
-      end;
+      if cardinal(i) > 3 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
+      var ptr: ^Int32 := pointer(new IntPtr(@self) + i*4 );
+      ptr^ := val;
     end;
     public property val[i: integer]: Int32 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec4i;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec4i): Vec4i := new Vec4i(-v.val0, -v.val1, -v.val2, -v.val3);
     public static function operator*(v: Vec4i; k: Int32): Vec4i := new Vec4i(v.val0*k, v.val1*k, v.val2*k, v.val3*k);
@@ -5031,25 +5200,23 @@ type
     
     private function GetValAt(i: integer): UInt32;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        2: Result := self.val2;
-        3: Result := self.val3;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
-      end;
+      if cardinal(i) > 3 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
+      var ptr: ^UInt32 := pointer(new IntPtr(@self) + i*4 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: UInt32);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        2: self.val2 := val;
-        3: self.val3 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
-      end;
+      if cardinal(i) > 3 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
+      var ptr: ^UInt32 := pointer(new IntPtr(@self) + i*4 );
+      ptr^ := val;
     end;
     public property val[i: integer]: UInt32 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec4ui;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator*(v: Vec4ui; k: UInt32): Vec4ui := new Vec4ui(v.val0*k, v.val1*k, v.val2*k, v.val3*k);
     public static function operator+(v1, v2: Vec4ui): Vec4ui := new Vec4ui(v1.val0+v2.val0, v1.val1+v2.val1, v1.val2+v2.val2, v1.val3+v2.val3);
@@ -5178,25 +5345,23 @@ type
     
     private function GetValAt(i: integer): Int64;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        2: Result := self.val2;
-        3: Result := self.val3;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
-      end;
+      if cardinal(i) > 3 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
+      var ptr: ^Int64 := pointer(new IntPtr(@self) + i*8 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: Int64);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        2: self.val2 := val;
-        3: self.val3 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
-      end;
+      if cardinal(i) > 3 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
+      var ptr: ^Int64 := pointer(new IntPtr(@self) + i*8 );
+      ptr^ := val;
     end;
     public property val[i: integer]: Int64 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec4i64;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec4i64): Vec4i64 := new Vec4i64(-v.val0, -v.val1, -v.val2, -v.val3);
     public static function operator*(v: Vec4i64; k: Int64): Vec4i64 := new Vec4i64(v.val0*k, v.val1*k, v.val2*k, v.val3*k);
@@ -5329,25 +5494,23 @@ type
     
     private function GetValAt(i: integer): UInt64;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        2: Result := self.val2;
-        3: Result := self.val3;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
-      end;
+      if cardinal(i) > 3 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
+      var ptr: ^UInt64 := pointer(new IntPtr(@self) + i*8 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: UInt64);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        2: self.val2 := val;
-        3: self.val3 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
-      end;
+      if cardinal(i) > 3 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
+      var ptr: ^UInt64 := pointer(new IntPtr(@self) + i*8 );
+      ptr^ := val;
     end;
     public property val[i: integer]: UInt64 read GetValAt write SetValAt; default;
+    
+    public function Println: Vec4ui64;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator*(v: Vec4ui64; k: UInt64): Vec4ui64 := new Vec4ui64(v.val0*k, v.val1*k, v.val2*k, v.val3*k);
     public static function operator+(v1, v2: Vec4ui64): Vec4ui64 := new Vec4ui64(v1.val0+v2.val0, v1.val1+v2.val1, v1.val2+v2.val2, v1.val3+v2.val3);
@@ -5482,25 +5645,23 @@ type
     
     private function GetValAt(i: integer): single;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        2: Result := self.val2;
-        3: Result := self.val3;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
-      end;
+      if cardinal(i) > 3 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
+      var ptr: ^single := pointer(new IntPtr(@self) + i*4 );
+      Result := ptr^;
     end;
     private procedure SetValAt(i: integer; val: single);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        2: self.val2 := val;
-        3: self.val3 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
-      end;
+      if cardinal(i) > 3 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
+      var ptr: ^single := pointer(new IntPtr(@self) + i*4 );
+      ptr^ := val;
     end;
     public property val[i: integer]: single read GetValAt write SetValAt; default;
+    
+    public function Println: Vec4f;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec4f): Vec4f := new Vec4f(-v.val0, -v.val1, -v.val2, -v.val3);
     public static function operator*(v: Vec4f; k: single): Vec4f := new Vec4f(v.val0*k, v.val1*k, v.val2*k, v.val3*k);
@@ -5624,12 +5785,12 @@ type
   end;
   
   Vec4d = record
-    public val0: real;
-    public val1: real;
-    public val2: real;
-    public val3: real;
+    public val0: double;
+    public val1: double;
+    public val2: double;
+    public val3: double;
     
-    public constructor(val0, val1, val2, val3: real);
+    public constructor(val0, val1, val2, val3: double);
     begin
       self.val0 := val0;
       self.val1 := val1;
@@ -5637,30 +5798,28 @@ type
       self.val3 := val3;
     end;
     
-    private function GetValAt(i: integer): real;
+    private function GetValAt(i: integer): double;
     begin
-      case i of
-        0: Result := self.val0;
-        1: Result := self.val1;
-        2: Result := self.val2;
-        3: Result := self.val3;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
-      end;
+      if cardinal(i) > 3 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
+      var ptr: ^double := pointer(new IntPtr(@self) + i*4 );
+      Result := ptr^;
     end;
-    private procedure SetValAt(i: integer; val: real);
+    private procedure SetValAt(i: integer; val: double);
     begin
-      case i of
-        0: self.val0 := val;
-        1: self.val1 := val;
-        2: self.val2 := val;
-        3: self.val3 := val;
-        else raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
-      end;
+      if cardinal(i) > 3 then raise new IndexOutOfRangeException('Индекс должен иметь значение 0..3');
+      var ptr: ^double := pointer(new IntPtr(@self) + i*4 );
+      ptr^ := val;
     end;
-    public property val[i: integer]: real read GetValAt write SetValAt; default;
+    public property val[i: integer]: double read GetValAt write SetValAt; default;
+    
+    public function Println: Vec4d;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
     public static function operator-(v: Vec4d): Vec4d := new Vec4d(-v.val0, -v.val1, -v.val2, -v.val3);
-    public static function operator*(v: Vec4d; k: real): Vec4d := new Vec4d(v.val0*k, v.val1*k, v.val2*k, v.val3*k);
+    public static function operator*(v: Vec4d; k: double): Vec4d := new Vec4d(v.val0*k, v.val1*k, v.val2*k, v.val3*k);
     public static function operator+(v1, v2: Vec4d): Vec4d := new Vec4d(v1.val0+v2.val0, v1.val1+v2.val1, v1.val2+v2.val2, v1.val3+v2.val3);
     public static function operator-(v1, v2: Vec4d): Vec4d := new Vec4d(v1.val0-v2.val0, v1.val1-v2.val1, v1.val2-v2.val2, v1.val3-v2.val3);
     
@@ -5790,8 +5949,8 @@ type
   {$region Mtr}
   
   Mtr2x2f = record
-    public val00, val01: single;
-    public val10, val11: single;
+    public val00, val10: single;
+    public val01, val11: single;
     
     public constructor(val00, val01, val10, val11: single);
     begin
@@ -5803,39 +5962,17 @@ type
     
     private function GetValAt(y,x: integer): single;
     begin
-      case y of
-        0:
-        case x of
-          0: Result := self.val00;
-          1: Result := self.val01;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        1:
-        case x of
-          0: Result := self.val10;
-          1: Result := self.val11;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
-      end;
+      if cardinal(x) > 1 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
+      if cardinal(y) > 1 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
+      var ptr: ^single := pointer(new IntPtr(@self) + (x*2 + y) * 4 );
+      Result := ptr^;
     end;
     private procedure SetValAt(y,x: integer; val: single);
     begin
-      case y of
-        0:
-        case x of
-          0: self.val00 := val;
-          1: self.val01 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        1:
-        case x of
-          0: self.val10 := val;
-          1: self.val11 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
-      end;
+      if cardinal(x) > 1 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
+      if cardinal(y) > 1 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
+      var ptr: ^single := pointer(new IntPtr(@self) + (x*2 + y) * 4 );
+      ptr^ := val;
     end;
     public property val[y,x: integer]: single read GetValAt write SetValAt; default;
     
@@ -5859,9 +5996,45 @@ type
       else raise new IndexOutOfRangeException('Номер столбца должен иметь значение 0..1');
     end;
     
-    public property RowPtr0: ^Vec2f read pointer(IntPtr(pointer(@self)) + 0);
-    public property RowPtr1: ^Vec2f read pointer(IntPtr(pointer(@self)) + 8);
-    public property RowPtr[x: integer]: ^Vec2f read pointer(IntPtr(pointer(@self)) + x*8);
+    public property ColPtr0: ^Vec2f read pointer(IntPtr(pointer(@self)) + 0);
+    public property ColPtr1: ^Vec2f read pointer(IntPtr(pointer(@self)) + 8);
+    public property ColPtr[x: integer]: ^Vec2f read pointer(IntPtr(pointer(@self)) + x*8);
+    
+    public static function RotateXYcw(rot: double): Mtr2x2f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr2x2f(
+         cr, +sr,
+        -sr,  cr
+      );
+    end;
+    public static function RotateXYccw(rot: double): Mtr2x2f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr2x2f(
+         cr, -sr,
+        +sr,  cr
+      );
+    end;
+    
+    public function Println: Mtr2x2f;
+    begin
+      var ElStrs := new string[2,2];
+      for var y := 0 to 2-1 do
+        for var x := 0 to 2-1 do
+          ElStrs[y,x] := (Sign(val[y,x])=-1?'-':'+') + Abs(val[y,x]).ToString('f2');
+      var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
+      var PrintlnMtrW := MtrElTextW*2 + 4; // +2*(Width-1) + 2;
+      
+      writeln( '┌' + #32*PrintlnMtrW + '┐' );
+      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ' │' );
+      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      
+      Result := self;
+    end;
     
     public static function operator*(m: Mtr2x2f; v: Vec2f): Vec2f := new Vec2f(m.val00*v.val0+m.val01*v.val1, m.val10*v.val0+m.val11*v.val1);
     public static function operator*(v: Vec2f; m: Mtr2x2f): Vec2f := new Vec2f(m.val00*v.val0+m.val10*v.val1, m.val01*v.val0+m.val11*v.val1);
@@ -5870,9 +6043,9 @@ type
   Mtr2f = Mtr2x2f;
   
   Mtr3x3f = record
-    public val00, val01, val02: single;
-    public val10, val11, val12: single;
-    public val20, val21, val22: single;
+    public val00, val10, val20: single;
+    public val01, val11, val21: single;
+    public val02, val12, val22: single;
     
     public constructor(val00, val01, val02, val10, val11, val12, val20, val21, val22: single);
     begin
@@ -5889,57 +6062,17 @@ type
     
     private function GetValAt(y,x: integer): single;
     begin
-      case y of
-        0:
-        case x of
-          0: Result := self.val00;
-          1: Result := self.val01;
-          2: Result := self.val02;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        1:
-        case x of
-          0: Result := self.val10;
-          1: Result := self.val11;
-          2: Result := self.val12;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        2:
-        case x of
-          0: Result := self.val20;
-          1: Result := self.val21;
-          2: Result := self.val22;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
-      end;
+      if cardinal(x) > 2 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
+      if cardinal(y) > 2 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
+      var ptr: ^single := pointer(new IntPtr(@self) + (x*3 + y) * 4 );
+      Result := ptr^;
     end;
     private procedure SetValAt(y,x: integer; val: single);
     begin
-      case y of
-        0:
-        case x of
-          0: self.val00 := val;
-          1: self.val01 := val;
-          2: self.val02 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        1:
-        case x of
-          0: self.val10 := val;
-          1: self.val11 := val;
-          2: self.val12 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        2:
-        case x of
-          0: self.val20 := val;
-          1: self.val21 := val;
-          2: self.val22 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
-      end;
+      if cardinal(x) > 2 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
+      if cardinal(y) > 2 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
+      var ptr: ^single := pointer(new IntPtr(@self) + (x*3 + y) * 4 );
+      ptr^ := val;
     end;
     public property val[y,x: integer]: single read GetValAt write SetValAt; default;
     
@@ -5967,10 +6100,91 @@ type
       else raise new IndexOutOfRangeException('Номер столбца должен иметь значение 0..2');
     end;
     
-    public property RowPtr0: ^Vec3f read pointer(IntPtr(pointer(@self)) + 0);
-    public property RowPtr1: ^Vec3f read pointer(IntPtr(pointer(@self)) + 12);
-    public property RowPtr2: ^Vec3f read pointer(IntPtr(pointer(@self)) + 24);
-    public property RowPtr[x: integer]: ^Vec3f read pointer(IntPtr(pointer(@self)) + x*12);
+    public property ColPtr0: ^Vec3f read pointer(IntPtr(pointer(@self)) + 0);
+    public property ColPtr1: ^Vec3f read pointer(IntPtr(pointer(@self)) + 12);
+    public property ColPtr2: ^Vec3f read pointer(IntPtr(pointer(@self)) + 24);
+    public property ColPtr[x: integer]: ^Vec3f read pointer(IntPtr(pointer(@self)) + x*12);
+    
+    public static function RotateXYcw(rot: double): Mtr3x3f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr3x3f(
+         cr, +sr, 0.0,
+        -sr,  cr, 0.0,
+        0.0, 0.0, 1.0
+      );
+    end;
+    public static function RotateXYccw(rot: double): Mtr3x3f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr3x3f(
+         cr, -sr, 0.0,
+        +sr,  cr, 0.0,
+        0.0, 0.0, 1.0
+      );
+    end;
+    
+    public static function RotateXZcw(rot: double): Mtr3x3f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr3x3f(
+         cr, 0.0, +sr,
+        0.0, 1.0, 0.0,
+        -sr, 0.0,  cr
+      );
+    end;
+    public static function RotateXZccw(rot: double): Mtr3x3f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr3x3f(
+         cr, 0.0, -sr,
+        0.0, 1.0, 0.0,
+        +sr, 0.0,  cr
+      );
+    end;
+    
+    public static function RotateYZcw(rot: double): Mtr3x3f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr3x3f(
+        1.0, 0.0, 0.0,
+        0.0,  cr, +sr,
+        0.0, -sr,  cr
+      );
+    end;
+    public static function RotateYZccw(rot: double): Mtr3x3f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr3x3f(
+        1.0, 0.0, 0.0,
+        0.0,  cr, -sr,
+        0.0, +sr,  cr
+      );
+    end;
+    
+    public function Println: Mtr3x3f;
+    begin
+      var ElStrs := new string[3,3];
+      for var y := 0 to 3-1 do
+        for var x := 0 to 3-1 do
+          ElStrs[y,x] := (Sign(val[y,x])=-1?'-':'+') + Abs(val[y,x]).ToString('f2');
+      var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
+      var PrintlnMtrW := MtrElTextW*3 + 6; // +2*(Width-1) + 2;
+      
+      writeln( '┌' + #32*PrintlnMtrW + '┐' );
+      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ', ', ElStrs[2,2].PadLeft(MtrElTextW), ' │' );
+      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      
+      Result := self;
+    end;
     
     public static function operator*(m: Mtr3x3f; v: Vec3f): Vec3f := new Vec3f(m.val00*v.val0+m.val01*v.val1+m.val02*v.val2, m.val10*v.val0+m.val11*v.val1+m.val12*v.val2, m.val20*v.val0+m.val21*v.val1+m.val22*v.val2);
     public static function operator*(v: Vec3f; m: Mtr3x3f): Vec3f := new Vec3f(m.val00*v.val0+m.val10*v.val1+m.val20*v.val2, m.val01*v.val0+m.val11*v.val1+m.val21*v.val2, m.val02*v.val0+m.val12*v.val1+m.val22*v.val2);
@@ -5982,10 +6196,10 @@ type
   Mtr3f = Mtr3x3f;
   
   Mtr4x4f = record
-    public val00, val01, val02, val03: single;
-    public val10, val11, val12, val13: single;
-    public val20, val21, val22, val23: single;
-    public val30, val31, val32, val33: single;
+    public val00, val10, val20, val30: single;
+    public val01, val11, val21, val31: single;
+    public val02, val12, val22, val32: single;
+    public val03, val13, val23, val33: single;
     
     public constructor(val00, val01, val02, val03, val10, val11, val12, val13, val20, val21, val22, val23, val30, val31, val32, val33: single);
     begin
@@ -6009,79 +6223,17 @@ type
     
     private function GetValAt(y,x: integer): single;
     begin
-      case y of
-        0:
-        case x of
-          0: Result := self.val00;
-          1: Result := self.val01;
-          2: Result := self.val02;
-          3: Result := self.val03;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        1:
-        case x of
-          0: Result := self.val10;
-          1: Result := self.val11;
-          2: Result := self.val12;
-          3: Result := self.val13;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        2:
-        case x of
-          0: Result := self.val20;
-          1: Result := self.val21;
-          2: Result := self.val22;
-          3: Result := self.val23;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        3:
-        case x of
-          0: Result := self.val30;
-          1: Result := self.val31;
-          2: Result := self.val32;
-          3: Result := self.val33;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
-      end;
+      if cardinal(x) > 3 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
+      if cardinal(y) > 3 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
+      var ptr: ^single := pointer(new IntPtr(@self) + (x*4 + y) * 4 );
+      Result := ptr^;
     end;
     private procedure SetValAt(y,x: integer; val: single);
     begin
-      case y of
-        0:
-        case x of
-          0: self.val00 := val;
-          1: self.val01 := val;
-          2: self.val02 := val;
-          3: self.val03 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        1:
-        case x of
-          0: self.val10 := val;
-          1: self.val11 := val;
-          2: self.val12 := val;
-          3: self.val13 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        2:
-        case x of
-          0: self.val20 := val;
-          1: self.val21 := val;
-          2: self.val22 := val;
-          3: self.val23 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        3:
-        case x of
-          0: self.val30 := val;
-          1: self.val31 := val;
-          2: self.val32 := val;
-          3: self.val33 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
-      end;
+      if cardinal(x) > 3 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
+      if cardinal(y) > 3 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
+      var ptr: ^single := pointer(new IntPtr(@self) + (x*4 + y) * 4 );
+      ptr^ := val;
     end;
     public property val[y,x: integer]: single read GetValAt write SetValAt; default;
     
@@ -6113,11 +6265,168 @@ type
       else raise new IndexOutOfRangeException('Номер столбца должен иметь значение 0..3');
     end;
     
-    public property RowPtr0: ^Vec4f read pointer(IntPtr(pointer(@self)) + 0);
-    public property RowPtr1: ^Vec4f read pointer(IntPtr(pointer(@self)) + 16);
-    public property RowPtr2: ^Vec4f read pointer(IntPtr(pointer(@self)) + 32);
-    public property RowPtr3: ^Vec4f read pointer(IntPtr(pointer(@self)) + 48);
-    public property RowPtr[x: integer]: ^Vec4f read pointer(IntPtr(pointer(@self)) + x*16);
+    public property ColPtr0: ^Vec4f read pointer(IntPtr(pointer(@self)) + 0);
+    public property ColPtr1: ^Vec4f read pointer(IntPtr(pointer(@self)) + 16);
+    public property ColPtr2: ^Vec4f read pointer(IntPtr(pointer(@self)) + 32);
+    public property ColPtr3: ^Vec4f read pointer(IntPtr(pointer(@self)) + 48);
+    public property ColPtr[x: integer]: ^Vec4f read pointer(IntPtr(pointer(@self)) + x*16);
+    
+    public static function RotateXYcw(rot: double): Mtr4x4f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr4x4f(
+         cr, +sr, 0.0, 0.0,
+        -sr,  cr, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0
+      );
+    end;
+    public static function RotateXYccw(rot: double): Mtr4x4f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr4x4f(
+         cr, -sr, 0.0, 0.0,
+        +sr,  cr, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0
+      );
+    end;
+    
+    public static function RotateXZcw(rot: double): Mtr4x4f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr4x4f(
+         cr, 0.0, +sr, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        -sr, 0.0,  cr, 0.0,
+        0.0, 0.0, 0.0, 1.0
+      );
+    end;
+    public static function RotateXZccw(rot: double): Mtr4x4f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr4x4f(
+         cr, 0.0, -sr, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        +sr, 0.0,  cr, 0.0,
+        0.0, 0.0, 0.0, 1.0
+      );
+    end;
+    
+    public static function RotateXWcw(rot: double): Mtr4x4f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr4x4f(
+         cr, 0.0, 0.0, +sr,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        -sr, 0.0, 0.0,  cr
+      );
+    end;
+    public static function RotateXWccw(rot: double): Mtr4x4f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr4x4f(
+         cr, 0.0, 0.0, -sr,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        +sr, 0.0, 0.0,  cr
+      );
+    end;
+    
+    public static function RotateYZcw(rot: double): Mtr4x4f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr4x4f(
+        1.0, 0.0, 0.0, 0.0,
+        0.0,  cr, +sr, 0.0,
+        0.0, -sr,  cr, 0.0,
+        0.0, 0.0, 0.0, 1.0
+      );
+    end;
+    public static function RotateYZccw(rot: double): Mtr4x4f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr4x4f(
+        1.0, 0.0, 0.0, 0.0,
+        0.0,  cr, -sr, 0.0,
+        0.0, +sr,  cr, 0.0,
+        0.0, 0.0, 0.0, 1.0
+      );
+    end;
+    
+    public static function RotateYWcw(rot: double): Mtr4x4f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr4x4f(
+        1.0, 0.0, 0.0, 0.0,
+        0.0,  cr, 0.0, +sr,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, -sr, 0.0,  cr
+      );
+    end;
+    public static function RotateYWccw(rot: double): Mtr4x4f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr4x4f(
+        1.0, 0.0, 0.0, 0.0,
+        0.0,  cr, 0.0, -sr,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, +sr, 0.0,  cr
+      );
+    end;
+    
+    public static function RotateZWcw(rot: double): Mtr4x4f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr4x4f(
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0,  cr, +sr,
+        0.0, 0.0, -sr,  cr
+      );
+    end;
+    public static function RotateZWccw(rot: double): Mtr4x4f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr4x4f(
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0,  cr, -sr,
+        0.0, 0.0, +sr,  cr
+      );
+    end;
+    
+    public function Println: Mtr4x4f;
+    begin
+      var ElStrs := new string[4,4];
+      for var y := 0 to 4-1 do
+        for var x := 0 to 4-1 do
+          ElStrs[y,x] := (Sign(val[y,x])=-1?'-':'+') + Abs(val[y,x]).ToString('f2');
+      var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
+      var PrintlnMtrW := MtrElTextW*4 + 8; // +2*(Width-1) + 2;
+      
+      writeln( '┌' + #32*PrintlnMtrW + '┐' );
+      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ', ', ElStrs[0,3].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ', ', ElStrs[1,3].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ', ', ElStrs[2,2].PadLeft(MtrElTextW), ', ', ElStrs[2,3].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[3,0].PadLeft(MtrElTextW), ', ', ElStrs[3,1].PadLeft(MtrElTextW), ', ', ElStrs[3,2].PadLeft(MtrElTextW), ', ', ElStrs[3,3].PadLeft(MtrElTextW), ' │' );
+      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      
+      Result := self;
+    end;
     
     public static function operator*(m: Mtr4x4f; v: Vec4f): Vec4f := new Vec4f(m.val00*v.val0+m.val01*v.val1+m.val02*v.val2+m.val03*v.val3, m.val10*v.val0+m.val11*v.val1+m.val12*v.val2+m.val13*v.val3, m.val20*v.val0+m.val21*v.val1+m.val22*v.val2+m.val23*v.val3, m.val30*v.val0+m.val31*v.val1+m.val32*v.val2+m.val33*v.val3);
     public static function operator*(v: Vec4f; m: Mtr4x4f): Vec4f := new Vec4f(m.val00*v.val0+m.val10*v.val1+m.val20*v.val2+m.val30*v.val3, m.val01*v.val0+m.val11*v.val1+m.val21*v.val2+m.val31*v.val3, m.val02*v.val0+m.val12*v.val1+m.val22*v.val2+m.val32*v.val3, m.val03*v.val0+m.val13*v.val1+m.val23*v.val2+m.val33*v.val3);
@@ -6132,8 +6441,9 @@ type
   Mtr4f = Mtr4x4f;
   
   Mtr2x3f = record
-    public val00, val01, val02: single;
-    public val10, val11, val12: single;
+    public val00, val10: single;
+    public val01, val11: single;
+    public val02, val12: single;
     
     public constructor(val00, val01, val02, val10, val11, val12: single);
     begin
@@ -6147,43 +6457,17 @@ type
     
     private function GetValAt(y,x: integer): single;
     begin
-      case y of
-        0:
-        case x of
-          0: Result := self.val00;
-          1: Result := self.val01;
-          2: Result := self.val02;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        1:
-        case x of
-          0: Result := self.val10;
-          1: Result := self.val11;
-          2: Result := self.val12;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
-      end;
+      if cardinal(x) > 2 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
+      if cardinal(y) > 1 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
+      var ptr: ^single := pointer(new IntPtr(@self) + (x*2 + y) * 4 );
+      Result := ptr^;
     end;
     private procedure SetValAt(y,x: integer; val: single);
     begin
-      case y of
-        0:
-        case x of
-          0: self.val00 := val;
-          1: self.val01 := val;
-          2: self.val02 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        1:
-        case x of
-          0: self.val10 := val;
-          1: self.val11 := val;
-          2: self.val12 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
-      end;
+      if cardinal(x) > 2 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
+      if cardinal(y) > 1 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
+      var ptr: ^single := pointer(new IntPtr(@self) + (x*2 + y) * 4 );
+      ptr^ := val;
     end;
     public property val[y,x: integer]: single read GetValAt write SetValAt; default;
     
@@ -6209,9 +6493,45 @@ type
       else raise new IndexOutOfRangeException('Номер столбца должен иметь значение 0..2');
     end;
     
-    public property RowPtr0: ^Vec3f read pointer(IntPtr(pointer(@self)) + 0);
-    public property RowPtr1: ^Vec3f read pointer(IntPtr(pointer(@self)) + 12);
-    public property RowPtr[x: integer]: ^Vec3f read pointer(IntPtr(pointer(@self)) + x*12);
+    public property ColPtr0: ^Vec3f read pointer(IntPtr(pointer(@self)) + 0);
+    public property ColPtr1: ^Vec3f read pointer(IntPtr(pointer(@self)) + 8);
+    public property ColPtr[x: integer]: ^Vec3f read pointer(IntPtr(pointer(@self)) + x*8);
+    
+    public static function RotateXYcw(rot: double): Mtr2x3f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr2x3f(
+         cr, +sr, 0.0,
+        -sr,  cr, 0.0
+      );
+    end;
+    public static function RotateXYccw(rot: double): Mtr2x3f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr2x3f(
+         cr, -sr, 0.0,
+        +sr,  cr, 0.0
+      );
+    end;
+    
+    public function Println: Mtr2x3f;
+    begin
+      var ElStrs := new string[2,3];
+      for var y := 0 to 2-1 do
+        for var x := 0 to 3-1 do
+          ElStrs[y,x] := (Sign(val[y,x])=-1?'-':'+') + Abs(val[y,x]).ToString('f2');
+      var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
+      var PrintlnMtrW := MtrElTextW*3 + 6; // +2*(Width-1) + 2;
+      
+      writeln( '┌' + #32*PrintlnMtrW + '┐' );
+      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ' │' );
+      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      
+      Result := self;
+    end;
     
     public static function operator*(m: Mtr2x3f; v: Vec3f): Vec2f := new Vec2f(m.val00*v.val0+m.val01*v.val1+m.val02*v.val2, m.val10*v.val0+m.val11*v.val1+m.val12*v.val2);
     public static function operator*(v: Vec2f; m: Mtr2x3f): Vec3f := new Vec3f(m.val00*v.val0+m.val10*v.val1, m.val01*v.val0+m.val11*v.val1, m.val02*v.val0+m.val12*v.val1);
@@ -6228,9 +6548,8 @@ type
   end;
   
   Mtr3x2f = record
-    public val00, val01: single;
-    public val10, val11: single;
-    public val20, val21: single;
+    public val00, val10, val20: single;
+    public val01, val11, val21: single;
     
     public constructor(val00, val01, val10, val11, val20, val21: single);
     begin
@@ -6244,51 +6563,17 @@ type
     
     private function GetValAt(y,x: integer): single;
     begin
-      case y of
-        0:
-        case x of
-          0: Result := self.val00;
-          1: Result := self.val01;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        1:
-        case x of
-          0: Result := self.val10;
-          1: Result := self.val11;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        2:
-        case x of
-          0: Result := self.val20;
-          1: Result := self.val21;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
-      end;
+      if cardinal(x) > 1 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
+      if cardinal(y) > 2 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
+      var ptr: ^single := pointer(new IntPtr(@self) + (x*3 + y) * 4 );
+      Result := ptr^;
     end;
     private procedure SetValAt(y,x: integer; val: single);
     begin
-      case y of
-        0:
-        case x of
-          0: self.val00 := val;
-          1: self.val01 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        1:
-        case x of
-          0: self.val10 := val;
-          1: self.val11 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        2:
-        case x of
-          0: self.val20 := val;
-          1: self.val21 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
-      end;
+      if cardinal(x) > 1 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
+      if cardinal(y) > 2 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
+      var ptr: ^single := pointer(new IntPtr(@self) + (x*3 + y) * 4 );
+      ptr^ := val;
     end;
     public property val[y,x: integer]: single read GetValAt write SetValAt; default;
     
@@ -6314,10 +6599,49 @@ type
       else raise new IndexOutOfRangeException('Номер столбца должен иметь значение 0..1');
     end;
     
-    public property RowPtr0: ^Vec2f read pointer(IntPtr(pointer(@self)) + 0);
-    public property RowPtr1: ^Vec2f read pointer(IntPtr(pointer(@self)) + 8);
-    public property RowPtr2: ^Vec2f read pointer(IntPtr(pointer(@self)) + 16);
-    public property RowPtr[x: integer]: ^Vec2f read pointer(IntPtr(pointer(@self)) + x*8);
+    public property ColPtr0: ^Vec2f read pointer(IntPtr(pointer(@self)) + 0);
+    public property ColPtr1: ^Vec2f read pointer(IntPtr(pointer(@self)) + 12);
+    public property ColPtr2: ^Vec2f read pointer(IntPtr(pointer(@self)) + 24);
+    public property ColPtr[x: integer]: ^Vec2f read pointer(IntPtr(pointer(@self)) + x*12);
+    
+    public static function RotateXYcw(rot: double): Mtr3x2f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr3x2f(
+         cr, +sr,
+        -sr,  cr,
+        0.0, 0.0
+      );
+    end;
+    public static function RotateXYccw(rot: double): Mtr3x2f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr3x2f(
+         cr, -sr,
+        +sr,  cr,
+        0.0, 0.0
+      );
+    end;
+    
+    public function Println: Mtr3x2f;
+    begin
+      var ElStrs := new string[3,2];
+      for var y := 0 to 3-1 do
+        for var x := 0 to 2-1 do
+          ElStrs[y,x] := (Sign(val[y,x])=-1?'-':'+') + Abs(val[y,x]).ToString('f2');
+      var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
+      var PrintlnMtrW := MtrElTextW*2 + 4; // +2*(Width-1) + 2;
+      
+      writeln( '┌' + #32*PrintlnMtrW + '┐' );
+      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ' │' );
+      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      
+      Result := self;
+    end;
     
     public static function operator*(m: Mtr3x2f; v: Vec2f): Vec3f := new Vec3f(m.val00*v.val0+m.val01*v.val1, m.val10*v.val0+m.val11*v.val1, m.val20*v.val0+m.val21*v.val1);
     public static function operator*(v: Vec3f; m: Mtr3x2f): Vec2f := new Vec2f(m.val00*v.val0+m.val10*v.val1+m.val20*v.val2, m.val01*v.val0+m.val11*v.val1+m.val21*v.val2);
@@ -6337,8 +6661,10 @@ type
   end;
   
   Mtr2x4f = record
-    public val00, val01, val02, val03: single;
-    public val10, val11, val12, val13: single;
+    public val00, val10: single;
+    public val01, val11: single;
+    public val02, val12: single;
+    public val03, val13: single;
     
     public constructor(val00, val01, val02, val03, val10, val11, val12, val13: single);
     begin
@@ -6354,47 +6680,17 @@ type
     
     private function GetValAt(y,x: integer): single;
     begin
-      case y of
-        0:
-        case x of
-          0: Result := self.val00;
-          1: Result := self.val01;
-          2: Result := self.val02;
-          3: Result := self.val03;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        1:
-        case x of
-          0: Result := self.val10;
-          1: Result := self.val11;
-          2: Result := self.val12;
-          3: Result := self.val13;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
-      end;
+      if cardinal(x) > 3 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
+      if cardinal(y) > 1 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
+      var ptr: ^single := pointer(new IntPtr(@self) + (x*2 + y) * 4 );
+      Result := ptr^;
     end;
     private procedure SetValAt(y,x: integer; val: single);
     begin
-      case y of
-        0:
-        case x of
-          0: self.val00 := val;
-          1: self.val01 := val;
-          2: self.val02 := val;
-          3: self.val03 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        1:
-        case x of
-          0: self.val10 := val;
-          1: self.val11 := val;
-          2: self.val12 := val;
-          3: self.val13 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
-      end;
+      if cardinal(x) > 3 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
+      if cardinal(y) > 1 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
+      var ptr: ^single := pointer(new IntPtr(@self) + (x*2 + y) * 4 );
+      ptr^ := val;
     end;
     public property val[y,x: integer]: single read GetValAt write SetValAt; default;
     
@@ -6422,9 +6718,45 @@ type
       else raise new IndexOutOfRangeException('Номер столбца должен иметь значение 0..3');
     end;
     
-    public property RowPtr0: ^Vec4f read pointer(IntPtr(pointer(@self)) + 0);
-    public property RowPtr1: ^Vec4f read pointer(IntPtr(pointer(@self)) + 16);
-    public property RowPtr[x: integer]: ^Vec4f read pointer(IntPtr(pointer(@self)) + x*16);
+    public property ColPtr0: ^Vec4f read pointer(IntPtr(pointer(@self)) + 0);
+    public property ColPtr1: ^Vec4f read pointer(IntPtr(pointer(@self)) + 8);
+    public property ColPtr[x: integer]: ^Vec4f read pointer(IntPtr(pointer(@self)) + x*8);
+    
+    public static function RotateXYcw(rot: double): Mtr2x4f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr2x4f(
+         cr, +sr, 0.0, 0.0,
+        -sr,  cr, 0.0, 0.0
+      );
+    end;
+    public static function RotateXYccw(rot: double): Mtr2x4f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr2x4f(
+         cr, -sr, 0.0, 0.0,
+        +sr,  cr, 0.0, 0.0
+      );
+    end;
+    
+    public function Println: Mtr2x4f;
+    begin
+      var ElStrs := new string[2,4];
+      for var y := 0 to 2-1 do
+        for var x := 0 to 4-1 do
+          ElStrs[y,x] := (Sign(val[y,x])=-1?'-':'+') + Abs(val[y,x]).ToString('f2');
+      var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
+      var PrintlnMtrW := MtrElTextW*4 + 8; // +2*(Width-1) + 2;
+      
+      writeln( '┌' + #32*PrintlnMtrW + '┐' );
+      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ', ', ElStrs[0,3].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ', ', ElStrs[1,3].PadLeft(MtrElTextW), ' │' );
+      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      
+      Result := self;
+    end;
     
     public static function operator*(m: Mtr2x4f; v: Vec4f): Vec2f := new Vec2f(m.val00*v.val0+m.val01*v.val1+m.val02*v.val2+m.val03*v.val3, m.val10*v.val0+m.val11*v.val1+m.val12*v.val2+m.val13*v.val3);
     public static function operator*(v: Vec2f; m: Mtr2x4f): Vec4f := new Vec4f(m.val00*v.val0+m.val10*v.val1, m.val01*v.val0+m.val11*v.val1, m.val02*v.val0+m.val12*v.val1, m.val03*v.val0+m.val13*v.val1);
@@ -6447,10 +6779,8 @@ type
   end;
   
   Mtr4x2f = record
-    public val00, val01: single;
-    public val10, val11: single;
-    public val20, val21: single;
-    public val30, val31: single;
+    public val00, val10, val20, val30: single;
+    public val01, val11, val21, val31: single;
     
     public constructor(val00, val01, val10, val11, val20, val21, val30, val31: single);
     begin
@@ -6466,63 +6796,17 @@ type
     
     private function GetValAt(y,x: integer): single;
     begin
-      case y of
-        0:
-        case x of
-          0: Result := self.val00;
-          1: Result := self.val01;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        1:
-        case x of
-          0: Result := self.val10;
-          1: Result := self.val11;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        2:
-        case x of
-          0: Result := self.val20;
-          1: Result := self.val21;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        3:
-        case x of
-          0: Result := self.val30;
-          1: Result := self.val31;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
-      end;
+      if cardinal(x) > 1 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
+      if cardinal(y) > 3 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
+      var ptr: ^single := pointer(new IntPtr(@self) + (x*4 + y) * 4 );
+      Result := ptr^;
     end;
     private procedure SetValAt(y,x: integer; val: single);
     begin
-      case y of
-        0:
-        case x of
-          0: self.val00 := val;
-          1: self.val01 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        1:
-        case x of
-          0: self.val10 := val;
-          1: self.val11 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        2:
-        case x of
-          0: self.val20 := val;
-          1: self.val21 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        3:
-        case x of
-          0: self.val30 := val;
-          1: self.val31 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
-      end;
+      if cardinal(x) > 1 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
+      if cardinal(y) > 3 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
+      var ptr: ^single := pointer(new IntPtr(@self) + (x*4 + y) * 4 );
+      ptr^ := val;
     end;
     public property val[y,x: integer]: single read GetValAt write SetValAt; default;
     
@@ -6550,11 +6834,53 @@ type
       else raise new IndexOutOfRangeException('Номер столбца должен иметь значение 0..1');
     end;
     
-    public property RowPtr0: ^Vec2f read pointer(IntPtr(pointer(@self)) + 0);
-    public property RowPtr1: ^Vec2f read pointer(IntPtr(pointer(@self)) + 8);
-    public property RowPtr2: ^Vec2f read pointer(IntPtr(pointer(@self)) + 16);
-    public property RowPtr3: ^Vec2f read pointer(IntPtr(pointer(@self)) + 24);
-    public property RowPtr[x: integer]: ^Vec2f read pointer(IntPtr(pointer(@self)) + x*8);
+    public property ColPtr0: ^Vec2f read pointer(IntPtr(pointer(@self)) + 0);
+    public property ColPtr1: ^Vec2f read pointer(IntPtr(pointer(@self)) + 16);
+    public property ColPtr2: ^Vec2f read pointer(IntPtr(pointer(@self)) + 32);
+    public property ColPtr3: ^Vec2f read pointer(IntPtr(pointer(@self)) + 48);
+    public property ColPtr[x: integer]: ^Vec2f read pointer(IntPtr(pointer(@self)) + x*16);
+    
+    public static function RotateXYcw(rot: double): Mtr4x2f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr4x2f(
+         cr, +sr,
+        -sr,  cr,
+        0.0, 0.0,
+        0.0, 0.0
+      );
+    end;
+    public static function RotateXYccw(rot: double): Mtr4x2f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr4x2f(
+         cr, -sr,
+        +sr,  cr,
+        0.0, 0.0,
+        0.0, 0.0
+      );
+    end;
+    
+    public function Println: Mtr4x2f;
+    begin
+      var ElStrs := new string[4,2];
+      for var y := 0 to 4-1 do
+        for var x := 0 to 2-1 do
+          ElStrs[y,x] := (Sign(val[y,x])=-1?'-':'+') + Abs(val[y,x]).ToString('f2');
+      var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
+      var PrintlnMtrW := MtrElTextW*2 + 4; // +2*(Width-1) + 2;
+      
+      writeln( '┌' + #32*PrintlnMtrW + '┐' );
+      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[3,0].PadLeft(MtrElTextW), ', ', ElStrs[3,1].PadLeft(MtrElTextW), ' │' );
+      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      
+      Result := self;
+    end;
     
     public static function operator*(m: Mtr4x2f; v: Vec2f): Vec4f := new Vec4f(m.val00*v.val0+m.val01*v.val1, m.val10*v.val0+m.val11*v.val1, m.val20*v.val0+m.val21*v.val1, m.val30*v.val0+m.val31*v.val1);
     public static function operator*(v: Vec4f; m: Mtr4x2f): Vec2f := new Vec2f(m.val00*v.val0+m.val10*v.val1+m.val20*v.val2+m.val30*v.val3, m.val01*v.val0+m.val11*v.val1+m.val21*v.val2+m.val31*v.val3);
@@ -6580,9 +6906,10 @@ type
   end;
   
   Mtr3x4f = record
-    public val00, val01, val02, val03: single;
-    public val10, val11, val12, val13: single;
-    public val20, val21, val22, val23: single;
+    public val00, val10, val20: single;
+    public val01, val11, val21: single;
+    public val02, val12, val22: single;
+    public val03, val13, val23: single;
     
     public constructor(val00, val01, val02, val03, val10, val11, val12, val13, val20, val21, val22, val23: single);
     begin
@@ -6602,63 +6929,17 @@ type
     
     private function GetValAt(y,x: integer): single;
     begin
-      case y of
-        0:
-        case x of
-          0: Result := self.val00;
-          1: Result := self.val01;
-          2: Result := self.val02;
-          3: Result := self.val03;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        1:
-        case x of
-          0: Result := self.val10;
-          1: Result := self.val11;
-          2: Result := self.val12;
-          3: Result := self.val13;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        2:
-        case x of
-          0: Result := self.val20;
-          1: Result := self.val21;
-          2: Result := self.val22;
-          3: Result := self.val23;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
-      end;
+      if cardinal(x) > 3 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
+      if cardinal(y) > 2 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
+      var ptr: ^single := pointer(new IntPtr(@self) + (x*3 + y) * 4 );
+      Result := ptr^;
     end;
     private procedure SetValAt(y,x: integer; val: single);
     begin
-      case y of
-        0:
-        case x of
-          0: self.val00 := val;
-          1: self.val01 := val;
-          2: self.val02 := val;
-          3: self.val03 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        1:
-        case x of
-          0: self.val10 := val;
-          1: self.val11 := val;
-          2: self.val12 := val;
-          3: self.val13 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        2:
-        case x of
-          0: self.val20 := val;
-          1: self.val21 := val;
-          2: self.val22 := val;
-          3: self.val23 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
-      end;
+      if cardinal(x) > 3 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
+      if cardinal(y) > 2 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
+      var ptr: ^single := pointer(new IntPtr(@self) + (x*3 + y) * 4 );
+      ptr^ := val;
     end;
     public property val[y,x: integer]: single read GetValAt write SetValAt; default;
     
@@ -6688,10 +6969,91 @@ type
       else raise new IndexOutOfRangeException('Номер столбца должен иметь значение 0..3');
     end;
     
-    public property RowPtr0: ^Vec4f read pointer(IntPtr(pointer(@self)) + 0);
-    public property RowPtr1: ^Vec4f read pointer(IntPtr(pointer(@self)) + 16);
-    public property RowPtr2: ^Vec4f read pointer(IntPtr(pointer(@self)) + 32);
-    public property RowPtr[x: integer]: ^Vec4f read pointer(IntPtr(pointer(@self)) + x*16);
+    public property ColPtr0: ^Vec4f read pointer(IntPtr(pointer(@self)) + 0);
+    public property ColPtr1: ^Vec4f read pointer(IntPtr(pointer(@self)) + 12);
+    public property ColPtr2: ^Vec4f read pointer(IntPtr(pointer(@self)) + 24);
+    public property ColPtr[x: integer]: ^Vec4f read pointer(IntPtr(pointer(@self)) + x*12);
+    
+    public static function RotateXYcw(rot: double): Mtr3x4f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr3x4f(
+         cr, +sr, 0.0, 0.0,
+        -sr,  cr, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0
+      );
+    end;
+    public static function RotateXYccw(rot: double): Mtr3x4f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr3x4f(
+         cr, -sr, 0.0, 0.0,
+        +sr,  cr, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0
+      );
+    end;
+    
+    public static function RotateXZcw(rot: double): Mtr3x4f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr3x4f(
+         cr, 0.0, +sr, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        -sr, 0.0,  cr, 0.0
+      );
+    end;
+    public static function RotateXZccw(rot: double): Mtr3x4f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr3x4f(
+         cr, 0.0, -sr, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        +sr, 0.0,  cr, 0.0
+      );
+    end;
+    
+    public static function RotateYZcw(rot: double): Mtr3x4f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr3x4f(
+        1.0, 0.0, 0.0, 0.0,
+        0.0,  cr, +sr, 0.0,
+        0.0, -sr,  cr, 0.0
+      );
+    end;
+    public static function RotateYZccw(rot: double): Mtr3x4f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr3x4f(
+        1.0, 0.0, 0.0, 0.0,
+        0.0,  cr, -sr, 0.0,
+        0.0, +sr,  cr, 0.0
+      );
+    end;
+    
+    public function Println: Mtr3x4f;
+    begin
+      var ElStrs := new string[3,4];
+      for var y := 0 to 3-1 do
+        for var x := 0 to 4-1 do
+          ElStrs[y,x] := (Sign(val[y,x])=-1?'-':'+') + Abs(val[y,x]).ToString('f2');
+      var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
+      var PrintlnMtrW := MtrElTextW*4 + 8; // +2*(Width-1) + 2;
+      
+      writeln( '┌' + #32*PrintlnMtrW + '┐' );
+      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ', ', ElStrs[0,3].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ', ', ElStrs[1,3].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ', ', ElStrs[2,2].PadLeft(MtrElTextW), ', ', ElStrs[2,3].PadLeft(MtrElTextW), ' │' );
+      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      
+      Result := self;
+    end;
     
     public static function operator*(m: Mtr3x4f; v: Vec4f): Vec3f := new Vec3f(m.val00*v.val0+m.val01*v.val1+m.val02*v.val2+m.val03*v.val3, m.val10*v.val0+m.val11*v.val1+m.val12*v.val2+m.val13*v.val3, m.val20*v.val0+m.val21*v.val1+m.val22*v.val2+m.val23*v.val3);
     public static function operator*(v: Vec3f; m: Mtr3x4f): Vec4f := new Vec4f(m.val00*v.val0+m.val10*v.val1+m.val20*v.val2, m.val01*v.val0+m.val11*v.val1+m.val21*v.val2, m.val02*v.val0+m.val12*v.val1+m.val22*v.val2, m.val03*v.val0+m.val13*v.val1+m.val23*v.val2);
@@ -6720,10 +7082,9 @@ type
   end;
   
   Mtr4x3f = record
-    public val00, val01, val02: single;
-    public val10, val11, val12: single;
-    public val20, val21, val22: single;
-    public val30, val31, val32: single;
+    public val00, val10, val20, val30: single;
+    public val01, val11, val21, val31: single;
+    public val02, val12, val22, val32: single;
     
     public constructor(val00, val01, val02, val10, val11, val12, val20, val21, val22, val30, val31, val32: single);
     begin
@@ -6743,71 +7104,17 @@ type
     
     private function GetValAt(y,x: integer): single;
     begin
-      case y of
-        0:
-        case x of
-          0: Result := self.val00;
-          1: Result := self.val01;
-          2: Result := self.val02;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        1:
-        case x of
-          0: Result := self.val10;
-          1: Result := self.val11;
-          2: Result := self.val12;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        2:
-        case x of
-          0: Result := self.val20;
-          1: Result := self.val21;
-          2: Result := self.val22;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        3:
-        case x of
-          0: Result := self.val30;
-          1: Result := self.val31;
-          2: Result := self.val32;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
-      end;
+      if cardinal(x) > 2 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
+      if cardinal(y) > 3 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
+      var ptr: ^single := pointer(new IntPtr(@self) + (x*4 + y) * 4 );
+      Result := ptr^;
     end;
     private procedure SetValAt(y,x: integer; val: single);
     begin
-      case y of
-        0:
-        case x of
-          0: self.val00 := val;
-          1: self.val01 := val;
-          2: self.val02 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        1:
-        case x of
-          0: self.val10 := val;
-          1: self.val11 := val;
-          2: self.val12 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        2:
-        case x of
-          0: self.val20 := val;
-          1: self.val21 := val;
-          2: self.val22 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        3:
-        case x of
-          0: self.val30 := val;
-          1: self.val31 := val;
-          2: self.val32 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
-      end;
+      if cardinal(x) > 2 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
+      if cardinal(y) > 3 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
+      var ptr: ^single := pointer(new IntPtr(@self) + (x*4 + y) * 4 );
+      ptr^ := val;
     end;
     public property val[y,x: integer]: single read GetValAt write SetValAt; default;
     
@@ -6837,11 +7144,99 @@ type
       else raise new IndexOutOfRangeException('Номер столбца должен иметь значение 0..2');
     end;
     
-    public property RowPtr0: ^Vec3f read pointer(IntPtr(pointer(@self)) + 0);
-    public property RowPtr1: ^Vec3f read pointer(IntPtr(pointer(@self)) + 12);
-    public property RowPtr2: ^Vec3f read pointer(IntPtr(pointer(@self)) + 24);
-    public property RowPtr3: ^Vec3f read pointer(IntPtr(pointer(@self)) + 36);
-    public property RowPtr[x: integer]: ^Vec3f read pointer(IntPtr(pointer(@self)) + x*12);
+    public property ColPtr0: ^Vec3f read pointer(IntPtr(pointer(@self)) + 0);
+    public property ColPtr1: ^Vec3f read pointer(IntPtr(pointer(@self)) + 16);
+    public property ColPtr2: ^Vec3f read pointer(IntPtr(pointer(@self)) + 32);
+    public property ColPtr3: ^Vec3f read pointer(IntPtr(pointer(@self)) + 48);
+    public property ColPtr[x: integer]: ^Vec3f read pointer(IntPtr(pointer(@self)) + x*16);
+    
+    public static function RotateXYcw(rot: double): Mtr4x3f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr4x3f(
+         cr, +sr, 0.0,
+        -sr,  cr, 0.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 0.0
+      );
+    end;
+    public static function RotateXYccw(rot: double): Mtr4x3f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr4x3f(
+         cr, -sr, 0.0,
+        +sr,  cr, 0.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 0.0
+      );
+    end;
+    
+    public static function RotateXZcw(rot: double): Mtr4x3f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr4x3f(
+         cr, 0.0, +sr,
+        0.0, 1.0, 0.0,
+        -sr, 0.0,  cr,
+        0.0, 0.0, 0.0
+      );
+    end;
+    public static function RotateXZccw(rot: double): Mtr4x3f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr4x3f(
+         cr, 0.0, -sr,
+        0.0, 1.0, 0.0,
+        +sr, 0.0,  cr,
+        0.0, 0.0, 0.0
+      );
+    end;
+    
+    public static function RotateYZcw(rot: double): Mtr4x3f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr4x3f(
+        1.0, 0.0, 0.0,
+        0.0,  cr, +sr,
+        0.0, -sr,  cr,
+        0.0, 0.0, 0.0
+      );
+    end;
+    public static function RotateYZccw(rot: double): Mtr4x3f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr4x3f(
+        1.0, 0.0, 0.0,
+        0.0,  cr, -sr,
+        0.0, +sr,  cr,
+        0.0, 0.0, 0.0
+      );
+    end;
+    
+    public function Println: Mtr4x3f;
+    begin
+      var ElStrs := new string[4,3];
+      for var y := 0 to 4-1 do
+        for var x := 0 to 3-1 do
+          ElStrs[y,x] := (Sign(val[y,x])=-1?'-':'+') + Abs(val[y,x]).ToString('f2');
+      var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
+      var PrintlnMtrW := MtrElTextW*3 + 6; // +2*(Width-1) + 2;
+      
+      writeln( '┌' + #32*PrintlnMtrW + '┐' );
+      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ', ', ElStrs[2,2].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[3,0].PadLeft(MtrElTextW), ', ', ElStrs[3,1].PadLeft(MtrElTextW), ', ', ElStrs[3,2].PadLeft(MtrElTextW), ' │' );
+      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      
+      Result := self;
+    end;
     
     public static function operator*(m: Mtr4x3f; v: Vec3f): Vec4f := new Vec4f(m.val00*v.val0+m.val01*v.val1+m.val02*v.val2, m.val10*v.val0+m.val11*v.val1+m.val12*v.val2, m.val20*v.val0+m.val21*v.val1+m.val22*v.val2, m.val30*v.val0+m.val31*v.val1+m.val32*v.val2);
     public static function operator*(v: Vec4f; m: Mtr4x3f): Vec3f := new Vec3f(m.val00*v.val0+m.val10*v.val1+m.val20*v.val2+m.val30*v.val3, m.val01*v.val0+m.val11*v.val1+m.val21*v.val2+m.val31*v.val3, m.val02*v.val0+m.val12*v.val1+m.val22*v.val2+m.val32*v.val3);
@@ -6873,10 +7268,10 @@ type
   end;
   
   Mtr2x2d = record
-    public val00, val01: real;
-    public val10, val11: real;
+    public val00, val10: double;
+    public val01, val11: double;
     
-    public constructor(val00, val01, val10, val11: real);
+    public constructor(val00, val01, val10, val11: double);
     begin
       self.val00 := val00;
       self.val01 := val01;
@@ -6884,43 +7279,21 @@ type
       self.val11 := val11;
     end;
     
-    private function GetValAt(y,x: integer): real;
+    private function GetValAt(y,x: integer): double;
     begin
-      case y of
-        0:
-        case x of
-          0: Result := self.val00;
-          1: Result := self.val01;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        1:
-        case x of
-          0: Result := self.val10;
-          1: Result := self.val11;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
-      end;
+      if cardinal(x) > 1 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
+      if cardinal(y) > 1 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
+      var ptr: ^double := pointer(new IntPtr(@self) + (x*2 + y) * 8 );
+      Result := ptr^;
     end;
-    private procedure SetValAt(y,x: integer; val: real);
+    private procedure SetValAt(y,x: integer; val: double);
     begin
-      case y of
-        0:
-        case x of
-          0: self.val00 := val;
-          1: self.val01 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        1:
-        case x of
-          0: self.val10 := val;
-          1: self.val11 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
-      end;
+      if cardinal(x) > 1 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
+      if cardinal(y) > 1 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
+      var ptr: ^double := pointer(new IntPtr(@self) + (x*2 + y) * 8 );
+      ptr^ := val;
     end;
-    public property val[y,x: integer]: real read GetValAt write SetValAt; default;
+    public property val[y,x: integer]: double read GetValAt write SetValAt; default;
     
     public static property Identity: Mtr2x2d read new Mtr2x2d(1.0, 0.0, 0.0, 1.0);
     
@@ -6942,9 +7315,45 @@ type
       else raise new IndexOutOfRangeException('Номер столбца должен иметь значение 0..1');
     end;
     
-    public property RowPtr0: ^Vec2d read pointer(IntPtr(pointer(@self)) + 0);
-    public property RowPtr1: ^Vec2d read pointer(IntPtr(pointer(@self)) + 16);
-    public property RowPtr[x: integer]: ^Vec2d read pointer(IntPtr(pointer(@self)) + x*16);
+    public property ColPtr0: ^Vec2d read pointer(IntPtr(pointer(@self)) + 0);
+    public property ColPtr1: ^Vec2d read pointer(IntPtr(pointer(@self)) + 16);
+    public property ColPtr[x: integer]: ^Vec2d read pointer(IntPtr(pointer(@self)) + x*16);
+    
+    public static function RotateXYcw(rot: double): Mtr2x2d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr2x2d(
+         cr, +sr,
+        -sr,  cr
+      );
+    end;
+    public static function RotateXYccw(rot: double): Mtr2x2d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr2x2d(
+         cr, -sr,
+        +sr,  cr
+      );
+    end;
+    
+    public function Println: Mtr2x2d;
+    begin
+      var ElStrs := new string[2,2];
+      for var y := 0 to 2-1 do
+        for var x := 0 to 2-1 do
+          ElStrs[y,x] := (Sign(val[y,x])=-1?'-':'+') + Abs(val[y,x]).ToString('f2');
+      var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
+      var PrintlnMtrW := MtrElTextW*2 + 4; // +2*(Width-1) + 2;
+      
+      writeln( '┌' + #32*PrintlnMtrW + '┐' );
+      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ' │' );
+      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      
+      Result := self;
+    end;
     
     public static function operator*(m: Mtr2x2d; v: Vec2d): Vec2d := new Vec2d(m.val00*v.val0+m.val01*v.val1, m.val10*v.val0+m.val11*v.val1);
     public static function operator*(v: Vec2d; m: Mtr2x2d): Vec2d := new Vec2d(m.val00*v.val0+m.val10*v.val1, m.val01*v.val0+m.val11*v.val1);
@@ -6980,11 +7389,11 @@ type
   Mtr2d = Mtr2x2d;
   
   Mtr3x3d = record
-    public val00, val01, val02: real;
-    public val10, val11, val12: real;
-    public val20, val21, val22: real;
+    public val00, val10, val20: double;
+    public val01, val11, val21: double;
+    public val02, val12, val22: double;
     
-    public constructor(val00, val01, val02, val10, val11, val12, val20, val21, val22: real);
+    public constructor(val00, val01, val02, val10, val11, val12, val20, val21, val22: double);
     begin
       self.val00 := val00;
       self.val01 := val01;
@@ -6997,61 +7406,21 @@ type
       self.val22 := val22;
     end;
     
-    private function GetValAt(y,x: integer): real;
+    private function GetValAt(y,x: integer): double;
     begin
-      case y of
-        0:
-        case x of
-          0: Result := self.val00;
-          1: Result := self.val01;
-          2: Result := self.val02;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        1:
-        case x of
-          0: Result := self.val10;
-          1: Result := self.val11;
-          2: Result := self.val12;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        2:
-        case x of
-          0: Result := self.val20;
-          1: Result := self.val21;
-          2: Result := self.val22;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
-      end;
+      if cardinal(x) > 2 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
+      if cardinal(y) > 2 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
+      var ptr: ^double := pointer(new IntPtr(@self) + (x*3 + y) * 8 );
+      Result := ptr^;
     end;
-    private procedure SetValAt(y,x: integer; val: real);
+    private procedure SetValAt(y,x: integer; val: double);
     begin
-      case y of
-        0:
-        case x of
-          0: self.val00 := val;
-          1: self.val01 := val;
-          2: self.val02 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        1:
-        case x of
-          0: self.val10 := val;
-          1: self.val11 := val;
-          2: self.val12 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        2:
-        case x of
-          0: self.val20 := val;
-          1: self.val21 := val;
-          2: self.val22 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
-      end;
+      if cardinal(x) > 2 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
+      if cardinal(y) > 2 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
+      var ptr: ^double := pointer(new IntPtr(@self) + (x*3 + y) * 8 );
+      ptr^ := val;
     end;
-    public property val[y,x: integer]: real read GetValAt write SetValAt; default;
+    public property val[y,x: integer]: double read GetValAt write SetValAt; default;
     
     public static property Identity: Mtr3x3d read new Mtr3x3d(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
     
@@ -7077,10 +7446,91 @@ type
       else raise new IndexOutOfRangeException('Номер столбца должен иметь значение 0..2');
     end;
     
-    public property RowPtr0: ^Vec3d read pointer(IntPtr(pointer(@self)) + 0);
-    public property RowPtr1: ^Vec3d read pointer(IntPtr(pointer(@self)) + 24);
-    public property RowPtr2: ^Vec3d read pointer(IntPtr(pointer(@self)) + 48);
-    public property RowPtr[x: integer]: ^Vec3d read pointer(IntPtr(pointer(@self)) + x*24);
+    public property ColPtr0: ^Vec3d read pointer(IntPtr(pointer(@self)) + 0);
+    public property ColPtr1: ^Vec3d read pointer(IntPtr(pointer(@self)) + 24);
+    public property ColPtr2: ^Vec3d read pointer(IntPtr(pointer(@self)) + 48);
+    public property ColPtr[x: integer]: ^Vec3d read pointer(IntPtr(pointer(@self)) + x*24);
+    
+    public static function RotateXYcw(rot: double): Mtr3x3d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr3x3d(
+         cr, +sr, 0.0,
+        -sr,  cr, 0.0,
+        0.0, 0.0, 1.0
+      );
+    end;
+    public static function RotateXYccw(rot: double): Mtr3x3d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr3x3d(
+         cr, -sr, 0.0,
+        +sr,  cr, 0.0,
+        0.0, 0.0, 1.0
+      );
+    end;
+    
+    public static function RotateXZcw(rot: double): Mtr3x3d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr3x3d(
+         cr, 0.0, +sr,
+        0.0, 1.0, 0.0,
+        -sr, 0.0,  cr
+      );
+    end;
+    public static function RotateXZccw(rot: double): Mtr3x3d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr3x3d(
+         cr, 0.0, -sr,
+        0.0, 1.0, 0.0,
+        +sr, 0.0,  cr
+      );
+    end;
+    
+    public static function RotateYZcw(rot: double): Mtr3x3d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr3x3d(
+        1.0, 0.0, 0.0,
+        0.0,  cr, +sr,
+        0.0, -sr,  cr
+      );
+    end;
+    public static function RotateYZccw(rot: double): Mtr3x3d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr3x3d(
+        1.0, 0.0, 0.0,
+        0.0,  cr, -sr,
+        0.0, +sr,  cr
+      );
+    end;
+    
+    public function Println: Mtr3x3d;
+    begin
+      var ElStrs := new string[3,3];
+      for var y := 0 to 3-1 do
+        for var x := 0 to 3-1 do
+          ElStrs[y,x] := (Sign(val[y,x])=-1?'-':'+') + Abs(val[y,x]).ToString('f2');
+      var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
+      var PrintlnMtrW := MtrElTextW*3 + 6; // +2*(Width-1) + 2;
+      
+      writeln( '┌' + #32*PrintlnMtrW + '┐' );
+      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ', ', ElStrs[2,2].PadLeft(MtrElTextW), ' │' );
+      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      
+      Result := self;
+    end;
     
     public static function operator*(m: Mtr3x3d; v: Vec3d): Vec3d := new Vec3d(m.val00*v.val0+m.val01*v.val1+m.val02*v.val2, m.val10*v.val0+m.val11*v.val1+m.val12*v.val2, m.val20*v.val0+m.val21*v.val1+m.val22*v.val2);
     public static function operator*(v: Vec3d; m: Mtr3x3d): Vec3d := new Vec3d(m.val00*v.val0+m.val10*v.val1+m.val20*v.val2, m.val01*v.val0+m.val11*v.val1+m.val21*v.val2, m.val02*v.val0+m.val12*v.val1+m.val22*v.val2);
@@ -7119,12 +7569,12 @@ type
   Mtr3d = Mtr3x3d;
   
   Mtr4x4d = record
-    public val00, val01, val02, val03: real;
-    public val10, val11, val12, val13: real;
-    public val20, val21, val22, val23: real;
-    public val30, val31, val32, val33: real;
+    public val00, val10, val20, val30: double;
+    public val01, val11, val21, val31: double;
+    public val02, val12, val22, val32: double;
+    public val03, val13, val23, val33: double;
     
-    public constructor(val00, val01, val02, val03, val10, val11, val12, val13, val20, val21, val22, val23, val30, val31, val32, val33: real);
+    public constructor(val00, val01, val02, val03, val10, val11, val12, val13, val20, val21, val22, val23, val30, val31, val32, val33: double);
     begin
       self.val00 := val00;
       self.val01 := val01;
@@ -7144,83 +7594,21 @@ type
       self.val33 := val33;
     end;
     
-    private function GetValAt(y,x: integer): real;
+    private function GetValAt(y,x: integer): double;
     begin
-      case y of
-        0:
-        case x of
-          0: Result := self.val00;
-          1: Result := self.val01;
-          2: Result := self.val02;
-          3: Result := self.val03;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        1:
-        case x of
-          0: Result := self.val10;
-          1: Result := self.val11;
-          2: Result := self.val12;
-          3: Result := self.val13;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        2:
-        case x of
-          0: Result := self.val20;
-          1: Result := self.val21;
-          2: Result := self.val22;
-          3: Result := self.val23;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        3:
-        case x of
-          0: Result := self.val30;
-          1: Result := self.val31;
-          2: Result := self.val32;
-          3: Result := self.val33;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
-      end;
+      if cardinal(x) > 3 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
+      if cardinal(y) > 3 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
+      var ptr: ^double := pointer(new IntPtr(@self) + (x*4 + y) * 8 );
+      Result := ptr^;
     end;
-    private procedure SetValAt(y,x: integer; val: real);
+    private procedure SetValAt(y,x: integer; val: double);
     begin
-      case y of
-        0:
-        case x of
-          0: self.val00 := val;
-          1: self.val01 := val;
-          2: self.val02 := val;
-          3: self.val03 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        1:
-        case x of
-          0: self.val10 := val;
-          1: self.val11 := val;
-          2: self.val12 := val;
-          3: self.val13 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        2:
-        case x of
-          0: self.val20 := val;
-          1: self.val21 := val;
-          2: self.val22 := val;
-          3: self.val23 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        3:
-        case x of
-          0: self.val30 := val;
-          1: self.val31 := val;
-          2: self.val32 := val;
-          3: self.val33 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
-      end;
+      if cardinal(x) > 3 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
+      if cardinal(y) > 3 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
+      var ptr: ^double := pointer(new IntPtr(@self) + (x*4 + y) * 8 );
+      ptr^ := val;
     end;
-    public property val[y,x: integer]: real read GetValAt write SetValAt; default;
+    public property val[y,x: integer]: double read GetValAt write SetValAt; default;
     
     public static property Identity: Mtr4x4d read new Mtr4x4d(1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
     
@@ -7250,11 +7638,168 @@ type
       else raise new IndexOutOfRangeException('Номер столбца должен иметь значение 0..3');
     end;
     
-    public property RowPtr0: ^Vec4d read pointer(IntPtr(pointer(@self)) + 0);
-    public property RowPtr1: ^Vec4d read pointer(IntPtr(pointer(@self)) + 32);
-    public property RowPtr2: ^Vec4d read pointer(IntPtr(pointer(@self)) + 64);
-    public property RowPtr3: ^Vec4d read pointer(IntPtr(pointer(@self)) + 96);
-    public property RowPtr[x: integer]: ^Vec4d read pointer(IntPtr(pointer(@self)) + x*32);
+    public property ColPtr0: ^Vec4d read pointer(IntPtr(pointer(@self)) + 0);
+    public property ColPtr1: ^Vec4d read pointer(IntPtr(pointer(@self)) + 32);
+    public property ColPtr2: ^Vec4d read pointer(IntPtr(pointer(@self)) + 64);
+    public property ColPtr3: ^Vec4d read pointer(IntPtr(pointer(@self)) + 96);
+    public property ColPtr[x: integer]: ^Vec4d read pointer(IntPtr(pointer(@self)) + x*32);
+    
+    public static function RotateXYcw(rot: double): Mtr4x4d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr4x4d(
+         cr, +sr, 0.0, 0.0,
+        -sr,  cr, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0
+      );
+    end;
+    public static function RotateXYccw(rot: double): Mtr4x4d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr4x4d(
+         cr, -sr, 0.0, 0.0,
+        +sr,  cr, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0
+      );
+    end;
+    
+    public static function RotateXZcw(rot: double): Mtr4x4d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr4x4d(
+         cr, 0.0, +sr, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        -sr, 0.0,  cr, 0.0,
+        0.0, 0.0, 0.0, 1.0
+      );
+    end;
+    public static function RotateXZccw(rot: double): Mtr4x4d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr4x4d(
+         cr, 0.0, -sr, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        +sr, 0.0,  cr, 0.0,
+        0.0, 0.0, 0.0, 1.0
+      );
+    end;
+    
+    public static function RotateXWcw(rot: double): Mtr4x4d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr4x4d(
+         cr, 0.0, 0.0, +sr,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        -sr, 0.0, 0.0,  cr
+      );
+    end;
+    public static function RotateXWccw(rot: double): Mtr4x4d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr4x4d(
+         cr, 0.0, 0.0, -sr,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        +sr, 0.0, 0.0,  cr
+      );
+    end;
+    
+    public static function RotateYZcw(rot: double): Mtr4x4d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr4x4d(
+        1.0, 0.0, 0.0, 0.0,
+        0.0,  cr, +sr, 0.0,
+        0.0, -sr,  cr, 0.0,
+        0.0, 0.0, 0.0, 1.0
+      );
+    end;
+    public static function RotateYZccw(rot: double): Mtr4x4d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr4x4d(
+        1.0, 0.0, 0.0, 0.0,
+        0.0,  cr, -sr, 0.0,
+        0.0, +sr,  cr, 0.0,
+        0.0, 0.0, 0.0, 1.0
+      );
+    end;
+    
+    public static function RotateYWcw(rot: double): Mtr4x4d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr4x4d(
+        1.0, 0.0, 0.0, 0.0,
+        0.0,  cr, 0.0, +sr,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, -sr, 0.0,  cr
+      );
+    end;
+    public static function RotateYWccw(rot: double): Mtr4x4d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr4x4d(
+        1.0, 0.0, 0.0, 0.0,
+        0.0,  cr, 0.0, -sr,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, +sr, 0.0,  cr
+      );
+    end;
+    
+    public static function RotateZWcw(rot: double): Mtr4x4d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr4x4d(
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0,  cr, +sr,
+        0.0, 0.0, -sr,  cr
+      );
+    end;
+    public static function RotateZWccw(rot: double): Mtr4x4d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr4x4d(
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0,  cr, -sr,
+        0.0, 0.0, +sr,  cr
+      );
+    end;
+    
+    public function Println: Mtr4x4d;
+    begin
+      var ElStrs := new string[4,4];
+      for var y := 0 to 4-1 do
+        for var x := 0 to 4-1 do
+          ElStrs[y,x] := (Sign(val[y,x])=-1?'-':'+') + Abs(val[y,x]).ToString('f2');
+      var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
+      var PrintlnMtrW := MtrElTextW*4 + 8; // +2*(Width-1) + 2;
+      
+      writeln( '┌' + #32*PrintlnMtrW + '┐' );
+      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ', ', ElStrs[0,3].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ', ', ElStrs[1,3].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ', ', ElStrs[2,2].PadLeft(MtrElTextW), ', ', ElStrs[2,3].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[3,0].PadLeft(MtrElTextW), ', ', ElStrs[3,1].PadLeft(MtrElTextW), ', ', ElStrs[3,2].PadLeft(MtrElTextW), ', ', ElStrs[3,3].PadLeft(MtrElTextW), ' │' );
+      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      
+      Result := self;
+    end;
     
     public static function operator*(m: Mtr4x4d; v: Vec4d): Vec4d := new Vec4d(m.val00*v.val0+m.val01*v.val1+m.val02*v.val2+m.val03*v.val3, m.val10*v.val0+m.val11*v.val1+m.val12*v.val2+m.val13*v.val3, m.val20*v.val0+m.val21*v.val1+m.val22*v.val2+m.val23*v.val3, m.val30*v.val0+m.val31*v.val1+m.val32*v.val2+m.val33*v.val3);
     public static function operator*(v: Vec4d; m: Mtr4x4d): Vec4d := new Vec4d(m.val00*v.val0+m.val10*v.val1+m.val20*v.val2+m.val30*v.val3, m.val01*v.val0+m.val11*v.val1+m.val21*v.val2+m.val31*v.val3, m.val02*v.val0+m.val12*v.val1+m.val22*v.val2+m.val32*v.val3, m.val03*v.val0+m.val13*v.val1+m.val23*v.val2+m.val33*v.val3);
@@ -7296,10 +7841,11 @@ type
   Mtr4d = Mtr4x4d;
   
   Mtr2x3d = record
-    public val00, val01, val02: real;
-    public val10, val11, val12: real;
+    public val00, val10: double;
+    public val01, val11: double;
+    public val02, val12: double;
     
-    public constructor(val00, val01, val02, val10, val11, val12: real);
+    public constructor(val00, val01, val02, val10, val11, val12: double);
     begin
       self.val00 := val00;
       self.val01 := val01;
@@ -7309,47 +7855,21 @@ type
       self.val12 := val12;
     end;
     
-    private function GetValAt(y,x: integer): real;
+    private function GetValAt(y,x: integer): double;
     begin
-      case y of
-        0:
-        case x of
-          0: Result := self.val00;
-          1: Result := self.val01;
-          2: Result := self.val02;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        1:
-        case x of
-          0: Result := self.val10;
-          1: Result := self.val11;
-          2: Result := self.val12;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
-      end;
+      if cardinal(x) > 2 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
+      if cardinal(y) > 1 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
+      var ptr: ^double := pointer(new IntPtr(@self) + (x*2 + y) * 8 );
+      Result := ptr^;
     end;
-    private procedure SetValAt(y,x: integer; val: real);
+    private procedure SetValAt(y,x: integer; val: double);
     begin
-      case y of
-        0:
-        case x of
-          0: self.val00 := val;
-          1: self.val01 := val;
-          2: self.val02 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        1:
-        case x of
-          0: self.val10 := val;
-          1: self.val11 := val;
-          2: self.val12 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
-      end;
+      if cardinal(x) > 2 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
+      if cardinal(y) > 1 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
+      var ptr: ^double := pointer(new IntPtr(@self) + (x*2 + y) * 8 );
+      ptr^ := val;
     end;
-    public property val[y,x: integer]: real read GetValAt write SetValAt; default;
+    public property val[y,x: integer]: double read GetValAt write SetValAt; default;
     
     public static property Identity: Mtr2x3d read new Mtr2x3d(1.0, 0.0, 0.0, 0.0, 1.0, 0.0);
     
@@ -7373,9 +7893,45 @@ type
       else raise new IndexOutOfRangeException('Номер столбца должен иметь значение 0..2');
     end;
     
-    public property RowPtr0: ^Vec3d read pointer(IntPtr(pointer(@self)) + 0);
-    public property RowPtr1: ^Vec3d read pointer(IntPtr(pointer(@self)) + 24);
-    public property RowPtr[x: integer]: ^Vec3d read pointer(IntPtr(pointer(@self)) + x*24);
+    public property ColPtr0: ^Vec3d read pointer(IntPtr(pointer(@self)) + 0);
+    public property ColPtr1: ^Vec3d read pointer(IntPtr(pointer(@self)) + 16);
+    public property ColPtr[x: integer]: ^Vec3d read pointer(IntPtr(pointer(@self)) + x*16);
+    
+    public static function RotateXYcw(rot: double): Mtr2x3d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr2x3d(
+         cr, +sr, 0.0,
+        -sr,  cr, 0.0
+      );
+    end;
+    public static function RotateXYccw(rot: double): Mtr2x3d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr2x3d(
+         cr, -sr, 0.0,
+        +sr,  cr, 0.0
+      );
+    end;
+    
+    public function Println: Mtr2x3d;
+    begin
+      var ElStrs := new string[2,3];
+      for var y := 0 to 2-1 do
+        for var x := 0 to 3-1 do
+          ElStrs[y,x] := (Sign(val[y,x])=-1?'-':'+') + Abs(val[y,x]).ToString('f2');
+      var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
+      var PrintlnMtrW := MtrElTextW*3 + 6; // +2*(Width-1) + 2;
+      
+      writeln( '┌' + #32*PrintlnMtrW + '┐' );
+      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ' │' );
+      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      
+      Result := self;
+    end;
     
     public static function operator*(m: Mtr2x3d; v: Vec3d): Vec2d := new Vec2d(m.val00*v.val0+m.val01*v.val1+m.val02*v.val2, m.val10*v.val0+m.val11*v.val1+m.val12*v.val2);
     public static function operator*(v: Vec2d; m: Mtr2x3d): Vec3d := new Vec3d(m.val00*v.val0+m.val10*v.val1, m.val01*v.val0+m.val11*v.val1, m.val02*v.val0+m.val12*v.val1);
@@ -7419,11 +7975,10 @@ type
   end;
   
   Mtr3x2d = record
-    public val00, val01: real;
-    public val10, val11: real;
-    public val20, val21: real;
+    public val00, val10, val20: double;
+    public val01, val11, val21: double;
     
-    public constructor(val00, val01, val10, val11, val20, val21: real);
+    public constructor(val00, val01, val10, val11, val20, val21: double);
     begin
       self.val00 := val00;
       self.val01 := val01;
@@ -7433,55 +7988,21 @@ type
       self.val21 := val21;
     end;
     
-    private function GetValAt(y,x: integer): real;
+    private function GetValAt(y,x: integer): double;
     begin
-      case y of
-        0:
-        case x of
-          0: Result := self.val00;
-          1: Result := self.val01;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        1:
-        case x of
-          0: Result := self.val10;
-          1: Result := self.val11;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        2:
-        case x of
-          0: Result := self.val20;
-          1: Result := self.val21;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
-      end;
+      if cardinal(x) > 1 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
+      if cardinal(y) > 2 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
+      var ptr: ^double := pointer(new IntPtr(@self) + (x*3 + y) * 8 );
+      Result := ptr^;
     end;
-    private procedure SetValAt(y,x: integer; val: real);
+    private procedure SetValAt(y,x: integer; val: double);
     begin
-      case y of
-        0:
-        case x of
-          0: self.val00 := val;
-          1: self.val01 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        1:
-        case x of
-          0: self.val10 := val;
-          1: self.val11 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        2:
-        case x of
-          0: self.val20 := val;
-          1: self.val21 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
-      end;
+      if cardinal(x) > 1 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
+      if cardinal(y) > 2 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
+      var ptr: ^double := pointer(new IntPtr(@self) + (x*3 + y) * 8 );
+      ptr^ := val;
     end;
-    public property val[y,x: integer]: real read GetValAt write SetValAt; default;
+    public property val[y,x: integer]: double read GetValAt write SetValAt; default;
     
     public static property Identity: Mtr3x2d read new Mtr3x2d(1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
     
@@ -7505,10 +8026,49 @@ type
       else raise new IndexOutOfRangeException('Номер столбца должен иметь значение 0..1');
     end;
     
-    public property RowPtr0: ^Vec2d read pointer(IntPtr(pointer(@self)) + 0);
-    public property RowPtr1: ^Vec2d read pointer(IntPtr(pointer(@self)) + 16);
-    public property RowPtr2: ^Vec2d read pointer(IntPtr(pointer(@self)) + 32);
-    public property RowPtr[x: integer]: ^Vec2d read pointer(IntPtr(pointer(@self)) + x*16);
+    public property ColPtr0: ^Vec2d read pointer(IntPtr(pointer(@self)) + 0);
+    public property ColPtr1: ^Vec2d read pointer(IntPtr(pointer(@self)) + 24);
+    public property ColPtr2: ^Vec2d read pointer(IntPtr(pointer(@self)) + 48);
+    public property ColPtr[x: integer]: ^Vec2d read pointer(IntPtr(pointer(@self)) + x*24);
+    
+    public static function RotateXYcw(rot: double): Mtr3x2d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr3x2d(
+         cr, +sr,
+        -sr,  cr,
+        0.0, 0.0
+      );
+    end;
+    public static function RotateXYccw(rot: double): Mtr3x2d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr3x2d(
+         cr, -sr,
+        +sr,  cr,
+        0.0, 0.0
+      );
+    end;
+    
+    public function Println: Mtr3x2d;
+    begin
+      var ElStrs := new string[3,2];
+      for var y := 0 to 3-1 do
+        for var x := 0 to 2-1 do
+          ElStrs[y,x] := (Sign(val[y,x])=-1?'-':'+') + Abs(val[y,x]).ToString('f2');
+      var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
+      var PrintlnMtrW := MtrElTextW*2 + 4; // +2*(Width-1) + 2;
+      
+      writeln( '┌' + #32*PrintlnMtrW + '┐' );
+      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ' │' );
+      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      
+      Result := self;
+    end;
     
     public static function operator*(m: Mtr3x2d; v: Vec2d): Vec3d := new Vec3d(m.val00*v.val0+m.val01*v.val1, m.val10*v.val0+m.val11*v.val1, m.val20*v.val0+m.val21*v.val1);
     public static function operator*(v: Vec3d; m: Mtr3x2d): Vec2d := new Vec2d(m.val00*v.val0+m.val10*v.val1+m.val20*v.val2, m.val01*v.val0+m.val11*v.val1+m.val21*v.val2);
@@ -7555,10 +8115,12 @@ type
   end;
   
   Mtr2x4d = record
-    public val00, val01, val02, val03: real;
-    public val10, val11, val12, val13: real;
+    public val00, val10: double;
+    public val01, val11: double;
+    public val02, val12: double;
+    public val03, val13: double;
     
-    public constructor(val00, val01, val02, val03, val10, val11, val12, val13: real);
+    public constructor(val00, val01, val02, val03, val10, val11, val12, val13: double);
     begin
       self.val00 := val00;
       self.val01 := val01;
@@ -7570,51 +8132,21 @@ type
       self.val13 := val13;
     end;
     
-    private function GetValAt(y,x: integer): real;
+    private function GetValAt(y,x: integer): double;
     begin
-      case y of
-        0:
-        case x of
-          0: Result := self.val00;
-          1: Result := self.val01;
-          2: Result := self.val02;
-          3: Result := self.val03;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        1:
-        case x of
-          0: Result := self.val10;
-          1: Result := self.val11;
-          2: Result := self.val12;
-          3: Result := self.val13;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
-      end;
+      if cardinal(x) > 3 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
+      if cardinal(y) > 1 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
+      var ptr: ^double := pointer(new IntPtr(@self) + (x*2 + y) * 8 );
+      Result := ptr^;
     end;
-    private procedure SetValAt(y,x: integer; val: real);
+    private procedure SetValAt(y,x: integer; val: double);
     begin
-      case y of
-        0:
-        case x of
-          0: self.val00 := val;
-          1: self.val01 := val;
-          2: self.val02 := val;
-          3: self.val03 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        1:
-        case x of
-          0: self.val10 := val;
-          1: self.val11 := val;
-          2: self.val12 := val;
-          3: self.val13 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
-      end;
+      if cardinal(x) > 3 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
+      if cardinal(y) > 1 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..1');
+      var ptr: ^double := pointer(new IntPtr(@self) + (x*2 + y) * 8 );
+      ptr^ := val;
     end;
-    public property val[y,x: integer]: real read GetValAt write SetValAt; default;
+    public property val[y,x: integer]: double read GetValAt write SetValAt; default;
     
     public static property Identity: Mtr2x4d read new Mtr2x4d(1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
     
@@ -7640,9 +8172,45 @@ type
       else raise new IndexOutOfRangeException('Номер столбца должен иметь значение 0..3');
     end;
     
-    public property RowPtr0: ^Vec4d read pointer(IntPtr(pointer(@self)) + 0);
-    public property RowPtr1: ^Vec4d read pointer(IntPtr(pointer(@self)) + 32);
-    public property RowPtr[x: integer]: ^Vec4d read pointer(IntPtr(pointer(@self)) + x*32);
+    public property ColPtr0: ^Vec4d read pointer(IntPtr(pointer(@self)) + 0);
+    public property ColPtr1: ^Vec4d read pointer(IntPtr(pointer(@self)) + 16);
+    public property ColPtr[x: integer]: ^Vec4d read pointer(IntPtr(pointer(@self)) + x*16);
+    
+    public static function RotateXYcw(rot: double): Mtr2x4d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr2x4d(
+         cr, +sr, 0.0, 0.0,
+        -sr,  cr, 0.0, 0.0
+      );
+    end;
+    public static function RotateXYccw(rot: double): Mtr2x4d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr2x4d(
+         cr, -sr, 0.0, 0.0,
+        +sr,  cr, 0.0, 0.0
+      );
+    end;
+    
+    public function Println: Mtr2x4d;
+    begin
+      var ElStrs := new string[2,4];
+      for var y := 0 to 2-1 do
+        for var x := 0 to 4-1 do
+          ElStrs[y,x] := (Sign(val[y,x])=-1?'-':'+') + Abs(val[y,x]).ToString('f2');
+      var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
+      var PrintlnMtrW := MtrElTextW*4 + 8; // +2*(Width-1) + 2;
+      
+      writeln( '┌' + #32*PrintlnMtrW + '┐' );
+      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ', ', ElStrs[0,3].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ', ', ElStrs[1,3].PadLeft(MtrElTextW), ' │' );
+      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      
+      Result := self;
+    end;
     
     public static function operator*(m: Mtr2x4d; v: Vec4d): Vec2d := new Vec2d(m.val00*v.val0+m.val01*v.val1+m.val02*v.val2+m.val03*v.val3, m.val10*v.val0+m.val11*v.val1+m.val12*v.val2+m.val13*v.val3);
     public static function operator*(v: Vec2d; m: Mtr2x4d): Vec4d := new Vec4d(m.val00*v.val0+m.val10*v.val1, m.val01*v.val0+m.val11*v.val1, m.val02*v.val0+m.val12*v.val1, m.val03*v.val0+m.val13*v.val1);
@@ -7692,12 +8260,10 @@ type
   end;
   
   Mtr4x2d = record
-    public val00, val01: real;
-    public val10, val11: real;
-    public val20, val21: real;
-    public val30, val31: real;
+    public val00, val10, val20, val30: double;
+    public val01, val11, val21, val31: double;
     
-    public constructor(val00, val01, val10, val11, val20, val21, val30, val31: real);
+    public constructor(val00, val01, val10, val11, val20, val21, val30, val31: double);
     begin
       self.val00 := val00;
       self.val01 := val01;
@@ -7709,67 +8275,21 @@ type
       self.val31 := val31;
     end;
     
-    private function GetValAt(y,x: integer): real;
+    private function GetValAt(y,x: integer): double;
     begin
-      case y of
-        0:
-        case x of
-          0: Result := self.val00;
-          1: Result := self.val01;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        1:
-        case x of
-          0: Result := self.val10;
-          1: Result := self.val11;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        2:
-        case x of
-          0: Result := self.val20;
-          1: Result := self.val21;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        3:
-        case x of
-          0: Result := self.val30;
-          1: Result := self.val31;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
-      end;
+      if cardinal(x) > 1 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
+      if cardinal(y) > 3 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
+      var ptr: ^double := pointer(new IntPtr(@self) + (x*4 + y) * 8 );
+      Result := ptr^;
     end;
-    private procedure SetValAt(y,x: integer; val: real);
+    private procedure SetValAt(y,x: integer; val: double);
     begin
-      case y of
-        0:
-        case x of
-          0: self.val00 := val;
-          1: self.val01 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        1:
-        case x of
-          0: self.val10 := val;
-          1: self.val11 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        2:
-        case x of
-          0: self.val20 := val;
-          1: self.val21 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        3:
-        case x of
-          0: self.val30 := val;
-          1: self.val31 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
-      end;
+      if cardinal(x) > 1 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..1');
+      if cardinal(y) > 3 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
+      var ptr: ^double := pointer(new IntPtr(@self) + (x*4 + y) * 8 );
+      ptr^ := val;
     end;
-    public property val[y,x: integer]: real read GetValAt write SetValAt; default;
+    public property val[y,x: integer]: double read GetValAt write SetValAt; default;
     
     public static property Identity: Mtr4x2d read new Mtr4x2d(1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0);
     
@@ -7795,11 +8315,53 @@ type
       else raise new IndexOutOfRangeException('Номер столбца должен иметь значение 0..1');
     end;
     
-    public property RowPtr0: ^Vec2d read pointer(IntPtr(pointer(@self)) + 0);
-    public property RowPtr1: ^Vec2d read pointer(IntPtr(pointer(@self)) + 16);
-    public property RowPtr2: ^Vec2d read pointer(IntPtr(pointer(@self)) + 32);
-    public property RowPtr3: ^Vec2d read pointer(IntPtr(pointer(@self)) + 48);
-    public property RowPtr[x: integer]: ^Vec2d read pointer(IntPtr(pointer(@self)) + x*16);
+    public property ColPtr0: ^Vec2d read pointer(IntPtr(pointer(@self)) + 0);
+    public property ColPtr1: ^Vec2d read pointer(IntPtr(pointer(@self)) + 32);
+    public property ColPtr2: ^Vec2d read pointer(IntPtr(pointer(@self)) + 64);
+    public property ColPtr3: ^Vec2d read pointer(IntPtr(pointer(@self)) + 96);
+    public property ColPtr[x: integer]: ^Vec2d read pointer(IntPtr(pointer(@self)) + x*32);
+    
+    public static function RotateXYcw(rot: double): Mtr4x2d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr4x2d(
+         cr, +sr,
+        -sr,  cr,
+        0.0, 0.0,
+        0.0, 0.0
+      );
+    end;
+    public static function RotateXYccw(rot: double): Mtr4x2d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr4x2d(
+         cr, -sr,
+        +sr,  cr,
+        0.0, 0.0,
+        0.0, 0.0
+      );
+    end;
+    
+    public function Println: Mtr4x2d;
+    begin
+      var ElStrs := new string[4,2];
+      for var y := 0 to 4-1 do
+        for var x := 0 to 2-1 do
+          ElStrs[y,x] := (Sign(val[y,x])=-1?'-':'+') + Abs(val[y,x]).ToString('f2');
+      var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
+      var PrintlnMtrW := MtrElTextW*2 + 4; // +2*(Width-1) + 2;
+      
+      writeln( '┌' + #32*PrintlnMtrW + '┐' );
+      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[3,0].PadLeft(MtrElTextW), ', ', ElStrs[3,1].PadLeft(MtrElTextW), ' │' );
+      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      
+      Result := self;
+    end;
     
     public static function operator*(m: Mtr4x2d; v: Vec2d): Vec4d := new Vec4d(m.val00*v.val0+m.val01*v.val1, m.val10*v.val0+m.val11*v.val1, m.val20*v.val0+m.val21*v.val1, m.val30*v.val0+m.val31*v.val1);
     public static function operator*(v: Vec4d; m: Mtr4x2d): Vec2d := new Vec2d(m.val00*v.val0+m.val10*v.val1+m.val20*v.val2+m.val30*v.val3, m.val01*v.val0+m.val11*v.val1+m.val21*v.val2+m.val31*v.val3);
@@ -7852,11 +8414,12 @@ type
   end;
   
   Mtr3x4d = record
-    public val00, val01, val02, val03: real;
-    public val10, val11, val12, val13: real;
-    public val20, val21, val22, val23: real;
+    public val00, val10, val20: double;
+    public val01, val11, val21: double;
+    public val02, val12, val22: double;
+    public val03, val13, val23: double;
     
-    public constructor(val00, val01, val02, val03, val10, val11, val12, val13, val20, val21, val22, val23: real);
+    public constructor(val00, val01, val02, val03, val10, val11, val12, val13, val20, val21, val22, val23: double);
     begin
       self.val00 := val00;
       self.val01 := val01;
@@ -7872,67 +8435,21 @@ type
       self.val23 := val23;
     end;
     
-    private function GetValAt(y,x: integer): real;
+    private function GetValAt(y,x: integer): double;
     begin
-      case y of
-        0:
-        case x of
-          0: Result := self.val00;
-          1: Result := self.val01;
-          2: Result := self.val02;
-          3: Result := self.val03;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        1:
-        case x of
-          0: Result := self.val10;
-          1: Result := self.val11;
-          2: Result := self.val12;
-          3: Result := self.val13;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        2:
-        case x of
-          0: Result := self.val20;
-          1: Result := self.val21;
-          2: Result := self.val22;
-          3: Result := self.val23;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
-      end;
+      if cardinal(x) > 3 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
+      if cardinal(y) > 2 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
+      var ptr: ^double := pointer(new IntPtr(@self) + (x*3 + y) * 8 );
+      Result := ptr^;
     end;
-    private procedure SetValAt(y,x: integer; val: real);
+    private procedure SetValAt(y,x: integer; val: double);
     begin
-      case y of
-        0:
-        case x of
-          0: self.val00 := val;
-          1: self.val01 := val;
-          2: self.val02 := val;
-          3: self.val03 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        1:
-        case x of
-          0: self.val10 := val;
-          1: self.val11 := val;
-          2: self.val12 := val;
-          3: self.val13 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        2:
-        case x of
-          0: self.val20 := val;
-          1: self.val21 := val;
-          2: self.val22 := val;
-          3: self.val23 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
-      end;
+      if cardinal(x) > 3 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..3');
+      if cardinal(y) > 2 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..2');
+      var ptr: ^double := pointer(new IntPtr(@self) + (x*3 + y) * 8 );
+      ptr^ := val;
     end;
-    public property val[y,x: integer]: real read GetValAt write SetValAt; default;
+    public property val[y,x: integer]: double read GetValAt write SetValAt; default;
     
     public static property Identity: Mtr3x4d read new Mtr3x4d(1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
     
@@ -7960,10 +8477,91 @@ type
       else raise new IndexOutOfRangeException('Номер столбца должен иметь значение 0..3');
     end;
     
-    public property RowPtr0: ^Vec4d read pointer(IntPtr(pointer(@self)) + 0);
-    public property RowPtr1: ^Vec4d read pointer(IntPtr(pointer(@self)) + 32);
-    public property RowPtr2: ^Vec4d read pointer(IntPtr(pointer(@self)) + 64);
-    public property RowPtr[x: integer]: ^Vec4d read pointer(IntPtr(pointer(@self)) + x*32);
+    public property ColPtr0: ^Vec4d read pointer(IntPtr(pointer(@self)) + 0);
+    public property ColPtr1: ^Vec4d read pointer(IntPtr(pointer(@self)) + 24);
+    public property ColPtr2: ^Vec4d read pointer(IntPtr(pointer(@self)) + 48);
+    public property ColPtr[x: integer]: ^Vec4d read pointer(IntPtr(pointer(@self)) + x*24);
+    
+    public static function RotateXYcw(rot: double): Mtr3x4d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr3x4d(
+         cr, +sr, 0.0, 0.0,
+        -sr,  cr, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0
+      );
+    end;
+    public static function RotateXYccw(rot: double): Mtr3x4d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr3x4d(
+         cr, -sr, 0.0, 0.0,
+        +sr,  cr, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0
+      );
+    end;
+    
+    public static function RotateXZcw(rot: double): Mtr3x4d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr3x4d(
+         cr, 0.0, +sr, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        -sr, 0.0,  cr, 0.0
+      );
+    end;
+    public static function RotateXZccw(rot: double): Mtr3x4d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr3x4d(
+         cr, 0.0, -sr, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        +sr, 0.0,  cr, 0.0
+      );
+    end;
+    
+    public static function RotateYZcw(rot: double): Mtr3x4d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr3x4d(
+        1.0, 0.0, 0.0, 0.0,
+        0.0,  cr, +sr, 0.0,
+        0.0, -sr,  cr, 0.0
+      );
+    end;
+    public static function RotateYZccw(rot: double): Mtr3x4d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr3x4d(
+        1.0, 0.0, 0.0, 0.0,
+        0.0,  cr, -sr, 0.0,
+        0.0, +sr,  cr, 0.0
+      );
+    end;
+    
+    public function Println: Mtr3x4d;
+    begin
+      var ElStrs := new string[3,4];
+      for var y := 0 to 3-1 do
+        for var x := 0 to 4-1 do
+          ElStrs[y,x] := (Sign(val[y,x])=-1?'-':'+') + Abs(val[y,x]).ToString('f2');
+      var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
+      var PrintlnMtrW := MtrElTextW*4 + 8; // +2*(Width-1) + 2;
+      
+      writeln( '┌' + #32*PrintlnMtrW + '┐' );
+      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ', ', ElStrs[0,3].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ', ', ElStrs[1,3].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ', ', ElStrs[2,2].PadLeft(MtrElTextW), ', ', ElStrs[2,3].PadLeft(MtrElTextW), ' │' );
+      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      
+      Result := self;
+    end;
     
     public static function operator*(m: Mtr3x4d; v: Vec4d): Vec3d := new Vec3d(m.val00*v.val0+m.val01*v.val1+m.val02*v.val2+m.val03*v.val3, m.val10*v.val0+m.val11*v.val1+m.val12*v.val2+m.val13*v.val3, m.val20*v.val0+m.val21*v.val1+m.val22*v.val2+m.val23*v.val3);
     public static function operator*(v: Vec3d; m: Mtr3x4d): Vec4d := new Vec4d(m.val00*v.val0+m.val10*v.val1+m.val20*v.val2, m.val01*v.val0+m.val11*v.val1+m.val21*v.val2, m.val02*v.val0+m.val12*v.val1+m.val22*v.val2, m.val03*v.val0+m.val13*v.val1+m.val23*v.val2);
@@ -8019,12 +8617,11 @@ type
   end;
   
   Mtr4x3d = record
-    public val00, val01, val02: real;
-    public val10, val11, val12: real;
-    public val20, val21, val22: real;
-    public val30, val31, val32: real;
+    public val00, val10, val20, val30: double;
+    public val01, val11, val21, val31: double;
+    public val02, val12, val22, val32: double;
     
-    public constructor(val00, val01, val02, val10, val11, val12, val20, val21, val22, val30, val31, val32: real);
+    public constructor(val00, val01, val02, val10, val11, val12, val20, val21, val22, val30, val31, val32: double);
     begin
       self.val00 := val00;
       self.val01 := val01;
@@ -8040,75 +8637,21 @@ type
       self.val32 := val32;
     end;
     
-    private function GetValAt(y,x: integer): real;
+    private function GetValAt(y,x: integer): double;
     begin
-      case y of
-        0:
-        case x of
-          0: Result := self.val00;
-          1: Result := self.val01;
-          2: Result := self.val02;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        1:
-        case x of
-          0: Result := self.val10;
-          1: Result := self.val11;
-          2: Result := self.val12;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        2:
-        case x of
-          0: Result := self.val20;
-          1: Result := self.val21;
-          2: Result := self.val22;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        3:
-        case x of
-          0: Result := self.val30;
-          1: Result := self.val31;
-          2: Result := self.val32;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
-      end;
+      if cardinal(x) > 2 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
+      if cardinal(y) > 3 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
+      var ptr: ^double := pointer(new IntPtr(@self) + (x*4 + y) * 8 );
+      Result := ptr^;
     end;
-    private procedure SetValAt(y,x: integer; val: real);
+    private procedure SetValAt(y,x: integer; val: double);
     begin
-      case y of
-        0:
-        case x of
-          0: self.val00 := val;
-          1: self.val01 := val;
-          2: self.val02 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        1:
-        case x of
-          0: self.val10 := val;
-          1: self.val11 := val;
-          2: self.val12 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        2:
-        case x of
-          0: self.val20 := val;
-          1: self.val21 := val;
-          2: self.val22 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        3:
-        case x of
-          0: self.val30 := val;
-          1: self.val31 := val;
-          2: self.val32 := val;
-          else raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
-        end;
-        else raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
-      end;
+      if cardinal(x) > 2 then raise new IndexOutOfRangeException('Индекс "X" должен иметь значение 0..2');
+      if cardinal(y) > 3 then raise new IndexOutOfRangeException('Индекс "Y" должен иметь значение 0..3');
+      var ptr: ^double := pointer(new IntPtr(@self) + (x*4 + y) * 8 );
+      ptr^ := val;
     end;
-    public property val[y,x: integer]: real read GetValAt write SetValAt; default;
+    public property val[y,x: integer]: double read GetValAt write SetValAt; default;
     
     public static property Identity: Mtr4x3d read new Mtr4x3d(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0);
     
@@ -8136,11 +8679,99 @@ type
       else raise new IndexOutOfRangeException('Номер столбца должен иметь значение 0..2');
     end;
     
-    public property RowPtr0: ^Vec3d read pointer(IntPtr(pointer(@self)) + 0);
-    public property RowPtr1: ^Vec3d read pointer(IntPtr(pointer(@self)) + 24);
-    public property RowPtr2: ^Vec3d read pointer(IntPtr(pointer(@self)) + 48);
-    public property RowPtr3: ^Vec3d read pointer(IntPtr(pointer(@self)) + 72);
-    public property RowPtr[x: integer]: ^Vec3d read pointer(IntPtr(pointer(@self)) + x*24);
+    public property ColPtr0: ^Vec3d read pointer(IntPtr(pointer(@self)) + 0);
+    public property ColPtr1: ^Vec3d read pointer(IntPtr(pointer(@self)) + 32);
+    public property ColPtr2: ^Vec3d read pointer(IntPtr(pointer(@self)) + 64);
+    public property ColPtr3: ^Vec3d read pointer(IntPtr(pointer(@self)) + 96);
+    public property ColPtr[x: integer]: ^Vec3d read pointer(IntPtr(pointer(@self)) + x*32);
+    
+    public static function RotateXYcw(rot: double): Mtr4x3d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr4x3d(
+         cr, +sr, 0.0,
+        -sr,  cr, 0.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 0.0
+      );
+    end;
+    public static function RotateXYccw(rot: double): Mtr4x3d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr4x3d(
+         cr, -sr, 0.0,
+        +sr,  cr, 0.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 0.0
+      );
+    end;
+    
+    public static function RotateXZcw(rot: double): Mtr4x3d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr4x3d(
+         cr, 0.0, +sr,
+        0.0, 1.0, 0.0,
+        -sr, 0.0,  cr,
+        0.0, 0.0, 0.0
+      );
+    end;
+    public static function RotateXZccw(rot: double): Mtr4x3d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr4x3d(
+         cr, 0.0, -sr,
+        0.0, 1.0, 0.0,
+        +sr, 0.0,  cr,
+        0.0, 0.0, 0.0
+      );
+    end;
+    
+    public static function RotateYZcw(rot: double): Mtr4x3d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr4x3d(
+        1.0, 0.0, 0.0,
+        0.0,  cr, +sr,
+        0.0, -sr,  cr,
+        0.0, 0.0, 0.0
+      );
+    end;
+    public static function RotateYZccw(rot: double): Mtr4x3d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr4x3d(
+        1.0, 0.0, 0.0,
+        0.0,  cr, -sr,
+        0.0, +sr,  cr,
+        0.0, 0.0, 0.0
+      );
+    end;
+    
+    public function Println: Mtr4x3d;
+    begin
+      var ElStrs := new string[4,3];
+      for var y := 0 to 4-1 do
+        for var x := 0 to 3-1 do
+          ElStrs[y,x] := (Sign(val[y,x])=-1?'-':'+') + Abs(val[y,x]).ToString('f2');
+      var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
+      var PrintlnMtrW := MtrElTextW*3 + 6; // +2*(Width-1) + 2;
+      
+      writeln( '┌' + #32*PrintlnMtrW + '┐' );
+      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ', ', ElStrs[2,2].PadLeft(MtrElTextW), ' │' );
+      writeln( '│ ', ElStrs[3,0].PadLeft(MtrElTextW), ', ', ElStrs[3,1].PadLeft(MtrElTextW), ', ', ElStrs[3,2].PadLeft(MtrElTextW), ' │' );
+      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      
+      Result := self;
+    end;
     
     public static function operator*(m: Mtr4x3d; v: Vec3d): Vec4d := new Vec4d(m.val00*v.val0+m.val01*v.val1+m.val02*v.val2, m.val10*v.val0+m.val11*v.val1+m.val12*v.val2, m.val20*v.val0+m.val21*v.val1+m.val22*v.val2, m.val30*v.val0+m.val31*v.val1+m.val32*v.val2);
     public static function operator*(v: Vec4d; m: Mtr4x3d): Vec3d := new Vec3d(m.val00*v.val0+m.val10*v.val1+m.val20*v.val2+m.val30*v.val3, m.val01*v.val0+m.val11*v.val1+m.val21*v.val2+m.val31*v.val3, m.val02*v.val0+m.val12*v.val1+m.val22*v.val2+m.val32*v.val3);
@@ -9688,11 +10319,28 @@ type
     
   end;
   
+  fixed = record
+    {private} val: UInt32;
+    
+    //ToDo реализовать простейшие операции, с инкапсуляцией но разрешить обращатся к val через свойство
+    
+  end;
+  
+  half = record
+    {private} val: UInt16;
+    
+    //ToDo реализовать простейшие операции, с инкапсуляцией но разрешить обращатся к val через свойство
+    
+  end;
+  
   {$endregion Misc}
   
 {$endregion Записи}
 
 type
+  
+  /// Ядро OpenGL
+  /// Все функции отсотированы по разрелу спецификации в исходниках
   gl = static class
     
     {$region 2.0 - OpenGL Fundamentals}
@@ -9703,6 +10351,11 @@ type
     
     public static function GetError: ErrorCode;
     external 'opengl32.dll' name 'glGetError';
+    
+    // 2.3.2
+    
+    static function GetGraphicsResetStatus: ErrorCode;
+    external 'opengl32.dll' name 'glGetGraphicsResetStatus';
     
     // 2.3.3
     
@@ -9728,6 +10381,8 @@ type
     
     // 4.1.1
     
+    static function ClientWaitSync(sync: GLsync; flags: CommandFlushingBehaviorFlags; timeout: TimeSpan): ClientWaitSyncResult;
+    external 'opengl32.dll' name 'glClientWaitSync';
     static function ClientWaitSync(sync: GLsync; flags: CommandFlushingBehaviorFlags; timeout: UInt64): ClientWaitSyncResult;
     external 'opengl32.dll' name 'glClientWaitSync';
     
@@ -9736,9 +10391,15 @@ type
     
     // 4.1.3
     
-    static procedure GetSynciv(sync: GLsync; pname: SyncObjInfoType; bufSize: Int32; var length: Int32; values: pointer);
+    static procedure GetSynciv(sync: GLsync; pname: SyncObjInfoType; bufSize: Int32; var length: Int32; var values: SyncObjectType);
     external 'opengl32.dll' name 'glGetSynciv';
-    static procedure GetSynciv(sync: GLsync; pname: SyncObjInfoType; bufSize: Int32; length: ^Int32; values: pointer);
+    static procedure GetSynciv(sync: GLsync; pname: SyncObjInfoType; bufSize: Int32; var length: Int32; var values: FenceStatus);
+    external 'opengl32.dll' name 'glGetSynciv';
+    static procedure GetSynciv(sync: GLsync; pname: SyncObjInfoType; bufSize: Int32; var length: Int32; var values: FenceCondition);
+    external 'opengl32.dll' name 'glGetSynciv';
+    static procedure GetSynciv(sync: GLsync; pname: SyncObjInfoType; bufSize: Int32; var length: Int32; var values: Int32);
+    external 'opengl32.dll' name 'glGetSynciv';
+    static procedure GetSynciv(sync: GLsync; pname: SyncObjInfoType; bufSize: Int32; length: pointer; values: pointer);
     external 'opengl32.dll' name 'glGetSynciv';
     
     static function IsSync(sync: GLsync): boolean;
@@ -9757,24 +10418,28 @@ type
     static procedure GenQueries(n: Int32; ids: pointer);
     external 'opengl32.dll' name 'glGenQueries';
     
-    static procedure CreateQueries(target: QueryInfoType; n: Int32; [MarshalAs(UnmanagedType.LPArray)] ids: array of QueryName);
+    static procedure CreateQueries(target: QueryTargetType; n: Int32; [MarshalAs(UnmanagedType.LPArray)] ids: array of QueryName);
     external 'opengl32.dll' name 'glCreateQueries';
-    static procedure CreateQueries(target: QueryInfoType; n: Int32; ids: ^QueryName);
+    static procedure CreateQueries(target: QueryTargetType; n: Int32; var ids: QueryName);
+    external 'opengl32.dll' name 'glCreateQueries';
+    static procedure CreateQueries(target: QueryTargetType; n: Int32; ids: pointer);
     external 'opengl32.dll' name 'glCreateQueries';
     
     static procedure DeleteQueries(n: Int32; [MarshalAs(UnmanagedType.LPArray)] ids: array of QueryName);
     external 'opengl32.dll' name 'glDeleteQueries';
-    static procedure DeleteQueries(n: Int32; ids: ^QueryName);
+    static procedure DeleteQueries(n: Int32; var ids: QueryName);
+    external 'opengl32.dll' name 'glDeleteQueries';
+    static procedure DeleteQueries(n: Int32; ids: pointer);
     external 'opengl32.dll' name 'glDeleteQueries';
     
-    static procedure BeginQueryIndexed(target: QueryInfoType; index: UInt32; id: QueryName);
+    static procedure BeginQueryIndexed(target: QueryTargetType; index: UInt32; id: QueryName);
     external 'opengl32.dll' name 'glBeginQueryIndexed';
-    static procedure BeginQuery(target: QueryInfoType; id: QueryName);
+    static procedure BeginQuery(target: QueryTargetType; id: QueryName);
     external 'opengl32.dll' name 'glBeginQuery';
     
-    static procedure EndQueryIndexed(target: QueryInfoType; index: UInt32);
+    static procedure EndQueryIndexed(target: QueryTargetType; index: UInt32);
     external 'opengl32.dll' name 'glEndQueryIndexed';
-    static procedure EndQuery(target: QueryInfoType);
+    static procedure EndQuery(target: QueryTargetType);
     external 'opengl32.dll' name 'glEndQuery';
     
     // 4.2.3
@@ -9782,42 +10447,52 @@ type
     static function IsQuery(id: QueryName): boolean;
     external 'opengl32.dll' name 'glIsQuery';
     
-    static procedure GetQueryIndexediv(target: QueryInfoType; index: UInt32; pname: GetQueryInfoName; [MarshalAs(UnmanagedType.LPArray)] &params: array of Int32);
+    static procedure GetQueryIndexediv(target: QueryTargetType; index: UInt32; pname: GetQueryInfoName; var &params: QueryName);
     external 'opengl32.dll' name 'glGetQueryIndexediv';
-    static procedure GetQueryIndexediv(target: QueryInfoType; index: UInt32; pname: GetQueryInfoName; var &params: Int32);
+    static procedure GetQueryIndexediv(target: QueryTargetType; index: UInt32; pname: GetQueryInfoName; var &params: Int32);
     external 'opengl32.dll' name 'glGetQueryIndexediv';
-    static procedure GetQueryIndexediv(target: QueryInfoType; index: UInt32; pname: GetQueryInfoName; &params: pointer);
+    static procedure GetQueryIndexediv(target: QueryTargetType; index: UInt32; pname: GetQueryInfoName; var &params: boolean);
+    external 'opengl32.dll' name 'glGetQueryIndexediv';
+    static procedure GetQueryIndexediv(target: QueryTargetType; index: UInt32; pname: GetQueryInfoName; var &params: TimeSpan);
+    external 'opengl32.dll' name 'glGetQueryIndexediv';
+    static procedure GetQueryIndexediv(target: QueryTargetType; index: UInt32; pname: GetQueryInfoName; var &params: DateTime);
+    external 'opengl32.dll' name 'glGetQueryIndexediv';
+    static procedure GetQueryIndexediv(target: QueryTargetType; index: UInt32; pname: GetQueryInfoName; &params: pointer);
     external 'opengl32.dll' name 'glGetQueryIndexediv';
     
-    static procedure GetQueryiv(target: QueryInfoType; pname: GetQueryInfoName; [MarshalAs(UnmanagedType.LPArray)] &params: array of Int32);
+    static procedure GetQueryiv(target: QueryTargetType; pname: GetQueryInfoName; var &params: QueryName);
     external 'opengl32.dll' name 'glGetQueryiv';
-    static procedure GetQueryiv(target: QueryInfoType; pname: GetQueryInfoName; var &params: Int32);
+    static procedure GetQueryiv(target: QueryTargetType; pname: GetQueryInfoName; var &params: Int32);
     external 'opengl32.dll' name 'glGetQueryiv';
-    static procedure GetQueryiv(target: QueryInfoType; pname: GetQueryInfoName; &params: pointer);
+    static procedure GetQueryiv(target: QueryTargetType; pname: GetQueryInfoName; var &params: boolean);
+    external 'opengl32.dll' name 'glGetQueryiv';
+    static procedure GetQueryiv(target: QueryTargetType; pname: GetQueryInfoName; var &params: TimeSpan);
+    external 'opengl32.dll' name 'glGetQueryiv';
+    static procedure GetQueryiv(target: QueryTargetType; pname: GetQueryInfoName; var &params: DateTime);
+    external 'opengl32.dll' name 'glGetQueryiv';
+    static procedure GetQueryiv(target: QueryTargetType; pname: GetQueryInfoName; &params: pointer);
     external 'opengl32.dll' name 'glGetQueryiv';
     
-    static procedure GetQueryObjectiv(id: QueryName; pname: GetQueryObjectInfoName; [MarshalAs(UnmanagedType.LPArray)] &params: array of Int32);
-    external 'opengl32.dll' name 'glGetQueryObjectiv';
     static procedure GetQueryObjectiv(id: QueryName; pname: GetQueryObjectInfoName; var &params: Int32);
+    external 'opengl32.dll' name 'glGetQueryObjectiv';
+    static procedure GetQueryObjectiv(id: QueryName; pname: GetQueryObjectInfoName; var &params: boolean);
     external 'opengl32.dll' name 'glGetQueryObjectiv';
     static procedure GetQueryObjectiv(id: QueryName; pname: GetQueryObjectInfoName; &params: pointer);
     external 'opengl32.dll' name 'glGetQueryObjectiv';
     
-    static procedure GetQueryObjectuiv(id: QueryName; pname: GetQueryObjectInfoName; [MarshalAs(UnmanagedType.LPArray)] &params: array of UInt32);
-    external 'opengl32.dll' name 'glGetQueryObjectuiv';
-    static procedure GetQueryObjectuiv(id: QueryName; pname: GetQueryObjectInfoName; var &params: UInt32);
+    static procedure GetQueryObjectuiv(id: QueryName; pname: GetQueryObjectInfoName; var &params: UInt32); // QueryName=UInt32, поэтому его можно сюда же передавать
     external 'opengl32.dll' name 'glGetQueryObjectuiv';
     static procedure GetQueryObjectuiv(id: QueryName; pname: GetQueryObjectInfoName; &params: pointer);
     external 'opengl32.dll' name 'glGetQueryObjectuiv';
     
-    static procedure GetQueryObjecti64v(id: QueryName; pname: GetQueryObjectInfoName; [MarshalAs(UnmanagedType.LPArray)] &params: array of Int64);
-    external 'opengl32.dll' name 'glGetQueryObjecti64v';
     static procedure GetQueryObjecti64v(id: QueryName; pname: GetQueryObjectInfoName; var &params: Int64);
     external 'opengl32.dll' name 'glGetQueryObjecti64v';
     static procedure GetQueryObjecti64v(id: QueryName; pname: GetQueryObjectInfoName; &params: pointer);
     external 'opengl32.dll' name 'glGetQueryObjecti64v';
     
-    static procedure GetQueryObjectui64v(id: QueryName; pname: GetQueryObjectInfoName; [MarshalAs(UnmanagedType.LPArray)] &params: array of UInt64);
+    static procedure GetQueryObjectui64v(id: QueryName; pname: GetQueryObjectInfoName; var &params: TimeSpan);
+    external 'opengl32.dll' name 'glGetQueryObjectui64v';
+    static procedure GetQueryObjectui64v(id: QueryName; pname: GetQueryObjectInfoName; var &params: DateTime);
     external 'opengl32.dll' name 'glGetQueryObjectui64v';
     static procedure GetQueryObjectui64v(id: QueryName; pname: GetQueryObjectInfoName; var &params: UInt64);
     external 'opengl32.dll' name 'glGetQueryObjectui64v';
@@ -9840,7 +10515,7 @@ type
     
     {$region 4.3 - Time Queries}
     
-    static procedure QueryCounter(id: QueryName; target: QueryInfoType);
+    static procedure QueryCounter(id: QueryName; target: QueryTargetType);
     external 'opengl32.dll' name 'glQueryCounter';
     
     {$endregion 4.3 - Time Queries}
@@ -9858,12 +10533,16 @@ type
     
     static procedure CreateBuffers(n: Int32; [MarshalAs(UnmanagedType.LPArray)] buffers: array of BufferName);
     external 'opengl32.dll' name 'glCreateBuffers';
-    static procedure CreateBuffers(n: Int32; buffers: ^UInt32);
+    static procedure CreateBuffers(n: Int32; var buffers: BufferName);
+    external 'opengl32.dll' name 'glCreateBuffers';
+    static procedure CreateBuffers(n: Int32; buffers: pointer);
     external 'opengl32.dll' name 'glCreateBuffers';
     
     static procedure DeleteBuffers(n: Int32; [MarshalAs(UnmanagedType.LPArray)] buffers: array of BufferName);
     external 'opengl32.dll' name 'glDeleteBuffers';
-    static procedure DeleteBuffers(n: Int32; buffers: ^BufferName);
+    static procedure DeleteBuffers(n: Int32; var buffers: BufferName);
+    external 'opengl32.dll' name 'glDeleteBuffers';
+    static procedure DeleteBuffers(n: Int32; buffers: pointer);
     external 'opengl32.dll' name 'glDeleteBuffers';
     
     static function IsBuffer(buffer: BufferName): boolean;
@@ -9884,19 +10563,22 @@ type
     
     static procedure BindBuffersBase(target: BufferBindType; first: UInt32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] buffers: array of BufferName);
     external 'opengl32.dll' name 'glBindBuffersBase';
-    static procedure BindBuffersBase(target: BufferBindType; first: UInt32; count: Int32; buffers: ^BufferName);
+    static procedure BindBuffersBase(target: BufferBindType; first: UInt32; count: Int32; var buffers: BufferName);
+    external 'opengl32.dll' name 'glBindBuffersBase';
+    static procedure BindBuffersBase(target: BufferBindType; first: UInt32; count: Int32; buffers: pointer);
     external 'opengl32.dll' name 'glBindBuffersBase';
     
     static procedure BindBuffersRange(target: BufferBindType; first: UInt32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] buffers: array of BufferName; [MarshalAs(UnmanagedType.LPArray)] offsets: array of IntPtr; [MarshalAs(UnmanagedType.LPArray)] sizes: array of UIntPtr);
     external 'opengl32.dll' name 'glBindBuffersRange';
-    static procedure BindBuffersRange(target: BufferBindType; first: UInt32; count: Int32; buffers: ^BufferName; offsets: ^IntPtr; sizes: ^UIntPtr);
+    static procedure BindBuffersRange(target: BufferBindType; first: UInt32; count: Int32; var buffers: BufferName; var offsets: IntPtr; var sizes: UIntPtr);
+    external 'opengl32.dll' name 'glBindBuffersRange';
+    static procedure BindBuffersRange(target: BufferBindType; first: UInt32; count: Int32; buffers: pointer; offsets: pointer; sizes: pointer);
     external 'opengl32.dll' name 'glBindBuffersRange';
     
     {$endregion 6.1 - Creating and Binding Buffer Objects}
     
     {$region 6.2 - Creating and Modifying Buffer Object Data Stores}
     
-    // BufferMapFlags автоматически преобразовывается в BufferStorageFlags
     static procedure BufferStorage(target: BufferBindType; size: UIntPtr; data: IntPtr; flags: BufferStorageFlags);
     external 'opengl32.dll' name 'glBufferStorage';
     static procedure BufferStorage(target: BufferBindType; size: UIntPtr; data: pointer; flags: BufferStorageFlags);
@@ -9912,9 +10594,9 @@ type
     static procedure BufferData(target: BufferBindType; size: UIntPtr; data: pointer; usage: BufferDataUsage);
     external 'opengl32.dll' name 'glBufferData';
     
-    static procedure NamedBufferData(buffer: BufferName; size: UIntPtr; data: IntPtr; usage: UInt32);
+    static procedure NamedBufferData(buffer: BufferName; size: UIntPtr; data: IntPtr; usage: BufferDataUsage);
     external 'opengl32.dll' name 'glNamedBufferData';
-    static procedure NamedBufferData(buffer: BufferName; size: UIntPtr; data: pointer; usage: UInt32);
+    static procedure NamedBufferData(buffer: BufferName; size: UIntPtr; data: pointer; usage: BufferDataUsage);
     external 'opengl32.dll' name 'glNamedBufferData';
     
     static procedure BufferSubData(target: BufferBindType; offset: IntPtr; size: UIntPtr; data: IntPtr);
@@ -9996,29 +10678,33 @@ type
     
     {$region 6.7 - Buffer Object Queries}
     
-    static procedure GetBufferParameteriv(target: BufferBindType; pname: BufferInfoType; [MarshalAs(UnmanagedType.LPArray)] &params: array of Int32);
+    static procedure GetBufferParameteriv(target: BufferBindType; pname: BufferInfoType; var &params: BufferDataUsage);
+    external 'opengl32.dll' name 'glGetBufferParameteriv';
+    static procedure GetBufferParameteriv(target: BufferBindType; pname: BufferInfoType; var &params: AccessType);
     external 'opengl32.dll' name 'glGetBufferParameteriv';
     static procedure GetBufferParameteriv(target: BufferBindType; pname: BufferInfoType; var &params: Int32);
+    external 'opengl32.dll' name 'glGetBufferParameteriv';
+    static procedure GetBufferParameteriv(target: BufferBindType; pname: BufferInfoType; var &params: boolean);
     external 'opengl32.dll' name 'glGetBufferParameteriv';
     static procedure GetBufferParameteriv(target: BufferBindType; pname: BufferInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetBufferParameteriv';
     
-    static procedure GetBufferParameteri64v(target: BufferBindType; pname: BufferInfoType; [MarshalAs(UnmanagedType.LPArray)] &params: array of Int64);
-    external 'opengl32.dll' name 'glGetBufferParameteri64v';
     static procedure GetBufferParameteri64v(target: BufferBindType; pname: BufferInfoType; var &params: Int64);
     external 'opengl32.dll' name 'glGetBufferParameteri64v';
     static procedure GetBufferParameteri64v(target: BufferBindType; pname: BufferInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetBufferParameteri64v';
     
-    static procedure GetNamedBufferParameteriv(target: BufferName; pname: BufferInfoType; [MarshalAs(UnmanagedType.LPArray)] &params: array of Int32);
+    static procedure GetNamedBufferParameteriv(target: BufferName; pname: BufferInfoType; var &params: BufferDataUsage);
+    external 'opengl32.dll' name 'glGetNamedBufferParameteriv';
+    static procedure GetNamedBufferParameteriv(target: BufferName; pname: BufferInfoType; var &params: AccessType);
     external 'opengl32.dll' name 'glGetNamedBufferParameteriv';
     static procedure GetNamedBufferParameteriv(target: BufferName; pname: BufferInfoType; var &params: Int32);
+    external 'opengl32.dll' name 'glGetNamedBufferParameteriv';
+    static procedure GetNamedBufferParameteriv(target: BufferName; pname: BufferInfoType; var &params: boolean);
     external 'opengl32.dll' name 'glGetNamedBufferParameteriv';
     static procedure GetNamedBufferParameteriv(target: BufferName; pname: BufferInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetNamedBufferParameteriv';
     
-    static procedure GetNamedBufferParameteri64v(target: BufferName; pname: BufferInfoType; [MarshalAs(UnmanagedType.LPArray)] &params: array of Int64);
-    external 'opengl32.dll' name 'glGetNamedBufferParameteri64v';
     static procedure GetNamedBufferParameteri64v(target: BufferName; pname: BufferInfoType; var &params: Int64);
     external 'opengl32.dll' name 'glGetNamedBufferParameteri64v';
     static procedure GetNamedBufferParameteri64v(target: BufferName; pname: BufferInfoType; &params: pointer);
@@ -10036,20 +10722,16 @@ type
     
     static procedure GetBufferPointerv(target: BufferBindType; pname: BufferInfoType; var &params: IntPtr);
     external 'opengl32.dll' name 'glGetBufferPointerv';
-    static procedure GetBufferPointerv(target: BufferBindType; pname: BufferInfoType; &params: ^IntPtr);
-    external 'opengl32.dll' name 'glGetBufferPointerv';
     static procedure GetBufferPointerv(target: BufferBindType; pname: BufferInfoType; var &params: pointer);
     external 'opengl32.dll' name 'glGetBufferPointerv';
-    static procedure GetBufferPointerv(target: BufferBindType; pname: BufferInfoType; &params: ^pointer);
+    static procedure GetBufferPointerv(target: BufferBindType; pname: BufferInfoType; &params: ^IntPtr);
     external 'opengl32.dll' name 'glGetBufferPointerv';
     
     static procedure GetNamedBufferPointerv(buffer: BufferName; pname: BufferInfoType; var &params: IntPtr);
     external 'opengl32.dll' name 'glGetNamedBufferPointerv';
-    static procedure GetNamedBufferPointerv(buffer: BufferName; pname: BufferInfoType; &params: ^IntPtr);
-    external 'opengl32.dll' name 'glGetNamedBufferPointerv';
     static procedure GetNamedBufferPointerv(buffer: BufferName; pname: BufferInfoType; var &params: pointer);
     external 'opengl32.dll' name 'glGetNamedBufferPointerv';
-    static procedure GetNamedBufferPointerv(buffer: BufferName; pname: BufferInfoType; &params: ^pointer);
+    static procedure GetNamedBufferPointerv(buffer: BufferName; pname: BufferInfoType; &params: ^IntPtr);
     external 'opengl32.dll' name 'glGetNamedBufferPointerv';
     
     {$endregion 6.7 - Buffer Object Queries}
@@ -10065,7 +10747,11 @@ type
     
     static procedure ShaderSource(shader: ShaderName; count: Int32; [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)] strings: array of string; [MarshalAs(UnmanagedType.LPArray)] lengths: array of Int32);
     external 'opengl32.dll' name 'glShaderSource';
-    static procedure ShaderSource(shader: ShaderName; count: Int32; strings: ^IntPtr; lengths: ^Int32);
+    static procedure ShaderSource(shader: ShaderName; count: Int32; [MarshalAs(UnmanagedType.SysInt, ArraySubType = UnmanagedType.LPStr)] var strings: string; var lengths: Int32);
+    external 'opengl32.dll' name 'glShaderSource';
+    static procedure ShaderSource(shader: ShaderName; count: Int32; var strings: IntPtr; var lengths: Int32);
+    external 'opengl32.dll' name 'glShaderSource';
+    static procedure ShaderSource(shader: ShaderName; count: Int32; strings: pointer; lengths: pointer);
     external 'opengl32.dll' name 'glShaderSource';
     
     static procedure CompileShader(shader: ShaderName);
@@ -10092,20 +10778,44 @@ type
     external 'opengl32.dll' name 'glShaderBinary';
     static procedure ShaderBinary(count: Int32; [MarshalAs(UnmanagedType.LPArray)] shaders: array of ShaderName; binaryformat: ShaderBinaryFormat; binary: IntPtr; length: Int32);
     external 'opengl32.dll' name 'glShaderBinary';
-    static procedure ShaderBinary(count: Int32; shaders: ^ShaderName; binaryformat: ShaderBinaryFormat; [MarshalAs(UnmanagedType.LPArray)] binary: array of byte; length: Int32);
+    static procedure ShaderBinary(count: Int32; var shaders: ShaderName; binaryformat: ShaderBinaryFormat; [MarshalAs(UnmanagedType.LPArray)] binary: array of byte; length: Int32);
     external 'opengl32.dll' name 'glShaderBinary';
-    static procedure ShaderBinary(count: Int32; shaders: ^ShaderName; binaryformat: ShaderBinaryFormat; binary: IntPtr; length: Int32);
+    static procedure ShaderBinary(count: Int32; var shaders: ShaderName; binaryformat: ShaderBinaryFormat; binary: IntPtr; length: Int32);
+    external 'opengl32.dll' name 'glShaderBinary';
+    static procedure ShaderBinary(count: Int32; shaders: pointer; binaryformat: ShaderBinaryFormat; [MarshalAs(UnmanagedType.LPArray)] binary: array of byte; length: Int32);
+    external 'opengl32.dll' name 'glShaderBinary';
+    static procedure ShaderBinary(count: Int32; shaders: pointer; binaryformat: ShaderBinaryFormat; binary: IntPtr; length: Int32);
     external 'opengl32.dll' name 'glShaderBinary';
     
     // 7.2.1
     
     static procedure SpecializeShader(shader: ShaderName; [MarshalAs(UnmanagedType.LPStr)] pEntryPoint: string; numSpecializationConstants: UInt32; [MarshalAs(UnmanagedType.LPArray)] pConstantIndex: array of UInt32; [MarshalAs(UnmanagedType.LPArray)] pConstantValue: array of IntFloatUnion);
     external 'opengl32.dll' name 'glSpecializeShader';
-    static procedure SpecializeShader(shader: ShaderName; [MarshalAs(UnmanagedType.LPStr)] pEntryPoint: string; numSpecializationConstants: UInt32; pConstantIndex: ^UInt32; pConstantValue: ^IntFloatUnion);
+    static procedure SpecializeShader(shader: ShaderName; [MarshalAs(UnmanagedType.LPStr)] pEntryPoint: string; numSpecializationConstants: UInt32; [MarshalAs(UnmanagedType.LPArray)] pConstantIndex: array of UInt32; [MarshalAs(UnmanagedType.LPArray)] pConstantValue: array of Int32);
+    external 'opengl32.dll' name 'glSpecializeShader';
+    static procedure SpecializeShader(shader: ShaderName; [MarshalAs(UnmanagedType.LPStr)] pEntryPoint: string; numSpecializationConstants: UInt32; [MarshalAs(UnmanagedType.LPArray)] pConstantIndex: array of UInt32; [MarshalAs(UnmanagedType.LPArray)] pConstantValue: array of single);
+    external 'opengl32.dll' name 'glSpecializeShader';
+    static procedure SpecializeShader(shader: ShaderName; [MarshalAs(UnmanagedType.LPStr)] pEntryPoint: string; numSpecializationConstants: UInt32; var pConstantIndex: UInt32; var pConstantValue: IntFloatUnion);
+    external 'opengl32.dll' name 'glSpecializeShader';
+    static procedure SpecializeShader(shader: ShaderName; [MarshalAs(UnmanagedType.LPStr)] pEntryPoint: string; numSpecializationConstants: UInt32; var pConstantIndex: UInt32; var pConstantValue: Int32);
+    external 'opengl32.dll' name 'glSpecializeShader';
+    static procedure SpecializeShader(shader: ShaderName; [MarshalAs(UnmanagedType.LPStr)] pEntryPoint: string; numSpecializationConstants: UInt32; var pConstantIndex: UInt32; var pConstantValue: single);
+    external 'opengl32.dll' name 'glSpecializeShader';
+    static procedure SpecializeShader(shader: ShaderName; [MarshalAs(UnmanagedType.LPStr)] pEntryPoint: string; numSpecializationConstants: UInt32; pConstantIndex: pointer; pConstantValue: pointer);
     external 'opengl32.dll' name 'glSpecializeShader';
     static procedure SpecializeShader(shader: ShaderName; pEntryPoint: IntPtr; numSpecializationConstants: UInt32; [MarshalAs(UnmanagedType.LPArray)] pConstantIndex: array of UInt32; [MarshalAs(UnmanagedType.LPArray)] pConstantValue: array of IntFloatUnion);
     external 'opengl32.dll' name 'glSpecializeShader';
-    static procedure SpecializeShader(shader: ShaderName; pEntryPoint: IntPtr; numSpecializationConstants: UInt32; pConstantIndex: ^UInt32; pConstantValue: ^IntFloatUnion);
+    static procedure SpecializeShader(shader: ShaderName; pEntryPoint: IntPtr; numSpecializationConstants: UInt32; [MarshalAs(UnmanagedType.LPArray)] pConstantIndex: array of UInt32; [MarshalAs(UnmanagedType.LPArray)] pConstantValue: array of Int32);
+    external 'opengl32.dll' name 'glSpecializeShader';
+    static procedure SpecializeShader(shader: ShaderName; pEntryPoint: IntPtr; numSpecializationConstants: UInt32; [MarshalAs(UnmanagedType.LPArray)] pConstantIndex: array of UInt32; [MarshalAs(UnmanagedType.LPArray)] pConstantValue: array of single);
+    external 'opengl32.dll' name 'glSpecializeShader';
+    static procedure SpecializeShader(shader: ShaderName; pEntryPoint: IntPtr; numSpecializationConstants: UInt32; var pConstantIndex: UInt32; var pConstantValue: IntFloatUnion);
+    external 'opengl32.dll' name 'glSpecializeShader';
+    static procedure SpecializeShader(shader: ShaderName; pEntryPoint: IntPtr; numSpecializationConstants: UInt32; var pConstantIndex: UInt32; var pConstantValue: Int32);
+    external 'opengl32.dll' name 'glSpecializeShader';
+    static procedure SpecializeShader(shader: ShaderName; pEntryPoint: IntPtr; numSpecializationConstants: UInt32; var pConstantIndex: UInt32; var pConstantValue: single);
+    external 'opengl32.dll' name 'glSpecializeShader';
+    static procedure SpecializeShader(shader: ShaderName; pEntryPoint: IntPtr; numSpecializationConstants: UInt32; pConstantIndex: pointer; pConstantValue: pointer);
     external 'opengl32.dll' name 'glSpecializeShader';
     
     {$endregion 7.2 - Shader Binaries}
@@ -10138,7 +10848,13 @@ type
     
     static function CreateShaderProgramv(&type: ShaderType; count: Int32; [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)] strings: array of string): ProgramName;
     external 'opengl32.dll' name 'glCreateShaderProgramv';
-    static function CreateShaderProgramv(&type: ShaderType; count: Int32; strings: ^IntPtr): ProgramName;
+    static function CreateShaderProgramv(&type: ShaderType; count: Int32; [MarshalAs(UnmanagedType.LPArray)] strings: array of IntPtr): ProgramName;
+    external 'opengl32.dll' name 'glCreateShaderProgramv';
+    static function CreateShaderProgramv(&type: ShaderType; count: Int32; [MarshalAs(UnmanagedType.SysInt, ArraySubType = UnmanagedType.LPStr)] var strings: string): ProgramName;
+    external 'opengl32.dll' name 'glCreateShaderProgramv';
+    static function CreateShaderProgramv(&type: ShaderType; count: Int32; var strings: IntPtr): ProgramName;
+    external 'opengl32.dll' name 'glCreateShaderProgramv';
+    static function CreateShaderProgramv(&type: ShaderType; count: Int32; strings: pointer): ProgramName;
     external 'opengl32.dll' name 'glCreateShaderProgramv';
     
     // 7.3.1
@@ -10161,17 +10877,18 @@ type
     external 'opengl32.dll' name 'glGetProgramResourceName';
     static procedure GetProgramResourceName(&program: ProgramName; programInterface: ProgramInterfaceType; index: ProgramResourceIndex; bufSize: Int32; var length: Int32; name: IntPtr);
     external 'opengl32.dll' name 'glGetProgramResourceName';
-    static procedure GetProgramResourceName(&program: ProgramName; programInterface: ProgramInterfaceType; index: ProgramResourceIndex; bufSize: Int32; length: ^Int32; [MarshalAs(UnmanagedType.LPStr)] name: string);
+    static procedure GetProgramResourceName(&program: ProgramName; programInterface: ProgramInterfaceType; index: ProgramResourceIndex; bufSize: Int32; length: pointer; [MarshalAs(UnmanagedType.LPStr)] name: string);
     external 'opengl32.dll' name 'glGetProgramResourceName';
-    static procedure GetProgramResourceName(&program: ProgramName; programInterface: ProgramInterfaceType; index: ProgramResourceIndex; bufSize: Int32; length: ^Int32; name: IntPtr);
+    static procedure GetProgramResourceName(&program: ProgramName; programInterface: ProgramInterfaceType; index: ProgramResourceIndex; bufSize: Int32; length: pointer; name: IntPtr);
     external 'opengl32.dll' name 'glGetProgramResourceName';
     
-    // если ProgramInterfaceProperty.Type - вывод через ShadingLanguageTypeToken
     static procedure GetProgramResourceiv(&program: ProgramName; programInterface: ProgramInterfaceType; index: ProgramResourceIndex; propCount: Int32; [MarshalAs(UnmanagedType.LPArray)] props: array of ProgramInterfaceProperty; bufSize: Int32; var length: Int32; [MarshalAs(UnmanagedType.LPArray)] &params: array of Int32);
     external 'opengl32.dll' name 'glGetProgramResourceiv';
-    static procedure GetProgramResourceiv(&program: ProgramName; programInterface: ProgramInterfaceType; index: ProgramResourceIndex; propCount: Int32; props: ^ProgramInterfaceProperty; bufSize: Int32; length: ^Int32; var &params: Int32);
+    static procedure GetProgramResourceiv(&program: ProgramName; programInterface: ProgramInterfaceType; index: ProgramResourceIndex; propCount: Int32; var props: ProgramInterfaceProperty; bufSize: Int32; var length: Int32; var &params: ShadingLanguageTypeToken);
     external 'opengl32.dll' name 'glGetProgramResourceiv';
-    static procedure GetProgramResourceiv(&program: ProgramName; programInterface: ProgramInterfaceType; index: ProgramResourceIndex; propCount: Int32; props: ^ProgramInterfaceProperty; bufSize: Int32; length: ^Int32; &params: pointer);
+    static procedure GetProgramResourceiv(&program: ProgramName; programInterface: ProgramInterfaceType; index: ProgramResourceIndex; propCount: Int32; var props: ProgramInterfaceProperty; bufSize: Int32; var length: Int32; var &params: Int32);
+    external 'opengl32.dll' name 'glGetProgramResourceiv';
+    static procedure GetProgramResourceiv(&program: ProgramName; programInterface: ProgramInterfaceType; index: ProgramResourceIndex; propCount: Int32; props: pointer; bufSize: Int32; length: pointer; &params: pointer);
     external 'opengl32.dll' name 'glGetProgramResourceiv';
     
     static function GetProgramResourceLocation(&program: ProgramName; programInterface: ProgramInterfaceType; [MarshalAs(UnmanagedType.LPStr)] name: string): Int32;
@@ -10229,9 +10946,9 @@ type
     external 'opengl32.dll' name 'glGetProgramBinary';
     static procedure GetProgramBinary(&program: ProgramName; bufSize: Int32; var length: Int32; var binaryFormat: ProgramBinaryFormat; binary: IntPtr);
     external 'opengl32.dll' name 'glGetProgramBinary';
-    static procedure GetProgramBinary(&program: ProgramName; bufSize: Int32; length: ^Int32; binaryFormat: ^ProgramBinaryFormat; [MarshalAs(UnmanagedType.LPArray)] binary: array of byte);
+    static procedure GetProgramBinary(&program: ProgramName; bufSize: Int32; length: pointer; binaryFormat: pointer; [MarshalAs(UnmanagedType.LPArray)] binary: array of byte);
     external 'opengl32.dll' name 'glGetProgramBinary';
-    static procedure GetProgramBinary(&program: ProgramName; bufSize: Int32; length: ^Int32; binaryFormat: ^ProgramBinaryFormat; binary: IntPtr);
+    static procedure GetProgramBinary(&program: ProgramName; bufSize: Int32; length: pointer; binaryFormat: pointer; binary: IntPtr);
     external 'opengl32.dll' name 'glGetProgramBinary';
     
     static procedure ProgramBinary(&program: ProgramName; binaryFormat: ProgramBinaryFormat; [MarshalAs(UnmanagedType.LPArray)] binary: array of byte; length: Int32);
@@ -10252,32 +10969,58 @@ type
     external 'opengl32.dll' name 'glGetActiveUniformName';
     static procedure GetActiveUniformName(&program: ProgramName; uniformIndex: UInt32; bufSize: Int32; var length: Int32; uniformName: IntPtr);
     external 'opengl32.dll' name 'glGetActiveUniformName';
-    static procedure GetActiveUniformName(&program: ProgramName; uniformIndex: UInt32; bufSize: Int32; length: ^Int32; [MarshalAs(UnmanagedType.LPStr)] uniformName: string);
+    static procedure GetActiveUniformName(&program: ProgramName; uniformIndex: UInt32; bufSize: Int32; length: pointer; [MarshalAs(UnmanagedType.LPStr)] uniformName: string);
     external 'opengl32.dll' name 'glGetActiveUniformName';
-    static procedure GetActiveUniformName(&program: ProgramName; uniformIndex: UInt32; bufSize: Int32; length: ^Int32; uniformName: IntPtr);
+    static procedure GetActiveUniformName(&program: ProgramName; uniformIndex: UInt32; bufSize: Int32; length: pointer; uniformName: IntPtr);
     external 'opengl32.dll' name 'glGetActiveUniformName';
     
     static procedure GetUniformIndices(&program: ProgramName; uniformCount: Int32; [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)] uniformNames: array of string; [MarshalAs(UnmanagedType.LPArray)] uniformIndices: array of UInt32);
     external 'opengl32.dll' name 'glGetUniformIndices';
-    static procedure GetUniformIndices(&program: ProgramName; uniformCount: Int32; [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)] uniformNames: array of string; uniformIndices: ^UInt32);
+    static procedure GetUniformIndices(&program: ProgramName; uniformCount: Int32; [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)] uniformNames: array of string; var uniformIndices: UInt32);
     external 'opengl32.dll' name 'glGetUniformIndices';
-    static procedure GetUniformIndices(&program: ProgramName; uniformCount: Int32; uniformNames: ^IntPtr; [MarshalAs(UnmanagedType.LPArray)] uniformIndices: array of UInt32);
+    static procedure GetUniformIndices(&program: ProgramName; uniformCount: Int32; [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)] uniformNames: array of string; uniformIndices: pointer);
     external 'opengl32.dll' name 'glGetUniformIndices';
-    static procedure GetUniformIndices(&program: ProgramName; uniformCount: Int32; uniformNames: ^IntPtr; uniformIndices: ^UInt32);
+    static procedure GetUniformIndices(&program: ProgramName; uniformCount: Int32; [MarshalAs(UnmanagedType.LPArray)] uniformNames: array of IntPtr; [MarshalAs(UnmanagedType.LPArray)] uniformIndices: array of UInt32);
+    external 'opengl32.dll' name 'glGetUniformIndices';
+    static procedure GetUniformIndices(&program: ProgramName; uniformCount: Int32; [MarshalAs(UnmanagedType.LPArray)] uniformNames: array of IntPtr; var uniformIndices: UInt32);
+    external 'opengl32.dll' name 'glGetUniformIndices';
+    static procedure GetUniformIndices(&program: ProgramName; uniformCount: Int32; [MarshalAs(UnmanagedType.LPArray)] uniformNames: array of IntPtr; uniformIndices: pointer);
+    external 'opengl32.dll' name 'glGetUniformIndices';
+    static procedure GetUniformIndices(&program: ProgramName; uniformCount: Int32; [MarshalAs(UnmanagedType.SysInt, ArraySubType = UnmanagedType.LPStr)] var uniformNames: string; [MarshalAs(UnmanagedType.LPArray)] uniformIndices: array of UInt32);
+    external 'opengl32.dll' name 'glGetUniformIndices';
+    static procedure GetUniformIndices(&program: ProgramName; uniformCount: Int32; [MarshalAs(UnmanagedType.SysInt, ArraySubType = UnmanagedType.LPStr)] var uniformNames: string; var uniformIndices: UInt32);
+    external 'opengl32.dll' name 'glGetUniformIndices';
+    static procedure GetUniformIndices(&program: ProgramName; uniformCount: Int32; [MarshalAs(UnmanagedType.SysInt, ArraySubType = UnmanagedType.LPStr)] var uniformNames: string; uniformIndices: pointer);
+    external 'opengl32.dll' name 'glGetUniformIndices';
+    static procedure GetUniformIndices(&program: ProgramName; uniformCount: Int32; var uniformNames: IntPtr; [MarshalAs(UnmanagedType.LPArray)] uniformIndices: array of UInt32);
+    external 'opengl32.dll' name 'glGetUniformIndices';
+    static procedure GetUniformIndices(&program: ProgramName; uniformCount: Int32; var uniformNames: IntPtr; var uniformIndices: UInt32);
+    external 'opengl32.dll' name 'glGetUniformIndices';
+    static procedure GetUniformIndices(&program: ProgramName; uniformCount: Int32; var uniformNames: IntPtr; uniformIndices: pointer);
+    external 'opengl32.dll' name 'glGetUniformIndices';
+    static procedure GetUniformIndices(&program: ProgramName; uniformCount: Int32; uniformNames: pointer; [MarshalAs(UnmanagedType.LPArray)] uniformIndices: array of UInt32);
+    external 'opengl32.dll' name 'glGetUniformIndices';
+    static procedure GetUniformIndices(&program: ProgramName; uniformCount: Int32; uniformNames: pointer; var uniformIndices: UInt32);
+    external 'opengl32.dll' name 'glGetUniformIndices';
+    static procedure GetUniformIndices(&program: ProgramName; uniformCount: Int32; uniformNames: pointer; uniformIndices: pointer);
     external 'opengl32.dll' name 'glGetUniformIndices';
     
-    static procedure GetActiveUniform(&program: ProgramName; index: UInt32; bufSize: Int32; var length: Int32; var size: Int32; &type: ^ShadingLanguageTypeToken; [MarshalAs(UnmanagedType.LPStr)] name: string);
+    static procedure GetActiveUniform(&program: ProgramName; index: UInt32; bufSize: Int32; var length: Int32; var size: Int32; var &type: ShadingLanguageTypeToken; [MarshalAs(UnmanagedType.LPStr)] name: string);
     external 'opengl32.dll' name 'glGetActiveUniform';
-    static procedure GetActiveUniform(&program: ProgramName; index: UInt32; bufSize: Int32; var length: Int32; var size: Int32; &type: ^ShadingLanguageTypeToken; name: IntPtr);
+    static procedure GetActiveUniform(&program: ProgramName; index: UInt32; bufSize: Int32; var length: Int32; var size: Int32; var &type: ShadingLanguageTypeToken; name: IntPtr);
     external 'opengl32.dll' name 'glGetActiveUniform';
-    static procedure GetActiveUniform(&program: ProgramName; index: UInt32; bufSize: Int32; length: ^Int32; size: ^Int32; &type: ^ShadingLanguageTypeToken; [MarshalAs(UnmanagedType.LPStr)] name: string);
+    static procedure GetActiveUniform(&program: ProgramName; index: UInt32; bufSize: Int32; length: pointer; size: pointer; &type: pointer; [MarshalAs(UnmanagedType.LPStr)] name: string);
     external 'opengl32.dll' name 'glGetActiveUniform';
-    static procedure GetActiveUniform(&program: ProgramName; index: UInt32; bufSize: Int32; length: ^Int32; size: ^Int32; &type: ^ShadingLanguageTypeToken; name: IntPtr);
+    static procedure GetActiveUniform(&program: ProgramName; index: UInt32; bufSize: Int32; length: pointer; size: pointer; &type: pointer; name: IntPtr);
     external 'opengl32.dll' name 'glGetActiveUniform';
     
     static procedure GetActiveUniformsiv(&program: ProgramName; uniformCount: Int32; [MarshalAs(UnmanagedType.LPArray)] uniformIndices: array of UInt32; pname: ProgramInterfaceProperty; [MarshalAs(UnmanagedType.LPArray)] &params: array of Int32);
     external 'opengl32.dll' name 'glGetActiveUniformsiv';
-    static procedure GetActiveUniformsiv(&program: ProgramName; uniformCount: Int32; uniformIndices: ^UInt32; pname: ProgramInterfaceProperty; &params: ^Int32);
+    static procedure GetActiveUniformsiv(&program: ProgramName; uniformCount: Int32; var uniformIndices: UInt32; pname: ProgramInterfaceProperty; var &params: ShadingLanguageTypeToken);
+    external 'opengl32.dll' name 'glGetActiveUniformsiv';
+    static procedure GetActiveUniformsiv(&program: ProgramName; uniformCount: Int32; var uniformIndices: UInt32; pname: ProgramInterfaceProperty; var &params: Int32);
+    external 'opengl32.dll' name 'glGetActiveUniformsiv';
+    static procedure GetActiveUniformsiv(&program: ProgramName; uniformCount: Int32; uniformIndices: pointer; pname: ProgramInterfaceProperty; &params: pointer);
     external 'opengl32.dll' name 'glGetActiveUniformsiv';
     
     static function GetUniformBlockIndex(&program: ProgramName; [MarshalAs(UnmanagedType.LPStr)] uniformBlockName: string): UInt32;
@@ -10287,21 +11030,25 @@ type
     
     static procedure GetActiveUniformBlockName(&program: ProgramName; uniformBlockIndex: UInt32; bufSize: Int32; var length: Int32; [MarshalAs(UnmanagedType.LPStr)] uniformBlockName: string);
     external 'opengl32.dll' name 'glGetActiveUniformBlockName';
-    static procedure GetActiveUniformBlockName(&program: ProgramName; uniformBlockIndex: UInt32; bufSize: Int32; length: ^Int32; uniformBlockName: IntPtr);
+    static procedure GetActiveUniformBlockName(&program: ProgramName; uniformBlockIndex: UInt32; bufSize: Int32; length: pointer; uniformBlockName: IntPtr);
     external 'opengl32.dll' name 'glGetActiveUniformBlockName';
     
     static procedure GetActiveUniformBlockiv(&program: ProgramName; uniformBlockIndex: UInt32; pname: ProgramInterfaceProperty; [MarshalAs(UnmanagedType.LPArray)] &params: array of Int32);
     external 'opengl32.dll' name 'glGetActiveUniformBlockiv';
+    static procedure GetActiveUniformBlockiv(&program: ProgramName; uniformBlockIndex: UInt32; pname: ProgramInterfaceProperty; var &params: ShadingLanguageTypeToken);
+    external 'opengl32.dll' name 'glGetActiveUniformBlockiv';
     static procedure GetActiveUniformBlockiv(&program: ProgramName; uniformBlockIndex: UInt32; pname: ProgramInterfaceProperty; var &params: Int32);
     external 'opengl32.dll' name 'glGetActiveUniformBlockiv';
-    static procedure GetActiveUniformBlockiv(&program: ProgramName; uniformBlockIndex: UInt32; pname: ProgramInterfaceProperty; &params: ^Int32);
+    static procedure GetActiveUniformBlockiv(&program: ProgramName; uniformBlockIndex: UInt32; pname: ProgramInterfaceProperty; &params: pointer);
     external 'opengl32.dll' name 'glGetActiveUniformBlockiv';
     
     static procedure GetActiveAtomicCounterBufferiv(&program: ProgramName; bufferIndex: UInt32; pname: ProgramInterfaceProperty; [MarshalAs(UnmanagedType.LPArray)] &params: array of Int32);
     external 'opengl32.dll' name 'glGetActiveAtomicCounterBufferiv';
+    static procedure GetActiveAtomicCounterBufferiv(&program: ProgramName; bufferIndex: UInt32; pname: ProgramInterfaceProperty; var &params: ShadingLanguageTypeToken);
+    external 'opengl32.dll' name 'glGetActiveAtomicCounterBufferiv';
     static procedure GetActiveAtomicCounterBufferiv(&program: ProgramName; bufferIndex: UInt32; pname: ProgramInterfaceProperty; var &params: Int32);
     external 'opengl32.dll' name 'glGetActiveAtomicCounterBufferiv';
-    static procedure GetActiveAtomicCounterBufferiv(&program: ProgramName; bufferIndex: UInt32; pname: ProgramInterfaceProperty; &params: ^Int32);
+    static procedure GetActiveAtomicCounterBufferiv(&program: ProgramName; bufferIndex: UInt32; pname: ProgramInterfaceProperty; &params: pointer);
     external 'opengl32.dll' name 'glGetActiveAtomicCounterBufferiv';
     
     // 7.6.1
@@ -10332,16 +11079,16 @@ type
     static procedure Uniform4f(location: Int32; v0: single; v1: single; v2: single; v3: single);
     external 'opengl32.dll' name 'glUniform4f';
     
-    static procedure Uniform1d(location: Int32; x: real);
+    static procedure Uniform1d(location: Int32; x: double);
     external 'opengl32.dll' name 'glUniform1d';
     
-    static procedure Uniform2d(location: Int32; x: real; y: real);
+    static procedure Uniform2d(location: Int32; x: double; y: double);
     external 'opengl32.dll' name 'glUniform2d';
     
-    static procedure Uniform3d(location: Int32; x: real; y: real; z: real);
+    static procedure Uniform3d(location: Int32; x: double; y: double; z: double);
     external 'opengl32.dll' name 'glUniform3d';
     
-    static procedure Uniform4d(location: Int32; x: real; y: real; z: real; w: real);
+    static procedure Uniform4d(location: Int32; x: double; y: double; z: double; w: double);
     external 'opengl32.dll' name 'glUniform4d';
     
     static procedure Uniform1ui(location: Int32; v0: UInt32);
@@ -10366,7 +11113,7 @@ type
     external 'opengl32.dll' name 'glUniform1iv';
     static procedure Uniform1iv(location: Int32; count: Int32; var value: Vec1i);
     external 'opengl32.dll' name 'glUniform1iv';
-    static procedure Uniform1iv(location: Int32; count: Int32; value: ^Int32);
+    static procedure Uniform1iv(location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glUniform1iv';
     
     static procedure Uniform2iv(location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of Int32);
@@ -10375,7 +11122,7 @@ type
     external 'opengl32.dll' name 'glUniform2iv';
     static procedure Uniform2iv(location: Int32; count: Int32; var value: Vec2i);
     external 'opengl32.dll' name 'glUniform2iv';
-    static procedure Uniform2iv(location: Int32; count: Int32; value: ^Int32);
+    static procedure Uniform2iv(location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glUniform2iv';
     
     static procedure Uniform3iv(location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of Int32);
@@ -10384,7 +11131,7 @@ type
     external 'opengl32.dll' name 'glUniform3iv';
     static procedure Uniform3iv(location: Int32; count: Int32; var value: Vec3i);
     external 'opengl32.dll' name 'glUniform3iv';
-    static procedure Uniform3iv(location: Int32; count: Int32; value: ^Int32);
+    static procedure Uniform3iv(location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glUniform3iv';
     
     static procedure Uniform4iv(location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of Int32);
@@ -10393,7 +11140,7 @@ type
     external 'opengl32.dll' name 'glUniform4iv';
     static procedure Uniform4iv(location: Int32; count: Int32; var value: Vec4i);
     external 'opengl32.dll' name 'glUniform4iv';
-    static procedure Uniform4iv(location: Int32; count: Int32; value: ^Int32);
+    static procedure Uniform4iv(location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glUniform4iv';
     
     static procedure Uniform1fv(location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
@@ -10402,7 +11149,7 @@ type
     external 'opengl32.dll' name 'glUniform1fv';
     static procedure Uniform1fv(location: Int32; count: Int32; var value: Vec1f);
     external 'opengl32.dll' name 'glUniform1fv';
-    static procedure Uniform1fv(location: Int32; count: Int32; value: ^single);
+    static procedure Uniform1fv(location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glUniform1fv';
     
     static procedure Uniform2fv(location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
@@ -10411,7 +11158,7 @@ type
     external 'opengl32.dll' name 'glUniform2fv';
     static procedure Uniform2fv(location: Int32; count: Int32; var value: Vec2f);
     external 'opengl32.dll' name 'glUniform2fv';
-    static procedure Uniform2fv(location: Int32; count: Int32; value: ^single);
+    static procedure Uniform2fv(location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glUniform2fv';
     
     static procedure Uniform3fv(location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
@@ -10420,7 +11167,7 @@ type
     external 'opengl32.dll' name 'glUniform3fv';
     static procedure Uniform3fv(location: Int32; count: Int32; var value: Vec3f);
     external 'opengl32.dll' name 'glUniform3fv';
-    static procedure Uniform3fv(location: Int32; count: Int32; value: ^single);
+    static procedure Uniform3fv(location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glUniform3fv';
     
     static procedure Uniform4fv(location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
@@ -10429,43 +11176,43 @@ type
     external 'opengl32.dll' name 'glUniform4fv';
     static procedure Uniform4fv(location: Int32; count: Int32; var value: Vec4f);
     external 'opengl32.dll' name 'glUniform4fv';
-    static procedure Uniform4fv(location: Int32; count: Int32; value: ^single);
+    static procedure Uniform4fv(location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glUniform4fv';
     
-    static procedure Uniform1dv(location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure Uniform1dv(location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glUniform1dv';
-    static procedure Uniform1dv(location: Int32; count: Int32; var value: real);
+    static procedure Uniform1dv(location: Int32; count: Int32; var value: double);
     external 'opengl32.dll' name 'glUniform1dv';
     static procedure Uniform1dv(location: Int32; count: Int32; var value: Vec1d);
     external 'opengl32.dll' name 'glUniform1dv';
-    static procedure Uniform1dv(location: Int32; count: Int32; value: ^real);
+    static procedure Uniform1dv(location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glUniform1dv';
     
-    static procedure Uniform2dv(location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure Uniform2dv(location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glUniform2dv';
-    static procedure Uniform2dv(location: Int32; count: Int32; var value: real);
+    static procedure Uniform2dv(location: Int32; count: Int32; var value: double);
     external 'opengl32.dll' name 'glUniform2dv';
     static procedure Uniform2dv(location: Int32; count: Int32; var value: Vec2d);
     external 'opengl32.dll' name 'glUniform2dv';
-    static procedure Uniform2dv(location: Int32; count: Int32; value: ^real);
+    static procedure Uniform2dv(location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glUniform2dv';
     
-    static procedure Uniform3dv(location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure Uniform3dv(location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glUniform3dv';
-    static procedure Uniform3dv(location: Int32; count: Int32; var value: real);
+    static procedure Uniform3dv(location: Int32; count: Int32; var value: double);
     external 'opengl32.dll' name 'glUniform3dv';
     static procedure Uniform3dv(location: Int32; count: Int32; var value: Vec3d);
     external 'opengl32.dll' name 'glUniform3dv';
-    static procedure Uniform3dv(location: Int32; count: Int32; value: ^real);
+    static procedure Uniform3dv(location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glUniform3dv';
     
-    static procedure Uniform4dv(location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure Uniform4dv(location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glUniform4dv';
-    static procedure Uniform4dv(location: Int32; count: Int32; var value: real);
+    static procedure Uniform4dv(location: Int32; count: Int32; var value: double);
     external 'opengl32.dll' name 'glUniform4dv';
     static procedure Uniform4dv(location: Int32; count: Int32; var value: Vec4d);
     external 'opengl32.dll' name 'glUniform4dv';
-    static procedure Uniform4dv(location: Int32; count: Int32; value: ^real);
+    static procedure Uniform4dv(location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glUniform4dv';
     
     static procedure Uniform1uiv(location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of UInt32);
@@ -10474,7 +11221,7 @@ type
     external 'opengl32.dll' name 'glUniform1uiv';
     static procedure Uniform1uiv(location: Int32; count: Int32; var value: Vec1ui);
     external 'opengl32.dll' name 'glUniform1uiv';
-    static procedure Uniform1uiv(location: Int32; count: Int32; value: ^UInt32);
+    static procedure Uniform1uiv(location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glUniform1uiv';
     
     static procedure Uniform2uiv(location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of UInt32);
@@ -10483,7 +11230,7 @@ type
     external 'opengl32.dll' name 'glUniform2uiv';
     static procedure Uniform2uiv(location: Int32; count: Int32; var value: Vec2ui);
     external 'opengl32.dll' name 'glUniform2uiv';
-    static procedure Uniform2uiv(location: Int32; count: Int32; value: ^UInt32);
+    static procedure Uniform2uiv(location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glUniform2uiv';
     
     static procedure Uniform3uiv(location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of UInt32);
@@ -10492,7 +11239,7 @@ type
     external 'opengl32.dll' name 'glUniform3uiv';
     static procedure Uniform3uiv(location: Int32; count: Int32; var value: Vec3ui);
     external 'opengl32.dll' name 'glUniform3uiv';
-    static procedure Uniform3uiv(location: Int32; count: Int32; value: ^UInt32);
+    static procedure Uniform3uiv(location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glUniform3uiv';
     
     static procedure Uniform4uiv(location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of UInt32);
@@ -10501,7 +11248,7 @@ type
     external 'opengl32.dll' name 'glUniform4uiv';
     static procedure Uniform4uiv(location: Int32; count: Int32; var value: Vec4ui);
     external 'opengl32.dll' name 'glUniform4uiv';
-    static procedure Uniform4uiv(location: Int32; count: Int32; value: ^UInt32);
+    static procedure Uniform4uiv(location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glUniform4uiv';
     
     {$endregion Uniform[1,2,3,4][i,f,d,ui]v}
@@ -10514,7 +11261,7 @@ type
     external 'opengl32.dll' name 'glUniformMatrix2fv';
     static procedure UniformMatrix2fv(location: Int32; count: Int32; transpose: boolean; var value: Mtr2f);
     external 'opengl32.dll' name 'glUniformMatrix2fv';
-    static procedure UniformMatrix2fv(location: Int32; count: Int32; transpose: boolean; value: ^single);
+    static procedure UniformMatrix2fv(location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glUniformMatrix2fv';
     
     static procedure UniformMatrix3fv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
@@ -10523,7 +11270,7 @@ type
     external 'opengl32.dll' name 'glUniformMatrix3fv';
     static procedure UniformMatrix3fv(location: Int32; count: Int32; transpose: boolean; var value: Mtr3f);
     external 'opengl32.dll' name 'glUniformMatrix3fv';
-    static procedure UniformMatrix3fv(location: Int32; count: Int32; transpose: boolean; value: ^single);
+    static procedure UniformMatrix3fv(location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glUniformMatrix3fv';
     
     static procedure UniformMatrix4fv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
@@ -10532,34 +11279,34 @@ type
     external 'opengl32.dll' name 'glUniformMatrix4fv';
     static procedure UniformMatrix4fv(location: Int32; count: Int32; transpose: boolean; var value: Mtr4f);
     external 'opengl32.dll' name 'glUniformMatrix4fv';
-    static procedure UniformMatrix4fv(location: Int32; count: Int32; transpose: boolean; value: ^single);
+    static procedure UniformMatrix4fv(location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glUniformMatrix4fv';
     
-    static procedure UniformMatrix2dv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure UniformMatrix2dv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glUniformMatrix2dv';
-    static procedure UniformMatrix2dv(location: Int32; count: Int32; transpose: boolean; var value: real);
+    static procedure UniformMatrix2dv(location: Int32; count: Int32; transpose: boolean; var value: double);
     external 'opengl32.dll' name 'glUniformMatrix2dv';
     static procedure UniformMatrix2dv(location: Int32; count: Int32; transpose: boolean; var value: Mtr2d);
     external 'opengl32.dll' name 'glUniformMatrix2dv';
-    static procedure UniformMatrix2dv(location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure UniformMatrix2dv(location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glUniformMatrix2dv';
     
-    static procedure UniformMatrix3dv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure UniformMatrix3dv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glUniformMatrix3dv';
-    static procedure UniformMatrix3dv(location: Int32; count: Int32; transpose: boolean; var value: real);
+    static procedure UniformMatrix3dv(location: Int32; count: Int32; transpose: boolean; var value: double);
     external 'opengl32.dll' name 'glUniformMatrix3dv';
     static procedure UniformMatrix3dv(location: Int32; count: Int32; transpose: boolean; var value: Mtr3d);
     external 'opengl32.dll' name 'glUniformMatrix3dv';
-    static procedure UniformMatrix3dv(location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure UniformMatrix3dv(location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glUniformMatrix3dv';
     
-    static procedure UniformMatrix4dv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure UniformMatrix4dv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glUniformMatrix4dv';
-    static procedure UniformMatrix4dv(location: Int32; count: Int32; transpose: boolean; var value: real);
+    static procedure UniformMatrix4dv(location: Int32; count: Int32; transpose: boolean; var value: double);
     external 'opengl32.dll' name 'glUniformMatrix4dv';
     static procedure UniformMatrix4dv(location: Int32; count: Int32; transpose: boolean; var value: Mtr4d);
     external 'opengl32.dll' name 'glUniformMatrix4dv';
-    static procedure UniformMatrix4dv(location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure UniformMatrix4dv(location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glUniformMatrix4dv';
     
     {$endregion UniformMatrix[2,3,4][f,d]v}
@@ -10572,7 +11319,7 @@ type
     external 'opengl32.dll' name 'glUniformMatrix2x3fv';
     static procedure UniformMatrix2x3fv(location: Int32; count: Int32; transpose: boolean; var value: Mtr2x3f);
     external 'opengl32.dll' name 'glUniformMatrix2x3fv';
-    static procedure UniformMatrix2x3fv(location: Int32; count: Int32; transpose: boolean; value: ^single);
+    static procedure UniformMatrix2x3fv(location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glUniformMatrix2x3fv';
     
     static procedure UniformMatrix3x2fv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
@@ -10581,7 +11328,7 @@ type
     external 'opengl32.dll' name 'glUniformMatrix3x2fv';
     static procedure UniformMatrix3x2fv(location: Int32; count: Int32; transpose: boolean; var value: Mtr3x2f);
     external 'opengl32.dll' name 'glUniformMatrix3x2fv';
-    static procedure UniformMatrix3x2fv(location: Int32; count: Int32; transpose: boolean; value: ^single);
+    static procedure UniformMatrix3x2fv(location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glUniformMatrix3x2fv';
     
     static procedure UniformMatrix2x4fv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
@@ -10590,7 +11337,7 @@ type
     external 'opengl32.dll' name 'glUniformMatrix2x4fv';
     static procedure UniformMatrix2x4fv(location: Int32; count: Int32; transpose: boolean; var value: Mtr2x4f);
     external 'opengl32.dll' name 'glUniformMatrix2x4fv';
-    static procedure UniformMatrix2x4fv(location: Int32; count: Int32; transpose: boolean; value: ^single);
+    static procedure UniformMatrix2x4fv(location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glUniformMatrix2x4fv';
     
     static procedure UniformMatrix4x2fv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
@@ -10599,7 +11346,7 @@ type
     external 'opengl32.dll' name 'glUniformMatrix4x2fv';
     static procedure UniformMatrix4x2fv(location: Int32; count: Int32; transpose: boolean; var value: Mtr4x2f);
     external 'opengl32.dll' name 'glUniformMatrix4x2fv';
-    static procedure UniformMatrix4x2fv(location: Int32; count: Int32; transpose: boolean; value: ^single);
+    static procedure UniformMatrix4x2fv(location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glUniformMatrix4x2fv';
     
     static procedure UniformMatrix3x4fv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
@@ -10608,7 +11355,7 @@ type
     external 'opengl32.dll' name 'glUniformMatrix3x4fv';
     static procedure UniformMatrix3x4fv(location: Int32; count: Int32; transpose: boolean; var value: Mtr3x4f);
     external 'opengl32.dll' name 'glUniformMatrix3x4fv';
-    static procedure UniformMatrix3x4fv(location: Int32; count: Int32; transpose: boolean; value: ^single);
+    static procedure UniformMatrix3x4fv(location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glUniformMatrix3x4fv';
     
     static procedure UniformMatrix4x3fv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
@@ -10617,61 +11364,61 @@ type
     external 'opengl32.dll' name 'glUniformMatrix4x3fv';
     static procedure UniformMatrix4x3fv(location: Int32; count: Int32; transpose: boolean; var value: Mtr4x3f);
     external 'opengl32.dll' name 'glUniformMatrix4x3fv';
-    static procedure UniformMatrix4x3fv(location: Int32; count: Int32; transpose: boolean; value: ^single);
+    static procedure UniformMatrix4x3fv(location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glUniformMatrix4x3fv';
     
-    static procedure UniformMatrix2x3dv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure UniformMatrix2x3dv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glUniformMatrix2x3dv';
-    static procedure UniformMatrix2x3dv(location: Int32; count: Int32; transpose: boolean; var value: real);
+    static procedure UniformMatrix2x3dv(location: Int32; count: Int32; transpose: boolean; var value: double);
     external 'opengl32.dll' name 'glUniformMatrix2x3dv';
     static procedure UniformMatrix2x3dv(location: Int32; count: Int32; transpose: boolean; var value: Mtr2x3d);
     external 'opengl32.dll' name 'glUniformMatrix2x3dv';
-    static procedure UniformMatrix2x3dv(location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure UniformMatrix2x3dv(location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glUniformMatrix2x3dv';
     
-    static procedure UniformMatrix3x2dv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure UniformMatrix3x2dv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glUniformMatrix3x2dv';
-    static procedure UniformMatrix3x2dv(location: Int32; count: Int32; transpose: boolean; var value: real);
+    static procedure UniformMatrix3x2dv(location: Int32; count: Int32; transpose: boolean; var value: double);
     external 'opengl32.dll' name 'glUniformMatrix3x2dv';
     static procedure UniformMatrix3x2dv(location: Int32; count: Int32; transpose: boolean; var value: Mtr3x2d);
     external 'opengl32.dll' name 'glUniformMatrix3x2dv';
-    static procedure UniformMatrix3x2dv(location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure UniformMatrix3x2dv(location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glUniformMatrix3x2dv';
     
-    static procedure UniformMatrix2x4dv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure UniformMatrix2x4dv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glUniformMatrix2x4dv';
-    static procedure UniformMatrix2x4dv(location: Int32; count: Int32; transpose: boolean; var value: real);
+    static procedure UniformMatrix2x4dv(location: Int32; count: Int32; transpose: boolean; var value: double);
     external 'opengl32.dll' name 'glUniformMatrix2x4dv';
     static procedure UniformMatrix2x4dv(location: Int32; count: Int32; transpose: boolean; var value: Mtr2x4d);
     external 'opengl32.dll' name 'glUniformMatrix2x4dv';
-    static procedure UniformMatrix2x4dv(location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure UniformMatrix2x4dv(location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glUniformMatrix2x4dv';
     
-    static procedure UniformMatrix4x2dv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure UniformMatrix4x2dv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glUniformMatrix4x2dv';
-    static procedure UniformMatrix4x2dv(location: Int32; count: Int32; transpose: boolean; var value: real);
+    static procedure UniformMatrix4x2dv(location: Int32; count: Int32; transpose: boolean; var value: double);
     external 'opengl32.dll' name 'glUniformMatrix4x2dv';
     static procedure UniformMatrix4x2dv(location: Int32; count: Int32; transpose: boolean; var value: Mtr4x2d);
     external 'opengl32.dll' name 'glUniformMatrix4x2dv';
-    static procedure UniformMatrix4x2dv(location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure UniformMatrix4x2dv(location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glUniformMatrix4x2dv';
     
-    static procedure UniformMatrix3x4dv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure UniformMatrix3x4dv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glUniformMatrix3x4dv';
-    static procedure UniformMatrix3x4dv(location: Int32; count: Int32; transpose: boolean; var value: real);
+    static procedure UniformMatrix3x4dv(location: Int32; count: Int32; transpose: boolean; var value: double);
     external 'opengl32.dll' name 'glUniformMatrix3x4dv';
     static procedure UniformMatrix3x4dv(location: Int32; count: Int32; transpose: boolean; var value: Mtr3x4d);
     external 'opengl32.dll' name 'glUniformMatrix3x4dv';
-    static procedure UniformMatrix3x4dv(location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure UniformMatrix3x4dv(location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glUniformMatrix3x4dv';
     
-    static procedure UniformMatrix4x3dv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure UniformMatrix4x3dv(location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glUniformMatrix4x3dv';
-    static procedure UniformMatrix4x3dv(location: Int32; count: Int32; transpose: boolean; var value: real);
+    static procedure UniformMatrix4x3dv(location: Int32; count: Int32; transpose: boolean; var value: double);
     external 'opengl32.dll' name 'glUniformMatrix4x3dv';
     static procedure UniformMatrix4x3dv(location: Int32; count: Int32; transpose: boolean; var value: Mtr4x3d);
     external 'opengl32.dll' name 'glUniformMatrix4x3dv';
-    static procedure UniformMatrix4x3dv(location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure UniformMatrix4x3dv(location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glUniformMatrix4x3dv';
     
     {$endregion UniformMatrix[2x3,3x2,2x4,4x2,3x4,4x3][f,d]v}
@@ -10702,16 +11449,16 @@ type
     static procedure ProgramUniform4f(&program: ProgramName; location: Int32; v0: single; v1: single; v2: single; v3: single);
     external 'opengl32.dll' name 'glProgramUniform4f';
     
-    static procedure ProgramUniform1d(&program: ProgramName; location: Int32; x: real);
+    static procedure ProgramUniform1d(&program: ProgramName; location: Int32; x: double);
     external 'opengl32.dll' name 'glProgramUniform1d';
     
-    static procedure ProgramUniform2d(&program: ProgramName; location: Int32; x: real; y: real);
+    static procedure ProgramUniform2d(&program: ProgramName; location: Int32; x: double; y: double);
     external 'opengl32.dll' name 'glProgramUniform2d';
     
-    static procedure ProgramUniform3d(&program: ProgramName; location: Int32; x: real; y: real; z: real);
+    static procedure ProgramUniform3d(&program: ProgramName; location: Int32; x: double; y: double; z: double);
     external 'opengl32.dll' name 'glProgramUniform3d';
     
-    static procedure ProgramUniform4d(&program: ProgramName; location: Int32; x: real; y: real; z: real; w: real);
+    static procedure ProgramUniform4d(&program: ProgramName; location: Int32; x: double; y: double; z: double; w: double);
     external 'opengl32.dll' name 'glProgramUniform4d';
     
     static procedure ProgramUniform1ui(&program: ProgramName; location: Int32; v0: UInt32);
@@ -10736,7 +11483,7 @@ type
     external 'opengl32.dll' name 'glProgramUniform1iv';
     static procedure ProgramUniform1iv(&program: ProgramName; location: Int32; count: Int32; var value: Vec1i);
     external 'opengl32.dll' name 'glProgramUniform1iv';
-    static procedure ProgramUniform1iv(&program: ProgramName; location: Int32; count: Int32; value: ^Int32);
+    static procedure ProgramUniform1iv(&program: ProgramName; location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glProgramUniform1iv';
     
     static procedure ProgramUniform2iv(&program: ProgramName; location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of Int32);
@@ -10745,7 +11492,7 @@ type
     external 'opengl32.dll' name 'glProgramUniform2iv';
     static procedure ProgramUniform2iv(&program: ProgramName; location: Int32; count: Int32; var value: Vec2i);
     external 'opengl32.dll' name 'glProgramUniform2iv';
-    static procedure ProgramUniform2iv(&program: ProgramName; location: Int32; count: Int32; value: ^Int32);
+    static procedure ProgramUniform2iv(&program: ProgramName; location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glProgramUniform2iv';
     
     static procedure ProgramUniform3iv(&program: ProgramName; location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of Int32);
@@ -10754,7 +11501,7 @@ type
     external 'opengl32.dll' name 'glProgramUniform3iv';
     static procedure ProgramUniform3iv(&program: ProgramName; location: Int32; count: Int32; var value: Vec3i);
     external 'opengl32.dll' name 'glProgramUniform3iv';
-    static procedure ProgramUniform3iv(&program: ProgramName; location: Int32; count: Int32; value: ^Int32);
+    static procedure ProgramUniform3iv(&program: ProgramName; location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glProgramUniform3iv';
     
     static procedure ProgramUniform4iv(&program: ProgramName; location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of Int32);
@@ -10763,7 +11510,7 @@ type
     external 'opengl32.dll' name 'glProgramUniform4iv';
     static procedure ProgramUniform4iv(&program: ProgramName; location: Int32; count: Int32; var value: Vec4i);
     external 'opengl32.dll' name 'glProgramUniform4iv';
-    static procedure ProgramUniform4iv(&program: ProgramName; location: Int32; count: Int32; value: ^Int32);
+    static procedure ProgramUniform4iv(&program: ProgramName; location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glProgramUniform4iv';
     
     static procedure ProgramUniform1fv(&program: ProgramName; location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
@@ -10772,7 +11519,7 @@ type
     external 'opengl32.dll' name 'glProgramUniform1fv';
     static procedure ProgramUniform1fv(&program: ProgramName; location: Int32; count: Int32; var value: Vec1f);
     external 'opengl32.dll' name 'glProgramUniform1fv';
-    static procedure ProgramUniform1fv(&program: ProgramName; location: Int32; count: Int32; value: ^single);
+    static procedure ProgramUniform1fv(&program: ProgramName; location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glProgramUniform1fv';
     
     static procedure ProgramUniform2fv(&program: ProgramName; location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
@@ -10781,7 +11528,7 @@ type
     external 'opengl32.dll' name 'glProgramUniform2fv';
     static procedure ProgramUniform2fv(&program: ProgramName; location: Int32; count: Int32; var value: Vec2f);
     external 'opengl32.dll' name 'glProgramUniform2fv';
-    static procedure ProgramUniform2fv(&program: ProgramName; location: Int32; count: Int32; value: ^single);
+    static procedure ProgramUniform2fv(&program: ProgramName; location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glProgramUniform2fv';
     
     static procedure ProgramUniform3fv(&program: ProgramName; location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
@@ -10790,7 +11537,7 @@ type
     external 'opengl32.dll' name 'glProgramUniform3fv';
     static procedure ProgramUniform3fv(&program: ProgramName; location: Int32; count: Int32; var value: Vec3f);
     external 'opengl32.dll' name 'glProgramUniform3fv';
-    static procedure ProgramUniform3fv(&program: ProgramName; location: Int32; count: Int32; value: ^single);
+    static procedure ProgramUniform3fv(&program: ProgramName; location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glProgramUniform3fv';
     
     static procedure ProgramUniform4fv(&program: ProgramName; location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
@@ -10799,43 +11546,43 @@ type
     external 'opengl32.dll' name 'glProgramUniform4fv';
     static procedure ProgramUniform4fv(&program: ProgramName; location: Int32; count: Int32; var value: Vec4f);
     external 'opengl32.dll' name 'glProgramUniform4fv';
-    static procedure ProgramUniform4fv(&program: ProgramName; location: Int32; count: Int32; value: ^single);
+    static procedure ProgramUniform4fv(&program: ProgramName; location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glProgramUniform4fv';
     
-    static procedure ProgramUniform1dv(&program: ProgramName; location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure ProgramUniform1dv(&program: ProgramName; location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glProgramUniform1dv';
-    static procedure ProgramUniform1dv(&program: ProgramName; location: Int32; count: Int32; var value: real);
+    static procedure ProgramUniform1dv(&program: ProgramName; location: Int32; count: Int32; var value: double);
     external 'opengl32.dll' name 'glProgramUniform1dv';
     static procedure ProgramUniform1dv(&program: ProgramName; location: Int32; count: Int32; var value: Vec1d);
     external 'opengl32.dll' name 'glProgramUniform1dv';
-    static procedure ProgramUniform1dv(&program: ProgramName; location: Int32; count: Int32; value: ^real);
+    static procedure ProgramUniform1dv(&program: ProgramName; location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glProgramUniform1dv';
     
-    static procedure ProgramUniform2dv(&program: ProgramName; location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure ProgramUniform2dv(&program: ProgramName; location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glProgramUniform2dv';
-    static procedure ProgramUniform2dv(&program: ProgramName; location: Int32; count: Int32; var value: real);
+    static procedure ProgramUniform2dv(&program: ProgramName; location: Int32; count: Int32; var value: double);
     external 'opengl32.dll' name 'glProgramUniform2dv';
     static procedure ProgramUniform2dv(&program: ProgramName; location: Int32; count: Int32; var value: Vec2d);
     external 'opengl32.dll' name 'glProgramUniform2dv';
-    static procedure ProgramUniform2dv(&program: ProgramName; location: Int32; count: Int32; value: ^real);
+    static procedure ProgramUniform2dv(&program: ProgramName; location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glProgramUniform2dv';
     
-    static procedure ProgramUniform3dv(&program: ProgramName; location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure ProgramUniform3dv(&program: ProgramName; location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glProgramUniform3dv';
-    static procedure ProgramUniform3dv(&program: ProgramName; location: Int32; count: Int32; var value: real);
+    static procedure ProgramUniform3dv(&program: ProgramName; location: Int32; count: Int32; var value: double);
     external 'opengl32.dll' name 'glProgramUniform3dv';
     static procedure ProgramUniform3dv(&program: ProgramName; location: Int32; count: Int32; var value: Vec3d);
     external 'opengl32.dll' name 'glProgramUniform3dv';
-    static procedure ProgramUniform3dv(&program: ProgramName; location: Int32; count: Int32; value: ^real);
+    static procedure ProgramUniform3dv(&program: ProgramName; location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glProgramUniform3dv';
     
-    static procedure ProgramUniform4dv(&program: ProgramName; location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure ProgramUniform4dv(&program: ProgramName; location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glProgramUniform4dv';
-    static procedure ProgramUniform4dv(&program: ProgramName; location: Int32; count: Int32; var value: real);
+    static procedure ProgramUniform4dv(&program: ProgramName; location: Int32; count: Int32; var value: double);
     external 'opengl32.dll' name 'glProgramUniform4dv';
     static procedure ProgramUniform4dv(&program: ProgramName; location: Int32; count: Int32; var value: Vec4d);
     external 'opengl32.dll' name 'glProgramUniform4dv';
-    static procedure ProgramUniform4dv(&program: ProgramName; location: Int32; count: Int32; value: ^real);
+    static procedure ProgramUniform4dv(&program: ProgramName; location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glProgramUniform4dv';
     
     static procedure ProgramUniform1uiv(&program: ProgramName; location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of UInt32);
@@ -10844,7 +11591,7 @@ type
     external 'opengl32.dll' name 'glProgramUniform1uiv';
     static procedure ProgramUniform1uiv(&program: ProgramName; location: Int32; count: Int32; var value: Vec1ui);
     external 'opengl32.dll' name 'glProgramUniform1uiv';
-    static procedure ProgramUniform1uiv(&program: ProgramName; location: Int32; count: Int32; value: ^UInt32);
+    static procedure ProgramUniform1uiv(&program: ProgramName; location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glProgramUniform1uiv';
     
     static procedure ProgramUniform2uiv(&program: ProgramName; location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of UInt32);
@@ -10853,7 +11600,7 @@ type
     external 'opengl32.dll' name 'glProgramUniform2uiv';
     static procedure ProgramUniform2uiv(&program: ProgramName; location: Int32; count: Int32; var value: Vec2ui);
     external 'opengl32.dll' name 'glProgramUniform2uiv';
-    static procedure ProgramUniform2uiv(&program: ProgramName; location: Int32; count: Int32; value: ^UInt32);
+    static procedure ProgramUniform2uiv(&program: ProgramName; location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glProgramUniform2uiv';
     
     static procedure ProgramUniform3uiv(&program: ProgramName; location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of UInt32);
@@ -10862,7 +11609,7 @@ type
     external 'opengl32.dll' name 'glProgramUniform3uiv';
     static procedure ProgramUniform3uiv(&program: ProgramName; location: Int32; count: Int32; var value: Vec3ui);
     external 'opengl32.dll' name 'glProgramUniform3uiv';
-    static procedure ProgramUniform3uiv(&program: ProgramName; location: Int32; count: Int32; value: ^UInt32);
+    static procedure ProgramUniform3uiv(&program: ProgramName; location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glProgramUniform3uiv';
     
     static procedure ProgramUniform4uiv(&program: ProgramName; location: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of UInt32);
@@ -10871,7 +11618,7 @@ type
     external 'opengl32.dll' name 'glProgramUniform4uiv';
     static procedure ProgramUniform4uiv(&program: ProgramName; location: Int32; count: Int32; var value: Vec4ui);
     external 'opengl32.dll' name 'glProgramUniform4uiv';
-    static procedure ProgramUniform4uiv(&program: ProgramName; location: Int32; count: Int32; value: ^UInt32);
+    static procedure ProgramUniform4uiv(&program: ProgramName; location: Int32; count: Int32; value: pointer);
     external 'opengl32.dll' name 'glProgramUniform4uiv';
     
     {$endregion ProgramUniform[1,2,3,4][i,f,d,ui]v}
@@ -10884,7 +11631,7 @@ type
     external 'opengl32.dll' name 'glProgramUniformMatrix2fv';
     static procedure ProgramUniformMatrix2fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: Mtr2f);
     external 'opengl32.dll' name 'glProgramUniformMatrix2fv';
-    static procedure ProgramUniformMatrix2fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: ^single);
+    static procedure ProgramUniformMatrix2fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glProgramUniformMatrix2fv';
     
     static procedure ProgramUniformMatrix3fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
@@ -10893,7 +11640,7 @@ type
     external 'opengl32.dll' name 'glProgramUniformMatrix3fv';
     static procedure ProgramUniformMatrix3fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: Mtr3f);
     external 'opengl32.dll' name 'glProgramUniformMatrix3fv';
-    static procedure ProgramUniformMatrix3fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: ^single);
+    static procedure ProgramUniformMatrix3fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glProgramUniformMatrix3fv';
     
     static procedure ProgramUniformMatrix4fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
@@ -10902,34 +11649,34 @@ type
     external 'opengl32.dll' name 'glProgramUniformMatrix4fv';
     static procedure ProgramUniformMatrix4fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: Mtr4f);
     external 'opengl32.dll' name 'glProgramUniformMatrix4fv';
-    static procedure ProgramUniformMatrix4fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: ^single);
+    static procedure ProgramUniformMatrix4fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glProgramUniformMatrix4fv';
     
-    static procedure ProgramUniformMatrix2dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure ProgramUniformMatrix2dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glProgramUniformMatrix2dv';
-    static procedure ProgramUniformMatrix2dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: real);
+    static procedure ProgramUniformMatrix2dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: double);
     external 'opengl32.dll' name 'glProgramUniformMatrix2dv';
     static procedure ProgramUniformMatrix2dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: Mtr2d);
     external 'opengl32.dll' name 'glProgramUniformMatrix2dv';
-    static procedure ProgramUniformMatrix2dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure ProgramUniformMatrix2dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glProgramUniformMatrix2dv';
     
-    static procedure ProgramUniformMatrix3dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure ProgramUniformMatrix3dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glProgramUniformMatrix3dv';
-    static procedure ProgramUniformMatrix3dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: real);
+    static procedure ProgramUniformMatrix3dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: double);
     external 'opengl32.dll' name 'glProgramUniformMatrix3dv';
     static procedure ProgramUniformMatrix3dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: Mtr3d);
     external 'opengl32.dll' name 'glProgramUniformMatrix3dv';
-    static procedure ProgramUniformMatrix3dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure ProgramUniformMatrix3dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glProgramUniformMatrix3dv';
     
-    static procedure ProgramUniformMatrix4dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure ProgramUniformMatrix4dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glProgramUniformMatrix4dv';
-    static procedure ProgramUniformMatrix4dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: real);
+    static procedure ProgramUniformMatrix4dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: double);
     external 'opengl32.dll' name 'glProgramUniformMatrix4dv';
     static procedure ProgramUniformMatrix4dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: Mtr4d);
     external 'opengl32.dll' name 'glProgramUniformMatrix4dv';
-    static procedure ProgramUniformMatrix4dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure ProgramUniformMatrix4dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glProgramUniformMatrix4dv';
     
     {$endregion ProgramUniformMatrix[2,3,4][f,d]v}
@@ -10942,7 +11689,7 @@ type
     external 'opengl32.dll' name 'glProgramUniformMatrix2x3fv';
     static procedure ProgramUniformMatrix2x3fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: Mtr2x3f);
     external 'opengl32.dll' name 'glProgramUniformMatrix2x3fv';
-    static procedure ProgramUniformMatrix2x3fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: ^single);
+    static procedure ProgramUniformMatrix2x3fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glProgramUniformMatrix2x3fv';
     
     static procedure ProgramUniformMatrix3x2fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
@@ -10951,7 +11698,7 @@ type
     external 'opengl32.dll' name 'glProgramUniformMatrix3x2fv';
     static procedure ProgramUniformMatrix3x2fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: Mtr3x2f);
     external 'opengl32.dll' name 'glProgramUniformMatrix3x2fv';
-    static procedure ProgramUniformMatrix3x2fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: ^single);
+    static procedure ProgramUniformMatrix3x2fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glProgramUniformMatrix3x2fv';
     
     static procedure ProgramUniformMatrix2x4fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
@@ -10960,7 +11707,7 @@ type
     external 'opengl32.dll' name 'glProgramUniformMatrix2x4fv';
     static procedure ProgramUniformMatrix2x4fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: Mtr2x4f);
     external 'opengl32.dll' name 'glProgramUniformMatrix2x4fv';
-    static procedure ProgramUniformMatrix2x4fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: ^single);
+    static procedure ProgramUniformMatrix2x4fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glProgramUniformMatrix2x4fv';
     
     static procedure ProgramUniformMatrix4x2fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
@@ -10969,7 +11716,7 @@ type
     external 'opengl32.dll' name 'glProgramUniformMatrix4x2fv';
     static procedure ProgramUniformMatrix4x2fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: Mtr4x2f);
     external 'opengl32.dll' name 'glProgramUniformMatrix4x2fv';
-    static procedure ProgramUniformMatrix4x2fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: ^single);
+    static procedure ProgramUniformMatrix4x2fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glProgramUniformMatrix4x2fv';
     
     static procedure ProgramUniformMatrix3x4fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
@@ -10978,7 +11725,7 @@ type
     external 'opengl32.dll' name 'glProgramUniformMatrix3x4fv';
     static procedure ProgramUniformMatrix3x4fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: Mtr3x4f);
     external 'opengl32.dll' name 'glProgramUniformMatrix3x4fv';
-    static procedure ProgramUniformMatrix3x4fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: ^single);
+    static procedure ProgramUniformMatrix3x4fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glProgramUniformMatrix3x4fv';
     
     static procedure ProgramUniformMatrix4x3fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
@@ -10987,61 +11734,61 @@ type
     external 'opengl32.dll' name 'glProgramUniformMatrix4x3fv';
     static procedure ProgramUniformMatrix4x3fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: Mtr4x3f);
     external 'opengl32.dll' name 'glProgramUniformMatrix4x3fv';
-    static procedure ProgramUniformMatrix4x3fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: ^single);
+    static procedure ProgramUniformMatrix4x3fv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glProgramUniformMatrix4x3fv';
     
-    static procedure ProgramUniformMatrix2x3dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure ProgramUniformMatrix2x3dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glProgramUniformMatrix2x3dv';
-    static procedure ProgramUniformMatrix2x3dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: real);
+    static procedure ProgramUniformMatrix2x3dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: double);
     external 'opengl32.dll' name 'glProgramUniformMatrix2x3dv';
     static procedure ProgramUniformMatrix2x3dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: Mtr2x3d);
     external 'opengl32.dll' name 'glProgramUniformMatrix2x3dv';
-    static procedure ProgramUniformMatrix2x3dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure ProgramUniformMatrix2x3dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glProgramUniformMatrix2x3dv';
     
-    static procedure ProgramUniformMatrix3x2dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure ProgramUniformMatrix3x2dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glProgramUniformMatrix3x2dv';
-    static procedure ProgramUniformMatrix3x2dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: real);
+    static procedure ProgramUniformMatrix3x2dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: double);
     external 'opengl32.dll' name 'glProgramUniformMatrix3x2dv';
     static procedure ProgramUniformMatrix3x2dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: Mtr3x2d);
     external 'opengl32.dll' name 'glProgramUniformMatrix3x2dv';
-    static procedure ProgramUniformMatrix3x2dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure ProgramUniformMatrix3x2dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glProgramUniformMatrix3x2dv';
     
-    static procedure ProgramUniformMatrix2x4dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure ProgramUniformMatrix2x4dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glProgramUniformMatrix2x4dv';
-    static procedure ProgramUniformMatrix2x4dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: real);
+    static procedure ProgramUniformMatrix2x4dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: double);
     external 'opengl32.dll' name 'glProgramUniformMatrix2x4dv';
     static procedure ProgramUniformMatrix2x4dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: Mtr2x4d);
     external 'opengl32.dll' name 'glProgramUniformMatrix2x4dv';
-    static procedure ProgramUniformMatrix2x4dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure ProgramUniformMatrix2x4dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glProgramUniformMatrix2x4dv';
     
-    static procedure ProgramUniformMatrix4x2dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure ProgramUniformMatrix4x2dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glProgramUniformMatrix4x2dv';
-    static procedure ProgramUniformMatrix4x2dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: real);
+    static procedure ProgramUniformMatrix4x2dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: double);
     external 'opengl32.dll' name 'glProgramUniformMatrix4x2dv';
     static procedure ProgramUniformMatrix4x2dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: Mtr4x2d);
     external 'opengl32.dll' name 'glProgramUniformMatrix4x2dv';
-    static procedure ProgramUniformMatrix4x2dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure ProgramUniformMatrix4x2dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glProgramUniformMatrix4x2dv';
     
-    static procedure ProgramUniformMatrix3x4dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure ProgramUniformMatrix3x4dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glProgramUniformMatrix3x4dv';
-    static procedure ProgramUniformMatrix3x4dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: real);
+    static procedure ProgramUniformMatrix3x4dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: double);
     external 'opengl32.dll' name 'glProgramUniformMatrix3x4dv';
     static procedure ProgramUniformMatrix3x4dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: Mtr3x4d);
     external 'opengl32.dll' name 'glProgramUniformMatrix3x4dv';
-    static procedure ProgramUniformMatrix3x4dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure ProgramUniformMatrix3x4dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glProgramUniformMatrix3x4dv';
     
-    static procedure ProgramUniformMatrix4x3dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of real);
+    static procedure ProgramUniformMatrix4x3dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; [MarshalAs(UnmanagedType.LPArray)] value: array of double);
     external 'opengl32.dll' name 'glProgramUniformMatrix4x3dv';
-    static procedure ProgramUniformMatrix4x3dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: real);
+    static procedure ProgramUniformMatrix4x3dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: double);
     external 'opengl32.dll' name 'glProgramUniformMatrix4x3dv';
     static procedure ProgramUniformMatrix4x3dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; var value: Mtr4x3d);
     external 'opengl32.dll' name 'glProgramUniformMatrix4x3dv';
-    static procedure ProgramUniformMatrix4x3dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure ProgramUniformMatrix4x3dv(&program: ProgramName; location: Int32; count: Int32; transpose: boolean; value: pointer);
     external 'opengl32.dll' name 'glProgramUniformMatrix4x3dv';
     
     {$endregion ProgramUniformMatrix[2x3,3x2,2x4,4x2,3x4,4x3][f,d]v}
@@ -11062,44 +11809,46 @@ type
     
     {$region 7.10 - Subroutine Uniform Variables}
     
-    static function GetSubroutineIndex(&program: ProgramName; __shadertype: ShaderType; [MarshalAs(UnmanagedType.LPStr)] name: string): UInt32;
+    static function GetSubroutineIndex(&program: ProgramName; _shadertype: ShaderType; [MarshalAs(UnmanagedType.LPStr)] name: string): UInt32;
     external 'opengl32.dll' name 'glGetSubroutineIndex';
-    static function GetSubroutineIndex(&program: ProgramName; __shadertype: ShaderType; name: IntPtr): UInt32;
+    static function GetSubroutineIndex(&program: ProgramName; _shadertype: ShaderType; name: IntPtr): UInt32;
     external 'opengl32.dll' name 'glGetSubroutineIndex';
     
-    static procedure GetActiveSubroutineName(&program: ProgramName; __shadertype: ShaderType; index: UInt32; bufsize: Int32; var length: Int32; [MarshalAs(UnmanagedType.LPStr)] name: string);
+    static procedure GetActiveSubroutineName(&program: ProgramName; _shadertype: ShaderType; index: UInt32; bufsize: Int32; var length: Int32; [MarshalAs(UnmanagedType.LPStr)] name: string);
     external 'opengl32.dll' name 'glGetActiveSubroutineName';
-    static procedure GetActiveSubroutineName(&program: ProgramName; __shadertype: ShaderType; index: UInt32; bufsize: Int32; var length: Int32; name: IntPtr);
+    static procedure GetActiveSubroutineName(&program: ProgramName; _shadertype: ShaderType; index: UInt32; bufsize: Int32; var length: Int32; name: IntPtr);
     external 'opengl32.dll' name 'glGetActiveSubroutineName';
-    static procedure GetActiveSubroutineName(&program: ProgramName; __shadertype: ShaderType; index: UInt32; bufsize: Int32; length: ^Int32; [MarshalAs(UnmanagedType.LPStr)] name: string);
+    static procedure GetActiveSubroutineName(&program: ProgramName; _shadertype: ShaderType; index: UInt32; bufsize: Int32; length: pointer; [MarshalAs(UnmanagedType.LPStr)] name: string);
     external 'opengl32.dll' name 'glGetActiveSubroutineName';
-    static procedure GetActiveSubroutineName(&program: ProgramName; __shadertype: ShaderType; index: UInt32; bufsize: Int32; length: ^Int32; name: IntPtr);
+    static procedure GetActiveSubroutineName(&program: ProgramName; _shadertype: ShaderType; index: UInt32; bufsize: Int32; length: pointer; name: IntPtr);
     external 'opengl32.dll' name 'glGetActiveSubroutineName';
     
-    static function GetSubroutineUniformLocation(&program: ProgramName; __shadertype: ShaderType; [MarshalAs(UnmanagedType.LPStr)] name: string): Int32;
+    static function GetSubroutineUniformLocation(&program: ProgramName; _shadertype: ShaderType; [MarshalAs(UnmanagedType.LPStr)] name: string): Int32;
     external 'opengl32.dll' name 'glGetSubroutineUniformLocation';
-    static function GetSubroutineUniformLocation(&program: ProgramName; __shadertype: ShaderType; name: IntPtr): Int32;
+    static function GetSubroutineUniformLocation(&program: ProgramName; _shadertype: ShaderType; name: IntPtr): Int32;
     external 'opengl32.dll' name 'glGetSubroutineUniformLocation';
     
-    static procedure GetActiveSubroutineUniformName(&program: ProgramName; __shadertype: ShaderType; index: UInt32; bufsize: Int32; var length: Int32; [MarshalAs(UnmanagedType.LPStr)] name: string);
+    static procedure GetActiveSubroutineUniformName(&program: ProgramName; _shadertype: ShaderType; index: UInt32; bufsize: Int32; var length: Int32; [MarshalAs(UnmanagedType.LPStr)] name: string);
     external 'opengl32.dll' name 'glGetActiveSubroutineUniformName';
-    static procedure GetActiveSubroutineUniformName(&program: ProgramName; __shadertype: ShaderType; index: UInt32; bufsize: Int32; var length: Int32; name: IntPtr);
+    static procedure GetActiveSubroutineUniformName(&program: ProgramName; _shadertype: ShaderType; index: UInt32; bufsize: Int32; var length: Int32; name: IntPtr);
     external 'opengl32.dll' name 'glGetActiveSubroutineUniformName';
-    static procedure GetActiveSubroutineUniformName(&program: ProgramName; __shadertype: ShaderType; index: UInt32; bufsize: Int32; length: ^Int32; [MarshalAs(UnmanagedType.LPStr)] name: string);
+    static procedure GetActiveSubroutineUniformName(&program: ProgramName; _shadertype: ShaderType; index: UInt32; bufsize: Int32; length: pointer; [MarshalAs(UnmanagedType.LPStr)] name: string);
     external 'opengl32.dll' name 'glGetActiveSubroutineUniformName';
-    static procedure GetActiveSubroutineUniformName(&program: ProgramName; __shadertype: ShaderType; index: UInt32; bufsize: Int32; length: ^Int32; name: IntPtr);
+    static procedure GetActiveSubroutineUniformName(&program: ProgramName; _shadertype: ShaderType; index: UInt32; bufsize: Int32; length: pointer; name: IntPtr);
     external 'opengl32.dll' name 'glGetActiveSubroutineUniformName';
     
-    static procedure GetActiveSubroutineUniformiv(&program: ProgramName; __shadertype: ShaderType; index: UInt32; pname: ProgramInterfaceProperty; [MarshalAs(UnmanagedType.LPArray)] values: array of Int32);
+    static procedure GetActiveSubroutineUniformiv(&program: ProgramName; _shadertype: ShaderType; index: UInt32; pname: ProgramInterfaceProperty; [MarshalAs(UnmanagedType.LPArray)] values: array of Int32);
     external 'opengl32.dll' name 'glGetActiveSubroutineUniformiv';
-    static procedure GetActiveSubroutineUniformiv(&program: ProgramName; __shadertype: ShaderType; index: UInt32; pname: ProgramInterfaceProperty; var values: Int32);
+    static procedure GetActiveSubroutineUniformiv(&program: ProgramName; _shadertype: ShaderType; index: UInt32; pname: ProgramInterfaceProperty; var values: Int32);
     external 'opengl32.dll' name 'glGetActiveSubroutineUniformiv';
-    static procedure GetActiveSubroutineUniformiv(&program: ProgramName; __shadertype: ShaderType; index: UInt32; pname: ProgramInterfaceProperty; values: pointer);
+    static procedure GetActiveSubroutineUniformiv(&program: ProgramName; _shadertype: ShaderType; index: UInt32; pname: ProgramInterfaceProperty; values: pointer);
     external 'opengl32.dll' name 'glGetActiveSubroutineUniformiv';
     
-    static procedure UniformSubroutinesuiv(__shadertype: ShaderType; count: Int32; [MarshalAs(UnmanagedType.LPArray)] indices: array of UInt32);
+    static procedure UniformSubroutinesuiv(_shadertype: ShaderType; count: Int32; [MarshalAs(UnmanagedType.LPArray)] indices: array of UInt32);
     external 'opengl32.dll' name 'glUniformSubroutinesuiv';
-    static procedure UniformSubroutinesuiv(__shadertype: ShaderType; count: Int32; indices: ^UInt32);
+    static procedure UniformSubroutinesuiv(_shadertype: ShaderType; count: Int32; var indices: UInt32);
+    external 'opengl32.dll' name 'glUniformSubroutinesuiv';
+    static procedure UniformSubroutinesuiv(_shadertype: ShaderType; count: Int32; indices: pointer);
     external 'opengl32.dll' name 'glUniformSubroutinesuiv';
     
     {$endregion 7.10 - Subroutine Uniform Variables}
@@ -11132,8 +11881,9 @@ type
     static procedure GetProgramiv(&program: ProgramName; pname: ProgramInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetProgramiv';
     
-    // ShaderType автоматически конвертируется в ProgramPipelineInfoType
-    static procedure GetProgramPipelineiv(pipeline: ProgramPipelineName; pname: ProgramPipelineInfoType; [MarshalAs(UnmanagedType.LPArray)] &params: array of Int32);
+    static procedure GetProgramPipelineiv(pipeline: ProgramPipelineName; pname: ProgramPipelineInfoType; var &params: ProgramName);
+    external 'opengl32.dll' name 'glGetProgramPipelineiv';
+    static procedure GetProgramPipelineiv(pipeline: ProgramPipelineName; pname: ProgramPipelineInfoType; var &params: ErrorCode);
     external 'opengl32.dll' name 'glGetProgramPipelineiv';
     static procedure GetProgramPipelineiv(pipeline: ProgramPipelineName; pname: ProgramPipelineInfoType; var &params: Int32);
     external 'opengl32.dll' name 'glGetProgramPipelineiv';
@@ -11142,56 +11892,64 @@ type
     
     static procedure GetAttachedShaders(&program: ProgramName; maxCount: Int32; var count: Int32; [MarshalAs(UnmanagedType.LPArray)] shaders: array of ShaderName);
     external 'opengl32.dll' name 'glGetAttachedShaders';
-    static procedure GetAttachedShaders(&program: ProgramName; maxCount: Int32; var count: Int32; shaders: ^ShaderName);
+    static procedure GetAttachedShaders(&program: ProgramName; maxCount: Int32; var count: Int32; var shaders: ShaderName);
     external 'opengl32.dll' name 'glGetAttachedShaders';
-    static procedure GetAttachedShaders(&program: ProgramName; maxCount: Int32; count: ^Int32; [MarshalAs(UnmanagedType.LPArray)] shaders: array of ShaderName);
+    static procedure GetAttachedShaders(&program: ProgramName; maxCount: Int32; var count: Int32; shaders: pointer);
     external 'opengl32.dll' name 'glGetAttachedShaders';
-    static procedure GetAttachedShaders(&program: ProgramName; maxCount: Int32; count: ^Int32; shaders: ^ShaderName);
+    static procedure GetAttachedShaders(&program: ProgramName; maxCount: Int32; count: pointer; [MarshalAs(UnmanagedType.LPArray)] shaders: array of ShaderName);
+    external 'opengl32.dll' name 'glGetAttachedShaders';
+    static procedure GetAttachedShaders(&program: ProgramName; maxCount: Int32; count: pointer; var shaders: ShaderName);
+    external 'opengl32.dll' name 'glGetAttachedShaders';
+    static procedure GetAttachedShaders(&program: ProgramName; maxCount: Int32; count: pointer; shaders: pointer);
     external 'opengl32.dll' name 'glGetAttachedShaders';
     
     static procedure GetShaderInfoLog(shader: ShaderName; bufSize: Int32; var length: Int32; [MarshalAs(UnmanagedType.LPStr)] infoLog: string);
     external 'opengl32.dll' name 'glGetShaderInfoLog';
     static procedure GetShaderInfoLog(shader: ShaderName; bufSize: Int32; var length: Int32; infoLog: IntPtr);
     external 'opengl32.dll' name 'glGetShaderInfoLog';
-    static procedure GetShaderInfoLog(shader: ShaderName; bufSize: Int32; length: ^Int32; [MarshalAs(UnmanagedType.LPStr)] infoLog: string);
+    static procedure GetShaderInfoLog(shader: ShaderName; bufSize: Int32; length: pointer; [MarshalAs(UnmanagedType.LPStr)] infoLog: string);
     external 'opengl32.dll' name 'glGetShaderInfoLog';
-    static procedure GetShaderInfoLog(shader: ShaderName; bufSize: Int32; length: ^Int32; infoLog: IntPtr);
+    static procedure GetShaderInfoLog(shader: ShaderName; bufSize: Int32; length: pointer; infoLog: IntPtr);
     external 'opengl32.dll' name 'glGetShaderInfoLog';
     
     static procedure GetProgramInfoLog(&program: ProgramName; bufSize: Int32; var length: Int32; [MarshalAs(UnmanagedType.LPStr)] infoLog: string);
     external 'opengl32.dll' name 'glGetProgramInfoLog';
     static procedure GetProgramInfoLog(&program: ProgramName; bufSize: Int32; var length: Int32; infoLog: IntPtr);
     external 'opengl32.dll' name 'glGetProgramInfoLog';
-    static procedure GetProgramInfoLog(&program: ProgramName; bufSize: Int32; length: ^Int32; [MarshalAs(UnmanagedType.LPStr)] infoLog: string);
+    static procedure GetProgramInfoLog(&program: ProgramName; bufSize: Int32; length: pointer; [MarshalAs(UnmanagedType.LPStr)] infoLog: string);
     external 'opengl32.dll' name 'glGetProgramInfoLog';
-    static procedure GetProgramInfoLog(&program: ProgramName; bufSize: Int32; length: ^Int32; infoLog: IntPtr);
+    static procedure GetProgramInfoLog(&program: ProgramName; bufSize: Int32; length: pointer; infoLog: IntPtr);
     external 'opengl32.dll' name 'glGetProgramInfoLog';
     
     static procedure GetProgramPipelineInfoLog(pipeline: ProgramPipelineName; bufSize: Int32; var length: Int32; [MarshalAs(UnmanagedType.LPStr)] infoLog: string);
     external 'opengl32.dll' name 'glGetProgramPipelineInfoLog';
     static procedure GetProgramPipelineInfoLog(pipeline: ProgramPipelineName; bufSize: Int32; var length: Int32; infoLog: IntPtr);
     external 'opengl32.dll' name 'glGetProgramPipelineInfoLog';
-    static procedure GetProgramPipelineInfoLog(pipeline: ProgramPipelineName; bufSize: Int32; length: ^Int32; [MarshalAs(UnmanagedType.LPStr)] infoLog: string);
+    static procedure GetProgramPipelineInfoLog(pipeline: ProgramPipelineName; bufSize: Int32; length: pointer; [MarshalAs(UnmanagedType.LPStr)] infoLog: string);
     external 'opengl32.dll' name 'glGetProgramPipelineInfoLog';
-    static procedure GetProgramPipelineInfoLog(pipeline: ProgramPipelineName; bufSize: Int32; length: ^Int32; infoLog: IntPtr);
+    static procedure GetProgramPipelineInfoLog(pipeline: ProgramPipelineName; bufSize: Int32; length: pointer; infoLog: IntPtr);
     external 'opengl32.dll' name 'glGetProgramPipelineInfoLog';
     
     static procedure GetShaderSource(shader: ShaderName; bufSize: Int32; var length: Int32; [MarshalAs(UnmanagedType.LPStr)] source: string);
     external 'opengl32.dll' name 'glGetShaderSource';
     static procedure GetShaderSource(shader: ShaderName; bufSize: Int32; var length: Int32; source: IntPtr);
     external 'opengl32.dll' name 'glGetShaderSource';
-    static procedure GetShaderSource(shader: ShaderName; bufSize: Int32; length: ^Int32; [MarshalAs(UnmanagedType.LPStr)] source: string);
+    static procedure GetShaderSource(shader: ShaderName; bufSize: Int32; length: pointer; [MarshalAs(UnmanagedType.LPStr)] source: string);
     external 'opengl32.dll' name 'glGetShaderSource';
-    static procedure GetShaderSource(shader: ShaderName; bufSize: Int32; length: ^Int32; source: IntPtr);
+    static procedure GetShaderSource(shader: ShaderName; bufSize: Int32; length: pointer; source: IntPtr);
     external 'opengl32.dll' name 'glGetShaderSource';
     
+    static procedure GetShaderPrecisionFormat(_shadertype: ShaderType; precisiontype: ShaderPrecisionFormatType; [MarshalAs(UnmanagedType.LPArray)] range: array of Int32; var precision: Int32);
+    external 'opengl32.dll' name 'glGetShaderPrecisionFormat';
+    static procedure GetShaderPrecisionFormat(_shadertype: ShaderType; precisiontype: ShaderPrecisionFormatType; [MarshalAs(UnmanagedType.LPArray)] range: array of Int32; precision: pointer);
+    external 'opengl32.dll' name 'glGetShaderPrecisionFormat';
     static procedure GetShaderPrecisionFormat(_shadertype: ShaderType; precisiontype: ShaderPrecisionFormatType; var range: Vec2i; var precision: Int32);
     external 'opengl32.dll' name 'glGetShaderPrecisionFormat';
-    static procedure GetShaderPrecisionFormat(_shadertype: ShaderType; precisiontype: ShaderPrecisionFormatType; var range: Vec2i; precision: ^Int32);
+    static procedure GetShaderPrecisionFormat(_shadertype: ShaderType; precisiontype: ShaderPrecisionFormatType; var range: Vec2i; precision: pointer);
     external 'opengl32.dll' name 'glGetShaderPrecisionFormat';
-    static procedure GetShaderPrecisionFormat(_shadertype: ShaderType; precisiontype: ShaderPrecisionFormatType; range: ^Vec2i; var precision: Int32);
+    static procedure GetShaderPrecisionFormat(_shadertype: ShaderType; precisiontype: ShaderPrecisionFormatType; range: pointer; var precision: Int32);
     external 'opengl32.dll' name 'glGetShaderPrecisionFormat';
-    static procedure GetShaderPrecisionFormat(_shadertype: ShaderType; precisiontype: ShaderPrecisionFormatType; range: ^Vec2i; precision: ^Int32);
+    static procedure GetShaderPrecisionFormat(_shadertype: ShaderType; precisiontype: ShaderPrecisionFormatType; range: pointer; precision: pointer);
     external 'opengl32.dll' name 'glGetShaderPrecisionFormat';
     
     static procedure GetUniformfv(&program: ProgramName; location: Int32; [MarshalAs(UnmanagedType.LPArray)] &params: array of single);
@@ -11201,9 +11959,9 @@ type
     static procedure GetUniformfv(&program: ProgramName; location: Int32; &params: pointer);
     external 'opengl32.dll' name 'glGetUniformfv';
     
-    static procedure GetUniformdv(&program: ProgramName; location: Int32; [MarshalAs(UnmanagedType.LPArray)] &params: array of real);
+    static procedure GetUniformdv(&program: ProgramName; location: Int32; [MarshalAs(UnmanagedType.LPArray)] &params: array of double);
     external 'opengl32.dll' name 'glGetUniformdv';
-    static procedure GetUniformdv(&program: ProgramName; location: Int32; var &params: real);
+    static procedure GetUniformdv(&program: ProgramName; location: Int32; var &params: double);
     external 'opengl32.dll' name 'glGetUniformdv';
     static procedure GetUniformdv(&program: ProgramName; location: Int32; &params: pointer);
     external 'opengl32.dll' name 'glGetUniformdv';
@@ -11229,9 +11987,9 @@ type
     static procedure GetnUniformfv(&program: ProgramName; location: Int32; bufSize: Int32; &params: pointer);
     external 'opengl32.dll' name 'glGetnUniformfv';
     
-    static procedure GetnUniformdv(&program: ProgramName; location: Int32; bufSize: Int32; [MarshalAs(UnmanagedType.LPArray)] &params: array of real);
+    static procedure GetnUniformdv(&program: ProgramName; location: Int32; bufSize: Int32; [MarshalAs(UnmanagedType.LPArray)] &params: array of double);
     external 'opengl32.dll' name 'glGetnUniformdv';
-    static procedure GetnUniformdv(&program: ProgramName; location: Int32; bufSize: Int32; var &params: real);
+    static procedure GetnUniformdv(&program: ProgramName; location: Int32; bufSize: Int32; var &params: double);
     external 'opengl32.dll' name 'glGetnUniformdv';
     static procedure GetnUniformdv(&program: ProgramName; location: Int32; bufSize: Int32; &params: pointer);
     external 'opengl32.dll' name 'glGetnUniformdv';
@@ -11287,7 +12045,9 @@ type
     
     static procedure BindTextures(first: TextureUnitId; count: Int32; [MarshalAs(UnmanagedType.LPArray)] textures: array of TextureName);
     external 'opengl32.dll' name 'glBindTextures';
-    static procedure BindTextures(first: TextureUnitId; count: Int32; textures: ^TextureName);
+    static procedure BindTextures(first: TextureUnitId; count: Int32; var textures: TextureName);
+    external 'opengl32.dll' name 'glBindTextures';
+    static procedure BindTextures(first: TextureUnitId; count: Int32; textures: pointer);
     external 'opengl32.dll' name 'glBindTextures';
     
     static procedure BindTextureUnit(&unit: TextureUnitId; texture: TextureName);
@@ -11295,14 +12055,16 @@ type
     
     static procedure CreateTextures(target: TextureBindTarget; n: Int32; [MarshalAs(UnmanagedType.LPArray)] textures: array of TextureName);
     external 'opengl32.dll' name 'glCreateTextures';
-    static procedure CreateTextures(target: TextureBindTarget; n: Int32; textures: ^TextureName);
+    static procedure CreateTextures(target: TextureBindTarget; n: Int32; var textures: TextureName);
+    external 'opengl32.dll' name 'glCreateTextures';
+    static procedure CreateTextures(target: TextureBindTarget; n: Int32; textures: pointer);
     external 'opengl32.dll' name 'glCreateTextures';
     
     static procedure DeleteTextures(n: Int32; [MarshalAs(UnmanagedType.LPArray)] textures: array of TextureName);
     external 'opengl32.dll' name 'glDeleteTextures';
     static procedure DeleteTextures(n: Int32; var textures: TextureName);
     external 'opengl32.dll' name 'glDeleteTextures';
-    static procedure DeleteTextures(n: Int32; textures: ^TextureName);
+    static procedure DeleteTextures(n: Int32; textures: pointer);
     external 'opengl32.dll' name 'glDeleteTextures';
     
     static function IsTexture(texture: TextureName): boolean;
@@ -11323,7 +12085,7 @@ type
     external 'opengl32.dll' name 'glCreateSamplers';
     static procedure CreateSamplers(n: Int32; var samplers: SamplerName);
     external 'opengl32.dll' name 'glCreateSamplers';
-    static procedure CreateSamplers(n: Int32; samplers: ^SamplerName);
+    static procedure CreateSamplers(n: Int32; samplers: pointer);
     external 'opengl32.dll' name 'glCreateSamplers';
     
     static procedure BindSampler(&unit: Int32; sampler: SamplerName);
@@ -11331,10 +12093,22 @@ type
     
     static procedure BindSamplers(first: Int32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] samplers: array of SamplerName);
     external 'opengl32.dll' name 'glBindSamplers';
-    static procedure BindSamplers(first: Int32; count: Int32; samplers: ^SamplerName);
+    static procedure BindSamplers(first: Int32; count: Int32; var samplers: SamplerName);
+    external 'opengl32.dll' name 'glBindSamplers';
+    static procedure BindSamplers(first: Int32; count: Int32; samplers: pointer);
     external 'opengl32.dll' name 'glBindSamplers';
     
-    static procedure SamplerParameteri(sampler: SamplerName; pname: TextureInfoType; param: Int32);
+    static procedure SamplerParameteri(sampler: SamplerName; pname: TextureInfoType; param: TextureCompareMode);
+    external 'opengl32.dll' name 'glSamplerParameteri';
+    static procedure SamplerParameteri(sampler: SamplerName; pname: TextureInfoType; param: ActivationFunc);
+    external 'opengl32.dll' name 'glSamplerParameteri';
+    static procedure SamplerParameteri(sampler: SamplerName; pname: TextureInfoType; param: PixelMagFilterMode);
+    external 'opengl32.dll' name 'glSamplerParameteri';
+    static procedure SamplerParameteri(sampler: SamplerName; pname: TextureInfoType; param: PixelMinFilterMode);
+    external 'opengl32.dll' name 'glSamplerParameteri';
+    static procedure SamplerParameteri(sampler: SamplerName; pname: TextureInfoType; param: PixelWrapMode);
+    external 'opengl32.dll' name 'glSamplerParameteri';
+    static procedure SamplerParameteri(sampler: SamplerName; pname: TextureInfoType; param: Int32); // нигде не используется, существует только для совместимости с .val
     external 'opengl32.dll' name 'glSamplerParameteri';
     
     static procedure SamplerParameterf(sampler: SamplerName; pname: TextureInfoType; param: single);
@@ -11342,29 +12116,39 @@ type
     
     static procedure SamplerParameteriv(sampler: SamplerName; pname: TextureInfoType; var param: Int32);
     external 'opengl32.dll' name 'glSamplerParameteriv';
-    static procedure SamplerParameteriv(sampler: SamplerName; pname: TextureInfoType; param: ^Int32);
+    static procedure SamplerParameteriv(sampler: SamplerName; pname: TextureInfoType; param: pointer);
     external 'opengl32.dll' name 'glSamplerParameteriv';
     
     static procedure SamplerParameterfv(sampler: SamplerName; pname: TextureInfoType; var param: single);
     external 'opengl32.dll' name 'glSamplerParameterfv';
-    static procedure SamplerParameterfv(sampler: SamplerName; pname: TextureInfoType; param: ^single);
+    static procedure SamplerParameterfv(sampler: SamplerName; pname: TextureInfoType; param: pointer);
     external 'opengl32.dll' name 'glSamplerParameterfv';
     
-    static procedure SamplerParameterIiv(sampler: SamplerName; pname: TextureInfoType; var param: Int32);
+    static procedure SamplerParameterIiv(sampler: SamplerName; pname: TextureInfoType; var param: Int32); // нигде не используется, существует только для совместимости с .val
     external 'opengl32.dll' name 'glSamplerParameterIiv';
-    static procedure SamplerParameterIiv(sampler: SamplerName; pname: TextureInfoType; param: ^Int32);
+    static procedure SamplerParameterIiv(sampler: SamplerName; pname: TextureInfoType; param: pointer);
     external 'opengl32.dll' name 'glSamplerParameterIiv';
     
-    static procedure SamplerParameterIuiv(sampler: SamplerName; pname: TextureInfoType; var param: UInt32);
+    static procedure SamplerParameterIuiv(sampler: SamplerName; pname: TextureInfoType; var param: TextureCompareMode);
     external 'opengl32.dll' name 'glSamplerParameterIuiv';
-    static procedure SamplerParameterIuiv(sampler: SamplerName; pname: TextureInfoType; param: ^UInt32);
+    static procedure SamplerParameterIuiv(sampler: SamplerName; pname: TextureInfoType; var param: ActivationFunc);
+    external 'opengl32.dll' name 'glSamplerParameterIuiv';
+    static procedure SamplerParameterIuiv(sampler: SamplerName; pname: TextureInfoType; var param: PixelMagFilterMode);
+    external 'opengl32.dll' name 'glSamplerParameterIuiv';
+    static procedure SamplerParameterIuiv(sampler: SamplerName; pname: TextureInfoType; var param: PixelMinFilterMode);
+    external 'opengl32.dll' name 'glSamplerParameterIuiv';
+    static procedure SamplerParameterIuiv(sampler: SamplerName; pname: TextureInfoType; var param: PixelWrapMode);
+    external 'opengl32.dll' name 'glSamplerParameterIuiv';
+    static procedure SamplerParameterIuiv(sampler: SamplerName; pname: TextureInfoType; var param: UInt32); // нигде не используется, существует только для совместимости с .val
+    external 'opengl32.dll' name 'glSamplerParameterIuiv';
+    static procedure SamplerParameterIuiv(sampler: SamplerName; pname: TextureInfoType; param: pointer);
     external 'opengl32.dll' name 'glSamplerParameterIuiv';
     
     static procedure DeleteSamplers(count: Int32; [MarshalAs(UnmanagedType.LPArray)] samplers: array of SamplerName);
     external 'opengl32.dll' name 'glDeleteSamplers';
     static procedure DeleteSamplers(count: Int32; var samplers: SamplerName);
     external 'opengl32.dll' name 'glDeleteSamplers';
-    static procedure DeleteSamplers(count: Int32; samplers: ^SamplerName);
+    static procedure DeleteSamplers(count: Int32; samplers: pointer);
     external 'opengl32.dll' name 'glDeleteSamplers';
     
     static function IsSampler(sampler: SamplerName): boolean;
@@ -11374,24 +12158,44 @@ type
     
     {$region 8.3 - Sampler Object Queries}
     
+    static procedure GetSamplerParameteriv(sampler: SamplerName; pname: TextureInfoType; var &params: TextureCompareMode);
+    external 'opengl32.dll' name 'glGetSamplerParameteriv';
+    static procedure GetSamplerParameteriv(sampler: SamplerName; pname: TextureInfoType; var &params: ActivationFunc);
+    external 'opengl32.dll' name 'glGetSamplerParameteriv';
+    static procedure GetSamplerParameteriv(sampler: SamplerName; pname: TextureInfoType; var &params: PixelMagFilterMode);
+    external 'opengl32.dll' name 'glGetSamplerParameteriv';
+    static procedure GetSamplerParameteriv(sampler: SamplerName; pname: TextureInfoType; var &params: PixelMinFilterMode);
+    external 'opengl32.dll' name 'glGetSamplerParameteriv';
+    static procedure GetSamplerParameteriv(sampler: SamplerName; pname: TextureInfoType; var &params: PixelWrapMode);
+    external 'opengl32.dll' name 'glGetSamplerParameteriv';
     static procedure GetSamplerParameteriv(sampler: SamplerName; pname: TextureInfoType; var &params: Int32);
     external 'opengl32.dll' name 'glGetSamplerParameteriv';
-    static procedure GetSamplerParameteriv(sampler: SamplerName; pname: TextureInfoType; &params: ^Int32);
+    static procedure GetSamplerParameteriv(sampler: SamplerName; pname: TextureInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetSamplerParameteriv';
     
     static procedure GetSamplerParameterfv(sampler: SamplerName; pname: TextureInfoType; var &params: single);
     external 'opengl32.dll' name 'glGetSamplerParameterfv';
-    static procedure GetSamplerParameterfv(sampler: SamplerName; pname: TextureInfoType; &params: ^single);
+    static procedure GetSamplerParameterfv(sampler: SamplerName; pname: TextureInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetSamplerParameterfv';
     
     static procedure GetSamplerParameterIiv(sampler: SamplerName; pname: TextureInfoType; var &params: Int32);
     external 'opengl32.dll' name 'glGetSamplerParameterIiv';
-    static procedure GetSamplerParameterIiv(sampler: SamplerName; pname: TextureInfoType; &params: ^Int32);
+    static procedure GetSamplerParameterIiv(sampler: SamplerName; pname: TextureInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetSamplerParameterIiv';
     
+    static procedure GetSamplerParameterIuiv(sampler: SamplerName; pname: TextureInfoType; var &params: TextureCompareMode);
+    external 'opengl32.dll' name 'glGetSamplerParameterIuiv';
+    static procedure GetSamplerParameterIuiv(sampler: SamplerName; pname: TextureInfoType; var &params: ActivationFunc);
+    external 'opengl32.dll' name 'glGetSamplerParameterIuiv';
+    static procedure GetSamplerParameterIuiv(sampler: SamplerName; pname: TextureInfoType; var &params: PixelMagFilterMode);
+    external 'opengl32.dll' name 'glGetSamplerParameterIuiv';
+    static procedure GetSamplerParameterIuiv(sampler: SamplerName; pname: TextureInfoType; var &params: PixelMinFilterMode);
+    external 'opengl32.dll' name 'glGetSamplerParameterIuiv';
+    static procedure GetSamplerParameterIuiv(sampler: SamplerName; pname: TextureInfoType; var &params: PixelWrapMode);
+    external 'opengl32.dll' name 'glGetSamplerParameterIuiv';
     static procedure GetSamplerParameterIuiv(sampler: SamplerName; pname: TextureInfoType; var &params: UInt32);
     external 'opengl32.dll' name 'glGetSamplerParameterIuiv';
-    static procedure GetSamplerParameterIuiv(sampler: SamplerName; pname: TextureInfoType; &params: ^UInt32);
+    static procedure GetSamplerParameterIuiv(sampler: SamplerName; pname: TextureInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetSamplerParameterIuiv';
     
     {$endregion 8.3 - Sampler Object Queries}
@@ -11566,56 +12370,140 @@ type
     // - и возможно ещё сделать для них перегрузки
     // - это так же касается 8.11
     
+    static procedure TexParameteri(target: TextureBindTarget; pname: TextureInfoType; param: DepthStencilMode);
+    external 'opengl32.dll' name 'glTexParameteri';
     static procedure TexParameteri(target: TextureBindTarget; pname: TextureInfoType; param: Int32);
+    external 'opengl32.dll' name 'glTexParameteri';
+    static procedure TexParameteri(target: TextureBindTarget; pname: TextureInfoType; param: TextureCompareMode);
+    external 'opengl32.dll' name 'glTexParameteri';
+    static procedure TexParameteri(target: TextureBindTarget; pname: TextureInfoType; param: ActivationFunc);
+    external 'opengl32.dll' name 'glTexParameteri';
+    static procedure TexParameteri(target: TextureBindTarget; pname: TextureInfoType; param: PixelMagFilterMode);
+    external 'opengl32.dll' name 'glTexParameteri';
+    static procedure TexParameteri(target: TextureBindTarget; pname: TextureInfoType; param: PixelMinFilterMode);
+    external 'opengl32.dll' name 'glTexParameteri';
+    static procedure TexParameteri(target: TextureBindTarget; pname: TextureInfoType; param: SwizzleMode);
+    external 'opengl32.dll' name 'glTexParameteri';
+    static procedure TexParameteri(target: TextureBindTarget; pname: TextureInfoType; param: PixelWrapMode);
     external 'opengl32.dll' name 'glTexParameteri';
     
     static procedure TexParameterf(target: TextureBindTarget; pname: TextureInfoType; param: single);
     external 'opengl32.dll' name 'glTexParameterf';
     
+    static procedure TexParameteriv(target: TextureBindTarget; pname: TextureInfoType; var &params: DepthStencilMode);
+    external 'opengl32.dll' name 'glTexParameteriv';
     static procedure TexParameteriv(target: TextureBindTarget; pname: TextureInfoType; var &params: Int32);
     external 'opengl32.dll' name 'glTexParameteriv';
-    static procedure TexParameteriv(target: TextureBindTarget; pname: TextureInfoType; &params: ^Int32);
+    static procedure TexParameteriv(target: TextureBindTarget; pname: TextureInfoType; var &params: TextureCompareMode);
+    external 'opengl32.dll' name 'glTexParameteriv';
+    static procedure TexParameteriv(target: TextureBindTarget; pname: TextureInfoType; var &params: ActivationFunc);
+    external 'opengl32.dll' name 'glTexParameteriv';
+    static procedure TexParameteriv(target: TextureBindTarget; pname: TextureInfoType; var &params: PixelMagFilterMode);
+    external 'opengl32.dll' name 'glTexParameteriv';
+    static procedure TexParameteriv(target: TextureBindTarget; pname: TextureInfoType; var &params: PixelMinFilterMode);
+    external 'opengl32.dll' name 'glTexParameteriv';
+    static procedure TexParameteriv(target: TextureBindTarget; pname: TextureInfoType; var &params: SwizzleMode);
+    external 'opengl32.dll' name 'glTexParameteriv';
+    static procedure TexParameteriv(target: TextureBindTarget; pname: TextureInfoType; var &params: PixelWrapMode);
+    external 'opengl32.dll' name 'glTexParameteriv';
+    static procedure TexParameteriv(target: TextureBindTarget; pname: TextureInfoType; &params: pointer);
     external 'opengl32.dll' name 'glTexParameteriv';
     
     static procedure TexParameterfv(target: TextureBindTarget; pname: TextureInfoType; var &params: single);
     external 'opengl32.dll' name 'glTexParameterfv';
-    static procedure TexParameterfv(target: TextureBindTarget; pname: TextureInfoType; &params: ^single);
+    static procedure TexParameterfv(target: TextureBindTarget; pname: TextureInfoType; &params: pointer);
     external 'opengl32.dll' name 'glTexParameterfv';
     
     static procedure TexParameterIiv(target: TextureBindTarget; pname: TextureInfoType; var &params: Int32);
     external 'opengl32.dll' name 'glTexParameterIiv';
-    static procedure TexParameterIiv(target: TextureBindTarget; pname: TextureInfoType; &params: ^Int32);
+    static procedure TexParameterIiv(target: TextureBindTarget; pname: TextureInfoType; &params: pointer);
     external 'opengl32.dll' name 'glTexParameterIiv';
     
+    static procedure TexParameterIuiv(target: TextureBindTarget; pname: TextureInfoType; var &params: DepthStencilMode);
+    external 'opengl32.dll' name 'glTexParameterIuiv';
+    static procedure TexParameterIuiv(target: TextureBindTarget; pname: TextureInfoType; var &params: TextureCompareMode);
+    external 'opengl32.dll' name 'glTexParameterIuiv';
+    static procedure TexParameterIuiv(target: TextureBindTarget; pname: TextureInfoType; var &params: ActivationFunc);
+    external 'opengl32.dll' name 'glTexParameterIuiv';
+    static procedure TexParameterIuiv(target: TextureBindTarget; pname: TextureInfoType; var &params: PixelMagFilterMode);
+    external 'opengl32.dll' name 'glTexParameterIuiv';
+    static procedure TexParameterIuiv(target: TextureBindTarget; pname: TextureInfoType; var &params: PixelMinFilterMode);
+    external 'opengl32.dll' name 'glTexParameterIuiv';
+    static procedure TexParameterIuiv(target: TextureBindTarget; pname: TextureInfoType; var &params: SwizzleMode);
+    external 'opengl32.dll' name 'glTexParameterIuiv';
+    static procedure TexParameterIuiv(target: TextureBindTarget; pname: TextureInfoType; var &params: PixelWrapMode);
+    external 'opengl32.dll' name 'glTexParameterIuiv';
     static procedure TexParameterIuiv(target: TextureBindTarget; pname: TextureInfoType; var &params: UInt32);
     external 'opengl32.dll' name 'glTexParameterIuiv';
-    static procedure TexParameterIuiv(target: TextureBindTarget; pname: TextureInfoType; &params: ^UInt32);
+    static procedure TexParameterIuiv(target: TextureBindTarget; pname: TextureInfoType; &params: pointer);
     external 'opengl32.dll' name 'glTexParameterIuiv';
     
+    static procedure TextureParameteri(texture: TextureName; pname: TextureInfoType; param: DepthStencilMode);
+    external 'opengl32.dll' name 'glTextureParameteri';
     static procedure TextureParameteri(texture: TextureName; pname: TextureInfoType; param: Int32);
+    external 'opengl32.dll' name 'glTextureParameteri';
+    static procedure TextureParameteri(texture: TextureName; pname: TextureInfoType; param: TextureCompareMode);
+    external 'opengl32.dll' name 'glTextureParameteri';
+    static procedure TextureParameteri(texture: TextureName; pname: TextureInfoType; param: ActivationFunc);
+    external 'opengl32.dll' name 'glTextureParameteri';
+    static procedure TextureParameteri(texture: TextureName; pname: TextureInfoType; param: PixelMagFilterMode);
+    external 'opengl32.dll' name 'glTextureParameteri';
+    static procedure TextureParameteri(texture: TextureName; pname: TextureInfoType; param: PixelMinFilterMode);
+    external 'opengl32.dll' name 'glTextureParameteri';
+    static procedure TextureParameteri(texture: TextureName; pname: TextureInfoType; param: SwizzleMode);
+    external 'opengl32.dll' name 'glTextureParameteri';
+    static procedure TextureParameteri(texture: TextureName; pname: TextureInfoType; param: PixelWrapMode);
     external 'opengl32.dll' name 'glTextureParameteri';
     
     static procedure TextureParameterf(texture: TextureName; pname: TextureInfoType; param: single);
     external 'opengl32.dll' name 'glTextureParameterf';
     
+    static procedure TextureParameteriv(texture: TextureName; pname: TextureInfoType; var param: DepthStencilMode);
+    external 'opengl32.dll' name 'glTextureParameteriv';
     static procedure TextureParameteriv(texture: TextureName; pname: TextureInfoType; var param: Int32);
     external 'opengl32.dll' name 'glTextureParameteriv';
-    static procedure TextureParameteriv(texture: TextureName; pname: TextureInfoType; param: ^Int32);
+    static procedure TextureParameteriv(texture: TextureName; pname: TextureInfoType; var param: TextureCompareMode);
+    external 'opengl32.dll' name 'glTextureParameteriv';
+    static procedure TextureParameteriv(texture: TextureName; pname: TextureInfoType; var param: ActivationFunc);
+    external 'opengl32.dll' name 'glTextureParameteriv';
+    static procedure TextureParameteriv(texture: TextureName; pname: TextureInfoType; var param: PixelMagFilterMode);
+    external 'opengl32.dll' name 'glTextureParameteriv';
+    static procedure TextureParameteriv(texture: TextureName; pname: TextureInfoType; var param: PixelMinFilterMode);
+    external 'opengl32.dll' name 'glTextureParameteriv';
+    static procedure TextureParameteriv(texture: TextureName; pname: TextureInfoType; var param: SwizzleMode);
+    external 'opengl32.dll' name 'glTextureParameteriv';
+    static procedure TextureParameteriv(texture: TextureName; pname: TextureInfoType; var param: PixelWrapMode);
+    external 'opengl32.dll' name 'glTextureParameteriv';
+    static procedure TextureParameteriv(texture: TextureName; pname: TextureInfoType; param: pointer);
     external 'opengl32.dll' name 'glTextureParameteriv';
     
     static procedure TextureParameterfv(texture: TextureName; pname: TextureInfoType; var param: single);
     external 'opengl32.dll' name 'glTextureParameterfv';
-    static procedure TextureParameterfv(texture: TextureName; pname: TextureInfoType; param: ^single);
+    static procedure TextureParameterfv(texture: TextureName; pname: TextureInfoType; param: pointer);
     external 'opengl32.dll' name 'glTextureParameterfv';
     
     static procedure TextureParameterIiv(texture: TextureName; pname: TextureInfoType; var &params: Int32);
     external 'opengl32.dll' name 'glTextureParameterIiv';
-    static procedure TextureParameterIiv(texture: TextureName; pname: TextureInfoType; &params: ^Int32);
+    static procedure TextureParameterIiv(texture: TextureName; pname: TextureInfoType; &params: pointer);
     external 'opengl32.dll' name 'glTextureParameterIiv';
     
+    static procedure TextureParameterIuiv(texture: TextureName; pname: TextureInfoType; var &params: DepthStencilMode);
+    external 'opengl32.dll' name 'glTextureParameterIuiv';
+    static procedure TextureParameterIuiv(texture: TextureName; pname: TextureInfoType; var &params: TextureCompareMode);
+    external 'opengl32.dll' name 'glTextureParameterIuiv';
+    static procedure TextureParameterIuiv(texture: TextureName; pname: TextureInfoType; var &params: ActivationFunc);
+    external 'opengl32.dll' name 'glTextureParameterIuiv';
+    static procedure TextureParameterIuiv(texture: TextureName; pname: TextureInfoType; var &params: PixelMagFilterMode);
+    external 'opengl32.dll' name 'glTextureParameterIuiv';
+    static procedure TextureParameterIuiv(texture: TextureName; pname: TextureInfoType; var &params: PixelMinFilterMode);
+    external 'opengl32.dll' name 'glTextureParameterIuiv';
+    static procedure TextureParameterIuiv(texture: TextureName; pname: TextureInfoType; var &params: SwizzleMode);
+    external 'opengl32.dll' name 'glTextureParameterIuiv';
+    static procedure TextureParameterIuiv(texture: TextureName; pname: TextureInfoType; var &params: PixelWrapMode);
+    external 'opengl32.dll' name 'glTextureParameterIuiv';
     static procedure TextureParameterIuiv(texture: TextureName; pname: TextureInfoType; var &params: UInt32);
     external 'opengl32.dll' name 'glTextureParameterIuiv';
-    static procedure TextureParameterIuiv(texture: TextureName; pname: TextureInfoType; &params: ^UInt32);
+    static procedure TextureParameterIuiv(texture: TextureName; pname: TextureInfoType; &params: pointer);
     external 'opengl32.dll' name 'glTextureParameterIuiv';
     
     {$endregion 8.10 - Texture Parameters}
@@ -11624,66 +12512,148 @@ type
     
     // 8.11.2
     
+    static procedure GetTexParameteriv(target: TextureBindTarget; pname: TextureInfoType; var &params: DepthStencilMode);
+    external 'opengl32.dll' name 'glGetTexParameteriv';
     static procedure GetTexParameteriv(target: TextureBindTarget; pname: TextureInfoType; var &params: Int32);
     external 'opengl32.dll' name 'glGetTexParameteriv';
-    static procedure GetTexParameteriv(target: TextureBindTarget; pname: TextureInfoType; &params: ^Int32);
+    static procedure GetTexParameteriv(target: TextureBindTarget; pname: TextureInfoType; var &params: TextureCompareMode);
+    external 'opengl32.dll' name 'glGetTexParameteriv';
+    static procedure GetTexParameteriv(target: TextureBindTarget; pname: TextureInfoType; var &params: ActivationFunc);
+    external 'opengl32.dll' name 'glGetTexParameteriv';
+    static procedure GetTexParameteriv(target: TextureBindTarget; pname: TextureInfoType; var &params: PixelMagFilterMode);
+    external 'opengl32.dll' name 'glGetTexParameteriv';
+    static procedure GetTexParameteriv(target: TextureBindTarget; pname: TextureInfoType; var &params: PixelMinFilterMode);
+    external 'opengl32.dll' name 'glGetTexParameteriv';
+    static procedure GetTexParameteriv(target: TextureBindTarget; pname: TextureInfoType; var &params: SwizzleMode);
+    external 'opengl32.dll' name 'glGetTexParameteriv';
+    static procedure GetTexParameteriv(target: TextureBindTarget; pname: TextureInfoType; var &params: PixelWrapMode);
+    external 'opengl32.dll' name 'glGetTexParameteriv';
+    static procedure GetTexParameteriv(target: TextureBindTarget; pname: TextureInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetTexParameteriv';
     
     static procedure GetTexParameterfv(target: TextureBindTarget; pname: TextureInfoType; var &params: single);
     external 'opengl32.dll' name 'glGetTexParameterfv';
-    static procedure GetTexParameterfv(target: TextureBindTarget; pname: TextureInfoType; &params: ^single);
+    static procedure GetTexParameterfv(target: TextureBindTarget; pname: TextureInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetTexParameterfv';
     
     static procedure GetTexParameterIiv(target: TextureBindTarget; pname: TextureInfoType; var &params: Int32);
     external 'opengl32.dll' name 'glGetTexParameterIiv';
-    static procedure GetTexParameterIiv(target: TextureBindTarget; pname: TextureInfoType; &params: ^Int32);
+    static procedure GetTexParameterIiv(target: TextureBindTarget; pname: TextureInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetTexParameterIiv';
     
+    static procedure GetTexParameterIuiv(target: TextureBindTarget; pname: TextureInfoType; var &params: DepthStencilMode);
+    external 'opengl32.dll' name 'glGetTexParameterIuiv';
+    static procedure GetTexParameterIuiv(target: TextureBindTarget; pname: TextureInfoType; var &params: TextureCompareMode);
+    external 'opengl32.dll' name 'glGetTexParameterIuiv';
+    static procedure GetTexParameterIuiv(target: TextureBindTarget; pname: TextureInfoType; var &params: ActivationFunc);
+    external 'opengl32.dll' name 'glGetTexParameterIuiv';
+    static procedure GetTexParameterIuiv(target: TextureBindTarget; pname: TextureInfoType; var &params: PixelMagFilterMode);
+    external 'opengl32.dll' name 'glGetTexParameterIuiv';
+    static procedure GetTexParameterIuiv(target: TextureBindTarget; pname: TextureInfoType; var &params: PixelMinFilterMode);
+    external 'opengl32.dll' name 'glGetTexParameterIuiv';
+    static procedure GetTexParameterIuiv(target: TextureBindTarget; pname: TextureInfoType; var &params: SwizzleMode);
+    external 'opengl32.dll' name 'glGetTexParameterIuiv';
+    static procedure GetTexParameterIuiv(target: TextureBindTarget; pname: TextureInfoType; var &params: PixelWrapMode);
+    external 'opengl32.dll' name 'glGetTexParameterIuiv';
     static procedure GetTexParameterIuiv(target: TextureBindTarget; pname: TextureInfoType; var &params: UInt32);
     external 'opengl32.dll' name 'glGetTexParameterIuiv';
-    static procedure GetTexParameterIuiv(target: TextureBindTarget; pname: TextureInfoType; &params: ^UInt32);
+    static procedure GetTexParameterIuiv(target: TextureBindTarget; pname: TextureInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetTexParameterIuiv';
     
+    static procedure GetTextureParameteriv(texture: TextureName; pname: TextureInfoType; var &params: DepthStencilMode);
+    external 'opengl32.dll' name 'glGetTextureParameteriv';
     static procedure GetTextureParameteriv(texture: TextureName; pname: TextureInfoType; var &params: Int32);
     external 'opengl32.dll' name 'glGetTextureParameteriv';
-    static procedure GetTextureParameteriv(texture: TextureName; pname: TextureInfoType; &params: ^Int32);
+    static procedure GetTextureParameteriv(texture: TextureName; pname: TextureInfoType; var &params: TextureCompareMode);
+    external 'opengl32.dll' name 'glGetTextureParameteriv';
+    static procedure GetTextureParameteriv(texture: TextureName; pname: TextureInfoType; var &params: ActivationFunc);
+    external 'opengl32.dll' name 'glGetTextureParameteriv';
+    static procedure GetTextureParameteriv(texture: TextureName; pname: TextureInfoType; var &params: PixelMagFilterMode);
+    external 'opengl32.dll' name 'glGetTextureParameteriv';
+    static procedure GetTextureParameteriv(texture: TextureName; pname: TextureInfoType; var &params: PixelMinFilterMode);
+    external 'opengl32.dll' name 'glGetTextureParameteriv';
+    static procedure GetTextureParameteriv(texture: TextureName; pname: TextureInfoType; var &params: SwizzleMode);
+    external 'opengl32.dll' name 'glGetTextureParameteriv';
+    static procedure GetTextureParameteriv(texture: TextureName; pname: TextureInfoType; var &params: PixelWrapMode);
+    external 'opengl32.dll' name 'glGetTextureParameteriv';
+    static procedure GetTextureParameteriv(texture: TextureName; pname: TextureInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetTextureParameteriv';
     
     static procedure GetTextureParameterfv(texture: TextureName; pname: TextureInfoType; var &params: single);
     external 'opengl32.dll' name 'glGetTextureParameterfv';
-    static procedure GetTextureParameterfv(texture: TextureName; pname: TextureInfoType; &params: ^single);
+    static procedure GetTextureParameterfv(texture: TextureName; pname: TextureInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetTextureParameterfv';
     
     static procedure GetTextureParameterIiv(texture: TextureName; pname: TextureInfoType; var &params: Int32);
     external 'opengl32.dll' name 'glGetTextureParameterIiv';
-    static procedure GetTextureParameterIiv(texture: TextureName; pname: TextureInfoType; &params: ^Int32);
+    static procedure GetTextureParameterIiv(texture: TextureName; pname: TextureInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetTextureParameterIiv';
     
+    static procedure GetTextureParameterIuiv(texture: TextureName; pname: TextureInfoType; var &params: DepthStencilMode);
+    external 'opengl32.dll' name 'glGetTextureParameterIuiv';
+    static procedure GetTextureParameterIuiv(texture: TextureName; pname: TextureInfoType; var &params: TextureCompareMode);
+    external 'opengl32.dll' name 'glGetTextureParameterIuiv';
+    static procedure GetTextureParameterIuiv(texture: TextureName; pname: TextureInfoType; var &params: ActivationFunc);
+    external 'opengl32.dll' name 'glGetTextureParameterIuiv';
+    static procedure GetTextureParameterIuiv(texture: TextureName; pname: TextureInfoType; var &params: PixelMagFilterMode);
+    external 'opengl32.dll' name 'glGetTextureParameterIuiv';
+    static procedure GetTextureParameterIuiv(texture: TextureName; pname: TextureInfoType; var &params: PixelMinFilterMode);
+    external 'opengl32.dll' name 'glGetTextureParameterIuiv';
+    static procedure GetTextureParameterIuiv(texture: TextureName; pname: TextureInfoType; var &params: SwizzleMode);
+    external 'opengl32.dll' name 'glGetTextureParameterIuiv';
+    static procedure GetTextureParameterIuiv(texture: TextureName; pname: TextureInfoType; var &params: PixelWrapMode);
+    external 'opengl32.dll' name 'glGetTextureParameterIuiv';
     static procedure GetTextureParameterIuiv(texture: TextureName; pname: TextureInfoType; var &params: UInt32);
     external 'opengl32.dll' name 'glGetTextureParameterIuiv';
-    static procedure GetTextureParameterIuiv(texture: TextureName; pname: TextureInfoType; &params: ^UInt32);
+    static procedure GetTextureParameterIuiv(texture: TextureName; pname: TextureInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetTextureParameterIuiv';
     
     // 8.11.3
     
     static procedure GetTexLevelParameterfv(target: TextureBindTarget; level: Int32; pname: TextureInfoType; var &params: single);
     external 'opengl32.dll' name 'glGetTexLevelParameterfv';
-    static procedure GetTexLevelParameterfv(target: TextureBindTarget; level: Int32; pname: TextureInfoType; &params: ^single);
+    static procedure GetTexLevelParameterfv(target: TextureBindTarget; level: Int32; pname: TextureInfoType; &params: pointer);
+    external 'opengl32.dll' name 'glGetTexLevelParameterfv';
+    static procedure GetTexLevelParameterfv(target: TextureCubeSide; level: Int32; pname: TextureInfoType; var &params: single);
+    external 'opengl32.dll' name 'glGetTexLevelParameterfv';
+    static procedure GetTexLevelParameterfv(target: TextureCubeSide; level: Int32; pname: TextureInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetTexLevelParameterfv';
     
+    static procedure GetTexLevelParameteriv(target: TextureBindTarget; level: Int32; pname: TextureInfoType; var &params: DataType);
+    external 'opengl32.dll' name 'glGetTexLevelParameteriv';
     static procedure GetTexLevelParameteriv(target: TextureBindTarget; level: Int32; pname: TextureInfoType; var &params: Int32);
     external 'opengl32.dll' name 'glGetTexLevelParameteriv';
-    static procedure GetTexLevelParameteriv(target: TextureBindTarget; level: Int32; pname: TextureInfoType; &params: ^Int32);
+    static procedure GetTexLevelParameteriv(target: TextureBindTarget; level: Int32; pname: TextureInfoType; var &params: boolean);
+    external 'opengl32.dll' name 'glGetTexLevelParameteriv';
+    static procedure GetTexLevelParameteriv(target: TextureBindTarget; level: Int32; pname: TextureInfoType; var &params: InternalDataFormat);
+    external 'opengl32.dll' name 'glGetTexLevelParameteriv';
+    static procedure GetTexLevelParameteriv(target: TextureBindTarget; level: Int32; pname: TextureInfoType; &params: pointer);
+    external 'opengl32.dll' name 'glGetTexLevelParameteriv';
+    static procedure GetTexLevelParameteriv(target: TextureCubeSide; level: Int32; pname: TextureInfoType; var &params: DataType);
+    external 'opengl32.dll' name 'glGetTexLevelParameteriv';
+    static procedure GetTexLevelParameteriv(target: TextureCubeSide; level: Int32; pname: TextureInfoType; var &params: Int32);
+    external 'opengl32.dll' name 'glGetTexLevelParameteriv';
+    static procedure GetTexLevelParameteriv(target: TextureCubeSide; level: Int32; pname: TextureInfoType; var &params: boolean);
+    external 'opengl32.dll' name 'glGetTexLevelParameteriv';
+    static procedure GetTexLevelParameteriv(target: TextureCubeSide; level: Int32; pname: TextureInfoType; var &params: InternalDataFormat);
+    external 'opengl32.dll' name 'glGetTexLevelParameteriv';
+    static procedure GetTexLevelParameteriv(target: TextureCubeSide; level: Int32; pname: TextureInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetTexLevelParameteriv';
     
     static procedure GetTextureLevelParameterfv(texture: TextureName; level: Int32; pname: TextureInfoType; var &params: single);
     external 'opengl32.dll' name 'glGetTextureLevelParameterfv';
-    static procedure GetTextureLevelParameterfv(texture: TextureName; level: Int32; pname: TextureInfoType; &params: ^single);
+    static procedure GetTextureLevelParameterfv(texture: TextureName; level: Int32; pname: TextureInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetTextureLevelParameterfv';
     
+    static procedure GetTextureLevelParameteriv(texture: TextureName; level: Int32; pname: TextureInfoType; var &params: DataType);
+    external 'opengl32.dll' name 'glGetTextureLevelParameteriv';
     static procedure GetTextureLevelParameteriv(texture: TextureName; level: Int32; pname: TextureInfoType; var &params: Int32);
     external 'opengl32.dll' name 'glGetTextureLevelParameteriv';
-    static procedure GetTextureLevelParameteriv(texture: TextureName; level: Int32; pname: TextureInfoType; &params: ^Int32);
+    static procedure GetTextureLevelParameteriv(texture: TextureName; level: Int32; pname: TextureInfoType; var &params: boolean);
+    external 'opengl32.dll' name 'glGetTextureLevelParameteriv';
+    static procedure GetTextureLevelParameteriv(texture: TextureName; level: Int32; pname: TextureInfoType; var &params: InternalDataFormat);
+    external 'opengl32.dll' name 'glGetTextureLevelParameteriv';
+    static procedure GetTextureLevelParameteriv(texture: TextureName; level: Int32; pname: TextureInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetTextureLevelParameteriv';
     
     // 8.11.4
@@ -11866,10 +12836,14 @@ type
     
     static procedure GetFramebufferParameteriv(target: FramebufferBindTarget; pname: FramebufferInfoType; var &params: Int32);
     external 'opengl32.dll' name 'glGetFramebufferParameteriv';
+    static procedure GetFramebufferParameteriv(target: FramebufferBindTarget; pname: FramebufferInfoType; var &params: boolean);
+    external 'opengl32.dll' name 'glGetFramebufferParameteriv';
     static procedure GetFramebufferParameteriv(target: FramebufferBindTarget; pname: FramebufferInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetFramebufferParameteriv';
     
     static procedure GetNamedFramebufferParameteriv(framebuffer: FramebufferName; pname: FramebufferInfoType; var param: Int32);
+    external 'opengl32.dll' name 'glGetNamedFramebufferParameteriv';
+    static procedure GetNamedFramebufferParameteriv(framebuffer: FramebufferName; pname: FramebufferInfoType; var param: boolean);
     external 'opengl32.dll' name 'glGetNamedFramebufferParameteriv';
     static procedure GetNamedFramebufferParameteriv(framebuffer: FramebufferName; pname: FramebufferInfoType; param: pointer);
     external 'opengl32.dll' name 'glGetNamedFramebufferParameteriv';
@@ -12060,16 +13034,16 @@ type
     static procedure VertexAttrib4f(index: UInt32; x: single; y: single; z: single; w: single);
     external 'opengl32.dll' name 'glVertexAttrib4f';
     
-    static procedure VertexAttrib1d(index: UInt32; x: real);
+    static procedure VertexAttrib1d(index: UInt32; x: double);
     external 'opengl32.dll' name 'glVertexAttrib1d';
     
-    static procedure VertexAttrib2d(index: UInt32; x: real; y: real);
+    static procedure VertexAttrib2d(index: UInt32; x: double; y: double);
     external 'opengl32.dll' name 'glVertexAttrib2d';
     
-    static procedure VertexAttrib3d(index: UInt32; x: real; y: real; z: real);
+    static procedure VertexAttrib3d(index: UInt32; x: double; y: double; z: double);
     external 'opengl32.dll' name 'glVertexAttrib3d';
     
-    static procedure VertexAttrib4d(index: UInt32; x: real; y: real; z: real; w: real);
+    static procedure VertexAttrib4d(index: UInt32; x: double; y: double; z: double; w: double);
     external 'opengl32.dll' name 'glVertexAttrib4d';
     
     {$endregion VertexAttrib[1,2,3,4][s,f,d]}
@@ -12130,27 +13104,27 @@ type
     static procedure VertexAttrib3fv(index: UInt32; v: pointer);
     external 'opengl32.dll' name 'glVertexAttrib3fv';
     
-    static procedure VertexAttrib1dv(index: UInt32; [MarshalAs(UnmanagedType.LPArray)] v: array of real);
+    static procedure VertexAttrib1dv(index: UInt32; [MarshalAs(UnmanagedType.LPArray)] v: array of double);
     external 'opengl32.dll' name 'glVertexAttrib1dv';
-    static procedure VertexAttrib1dv(index: UInt32; var v: real);
+    static procedure VertexAttrib1dv(index: UInt32; var v: double);
     external 'opengl32.dll' name 'glVertexAttrib1dv';
     static procedure VertexAttrib1dv(index: UInt32; var v: Vec1d);
     external 'opengl32.dll' name 'glVertexAttrib1dv';
     static procedure VertexAttrib1dv(index: UInt32; v: pointer);
     external 'opengl32.dll' name 'glVertexAttrib1dv';
     
-    static procedure VertexAttrib2dv(index: UInt32; [MarshalAs(UnmanagedType.LPArray)] v: array of real);
+    static procedure VertexAttrib2dv(index: UInt32; [MarshalAs(UnmanagedType.LPArray)] v: array of double);
     external 'opengl32.dll' name 'glVertexAttrib2dv';
-    static procedure VertexAttrib2dv(index: UInt32; var v: real);
+    static procedure VertexAttrib2dv(index: UInt32; var v: double);
     external 'opengl32.dll' name 'glVertexAttrib2dv';
     static procedure VertexAttrib2dv(index: UInt32; var v: Vec2d);
     external 'opengl32.dll' name 'glVertexAttrib2dv';
     static procedure VertexAttrib2dv(index: UInt32; v: pointer);
     external 'opengl32.dll' name 'glVertexAttrib2dv';
     
-    static procedure VertexAttrib3dv(index: UInt32; [MarshalAs(UnmanagedType.LPArray)] v: array of real);
+    static procedure VertexAttrib3dv(index: UInt32; [MarshalAs(UnmanagedType.LPArray)] v: array of double);
     external 'opengl32.dll' name 'glVertexAttrib3dv';
-    static procedure VertexAttrib3dv(index: UInt32; var v: real);
+    static procedure VertexAttrib3dv(index: UInt32; var v: double);
     external 'opengl32.dll' name 'glVertexAttrib3dv';
     static procedure VertexAttrib3dv(index: UInt32; var v: Vec3d);
     external 'opengl32.dll' name 'glVertexAttrib3dv';
@@ -12197,9 +13171,9 @@ type
     static procedure VertexAttrib4fv(index: UInt32; v: pointer);
     external 'opengl32.dll' name 'glVertexAttrib4fv';
     
-    static procedure VertexAttrib4dv(index: UInt32; [MarshalAs(UnmanagedType.LPArray)] v: array of real);
+    static procedure VertexAttrib4dv(index: UInt32; [MarshalAs(UnmanagedType.LPArray)] v: array of double);
     external 'opengl32.dll' name 'glVertexAttrib4dv';
-    static procedure VertexAttrib4dv(index: UInt32; var v: real);
+    static procedure VertexAttrib4dv(index: UInt32; var v: double);
     external 'opengl32.dll' name 'glVertexAttrib4dv';
     static procedure VertexAttrib4dv(index: UInt32; var v: Vec4d);
     external 'opengl32.dll' name 'glVertexAttrib4dv';
@@ -12446,52 +13420,52 @@ type
     
     {$region VertexAttribL[1,2,3,4]d}
     
-    static procedure VertexAttribL1d(index: UInt32; x: real);
+    static procedure VertexAttribL1d(index: UInt32; x: double);
     external 'opengl32.dll' name 'glVertexAttribL1d';
     
-    static procedure VertexAttribL2d(index: UInt32; x: real; y: real);
+    static procedure VertexAttribL2d(index: UInt32; x: double; y: double);
     external 'opengl32.dll' name 'glVertexAttribL2d';
     
-    static procedure VertexAttribL3d(index: UInt32; x: real; y: real; z: real);
+    static procedure VertexAttribL3d(index: UInt32; x: double; y: double; z: double);
     external 'opengl32.dll' name 'glVertexAttribL3d';
     
-    static procedure VertexAttribL4d(index: UInt32; x: real; y: real; z: real; w: real);
+    static procedure VertexAttribL4d(index: UInt32; x: double; y: double; z: double; w: double);
     external 'opengl32.dll' name 'glVertexAttribL4d';
     
     {$endregion VertexAttribL[1,2,3,4]d}
     
     {$region VertexAttribL[1,2,3,4]dv}
     
-    static procedure VertexAttribL1dv(index: UInt32; [MarshalAs(UnmanagedType.LPArray)] v: array of real);
+    static procedure VertexAttribL1dv(index: UInt32; [MarshalAs(UnmanagedType.LPArray)] v: array of double);
     external 'opengl32.dll' name 'glVertexAttribL1dv';
-    static procedure VertexAttribL1dv(index: UInt32; var v: real);
+    static procedure VertexAttribL1dv(index: UInt32; var v: double);
     external 'opengl32.dll' name 'glVertexAttribL1dv';
     static procedure VertexAttribL1dv(index: UInt32; var v: Vec1d);
     external 'opengl32.dll' name 'glVertexAttribL1dv';
     static procedure VertexAttribL1dv(index: UInt32; v: pointer);
     external 'opengl32.dll' name 'glVertexAttribL1dv';
     
-    static procedure VertexAttribL2dv(index: UInt32; [MarshalAs(UnmanagedType.LPArray)] v: array of real);
+    static procedure VertexAttribL2dv(index: UInt32; [MarshalAs(UnmanagedType.LPArray)] v: array of double);
     external 'opengl32.dll' name 'glVertexAttribL2dv';
-    static procedure VertexAttribL2dv(index: UInt32; var v: real);
+    static procedure VertexAttribL2dv(index: UInt32; var v: double);
     external 'opengl32.dll' name 'glVertexAttribL2dv';
     static procedure VertexAttribL2dv(index: UInt32; var v: Vec2d);
     external 'opengl32.dll' name 'glVertexAttribL2dv';
     static procedure VertexAttribL2dv(index: UInt32; v: pointer);
     external 'opengl32.dll' name 'glVertexAttribL2dv';
     
-    static procedure VertexAttribL3dv(index: UInt32; [MarshalAs(UnmanagedType.LPArray)] v: array of real);
+    static procedure VertexAttribL3dv(index: UInt32; [MarshalAs(UnmanagedType.LPArray)] v: array of double);
     external 'opengl32.dll' name 'glVertexAttribL3dv';
-    static procedure VertexAttribL3dv(index: UInt32; var v: real);
+    static procedure VertexAttribL3dv(index: UInt32; var v: double);
     external 'opengl32.dll' name 'glVertexAttribL3dv';
     static procedure VertexAttribL3dv(index: UInt32; var v: Vec3d);
     external 'opengl32.dll' name 'glVertexAttribL3dv';
     static procedure VertexAttribL3dv(index: UInt32; v: pointer);
     external 'opengl32.dll' name 'glVertexAttribL3dv';
     
-    static procedure VertexAttribL4dv(index: UInt32; [MarshalAs(UnmanagedType.LPArray)] v: array of real);
+    static procedure VertexAttribL4dv(index: UInt32; [MarshalAs(UnmanagedType.LPArray)] v: array of double);
     external 'opengl32.dll' name 'glVertexAttribL4dv';
-    static procedure VertexAttribL4dv(index: UInt32; var v: real);
+    static procedure VertexAttribL4dv(index: UInt32; var v: double);
     external 'opengl32.dll' name 'glVertexAttribL4dv';
     static procedure VertexAttribL4dv(index: UInt32; var v: Vec4d);
     external 'opengl32.dll' name 'glVertexAttribL4dv';
@@ -12779,10 +13753,6 @@ type
     external 'opengl32.dll' name 'glMultiDrawElements';
     static procedure MultiDrawElements(mode: PrimitiveType; var count: Int32; &type: DataType; var indices: pointer; drawcount: Int32);
     external 'opengl32.dll' name 'glMultiDrawElements';
-    static procedure MultiDrawElements(mode: PrimitiveType; count: ^Int32; &type: DataType; indices: ^IntPtr; drawcount: Int32);
-    external 'opengl32.dll' name 'glMultiDrawElements';
-    static procedure MultiDrawElements(mode: PrimitiveType; count: ^Int32; &type: DataType; indices: ^pointer; drawcount: Int32);
-    external 'opengl32.dll' name 'glMultiDrawElements';
     static procedure MultiDrawElements(mode: PrimitiveType; count: pointer; &type: DataType; indices: pointer; drawcount: Int32);
     external 'opengl32.dll' name 'glMultiDrawElements';
     
@@ -12894,10 +13864,6 @@ type
     external 'opengl32.dll' name 'glMultiDrawElementsBaseVertex';
     static procedure MultiDrawElementsBaseVertex(mode: PrimitiveType; var count: Int32; &type: DataType; var indices: pointer; drawcount: Int32; var basevertex: Int32);
     external 'opengl32.dll' name 'glMultiDrawElementsBaseVertex';
-    static procedure MultiDrawElementsBaseVertex(mode: PrimitiveType; count: ^Int32; &type: DataType; indices: ^IntPtr; drawcount: Int32; basevertex: ^Int32);
-    external 'opengl32.dll' name 'glMultiDrawElementsBaseVertex';
-    static procedure MultiDrawElementsBaseVertex(mode: PrimitiveType; count: ^Int32; &type: DataType; indices: ^pointer; drawcount: Int32; basevertex: ^Int32);
-    external 'opengl32.dll' name 'glMultiDrawElementsBaseVertex';
     static procedure MultiDrawElementsBaseVertex(mode: PrimitiveType; count: pointer; &type: DataType; indices: pointer; drawcount: Int32; basevertex: pointer);
     external 'opengl32.dll' name 'glMultiDrawElementsBaseVertex';
     
@@ -12920,9 +13886,9 @@ type
     static procedure GetVertexArrayIndexed64iv(vaobj: VertexArrayName; index: UInt32; pname: VertexAttribInfoType; param: pointer);
     external 'opengl32.dll' name 'glGetVertexArrayIndexed64iv';
     
-    static procedure GetVertexAttribdv(index: UInt32; pname: VertexAttribInfoType; [MarshalAs(UnmanagedType.LPArray)] &params: array of real);
+    static procedure GetVertexAttribdv(index: UInt32; pname: VertexAttribInfoType; [MarshalAs(UnmanagedType.LPArray)] &params: array of double);
     external 'opengl32.dll' name 'glGetVertexAttribdv';
-    static procedure GetVertexAttribdv(index: UInt32; pname: VertexAttribInfoType; var &params: real);
+    static procedure GetVertexAttribdv(index: UInt32; pname: VertexAttribInfoType; var &params: double);
     external 'opengl32.dll' name 'glGetVertexAttribdv';
     static procedure GetVertexAttribdv(index: UInt32; pname: VertexAttribInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetVertexAttribdv';
@@ -12955,9 +13921,9 @@ type
     static procedure GetVertexAttribIuiv(index: UInt32; pname: VertexAttribInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetVertexAttribIuiv';
     
-    static procedure GetVertexAttribLdv(index: UInt32; pname: VertexAttribInfoType; [MarshalAs(UnmanagedType.LPArray)] &params: array of real);
+    static procedure GetVertexAttribLdv(index: UInt32; pname: VertexAttribInfoType; [MarshalAs(UnmanagedType.LPArray)] &params: array of double);
     external 'opengl32.dll' name 'glGetVertexAttribLdv';
-    static procedure GetVertexAttribLdv(index: UInt32; pname: VertexAttribInfoType; var &params: real);
+    static procedure GetVertexAttribLdv(index: UInt32; pname: VertexAttribInfoType; var &params: double);
     external 'opengl32.dll' name 'glGetVertexAttribLdv';
     static procedure GetVertexAttribLdv(index: UInt32; pname: VertexAttribInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetVertexAttribLdv';
@@ -12968,7 +13934,7 @@ type
     external 'opengl32.dll' name 'glGetVertexAttribPointerv';
     static procedure GetVertexAttribPointerv(index: UInt32; pname: UInt32; var _pointer: pointer);
     external 'opengl32.dll' name 'glGetVertexAttribPointerv';
-    static procedure GetVertexAttribPointerv(index: UInt32; pname: UInt32; _pointer: ^pointer);
+    static procedure GetVertexAttribPointerv(index: UInt32; pname: UInt32; _pointer: ^IntPtr);
     external 'opengl32.dll' name 'glGetVertexAttribPointerv';
     
     {$endregion 10.5 - Vertex Array and Vertex Array Object Queries}
@@ -13004,13 +13970,13 @@ type
     external 'opengl32.dll' name 'glGetActiveAttrib';
     static procedure GetActiveAttrib(&program: ProgramName; index: UInt32; bufSize: Int32; var length: Int32; var size: Int32; &type: pointer; name: IntPtr);
     external 'opengl32.dll' name 'glGetActiveAttrib';
-    static procedure GetActiveAttrib(&program: ProgramName; index: UInt32; bufSize: Int32; length: ^Int32; size: ^Int32; var &type: ProgramVarType; [MarshalAs(UnmanagedType.LPStr)] name: string);
+    static procedure GetActiveAttrib(&program: ProgramName; index: UInt32; bufSize: Int32; length: pointer; size: pointer; var &type: ProgramVarType; [MarshalAs(UnmanagedType.LPStr)] name: string);
     external 'opengl32.dll' name 'glGetActiveAttrib';
-    static procedure GetActiveAttrib(&program: ProgramName; index: UInt32; bufSize: Int32; length: ^Int32; size: ^Int32; var &type: ProgramVarType; name: IntPtr);
+    static procedure GetActiveAttrib(&program: ProgramName; index: UInt32; bufSize: Int32; length: pointer; size: pointer; var &type: ProgramVarType; name: IntPtr);
     external 'opengl32.dll' name 'glGetActiveAttrib';
-    static procedure GetActiveAttrib(&program: ProgramName; index: UInt32; bufSize: Int32; length: ^Int32; size: ^Int32; &type: pointer; [MarshalAs(UnmanagedType.LPStr)] name: string);
+    static procedure GetActiveAttrib(&program: ProgramName; index: UInt32; bufSize: Int32; length: pointer; size: pointer; &type: pointer; [MarshalAs(UnmanagedType.LPStr)] name: string);
     external 'opengl32.dll' name 'glGetActiveAttrib';
-    static procedure GetActiveAttrib(&program: ProgramName; index: UInt32; bufSize: Int32; length: ^Int32; size: ^Int32; &type: pointer; name: IntPtr);
+    static procedure GetActiveAttrib(&program: ProgramName; index: UInt32; bufSize: Int32; length: pointer; size: pointer; &type: pointer; name: IntPtr);
     external 'opengl32.dll' name 'glGetActiveAttrib';
     
     static function GetAttribLocation(&program: ProgramName; [MarshalAs(UnmanagedType.LPStr)] name: string): Int32;
@@ -13035,9 +14001,9 @@ type
     external 'opengl32.dll' name 'glGetTransformFeedbackVarying';
     static procedure GetTransformFeedbackVarying(&program: ProgramName; index: UInt32; bufSize: Int32; var length: Int32; var size: Int32; var &type: ProgramVarType; name: IntPtr);
     external 'opengl32.dll' name 'glGetTransformFeedbackVarying';
-    static procedure GetTransformFeedbackVarying(&program: ProgramName; index: UInt32; bufSize: Int32; length: ^Int32; size: ^Int32; &type: pointer; [MarshalAs(UnmanagedType.LPStr)] name: string);
+    static procedure GetTransformFeedbackVarying(&program: ProgramName; index: UInt32; bufSize: Int32; length: pointer; size: pointer; &type: pointer; [MarshalAs(UnmanagedType.LPStr)] name: string);
     external 'opengl32.dll' name 'glGetTransformFeedbackVarying';
-    static procedure GetTransformFeedbackVarying(&program: ProgramName; index: UInt32; bufSize: Int32; length: ^Int32; size: ^Int32; &type: pointer; name: IntPtr);
+    static procedure GetTransformFeedbackVarying(&program: ProgramName; index: UInt32; bufSize: Int32; length: pointer; size: pointer; &type: pointer; name: IntPtr);
     external 'opengl32.dll' name 'glGetTransformFeedbackVarying';
     
     //11.1.3
@@ -13136,6 +14102,13 @@ type
     
     {$endregion 13.3 - Transform Feedback}
     
+    {$region 13.6 - Flatshading}
+    
+    static procedure ProvokingVertex(mode: VertexProvokingMode);
+    external 'opengl32.dll' name 'glProvokingVertex';
+    
+    {$endregion 13.6 - Flatshading}
+    
     {$region 13.7 - Primitive Clipping}
     
     static procedure ClipControl(origin: ClipOriginMode; depth: ClipDepthMode);
@@ -13147,17 +14120,17 @@ type
     
     // 13.8.1
     
-    static procedure DepthRangeArrayv(first: UInt32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] v: array of real);
+    static procedure DepthRangeArrayv(first: UInt32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] v: array of double);
     external 'opengl32.dll' name 'glDepthRangeArrayv';
-    static procedure DepthRangeArrayv(first: UInt32; count: Int32; var v: real);
+    static procedure DepthRangeArrayv(first: UInt32; count: Int32; var v: double);
     external 'opengl32.dll' name 'glDepthRangeArrayv';
     static procedure DepthRangeArrayv(first: UInt32; count: Int32; v: pointer);
     external 'opengl32.dll' name 'glDepthRangeArrayv';
     
-    static procedure DepthRangeIndexed(index: UInt32; n: real; f: real);
+    static procedure DepthRangeIndexed(index: UInt32; n: double; f: double);
     external 'opengl32.dll' name 'glDepthRangeIndexed';
     
-    static procedure DepthRange(n: real; f: real);
+    static procedure DepthRange(n: double; f: double);
     external 'opengl32.dll' name 'glDepthRange';
     
     static procedure DepthRangef(n: single; f: single);
@@ -13187,7 +14160,7 @@ type
     
     {$endregion 13.0 - Fixed-Function Vertex Post-Processing}
     
-    {$region 14.0 Fixed-Function Primitive Assembly and Rasterization}
+    {$region 14.0 - Fixed-Function Primitive Assembly and Rasterization}
     
     {$region 14.3 - Antialiasing}
     
@@ -13304,7 +14277,7 @@ type
     
     {$endregion 14.9 - Early Per-Fragment Tests}
     
-    {$endregion 14.0 Fixed-Function Primitive Assembly and Rasterization}
+    {$endregion 14.0 - Fixed-Function Primitive Assembly and Rasterization}
     
     {$region 15.0 - Programmable Fragment Processing}
     
@@ -13342,10 +14315,10 @@ type
     
     // 17.3.3
     
-    static procedure StencilFunc(func: FuncActivationMode; ref: Int32; mask: UInt32);
+    static procedure StencilFunc(func: ActivationFunc; ref: Int32; mask: UInt32);
     external 'opengl32.dll' name 'glStencilFunc';
     
-    static procedure StencilFuncSeparate(face: PolygonFace; func: FuncActivationMode; ref: Int32; mask: UInt32);
+    static procedure StencilFuncSeparate(face: PolygonFace; func: ActivationFunc; ref: Int32; mask: UInt32);
     external 'opengl32.dll' name 'glStencilFuncSeparate';
     
     static procedure StencilOp(fail: StencilOpFailMode; zfail: StencilOpFailMode; zpass: StencilOpFailMode);
@@ -13356,7 +14329,7 @@ type
     
     // 17.3.4
     
-    static procedure DepthFunc(func: FuncActivationMode);
+    static procedure DepthFunc(func: ActivationFunc);
     external 'opengl32.dll' name 'glDepthFunc';
     
     // 17.3.6
@@ -13456,7 +14429,7 @@ type
     static procedure ClearColor(red: single; green: single; blue: single; alpha: single);
     external 'opengl32.dll' name 'glClearColor';
     
-    static procedure ClearDepth(depth: real);
+    static procedure ClearDepth(depth: double);
     external 'opengl32.dll' name 'glClearDepth';
     
     static procedure ClearDepthf(d: single);
@@ -13584,10 +14557,10 @@ type
     
     // 18.3.1
     
-    static procedure BlitFramebuffer(srcX0: Int32; srcY0: Int32; srcX1: Int32; srcY1: Int32; dstX0: Int32; dstY0: Int32; dstX1: Int32; dstY1: Int32; mask: BufferTypeFlags; filter: PixelFilterMode);
+    static procedure BlitFramebuffer(srcX0: Int32; srcY0: Int32; srcX1: Int32; srcY1: Int32; dstX0: Int32; dstY0: Int32; dstX1: Int32; dstY1: Int32; mask: BufferTypeFlags; filter: PixelMagFilterMode);
     external 'opengl32.dll' name 'glBlitFramebuffer';
     
-    static procedure BlitNamedFramebuffer(readFramebuffer: FramebufferName; drawFramebuffer: FramebufferName; srcX0: Int32; srcY0: Int32; srcX1: Int32; srcY1: Int32; dstX0: Int32; dstY0: Int32; dstX1: Int32; dstY1: Int32; mask: BufferTypeFlags; filter: PixelFilterMode);
+    static procedure BlitNamedFramebuffer(readFramebuffer: FramebufferName; drawFramebuffer: FramebufferName; srcX0: Int32; srcY0: Int32; srcX1: Int32; srcY1: Int32; dstX0: Int32; dstY0: Int32; dstX1: Int32; dstY1: Int32; mask: BufferTypeFlags; filter: PixelMagFilterMode);
     external 'opengl32.dll' name 'glBlitNamedFramebuffer';
     
     // 18.3.2
@@ -13691,18 +14664,18 @@ type
     external 'opengl32.dll' name 'glGetObjectLabel';
     static procedure GetObjectLabel(identifier: ObjectType; name: UInt32; bufSize: Int32; var length: Int32; &label: IntPtr);
     external 'opengl32.dll' name 'glGetObjectLabel';
-    static procedure GetObjectLabel(identifier: ObjectType; name: UInt32; bufSize: Int32; length: ^Int32; [MarshalAs(UnmanagedType.LPStr)] &label: string);
+    static procedure GetObjectLabel(identifier: ObjectType; name: UInt32; bufSize: Int32; length: pointer; [MarshalAs(UnmanagedType.LPStr)] &label: string);
     external 'opengl32.dll' name 'glGetObjectLabel';
-    static procedure GetObjectLabel(identifier: ObjectType; name: UInt32; bufSize: Int32; length: ^Int32; &label: IntPtr);
+    static procedure GetObjectLabel(identifier: ObjectType; name: UInt32; bufSize: Int32; length: pointer; &label: IntPtr);
     external 'opengl32.dll' name 'glGetObjectLabel';
     
     static procedure GetObjectPtrLabel(ptr: pointer; bufSize: Int32; var length: Int32; [MarshalAs(UnmanagedType.LPStr)] &label: string);
     external 'opengl32.dll' name 'glGetObjectPtrLabel';
     static procedure GetObjectPtrLabel(ptr: pointer; bufSize: Int32; var length: Int32; &label: IntPtr);
     external 'opengl32.dll' name 'glGetObjectPtrLabel';
-    static procedure GetObjectPtrLabel(ptr: pointer; bufSize: Int32; length: ^Int32; [MarshalAs(UnmanagedType.LPStr)] &label: string);
+    static procedure GetObjectPtrLabel(ptr: pointer; bufSize: Int32; length: pointer; [MarshalAs(UnmanagedType.LPStr)] &label: string);
     external 'opengl32.dll' name 'glGetObjectPtrLabel';
-    static procedure GetObjectPtrLabel(ptr: pointer; bufSize: Int32; length: ^Int32; &label: IntPtr);
+    static procedure GetObjectPtrLabel(ptr: pointer; bufSize: Int32; length: pointer; &label: IntPtr);
     external 'opengl32.dll' name 'glGetObjectPtrLabel';
     
     {$endregion 20.9 - Debug Output Queries}
@@ -13711,12 +14684,12 @@ type
     
     {$region 21.0 - Special Functions}
     
-    {$endregion 21.5 - Hints}
+    {$region 21.5 - Hints}
     
     static procedure Hint(target: HintType; mode: HintValue);
     external 'opengl32.dll' name 'glHint';
     
-    {$region 21.5 - Hints}
+    {$endregion 21.5 - Hints}
     
     {$endregion 21.0 - Special Functions}
     
@@ -13735,16 +14708,12 @@ type
     external 'opengl32.dll' name 'glGetIntegerv';
     static procedure GetIntegerv(pname: GLGetQueries; var data: Int32);
     external 'opengl32.dll' name 'glGetIntegerv';
-    static procedure GetIntegerv(pname: QueryInfoType; var data: Int32);
-    external 'opengl32.dll' name 'glGetIntegerv';
     static procedure GetIntegerv(pname: GLGetQueries; data: pointer);
     external 'opengl32.dll' name 'glGetIntegerv';
     
     static procedure GetInteger64v(pname: GLGetQueries; [MarshalAs(UnmanagedType.LPArray)] data: array of Int64);
     external 'opengl32.dll' name 'glGetInteger64v';
     static procedure GetInteger64v(pname: GLGetQueries; var data: Int64);
-    external 'opengl32.dll' name 'glGetInteger64v';
-    static procedure GetInteger64v(pname: QueryInfoType; var data: Int64);
     external 'opengl32.dll' name 'glGetInteger64v';
     static procedure GetInteger64v(pname: GLGetQueries; data: pointer);
     external 'opengl32.dll' name 'glGetInteger64v';
@@ -13756,9 +14725,9 @@ type
     static procedure GetFloatv(pname: GLGetQueries; data: pointer);
     external 'opengl32.dll' name 'glGetFloatv';
     
-    static procedure GetDoublev(pname: GLGetQueries; [MarshalAs(UnmanagedType.LPArray)] data: array of real);
+    static procedure GetDoublev(pname: GLGetQueries; [MarshalAs(UnmanagedType.LPArray)] data: array of double);
     external 'opengl32.dll' name 'glGetDoublev';
-    static procedure GetDoublev(pname: GLGetQueries; var data: real);
+    static procedure GetDoublev(pname: GLGetQueries; var data: double);
     external 'opengl32.dll' name 'glGetDoublev';
     static procedure GetDoublev(pname: GLGetQueries; data: pointer);
     external 'opengl32.dll' name 'glGetDoublev';
@@ -13795,9 +14764,9 @@ type
     static procedure GetInteger64i_v(target: GLGetQueries; index: UInt32; data: pointer);
     external 'opengl32.dll' name 'glGetInteger64i_v';
 	  
-    static procedure GetDoublei_v(target: GLGetQueries; index: UInt32; [MarshalAs(UnmanagedType.LPArray)] data: array of real);
+    static procedure GetDoublei_v(target: GLGetQueries; index: UInt32; [MarshalAs(UnmanagedType.LPArray)] data: array of double);
     external 'opengl32.dll' name 'glGetDoublei_v';
-    static procedure GetDoublei_v(target: GLGetQueries; index: UInt32; var data: real);
+    static procedure GetDoublei_v(target: GLGetQueries; index: UInt32; var data: double);
     external 'opengl32.dll' name 'glGetDoublei_v';
     static procedure GetDoublei_v(target: GLGetQueries; index: UInt32; data: pointer);
     external 'opengl32.dll' name 'glGetDoublei_v';
@@ -13816,7 +14785,9 @@ type
     external 'opengl32.dll' name 'glGetPointerv';
     static procedure GetPointerv(pname: GLGetQueries; var &params: IntPtr);
     external 'opengl32.dll' name 'glGetPointerv';
-    static procedure GetPointerv(pname: GLGetQueries; &params: ^pointer);
+    static procedure GetPointerv(pname: GLGetQueries; var &params: pointer);
+    external 'opengl32.dll' name 'glGetPointerv';
+    static procedure GetPointerv(pname: GLGetQueries; &params: ^IntPtr);
     external 'opengl32.dll' name 'glGetPointerv';
     
     static function GetString(name: GLGetStringQueries): string; //ToDo #2029
@@ -13876,18 +14847,17 @@ type
     
     {$endregion 22.0 - Context State Queries}
     
+  end;
+  
+  //ToDo подчистить всё что дальше:
+  
+  //ToDo похоже в .h не хватает функций, констант и т.п.
+  // - пройтись по личным спецификациям каждого расширения
+  
+  /// Расширения, которые встречаются у всех видеокарт
+  gl_ARB = static class
     
-    
-    {$region unsorted}
-    
-    static procedure ProvokingVertex(mode: UInt32);
-    external 'opengl32.dll' name 'glProvokingVertex';
-    
-    static procedure CopyPixels(x: Int32; y: Int32; width: Int32; height: Int32; &type: UInt32);
-    external 'opengl32.dll' name 'glCopyPixels';
-    
-    static function GetGraphicsResetStatus: UInt32;
-    external 'opengl32.dll' name 'glGetGraphicsResetStatus';
+    {$region ARB}
     
     static procedure PrimitiveBoundingBoxARB(minX: single; minY: single; minZ: single; minW: single; maxX: single; maxY: single; maxZ: single; maxW: single);
     external 'opengl32.dll' name 'glPrimitiveBoundingBoxARB';
@@ -14099,9 +15069,6 @@ type
     static procedure MaxShaderCompilerThreadsARB(count: UInt32);
     external 'opengl32.dll' name 'glMaxShaderCompilerThreadsARB';
     
-    static function GetGraphicsResetStatusARB: UInt32;
-    external 'opengl32.dll' name 'glGetGraphicsResetStatusARB';
-    
     static procedure GetnTexImageARB(target: UInt32; level: Int32; format: UInt32; &type: UInt32; bufSize: Int32; img: pointer);
     external 'opengl32.dll' name 'glGetnTexImageARB';
     
@@ -14120,7 +15087,7 @@ type
     static procedure GetnUniformuivARB(&program: UInt32; location: Int32; bufSize: Int32; &params: ^UInt32);
     external 'opengl32.dll' name 'glGetnUniformuivARB';
     
-    static procedure GetnUniformdvARB(&program: UInt32; location: Int32; bufSize: Int32; &params: ^real);
+    static procedure GetnUniformdvARB(&program: UInt32; location: Int32; bufSize: Int32; &params: ^double);
     external 'opengl32.dll' name 'glGetnUniformdvARB';
     
     static procedure FramebufferSampleLocationsfvARB(target: UInt32; start: UInt32; count: Int32; v: ^single);
@@ -14156,9 +15123,6 @@ type
     static procedure BufferPageCommitmentARB(target: UInt32; offset: IntPtr; size: UIntPtr; commit: boolean);
     external 'opengl32.dll' name 'glBufferPageCommitmentARB';
     
-    static procedure NamedBufferPageCommitmentEXT(buffer: UInt32; offset: IntPtr; size: UIntPtr; commit: boolean);
-    external 'opengl32.dll' name 'glNamedBufferPageCommitmentEXT';
-    
     static procedure NamedBufferPageCommitmentARB(buffer: UInt32; offset: IntPtr; size: UIntPtr; commit: boolean);
     external 'opengl32.dll' name 'glNamedBufferPageCommitmentARB';
     
@@ -14168,50 +15132,680 @@ type
     static procedure TexBufferARB(target: UInt32; internalformat: UInt32; buffer: UInt32);
     external 'opengl32.dll' name 'glTexBufferARB';
     
-    static procedure BlendBarrierKHR;
-    external 'opengl32.dll' name 'glBlendBarrierKHR';
+    static procedure VertexAttribDivisorARB(index: UInt32; divisor: UInt32);
+    external 'opengl32.dll' name 'glVertexAttribDivisorARB';
     
-    static procedure MaxShaderCompilerThreadsKHR(count: UInt32);
-    external 'opengl32.dll' name 'glMaxShaderCompilerThreadsKHR';
+    static procedure GetVertexAttribLui64vARB(index: UInt32; pname: UInt32; &params: ^UInt64);
+    external 'opengl32.dll' name 'glGetVertexAttribLui64vARB';
     
-    static procedure RenderbufferStorageMultisampleAdvancedAMD(target: UInt32; samples: Int32; storageSamples: Int32; internalformat: UInt32; width: Int32; height: Int32);
-    external 'opengl32.dll' name 'glRenderbufferStorageMultisampleAdvancedAMD';
+    static procedure VertexAttribL1ui64ARB(index: UInt32; x: UInt64);
+    external 'opengl32.dll' name 'glVertexAttribL1ui64ARB';
     
-    static procedure NamedRenderbufferStorageMultisampleAdvancedAMD(renderbuffer: UInt32; samples: Int32; storageSamples: Int32; internalformat: UInt32; width: Int32; height: Int32);
-    external 'opengl32.dll' name 'glNamedRenderbufferStorageMultisampleAdvancedAMD';
+    static procedure VertexAttribL1ui64vARB(index: UInt32; v: ^UInt64);
+    external 'opengl32.dll' name 'glVertexAttribL1ui64vARB';
     
-    static procedure GetPerfMonitorGroupsAMD(numGroups: ^Int32; groupsSize: Int32; groups: ^UInt32);
-    external 'opengl32.dll' name 'glGetPerfMonitorGroupsAMD';
+    static procedure ClampColorARB(target: ErrorCode; clamp: ErrorCode);
+    external 'opengl32.dll' name 'glClampColorARB';
     
-    static procedure GetPerfMonitorCountersAMD(group: UInt32; numCounters: ^Int32; maxActiveCounters: ^Int32; counterSize: Int32; counters: ^UInt32);
-    external 'opengl32.dll' name 'glGetPerfMonitorCountersAMD';
+    static procedure DrawBuffersARB(n: Int32; bufs: ^ErrorCode);
+    external 'opengl32.dll' name 'glDrawBuffersARB';
     
-    static procedure GetPerfMonitorGroupStringAMD(group: UInt32; bufSize: Int32; length: ^Int32; groupString: ^SByte);
-    external 'opengl32.dll' name 'glGetPerfMonitorGroupStringAMD';
+    static procedure ProgramStringARB(target: ErrorCode; format: ErrorCode; len: Int32; string: pointer);
+    external 'opengl32.dll' name 'glProgramStringARB';
     
-    static procedure GetPerfMonitorCounterStringAMD(group: UInt32; counter: UInt32; bufSize: Int32; length: ^Int32; counterString: ^SByte);
-    external 'opengl32.dll' name 'glGetPerfMonitorCounterStringAMD';
+    static procedure BindProgramARB(target: ErrorCode; &program: UInt32);
+    external 'opengl32.dll' name 'glBindProgramARB';
     
-    static procedure GetPerfMonitorCounterInfoAMD(group: UInt32; counter: UInt32; pname: UInt32; data: pointer);
-    external 'opengl32.dll' name 'glGetPerfMonitorCounterInfoAMD';
+    static procedure DeleteProgramsARB(n: Int32; programs: ^UInt32);
+    external 'opengl32.dll' name 'glDeleteProgramsARB';
     
-    static procedure GenPerfMonitorsAMD(n: Int32; monitors: ^UInt32);
-    external 'opengl32.dll' name 'glGenPerfMonitorsAMD';
+    static procedure GenProgramsARB(n: Int32; programs: ^UInt32);
+    external 'opengl32.dll' name 'glGenProgramsARB';
     
-    static procedure DeletePerfMonitorsAMD(n: Int32; monitors: ^UInt32);
-    external 'opengl32.dll' name 'glDeletePerfMonitorsAMD';
+    static procedure ProgramEnvParameter4dARB(target: ErrorCode; index: UInt32; x: double; y: double; z: double; w: double);
+    external 'opengl32.dll' name 'glProgramEnvParameter4dARB';
     
-    static procedure SelectPerfMonitorCountersAMD(monitor: UInt32; enable: boolean; group: UInt32; numCounters: Int32; counterList: ^UInt32);
-    external 'opengl32.dll' name 'glSelectPerfMonitorCountersAMD';
+    static procedure ProgramEnvParameter4dvARB(target: ErrorCode; index: UInt32; &params: ^double);
+    external 'opengl32.dll' name 'glProgramEnvParameter4dvARB';
     
-    static procedure BeginPerfMonitorAMD(monitor: UInt32);
-    external 'opengl32.dll' name 'glBeginPerfMonitorAMD';
+    static procedure ProgramEnvParameter4fARB(target: ErrorCode; index: UInt32; x: single; y: single; z: single; w: single);
+    external 'opengl32.dll' name 'glProgramEnvParameter4fARB';
     
-    static procedure EndPerfMonitorAMD(monitor: UInt32);
-    external 'opengl32.dll' name 'glEndPerfMonitorAMD';
+    static procedure ProgramEnvParameter4fvARB(target: ErrorCode; index: UInt32; &params: ^single);
+    external 'opengl32.dll' name 'glProgramEnvParameter4fvARB';
     
-    static procedure GetPerfMonitorCounterDataAMD(monitor: UInt32; pname: UInt32; dataSize: Int32; data: ^UInt32; bytesWritten: ^Int32);
-    external 'opengl32.dll' name 'glGetPerfMonitorCounterDataAMD';
+    static procedure ProgramLocalParameter4dARB(target: ErrorCode; index: UInt32; x: double; y: double; z: double; w: double);
+    external 'opengl32.dll' name 'glProgramLocalParameter4dARB';
+    
+    static procedure ProgramLocalParameter4dvARB(target: ErrorCode; index: UInt32; &params: ^double);
+    external 'opengl32.dll' name 'glProgramLocalParameter4dvARB';
+    
+    static procedure ProgramLocalParameter4fARB(target: ErrorCode; index: UInt32; x: single; y: single; z: single; w: single);
+    external 'opengl32.dll' name 'glProgramLocalParameter4fARB';
+    
+    static procedure ProgramLocalParameter4fvARB(target: ErrorCode; index: UInt32; &params: ^single);
+    external 'opengl32.dll' name 'glProgramLocalParameter4fvARB';
+    
+    static procedure GetProgramEnvParameterdvARB(target: ErrorCode; index: UInt32; &params: ^double);
+    external 'opengl32.dll' name 'glGetProgramEnvParameterdvARB';
+    
+    static procedure GetProgramEnvParameterfvARB(target: ErrorCode; index: UInt32; &params: ^single);
+    external 'opengl32.dll' name 'glGetProgramEnvParameterfvARB';
+    
+    static procedure GetProgramLocalParameterdvARB(target: ErrorCode; index: UInt32; &params: ^double);
+    external 'opengl32.dll' name 'glGetProgramLocalParameterdvARB';
+    
+    static procedure GetProgramLocalParameterfvARB(target: ErrorCode; index: UInt32; &params: ^single);
+    external 'opengl32.dll' name 'glGetProgramLocalParameterfvARB';
+    
+    static procedure GetProgramivARB(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetProgramivARB';
+    
+    static procedure GetProgramStringARB(target: ErrorCode; pname: ErrorCode; string: pointer);
+    external 'opengl32.dll' name 'glGetProgramStringARB';
+    
+    static function IsProgramARB(&program: UInt32): Byte;
+    external 'opengl32.dll' name 'glIsProgramARB';
+    
+    static procedure CurrentPaletteMatrixARB(index: Int32);
+    external 'opengl32.dll' name 'glCurrentPaletteMatrixARB';
+    
+    static procedure MatrixIndexubvARB(size: Int32; indices: ^Byte);
+    external 'opengl32.dll' name 'glMatrixIndexubvARB';
+    
+    static procedure MatrixIndexusvARB(size: Int32; indices: ^UInt16);
+    external 'opengl32.dll' name 'glMatrixIndexusvARB';
+    
+    static procedure MatrixIndexuivARB(size: Int32; indices: ^UInt32);
+    external 'opengl32.dll' name 'glMatrixIndexuivARB';
+    
+    static procedure MatrixIndexPointerARB(size: Int32; &type: ErrorCode; stride: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glMatrixIndexPointerARB';
+    
+    static procedure SampleCoverageARB(value: single; invert: Byte);
+    external 'opengl32.dll' name 'glSampleCoverageARB';
+    
+    static procedure ActiveTextureARB(texture: ErrorCode);
+    external 'opengl32.dll' name 'glActiveTextureARB';
+    
+    static procedure ClientActiveTextureARB(texture: ErrorCode);
+    external 'opengl32.dll' name 'glClientActiveTextureARB';
+    
+    static procedure MultiTexCoord1dARB(target: ErrorCode; s: double);
+    external 'opengl32.dll' name 'glMultiTexCoord1dARB';
+    
+    static procedure MultiTexCoord1dvARB(target: ErrorCode; v: ^double);
+    external 'opengl32.dll' name 'glMultiTexCoord1dvARB';
+    
+    static procedure MultiTexCoord1fARB(target: ErrorCode; s: single);
+    external 'opengl32.dll' name 'glMultiTexCoord1fARB';
+    
+    static procedure MultiTexCoord1fvARB(target: ErrorCode; v: ^single);
+    external 'opengl32.dll' name 'glMultiTexCoord1fvARB';
+    
+    static procedure MultiTexCoord1iARB(target: ErrorCode; s: Int32);
+    external 'opengl32.dll' name 'glMultiTexCoord1iARB';
+    
+    static procedure MultiTexCoord1ivARB(target: ErrorCode; v: ^Int32);
+    external 'opengl32.dll' name 'glMultiTexCoord1ivARB';
+    
+    static procedure MultiTexCoord1sARB(target: ErrorCode; s: Int16);
+    external 'opengl32.dll' name 'glMultiTexCoord1sARB';
+    
+    static procedure MultiTexCoord1svARB(target: ErrorCode; v: ^Int16);
+    external 'opengl32.dll' name 'glMultiTexCoord1svARB';
+    
+    static procedure MultiTexCoord2dARB(target: ErrorCode; s: double; t: double);
+    external 'opengl32.dll' name 'glMultiTexCoord2dARB';
+    
+    static procedure MultiTexCoord2dvARB(target: ErrorCode; v: ^double);
+    external 'opengl32.dll' name 'glMultiTexCoord2dvARB';
+    
+    static procedure MultiTexCoord2fARB(target: ErrorCode; s: single; t: single);
+    external 'opengl32.dll' name 'glMultiTexCoord2fARB';
+    
+    static procedure MultiTexCoord2fvARB(target: ErrorCode; v: ^single);
+    external 'opengl32.dll' name 'glMultiTexCoord2fvARB';
+    
+    static procedure MultiTexCoord2iARB(target: ErrorCode; s: Int32; t: Int32);
+    external 'opengl32.dll' name 'glMultiTexCoord2iARB';
+    
+    static procedure MultiTexCoord2ivARB(target: ErrorCode; v: ^Int32);
+    external 'opengl32.dll' name 'glMultiTexCoord2ivARB';
+    
+    static procedure MultiTexCoord2sARB(target: ErrorCode; s: Int16; t: Int16);
+    external 'opengl32.dll' name 'glMultiTexCoord2sARB';
+    
+    static procedure MultiTexCoord2svARB(target: ErrorCode; v: ^Int16);
+    external 'opengl32.dll' name 'glMultiTexCoord2svARB';
+    
+    static procedure MultiTexCoord3dARB(target: ErrorCode; s: double; t: double; r: double);
+    external 'opengl32.dll' name 'glMultiTexCoord3dARB';
+    
+    static procedure MultiTexCoord3dvARB(target: ErrorCode; v: ^double);
+    external 'opengl32.dll' name 'glMultiTexCoord3dvARB';
+    
+    static procedure MultiTexCoord3fARB(target: ErrorCode; s: single; t: single; r: single);
+    external 'opengl32.dll' name 'glMultiTexCoord3fARB';
+    
+    static procedure MultiTexCoord3fvARB(target: ErrorCode; v: ^single);
+    external 'opengl32.dll' name 'glMultiTexCoord3fvARB';
+    
+    static procedure MultiTexCoord3iARB(target: ErrorCode; s: Int32; t: Int32; r: Int32);
+    external 'opengl32.dll' name 'glMultiTexCoord3iARB';
+    
+    static procedure MultiTexCoord3ivARB(target: ErrorCode; v: ^Int32);
+    external 'opengl32.dll' name 'glMultiTexCoord3ivARB';
+    
+    static procedure MultiTexCoord3sARB(target: ErrorCode; s: Int16; t: Int16; r: Int16);
+    external 'opengl32.dll' name 'glMultiTexCoord3sARB';
+    
+    static procedure MultiTexCoord3svARB(target: ErrorCode; v: ^Int16);
+    external 'opengl32.dll' name 'glMultiTexCoord3svARB';
+    
+    static procedure MultiTexCoord4dARB(target: ErrorCode; s: double; t: double; r: double; q: double);
+    external 'opengl32.dll' name 'glMultiTexCoord4dARB';
+    
+    static procedure MultiTexCoord4dvARB(target: ErrorCode; v: ^double);
+    external 'opengl32.dll' name 'glMultiTexCoord4dvARB';
+    
+    static procedure MultiTexCoord4fARB(target: ErrorCode; s: single; t: single; r: single; q: single);
+    external 'opengl32.dll' name 'glMultiTexCoord4fARB';
+    
+    static procedure MultiTexCoord4fvARB(target: ErrorCode; v: ^single);
+    external 'opengl32.dll' name 'glMultiTexCoord4fvARB';
+    
+    static procedure MultiTexCoord4iARB(target: ErrorCode; s: Int32; t: Int32; r: Int32; q: Int32);
+    external 'opengl32.dll' name 'glMultiTexCoord4iARB';
+    
+    static procedure MultiTexCoord4ivARB(target: ErrorCode; v: ^Int32);
+    external 'opengl32.dll' name 'glMultiTexCoord4ivARB';
+    
+    static procedure MultiTexCoord4sARB(target: ErrorCode; s: Int16; t: Int16; r: Int16; q: Int16);
+    external 'opengl32.dll' name 'glMultiTexCoord4sARB';
+    
+    static procedure MultiTexCoord4svARB(target: ErrorCode; v: ^Int16);
+    external 'opengl32.dll' name 'glMultiTexCoord4svARB';
+    
+    static procedure GenQueriesARB(n: Int32; ids: ^UInt32);
+    external 'opengl32.dll' name 'glGenQueriesARB';
+    
+    static procedure DeleteQueriesARB(n: Int32; ids: ^UInt32);
+    external 'opengl32.dll' name 'glDeleteQueriesARB';
+    
+    static function IsQueryARB(id: UInt32): Byte;
+    external 'opengl32.dll' name 'glIsQueryARB';
+    
+    static procedure BeginQueryARB(target: ErrorCode; id: UInt32);
+    external 'opengl32.dll' name 'glBeginQueryARB';
+    
+    static procedure EndQueryARB(target: ErrorCode);
+    external 'opengl32.dll' name 'glEndQueryARB';
+    
+    static procedure GetQueryivARB(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetQueryivARB';
+    
+    static procedure GetQueryObjectivARB(id: UInt32; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetQueryObjectivARB';
+    
+    static procedure GetQueryObjectuivARB(id: UInt32; pname: ErrorCode; &params: ^UInt32);
+    external 'opengl32.dll' name 'glGetQueryObjectuivARB';
+    
+    static procedure PointParameterfARB(pname: ErrorCode; param: single);
+    external 'opengl32.dll' name 'glPointParameterfARB';
+    
+    static procedure PointParameterfvARB(pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glPointParameterfvARB';
+    
+    static function GetGraphicsResetStatusARB: ErrorCode;
+    external 'opengl32.dll' name 'glGetGraphicsResetStatusARB';
+    
+    static procedure GetnMapdvARB(target: ErrorCode; query: ErrorCode; bufSize: Int32; v: ^double);
+    external 'opengl32.dll' name 'glGetnMapdvARB';
+    
+    static procedure GetnMapfvARB(target: ErrorCode; query: ErrorCode; bufSize: Int32; v: ^single);
+    external 'opengl32.dll' name 'glGetnMapfvARB';
+    
+    static procedure GetnMapivARB(target: ErrorCode; query: ErrorCode; bufSize: Int32; v: ^Int32);
+    external 'opengl32.dll' name 'glGetnMapivARB';
+    
+    static procedure GetnPixelMapfvARB(map: ErrorCode; bufSize: Int32; values: ^single);
+    external 'opengl32.dll' name 'glGetnPixelMapfvARB';
+    
+    static procedure GetnPixelMapuivARB(map: ErrorCode; bufSize: Int32; values: ^UInt32);
+    external 'opengl32.dll' name 'glGetnPixelMapuivARB';
+    
+    static procedure GetnPixelMapusvARB(map: ErrorCode; bufSize: Int32; values: ^UInt16);
+    external 'opengl32.dll' name 'glGetnPixelMapusvARB';
+    
+    static procedure GetnPolygonStippleARB(bufSize: Int32; pattern: ^Byte);
+    external 'opengl32.dll' name 'glGetnPolygonStippleARB';
+    
+    static procedure GetnColorTableARB(target: ErrorCode; format: ErrorCode; &type: ErrorCode; bufSize: Int32; table: pointer);
+    external 'opengl32.dll' name 'glGetnColorTableARB';
+    
+    static procedure GetnConvolutionFilterARB(target: ErrorCode; format: ErrorCode; &type: ErrorCode; bufSize: Int32; image: pointer);
+    external 'opengl32.dll' name 'glGetnConvolutionFilterARB';
+    
+    static procedure GetnSeparableFilterARB(target: ErrorCode; format: ErrorCode; &type: ErrorCode; rowBufSize: Int32; row: pointer; columnBufSize: Int32; column: pointer; span: pointer);
+    external 'opengl32.dll' name 'glGetnSeparableFilterARB';
+    
+    static procedure GetnHistogramARB(target: ErrorCode; reset: Byte; format: ErrorCode; &type: ErrorCode; bufSize: Int32; values: pointer);
+    external 'opengl32.dll' name 'glGetnHistogramARB';
+    
+    static procedure GetnMinmaxARB(target: ErrorCode; reset: Byte; format: ErrorCode; &type: ErrorCode; bufSize: Int32; values: pointer);
+    external 'opengl32.dll' name 'glGetnMinmaxARB';
+    
+    static procedure DeleteObjectARB(obj: GLhandleARB);
+    external 'opengl32.dll' name 'glDeleteObjectARB';
+    
+    static function GetHandleARB(pname: ErrorCode): GLhandleARB;
+    external 'opengl32.dll' name 'glGetHandleARB';
+    
+    static procedure DetachObjectARB(containerObj: GLhandleARB; attachedObj: GLhandleARB);
+    external 'opengl32.dll' name 'glDetachObjectARB';
+    
+    static function CreateShaderObjectARB(shaderType: ErrorCode): GLhandleARB;
+    external 'opengl32.dll' name 'glCreateShaderObjectARB';
+    
+    static procedure ShaderSourceARB(shaderObj: GLhandleARB; count: Int32; string: ^^Byte; length: ^Int32);
+    external 'opengl32.dll' name 'glShaderSourceARB';
+    
+    static procedure CompileShaderARB(shaderObj: GLhandleARB);
+    external 'opengl32.dll' name 'glCompileShaderARB';
+    
+    static function CreateProgramObjectARB: GLhandleARB;
+    external 'opengl32.dll' name 'glCreateProgramObjectARB';
+    
+    static procedure AttachObjectARB(containerObj: GLhandleARB; obj: GLhandleARB);
+    external 'opengl32.dll' name 'glAttachObjectARB';
+    
+    static procedure LinkProgramARB(programObj: GLhandleARB);
+    external 'opengl32.dll' name 'glLinkProgramARB';
+    
+    static procedure UseProgramObjectARB(programObj: GLhandleARB);
+    external 'opengl32.dll' name 'glUseProgramObjectARB';
+    
+    static procedure ValidateProgramARB(programObj: GLhandleARB);
+    external 'opengl32.dll' name 'glValidateProgramARB';
+    
+    static procedure Uniform1fARB(location: Int32; v0: single);
+    external 'opengl32.dll' name 'glUniform1fARB';
+    
+    static procedure Uniform2fARB(location: Int32; v0: single; v1: single);
+    external 'opengl32.dll' name 'glUniform2fARB';
+    
+    static procedure Uniform3fARB(location: Int32; v0: single; v1: single; v2: single);
+    external 'opengl32.dll' name 'glUniform3fARB';
+    
+    static procedure Uniform4fARB(location: Int32; v0: single; v1: single; v2: single; v3: single);
+    external 'opengl32.dll' name 'glUniform4fARB';
+    
+    static procedure Uniform1iARB(location: Int32; v0: Int32);
+    external 'opengl32.dll' name 'glUniform1iARB';
+    
+    static procedure Uniform2iARB(location: Int32; v0: Int32; v1: Int32);
+    external 'opengl32.dll' name 'glUniform2iARB';
+    
+    static procedure Uniform3iARB(location: Int32; v0: Int32; v1: Int32; v2: Int32);
+    external 'opengl32.dll' name 'glUniform3iARB';
+    
+    static procedure Uniform4iARB(location: Int32; v0: Int32; v1: Int32; v2: Int32; v3: Int32);
+    external 'opengl32.dll' name 'glUniform4iARB';
+    
+    static procedure Uniform1fvARB(location: Int32; count: Int32; value: ^single);
+    external 'opengl32.dll' name 'glUniform1fvARB';
+    
+    static procedure Uniform2fvARB(location: Int32; count: Int32; value: ^single);
+    external 'opengl32.dll' name 'glUniform2fvARB';
+    
+    static procedure Uniform3fvARB(location: Int32; count: Int32; value: ^single);
+    external 'opengl32.dll' name 'glUniform3fvARB';
+    
+    static procedure Uniform4fvARB(location: Int32; count: Int32; value: ^single);
+    external 'opengl32.dll' name 'glUniform4fvARB';
+    
+    static procedure Uniform1ivARB(location: Int32; count: Int32; value: ^Int32);
+    external 'opengl32.dll' name 'glUniform1ivARB';
+    
+    static procedure Uniform2ivARB(location: Int32; count: Int32; value: ^Int32);
+    external 'opengl32.dll' name 'glUniform2ivARB';
+    
+    static procedure Uniform3ivARB(location: Int32; count: Int32; value: ^Int32);
+    external 'opengl32.dll' name 'glUniform3ivARB';
+    
+    static procedure Uniform4ivARB(location: Int32; count: Int32; value: ^Int32);
+    external 'opengl32.dll' name 'glUniform4ivARB';
+    
+    static procedure UniformMatrix2fvARB(location: Int32; count: Int32; transpose: Byte; value: ^single);
+    external 'opengl32.dll' name 'glUniformMatrix2fvARB';
+    
+    static procedure UniformMatrix3fvARB(location: Int32; count: Int32; transpose: Byte; value: ^single);
+    external 'opengl32.dll' name 'glUniformMatrix3fvARB';
+    
+    static procedure UniformMatrix4fvARB(location: Int32; count: Int32; transpose: Byte; value: ^single);
+    external 'opengl32.dll' name 'glUniformMatrix4fvARB';
+    
+    static procedure GetObjectParameterfvARB(obj: GLhandleARB; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetObjectParameterfvARB';
+    
+    static procedure GetObjectParameterivARB(obj: GLhandleARB; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetObjectParameterivARB';
+    
+    static procedure GetInfoLogARB(obj: GLhandleARB; maxLength: Int32; length: ^Int32; infoLog: ^Byte);
+    external 'opengl32.dll' name 'glGetInfoLogARB';
+    
+    static procedure GetAttachedObjectsARB(containerObj: GLhandleARB; maxCount: Int32; count: ^Int32; obj: ^GLhandleARB);
+    external 'opengl32.dll' name 'glGetAttachedObjectsARB';
+    
+    static function GetUniformLocationARB(programObj: GLhandleARB; name: ^Byte): Int32;
+    external 'opengl32.dll' name 'glGetUniformLocationARB';
+    
+    static procedure GetActiveUniformARB(programObj: GLhandleARB; index: UInt32; maxLength: Int32; length: ^Int32; size: ^Int32; &type: ^ErrorCode; name: ^Byte);
+    external 'opengl32.dll' name 'glGetActiveUniformARB';
+    
+    static procedure GetUniformfvARB(programObj: GLhandleARB; location: Int32; &params: ^single);
+    external 'opengl32.dll' name 'glGetUniformfvARB';
+    
+    static procedure GetUniformivARB(programObj: GLhandleARB; location: Int32; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetUniformivARB';
+    
+    static procedure GetShaderSourceARB(obj: GLhandleARB; maxLength: Int32; length: ^Int32; source: ^Byte);
+    external 'opengl32.dll' name 'glGetShaderSourceARB';
+    
+    static procedure CompressedTexImage3DARB(target: ErrorCode; level: Int32; internalformat: ErrorCode; width: Int32; height: Int32; depth: Int32; border: Int32; imageSize: Int32; data: pointer);
+    external 'opengl32.dll' name 'glCompressedTexImage3DARB';
+    
+    static procedure CompressedTexImage2DARB(target: ErrorCode; level: Int32; internalformat: ErrorCode; width: Int32; height: Int32; border: Int32; imageSize: Int32; data: pointer);
+    external 'opengl32.dll' name 'glCompressedTexImage2DARB';
+    
+    static procedure CompressedTexImage1DARB(target: ErrorCode; level: Int32; internalformat: ErrorCode; width: Int32; border: Int32; imageSize: Int32; data: pointer);
+    external 'opengl32.dll' name 'glCompressedTexImage1DARB';
+    
+    static procedure CompressedTexSubImage3DARB(target: ErrorCode; level: Int32; xoffset: Int32; yoffset: Int32; zoffset: Int32; width: Int32; height: Int32; depth: Int32; format: ErrorCode; imageSize: Int32; data: pointer);
+    external 'opengl32.dll' name 'glCompressedTexSubImage3DARB';
+    
+    static procedure CompressedTexSubImage2DARB(target: ErrorCode; level: Int32; xoffset: Int32; yoffset: Int32; width: Int32; height: Int32; format: ErrorCode; imageSize: Int32; data: pointer);
+    external 'opengl32.dll' name 'glCompressedTexSubImage2DARB';
+    
+    static procedure CompressedTexSubImage1DARB(target: ErrorCode; level: Int32; xoffset: Int32; width: Int32; format: ErrorCode; imageSize: Int32; data: pointer);
+    external 'opengl32.dll' name 'glCompressedTexSubImage1DARB';
+    
+    static procedure GetCompressedTexImageARB(target: ErrorCode; level: Int32; img: pointer);
+    external 'opengl32.dll' name 'glGetCompressedTexImageARB';
+    
+    static procedure LoadTransposeMatrixfARB(m: ^single);
+    external 'opengl32.dll' name 'glLoadTransposeMatrixfARB';
+    
+    static procedure LoadTransposeMatrixdARB(m: ^double);
+    external 'opengl32.dll' name 'glLoadTransposeMatrixdARB';
+    
+    static procedure MultTransposeMatrixfARB(m: ^single);
+    external 'opengl32.dll' name 'glMultTransposeMatrixfARB';
+    
+    static procedure MultTransposeMatrixdARB(m: ^double);
+    external 'opengl32.dll' name 'glMultTransposeMatrixdARB';
+    
+    static procedure WeightbvARB(size: Int32; weights: ^SByte);
+    external 'opengl32.dll' name 'glWeightbvARB';
+    
+    static procedure WeightsvARB(size: Int32; weights: ^Int16);
+    external 'opengl32.dll' name 'glWeightsvARB';
+    
+    static procedure WeightivARB(size: Int32; weights: ^Int32);
+    external 'opengl32.dll' name 'glWeightivARB';
+    
+    static procedure WeightfvARB(size: Int32; weights: ^single);
+    external 'opengl32.dll' name 'glWeightfvARB';
+    
+    static procedure WeightdvARB(size: Int32; weights: ^double);
+    external 'opengl32.dll' name 'glWeightdvARB';
+    
+    static procedure WeightubvARB(size: Int32; weights: ^Byte);
+    external 'opengl32.dll' name 'glWeightubvARB';
+    
+    static procedure WeightusvARB(size: Int32; weights: ^UInt16);
+    external 'opengl32.dll' name 'glWeightusvARB';
+    
+    static procedure WeightuivARB(size: Int32; weights: ^UInt32);
+    external 'opengl32.dll' name 'glWeightuivARB';
+    
+    static procedure WeightPointerARB(size: Int32; &type: ErrorCode; stride: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glWeightPointerARB';
+    
+    static procedure VertexBlendARB(count: Int32);
+    external 'opengl32.dll' name 'glVertexBlendARB';
+    
+    static procedure BindBufferARB(target: ErrorCode; buffer: UInt32);
+    external 'opengl32.dll' name 'glBindBufferARB';
+    
+    static procedure DeleteBuffersARB(n: Int32; buffers: ^UInt32);
+    external 'opengl32.dll' name 'glDeleteBuffersARB';
+    
+    static procedure GenBuffersARB(n: Int32; buffers: ^UInt32);
+    external 'opengl32.dll' name 'glGenBuffersARB';
+    
+    static function IsBufferARB(buffer: UInt32): Byte;
+    external 'opengl32.dll' name 'glIsBufferARB';
+    
+    static procedure BufferDataARB(target: ErrorCode; size: UIntPtr; data: pointer; usage: ErrorCode);
+    external 'opengl32.dll' name 'glBufferDataARB';
+    
+    static procedure BufferSubDataARB(target: ErrorCode; offset: IntPtr; size: UIntPtr; data: pointer);
+    external 'opengl32.dll' name 'glBufferSubDataARB';
+    
+    static procedure GetBufferSubDataARB(target: ErrorCode; offset: IntPtr; size: UIntPtr; data: pointer);
+    external 'opengl32.dll' name 'glGetBufferSubDataARB';
+    
+    static function MapBufferARB(target: ErrorCode; access: ErrorCode): pointer;
+    external 'opengl32.dll' name 'glMapBufferARB';
+    
+    static function UnmapBufferARB(target: ErrorCode): Byte;
+    external 'opengl32.dll' name 'glUnmapBufferARB';
+    
+    static procedure GetBufferParameterivARB(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetBufferParameterivARB';
+    
+    static procedure GetBufferPointervARB(target: ErrorCode; pname: ErrorCode; &params: ^pointer);
+    external 'opengl32.dll' name 'glGetBufferPointervARB';
+    
+    static procedure VertexAttrib1dARB(index: UInt32; x: double);
+    external 'opengl32.dll' name 'glVertexAttrib1dARB';
+    
+    static procedure VertexAttrib1dvARB(index: UInt32; v: ^double);
+    external 'opengl32.dll' name 'glVertexAttrib1dvARB';
+    
+    static procedure VertexAttrib1fARB(index: UInt32; x: single);
+    external 'opengl32.dll' name 'glVertexAttrib1fARB';
+    
+    static procedure VertexAttrib1fvARB(index: UInt32; v: ^single);
+    external 'opengl32.dll' name 'glVertexAttrib1fvARB';
+    
+    static procedure VertexAttrib1sARB(index: UInt32; x: Int16);
+    external 'opengl32.dll' name 'glVertexAttrib1sARB';
+    
+    static procedure VertexAttrib1svARB(index: UInt32; v: ^Int16);
+    external 'opengl32.dll' name 'glVertexAttrib1svARB';
+    
+    static procedure VertexAttrib2dARB(index: UInt32; x: double; y: double);
+    external 'opengl32.dll' name 'glVertexAttrib2dARB';
+    
+    static procedure VertexAttrib2dvARB(index: UInt32; v: ^double);
+    external 'opengl32.dll' name 'glVertexAttrib2dvARB';
+    
+    static procedure VertexAttrib2fARB(index: UInt32; x: single; y: single);
+    external 'opengl32.dll' name 'glVertexAttrib2fARB';
+    
+    static procedure VertexAttrib2fvARB(index: UInt32; v: ^single);
+    external 'opengl32.dll' name 'glVertexAttrib2fvARB';
+    
+    static procedure VertexAttrib2sARB(index: UInt32; x: Int16; y: Int16);
+    external 'opengl32.dll' name 'glVertexAttrib2sARB';
+    
+    static procedure VertexAttrib2svARB(index: UInt32; v: ^Int16);
+    external 'opengl32.dll' name 'glVertexAttrib2svARB';
+    
+    static procedure VertexAttrib3dARB(index: UInt32; x: double; y: double; z: double);
+    external 'opengl32.dll' name 'glVertexAttrib3dARB';
+    
+    static procedure VertexAttrib3dvARB(index: UInt32; v: ^double);
+    external 'opengl32.dll' name 'glVertexAttrib3dvARB';
+    
+    static procedure VertexAttrib3fARB(index: UInt32; x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glVertexAttrib3fARB';
+    
+    static procedure VertexAttrib3fvARB(index: UInt32; v: ^single);
+    external 'opengl32.dll' name 'glVertexAttrib3fvARB';
+    
+    static procedure VertexAttrib3sARB(index: UInt32; x: Int16; y: Int16; z: Int16);
+    external 'opengl32.dll' name 'glVertexAttrib3sARB';
+    
+    static procedure VertexAttrib3svARB(index: UInt32; v: ^Int16);
+    external 'opengl32.dll' name 'glVertexAttrib3svARB';
+    
+    static procedure VertexAttrib4NbvARB(index: UInt32; v: ^SByte);
+    external 'opengl32.dll' name 'glVertexAttrib4NbvARB';
+    
+    static procedure VertexAttrib4NivARB(index: UInt32; v: ^Int32);
+    external 'opengl32.dll' name 'glVertexAttrib4NivARB';
+    
+    static procedure VertexAttrib4NsvARB(index: UInt32; v: ^Int16);
+    external 'opengl32.dll' name 'glVertexAttrib4NsvARB';
+    
+    static procedure VertexAttrib4NubARB(index: UInt32; x: Byte; y: Byte; z: Byte; w: Byte);
+    external 'opengl32.dll' name 'glVertexAttrib4NubARB';
+    
+    static procedure VertexAttrib4NubvARB(index: UInt32; v: ^Byte);
+    external 'opengl32.dll' name 'glVertexAttrib4NubvARB';
+    
+    static procedure VertexAttrib4NuivARB(index: UInt32; v: ^UInt32);
+    external 'opengl32.dll' name 'glVertexAttrib4NuivARB';
+    
+    static procedure VertexAttrib4NusvARB(index: UInt32; v: ^UInt16);
+    external 'opengl32.dll' name 'glVertexAttrib4NusvARB';
+    
+    static procedure VertexAttrib4bvARB(index: UInt32; v: ^SByte);
+    external 'opengl32.dll' name 'glVertexAttrib4bvARB';
+    
+    static procedure VertexAttrib4dARB(index: UInt32; x: double; y: double; z: double; w: double);
+    external 'opengl32.dll' name 'glVertexAttrib4dARB';
+    
+    static procedure VertexAttrib4dvARB(index: UInt32; v: ^double);
+    external 'opengl32.dll' name 'glVertexAttrib4dvARB';
+    
+    static procedure VertexAttrib4fARB(index: UInt32; x: single; y: single; z: single; w: single);
+    external 'opengl32.dll' name 'glVertexAttrib4fARB';
+    
+    static procedure VertexAttrib4fvARB(index: UInt32; v: ^single);
+    external 'opengl32.dll' name 'glVertexAttrib4fvARB';
+    
+    static procedure VertexAttrib4ivARB(index: UInt32; v: ^Int32);
+    external 'opengl32.dll' name 'glVertexAttrib4ivARB';
+    
+    static procedure VertexAttrib4sARB(index: UInt32; x: Int16; y: Int16; z: Int16; w: Int16);
+    external 'opengl32.dll' name 'glVertexAttrib4sARB';
+    
+    static procedure VertexAttrib4svARB(index: UInt32; v: ^Int16);
+    external 'opengl32.dll' name 'glVertexAttrib4svARB';
+    
+    static procedure VertexAttrib4ubvARB(index: UInt32; v: ^Byte);
+    external 'opengl32.dll' name 'glVertexAttrib4ubvARB';
+    
+    static procedure VertexAttrib4uivARB(index: UInt32; v: ^UInt32);
+    external 'opengl32.dll' name 'glVertexAttrib4uivARB';
+    
+    static procedure VertexAttrib4usvARB(index: UInt32; v: ^UInt16);
+    external 'opengl32.dll' name 'glVertexAttrib4usvARB';
+    
+    static procedure VertexAttribPointerARB(index: UInt32; size: Int32; &type: ErrorCode; normalized: Byte; stride: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glVertexAttribPointerARB';
+    
+    static procedure EnableVertexAttribArrayARB(index: UInt32);
+    external 'opengl32.dll' name 'glEnableVertexAttribArrayARB';
+    
+    static procedure DisableVertexAttribArrayARB(index: UInt32);
+    external 'opengl32.dll' name 'glDisableVertexAttribArrayARB';
+    
+    static procedure GetVertexAttribdvARB(index: UInt32; pname: ErrorCode; &params: ^double);
+    external 'opengl32.dll' name 'glGetVertexAttribdvARB';
+    
+    static procedure GetVertexAttribfvARB(index: UInt32; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetVertexAttribfvARB';
+    
+    static procedure GetVertexAttribivARB(index: UInt32; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetVertexAttribivARB';
+    
+    static procedure GetVertexAttribPointervARB(index: UInt32; pname: ErrorCode; _pointer: ^pointer);
+    external 'opengl32.dll' name 'glGetVertexAttribPointervARB';
+    
+    static procedure BindAttribLocationARB(programObj: GLhandleARB; index: UInt32; name: ^Byte);
+    external 'opengl32.dll' name 'glBindAttribLocationARB';
+    
+    static procedure GetActiveAttribARB(programObj: GLhandleARB; index: UInt32; maxLength: Int32; length: ^Int32; size: ^Int32; &type: ^ErrorCode; name: ^Byte);
+    external 'opengl32.dll' name 'glGetActiveAttribARB';
+    
+    static function GetAttribLocationARB(programObj: GLhandleARB; name: ^Byte): Int32;
+    external 'opengl32.dll' name 'glGetAttribLocationARB';
+    
+    static procedure WindowPos2dARB(x: double; y: double);
+    external 'opengl32.dll' name 'glWindowPos2dARB';
+    
+    static procedure WindowPos2dvARB(v: ^double);
+    external 'opengl32.dll' name 'glWindowPos2dvARB';
+    
+    static procedure WindowPos2fARB(x: single; y: single);
+    external 'opengl32.dll' name 'glWindowPos2fARB';
+    
+    static procedure WindowPos2fvARB(v: ^single);
+    external 'opengl32.dll' name 'glWindowPos2fvARB';
+    
+    static procedure WindowPos2iARB(x: Int32; y: Int32);
+    external 'opengl32.dll' name 'glWindowPos2iARB';
+    
+    static procedure WindowPos2ivARB(v: ^Int32);
+    external 'opengl32.dll' name 'glWindowPos2ivARB';
+    
+    static procedure WindowPos2sARB(x: Int16; y: Int16);
+    external 'opengl32.dll' name 'glWindowPos2sARB';
+    
+    static procedure WindowPos2svARB(v: ^Int16);
+    external 'opengl32.dll' name 'glWindowPos2svARB';
+    
+    static procedure WindowPos3dARB(x: double; y: double; z: double);
+    external 'opengl32.dll' name 'glWindowPos3dARB';
+    
+    static procedure WindowPos3dvARB(v: ^double);
+    external 'opengl32.dll' name 'glWindowPos3dvARB';
+    
+    static procedure WindowPos3fARB(x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glWindowPos3fARB';
+    
+    static procedure WindowPos3fvARB(v: ^single);
+    external 'opengl32.dll' name 'glWindowPos3fvARB';
+    
+    static procedure WindowPos3iARB(x: Int32; y: Int32; z: Int32);
+    external 'opengl32.dll' name 'glWindowPos3iARB';
+    
+    static procedure WindowPos3ivARB(v: ^Int32);
+    external 'opengl32.dll' name 'glWindowPos3ivARB';
+    
+    static procedure WindowPos3sARB(x: Int16; y: Int16; z: Int16);
+    external 'opengl32.dll' name 'glWindowPos3sARB';
+    
+    static procedure WindowPos3svARB(v: ^Int16);
+    external 'opengl32.dll' name 'glWindowPos3svARB';
+    
+    {$endregion ARB}
+    
+  end;
+  
+  /// Расширения, которые встречаются у многих видеокарт
+  gl_EXT = static class
+    
+    {$region EXT}
+    
+    static procedure NamedBufferPageCommitmentEXT(buffer: UInt32; offset: IntPtr; size: UIntPtr; commit: boolean);
+    external 'opengl32.dll' name 'glNamedBufferPageCommitmentEXT';
     
     static procedure EGLImageTargetTexStorageEXT(target: UInt32; image: GLeglImageOES; attrib_list: ^Int32);
     external 'opengl32.dll' name 'glEGLImageTargetTexStorageEXT';
@@ -14237,13 +15831,13 @@ type
     static procedure MatrixLoadfEXT(mode: UInt32; m: ^single);
     external 'opengl32.dll' name 'glMatrixLoadfEXT';
     
-    static procedure MatrixLoaddEXT(mode: UInt32; m: ^real);
+    static procedure MatrixLoaddEXT(mode: UInt32; m: ^double);
     external 'opengl32.dll' name 'glMatrixLoaddEXT';
     
     static procedure MatrixMultfEXT(mode: UInt32; m: ^single);
     external 'opengl32.dll' name 'glMatrixMultfEXT';
     
-    static procedure MatrixMultdEXT(mode: UInt32; m: ^real);
+    static procedure MatrixMultdEXT(mode: UInt32; m: ^double);
     external 'opengl32.dll' name 'glMatrixMultdEXT';
     
     static procedure MatrixLoadIdentityEXT(mode: UInt32);
@@ -14252,25 +15846,25 @@ type
     static procedure MatrixRotatefEXT(mode: UInt32; angle: single; x: single; y: single; z: single);
     external 'opengl32.dll' name 'glMatrixRotatefEXT';
     
-    static procedure MatrixRotatedEXT(mode: UInt32; angle: real; x: real; y: real; z: real);
+    static procedure MatrixRotatedEXT(mode: UInt32; angle: double; x: double; y: double; z: double);
     external 'opengl32.dll' name 'glMatrixRotatedEXT';
     
     static procedure MatrixScalefEXT(mode: UInt32; x: single; y: single; z: single);
     external 'opengl32.dll' name 'glMatrixScalefEXT';
     
-    static procedure MatrixScaledEXT(mode: UInt32; x: real; y: real; z: real);
+    static procedure MatrixScaledEXT(mode: UInt32; x: double; y: double; z: double);
     external 'opengl32.dll' name 'glMatrixScaledEXT';
     
     static procedure MatrixTranslatefEXT(mode: UInt32; x: single; y: single; z: single);
     external 'opengl32.dll' name 'glMatrixTranslatefEXT';
     
-    static procedure MatrixTranslatedEXT(mode: UInt32; x: real; y: real; z: real);
+    static procedure MatrixTranslatedEXT(mode: UInt32; x: double; y: double; z: double);
     external 'opengl32.dll' name 'glMatrixTranslatedEXT';
     
-    static procedure MatrixFrustumEXT(mode: UInt32; left: real; right: real; bottom: real; top: real; zNear: real; zFar: real);
+    static procedure MatrixFrustumEXT(mode: UInt32; left: double; right: double; bottom: double; top: double; zNear: double; zFar: double);
     external 'opengl32.dll' name 'glMatrixFrustumEXT';
     
-    static procedure MatrixOrthoEXT(mode: UInt32; left: real; right: real; bottom: real; top: real; zNear: real; zFar: real);
+    static procedure MatrixOrthoEXT(mode: UInt32; left: double; right: double; bottom: double; top: double; zNear: double; zFar: double);
     external 'opengl32.dll' name 'glMatrixOrthoEXT';
     
     static procedure MatrixPopEXT(mode: UInt32);
@@ -14363,10 +15957,10 @@ type
     static procedure MultiTexEnvivEXT(texunit: UInt32; target: UInt32; pname: UInt32; &params: ^Int32);
     external 'opengl32.dll' name 'glMultiTexEnvivEXT';
     
-    static procedure MultiTexGendEXT(texunit: UInt32; coord: UInt32; pname: UInt32; param: real);
+    static procedure MultiTexGendEXT(texunit: UInt32; coord: UInt32; pname: UInt32; param: double);
     external 'opengl32.dll' name 'glMultiTexGendEXT';
     
-    static procedure MultiTexGendvEXT(texunit: UInt32; coord: UInt32; pname: UInt32; &params: ^real);
+    static procedure MultiTexGendvEXT(texunit: UInt32; coord: UInt32; pname: UInt32; &params: ^double);
     external 'opengl32.dll' name 'glMultiTexGendvEXT';
     
     static procedure MultiTexGenfEXT(texunit: UInt32; coord: UInt32; pname: UInt32; param: single);
@@ -14387,7 +15981,7 @@ type
     static procedure GetMultiTexEnvivEXT(texunit: UInt32; target: UInt32; pname: UInt32; &params: ^Int32);
     external 'opengl32.dll' name 'glGetMultiTexEnvivEXT';
     
-    static procedure GetMultiTexGendvEXT(texunit: UInt32; coord: UInt32; pname: UInt32; &params: ^real);
+    static procedure GetMultiTexGendvEXT(texunit: UInt32; coord: UInt32; pname: UInt32; &params: ^double);
     external 'opengl32.dll' name 'glGetMultiTexGendvEXT';
     
     static procedure GetMultiTexGenfvEXT(texunit: UInt32; coord: UInt32; pname: UInt32; &params: ^single);
@@ -14465,7 +16059,7 @@ type
     static procedure GetFloatIndexedvEXT(target: UInt32; index: UInt32; data: ^single);
     external 'opengl32.dll' name 'glGetFloatIndexedvEXT';
     
-    static procedure GetDoubleIndexedvEXT(target: UInt32; index: UInt32; data: ^real);
+    static procedure GetDoubleIndexedvEXT(target: UInt32; index: UInt32; data: ^double);
     external 'opengl32.dll' name 'glGetDoubleIndexedvEXT';
     
     static procedure GetPointerIndexedvEXT(target: UInt32; index: UInt32; data: ^IntPtr);
@@ -14531,13 +16125,13 @@ type
     static procedure MatrixLoadTransposefEXT(mode: UInt32; m: ^single);
     external 'opengl32.dll' name 'glMatrixLoadTransposefEXT';
     
-    static procedure MatrixLoadTransposedEXT(mode: UInt32; m: ^real);
+    static procedure MatrixLoadTransposedEXT(mode: UInt32; m: ^double);
     external 'opengl32.dll' name 'glMatrixLoadTransposedEXT';
     
     static procedure MatrixMultTransposefEXT(mode: UInt32; m: ^single);
     external 'opengl32.dll' name 'glMatrixMultTransposefEXT';
     
-    static procedure MatrixMultTransposedEXT(mode: UInt32; m: ^real);
+    static procedure MatrixMultTransposedEXT(mode: UInt32; m: ^double);
     external 'opengl32.dll' name 'glMatrixMultTransposedEXT';
     
     static procedure NamedBufferDataEXT(buffer: UInt32; size: UIntPtr; data: pointer; usage: UInt32);
@@ -14726,7 +16320,7 @@ type
     static procedure GetFloati_vEXT(pname: UInt32; index: UInt32; &params: ^single);
     external 'opengl32.dll' name 'glGetFloati_vEXT';
     
-    static procedure GetDoublei_vEXT(pname: UInt32; index: UInt32; &params: ^real);
+    static procedure GetDoublei_vEXT(pname: UInt32; index: UInt32; &params: ^double);
     external 'opengl32.dll' name 'glGetDoublei_vEXT';
     
     static procedure GetPointeri_vEXT(pname: UInt32; index: UInt32; &params: ^IntPtr);
@@ -14735,10 +16329,10 @@ type
     static procedure NamedProgramStringEXT(&program: UInt32; target: UInt32; format: UInt32; len: Int32; string: pointer);
     external 'opengl32.dll' name 'glNamedProgramStringEXT';
     
-    static procedure NamedProgramLocalParameter4dEXT(&program: UInt32; target: UInt32; index: UInt32; x: real; y: real; z: real; w: real);
+    static procedure NamedProgramLocalParameter4dEXT(&program: UInt32; target: UInt32; index: UInt32; x: double; y: double; z: double; w: double);
     external 'opengl32.dll' name 'glNamedProgramLocalParameter4dEXT';
     
-    static procedure NamedProgramLocalParameter4dvEXT(&program: UInt32; target: UInt32; index: UInt32; &params: ^real);
+    static procedure NamedProgramLocalParameter4dvEXT(&program: UInt32; target: UInt32; index: UInt32; &params: ^double);
     external 'opengl32.dll' name 'glNamedProgramLocalParameter4dvEXT';
     
     static procedure NamedProgramLocalParameter4fEXT(&program: UInt32; target: UInt32; index: UInt32; x: single; y: single; z: single; w: single);
@@ -14747,7 +16341,7 @@ type
     static procedure NamedProgramLocalParameter4fvEXT(&program: UInt32; target: UInt32; index: UInt32; &params: ^single);
     external 'opengl32.dll' name 'glNamedProgramLocalParameter4fvEXT';
     
-    static procedure GetNamedProgramLocalParameterdvEXT(&program: UInt32; target: UInt32; index: UInt32; &params: ^real);
+    static procedure GetNamedProgramLocalParameterdvEXT(&program: UInt32; target: UInt32; index: UInt32; &params: ^double);
     external 'opengl32.dll' name 'glGetNamedProgramLocalParameterdvEXT';
     
     static procedure GetNamedProgramLocalParameterfvEXT(&program: UInt32; target: UInt32; index: UInt32; &params: ^single);
@@ -14903,55 +16497,55 @@ type
     static procedure GetNamedFramebufferParameterivEXT(framebuffer: UInt32; pname: UInt32; &params: ^Int32);
     external 'opengl32.dll' name 'glGetNamedFramebufferParameterivEXT';
     
-    static procedure ProgramUniform1dEXT(&program: UInt32; location: Int32; x: real);
+    static procedure ProgramUniform1dEXT(&program: UInt32; location: Int32; x: double);
     external 'opengl32.dll' name 'glProgramUniform1dEXT';
     
-    static procedure ProgramUniform2dEXT(&program: UInt32; location: Int32; x: real; y: real);
+    static procedure ProgramUniform2dEXT(&program: UInt32; location: Int32; x: double; y: double);
     external 'opengl32.dll' name 'glProgramUniform2dEXT';
     
-    static procedure ProgramUniform3dEXT(&program: UInt32; location: Int32; x: real; y: real; z: real);
+    static procedure ProgramUniform3dEXT(&program: UInt32; location: Int32; x: double; y: double; z: double);
     external 'opengl32.dll' name 'glProgramUniform3dEXT';
     
-    static procedure ProgramUniform4dEXT(&program: UInt32; location: Int32; x: real; y: real; z: real; w: real);
+    static procedure ProgramUniform4dEXT(&program: UInt32; location: Int32; x: double; y: double; z: double; w: double);
     external 'opengl32.dll' name 'glProgramUniform4dEXT';
     
-    static procedure ProgramUniform1dvEXT(&program: UInt32; location: Int32; count: Int32; value: ^real);
+    static procedure ProgramUniform1dvEXT(&program: UInt32; location: Int32; count: Int32; value: ^double);
     external 'opengl32.dll' name 'glProgramUniform1dvEXT';
     
-    static procedure ProgramUniform2dvEXT(&program: UInt32; location: Int32; count: Int32; value: ^real);
+    static procedure ProgramUniform2dvEXT(&program: UInt32; location: Int32; count: Int32; value: ^double);
     external 'opengl32.dll' name 'glProgramUniform2dvEXT';
     
-    static procedure ProgramUniform3dvEXT(&program: UInt32; location: Int32; count: Int32; value: ^real);
+    static procedure ProgramUniform3dvEXT(&program: UInt32; location: Int32; count: Int32; value: ^double);
     external 'opengl32.dll' name 'glProgramUniform3dvEXT';
     
-    static procedure ProgramUniform4dvEXT(&program: UInt32; location: Int32; count: Int32; value: ^real);
+    static procedure ProgramUniform4dvEXT(&program: UInt32; location: Int32; count: Int32; value: ^double);
     external 'opengl32.dll' name 'glProgramUniform4dvEXT';
     
-    static procedure ProgramUniformMatrix2dvEXT(&program: UInt32; location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure ProgramUniformMatrix2dvEXT(&program: UInt32; location: Int32; count: Int32; transpose: boolean; value: ^double);
     external 'opengl32.dll' name 'glProgramUniformMatrix2dvEXT';
     
-    static procedure ProgramUniformMatrix3dvEXT(&program: UInt32; location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure ProgramUniformMatrix3dvEXT(&program: UInt32; location: Int32; count: Int32; transpose: boolean; value: ^double);
     external 'opengl32.dll' name 'glProgramUniformMatrix3dvEXT';
     
-    static procedure ProgramUniformMatrix4dvEXT(&program: UInt32; location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure ProgramUniformMatrix4dvEXT(&program: UInt32; location: Int32; count: Int32; transpose: boolean; value: ^double);
     external 'opengl32.dll' name 'glProgramUniformMatrix4dvEXT';
     
-    static procedure ProgramUniformMatrix2x3dvEXT(&program: UInt32; location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure ProgramUniformMatrix2x3dvEXT(&program: UInt32; location: Int32; count: Int32; transpose: boolean; value: ^double);
     external 'opengl32.dll' name 'glProgramUniformMatrix2x3dvEXT';
     
-    static procedure ProgramUniformMatrix2x4dvEXT(&program: UInt32; location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure ProgramUniformMatrix2x4dvEXT(&program: UInt32; location: Int32; count: Int32; transpose: boolean; value: ^double);
     external 'opengl32.dll' name 'glProgramUniformMatrix2x4dvEXT';
     
-    static procedure ProgramUniformMatrix3x2dvEXT(&program: UInt32; location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure ProgramUniformMatrix3x2dvEXT(&program: UInt32; location: Int32; count: Int32; transpose: boolean; value: ^double);
     external 'opengl32.dll' name 'glProgramUniformMatrix3x2dvEXT';
     
-    static procedure ProgramUniformMatrix3x4dvEXT(&program: UInt32; location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure ProgramUniformMatrix3x4dvEXT(&program: UInt32; location: Int32; count: Int32; transpose: boolean; value: ^double);
     external 'opengl32.dll' name 'glProgramUniformMatrix3x4dvEXT';
     
-    static procedure ProgramUniformMatrix4x2dvEXT(&program: UInt32; location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure ProgramUniformMatrix4x2dvEXT(&program: UInt32; location: Int32; count: Int32; transpose: boolean; value: ^double);
     external 'opengl32.dll' name 'glProgramUniformMatrix4x2dvEXT';
     
-    static procedure ProgramUniformMatrix4x3dvEXT(&program: UInt32; location: Int32; count: Int32; transpose: boolean; value: ^real);
+    static procedure ProgramUniformMatrix4x3dvEXT(&program: UInt32; location: Int32; count: Int32; transpose: boolean; value: ^double);
     external 'opengl32.dll' name 'glProgramUniformMatrix4x3dvEXT';
     
     static procedure TextureBufferRangeEXT(texture: UInt32; target: UInt32; internalformat: UInt32; buffer: UInt32; offset: IntPtr; size: UIntPtr);
@@ -15026,6 +16620,921 @@ type
     static procedure WindowRectanglesEXT(mode: UInt32; count: Int32; box: ^Int32);
     external 'opengl32.dll' name 'glWindowRectanglesEXT';
     
+    static procedure ColorSubTableEXT(target: UInt32; start: Int32; count: Int32; format: UInt32; &type: UInt32; table: pointer);
+    external 'opengl32.dll' name 'glColorSubTableEXT';
+    
+    static procedure ColorTableEXT(target: UInt32; internalformat: UInt32; width: Int32; format: UInt32; &type: UInt32; table: pointer);
+    external 'opengl32.dll' name 'glColorTableEXT';
+    
+    static procedure GetColorTableEXT(target: UInt32; format: UInt32; &type: UInt32; table: pointer);
+    external 'opengl32.dll' name 'glGetColorTableEXT';
+    
+    static procedure GetColorTableParameterivEXT(target: UInt32; pname: UInt32; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetColorTableParameterivEXT';
+    
+    static procedure UniformBufferEXT(&program: UInt32; location: Int32; buffer: UInt32);
+    external 'opengl32.dll' name 'glUniformBufferEXT';
+    
+    static function GetUniformBufferSizeEXT(&program: UInt32; location: Int32): Int32;
+    external 'opengl32.dll' name 'glGetUniformBufferSizeEXT';
+    
+    static function GetUniformOffsetEXT(&program: UInt32; location: Int32): IntPtr;
+    external 'opengl32.dll' name 'glGetUniformOffsetEXT';
+    
+    static procedure BlendColorEXT(red: single; green: single; blue: single; alpha: single);
+    external 'opengl32.dll' name 'glBlendColorEXT';
+    
+    static procedure BlendEquationSeparateEXT(modeRGB: ErrorCode; modeAlpha: ErrorCode);
+    external 'opengl32.dll' name 'glBlendEquationSeparateEXT';
+    
+    static procedure BlendFuncSeparateEXT(sfactorRGB: ErrorCode; dfactorRGB: ErrorCode; sfactorAlpha: ErrorCode; dfactorAlpha: ErrorCode);
+    external 'opengl32.dll' name 'glBlendFuncSeparateEXT';
+    
+    static procedure BlendEquationEXT(mode: ErrorCode);
+    external 'opengl32.dll' name 'glBlendEquationEXT';
+    
+    static procedure CopyColorSubTableEXT(target: ErrorCode; start: Int32; x: Int32; y: Int32; width: Int32);
+    external 'opengl32.dll' name 'glCopyColorSubTableEXT';
+    
+    static procedure LockArraysEXT(first: Int32; count: Int32);
+    external 'opengl32.dll' name 'glLockArraysEXT';
+    
+    static procedure UnlockArraysEXT;
+    external 'opengl32.dll' name 'glUnlockArraysEXT';
+    
+    static procedure ConvolutionFilter1DEXT(target: ErrorCode; internalformat: ErrorCode; width: Int32; format: ErrorCode; &type: ErrorCode; image: pointer);
+    external 'opengl32.dll' name 'glConvolutionFilter1DEXT';
+    
+    static procedure ConvolutionFilter2DEXT(target: ErrorCode; internalformat: ErrorCode; width: Int32; height: Int32; format: ErrorCode; &type: ErrorCode; image: pointer);
+    external 'opengl32.dll' name 'glConvolutionFilter2DEXT';
+    
+    static procedure ConvolutionParameterfEXT(target: ErrorCode; pname: ErrorCode; &params: single);
+    external 'opengl32.dll' name 'glConvolutionParameterfEXT';
+    
+    static procedure ConvolutionParameterfvEXT(target: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glConvolutionParameterfvEXT';
+    
+    static procedure ConvolutionParameteriEXT(target: ErrorCode; pname: ErrorCode; &params: Int32);
+    external 'opengl32.dll' name 'glConvolutionParameteriEXT';
+    
+    static procedure ConvolutionParameterivEXT(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glConvolutionParameterivEXT';
+    
+    static procedure CopyConvolutionFilter1DEXT(target: ErrorCode; internalformat: ErrorCode; x: Int32; y: Int32; width: Int32);
+    external 'opengl32.dll' name 'glCopyConvolutionFilter1DEXT';
+    
+    static procedure CopyConvolutionFilter2DEXT(target: ErrorCode; internalformat: ErrorCode; x: Int32; y: Int32; width: Int32; height: Int32);
+    external 'opengl32.dll' name 'glCopyConvolutionFilter2DEXT';
+    
+    static procedure GetConvolutionFilterEXT(target: ErrorCode; format: ErrorCode; &type: ErrorCode; image: pointer);
+    external 'opengl32.dll' name 'glGetConvolutionFilterEXT';
+    
+    static procedure GetConvolutionParameterfvEXT(target: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetConvolutionParameterfvEXT';
+    
+    static procedure GetConvolutionParameterivEXT(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetConvolutionParameterivEXT';
+    
+    static procedure GetSeparableFilterEXT(target: ErrorCode; format: ErrorCode; &type: ErrorCode; row: pointer; column: pointer; span: pointer);
+    external 'opengl32.dll' name 'glGetSeparableFilterEXT';
+    
+    static procedure SeparableFilter2DEXT(target: ErrorCode; internalformat: ErrorCode; width: Int32; height: Int32; format: ErrorCode; &type: ErrorCode; row: pointer; column: pointer);
+    external 'opengl32.dll' name 'glSeparableFilter2DEXT';
+    
+    static procedure Tangent3bEXT(tx: SByte; ty: SByte; tz: SByte);
+    external 'opengl32.dll' name 'glTangent3bEXT';
+    
+    static procedure Tangent3bvEXT(v: ^SByte);
+    external 'opengl32.dll' name 'glTangent3bvEXT';
+    
+    static procedure Tangent3dEXT(tx: double; ty: double; tz: double);
+    external 'opengl32.dll' name 'glTangent3dEXT';
+    
+    static procedure Tangent3dvEXT(v: ^double);
+    external 'opengl32.dll' name 'glTangent3dvEXT';
+    
+    static procedure Tangent3fEXT(tx: single; ty: single; tz: single);
+    external 'opengl32.dll' name 'glTangent3fEXT';
+    
+    static procedure Tangent3fvEXT(v: ^single);
+    external 'opengl32.dll' name 'glTangent3fvEXT';
+    
+    static procedure Tangent3iEXT(tx: Int32; ty: Int32; tz: Int32);
+    external 'opengl32.dll' name 'glTangent3iEXT';
+    
+    static procedure Tangent3ivEXT(v: ^Int32);
+    external 'opengl32.dll' name 'glTangent3ivEXT';
+    
+    static procedure Tangent3sEXT(tx: Int16; ty: Int16; tz: Int16);
+    external 'opengl32.dll' name 'glTangent3sEXT';
+    
+    static procedure Tangent3svEXT(v: ^Int16);
+    external 'opengl32.dll' name 'glTangent3svEXT';
+    
+    static procedure Binormal3bEXT(bx: SByte; by: SByte; bz: SByte);
+    external 'opengl32.dll' name 'glBinormal3bEXT';
+    
+    static procedure Binormal3bvEXT(v: ^SByte);
+    external 'opengl32.dll' name 'glBinormal3bvEXT';
+    
+    static procedure Binormal3dEXT(bx: double; by: double; bz: double);
+    external 'opengl32.dll' name 'glBinormal3dEXT';
+    
+    static procedure Binormal3dvEXT(v: ^double);
+    external 'opengl32.dll' name 'glBinormal3dvEXT';
+    
+    static procedure Binormal3fEXT(bx: single; by: single; bz: single);
+    external 'opengl32.dll' name 'glBinormal3fEXT';
+    
+    static procedure Binormal3fvEXT(v: ^single);
+    external 'opengl32.dll' name 'glBinormal3fvEXT';
+    
+    static procedure Binormal3iEXT(bx: Int32; by: Int32; bz: Int32);
+    external 'opengl32.dll' name 'glBinormal3iEXT';
+    
+    static procedure Binormal3ivEXT(v: ^Int32);
+    external 'opengl32.dll' name 'glBinormal3ivEXT';
+    
+    static procedure Binormal3sEXT(bx: Int16; by: Int16; bz: Int16);
+    external 'opengl32.dll' name 'glBinormal3sEXT';
+    
+    static procedure Binormal3svEXT(v: ^Int16);
+    external 'opengl32.dll' name 'glBinormal3svEXT';
+    
+    static procedure TangentPointerEXT(&type: ErrorCode; stride: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glTangentPointerEXT';
+    
+    static procedure BinormalPointerEXT(&type: ErrorCode; stride: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glBinormalPointerEXT';
+    
+    static procedure CopyTexImage1DEXT(target: ErrorCode; level: Int32; internalformat: ErrorCode; x: Int32; y: Int32; width: Int32; border: Int32);
+    external 'opengl32.dll' name 'glCopyTexImage1DEXT';
+    
+    static procedure CopyTexImage2DEXT(target: ErrorCode; level: Int32; internalformat: ErrorCode; x: Int32; y: Int32; width: Int32; height: Int32; border: Int32);
+    external 'opengl32.dll' name 'glCopyTexImage2DEXT';
+    
+    static procedure CopyTexSubImage1DEXT(target: ErrorCode; level: Int32; xoffset: Int32; x: Int32; y: Int32; width: Int32);
+    external 'opengl32.dll' name 'glCopyTexSubImage1DEXT';
+    
+    static procedure CopyTexSubImage2DEXT(target: ErrorCode; level: Int32; xoffset: Int32; yoffset: Int32; x: Int32; y: Int32; width: Int32; height: Int32);
+    external 'opengl32.dll' name 'glCopyTexSubImage2DEXT';
+    
+    static procedure CopyTexSubImage3DEXT(target: ErrorCode; level: Int32; xoffset: Int32; yoffset: Int32; zoffset: Int32; x: Int32; y: Int32; width: Int32; height: Int32);
+    external 'opengl32.dll' name 'glCopyTexSubImage3DEXT';
+    
+    static procedure CullParameterdvEXT(pname: ErrorCode; &params: ^double);
+    external 'opengl32.dll' name 'glCullParameterdvEXT';
+    
+    static procedure CullParameterfvEXT(pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glCullParameterfvEXT';
+    
+    static procedure DepthBoundsEXT(zmin: double; zmax: double);
+    external 'opengl32.dll' name 'glDepthBoundsEXT';
+    
+    static procedure ColorMaskIndexedEXT(index: UInt32; r: Byte; g: Byte; b: Byte; a: Byte);
+    external 'opengl32.dll' name 'glColorMaskIndexedEXT';
+    
+    static procedure DrawRangeElementsEXT(mode: ErrorCode; start: UInt32; &end: UInt32; count: Int32; &type: ErrorCode; indices: pointer);
+    external 'opengl32.dll' name 'glDrawRangeElementsEXT';
+    
+    static procedure BufferStorageExternalEXT(target: ErrorCode; offset: IntPtr; size: UIntPtr; clientBuffer: GLeglClientBufferEXT; flags: UInt32);
+    external 'opengl32.dll' name 'glBufferStorageExternalEXT';
+    
+    static procedure NamedBufferStorageExternalEXT(buffer: UInt32; offset: IntPtr; size: UIntPtr; clientBuffer: GLeglClientBufferEXT; flags: UInt32);
+    external 'opengl32.dll' name 'glNamedBufferStorageExternalEXT';
+    
+    static procedure FogCoordfEXT(coord: single);
+    external 'opengl32.dll' name 'glFogCoordfEXT';
+    
+    static procedure FogCoordfvEXT(coord: ^single);
+    external 'opengl32.dll' name 'glFogCoordfvEXT';
+    
+    static procedure FogCoorddEXT(coord: double);
+    external 'opengl32.dll' name 'glFogCoorddEXT';
+    
+    static procedure FogCoorddvEXT(coord: ^double);
+    external 'opengl32.dll' name 'glFogCoorddvEXT';
+    
+    static procedure FogCoordPointerEXT(&type: ErrorCode; stride: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glFogCoordPointerEXT';
+    
+    static procedure BlitFramebufferEXT(srcX0: Int32; srcY0: Int32; srcX1: Int32; srcY1: Int32; dstX0: Int32; dstY0: Int32; dstX1: Int32; dstY1: Int32; mask: UInt32; filter: ErrorCode);
+    external 'opengl32.dll' name 'glBlitFramebufferEXT';
+    
+    static procedure RenderbufferStorageMultisampleEXT(target: ErrorCode; samples: Int32; internalformat: ErrorCode; width: Int32; height: Int32);
+    external 'opengl32.dll' name 'glRenderbufferStorageMultisampleEXT';
+    
+    static function IsRenderbufferEXT(renderbuffer: UInt32): Byte;
+    external 'opengl32.dll' name 'glIsRenderbufferEXT';
+    
+    static procedure BindRenderbufferEXT(target: ErrorCode; renderbuffer: UInt32);
+    external 'opengl32.dll' name 'glBindRenderbufferEXT';
+    
+    static procedure DeleteRenderbuffersEXT(n: Int32; renderbuffers: ^UInt32);
+    external 'opengl32.dll' name 'glDeleteRenderbuffersEXT';
+    
+    static procedure GenRenderbuffersEXT(n: Int32; renderbuffers: ^UInt32);
+    external 'opengl32.dll' name 'glGenRenderbuffersEXT';
+    
+    static procedure RenderbufferStorageEXT(target: ErrorCode; internalformat: ErrorCode; width: Int32; height: Int32);
+    external 'opengl32.dll' name 'glRenderbufferStorageEXT';
+    
+    static procedure GetRenderbufferParameterivEXT(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetRenderbufferParameterivEXT';
+    
+    static function IsFramebufferEXT(framebuffer: UInt32): Byte;
+    external 'opengl32.dll' name 'glIsFramebufferEXT';
+    
+    static procedure BindFramebufferEXT(target: ErrorCode; framebuffer: UInt32);
+    external 'opengl32.dll' name 'glBindFramebufferEXT';
+    
+    static procedure DeleteFramebuffersEXT(n: Int32; framebuffers: ^UInt32);
+    external 'opengl32.dll' name 'glDeleteFramebuffersEXT';
+    
+    static procedure GenFramebuffersEXT(n: Int32; framebuffers: ^UInt32);
+    external 'opengl32.dll' name 'glGenFramebuffersEXT';
+    
+    static function CheckFramebufferStatusEXT(target: ErrorCode): ErrorCode;
+    external 'opengl32.dll' name 'glCheckFramebufferStatusEXT';
+    
+    static procedure FramebufferTexture1DEXT(target: ErrorCode; attachment: ErrorCode; textarget: ErrorCode; texture: UInt32; level: Int32);
+    external 'opengl32.dll' name 'glFramebufferTexture1DEXT';
+    
+    static procedure FramebufferTexture2DEXT(target: ErrorCode; attachment: ErrorCode; textarget: ErrorCode; texture: UInt32; level: Int32);
+    external 'opengl32.dll' name 'glFramebufferTexture2DEXT';
+    
+    static procedure FramebufferTexture3DEXT(target: ErrorCode; attachment: ErrorCode; textarget: ErrorCode; texture: UInt32; level: Int32; zoffset: Int32);
+    external 'opengl32.dll' name 'glFramebufferTexture3DEXT';
+    
+    static procedure FramebufferRenderbufferEXT(target: ErrorCode; attachment: ErrorCode; renderbuffertarget: ErrorCode; renderbuffer: UInt32);
+    external 'opengl32.dll' name 'glFramebufferRenderbufferEXT';
+    
+    static procedure GetFramebufferAttachmentParameterivEXT(target: ErrorCode; attachment: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetFramebufferAttachmentParameterivEXT';
+    
+    static procedure GenerateMipmapEXT(target: ErrorCode);
+    external 'opengl32.dll' name 'glGenerateMipmapEXT';
+    
+    static procedure ProgramParameteriEXT(&program: UInt32; pname: ErrorCode; value: Int32);
+    external 'opengl32.dll' name 'glProgramParameteriEXT';
+    
+    static procedure ProgramEnvParameters4fvEXT(target: ErrorCode; index: UInt32; count: Int32; &params: ^single);
+    external 'opengl32.dll' name 'glProgramEnvParameters4fvEXT';
+    
+    static procedure ProgramLocalParameters4fvEXT(target: ErrorCode; index: UInt32; count: Int32; &params: ^single);
+    external 'opengl32.dll' name 'glProgramLocalParameters4fvEXT';
+    
+    static procedure GetUniformuivEXT(&program: UInt32; location: Int32; &params: ^UInt32);
+    external 'opengl32.dll' name 'glGetUniformuivEXT';
+    
+    static procedure BindFragDataLocationEXT(&program: UInt32; color: UInt32; name: ^Byte);
+    external 'opengl32.dll' name 'glBindFragDataLocationEXT';
+    
+    static function GetFragDataLocationEXT(&program: UInt32; name: ^Byte): Int32;
+    external 'opengl32.dll' name 'glGetFragDataLocationEXT';
+    
+    static procedure Uniform1uiEXT(location: Int32; v0: UInt32);
+    external 'opengl32.dll' name 'glUniform1uiEXT';
+    
+    static procedure Uniform2uiEXT(location: Int32; v0: UInt32; v1: UInt32);
+    external 'opengl32.dll' name 'glUniform2uiEXT';
+    
+    static procedure Uniform3uiEXT(location: Int32; v0: UInt32; v1: UInt32; v2: UInt32);
+    external 'opengl32.dll' name 'glUniform3uiEXT';
+    
+    static procedure Uniform4uiEXT(location: Int32; v0: UInt32; v1: UInt32; v2: UInt32; v3: UInt32);
+    external 'opengl32.dll' name 'glUniform4uiEXT';
+    
+    static procedure Uniform1uivEXT(location: Int32; count: Int32; value: ^UInt32);
+    external 'opengl32.dll' name 'glUniform1uivEXT';
+    
+    static procedure Uniform2uivEXT(location: Int32; count: Int32; value: ^UInt32);
+    external 'opengl32.dll' name 'glUniform2uivEXT';
+    
+    static procedure Uniform3uivEXT(location: Int32; count: Int32; value: ^UInt32);
+    external 'opengl32.dll' name 'glUniform3uivEXT';
+    
+    static procedure Uniform4uivEXT(location: Int32; count: Int32; value: ^UInt32);
+    external 'opengl32.dll' name 'glUniform4uivEXT';
+    
+    static procedure GetHistogramEXT(target: ErrorCode; reset: Byte; format: ErrorCode; &type: ErrorCode; values: pointer);
+    external 'opengl32.dll' name 'glGetHistogramEXT';
+    
+    static procedure GetHistogramParameterfvEXT(target: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetHistogramParameterfvEXT';
+    
+    static procedure GetHistogramParameterivEXT(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetHistogramParameterivEXT';
+    
+    static procedure GetMinmaxEXT(target: ErrorCode; reset: Byte; format: ErrorCode; &type: ErrorCode; values: pointer);
+    external 'opengl32.dll' name 'glGetMinmaxEXT';
+    
+    static procedure GetMinmaxParameterfvEXT(target: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetMinmaxParameterfvEXT';
+    
+    static procedure GetMinmaxParameterivEXT(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetMinmaxParameterivEXT';
+    
+    static procedure HistogramEXT(target: ErrorCode; width: Int32; internalformat: ErrorCode; sink: Byte);
+    external 'opengl32.dll' name 'glHistogramEXT';
+    
+    static procedure MinmaxEXT(target: ErrorCode; internalformat: ErrorCode; sink: Byte);
+    external 'opengl32.dll' name 'glMinmaxEXT';
+    
+    static procedure ResetHistogramEXT(target: ErrorCode);
+    external 'opengl32.dll' name 'glResetHistogramEXT';
+    
+    static procedure ResetMinmaxEXT(target: ErrorCode);
+    external 'opengl32.dll' name 'glResetMinmaxEXT';
+    
+    static procedure IndexFuncEXT(func: ErrorCode; ref: single);
+    external 'opengl32.dll' name 'glIndexFuncEXT';
+    
+    static procedure IndexMaterialEXT(face: ErrorCode; mode: ErrorCode);
+    external 'opengl32.dll' name 'glIndexMaterialEXT';
+    
+    static procedure ApplyTextureEXT(mode: ErrorCode);
+    external 'opengl32.dll' name 'glApplyTextureEXT';
+    
+    static procedure TextureLightEXT(pname: ErrorCode);
+    external 'opengl32.dll' name 'glTextureLightEXT';
+    
+    static procedure TextureMaterialEXT(face: ErrorCode; mode: ErrorCode);
+    external 'opengl32.dll' name 'glTextureMaterialEXT';
+    
+    static procedure GetUnsignedBytevEXT(pname: ErrorCode; data: ^Byte);
+    external 'opengl32.dll' name 'glGetUnsignedBytevEXT';
+    
+    static procedure GetUnsignedBytei_vEXT(target: ErrorCode; index: UInt32; data: ^Byte);
+    external 'opengl32.dll' name 'glGetUnsignedBytei_vEXT';
+    
+    static procedure DeleteMemoryObjectsEXT(n: Int32; memoryObjects: ^UInt32);
+    external 'opengl32.dll' name 'glDeleteMemoryObjectsEXT';
+    
+    static function IsMemoryObjectEXT(memoryObject: UInt32): Byte;
+    external 'opengl32.dll' name 'glIsMemoryObjectEXT';
+    
+    static procedure CreateMemoryObjectsEXT(n: Int32; memoryObjects: ^UInt32);
+    external 'opengl32.dll' name 'glCreateMemoryObjectsEXT';
+    
+    static procedure MemoryObjectParameterivEXT(memoryObject: UInt32; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glMemoryObjectParameterivEXT';
+    
+    static procedure GetMemoryObjectParameterivEXT(memoryObject: UInt32; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetMemoryObjectParameterivEXT';
+    
+    static procedure TexStorageMem2DEXT(target: ErrorCode; levels: Int32; internalFormat: ErrorCode; width: Int32; height: Int32; memory: UInt32; offset: UInt64);
+    external 'opengl32.dll' name 'glTexStorageMem2DEXT';
+    
+    static procedure TexStorageMem2DMultisampleEXT(target: ErrorCode; samples: Int32; internalFormat: ErrorCode; width: Int32; height: Int32; fixedSampleLocations: Byte; memory: UInt32; offset: UInt64);
+    external 'opengl32.dll' name 'glTexStorageMem2DMultisampleEXT';
+    
+    static procedure TexStorageMem3DEXT(target: ErrorCode; levels: Int32; internalFormat: ErrorCode; width: Int32; height: Int32; depth: Int32; memory: UInt32; offset: UInt64);
+    external 'opengl32.dll' name 'glTexStorageMem3DEXT';
+    
+    static procedure TexStorageMem3DMultisampleEXT(target: ErrorCode; samples: Int32; internalFormat: ErrorCode; width: Int32; height: Int32; depth: Int32; fixedSampleLocations: Byte; memory: UInt32; offset: UInt64);
+    external 'opengl32.dll' name 'glTexStorageMem3DMultisampleEXT';
+    
+    static procedure BufferStorageMemEXT(target: ErrorCode; size: UIntPtr; memory: UInt32; offset: UInt64);
+    external 'opengl32.dll' name 'glBufferStorageMemEXT';
+    
+    static procedure TextureStorageMem2DEXT(texture: UInt32; levels: Int32; internalFormat: ErrorCode; width: Int32; height: Int32; memory: UInt32; offset: UInt64);
+    external 'opengl32.dll' name 'glTextureStorageMem2DEXT';
+    
+    static procedure TextureStorageMem2DMultisampleEXT(texture: UInt32; samples: Int32; internalFormat: ErrorCode; width: Int32; height: Int32; fixedSampleLocations: Byte; memory: UInt32; offset: UInt64);
+    external 'opengl32.dll' name 'glTextureStorageMem2DMultisampleEXT';
+    
+    static procedure TextureStorageMem3DEXT(texture: UInt32; levels: Int32; internalFormat: ErrorCode; width: Int32; height: Int32; depth: Int32; memory: UInt32; offset: UInt64);
+    external 'opengl32.dll' name 'glTextureStorageMem3DEXT';
+    
+    static procedure TextureStorageMem3DMultisampleEXT(texture: UInt32; samples: Int32; internalFormat: ErrorCode; width: Int32; height: Int32; depth: Int32; fixedSampleLocations: Byte; memory: UInt32; offset: UInt64);
+    external 'opengl32.dll' name 'glTextureStorageMem3DMultisampleEXT';
+    
+    static procedure NamedBufferStorageMemEXT(buffer: UInt32; size: UIntPtr; memory: UInt32; offset: UInt64);
+    external 'opengl32.dll' name 'glNamedBufferStorageMemEXT';
+    
+    static procedure TexStorageMem1DEXT(target: ErrorCode; levels: Int32; internalFormat: ErrorCode; width: Int32; memory: UInt32; offset: UInt64);
+    external 'opengl32.dll' name 'glTexStorageMem1DEXT';
+    
+    static procedure TextureStorageMem1DEXT(texture: UInt32; levels: Int32; internalFormat: ErrorCode; width: Int32; memory: UInt32; offset: UInt64);
+    external 'opengl32.dll' name 'glTextureStorageMem1DEXT';
+    
+    static procedure ImportMemoryFdEXT(memory: UInt32; size: UInt64; handleType: ErrorCode; fd: Int32);
+    external 'opengl32.dll' name 'glImportMemoryFdEXT';
+    
+    static procedure ImportMemoryWin32HandleEXT(memory: UInt32; size: UInt64; handleType: ErrorCode; handle: pointer);
+    external 'opengl32.dll' name 'glImportMemoryWin32HandleEXT';
+    
+    static procedure ImportMemoryWin32NameEXT(memory: UInt32; size: UInt64; handleType: ErrorCode; name: pointer);
+    external 'opengl32.dll' name 'glImportMemoryWin32NameEXT';
+    
+    static procedure MultiDrawArraysEXT(mode: ErrorCode; first: ^Int32; count: ^Int32; primcount: Int32);
+    external 'opengl32.dll' name 'glMultiDrawArraysEXT';
+    
+    static procedure MultiDrawElementsEXT(mode: ErrorCode; count: ^Int32; &type: ErrorCode; indices: ^pointer; primcount: Int32);
+    external 'opengl32.dll' name 'glMultiDrawElementsEXT';
+    
+    static procedure SampleMaskEXT(value: single; invert: Byte);
+    external 'opengl32.dll' name 'glSampleMaskEXT';
+    
+    static procedure SamplePatternEXT(pattern: ErrorCode);
+    external 'opengl32.dll' name 'glSamplePatternEXT';
+    
+    static procedure GetColorTableParameterfvEXT(target: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetColorTableParameterfvEXT';
+    
+    static procedure PixelTransformParameteriEXT(target: ErrorCode; pname: ErrorCode; param: Int32);
+    external 'opengl32.dll' name 'glPixelTransformParameteriEXT';
+    
+    static procedure PixelTransformParameterfEXT(target: ErrorCode; pname: ErrorCode; param: single);
+    external 'opengl32.dll' name 'glPixelTransformParameterfEXT';
+    
+    static procedure PixelTransformParameterivEXT(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glPixelTransformParameterivEXT';
+    
+    static procedure PixelTransformParameterfvEXT(target: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glPixelTransformParameterfvEXT';
+    
+    static procedure GetPixelTransformParameterivEXT(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetPixelTransformParameterivEXT';
+    
+    static procedure GetPixelTransformParameterfvEXT(target: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetPixelTransformParameterfvEXT';
+    
+    static procedure PointParameterfEXT(pname: ErrorCode; param: single);
+    external 'opengl32.dll' name 'glPointParameterfEXT';
+    
+    static procedure PointParameterfvEXT(pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glPointParameterfvEXT';
+    
+    static procedure PolygonOffsetEXT(factor: single; bias: single);
+    external 'opengl32.dll' name 'glPolygonOffsetEXT';
+    
+    static procedure ProvokingVertexEXT(mode: ErrorCode);
+    external 'opengl32.dll' name 'glProvokingVertexEXT';
+    
+    static procedure SecondaryColor3bEXT(red: SByte; green: SByte; blue: SByte);
+    external 'opengl32.dll' name 'glSecondaryColor3bEXT';
+    
+    static procedure SecondaryColor3bvEXT(v: ^SByte);
+    external 'opengl32.dll' name 'glSecondaryColor3bvEXT';
+    
+    static procedure SecondaryColor3dEXT(red: double; green: double; blue: double);
+    external 'opengl32.dll' name 'glSecondaryColor3dEXT';
+    
+    static procedure SecondaryColor3dvEXT(v: ^double);
+    external 'opengl32.dll' name 'glSecondaryColor3dvEXT';
+    
+    static procedure SecondaryColor3fEXT(red: single; green: single; blue: single);
+    external 'opengl32.dll' name 'glSecondaryColor3fEXT';
+    
+    static procedure SecondaryColor3fvEXT(v: ^single);
+    external 'opengl32.dll' name 'glSecondaryColor3fvEXT';
+    
+    static procedure SecondaryColor3iEXT(red: Int32; green: Int32; blue: Int32);
+    external 'opengl32.dll' name 'glSecondaryColor3iEXT';
+    
+    static procedure SecondaryColor3ivEXT(v: ^Int32);
+    external 'opengl32.dll' name 'glSecondaryColor3ivEXT';
+    
+    static procedure SecondaryColor3sEXT(red: Int16; green: Int16; blue: Int16);
+    external 'opengl32.dll' name 'glSecondaryColor3sEXT';
+    
+    static procedure SecondaryColor3svEXT(v: ^Int16);
+    external 'opengl32.dll' name 'glSecondaryColor3svEXT';
+    
+    static procedure SecondaryColor3ubEXT(red: Byte; green: Byte; blue: Byte);
+    external 'opengl32.dll' name 'glSecondaryColor3ubEXT';
+    
+    static procedure SecondaryColor3ubvEXT(v: ^Byte);
+    external 'opengl32.dll' name 'glSecondaryColor3ubvEXT';
+    
+    static procedure SecondaryColor3uiEXT(red: UInt32; green: UInt32; blue: UInt32);
+    external 'opengl32.dll' name 'glSecondaryColor3uiEXT';
+    
+    static procedure SecondaryColor3uivEXT(v: ^UInt32);
+    external 'opengl32.dll' name 'glSecondaryColor3uivEXT';
+    
+    static procedure SecondaryColor3usEXT(red: UInt16; green: UInt16; blue: UInt16);
+    external 'opengl32.dll' name 'glSecondaryColor3usEXT';
+    
+    static procedure SecondaryColor3usvEXT(v: ^UInt16);
+    external 'opengl32.dll' name 'glSecondaryColor3usvEXT';
+    
+    static procedure SecondaryColorPointerEXT(size: Int32; &type: ErrorCode; stride: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glSecondaryColorPointerEXT';
+    
+    static procedure GenSemaphoresEXT(n: Int32; semaphores: ^UInt32);
+    external 'opengl32.dll' name 'glGenSemaphoresEXT';
+    
+    static procedure DeleteSemaphoresEXT(n: Int32; semaphores: ^UInt32);
+    external 'opengl32.dll' name 'glDeleteSemaphoresEXT';
+    
+    static function IsSemaphoreEXT(semaphore: UInt32): Byte;
+    external 'opengl32.dll' name 'glIsSemaphoreEXT';
+    
+    static procedure SemaphoreParameterui64vEXT(semaphore: UInt32; pname: ErrorCode; &params: ^UInt64);
+    external 'opengl32.dll' name 'glSemaphoreParameterui64vEXT';
+    
+    static procedure GetSemaphoreParameterui64vEXT(semaphore: UInt32; pname: ErrorCode; &params: ^UInt64);
+    external 'opengl32.dll' name 'glGetSemaphoreParameterui64vEXT';
+    
+    static procedure WaitSemaphoreEXT(semaphore: UInt32; numBufferBarriers: UInt32; buffers: ^UInt32; numTextureBarriers: UInt32; textures: ^UInt32; srcLayouts: ^ErrorCode);
+    external 'opengl32.dll' name 'glWaitSemaphoreEXT';
+    
+    static procedure SignalSemaphoreEXT(semaphore: UInt32; numBufferBarriers: UInt32; buffers: ^UInt32; numTextureBarriers: UInt32; textures: ^UInt32; dstLayouts: ^ErrorCode);
+    external 'opengl32.dll' name 'glSignalSemaphoreEXT';
+    
+    static procedure ImportSemaphoreFdEXT(semaphore: UInt32; handleType: ErrorCode; fd: Int32);
+    external 'opengl32.dll' name 'glImportSemaphoreFdEXT';
+    
+    static procedure ImportSemaphoreWin32HandleEXT(semaphore: UInt32; handleType: ErrorCode; handle: pointer);
+    external 'opengl32.dll' name 'glImportSemaphoreWin32HandleEXT';
+    
+    static procedure ImportSemaphoreWin32NameEXT(semaphore: UInt32; handleType: ErrorCode; name: pointer);
+    external 'opengl32.dll' name 'glImportSemaphoreWin32NameEXT';
+    
+    static procedure BindImageTextureEXT(index: UInt32; texture: UInt32; level: Int32; layered: Byte; layer: Int32; access: ErrorCode; format: Int32);
+    external 'opengl32.dll' name 'glBindImageTextureEXT';
+    
+    static procedure MemoryBarrierEXT(barriers: UInt32);
+    external 'opengl32.dll' name 'glMemoryBarrierEXT';
+    
+    static procedure StencilClearTagEXT(stencilTagBits: Int32; stencilClearTag: UInt32);
+    external 'opengl32.dll' name 'glStencilClearTagEXT';
+    
+    static procedure ActiveStencilFaceEXT(face: ErrorCode);
+    external 'opengl32.dll' name 'glActiveStencilFaceEXT';
+    
+    static procedure TexSubImage1DEXT(target: ErrorCode; level: Int32; xoffset: Int32; width: Int32; format: ErrorCode; &type: ErrorCode; pixels: pointer);
+    external 'opengl32.dll' name 'glTexSubImage1DEXT';
+    
+    static procedure TexSubImage2DEXT(target: ErrorCode; level: Int32; xoffset: Int32; yoffset: Int32; width: Int32; height: Int32; format: ErrorCode; &type: ErrorCode; pixels: pointer);
+    external 'opengl32.dll' name 'glTexSubImage2DEXT';
+    
+    static procedure TexImage3DEXT(target: ErrorCode; level: Int32; internalformat: ErrorCode; width: Int32; height: Int32; depth: Int32; border: Int32; format: ErrorCode; &type: ErrorCode; pixels: pointer);
+    external 'opengl32.dll' name 'glTexImage3DEXT';
+    
+    static procedure TexSubImage3DEXT(target: ErrorCode; level: Int32; xoffset: Int32; yoffset: Int32; zoffset: Int32; width: Int32; height: Int32; depth: Int32; format: ErrorCode; &type: ErrorCode; pixels: pointer);
+    external 'opengl32.dll' name 'glTexSubImage3DEXT';
+    
+    static procedure FramebufferTextureLayerEXT(target: ErrorCode; attachment: ErrorCode; texture: UInt32; level: Int32; layer: Int32);
+    external 'opengl32.dll' name 'glFramebufferTextureLayerEXT';
+    
+    static procedure TexBufferEXT(target: ErrorCode; internalformat: ErrorCode; buffer: UInt32);
+    external 'opengl32.dll' name 'glTexBufferEXT';
+    
+    static procedure TexParameterIivEXT(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glTexParameterIivEXT';
+    
+    static procedure TexParameterIuivEXT(target: ErrorCode; pname: ErrorCode; &params: ^UInt32);
+    external 'opengl32.dll' name 'glTexParameterIuivEXT';
+    
+    static procedure GetTexParameterIivEXT(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetTexParameterIivEXT';
+    
+    static procedure GetTexParameterIuivEXT(target: ErrorCode; pname: ErrorCode; &params: ^UInt32);
+    external 'opengl32.dll' name 'glGetTexParameterIuivEXT';
+    
+    static procedure ClearColorIiEXT(red: Int32; green: Int32; blue: Int32; alpha: Int32);
+    external 'opengl32.dll' name 'glClearColorIiEXT';
+    
+    static procedure ClearColorIuiEXT(red: UInt32; green: UInt32; blue: UInt32; alpha: UInt32);
+    external 'opengl32.dll' name 'glClearColorIuiEXT';
+    
+    static function AreTexturesResidentEXT(n: Int32; textures: ^UInt32; residences: ^Byte): Byte;
+    external 'opengl32.dll' name 'glAreTexturesResidentEXT';
+    
+    static procedure BindTextureEXT(target: ErrorCode; texture: UInt32);
+    external 'opengl32.dll' name 'glBindTextureEXT';
+    
+    static procedure DeleteTexturesEXT(n: Int32; textures: ^UInt32);
+    external 'opengl32.dll' name 'glDeleteTexturesEXT';
+    
+    static procedure GenTexturesEXT(n: Int32; textures: ^UInt32);
+    external 'opengl32.dll' name 'glGenTexturesEXT';
+    
+    static function IsTextureEXT(texture: UInt32): Byte;
+    external 'opengl32.dll' name 'glIsTextureEXT';
+    
+    static procedure PrioritizeTexturesEXT(n: Int32; textures: ^UInt32; priorities: ^single);
+    external 'opengl32.dll' name 'glPrioritizeTexturesEXT';
+    
+    static procedure TextureNormalEXT(mode: ErrorCode);
+    external 'opengl32.dll' name 'glTextureNormalEXT';
+    
+    static procedure GetQueryObjecti64vEXT(id: UInt32; pname: ErrorCode; &params: ^Int64);
+    external 'opengl32.dll' name 'glGetQueryObjecti64vEXT';
+    
+    static procedure GetQueryObjectui64vEXT(id: UInt32; pname: ErrorCode; &params: ^UInt64);
+    external 'opengl32.dll' name 'glGetQueryObjectui64vEXT';
+    
+    static procedure BeginTransformFeedbackEXT(primitiveMode: ErrorCode);
+    external 'opengl32.dll' name 'glBeginTransformFeedbackEXT';
+    
+    static procedure EndTransformFeedbackEXT;
+    external 'opengl32.dll' name 'glEndTransformFeedbackEXT';
+    
+    static procedure BindBufferRangeEXT(target: ErrorCode; index: UInt32; buffer: UInt32; offset: IntPtr; size: UIntPtr);
+    external 'opengl32.dll' name 'glBindBufferRangeEXT';
+    
+    static procedure BindBufferOffsetEXT(target: ErrorCode; index: UInt32; buffer: UInt32; offset: IntPtr);
+    external 'opengl32.dll' name 'glBindBufferOffsetEXT';
+    
+    static procedure BindBufferBaseEXT(target: ErrorCode; index: UInt32; buffer: UInt32);
+    external 'opengl32.dll' name 'glBindBufferBaseEXT';
+    
+    static procedure TransformFeedbackVaryingsEXT(&program: UInt32; count: Int32; varyings: ^^Byte; bufferMode: ErrorCode);
+    external 'opengl32.dll' name 'glTransformFeedbackVaryingsEXT';
+    
+    static procedure GetTransformFeedbackVaryingEXT(&program: UInt32; index: UInt32; bufSize: Int32; length: ^Int32; size: ^Int32; &type: ^ErrorCode; name: ^Byte);
+    external 'opengl32.dll' name 'glGetTransformFeedbackVaryingEXT';
+    
+    static procedure ArrayElementEXT(i: Int32);
+    external 'opengl32.dll' name 'glArrayElementEXT';
+    
+    static procedure ColorPointerEXT(size: Int32; &type: ErrorCode; stride: Int32; count: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glColorPointerEXT';
+    
+    static procedure DrawArraysEXT(mode: ErrorCode; first: Int32; count: Int32);
+    external 'opengl32.dll' name 'glDrawArraysEXT';
+    
+    static procedure EdgeFlagPointerEXT(stride: Int32; count: Int32; _pointer: ^Byte);
+    external 'opengl32.dll' name 'glEdgeFlagPointerEXT';
+    
+    static procedure GetPointervEXT(pname: ErrorCode; &params: ^pointer);
+    external 'opengl32.dll' name 'glGetPointervEXT';
+    
+    static procedure IndexPointerEXT(&type: ErrorCode; stride: Int32; count: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glIndexPointerEXT';
+    
+    static procedure NormalPointerEXT(&type: ErrorCode; stride: Int32; count: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glNormalPointerEXT';
+    
+    static procedure TexCoordPointerEXT(size: Int32; &type: ErrorCode; stride: Int32; count: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glTexCoordPointerEXT';
+    
+    static procedure VertexPointerEXT(size: Int32; &type: ErrorCode; stride: Int32; count: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glVertexPointerEXT';
+    
+    static procedure VertexAttribL1dEXT(index: UInt32; x: double);
+    external 'opengl32.dll' name 'glVertexAttribL1dEXT';
+    
+    static procedure VertexAttribL2dEXT(index: UInt32; x: double; y: double);
+    external 'opengl32.dll' name 'glVertexAttribL2dEXT';
+    
+    static procedure VertexAttribL3dEXT(index: UInt32; x: double; y: double; z: double);
+    external 'opengl32.dll' name 'glVertexAttribL3dEXT';
+    
+    static procedure VertexAttribL4dEXT(index: UInt32; x: double; y: double; z: double; w: double);
+    external 'opengl32.dll' name 'glVertexAttribL4dEXT';
+    
+    static procedure VertexAttribL1dvEXT(index: UInt32; v: ^double);
+    external 'opengl32.dll' name 'glVertexAttribL1dvEXT';
+    
+    static procedure VertexAttribL2dvEXT(index: UInt32; v: ^double);
+    external 'opengl32.dll' name 'glVertexAttribL2dvEXT';
+    
+    static procedure VertexAttribL3dvEXT(index: UInt32; v: ^double);
+    external 'opengl32.dll' name 'glVertexAttribL3dvEXT';
+    
+    static procedure VertexAttribL4dvEXT(index: UInt32; v: ^double);
+    external 'opengl32.dll' name 'glVertexAttribL4dvEXT';
+    
+    static procedure VertexAttribLPointerEXT(index: UInt32; size: Int32; &type: ErrorCode; stride: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glVertexAttribLPointerEXT';
+    
+    static procedure GetVertexAttribLdvEXT(index: UInt32; pname: ErrorCode; &params: ^double);
+    external 'opengl32.dll' name 'glGetVertexAttribLdvEXT';
+    
+    static procedure BeginVertexShaderEXT;
+    external 'opengl32.dll' name 'glBeginVertexShaderEXT';
+    
+    static procedure EndVertexShaderEXT;
+    external 'opengl32.dll' name 'glEndVertexShaderEXT';
+    
+    static procedure BindVertexShaderEXT(id: UInt32);
+    external 'opengl32.dll' name 'glBindVertexShaderEXT';
+    
+    static function GenVertexShadersEXT(range: UInt32): UInt32;
+    external 'opengl32.dll' name 'glGenVertexShadersEXT';
+    
+    static procedure DeleteVertexShaderEXT(id: UInt32);
+    external 'opengl32.dll' name 'glDeleteVertexShaderEXT';
+    
+    static procedure ShaderOp1EXT(op: ErrorCode; res: UInt32; arg1: UInt32);
+    external 'opengl32.dll' name 'glShaderOp1EXT';
+    
+    static procedure ShaderOp2EXT(op: ErrorCode; res: UInt32; arg1: UInt32; arg2: UInt32);
+    external 'opengl32.dll' name 'glShaderOp2EXT';
+    
+    static procedure ShaderOp3EXT(op: ErrorCode; res: UInt32; arg1: UInt32; arg2: UInt32; arg3: UInt32);
+    external 'opengl32.dll' name 'glShaderOp3EXT';
+    
+    static procedure SwizzleEXT(res: UInt32; &in: UInt32; outX: ErrorCode; outY: ErrorCode; outZ: ErrorCode; outW: ErrorCode);
+    external 'opengl32.dll' name 'glSwizzleEXT';
+    
+    static procedure WriteMaskEXT(res: UInt32; &in: UInt32; outX: ErrorCode; outY: ErrorCode; outZ: ErrorCode; outW: ErrorCode);
+    external 'opengl32.dll' name 'glWriteMaskEXT';
+    
+    static procedure InsertComponentEXT(res: UInt32; src: UInt32; num: UInt32);
+    external 'opengl32.dll' name 'glInsertComponentEXT';
+    
+    static procedure ExtractComponentEXT(res: UInt32; src: UInt32; num: UInt32);
+    external 'opengl32.dll' name 'glExtractComponentEXT';
+    
+    static function GenSymbolsEXT(datatype: ErrorCode; storagetype: ErrorCode; range: ErrorCode; components: UInt32): UInt32;
+    external 'opengl32.dll' name 'glGenSymbolsEXT';
+    
+    static procedure SetInvariantEXT(id: UInt32; &type: ErrorCode; addr: pointer);
+    external 'opengl32.dll' name 'glSetInvariantEXT';
+    
+    static procedure SetLocalConstantEXT(id: UInt32; &type: ErrorCode; addr: pointer);
+    external 'opengl32.dll' name 'glSetLocalConstantEXT';
+    
+    static procedure VariantbvEXT(id: UInt32; addr: ^SByte);
+    external 'opengl32.dll' name 'glVariantbvEXT';
+    
+    static procedure VariantsvEXT(id: UInt32; addr: ^Int16);
+    external 'opengl32.dll' name 'glVariantsvEXT';
+    
+    static procedure VariantivEXT(id: UInt32; addr: ^Int32);
+    external 'opengl32.dll' name 'glVariantivEXT';
+    
+    static procedure VariantfvEXT(id: UInt32; addr: ^single);
+    external 'opengl32.dll' name 'glVariantfvEXT';
+    
+    static procedure VariantdvEXT(id: UInt32; addr: ^double);
+    external 'opengl32.dll' name 'glVariantdvEXT';
+    
+    static procedure VariantubvEXT(id: UInt32; addr: ^Byte);
+    external 'opengl32.dll' name 'glVariantubvEXT';
+    
+    static procedure VariantusvEXT(id: UInt32; addr: ^UInt16);
+    external 'opengl32.dll' name 'glVariantusvEXT';
+    
+    static procedure VariantuivEXT(id: UInt32; addr: ^UInt32);
+    external 'opengl32.dll' name 'glVariantuivEXT';
+    
+    static procedure VariantPointerEXT(id: UInt32; &type: ErrorCode; stride: UInt32; addr: pointer);
+    external 'opengl32.dll' name 'glVariantPointerEXT';
+    
+    static procedure EnableVariantClientStateEXT(id: UInt32);
+    external 'opengl32.dll' name 'glEnableVariantClientStateEXT';
+    
+    static procedure DisableVariantClientStateEXT(id: UInt32);
+    external 'opengl32.dll' name 'glDisableVariantClientStateEXT';
+    
+    static function BindLightParameterEXT(light: ErrorCode; value: ErrorCode): UInt32;
+    external 'opengl32.dll' name 'glBindLightParameterEXT';
+    
+    static function BindMaterialParameterEXT(face: ErrorCode; value: ErrorCode): UInt32;
+    external 'opengl32.dll' name 'glBindMaterialParameterEXT';
+    
+    static function BindTexGenParameterEXT(&unit: ErrorCode; coord: ErrorCode; value: ErrorCode): UInt32;
+    external 'opengl32.dll' name 'glBindTexGenParameterEXT';
+    
+    static function BindTextureUnitParameterEXT(&unit: ErrorCode; value: ErrorCode): UInt32;
+    external 'opengl32.dll' name 'glBindTextureUnitParameterEXT';
+    
+    static function BindParameterEXT(value: ErrorCode): UInt32;
+    external 'opengl32.dll' name 'glBindParameterEXT';
+    
+    static function IsVariantEnabledEXT(id: UInt32; cap: ErrorCode): Byte;
+    external 'opengl32.dll' name 'glIsVariantEnabledEXT';
+    
+    static procedure GetVariantBooleanvEXT(id: UInt32; value: ErrorCode; data: ^Byte);
+    external 'opengl32.dll' name 'glGetVariantBooleanvEXT';
+    
+    static procedure GetVariantIntegervEXT(id: UInt32; value: ErrorCode; data: ^Int32);
+    external 'opengl32.dll' name 'glGetVariantIntegervEXT';
+    
+    static procedure GetVariantFloatvEXT(id: UInt32; value: ErrorCode; data: ^single);
+    external 'opengl32.dll' name 'glGetVariantFloatvEXT';
+    
+    static procedure GetVariantPointervEXT(id: UInt32; value: ErrorCode; data: ^pointer);
+    external 'opengl32.dll' name 'glGetVariantPointervEXT';
+    
+    static procedure GetInvariantBooleanvEXT(id: UInt32; value: ErrorCode; data: ^Byte);
+    external 'opengl32.dll' name 'glGetInvariantBooleanvEXT';
+    
+    static procedure GetInvariantIntegervEXT(id: UInt32; value: ErrorCode; data: ^Int32);
+    external 'opengl32.dll' name 'glGetInvariantIntegervEXT';
+    
+    static procedure GetInvariantFloatvEXT(id: UInt32; value: ErrorCode; data: ^single);
+    external 'opengl32.dll' name 'glGetInvariantFloatvEXT';
+    
+    static procedure GetLocalConstantBooleanvEXT(id: UInt32; value: ErrorCode; data: ^Byte);
+    external 'opengl32.dll' name 'glGetLocalConstantBooleanvEXT';
+    
+    static procedure GetLocalConstantIntegervEXT(id: UInt32; value: ErrorCode; data: ^Int32);
+    external 'opengl32.dll' name 'glGetLocalConstantIntegervEXT';
+    
+    static procedure GetLocalConstantFloatvEXT(id: UInt32; value: ErrorCode; data: ^single);
+    external 'opengl32.dll' name 'glGetLocalConstantFloatvEXT';
+    
+    static procedure VertexWeightfEXT(weight: single);
+    external 'opengl32.dll' name 'glVertexWeightfEXT';
+    
+    static procedure VertexWeightfvEXT(weight: ^single);
+    external 'opengl32.dll' name 'glVertexWeightfvEXT';
+    
+    static procedure VertexWeightPointerEXT(size: Int32; &type: ErrorCode; stride: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glVertexWeightPointerEXT';
+    
+    static function AcquireKeyedMutexWin32EXT(memory: UInt32; key: UInt64; timeout: UInt32): Byte;
+    external 'opengl32.dll' name 'glAcquireKeyedMutexWin32EXT';
+    
+    static function ReleaseKeyedMutexWin32EXT(memory: UInt32; key: UInt64): Byte;
+    external 'opengl32.dll' name 'glReleaseKeyedMutexWin32EXT';
+    
+    static function ImportSyncEXT(external_sync_type: ErrorCode; external_sync: IntPtr; flags: UInt32): GLsync;
+    external 'opengl32.dll' name 'glImportSyncEXT';
+    
+    static procedure FramebufferTextureEXT(target: ErrorCode; attachment: ErrorCode; texture: UInt32; level: Int32);
+    external 'opengl32.dll' name 'glFramebufferTextureEXT';
+    
+    static procedure FramebufferTextureFaceEXT(target: ErrorCode; attachment: ErrorCode; texture: UInt32; level: Int32; face: ErrorCode);
+    external 'opengl32.dll' name 'glFramebufferTextureFaceEXT';
+    
+    static procedure VertexAttribI1iEXT(index: UInt32; x: Int32);
+    external 'opengl32.dll' name 'glVertexAttribI1iEXT';
+    
+    static procedure VertexAttribI2iEXT(index: UInt32; x: Int32; y: Int32);
+    external 'opengl32.dll' name 'glVertexAttribI2iEXT';
+    
+    static procedure VertexAttribI3iEXT(index: UInt32; x: Int32; y: Int32; z: Int32);
+    external 'opengl32.dll' name 'glVertexAttribI3iEXT';
+    
+    static procedure VertexAttribI4iEXT(index: UInt32; x: Int32; y: Int32; z: Int32; w: Int32);
+    external 'opengl32.dll' name 'glVertexAttribI4iEXT';
+    
+    static procedure VertexAttribI1uiEXT(index: UInt32; x: UInt32);
+    external 'opengl32.dll' name 'glVertexAttribI1uiEXT';
+    
+    static procedure VertexAttribI2uiEXT(index: UInt32; x: UInt32; y: UInt32);
+    external 'opengl32.dll' name 'glVertexAttribI2uiEXT';
+    
+    static procedure VertexAttribI3uiEXT(index: UInt32; x: UInt32; y: UInt32; z: UInt32);
+    external 'opengl32.dll' name 'glVertexAttribI3uiEXT';
+    
+    static procedure VertexAttribI4uiEXT(index: UInt32; x: UInt32; y: UInt32; z: UInt32; w: UInt32);
+    external 'opengl32.dll' name 'glVertexAttribI4uiEXT';
+    
+    static procedure VertexAttribI1ivEXT(index: UInt32; v: ^Int32);
+    external 'opengl32.dll' name 'glVertexAttribI1ivEXT';
+    
+    static procedure VertexAttribI2ivEXT(index: UInt32; v: ^Int32);
+    external 'opengl32.dll' name 'glVertexAttribI2ivEXT';
+    
+    static procedure VertexAttribI3ivEXT(index: UInt32; v: ^Int32);
+    external 'opengl32.dll' name 'glVertexAttribI3ivEXT';
+    
+    static procedure VertexAttribI4ivEXT(index: UInt32; v: ^Int32);
+    external 'opengl32.dll' name 'glVertexAttribI4ivEXT';
+    
+    static procedure VertexAttribI1uivEXT(index: UInt32; v: ^UInt32);
+    external 'opengl32.dll' name 'glVertexAttribI1uivEXT';
+    
+    static procedure VertexAttribI2uivEXT(index: UInt32; v: ^UInt32);
+    external 'opengl32.dll' name 'glVertexAttribI2uivEXT';
+    
+    static procedure VertexAttribI3uivEXT(index: UInt32; v: ^UInt32);
+    external 'opengl32.dll' name 'glVertexAttribI3uivEXT';
+    
+    static procedure VertexAttribI4uivEXT(index: UInt32; v: ^UInt32);
+    external 'opengl32.dll' name 'glVertexAttribI4uivEXT';
+    
+    static procedure VertexAttribI4bvEXT(index: UInt32; v: ^SByte);
+    external 'opengl32.dll' name 'glVertexAttribI4bvEXT';
+    
+    static procedure VertexAttribI4svEXT(index: UInt32; v: ^Int16);
+    external 'opengl32.dll' name 'glVertexAttribI4svEXT';
+    
+    static procedure VertexAttribI4ubvEXT(index: UInt32; v: ^Byte);
+    external 'opengl32.dll' name 'glVertexAttribI4ubvEXT';
+    
+    static procedure VertexAttribI4usvEXT(index: UInt32; v: ^UInt16);
+    external 'opengl32.dll' name 'glVertexAttribI4usvEXT';
+    
+    static procedure VertexAttribIPointerEXT(index: UInt32; size: Int32; &type: ErrorCode; stride: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glVertexAttribIPointerEXT';
+    
+    static procedure GetVertexAttribIivEXT(index: UInt32; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetVertexAttribIivEXT';
+    
+    static procedure GetVertexAttribIuivEXT(index: UInt32; pname: ErrorCode; &params: ^UInt32);
+    external 'opengl32.dll' name 'glGetVertexAttribIuivEXT';
+    
+    {$endregion EXT}
+    
+  end;
+  
+  /// Расширения, которые встречаются только у видеокарт Intel
+  gl_Intel = static class
+    
+    {$region INTEL}
+    
     static procedure ApplyFramebufferAttachmentCMAAINTEL;
     external 'opengl32.dll' name 'glApplyFramebufferAttachmentCMAAINTEL';
     
@@ -15058,6 +17567,36 @@ type
     
     static procedure GetPerfQueryInfoINTEL(queryId: UInt32; queryNameLength: UInt32; queryName: ^SByte; dataSize: ^UInt32; noCounters: ^UInt32; noInstances: ^UInt32; capsMask: ^UInt32);
     external 'opengl32.dll' name 'glGetPerfQueryInfoINTEL';
+    
+    static procedure SyncTextureINTEL(texture: UInt32);
+    external 'opengl32.dll' name 'glSyncTextureINTEL';
+    
+    static procedure UnmapTexture2DINTEL(texture: UInt32; level: Int32);
+    external 'opengl32.dll' name 'glUnmapTexture2DINTEL';
+    
+    static function MapTexture2DINTEL(texture: UInt32; level: Int32; access: UInt32; stride: ^Int32; layout: ^ErrorCode): pointer;
+    external 'opengl32.dll' name 'glMapTexture2DINTEL';
+    
+    static procedure VertexPointervINTEL(size: Int32; &type: ErrorCode; _pointer: ^pointer);
+    external 'opengl32.dll' name 'glVertexPointervINTEL';
+    
+    static procedure NormalPointervINTEL(&type: ErrorCode; _pointer: ^pointer);
+    external 'opengl32.dll' name 'glNormalPointervINTEL';
+    
+    static procedure ColorPointervINTEL(size: Int32; &type: ErrorCode; _pointer: ^pointer);
+    external 'opengl32.dll' name 'glColorPointervINTEL';
+    
+    static procedure TexCoordPointervINTEL(size: Int32; &type: ErrorCode; _pointer: ^pointer);
+    external 'opengl32.dll' name 'glTexCoordPointervINTEL';
+    
+    {$endregion INTEL}
+    
+  end;
+  
+  /// Расширения, которые встречаются только у видеокарт NVidia
+  gl_NVidia = static class
+    
+    {$region NVIDIA}
     
     static procedure MultiDrawArraysIndirectBindlessNV(mode: UInt32; indirect: pointer; drawCount: Int32; stride: Int32; vertexBufferCount: Int32);
     external 'opengl32.dll' name 'glMultiDrawArraysIndirectBindlessNV';
@@ -15638,68 +18177,1546 @@ type
     static procedure ViewportSwizzleNV(index: UInt32; swizzlex: UInt32; swizzley: UInt32; swizzlez: UInt32; swizzlew: UInt32);
     external 'opengl32.dll' name 'glViewportSwizzleNV';
     
-    static procedure FramebufferTextureMultiviewOVR(target: UInt32; attachment: UInt32; texture: UInt32; level: Int32; baseViewIndex: Int32; numViews: Int32);
-    external 'opengl32.dll' name 'glFramebufferTextureMultiviewOVR';
+    static procedure VertexAttribFormatNV(index: UInt32; size: Int32; &type: UInt32; normalized: boolean; stride: Int32);
+    external 'opengl32.dll' name 'glVertexAttribFormatNV';
     
-    static procedure AlphaFunc(func: UInt32; ref: single);
-    external 'opengl32.dll' name 'glAlphaFunc';
+    static procedure VertexAttribIFormatNV(index: UInt32; size: Int32; &type: UInt32; stride: Int32);
+    external 'opengl32.dll' name 'glVertexAttribIFormatNV';
     
-    static procedure &Begin(mode: UInt32);
+    static procedure VertexAttribLFormatNV(index: UInt32; size: Int32; &type: UInt32; stride: Int32);
+    external 'opengl32.dll' name 'glVertexAttribLFormatNV';
+    
+    static procedure VertexAttribL1i64NV(index: UInt32; x: Int64);
+    external 'opengl32.dll' name 'glVertexAttribL1i64NV';
+    
+    static procedure VertexAttribL2i64NV(index: UInt32; x: Int64; y: Int64);
+    external 'opengl32.dll' name 'glVertexAttribL2i64NV';
+    
+    static procedure VertexAttribL3i64NV(index: UInt32; x: Int64; y: Int64; z: Int64);
+    external 'opengl32.dll' name 'glVertexAttribL3i64NV';
+    
+    static procedure VertexAttribL4i64NV(index: UInt32; x: Int64; y: Int64; z: Int64; w: Int64);
+    external 'opengl32.dll' name 'glVertexAttribL4i64NV';
+    
+    static procedure VertexAttribL1i64vNV(index: UInt32; v: ^Int64);
+    external 'opengl32.dll' name 'glVertexAttribL1i64vNV';
+    
+    static procedure VertexAttribL2i64vNV(index: UInt32; v: ^Int64);
+    external 'opengl32.dll' name 'glVertexAttribL2i64vNV';
+    
+    static procedure VertexAttribL3i64vNV(index: UInt32; v: ^Int64);
+    external 'opengl32.dll' name 'glVertexAttribL3i64vNV';
+    
+    static procedure VertexAttribL4i64vNV(index: UInt32; v: ^Int64);
+    external 'opengl32.dll' name 'glVertexAttribL4i64vNV';
+    
+    static procedure VertexAttribL1ui64NV(index: UInt32; x: UInt64);
+    external 'opengl32.dll' name 'glVertexAttribL1ui64NV';
+    
+    static procedure VertexAttribL2ui64NV(index: UInt32; x: UInt64; y: UInt64);
+    external 'opengl32.dll' name 'glVertexAttribL2ui64NV';
+    
+    static procedure VertexAttribL3ui64NV(index: UInt32; x: UInt64; y: UInt64; z: UInt64);
+    external 'opengl32.dll' name 'glVertexAttribL3ui64NV';
+    
+    static procedure VertexAttribL4ui64NV(index: UInt32; x: UInt64; y: UInt64; z: UInt64; w: UInt64);
+    external 'opengl32.dll' name 'glVertexAttribL4ui64NV';
+    
+    static procedure VertexAttribL1ui64vNV(index: UInt32; v: ^UInt64);
+    external 'opengl32.dll' name 'glVertexAttribL1ui64vNV';
+    
+    static procedure VertexAttribL2ui64vNV(index: UInt32; v: ^UInt64);
+    external 'opengl32.dll' name 'glVertexAttribL2ui64vNV';
+    
+    static procedure VertexAttribL3ui64vNV(index: UInt32; v: ^UInt64);
+    external 'opengl32.dll' name 'glVertexAttribL3ui64vNV';
+    
+    static procedure VertexAttribL4ui64vNV(index: UInt32; v: ^UInt64);
+    external 'opengl32.dll' name 'glVertexAttribL4ui64vNV';
+    
+    static procedure BeginConditionalRenderNVX(id: UInt32);
+    external 'opengl32.dll' name 'glBeginConditionalRenderNVX';
+    
+    static procedure EndConditionalRenderNVX;
+    external 'opengl32.dll' name 'glEndConditionalRenderNVX';
+    
+    static procedure LGPUNamedBufferSubDataNVX(gpuMask: UInt32; buffer: UInt32; offset: IntPtr; size: UIntPtr; data: pointer);
+    external 'opengl32.dll' name 'glLGPUNamedBufferSubDataNVX';
+    
+    static procedure LGPUCopyImageSubDataNVX(sourceGpu: UInt32; destinationGpuMask: UInt32; srcName: UInt32; srcTarget: ErrorCode; srcLevel: Int32; srcX: Int32; srxY: Int32; srcZ: Int32; dstName: UInt32; dstTarget: ErrorCode; dstLevel: Int32; dstX: Int32; dstY: Int32; dstZ: Int32; width: Int32; height: Int32; depth: Int32);
+    external 'opengl32.dll' name 'glLGPUCopyImageSubDataNVX';
+    
+    static procedure LGPUInterlockNVX;
+    external 'opengl32.dll' name 'glLGPUInterlockNVX';
+    
+    static procedure AlphaToCoverageDitherControlNV(mode: ErrorCode);
+    external 'opengl32.dll' name 'glAlphaToCoverageDitherControlNV';
+    
+    static procedure CopyImageSubDataNV(srcName: UInt32; srcTarget: ErrorCode; srcLevel: Int32; srcX: Int32; srcY: Int32; srcZ: Int32; dstName: UInt32; dstTarget: ErrorCode; dstLevel: Int32; dstX: Int32; dstY: Int32; dstZ: Int32; width: Int32; height: Int32; depth: Int32);
+    external 'opengl32.dll' name 'glCopyImageSubDataNV';
+    
+    static procedure DepthRangedNV(zNear: double; zFar: double);
+    external 'opengl32.dll' name 'glDepthRangedNV';
+    
+    static procedure ClearDepthdNV(depth: double);
+    external 'opengl32.dll' name 'glClearDepthdNV';
+    
+    static procedure DepthBoundsdNV(zmin: double; zmax: double);
+    external 'opengl32.dll' name 'glDepthBoundsdNV';
+    
+    static procedure DrawTextureNV(texture: UInt32; sampler: UInt32; x0: single; y0: single; x1: single; y1: single; z: single; s0: single; t0: single; s1: single; t1: single);
+    external 'opengl32.dll' name 'glDrawTextureNV';
+    
+    static procedure MapControlPointsNV(target: ErrorCode; index: UInt32; &type: ErrorCode; ustride: Int32; vstride: Int32; uorder: Int32; vorder: Int32; &packed: Byte; points: pointer);
+    external 'opengl32.dll' name 'glMapControlPointsNV';
+    
+    static procedure MapParameterivNV(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glMapParameterivNV';
+    
+    static procedure MapParameterfvNV(target: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glMapParameterfvNV';
+    
+    static procedure GetMapControlPointsNV(target: ErrorCode; index: UInt32; &type: ErrorCode; ustride: Int32; vstride: Int32; &packed: Byte; points: pointer);
+    external 'opengl32.dll' name 'glGetMapControlPointsNV';
+    
+    static procedure GetMapParameterivNV(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetMapParameterivNV';
+    
+    static procedure GetMapParameterfvNV(target: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetMapParameterfvNV';
+    
+    static procedure GetMapAttribParameterivNV(target: ErrorCode; index: UInt32; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetMapAttribParameterivNV';
+    
+    static procedure GetMapAttribParameterfvNV(target: ErrorCode; index: UInt32; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetMapAttribParameterfvNV';
+    
+    static procedure EvalMapsNV(target: ErrorCode; mode: ErrorCode);
+    external 'opengl32.dll' name 'glEvalMapsNV';
+    
+    static procedure GetMultisamplefvNV(pname: ErrorCode; index: UInt32; val: ^single);
+    external 'opengl32.dll' name 'glGetMultisamplefvNV';
+    
+    static procedure SampleMaskIndexedNV(index: UInt32; mask: UInt32);
+    external 'opengl32.dll' name 'glSampleMaskIndexedNV';
+    
+    static procedure TexRenderbufferNV(target: ErrorCode; renderbuffer: UInt32);
+    external 'opengl32.dll' name 'glTexRenderbufferNV';
+    
+    static procedure DeleteFencesNV(n: Int32; fences: ^UInt32);
+    external 'opengl32.dll' name 'glDeleteFencesNV';
+    
+    static procedure GenFencesNV(n: Int32; fences: ^UInt32);
+    external 'opengl32.dll' name 'glGenFencesNV';
+    
+    static function IsFenceNV(fence: UInt32): Byte;
+    external 'opengl32.dll' name 'glIsFenceNV';
+    
+    static function TestFenceNV(fence: UInt32): Byte;
+    external 'opengl32.dll' name 'glTestFenceNV';
+    
+    static procedure GetFenceivNV(fence: UInt32; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetFenceivNV';
+    
+    static procedure FinishFenceNV(fence: UInt32);
+    external 'opengl32.dll' name 'glFinishFenceNV';
+    
+    static procedure SetFenceNV(fence: UInt32; condition: ErrorCode);
+    external 'opengl32.dll' name 'glSetFenceNV';
+    
+    static procedure ProgramNamedParameter4fNV(id: UInt32; len: Int32; name: ^Byte; x: single; y: single; z: single; w: single);
+    external 'opengl32.dll' name 'glProgramNamedParameter4fNV';
+    
+    static procedure ProgramNamedParameter4fvNV(id: UInt32; len: Int32; name: ^Byte; v: ^single);
+    external 'opengl32.dll' name 'glProgramNamedParameter4fvNV';
+    
+    static procedure ProgramNamedParameter4dNV(id: UInt32; len: Int32; name: ^Byte; x: double; y: double; z: double; w: double);
+    external 'opengl32.dll' name 'glProgramNamedParameter4dNV';
+    
+    static procedure ProgramNamedParameter4dvNV(id: UInt32; len: Int32; name: ^Byte; v: ^double);
+    external 'opengl32.dll' name 'glProgramNamedParameter4dvNV';
+    
+    static procedure GetProgramNamedParameterfvNV(id: UInt32; len: Int32; name: ^Byte; &params: ^single);
+    external 'opengl32.dll' name 'glGetProgramNamedParameterfvNV';
+    
+    static procedure GetProgramNamedParameterdvNV(id: UInt32; len: Int32; name: ^Byte; &params: ^double);
+    external 'opengl32.dll' name 'glGetProgramNamedParameterdvNV';
+    
+    static procedure ProgramVertexLimitNV(target: ErrorCode; limit: Int32);
+    external 'opengl32.dll' name 'glProgramVertexLimitNV';
+    
+    static procedure RenderGpuMaskNV(mask: UInt32);
+    external 'opengl32.dll' name 'glRenderGpuMaskNV';
+    
+    static procedure MulticastBufferSubDataNV(gpuMask: UInt32; buffer: UInt32; offset: IntPtr; size: UIntPtr; data: pointer);
+    external 'opengl32.dll' name 'glMulticastBufferSubDataNV';
+    
+    static procedure MulticastCopyBufferSubDataNV(readGpu: UInt32; writeGpuMask: UInt32; readBuffer: UInt32; writeBuffer: UInt32; readOffset: IntPtr; writeOffset: IntPtr; size: UIntPtr);
+    external 'opengl32.dll' name 'glMulticastCopyBufferSubDataNV';
+    
+    static procedure MulticastCopyImageSubDataNV(srcGpu: UInt32; dstGpuMask: UInt32; srcName: UInt32; srcTarget: ErrorCode; srcLevel: Int32; srcX: Int32; srcY: Int32; srcZ: Int32; dstName: UInt32; dstTarget: ErrorCode; dstLevel: Int32; dstX: Int32; dstY: Int32; dstZ: Int32; srcWidth: Int32; srcHeight: Int32; srcDepth: Int32);
+    external 'opengl32.dll' name 'glMulticastCopyImageSubDataNV';
+    
+    static procedure MulticastBlitFramebufferNV(srcGpu: UInt32; dstGpu: UInt32; srcX0: Int32; srcY0: Int32; srcX1: Int32; srcY1: Int32; dstX0: Int32; dstY0: Int32; dstX1: Int32; dstY1: Int32; mask: UInt32; filter: ErrorCode);
+    external 'opengl32.dll' name 'glMulticastBlitFramebufferNV';
+    
+    static procedure MulticastFramebufferSampleLocationsfvNV(gpu: UInt32; framebuffer: UInt32; start: UInt32; count: Int32; v: ^single);
+    external 'opengl32.dll' name 'glMulticastFramebufferSampleLocationsfvNV';
+    
+    static procedure MulticastBarrierNV;
+    external 'opengl32.dll' name 'glMulticastBarrierNV';
+    
+    static procedure MulticastWaitSyncNV(signalGpu: UInt32; waitGpuMask: UInt32);
+    external 'opengl32.dll' name 'glMulticastWaitSyncNV';
+    
+    static procedure MulticastGetQueryObjectivNV(gpu: UInt32; id: UInt32; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glMulticastGetQueryObjectivNV';
+    
+    static procedure MulticastGetQueryObjectuivNV(gpu: UInt32; id: UInt32; pname: ErrorCode; &params: ^UInt32);
+    external 'opengl32.dll' name 'glMulticastGetQueryObjectuivNV';
+    
+    static procedure MulticastGetQueryObjecti64vNV(gpu: UInt32; id: UInt32; pname: ErrorCode; &params: ^Int64);
+    external 'opengl32.dll' name 'glMulticastGetQueryObjecti64vNV';
+    
+    static procedure MulticastGetQueryObjectui64vNV(gpu: UInt32; id: UInt32; pname: ErrorCode; &params: ^UInt64);
+    external 'opengl32.dll' name 'glMulticastGetQueryObjectui64vNV';
+    
+    static procedure ProgramLocalParameterI4iNV(target: ErrorCode; index: UInt32; x: Int32; y: Int32; z: Int32; w: Int32);
+    external 'opengl32.dll' name 'glProgramLocalParameterI4iNV';
+    
+    static procedure ProgramLocalParameterI4ivNV(target: ErrorCode; index: UInt32; &params: ^Int32);
+    external 'opengl32.dll' name 'glProgramLocalParameterI4ivNV';
+    
+    static procedure ProgramLocalParametersI4ivNV(target: ErrorCode; index: UInt32; count: Int32; &params: ^Int32);
+    external 'opengl32.dll' name 'glProgramLocalParametersI4ivNV';
+    
+    static procedure ProgramLocalParameterI4uiNV(target: ErrorCode; index: UInt32; x: UInt32; y: UInt32; z: UInt32; w: UInt32);
+    external 'opengl32.dll' name 'glProgramLocalParameterI4uiNV';
+    
+    static procedure ProgramLocalParameterI4uivNV(target: ErrorCode; index: UInt32; &params: ^UInt32);
+    external 'opengl32.dll' name 'glProgramLocalParameterI4uivNV';
+    
+    static procedure ProgramLocalParametersI4uivNV(target: ErrorCode; index: UInt32; count: Int32; &params: ^UInt32);
+    external 'opengl32.dll' name 'glProgramLocalParametersI4uivNV';
+    
+    static procedure ProgramEnvParameterI4iNV(target: ErrorCode; index: UInt32; x: Int32; y: Int32; z: Int32; w: Int32);
+    external 'opengl32.dll' name 'glProgramEnvParameterI4iNV';
+    
+    static procedure ProgramEnvParameterI4ivNV(target: ErrorCode; index: UInt32; &params: ^Int32);
+    external 'opengl32.dll' name 'glProgramEnvParameterI4ivNV';
+    
+    static procedure ProgramEnvParametersI4ivNV(target: ErrorCode; index: UInt32; count: Int32; &params: ^Int32);
+    external 'opengl32.dll' name 'glProgramEnvParametersI4ivNV';
+    
+    static procedure ProgramEnvParameterI4uiNV(target: ErrorCode; index: UInt32; x: UInt32; y: UInt32; z: UInt32; w: UInt32);
+    external 'opengl32.dll' name 'glProgramEnvParameterI4uiNV';
+    
+    static procedure ProgramEnvParameterI4uivNV(target: ErrorCode; index: UInt32; &params: ^UInt32);
+    external 'opengl32.dll' name 'glProgramEnvParameterI4uivNV';
+    
+    static procedure ProgramEnvParametersI4uivNV(target: ErrorCode; index: UInt32; count: Int32; &params: ^UInt32);
+    external 'opengl32.dll' name 'glProgramEnvParametersI4uivNV';
+    
+    static procedure GetProgramLocalParameterIivNV(target: ErrorCode; index: UInt32; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetProgramLocalParameterIivNV';
+    
+    static procedure GetProgramLocalParameterIuivNV(target: ErrorCode; index: UInt32; &params: ^UInt32);
+    external 'opengl32.dll' name 'glGetProgramLocalParameterIuivNV';
+    
+    static procedure GetProgramEnvParameterIivNV(target: ErrorCode; index: UInt32; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetProgramEnvParameterIivNV';
+    
+    static procedure GetProgramEnvParameterIuivNV(target: ErrorCode; index: UInt32; &params: ^UInt32);
+    external 'opengl32.dll' name 'glGetProgramEnvParameterIuivNV';
+    
+    static procedure ProgramSubroutineParametersuivNV(target: ErrorCode; count: Int32; &params: ^UInt32);
+    external 'opengl32.dll' name 'glProgramSubroutineParametersuivNV';
+    
+    static procedure GetProgramSubroutineParameteruivNV(target: ErrorCode; index: UInt32; param: ^UInt32);
+    external 'opengl32.dll' name 'glGetProgramSubroutineParameteruivNV';
+    
+    static procedure Vertex2hNV(x: half; y: half);
+    external 'opengl32.dll' name 'glVertex2hNV';
+    
+    static procedure Vertex2hvNV(v: ^half);
+    external 'opengl32.dll' name 'glVertex2hvNV';
+    
+    static procedure Vertex3hNV(x: half; y: half; z: half);
+    external 'opengl32.dll' name 'glVertex3hNV';
+    
+    static procedure Vertex3hvNV(v: ^half);
+    external 'opengl32.dll' name 'glVertex3hvNV';
+    
+    static procedure Vertex4hNV(x: half; y: half; z: half; w: half);
+    external 'opengl32.dll' name 'glVertex4hNV';
+    
+    static procedure Vertex4hvNV(v: ^half);
+    external 'opengl32.dll' name 'glVertex4hvNV';
+    
+    static procedure Normal3hNV(nx: half; ny: half; nz: half);
+    external 'opengl32.dll' name 'glNormal3hNV';
+    
+    static procedure Normal3hvNV(v: ^half);
+    external 'opengl32.dll' name 'glNormal3hvNV';
+    
+    static procedure Color3hNV(red: half; green: half; blue: half);
+    external 'opengl32.dll' name 'glColor3hNV';
+    
+    static procedure Color3hvNV(v: ^half);
+    external 'opengl32.dll' name 'glColor3hvNV';
+    
+    static procedure Color4hNV(red: half; green: half; blue: half; alpha: half);
+    external 'opengl32.dll' name 'glColor4hNV';
+    
+    static procedure Color4hvNV(v: ^half);
+    external 'opengl32.dll' name 'glColor4hvNV';
+    
+    static procedure TexCoord1hNV(s: half);
+    external 'opengl32.dll' name 'glTexCoord1hNV';
+    
+    static procedure TexCoord1hvNV(v: ^half);
+    external 'opengl32.dll' name 'glTexCoord1hvNV';
+    
+    static procedure TexCoord2hNV(s: half; t: half);
+    external 'opengl32.dll' name 'glTexCoord2hNV';
+    
+    static procedure TexCoord2hvNV(v: ^half);
+    external 'opengl32.dll' name 'glTexCoord2hvNV';
+    
+    static procedure TexCoord3hNV(s: half; t: half; r: half);
+    external 'opengl32.dll' name 'glTexCoord3hNV';
+    
+    static procedure TexCoord3hvNV(v: ^half);
+    external 'opengl32.dll' name 'glTexCoord3hvNV';
+    
+    static procedure TexCoord4hNV(s: half; t: half; r: half; q: half);
+    external 'opengl32.dll' name 'glTexCoord4hNV';
+    
+    static procedure TexCoord4hvNV(v: ^half);
+    external 'opengl32.dll' name 'glTexCoord4hvNV';
+    
+    static procedure MultiTexCoord1hNV(target: ErrorCode; s: half);
+    external 'opengl32.dll' name 'glMultiTexCoord1hNV';
+    
+    static procedure MultiTexCoord1hvNV(target: ErrorCode; v: ^half);
+    external 'opengl32.dll' name 'glMultiTexCoord1hvNV';
+    
+    static procedure MultiTexCoord2hNV(target: ErrorCode; s: half; t: half);
+    external 'opengl32.dll' name 'glMultiTexCoord2hNV';
+    
+    static procedure MultiTexCoord2hvNV(target: ErrorCode; v: ^half);
+    external 'opengl32.dll' name 'glMultiTexCoord2hvNV';
+    
+    static procedure MultiTexCoord3hNV(target: ErrorCode; s: half; t: half; r: half);
+    external 'opengl32.dll' name 'glMultiTexCoord3hNV';
+    
+    static procedure MultiTexCoord3hvNV(target: ErrorCode; v: ^half);
+    external 'opengl32.dll' name 'glMultiTexCoord3hvNV';
+    
+    static procedure MultiTexCoord4hNV(target: ErrorCode; s: half; t: half; r: half; q: half);
+    external 'opengl32.dll' name 'glMultiTexCoord4hNV';
+    
+    static procedure MultiTexCoord4hvNV(target: ErrorCode; v: ^half);
+    external 'opengl32.dll' name 'glMultiTexCoord4hvNV';
+    
+    static procedure FogCoordhNV(fog: half);
+    external 'opengl32.dll' name 'glFogCoordhNV';
+    
+    static procedure FogCoordhvNV(fog: ^half);
+    external 'opengl32.dll' name 'glFogCoordhvNV';
+    
+    static procedure SecondaryColor3hNV(red: half; green: half; blue: half);
+    external 'opengl32.dll' name 'glSecondaryColor3hNV';
+    
+    static procedure SecondaryColor3hvNV(v: ^half);
+    external 'opengl32.dll' name 'glSecondaryColor3hvNV';
+    
+    static procedure VertexWeighthNV(weight: half);
+    external 'opengl32.dll' name 'glVertexWeighthNV';
+    
+    static procedure VertexWeighthvNV(weight: ^half);
+    external 'opengl32.dll' name 'glVertexWeighthvNV';
+    
+    static procedure VertexAttrib1hNV(index: UInt32; x: half);
+    external 'opengl32.dll' name 'glVertexAttrib1hNV';
+    
+    static procedure VertexAttrib1hvNV(index: UInt32; v: ^half);
+    external 'opengl32.dll' name 'glVertexAttrib1hvNV';
+    
+    static procedure VertexAttrib2hNV(index: UInt32; x: half; y: half);
+    external 'opengl32.dll' name 'glVertexAttrib2hNV';
+    
+    static procedure VertexAttrib2hvNV(index: UInt32; v: ^half);
+    external 'opengl32.dll' name 'glVertexAttrib2hvNV';
+    
+    static procedure VertexAttrib3hNV(index: UInt32; x: half; y: half; z: half);
+    external 'opengl32.dll' name 'glVertexAttrib3hNV';
+    
+    static procedure VertexAttrib3hvNV(index: UInt32; v: ^half);
+    external 'opengl32.dll' name 'glVertexAttrib3hvNV';
+    
+    static procedure VertexAttrib4hNV(index: UInt32; x: half; y: half; z: half; w: half);
+    external 'opengl32.dll' name 'glVertexAttrib4hNV';
+    
+    static procedure VertexAttrib4hvNV(index: UInt32; v: ^half);
+    external 'opengl32.dll' name 'glVertexAttrib4hvNV';
+    
+    static procedure VertexAttribs1hvNV(index: UInt32; n: Int32; v: ^half);
+    external 'opengl32.dll' name 'glVertexAttribs1hvNV';
+    
+    static procedure VertexAttribs2hvNV(index: UInt32; n: Int32; v: ^half);
+    external 'opengl32.dll' name 'glVertexAttribs2hvNV';
+    
+    static procedure VertexAttribs3hvNV(index: UInt32; n: Int32; v: ^half);
+    external 'opengl32.dll' name 'glVertexAttribs3hvNV';
+    
+    static procedure VertexAttribs4hvNV(index: UInt32; n: Int32; v: ^half);
+    external 'opengl32.dll' name 'glVertexAttribs4hvNV';
+    
+    static procedure GenOcclusionQueriesNV(n: Int32; ids: ^UInt32);
+    external 'opengl32.dll' name 'glGenOcclusionQueriesNV';
+    
+    static procedure DeleteOcclusionQueriesNV(n: Int32; ids: ^UInt32);
+    external 'opengl32.dll' name 'glDeleteOcclusionQueriesNV';
+    
+    static function IsOcclusionQueryNV(id: UInt32): Byte;
+    external 'opengl32.dll' name 'glIsOcclusionQueryNV';
+    
+    static procedure BeginOcclusionQueryNV(id: UInt32);
+    external 'opengl32.dll' name 'glBeginOcclusionQueryNV';
+    
+    static procedure EndOcclusionQueryNV;
+    external 'opengl32.dll' name 'glEndOcclusionQueryNV';
+    
+    static procedure GetOcclusionQueryivNV(id: UInt32; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetOcclusionQueryivNV';
+    
+    static procedure GetOcclusionQueryuivNV(id: UInt32; pname: ErrorCode; &params: ^UInt32);
+    external 'opengl32.dll' name 'glGetOcclusionQueryuivNV';
+    
+    static procedure ProgramBufferParametersfvNV(target: ErrorCode; bindingIndex: UInt32; wordIndex: UInt32; count: Int32; &params: ^single);
+    external 'opengl32.dll' name 'glProgramBufferParametersfvNV';
+    
+    static procedure ProgramBufferParametersIivNV(target: ErrorCode; bindingIndex: UInt32; wordIndex: UInt32; count: Int32; &params: ^Int32);
+    external 'opengl32.dll' name 'glProgramBufferParametersIivNV';
+    
+    static procedure ProgramBufferParametersIuivNV(target: ErrorCode; bindingIndex: UInt32; wordIndex: UInt32; count: Int32; &params: ^UInt32);
+    external 'opengl32.dll' name 'glProgramBufferParametersIuivNV';
+    
+    static procedure PathColorGenNV(color: ErrorCode; genMode: ErrorCode; colorFormat: ErrorCode; coeffs: ^single);
+    external 'opengl32.dll' name 'glPathColorGenNV';
+    
+    static procedure PathTexGenNV(texCoordSet: ErrorCode; genMode: ErrorCode; components: Int32; coeffs: ^single);
+    external 'opengl32.dll' name 'glPathTexGenNV';
+    
+    static procedure PathFogGenNV(genMode: ErrorCode);
+    external 'opengl32.dll' name 'glPathFogGenNV';
+    
+    static procedure GetPathColorGenivNV(color: ErrorCode; pname: ErrorCode; value: ^Int32);
+    external 'opengl32.dll' name 'glGetPathColorGenivNV';
+    
+    static procedure GetPathColorGenfvNV(color: ErrorCode; pname: ErrorCode; value: ^single);
+    external 'opengl32.dll' name 'glGetPathColorGenfvNV';
+    
+    static procedure GetPathTexGenivNV(texCoordSet: ErrorCode; pname: ErrorCode; value: ^Int32);
+    external 'opengl32.dll' name 'glGetPathTexGenivNV';
+    
+    static procedure GetPathTexGenfvNV(texCoordSet: ErrorCode; pname: ErrorCode; value: ^single);
+    external 'opengl32.dll' name 'glGetPathTexGenfvNV';
+    
+    static procedure PixelDataRangeNV(target: ErrorCode; length: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glPixelDataRangeNV';
+    
+    static procedure FlushPixelDataRangeNV(target: ErrorCode);
+    external 'opengl32.dll' name 'glFlushPixelDataRangeNV';
+    
+    static procedure PointParameteriNV(pname: ErrorCode; param: Int32);
+    external 'opengl32.dll' name 'glPointParameteriNV';
+    
+    static procedure PointParameterivNV(pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glPointParameterivNV';
+    
+    static procedure PresentFrameKeyedNV(video_slot: UInt32; minPresentTime: UInt64; beginPresentTimeId: UInt32; presentDurationId: UInt32; &type: ErrorCode; target0: ErrorCode; fill0: UInt32; key0: UInt32; target1: ErrorCode; fill1: UInt32; key1: UInt32);
+    external 'opengl32.dll' name 'glPresentFrameKeyedNV';
+    
+    static procedure PresentFrameDualFillNV(video_slot: UInt32; minPresentTime: UInt64; beginPresentTimeId: UInt32; presentDurationId: UInt32; &type: ErrorCode; target0: ErrorCode; fill0: UInt32; target1: ErrorCode; fill1: UInt32; target2: ErrorCode; fill2: UInt32; target3: ErrorCode; fill3: UInt32);
+    external 'opengl32.dll' name 'glPresentFrameDualFillNV';
+    
+    static procedure GetVideoivNV(video_slot: UInt32; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetVideoivNV';
+    
+    static procedure GetVideouivNV(video_slot: UInt32; pname: ErrorCode; &params: ^UInt32);
+    external 'opengl32.dll' name 'glGetVideouivNV';
+    
+    static procedure GetVideoi64vNV(video_slot: UInt32; pname: ErrorCode; &params: ^Int64);
+    external 'opengl32.dll' name 'glGetVideoi64vNV';
+    
+    static procedure GetVideoui64vNV(video_slot: UInt32; pname: ErrorCode; &params: ^UInt64);
+    external 'opengl32.dll' name 'glGetVideoui64vNV';
+    
+    static procedure PrimitiveRestartNV;
+    external 'opengl32.dll' name 'glPrimitiveRestartNV';
+    
+    static procedure PrimitiveRestartIndexNV(index: UInt32);
+    external 'opengl32.dll' name 'glPrimitiveRestartIndexNV';
+    
+    static function QueryResourceNV(queryType: ErrorCode; tagId: Int32; bufSize: UInt32; buffer: ^Int32): Int32;
+    external 'opengl32.dll' name 'glQueryResourceNV';
+    
+    static procedure GenQueryResourceTagNV(n: Int32; tagIds: ^Int32);
+    external 'opengl32.dll' name 'glGenQueryResourceTagNV';
+    
+    static procedure DeleteQueryResourceTagNV(n: Int32; tagIds: ^Int32);
+    external 'opengl32.dll' name 'glDeleteQueryResourceTagNV';
+    
+    static procedure QueryResourceTagNV(tagId: Int32; tagString: ^Byte);
+    external 'opengl32.dll' name 'glQueryResourceTagNV';
+    
+    static procedure CombinerParameterfvNV(pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glCombinerParameterfvNV';
+    
+    static procedure CombinerParameterfNV(pname: ErrorCode; param: single);
+    external 'opengl32.dll' name 'glCombinerParameterfNV';
+    
+    static procedure CombinerParameterivNV(pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glCombinerParameterivNV';
+    
+    static procedure CombinerParameteriNV(pname: ErrorCode; param: Int32);
+    external 'opengl32.dll' name 'glCombinerParameteriNV';
+    
+    static procedure CombinerInputNV(stage: ErrorCode; portion: ErrorCode; variable: ErrorCode; input: ErrorCode; mapping: ErrorCode; componentUsage: ErrorCode);
+    external 'opengl32.dll' name 'glCombinerInputNV';
+    
+    static procedure CombinerOutputNV(stage: ErrorCode; portion: ErrorCode; abOutput: ErrorCode; cdOutput: ErrorCode; sumOutput: ErrorCode; scale: ErrorCode; bias: ErrorCode; abDotProduct: Byte; cdDotProduct: Byte; muxSum: Byte);
+    external 'opengl32.dll' name 'glCombinerOutputNV';
+    
+    static procedure FinalCombinerInputNV(variable: ErrorCode; input: ErrorCode; mapping: ErrorCode; componentUsage: ErrorCode);
+    external 'opengl32.dll' name 'glFinalCombinerInputNV';
+    
+    static procedure GetCombinerInputParameterfvNV(stage: ErrorCode; portion: ErrorCode; variable: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetCombinerInputParameterfvNV';
+    
+    static procedure GetCombinerInputParameterivNV(stage: ErrorCode; portion: ErrorCode; variable: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetCombinerInputParameterivNV';
+    
+    static procedure GetCombinerOutputParameterfvNV(stage: ErrorCode; portion: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetCombinerOutputParameterfvNV';
+    
+    static procedure GetCombinerOutputParameterivNV(stage: ErrorCode; portion: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetCombinerOutputParameterivNV';
+    
+    static procedure GetFinalCombinerInputParameterfvNV(variable: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetFinalCombinerInputParameterfvNV';
+    
+    static procedure GetFinalCombinerInputParameterivNV(variable: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetFinalCombinerInputParameterivNV';
+    
+    static procedure CombinerStageParameterfvNV(stage: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glCombinerStageParameterfvNV';
+    
+    static procedure GetCombinerStageParameterfvNV(stage: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetCombinerStageParameterfvNV';
+    
+    static procedure TexImage2DMultisampleCoverageNV(target: ErrorCode; coverageSamples: Int32; colorSamples: Int32; internalFormat: Int32; width: Int32; height: Int32; fixedSampleLocations: Byte);
+    external 'opengl32.dll' name 'glTexImage2DMultisampleCoverageNV';
+    
+    static procedure TexImage3DMultisampleCoverageNV(target: ErrorCode; coverageSamples: Int32; colorSamples: Int32; internalFormat: Int32; width: Int32; height: Int32; depth: Int32; fixedSampleLocations: Byte);
+    external 'opengl32.dll' name 'glTexImage3DMultisampleCoverageNV';
+    
+    static procedure TextureImage2DMultisampleNV(texture: UInt32; target: ErrorCode; samples: Int32; internalFormat: Int32; width: Int32; height: Int32; fixedSampleLocations: Byte);
+    external 'opengl32.dll' name 'glTextureImage2DMultisampleNV';
+    
+    static procedure TextureImage3DMultisampleNV(texture: UInt32; target: ErrorCode; samples: Int32; internalFormat: Int32; width: Int32; height: Int32; depth: Int32; fixedSampleLocations: Byte);
+    external 'opengl32.dll' name 'glTextureImage3DMultisampleNV';
+    
+    static procedure TextureImage2DMultisampleCoverageNV(texture: UInt32; target: ErrorCode; coverageSamples: Int32; colorSamples: Int32; internalFormat: Int32; width: Int32; height: Int32; fixedSampleLocations: Byte);
+    external 'opengl32.dll' name 'glTextureImage2DMultisampleCoverageNV';
+    
+    static procedure TextureImage3DMultisampleCoverageNV(texture: UInt32; target: ErrorCode; coverageSamples: Int32; colorSamples: Int32; internalFormat: Int32; width: Int32; height: Int32; depth: Int32; fixedSampleLocations: Byte);
+    external 'opengl32.dll' name 'glTextureImage3DMultisampleCoverageNV';
+    
+    static procedure BeginTransformFeedbackNV(primitiveMode: ErrorCode);
+    external 'opengl32.dll' name 'glBeginTransformFeedbackNV';
+    
+    static procedure EndTransformFeedbackNV;
+    external 'opengl32.dll' name 'glEndTransformFeedbackNV';
+    
+    static procedure TransformFeedbackAttribsNV(count: Int32; attribs: ^Int32; bufferMode: ErrorCode);
+    external 'opengl32.dll' name 'glTransformFeedbackAttribsNV';
+    
+    static procedure BindBufferRangeNV(target: ErrorCode; index: UInt32; buffer: UInt32; offset: IntPtr; size: UIntPtr);
+    external 'opengl32.dll' name 'glBindBufferRangeNV';
+    
+    static procedure BindBufferOffsetNV(target: ErrorCode; index: UInt32; buffer: UInt32; offset: IntPtr);
+    external 'opengl32.dll' name 'glBindBufferOffsetNV';
+    
+    static procedure BindBufferBaseNV(target: ErrorCode; index: UInt32; buffer: UInt32);
+    external 'opengl32.dll' name 'glBindBufferBaseNV';
+    
+    static procedure TransformFeedbackVaryingsNV(&program: UInt32; count: Int32; locations: ^Int32; bufferMode: ErrorCode);
+    external 'opengl32.dll' name 'glTransformFeedbackVaryingsNV';
+    
+    static procedure ActiveVaryingNV(&program: UInt32; name: ^Byte);
+    external 'opengl32.dll' name 'glActiveVaryingNV';
+    
+    static function GetVaryingLocationNV(&program: UInt32; name: ^Byte): Int32;
+    external 'opengl32.dll' name 'glGetVaryingLocationNV';
+    
+    static procedure GetActiveVaryingNV(&program: UInt32; index: UInt32; bufSize: Int32; length: ^Int32; size: ^Int32; &type: ^ErrorCode; name: ^Byte);
+    external 'opengl32.dll' name 'glGetActiveVaryingNV';
+    
+    static procedure GetTransformFeedbackVaryingNV(&program: UInt32; index: UInt32; location: ^Int32);
+    external 'opengl32.dll' name 'glGetTransformFeedbackVaryingNV';
+    
+    static procedure TransformFeedbackStreamAttribsNV(count: Int32; attribs: ^Int32; nbuffers: Int32; bufstreams: ^Int32; bufferMode: ErrorCode);
+    external 'opengl32.dll' name 'glTransformFeedbackStreamAttribsNV';
+    
+    static procedure BindTransformFeedbackNV(target: ErrorCode; id: UInt32);
+    external 'opengl32.dll' name 'glBindTransformFeedbackNV';
+    
+    static procedure DeleteTransformFeedbacksNV(n: Int32; ids: ^UInt32);
+    external 'opengl32.dll' name 'glDeleteTransformFeedbacksNV';
+    
+    static procedure GenTransformFeedbacksNV(n: Int32; ids: ^UInt32);
+    external 'opengl32.dll' name 'glGenTransformFeedbacksNV';
+    
+    static function IsTransformFeedbackNV(id: UInt32): Byte;
+    external 'opengl32.dll' name 'glIsTransformFeedbackNV';
+    
+    static procedure PauseTransformFeedbackNV;
+    external 'opengl32.dll' name 'glPauseTransformFeedbackNV';
+    
+    static procedure ResumeTransformFeedbackNV;
+    external 'opengl32.dll' name 'glResumeTransformFeedbackNV';
+    
+    static procedure DrawTransformFeedbackNV(mode: ErrorCode; id: UInt32);
+    external 'opengl32.dll' name 'glDrawTransformFeedbackNV';
+    
+    static procedure VDPAUInitNV(vdpDevice: pointer; getProcAddress: pointer);
+    external 'opengl32.dll' name 'glVDPAUInitNV';
+    
+    static procedure VDPAUFiniNV;
+    external 'opengl32.dll' name 'glVDPAUFiniNV';
+    
+    static function VDPAURegisterVideoSurfaceNV(vdpSurface: pointer; target: ErrorCode; numTextureNames: Int32; textureNames: ^UInt32): GLvdpauSurfaceNV;
+    external 'opengl32.dll' name 'glVDPAURegisterVideoSurfaceNV';
+    
+    static function VDPAURegisterOutputSurfaceNV(vdpSurface: pointer; target: ErrorCode; numTextureNames: Int32; textureNames: ^UInt32): GLvdpauSurfaceNV;
+    external 'opengl32.dll' name 'glVDPAURegisterOutputSurfaceNV';
+    
+    static function VDPAUIsSurfaceNV(surface: GLvdpauSurfaceNV): Byte;
+    external 'opengl32.dll' name 'glVDPAUIsSurfaceNV';
+    
+    static procedure VDPAUUnregisterSurfaceNV(surface: GLvdpauSurfaceNV);
+    external 'opengl32.dll' name 'glVDPAUUnregisterSurfaceNV';
+    
+    static procedure VDPAUGetSurfaceivNV(surface: GLvdpauSurfaceNV; pname: ErrorCode; bufSize: Int32; length: ^Int32; values: ^Int32);
+    external 'opengl32.dll' name 'glVDPAUGetSurfaceivNV';
+    
+    static procedure VDPAUSurfaceAccessNV(surface: GLvdpauSurfaceNV; access: ErrorCode);
+    external 'opengl32.dll' name 'glVDPAUSurfaceAccessNV';
+    
+    static procedure VDPAUMapSurfacesNV(numSurfaces: Int32; surfaces: ^GLvdpauSurfaceNV);
+    external 'opengl32.dll' name 'glVDPAUMapSurfacesNV';
+    
+    static procedure VDPAUUnmapSurfacesNV(numSurface: Int32; surfaces: ^GLvdpauSurfaceNV);
+    external 'opengl32.dll' name 'glVDPAUUnmapSurfacesNV';
+    
+    static function VDPAURegisterVideoSurfaceWithPictureStructureNV(vdpSurface: pointer; target: ErrorCode; numTextureNames: Int32; textureNames: ^UInt32; isFrameStructure: Byte): GLvdpauSurfaceNV;
+    external 'opengl32.dll' name 'glVDPAURegisterVideoSurfaceWithPictureStructureNV';
+    
+    static procedure FlushVertexArrayRangeNV;
+    external 'opengl32.dll' name 'glFlushVertexArrayRangeNV';
+    
+    static procedure VertexArrayRangeNV(length: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glVertexArrayRangeNV';
+    
+    static function AreProgramsResidentNV(n: Int32; programs: ^UInt32; residences: ^Byte): Byte;
+    external 'opengl32.dll' name 'glAreProgramsResidentNV';
+    
+    static procedure BindProgramNV(target: ErrorCode; id: UInt32);
+    external 'opengl32.dll' name 'glBindProgramNV';
+    
+    static procedure DeleteProgramsNV(n: Int32; programs: ^UInt32);
+    external 'opengl32.dll' name 'glDeleteProgramsNV';
+    
+    static procedure ExecuteProgramNV(target: ErrorCode; id: UInt32; &params: ^single);
+    external 'opengl32.dll' name 'glExecuteProgramNV';
+    
+    static procedure GenProgramsNV(n: Int32; programs: ^UInt32);
+    external 'opengl32.dll' name 'glGenProgramsNV';
+    
+    static procedure GetProgramParameterdvNV(target: ErrorCode; index: UInt32; pname: ErrorCode; &params: ^double);
+    external 'opengl32.dll' name 'glGetProgramParameterdvNV';
+    
+    static procedure GetProgramParameterfvNV(target: ErrorCode; index: UInt32; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetProgramParameterfvNV';
+    
+    static procedure GetProgramivNV(id: UInt32; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetProgramivNV';
+    
+    static procedure GetProgramStringNV(id: UInt32; pname: ErrorCode; &program: ^Byte);
+    external 'opengl32.dll' name 'glGetProgramStringNV';
+    
+    static procedure GetTrackMatrixivNV(target: ErrorCode; address: UInt32; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetTrackMatrixivNV';
+    
+    static procedure GetVertexAttribdvNV(index: UInt32; pname: ErrorCode; &params: ^double);
+    external 'opengl32.dll' name 'glGetVertexAttribdvNV';
+    
+    static procedure GetVertexAttribfvNV(index: UInt32; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetVertexAttribfvNV';
+    
+    static procedure GetVertexAttribivNV(index: UInt32; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetVertexAttribivNV';
+    
+    static procedure GetVertexAttribPointervNV(index: UInt32; pname: ErrorCode; _pointer: ^pointer);
+    external 'opengl32.dll' name 'glGetVertexAttribPointervNV';
+    
+    static function IsProgramNV(id: UInt32): Byte;
+    external 'opengl32.dll' name 'glIsProgramNV';
+    
+    static procedure LoadProgramNV(target: ErrorCode; id: UInt32; len: Int32; &program: ^Byte);
+    external 'opengl32.dll' name 'glLoadProgramNV';
+    
+    static procedure ProgramParameter4dNV(target: ErrorCode; index: UInt32; x: double; y: double; z: double; w: double);
+    external 'opengl32.dll' name 'glProgramParameter4dNV';
+    
+    static procedure ProgramParameter4dvNV(target: ErrorCode; index: UInt32; v: ^double);
+    external 'opengl32.dll' name 'glProgramParameter4dvNV';
+    
+    static procedure ProgramParameter4fNV(target: ErrorCode; index: UInt32; x: single; y: single; z: single; w: single);
+    external 'opengl32.dll' name 'glProgramParameter4fNV';
+    
+    static procedure ProgramParameter4fvNV(target: ErrorCode; index: UInt32; v: ^single);
+    external 'opengl32.dll' name 'glProgramParameter4fvNV';
+    
+    static procedure ProgramParameters4dvNV(target: ErrorCode; index: UInt32; count: Int32; v: ^double);
+    external 'opengl32.dll' name 'glProgramParameters4dvNV';
+    
+    static procedure ProgramParameters4fvNV(target: ErrorCode; index: UInt32; count: Int32; v: ^single);
+    external 'opengl32.dll' name 'glProgramParameters4fvNV';
+    
+    static procedure RequestResidentProgramsNV(n: Int32; programs: ^UInt32);
+    external 'opengl32.dll' name 'glRequestResidentProgramsNV';
+    
+    static procedure TrackMatrixNV(target: ErrorCode; address: UInt32; matrix: ErrorCode; transform: ErrorCode);
+    external 'opengl32.dll' name 'glTrackMatrixNV';
+    
+    static procedure VertexAttribPointerNV(index: UInt32; fsize: Int32; &type: ErrorCode; stride: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glVertexAttribPointerNV';
+    
+    static procedure VertexAttrib1dNV(index: UInt32; x: double);
+    external 'opengl32.dll' name 'glVertexAttrib1dNV';
+    
+    static procedure VertexAttrib1dvNV(index: UInt32; v: ^double);
+    external 'opengl32.dll' name 'glVertexAttrib1dvNV';
+    
+    static procedure VertexAttrib1fNV(index: UInt32; x: single);
+    external 'opengl32.dll' name 'glVertexAttrib1fNV';
+    
+    static procedure VertexAttrib1fvNV(index: UInt32; v: ^single);
+    external 'opengl32.dll' name 'glVertexAttrib1fvNV';
+    
+    static procedure VertexAttrib1sNV(index: UInt32; x: Int16);
+    external 'opengl32.dll' name 'glVertexAttrib1sNV';
+    
+    static procedure VertexAttrib1svNV(index: UInt32; v: ^Int16);
+    external 'opengl32.dll' name 'glVertexAttrib1svNV';
+    
+    static procedure VertexAttrib2dNV(index: UInt32; x: double; y: double);
+    external 'opengl32.dll' name 'glVertexAttrib2dNV';
+    
+    static procedure VertexAttrib2dvNV(index: UInt32; v: ^double);
+    external 'opengl32.dll' name 'glVertexAttrib2dvNV';
+    
+    static procedure VertexAttrib2fNV(index: UInt32; x: single; y: single);
+    external 'opengl32.dll' name 'glVertexAttrib2fNV';
+    
+    static procedure VertexAttrib2fvNV(index: UInt32; v: ^single);
+    external 'opengl32.dll' name 'glVertexAttrib2fvNV';
+    
+    static procedure VertexAttrib2sNV(index: UInt32; x: Int16; y: Int16);
+    external 'opengl32.dll' name 'glVertexAttrib2sNV';
+    
+    static procedure VertexAttrib2svNV(index: UInt32; v: ^Int16);
+    external 'opengl32.dll' name 'glVertexAttrib2svNV';
+    
+    static procedure VertexAttrib3dNV(index: UInt32; x: double; y: double; z: double);
+    external 'opengl32.dll' name 'glVertexAttrib3dNV';
+    
+    static procedure VertexAttrib3dvNV(index: UInt32; v: ^double);
+    external 'opengl32.dll' name 'glVertexAttrib3dvNV';
+    
+    static procedure VertexAttrib3fNV(index: UInt32; x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glVertexAttrib3fNV';
+    
+    static procedure VertexAttrib3fvNV(index: UInt32; v: ^single);
+    external 'opengl32.dll' name 'glVertexAttrib3fvNV';
+    
+    static procedure VertexAttrib3sNV(index: UInt32; x: Int16; y: Int16; z: Int16);
+    external 'opengl32.dll' name 'glVertexAttrib3sNV';
+    
+    static procedure VertexAttrib3svNV(index: UInt32; v: ^Int16);
+    external 'opengl32.dll' name 'glVertexAttrib3svNV';
+    
+    static procedure VertexAttrib4dNV(index: UInt32; x: double; y: double; z: double; w: double);
+    external 'opengl32.dll' name 'glVertexAttrib4dNV';
+    
+    static procedure VertexAttrib4dvNV(index: UInt32; v: ^double);
+    external 'opengl32.dll' name 'glVertexAttrib4dvNV';
+    
+    static procedure VertexAttrib4fNV(index: UInt32; x: single; y: single; z: single; w: single);
+    external 'opengl32.dll' name 'glVertexAttrib4fNV';
+    
+    static procedure VertexAttrib4fvNV(index: UInt32; v: ^single);
+    external 'opengl32.dll' name 'glVertexAttrib4fvNV';
+    
+    static procedure VertexAttrib4sNV(index: UInt32; x: Int16; y: Int16; z: Int16; w: Int16);
+    external 'opengl32.dll' name 'glVertexAttrib4sNV';
+    
+    static procedure VertexAttrib4svNV(index: UInt32; v: ^Int16);
+    external 'opengl32.dll' name 'glVertexAttrib4svNV';
+    
+    static procedure VertexAttrib4ubNV(index: UInt32; x: Byte; y: Byte; z: Byte; w: Byte);
+    external 'opengl32.dll' name 'glVertexAttrib4ubNV';
+    
+    static procedure VertexAttrib4ubvNV(index: UInt32; v: ^Byte);
+    external 'opengl32.dll' name 'glVertexAttrib4ubvNV';
+    
+    static procedure VertexAttribs1dvNV(index: UInt32; count: Int32; v: ^double);
+    external 'opengl32.dll' name 'glVertexAttribs1dvNV';
+    
+    static procedure VertexAttribs1fvNV(index: UInt32; count: Int32; v: ^single);
+    external 'opengl32.dll' name 'glVertexAttribs1fvNV';
+    
+    static procedure VertexAttribs1svNV(index: UInt32; count: Int32; v: ^Int16);
+    external 'opengl32.dll' name 'glVertexAttribs1svNV';
+    
+    static procedure VertexAttribs2dvNV(index: UInt32; count: Int32; v: ^double);
+    external 'opengl32.dll' name 'glVertexAttribs2dvNV';
+    
+    static procedure VertexAttribs2fvNV(index: UInt32; count: Int32; v: ^single);
+    external 'opengl32.dll' name 'glVertexAttribs2fvNV';
+    
+    static procedure VertexAttribs2svNV(index: UInt32; count: Int32; v: ^Int16);
+    external 'opengl32.dll' name 'glVertexAttribs2svNV';
+    
+    static procedure VertexAttribs3dvNV(index: UInt32; count: Int32; v: ^double);
+    external 'opengl32.dll' name 'glVertexAttribs3dvNV';
+    
+    static procedure VertexAttribs3fvNV(index: UInt32; count: Int32; v: ^single);
+    external 'opengl32.dll' name 'glVertexAttribs3fvNV';
+    
+    static procedure VertexAttribs3svNV(index: UInt32; count: Int32; v: ^Int16);
+    external 'opengl32.dll' name 'glVertexAttribs3svNV';
+    
+    static procedure VertexAttribs4dvNV(index: UInt32; count: Int32; v: ^double);
+    external 'opengl32.dll' name 'glVertexAttribs4dvNV';
+    
+    static procedure VertexAttribs4fvNV(index: UInt32; count: Int32; v: ^single);
+    external 'opengl32.dll' name 'glVertexAttribs4fvNV';
+    
+    static procedure VertexAttribs4svNV(index: UInt32; count: Int32; v: ^Int16);
+    external 'opengl32.dll' name 'glVertexAttribs4svNV';
+    
+    static procedure VertexAttribs4ubvNV(index: UInt32; count: Int32; v: ^Byte);
+    external 'opengl32.dll' name 'glVertexAttribs4ubvNV';
+    
+    static procedure BeginVideoCaptureNV(video_capture_slot: UInt32);
+    external 'opengl32.dll' name 'glBeginVideoCaptureNV';
+    
+    static procedure BindVideoCaptureStreamBufferNV(video_capture_slot: UInt32; stream: UInt32; frame_region: ErrorCode; offset: IntPtr);
+    external 'opengl32.dll' name 'glBindVideoCaptureStreamBufferNV';
+    
+    static procedure BindVideoCaptureStreamTextureNV(video_capture_slot: UInt32; stream: UInt32; frame_region: ErrorCode; target: ErrorCode; texture: UInt32);
+    external 'opengl32.dll' name 'glBindVideoCaptureStreamTextureNV';
+    
+    static procedure EndVideoCaptureNV(video_capture_slot: UInt32);
+    external 'opengl32.dll' name 'glEndVideoCaptureNV';
+    
+    static procedure GetVideoCaptureivNV(video_capture_slot: UInt32; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetVideoCaptureivNV';
+    
+    static procedure GetVideoCaptureStreamivNV(video_capture_slot: UInt32; stream: UInt32; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetVideoCaptureStreamivNV';
+    
+    static procedure GetVideoCaptureStreamfvNV(video_capture_slot: UInt32; stream: UInt32; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetVideoCaptureStreamfvNV';
+    
+    static procedure GetVideoCaptureStreamdvNV(video_capture_slot: UInt32; stream: UInt32; pname: ErrorCode; &params: ^double);
+    external 'opengl32.dll' name 'glGetVideoCaptureStreamdvNV';
+    
+    static function VideoCaptureNV(video_capture_slot: UInt32; sequence_num: ^UInt32; capture_time: ^UInt64): ErrorCode;
+    external 'opengl32.dll' name 'glVideoCaptureNV';
+    
+    static procedure VideoCaptureStreamParameterivNV(video_capture_slot: UInt32; stream: UInt32; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glVideoCaptureStreamParameterivNV';
+    
+    static procedure VideoCaptureStreamParameterfvNV(video_capture_slot: UInt32; stream: UInt32; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glVideoCaptureStreamParameterfvNV';
+    
+    static procedure VideoCaptureStreamParameterdvNV(video_capture_slot: UInt32; stream: UInt32; pname: ErrorCode; &params: ^double);
+    external 'opengl32.dll' name 'glVideoCaptureStreamParameterdvNV';
+    
+    {$endregion NVIDIA}
+    
+    {$region PGI}
+    
+    static procedure HintPGI(target: ErrorCode; mode: Int32);
+    external 'opengl32.dll' name 'glHintPGI';
+    
+    {$endregion PGI}
+    
+  end;
+  
+  /// Расширения, которые встречаются только у видеокарт Radeon
+  /// то есть AMD + ATI
+  gl_Radeon = static class
+    
+    {$region AMD}
+    
+    static procedure RenderbufferStorageMultisampleAdvancedAMD(target: UInt32; samples: Int32; storageSamples: Int32; internalformat: UInt32; width: Int32; height: Int32);
+    external 'opengl32.dll' name 'glRenderbufferStorageMultisampleAdvancedAMD';
+    
+    static procedure NamedRenderbufferStorageMultisampleAdvancedAMD(renderbuffer: UInt32; samples: Int32; storageSamples: Int32; internalformat: UInt32; width: Int32; height: Int32);
+    external 'opengl32.dll' name 'glNamedRenderbufferStorageMultisampleAdvancedAMD';
+    
+    static procedure GetPerfMonitorGroupsAMD(numGroups: ^Int32; groupsSize: Int32; groups: ^UInt32);
+    external 'opengl32.dll' name 'glGetPerfMonitorGroupsAMD';
+    
+    static procedure GetPerfMonitorCountersAMD(group: UInt32; numCounters: ^Int32; maxActiveCounters: ^Int32; counterSize: Int32; counters: ^UInt32);
+    external 'opengl32.dll' name 'glGetPerfMonitorCountersAMD';
+    
+    static procedure GetPerfMonitorGroupStringAMD(group: UInt32; bufSize: Int32; length: ^Int32; groupString: ^SByte);
+    external 'opengl32.dll' name 'glGetPerfMonitorGroupStringAMD';
+    
+    static procedure GetPerfMonitorCounterStringAMD(group: UInt32; counter: UInt32; bufSize: Int32; length: ^Int32; counterString: ^SByte);
+    external 'opengl32.dll' name 'glGetPerfMonitorCounterStringAMD';
+    
+    static procedure GetPerfMonitorCounterInfoAMD(group: UInt32; counter: UInt32; pname: UInt32; data: pointer);
+    external 'opengl32.dll' name 'glGetPerfMonitorCounterInfoAMD';
+    
+    static procedure GenPerfMonitorsAMD(n: Int32; monitors: ^UInt32);
+    external 'opengl32.dll' name 'glGenPerfMonitorsAMD';
+    
+    static procedure DeletePerfMonitorsAMD(n: Int32; monitors: ^UInt32);
+    external 'opengl32.dll' name 'glDeletePerfMonitorsAMD';
+    
+    static procedure SelectPerfMonitorCountersAMD(monitor: UInt32; enable: boolean; group: UInt32; numCounters: Int32; counterList: ^UInt32);
+    external 'opengl32.dll' name 'glSelectPerfMonitorCountersAMD';
+    
+    static procedure BeginPerfMonitorAMD(monitor: UInt32);
+    external 'opengl32.dll' name 'glBeginPerfMonitorAMD';
+    
+    static procedure EndPerfMonitorAMD(monitor: UInt32);
+    external 'opengl32.dll' name 'glEndPerfMonitorAMD';
+    
+    static procedure GetPerfMonitorCounterDataAMD(monitor: UInt32; pname: UInt32; dataSize: Int32; data: ^UInt32; bytesWritten: ^Int32);
+    external 'opengl32.dll' name 'glGetPerfMonitorCounterDataAMD';
+    
+    static procedure DebugMessageEnableAMD(category: ErrorCode; severity: ErrorCode; count: Int32; ids: ^UInt32; enabled: Byte);
+    external 'opengl32.dll' name 'glDebugMessageEnableAMD';
+    
+    static procedure DebugMessageInsertAMD(category: ErrorCode; severity: ErrorCode; id: UInt32; length: Int32; buf: ^Byte);
+    external 'opengl32.dll' name 'glDebugMessageInsertAMD';
+    
+    static procedure DebugMessageCallbackAMD(callback: GLDEBUGPROCAMD; userParam: pointer);
+    external 'opengl32.dll' name 'glDebugMessageCallbackAMD';
+    
+    static function GetDebugMessageLogAMD(count: UInt32; bufsize: Int32; categories: ^ErrorCode; severities: ^UInt32; ids: ^UInt32; lengths: ^Int32; message: ^Byte): UInt32;
+    external 'opengl32.dll' name 'glGetDebugMessageLogAMD';
+    
+    static procedure BlendFuncIndexedAMD(buf: UInt32; src: ErrorCode; dst: ErrorCode);
+    external 'opengl32.dll' name 'glBlendFuncIndexedAMD';
+    
+    static procedure BlendFuncSeparateIndexedAMD(buf: UInt32; srcRGB: ErrorCode; dstRGB: ErrorCode; srcAlpha: ErrorCode; dstAlpha: ErrorCode);
+    external 'opengl32.dll' name 'glBlendFuncSeparateIndexedAMD';
+    
+    static procedure BlendEquationIndexedAMD(buf: UInt32; mode: ErrorCode);
+    external 'opengl32.dll' name 'glBlendEquationIndexedAMD';
+    
+    static procedure BlendEquationSeparateIndexedAMD(buf: UInt32; modeRGB: ErrorCode; modeAlpha: ErrorCode);
+    external 'opengl32.dll' name 'glBlendEquationSeparateIndexedAMD';
+    
+    static procedure FramebufferSamplePositionsfvAMD(target: ErrorCode; numsamples: UInt32; pixelindex: UInt32; values: ^single);
+    external 'opengl32.dll' name 'glFramebufferSamplePositionsfvAMD';
+    
+    static procedure NamedFramebufferSamplePositionsfvAMD(framebuffer: UInt32; numsamples: UInt32; pixelindex: UInt32; values: ^single);
+    external 'opengl32.dll' name 'glNamedFramebufferSamplePositionsfvAMD';
+    
+    static procedure GetFramebufferParameterfvAMD(target: ErrorCode; pname: ErrorCode; numsamples: UInt32; pixelindex: UInt32; size: Int32; values: ^single);
+    external 'opengl32.dll' name 'glGetFramebufferParameterfvAMD';
+    
+    static procedure GetNamedFramebufferParameterfvAMD(framebuffer: UInt32; pname: ErrorCode; numsamples: UInt32; pixelindex: UInt32; size: Int32; values: ^single);
+    external 'opengl32.dll' name 'glGetNamedFramebufferParameterfvAMD';
+    
+    static procedure VertexAttribParameteriAMD(index: UInt32; pname: ErrorCode; param: Int32);
+    external 'opengl32.dll' name 'glVertexAttribParameteriAMD';
+    
+    static procedure MultiDrawArraysIndirectAMD(mode: ErrorCode; indirect: pointer; primcount: Int32; stride: Int32);
+    external 'opengl32.dll' name 'glMultiDrawArraysIndirectAMD';
+    
+    static procedure MultiDrawElementsIndirectAMD(mode: ErrorCode; &type: ErrorCode; indirect: pointer; primcount: Int32; stride: Int32);
+    external 'opengl32.dll' name 'glMultiDrawElementsIndirectAMD';
+    
+    static procedure GenNamesAMD(identifier: ErrorCode; num: UInt32; names: ^UInt32);
+    external 'opengl32.dll' name 'glGenNamesAMD';
+    
+    static procedure DeleteNamesAMD(identifier: ErrorCode; num: UInt32; names: ^UInt32);
+    external 'opengl32.dll' name 'glDeleteNamesAMD';
+    
+    static function IsNameAMD(identifier: ErrorCode; name: UInt32): Byte;
+    external 'opengl32.dll' name 'glIsNameAMD';
+    
+    static procedure QueryObjectParameteruiAMD(target: ErrorCode; id: UInt32; pname: ErrorCode; param: UInt32);
+    external 'opengl32.dll' name 'glQueryObjectParameteruiAMD';
+    
+    static procedure SetMultisamplefvAMD(pname: ErrorCode; index: UInt32; val: ^single);
+    external 'opengl32.dll' name 'glSetMultisamplefvAMD';
+    
+    static procedure TexStorageSparseAMD(target: ErrorCode; internalFormat: ErrorCode; width: Int32; height: Int32; depth: Int32; layers: Int32; flags: UInt32);
+    external 'opengl32.dll' name 'glTexStorageSparseAMD';
+    
+    static procedure TextureStorageSparseAMD(texture: UInt32; target: ErrorCode; internalFormat: ErrorCode; width: Int32; height: Int32; depth: Int32; layers: Int32; flags: UInt32);
+    external 'opengl32.dll' name 'glTextureStorageSparseAMD';
+    
+    static procedure StencilOpValueAMD(face: ErrorCode; value: UInt32);
+    external 'opengl32.dll' name 'glStencilOpValueAMD';
+    
+    static procedure TessellationFactorAMD(factor: single);
+    external 'opengl32.dll' name 'glTessellationFactorAMD';
+    
+    static procedure TessellationModeAMD(mode: ErrorCode);
+    external 'opengl32.dll' name 'glTessellationModeAMD';
+    
+    {$endregion AMD}
+    
+    {$region ATI}
+    
+    static procedure DrawBuffersATI(n: Int32; bufs: ^ErrorCode);
+    external 'opengl32.dll' name 'glDrawBuffersATI';
+    
+    static procedure ElementPointerATI(&type: ErrorCode; _pointer: pointer);
+    external 'opengl32.dll' name 'glElementPointerATI';
+    
+    static procedure DrawElementArrayATI(mode: ErrorCode; count: Int32);
+    external 'opengl32.dll' name 'glDrawElementArrayATI';
+    
+    static procedure DrawRangeElementArrayATI(mode: ErrorCode; start: UInt32; &end: UInt32; count: Int32);
+    external 'opengl32.dll' name 'glDrawRangeElementArrayATI';
+    
+    static procedure TexBumpParameterivATI(pname: ErrorCode; param: ^Int32);
+    external 'opengl32.dll' name 'glTexBumpParameterivATI';
+    
+    static procedure TexBumpParameterfvATI(pname: ErrorCode; param: ^single);
+    external 'opengl32.dll' name 'glTexBumpParameterfvATI';
+    
+    static procedure GetTexBumpParameterivATI(pname: ErrorCode; param: ^Int32);
+    external 'opengl32.dll' name 'glGetTexBumpParameterivATI';
+    
+    static procedure GetTexBumpParameterfvATI(pname: ErrorCode; param: ^single);
+    external 'opengl32.dll' name 'glGetTexBumpParameterfvATI';
+    
+    static function GenFragmentShadersATI(range: UInt32): UInt32;
+    external 'opengl32.dll' name 'glGenFragmentShadersATI';
+    
+    static procedure BindFragmentShaderATI(id: UInt32);
+    external 'opengl32.dll' name 'glBindFragmentShaderATI';
+    
+    static procedure DeleteFragmentShaderATI(id: UInt32);
+    external 'opengl32.dll' name 'glDeleteFragmentShaderATI';
+    
+    static procedure BeginFragmentShaderATI;
+    external 'opengl32.dll' name 'glBeginFragmentShaderATI';
+    
+    static procedure EndFragmentShaderATI;
+    external 'opengl32.dll' name 'glEndFragmentShaderATI';
+    
+    static procedure PassTexCoordATI(dst: UInt32; coord: UInt32; swizzle: ErrorCode);
+    external 'opengl32.dll' name 'glPassTexCoordATI';
+    
+    static procedure SampleMapATI(dst: UInt32; interp: UInt32; swizzle: ErrorCode);
+    external 'opengl32.dll' name 'glSampleMapATI';
+    
+    static procedure ColorFragmentOp1ATI(op: ErrorCode; dst: UInt32; dstMask: UInt32; dstMod: UInt32; arg1: UInt32; arg1Rep: UInt32; arg1Mod: UInt32);
+    external 'opengl32.dll' name 'glColorFragmentOp1ATI';
+    
+    static procedure ColorFragmentOp2ATI(op: ErrorCode; dst: UInt32; dstMask: UInt32; dstMod: UInt32; arg1: UInt32; arg1Rep: UInt32; arg1Mod: UInt32; arg2: UInt32; arg2Rep: UInt32; arg2Mod: UInt32);
+    external 'opengl32.dll' name 'glColorFragmentOp2ATI';
+    
+    static procedure ColorFragmentOp3ATI(op: ErrorCode; dst: UInt32; dstMask: UInt32; dstMod: UInt32; arg1: UInt32; arg1Rep: UInt32; arg1Mod: UInt32; arg2: UInt32; arg2Rep: UInt32; arg2Mod: UInt32; arg3: UInt32; arg3Rep: UInt32; arg3Mod: UInt32);
+    external 'opengl32.dll' name 'glColorFragmentOp3ATI';
+    
+    static procedure AlphaFragmentOp1ATI(op: ErrorCode; dst: UInt32; dstMod: UInt32; arg1: UInt32; arg1Rep: UInt32; arg1Mod: UInt32);
+    external 'opengl32.dll' name 'glAlphaFragmentOp1ATI';
+    
+    static procedure AlphaFragmentOp2ATI(op: ErrorCode; dst: UInt32; dstMod: UInt32; arg1: UInt32; arg1Rep: UInt32; arg1Mod: UInt32; arg2: UInt32; arg2Rep: UInt32; arg2Mod: UInt32);
+    external 'opengl32.dll' name 'glAlphaFragmentOp2ATI';
+    
+    static procedure AlphaFragmentOp3ATI(op: ErrorCode; dst: UInt32; dstMod: UInt32; arg1: UInt32; arg1Rep: UInt32; arg1Mod: UInt32; arg2: UInt32; arg2Rep: UInt32; arg2Mod: UInt32; arg3: UInt32; arg3Rep: UInt32; arg3Mod: UInt32);
+    external 'opengl32.dll' name 'glAlphaFragmentOp3ATI';
+    
+    static procedure SetFragmentShaderConstantATI(dst: UInt32; value: ^single);
+    external 'opengl32.dll' name 'glSetFragmentShaderConstantATI';
+    
+    static function MapObjectBufferATI(buffer: UInt32): pointer;
+    external 'opengl32.dll' name 'glMapObjectBufferATI';
+    
+    static procedure UnmapObjectBufferATI(buffer: UInt32);
+    external 'opengl32.dll' name 'glUnmapObjectBufferATI';
+    
+    static procedure PNTrianglesiATI(pname: ErrorCode; param: Int32);
+    external 'opengl32.dll' name 'glPNTrianglesiATI';
+    
+    static procedure PNTrianglesfATI(pname: ErrorCode; param: single);
+    external 'opengl32.dll' name 'glPNTrianglesfATI';
+    
+    static procedure StencilOpSeparateATI(face: ErrorCode; sfail: ErrorCode; dpfail: ErrorCode; dppass: ErrorCode);
+    external 'opengl32.dll' name 'glStencilOpSeparateATI';
+    
+    static procedure StencilFuncSeparateATI(frontfunc: ErrorCode; backfunc: ErrorCode; ref: Int32; mask: UInt32);
+    external 'opengl32.dll' name 'glStencilFuncSeparateATI';
+    
+    static function NewObjectBufferATI(size: Int32; _pointer: pointer; usage: ErrorCode): UInt32;
+    external 'opengl32.dll' name 'glNewObjectBufferATI';
+    
+    static function IsObjectBufferATI(buffer: UInt32): Byte;
+    external 'opengl32.dll' name 'glIsObjectBufferATI';
+    
+    static procedure UpdateObjectBufferATI(buffer: UInt32; offset: UInt32; size: Int32; _pointer: pointer; preserve: ErrorCode);
+    external 'opengl32.dll' name 'glUpdateObjectBufferATI';
+    
+    static procedure GetObjectBufferfvATI(buffer: UInt32; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetObjectBufferfvATI';
+    
+    static procedure GetObjectBufferivATI(buffer: UInt32; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetObjectBufferivATI';
+    
+    static procedure FreeObjectBufferATI(buffer: UInt32);
+    external 'opengl32.dll' name 'glFreeObjectBufferATI';
+    
+    static procedure ArrayObjectATI(&array: ErrorCode; size: Int32; &type: ErrorCode; stride: Int32; buffer: UInt32; offset: UInt32);
+    external 'opengl32.dll' name 'glArrayObjectATI';
+    
+    static procedure GetArrayObjectfvATI(&array: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetArrayObjectfvATI';
+    
+    static procedure GetArrayObjectivATI(&array: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetArrayObjectivATI';
+    
+    static procedure VariantArrayObjectATI(id: UInt32; &type: ErrorCode; stride: Int32; buffer: UInt32; offset: UInt32);
+    external 'opengl32.dll' name 'glVariantArrayObjectATI';
+    
+    static procedure GetVariantArrayObjectfvATI(id: UInt32; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetVariantArrayObjectfvATI';
+    
+    static procedure GetVariantArrayObjectivATI(id: UInt32; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetVariantArrayObjectivATI';
+    
+    static procedure VertexAttribArrayObjectATI(index: UInt32; size: Int32; &type: ErrorCode; normalized: Byte; stride: Int32; buffer: UInt32; offset: UInt32);
+    external 'opengl32.dll' name 'glVertexAttribArrayObjectATI';
+    
+    static procedure GetVertexAttribArrayObjectfvATI(index: UInt32; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetVertexAttribArrayObjectfvATI';
+    
+    static procedure GetVertexAttribArrayObjectivATI(index: UInt32; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetVertexAttribArrayObjectivATI';
+    
+    static procedure VertexStream1sATI(stream: ErrorCode; x: Int16);
+    external 'opengl32.dll' name 'glVertexStream1sATI';
+    
+    static procedure VertexStream1svATI(stream: ErrorCode; coords: ^Int16);
+    external 'opengl32.dll' name 'glVertexStream1svATI';
+    
+    static procedure VertexStream1iATI(stream: ErrorCode; x: Int32);
+    external 'opengl32.dll' name 'glVertexStream1iATI';
+    
+    static procedure VertexStream1ivATI(stream: ErrorCode; coords: ^Int32);
+    external 'opengl32.dll' name 'glVertexStream1ivATI';
+    
+    static procedure VertexStream1fATI(stream: ErrorCode; x: single);
+    external 'opengl32.dll' name 'glVertexStream1fATI';
+    
+    static procedure VertexStream1fvATI(stream: ErrorCode; coords: ^single);
+    external 'opengl32.dll' name 'glVertexStream1fvATI';
+    
+    static procedure VertexStream1dATI(stream: ErrorCode; x: double);
+    external 'opengl32.dll' name 'glVertexStream1dATI';
+    
+    static procedure VertexStream1dvATI(stream: ErrorCode; coords: ^double);
+    external 'opengl32.dll' name 'glVertexStream1dvATI';
+    
+    static procedure VertexStream2sATI(stream: ErrorCode; x: Int16; y: Int16);
+    external 'opengl32.dll' name 'glVertexStream2sATI';
+    
+    static procedure VertexStream2svATI(stream: ErrorCode; coords: ^Int16);
+    external 'opengl32.dll' name 'glVertexStream2svATI';
+    
+    static procedure VertexStream2iATI(stream: ErrorCode; x: Int32; y: Int32);
+    external 'opengl32.dll' name 'glVertexStream2iATI';
+    
+    static procedure VertexStream2ivATI(stream: ErrorCode; coords: ^Int32);
+    external 'opengl32.dll' name 'glVertexStream2ivATI';
+    
+    static procedure VertexStream2fATI(stream: ErrorCode; x: single; y: single);
+    external 'opengl32.dll' name 'glVertexStream2fATI';
+    
+    static procedure VertexStream2fvATI(stream: ErrorCode; coords: ^single);
+    external 'opengl32.dll' name 'glVertexStream2fvATI';
+    
+    static procedure VertexStream2dATI(stream: ErrorCode; x: double; y: double);
+    external 'opengl32.dll' name 'glVertexStream2dATI';
+    
+    static procedure VertexStream2dvATI(stream: ErrorCode; coords: ^double);
+    external 'opengl32.dll' name 'glVertexStream2dvATI';
+    
+    static procedure VertexStream3sATI(stream: ErrorCode; x: Int16; y: Int16; z: Int16);
+    external 'opengl32.dll' name 'glVertexStream3sATI';
+    
+    static procedure VertexStream3svATI(stream: ErrorCode; coords: ^Int16);
+    external 'opengl32.dll' name 'glVertexStream3svATI';
+    
+    static procedure VertexStream3iATI(stream: ErrorCode; x: Int32; y: Int32; z: Int32);
+    external 'opengl32.dll' name 'glVertexStream3iATI';
+    
+    static procedure VertexStream3ivATI(stream: ErrorCode; coords: ^Int32);
+    external 'opengl32.dll' name 'glVertexStream3ivATI';
+    
+    static procedure VertexStream3fATI(stream: ErrorCode; x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glVertexStream3fATI';
+    
+    static procedure VertexStream3fvATI(stream: ErrorCode; coords: ^single);
+    external 'opengl32.dll' name 'glVertexStream3fvATI';
+    
+    static procedure VertexStream3dATI(stream: ErrorCode; x: double; y: double; z: double);
+    external 'opengl32.dll' name 'glVertexStream3dATI';
+    
+    static procedure VertexStream3dvATI(stream: ErrorCode; coords: ^double);
+    external 'opengl32.dll' name 'glVertexStream3dvATI';
+    
+    static procedure VertexStream4sATI(stream: ErrorCode; x: Int16; y: Int16; z: Int16; w: Int16);
+    external 'opengl32.dll' name 'glVertexStream4sATI';
+    
+    static procedure VertexStream4svATI(stream: ErrorCode; coords: ^Int16);
+    external 'opengl32.dll' name 'glVertexStream4svATI';
+    
+    static procedure VertexStream4iATI(stream: ErrorCode; x: Int32; y: Int32; z: Int32; w: Int32);
+    external 'opengl32.dll' name 'glVertexStream4iATI';
+    
+    static procedure VertexStream4ivATI(stream: ErrorCode; coords: ^Int32);
+    external 'opengl32.dll' name 'glVertexStream4ivATI';
+    
+    static procedure VertexStream4fATI(stream: ErrorCode; x: single; y: single; z: single; w: single);
+    external 'opengl32.dll' name 'glVertexStream4fATI';
+    
+    static procedure VertexStream4fvATI(stream: ErrorCode; coords: ^single);
+    external 'opengl32.dll' name 'glVertexStream4fvATI';
+    
+    static procedure VertexStream4dATI(stream: ErrorCode; x: double; y: double; z: double; w: double);
+    external 'opengl32.dll' name 'glVertexStream4dATI';
+    
+    static procedure VertexStream4dvATI(stream: ErrorCode; coords: ^double);
+    external 'opengl32.dll' name 'glVertexStream4dvATI';
+    
+    static procedure NormalStream3bATI(stream: ErrorCode; nx: SByte; ny: SByte; nz: SByte);
+    external 'opengl32.dll' name 'glNormalStream3bATI';
+    
+    static procedure NormalStream3bvATI(stream: ErrorCode; coords: ^SByte);
+    external 'opengl32.dll' name 'glNormalStream3bvATI';
+    
+    static procedure NormalStream3sATI(stream: ErrorCode; nx: Int16; ny: Int16; nz: Int16);
+    external 'opengl32.dll' name 'glNormalStream3sATI';
+    
+    static procedure NormalStream3svATI(stream: ErrorCode; coords: ^Int16);
+    external 'opengl32.dll' name 'glNormalStream3svATI';
+    
+    static procedure NormalStream3iATI(stream: ErrorCode; nx: Int32; ny: Int32; nz: Int32);
+    external 'opengl32.dll' name 'glNormalStream3iATI';
+    
+    static procedure NormalStream3ivATI(stream: ErrorCode; coords: ^Int32);
+    external 'opengl32.dll' name 'glNormalStream3ivATI';
+    
+    static procedure NormalStream3fATI(stream: ErrorCode; nx: single; ny: single; nz: single);
+    external 'opengl32.dll' name 'glNormalStream3fATI';
+    
+    static procedure NormalStream3fvATI(stream: ErrorCode; coords: ^single);
+    external 'opengl32.dll' name 'glNormalStream3fvATI';
+    
+    static procedure NormalStream3dATI(stream: ErrorCode; nx: double; ny: double; nz: double);
+    external 'opengl32.dll' name 'glNormalStream3dATI';
+    
+    static procedure NormalStream3dvATI(stream: ErrorCode; coords: ^double);
+    external 'opengl32.dll' name 'glNormalStream3dvATI';
+    
+    static procedure ClientActiveVertexStreamATI(stream: ErrorCode);
+    external 'opengl32.dll' name 'glClientActiveVertexStreamATI';
+    
+    static procedure VertexBlendEnviATI(pname: ErrorCode; param: Int32);
+    external 'opengl32.dll' name 'glVertexBlendEnviATI';
+    
+    static procedure VertexBlendEnvfATI(pname: ErrorCode; param: single);
+    external 'opengl32.dll' name 'glVertexBlendEnvfATI';
+    
+    {$endregion ATI}
+    
+  end;
+  
+  /// Расширения, которые встречаются только у железа от Sun Microsystems, Inc.
+  /// (Это та же компания которой пренадлежит Java)
+  gl_SUN = static class
+    
+    {$region SUN}
+    
+    static procedure FinishTextureSUNX;
+    external 'opengl32.dll' name 'glFinishTextureSUNX';
+    
+    static procedure GlobalAlphaFactorbSUN(factor: SByte);
+    external 'opengl32.dll' name 'glGlobalAlphaFactorbSUN';
+    
+    static procedure GlobalAlphaFactorsSUN(factor: Int16);
+    external 'opengl32.dll' name 'glGlobalAlphaFactorsSUN';
+    
+    static procedure GlobalAlphaFactoriSUN(factor: Int32);
+    external 'opengl32.dll' name 'glGlobalAlphaFactoriSUN';
+    
+    static procedure GlobalAlphaFactorfSUN(factor: single);
+    external 'opengl32.dll' name 'glGlobalAlphaFactorfSUN';
+    
+    static procedure GlobalAlphaFactordSUN(factor: double);
+    external 'opengl32.dll' name 'glGlobalAlphaFactordSUN';
+    
+    static procedure GlobalAlphaFactorubSUN(factor: Byte);
+    external 'opengl32.dll' name 'glGlobalAlphaFactorubSUN';
+    
+    static procedure GlobalAlphaFactorusSUN(factor: UInt16);
+    external 'opengl32.dll' name 'glGlobalAlphaFactorusSUN';
+    
+    static procedure GlobalAlphaFactoruiSUN(factor: UInt32);
+    external 'opengl32.dll' name 'glGlobalAlphaFactoruiSUN';
+    
+    static procedure DrawMeshArraysSUN(mode: ErrorCode; first: Int32; count: Int32; width: Int32);
+    external 'opengl32.dll' name 'glDrawMeshArraysSUN';
+    
+    static procedure ReplacementCodeuiSUN(code: UInt32);
+    external 'opengl32.dll' name 'glReplacementCodeuiSUN';
+    
+    static procedure ReplacementCodeusSUN(code: UInt16);
+    external 'opengl32.dll' name 'glReplacementCodeusSUN';
+    
+    static procedure ReplacementCodeubSUN(code: Byte);
+    external 'opengl32.dll' name 'glReplacementCodeubSUN';
+    
+    static procedure ReplacementCodeuivSUN(code: ^UInt32);
+    external 'opengl32.dll' name 'glReplacementCodeuivSUN';
+    
+    static procedure ReplacementCodeusvSUN(code: ^UInt16);
+    external 'opengl32.dll' name 'glReplacementCodeusvSUN';
+    
+    static procedure ReplacementCodeubvSUN(code: ^Byte);
+    external 'opengl32.dll' name 'glReplacementCodeubvSUN';
+    
+    static procedure ReplacementCodePointerSUN(&type: ErrorCode; stride: Int32; _pointer: ^pointer);
+    external 'opengl32.dll' name 'glReplacementCodePointerSUN';
+    
+    static procedure Color4ubVertex2fSUN(r: Byte; g: Byte; b: Byte; a: Byte; x: single; y: single);
+    external 'opengl32.dll' name 'glColor4ubVertex2fSUN';
+    
+    static procedure Color4ubVertex2fvSUN(c: ^Byte; v: ^single);
+    external 'opengl32.dll' name 'glColor4ubVertex2fvSUN';
+    
+    static procedure Color4ubVertex3fSUN(r: Byte; g: Byte; b: Byte; a: Byte; x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glColor4ubVertex3fSUN';
+    
+    static procedure Color4ubVertex3fvSUN(c: ^Byte; v: ^single);
+    external 'opengl32.dll' name 'glColor4ubVertex3fvSUN';
+    
+    static procedure Color3fVertex3fSUN(r: single; g: single; b: single; x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glColor3fVertex3fSUN';
+    
+    static procedure Color3fVertex3fvSUN(c: ^single; v: ^single);
+    external 'opengl32.dll' name 'glColor3fVertex3fvSUN';
+    
+    static procedure Normal3fVertex3fSUN(nx: single; ny: single; nz: single; x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glNormal3fVertex3fSUN';
+    
+    static procedure Normal3fVertex3fvSUN(n: ^single; v: ^single);
+    external 'opengl32.dll' name 'glNormal3fVertex3fvSUN';
+    
+    static procedure Color4fNormal3fVertex3fSUN(r: single; g: single; b: single; a: single; nx: single; ny: single; nz: single; x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glColor4fNormal3fVertex3fSUN';
+    
+    static procedure Color4fNormal3fVertex3fvSUN(c: ^single; n: ^single; v: ^single);
+    external 'opengl32.dll' name 'glColor4fNormal3fVertex3fvSUN';
+    
+    static procedure TexCoord2fVertex3fSUN(s: single; t: single; x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glTexCoord2fVertex3fSUN';
+    
+    static procedure TexCoord2fVertex3fvSUN(tc: ^single; v: ^single);
+    external 'opengl32.dll' name 'glTexCoord2fVertex3fvSUN';
+    
+    static procedure TexCoord4fVertex4fSUN(s: single; t: single; p: single; q: single; x: single; y: single; z: single; w: single);
+    external 'opengl32.dll' name 'glTexCoord4fVertex4fSUN';
+    
+    static procedure TexCoord4fVertex4fvSUN(tc: ^single; v: ^single);
+    external 'opengl32.dll' name 'glTexCoord4fVertex4fvSUN';
+    
+    static procedure TexCoord2fColor4ubVertex3fSUN(s: single; t: single; r: Byte; g: Byte; b: Byte; a: Byte; x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glTexCoord2fColor4ubVertex3fSUN';
+    
+    static procedure TexCoord2fColor4ubVertex3fvSUN(tc: ^single; c: ^Byte; v: ^single);
+    external 'opengl32.dll' name 'glTexCoord2fColor4ubVertex3fvSUN';
+    
+    static procedure TexCoord2fColor3fVertex3fSUN(s: single; t: single; r: single; g: single; b: single; x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glTexCoord2fColor3fVertex3fSUN';
+    
+    static procedure TexCoord2fColor3fVertex3fvSUN(tc: ^single; c: ^single; v: ^single);
+    external 'opengl32.dll' name 'glTexCoord2fColor3fVertex3fvSUN';
+    
+    static procedure TexCoord2fNormal3fVertex3fSUN(s: single; t: single; nx: single; ny: single; nz: single; x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glTexCoord2fNormal3fVertex3fSUN';
+    
+    static procedure TexCoord2fNormal3fVertex3fvSUN(tc: ^single; n: ^single; v: ^single);
+    external 'opengl32.dll' name 'glTexCoord2fNormal3fVertex3fvSUN';
+    
+    static procedure TexCoord2fColor4fNormal3fVertex3fSUN(s: single; t: single; r: single; g: single; b: single; a: single; nx: single; ny: single; nz: single; x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glTexCoord2fColor4fNormal3fVertex3fSUN';
+    
+    static procedure TexCoord2fColor4fNormal3fVertex3fvSUN(tc: ^single; c: ^single; n: ^single; v: ^single);
+    external 'opengl32.dll' name 'glTexCoord2fColor4fNormal3fVertex3fvSUN';
+    
+    static procedure TexCoord4fColor4fNormal3fVertex4fSUN(s: single; t: single; p: single; q: single; r: single; g: single; b: single; a: single; nx: single; ny: single; nz: single; x: single; y: single; z: single; w: single);
+    external 'opengl32.dll' name 'glTexCoord4fColor4fNormal3fVertex4fSUN';
+    
+    static procedure TexCoord4fColor4fNormal3fVertex4fvSUN(tc: ^single; c: ^single; n: ^single; v: ^single);
+    external 'opengl32.dll' name 'glTexCoord4fColor4fNormal3fVertex4fvSUN';
+    
+    static procedure ReplacementCodeuiVertex3fSUN(rc: UInt32; x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glReplacementCodeuiVertex3fSUN';
+    
+    static procedure ReplacementCodeuiVertex3fvSUN(rc: ^UInt32; v: ^single);
+    external 'opengl32.dll' name 'glReplacementCodeuiVertex3fvSUN';
+    
+    static procedure ReplacementCodeuiColor4ubVertex3fSUN(rc: UInt32; r: Byte; g: Byte; b: Byte; a: Byte; x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glReplacementCodeuiColor4ubVertex3fSUN';
+    
+    static procedure ReplacementCodeuiColor4ubVertex3fvSUN(rc: ^UInt32; c: ^Byte; v: ^single);
+    external 'opengl32.dll' name 'glReplacementCodeuiColor4ubVertex3fvSUN';
+    
+    static procedure ReplacementCodeuiColor3fVertex3fSUN(rc: UInt32; r: single; g: single; b: single; x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glReplacementCodeuiColor3fVertex3fSUN';
+    
+    static procedure ReplacementCodeuiColor3fVertex3fvSUN(rc: ^UInt32; c: ^single; v: ^single);
+    external 'opengl32.dll' name 'glReplacementCodeuiColor3fVertex3fvSUN';
+    
+    static procedure ReplacementCodeuiNormal3fVertex3fSUN(rc: UInt32; nx: single; ny: single; nz: single; x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glReplacementCodeuiNormal3fVertex3fSUN';
+    
+    static procedure ReplacementCodeuiNormal3fVertex3fvSUN(rc: ^UInt32; n: ^single; v: ^single);
+    external 'opengl32.dll' name 'glReplacementCodeuiNormal3fVertex3fvSUN';
+    
+    static procedure ReplacementCodeuiColor4fNormal3fVertex3fSUN(rc: UInt32; r: single; g: single; b: single; a: single; nx: single; ny: single; nz: single; x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glReplacementCodeuiColor4fNormal3fVertex3fSUN';
+    
+    static procedure ReplacementCodeuiColor4fNormal3fVertex3fvSUN(rc: ^UInt32; c: ^single; n: ^single; v: ^single);
+    external 'opengl32.dll' name 'glReplacementCodeuiColor4fNormal3fVertex3fvSUN';
+    
+    static procedure ReplacementCodeuiTexCoord2fVertex3fSUN(rc: UInt32; s: single; t: single; x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glReplacementCodeuiTexCoord2fVertex3fSUN';
+    
+    static procedure ReplacementCodeuiTexCoord2fVertex3fvSUN(rc: ^UInt32; tc: ^single; v: ^single);
+    external 'opengl32.dll' name 'glReplacementCodeuiTexCoord2fVertex3fvSUN';
+    
+    static procedure ReplacementCodeuiTexCoord2fNormal3fVertex3fSUN(rc: UInt32; s: single; t: single; nx: single; ny: single; nz: single; x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glReplacementCodeuiTexCoord2fNormal3fVertex3fSUN';
+    
+    static procedure ReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN(rc: ^UInt32; tc: ^single; n: ^single; v: ^single);
+    external 'opengl32.dll' name 'glReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN';
+    
+    static procedure ReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fSUN(rc: UInt32; s: single; t: single; r: single; g: single; b: single; a: single; nx: single; ny: single; nz: single; x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fSUN';
+    
+    static procedure ReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN(rc: ^UInt32; tc: ^single; c: ^single; n: ^single; v: ^single);
+    external 'opengl32.dll' name 'glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN';
+    
+    {$endregion SUN}
+    
+  end;
+  
+  /// Всё устаревшее (то что удалено из последней версии OpenGL + то что собираются удалить в следующих)
+  gl_Deprecated = static class
+    
+    {$region Deprecated}
+    
+    {$region Old graphics}
+    
+    static procedure &Begin(mode: PrimitiveType);
     external 'opengl32.dll' name 'glBegin';
     
-    static procedure Bitmap(width: Int32; height: Int32; xorig: single; yorig: single; xmove: single; ymove: single; bitmap: ^Byte);
-    external 'opengl32.dll' name 'glBitmap';
+    static procedure &End;
+    external 'opengl32.dll' name 'glEnd';
+    static procedure _End; //ToDo #2041
+    external 'opengl32.dll' name 'glEnd';
     
-    static procedure CallLists(n: Int32; &type: UInt32; lists: pointer);
-    external 'opengl32.dll' name 'glCallLists';
+    //ToDo тут не все явно
     
-    static procedure ClientActiveTexture(texture: UInt32);
-    external 'opengl32.dll' name 'glClientActiveTexture';
+    {$region EdgeFlag[]}
     
-    static procedure Color4f(red: single; green: single; blue: single; alpha: single);
-    external 'opengl32.dll' name 'glColor4f';
+    {$endregion EdgeFlag[]}
     
-    static procedure Color4fv(v: ^single);
-    external 'opengl32.dll' name 'glColor4fv';
+    {$region Color[1,2,3,4][ub,f]}
     
     static procedure Color4ub(red: Byte; green: Byte; blue: Byte; alpha: Byte);
     external 'opengl32.dll' name 'glColor4ub';
     
-    static procedure ColorPointer(size: Int32; &type: UInt32; stride: Int32; _pointer: pointer);
-    external 'opengl32.dll' name 'glColorPointer';
+    static procedure Color4f(red: single; green: single; blue: single; alpha: single);
+    external 'opengl32.dll' name 'glColor4f';
     
-    static procedure ColorSubTableEXT(target: UInt32; start: Int32; count: Int32; format: UInt32; &type: UInt32; table: pointer);
-    external 'opengl32.dll' name 'glColorSubTableEXT';
+    {$endregion Color[1,2,3,4][ub,f]}
     
-    static procedure ColorTableEXT(target: UInt32; internalformat: UInt32; width: Int32; format: UInt32; &type: UInt32; table: pointer);
-    external 'opengl32.dll' name 'glColorTableEXT';
+    {$region Color[1,2,3,4][ub,f]v}
     
-    static procedure DisableClientState(&array: UInt32);
-    external 'opengl32.dll' name 'glDisableClientState';
+    static procedure Color4fv([MarshalAs(UnmanagedType.LPArray)] v: array of single);
+    external 'opengl32.dll' name 'glColor4fv';
+    static procedure Color4fv(var v: Vec4f);
+    external 'opengl32.dll' name 'glColor4fv';
+    static procedure Color4fv(var v: single);
+    external 'opengl32.dll' name 'glColor4fv';
+    static procedure Color4fv(v: pointer);
+    external 'opengl32.dll' name 'glColor4fv';
     
-    static procedure DrawPixels(width: Int32; height: Int32; format: UInt32; &type: UInt32; pixels: pointer);
-    external 'opengl32.dll' name 'glDrawPixels';
+    {$endregion Color[1,2,3,4][ub,f]v}
     
-    static procedure EnableClientState(&array: UInt32);
-    external 'opengl32.dll' name 'glEnableClientState';
+    {$region FogCoord[]}
     
-    static procedure &End;
-    external 'opengl32.dll' name 'glEnd';
+    {$endregion FogCoord[]}
     
-    static procedure EndList;
-    external 'opengl32.dll' name 'glEndList';
+    {$region Index[]}
+    
+    {$endregion Index[]}
+    
+    {$region Normal3[]}
+    
+    {$endregion Normal3[]}
+    
+    {$region SecondaryColor3[]}
+    
+    {$endregion SecondaryColor3[]}
+    
+    {$region TexCoord[]}
+    
+    {$endregion TexCoord[]}
+    
+    {$region Vertex[1,2,3,4][]}
+    
+    {$endregion Vertex[1,2,3,4][]}
+    
+    {$region Vertex[1,2,3,4][]v}
+    
+    {$endregion Vertex[1,2,3,4][]v}
     
     static procedure Frustumf(left: single; right: single; bottom: single; top: single; zNear: single; zFar: single);
     external 'opengl32.dll' name 'glFrustumf';
-    
-    static function GenLists(range: Int32): UInt32;
-    external 'opengl32.dll' name 'glGenLists';
-    
-    static procedure GetColorTableEXT(target: UInt32; format: UInt32; &type: UInt32; table: pointer);
-    external 'opengl32.dll' name 'glGetColorTableEXT';
-    
-    static procedure GetColorTableParameterivEXT(target: UInt32; pname: UInt32; &params: ^Int32);
-    external 'opengl32.dll' name 'glGetColorTableParameterivEXT';
     
     static procedure GetLightfv(light: UInt32; pname: UInt32; &params: ^single);
     external 'opengl32.dll' name 'glGetLightfv';
@@ -15751,9 +19768,6 @@ type
     
     static procedure MultiTexCoord2fv(target: UInt32; v: ^single);
     external 'opengl32.dll' name 'glMultiTexCoord2fv';
-    
-    static procedure NewList(list: UInt32; mode: UInt32);
-    external 'opengl32.dll' name 'glNewList';
     
     static procedure Normal3f(nx: single; ny: single; nz: single);
     external 'opengl32.dll' name 'glNormal3f';
@@ -15815,81 +19829,1610 @@ type
     static procedure VertexPointer(size: Int32; &type: UInt32; stride: Int32; _pointer: pointer);
     external 'opengl32.dll' name 'glVertexPointer';
     
-    {$endregion unsorted}
+    {$endregion Old graphics}
     
-    {$region странные расширения}{
+    {$region Lists}
     
-    static procedure VertexAttribFormatNV(index: UInt32; size: Int32; &type: UInt32; normalized: boolean; stride: Int32);
-    external 'opengl32.dll' name 'glVertexAttribFormatNV';
+    static function GenLists(range: Int32): UInt32; // : ListName; - напишите если очень надо добавить
+    external 'opengl32.dll' name 'glGenLists';
     
-    static procedure VertexAttribIFormatNV(index: UInt32; size: Int32; &type: UInt32; stride: Int32);
-    external 'opengl32.dll' name 'glVertexAttribIFormatNV';
+    // lists может быть нескольких разных типов массивов,
+    // надо многовато перегрузок, как для устаревшей функции
+    // если вам для чего то надо - напишите мне
+    // желательно, в issue
+    static procedure CallLists(n: Int32; &type: DataType; lists: pointer);
+    external 'opengl32.dll' name 'glCallLists';
     
-    static procedure VertexAttribLFormatNV(index: UInt32; size: Int32; &type: UInt32; stride: Int32);
-    external 'opengl32.dll' name 'glVertexAttribLFormatNV';
+    static procedure EndList;
+    external 'opengl32.dll' name 'glEndList';
     
-    static procedure VertexAttribL1i64NV(index: UInt32; x: Int64);
-    external 'opengl32.dll' name 'glVertexAttribL1i64NV';
+    static procedure NewList(list: UInt32; mode: UInt32); // mode это энум который тут не описан, напишите если очень надо добавить
+    external 'opengl32.dll' name 'glNewList';
     
-    static procedure VertexAttribL2i64NV(index: UInt32; x: Int64; y: Int64);
-    external 'opengl32.dll' name 'glVertexAttribL2i64NV';
+    {$endregion Lists}
     
-    static procedure VertexAttribL3i64NV(index: UInt32; x: Int64; y: Int64; z: Int64);
-    external 'opengl32.dll' name 'glVertexAttribL3i64NV';
+    {$region Misc}
     
-    static procedure VertexAttribL4i64NV(index: UInt32; x: Int64; y: Int64; z: Int64; w: Int64);
-    external 'opengl32.dll' name 'glVertexAttribL4i64NV';
+    static procedure AlphaFunc(func: ActivationFunc; ref: single);
+    external 'opengl32.dll' name 'glAlphaFunc';
     
-    static procedure VertexAttribL1i64vNV(index: UInt32; v: ^Int64);
-    external 'opengl32.dll' name 'glVertexAttribL1i64vNV';
+    static procedure Bitmap(width: Int32; height: Int32; xorig: single; yorig: single; xmove: single; ymove: single; [MarshalAs(UnmanagedType.LPArray)] bitmap: array of byte);
+    external 'opengl32.dll' name 'glBitmap';
+    static procedure Bitmap(width: Int32; height: Int32; xorig: single; yorig: single; xmove: single; ymove: single; bitmap: IntPtr);
+    external 'opengl32.dll' name 'glBitmap';
+    static procedure Bitmap(width: Int32; height: Int32; xorig: single; yorig: single; xmove: single; ymove: single; bitmap: pointer);
+    external 'opengl32.dll' name 'glBitmap';
     
-    static procedure VertexAttribL2i64vNV(index: UInt32; v: ^Int64);
-    external 'opengl32.dll' name 'glVertexAttribL2i64vNV';
+    static procedure CopyPixels(x: Int32; y: Int32; width: Int32; height: Int32; &type: CopyableImageBuffer);
+    external 'opengl32.dll' name 'glCopyPixels';
     
-    static procedure VertexAttribL3i64vNV(index: UInt32; v: ^Int64);
-    external 'opengl32.dll' name 'glVertexAttribL3i64vNV';
+    static procedure DrawPixels(width: Int32; height: Int32; format: DataFormat; &type: CopyableImageBuffer; pixels: pointer);
+    external 'opengl32.dll' name 'glDrawPixels';
     
-    static procedure VertexAttribL4i64vNV(index: UInt32; v: ^Int64);
-    external 'opengl32.dll' name 'glVertexAttribL4i64vNV';
+    static procedure ColorPointer(size: Int32; &type: DataType; stride: Int32; _pointer: pointer); // может быть надо другие перегрузки, напишите если очень надо добавить
+    external 'opengl32.dll' name 'glColorPointer';
     
-    static procedure VertexAttribL1ui64NV(index: UInt32; x: UInt64);
-    external 'opengl32.dll' name 'glVertexAttribL1ui64NV';
+    static procedure ClientActiveTexture(texture: TextureUnitId);
+    external 'opengl32.dll' name 'glClientActiveTexture';
     
-    static procedure VertexAttribL2ui64NV(index: UInt32; x: UInt64; y: UInt64);
-    external 'opengl32.dll' name 'glVertexAttribL2ui64NV';
+    static procedure DisableClientState(&array: UInt32); // array это энум который тут не описан, напишите если очень надо добавить
+    external 'opengl32.dll' name 'glDisableClientState';
     
-    static procedure VertexAttribL3ui64NV(index: UInt32; x: UInt64; y: UInt64; z: UInt64);
-    external 'opengl32.dll' name 'glVertexAttribL3ui64NV';
+    static procedure EnableClientState(&array: UInt32);
+    external 'opengl32.dll' name 'glEnableClientState';
     
-    static procedure VertexAttribL4ui64NV(index: UInt32; x: UInt64; y: UInt64; z: UInt64; w: UInt64);
-    external 'opengl32.dll' name 'glVertexAttribL4ui64NV';
+    {$endregion Misc}
     
-    static procedure VertexAttribL1ui64vNV(index: UInt32; v: ^UInt64);
-    external 'opengl32.dll' name 'glVertexAttribL1ui64vNV';
-    
-    static procedure VertexAttribL2ui64vNV(index: UInt32; v: ^UInt64);
-    external 'opengl32.dll' name 'glVertexAttribL2ui64vNV';
-    
-    static procedure VertexAttribL3ui64vNV(index: UInt32; v: ^UInt64);
-    external 'opengl32.dll' name 'glVertexAttribL3ui64vNV';
-    
-    static procedure VertexAttribL4ui64vNV(index: UInt32; v: ^UInt64);
-    external 'opengl32.dll' name 'glVertexAttribL4ui64vNV';
-    
-    static procedure VertexAttribDivisorARB(index: UInt32; divisor: UInt32);
-    external 'opengl32.dll' name 'glVertexAttribDivisorARB';
-    
-    static procedure GetVertexAttribLui64vARB(index: UInt32; pname: UInt32; &params: ^UInt64);
-    external 'opengl32.dll' name 'glGetVertexAttribLui64vARB';
-    
-    static procedure VertexAttribL1ui64ARB(index: UInt32; x: UInt64);
-    external 'opengl32.dll' name 'glVertexAttribL1ui64ARB';
-    
-    static procedure VertexAttribL1ui64vARB(index: UInt32; v: ^UInt64);
-    external 'opengl32.dll' name 'glVertexAttribL1ui64vARB';
-    
-    }{$endregion странные расширения}
+    {$endregion Deprecated}
     
   end;
-
+  
+  /// Расширение OVR - (наверное) OpenVR
+  /// Сцена то у обоих глаз общая, отличается только точка обзора
+  /// Поэтому рендеринг можно сильно ускорить, сделав всё параллельно и без лишних движений
+  gl_OVR = static class
+    
+    {$region OVR}
+    
+    static procedure FramebufferTextureMultiviewOVR(target: UInt32; attachment: UInt32; texture: UInt32; level: Int32; baseViewIndex: Int32; numViews: Int32);
+    external 'opengl32.dll' name 'glFramebufferTextureMultiviewOVR';
+    
+    {$endregion OVR}
+    
+  end;
+  
+  /// Расширения для разного дебага
+  gl_KHR = static class
+    
+    {$region KHR}
+    
+    static procedure BlendBarrierKHR;
+    external 'opengl32.dll' name 'glBlendBarrierKHR';
+    
+    static procedure MaxShaderCompilerThreadsKHR(count: UInt32);
+    external 'opengl32.dll' name 'glMaxShaderCompilerThreadsKHR';
+    
+    {$endregion KHR}
+    
+  end;
+  
+  /// Расширения для телефонов, консолей и т.п.
+  /// В общем для всего того, на чём вы фиг не запустите программу на паскале
+  gl_OES = static class
+    
+    {$region OES}
+    
+    static procedure MultiTexCoord1bOES(texture: ErrorCode; s: SByte);
+    external 'opengl32.dll' name 'glMultiTexCoord1bOES';
+    
+    static procedure MultiTexCoord1bvOES(texture: ErrorCode; coords: ^SByte);
+    external 'opengl32.dll' name 'glMultiTexCoord1bvOES';
+    
+    static procedure MultiTexCoord2bOES(texture: ErrorCode; s: SByte; t: SByte);
+    external 'opengl32.dll' name 'glMultiTexCoord2bOES';
+    
+    static procedure MultiTexCoord2bvOES(texture: ErrorCode; coords: ^SByte);
+    external 'opengl32.dll' name 'glMultiTexCoord2bvOES';
+    
+    static procedure MultiTexCoord3bOES(texture: ErrorCode; s: SByte; t: SByte; r: SByte);
+    external 'opengl32.dll' name 'glMultiTexCoord3bOES';
+    
+    static procedure MultiTexCoord3bvOES(texture: ErrorCode; coords: ^SByte);
+    external 'opengl32.dll' name 'glMultiTexCoord3bvOES';
+    
+    static procedure MultiTexCoord4bOES(texture: ErrorCode; s: SByte; t: SByte; r: SByte; q: SByte);
+    external 'opengl32.dll' name 'glMultiTexCoord4bOES';
+    
+    static procedure MultiTexCoord4bvOES(texture: ErrorCode; coords: ^SByte);
+    external 'opengl32.dll' name 'glMultiTexCoord4bvOES';
+    
+    static procedure TexCoord1bOES(s: SByte);
+    external 'opengl32.dll' name 'glTexCoord1bOES';
+    
+    static procedure TexCoord1bvOES(coords: ^SByte);
+    external 'opengl32.dll' name 'glTexCoord1bvOES';
+    
+    static procedure TexCoord2bOES(s: SByte; t: SByte);
+    external 'opengl32.dll' name 'glTexCoord2bOES';
+    
+    static procedure TexCoord2bvOES(coords: ^SByte);
+    external 'opengl32.dll' name 'glTexCoord2bvOES';
+    
+    static procedure TexCoord3bOES(s: SByte; t: SByte; r: SByte);
+    external 'opengl32.dll' name 'glTexCoord3bOES';
+    
+    static procedure TexCoord3bvOES(coords: ^SByte);
+    external 'opengl32.dll' name 'glTexCoord3bvOES';
+    
+    static procedure TexCoord4bOES(s: SByte; t: SByte; r: SByte; q: SByte);
+    external 'opengl32.dll' name 'glTexCoord4bOES';
+    
+    static procedure TexCoord4bvOES(coords: ^SByte);
+    external 'opengl32.dll' name 'glTexCoord4bvOES';
+    
+    static procedure Vertex2bOES(x: SByte; y: SByte);
+    external 'opengl32.dll' name 'glVertex2bOES';
+    
+    static procedure Vertex2bvOES(coords: ^SByte);
+    external 'opengl32.dll' name 'glVertex2bvOES';
+    
+    static procedure Vertex3bOES(x: SByte; y: SByte; z: SByte);
+    external 'opengl32.dll' name 'glVertex3bOES';
+    
+    static procedure Vertex3bvOES(coords: ^SByte);
+    external 'opengl32.dll' name 'glVertex3bvOES';
+    
+    static procedure Vertex4bOES(x: SByte; y: SByte; z: SByte; w: SByte);
+    external 'opengl32.dll' name 'glVertex4bOES';
+    
+    static procedure Vertex4bvOES(coords: ^SByte);
+    external 'opengl32.dll' name 'glVertex4bvOES';
+    
+    static procedure AlphaFuncxOES(func: ErrorCode; ref: fixed);
+    external 'opengl32.dll' name 'glAlphaFuncxOES';
+    
+    static procedure ClearColorxOES(red: fixed; green: fixed; blue: fixed; alpha: fixed);
+    external 'opengl32.dll' name 'glClearColorxOES';
+    
+    static procedure ClearDepthxOES(depth: fixed);
+    external 'opengl32.dll' name 'glClearDepthxOES';
+    
+    static procedure ClipPlanexOES(plane: ErrorCode; equation: ^fixed);
+    external 'opengl32.dll' name 'glClipPlanexOES';
+    
+    static procedure Color4xOES(red: fixed; green: fixed; blue: fixed; alpha: fixed);
+    external 'opengl32.dll' name 'glColor4xOES';
+    
+    static procedure DepthRangexOES(n: fixed; f: fixed);
+    external 'opengl32.dll' name 'glDepthRangexOES';
+    
+    static procedure FogxOES(pname: ErrorCode; param: fixed);
+    external 'opengl32.dll' name 'glFogxOES';
+    
+    static procedure FogxvOES(pname: ErrorCode; param: ^fixed);
+    external 'opengl32.dll' name 'glFogxvOES';
+    
+    static procedure FrustumxOES(l: fixed; r: fixed; b: fixed; t: fixed; n: fixed; f: fixed);
+    external 'opengl32.dll' name 'glFrustumxOES';
+    
+    static procedure GetClipPlanexOES(plane: ErrorCode; equation: ^fixed);
+    external 'opengl32.dll' name 'glGetClipPlanexOES';
+    
+    static procedure GetFixedvOES(pname: ErrorCode; &params: ^fixed);
+    external 'opengl32.dll' name 'glGetFixedvOES';
+    
+    static procedure GetTexEnvxvOES(target: ErrorCode; pname: ErrorCode; &params: ^fixed);
+    external 'opengl32.dll' name 'glGetTexEnvxvOES';
+    
+    static procedure GetTexParameterxvOES(target: ErrorCode; pname: ErrorCode; &params: ^fixed);
+    external 'opengl32.dll' name 'glGetTexParameterxvOES';
+    
+    static procedure LightModelxOES(pname: ErrorCode; param: fixed);
+    external 'opengl32.dll' name 'glLightModelxOES';
+    
+    static procedure LightModelxvOES(pname: ErrorCode; param: ^fixed);
+    external 'opengl32.dll' name 'glLightModelxvOES';
+    
+    static procedure LightxOES(light: ErrorCode; pname: ErrorCode; param: fixed);
+    external 'opengl32.dll' name 'glLightxOES';
+    
+    static procedure LightxvOES(light: ErrorCode; pname: ErrorCode; &params: ^fixed);
+    external 'opengl32.dll' name 'glLightxvOES';
+    
+    static procedure LineWidthxOES(width: fixed);
+    external 'opengl32.dll' name 'glLineWidthxOES';
+    
+    static procedure LoadMatrixxOES(m: ^fixed);
+    external 'opengl32.dll' name 'glLoadMatrixxOES';
+    
+    static procedure MaterialxOES(face: ErrorCode; pname: ErrorCode; param: fixed);
+    external 'opengl32.dll' name 'glMaterialxOES';
+    
+    static procedure MaterialxvOES(face: ErrorCode; pname: ErrorCode; param: ^fixed);
+    external 'opengl32.dll' name 'glMaterialxvOES';
+    
+    static procedure MultMatrixxOES(m: ^fixed);
+    external 'opengl32.dll' name 'glMultMatrixxOES';
+    
+    static procedure MultiTexCoord4xOES(texture: ErrorCode; s: fixed; t: fixed; r: fixed; q: fixed);
+    external 'opengl32.dll' name 'glMultiTexCoord4xOES';
+    
+    static procedure Normal3xOES(nx: fixed; ny: fixed; nz: fixed);
+    external 'opengl32.dll' name 'glNormal3xOES';
+    
+    static procedure OrthoxOES(l: fixed; r: fixed; b: fixed; t: fixed; n: fixed; f: fixed);
+    external 'opengl32.dll' name 'glOrthoxOES';
+    
+    static procedure PointParameterxvOES(pname: ErrorCode; &params: ^fixed);
+    external 'opengl32.dll' name 'glPointParameterxvOES';
+    
+    static procedure PointSizexOES(size: fixed);
+    external 'opengl32.dll' name 'glPointSizexOES';
+    
+    static procedure PolygonOffsetxOES(factor: fixed; units: fixed);
+    external 'opengl32.dll' name 'glPolygonOffsetxOES';
+    
+    static procedure RotatexOES(angle: fixed; x: fixed; y: fixed; z: fixed);
+    external 'opengl32.dll' name 'glRotatexOES';
+    
+    static procedure ScalexOES(x: fixed; y: fixed; z: fixed);
+    external 'opengl32.dll' name 'glScalexOES';
+    
+    static procedure TexEnvxOES(target: ErrorCode; pname: ErrorCode; param: fixed);
+    external 'opengl32.dll' name 'glTexEnvxOES';
+    
+    static procedure TexEnvxvOES(target: ErrorCode; pname: ErrorCode; &params: ^fixed);
+    external 'opengl32.dll' name 'glTexEnvxvOES';
+    
+    static procedure TexParameterxOES(target: ErrorCode; pname: ErrorCode; param: fixed);
+    external 'opengl32.dll' name 'glTexParameterxOES';
+    
+    static procedure TexParameterxvOES(target: ErrorCode; pname: ErrorCode; &params: ^fixed);
+    external 'opengl32.dll' name 'glTexParameterxvOES';
+    
+    static procedure TranslatexOES(x: fixed; y: fixed; z: fixed);
+    external 'opengl32.dll' name 'glTranslatexOES';
+    
+    static procedure AccumxOES(op: ErrorCode; value: fixed);
+    external 'opengl32.dll' name 'glAccumxOES';
+    
+    static procedure BitmapxOES(width: Int32; height: Int32; xorig: fixed; yorig: fixed; xmove: fixed; ymove: fixed; bitmap: ^Byte);
+    external 'opengl32.dll' name 'glBitmapxOES';
+    
+    static procedure BlendColorxOES(red: fixed; green: fixed; blue: fixed; alpha: fixed);
+    external 'opengl32.dll' name 'glBlendColorxOES';
+    
+    static procedure ClearAccumxOES(red: fixed; green: fixed; blue: fixed; alpha: fixed);
+    external 'opengl32.dll' name 'glClearAccumxOES';
+    
+    static procedure Color3xOES(red: fixed; green: fixed; blue: fixed);
+    external 'opengl32.dll' name 'glColor3xOES';
+    
+    static procedure Color3xvOES(components: ^fixed);
+    external 'opengl32.dll' name 'glColor3xvOES';
+    
+    static procedure Color4xvOES(components: ^fixed);
+    external 'opengl32.dll' name 'glColor4xvOES';
+    
+    static procedure ConvolutionParameterxOES(target: ErrorCode; pname: ErrorCode; param: fixed);
+    external 'opengl32.dll' name 'glConvolutionParameterxOES';
+    
+    static procedure ConvolutionParameterxvOES(target: ErrorCode; pname: ErrorCode; &params: ^fixed);
+    external 'opengl32.dll' name 'glConvolutionParameterxvOES';
+    
+    static procedure EvalCoord1xOES(u: fixed);
+    external 'opengl32.dll' name 'glEvalCoord1xOES';
+    
+    static procedure EvalCoord1xvOES(coords: ^fixed);
+    external 'opengl32.dll' name 'glEvalCoord1xvOES';
+    
+    static procedure EvalCoord2xOES(u: fixed; v: fixed);
+    external 'opengl32.dll' name 'glEvalCoord2xOES';
+    
+    static procedure EvalCoord2xvOES(coords: ^fixed);
+    external 'opengl32.dll' name 'glEvalCoord2xvOES';
+    
+    static procedure FeedbackBufferxOES(n: Int32; &type: ErrorCode; buffer: ^fixed);
+    external 'opengl32.dll' name 'glFeedbackBufferxOES';
+    
+    static procedure GetConvolutionParameterxvOES(target: ErrorCode; pname: ErrorCode; &params: ^fixed);
+    external 'opengl32.dll' name 'glGetConvolutionParameterxvOES';
+    
+    static procedure GetHistogramParameterxvOES(target: ErrorCode; pname: ErrorCode; &params: ^fixed);
+    external 'opengl32.dll' name 'glGetHistogramParameterxvOES';
+    
+    static procedure GetLightxOES(light: ErrorCode; pname: ErrorCode; &params: ^fixed);
+    external 'opengl32.dll' name 'glGetLightxOES';
+    
+    static procedure GetMapxvOES(target: ErrorCode; query: ErrorCode; v: ^fixed);
+    external 'opengl32.dll' name 'glGetMapxvOES';
+    
+    static procedure GetMaterialxOES(face: ErrorCode; pname: ErrorCode; param: fixed);
+    external 'opengl32.dll' name 'glGetMaterialxOES';
+    
+    static procedure GetTexGenxvOES(coord: ErrorCode; pname: ErrorCode; &params: ^fixed);
+    external 'opengl32.dll' name 'glGetTexGenxvOES';
+    
+    static procedure GetTexLevelParameterxvOES(target: ErrorCode; level: Int32; pname: ErrorCode; &params: ^fixed);
+    external 'opengl32.dll' name 'glGetTexLevelParameterxvOES';
+    
+    static procedure IndexxOES(component: fixed);
+    external 'opengl32.dll' name 'glIndexxOES';
+    
+    static procedure IndexxvOES(component: ^fixed);
+    external 'opengl32.dll' name 'glIndexxvOES';
+    
+    static procedure LoadTransposeMatrixxOES(m: ^fixed);
+    external 'opengl32.dll' name 'glLoadTransposeMatrixxOES';
+    
+    static procedure Map1xOES(target: ErrorCode; u1: fixed; u2: fixed; stride: Int32; order: Int32; points: fixed);
+    external 'opengl32.dll' name 'glMap1xOES';
+    
+    static procedure Map2xOES(target: ErrorCode; u1: fixed; u2: fixed; ustride: Int32; uorder: Int32; v1: fixed; v2: fixed; vstride: Int32; vorder: Int32; points: fixed);
+    external 'opengl32.dll' name 'glMap2xOES';
+    
+    static procedure MapGrid1xOES(n: Int32; u1: fixed; u2: fixed);
+    external 'opengl32.dll' name 'glMapGrid1xOES';
+    
+    static procedure MapGrid2xOES(n: Int32; u1: fixed; u2: fixed; v1: fixed; v2: fixed);
+    external 'opengl32.dll' name 'glMapGrid2xOES';
+    
+    static procedure MultTransposeMatrixxOES(m: ^fixed);
+    external 'opengl32.dll' name 'glMultTransposeMatrixxOES';
+    
+    static procedure MultiTexCoord1xOES(texture: ErrorCode; s: fixed);
+    external 'opengl32.dll' name 'glMultiTexCoord1xOES';
+    
+    static procedure MultiTexCoord1xvOES(texture: ErrorCode; coords: ^fixed);
+    external 'opengl32.dll' name 'glMultiTexCoord1xvOES';
+    
+    static procedure MultiTexCoord2xOES(texture: ErrorCode; s: fixed; t: fixed);
+    external 'opengl32.dll' name 'glMultiTexCoord2xOES';
+    
+    static procedure MultiTexCoord2xvOES(texture: ErrorCode; coords: ^fixed);
+    external 'opengl32.dll' name 'glMultiTexCoord2xvOES';
+    
+    static procedure MultiTexCoord3xOES(texture: ErrorCode; s: fixed; t: fixed; r: fixed);
+    external 'opengl32.dll' name 'glMultiTexCoord3xOES';
+    
+    static procedure MultiTexCoord3xvOES(texture: ErrorCode; coords: ^fixed);
+    external 'opengl32.dll' name 'glMultiTexCoord3xvOES';
+    
+    static procedure MultiTexCoord4xvOES(texture: ErrorCode; coords: ^fixed);
+    external 'opengl32.dll' name 'glMultiTexCoord4xvOES';
+    
+    static procedure Normal3xvOES(coords: ^fixed);
+    external 'opengl32.dll' name 'glNormal3xvOES';
+    
+    static procedure PassThroughxOES(token: fixed);
+    external 'opengl32.dll' name 'glPassThroughxOES';
+    
+    static procedure PixelTransferxOES(pname: ErrorCode; param: fixed);
+    external 'opengl32.dll' name 'glPixelTransferxOES';
+    
+    static procedure PixelZoomxOES(xfactor: fixed; yfactor: fixed);
+    external 'opengl32.dll' name 'glPixelZoomxOES';
+    
+    static procedure PrioritizeTexturesxOES(n: Int32; textures: ^UInt32; priorities: ^fixed);
+    external 'opengl32.dll' name 'glPrioritizeTexturesxOES';
+    
+    static procedure RasterPos2xOES(x: fixed; y: fixed);
+    external 'opengl32.dll' name 'glRasterPos2xOES';
+    
+    static procedure RasterPos2xvOES(coords: ^fixed);
+    external 'opengl32.dll' name 'glRasterPos2xvOES';
+    
+    static procedure RasterPos3xOES(x: fixed; y: fixed; z: fixed);
+    external 'opengl32.dll' name 'glRasterPos3xOES';
+    
+    static procedure RasterPos3xvOES(coords: ^fixed);
+    external 'opengl32.dll' name 'glRasterPos3xvOES';
+    
+    static procedure RasterPos4xOES(x: fixed; y: fixed; z: fixed; w: fixed);
+    external 'opengl32.dll' name 'glRasterPos4xOES';
+    
+    static procedure RasterPos4xvOES(coords: ^fixed);
+    external 'opengl32.dll' name 'glRasterPos4xvOES';
+    
+    static procedure RectxOES(x1: fixed; y1: fixed; x2: fixed; y2: fixed);
+    external 'opengl32.dll' name 'glRectxOES';
+    
+    static procedure RectxvOES(v1: ^fixed; v2: ^fixed);
+    external 'opengl32.dll' name 'glRectxvOES';
+    
+    static procedure TexCoord1xOES(s: fixed);
+    external 'opengl32.dll' name 'glTexCoord1xOES';
+    
+    static procedure TexCoord1xvOES(coords: ^fixed);
+    external 'opengl32.dll' name 'glTexCoord1xvOES';
+    
+    static procedure TexCoord2xOES(s: fixed; t: fixed);
+    external 'opengl32.dll' name 'glTexCoord2xOES';
+    
+    static procedure TexCoord2xvOES(coords: ^fixed);
+    external 'opengl32.dll' name 'glTexCoord2xvOES';
+    
+    static procedure TexCoord3xOES(s: fixed; t: fixed; r: fixed);
+    external 'opengl32.dll' name 'glTexCoord3xOES';
+    
+    static procedure TexCoord3xvOES(coords: ^fixed);
+    external 'opengl32.dll' name 'glTexCoord3xvOES';
+    
+    static procedure TexCoord4xOES(s: fixed; t: fixed; r: fixed; q: fixed);
+    external 'opengl32.dll' name 'glTexCoord4xOES';
+    
+    static procedure TexCoord4xvOES(coords: ^fixed);
+    external 'opengl32.dll' name 'glTexCoord4xvOES';
+    
+    static procedure TexGenxOES(coord: ErrorCode; pname: ErrorCode; param: fixed);
+    external 'opengl32.dll' name 'glTexGenxOES';
+    
+    static procedure TexGenxvOES(coord: ErrorCode; pname: ErrorCode; &params: ^fixed);
+    external 'opengl32.dll' name 'glTexGenxvOES';
+    
+    static procedure Vertex2xOES(x: fixed);
+    external 'opengl32.dll' name 'glVertex2xOES';
+    
+    static procedure Vertex2xvOES(coords: ^fixed);
+    external 'opengl32.dll' name 'glVertex2xvOES';
+    
+    static procedure Vertex3xOES(x: fixed; y: fixed);
+    external 'opengl32.dll' name 'glVertex3xOES';
+    
+    static procedure Vertex3xvOES(coords: ^fixed);
+    external 'opengl32.dll' name 'glVertex3xvOES';
+    
+    static procedure Vertex4xOES(x: fixed; y: fixed; z: fixed);
+    external 'opengl32.dll' name 'glVertex4xOES';
+    
+    static procedure Vertex4xvOES(coords: ^fixed);
+    external 'opengl32.dll' name 'glVertex4xvOES';
+    
+    static function QueryMatrixxOES(mantissa: ^fixed; exponent: ^Int32): UInt32;
+    external 'opengl32.dll' name 'glQueryMatrixxOES';
+    
+    static procedure ClearDepthfOES(depth: single);
+    external 'opengl32.dll' name 'glClearDepthfOES';
+    
+    static procedure ClipPlanefOES(plane: ErrorCode; equation: ^single);
+    external 'opengl32.dll' name 'glClipPlanefOES';
+    
+    static procedure DepthRangefOES(n: single; f: single);
+    external 'opengl32.dll' name 'glDepthRangefOES';
+    
+    static procedure FrustumfOES(l: single; r: single; b: single; t: single; n: single; f: single);
+    external 'opengl32.dll' name 'glFrustumfOES';
+    
+    static procedure GetClipPlanefOES(plane: ErrorCode; equation: ^single);
+    external 'opengl32.dll' name 'glGetClipPlanefOES';
+    
+    static procedure OrthofOES(l: single; r: single; b: single; t: single; n: single; f: single);
+    external 'opengl32.dll' name 'glOrthofOES';
+    
+    {$endregion OES}
+    
+  end;
+  
+  /// Расширения для надгрызенных яблок
+  gl_APPLE = static class
+    
+    {$region APPLE}
+    
+    static procedure ElementPointerAPPLE(&type: ErrorCode; _pointer: pointer);
+    external 'opengl32.dll' name 'glElementPointerAPPLE';
+    
+    static procedure DrawElementArrayAPPLE(mode: ErrorCode; first: Int32; count: Int32);
+    external 'opengl32.dll' name 'glDrawElementArrayAPPLE';
+    
+    static procedure DrawRangeElementArrayAPPLE(mode: ErrorCode; start: UInt32; &end: UInt32; first: Int32; count: Int32);
+    external 'opengl32.dll' name 'glDrawRangeElementArrayAPPLE';
+    
+    static procedure MultiDrawElementArrayAPPLE(mode: ErrorCode; first: ^Int32; count: ^Int32; primcount: Int32);
+    external 'opengl32.dll' name 'glMultiDrawElementArrayAPPLE';
+    
+    static procedure MultiDrawRangeElementArrayAPPLE(mode: ErrorCode; start: UInt32; &end: UInt32; first: ^Int32; count: ^Int32; primcount: Int32);
+    external 'opengl32.dll' name 'glMultiDrawRangeElementArrayAPPLE';
+    
+    static procedure GenFencesAPPLE(n: Int32; fences: ^UInt32);
+    external 'opengl32.dll' name 'glGenFencesAPPLE';
+    
+    static procedure DeleteFencesAPPLE(n: Int32; fences: ^UInt32);
+    external 'opengl32.dll' name 'glDeleteFencesAPPLE';
+    
+    static procedure SetFenceAPPLE(fence: UInt32);
+    external 'opengl32.dll' name 'glSetFenceAPPLE';
+    
+    static function IsFenceAPPLE(fence: UInt32): Byte;
+    external 'opengl32.dll' name 'glIsFenceAPPLE';
+    
+    static function TestFenceAPPLE(fence: UInt32): Byte;
+    external 'opengl32.dll' name 'glTestFenceAPPLE';
+    
+    static procedure FinishFenceAPPLE(fence: UInt32);
+    external 'opengl32.dll' name 'glFinishFenceAPPLE';
+    
+    static function TestObjectAPPLE(object: ErrorCode; name: UInt32): Byte;
+    external 'opengl32.dll' name 'glTestObjectAPPLE';
+    
+    static procedure FinishObjectAPPLE(object: ErrorCode; name: Int32);
+    external 'opengl32.dll' name 'glFinishObjectAPPLE';
+    
+    static procedure BufferParameteriAPPLE(target: ErrorCode; pname: ErrorCode; param: Int32);
+    external 'opengl32.dll' name 'glBufferParameteriAPPLE';
+    
+    static procedure FlushMappedBufferRangeAPPLE(target: ErrorCode; offset: IntPtr; size: UIntPtr);
+    external 'opengl32.dll' name 'glFlushMappedBufferRangeAPPLE';
+    
+    static function ObjectPurgeableAPPLE(objectType: ErrorCode; name: UInt32; option: ErrorCode): ErrorCode;
+    external 'opengl32.dll' name 'glObjectPurgeableAPPLE';
+    
+    static function ObjectUnpurgeableAPPLE(objectType: ErrorCode; name: UInt32; option: ErrorCode): ErrorCode;
+    external 'opengl32.dll' name 'glObjectUnpurgeableAPPLE';
+    
+    static procedure GetObjectParameterivAPPLE(objectType: ErrorCode; name: UInt32; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetObjectParameterivAPPLE';
+    
+    static procedure TextureRangeAPPLE(target: ErrorCode; length: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glTextureRangeAPPLE';
+    
+    static procedure GetTexParameterPointervAPPLE(target: ErrorCode; pname: ErrorCode; &params: ^pointer);
+    external 'opengl32.dll' name 'glGetTexParameterPointervAPPLE';
+    
+    static procedure BindVertexArrayAPPLE(&array: UInt32);
+    external 'opengl32.dll' name 'glBindVertexArrayAPPLE';
+    
+    static procedure DeleteVertexArraysAPPLE(n: Int32; arrays: ^UInt32);
+    external 'opengl32.dll' name 'glDeleteVertexArraysAPPLE';
+    
+    static procedure GenVertexArraysAPPLE(n: Int32; arrays: ^UInt32);
+    external 'opengl32.dll' name 'glGenVertexArraysAPPLE';
+    
+    static function IsVertexArrayAPPLE(&array: UInt32): Byte;
+    external 'opengl32.dll' name 'glIsVertexArrayAPPLE';
+    
+    static procedure VertexArrayRangeAPPLE(length: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glVertexArrayRangeAPPLE';
+    
+    static procedure FlushVertexArrayRangeAPPLE(length: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glFlushVertexArrayRangeAPPLE';
+    
+    static procedure VertexArrayParameteriAPPLE(pname: ErrorCode; param: Int32);
+    external 'opengl32.dll' name 'glVertexArrayParameteriAPPLE';
+    
+    static procedure EnableVertexAttribAPPLE(index: UInt32; pname: ErrorCode);
+    external 'opengl32.dll' name 'glEnableVertexAttribAPPLE';
+    
+    static procedure DisableVertexAttribAPPLE(index: UInt32; pname: ErrorCode);
+    external 'opengl32.dll' name 'glDisableVertexAttribAPPLE';
+    
+    static function IsVertexAttribEnabledAPPLE(index: UInt32; pname: ErrorCode): Byte;
+    external 'opengl32.dll' name 'glIsVertexAttribEnabledAPPLE';
+    
+    static procedure MapVertexAttrib1dAPPLE(index: UInt32; size: UInt32; u1: double; u2: double; stride: Int32; order: Int32; points: ^double);
+    external 'opengl32.dll' name 'glMapVertexAttrib1dAPPLE';
+    
+    static procedure MapVertexAttrib1fAPPLE(index: UInt32; size: UInt32; u1: single; u2: single; stride: Int32; order: Int32; points: ^single);
+    external 'opengl32.dll' name 'glMapVertexAttrib1fAPPLE';
+    
+    static procedure MapVertexAttrib2dAPPLE(index: UInt32; size: UInt32; u1: double; u2: double; ustride: Int32; uorder: Int32; v1: double; v2: double; vstride: Int32; vorder: Int32; points: ^double);
+    external 'opengl32.dll' name 'glMapVertexAttrib2dAPPLE';
+    
+    static procedure MapVertexAttrib2fAPPLE(index: UInt32; size: UInt32; u1: single; u2: single; ustride: Int32; uorder: Int32; v1: single; v2: single; vstride: Int32; vorder: Int32; points: ^single);
+    external 'opengl32.dll' name 'glMapVertexAttrib2fAPPLE';
+    
+    {$endregion APPLE}
+    
+  end;
+  
+  /// Расширения GREMEDY для логирования
+  gl_GREMEDY = static class
+    
+    {$region GREMEDY}
+    
+    static procedure FrameTerminatorGREMEDY;
+    external 'opengl32.dll' name 'glFrameTerminatorGREMEDY';
+    
+    static procedure StringMarkerGREMEDY(len: Int32; string: pointer);
+    external 'opengl32.dll' name 'glStringMarkerGREMEDY';
+    
+    {$endregion GREMEDY}
+    
+  end;
+  
+  /// Расширения для ноутбуков от HP
+  /// Первая страница ответов в гугле заполнена:
+  /// "у меня не работает OpenGL на HP ноуте, хелп"
+  /// Выглядит как достаточнно инфы)))
+  gl_HP = static class
+    
+    {$region HP}
+    
+    static procedure ImageTransformParameteriHP(target: ErrorCode; pname: ErrorCode; param: Int32);
+    external 'opengl32.dll' name 'glImageTransformParameteriHP';
+    
+    static procedure ImageTransformParameterfHP(target: ErrorCode; pname: ErrorCode; param: single);
+    external 'opengl32.dll' name 'glImageTransformParameterfHP';
+    
+    static procedure ImageTransformParameterivHP(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glImageTransformParameterivHP';
+    
+    static procedure ImageTransformParameterfvHP(target: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glImageTransformParameterfvHP';
+    
+    static procedure GetImageTransformParameterivHP(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetImageTransformParameterivHP';
+    
+    static procedure GetImageTransformParameterfvHP(target: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetImageTransformParameterfvHP';
+    
+    {$endregion HP}
+    
+  end;
+  
+  /// Расширения для "International Business Machines"
+  /// То есть для электроники для бизнеса
+  gl_IBM = static class
+    
+    {$region IBM}
+    
+    static procedure MultiModeDrawArraysIBM(mode: ^ErrorCode; first: ^Int32; count: ^Int32; primcount: Int32; modestride: Int32);
+    external 'opengl32.dll' name 'glMultiModeDrawArraysIBM';
+    
+    static procedure MultiModeDrawElementsIBM(mode: ^ErrorCode; count: ^Int32; &type: ErrorCode; indices: ^pointer; primcount: Int32; modestride: Int32);
+    external 'opengl32.dll' name 'glMultiModeDrawElementsIBM';
+    
+    static procedure FlushStaticDataIBM(target: ErrorCode);
+    external 'opengl32.dll' name 'glFlushStaticDataIBM';
+    
+    static procedure ColorPointerListIBM(size: Int32; &type: ErrorCode; stride: Int32; _pointer: ^pointer; ptrstride: Int32);
+    external 'opengl32.dll' name 'glColorPointerListIBM';
+    
+    static procedure SecondaryColorPointerListIBM(size: Int32; &type: ErrorCode; stride: Int32; _pointer: ^pointer; ptrstride: Int32);
+    external 'opengl32.dll' name 'glSecondaryColorPointerListIBM';
+    
+    static procedure EdgeFlagPointerListIBM(stride: Int32; _pointer: ^^Byte; ptrstride: Int32);
+    external 'opengl32.dll' name 'glEdgeFlagPointerListIBM';
+    
+    static procedure FogCoordPointerListIBM(&type: ErrorCode; stride: Int32; _pointer: ^pointer; ptrstride: Int32);
+    external 'opengl32.dll' name 'glFogCoordPointerListIBM';
+    
+    static procedure IndexPointerListIBM(&type: ErrorCode; stride: Int32; _pointer: ^pointer; ptrstride: Int32);
+    external 'opengl32.dll' name 'glIndexPointerListIBM';
+    
+    static procedure NormalPointerListIBM(&type: ErrorCode; stride: Int32; _pointer: ^pointer; ptrstride: Int32);
+    external 'opengl32.dll' name 'glNormalPointerListIBM';
+    
+    static procedure TexCoordPointerListIBM(size: Int32; &type: ErrorCode; stride: Int32; _pointer: ^pointer; ptrstride: Int32);
+    external 'opengl32.dll' name 'glTexCoordPointerListIBM';
+    
+    static procedure VertexPointerListIBM(size: Int32; &type: ErrorCode; stride: Int32; _pointer: ^pointer; ptrstride: Int32);
+    external 'opengl32.dll' name 'glVertexPointerListIBM';
+    
+    {$endregion IBM}
+    
+  end;
+  
+  /// Intergraph Corporation
+  /// Вроде что то древнее и влиятельное, вроде как на уровне Oracle и Microsoft
+  /// Ну понятно, поэтому у них аж 1 функция))
+  gl_INGR = static class
+    
+    {$region INGR}
+    
+    static procedure BlendFuncSeparateINGR(sfactorRGB: ErrorCode; dfactorRGB: ErrorCode; sfactorAlpha: ErrorCode; dfactorAlpha: ErrorCode);
+    external 'opengl32.dll' name 'glBlendFuncSeparateINGR';
+    
+    {$endregion INGR}
+    
+  end;
+  
+  /// Совместное с Vulkan расширение для 3D графики
+  /// Которое такое важное что на нём UNIX-подобные системы строятся и без него не работают
+  /// Vulkan, кстати, те же люди придумывали, что OpenGL
+  gl_MESA = static class
+    
+    {$region MESA}
+    
+    static procedure ResizeBuffersMESA;
+    external 'opengl32.dll' name 'glResizeBuffersMESA';
+    
+    static procedure WindowPos2dMESA(x: double; y: double);
+    external 'opengl32.dll' name 'glWindowPos2dMESA';
+    
+    static procedure WindowPos2dvMESA(v: ^double);
+    external 'opengl32.dll' name 'glWindowPos2dvMESA';
+    
+    static procedure WindowPos2fMESA(x: single; y: single);
+    external 'opengl32.dll' name 'glWindowPos2fMESA';
+    
+    static procedure WindowPos2fvMESA(v: ^single);
+    external 'opengl32.dll' name 'glWindowPos2fvMESA';
+    
+    static procedure WindowPos2iMESA(x: Int32; y: Int32);
+    external 'opengl32.dll' name 'glWindowPos2iMESA';
+    
+    static procedure WindowPos2ivMESA(v: ^Int32);
+    external 'opengl32.dll' name 'glWindowPos2ivMESA';
+    
+    static procedure WindowPos2sMESA(x: Int16; y: Int16);
+    external 'opengl32.dll' name 'glWindowPos2sMESA';
+    
+    static procedure WindowPos2svMESA(v: ^Int16);
+    external 'opengl32.dll' name 'glWindowPos2svMESA';
+    
+    static procedure WindowPos3dMESA(x: double; y: double; z: double);
+    external 'opengl32.dll' name 'glWindowPos3dMESA';
+    
+    static procedure WindowPos3dvMESA(v: ^double);
+    external 'opengl32.dll' name 'glWindowPos3dvMESA';
+    
+    static procedure WindowPos3fMESA(x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glWindowPos3fMESA';
+    
+    static procedure WindowPos3fvMESA(v: ^single);
+    external 'opengl32.dll' name 'glWindowPos3fvMESA';
+    
+    static procedure WindowPos3iMESA(x: Int32; y: Int32; z: Int32);
+    external 'opengl32.dll' name 'glWindowPos3iMESA';
+    
+    static procedure WindowPos3ivMESA(v: ^Int32);
+    external 'opengl32.dll' name 'glWindowPos3ivMESA';
+    
+    static procedure WindowPos3sMESA(x: Int16; y: Int16; z: Int16);
+    external 'opengl32.dll' name 'glWindowPos3sMESA';
+    
+    static procedure WindowPos3svMESA(v: ^Int16);
+    external 'opengl32.dll' name 'glWindowPos3svMESA';
+    
+    static procedure WindowPos4dMESA(x: double; y: double; z: double; w: double);
+    external 'opengl32.dll' name 'glWindowPos4dMESA';
+    
+    static procedure WindowPos4dvMESA(v: ^double);
+    external 'opengl32.dll' name 'glWindowPos4dvMESA';
+    
+    static procedure WindowPos4fMESA(x: single; y: single; z: single; w: single);
+    external 'opengl32.dll' name 'glWindowPos4fMESA';
+    
+    static procedure WindowPos4fvMESA(v: ^single);
+    external 'opengl32.dll' name 'glWindowPos4fvMESA';
+    
+    static procedure WindowPos4iMESA(x: Int32; y: Int32; z: Int32; w: Int32);
+    external 'opengl32.dll' name 'glWindowPos4iMESA';
+    
+    static procedure WindowPos4ivMESA(v: ^Int32);
+    external 'opengl32.dll' name 'glWindowPos4ivMESA';
+    
+    static procedure WindowPos4sMESA(x: Int16; y: Int16; z: Int16; w: Int16);
+    external 'opengl32.dll' name 'glWindowPos4sMESA';
+    
+    static procedure WindowPos4svMESA(v: ^Int16);
+    external 'opengl32.dll' name 'glWindowPos4svMESA';
+    
+    {$endregion MESA}
+    
+  end;
+  
+  /// Silicon Graphics, Inc.
+  gl_SGI = static class
+    
+    {$region SGI}
+    
+    static procedure ColorTableSGI(target: ErrorCode; internalformat: ErrorCode; width: Int32; format: ErrorCode; &type: ErrorCode; table: pointer);
+    external 'opengl32.dll' name 'glColorTableSGI';
+    
+    static procedure ColorTableParameterfvSGI(target: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glColorTableParameterfvSGI';
+    
+    static procedure ColorTableParameterivSGI(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glColorTableParameterivSGI';
+    
+    static procedure CopyColorTableSGI(target: ErrorCode; internalformat: ErrorCode; x: Int32; y: Int32; width: Int32);
+    external 'opengl32.dll' name 'glCopyColorTableSGI';
+    
+    static procedure GetColorTableSGI(target: ErrorCode; format: ErrorCode; &type: ErrorCode; table: pointer);
+    external 'opengl32.dll' name 'glGetColorTableSGI';
+    
+    static procedure GetColorTableParameterfvSGI(target: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetColorTableParameterfvSGI';
+    
+    static procedure GetColorTableParameterivSGI(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetColorTableParameterivSGI';
+    
+    {$endregion SGI}
+    
+    // эксперементальное, то есть то, что может быть удалено/изменено в любой момент:
+    
+    {$region SGIS}
+    
+    static procedure DetailTexFuncSGIS(target: ErrorCode; n: Int32; points: ^single);
+    external 'opengl32.dll' name 'glDetailTexFuncSGIS';
+    
+    static procedure GetDetailTexFuncSGIS(target: ErrorCode; points: ^single);
+    external 'opengl32.dll' name 'glGetDetailTexFuncSGIS';
+    
+    static procedure FogFuncSGIS(n: Int32; points: ^single);
+    external 'opengl32.dll' name 'glFogFuncSGIS';
+    
+    static procedure GetFogFuncSGIS(points: ^single);
+    external 'opengl32.dll' name 'glGetFogFuncSGIS';
+    
+    static procedure SampleMaskSGIS(value: single; invert: Byte);
+    external 'opengl32.dll' name 'glSampleMaskSGIS';
+    
+    static procedure SamplePatternSGIS(pattern: ErrorCode);
+    external 'opengl32.dll' name 'glSamplePatternSGIS';
+    
+    static procedure PixelTexGenParameteriSGIS(pname: ErrorCode; param: Int32);
+    external 'opengl32.dll' name 'glPixelTexGenParameteriSGIS';
+    
+    static procedure PixelTexGenParameterivSGIS(pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glPixelTexGenParameterivSGIS';
+    
+    static procedure PixelTexGenParameterfSGIS(pname: ErrorCode; param: single);
+    external 'opengl32.dll' name 'glPixelTexGenParameterfSGIS';
+    
+    static procedure PixelTexGenParameterfvSGIS(pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glPixelTexGenParameterfvSGIS';
+    
+    static procedure GetPixelTexGenParameterivSGIS(pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetPixelTexGenParameterivSGIS';
+    
+    static procedure GetPixelTexGenParameterfvSGIS(pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetPixelTexGenParameterfvSGIS';
+    
+    static procedure PointParameterfSGIS(pname: ErrorCode; param: single);
+    external 'opengl32.dll' name 'glPointParameterfSGIS';
+    
+    static procedure PointParameterfvSGIS(pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glPointParameterfvSGIS';
+    
+    static procedure SharpenTexFuncSGIS(target: ErrorCode; n: Int32; points: ^single);
+    external 'opengl32.dll' name 'glSharpenTexFuncSGIS';
+    
+    static procedure GetSharpenTexFuncSGIS(target: ErrorCode; points: ^single);
+    external 'opengl32.dll' name 'glGetSharpenTexFuncSGIS';
+    
+    static procedure TexImage4DSGIS(target: ErrorCode; level: Int32; internalformat: ErrorCode; width: Int32; height: Int32; depth: Int32; size4d: Int32; border: Int32; format: ErrorCode; &type: ErrorCode; pixels: pointer);
+    external 'opengl32.dll' name 'glTexImage4DSGIS';
+    
+    static procedure TexSubImage4DSGIS(target: ErrorCode; level: Int32; xoffset: Int32; yoffset: Int32; zoffset: Int32; woffset: Int32; width: Int32; height: Int32; depth: Int32; size4d: Int32; format: ErrorCode; &type: ErrorCode; pixels: pointer);
+    external 'opengl32.dll' name 'glTexSubImage4DSGIS';
+    
+    static procedure TextureColorMaskSGIS(red: Byte; green: Byte; blue: Byte; alpha: Byte);
+    external 'opengl32.dll' name 'glTextureColorMaskSGIS';
+    
+    static procedure GetTexFilterFuncSGIS(target: ErrorCode; filter: ErrorCode; weights: ^single);
+    external 'opengl32.dll' name 'glGetTexFilterFuncSGIS';
+    
+    static procedure TexFilterFuncSGIS(target: ErrorCode; filter: ErrorCode; n: Int32; weights: ^single);
+    external 'opengl32.dll' name 'glTexFilterFuncSGIS';
+    
+    {$endregion SGIS}
+    
+    {$region SGIX}
+    
+    static procedure AsyncMarkerSGIX(marker: UInt32);
+    external 'opengl32.dll' name 'glAsyncMarkerSGIX';
+    
+    static function FinishAsyncSGIX(markerp: ^UInt32): Int32;
+    external 'opengl32.dll' name 'glFinishAsyncSGIX';
+    
+    static function PollAsyncSGIX(markerp: ^UInt32): Int32;
+    external 'opengl32.dll' name 'glPollAsyncSGIX';
+    
+    static function GenAsyncMarkersSGIX(range: Int32): UInt32;
+    external 'opengl32.dll' name 'glGenAsyncMarkersSGIX';
+    
+    static procedure DeleteAsyncMarkersSGIX(marker: UInt32; range: Int32);
+    external 'opengl32.dll' name 'glDeleteAsyncMarkersSGIX';
+    
+    static function IsAsyncMarkerSGIX(marker: UInt32): Byte;
+    external 'opengl32.dll' name 'glIsAsyncMarkerSGIX';
+    
+    static procedure FlushRasterSGIX;
+    external 'opengl32.dll' name 'glFlushRasterSGIX';
+    
+    static procedure FragmentColorMaterialSGIX(face: ErrorCode; mode: ErrorCode);
+    external 'opengl32.dll' name 'glFragmentColorMaterialSGIX';
+    
+    static procedure FragmentLightfSGIX(light: ErrorCode; pname: ErrorCode; param: single);
+    external 'opengl32.dll' name 'glFragmentLightfSGIX';
+    
+    static procedure FragmentLightfvSGIX(light: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glFragmentLightfvSGIX';
+    
+    static procedure FragmentLightiSGIX(light: ErrorCode; pname: ErrorCode; param: Int32);
+    external 'opengl32.dll' name 'glFragmentLightiSGIX';
+    
+    static procedure FragmentLightivSGIX(light: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glFragmentLightivSGIX';
+    
+    static procedure FragmentLightModelfSGIX(pname: ErrorCode; param: single);
+    external 'opengl32.dll' name 'glFragmentLightModelfSGIX';
+    
+    static procedure FragmentLightModelfvSGIX(pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glFragmentLightModelfvSGIX';
+    
+    static procedure FragmentLightModeliSGIX(pname: ErrorCode; param: Int32);
+    external 'opengl32.dll' name 'glFragmentLightModeliSGIX';
+    
+    static procedure FragmentLightModelivSGIX(pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glFragmentLightModelivSGIX';
+    
+    static procedure FragmentMaterialfSGIX(face: ErrorCode; pname: ErrorCode; param: single);
+    external 'opengl32.dll' name 'glFragmentMaterialfSGIX';
+    
+    static procedure FragmentMaterialfvSGIX(face: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glFragmentMaterialfvSGIX';
+    
+    static procedure FragmentMaterialiSGIX(face: ErrorCode; pname: ErrorCode; param: Int32);
+    external 'opengl32.dll' name 'glFragmentMaterialiSGIX';
+    
+    static procedure FragmentMaterialivSGIX(face: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glFragmentMaterialivSGIX';
+    
+    static procedure GetFragmentLightfvSGIX(light: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetFragmentLightfvSGIX';
+    
+    static procedure GetFragmentLightivSGIX(light: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetFragmentLightivSGIX';
+    
+    static procedure GetFragmentMaterialfvSGIX(face: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetFragmentMaterialfvSGIX';
+    
+    static procedure GetFragmentMaterialivSGIX(face: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetFragmentMaterialivSGIX';
+    
+    static procedure LightEnviSGIX(pname: ErrorCode; param: Int32);
+    external 'opengl32.dll' name 'glLightEnviSGIX';
+    
+    static procedure FrameZoomSGIX(factor: Int32);
+    external 'opengl32.dll' name 'glFrameZoomSGIX';
+    
+    static procedure IglooInterfaceSGIX(pname: ErrorCode; &params: pointer);
+    external 'opengl32.dll' name 'glIglooInterfaceSGIX';
+    
+    static function GetInstrumentsSGIX: Int32;
+    external 'opengl32.dll' name 'glGetInstrumentsSGIX';
+    
+    static procedure InstrumentsBufferSGIX(size: Int32; buffer: ^Int32);
+    external 'opengl32.dll' name 'glInstrumentsBufferSGIX';
+    
+    static function PollInstrumentsSGIX(marker_p: ^Int32): Int32;
+    external 'opengl32.dll' name 'glPollInstrumentsSGIX';
+    
+    static procedure ReadInstrumentsSGIX(marker: Int32);
+    external 'opengl32.dll' name 'glReadInstrumentsSGIX';
+    
+    static procedure StartInstrumentsSGIX;
+    external 'opengl32.dll' name 'glStartInstrumentsSGIX';
+    
+    static procedure StopInstrumentsSGIX(marker: Int32);
+    external 'opengl32.dll' name 'glStopInstrumentsSGIX';
+    
+    static procedure GetListParameterfvSGIX(list: UInt32; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetListParameterfvSGIX';
+    
+    static procedure GetListParameterivSGIX(list: UInt32; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetListParameterivSGIX';
+    
+    static procedure ListParameterfSGIX(list: UInt32; pname: ErrorCode; param: single);
+    external 'opengl32.dll' name 'glListParameterfSGIX';
+    
+    static procedure ListParameterfvSGIX(list: UInt32; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glListParameterfvSGIX';
+    
+    static procedure ListParameteriSGIX(list: UInt32; pname: ErrorCode; param: Int32);
+    external 'opengl32.dll' name 'glListParameteriSGIX';
+    
+    static procedure ListParameterivSGIX(list: UInt32; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glListParameterivSGIX';
+    
+    static procedure PixelTexGenSGIX(mode: ErrorCode);
+    external 'opengl32.dll' name 'glPixelTexGenSGIX';
+    
+    static procedure DeformationMap3dSGIX(target: ErrorCode; u1: double; u2: double; ustride: Int32; uorder: Int32; v1: double; v2: double; vstride: Int32; vorder: Int32; w1: double; w2: double; wstride: Int32; worder: Int32; points: ^double);
+    external 'opengl32.dll' name 'glDeformationMap3dSGIX';
+    
+    static procedure DeformationMap3fSGIX(target: ErrorCode; u1: single; u2: single; ustride: Int32; uorder: Int32; v1: single; v2: single; vstride: Int32; vorder: Int32; w1: single; w2: single; wstride: Int32; worder: Int32; points: ^single);
+    external 'opengl32.dll' name 'glDeformationMap3fSGIX';
+    
+    static procedure DeformSGIX(mask: UInt32);
+    external 'opengl32.dll' name 'glDeformSGIX';
+    
+    static procedure LoadIdentityDeformationMapSGIX(mask: UInt32);
+    external 'opengl32.dll' name 'glLoadIdentityDeformationMapSGIX';
+    
+    static procedure ReferencePlaneSGIX(equation: ^double);
+    external 'opengl32.dll' name 'glReferencePlaneSGIX';
+    
+    static procedure SpriteParameterfSGIX(pname: ErrorCode; param: single);
+    external 'opengl32.dll' name 'glSpriteParameterfSGIX';
+    
+    static procedure SpriteParameterfvSGIX(pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glSpriteParameterfvSGIX';
+    
+    static procedure SpriteParameteriSGIX(pname: ErrorCode; param: Int32);
+    external 'opengl32.dll' name 'glSpriteParameteriSGIX';
+    
+    static procedure SpriteParameterivSGIX(pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glSpriteParameterivSGIX';
+    
+    static procedure TagSampleBufferSGIX;
+    external 'opengl32.dll' name 'glTagSampleBufferSGIX';
+    
+    {$endregion SGIX}
+    
+  end;
+  
+  //ToDo досортировать
+  
+  /// То, до чего у меня дойдут руки позже
+  /// Наверное, большинство функций тут - устаревшие
+  /// Потому что их нет в спецификации ядра OpenGL
+  /// И у них нет приставки расширения на конце (несколько больших букв, как EXT или NV)
+  /// А других групп функций - я ещё не встречал
+  gl_unsorted = static class
+    
+    {$region unsorted}
+    
+    static procedure MultiTexCoord1d(target: ErrorCode; s: double);
+    external 'opengl32.dll' name 'glMultiTexCoord1d';
+    
+    static procedure MultiTexCoord1dv(target: ErrorCode; v: ^double);
+    external 'opengl32.dll' name 'glMultiTexCoord1dv';
+    
+    static procedure MultiTexCoord1f(target: ErrorCode; s: single);
+    external 'opengl32.dll' name 'glMultiTexCoord1f';
+    
+    static procedure MultiTexCoord1fv(target: ErrorCode; v: ^single);
+    external 'opengl32.dll' name 'glMultiTexCoord1fv';
+    
+    static procedure MultiTexCoord1i(target: ErrorCode; s: Int32);
+    external 'opengl32.dll' name 'glMultiTexCoord1i';
+    
+    static procedure MultiTexCoord1iv(target: ErrorCode; v: ^Int32);
+    external 'opengl32.dll' name 'glMultiTexCoord1iv';
+    
+    static procedure MultiTexCoord1s(target: ErrorCode; s: Int16);
+    external 'opengl32.dll' name 'glMultiTexCoord1s';
+    
+    static procedure MultiTexCoord1sv(target: ErrorCode; v: ^Int16);
+    external 'opengl32.dll' name 'glMultiTexCoord1sv';
+    
+    static procedure MultiTexCoord2d(target: ErrorCode; s: double; t: double);
+    external 'opengl32.dll' name 'glMultiTexCoord2d';
+    
+    static procedure MultiTexCoord2dv(target: ErrorCode; v: ^double);
+    external 'opengl32.dll' name 'glMultiTexCoord2dv';
+    
+    static procedure MultiTexCoord2i(target: ErrorCode; s: Int32; t: Int32);
+    external 'opengl32.dll' name 'glMultiTexCoord2i';
+    
+    static procedure MultiTexCoord2iv(target: ErrorCode; v: ^Int32);
+    external 'opengl32.dll' name 'glMultiTexCoord2iv';
+    
+    static procedure MultiTexCoord2s(target: ErrorCode; s: Int16; t: Int16);
+    external 'opengl32.dll' name 'glMultiTexCoord2s';
+    
+    static procedure MultiTexCoord2sv(target: ErrorCode; v: ^Int16);
+    external 'opengl32.dll' name 'glMultiTexCoord2sv';
+    
+    static procedure MultiTexCoord3d(target: ErrorCode; s: double; t: double; r: double);
+    external 'opengl32.dll' name 'glMultiTexCoord3d';
+    
+    static procedure MultiTexCoord3dv(target: ErrorCode; v: ^double);
+    external 'opengl32.dll' name 'glMultiTexCoord3dv';
+    
+    static procedure MultiTexCoord3f(target: ErrorCode; s: single; t: single; r: single);
+    external 'opengl32.dll' name 'glMultiTexCoord3f';
+    
+    static procedure MultiTexCoord3fv(target: ErrorCode; v: ^single);
+    external 'opengl32.dll' name 'glMultiTexCoord3fv';
+    
+    static procedure MultiTexCoord3i(target: ErrorCode; s: Int32; t: Int32; r: Int32);
+    external 'opengl32.dll' name 'glMultiTexCoord3i';
+    
+    static procedure MultiTexCoord3iv(target: ErrorCode; v: ^Int32);
+    external 'opengl32.dll' name 'glMultiTexCoord3iv';
+    
+    static procedure MultiTexCoord3s(target: ErrorCode; s: Int16; t: Int16; r: Int16);
+    external 'opengl32.dll' name 'glMultiTexCoord3s';
+    
+    static procedure MultiTexCoord3sv(target: ErrorCode; v: ^Int16);
+    external 'opengl32.dll' name 'glMultiTexCoord3sv';
+    
+    static procedure MultiTexCoord4d(target: ErrorCode; s: double; t: double; r: double; q: double);
+    external 'opengl32.dll' name 'glMultiTexCoord4d';
+    
+    static procedure MultiTexCoord4dv(target: ErrorCode; v: ^double);
+    external 'opengl32.dll' name 'glMultiTexCoord4dv';
+    
+    static procedure MultiTexCoord4f(target: ErrorCode; s: single; t: single; r: single; q: single);
+    external 'opengl32.dll' name 'glMultiTexCoord4f';
+    
+    static procedure MultiTexCoord4fv(target: ErrorCode; v: ^single);
+    external 'opengl32.dll' name 'glMultiTexCoord4fv';
+    
+    static procedure MultiTexCoord4i(target: ErrorCode; s: Int32; t: Int32; r: Int32; q: Int32);
+    external 'opengl32.dll' name 'glMultiTexCoord4i';
+    
+    static procedure MultiTexCoord4iv(target: ErrorCode; v: ^Int32);
+    external 'opengl32.dll' name 'glMultiTexCoord4iv';
+    
+    static procedure MultiTexCoord4s(target: ErrorCode; s: Int16; t: Int16; r: Int16; q: Int16);
+    external 'opengl32.dll' name 'glMultiTexCoord4s';
+    
+    static procedure MultiTexCoord4sv(target: ErrorCode; v: ^Int16);
+    external 'opengl32.dll' name 'glMultiTexCoord4sv';
+    
+    static procedure LoadTransposeMatrixf(m: ^single);
+    external 'opengl32.dll' name 'glLoadTransposeMatrixf';
+    
+    static procedure LoadTransposeMatrixd(m: ^double);
+    external 'opengl32.dll' name 'glLoadTransposeMatrixd';
+    
+    static procedure MultTransposeMatrixf(m: ^single);
+    external 'opengl32.dll' name 'glMultTransposeMatrixf';
+    
+    static procedure MultTransposeMatrixd(m: ^double);
+    external 'opengl32.dll' name 'glMultTransposeMatrixd';
+    
+    static procedure FogCoordf(coord: single);
+    external 'opengl32.dll' name 'glFogCoordf';
+    
+    static procedure FogCoordfv(coord: ^single);
+    external 'opengl32.dll' name 'glFogCoordfv';
+    
+    static procedure FogCoordd(coord: double);
+    external 'opengl32.dll' name 'glFogCoordd';
+    
+    static procedure FogCoorddv(coord: ^double);
+    external 'opengl32.dll' name 'glFogCoorddv';
+    
+    static procedure FogCoordPointer(&type: ErrorCode; stride: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glFogCoordPointer';
+    
+    static procedure SecondaryColor3b(red: SByte; green: SByte; blue: SByte);
+    external 'opengl32.dll' name 'glSecondaryColor3b';
+    
+    static procedure SecondaryColor3bv(v: ^SByte);
+    external 'opengl32.dll' name 'glSecondaryColor3bv';
+    
+    static procedure SecondaryColor3d(red: double; green: double; blue: double);
+    external 'opengl32.dll' name 'glSecondaryColor3d';
+    
+    static procedure SecondaryColor3dv(v: ^double);
+    external 'opengl32.dll' name 'glSecondaryColor3dv';
+    
+    static procedure SecondaryColor3f(red: single; green: single; blue: single);
+    external 'opengl32.dll' name 'glSecondaryColor3f';
+    
+    static procedure SecondaryColor3fv(v: ^single);
+    external 'opengl32.dll' name 'glSecondaryColor3fv';
+    
+    static procedure SecondaryColor3i(red: Int32; green: Int32; blue: Int32);
+    external 'opengl32.dll' name 'glSecondaryColor3i';
+    
+    static procedure SecondaryColor3iv(v: ^Int32);
+    external 'opengl32.dll' name 'glSecondaryColor3iv';
+    
+    static procedure SecondaryColor3s(red: Int16; green: Int16; blue: Int16);
+    external 'opengl32.dll' name 'glSecondaryColor3s';
+    
+    static procedure SecondaryColor3sv(v: ^Int16);
+    external 'opengl32.dll' name 'glSecondaryColor3sv';
+    
+    static procedure SecondaryColor3ub(red: Byte; green: Byte; blue: Byte);
+    external 'opengl32.dll' name 'glSecondaryColor3ub';
+    
+    static procedure SecondaryColor3ubv(v: ^Byte);
+    external 'opengl32.dll' name 'glSecondaryColor3ubv';
+    
+    static procedure SecondaryColor3ui(red: UInt32; green: UInt32; blue: UInt32);
+    external 'opengl32.dll' name 'glSecondaryColor3ui';
+    
+    static procedure SecondaryColor3uiv(v: ^UInt32);
+    external 'opengl32.dll' name 'glSecondaryColor3uiv';
+    
+    static procedure SecondaryColor3us(red: UInt16; green: UInt16; blue: UInt16);
+    external 'opengl32.dll' name 'glSecondaryColor3us';
+    
+    static procedure SecondaryColor3usv(v: ^UInt16);
+    external 'opengl32.dll' name 'glSecondaryColor3usv';
+    
+    static procedure SecondaryColorPointer(size: Int32; &type: ErrorCode; stride: Int32; _pointer: pointer);
+    external 'opengl32.dll' name 'glSecondaryColorPointer';
+    
+    static procedure WindowPos2d(x: double; y: double);
+    external 'opengl32.dll' name 'glWindowPos2d';
+    
+    static procedure WindowPos2dv(v: ^double);
+    external 'opengl32.dll' name 'glWindowPos2dv';
+    
+    static procedure WindowPos2f(x: single; y: single);
+    external 'opengl32.dll' name 'glWindowPos2f';
+    
+    static procedure WindowPos2fv(v: ^single);
+    external 'opengl32.dll' name 'glWindowPos2fv';
+    
+    static procedure WindowPos2i(x: Int32; y: Int32);
+    external 'opengl32.dll' name 'glWindowPos2i';
+    
+    static procedure WindowPos2iv(v: ^Int32);
+    external 'opengl32.dll' name 'glWindowPos2iv';
+    
+    static procedure WindowPos2s(x: Int16; y: Int16);
+    external 'opengl32.dll' name 'glWindowPos2s';
+    
+    static procedure WindowPos2sv(v: ^Int16);
+    external 'opengl32.dll' name 'glWindowPos2sv';
+    
+    static procedure WindowPos3d(x: double; y: double; z: double);
+    external 'opengl32.dll' name 'glWindowPos3d';
+    
+    static procedure WindowPos3dv(v: ^double);
+    external 'opengl32.dll' name 'glWindowPos3dv';
+    
+    static procedure WindowPos3f(x: single; y: single; z: single);
+    external 'opengl32.dll' name 'glWindowPos3f';
+    
+    static procedure WindowPos3fv(v: ^single);
+    external 'opengl32.dll' name 'glWindowPos3fv';
+    
+    static procedure WindowPos3i(x: Int32; y: Int32; z: Int32);
+    external 'opengl32.dll' name 'glWindowPos3i';
+    
+    static procedure WindowPos3iv(v: ^Int32);
+    external 'opengl32.dll' name 'glWindowPos3iv';
+    
+    static procedure WindowPos3s(x: Int16; y: Int16; z: Int16);
+    external 'opengl32.dll' name 'glWindowPos3s';
+    
+    static procedure WindowPos3sv(v: ^Int16);
+    external 'opengl32.dll' name 'glWindowPos3sv';
+    
+    static function CreateProgram: UInt32;
+    external 'opengl32.dll' name 'glCreateProgram';
+    
+    static procedure VertexP2ui(&type: ErrorCode; value: UInt32);
+    external 'opengl32.dll' name 'glVertexP2ui';
+    
+    static procedure VertexP2uiv(&type: ErrorCode; value: ^UInt32);
+    external 'opengl32.dll' name 'glVertexP2uiv';
+    
+    static procedure VertexP3ui(&type: ErrorCode; value: UInt32);
+    external 'opengl32.dll' name 'glVertexP3ui';
+    
+    static procedure VertexP3uiv(&type: ErrorCode; value: ^UInt32);
+    external 'opengl32.dll' name 'glVertexP3uiv';
+    
+    static procedure VertexP4ui(&type: ErrorCode; value: UInt32);
+    external 'opengl32.dll' name 'glVertexP4ui';
+    
+    static procedure VertexP4uiv(&type: ErrorCode; value: ^UInt32);
+    external 'opengl32.dll' name 'glVertexP4uiv';
+    
+    static procedure TexCoordP1ui(&type: ErrorCode; coords: UInt32);
+    external 'opengl32.dll' name 'glTexCoordP1ui';
+    
+    static procedure TexCoordP1uiv(&type: ErrorCode; coords: ^UInt32);
+    external 'opengl32.dll' name 'glTexCoordP1uiv';
+    
+    static procedure TexCoordP2ui(&type: ErrorCode; coords: UInt32);
+    external 'opengl32.dll' name 'glTexCoordP2ui';
+    
+    static procedure TexCoordP2uiv(&type: ErrorCode; coords: ^UInt32);
+    external 'opengl32.dll' name 'glTexCoordP2uiv';
+    
+    static procedure TexCoordP3ui(&type: ErrorCode; coords: UInt32);
+    external 'opengl32.dll' name 'glTexCoordP3ui';
+    
+    static procedure TexCoordP3uiv(&type: ErrorCode; coords: ^UInt32);
+    external 'opengl32.dll' name 'glTexCoordP3uiv';
+    
+    static procedure TexCoordP4ui(&type: ErrorCode; coords: UInt32);
+    external 'opengl32.dll' name 'glTexCoordP4ui';
+    
+    static procedure TexCoordP4uiv(&type: ErrorCode; coords: ^UInt32);
+    external 'opengl32.dll' name 'glTexCoordP4uiv';
+    
+    static procedure MultiTexCoordP1ui(texture: ErrorCode; &type: ErrorCode; coords: UInt32);
+    external 'opengl32.dll' name 'glMultiTexCoordP1ui';
+    
+    static procedure MultiTexCoordP1uiv(texture: ErrorCode; &type: ErrorCode; coords: ^UInt32);
+    external 'opengl32.dll' name 'glMultiTexCoordP1uiv';
+    
+    static procedure MultiTexCoordP2ui(texture: ErrorCode; &type: ErrorCode; coords: UInt32);
+    external 'opengl32.dll' name 'glMultiTexCoordP2ui';
+    
+    static procedure MultiTexCoordP2uiv(texture: ErrorCode; &type: ErrorCode; coords: ^UInt32);
+    external 'opengl32.dll' name 'glMultiTexCoordP2uiv';
+    
+    static procedure MultiTexCoordP3ui(texture: ErrorCode; &type: ErrorCode; coords: UInt32);
+    external 'opengl32.dll' name 'glMultiTexCoordP3ui';
+    
+    static procedure MultiTexCoordP3uiv(texture: ErrorCode; &type: ErrorCode; coords: ^UInt32);
+    external 'opengl32.dll' name 'glMultiTexCoordP3uiv';
+    
+    static procedure MultiTexCoordP4ui(texture: ErrorCode; &type: ErrorCode; coords: UInt32);
+    external 'opengl32.dll' name 'glMultiTexCoordP4ui';
+    
+    static procedure MultiTexCoordP4uiv(texture: ErrorCode; &type: ErrorCode; coords: ^UInt32);
+    external 'opengl32.dll' name 'glMultiTexCoordP4uiv';
+    
+    static procedure NormalP3ui(&type: ErrorCode; coords: UInt32);
+    external 'opengl32.dll' name 'glNormalP3ui';
+    
+    static procedure NormalP3uiv(&type: ErrorCode; coords: ^UInt32);
+    external 'opengl32.dll' name 'glNormalP3uiv';
+    
+    static procedure ColorP3ui(&type: ErrorCode; color: UInt32);
+    external 'opengl32.dll' name 'glColorP3ui';
+    
+    static procedure ColorP3uiv(&type: ErrorCode; color: ^UInt32);
+    external 'opengl32.dll' name 'glColorP3uiv';
+    
+    static procedure ColorP4ui(&type: ErrorCode; color: UInt32);
+    external 'opengl32.dll' name 'glColorP4ui';
+    
+    static procedure ColorP4uiv(&type: ErrorCode; color: ^UInt32);
+    external 'opengl32.dll' name 'glColorP4uiv';
+    
+    static procedure SecondaryColorP3ui(&type: ErrorCode; color: UInt32);
+    external 'opengl32.dll' name 'glSecondaryColorP3ui';
+    
+    static procedure SecondaryColorP3uiv(&type: ErrorCode; color: ^UInt32);
+    external 'opengl32.dll' name 'glSecondaryColorP3uiv';
+    
+    static procedure GetnMapdv(target: ErrorCode; query: ErrorCode; bufSize: Int32; v: ^double);
+    external 'opengl32.dll' name 'glGetnMapdv';
+    
+    static procedure GetnMapfv(target: ErrorCode; query: ErrorCode; bufSize: Int32; v: ^single);
+    external 'opengl32.dll' name 'glGetnMapfv';
+    
+    static procedure GetnMapiv(target: ErrorCode; query: ErrorCode; bufSize: Int32; v: ^Int32);
+    external 'opengl32.dll' name 'glGetnMapiv';
+    
+    static procedure GetnPixelMapfv(map: ErrorCode; bufSize: Int32; values: ^single);
+    external 'opengl32.dll' name 'glGetnPixelMapfv';
+    
+    static procedure GetnPixelMapuiv(map: ErrorCode; bufSize: Int32; values: ^UInt32);
+    external 'opengl32.dll' name 'glGetnPixelMapuiv';
+    
+    static procedure GetnPixelMapusv(map: ErrorCode; bufSize: Int32; values: ^UInt16);
+    external 'opengl32.dll' name 'glGetnPixelMapusv';
+    
+    static procedure GetnPolygonStipple(bufSize: Int32; pattern: ^Byte);
+    external 'opengl32.dll' name 'glGetnPolygonStipple';
+    
+    static procedure GetnColorTable(target: ErrorCode; format: ErrorCode; &type: ErrorCode; bufSize: Int32; table: pointer);
+    external 'opengl32.dll' name 'glGetnColorTable';
+    
+    static procedure GetnConvolutionFilter(target: ErrorCode; format: ErrorCode; &type: ErrorCode; bufSize: Int32; image: pointer);
+    external 'opengl32.dll' name 'glGetnConvolutionFilter';
+    
+    static procedure GetnSeparableFilter(target: ErrorCode; format: ErrorCode; &type: ErrorCode; rowBufSize: Int32; row: pointer; columnBufSize: Int32; column: pointer; span: pointer);
+    external 'opengl32.dll' name 'glGetnSeparableFilter';
+    
+    static procedure GetnHistogram(target: ErrorCode; reset: Byte; format: ErrorCode; &type: ErrorCode; bufSize: Int32; values: pointer);
+    external 'opengl32.dll' name 'glGetnHistogram';
+    
+    static procedure GetnMinmax(target: ErrorCode; reset: Byte; format: ErrorCode; &type: ErrorCode; bufSize: Int32; values: pointer);
+    external 'opengl32.dll' name 'glGetnMinmax';
+    
+    static procedure ColorTable(target: ErrorCode; internalformat: ErrorCode; width: Int32; format: ErrorCode; &type: ErrorCode; table: pointer);
+    external 'opengl32.dll' name 'glColorTable';
+    
+    static procedure ColorTableParameterfv(target: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glColorTableParameterfv';
+    
+    static procedure ColorTableParameteriv(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glColorTableParameteriv';
+    
+    static procedure CopyColorTable(target: ErrorCode; internalformat: ErrorCode; x: Int32; y: Int32; width: Int32);
+    external 'opengl32.dll' name 'glCopyColorTable';
+    
+    static procedure GetColorTable(target: ErrorCode; format: ErrorCode; &type: ErrorCode; table: pointer);
+    external 'opengl32.dll' name 'glGetColorTable';
+    
+    static procedure GetColorTableParameterfv(target: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetColorTableParameterfv';
+    
+    static procedure GetColorTableParameteriv(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetColorTableParameteriv';
+    
+    static procedure ColorSubTable(target: ErrorCode; start: Int32; count: Int32; format: ErrorCode; &type: ErrorCode; data: pointer);
+    external 'opengl32.dll' name 'glColorSubTable';
+    
+    static procedure CopyColorSubTable(target: ErrorCode; start: Int32; x: Int32; y: Int32; width: Int32);
+    external 'opengl32.dll' name 'glCopyColorSubTable';
+    
+    static procedure ConvolutionFilter1D(target: ErrorCode; internalformat: ErrorCode; width: Int32; format: ErrorCode; &type: ErrorCode; image: pointer);
+    external 'opengl32.dll' name 'glConvolutionFilter1D';
+    
+    static procedure ConvolutionFilter2D(target: ErrorCode; internalformat: ErrorCode; width: Int32; height: Int32; format: ErrorCode; &type: ErrorCode; image: pointer);
+    external 'opengl32.dll' name 'glConvolutionFilter2D';
+    
+    static procedure ConvolutionParameterf(target: ErrorCode; pname: ErrorCode; &params: single);
+    external 'opengl32.dll' name 'glConvolutionParameterf';
+    
+    static procedure ConvolutionParameterfv(target: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glConvolutionParameterfv';
+    
+    static procedure ConvolutionParameteri(target: ErrorCode; pname: ErrorCode; &params: Int32);
+    external 'opengl32.dll' name 'glConvolutionParameteri';
+    
+    static procedure ConvolutionParameteriv(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glConvolutionParameteriv';
+    
+    static procedure CopyConvolutionFilter1D(target: ErrorCode; internalformat: ErrorCode; x: Int32; y: Int32; width: Int32);
+    external 'opengl32.dll' name 'glCopyConvolutionFilter1D';
+    
+    static procedure CopyConvolutionFilter2D(target: ErrorCode; internalformat: ErrorCode; x: Int32; y: Int32; width: Int32; height: Int32);
+    external 'opengl32.dll' name 'glCopyConvolutionFilter2D';
+    
+    static procedure GetConvolutionFilter(target: ErrorCode; format: ErrorCode; &type: ErrorCode; image: pointer);
+    external 'opengl32.dll' name 'glGetConvolutionFilter';
+    
+    static procedure GetConvolutionParameterfv(target: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetConvolutionParameterfv';
+    
+    static procedure GetConvolutionParameteriv(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetConvolutionParameteriv';
+    
+    static procedure GetSeparableFilter(target: ErrorCode; format: ErrorCode; &type: ErrorCode; row: pointer; column: pointer; span: pointer);
+    external 'opengl32.dll' name 'glGetSeparableFilter';
+    
+    static procedure SeparableFilter2D(target: ErrorCode; internalformat: ErrorCode; width: Int32; height: Int32; format: ErrorCode; &type: ErrorCode; row: pointer; column: pointer);
+    external 'opengl32.dll' name 'glSeparableFilter2D';
+    
+    static procedure GetHistogram(target: ErrorCode; reset: Byte; format: ErrorCode; &type: ErrorCode; values: pointer);
+    external 'opengl32.dll' name 'glGetHistogram';
+    
+    static procedure GetHistogramParameterfv(target: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetHistogramParameterfv';
+    
+    static procedure GetHistogramParameteriv(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetHistogramParameteriv';
+    
+    static procedure GetMinmax(target: ErrorCode; reset: Byte; format: ErrorCode; &type: ErrorCode; values: pointer);
+    external 'opengl32.dll' name 'glGetMinmax';
+    
+    static procedure GetMinmaxParameterfv(target: ErrorCode; pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glGetMinmaxParameterfv';
+    
+    static procedure GetMinmaxParameteriv(target: ErrorCode; pname: ErrorCode; &params: ^Int32);
+    external 'opengl32.dll' name 'glGetMinmaxParameteriv';
+    
+    static procedure Histogram(target: ErrorCode; width: Int32; internalformat: ErrorCode; sink: Byte);
+    external 'opengl32.dll' name 'glHistogram';
+    
+    static procedure Minmax(target: ErrorCode; internalformat: ErrorCode; sink: Byte);
+    external 'opengl32.dll' name 'glMinmax';
+    
+    static procedure ResetHistogram(target: ErrorCode);
+    external 'opengl32.dll' name 'glResetHistogram';
+    
+    static procedure ResetMinmax(target: ErrorCode);
+    external 'opengl32.dll' name 'glResetMinmax';
+    
+    static procedure GetPixelMapxv(map: ErrorCode; size: Int32; values: ^fixed);
+    external 'opengl32.dll' name 'glGetPixelMapxv';
+    
+    static procedure PixelMapx(map: ErrorCode; size: Int32; values: ^fixed);
+    external 'opengl32.dll' name 'glPixelMapx';
+    
+    static procedure PixelStorex(pname: ErrorCode; param: fixed);
+    external 'opengl32.dll' name 'glPixelStorex';
+    
+    static procedure TbufferMask3DFX(mask: UInt32);
+    external 'opengl32.dll' name 'glTbufferMask3DFX';
+    
+    static procedure AlphaFuncx(func: ErrorCode; ref: Int32);
+    external 'opengl32.dll' name 'glAlphaFuncx';
+    
+    static procedure ClearColorx(red: Int32; green: Int32; blue: Int32; alpha: Int32);
+    external 'opengl32.dll' name 'glClearColorx';
+    
+    static procedure ClearDepthx(depth: Int32);
+    external 'opengl32.dll' name 'glClearDepthx';
+    
+    static procedure Color4x(red: fixed; green: fixed; blue: fixed; alpha: fixed);
+    external 'opengl32.dll' name 'glColor4x';
+    
+    static procedure DepthRangex(zNear: Int32; zFar: Int32);
+    external 'opengl32.dll' name 'glDepthRangex';
+    
+    static procedure Fogf(pname: ErrorCode; param: single);
+    external 'opengl32.dll' name 'glFogf';
+    
+    static procedure Fogfv(pname: ErrorCode; &params: ^single);
+    external 'opengl32.dll' name 'glFogfv';
+    
+    static procedure Fogx(pname: ErrorCode; param: fixed);
+    external 'opengl32.dll' name 'glFogx';
+    
+    static procedure Fogxv(pname: ErrorCode; &params: ^fixed);
+    external 'opengl32.dll' name 'glFogxv';
+    
+    static procedure Frustumx(left: fixed; right: fixed; bottom: fixed; top: fixed; zNear: fixed; zFar: fixed);
+    external 'opengl32.dll' name 'glFrustumx';
+    
+    static procedure LightModelf(pname: ErrorCode; param: single);
+    external 'opengl32.dll' name 'glLightModelf';
+    
+    static procedure LightModelx(pname: ErrorCode; param: fixed);
+    external 'opengl32.dll' name 'glLightModelx';
+    
+    static procedure LightModelxv(pname: ErrorCode; &params: ^fixed);
+    external 'opengl32.dll' name 'glLightModelxv';
+    
+    static procedure Lightf(light: ErrorCode; pname: ErrorCode; param: single);
+    external 'opengl32.dll' name 'glLightf';
+    
+    static procedure Lightx(light: ErrorCode; pname: ErrorCode; param: fixed);
+    external 'opengl32.dll' name 'glLightx';
+    
+    static procedure Lightxv(light: ErrorCode; pname: ErrorCode; &params: ^fixed);
+    external 'opengl32.dll' name 'glLightxv';
+    
+    static procedure LineWidthx(width: fixed);
+    external 'opengl32.dll' name 'glLineWidthx';
+    
+    static procedure LoadMatrixx(m: ^fixed);
+    external 'opengl32.dll' name 'glLoadMatrixx';
+    
+    static procedure Materialx(face: ErrorCode; pname: ErrorCode; param: fixed);
+    external 'opengl32.dll' name 'glMaterialx';
+    
+    static procedure Materialxv(face: ErrorCode; pname: ErrorCode; &params: ^fixed);
+    external 'opengl32.dll' name 'glMaterialxv';
+    
+    static procedure MultMatrixx(m: ^fixed);
+    external 'opengl32.dll' name 'glMultMatrixx';
+    
+    static procedure MultiTexCoord4x(target: ErrorCode; s: fixed; t: fixed; r: fixed; q: fixed);
+    external 'opengl32.dll' name 'glMultiTexCoord4x';
+    
+    static procedure Normal3x(nx: fixed; ny: fixed; nz: fixed);
+    external 'opengl32.dll' name 'glNormal3x';
+    
+    static procedure Orthox(left: fixed; right: fixed; bottom: fixed; top: fixed; zNear: fixed; zFar: fixed);
+    external 'opengl32.dll' name 'glOrthox';
+    
+    static procedure PointSizex(size: fixed);
+    external 'opengl32.dll' name 'glPointSizex';
+    
+    static procedure PolygonOffsetx(factor: fixed; units: fixed);
+    external 'opengl32.dll' name 'glPolygonOffsetx';
+    
+    static procedure Rotatex(angle: fixed; x: fixed; y: fixed; z: fixed);
+    external 'opengl32.dll' name 'glRotatex';
+    
+    static procedure SampleCoveragex(value: Int32; invert: Byte);
+    external 'opengl32.dll' name 'glSampleCoveragex';
+    
+    static procedure Scalex(x: fixed; y: fixed; z: fixed);
+    external 'opengl32.dll' name 'glScalex';
+    
+    static procedure TexEnvf(target: ErrorCode; pname: ErrorCode; param: single);
+    external 'opengl32.dll' name 'glTexEnvf';
+    
+    static procedure TexEnvx(target: ErrorCode; pname: ErrorCode; param: fixed);
+    external 'opengl32.dll' name 'glTexEnvx';
+    
+    static procedure TexEnvxv(target: ErrorCode; pname: ErrorCode; &params: ^fixed);
+    external 'opengl32.dll' name 'glTexEnvxv';
+    
+    static procedure TexParameterx(target: ErrorCode; pname: ErrorCode; param: fixed);
+    external 'opengl32.dll' name 'glTexParameterx';
+    
+    static procedure Translatex(x: fixed; y: fixed; z: fixed);
+    external 'opengl32.dll' name 'glTranslatex';
+    
+    {$endregion unsorted}
+    
+  end;
+  
 end.

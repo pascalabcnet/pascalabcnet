@@ -31,6 +31,8 @@ uses System.Runtime.InteropServices;
 //ToDo клонирование очередей
 // - для паралельного выполнения из разных потоков
 
+//ToDo если контекст создан из cl_context - не удалять его
+
 //ToDo issue компилятора:
 // - #1952
 // - #1981
@@ -442,15 +444,17 @@ type
     
     public static property &Default: Context read _def_cont write _def_cont;
     
-    public constructor := Create(DeviceTypeFlags.GPU);
-    
     static constructor :=
     try
       
       var ec := cl.GetPlatformIDs(1,@_platform,nil);
       ec.RaiseIfError;
       
-      _def_cont := new Context;
+      try
+        _def_cont := new Context;
+      except
+        _def_cont := new Context(DeviceTypeFlags.All); // если нету GPU - попытаться хотя бы для чего то его инициализировать
+      end;
       
     except
       on e: Exception do
@@ -461,6 +465,8 @@ type
       end;
     end;
     
+    public constructor := Create(DeviceTypeFlags.GPU);
+    
     public constructor(dt: DeviceTypeFlags);
     begin
       var ec: ErrorCode;
@@ -470,6 +476,20 @@ type
       _context := cl.CreateContext(nil, 1, @_device, nil, nil, @ec);
       ec.RaiseIfError;
       
+    end;
+    
+    public constructor(context: cl_context);
+    begin
+      
+      cl.GetContextInfo(context, ContextInfoType.CL_CONTEXT_DEVICES, new UIntPtr(IntPtr.Size), @_device, nil).RaiseIfError;
+      
+      _context := context;
+    end;
+    
+    public constructor(context: cl_context; device: cl_device_id);
+    begin
+      _device := device;
+      _context := context;
     end;
     
     public function BeginInvoke<T>(q: CommandQueue<T>): Task<T>;
@@ -488,19 +508,21 @@ type
         cl.ReleaseCommandQueue(cq).RaiseIfError;
         Result := q.res;
       end;
-      Result := Task&<T>.Run(костыль_для_Result);
       
+      Result := Task.Run(костыль_для_Result);
     end;
     
     public function SyncInvoke<T>(q: CommandQueue<T>): T;
     begin
       var tsk := BeginInvoke(q);
-      tsk.Wait;
+      tsk.Wait; //ToDo плавающая ошибка - на этой строчке "System.Threading.Tasks.TaskCanceledException: Отменена задача."
       Result := tsk.Result;
+      // может там Task&<T>.Run криво вызывается... посмотреть IL
     end;
     
     public procedure Finalize; override :=
-    cl.ReleaseContext(_context).RaiseIfError;
+    if _context <> cl_context.Zero then // если было исключение при инициализации
+      cl.ReleaseContext(_context).RaiseIfError;
     
   end;
   
