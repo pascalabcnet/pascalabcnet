@@ -121,7 +121,7 @@ begin
         SwapBuffers(hdc);
       end);
       
-      Sleep(1);
+      Sleep(16);
     end).Start;
     
   end;
