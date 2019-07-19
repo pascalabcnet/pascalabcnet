@@ -104,7 +104,7 @@ namespace VisualPascalABC
                 int start = TextUtilities.FindPrevWordStart(editor.Document, caret.Offset);
                 var Text = editor.Document.GetText(start, caret.Offset - start).TrimEnd();
 
-                if (Text.ToLower() == "begin")
+                if (Text.ToLower() == "begin") 
                 {
                     string cur, next, prev;
                     GetCurNextLines(out cur, out next, out prev);
@@ -183,15 +183,17 @@ namespace VisualPascalABC
                 else
                 {
                     var seg = doc.GetLineSegment(ta.Caret.Line);
-                    var curline = doc.GetText(seg);
-                    if (curline.Contains(":="))
-                    {
-                        var curlinenew = Regex.Replace(curline, @"(\s*)(\S+)(\s*):=(\s*)(.+)(;?)(\s*)", @"$1$2 := $5;");
-                        doc.Replace(seg.Offset, curline.Length, curlinenew);
-                        ta.Caret.Column = curlinenew.Length;
-                        return false;
+                    var curline = doc.GetText(seg).TrimEnd();
+                    if (ta.Caret.Column >= curline.Length)
+                        if (curline.Contains(":="))
+                        {
+                            var curlinenew = Regex.Replace(curline, @"(\s*)(\S+)(\s*):=(\s*)(.+)(;?)", @"$1$2 := $5;");
+                            curlinenew = curlinenew.Replace(";;", ";");
+                            doc.Replace(seg.Offset, curline.Length, curlinenew);
+                            ta.Caret.Column = curlinenew.Length;
+                            return false;
+                        }
                     }
-                }
 
                 return false;
             }
