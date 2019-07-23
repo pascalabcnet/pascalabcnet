@@ -42,6 +42,8 @@ unit OpenGL;
 
 //ToDo проверить передачу external функции вместо лямбды
 
+//ToDo SysInt - а это вообще работает так как я думаю?
+
 //ToDo автоматический тестировщик
 // - особенно для матриц надо...
 // - и примеры тоже надо проверять после любых изменений
@@ -75,6 +77,9 @@ type
   VertexArrayName               = UInt32;
   TransformFeedbackName         = UInt32;
   
+  GLContext                     = UInt32;
+  GDI_DC                        = IntPtr;
+  
   ShaderBinaryFormat            = UInt32;
   ProgramResourceIndex          = UInt32;
   ProgramBinaryFormat           = UInt32;
@@ -82,7 +87,6 @@ type
   GLhandleARB                   = UInt32;
   GLeglClientBufferEXT          = IntPtr;
   GLvdpauSurfaceNV              = IntPtr;
-  HGLRC                         = UInt32; //ToDo вроде это что то для связки с GDI... если в конце окажется не нужно - удалить
   
   
   
@@ -317,6 +321,92 @@ type
   end;
   
   {$endregion ...InfoType}
+  
+  //S
+  CompatibilityViewClassType = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public static property C_128_BITS:        CompatibilityViewClassType read new CompatibilityViewClassType($82C4);
+    public static property C_96_BITS:         CompatibilityViewClassType read new CompatibilityViewClassType($82C5);
+    public static property C_64_BITS:         CompatibilityViewClassType read new CompatibilityViewClassType($82C6);
+    public static property C_48_BITS:         CompatibilityViewClassType read new CompatibilityViewClassType($82C7);
+    public static property C_32_BITS:         CompatibilityViewClassType read new CompatibilityViewClassType($82C8);
+    public static property C_24_BITS:         CompatibilityViewClassType read new CompatibilityViewClassType($82C9);
+    public static property C_16_BITS:         CompatibilityViewClassType read new CompatibilityViewClassType($82CA);
+    public static property C_8_BITS:          CompatibilityViewClassType read new CompatibilityViewClassType($82CB);
+    public static property C_S3TC_DXT1_RGB:   CompatibilityViewClassType read new CompatibilityViewClassType($82CC);
+    public static property C_S3TC_DXT1_RGBA:  CompatibilityViewClassType read new CompatibilityViewClassType($82CD);
+    public static property C_S3TC_DXT3_RGBA:  CompatibilityViewClassType read new CompatibilityViewClassType($82CE);
+    public static property C_S3TC_DXT5_RGBA:  CompatibilityViewClassType read new CompatibilityViewClassType($82CF);
+    public static property C_RGTC1_RED:       CompatibilityViewClassType read new CompatibilityViewClassType($82D0);
+    public static property C_RGTC2_RG:        CompatibilityViewClassType read new CompatibilityViewClassType($82D1);
+    public static property C_BPTC_UNORM:      CompatibilityViewClassType read new CompatibilityViewClassType($82D2);
+    public static property C_BPTC_FLOAT:      CompatibilityViewClassType read new CompatibilityViewClassType($82D3);
+    
+  end;
+  
+  //S
+  CompatibilityImageClassType = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public static property C_4_X_32:      CompatibilityImageClassType read new CompatibilityImageClassType($82B9);
+    public static property C_2_X_32:      CompatibilityImageClassType read new CompatibilityImageClassType($82BA);
+    public static property C_1_X_32:      CompatibilityImageClassType read new CompatibilityImageClassType($82BB);
+    public static property C_4_X_16:      CompatibilityImageClassType read new CompatibilityImageClassType($82BC);
+    public static property C_2_X_16:      CompatibilityImageClassType read new CompatibilityImageClassType($82BD);
+    public static property C_1_X_16:      CompatibilityImageClassType read new CompatibilityImageClassType($82BE);
+    public static property C_4_X_8:       CompatibilityImageClassType read new CompatibilityImageClassType($82BF);
+    public static property C_2_X_8:       CompatibilityImageClassType read new CompatibilityImageClassType($82C0);
+    public static property C_1_X_8:       CompatibilityImageClassType read new CompatibilityImageClassType($82C1);
+    public static property C_11_11_10:    CompatibilityImageClassType read new CompatibilityImageClassType($82C2);
+    public static property C_10_10_10_2:  CompatibilityImageClassType read new CompatibilityImageClassType($82C3);
+    
+  end;
+  
+  //S
+  ImageFormatCompatibilityMode = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public static property COMPATIBILITY1_BY_SIZE:  ImageFormatCompatibilityMode read new ImageFormatCompatibilityMode($90C8);
+    public static property COMPATIBILITY2_BY_CLASS: ImageFormatCompatibilityMode read new ImageFormatCompatibilityMode($90C9);
+    public static property NONE:                    ImageFormatCompatibilityMode read new ImageFormatCompatibilityMode($90C9);
+    
+  end;
+  
+  //S
+  SupportLevel = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public static property NONE:            SupportLevel read new SupportLevel(0);
+    public static property FULL_SUPPORT:    SupportLevel read new SupportLevel($82B7);
+    public static property CAVEAT_SUPPORT:  SupportLevel read new SupportLevel($82B8);
+    
+  end;
+  
+  //S
+  GDI_LayerType = record
+    public val: Byte;
+    public constructor(val: Byte) := self.val := val;
+    
+    public static property MAIN_PLANE:      GDI_LayerType read new GDI_LayerType(0);
+    public static property OVERLAY_PLANE:   GDI_LayerType read new GDI_LayerType(1);
+    public static property UNDERLAY_PLANE:  GDI_LayerType read new GDI_LayerType(-1);
+    
+  end;
+  
+  //S
+  GDI_PixelDataType = record
+    public val: Byte;
+    public constructor(val: Byte) := self.val := val;
+    
+    public static property RGBA:        GDI_PixelDataType read new GDI_PixelDataType(0);
+    public static property COLORINDEX:  GDI_PixelDataType read new GDI_PixelDataType(1);
+    
+  end;
   
   //S
   CopyableImageBuffer = record
@@ -1195,9 +1285,22 @@ type
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    public static property GL_RENDERBUFFER: CopyableImageType read new CopyableImageType($8D41);
+    public static property ARRAY_BUFFER:              CopyableImageType read new CopyableImageType($8892);
+    public static property ATOMIC_COUNTER_BUFFER:     CopyableImageType read new CopyableImageType($92C0);
+    public static property COPY_READ_BUFFER:          CopyableImageType read new CopyableImageType($8F36);
+    public static property COPY_WRITE_BUFFER:         CopyableImageType read new CopyableImageType($8F37);
+    public static property DISPATCH_INDIRECT_BUFFER:  CopyableImageType read new CopyableImageType($90EE);
+    public static property DRAW_INDIRECT_BUFFER:      CopyableImageType read new CopyableImageType($8F3F);
+    public static property ELEMENT_ARRAY_BUFFER:      CopyableImageType read new CopyableImageType($8893);
+    public static property PIXEL_PACK_BUFFER:         CopyableImageType read new CopyableImageType($88EB);
+    public static property PIXEL_UNPACK_BUFFER:       CopyableImageType read new CopyableImageType($88EC);
+    public static property QUERY_BUFFER:              CopyableImageType read new CopyableImageType($9192);
+    public static property SHADER_STORAGE_BUFFER:     CopyableImageType read new CopyableImageType($90D2);
+    public static property TEXTURE_BUFFER:            CopyableImageType read new CopyableImageType($8C2A);
+    public static property TRANSFORM_FEEDBACK_BUFFER: CopyableImageType read new CopyableImageType($8C8E);
+    public static property UNIFORM_BUFFER:            CopyableImageType read new CopyableImageType($8A11);
     
-    public static function operator implicit(v: BufferBindType): CopyableImageType := new CopyableImageType(v.val);
+    public static property GL_RENDERBUFFER:           CopyableImageType read new CopyableImageType($8D41);
     
   end;
   
@@ -1953,6 +2056,33 @@ type
   {$region Флаги}
   
   //S
+  GDI_PixelFormatFlags = record
+    public val: UInt32;
+    public constructor(val: UInt32) := self.val := val;
+    
+    public static property DOUBLEBUFFER:          GDI_PixelFormatFlags read new GDI_PixelFormatFlags($00000001);
+    public static property STEREO:                GDI_PixelFormatFlags read new GDI_PixelFormatFlags($00000002);
+    public static property DRAW_TO_WINDOW:        GDI_PixelFormatFlags read new GDI_PixelFormatFlags($00000004);
+    public static property DRAW_TO_BITMAP:        GDI_PixelFormatFlags read new GDI_PixelFormatFlags($00000008);
+    public static property SUPPORT_GDI:           GDI_PixelFormatFlags read new GDI_PixelFormatFlags($00000010);
+    public static property SUPPORT_OPENGL:        GDI_PixelFormatFlags read new GDI_PixelFormatFlags($00000020);
+    public static property GENERIC_FORMAT:        GDI_PixelFormatFlags read new GDI_PixelFormatFlags($00000040);
+    public static property NEED_PALETTE:          GDI_PixelFormatFlags read new GDI_PixelFormatFlags($00000080);
+    public static property NEED_SYSTEM_PALETTE:   GDI_PixelFormatFlags read new GDI_PixelFormatFlags($00000100);
+    public static property SWAP_EXCHANGE:         GDI_PixelFormatFlags read new GDI_PixelFormatFlags($00000200);
+    public static property SWAP_COPY:             GDI_PixelFormatFlags read new GDI_PixelFormatFlags($00000400);
+    public static property SWAP_LAYER_BUFFERS:    GDI_PixelFormatFlags read new GDI_PixelFormatFlags($00000800);
+    public static property GENERIC_ACCELERATED:   GDI_PixelFormatFlags read new GDI_PixelFormatFlags($00001000);
+    public static property SUPPORT_DIRECTDRAW:    GDI_PixelFormatFlags read new GDI_PixelFormatFlags($00002000);
+    public static property DEPTH_DONTCARE:        GDI_PixelFormatFlags read new GDI_PixelFormatFlags($20000000);
+    public static property DOUBLEBUFFER_DONTCARE: GDI_PixelFormatFlags read new GDI_PixelFormatFlags($40000000);
+    public static property STEREO_DONTCARE:       GDI_PixelFormatFlags read new GDI_PixelFormatFlags($80000000);
+    
+    public static function operator or(v1,v2: GDI_PixelFormatFlags): GDI_PixelFormatFlags := new GDI_PixelFormatFlags(v1.val or v2.val);
+    
+  end;
+  
+  //S
   BufferTypeFlags = record
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
@@ -2111,16 +2241,20 @@ type
     end;
     public property val[i: integer]: SByte read GetValAt write SetValAt; default;
     
+    public static function operator-(v: Vec1b): Vec1b := new Vec1b(-v.val0);
+    public static function operator*(v: Vec1b; k: SByte): Vec1b := new Vec1b(v.val0*k);
+    public static function operator+(v1, v2: Vec1b): Vec1b := new Vec1b(v1.val0+v2.val0);
+    public static function operator-(v1, v2: Vec1b): Vec1b := new Vec1b(v1.val0-v2.val0);
+    
+    public function SqrLength := val0*val0;
+    
+    public function SqrLength_d: double := real(val0)*val0;
+    
     public function Println: Vec1b;
     begin
       writeln( '[ ', val0.ToString('f2'), ' ]' );
       Result := self;
     end;
-    
-    public static function operator-(v: Vec1b): Vec1b := new Vec1b(-v.val0);
-    public static function operator*(v: Vec1b; k: SByte): Vec1b := new Vec1b(v.val0*k);
-    public static function operator+(v1, v2: Vec1b): Vec1b := new Vec1b(v1.val0+v2.val0);
-    public static function operator-(v1, v2: Vec1b): Vec1b := new Vec1b(v1.val0-v2.val0);
     
   end;
   
@@ -2146,18 +2280,22 @@ type
     end;
     public property val[i: integer]: Byte read GetValAt write SetValAt; default;
     
-    public function Println: Vec1ub;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ' ]' );
-      Result := self;
-    end;
-    
     public static function operator*(v: Vec1ub; k: Byte): Vec1ub := new Vec1ub(v.val0*k);
     public static function operator+(v1, v2: Vec1ub): Vec1ub := new Vec1ub(v1.val0+v2.val0);
     public static function operator-(v1, v2: Vec1ub): Vec1ub := new Vec1ub(v1.val0-v2.val0);
     
     public static function operator implicit(v: Vec1b): Vec1ub := new Vec1ub(v.val0);
     public static function operator implicit(v: Vec1ub): Vec1b := new Vec1b(v.val0);
+    
+    public function SqrLength := val0*val0;
+    
+    public function SqrLength_d: double := real(val0)*val0;
+    
+    public function Println: Vec1ub;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
   end;
   
@@ -2183,12 +2321,6 @@ type
     end;
     public property val[i: integer]: Int16 read GetValAt write SetValAt; default;
     
-    public function Println: Vec1s;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ' ]' );
-      Result := self;
-    end;
-    
     public static function operator-(v: Vec1s): Vec1s := new Vec1s(-v.val0);
     public static function operator*(v: Vec1s; k: Int16): Vec1s := new Vec1s(v.val0*k);
     public static function operator+(v1, v2: Vec1s): Vec1s := new Vec1s(v1.val0+v2.val0);
@@ -2199,6 +2331,16 @@ type
     
     public static function operator implicit(v: Vec1ub): Vec1s := new Vec1s(v.val0);
     public static function operator implicit(v: Vec1s): Vec1ub := new Vec1ub(v.val0);
+    
+    public function SqrLength := val0*val0;
+    
+    public function SqrLength_d: double := real(val0)*val0;
+    
+    public function Println: Vec1s;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
   end;
   
@@ -2224,12 +2366,6 @@ type
     end;
     public property val[i: integer]: UInt16 read GetValAt write SetValAt; default;
     
-    public function Println: Vec1us;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ' ]' );
-      Result := self;
-    end;
-    
     public static function operator*(v: Vec1us; k: UInt16): Vec1us := new Vec1us(v.val0*k);
     public static function operator+(v1, v2: Vec1us): Vec1us := new Vec1us(v1.val0+v2.val0);
     public static function operator-(v1, v2: Vec1us): Vec1us := new Vec1us(v1.val0-v2.val0);
@@ -2242,6 +2378,16 @@ type
     
     public static function operator implicit(v: Vec1s): Vec1us := new Vec1us(v.val0);
     public static function operator implicit(v: Vec1us): Vec1s := new Vec1s(v.val0);
+    
+    public function SqrLength := val0*val0;
+    
+    public function SqrLength_d: double := real(val0)*val0;
+    
+    public function Println: Vec1us;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
   end;
   
@@ -2267,12 +2413,6 @@ type
     end;
     public property val[i: integer]: Int32 read GetValAt write SetValAt; default;
     
-    public function Println: Vec1i;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ' ]' );
-      Result := self;
-    end;
-    
     public static function operator-(v: Vec1i): Vec1i := new Vec1i(-v.val0);
     public static function operator*(v: Vec1i; k: Int32): Vec1i := new Vec1i(v.val0*k);
     public static function operator+(v1, v2: Vec1i): Vec1i := new Vec1i(v1.val0+v2.val0);
@@ -2289,6 +2429,16 @@ type
     
     public static function operator implicit(v: Vec1us): Vec1i := new Vec1i(v.val0);
     public static function operator implicit(v: Vec1i): Vec1us := new Vec1us(v.val0);
+    
+    public function SqrLength := val0*val0;
+    
+    public function SqrLength_d: double := real(val0)*val0;
+    
+    public function Println: Vec1i;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
   end;
   
@@ -2314,12 +2464,6 @@ type
     end;
     public property val[i: integer]: UInt32 read GetValAt write SetValAt; default;
     
-    public function Println: Vec1ui;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ' ]' );
-      Result := self;
-    end;
-    
     public static function operator*(v: Vec1ui; k: UInt32): Vec1ui := new Vec1ui(v.val0*k);
     public static function operator+(v1, v2: Vec1ui): Vec1ui := new Vec1ui(v1.val0+v2.val0);
     public static function operator-(v1, v2: Vec1ui): Vec1ui := new Vec1ui(v1.val0-v2.val0);
@@ -2338,6 +2482,16 @@ type
     
     public static function operator implicit(v: Vec1i): Vec1ui := new Vec1ui(v.val0);
     public static function operator implicit(v: Vec1ui): Vec1i := new Vec1i(v.val0);
+    
+    public function SqrLength := val0*val0;
+    
+    public function SqrLength_d: double := real(val0)*val0;
+    
+    public function Println: Vec1ui;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
   end;
   
@@ -2363,12 +2517,6 @@ type
     end;
     public property val[i: integer]: Int64 read GetValAt write SetValAt; default;
     
-    public function Println: Vec1i64;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ' ]' );
-      Result := self;
-    end;
-    
     public static function operator-(v: Vec1i64): Vec1i64 := new Vec1i64(-v.val0);
     public static function operator*(v: Vec1i64; k: Int64): Vec1i64 := new Vec1i64(v.val0*k);
     public static function operator+(v1, v2: Vec1i64): Vec1i64 := new Vec1i64(v1.val0+v2.val0);
@@ -2391,6 +2539,16 @@ type
     
     public static function operator implicit(v: Vec1ui): Vec1i64 := new Vec1i64(v.val0);
     public static function operator implicit(v: Vec1i64): Vec1ui := new Vec1ui(v.val0);
+    
+    public function SqrLength := val0*val0;
+    
+    public function SqrLength_d: double := real(val0)*val0;
+    
+    public function Println: Vec1i64;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Result := self;
+    end;
     
   end;
   
@@ -2415,12 +2573,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: UInt64 read GetValAt write SetValAt; default;
-    
-    public function Println: Vec1ui64;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator*(v: Vec1ui64; k: UInt64): Vec1ui64 := new Vec1ui64(v.val0*k);
     public static function operator+(v1, v2: Vec1ui64): Vec1ui64 := new Vec1ui64(v1.val0+v2.val0);
@@ -2447,6 +2599,16 @@ type
     public static function operator implicit(v: Vec1i64): Vec1ui64 := new Vec1ui64(v.val0);
     public static function operator implicit(v: Vec1ui64): Vec1i64 := new Vec1i64(v.val0);
     
+    public function SqrLength := val0*val0;
+    
+    public function SqrLength_d: double := real(val0)*val0;
+    
+    public function Println: Vec1ui64;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec1f = record
@@ -2471,14 +2633,9 @@ type
     end;
     public property val[i: integer]: single read GetValAt write SetValAt; default;
     
-    public function Println: Vec1f;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ' ]' );
-      Result := self;
-    end;
-    
     public static function operator-(v: Vec1f): Vec1f := new Vec1f(-v.val0);
     public static function operator*(v: Vec1f; k: single): Vec1f := new Vec1f(v.val0*k);
+    public static function operator/(v: Vec1f; k: single): Vec1f := new Vec1f(v.val0/k);
     public static function operator+(v1, v2: Vec1f): Vec1f := new Vec1f(v1.val0+v2.val0);
     public static function operator-(v1, v2: Vec1f): Vec1f := new Vec1f(v1.val0-v2.val0);
     
@@ -2506,6 +2663,18 @@ type
     public static function operator implicit(v: Vec1ui64): Vec1f := new Vec1f(v.val0);
     public static function operator implicit(v: Vec1f): Vec1ui64 := new Vec1ui64(Convert.ToUInt64(v.val0));
     
+    public function SqrLength := val0*val0;
+    
+    public function SqrLength_d: double := real(val0)*val0;
+    
+    public function Normalized := self / single(Sqrt(self.SqrLength_d));
+    
+    public function Println: Vec1f;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec1d = record
@@ -2530,14 +2699,9 @@ type
     end;
     public property val[i: integer]: double read GetValAt write SetValAt; default;
     
-    public function Println: Vec1d;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ' ]' );
-      Result := self;
-    end;
-    
     public static function operator-(v: Vec1d): Vec1d := new Vec1d(-v.val0);
     public static function operator*(v: Vec1d; k: double): Vec1d := new Vec1d(v.val0*k);
+    public static function operator/(v: Vec1d; k: double): Vec1d := new Vec1d(v.val0/k);
     public static function operator+(v1, v2: Vec1d): Vec1d := new Vec1d(v1.val0+v2.val0);
     public static function operator-(v1, v2: Vec1d): Vec1d := new Vec1d(v1.val0-v2.val0);
     
@@ -2568,6 +2732,16 @@ type
     public static function operator implicit(v: Vec1f): Vec1d := new Vec1d(v.val0);
     public static function operator implicit(v: Vec1d): Vec1f := new Vec1f(v.val0);
     
+    public function SqrLength := val0*val0;
+    
+    public function Normalized := self / Sqrt(self.SqrLength);
+    
+    public function Println: Vec1d;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   {$endregion Vec1}
   
@@ -2596,12 +2770,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: SByte read GetValAt write SetValAt; default;
-    
-    public function Println: Vec2b;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator-(v: Vec2b): Vec2b := new Vec2b(-v.val0, -v.val1);
     public static function operator*(v: Vec2b; k: SByte): Vec2b := new Vec2b(v.val0*k, v.val1*k);
@@ -2638,6 +2806,16 @@ type
     public static function operator implicit(v: Vec1d): Vec2b := new Vec2b(Convert.ToSByte(v.val0), 0);
     public static function operator implicit(v: Vec2b): Vec1d := new Vec1d(v.val0);
     
+    public function SqrLength := val0*val0 + val1*val1;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1;
+    
+    public function Println: Vec2b;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec2ub = record
@@ -2663,12 +2841,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: Byte read GetValAt write SetValAt; default;
-    
-    public function Println: Vec2ub;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator*(v: Vec2ub; k: Byte): Vec2ub := new Vec2ub(v.val0*k, v.val1*k);
     public static function operator+(v1, v2: Vec2ub): Vec2ub := new Vec2ub(v1.val0+v2.val0, v1.val1+v2.val1);
@@ -2707,6 +2879,16 @@ type
     public static function operator implicit(v: Vec2b): Vec2ub := new Vec2ub(v.val0, v.val1);
     public static function operator implicit(v: Vec2ub): Vec2b := new Vec2b(v.val0, v.val1);
     
+    public function SqrLength := val0*val0 + val1*val1;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1;
+    
+    public function Println: Vec2ub;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec2s = record
@@ -2732,12 +2914,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: Int16 read GetValAt write SetValAt; default;
-    
-    public function Println: Vec2s;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator-(v: Vec2s): Vec2s := new Vec2s(-v.val0, -v.val1);
     public static function operator*(v: Vec2s; k: Int16): Vec2s := new Vec2s(v.val0*k, v.val1*k);
@@ -2780,6 +2956,16 @@ type
     public static function operator implicit(v: Vec2ub): Vec2s := new Vec2s(v.val0, v.val1);
     public static function operator implicit(v: Vec2s): Vec2ub := new Vec2ub(v.val0, v.val1);
     
+    public function SqrLength := val0*val0 + val1*val1;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1;
+    
+    public function Println: Vec2s;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec2us = record
@@ -2805,12 +2991,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: UInt16 read GetValAt write SetValAt; default;
-    
-    public function Println: Vec2us;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator*(v: Vec2us; k: UInt16): Vec2us := new Vec2us(v.val0*k, v.val1*k);
     public static function operator+(v1, v2: Vec2us): Vec2us := new Vec2us(v1.val0+v2.val0, v1.val1+v2.val1);
@@ -2855,6 +3035,16 @@ type
     public static function operator implicit(v: Vec2s): Vec2us := new Vec2us(v.val0, v.val1);
     public static function operator implicit(v: Vec2us): Vec2s := new Vec2s(v.val0, v.val1);
     
+    public function SqrLength := val0*val0 + val1*val1;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1;
+    
+    public function Println: Vec2us;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec2i = record
@@ -2880,12 +3070,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: Int32 read GetValAt write SetValAt; default;
-    
-    public function Println: Vec2i;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator-(v: Vec2i): Vec2i := new Vec2i(-v.val0, -v.val1);
     public static function operator*(v: Vec2i; k: Int32): Vec2i := new Vec2i(v.val0*k, v.val1*k);
@@ -2934,6 +3118,16 @@ type
     public static function operator implicit(v: Vec2us): Vec2i := new Vec2i(v.val0, v.val1);
     public static function operator implicit(v: Vec2i): Vec2us := new Vec2us(v.val0, v.val1);
     
+    public function SqrLength := val0*val0 + val1*val1;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1;
+    
+    public function Println: Vec2i;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec2ui = record
@@ -2959,12 +3153,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: UInt32 read GetValAt write SetValAt; default;
-    
-    public function Println: Vec2ui;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator*(v: Vec2ui; k: UInt32): Vec2ui := new Vec2ui(v.val0*k, v.val1*k);
     public static function operator+(v1, v2: Vec2ui): Vec2ui := new Vec2ui(v1.val0+v2.val0, v1.val1+v2.val1);
@@ -3015,6 +3203,16 @@ type
     public static function operator implicit(v: Vec2i): Vec2ui := new Vec2ui(v.val0, v.val1);
     public static function operator implicit(v: Vec2ui): Vec2i := new Vec2i(v.val0, v.val1);
     
+    public function SqrLength := val0*val0 + val1*val1;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1;
+    
+    public function Println: Vec2ui;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec2i64 = record
@@ -3040,12 +3238,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: Int64 read GetValAt write SetValAt; default;
-    
-    public function Println: Vec2i64;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator-(v: Vec2i64): Vec2i64 := new Vec2i64(-v.val0, -v.val1);
     public static function operator*(v: Vec2i64; k: Int64): Vec2i64 := new Vec2i64(v.val0*k, v.val1*k);
@@ -3100,6 +3292,16 @@ type
     public static function operator implicit(v: Vec2ui): Vec2i64 := new Vec2i64(v.val0, v.val1);
     public static function operator implicit(v: Vec2i64): Vec2ui := new Vec2ui(v.val0, v.val1);
     
+    public function SqrLength := val0*val0 + val1*val1;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1;
+    
+    public function Println: Vec2i64;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec2ui64 = record
@@ -3125,12 +3327,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: UInt64 read GetValAt write SetValAt; default;
-    
-    public function Println: Vec2ui64;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator*(v: Vec2ui64; k: UInt64): Vec2ui64 := new Vec2ui64(v.val0*k, v.val1*k);
     public static function operator+(v1, v2: Vec2ui64): Vec2ui64 := new Vec2ui64(v1.val0+v2.val0, v1.val1+v2.val1);
@@ -3187,6 +3383,16 @@ type
     public static function operator implicit(v: Vec2i64): Vec2ui64 := new Vec2ui64(v.val0, v.val1);
     public static function operator implicit(v: Vec2ui64): Vec2i64 := new Vec2i64(v.val0, v.val1);
     
+    public function SqrLength := val0*val0 + val1*val1;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1;
+    
+    public function Println: Vec2ui64;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec2f = record
@@ -3213,14 +3419,9 @@ type
     end;
     public property val[i: integer]: single read GetValAt write SetValAt; default;
     
-    public function Println: Vec2f;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
-      Result := self;
-    end;
-    
     public static function operator-(v: Vec2f): Vec2f := new Vec2f(-v.val0, -v.val1);
     public static function operator*(v: Vec2f; k: single): Vec2f := new Vec2f(v.val0*k, v.val1*k);
+    public static function operator/(v: Vec2f; k: single): Vec2f := new Vec2f(v.val0/k, v.val1/k);
     public static function operator+(v1, v2: Vec2f): Vec2f := new Vec2f(v1.val0+v2.val0, v1.val1+v2.val1);
     public static function operator-(v1, v2: Vec2f): Vec2f := new Vec2f(v1.val0-v2.val0, v1.val1-v2.val1);
     
@@ -3278,6 +3479,18 @@ type
     public static function operator implicit(v: Vec2ui64): Vec2f := new Vec2f(v.val0, v.val1);
     public static function operator implicit(v: Vec2f): Vec2ui64 := new Vec2ui64(Convert.ToUInt64(v.val0), Convert.ToUInt64(v.val1));
     
+    public function SqrLength := val0*val0 + val1*val1;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1;
+    
+    public function Normalized := self / single(Sqrt(self.SqrLength_d));
+    
+    public function Println: Vec2f;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec2d = record
@@ -3304,14 +3517,9 @@ type
     end;
     public property val[i: integer]: double read GetValAt write SetValAt; default;
     
-    public function Println: Vec2d;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
-      Result := self;
-    end;
-    
     public static function operator-(v: Vec2d): Vec2d := new Vec2d(-v.val0, -v.val1);
     public static function operator*(v: Vec2d; k: double): Vec2d := new Vec2d(v.val0*k, v.val1*k);
+    public static function operator/(v: Vec2d; k: double): Vec2d := new Vec2d(v.val0/k, v.val1/k);
     public static function operator+(v1, v2: Vec2d): Vec2d := new Vec2d(v1.val0+v2.val0, v1.val1+v2.val1);
     public static function operator-(v1, v2: Vec2d): Vec2d := new Vec2d(v1.val0-v2.val0, v1.val1-v2.val1);
     
@@ -3372,6 +3580,16 @@ type
     public static function operator implicit(v: Vec2f): Vec2d := new Vec2d(v.val0, v.val1);
     public static function operator implicit(v: Vec2d): Vec2f := new Vec2f(v.val0, v.val1);
     
+    public function SqrLength := val0*val0 + val1*val1;
+    
+    public function Normalized := self / Sqrt(self.SqrLength);
+    
+    public function Println: Vec2d;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   {$endregion Vec2}
   
@@ -3402,12 +3620,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: SByte read GetValAt write SetValAt; default;
-    
-    public function Println: Vec3b;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator-(v: Vec3b): Vec3b := new Vec3b(-v.val0, -v.val1, -v.val2);
     public static function operator*(v: Vec3b; k: SByte): Vec3b := new Vec3b(v.val0*k, v.val1*k, v.val2*k);
@@ -3474,6 +3686,16 @@ type
     public static function operator implicit(v: Vec2d): Vec3b := new Vec3b(Convert.ToSByte(v.val0), Convert.ToSByte(v.val1), 0);
     public static function operator implicit(v: Vec3b): Vec2d := new Vec2d(v.val0, v.val1);
     
+    public function SqrLength := val0*val0 + val1*val1 + val2*val2;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2;
+    
+    public function Println: Vec3b;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec3ub = record
@@ -3501,12 +3723,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: Byte read GetValAt write SetValAt; default;
-    
-    public function Println: Vec3ub;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator*(v: Vec3ub; k: Byte): Vec3ub := new Vec3ub(v.val0*k, v.val1*k, v.val2*k);
     public static function operator+(v1, v2: Vec3ub): Vec3ub := new Vec3ub(v1.val0+v2.val0, v1.val1+v2.val1, v1.val2+v2.val2);
@@ -3575,6 +3791,16 @@ type
     public static function operator implicit(v: Vec3b): Vec3ub := new Vec3ub(v.val0, v.val1, v.val2);
     public static function operator implicit(v: Vec3ub): Vec3b := new Vec3b(v.val0, v.val1, v.val2);
     
+    public function SqrLength := val0*val0 + val1*val1 + val2*val2;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2;
+    
+    public function Println: Vec3ub;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec3s = record
@@ -3602,12 +3828,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: Int16 read GetValAt write SetValAt; default;
-    
-    public function Println: Vec3s;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator-(v: Vec3s): Vec3s := new Vec3s(-v.val0, -v.val1, -v.val2);
     public static function operator*(v: Vec3s; k: Int16): Vec3s := new Vec3s(v.val0*k, v.val1*k, v.val2*k);
@@ -3680,6 +3900,16 @@ type
     public static function operator implicit(v: Vec3ub): Vec3s := new Vec3s(v.val0, v.val1, v.val2);
     public static function operator implicit(v: Vec3s): Vec3ub := new Vec3ub(v.val0, v.val1, v.val2);
     
+    public function SqrLength := val0*val0 + val1*val1 + val2*val2;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2;
+    
+    public function Println: Vec3s;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec3us = record
@@ -3707,12 +3937,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: UInt16 read GetValAt write SetValAt; default;
-    
-    public function Println: Vec3us;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator*(v: Vec3us; k: UInt16): Vec3us := new Vec3us(v.val0*k, v.val1*k, v.val2*k);
     public static function operator+(v1, v2: Vec3us): Vec3us := new Vec3us(v1.val0+v2.val0, v1.val1+v2.val1, v1.val2+v2.val2);
@@ -3787,6 +4011,16 @@ type
     public static function operator implicit(v: Vec3s): Vec3us := new Vec3us(v.val0, v.val1, v.val2);
     public static function operator implicit(v: Vec3us): Vec3s := new Vec3s(v.val0, v.val1, v.val2);
     
+    public function SqrLength := val0*val0 + val1*val1 + val2*val2;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2;
+    
+    public function Println: Vec3us;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec3i = record
@@ -3814,12 +4048,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: Int32 read GetValAt write SetValAt; default;
-    
-    public function Println: Vec3i;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator-(v: Vec3i): Vec3i := new Vec3i(-v.val0, -v.val1, -v.val2);
     public static function operator*(v: Vec3i; k: Int32): Vec3i := new Vec3i(v.val0*k, v.val1*k, v.val2*k);
@@ -3898,6 +4126,16 @@ type
     public static function operator implicit(v: Vec3us): Vec3i := new Vec3i(v.val0, v.val1, v.val2);
     public static function operator implicit(v: Vec3i): Vec3us := new Vec3us(v.val0, v.val1, v.val2);
     
+    public function SqrLength := val0*val0 + val1*val1 + val2*val2;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2;
+    
+    public function Println: Vec3i;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec3ui = record
@@ -3925,12 +4163,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: UInt32 read GetValAt write SetValAt; default;
-    
-    public function Println: Vec3ui;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator*(v: Vec3ui; k: UInt32): Vec3ui := new Vec3ui(v.val0*k, v.val1*k, v.val2*k);
     public static function operator+(v1, v2: Vec3ui): Vec3ui := new Vec3ui(v1.val0+v2.val0, v1.val1+v2.val1, v1.val2+v2.val2);
@@ -4011,6 +4243,16 @@ type
     public static function operator implicit(v: Vec3i): Vec3ui := new Vec3ui(v.val0, v.val1, v.val2);
     public static function operator implicit(v: Vec3ui): Vec3i := new Vec3i(v.val0, v.val1, v.val2);
     
+    public function SqrLength := val0*val0 + val1*val1 + val2*val2;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2;
+    
+    public function Println: Vec3ui;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec3i64 = record
@@ -4038,12 +4280,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: Int64 read GetValAt write SetValAt; default;
-    
-    public function Println: Vec3i64;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator-(v: Vec3i64): Vec3i64 := new Vec3i64(-v.val0, -v.val1, -v.val2);
     public static function operator*(v: Vec3i64; k: Int64): Vec3i64 := new Vec3i64(v.val0*k, v.val1*k, v.val2*k);
@@ -4128,6 +4364,16 @@ type
     public static function operator implicit(v: Vec3ui): Vec3i64 := new Vec3i64(v.val0, v.val1, v.val2);
     public static function operator implicit(v: Vec3i64): Vec3ui := new Vec3ui(v.val0, v.val1, v.val2);
     
+    public function SqrLength := val0*val0 + val1*val1 + val2*val2;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2;
+    
+    public function Println: Vec3i64;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec3ui64 = record
@@ -4155,12 +4401,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: UInt64 read GetValAt write SetValAt; default;
-    
-    public function Println: Vec3ui64;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator*(v: Vec3ui64; k: UInt64): Vec3ui64 := new Vec3ui64(v.val0*k, v.val1*k, v.val2*k);
     public static function operator+(v1, v2: Vec3ui64): Vec3ui64 := new Vec3ui64(v1.val0+v2.val0, v1.val1+v2.val1, v1.val2+v2.val2);
@@ -4247,6 +4487,16 @@ type
     public static function operator implicit(v: Vec3i64): Vec3ui64 := new Vec3ui64(v.val0, v.val1, v.val2);
     public static function operator implicit(v: Vec3ui64): Vec3i64 := new Vec3i64(v.val0, v.val1, v.val2);
     
+    public function SqrLength := val0*val0 + val1*val1 + val2*val2;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2;
+    
+    public function Println: Vec3ui64;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec3f = record
@@ -4275,14 +4525,9 @@ type
     end;
     public property val[i: integer]: single read GetValAt write SetValAt; default;
     
-    public function Println: Vec3f;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
-      Result := self;
-    end;
-    
     public static function operator-(v: Vec3f): Vec3f := new Vec3f(-v.val0, -v.val1, -v.val2);
     public static function operator*(v: Vec3f; k: single): Vec3f := new Vec3f(v.val0*k, v.val1*k, v.val2*k);
+    public static function operator/(v: Vec3f; k: single): Vec3f := new Vec3f(v.val0/k, v.val1/k, v.val2/k);
     public static function operator+(v1, v2: Vec3f): Vec3f := new Vec3f(v1.val0+v2.val0, v1.val1+v2.val1, v1.val2+v2.val2);
     public static function operator-(v1, v2: Vec3f): Vec3f := new Vec3f(v1.val0-v2.val0, v1.val1-v2.val1, v1.val2-v2.val2);
     
@@ -4370,6 +4615,18 @@ type
     public static function operator implicit(v: Vec3ui64): Vec3f := new Vec3f(v.val0, v.val1, v.val2);
     public static function operator implicit(v: Vec3f): Vec3ui64 := new Vec3ui64(Convert.ToUInt64(v.val0), Convert.ToUInt64(v.val1), Convert.ToUInt64(v.val2));
     
+    public function SqrLength := val0*val0 + val1*val1 + val2*val2;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2;
+    
+    public function Normalized := self / single(Sqrt(self.SqrLength_d));
+    
+    public function Println: Vec3f;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec3d = record
@@ -4398,14 +4655,9 @@ type
     end;
     public property val[i: integer]: double read GetValAt write SetValAt; default;
     
-    public function Println: Vec3d;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
-      Result := self;
-    end;
-    
     public static function operator-(v: Vec3d): Vec3d := new Vec3d(-v.val0, -v.val1, -v.val2);
     public static function operator*(v: Vec3d; k: double): Vec3d := new Vec3d(v.val0*k, v.val1*k, v.val2*k);
+    public static function operator/(v: Vec3d; k: double): Vec3d := new Vec3d(v.val0/k, v.val1/k, v.val2/k);
     public static function operator+(v1, v2: Vec3d): Vec3d := new Vec3d(v1.val0+v2.val0, v1.val1+v2.val1, v1.val2+v2.val2);
     public static function operator-(v1, v2: Vec3d): Vec3d := new Vec3d(v1.val0-v2.val0, v1.val1-v2.val1, v1.val2-v2.val2);
     
@@ -4496,6 +4748,16 @@ type
     public static function operator implicit(v: Vec3f): Vec3d := new Vec3d(v.val0, v.val1, v.val2);
     public static function operator implicit(v: Vec3d): Vec3f := new Vec3f(v.val0, v.val1, v.val2);
     
+    public function SqrLength := val0*val0 + val1*val1 + val2*val2;
+    
+    public function Normalized := self / Sqrt(self.SqrLength);
+    
+    public function Println: Vec3d;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   {$endregion Vec3}
   
@@ -4528,12 +4790,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: SByte read GetValAt write SetValAt; default;
-    
-    public function Println: Vec4b;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator-(v: Vec4b): Vec4b := new Vec4b(-v.val0, -v.val1, -v.val2, -v.val3);
     public static function operator*(v: Vec4b; k: SByte): Vec4b := new Vec4b(v.val0*k, v.val1*k, v.val2*k, v.val3*k);
@@ -4630,6 +4886,16 @@ type
     public static function operator implicit(v: Vec3d): Vec4b := new Vec4b(Convert.ToSByte(v.val0), Convert.ToSByte(v.val1), Convert.ToSByte(v.val2), 0);
     public static function operator implicit(v: Vec4b): Vec3d := new Vec3d(v.val0, v.val1, v.val2);
     
+    public function SqrLength := val0*val0 + val1*val1 + val2*val2 + val3*val3;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2 + real(val3)*val3;
+    
+    public function Println: Vec4b;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec4ub = record
@@ -4659,12 +4925,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: Byte read GetValAt write SetValAt; default;
-    
-    public function Println: Vec4ub;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator*(v: Vec4ub; k: Byte): Vec4ub := new Vec4ub(v.val0*k, v.val1*k, v.val2*k, v.val3*k);
     public static function operator+(v1, v2: Vec4ub): Vec4ub := new Vec4ub(v1.val0+v2.val0, v1.val1+v2.val1, v1.val2+v2.val2, v1.val3+v2.val3);
@@ -4763,6 +5023,16 @@ type
     public static function operator implicit(v: Vec4b): Vec4ub := new Vec4ub(v.val0, v.val1, v.val2, v.val3);
     public static function operator implicit(v: Vec4ub): Vec4b := new Vec4b(v.val0, v.val1, v.val2, v.val3);
     
+    public function SqrLength := val0*val0 + val1*val1 + val2*val2 + val3*val3;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2 + real(val3)*val3;
+    
+    public function Println: Vec4ub;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec4s = record
@@ -4792,12 +5062,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: Int16 read GetValAt write SetValAt; default;
-    
-    public function Println: Vec4s;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator-(v: Vec4s): Vec4s := new Vec4s(-v.val0, -v.val1, -v.val2, -v.val3);
     public static function operator*(v: Vec4s; k: Int16): Vec4s := new Vec4s(v.val0*k, v.val1*k, v.val2*k, v.val3*k);
@@ -4900,6 +5164,16 @@ type
     public static function operator implicit(v: Vec4ub): Vec4s := new Vec4s(v.val0, v.val1, v.val2, v.val3);
     public static function operator implicit(v: Vec4s): Vec4ub := new Vec4ub(v.val0, v.val1, v.val2, v.val3);
     
+    public function SqrLength := val0*val0 + val1*val1 + val2*val2 + val3*val3;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2 + real(val3)*val3;
+    
+    public function Println: Vec4s;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec4us = record
@@ -4929,12 +5203,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: UInt16 read GetValAt write SetValAt; default;
-    
-    public function Println: Vec4us;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator*(v: Vec4us; k: UInt16): Vec4us := new Vec4us(v.val0*k, v.val1*k, v.val2*k, v.val3*k);
     public static function operator+(v1, v2: Vec4us): Vec4us := new Vec4us(v1.val0+v2.val0, v1.val1+v2.val1, v1.val2+v2.val2, v1.val3+v2.val3);
@@ -5039,6 +5307,16 @@ type
     public static function operator implicit(v: Vec4s): Vec4us := new Vec4us(v.val0, v.val1, v.val2, v.val3);
     public static function operator implicit(v: Vec4us): Vec4s := new Vec4s(v.val0, v.val1, v.val2, v.val3);
     
+    public function SqrLength := val0*val0 + val1*val1 + val2*val2 + val3*val3;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2 + real(val3)*val3;
+    
+    public function Println: Vec4us;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec4i = record
@@ -5068,12 +5346,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: Int32 read GetValAt write SetValAt; default;
-    
-    public function Println: Vec4i;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator-(v: Vec4i): Vec4i := new Vec4i(-v.val0, -v.val1, -v.val2, -v.val3);
     public static function operator*(v: Vec4i; k: Int32): Vec4i := new Vec4i(v.val0*k, v.val1*k, v.val2*k, v.val3*k);
@@ -5182,6 +5454,16 @@ type
     public static function operator implicit(v: Vec4us): Vec4i := new Vec4i(v.val0, v.val1, v.val2, v.val3);
     public static function operator implicit(v: Vec4i): Vec4us := new Vec4us(v.val0, v.val1, v.val2, v.val3);
     
+    public function SqrLength := val0*val0 + val1*val1 + val2*val2 + val3*val3;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2 + real(val3)*val3;
+    
+    public function Println: Vec4i;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec4ui = record
@@ -5211,12 +5493,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: UInt32 read GetValAt write SetValAt; default;
-    
-    public function Println: Vec4ui;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator*(v: Vec4ui; k: UInt32): Vec4ui := new Vec4ui(v.val0*k, v.val1*k, v.val2*k, v.val3*k);
     public static function operator+(v1, v2: Vec4ui): Vec4ui := new Vec4ui(v1.val0+v2.val0, v1.val1+v2.val1, v1.val2+v2.val2, v1.val3+v2.val3);
@@ -5327,6 +5603,16 @@ type
     public static function operator implicit(v: Vec4i): Vec4ui := new Vec4ui(v.val0, v.val1, v.val2, v.val3);
     public static function operator implicit(v: Vec4ui): Vec4i := new Vec4i(v.val0, v.val1, v.val2, v.val3);
     
+    public function SqrLength := val0*val0 + val1*val1 + val2*val2 + val3*val3;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2 + real(val3)*val3;
+    
+    public function Println: Vec4ui;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec4i64 = record
@@ -5356,12 +5642,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: Int64 read GetValAt write SetValAt; default;
-    
-    public function Println: Vec4i64;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator-(v: Vec4i64): Vec4i64 := new Vec4i64(-v.val0, -v.val1, -v.val2, -v.val3);
     public static function operator*(v: Vec4i64; k: Int64): Vec4i64 := new Vec4i64(v.val0*k, v.val1*k, v.val2*k, v.val3*k);
@@ -5476,6 +5756,16 @@ type
     public static function operator implicit(v: Vec4ui): Vec4i64 := new Vec4i64(v.val0, v.val1, v.val2, v.val3);
     public static function operator implicit(v: Vec4i64): Vec4ui := new Vec4ui(v.val0, v.val1, v.val2, v.val3);
     
+    public function SqrLength := val0*val0 + val1*val1 + val2*val2 + val3*val3;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2 + real(val3)*val3;
+    
+    public function Println: Vec4i64;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec4ui64 = record
@@ -5505,12 +5795,6 @@ type
       ptr^ := val;
     end;
     public property val[i: integer]: UInt64 read GetValAt write SetValAt; default;
-    
-    public function Println: Vec4ui64;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
-      Result := self;
-    end;
     
     public static function operator*(v: Vec4ui64; k: UInt64): Vec4ui64 := new Vec4ui64(v.val0*k, v.val1*k, v.val2*k, v.val3*k);
     public static function operator+(v1, v2: Vec4ui64): Vec4ui64 := new Vec4ui64(v1.val0+v2.val0, v1.val1+v2.val1, v1.val2+v2.val2, v1.val3+v2.val3);
@@ -5627,6 +5911,16 @@ type
     public static function operator implicit(v: Vec4i64): Vec4ui64 := new Vec4ui64(v.val0, v.val1, v.val2, v.val3);
     public static function operator implicit(v: Vec4ui64): Vec4i64 := new Vec4i64(v.val0, v.val1, v.val2, v.val3);
     
+    public function SqrLength := val0*val0 + val1*val1 + val2*val2 + val3*val3;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2 + real(val3)*val3;
+    
+    public function Println: Vec4ui64;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec4f = record
@@ -5657,14 +5951,9 @@ type
     end;
     public property val[i: integer]: single read GetValAt write SetValAt; default;
     
-    public function Println: Vec4f;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
-      Result := self;
-    end;
-    
     public static function operator-(v: Vec4f): Vec4f := new Vec4f(-v.val0, -v.val1, -v.val2, -v.val3);
     public static function operator*(v: Vec4f; k: single): Vec4f := new Vec4f(v.val0*k, v.val1*k, v.val2*k, v.val3*k);
+    public static function operator/(v: Vec4f; k: single): Vec4f := new Vec4f(v.val0/k, v.val1/k, v.val2/k, v.val3/k);
     public static function operator+(v1, v2: Vec4f): Vec4f := new Vec4f(v1.val0+v2.val0, v1.val1+v2.val1, v1.val2+v2.val2, v1.val3+v2.val3);
     public static function operator-(v1, v2: Vec4f): Vec4f := new Vec4f(v1.val0-v2.val0, v1.val1-v2.val1, v1.val2-v2.val2, v1.val3-v2.val3);
     
@@ -5782,6 +6071,18 @@ type
     public static function operator implicit(v: Vec4ui64): Vec4f := new Vec4f(v.val0, v.val1, v.val2, v.val3);
     public static function operator implicit(v: Vec4f): Vec4ui64 := new Vec4ui64(Convert.ToUInt64(v.val0), Convert.ToUInt64(v.val1), Convert.ToUInt64(v.val2), Convert.ToUInt64(v.val3));
     
+    public function SqrLength := val0*val0 + val1*val1 + val2*val2 + val3*val3;
+    
+    public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2 + real(val3)*val3;
+    
+    public function Normalized := self / single(Sqrt(self.SqrLength_d));
+    
+    public function Println: Vec4f;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   Vec4d = record
@@ -5812,14 +6113,9 @@ type
     end;
     public property val[i: integer]: double read GetValAt write SetValAt; default;
     
-    public function Println: Vec4d;
-    begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
-      Result := self;
-    end;
-    
     public static function operator-(v: Vec4d): Vec4d := new Vec4d(-v.val0, -v.val1, -v.val2, -v.val3);
     public static function operator*(v: Vec4d; k: double): Vec4d := new Vec4d(v.val0*k, v.val1*k, v.val2*k, v.val3*k);
+    public static function operator/(v: Vec4d; k: double): Vec4d := new Vec4d(v.val0/k, v.val1/k, v.val2/k, v.val3/k);
     public static function operator+(v1, v2: Vec4d): Vec4d := new Vec4d(v1.val0+v2.val0, v1.val1+v2.val1, v1.val2+v2.val2, v1.val3+v2.val3);
     public static function operator-(v1, v2: Vec4d): Vec4d := new Vec4d(v1.val0-v2.val0, v1.val1-v2.val1, v1.val2-v2.val2, v1.val3-v2.val3);
     
@@ -5940,6 +6236,16 @@ type
     public static function operator implicit(v: Vec4f): Vec4d := new Vec4d(v.val0, v.val1, v.val2, v.val3);
     public static function operator implicit(v: Vec4d): Vec4f := new Vec4f(v.val0, v.val1, v.val2, v.val3);
     
+    public function SqrLength := val0*val0 + val1*val1 + val2*val2 + val3*val3;
+    
+    public function Normalized := self / Sqrt(self.SqrLength);
+    
+    public function Println: Vec4d;
+    begin
+      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Result := self;
+    end;
+    
   end;
   
   {$endregion Vec4}
@@ -5999,6 +6305,11 @@ type
     public property ColPtr0: ^Vec2f read pointer(IntPtr(pointer(@self)) + 0);
     public property ColPtr1: ^Vec2f read pointer(IntPtr(pointer(@self)) + 8);
     public property ColPtr[x: integer]: ^Vec2f read pointer(IntPtr(pointer(@self)) + x*8);
+    
+    public static function Scale(k: double): Mtr2x2f := new Mtr2x2f(k, 0.0, 0.0, k);
+    
+    public static function Traslate(X: single): Mtr2x2f := new Mtr2x2f(1.0, X, 0.0, 1.0);
+    public static function TraslateTransposed(X: single): Mtr2x2f := new Mtr2x2f(1.0, 0.0, X, 1.0);
     
     public static function RotateXYcw(rot: double): Mtr2x2f;
     begin
@@ -6105,6 +6416,11 @@ type
     public property ColPtr2: ^Vec3f read pointer(IntPtr(pointer(@self)) + 24);
     public property ColPtr[x: integer]: ^Vec3f read pointer(IntPtr(pointer(@self)) + x*12);
     
+    public static function Scale(k: double): Mtr3x3f := new Mtr3x3f(k, 0.0, 0.0, 0.0, k, 0.0, 0.0, 0.0, k);
+    
+    public static function Traslate(X, Y: single): Mtr3x3f := new Mtr3x3f(1.0, 0.0, X, 0.0, 1.0, Y, 0.0, 0.0, 1.0);
+    public static function TraslateTransposed(X, Y: single): Mtr3x3f := new Mtr3x3f(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, X, Y, 1.0);
+    
     public static function RotateXYcw(rot: double): Mtr3x3f;
     begin
       var sr: single := Sin(rot);
@@ -6123,27 +6439,6 @@ type
          cr, -sr, 0.0,
         +sr,  cr, 0.0,
         0.0, 0.0, 1.0
-      );
-    end;
-    
-    public static function RotateXZcw(rot: double): Mtr3x3f;
-    begin
-      var sr: single := Sin(rot);
-      var cr: single := Cos(rot);
-      Result := new Mtr3x3f(
-         cr, 0.0, +sr,
-        0.0, 1.0, 0.0,
-        -sr, 0.0,  cr
-      );
-    end;
-    public static function RotateXZccw(rot: double): Mtr3x3f;
-    begin
-      var sr: single := Sin(rot);
-      var cr: single := Cos(rot);
-      Result := new Mtr3x3f(
-         cr, 0.0, -sr,
-        0.0, 1.0, 0.0,
-        +sr, 0.0,  cr
       );
     end;
     
@@ -6166,6 +6461,61 @@ type
         0.0,  cr, -sr,
         0.0, +sr,  cr
       );
+    end;
+    
+    public static function RotateZXcw(rot: double): Mtr3x3f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr3x3f(
+         cr, 0.0, -sr,
+        0.0, 1.0, 0.0,
+        +sr, 0.0,  cr
+      );
+    end;
+    public static function RotateZXccw(rot: double): Mtr3x3f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr3x3f(
+         cr, 0.0, +sr,
+        0.0, 1.0, 0.0,
+        -sr, 0.0,  cr
+      );
+    end;
+    
+    public static function Rotate3Dcw(u: Vec3f; rot: double): Mtr3x3f;
+    begin
+      var k1 := Sin(rot);
+      var k2 := 2*Sqr(Sin(rot/2));
+      
+      Result.val00 := 1 + k2*( -u.val2*u.val2 - u.val1*u.val1 );
+      Result.val01 := k1*u.val2 + k2*( u.val1*u.val0 );
+      Result.val02 := -k1*u.val1 + k2*( u.val2*u.val0 );
+      Result.val10 := -k1*u.val2 + k2*( u.val0*u.val1 );
+      Result.val11 := 1 + k2*( -u.val2*u.val2 - u.val0*u.val0 );
+      Result.val12 := k1*u.val0 + k2*( u.val2*u.val1 );
+      Result.val20 := k1*u.val1 + k2*( u.val0*u.val2 );
+      Result.val21 := -k1*u.val0 + k2*( u.val1*u.val2 );
+      Result.val22 := 1 + k2*( -u.val1*u.val1 - u.val0*u.val0 );
+      
+    end;
+    
+    public static function Rotate3Dccw(u: Vec3f; rot: double): Mtr3x3f;
+    begin
+      var k1 := Sin(rot);
+      var k2 := 2*Sqr(Sin(rot/2));
+      
+      Result.val00 := 1 + k2*( -u.val2*u.val2 - u.val1*u.val1 );
+      Result.val01 := -k1*u.val2 + k2*( u.val1*u.val0 );
+      Result.val02 := k1*u.val1 + k2*( u.val2*u.val0 );
+      Result.val10 := k1*u.val2 + k2*( u.val0*u.val1 );
+      Result.val11 := 1 + k2*( -u.val2*u.val2 - u.val0*u.val0 );
+      Result.val12 := -k1*u.val0 + k2*( u.val2*u.val1 );
+      Result.val20 := -k1*u.val1 + k2*( u.val0*u.val2 );
+      Result.val21 := k1*u.val0 + k2*( u.val1*u.val2 );
+      Result.val22 := 1 + k2*( -u.val1*u.val1 - u.val0*u.val0 );
+      
     end;
     
     public function Println: Mtr3x3f;
@@ -6271,6 +6621,11 @@ type
     public property ColPtr3: ^Vec4f read pointer(IntPtr(pointer(@self)) + 48);
     public property ColPtr[x: integer]: ^Vec4f read pointer(IntPtr(pointer(@self)) + x*16);
     
+    public static function Scale(k: double): Mtr4x4f := new Mtr4x4f(k, 0.0, 0.0, 0.0, 0.0, k, 0.0, 0.0, 0.0, 0.0, k, 0.0, 0.0, 0.0, 0.0, k);
+    
+    public static function Traslate(X, Y, Z: single): Mtr4x4f := new Mtr4x4f(1.0, 0.0, 0.0, X, 0.0, 1.0, 0.0, Y, 0.0, 0.0, 1.0, Z, 0.0, 0.0, 0.0, 1.0);
+    public static function TraslateTransposed(X, Y, Z: single): Mtr4x4f := new Mtr4x4f(1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, X, Y, Z, 1.0);
+    
     public static function RotateXYcw(rot: double): Mtr4x4f;
     begin
       var sr: single := Sin(rot);
@@ -6291,52 +6646,6 @@ type
         +sr,  cr, 0.0, 0.0,
         0.0, 0.0, 1.0, 0.0,
         0.0, 0.0, 0.0, 1.0
-      );
-    end;
-    
-    public static function RotateXZcw(rot: double): Mtr4x4f;
-    begin
-      var sr: single := Sin(rot);
-      var cr: single := Cos(rot);
-      Result := new Mtr4x4f(
-         cr, 0.0, +sr, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        -sr, 0.0,  cr, 0.0,
-        0.0, 0.0, 0.0, 1.0
-      );
-    end;
-    public static function RotateXZccw(rot: double): Mtr4x4f;
-    begin
-      var sr: single := Sin(rot);
-      var cr: single := Cos(rot);
-      Result := new Mtr4x4f(
-         cr, 0.0, -sr, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        +sr, 0.0,  cr, 0.0,
-        0.0, 0.0, 0.0, 1.0
-      );
-    end;
-    
-    public static function RotateXWcw(rot: double): Mtr4x4f;
-    begin
-      var sr: single := Sin(rot);
-      var cr: single := Cos(rot);
-      Result := new Mtr4x4f(
-         cr, 0.0, 0.0, +sr,
-        0.0, 1.0, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
-        -sr, 0.0, 0.0,  cr
-      );
-    end;
-    public static function RotateXWccw(rot: double): Mtr4x4f;
-    begin
-      var sr: single := Sin(rot);
-      var cr: single := Cos(rot);
-      Result := new Mtr4x4f(
-         cr, 0.0, 0.0, -sr,
-        0.0, 1.0, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
-        +sr, 0.0, 0.0,  cr
       );
     end;
     
@@ -6363,50 +6672,63 @@ type
       );
     end;
     
-    public static function RotateYWcw(rot: double): Mtr4x4f;
+    public static function RotateZXcw(rot: double): Mtr4x4f;
     begin
       var sr: single := Sin(rot);
       var cr: single := Cos(rot);
       Result := new Mtr4x4f(
-        1.0, 0.0, 0.0, 0.0,
-        0.0,  cr, 0.0, +sr,
-        0.0, 0.0, 1.0, 0.0,
-        0.0, -sr, 0.0,  cr
+         cr, 0.0, -sr, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        +sr, 0.0,  cr, 0.0,
+        0.0, 0.0, 0.0, 1.0
       );
     end;
-    public static function RotateYWccw(rot: double): Mtr4x4f;
+    public static function RotateZXccw(rot: double): Mtr4x4f;
     begin
       var sr: single := Sin(rot);
       var cr: single := Cos(rot);
       Result := new Mtr4x4f(
-        1.0, 0.0, 0.0, 0.0,
-        0.0,  cr, 0.0, -sr,
-        0.0, 0.0, 1.0, 0.0,
-        0.0, +sr, 0.0,  cr
+         cr, 0.0, +sr, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        -sr, 0.0,  cr, 0.0,
+        0.0, 0.0, 0.0, 1.0
       );
     end;
     
-    public static function RotateZWcw(rot: double): Mtr4x4f;
+    public static function Rotate3Dcw(u: Vec3f; rot: double): Mtr4x4f;
     begin
-      var sr: single := Sin(rot);
-      var cr: single := Cos(rot);
-      Result := new Mtr4x4f(
-        1.0, 0.0, 0.0, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        0.0, 0.0,  cr, +sr,
-        0.0, 0.0, -sr,  cr
-      );
+      var k1 := Sin(rot);
+      var k2 := 2*Sqr(Sin(rot/2));
+      
+      Result.val00 := 1 + k2*( -u.val2*u.val2 - u.val1*u.val1 );
+      Result.val01 := k1*u.val2 + k2*( u.val1*u.val0 );
+      Result.val02 := -k1*u.val1 + k2*( u.val2*u.val0 );
+      Result.val10 := -k1*u.val2 + k2*( u.val0*u.val1 );
+      Result.val11 := 1 + k2*( -u.val2*u.val2 - u.val0*u.val0 );
+      Result.val12 := k1*u.val0 + k2*( u.val2*u.val1 );
+      Result.val20 := k1*u.val1 + k2*( u.val0*u.val2 );
+      Result.val21 := -k1*u.val0 + k2*( u.val1*u.val2 );
+      Result.val22 := 1 + k2*( -u.val1*u.val1 - u.val0*u.val0 );
+      
+      Result.val33 := 1;
     end;
-    public static function RotateZWccw(rot: double): Mtr4x4f;
+    
+    public static function Rotate3Dccw(u: Vec3f; rot: double): Mtr4x4f;
     begin
-      var sr: single := Sin(rot);
-      var cr: single := Cos(rot);
-      Result := new Mtr4x4f(
-        1.0, 0.0, 0.0, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        0.0, 0.0,  cr, -sr,
-        0.0, 0.0, +sr,  cr
-      );
+      var k1 := Sin(rot);
+      var k2 := 2*Sqr(Sin(rot/2));
+      
+      Result.val00 := 1 + k2*( -u.val2*u.val2 - u.val1*u.val1 );
+      Result.val01 := -k1*u.val2 + k2*( u.val1*u.val0 );
+      Result.val02 := k1*u.val1 + k2*( u.val2*u.val0 );
+      Result.val10 := k1*u.val2 + k2*( u.val0*u.val1 );
+      Result.val11 := 1 + k2*( -u.val2*u.val2 - u.val0*u.val0 );
+      Result.val12 := -k1*u.val0 + k2*( u.val2*u.val1 );
+      Result.val20 := -k1*u.val1 + k2*( u.val0*u.val2 );
+      Result.val21 := k1*u.val0 + k2*( u.val1*u.val2 );
+      Result.val22 := 1 + k2*( -u.val1*u.val1 - u.val0*u.val0 );
+      
+      Result.val33 := 1;
     end;
     
     public function Println: Mtr4x4f;
@@ -6496,6 +6818,11 @@ type
     public property ColPtr0: ^Vec3f read pointer(IntPtr(pointer(@self)) + 0);
     public property ColPtr1: ^Vec3f read pointer(IntPtr(pointer(@self)) + 8);
     public property ColPtr[x: integer]: ^Vec3f read pointer(IntPtr(pointer(@self)) + x*8);
+    
+    public static function Scale(k: double): Mtr2x3f := new Mtr2x3f(k, 0.0, 0.0, 0.0, k, 0.0);
+    
+    public static function Traslate(X, Y: single): Mtr2x3f := new Mtr2x3f(1.0, 0.0, X, 0.0, 1.0, Y);
+    public static function TraslateTransposed(X: single): Mtr2x3f := new Mtr2x3f(1.0, 0.0, 0.0, X, 1.0, 0.0);
     
     public static function RotateXYcw(rot: double): Mtr2x3f;
     begin
@@ -6603,6 +6930,11 @@ type
     public property ColPtr1: ^Vec2f read pointer(IntPtr(pointer(@self)) + 12);
     public property ColPtr2: ^Vec2f read pointer(IntPtr(pointer(@self)) + 24);
     public property ColPtr[x: integer]: ^Vec2f read pointer(IntPtr(pointer(@self)) + x*12);
+    
+    public static function Scale(k: double): Mtr3x2f := new Mtr3x2f(k, 0.0, 0.0, k, 0.0, 0.0);
+    
+    public static function Traslate(X: single): Mtr3x2f := new Mtr3x2f(1.0, X, 0.0, 1.0, 0.0, 0.0);
+    public static function TraslateTransposed(X, Y: single): Mtr3x2f := new Mtr3x2f(1.0, 0.0, 0.0, 1.0, X, Y);
     
     public static function RotateXYcw(rot: double): Mtr3x2f;
     begin
@@ -6722,6 +7054,11 @@ type
     public property ColPtr1: ^Vec4f read pointer(IntPtr(pointer(@self)) + 8);
     public property ColPtr[x: integer]: ^Vec4f read pointer(IntPtr(pointer(@self)) + x*8);
     
+    public static function Scale(k: double): Mtr2x4f := new Mtr2x4f(k, 0.0, 0.0, 0.0, 0.0, k, 0.0, 0.0);
+    
+    public static function Traslate(X, Y: single): Mtr2x4f := new Mtr2x4f(1.0, 0.0, 0.0, X, 0.0, 1.0, 0.0, Y);
+    public static function TraslateTransposed(X: single): Mtr2x4f := new Mtr2x4f(1.0, 0.0, 0.0, 0.0, X, 1.0, 0.0, 0.0);
+    
     public static function RotateXYcw(rot: double): Mtr2x4f;
     begin
       var sr: single := Sin(rot);
@@ -6839,6 +7176,11 @@ type
     public property ColPtr2: ^Vec2f read pointer(IntPtr(pointer(@self)) + 32);
     public property ColPtr3: ^Vec2f read pointer(IntPtr(pointer(@self)) + 48);
     public property ColPtr[x: integer]: ^Vec2f read pointer(IntPtr(pointer(@self)) + x*16);
+    
+    public static function Scale(k: double): Mtr4x2f := new Mtr4x2f(k, 0.0, 0.0, k, 0.0, 0.0, 0.0, 0.0);
+    
+    public static function Traslate(X: single): Mtr4x2f := new Mtr4x2f(1.0, X, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0);
+    public static function TraslateTransposed(X, Y: single): Mtr4x2f := new Mtr4x2f(1.0, 0.0, 0.0, 1.0, 0.0, 0.0, X, Y);
     
     public static function RotateXYcw(rot: double): Mtr4x2f;
     begin
@@ -6974,6 +7316,11 @@ type
     public property ColPtr2: ^Vec4f read pointer(IntPtr(pointer(@self)) + 24);
     public property ColPtr[x: integer]: ^Vec4f read pointer(IntPtr(pointer(@self)) + x*12);
     
+    public static function Scale(k: double): Mtr3x4f := new Mtr3x4f(k, 0.0, 0.0, 0.0, 0.0, k, 0.0, 0.0, 0.0, 0.0, k, 0.0);
+    
+    public static function Traslate(X, Y, Z: single): Mtr3x4f := new Mtr3x4f(1.0, 0.0, 0.0, X, 0.0, 1.0, 0.0, Y, 0.0, 0.0, 1.0, Z);
+    public static function TraslateTransposed(X, Y: single): Mtr3x4f := new Mtr3x4f(1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, X, Y, 1.0, 0.0);
+    
     public static function RotateXYcw(rot: double): Mtr3x4f;
     begin
       var sr: single := Sin(rot);
@@ -6992,27 +7339,6 @@ type
          cr, -sr, 0.0, 0.0,
         +sr,  cr, 0.0, 0.0,
         0.0, 0.0, 1.0, 0.0
-      );
-    end;
-    
-    public static function RotateXZcw(rot: double): Mtr3x4f;
-    begin
-      var sr: single := Sin(rot);
-      var cr: single := Cos(rot);
-      Result := new Mtr3x4f(
-         cr, 0.0, +sr, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        -sr, 0.0,  cr, 0.0
-      );
-    end;
-    public static function RotateXZccw(rot: double): Mtr3x4f;
-    begin
-      var sr: single := Sin(rot);
-      var cr: single := Cos(rot);
-      Result := new Mtr3x4f(
-         cr, 0.0, -sr, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        +sr, 0.0,  cr, 0.0
       );
     end;
     
@@ -7035,6 +7361,61 @@ type
         0.0,  cr, -sr, 0.0,
         0.0, +sr,  cr, 0.0
       );
+    end;
+    
+    public static function RotateZXcw(rot: double): Mtr3x4f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr3x4f(
+         cr, 0.0, -sr, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        +sr, 0.0,  cr, 0.0
+      );
+    end;
+    public static function RotateZXccw(rot: double): Mtr3x4f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr3x4f(
+         cr, 0.0, +sr, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        -sr, 0.0,  cr, 0.0
+      );
+    end;
+    
+    public static function Rotate3Dcw(u: Vec3f; rot: double): Mtr3x4f;
+    begin
+      var k1 := Sin(rot);
+      var k2 := 2*Sqr(Sin(rot/2));
+      
+      Result.val00 := 1 + k2*( -u.val2*u.val2 - u.val1*u.val1 );
+      Result.val01 := k1*u.val2 + k2*( u.val1*u.val0 );
+      Result.val02 := -k1*u.val1 + k2*( u.val2*u.val0 );
+      Result.val10 := -k1*u.val2 + k2*( u.val0*u.val1 );
+      Result.val11 := 1 + k2*( -u.val2*u.val2 - u.val0*u.val0 );
+      Result.val12 := k1*u.val0 + k2*( u.val2*u.val1 );
+      Result.val20 := k1*u.val1 + k2*( u.val0*u.val2 );
+      Result.val21 := -k1*u.val0 + k2*( u.val1*u.val2 );
+      Result.val22 := 1 + k2*( -u.val1*u.val1 - u.val0*u.val0 );
+      
+    end;
+    
+    public static function Rotate3Dccw(u: Vec3f; rot: double): Mtr3x4f;
+    begin
+      var k1 := Sin(rot);
+      var k2 := 2*Sqr(Sin(rot/2));
+      
+      Result.val00 := 1 + k2*( -u.val2*u.val2 - u.val1*u.val1 );
+      Result.val01 := -k1*u.val2 + k2*( u.val1*u.val0 );
+      Result.val02 := k1*u.val1 + k2*( u.val2*u.val0 );
+      Result.val10 := k1*u.val2 + k2*( u.val0*u.val1 );
+      Result.val11 := 1 + k2*( -u.val2*u.val2 - u.val0*u.val0 );
+      Result.val12 := -k1*u.val0 + k2*( u.val2*u.val1 );
+      Result.val20 := -k1*u.val1 + k2*( u.val0*u.val2 );
+      Result.val21 := k1*u.val0 + k2*( u.val1*u.val2 );
+      Result.val22 := 1 + k2*( -u.val1*u.val1 - u.val0*u.val0 );
+      
     end;
     
     public function Println: Mtr3x4f;
@@ -7150,6 +7531,11 @@ type
     public property ColPtr3: ^Vec3f read pointer(IntPtr(pointer(@self)) + 48);
     public property ColPtr[x: integer]: ^Vec3f read pointer(IntPtr(pointer(@self)) + x*16);
     
+    public static function Scale(k: double): Mtr4x3f := new Mtr4x3f(k, 0.0, 0.0, 0.0, k, 0.0, 0.0, 0.0, k, 0.0, 0.0, 0.0);
+    
+    public static function Traslate(X, Y: single): Mtr4x3f := new Mtr4x3f(1.0, 0.0, X, 0.0, 1.0, Y, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0);
+    public static function TraslateTransposed(X, Y, Z: single): Mtr4x3f := new Mtr4x3f(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, X, Y, Z);
+    
     public static function RotateXYcw(rot: double): Mtr4x3f;
     begin
       var sr: single := Sin(rot);
@@ -7169,29 +7555,6 @@ type
          cr, -sr, 0.0,
         +sr,  cr, 0.0,
         0.0, 0.0, 1.0,
-        0.0, 0.0, 0.0
-      );
-    end;
-    
-    public static function RotateXZcw(rot: double): Mtr4x3f;
-    begin
-      var sr: single := Sin(rot);
-      var cr: single := Cos(rot);
-      Result := new Mtr4x3f(
-         cr, 0.0, +sr,
-        0.0, 1.0, 0.0,
-        -sr, 0.0,  cr,
-        0.0, 0.0, 0.0
-      );
-    end;
-    public static function RotateXZccw(rot: double): Mtr4x3f;
-    begin
-      var sr: single := Sin(rot);
-      var cr: single := Cos(rot);
-      Result := new Mtr4x3f(
-         cr, 0.0, -sr,
-        0.0, 1.0, 0.0,
-        +sr, 0.0,  cr,
         0.0, 0.0, 0.0
       );
     end;
@@ -7217,6 +7580,63 @@ type
         0.0, +sr,  cr,
         0.0, 0.0, 0.0
       );
+    end;
+    
+    public static function RotateZXcw(rot: double): Mtr4x3f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr4x3f(
+         cr, 0.0, -sr,
+        0.0, 1.0, 0.0,
+        +sr, 0.0,  cr,
+        0.0, 0.0, 0.0
+      );
+    end;
+    public static function RotateZXccw(rot: double): Mtr4x3f;
+    begin
+      var sr: single := Sin(rot);
+      var cr: single := Cos(rot);
+      Result := new Mtr4x3f(
+         cr, 0.0, +sr,
+        0.0, 1.0, 0.0,
+        -sr, 0.0,  cr,
+        0.0, 0.0, 0.0
+      );
+    end;
+    
+    public static function Rotate3Dcw(u: Vec3f; rot: double): Mtr4x3f;
+    begin
+      var k1 := Sin(rot);
+      var k2 := 2*Sqr(Sin(rot/2));
+      
+      Result.val00 := 1 + k2*( -u.val2*u.val2 - u.val1*u.val1 );
+      Result.val01 := k1*u.val2 + k2*( u.val1*u.val0 );
+      Result.val02 := -k1*u.val1 + k2*( u.val2*u.val0 );
+      Result.val10 := -k1*u.val2 + k2*( u.val0*u.val1 );
+      Result.val11 := 1 + k2*( -u.val2*u.val2 - u.val0*u.val0 );
+      Result.val12 := k1*u.val0 + k2*( u.val2*u.val1 );
+      Result.val20 := k1*u.val1 + k2*( u.val0*u.val2 );
+      Result.val21 := -k1*u.val0 + k2*( u.val1*u.val2 );
+      Result.val22 := 1 + k2*( -u.val1*u.val1 - u.val0*u.val0 );
+      
+    end;
+    
+    public static function Rotate3Dccw(u: Vec3f; rot: double): Mtr4x3f;
+    begin
+      var k1 := Sin(rot);
+      var k2 := 2*Sqr(Sin(rot/2));
+      
+      Result.val00 := 1 + k2*( -u.val2*u.val2 - u.val1*u.val1 );
+      Result.val01 := -k1*u.val2 + k2*( u.val1*u.val0 );
+      Result.val02 := k1*u.val1 + k2*( u.val2*u.val0 );
+      Result.val10 := k1*u.val2 + k2*( u.val0*u.val1 );
+      Result.val11 := 1 + k2*( -u.val2*u.val2 - u.val0*u.val0 );
+      Result.val12 := -k1*u.val0 + k2*( u.val2*u.val1 );
+      Result.val20 := -k1*u.val1 + k2*( u.val0*u.val2 );
+      Result.val21 := k1*u.val0 + k2*( u.val1*u.val2 );
+      Result.val22 := 1 + k2*( -u.val1*u.val1 - u.val0*u.val0 );
+      
     end;
     
     public function Println: Mtr4x3f;
@@ -7318,6 +7738,11 @@ type
     public property ColPtr0: ^Vec2d read pointer(IntPtr(pointer(@self)) + 0);
     public property ColPtr1: ^Vec2d read pointer(IntPtr(pointer(@self)) + 16);
     public property ColPtr[x: integer]: ^Vec2d read pointer(IntPtr(pointer(@self)) + x*16);
+    
+    public static function Scale(k: double): Mtr2x2d := new Mtr2x2d(k, 0.0, 0.0, k);
+    
+    public static function Traslate(X: double): Mtr2x2d := new Mtr2x2d(1.0, X, 0.0, 1.0);
+    public static function TraslateTransposed(X: double): Mtr2x2d := new Mtr2x2d(1.0, 0.0, X, 1.0);
     
     public static function RotateXYcw(rot: double): Mtr2x2d;
     begin
@@ -7451,6 +7876,11 @@ type
     public property ColPtr2: ^Vec3d read pointer(IntPtr(pointer(@self)) + 48);
     public property ColPtr[x: integer]: ^Vec3d read pointer(IntPtr(pointer(@self)) + x*24);
     
+    public static function Scale(k: double): Mtr3x3d := new Mtr3x3d(k, 0.0, 0.0, 0.0, k, 0.0, 0.0, 0.0, k);
+    
+    public static function Traslate(X, Y: double): Mtr3x3d := new Mtr3x3d(1.0, 0.0, X, 0.0, 1.0, Y, 0.0, 0.0, 1.0);
+    public static function TraslateTransposed(X, Y: double): Mtr3x3d := new Mtr3x3d(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, X, Y, 1.0);
+    
     public static function RotateXYcw(rot: double): Mtr3x3d;
     begin
       var sr: double := Sin(rot);
@@ -7469,27 +7899,6 @@ type
          cr, -sr, 0.0,
         +sr,  cr, 0.0,
         0.0, 0.0, 1.0
-      );
-    end;
-    
-    public static function RotateXZcw(rot: double): Mtr3x3d;
-    begin
-      var sr: double := Sin(rot);
-      var cr: double := Cos(rot);
-      Result := new Mtr3x3d(
-         cr, 0.0, +sr,
-        0.0, 1.0, 0.0,
-        -sr, 0.0,  cr
-      );
-    end;
-    public static function RotateXZccw(rot: double): Mtr3x3d;
-    begin
-      var sr: double := Sin(rot);
-      var cr: double := Cos(rot);
-      Result := new Mtr3x3d(
-         cr, 0.0, -sr,
-        0.0, 1.0, 0.0,
-        +sr, 0.0,  cr
       );
     end;
     
@@ -7512,6 +7921,61 @@ type
         0.0,  cr, -sr,
         0.0, +sr,  cr
       );
+    end;
+    
+    public static function RotateZXcw(rot: double): Mtr3x3d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr3x3d(
+         cr, 0.0, -sr,
+        0.0, 1.0, 0.0,
+        +sr, 0.0,  cr
+      );
+    end;
+    public static function RotateZXccw(rot: double): Mtr3x3d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr3x3d(
+         cr, 0.0, +sr,
+        0.0, 1.0, 0.0,
+        -sr, 0.0,  cr
+      );
+    end;
+    
+    public static function Rotate3Dcw(u: Vec3d; rot: double): Mtr3x3d;
+    begin
+      var k1 := Sin(rot);
+      var k2 := 2*Sqr(Sin(rot/2));
+      
+      Result.val00 := 1 + k2*( -u.val2*u.val2 - u.val1*u.val1 );
+      Result.val01 := k1*u.val2 + k2*( u.val1*u.val0 );
+      Result.val02 := -k1*u.val1 + k2*( u.val2*u.val0 );
+      Result.val10 := -k1*u.val2 + k2*( u.val0*u.val1 );
+      Result.val11 := 1 + k2*( -u.val2*u.val2 - u.val0*u.val0 );
+      Result.val12 := k1*u.val0 + k2*( u.val2*u.val1 );
+      Result.val20 := k1*u.val1 + k2*( u.val0*u.val2 );
+      Result.val21 := -k1*u.val0 + k2*( u.val1*u.val2 );
+      Result.val22 := 1 + k2*( -u.val1*u.val1 - u.val0*u.val0 );
+      
+    end;
+    
+    public static function Rotate3Dccw(u: Vec3d; rot: double): Mtr3x3d;
+    begin
+      var k1 := Sin(rot);
+      var k2 := 2*Sqr(Sin(rot/2));
+      
+      Result.val00 := 1 + k2*( -u.val2*u.val2 - u.val1*u.val1 );
+      Result.val01 := -k1*u.val2 + k2*( u.val1*u.val0 );
+      Result.val02 := k1*u.val1 + k2*( u.val2*u.val0 );
+      Result.val10 := k1*u.val2 + k2*( u.val0*u.val1 );
+      Result.val11 := 1 + k2*( -u.val2*u.val2 - u.val0*u.val0 );
+      Result.val12 := -k1*u.val0 + k2*( u.val2*u.val1 );
+      Result.val20 := -k1*u.val1 + k2*( u.val0*u.val2 );
+      Result.val21 := k1*u.val0 + k2*( u.val1*u.val2 );
+      Result.val22 := 1 + k2*( -u.val1*u.val1 - u.val0*u.val0 );
+      
     end;
     
     public function Println: Mtr3x3d;
@@ -7644,6 +8108,11 @@ type
     public property ColPtr3: ^Vec4d read pointer(IntPtr(pointer(@self)) + 96);
     public property ColPtr[x: integer]: ^Vec4d read pointer(IntPtr(pointer(@self)) + x*32);
     
+    public static function Scale(k: double): Mtr4x4d := new Mtr4x4d(k, 0.0, 0.0, 0.0, 0.0, k, 0.0, 0.0, 0.0, 0.0, k, 0.0, 0.0, 0.0, 0.0, k);
+    
+    public static function Traslate(X, Y, Z: double): Mtr4x4d := new Mtr4x4d(1.0, 0.0, 0.0, X, 0.0, 1.0, 0.0, Y, 0.0, 0.0, 1.0, Z, 0.0, 0.0, 0.0, 1.0);
+    public static function TraslateTransposed(X, Y, Z: double): Mtr4x4d := new Mtr4x4d(1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, X, Y, Z, 1.0);
+    
     public static function RotateXYcw(rot: double): Mtr4x4d;
     begin
       var sr: double := Sin(rot);
@@ -7664,52 +8133,6 @@ type
         +sr,  cr, 0.0, 0.0,
         0.0, 0.0, 1.0, 0.0,
         0.0, 0.0, 0.0, 1.0
-      );
-    end;
-    
-    public static function RotateXZcw(rot: double): Mtr4x4d;
-    begin
-      var sr: double := Sin(rot);
-      var cr: double := Cos(rot);
-      Result := new Mtr4x4d(
-         cr, 0.0, +sr, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        -sr, 0.0,  cr, 0.0,
-        0.0, 0.0, 0.0, 1.0
-      );
-    end;
-    public static function RotateXZccw(rot: double): Mtr4x4d;
-    begin
-      var sr: double := Sin(rot);
-      var cr: double := Cos(rot);
-      Result := new Mtr4x4d(
-         cr, 0.0, -sr, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        +sr, 0.0,  cr, 0.0,
-        0.0, 0.0, 0.0, 1.0
-      );
-    end;
-    
-    public static function RotateXWcw(rot: double): Mtr4x4d;
-    begin
-      var sr: double := Sin(rot);
-      var cr: double := Cos(rot);
-      Result := new Mtr4x4d(
-         cr, 0.0, 0.0, +sr,
-        0.0, 1.0, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
-        -sr, 0.0, 0.0,  cr
-      );
-    end;
-    public static function RotateXWccw(rot: double): Mtr4x4d;
-    begin
-      var sr: double := Sin(rot);
-      var cr: double := Cos(rot);
-      Result := new Mtr4x4d(
-         cr, 0.0, 0.0, -sr,
-        0.0, 1.0, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
-        +sr, 0.0, 0.0,  cr
       );
     end;
     
@@ -7736,50 +8159,63 @@ type
       );
     end;
     
-    public static function RotateYWcw(rot: double): Mtr4x4d;
+    public static function RotateZXcw(rot: double): Mtr4x4d;
     begin
       var sr: double := Sin(rot);
       var cr: double := Cos(rot);
       Result := new Mtr4x4d(
-        1.0, 0.0, 0.0, 0.0,
-        0.0,  cr, 0.0, +sr,
-        0.0, 0.0, 1.0, 0.0,
-        0.0, -sr, 0.0,  cr
+         cr, 0.0, -sr, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        +sr, 0.0,  cr, 0.0,
+        0.0, 0.0, 0.0, 1.0
       );
     end;
-    public static function RotateYWccw(rot: double): Mtr4x4d;
+    public static function RotateZXccw(rot: double): Mtr4x4d;
     begin
       var sr: double := Sin(rot);
       var cr: double := Cos(rot);
       Result := new Mtr4x4d(
-        1.0, 0.0, 0.0, 0.0,
-        0.0,  cr, 0.0, -sr,
-        0.0, 0.0, 1.0, 0.0,
-        0.0, +sr, 0.0,  cr
+         cr, 0.0, +sr, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        -sr, 0.0,  cr, 0.0,
+        0.0, 0.0, 0.0, 1.0
       );
     end;
     
-    public static function RotateZWcw(rot: double): Mtr4x4d;
+    public static function Rotate3Dcw(u: Vec3d; rot: double): Mtr4x4d;
     begin
-      var sr: double := Sin(rot);
-      var cr: double := Cos(rot);
-      Result := new Mtr4x4d(
-        1.0, 0.0, 0.0, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        0.0, 0.0,  cr, +sr,
-        0.0, 0.0, -sr,  cr
-      );
+      var k1 := Sin(rot);
+      var k2 := 2*Sqr(Sin(rot/2));
+      
+      Result.val00 := 1 + k2*( -u.val2*u.val2 - u.val1*u.val1 );
+      Result.val01 := k1*u.val2 + k2*( u.val1*u.val0 );
+      Result.val02 := -k1*u.val1 + k2*( u.val2*u.val0 );
+      Result.val10 := -k1*u.val2 + k2*( u.val0*u.val1 );
+      Result.val11 := 1 + k2*( -u.val2*u.val2 - u.val0*u.val0 );
+      Result.val12 := k1*u.val0 + k2*( u.val2*u.val1 );
+      Result.val20 := k1*u.val1 + k2*( u.val0*u.val2 );
+      Result.val21 := -k1*u.val0 + k2*( u.val1*u.val2 );
+      Result.val22 := 1 + k2*( -u.val1*u.val1 - u.val0*u.val0 );
+      
+      Result.val33 := 1;
     end;
-    public static function RotateZWccw(rot: double): Mtr4x4d;
+    
+    public static function Rotate3Dccw(u: Vec3d; rot: double): Mtr4x4d;
     begin
-      var sr: double := Sin(rot);
-      var cr: double := Cos(rot);
-      Result := new Mtr4x4d(
-        1.0, 0.0, 0.0, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        0.0, 0.0,  cr, -sr,
-        0.0, 0.0, +sr,  cr
-      );
+      var k1 := Sin(rot);
+      var k2 := 2*Sqr(Sin(rot/2));
+      
+      Result.val00 := 1 + k2*( -u.val2*u.val2 - u.val1*u.val1 );
+      Result.val01 := -k1*u.val2 + k2*( u.val1*u.val0 );
+      Result.val02 := k1*u.val1 + k2*( u.val2*u.val0 );
+      Result.val10 := k1*u.val2 + k2*( u.val0*u.val1 );
+      Result.val11 := 1 + k2*( -u.val2*u.val2 - u.val0*u.val0 );
+      Result.val12 := -k1*u.val0 + k2*( u.val2*u.val1 );
+      Result.val20 := -k1*u.val1 + k2*( u.val0*u.val2 );
+      Result.val21 := k1*u.val0 + k2*( u.val1*u.val2 );
+      Result.val22 := 1 + k2*( -u.val1*u.val1 - u.val0*u.val0 );
+      
+      Result.val33 := 1;
     end;
     
     public function Println: Mtr4x4d;
@@ -7896,6 +8332,11 @@ type
     public property ColPtr0: ^Vec3d read pointer(IntPtr(pointer(@self)) + 0);
     public property ColPtr1: ^Vec3d read pointer(IntPtr(pointer(@self)) + 16);
     public property ColPtr[x: integer]: ^Vec3d read pointer(IntPtr(pointer(@self)) + x*16);
+    
+    public static function Scale(k: double): Mtr2x3d := new Mtr2x3d(k, 0.0, 0.0, 0.0, k, 0.0);
+    
+    public static function Traslate(X, Y: double): Mtr2x3d := new Mtr2x3d(1.0, 0.0, X, 0.0, 1.0, Y);
+    public static function TraslateTransposed(X: double): Mtr2x3d := new Mtr2x3d(1.0, 0.0, 0.0, X, 1.0, 0.0);
     
     public static function RotateXYcw(rot: double): Mtr2x3d;
     begin
@@ -8030,6 +8471,11 @@ type
     public property ColPtr1: ^Vec2d read pointer(IntPtr(pointer(@self)) + 24);
     public property ColPtr2: ^Vec2d read pointer(IntPtr(pointer(@self)) + 48);
     public property ColPtr[x: integer]: ^Vec2d read pointer(IntPtr(pointer(@self)) + x*24);
+    
+    public static function Scale(k: double): Mtr3x2d := new Mtr3x2d(k, 0.0, 0.0, k, 0.0, 0.0);
+    
+    public static function Traslate(X: double): Mtr3x2d := new Mtr3x2d(1.0, X, 0.0, 1.0, 0.0, 0.0);
+    public static function TraslateTransposed(X, Y: double): Mtr3x2d := new Mtr3x2d(1.0, 0.0, 0.0, 1.0, X, Y);
     
     public static function RotateXYcw(rot: double): Mtr3x2d;
     begin
@@ -8176,6 +8622,11 @@ type
     public property ColPtr1: ^Vec4d read pointer(IntPtr(pointer(@self)) + 16);
     public property ColPtr[x: integer]: ^Vec4d read pointer(IntPtr(pointer(@self)) + x*16);
     
+    public static function Scale(k: double): Mtr2x4d := new Mtr2x4d(k, 0.0, 0.0, 0.0, 0.0, k, 0.0, 0.0);
+    
+    public static function Traslate(X, Y: double): Mtr2x4d := new Mtr2x4d(1.0, 0.0, 0.0, X, 0.0, 1.0, 0.0, Y);
+    public static function TraslateTransposed(X: double): Mtr2x4d := new Mtr2x4d(1.0, 0.0, 0.0, 0.0, X, 1.0, 0.0, 0.0);
+    
     public static function RotateXYcw(rot: double): Mtr2x4d;
     begin
       var sr: double := Sin(rot);
@@ -8320,6 +8771,11 @@ type
     public property ColPtr2: ^Vec2d read pointer(IntPtr(pointer(@self)) + 64);
     public property ColPtr3: ^Vec2d read pointer(IntPtr(pointer(@self)) + 96);
     public property ColPtr[x: integer]: ^Vec2d read pointer(IntPtr(pointer(@self)) + x*32);
+    
+    public static function Scale(k: double): Mtr4x2d := new Mtr4x2d(k, 0.0, 0.0, k, 0.0, 0.0, 0.0, 0.0);
+    
+    public static function Traslate(X: double): Mtr4x2d := new Mtr4x2d(1.0, X, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0);
+    public static function TraslateTransposed(X, Y: double): Mtr4x2d := new Mtr4x2d(1.0, 0.0, 0.0, 1.0, 0.0, 0.0, X, Y);
     
     public static function RotateXYcw(rot: double): Mtr4x2d;
     begin
@@ -8482,6 +8938,11 @@ type
     public property ColPtr2: ^Vec4d read pointer(IntPtr(pointer(@self)) + 48);
     public property ColPtr[x: integer]: ^Vec4d read pointer(IntPtr(pointer(@self)) + x*24);
     
+    public static function Scale(k: double): Mtr3x4d := new Mtr3x4d(k, 0.0, 0.0, 0.0, 0.0, k, 0.0, 0.0, 0.0, 0.0, k, 0.0);
+    
+    public static function Traslate(X, Y, Z: double): Mtr3x4d := new Mtr3x4d(1.0, 0.0, 0.0, X, 0.0, 1.0, 0.0, Y, 0.0, 0.0, 1.0, Z);
+    public static function TraslateTransposed(X, Y: double): Mtr3x4d := new Mtr3x4d(1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, X, Y, 1.0, 0.0);
+    
     public static function RotateXYcw(rot: double): Mtr3x4d;
     begin
       var sr: double := Sin(rot);
@@ -8500,27 +8961,6 @@ type
          cr, -sr, 0.0, 0.0,
         +sr,  cr, 0.0, 0.0,
         0.0, 0.0, 1.0, 0.0
-      );
-    end;
-    
-    public static function RotateXZcw(rot: double): Mtr3x4d;
-    begin
-      var sr: double := Sin(rot);
-      var cr: double := Cos(rot);
-      Result := new Mtr3x4d(
-         cr, 0.0, +sr, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        -sr, 0.0,  cr, 0.0
-      );
-    end;
-    public static function RotateXZccw(rot: double): Mtr3x4d;
-    begin
-      var sr: double := Sin(rot);
-      var cr: double := Cos(rot);
-      Result := new Mtr3x4d(
-         cr, 0.0, -sr, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        +sr, 0.0,  cr, 0.0
       );
     end;
     
@@ -8543,6 +8983,61 @@ type
         0.0,  cr, -sr, 0.0,
         0.0, +sr,  cr, 0.0
       );
+    end;
+    
+    public static function RotateZXcw(rot: double): Mtr3x4d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr3x4d(
+         cr, 0.0, -sr, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        +sr, 0.0,  cr, 0.0
+      );
+    end;
+    public static function RotateZXccw(rot: double): Mtr3x4d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr3x4d(
+         cr, 0.0, +sr, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        -sr, 0.0,  cr, 0.0
+      );
+    end;
+    
+    public static function Rotate3Dcw(u: Vec3d; rot: double): Mtr3x4d;
+    begin
+      var k1 := Sin(rot);
+      var k2 := 2*Sqr(Sin(rot/2));
+      
+      Result.val00 := 1 + k2*( -u.val2*u.val2 - u.val1*u.val1 );
+      Result.val01 := k1*u.val2 + k2*( u.val1*u.val0 );
+      Result.val02 := -k1*u.val1 + k2*( u.val2*u.val0 );
+      Result.val10 := -k1*u.val2 + k2*( u.val0*u.val1 );
+      Result.val11 := 1 + k2*( -u.val2*u.val2 - u.val0*u.val0 );
+      Result.val12 := k1*u.val0 + k2*( u.val2*u.val1 );
+      Result.val20 := k1*u.val1 + k2*( u.val0*u.val2 );
+      Result.val21 := -k1*u.val0 + k2*( u.val1*u.val2 );
+      Result.val22 := 1 + k2*( -u.val1*u.val1 - u.val0*u.val0 );
+      
+    end;
+    
+    public static function Rotate3Dccw(u: Vec3d; rot: double): Mtr3x4d;
+    begin
+      var k1 := Sin(rot);
+      var k2 := 2*Sqr(Sin(rot/2));
+      
+      Result.val00 := 1 + k2*( -u.val2*u.val2 - u.val1*u.val1 );
+      Result.val01 := -k1*u.val2 + k2*( u.val1*u.val0 );
+      Result.val02 := k1*u.val1 + k2*( u.val2*u.val0 );
+      Result.val10 := k1*u.val2 + k2*( u.val0*u.val1 );
+      Result.val11 := 1 + k2*( -u.val2*u.val2 - u.val0*u.val0 );
+      Result.val12 := -k1*u.val0 + k2*( u.val2*u.val1 );
+      Result.val20 := -k1*u.val1 + k2*( u.val0*u.val2 );
+      Result.val21 := k1*u.val0 + k2*( u.val1*u.val2 );
+      Result.val22 := 1 + k2*( -u.val1*u.val1 - u.val0*u.val0 );
+      
     end;
     
     public function Println: Mtr3x4d;
@@ -8685,6 +9180,11 @@ type
     public property ColPtr3: ^Vec3d read pointer(IntPtr(pointer(@self)) + 96);
     public property ColPtr[x: integer]: ^Vec3d read pointer(IntPtr(pointer(@self)) + x*32);
     
+    public static function Scale(k: double): Mtr4x3d := new Mtr4x3d(k, 0.0, 0.0, 0.0, k, 0.0, 0.0, 0.0, k, 0.0, 0.0, 0.0);
+    
+    public static function Traslate(X, Y: double): Mtr4x3d := new Mtr4x3d(1.0, 0.0, X, 0.0, 1.0, Y, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0);
+    public static function TraslateTransposed(X, Y, Z: double): Mtr4x3d := new Mtr4x3d(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, X, Y, Z);
+    
     public static function RotateXYcw(rot: double): Mtr4x3d;
     begin
       var sr: double := Sin(rot);
@@ -8704,29 +9204,6 @@ type
          cr, -sr, 0.0,
         +sr,  cr, 0.0,
         0.0, 0.0, 1.0,
-        0.0, 0.0, 0.0
-      );
-    end;
-    
-    public static function RotateXZcw(rot: double): Mtr4x3d;
-    begin
-      var sr: double := Sin(rot);
-      var cr: double := Cos(rot);
-      Result := new Mtr4x3d(
-         cr, 0.0, +sr,
-        0.0, 1.0, 0.0,
-        -sr, 0.0,  cr,
-        0.0, 0.0, 0.0
-      );
-    end;
-    public static function RotateXZccw(rot: double): Mtr4x3d;
-    begin
-      var sr: double := Sin(rot);
-      var cr: double := Cos(rot);
-      Result := new Mtr4x3d(
-         cr, 0.0, -sr,
-        0.0, 1.0, 0.0,
-        +sr, 0.0,  cr,
         0.0, 0.0, 0.0
       );
     end;
@@ -8752,6 +9229,63 @@ type
         0.0, +sr,  cr,
         0.0, 0.0, 0.0
       );
+    end;
+    
+    public static function RotateZXcw(rot: double): Mtr4x3d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr4x3d(
+         cr, 0.0, -sr,
+        0.0, 1.0, 0.0,
+        +sr, 0.0,  cr,
+        0.0, 0.0, 0.0
+      );
+    end;
+    public static function RotateZXccw(rot: double): Mtr4x3d;
+    begin
+      var sr: double := Sin(rot);
+      var cr: double := Cos(rot);
+      Result := new Mtr4x3d(
+         cr, 0.0, +sr,
+        0.0, 1.0, 0.0,
+        -sr, 0.0,  cr,
+        0.0, 0.0, 0.0
+      );
+    end;
+    
+    public static function Rotate3Dcw(u: Vec3d; rot: double): Mtr4x3d;
+    begin
+      var k1 := Sin(rot);
+      var k2 := 2*Sqr(Sin(rot/2));
+      
+      Result.val00 := 1 + k2*( -u.val2*u.val2 - u.val1*u.val1 );
+      Result.val01 := k1*u.val2 + k2*( u.val1*u.val0 );
+      Result.val02 := -k1*u.val1 + k2*( u.val2*u.val0 );
+      Result.val10 := -k1*u.val2 + k2*( u.val0*u.val1 );
+      Result.val11 := 1 + k2*( -u.val2*u.val2 - u.val0*u.val0 );
+      Result.val12 := k1*u.val0 + k2*( u.val2*u.val1 );
+      Result.val20 := k1*u.val1 + k2*( u.val0*u.val2 );
+      Result.val21 := -k1*u.val0 + k2*( u.val1*u.val2 );
+      Result.val22 := 1 + k2*( -u.val1*u.val1 - u.val0*u.val0 );
+      
+    end;
+    
+    public static function Rotate3Dccw(u: Vec3d; rot: double): Mtr4x3d;
+    begin
+      var k1 := Sin(rot);
+      var k2 := 2*Sqr(Sin(rot/2));
+      
+      Result.val00 := 1 + k2*( -u.val2*u.val2 - u.val1*u.val1 );
+      Result.val01 := -k1*u.val2 + k2*( u.val1*u.val0 );
+      Result.val02 := k1*u.val1 + k2*( u.val2*u.val0 );
+      Result.val10 := k1*u.val2 + k2*( u.val0*u.val1 );
+      Result.val11 := 1 + k2*( -u.val2*u.val2 - u.val0*u.val0 );
+      Result.val12 := -k1*u.val0 + k2*( u.val2*u.val1 );
+      Result.val20 := -k1*u.val1 + k2*( u.val0*u.val2 );
+      Result.val21 := k1*u.val0 + k2*( u.val1*u.val2 );
+      Result.val22 := 1 + k2*( -u.val1*u.val1 - u.val0*u.val0 );
+      
     end;
     
     public function Println: Mtr4x3d;
@@ -10319,6 +10853,7 @@ type
     
   end;
   
+  //ToDo функции принемающие single - бывает, принимают и fixed
   fixed = record
     {private} val: UInt32;
     
@@ -10330,6 +10865,44 @@ type
     {private} val: UInt16;
     
     //ToDo реализовать простейшие операции, с инкапсуляцией но разрешить обращатся к val через свойство
+    
+  end;
+  
+  GDI_PixelFormatDescriptor = record
+    nSize:            UInt16 := sizeof(GDI_PixelFormatDescriptor);
+    nVersion:         UInt16 := 1;
+    
+    dwFlags:          GDI_PixelFormatFlags;
+    iPixelType:       GDI_PixelDataType;
+    
+    cColorBits:       Byte; // кол-во битов для R+G+B
+    
+    cRedBits:         Byte; // похоже, если оставить нулями - их автоматом заполнит
+    cRedShift:        Byte;
+    cGreenBits:       Byte;
+    cGreenShift:      Byte;
+    cBlueBits:        Byte;
+    cBlueShift:       Byte;
+    cAlphaBits:       Byte; // последние 2 не работают на Windows
+    cAlphaShift:      Byte;
+    
+    cAccumBits:       Byte;
+    cAccumRedBits:    Byte;
+    cAccumGreenBits:  Byte;
+    cAccumBlueBits:   Byte;
+    cAccumAlphaBits:  Byte;
+    
+    cDepthBits:       Byte;
+    cStencilBits:     Byte;
+    cAuxBuffers:      Byte; // устарело
+    
+    iLayerType:       GDI_LayerType; // устарело
+    bLayersSize:      Byte; // разделено на 2 числа по 4 бита, и бесполезно без iLayerType, то есть оно тоже устарело
+    
+    // не смог найти нормального описания последних 3, но все присваивают им нолики
+    dwLayerMask:      UInt32;
+    dwVisibleMask:    UInt32;
+    dwDamageMask:     UInt32;
     
   end;
   
@@ -13576,24 +14149,16 @@ type
     static procedure VertexArrayVertexBuffer(vaobj: VertexArrayName; bindingindex: UInt32; buffer: BufferName; offset: IntPtr; stride: Int32);
     external 'opengl32.dll' name 'glVertexArrayVertexBuffer';
     
-    static procedure BindVertexBuffers(first: UInt32; count: Int32; var buffers: BufferName; [MarshalAs(UnmanagedType.LPArray)] offsets: array of IntPtr; [MarshalAs(UnmanagedType.LPArray)] strides: array of Int32);
+    static procedure BindVertexBuffers(first: UInt32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] buffers: array of BufferName; [MarshalAs(UnmanagedType.LPArray)] offsets: array of IntPtr; [MarshalAs(UnmanagedType.LPArray)] strides: array of Int32);
     external 'opengl32.dll' name 'glBindVertexBuffers';
     static procedure BindVertexBuffers(first: UInt32; count: Int32; var buffers: BufferName; var offsets: IntPtr; var strides: Int32);
-    external 'opengl32.dll' name 'glBindVertexBuffers';
-    static procedure BindVertexBuffers(first: UInt32; count: Int32; var buffers: BufferName; offsets: pointer; strides: pointer);
-    external 'opengl32.dll' name 'glBindVertexBuffers';
-    static procedure BindVertexBuffers(first: UInt32; count: Int32; buffers: pointer; var offsets: IntPtr; var strides: Int32);
     external 'opengl32.dll' name 'glBindVertexBuffers';
     static procedure BindVertexBuffers(first: UInt32; count: Int32; buffers: pointer; offsets: pointer; strides: pointer);
     external 'opengl32.dll' name 'glBindVertexBuffers';
     
-    static procedure VertexArrayVertexBuffers(vaobj: VertexArrayName; first: UInt32; count: Int32; var buffers: BufferName; [MarshalAs(UnmanagedType.LPArray)] offsets: array of IntPtr; [MarshalAs(UnmanagedType.LPArray)] strides: array of Int32);
+    static procedure VertexArrayVertexBuffers(vaobj: VertexArrayName; first: UInt32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] buffers: array of BufferName; [MarshalAs(UnmanagedType.LPArray)] offsets: array of IntPtr; [MarshalAs(UnmanagedType.LPArray)] strides: array of Int32);
     external 'opengl32.dll' name 'glVertexArrayVertexBuffers';
     static procedure VertexArrayVertexBuffers(vaobj: VertexArrayName; first: UInt32; count: Int32; var buffers: BufferName; var offsets: IntPtr; var strides: Int32);
-    external 'opengl32.dll' name 'glVertexArrayVertexBuffers';
-    static procedure VertexArrayVertexBuffers(vaobj: VertexArrayName; first: UInt32; count: Int32; var buffers: BufferName; offsets: pointer; strides: pointer);
-    external 'opengl32.dll' name 'glVertexArrayVertexBuffers';
-    static procedure VertexArrayVertexBuffers(vaobj: VertexArrayName; first: UInt32; count: Int32; buffers: pointer; var offsets: IntPtr; var strides: Int32);
     external 'opengl32.dll' name 'glVertexArrayVertexBuffers';
     static procedure VertexArrayVertexBuffers(vaobj: VertexArrayName; first: UInt32; count: Int32; buffers: pointer; offsets: pointer; strides: pointer);
     external 'opengl32.dll' name 'glVertexArrayVertexBuffers';
@@ -13871,12 +14436,16 @@ type
     
     {$region 10.5 - Vertex Array and Vertex Array Object Queries}
     
+    static procedure GetVertexArrayiv(vaobj: VertexArrayName; pname: VertexAttribInfoType; var param: BufferName);
+    external 'opengl32.dll' name 'glGetVertexArrayiv';
     static procedure GetVertexArrayiv(vaobj: VertexArrayName; pname: VertexAttribInfoType; var param: Int32);
     external 'opengl32.dll' name 'glGetVertexArrayiv';
     static procedure GetVertexArrayiv(vaobj: VertexArrayName; pname: VertexAttribInfoType; param: pointer);
     external 'opengl32.dll' name 'glGetVertexArrayiv';
     
     static procedure GetVertexArrayIndexediv(vaobj: VertexArrayName; index: UInt32; pname: VertexAttribInfoType; var param: Int32);
+    external 'opengl32.dll' name 'glGetVertexArrayIndexediv';
+    static procedure GetVertexArrayIndexediv(vaobj: VertexArrayName; index: UInt32; pname: VertexAttribInfoType; var param: DataType);
     external 'opengl32.dll' name 'glGetVertexArrayIndexediv';
     static procedure GetVertexArrayIndexediv(vaobj: VertexArrayName; index: UInt32; pname: VertexAttribInfoType; param: pointer);
     external 'opengl32.dll' name 'glGetVertexArrayIndexediv';
@@ -13890,6 +14459,8 @@ type
     external 'opengl32.dll' name 'glGetVertexAttribdv';
     static procedure GetVertexAttribdv(index: UInt32; pname: VertexAttribInfoType; var &params: double);
     external 'opengl32.dll' name 'glGetVertexAttribdv';
+    static procedure GetVertexAttribdv(index: UInt32; pname: VertexAttribInfoType; var &params: Vec4d);
+    external 'opengl32.dll' name 'glGetVertexAttribdv';
     static procedure GetVertexAttribdv(index: UInt32; pname: VertexAttribInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetVertexAttribdv';
     
@@ -13897,26 +14468,44 @@ type
     external 'opengl32.dll' name 'glGetVertexAttribfv';
     static procedure GetVertexAttribfv(index: UInt32; pname: VertexAttribInfoType; var &params: single);
     external 'opengl32.dll' name 'glGetVertexAttribfv';
+    static procedure GetVertexAttribfv(index: UInt32; pname: VertexAttribInfoType; var &params: Vec4f);
+    external 'opengl32.dll' name 'glGetVertexAttribfv';
     static procedure GetVertexAttribfv(index: UInt32; pname: VertexAttribInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetVertexAttribfv';
     
+    static procedure GetVertexAttribiv(index: UInt32; pname: VertexAttribInfoType; var &params: BufferName);
+    external 'opengl32.dll' name 'glGetVertexAttribiv';
+    static procedure GetVertexAttribiv(index: UInt32; pname: VertexAttribInfoType; var &params: DataType);
+    external 'opengl32.dll' name 'glGetVertexAttribiv';
     static procedure GetVertexAttribiv(index: UInt32; pname: VertexAttribInfoType; [MarshalAs(UnmanagedType.LPArray)] &params: array of Int32);
     external 'opengl32.dll' name 'glGetVertexAttribiv';
     static procedure GetVertexAttribiv(index: UInt32; pname: VertexAttribInfoType; var &params: Int32);
     external 'opengl32.dll' name 'glGetVertexAttribiv';
+    static procedure GetVertexAttribiv(index: UInt32; pname: VertexAttribInfoType; var &params: Vec4i);
+    external 'opengl32.dll' name 'glGetVertexAttribiv';
     static procedure GetVertexAttribiv(index: UInt32; pname: VertexAttribInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetVertexAttribiv';
     
+    static procedure GetVertexAttribIiv(index: UInt32; pname: VertexAttribInfoType; var &params: BufferName);
+    external 'opengl32.dll' name 'glGetVertexAttribIiv';
+    static procedure GetVertexAttribIiv(index: UInt32; pname: VertexAttribInfoType; var &params: DataType);
+    external 'opengl32.dll' name 'glGetVertexAttribIiv';
     static procedure GetVertexAttribIiv(index: UInt32; pname: VertexAttribInfoType; [MarshalAs(UnmanagedType.LPArray)] &params: array of Int32);
     external 'opengl32.dll' name 'glGetVertexAttribIiv';
     static procedure GetVertexAttribIiv(index: UInt32; pname: VertexAttribInfoType; var &params: Int32);
     external 'opengl32.dll' name 'glGetVertexAttribIiv';
+    static procedure GetVertexAttribIiv(index: UInt32; pname: VertexAttribInfoType; var &params: Vec4i);
+    external 'opengl32.dll' name 'glGetVertexAttribIiv';
     static procedure GetVertexAttribIiv(index: UInt32; pname: VertexAttribInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetVertexAttribIiv';
     
+    static procedure GetVertexAttribIuiv(index: UInt32; pname: VertexAttribInfoType; var &params: DataType);
+    external 'opengl32.dll' name 'glGetVertexAttribIuiv';
     static procedure GetVertexAttribIuiv(index: UInt32; pname: VertexAttribInfoType; [MarshalAs(UnmanagedType.LPArray)] &params: array of UInt32);
     external 'opengl32.dll' name 'glGetVertexAttribIuiv';
     static procedure GetVertexAttribIuiv(index: UInt32; pname: VertexAttribInfoType; var &params: UInt32);
+    external 'opengl32.dll' name 'glGetVertexAttribIuiv';
+    static procedure GetVertexAttribIuiv(index: UInt32; pname: VertexAttribInfoType; var &params: Vec4ui);
     external 'opengl32.dll' name 'glGetVertexAttribIuiv';
     static procedure GetVertexAttribIuiv(index: UInt32; pname: VertexAttribInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetVertexAttribIuiv';
@@ -13924,6 +14513,8 @@ type
     static procedure GetVertexAttribLdv(index: UInt32; pname: VertexAttribInfoType; [MarshalAs(UnmanagedType.LPArray)] &params: array of double);
     external 'opengl32.dll' name 'glGetVertexAttribLdv';
     static procedure GetVertexAttribLdv(index: UInt32; pname: VertexAttribInfoType; var &params: double);
+    external 'opengl32.dll' name 'glGetVertexAttribLdv';
+    static procedure GetVertexAttribLdv(index: UInt32; pname: VertexAttribInfoType; var &params: Vec4d);
     external 'opengl32.dll' name 'glGetVertexAttribLdv';
     static procedure GetVertexAttribLdv(index: UInt32; pname: VertexAttribInfoType; &params: pointer);
     external 'opengl32.dll' name 'glGetVertexAttribLdv';
@@ -14001,6 +14592,14 @@ type
     external 'opengl32.dll' name 'glGetTransformFeedbackVarying';
     static procedure GetTransformFeedbackVarying(&program: ProgramName; index: UInt32; bufSize: Int32; var length: Int32; var size: Int32; var &type: ProgramVarType; name: IntPtr);
     external 'opengl32.dll' name 'glGetTransformFeedbackVarying';
+    static procedure GetTransformFeedbackVarying(&program: ProgramName; index: UInt32; bufSize: Int32; var length: Int32; var size: Int32; &type: pointer; [MarshalAs(UnmanagedType.LPStr)] name: string);
+    external 'opengl32.dll' name 'glGetTransformFeedbackVarying';
+    static procedure GetTransformFeedbackVarying(&program: ProgramName; index: UInt32; bufSize: Int32; var length: Int32; var size: Int32; &type: pointer; name: IntPtr);
+    external 'opengl32.dll' name 'glGetTransformFeedbackVarying';
+    static procedure GetTransformFeedbackVarying(&program: ProgramName; index: UInt32; bufSize: Int32; length: pointer; size: pointer; var &type: ProgramVarType; [MarshalAs(UnmanagedType.LPStr)] name: string);
+    external 'opengl32.dll' name 'glGetTransformFeedbackVarying';
+    static procedure GetTransformFeedbackVarying(&program: ProgramName; index: UInt32; bufSize: Int32; length: pointer; size: pointer; var &type: ProgramVarType; name: IntPtr);
+    external 'opengl32.dll' name 'glGetTransformFeedbackVarying';
     static procedure GetTransformFeedbackVarying(&program: ProgramName; index: UInt32; bufSize: Int32; length: pointer; size: pointer; &type: pointer; [MarshalAs(UnmanagedType.LPStr)] name: string);
     external 'opengl32.dll' name 'glGetTransformFeedbackVarying';
     static procedure GetTransformFeedbackVarying(&program: ProgramName; index: UInt32; bufSize: Int32; length: pointer; size: pointer; &type: pointer; name: IntPtr);
@@ -14022,6 +14621,10 @@ type
     
     // 11.2.2
     
+    static procedure PatchParameterfv(pname: PatchMode; var values: Vec2f);
+    external 'opengl32.dll' name 'glPatchParameterfv';
+    static procedure PatchParameterfv(pname: PatchMode; var values: Vec4f);
+    external 'opengl32.dll' name 'glPatchParameterfv';
     static procedure PatchParameterfv(pname: PatchMode; [MarshalAs(UnmanagedType.LPArray)] values: array of single);
     external 'opengl32.dll' name 'glPatchParameterfv';
     static procedure PatchParameterfv(pname: PatchMode; var values: single);
@@ -14120,6 +14723,10 @@ type
     
     // 13.8.1
     
+    static procedure DepthRangeArrayv(first: UInt32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] v: array of Vec2d);
+    external 'opengl32.dll' name 'glDepthRangeArrayv';
+    static procedure DepthRangeArrayv(first: UInt32; count: Int32; var v: Vec2d);
+    external 'opengl32.dll' name 'glDepthRangeArrayv';
     static procedure DepthRangeArrayv(first: UInt32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] v: array of double);
     external 'opengl32.dll' name 'glDepthRangeArrayv';
     static procedure DepthRangeArrayv(first: UInt32; count: Int32; var v: double);
@@ -14127,15 +14734,19 @@ type
     static procedure DepthRangeArrayv(first: UInt32; count: Int32; v: pointer);
     external 'opengl32.dll' name 'glDepthRangeArrayv';
     
-    static procedure DepthRangeIndexed(index: UInt32; n: double; f: double);
+    static procedure DepthRangeIndexed(index: UInt32; nearVal: double; farVal: double);
     external 'opengl32.dll' name 'glDepthRangeIndexed';
     
-    static procedure DepthRange(n: double; f: double);
+    static procedure DepthRange(nearVal: double; farVal: double);
     external 'opengl32.dll' name 'glDepthRange';
     
-    static procedure DepthRangef(n: single; f: single);
+    static procedure DepthRangef(nearVal: single; farVal: single);
     external 'opengl32.dll' name 'glDepthRangef';
     
+    static procedure ViewportArrayv(first: UInt32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] v: array of Vec4f);
+    external 'opengl32.dll' name 'glViewportArrayv';
+    static procedure ViewportArrayv(first: UInt32; count: Int32; var v: Vec4f);
+    external 'opengl32.dll' name 'glViewportArrayv';
     static procedure ViewportArrayv(first: UInt32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] v: array of single);
     external 'opengl32.dll' name 'glViewportArrayv';
     static procedure ViewportArrayv(first: UInt32; count: Int32; var v: single);
@@ -14146,6 +14757,8 @@ type
     static procedure ViewportIndexedf(index: UInt32; x: single; y: single; w: single; h: single);
     external 'opengl32.dll' name 'glViewportIndexedf';
     
+    static procedure ViewportIndexedfv(index: UInt32; var v: Vec4f);
+    external 'opengl32.dll' name 'glViewportIndexedfv';
     static procedure ViewportIndexedfv(index: UInt32; [MarshalAs(UnmanagedType.LPArray)] v: array of single);
     external 'opengl32.dll' name 'glViewportIndexedfv';
     static procedure ViewportIndexedfv(index: UInt32; var v: single);
@@ -14195,15 +14808,11 @@ type
     static procedure PointParameterf(pname: PointInfoType; param: single);
     external 'opengl32.dll' name 'glPointParameterf';
     
-    static procedure PointParameteriv(pname: PointInfoType; [MarshalAs(UnmanagedType.LPArray)] &params: array of Int32);
-    external 'opengl32.dll' name 'glPointParameteriv';
     static procedure PointParameteriv(pname: PointInfoType; var &params: Int32);
     external 'opengl32.dll' name 'glPointParameteriv';
     static procedure PointParameteriv(pname: PointInfoType; &params: pointer);
     external 'opengl32.dll' name 'glPointParameteriv';
     
-    static procedure PointParameterfv(pname: PointInfoType; [MarshalAs(UnmanagedType.LPArray)] &params: array of single);
-    external 'opengl32.dll' name 'glPointParameterfv';
     static procedure PointParameterfv(pname: PointInfoType; var &params: single);
     external 'opengl32.dll' name 'glPointParameterfv';
     static procedure PointParameterfv(pname: PointInfoType; &params: pointer);
@@ -14247,6 +14856,10 @@ type
     
     // 14.9.2
     
+    static procedure ScissorArrayv(first: UInt32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] v: array of Vec4i);
+    external 'opengl32.dll' name 'glScissorArrayv';
+    static procedure ScissorArrayv(first: UInt32; count: Int32; var v: Vec4i);
+    external 'opengl32.dll' name 'glScissorArrayv';
     static procedure ScissorArrayv(first: UInt32; count: Int32; [MarshalAs(UnmanagedType.LPArray)] v: array of Int32);
     external 'opengl32.dll' name 'glScissorArrayv';
     static procedure ScissorArrayv(first: UInt32; count: Int32; var v: Int32);
@@ -14257,6 +14870,8 @@ type
     static procedure ScissorIndexed(index: UInt32; left: Int32; bottom: Int32; width: Int32; height: Int32);
     external 'opengl32.dll' name 'glScissorIndexed';
     
+    static procedure ScissorIndexedv(index: UInt32; var v: Vec4i);
+    external 'opengl32.dll' name 'glScissorIndexedv';
     static procedure ScissorIndexedv(index: UInt32; [MarshalAs(UnmanagedType.LPArray)] v: array of Int32);
     external 'opengl32.dll' name 'glScissorIndexedv';
     static procedure ScissorIndexedv(index: UInt32; var v: Int32);
@@ -14290,9 +14905,9 @@ type
     static procedure BindFragDataLocationIndexed(&program: ProgramName; colorNumber: UInt32; index: UInt32; name: IntPtr);
     external 'opengl32.dll' name 'glBindFragDataLocationIndexed';
     
-    static procedure BindFragDataLocation(&program: ProgramName; color: UInt32; [MarshalAs(UnmanagedType.LPStr)] name: string);
+    static procedure BindFragDataLocation(&program: ProgramName; colorNumber: UInt32; [MarshalAs(UnmanagedType.LPStr)] name: string);
     external 'opengl32.dll' name 'glBindFragDataLocation';
-    static procedure BindFragDataLocation(&program: ProgramName; color: UInt32; name: IntPtr);
+    static procedure BindFragDataLocation(&program: ProgramName; colorNumber: UInt32; name: IntPtr);
     external 'opengl32.dll' name 'glBindFragDataLocation';
     
     static function GetFragDataLocation(&program: ProgramName; [MarshalAs(UnmanagedType.LPStr)] name: string): Int32;
@@ -14432,7 +15047,7 @@ type
     static procedure ClearDepth(depth: double);
     external 'opengl32.dll' name 'glClearDepth';
     
-    static procedure ClearDepthf(d: single);
+    static procedure ClearDepthf(depth: single);
     external 'opengl32.dll' name 'glClearDepthf';
     
     static procedure ClearStencil(s: Int32);
@@ -14440,6 +15055,10 @@ type
     
     // 17.4.3.1
     
+    static procedure ClearBufferiv(buffer: FramebufferAttachmentPoint; drawbuffer: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of Vec4i);
+    external 'opengl32.dll' name 'glClearBufferiv';
+    static procedure ClearBufferiv(buffer: FramebufferAttachmentPoint; drawbuffer: Int32; var value: Vec4i);
+    external 'opengl32.dll' name 'glClearBufferiv';
     static procedure ClearBufferiv(buffer: FramebufferAttachmentPoint; drawbuffer: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of Int32);
     external 'opengl32.dll' name 'glClearBufferiv';
     static procedure ClearBufferiv(buffer: FramebufferAttachmentPoint; drawbuffer: Int32; var value: Int32);
@@ -14447,6 +15066,10 @@ type
     static procedure ClearBufferiv(buffer: FramebufferAttachmentPoint; drawbuffer: Int32; value: pointer);
     external 'opengl32.dll' name 'glClearBufferiv';
     
+    static procedure ClearBufferfv(buffer: FramebufferAttachmentPoint; drawbuffer: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of Vec4f);
+    external 'opengl32.dll' name 'glClearBufferfv';
+    static procedure ClearBufferfv(buffer: FramebufferAttachmentPoint; drawbuffer: Int32; var value: Vec4f);
+    external 'opengl32.dll' name 'glClearBufferfv';
     static procedure ClearBufferfv(buffer: FramebufferAttachmentPoint; drawbuffer: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
     external 'opengl32.dll' name 'glClearBufferfv';
     static procedure ClearBufferfv(buffer: FramebufferAttachmentPoint; drawbuffer: Int32; var value: single);
@@ -14454,6 +15077,10 @@ type
     static procedure ClearBufferfv(buffer: FramebufferAttachmentPoint; drawbuffer: Int32; value: pointer);
     external 'opengl32.dll' name 'glClearBufferfv';
     
+    static procedure ClearBufferuiv(buffer: FramebufferAttachmentPoint; drawbuffer: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of Vec4ui);
+    external 'opengl32.dll' name 'glClearBufferuiv';
+    static procedure ClearBufferuiv(buffer: FramebufferAttachmentPoint; drawbuffer: Int32; var value: Vec4ui);
+    external 'opengl32.dll' name 'glClearBufferuiv';
     static procedure ClearBufferuiv(buffer: FramebufferAttachmentPoint; drawbuffer: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of UInt32);
     external 'opengl32.dll' name 'glClearBufferuiv';
     static procedure ClearBufferuiv(buffer: FramebufferAttachmentPoint; drawbuffer: Int32; var value: UInt32);
@@ -14461,6 +15088,10 @@ type
     static procedure ClearBufferuiv(buffer: FramebufferAttachmentPoint; drawbuffer: Int32; value: pointer);
     external 'opengl32.dll' name 'glClearBufferuiv';
     
+    static procedure ClearNamedFramebufferiv(framebuffer: FramebufferName; buffer: FramebufferAttachmentPoint; drawbuffer: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of Vec4i);
+    external 'opengl32.dll' name 'glClearNamedFramebufferiv';
+    static procedure ClearNamedFramebufferiv(framebuffer: FramebufferName; buffer: FramebufferAttachmentPoint; drawbuffer: Int32; var value: Vec4i);
+    external 'opengl32.dll' name 'glClearNamedFramebufferiv';
     static procedure ClearNamedFramebufferiv(framebuffer: FramebufferName; buffer: FramebufferAttachmentPoint; drawbuffer: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of Int32);
     external 'opengl32.dll' name 'glClearNamedFramebufferiv';
     static procedure ClearNamedFramebufferiv(framebuffer: FramebufferName; buffer: FramebufferAttachmentPoint; drawbuffer: Int32; var value: Int32);
@@ -14468,6 +15099,10 @@ type
     static procedure ClearNamedFramebufferiv(framebuffer: FramebufferName; buffer: FramebufferAttachmentPoint; drawbuffer: Int32; value: pointer);
     external 'opengl32.dll' name 'glClearNamedFramebufferiv';
     
+    static procedure ClearNamedFramebufferfv(framebuffer: FramebufferName; buffer: FramebufferAttachmentPoint; drawbuffer: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of Vec4f);
+    external 'opengl32.dll' name 'glClearNamedFramebufferfv';
+    static procedure ClearNamedFramebufferfv(framebuffer: FramebufferName; buffer: FramebufferAttachmentPoint; drawbuffer: Int32; var value: Vec4f);
+    external 'opengl32.dll' name 'glClearNamedFramebufferfv';
     static procedure ClearNamedFramebufferfv(framebuffer: FramebufferName; buffer: FramebufferAttachmentPoint; drawbuffer: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of single);
     external 'opengl32.dll' name 'glClearNamedFramebufferfv';
     static procedure ClearNamedFramebufferfv(framebuffer: FramebufferName; buffer: FramebufferAttachmentPoint; drawbuffer: Int32; var value: single);
@@ -14475,6 +15110,10 @@ type
     static procedure ClearNamedFramebufferfv(framebuffer: FramebufferName; buffer: FramebufferAttachmentPoint; drawbuffer: Int32; value: pointer);
     external 'opengl32.dll' name 'glClearNamedFramebufferfv';
     
+    static procedure ClearNamedFramebufferuiv(framebuffer: FramebufferName; buffer: FramebufferAttachmentPoint; drawbuffer: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of Vec4ui);
+    external 'opengl32.dll' name 'glClearNamedFramebufferuiv';
+    static procedure ClearNamedFramebufferuiv(framebuffer: FramebufferName; buffer: FramebufferAttachmentPoint; drawbuffer: Int32; var value: Vec4ui);
+    external 'opengl32.dll' name 'glClearNamedFramebufferuiv';
     static procedure ClearNamedFramebufferuiv(framebuffer: FramebufferName; buffer: FramebufferAttachmentPoint; drawbuffer: Int32; [MarshalAs(UnmanagedType.LPArray)] value: array of UInt32);
     external 'opengl32.dll' name 'glClearNamedFramebufferuiv';
     static procedure ClearNamedFramebufferuiv(framebuffer: FramebufferName; buffer: FramebufferAttachmentPoint; drawbuffer: Int32; var value: UInt32);
@@ -14804,9 +15443,19 @@ type
     
     {$region 22.3 - Internal Format Queries}
     
+    static procedure GetInternalformativ(target: TextureBindTarget; internalformat: InternalDataFormat; pname: InternalFormatInfoType; bufSize: Int32; var &params: Int32);
+    external 'opengl32.dll' name 'glGetInternalformativ';
     static procedure GetInternalformativ(target: TextureBindTarget; internalformat: InternalDataFormat; pname: InternalFormatInfoType; bufSize: Int32; [MarshalAs(UnmanagedType.LPArray)] &params: array of Int32);
     external 'opengl32.dll' name 'glGetInternalformativ';
-    static procedure GetInternalformativ(target: TextureBindTarget; internalformat: InternalDataFormat; pname: InternalFormatInfoType; bufSize: Int32; var &params: Int32);
+    static procedure GetInternalformativ(target: TextureBindTarget; internalformat: InternalDataFormat; pname: InternalFormatInfoType; bufSize: Int32; var &params: SupportLevel);
+    external 'opengl32.dll' name 'glGetInternalformativ';
+    static procedure GetInternalformativ(target: TextureBindTarget; internalformat: InternalDataFormat; pname: InternalFormatInfoType; bufSize: Int32; var &params: DataFormat);
+    external 'opengl32.dll' name 'glGetInternalformativ';
+    static procedure GetInternalformativ(target: TextureBindTarget; internalformat: InternalDataFormat; pname: InternalFormatInfoType; bufSize: Int32; var &params: DataType);
+    external 'opengl32.dll' name 'glGetInternalformativ';
+    static procedure GetInternalformativ(target: TextureBindTarget; internalformat: InternalDataFormat; pname: InternalFormatInfoType; bufSize: Int32; var &params: CompatibilityImageClassType);
+    external 'opengl32.dll' name 'glGetInternalformativ';
+    static procedure GetInternalformativ(target: TextureBindTarget; internalformat: InternalDataFormat; pname: InternalFormatInfoType; bufSize: Int32; var &params: ImageFormatCompatibilityMode);
     external 'opengl32.dll' name 'glGetInternalformativ';
     static procedure GetInternalformativ(target: TextureBindTarget; internalformat: InternalDataFormat; pname: InternalFormatInfoType; bufSize: Int32; &params: pointer);
     external 'opengl32.dll' name 'glGetInternalformativ';
@@ -14822,22 +15471,20 @@ type
     
     {$region 22.4 - Transform Feedback State Queries}
     
-    static procedure GetTransformFeedbackiv(xfb: TransformFeedbackName; pname: TransformFeedbackInfoType; [MarshalAs(UnmanagedType.LPArray)] param: array of Int32);
+    static procedure GetTransformFeedbackiv(xfb: TransformFeedbackName; pname: TransformFeedbackInfoType; var param: BufferName);
     external 'opengl32.dll' name 'glGetTransformFeedbackiv';
     static procedure GetTransformFeedbackiv(xfb: TransformFeedbackName; pname: TransformFeedbackInfoType; var param: Int32);
     external 'opengl32.dll' name 'glGetTransformFeedbackiv';
     static procedure GetTransformFeedbackiv(xfb: TransformFeedbackName; pname: TransformFeedbackInfoType; param: pointer);
     external 'opengl32.dll' name 'glGetTransformFeedbackiv';
     
-    static procedure GetTransformFeedbacki_v(xfb: TransformFeedbackName; pname: TransformFeedbackInfoType; index: UInt32; [MarshalAs(UnmanagedType.LPArray)] param: array of Int32);
+    static procedure GetTransformFeedbacki_v(xfb: TransformFeedbackName; pname: TransformFeedbackInfoType; index: UInt32; var param: BufferName);
     external 'opengl32.dll' name 'glGetTransformFeedbacki_v';
     static procedure GetTransformFeedbacki_v(xfb: TransformFeedbackName; pname: TransformFeedbackInfoType; index: UInt32; var param: Int32);
     external 'opengl32.dll' name 'glGetTransformFeedbacki_v';
     static procedure GetTransformFeedbacki_v(xfb: TransformFeedbackName; pname: TransformFeedbackInfoType; index: UInt32; param: pointer);
     external 'opengl32.dll' name 'glGetTransformFeedbacki_v';
     
-    static procedure GetTransformFeedbacki64_v(xfb: TransformFeedbackName; pname: TransformFeedbackInfoType; index: UInt32; [MarshalAs(UnmanagedType.LPArray)] param: array of Int64);
-    external 'opengl32.dll' name 'glGetTransformFeedbacki64_v';
     static procedure GetTransformFeedbacki64_v(xfb: TransformFeedbackName; pname: TransformFeedbackInfoType; index: UInt32; var param: Int64);
     external 'opengl32.dll' name 'glGetTransformFeedbacki64_v';
     static procedure GetTransformFeedbacki64_v(xfb: TransformFeedbackName; pname: TransformFeedbackInfoType; index: UInt32; param: pointer);
