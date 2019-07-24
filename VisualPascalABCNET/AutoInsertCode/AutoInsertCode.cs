@@ -70,7 +70,7 @@ namespace VisualPascalABC
                     int start1 = TextUtilities.FindPrevWordStart(editor.Document, caret1.Offset);
                     var Text1 = editor.Document.GetText(start1, caret1.Offset - start1).TrimEnd();
 
-                    if (Text1.ToLower().StartsWith("for"))
+                    if (Text1.ToLower().StartsWith("for") || Text1.ToLower().StartsWith("foreach"))
                     {
                         doc.Insert(CurrentOffset(), " var");
                         ta.Caret.Column = ta.Caret.Column + 5;
@@ -82,20 +82,6 @@ namespace VisualPascalABC
                     var tl_beg = new TextLocation(ta.Caret.Column, ta.Caret.Line);
                     int offset = doc.PositionToOffset(tl_beg);
                     doc.Insert(offset, ")");
-                    return false;
-                }
-                if (ch == '[')
-                {
-                    var tl_beg = new TextLocation(ta.Caret.Column, ta.Caret.Line);
-                    int offset = doc.PositionToOffset(tl_beg);
-                    doc.Insert(offset, "]");
-                    return false;
-                }
-                if (ch == '{')
-                {
-                    var tl_beg = new TextLocation(ta.Caret.Column, ta.Caret.Line);
-                    int offset = doc.PositionToOffset(tl_beg);
-                    doc.Insert(offset, "}");
                     return false;
                 }*/
                 if (ch != '\n')
@@ -186,7 +172,9 @@ namespace VisualPascalABC
                     var curline = doc.GetText(seg);
                     if (curline.Contains(":="))
                     {
-                        var curlinenew = Regex.Replace(curline, @"(\s*)(\S+)(\s*):=(\s*)(.+)(;?)(\s*)", @"$1$2 := $5;");
+                        var curlinenew = Regex.Replace(curline, @"(\s*)(\S+)(\s*):=(\s*)([^;]+)(;?)(\s*)", @"$1$2 := $5;");
+                        //if (curlinenew.EndsWith(";;"))
+                        //    curlinenew = curlinenew.Remove(curlinenew.Length - 1);
                         doc.Replace(seg.Offset, curline.Length, curlinenew);
                         ta.Caret.Column = curlinenew.Length;
                         return false;
