@@ -179,7 +179,6 @@ namespace VisualPascalABC
                         ta.Caret.Column = curlinenew.Length;
                         return false;
                     }
-                }
 
                 return false;
             }

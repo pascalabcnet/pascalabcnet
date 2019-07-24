@@ -1228,8 +1228,8 @@ function ExpandFileName(fname: string): string;
 // -----------------------------------------------------
 //>>     Математические подпрограммы # Math subroutines
 // -----------------------------------------------------
-///-function Sign(x: число): число;
-/// Возвращает знак числа x
+///-function Sign(x: число): integer;
+/// Возвращает -1, 0 или +1 в зависимости от знака числа x
 function Sign(x: shortint): integer;
 ///--
 function Sign(x: smallint): integer;
