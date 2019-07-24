@@ -49,7 +49,6 @@ end;
 
 [if]
 if | then
-  
 
 [ifb]
 if | then
@@ -74,7 +73,7 @@ case | of
 end;
 
 [class]
-| = class
+type | = class
   
 end;
 
@@ -89,8 +88,8 @@ end;
 
 [r]
 repeat
-  
-until |;
+  |
+until ;
 
 [p]
 Print(|);
@@ -125,6 +124,7 @@ try
   |
 except
   on e: Exception do
+    
 end;
 
 [tryf]
