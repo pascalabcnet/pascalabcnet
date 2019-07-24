@@ -74,3 +74,4 @@ RESULT_IDENT_NOT_EXPECTED_IN_THIS_CONTEXT=Result identifier is not allowed in th
 NESTED_RECORD_DEFINITIONS_ARE_ARE_FORBIDDEN=Nested record definitions are forbidden
 NIL_IN_UNNAMED_OBJECT=Anonymous class field cannot be initialized by nil constant
 YIELD_STATEMENT_CANNOT_BE_USED_IN_LAMBDA_BODY=yield statement cannot be used in lambda body
+SEMICOLON_BEFORE_ELSE=You cannot put semicolon before 'else'

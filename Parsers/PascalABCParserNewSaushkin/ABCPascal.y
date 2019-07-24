@@ -2776,6 +2776,10 @@ if_stmt
         {
 			$$ = new if_node($2, $4 as statement, $6 as statement, @$); 
         }
+	| tkIf expr_l1 tkThen unlabelled_stmt tkSemiColon tkElse unlabelled_stmt
+        {
+			parsertools.AddErrorFromResource("SEMICOLON_BEFORE_ELSE",@5); 
+        }
     ;
 
 match_with
