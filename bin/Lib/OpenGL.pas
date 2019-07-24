@@ -2250,9 +2250,18 @@ type
     
     public function SqrLength_d: double := real(val0)*val0;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec1b;
     begin
-      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -2291,9 +2300,18 @@ type
     
     public function SqrLength_d: double := real(val0)*val0;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec1ub;
     begin
-      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -2336,9 +2354,18 @@ type
     
     public function SqrLength_d: double := real(val0)*val0;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec1s;
     begin
-      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -2383,9 +2410,18 @@ type
     
     public function SqrLength_d: double := real(val0)*val0;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec1us;
     begin
-      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -2434,9 +2470,18 @@ type
     
     public function SqrLength_d: double := real(val0)*val0;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec1i;
     begin
-      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -2487,9 +2532,18 @@ type
     
     public function SqrLength_d: double := real(val0)*val0;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec1ui;
     begin
-      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -2544,9 +2598,18 @@ type
     
     public function SqrLength_d: double := real(val0)*val0;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec1i64;
     begin
-      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -2603,9 +2666,18 @@ type
     
     public function SqrLength_d: double := real(val0)*val0;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec1ui64;
     begin
-      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -2669,9 +2741,18 @@ type
     
     public function Normalized := self / single(Sqrt(self.SqrLength_d));
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec1f;
     begin
-      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -2736,9 +2817,18 @@ type
     
     public function Normalized := self / Sqrt(self.SqrLength);
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec1d;
     begin
-      writeln( '[ ', val0.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -2810,9 +2900,20 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec2b;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -2883,9 +2984,20 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec2ub;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -2960,9 +3072,20 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec2s;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -3039,9 +3162,20 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec2us;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -3122,9 +3256,20 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec2i;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -3207,9 +3352,20 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec2ui;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -3296,9 +3452,20 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec2i64;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -3387,9 +3554,20 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec2ui64;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -3485,9 +3663,20 @@ type
     
     public function Normalized := self / single(Sqrt(self.SqrLength_d));
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec2f;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -3584,9 +3773,20 @@ type
     
     public function Normalized := self / Sqrt(self.SqrLength);
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec2d;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -3690,9 +3890,22 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ', ';
+      res += val2.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec3b;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -3795,9 +4008,22 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ', ';
+      res += val2.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec3ub;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -3904,9 +4130,22 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ', ';
+      res += val2.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec3s;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -4015,9 +4254,22 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ', ';
+      res += val2.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec3us;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -4130,9 +4382,22 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ', ';
+      res += val2.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec3i;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -4247,9 +4512,22 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ', ';
+      res += val2.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec3ui;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -4368,9 +4646,22 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ', ';
+      res += val2.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec3i64;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -4491,9 +4782,22 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ', ';
+      res += val2.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec3ui64;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -4621,9 +4925,22 @@ type
     
     public function Normalized := self / single(Sqrt(self.SqrLength_d));
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ', ';
+      res += val2.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec3f;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -4752,9 +5069,22 @@ type
     
     public function Normalized := self / Sqrt(self.SqrLength);
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ', ';
+      res += val2.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec3d;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -4890,9 +5220,24 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2 + real(val3)*val3;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ', ';
+      res += val2.ToString('f2');
+      res += ', ';
+      res += val3.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec4b;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -5027,9 +5372,24 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2 + real(val3)*val3;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ', ';
+      res += val2.ToString('f2');
+      res += ', ';
+      res += val3.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec4ub;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -5168,9 +5528,24 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2 + real(val3)*val3;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ', ';
+      res += val2.ToString('f2');
+      res += ', ';
+      res += val3.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec4s;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -5311,9 +5686,24 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2 + real(val3)*val3;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ', ';
+      res += val2.ToString('f2');
+      res += ', ';
+      res += val3.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec4us;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -5458,9 +5848,24 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2 + real(val3)*val3;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ', ';
+      res += val2.ToString('f2');
+      res += ', ';
+      res += val3.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec4i;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -5607,9 +6012,24 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2 + real(val3)*val3;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ', ';
+      res += val2.ToString('f2');
+      res += ', ';
+      res += val3.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec4ui;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -5760,9 +6180,24 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2 + real(val3)*val3;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ', ';
+      res += val2.ToString('f2');
+      res += ', ';
+      res += val3.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec4i64;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -5915,9 +6350,24 @@ type
     
     public function SqrLength_d: double := real(val0)*val0 + real(val1)*val1 + real(val2)*val2 + real(val3)*val3;
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ', ';
+      res += val2.ToString('f2');
+      res += ', ';
+      res += val3.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec4ui64;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -6077,9 +6527,24 @@ type
     
     public function Normalized := self / single(Sqrt(self.SqrLength_d));
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ', ';
+      res += val2.ToString('f2');
+      res += ', ';
+      res += val3.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec4f;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -6240,9 +6705,24 @@ type
     
     public function Normalized := self / Sqrt(self.SqrLength);
     
+    public function ToString: string; override;
+    begin
+      var res := new StringBuilder;
+      res += '[ ';
+      res += val0.ToString('f2');
+      res += ', ';
+      res += val1.ToString('f2');
+      res += ', ';
+      res += val2.ToString('f2');
+      res += ', ';
+      res += val3.ToString('f2');
+      res += ' ]';
+      Result := res.ToString;
+    end;
+    
     public function Println: Vec4d;
     begin
-      writeln( '[ ', val0.ToString('f2'), ', ', val1.ToString('f2'), ', ', val2.ToString('f2'), ', ', val3.ToString('f2'), ' ]' );
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -6330,8 +6810,10 @@ type
       );
     end;
     
-    public function Println: Mtr2x2f;
+    public function ToString: string; override;
     begin
+      var res := new StringBuilder;
+      
       var ElStrs := new string[2,2];
       for var y := 0 to 2-1 do
         for var x := 0 to 2-1 do
@@ -6339,11 +6821,29 @@ type
       var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
       var PrintlnMtrW := MtrElTextW*2 + 4; // +2*(Width-1) + 2;
       
-      writeln( '┌' + #32*PrintlnMtrW + '┐' );
-      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ' │' );
-      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      res += '┌';
+      res.Append(#32, PrintlnMtrW);
+      res += '┐'#10;
+      res += '│ ';
+      res += ElStrs[0,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,1].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[1,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,1].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '└';
+      res.Append(#32, PrintlnMtrW);
+      res += '┘';
       
+      Result := res.ToString;
+    end;
+    
+    public function Println: Mtr2x2f;
+    begin
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -6518,8 +7018,10 @@ type
       
     end;
     
-    public function Println: Mtr3x3f;
+    public function ToString: string; override;
     begin
+      var res := new StringBuilder;
+      
       var ElStrs := new string[3,3];
       for var y := 0 to 3-1 do
         for var x := 0 to 3-1 do
@@ -6527,12 +7029,40 @@ type
       var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
       var PrintlnMtrW := MtrElTextW*3 + 6; // +2*(Width-1) + 2;
       
-      writeln( '┌' + #32*PrintlnMtrW + '┐' );
-      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ', ', ElStrs[2,2].PadLeft(MtrElTextW), ' │' );
-      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      res += '┌';
+      res.Append(#32, PrintlnMtrW);
+      res += '┐'#10;
+      res += '│ ';
+      res += ElStrs[0,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,2].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[1,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,2].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[2,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,2].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '└';
+      res.Append(#32, PrintlnMtrW);
+      res += '┘';
       
+      Result := res.ToString;
+    end;
+    
+    public function Println: Mtr3x3f;
+    begin
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -6731,8 +7261,10 @@ type
       Result.val33 := 1;
     end;
     
-    public function Println: Mtr4x4f;
+    public function ToString: string; override;
     begin
+      var res := new StringBuilder;
+      
       var ElStrs := new string[4,4];
       for var y := 0 to 4-1 do
         for var x := 0 to 4-1 do
@@ -6740,13 +7272,55 @@ type
       var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
       var PrintlnMtrW := MtrElTextW*4 + 8; // +2*(Width-1) + 2;
       
-      writeln( '┌' + #32*PrintlnMtrW + '┐' );
-      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ', ', ElStrs[0,3].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ', ', ElStrs[1,3].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ', ', ElStrs[2,2].PadLeft(MtrElTextW), ', ', ElStrs[2,3].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[3,0].PadLeft(MtrElTextW), ', ', ElStrs[3,1].PadLeft(MtrElTextW), ', ', ElStrs[3,2].PadLeft(MtrElTextW), ', ', ElStrs[3,3].PadLeft(MtrElTextW), ' │' );
-      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      res += '┌';
+      res.Append(#32, PrintlnMtrW);
+      res += '┐'#10;
+      res += '│ ';
+      res += ElStrs[0,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,2].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,3].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[1,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,2].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,3].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[2,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,2].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,3].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[3,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[3,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[3,2].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[3,3].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '└';
+      res.Append(#32, PrintlnMtrW);
+      res += '┘';
       
+      Result := res.ToString;
+    end;
+    
+    public function Println: Mtr4x4f;
+    begin
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -6843,8 +7417,10 @@ type
       );
     end;
     
-    public function Println: Mtr2x3f;
+    public function ToString: string; override;
     begin
+      var res := new StringBuilder;
+      
       var ElStrs := new string[2,3];
       for var y := 0 to 2-1 do
         for var x := 0 to 3-1 do
@@ -6852,11 +7428,33 @@ type
       var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
       var PrintlnMtrW := MtrElTextW*3 + 6; // +2*(Width-1) + 2;
       
-      writeln( '┌' + #32*PrintlnMtrW + '┐' );
-      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ' │' );
-      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      res += '┌';
+      res.Append(#32, PrintlnMtrW);
+      res += '┐'#10;
+      res += '│ ';
+      res += ElStrs[0,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,2].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[1,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,2].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '└';
+      res.Append(#32, PrintlnMtrW);
+      res += '┘';
       
+      Result := res.ToString;
+    end;
+    
+    public function Println: Mtr2x3f;
+    begin
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -6957,8 +7555,10 @@ type
       );
     end;
     
-    public function Println: Mtr3x2f;
+    public function ToString: string; override;
     begin
+      var res := new StringBuilder;
+      
       var ElStrs := new string[3,2];
       for var y := 0 to 3-1 do
         for var x := 0 to 2-1 do
@@ -6966,12 +7566,34 @@ type
       var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
       var PrintlnMtrW := MtrElTextW*2 + 4; // +2*(Width-1) + 2;
       
-      writeln( '┌' + #32*PrintlnMtrW + '┐' );
-      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ' │' );
-      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      res += '┌';
+      res.Append(#32, PrintlnMtrW);
+      res += '┐'#10;
+      res += '│ ';
+      res += ElStrs[0,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,1].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[1,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,1].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[2,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,1].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '└';
+      res.Append(#32, PrintlnMtrW);
+      res += '┘';
       
+      Result := res.ToString;
+    end;
+    
+    public function Println: Mtr3x2f;
+    begin
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -7078,8 +7700,10 @@ type
       );
     end;
     
-    public function Println: Mtr2x4f;
+    public function ToString: string; override;
     begin
+      var res := new StringBuilder;
+      
       var ElStrs := new string[2,4];
       for var y := 0 to 2-1 do
         for var x := 0 to 4-1 do
@@ -7087,11 +7711,37 @@ type
       var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
       var PrintlnMtrW := MtrElTextW*4 + 8; // +2*(Width-1) + 2;
       
-      writeln( '┌' + #32*PrintlnMtrW + '┐' );
-      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ', ', ElStrs[0,3].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ', ', ElStrs[1,3].PadLeft(MtrElTextW), ' │' );
-      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      res += '┌';
+      res.Append(#32, PrintlnMtrW);
+      res += '┐'#10;
+      res += '│ ';
+      res += ElStrs[0,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,2].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,3].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[1,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,2].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,3].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '└';
+      res.Append(#32, PrintlnMtrW);
+      res += '┘';
       
+      Result := res.ToString;
+    end;
+    
+    public function Println: Mtr2x4f;
+    begin
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -7205,8 +7855,10 @@ type
       );
     end;
     
-    public function Println: Mtr4x2f;
+    public function ToString: string; override;
     begin
+      var res := new StringBuilder;
+      
       var ElStrs := new string[4,2];
       for var y := 0 to 4-1 do
         for var x := 0 to 2-1 do
@@ -7214,13 +7866,39 @@ type
       var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
       var PrintlnMtrW := MtrElTextW*2 + 4; // +2*(Width-1) + 2;
       
-      writeln( '┌' + #32*PrintlnMtrW + '┐' );
-      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[3,0].PadLeft(MtrElTextW), ', ', ElStrs[3,1].PadLeft(MtrElTextW), ' │' );
-      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      res += '┌';
+      res.Append(#32, PrintlnMtrW);
+      res += '┐'#10;
+      res += '│ ';
+      res += ElStrs[0,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,1].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[1,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,1].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[2,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,1].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[3,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[3,1].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '└';
+      res.Append(#32, PrintlnMtrW);
+      res += '┘';
       
+      Result := res.ToString;
+    end;
+    
+    public function Println: Mtr4x2f;
+    begin
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -7418,8 +8096,10 @@ type
       
     end;
     
-    public function Println: Mtr3x4f;
+    public function ToString: string; override;
     begin
+      var res := new StringBuilder;
+      
       var ElStrs := new string[3,4];
       for var y := 0 to 3-1 do
         for var x := 0 to 4-1 do
@@ -7427,12 +8107,46 @@ type
       var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
       var PrintlnMtrW := MtrElTextW*4 + 8; // +2*(Width-1) + 2;
       
-      writeln( '┌' + #32*PrintlnMtrW + '┐' );
-      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ', ', ElStrs[0,3].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ', ', ElStrs[1,3].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ', ', ElStrs[2,2].PadLeft(MtrElTextW), ', ', ElStrs[2,3].PadLeft(MtrElTextW), ' │' );
-      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      res += '┌';
+      res.Append(#32, PrintlnMtrW);
+      res += '┐'#10;
+      res += '│ ';
+      res += ElStrs[0,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,2].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,3].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[1,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,2].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,3].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[2,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,2].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,3].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '└';
+      res.Append(#32, PrintlnMtrW);
+      res += '┘';
       
+      Result := res.ToString;
+    end;
+    
+    public function Println: Mtr3x4f;
+    begin
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -7639,8 +8353,10 @@ type
       
     end;
     
-    public function Println: Mtr4x3f;
+    public function ToString: string; override;
     begin
+      var res := new StringBuilder;
+      
       var ElStrs := new string[4,3];
       for var y := 0 to 4-1 do
         for var x := 0 to 3-1 do
@@ -7648,13 +8364,47 @@ type
       var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
       var PrintlnMtrW := MtrElTextW*3 + 6; // +2*(Width-1) + 2;
       
-      writeln( '┌' + #32*PrintlnMtrW + '┐' );
-      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ', ', ElStrs[2,2].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[3,0].PadLeft(MtrElTextW), ', ', ElStrs[3,1].PadLeft(MtrElTextW), ', ', ElStrs[3,2].PadLeft(MtrElTextW), ' │' );
-      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      res += '┌';
+      res.Append(#32, PrintlnMtrW);
+      res += '┐'#10;
+      res += '│ ';
+      res += ElStrs[0,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,2].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[1,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,2].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[2,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,2].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[3,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[3,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[3,2].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '└';
+      res.Append(#32, PrintlnMtrW);
+      res += '┘';
       
+      Result := res.ToString;
+    end;
+    
+    public function Println: Mtr4x3f;
+    begin
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -7763,8 +8513,10 @@ type
       );
     end;
     
-    public function Println: Mtr2x2d;
+    public function ToString: string; override;
     begin
+      var res := new StringBuilder;
+      
       var ElStrs := new string[2,2];
       for var y := 0 to 2-1 do
         for var x := 0 to 2-1 do
@@ -7772,11 +8524,29 @@ type
       var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
       var PrintlnMtrW := MtrElTextW*2 + 4; // +2*(Width-1) + 2;
       
-      writeln( '┌' + #32*PrintlnMtrW + '┐' );
-      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ' │' );
-      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      res += '┌';
+      res.Append(#32, PrintlnMtrW);
+      res += '┐'#10;
+      res += '│ ';
+      res += ElStrs[0,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,1].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[1,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,1].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '└';
+      res.Append(#32, PrintlnMtrW);
+      res += '┘';
       
+      Result := res.ToString;
+    end;
+    
+    public function Println: Mtr2x2d;
+    begin
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -7978,8 +8748,10 @@ type
       
     end;
     
-    public function Println: Mtr3x3d;
+    public function ToString: string; override;
     begin
+      var res := new StringBuilder;
+      
       var ElStrs := new string[3,3];
       for var y := 0 to 3-1 do
         for var x := 0 to 3-1 do
@@ -7987,12 +8759,40 @@ type
       var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
       var PrintlnMtrW := MtrElTextW*3 + 6; // +2*(Width-1) + 2;
       
-      writeln( '┌' + #32*PrintlnMtrW + '┐' );
-      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ', ', ElStrs[2,2].PadLeft(MtrElTextW), ' │' );
-      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      res += '┌';
+      res.Append(#32, PrintlnMtrW);
+      res += '┐'#10;
+      res += '│ ';
+      res += ElStrs[0,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,2].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[1,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,2].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[2,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,2].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '└';
+      res.Append(#32, PrintlnMtrW);
+      res += '┘';
       
+      Result := res.ToString;
+    end;
+    
+    public function Println: Mtr3x3d;
+    begin
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -8218,8 +9018,10 @@ type
       Result.val33 := 1;
     end;
     
-    public function Println: Mtr4x4d;
+    public function ToString: string; override;
     begin
+      var res := new StringBuilder;
+      
       var ElStrs := new string[4,4];
       for var y := 0 to 4-1 do
         for var x := 0 to 4-1 do
@@ -8227,13 +9029,55 @@ type
       var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
       var PrintlnMtrW := MtrElTextW*4 + 8; // +2*(Width-1) + 2;
       
-      writeln( '┌' + #32*PrintlnMtrW + '┐' );
-      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ', ', ElStrs[0,3].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ', ', ElStrs[1,3].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ', ', ElStrs[2,2].PadLeft(MtrElTextW), ', ', ElStrs[2,3].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[3,0].PadLeft(MtrElTextW), ', ', ElStrs[3,1].PadLeft(MtrElTextW), ', ', ElStrs[3,2].PadLeft(MtrElTextW), ', ', ElStrs[3,3].PadLeft(MtrElTextW), ' │' );
-      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      res += '┌';
+      res.Append(#32, PrintlnMtrW);
+      res += '┐'#10;
+      res += '│ ';
+      res += ElStrs[0,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,2].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,3].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[1,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,2].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,3].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[2,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,2].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,3].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[3,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[3,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[3,2].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[3,3].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '└';
+      res.Append(#32, PrintlnMtrW);
+      res += '┘';
       
+      Result := res.ToString;
+    end;
+    
+    public function Println: Mtr4x4d;
+    begin
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -8357,8 +9201,10 @@ type
       );
     end;
     
-    public function Println: Mtr2x3d;
+    public function ToString: string; override;
     begin
+      var res := new StringBuilder;
+      
       var ElStrs := new string[2,3];
       for var y := 0 to 2-1 do
         for var x := 0 to 3-1 do
@@ -8366,11 +9212,33 @@ type
       var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
       var PrintlnMtrW := MtrElTextW*3 + 6; // +2*(Width-1) + 2;
       
-      writeln( '┌' + #32*PrintlnMtrW + '┐' );
-      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ' │' );
-      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      res += '┌';
+      res.Append(#32, PrintlnMtrW);
+      res += '┐'#10;
+      res += '│ ';
+      res += ElStrs[0,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,2].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[1,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,2].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '└';
+      res.Append(#32, PrintlnMtrW);
+      res += '┘';
       
+      Result := res.ToString;
+    end;
+    
+    public function Println: Mtr2x3d;
+    begin
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -8498,8 +9366,10 @@ type
       );
     end;
     
-    public function Println: Mtr3x2d;
+    public function ToString: string; override;
     begin
+      var res := new StringBuilder;
+      
       var ElStrs := new string[3,2];
       for var y := 0 to 3-1 do
         for var x := 0 to 2-1 do
@@ -8507,12 +9377,34 @@ type
       var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
       var PrintlnMtrW := MtrElTextW*2 + 4; // +2*(Width-1) + 2;
       
-      writeln( '┌' + #32*PrintlnMtrW + '┐' );
-      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ' │' );
-      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      res += '┌';
+      res.Append(#32, PrintlnMtrW);
+      res += '┐'#10;
+      res += '│ ';
+      res += ElStrs[0,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,1].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[1,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,1].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[2,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,1].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '└';
+      res.Append(#32, PrintlnMtrW);
+      res += '┘';
       
+      Result := res.ToString;
+    end;
+    
+    public function Println: Mtr3x2d;
+    begin
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -8646,8 +9538,10 @@ type
       );
     end;
     
-    public function Println: Mtr2x4d;
+    public function ToString: string; override;
     begin
+      var res := new StringBuilder;
+      
       var ElStrs := new string[2,4];
       for var y := 0 to 2-1 do
         for var x := 0 to 4-1 do
@@ -8655,11 +9549,37 @@ type
       var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
       var PrintlnMtrW := MtrElTextW*4 + 8; // +2*(Width-1) + 2;
       
-      writeln( '┌' + #32*PrintlnMtrW + '┐' );
-      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ', ', ElStrs[0,3].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ', ', ElStrs[1,3].PadLeft(MtrElTextW), ' │' );
-      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      res += '┌';
+      res.Append(#32, PrintlnMtrW);
+      res += '┐'#10;
+      res += '│ ';
+      res += ElStrs[0,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,2].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,3].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[1,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,2].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,3].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '└';
+      res.Append(#32, PrintlnMtrW);
+      res += '┘';
       
+      Result := res.ToString;
+    end;
+    
+    public function Println: Mtr2x4d;
+    begin
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -8800,8 +9720,10 @@ type
       );
     end;
     
-    public function Println: Mtr4x2d;
+    public function ToString: string; override;
     begin
+      var res := new StringBuilder;
+      
       var ElStrs := new string[4,2];
       for var y := 0 to 4-1 do
         for var x := 0 to 2-1 do
@@ -8809,13 +9731,39 @@ type
       var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
       var PrintlnMtrW := MtrElTextW*2 + 4; // +2*(Width-1) + 2;
       
-      writeln( '┌' + #32*PrintlnMtrW + '┐' );
-      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[3,0].PadLeft(MtrElTextW), ', ', ElStrs[3,1].PadLeft(MtrElTextW), ' │' );
-      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      res += '┌';
+      res.Append(#32, PrintlnMtrW);
+      res += '┐'#10;
+      res += '│ ';
+      res += ElStrs[0,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,1].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[1,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,1].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[2,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,1].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[3,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[3,1].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '└';
+      res.Append(#32, PrintlnMtrW);
+      res += '┘';
       
+      Result := res.ToString;
+    end;
+    
+    public function Println: Mtr4x2d;
+    begin
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -9040,8 +9988,10 @@ type
       
     end;
     
-    public function Println: Mtr3x4d;
+    public function ToString: string; override;
     begin
+      var res := new StringBuilder;
+      
       var ElStrs := new string[3,4];
       for var y := 0 to 3-1 do
         for var x := 0 to 4-1 do
@@ -9049,12 +9999,46 @@ type
       var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
       var PrintlnMtrW := MtrElTextW*4 + 8; // +2*(Width-1) + 2;
       
-      writeln( '┌' + #32*PrintlnMtrW + '┐' );
-      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ', ', ElStrs[0,3].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ', ', ElStrs[1,3].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ', ', ElStrs[2,2].PadLeft(MtrElTextW), ', ', ElStrs[2,3].PadLeft(MtrElTextW), ' │' );
-      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      res += '┌';
+      res.Append(#32, PrintlnMtrW);
+      res += '┐'#10;
+      res += '│ ';
+      res += ElStrs[0,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,2].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,3].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[1,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,2].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,3].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[2,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,2].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,3].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '└';
+      res.Append(#32, PrintlnMtrW);
+      res += '┘';
       
+      Result := res.ToString;
+    end;
+    
+    public function Println: Mtr3x4d;
+    begin
+      Writeln(self.ToString);
       Result := self;
     end;
     
@@ -9288,8 +10272,10 @@ type
       
     end;
     
-    public function Println: Mtr4x3d;
+    public function ToString: string; override;
     begin
+      var res := new StringBuilder;
+      
       var ElStrs := new string[4,3];
       for var y := 0 to 4-1 do
         for var x := 0 to 3-1 do
@@ -9297,13 +10283,47 @@ type
       var MtrElTextW := ElStrs.OfType&<string>.Max(s->s.Length);
       var PrintlnMtrW := MtrElTextW*3 + 6; // +2*(Width-1) + 2;
       
-      writeln( '┌' + #32*PrintlnMtrW + '┐' );
-      writeln( '│ ', ElStrs[0,0].PadLeft(MtrElTextW), ', ', ElStrs[0,1].PadLeft(MtrElTextW), ', ', ElStrs[0,2].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[1,0].PadLeft(MtrElTextW), ', ', ElStrs[1,1].PadLeft(MtrElTextW), ', ', ElStrs[1,2].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[2,0].PadLeft(MtrElTextW), ', ', ElStrs[2,1].PadLeft(MtrElTextW), ', ', ElStrs[2,2].PadLeft(MtrElTextW), ' │' );
-      writeln( '│ ', ElStrs[3,0].PadLeft(MtrElTextW), ', ', ElStrs[3,1].PadLeft(MtrElTextW), ', ', ElStrs[3,2].PadLeft(MtrElTextW), ' │' );
-      writeln( '└' + #32*PrintlnMtrW + '┘' );
+      res += '┌';
+      res.Append(#32, PrintlnMtrW);
+      res += '┐'#10;
+      res += '│ ';
+      res += ElStrs[0,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[0,2].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[1,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[1,2].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[2,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[2,2].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '│ ';
+      res += ElStrs[3,0].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[3,1].PadLeft(MtrElTextW);
+      res += ', ';
+      res += ElStrs[3,2].PadLeft(MtrElTextW);
+      res += ' │'#10;
+      res += '└';
+      res.Append(#32, PrintlnMtrW);
+      res += '┘';
       
+      Result := res.ToString;
+    end;
+    
+    public function Println: Mtr4x3d;
+    begin
+      Writeln(self.ToString);
       Result := self;
     end;
     
