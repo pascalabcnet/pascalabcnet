@@ -101,15 +101,15 @@ namespace VisualPascalABC
                         // Проанализируем предыдущий оператор по первому слову
                         var pst = prev?.TrimStart().ToLower();
                         if (pst != null)
-                        if (pst.StartsWith("if") || pst.StartsWith("for") || pst.StartsWith("loop") || pst.StartsWith("with") || pst.StartsWith("on") || pst.StartsWith("while") || pst.StartsWith("else") || pst.StartsWith("foreach")) // потом улучшу - для нескольких выборов
-                        {
-                            // Надо удалить в текущей строке пробелы чтобы выровнять begin по if
-                            var iprev = Indent(prev);
-                            var tl_beg = new TextLocation(ta.Caret.Column, ta.Caret.Line);
-                            int offset = doc.PositionToOffset(tl_beg);
-                            doc.Remove(offset - 7, 2);
-                            icur -= 2;
-                        }
+                            if (pst.StartsWith("if") || pst.StartsWith("for") || pst.StartsWith("loop") || pst.StartsWith("with") || pst.StartsWith("on") || pst.StartsWith("while") || pst.StartsWith("else") || pst.StartsWith("foreach")) // потом улучшу - для нескольких выборов
+                            {
+                                // Надо удалить в текущей строке пробелы чтобы выровнять begin по if
+                                var iprev = Indent(prev);
+                                var tl_beg = new TextLocation(ta.Caret.Column, ta.Caret.Line);
+                                int offset = doc.PositionToOffset(tl_beg);
+                                doc.Remove(offset - 7, 2);
+                                icur -= 2;
+                            }
                     }
 
                     ta.InsertString("\n" + Spaces(icur + 2));
@@ -165,21 +165,22 @@ namespace VisualPascalABC
                     ta.InsertString("\n" + Spaces(icur + 2));
                     return true;
                 }
-                
+
                 else
                 {
                     var seg = doc.GetLineSegment(ta.Caret.Line);
-                    var curline = doc.GetText(seg);
-                    if (curline.Contains(":="))
-                    {
-                        var curlinenew = Regex.Replace(curline, @"(\s*)(\S+)(\s*):=(\s*)([^;]+)(;?)(\s*)", @"$1$2 := $5;");
-                        //if (curlinenew.EndsWith(";;"))
-                        //    curlinenew = curlinenew.Remove(curlinenew.Length - 1);
-                        doc.Replace(seg.Offset, curline.Length, curlinenew);
-                        ta.Caret.Column = curlinenew.Length;
-                        return false;
-                    }
-
+                    var curline = doc.GetText(seg).TrimEnd();
+                    if (ta.Caret.Column >= curline.Length)
+                        if (curline.Contains(":="))
+                        {
+                            var curlinenew = Regex.Replace(curline, @"(\s*)(\S+)(\s*):=(\s*)([^;]+)(;?)", @"$1$2 := $5;");
+                            while (curlinenew.EndsWith(";;"))
+                                curlinenew = curlinenew.Remove(curlinenew.Length - 1);
+                            doc.Replace(seg.Offset, curline.Length, curlinenew);
+                            ta.Caret.Column = curlinenew.Length;
+                            return false;
+                        }
+                }
                 return false;
             }
             catch (Exception e)
