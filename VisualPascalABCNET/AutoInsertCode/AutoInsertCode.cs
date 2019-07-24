@@ -38,8 +38,19 @@ namespace VisualPascalABC
                 i++;
             } while (Next != null && Next.Trim() == "");
             Prev = null;
+            //if (ta.Caret.Line > 0)
+            //Prev = GetLine(ta.Caret.Line - 1);
             if (ta.Caret.Line > 0)
-                Prev = GetLine(ta.Caret.Line - 1);
+            {
+                var j = ta.Caret.Line;
+                do
+                {
+                    j--;
+                    Prev = GetLine(j);
+                } while (j > 0 && Prev.Trim() == "");
+                if (Prev.Trim() == "")
+                    Prev = null;
+            }
         }
 
         int Indent(string s)
@@ -118,7 +129,7 @@ namespace VisualPascalABC
                         var tl_beg = new TextLocation(ta.Caret.Column, ta.Caret.Line);
                         int offset = doc.PositionToOffset(tl_beg);
                         var send = "\n" + Spaces(icur) + "end";
-                        if (next == null)
+                        if (next == null && (prev == null || !(prev.TrimStart().ToLower().StartsWith("procedure") || prev.TrimStart().ToLower().StartsWith("function"))))
                             send += ".";
                         else send += ";";
                         doc.Insert(offset, send);
