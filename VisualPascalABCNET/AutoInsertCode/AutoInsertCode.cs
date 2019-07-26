@@ -83,8 +83,13 @@ namespace VisualPascalABC
 
                     if (Text1.ToLower().StartsWith("for") || Text1.ToLower().StartsWith("foreach"))
                     {
-                        doc.Insert(CurrentOffset(), " var");
-                        ta.Caret.Column = ta.Caret.Column + 5;
+                        var curline = TextUtilities.GetLineAsString(editor.Document, caret1.Line);
+                        var len = curline.TrimEnd().Length;
+                        if (ta.Caret.Column == len)
+                        {
+                            doc.Replace(CurrentOffset(), curline.Length - len, " var");
+                            ta.Caret.Column = ta.Caret.Column + 4;
+                        }
                     }
                     return false;
                 }
@@ -118,8 +123,13 @@ namespace VisualPascalABC
                                 var iprev = Indent(prev);
                                 var tl_beg = new TextLocation(ta.Caret.Column, ta.Caret.Line);
                                 int offset = doc.PositionToOffset(tl_beg);
-                                doc.Remove(offset - 7, 2);
-                                icur -= 2;
+
+                                var cls = doc.GetLineSegment(ta.Caret.Line);
+
+                                // надо удалить всю строчку с begin и сформировать новую
+                                doc.Replace(cls.Offset, cls.Length , Spaces(iprev)+"begin");
+                                ta.Caret.Column = iprev + 5;
+                                icur = iprev;
                             }
                     }
 
