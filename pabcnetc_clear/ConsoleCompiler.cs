@@ -169,7 +169,8 @@ namespace PascalABCCompiler
             if (FileName.ToLower().EndsWith(".pabcproj"))
                 co.ProjectCompiled = true;
             if (n1 == n - 1)
-                co.OutputDirectory = "";
+                //co.OutputDirectory = ""
+                ;
             else co.OutputDirectory = args[n - 1];
             co.Rebuild = false;
             co.Debug = false;

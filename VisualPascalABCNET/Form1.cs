@@ -1511,6 +1511,12 @@ namespace VisualPascalABC
             mAUTOINSERTToolStripMenuItem.Checked = !mAUTOINSERTToolStripMenuItem.Checked;
         }
 
+        private void mAUTOINSERTToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            tsAutoInsertCode.Checked = !tsAutoInsertCode.Checked;
+            mAUTOINSERTToolStripMenuItem.Checked = !mAUTOINSERTToolStripMenuItem.Checked;
+        }
+
         private void tsHelp_Click(object sender, EventArgs e)
         {
             __showhelpinqueue();
