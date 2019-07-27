@@ -9337,7 +9337,7 @@ namespace PascalABCCompiler.TreeConverter
             return bfc;
         }
 
-        private void try_convert_typed_expression_to_function_call(ref expression_node en)
+        public void try_convert_typed_expression_to_function_call(ref expression_node en)
         {
             if (en.semantic_node_type == semantic_node_type.typed_expression)
             {

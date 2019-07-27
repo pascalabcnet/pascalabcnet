@@ -1795,6 +1795,51 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
+        private void delete_functions_with_less_result_type(List<function_node> set_of_possible_functions)
+        {
+            function_node best_function = null;
+            List<function_node> to_remove = new List<function_node>();
+            foreach (function_node fn in set_of_possible_functions)
+            {
+                if (fn.return_value_type != null)
+                {
+                    if (best_function == null)
+                    {
+                        best_function = fn;
+                    }
+                    else
+                    {
+                        type_compare tc = type_table.compare_types(best_function.return_value_type, fn.return_value_type);
+                        if (best_function.return_value_type.is_standard_type && fn.return_value_type.is_standard_type)
+                        {
+                            if (tc == type_compare.less_type)
+                            {
+                                to_remove.Add(best_function);
+                                best_function = fn;
+                            }
+                            else if (tc == type_compare.greater_type)
+                                to_remove.Add(fn);
+                        }
+                        else
+                        {
+                            if (tc == type_compare.greater_type)
+                            {
+                                to_remove.Add(best_function);
+                                best_function = fn;
+                            }
+                            else if (tc == type_compare.less_type)
+                                to_remove.Add(fn);
+                        }
+                    }
+                }
+            }
+
+            foreach (function_node fn in to_remove)
+            {
+                set_of_possible_functions.Remove(fn);
+            }
+        }
+
 
         //Первый параметр - выходной. Он содержит выражения с необходимыми преобразованиями типов.
         public function_node select_function(expressions_list parameters, List<SymbolInfo> functions, location loc, List<SyntaxTree.expression> syntax_nodes_parameters = null, bool only_from_not_extensions = false)
@@ -2112,47 +2157,9 @@ namespace PascalABCCompiler.TreeConverter
                 return new indefinite_functions_set(indefinits);
             }
 
-            function_node best_function = null;
-            List<function_node> to_remove = new List<function_node>();
-            foreach (function_node fn in set_of_possible_functions)
-            {
-                if (fn.return_value_type != null)
-                {
-                    if (best_function == null)
-                    {
-                        best_function = fn;
-                    }
-                    else
-                    {
-                        type_compare tc = type_table.compare_types(best_function.return_value_type, fn.return_value_type);
-                        if (best_function.return_value_type.is_standard_type && fn.return_value_type.is_standard_type)
-                        {
-                        	if (tc == type_compare.less_type)
-                        	{
-                           		to_remove.Add(best_function);
-                            	best_function = fn;
-                        	}
-                        	else if (tc == type_compare.greater_type)
-                            	to_remove.Add(fn);
-                        }
-                        else
-                        {
-                        	if (tc == type_compare.greater_type)
-                        	{
-                           		to_remove.Add(best_function);
-                            	best_function = fn;
-                        	}
-                        	else if (tc == type_compare.less_type)
-                            	to_remove.Add(fn);
-                        }
-                    }
-                }
-            }
-
-            foreach (function_node fn in to_remove)
-            {
-                set_of_possible_functions.Remove(fn);
-            }
+            // Удалить функции, у которых тип возвращаемого значения меньше.
+            // Тут это ошибка т.к. параметры могут соответствовать точнее, а они проверяются дальше. Приоритет должен даваться параметрам
+            //delete_functions_with_less_result_type(set_of_possible_functions);
 
             // Формирование словаря списков функций с одинаковым значением расстояния
             // SSM 07/11/17 Для a.Average(x->x) - остаётся 4 функции. На этом уровне выбрать невозможно:
@@ -2167,7 +2174,12 @@ namespace PascalABCCompiler.TreeConverter
                 int distance = 0;
                 for (int i = 0; i < parameters.Count; i++)
                 {
-                    type_node from = parameters[i].type;
+                    //type_node from = parameters[i].type;
+
+                    expression_node en = parameters[i];
+                    syntax_tree_visitor.try_convert_typed_expression_to_function_call(ref en);
+                    type_node from = en.type;
+
                     type_node to = fn.parameters[Math.Min(i, fn.parameters.Count - 1)].type;
                     if (fn.parameters[Math.Min(i, fn.parameters.Count - 1)].is_params)
                         to = to.element_type;
@@ -2204,6 +2216,12 @@ namespace PascalABCCompiler.TreeConverter
                                                  // если две и больше - то они пробрасываются и мы переходим к бОльшей дистанции
             {
                 List<function_node> funcs = distances[dist];
+
+                // Удалить функции, у которых тип возвращаемого значения меньше.
+                // Тут это ошибка т.к. параметры могут соответствовать точнее, а они проверяются дальше. Приоритет должен даваться параметрам
+                // SSM 27.07.19 перенес это сюда чтобы удаление происходило среди функций с одной дистанцией. В строке 2162 закомментировал
+                delete_functions_with_less_result_type(funcs);
+
                 if (funcs.Count == 1) // если для данной дистанции ровно одна функция, то обработать её и вернуть
                 {
                     Errors.Error err = null;
@@ -2292,7 +2310,6 @@ namespace PascalABCCompiler.TreeConverter
                         if (!fldiResType.Equals(kres[n]))
                             bools[n] = false;
                     }
-                //var rettype_i = 
                 }
 
                 // SSM 04.06.19
@@ -2439,12 +2456,15 @@ namespace PascalABCCompiler.TreeConverter
 
                 }
             }
+
             return AddError<function_node>(new SeveralFunctionsCanBeCalled(loc, set_of_possible_functions));
         }
 
         private int get_type_distance(type_node from, type_node to)
         {
             if (from == to)
+                return 0;
+            if (from is short_string_type_node && to is compiled_type_node ctn && ctn.compiled_type == typeof(System.String))
                 return 0;
             if (from is delegated_methods && (from as delegated_methods).empty_param_method != null && (from as delegated_methods).empty_param_method.ret_type != null)
                 from = (from as delegated_methods).empty_param_method.ret_type;

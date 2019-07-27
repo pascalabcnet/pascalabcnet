@@ -11,7 +11,7 @@
    NumLibABC,
    IniFile, PointerTools, PointRect, PT4, PT4MakerNetX, Robot, RobotField,
    RobotTaskMaker, RobotZadan, Sockets, Utils, VCL, Timers, PT4Exam, PT4TaskMakerNET, RBDMUtils,
-   Collections, Arrays, Core, FormsABC, MPI, ClientServer, OpenGL, Speech, Sounds, Countries,
+   Collections, Arrays, Core, FormsABC, MPI, ClientServer, Speech, Sounds, Countries,
    ABCDatabases,BlockFileOfT,Controls,
    OpenCL, OpenCLABC,
    OpenGL, OpenGLABC
