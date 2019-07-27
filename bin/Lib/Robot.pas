@@ -397,6 +397,10 @@ begin
   RegisterTask('p14',p14);
   RegisterTask('p15',p15);
 
+  RegisterTask('ps1',ps1);
+  RegisterTask('ps2',ps2);
+  RegisterTask('ps3',ps3);
+
   RegisterTask('pp1',pp1);
   RegisterTask('pp2',pp2);
   RegisterTask('pp3',pp3);

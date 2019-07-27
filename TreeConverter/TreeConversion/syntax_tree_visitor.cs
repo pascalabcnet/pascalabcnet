@@ -17038,6 +17038,8 @@ namespace PascalABCCompiler.TreeConverter
         {
             expression_node left = convert_strong(_bin_expr.left);
             expression_node right = convert_strong(_bin_expr.right);
+            if (_bin_expr.operation_type == Operators.In)
+                try_convert_typed_expression_to_function_call(ref left);
             expression_node res = find_operator(_bin_expr.operation_type, left, right, get_location(_bin_expr));
 
             if (res.type is undefined_type)

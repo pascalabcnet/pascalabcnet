@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 unit RobotZadan;
 
@@ -143,6 +143,10 @@ procedure p12;
 procedure p13;
 procedure p14;
 procedure p15;
+
+procedure ps1;
+procedure ps2;
+procedure ps3;
 
 procedure pp1;
 procedure pp2;
@@ -2394,6 +2398,22 @@ begin
       Tag(4*i,2*j+1);
     end;  
   end
+end;
+
+procedure ps1;
+begin
+  TaskText('Задание ps1. Закрасить помеченные клетки, составив процедуру');
+  
+end;
+
+procedure ps2;
+begin
+  TaskText('Задание ps1. Закрасить помеченные клетки, составив процедуру');
+end;
+
+procedure ps3;
+begin
+  TaskText('Задание ps1. Закрасить помеченные клетки, составив процедуру');
 end;
 
 procedure pp1;
