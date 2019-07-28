@@ -13,11 +13,6 @@ Down;
 [Paint]
 Paint; 
 
-[program]
-begin
-  |
-end.
-
 [begin end]
 begin
   |

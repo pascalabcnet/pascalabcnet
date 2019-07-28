@@ -22,6 +22,7 @@ namespace CodeTemplatesPlugin
         {
             this.workbench = workbench;
             this.MainForm = workbench.MainForm as VisualPascalABC.Form1;
+            ctForm.MainForm = MainForm;
         }
         public string Name
         {

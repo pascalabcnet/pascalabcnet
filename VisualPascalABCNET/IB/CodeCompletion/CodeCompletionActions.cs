@@ -347,7 +347,9 @@ namespace VisualPascalABC
                 }
         }
 
-        public static void GenerateTemplate(string pattern, TextArea textArea)
+        public static void GenerateTemplate(string pattern, TextArea textArea) => GenerateTemplate(pattern, textArea, templateManager);
+
+        public static void GenerateTemplate(string pattern, TextArea textArea, CodeTemplateManager templateManager, bool withPatternLength = true)
         {
             try
             {
@@ -359,7 +361,7 @@ namespace VisualPascalABC
                 string name = templateManager.GetTemplateHeader(pattern);
                 if (name == null) return;
                 string templ = templateManager.GetTemplate(name);
-                int ind = pattern.Length;
+                int ind = withPatternLength ? pattern.Length : 0;
                 int cline;
                 int ccol;
                 find_cursor_pos(templ, out cline, out ccol);

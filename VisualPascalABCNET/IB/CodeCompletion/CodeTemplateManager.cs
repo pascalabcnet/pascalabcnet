@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
@@ -10,9 +9,9 @@ namespace VisualPascalABC
 {
 	public class CodeTemplateManager
 	{
-		private Hashtable ht = new Hashtable();
-		
-		public CodeTemplateManager(string filename = "template.pct")
+        public Dictionary<string, string> ht = new Dictionary<string, string>();
+
+        public CodeTemplateManager(string filename = "template.pct")
 		{
 			try
 			{
