@@ -2489,7 +2489,7 @@ namespace VisualPascalABC
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
         private System.Windows.Forms.ToolStripMenuItem tsSelectAll;
         private System.Windows.Forms.ToolStripMenuItem tsGotoLine;
-        private WeifenLuo.WinFormsUI.Docking.DockPanel MainDockPanel;
+        public WeifenLuo.WinFormsUI.Docking.DockPanel MainDockPanel;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
         private System.Windows.Forms.ToolStripMenuItem tsShowCompilerConsoleWindow;
         private System.Windows.Forms.ToolStripMenuItem tsShowDebugVariablesListWindow;

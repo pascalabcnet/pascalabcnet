@@ -1,0 +1,69 @@
+[Left]
+Left; 
+
+[Right]
+Right; 
+
+[Up]
+Up; 
+
+[Down]
+Down; 
+
+[Paint]
+Paint; 
+
+[program]
+begin
+  |
+end.
+
+[begin end]
+begin
+  |
+end;
+
+[loop]
+loop 10 do
+begin
+  |
+end;
+
+[for var i]
+for var i:=1 to 10 do
+begin
+  |
+end;
+
+[if then]
+if условие then
+begin
+  |
+end;
+
+[if then else]
+if условие then
+begin
+  |
+end
+else
+begin
+  
+end;
+
+[case]
+case | of
+  : ;
+  : ;
+end;
+
+[while do]
+while условие do
+begin
+  |
+end;
+
+[repeat until]
+repeat
+  |
+until условие;

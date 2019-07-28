@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections;
@@ -12,11 +12,11 @@ namespace VisualPascalABC
 	{
 		private Hashtable ht = new Hashtable();
 		
-		public CodeTemplateManager()
+		public CodeTemplateManager(string filename = "template.pct")
 		{
 			try
 			{
-				StreamReader sr = File.OpenText(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName),"template.pct"));
+				StreamReader sr = File.OpenText(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName), filename));
 				ParseFile(sr);
 				sr.Close();
 			}
