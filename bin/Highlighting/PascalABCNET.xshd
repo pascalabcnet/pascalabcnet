@@ -115,6 +115,10 @@
 		<Key word = "end" />
 	</KeyWords> 
 
+	<KeyWords name = "Special" bold = "true" italic = "false" color = "Red">
+		<Key word = "•" />
+	</KeyWords> 
+
 	<KeyWords name = "Async" bold = "true" italic = "false" color = "Black">
 		<Key word = "async" />
 		<Key word = "asyncparam" />

@@ -50,7 +50,8 @@
 %token <id> tkDirectiveName tkIdentifier 
 %token <stn> tkStringLiteral tkFormatStringLiteral tkAsciiChar
 %token <id> tkAbstract tkForward tkOverload tkReintroduce tkOverride tkVirtual tkExtensionMethod 
-%token <ex> tkInteger tkFloat tkHex 
+%token <ex> tkInteger tkFloat tkHex
+%token <id> tkUnknown
 
 %type <ti> unit_key_word class_or_static
 %type <stn> assignment 

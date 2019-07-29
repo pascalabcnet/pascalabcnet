@@ -13,30 +13,35 @@ Down;
 [Paint]
 Paint; 
 
-[begin end]
+[Новая программа]
+begin
+  |
+end.
+
+[begin … end]
 begin
   |
 end;
 
-[loop]
+[loop … do]
 loop 10 do
 begin
   |
 end;
 
-[for var i]
+[for var i:=• to • do]
 for var i:=1 to 10 do
 begin
   |
 end;
 
-[if then]
+[if • then …]
 if условие then
 begin
   |
 end;
 
-[if then else]
+[if • then … else …]
 if условие then
 begin
   |
@@ -46,19 +51,19 @@ begin
   
 end;
 
-[case]
-case | of
-  : ;
-  : ;
-end;
-
-[while do]
+[while • do …]
 while условие do
 begin
   |
 end;
 
-[repeat until]
+[repeat … until •]
 repeat
   |
 until условие;
+
+[case • of … end]
+case | of
+  : ;
+  : ;
+end;
