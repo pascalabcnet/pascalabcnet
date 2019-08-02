@@ -349,7 +349,7 @@ namespace VisualPascalABC
 
         public static void GenerateTemplate(string pattern, TextArea textArea) => GenerateTemplate(pattern, textArea, templateManager);
 
-        public static void GenerateTemplate(string pattern, TextArea textArea, CodeTemplateManager templateManager, bool withPatternLength = true)
+        public static void GenerateTemplate(string pattern, TextArea textArea, CodeTemplateManager templateManager, bool withPatternLength = true, Func<string,string> PostAction = null)
         {
             try
             {
@@ -384,7 +384,12 @@ namespace VisualPascalABC
                 doc.Replace(offset, ind, "");
                 doc.CommitUpdate();
                 textArea.Caret.Column = col - ind;
-                textArea.InsertString(sb.ToString());
+                var sbs = sb.ToString();
+                if (PostAction != null)
+                {
+                    sbs = PostAction(sbs);
+                }
+                textArea.InsertString(sbs);
                 textArea.Caret.Line = line + cline;
                 textArea.Caret.Column = col - ind + ccol;
             }

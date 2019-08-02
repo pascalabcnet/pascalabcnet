@@ -7,6 +7,7 @@ using VisualPascalABCPlugins;
 using VisualPascalABC;
 using WeifenLuo.WinFormsUI.Docking;
 
+
 namespace CodeTemplatesPlugin
 {
     public class CodeTemplates_VisualPascalABCPlugin : IVisualPascalABCPlugin

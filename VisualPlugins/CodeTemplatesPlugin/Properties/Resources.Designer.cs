@@ -63,9 +63,29 @@ namespace CodeTemplatesPlugin.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap CodeTemplate3 {
+            get {
+                object obj = ResourceManager.GetObject("CodeTemplate3", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap CodeTemplates {
             get {
                 object obj = ResourceManager.GetObject("CodeTemplates", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap CodeTemplates2 {
+            get {
+                object obj = ResourceManager.GetObject("CodeTemplates2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

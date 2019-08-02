@@ -24,23 +24,30 @@
 	Size: integer <b>read</b>;<br>&nbsp; 
 	<b>end</b>;<br>
 	&nbsp; Brush = <b>class</b>(IShape,IBrush)<br>
-&nbsp;&nbsp;&nbsp; // метод Draw реализуется 
-	единожды<br>
-&nbsp; <b>end</b>;</code></p>
+&nbsp;&nbsp;&nbsp; 
+	<b>procedure</b> Draw;<br>&nbsp;&nbsp;&nbsp; <strong>begin</strong><br>&nbsp;&nbsp;&nbsp;
+	<strong>end</strong>;<br>&nbsp; <b>end</b>;</code></p>
 </blockquote>
-<p>Чтобы решить проблему с одинаковыми именами в интерфейсах, в
-.NET классы могут реализовывать методы интерфейсов так 
-называемым явным образом, так что вызов метода интерфейса для переменной класса 
-возможен только после явного приведения к типу интерфейса. В <b>
-PascalABC.NET</b> такие классы определять нельзя, 
-однако, пользоваться такими классами, реализованными в .NET, 
-можно. Например, тип <code>integer</code> явно 
-реализует интерфейс <code>IComparable</code><span id="nsrTitle">:</span></p>
+<p>Чтобы решить проблему с одинаковыми именами в интерфейсах, в .NET классы 
+могут реализовывать методы интерфейсов так называемым <strong>явным</strong> 
+образом, так что вызов метода интерфейса для переменной класса возможен только 
+после явного приведения к типу интерфейса. <span id="nsrTitle">Например:</span></p>
 <blockquote>
-	<p><code><b>var</b> i: integer := 1;<br>
-	<b>var</b> res : integer := IComparable(i).CompareTo(2);<br>
-	// i.CompareTo(2) 
-	- ошибка компиляции </code></p>
+	<p><code><strong>type</strong><br>&nbsp; IWindow = <strong>interface</strong><br>&nbsp;&nbsp;&nbsp; 
+	procedure Menu;<br>&nbsp; <strong>end</strong>;<br>&nbsp; IRestaurant =
+	<strong>interface</strong><br>&nbsp;&nbsp;&nbsp; procedure Menu;<br>&nbsp;
+	<strong>end</strong>;<br>&nbsp; RestaurantSystem = <strong>class</strong>(IWindow,IRestaurant)<br>&nbsp;&nbsp;&nbsp;
+	<strong>public</strong><br>&nbsp;&nbsp;&nbsp; <strong>procedure</strong> 
+	IWindow.Menu; // явная реализация метода интерфейса<br>&nbsp;&nbsp;&nbsp;
+	<strong>begin</strong><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	Println('IWindow.Menu');<br>&nbsp;&nbsp;&nbsp; <strong>end</strong>;<br>&nbsp;&nbsp;&nbsp;
+	<strong>procedure</strong> IRestaurant.Menu;<br>&nbsp;&nbsp;&nbsp; <strong>
+	begin</strong><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+	Println('IRestaurant.Menu');<br>&nbsp;&nbsp;&nbsp; <strong>end</strong>;<br>&nbsp;
+	<strong>end</strong>;<br><br><strong>begin</strong><br>&nbsp; <strong>var</strong> 
+	r := new RestaurantSystem;<br>&nbsp; IWindow(r).Menu; <br>&nbsp; 
+	IRestaurant(r).Menu; <br>&nbsp; r.Menu; // ошибка компиляции!<br><strong>end</strong>. </code>
+	&nbsp;</p>
 </blockquote>
 <p>&nbsp;</p>
 </body>

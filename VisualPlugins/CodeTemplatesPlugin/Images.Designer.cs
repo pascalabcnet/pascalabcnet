@@ -34,8 +34,10 @@
             // 
             // PluginImage
             // 
-            this.PluginImage.Image = global::CodeTemplatesPlugin.Properties.Resources.CodeTemplates;
-            this.PluginImage.Location = new System.Drawing.Point(39, 37);
+            this.PluginImage.Image = global::CodeTemplatesPlugin.Properties.Resources.CodeTemplate3;
+            this.PluginImage.InitialImage = global::CodeTemplatesPlugin.Properties.Resources.CodeTemplates2;
+            this.PluginImage.Location = new System.Drawing.Point(78, 71);
+            this.PluginImage.Margin = new System.Windows.Forms.Padding(6);
             this.PluginImage.Name = "PluginImage";
             this.PluginImage.Size = new System.Drawing.Size(16, 16);
             this.PluginImage.TabIndex = 1;
@@ -44,10 +46,11 @@
             // 
             // Images
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(385, 241);
+            this.ClientSize = new System.Drawing.Size(770, 463);
             this.Controls.Add(this.PluginImage);
+            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.Name = "Images";
             this.Text = "Images";
             ((System.ComponentModel.ISupportInitialize)(this.PluginImage)).EndInit();

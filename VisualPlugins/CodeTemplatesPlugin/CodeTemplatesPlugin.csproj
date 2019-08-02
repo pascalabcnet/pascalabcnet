@@ -132,5 +132,11 @@
   <ItemGroup>
     <None Include="Resources\CodeTemplates.bmp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CodeTemplates1.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\format.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
