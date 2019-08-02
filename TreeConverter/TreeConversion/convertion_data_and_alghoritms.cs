@@ -1860,6 +1860,11 @@ namespace PascalABCCompiler.TreeConverter
 
             foreach (SymbolInfo function in functions)
             {
+                if (function.sym_info is compiled_function_node cfn0 && 
+                    cfn0.comperehensive_type is compiled_type_node ctn0 &&
+                    (ctn0.compiled_type.Name == "PABCSystem" + compiler_string_consts.ImplementationSectionNamespaceName || ctn0.compiled_type.Name == "PABCExtensions" + compiler_string_consts.ImplementationSectionNamespaceName)
+                    && !ctn0.compiled_type.Assembly.FullName.StartsWith("PABCRtl")) // пропустить функции (методы расширения), определенные в сборке в ПИ PABCSystem, но не в PABCRtl.dll
+                    continue;
                 // В режиме only_from_not_extensions пропускать все extensions
                 if (only_from_not_extensions && (function.sym_info is function_node) && (function.sym_info as function_node).is_extension_method)
                     continue;

@@ -21,11 +21,8 @@ namespace CodeTemplatesPlugin
 
         private Dictionary<string, string> help = new Dictionary<string, string>();
 
-        public CodeTemplatesForm()
+        public void LoadTemplates()
         {
-            InitializeComponent();
-            var scale = ScreenScale.Calc();
-            listBox1.TileSize = new Size(listBox1.TileSize.Width, System.Convert.ToInt32(16 * scale));
             try
             {
                 schoolManager = new CodeTemplateManager("school.pct");
@@ -38,13 +35,13 @@ namespace CodeTemplatesPlugin
                     a[1] = a[1].Trim();
                     help[a[0]] = a[2];
                     var ind = -1;
-                    for (var i=0; i < listBox1.Groups.Count; i++)
+                    for (var i = 0; i < listBox1.Groups.Count; i++)
                     {
                         if (listBox1.Groups[i].Name == a[1])
                         {
                             ind = i;
                             break;
-                        }                            
+                        }
                     }
                     if (ind == -1)
                     {
@@ -57,6 +54,13 @@ namespace CodeTemplatesPlugin
             catch
             {
             }
+        }
+        public CodeTemplatesForm()
+        {
+            InitializeComponent();
+            var scale = ScreenScale.Calc();
+            listBox1.TileSize = new Size(listBox1.TileSize.Width, System.Convert.ToInt32(16 * scale));
+            LoadTemplates();
         }
 
         private void CodeTemplatesForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -162,7 +166,8 @@ namespace CodeTemplatesPlugin
 
         private void listBox1_SizeChanged(object sender, EventArgs e)
         {
-            listBox1.TileSize = new Size(listBox1.Size.Width-4, listBox1.TileSize.Height);
+            if (listBox1.Size.Width > 4)
+                listBox1.TileSize = new Size(listBox1.Size.Width-4, listBox1.TileSize.Height);
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
