@@ -483,7 +483,10 @@ namespace VisualPascalABC
             //}
             CodeFileDocumentControl bakTab = CurrentCodeFileDocument;
             CurrentCodeFileDocument = TbPage;
-            saveFileDialog1.FileName = Path.GetFileName(CurrentSourceFileName);
+            var s = Path.GetFileName(CurrentSourceFileName);
+            if (s.ToLower().StartsWith("program"))
+                s = "";
+            saveFileDialog1.FileName = s;
             string id = Path.GetDirectoryName(CurrentSourceFileName);
             if (id == "")
             {
