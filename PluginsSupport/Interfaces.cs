@@ -240,6 +240,7 @@ namespace VisualPascalABCPlugins
         bool HighlightOperatorBrackets { get; set; }
         bool UseDllForSystemUnits { get; set; }
         bool PABCDllChecked { get; set; }
+        bool AutoInsertCodeIsEnabledOnStartup { get; set; }
     }
 
     public interface IListItem

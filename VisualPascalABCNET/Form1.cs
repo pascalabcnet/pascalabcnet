@@ -370,9 +370,9 @@ namespace VisualPascalABC
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            // Автовставка кода по умолчанию включена
-            tsAutoInsertCode.Checked = true;
-            mAUTOINSERTToolStripMenuItem.Checked = true;
+            // Автовставка кода по умолчанию включена. Отключил это - теперь сохраняется в настройках!
+            //tsAutoInsertCode.Checked = true;
+            //mAUTOINSERTToolStripMenuItem.Checked = true;
 
             //CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.TextArea.KeyEventHandler += TextArea_KeyEventHandler;
 

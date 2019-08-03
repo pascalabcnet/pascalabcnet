@@ -78,7 +78,7 @@ namespace VisualPascalABC.OptionsContent
                         cbConvertTabsToSpaces.Checked = MainForm.UserOptions.ConverTabsToSpaces;
                         cbEnableMatchOperBrackets.Checked = MainForm.UserOptions.HighlightOperatorBrackets;
                         nudTabIndent.Value = MainForm.UserOptions.TabIndent;
-                        cbSkipStakTraceItemIfSourceFileInSystemDirectory.Checked = !MainForm.UserOptions.SkipStakTraceItemIfSourceFileInSystemDirectory;
+                        cbSkipStakTraceItemIfSourceFileInSystemDirectory.Checked = !MainForm.UserOptions.SkipStackTraceItemIfSourceFileInSystemDirectory;
                         //cbErrorPos.Items.Clear();
                         //AddcbErrorPosItem(SourceLocationAction.GotoBeg, strprefix + "EP_BEGIN");
                         //AddcbErrorPosItem(SourceLocationAction.GotoEnd, strprefix + "EP_END");
@@ -119,7 +119,7 @@ namespace VisualPascalABC.OptionsContent
                     	MainForm.UserOptions.CurrentFontFamily = fcbFont.SelectedItem as string;
                     }
                     MainForm.UserOptions.EditorFontSize = Convert.ToInt32(cbEditorFontSize.Text);
-                    MainForm.UserOptions.SkipStakTraceItemIfSourceFileInSystemDirectory = !cbSkipStakTraceItemIfSourceFileInSystemDirectory.Checked;
+                    MainForm.UserOptions.SkipStackTraceItemIfSourceFileInSystemDirectory = !cbSkipStakTraceItemIfSourceFileInSystemDirectory.Checked;
                     MainForm.UpdateUserOptions();
                     WorkbenchServiceFactory.OptionsService.SaveOptions();
                     alreadyShown = false;
