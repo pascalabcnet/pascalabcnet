@@ -1,4 +1,4 @@
-uses ABCObjects,GraphABC,Timers;
+﻿uses ABCObjects,GraphABC,Timers;
 
 const 
   clPlayer = Color.BurlyWood;

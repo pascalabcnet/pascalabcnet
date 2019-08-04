@@ -1,11 +1,11 @@
 ﻿// Движение по траектории
-uses ABCObjects,GraphABC;
+uses WPFObjects,GraphWPF;
 
 const
 /// Шаг по параметру кривой
-  step = 0.03;
+  step = 0.02;
 /// Задержка по времени, мс
-  delay = 10;
+  delay = 5;
 
 type
   PointR = record
@@ -14,7 +14,7 @@ type
 
 function Position(t: real): PointR; // астроида
 begin
-  var si := sin(1.5 * t);
+  var si := sin(1.7 * t);
   var co := cos(1.5 * t);
   Result.x := si*si*si;
   Result.y := co*co*co;
@@ -26,31 +26,31 @@ begin
   Result.y := cos(2.97221*t + 2*Pi/3);
 end;
 
-function LogicalToScreen(p: PointR): Point;
+function LogicalToScreen(p: PointR): GPoint;
 begin
-  var ww := WindowWidth div 2;
-  var hh := WindowHeight div 2;
-  Result.x := round((ww - 50) * p.x + ww);
-  Result.y := round((hh - 50) * p.y + hh);
+  var ww := Window.Width / 2;
+  var hh := Window.Height / 2;
+  Result.x := Round((ww - 50) * p.x + ww);
+  Result.y := Round((hh - 50) * p.y + hh);
 end;
 
 procedure InitScreen;
 begin
-  SetBrushColor(clMoneyGreen);
-  Rectangle(10,10,WindowWidth-10,WindowHeight-10);
+  Brush.Color := Colors.LightGreen;
+  Rectangle(10,10,Window.Width-20,Window.Height-20);
   var p := LogicalToScreen(Position1(0));
   MoveTo(p.x,p.y);
 end;
 
 begin
-  Window.IsFixedSize := True;
+  //Window.IsFixedSize := True;
   Window.Title := 'Движение по траектории';
-  SetWindowSize(640,480);
-  CenterWindow;
+  Window.SetSize(640,480);
+  Window.CenterOnScreen;
 
   InitScreen;
-  var c := new CircleABC(200,200,25,clGreen);
-  var d := new StarABC(200,200,40,20,5,clYellow);
+  var c := new CircleWPF(200,200,25,Colors.Green);
+  var d := new StarWPF(200,200,40,20,5,Colors.Yellow);
 
   var t: real := 0;
   while True do
