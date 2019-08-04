@@ -25,7 +25,7 @@ namespace CodeTemplatesPlugin
         {
             try
             {
-                schoolManager = new CodeTemplateManager("school.pct");
+                schoolManager = new CodeTemplateManager("school.pct",true); // искать вначале в локальном каталоге, потом на уровень выше и только потом в системном
                 listBox1.Items.Clear();
                 //listBox1.Items.AddRange(schoolManager.ht.Keys.ToArray());
                 foreach (var x in schoolManager.ht.Keys)

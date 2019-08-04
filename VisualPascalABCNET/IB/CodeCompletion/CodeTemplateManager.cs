@@ -11,11 +11,28 @@ namespace VisualPascalABC
 	{
         public Dictionary<string, string> ht = new Dictionary<string, string>();
 
-        public CodeTemplateManager(string filename = "template.pct")
+        public CodeTemplateManager(string filename = "template.pct", bool searchFromLocalDirectory = false)
 		{
 			try
 			{
-				StreamReader sr = File.OpenText(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName), filename));
+                StreamReader sr;
+                string PABCExeDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
+                if (!searchFromLocalDirectory)
+                {
+                    sr = File.OpenText(Path.Combine(PABCExeDirectory, filename));
+                }
+                else
+                {
+                    if (File.Exists(filename))
+                        sr = File.OpenText(filename);
+                    else
+                    {
+                        var ss = Path.Combine(@"..\", filename);
+                        if (File.Exists(ss))
+                            sr = File.OpenText(ss);
+                        else sr = File.OpenText(Path.Combine(PABCExeDirectory, filename));
+                    }
+                }
 				ParseFile(sr);
 				sr.Close();
 			}
