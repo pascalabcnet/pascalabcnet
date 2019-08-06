@@ -13,6 +13,10 @@ const
 begin
   Randomize(0);
   
+  // Инициализация
+  
+//  Context.Default := new Context(DeviceTypeFlags.GPU); // не нужно - это и так значение по-умолчанию
+  
   // Чтение и компиляция .cl файла
   
   {$resource MatrMlt.cl}
@@ -96,7 +100,7 @@ begin
     
     Calc_C_Q +
     (
-      Otp_C_Q *
+      Otp_C_Q * // выводить C и считать V2 можно одновременно, поэтому тут *, т.е. параллельное выполнение
       (
         Calc_V2_Q +
         Otp_V2_Q

@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -32,12 +32,13 @@ namespace VisualPascalABC
         public bool EnableSmartIntellisense = false;
         public bool ShowQuickClassBrowserPanel = false;
         public bool AllowCodeFormatting = false;
-        public bool SkipStakTraceItemIfSourceFileInSystemDirectory = true;
+        public bool SkipStackTraceItemIfSourceFileInSystemDirectory = true;
         public bool AlwaysAttachDebuggerAtStart = false;
         public string CurrentFontFamily = "Courier New";
         public bool HighlightOperatorBrackets=true;
         public bool UseDllForSystemUnits = true;
         public bool PABCDllChecked = false;
+        public bool AutoInsertCodeIsEnabledOnStartup = true;
 
         public bool DeleteEXEAfterExecute
         {
@@ -195,6 +196,12 @@ namespace VisualPascalABC
             set { SaveSourceFilesIfComilationOk = value; }
         }
 
+        bool VisualPascalABCPlugins.IUserOptions.AutoInsertCodeIsEnabledOnStartup
+        {
+            get { return AutoInsertCodeIsEnabledOnStartup; }
+            set { AutoInsertCodeIsEnabledOnStartup = value; }
+        }
+
         bool VisualPascalABCPlugins.IUserOptions.ShowCompletionInfoByGroup
         {
             get { return ShowCompletionInfoByGroup; }
@@ -221,8 +228,8 @@ namespace VisualPascalABC
 
         bool VisualPascalABCPlugins.IUserOptions.SkipStakTraceItemIfSourceFileInSystemDirectory
         {
-            get { return SkipStakTraceItemIfSourceFileInSystemDirectory; }
-            set { SkipStakTraceItemIfSourceFileInSystemDirectory = value; }
+            get { return SkipStackTraceItemIfSourceFileInSystemDirectory; }
+            set { SkipStackTraceItemIfSourceFileInSystemDirectory = value; }
         }
 
         int VisualPascalABCPlugins.IUserOptions.TabIndent

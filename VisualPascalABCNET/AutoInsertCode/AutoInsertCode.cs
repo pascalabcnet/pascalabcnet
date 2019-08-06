@@ -24,33 +24,26 @@ namespace VisualPascalABC
         void GetCurNextLines(out string Current, out string Next, out string Prev) // Next - следующая непустая строка
         {
             var ta = CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.TextArea;
-            var doc = ta.Document;
-            var tl_beg = new TextLocation(ta.Caret.Column, ta.Caret.Line);
-            var cls = doc.GetLineSegment(ta.Caret.Line);
-            LineSegment nls = null;
-            if (ta.Caret.Line + 1 < doc.TotalNumberOfLines)
-                nls = doc.GetLineSegment(ta.Caret.Line + 1);
             Current = GetLine(ta.Caret.Line);
+
             var i = ta.Caret.Line + 1;
             do
             {
                 Next = GetLine(i);
                 i++;
             } while (Next != null && Next.Trim() == "");
+
             Prev = null;
-            //if (ta.Caret.Line > 0)
-            //Prev = GetLine(ta.Caret.Line - 1);
-            if (ta.Caret.Line > 0)
+            if (ta.Caret.Line == 0)
+                return;
+            var j = ta.Caret.Line;
+            do
             {
-                var j = ta.Caret.Line;
-                do
-                {
-                    j--;
-                    Prev = GetLine(j);
-                } while (j > 0 && Prev.Trim() == "");
-                if (Prev.Trim() == "")
-                    Prev = null;
-            }
+                j--;
+                Prev = GetLine(j);
+            } while (j > 0 && Prev.Trim() == "");
+            if (Prev.Trim() == "")
+                Prev = null;
         }
 
         int Indent(string s)
@@ -83,8 +76,13 @@ namespace VisualPascalABC
 
                     if (Text1.ToLower().StartsWith("for") || Text1.ToLower().StartsWith("foreach"))
                     {
-                        doc.Insert(CurrentOffset(), " var");
-                        ta.Caret.Column = ta.Caret.Column + 5;
+                        var curline = TextUtilities.GetLineAsString(editor.Document, caret1.Line);
+                        var len = curline.TrimEnd().Length;
+                        if (ta.Caret.Column == len)
+                        {
+                            doc.Replace(CurrentOffset(), curline.Length - len, " var");
+                            ta.Caret.Column = ta.Caret.Column + 4;
+                        }
                     }
                     return false;
                 }
@@ -118,8 +116,13 @@ namespace VisualPascalABC
                                 var iprev = Indent(prev);
                                 var tl_beg = new TextLocation(ta.Caret.Column, ta.Caret.Line);
                                 int offset = doc.PositionToOffset(tl_beg);
-                                doc.Remove(offset - 7, 2);
-                                icur -= 2;
+
+                                var cls = doc.GetLineSegment(ta.Caret.Line);
+
+                                // надо удалить всю строчку с begin и сформировать новую
+                                doc.Replace(cls.Offset, cls.Length , Spaces(iprev)+"begin");
+                                ta.Caret.Column = iprev + 5;
+                                icur = iprev;
                             }
                     }
 
@@ -182,9 +185,10 @@ namespace VisualPascalABC
                     var seg = doc.GetLineSegment(ta.Caret.Line);
                     var curline = doc.GetText(seg).TrimEnd();
                     if (ta.Caret.Column >= curline.Length)
-                        if (curline.Contains(":="))
+                        //if (curline.Contains(":=") && !curline.TrimStart().ToLower().StartsWith("for"))  // Это наиболее спорно. Надо проверять, что до присваивания - одно имя
+                        if (Regex.IsMatch(curline, @"^\s*\w+\s*:=", RegexOptions.IgnoreCase))
                         {
-                            var curlinenew = Regex.Replace(curline, @"(\s*)(\S+)(\s*):=(\s*)([^;]+)(;?)", @"$1$2 := $5;");
+                            var curlinenew = Regex.Replace(curline, @"(\s*)(\S+)(\s*):=(\s*)([^ ;]+)(\s*)(;?)", @"$1$2 := $5;",RegexOptions.IgnoreCase);
                             while (curlinenew.EndsWith(";;"))
                                 curlinenew = curlinenew.Remove(curlinenew.Length - 1);
                             doc.Replace(seg.Offset, curline.Length, curlinenew);

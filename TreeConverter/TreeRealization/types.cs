@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections;
@@ -3381,7 +3381,7 @@ namespace PascalABCCompiler.TreeRealization
             {
                 List<SymbolInfo> sil = compiled_find(name);
                 List<SymbolInfo> sil2 = find_in_additional_names(name);
-                if (sil == null && sil2 == null && string.Compare(name,"Create",true) != 0)
+                if (/*sil == null &&*/ sil2 == null && string.Compare(name,"Create",true) != 0)
                 {
                     compiled_type_node bas_type = base_type as compiled_type_node;
                     while (sil == null && bas_type != null && bas_type.scope != null)

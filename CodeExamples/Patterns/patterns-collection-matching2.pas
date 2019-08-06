@@ -39,8 +39,8 @@ begin
   
   // match .. with
   match personArr with
-    [_, _, Person('Вася', age, _)]: print(age);
-    [var p, .., Person('Маша', _, _)]: print((p as Person).name);
-    [..]: print(1);
+    [_, _, Person('Вася', age, _)]: Print(age);
+    [var p, .., Person('Маша', _, _)]: Print((p as Person).name);
+    [..]: Print(1);
   end;
 end.
