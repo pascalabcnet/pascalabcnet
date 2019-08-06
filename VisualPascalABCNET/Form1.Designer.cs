@@ -2324,7 +2324,6 @@ namespace VisualPascalABC
             this.mAUTOINSERTToolStripMenuItem.Name = "mAUTOINSERTToolStripMenuItem";
             this.mAUTOINSERTToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
             this.mAUTOINSERTToolStripMenuItem.Text = "M_AUTOINSERT_CODE";
-            this.mAUTOINSERTToolStripMenuItem.Click += new System.EventHandler(this.tsAutoInsertCode_Click);
             // 
             // Form1
             // 

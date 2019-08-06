@@ -64,7 +64,6 @@ namespace VisualPascalABC
         private string OptionsItemNameShowLocalVarsTab = "ShowLocalVarsTab";
         private string OptionsItemUseDllForSystemModules = "UseDllForSystemModules";
         private string OptionsItemPABCDllChecked = "PABCDllChecked";
-        private string OptionsItemNameAutoInsertCode = "AutoInsertCode";
 
         bool _mainFormWindowStateMaximized = false;
 
@@ -230,12 +229,6 @@ namespace VisualPascalABC
                     UserOptions.UseDllForSystemUnits = Convert.ToBoolean(value);
                 if ((value = (string)Options[OptionsItemPABCDllChecked]) != null)
                     UserOptions.PABCDllChecked = Convert.ToBoolean(value);
-                if ((value = (string)Options[OptionsItemNameAutoInsertCode]) != null)
-                {
-                    bool bvalue = Convert.ToBoolean(value);
-                    tsAutoInsertCode.Checked = bvalue;
-                    mAUTOINSERTToolStripMenuItem.Checked = bvalue;
-                }
                 int i = 0;
                 while ((value = (string)Options[OptionsItemNameLastFile + (i++).ToString()]) != null)
                     AddLastFile(value);
@@ -301,7 +294,6 @@ namespace VisualPascalABC
             Options.Add(OptionsItemNameDockRightPortion, MainDockPanel.DockRightPortion);
             Options.Add(OptionsItemUseDllForSystemModules, UserOptions.UseDllForSystemUnits);
             Options.Add(OptionsItemPABCDllChecked, UserOptions.PABCDllChecked);
-            Options.Add(OptionsItemNameAutoInsertCode, tsAutoInsertCode.Checked);
             if (MainFormText != MainFormTitle)
                 Options.Add(OptionsItemNameMainFormTitle, MainFormText);
             for (int i = 0; i < LastOpenFiles.Count; i++)
