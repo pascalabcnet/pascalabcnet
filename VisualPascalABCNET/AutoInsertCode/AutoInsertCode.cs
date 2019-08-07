@@ -97,12 +97,18 @@ namespace VisualPascalABC
                     return false;
                 var caret = editor.ActiveTextAreaControl.Caret;
                 int start = TextUtilities.FindPrevWordStart(editor.Document, caret.Offset);
+                // Нужно, чтобы в Text было последнее слово в строке !!! Исключение - когда в следующей надо сделать просто сдвиг
                 var Text = editor.Document.GetText(start, caret.Offset - start).TrimEnd();
+                //var curStrEnd = TextUtilities.GetLineAsString(editor.Document, caret.Line).Substring(caret.Column);
 
                 if (Text.ToLower() == "begin")
                 {
                     string cur, next, prev;
                     GetCurNextLines(out cur, out next, out prev);
+                    // Ничего не надо делать если begin - не последнее слово в строке
+                    var curStrEnd = cur.Substring(caret.Column);
+                    if (!string.IsNullOrWhiteSpace(curStrEnd))
+                        return false;
                     // анализ предыдущей
                     var icur = Indent(cur);
                     if (cur.Trim().ToLower() == "begin" && (next == null || Indent(next) < icur || Indent(next) == icur && !next.TrimStart().ToLower().StartsWith("end"))) // значит, это единственное слово begin в строке
@@ -144,6 +150,8 @@ namespace VisualPascalABC
                 {
                     string cur, next, prev;
                     GetCurNextLines(out cur, out next, out prev);
+                    if (!string.IsNullOrWhiteSpace(cur.Substring(caret.Column)))
+                        return false;
                     var icur = Indent(cur);
                     ta.InsertString("\n" + Spaces(icur + 2));
                     if (next == null || Indent(next) < icur || Indent(next) == icur && !next.TrimStart().ToLower().StartsWith("until"))
@@ -160,6 +168,8 @@ namespace VisualPascalABC
                 {
                     string cur, next, prev;
                     GetCurNextLines(out cur, out next, out prev);
+                    if (!string.IsNullOrWhiteSpace(cur.Substring(caret.Column)))
+                        return false;
                     var icur = Indent(cur);
                     ta.InsertString("\n" + Spaces(icur + 2));
                     if (cur.TrimStart().ToLower().StartsWith("case") && next == null || Indent(next) < icur || Indent(next) == icur && !next.TrimStart().ToLower().StartsWith("end"))
@@ -188,7 +198,7 @@ namespace VisualPascalABC
                         //if (curline.Contains(":=") && !curline.TrimStart().ToLower().StartsWith("for"))  // Это наиболее спорно. Надо проверять, что до присваивания - одно имя
                         if (Regex.IsMatch(curline, @"^\s*\w+\s*:=", RegexOptions.IgnoreCase))
                         {
-                            var curlinenew = Regex.Replace(curline, @"(\s*)(\S+)(\s*):=(\s*)([^ ;]+)(\s*)(;?)", @"$1$2 := $5;",RegexOptions.IgnoreCase);
+                            var curlinenew = Regex.Replace(curline, @"(\s*)(\S+)(\s*):=(\s*)([^;]+)(\s*)(;?)$", @"$1$2 := $5;",RegexOptions.IgnoreCase);
                             while (curlinenew.EndsWith(";;"))
                                 curlinenew = curlinenew.Remove(curlinenew.Length - 1);
                             doc.Replace(seg.Offset, curline.Length, curlinenew);

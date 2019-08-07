@@ -2630,7 +2630,8 @@ namespace PascalABCCompiler.TreeConverter
                         if (convertion_data_and_alghoritms.function_eq_params_and_result(meth, fn))
                         {
                             //Нашли нужную функцию
-                            if (meth == fn || fn is common_method_node && (fn as common_method_node).overrided_method == null) sil = null;
+                            if (meth == fn || fn is common_method_node && (fn as common_method_node).overrided_method == null)
+                                sil = null;
                             break;
                         }
                     }
@@ -2860,10 +2861,12 @@ namespace PascalABCCompiler.TreeConverter
                 while (tn != null)
                 {
                     common_type_node cint = tn as common_type_node;
+                    
                     if (cint != null)
                     {
                         if (_ctn.IsAbstract) return;
                         if (_ctn.IsStatic) return;
+
                         foreach (common_method_node meth in cint.methods)
                         {
                             if (meth.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)

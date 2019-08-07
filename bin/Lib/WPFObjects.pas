@@ -290,10 +290,6 @@ type
       transl.BeginAnimation(TranslateTransform.XProperty, ax, HandoffBehavior.Compose);
       transl.BeginAnimation(TranslateTransform.YProperty, ay, HandoffBehavior.Compose);
     end;
-  public
-    /// Анимирует перемещение графического объекта к точке (x,y) в течение sec секунд
-    procedure AnimMoveTo(x,y: real; sec: real := 1) := Invoke(AnimMoveToP,x,y,sec);
-  private
     procedure AnimMoveEndP;
     begin
       var animation := new DoubleAnimation();
@@ -301,19 +297,11 @@ type
       transl.BeginAnimation(TranslateTransform.XProperty, animation);
       transl.BeginAnimation(TranslateTransform.YProperty, animation);
     end;
-  public
-    /// Завершает анимацию перемещения
-    procedure AnimMoveEnd := Invoke(AnimMoveEndP);
-  private
     procedure AnimRotateP(a,sec: real);
     begin
       var an := new DoubleAnimation(a, System.TimeSpan.FromSeconds(sec));
       rot.BeginAnimation(RotateTransform.AngleProperty, an, HandoffBehavior.Compose);
     end;
-  public
-    /// Анимирует вращение графического объекта на угол a в течение sec секунд
-    procedure AnimRotate(a: real; sec: real := 1) := Invoke(AnimRotateP,a,sec);
-  private
     procedure AnimScaleP(a,sec: real);
     begin
       var an := new DoubleAnimation(a, System.TimeSpan.FromSeconds(sec));
@@ -321,9 +309,14 @@ type
       sca.BeginAnimation(ScaleTransform.ScaleYProperty, an, HandoffBehavior.Compose);
     end;
   public
+    /// Анимирует перемещение графического объекта к точке (x,y) в течение sec секунд
+    procedure AnimMoveTo(x,y: real; sec: real := 1) := Invoke(AnimMoveToP,x,y,sec);
+    /// Завершает анимацию перемещения
+    procedure AnimMoveEnd := Invoke(AnimMoveEndP);
+    /// Анимирует вращение графического объекта на угол a в течение sec секунд
+    procedure AnimRotate(a: real; sec: real := 1) := Invoke(AnimRotateP,a,sec);
     /// Анимирует масштабирование графического объекта на величину a в течение sec секунд
     procedure AnimScale(a: real; sec: real := 1) := Invoke(AnimScaleP,a,sec);
-        
     /// Добавляет к графическому объекту дочерний
     procedure AddChild(ch: ObjectWPF; al: Alignment := Alignment.LeftTop);
     /// Удаляет из графического объекта дочерний
@@ -439,8 +432,8 @@ type
     function SetText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): EllipseWPF 
       := inherited SetText(txt,size,fontname,c) as EllipseWPF;
     /// Декоратор поворота объекта
-    function SetRotate(da: real): EllipseWPF 
-      := inherited SetRotate(da) as EllipseWPF;
+    function SetRotate(da: real): EllipseWPF := inherited SetRotate(da) as EllipseWPF;
+    /// 
   end;
 
 // -----------------------------------------------------
