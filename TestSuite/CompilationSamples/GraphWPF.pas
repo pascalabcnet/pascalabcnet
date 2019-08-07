@@ -344,7 +344,7 @@ function ColorBrush(c: Color): GBrush;
 /// Возвращает однотонное цветное перо, заданное цветом
 function ColorPen(c: Color): GPen;
 /// Процедура синхронизации вывода графики
-procedure Invoke(d: ()->());
+procedure Redraw(d: ()->());
 
 
 // -----------------------------------------------------
@@ -503,7 +503,7 @@ procedure __FinalizeModule__;
 
 implementation
 
-procedure Invoke(d: ()->()) := app.Dispatcher.Invoke(d);
+procedure Redraw(d: ()->()) := app.Dispatcher.Invoke(d);
 function getApp: Application := app;
 
 function RGB(r,g,b: byte) := Color.Fromrgb(r, g, b);

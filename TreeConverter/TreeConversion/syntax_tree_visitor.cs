@@ -18456,6 +18456,8 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.new_expr _new_expr)
         {
             type_node tn = ret.visit(_new_expr.type);
+            if (tn is generic_instance_type_node gitn) // SSM 07/08/19 #2070
+                gitn._is_abstract = gitn.original_generic.IsAbstract;
             //if (tn == SystemLibrary.SystemLibrary.void_type)
             //	AddError(new VoidNotValid(get_location(_new_expr.type)));
             if (tn.IsDelegate && !_new_expr.new_array)

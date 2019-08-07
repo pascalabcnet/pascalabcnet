@@ -2866,13 +2866,23 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (_ctn.IsAbstract) return;
                         if (_ctn.IsStatic) return;
-
-                        foreach (common_method_node meth in cint.methods)
+                        
+                        if (cint is common_generic_instance_type_node cgnn)
                         {
-                            if (meth.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)
-                                check_implement_abstract_function(cnode, meth, cint);
+                            foreach (common_method_node meth in cgnn.base_generic_instance.all_methods)
+                            {
+                                if (meth.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)
+                                    check_implement_abstract_function(cnode, meth, cgnn.base_generic_instance);
+                            }
                         }
-
+                        else
+                        {
+                            foreach (common_method_node meth in cint.methods)
+                            {
+                                if (meth.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)
+                                    check_implement_abstract_function(cnode, meth, cint);
+                            }
+                        }
                     }
                     else
                     {
