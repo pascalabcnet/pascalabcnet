@@ -229,9 +229,9 @@ function operator implicit(Self: array of (real, real)): array of Point; extensi
 function operator implicit(Self: array of (integer, integer)): array of Point; extensionmethod := 
   Self.Select(t->new Point(t[0],t[1])).ToArray;
  
-procedure SetLeft(Self: UIElement; l: integer); extensionmethod := Canvas.SetLeft(Self,l);
+procedure SetLeft(Self: UIElement; l: real); extensionmethod := Canvas.SetLeft(Self,l);
 
-procedure SetTop(Self: UIElement; t: integer); extensionmethod := Canvas.SetTop(Self,t);
+procedure SetTop(Self: UIElement; t: real); extensionmethod := Canvas.SetTop(Self,t);
 
 var __initialized: boolean;
 

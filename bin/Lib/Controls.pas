@@ -62,46 +62,98 @@ type
       //Margin := GlobalMargin;
       Text := Txt;
       b.Click += BClick;
+      b.Focusable := False;
+      ActivePanel.Children.Add(b);
+    end;
+    procedure CreatePXY(x,y: real; Txt: string);
+    begin
+      element := new GButton;
+      element.SetLeft(x);
+      element.SetTop(y);
+      element.Margin := new Thickness(0,0,0,8);
+      //Margin := GlobalMargin;
+      Text := Txt;
+      b.Click += BClick;
+      b.Focusable := False;
       ActivePanel.Children.Add(b);
     end;
   public 
-    event Click: procedure;
+    Click: procedure;
     constructor Create(Txt: string);
     begin
       Invoke(CreateP,Txt);
     end;
+    constructor Create(x,y: real; Txt: string);
+    begin
+      Invoke(CreatePXY,x,y,Txt);
+    end;
     property Text: string read GetText write SetText;
+    property FontSize: real read InvokeReal(()->b.FontSize) write Invoke(procedure(t: real) -> b.FontSize := t,value);
+    property Enabled: boolean read InvokeBoolean(()->b.IsEnabled) write Invoke(procedure(t: boolean) -> b.IsEnabled := t,value);
   end;
   
   ///!#
   TextLabelT = class(CommonControl)
   protected
     function b: GTextBlock := element as GTextBlock;
-    procedure CreateP(Txt: string);
+    procedure CreateP(Txt: string; fontsize: real);
     begin
       var tb := new GTextBlock;
       element := tb;
       //element.Margin := new Thickness(0,0,0,8);
       //element.Margin := new Thickness(5,5,5,0);
+      tb.FontSize := fontsize;
       Text := Txt;
       ActivePanel.Children.Add(b);
     end;
-    procedure CreatePXY(x,y: real; Txt: string);
+    procedure CreatePXY(x,y: real; Txt: string; fontsize: real);
     begin
       var tb := new GTextBlock;
       element := tb;
-      tb.Background := new SolidColorBrush(Colors.White);
-      tb.FontSize := 20;
-      tb.Opacity := 0.7;
+      //tb.Background := new SolidColorBrush(Colors.White);
+      //tb.Opacity := 0.7;
       Canvas.SetLeft(element,x);
       Canvas.SetTop(element,y);
+      tb.FontSize := fontsize;
       Text := Txt;
       ActivePanel.Children.Add(b);
     end;
   public 
-    constructor Create(Txt: string) := Invoke(CreateP,Txt);
-    constructor Create(x,y: real; Txt: string) := Invoke(CreatePXY,x,y,Txt);
+    constructor Create(Txt: string; fontsize: real := 12) := Invoke(CreateP,Txt,fontsize);
+    constructor Create(x,y: real; Txt: string; fontsize: real := 12) := Invoke(CreatePXY,x,y,Txt,fontsize);
     property Text: string read InvokeString(()->b.Text) write Invoke(procedure(t: string) -> b.Text := t,value);
+    property FontSize: real read InvokeReal(()->b.FontSize) write Invoke(procedure(t: real) -> b.FontSize := t,value);
+  end;
+  
+  IntegerLabelT = class(TextLabelT)
+  private 
+    val := 0;
+    message: string;
+    procedure CreateP(message: string; fontSize: real := 12; initValue: integer := 0);
+    begin
+      inherited CreateP(message+' '+initValue,fontSize);
+      Self.message := message;
+      val := initValue;
+    end;
+  public
+    property Value: integer read val write begin val := value; Text := message+' '+val; end;
+    constructor Create(message: string; fontSize: real := 12; initValue: integer := 0) := Invoke(CreateP,message,fontSize,initValue);
+  end;
+  
+  RealLabelT = class(TextLabelT)
+  private 
+    val := 0.0;
+    message: string;
+    procedure CreateP(message: string; fontSize: real := 12; initValue: real := 0);
+    begin
+      inherited CreateP(message+' '+initValue.ToString(FracDigits),fontSize);
+      Self.message := message;
+      val := initValue;
+    end;
+  public
+    property Value: real read val write begin val := value; Text := message+' '+val.ToString(FracDigits); end;
+    constructor Create(message: string; fontSize: real := 12; initValue: real := 0) := Invoke(CreateP,message,fontSize,initValue);
+    auto property FracDigits: integer := 1;
   end;
   
   ///!#
@@ -134,6 +186,7 @@ type
       Invoke(CreateP,Txt,w);
     end;
     property Text: string read GetText write SetText;
+    property FontSize: real read InvokeReal(()->tb.FontSize) write Invoke(procedure(t: real) -> tb.FontSize := t,value);
   end;
   
   IntegerBoxT = class(TextBoxT)
@@ -167,9 +220,12 @@ type
       end;}
     end;
     property Value: integer read GetValue write SetValue;
+    property FontSize: real read InvokeReal(()->tb.FontSize) write Invoke(procedure(t: real) -> tb.FontSize := t,value);
   end;
   
   TextBoxWithLabelT = class(CommonControl)
+  private 
+    l: TextBlock;
   protected
     function tb: GTextBox := (element as StackPanel).Children[1] as GTextBox;
     procedure BTextChanged(sender: Object; e: TextChangedEventArgs);
@@ -186,7 +242,7 @@ type
       element := sp;
       sp.Orientation := Orientation.Horizontal;
       sp.HorizontalAlignment := HorizontalAlignment.Stretch;
-      var l := new TextBlock();
+      l := new TextBlock();
       l.Text := LabelTxt;
       sp.Children.Add(l);
       var tb := new GTextBox;
@@ -207,6 +263,7 @@ type
       Invoke(CreateP,LabelTxt,Txt,w);
     end;
     property Text: string read GetText write SetText;
+    property FontSize: real read InvokeReal(()->tb.FontSize) write Invoke(procedure(t: real) -> begin tb.FontSize := t; l.FontSize := t; end,value);
   end;
 
   SliderT = class(CommonControl)
@@ -250,8 +307,11 @@ type
 
   
 function Button(Txt: string): ButtonT;
-function TextLabel(Txt: string): TextLabelT;
-function TextLabel(x,y: real; Txt: string): TextLabelT;
+function Button(x,y: integer; Txt: string): ButtonT;
+function TextLabel(Txt: string; fontsize: real := 12): TextLabelT;
+function TextLabel(x,y: real; Txt: string; fontsize: real := 12): TextLabelT;
+function IntegerLabel(message: string; fontsize: real := 12; initValue: integer := 0): IntegerLabelT;
+function RealLabel(message: string; fontsize: real := 12; initValue: real := 0): RealLabelT;
 function TextBox(Txt: string := ''; w: real := 0): TextBoxT;
 function IntegerBox(w: real := 0): IntegerBoxT;
 function Slider(min: real := 0; max: real := 10; val: real := 0): SliderT;
@@ -292,8 +352,9 @@ begin
   end;
   p.Background := new SolidColorBrush(c);
   DockPanel.SetDock(bb,d);
-  // Всегда добавлять предпоследним
-  MainDockPanel.children.Insert(MainDockPanel.children.Count-1,bb);
+  //MainDockPanel.children.Insert(MainDockPanel.children.Count-1,bb);
+  MainDockPanel.children.Insert(0,bb);
+  //MainDockPanel.children.Add(bb);
   pp := p;
   ActivePanel := p;
 end;
@@ -323,8 +384,11 @@ end;
 procedure AddStatusBar(Height: real) := Invoke(AddStatusBarP,Height);
 
 function Button(Txt: string): ButtonT := ButtonT.Create(Txt);
-function TextLabel(Txt: string): TextLabelT := TextLabelT.Create(Txt);
-function TextLabel(x,y: real; Txt: string): TextLabelT := TextLabelT.Create(x,y,Txt);
+function Button(x,y: integer; Txt: string): ButtonT := ButtonT.Create(x,y,Txt);
+function TextLabel(Txt: string; fontsize: real): TextLabelT := TextLabelT.Create(Txt,fontsize);
+function TextLabel(x,y: real; Txt: string; fontsize: real): TextLabelT := TextLabelT.Create(x,y,Txt,fontsize);
+function IntegerLabel(message: string; fontsize: real; initValue: integer): IntegerLabelT := IntegerLabelT.Create(message,fontsize,initValue);
+function RealLabel(message: string; fontsize: real; initValue: real): RealLabelT := RealLabelT.Create(message,fontsize,initValue);
 function TextBox(Txt: string; w: real): TextBoxT := TextBoxT.Create(Txt,w);
 function IntegerBox(w: real): IntegerBoxT := IntegerBoxT.Create(w);
 function Slider(min,max,val: real): SliderT := SliderT.Create(min,max,val);

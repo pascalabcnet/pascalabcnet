@@ -3486,16 +3486,18 @@ begin
       sb.Append('{')
     else sb.Append('[');
     if g.MoveNext() then
+    begin  
       sb.Append(StructuredObjectToString(g.Current, n + 1));
-    var cnt := 1;  
-    while g.MoveNext() and (cnt < nmax) do 
-    begin
-      sb.Append(',');
-      sb.Append(StructuredObjectToString(g.Current, n + 1));
-      cnt += 1;
-    end;
-    if cnt >= nmax then 
-      sb.Append(',...');
+      var cnt := 1;  
+      while g.MoveNext() and (cnt < nmax) do 
+      begin
+        sb.Append(',');
+        sb.Append(StructuredObjectToString(g.Current, n + 1));
+        cnt += 1;
+      end;
+      if cnt >= nmax then 
+        sb.Append(',...');
+    end;    
     
     if isdictorset then
       sb.Append('}')
@@ -8658,11 +8660,13 @@ function Print<T>(Self: sequence of T; delim: string): sequence of T; extensionm
 begin
   var g := Self.GetEnumerator();
   if g.MoveNext() then
+  begin  
     Write(g.Current);
-  while g.MoveNext() do
-    if delim <> '' then
-      Write(delim, g.Current)
-    else Write(g.Current);
+    while g.MoveNext() do
+      if delim <> '' then
+        Write(delim, g.Current)
+      else Write(g.Current);
+  end;  
   Result := Self; 
 end;
 
@@ -8719,9 +8723,11 @@ begin
   var g := Self.GetEnumerator();
   var sb := new System.Text.StringBuilder('');
   if g.MoveNext() then
+  begin
     sb.Append(g.Current.ToString());
-  while g.MoveNext() do 
-    sb.Append(delim + g.Current.ToString());
+    while g.MoveNext() do 
+      sb.Append(delim + g.Current.ToString());
+  end;  
   Result := sb.ToString;  
 end;
 

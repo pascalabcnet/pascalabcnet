@@ -68,7 +68,7 @@ namespace VisualPascalABC
                 var ta = editor.ActiveTextAreaControl.TextArea;
                 var doc = ta.Document;
 
-                if (ch == ' ')
+                /*if (ch == ' ')
                 {
                     var caret1 = editor.ActiveTextAreaControl.Caret;
                     int start1 = TextUtilities.FindPrevWordStart(editor.Document, caret1.Offset);
@@ -85,7 +85,7 @@ namespace VisualPascalABC
                         }
                     }
                     return false;
-                }
+                }*/
                 /*if (ch == '(')
                 {
                     var tl_beg = new TextLocation(ta.Caret.Column, ta.Caret.Line);
@@ -198,6 +198,13 @@ namespace VisualPascalABC
                         //if (curline.Contains(":=") && !curline.TrimStart().ToLower().StartsWith("for"))  // Это наиболее спорно. Надо проверять, что до присваивания - одно имя
                         if (Regex.IsMatch(curline, @"^\s*\w+\s*:=", RegexOptions.IgnoreCase))
                         {
+                            if (curline.Length > 0)
+                            {
+                                var last = curline[curline.Length - 1];
+                                if (!char.IsLetterOrDigit(last) && last != ']' && last != ')')
+                                    return false;
+                            }
+
                             var curlinenew = Regex.Replace(curline, @"(\s*)(\S+)(\s*):=(\s*)([^;]+)(\s*)(;?)$", @"$1$2 := $5;",RegexOptions.IgnoreCase);
                             while (curlinenew.EndsWith(";;"))
                                 curlinenew = curlinenew.Remove(curlinenew.Length - 1);
