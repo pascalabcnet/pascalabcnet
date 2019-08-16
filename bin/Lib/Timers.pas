@@ -38,11 +38,11 @@ type
     property TimerProc: ()->() read _procedure write _procedure;
   end;
   
-function CreateTimer(ms: integer; TimerProc: procedure): Timer;
+function CreateTimerAndStart(ms: integer; TimerProc: procedure): Timer;
 
 implementation
 
-function CreateTimer(ms: integer; TimerProc: procedure): Timer;
+function CreateTimerAndStart(ms: integer; TimerProc: procedure): Timer;
 begin
   Result := new Timer(ms,TimerProc);
   Result.Start;

@@ -9,6 +9,7 @@ uses GraphWPFBase;
 uses System.Windows; 
 uses System.Windows.Media; 
 uses System.Windows.Controls; 
+uses System.ComponentModel;
 
 procedure AddRightPanel(Width: real := 200; c: Color := Colors.LightGray; Margin: real := 10);
 procedure AddLeftPanel(Width: real := 200; c: Color := Colors.LightGray; Margin: real := 10);
@@ -18,12 +19,13 @@ procedure AddStatusBar(Height: real := 24);
 
 var 
   ActivePanel: Panel;
-  GlobalMargin := 0;
+  GlobalHMargin := 12;
 
 type
   GButton = System.Windows.Controls.Button;
   GTextBlock = System.Windows.Controls.TextBlock;
   GTextBox = System.Windows.Controls.TextBox;
+  GListBox = System.Windows.Controls.ListBox;
   Key = System.Windows.Input.Key;  
   ///!#
   CommonControl = class
@@ -58,7 +60,7 @@ type
     procedure CreateP(Txt: string);
     begin
       element := new GButton;
-      element.Margin := new Thickness(0,0,0,8);
+      element.Margin := new Thickness(0,0,0,GlobalHMargin);
       //Margin := GlobalMargin;
       Text := Txt;
       b.Click += BClick;
@@ -70,7 +72,7 @@ type
       element := new GButton;
       element.SetLeft(x);
       element.SetTop(y);
-      element.Margin := new Thickness(0,0,0,8);
+      element.Margin := new Thickness(0,0,0,GlobalHMargin);
       //Margin := GlobalMargin;
       Text := Txt;
       b.Click += BClick;
@@ -100,7 +102,7 @@ type
     begin
       var tb := new GTextBlock;
       element := tb;
-      //element.Margin := new Thickness(0,0,0,8);
+      element.Margin := new Thickness(0,0,0,GlobalHMargin);
       //element.Margin := new Thickness(5,5,5,0);
       tb.FontSize := fontsize;
       Text := Txt;
@@ -110,6 +112,7 @@ type
     begin
       var tb := new GTextBlock;
       element := tb;
+      element.Margin := new Thickness(0,0,0,GlobalHMargin);
       //tb.Background := new SolidColorBrush(Colors.White);
       //tb.Opacity := 0.7;
       Canvas.SetLeft(element,x);
@@ -172,7 +175,7 @@ type
     begin
       element := new GTextBox;
       element.HorizontalAlignment := HorizontalAlignment.Stretch;
-      element.Margin := new Thickness(0,0,0,8);
+      element.Margin := new Thickness(0,0,0,GlobalHMargin);
       Text := Txt;
       if w > 0 then
         Width := w;
@@ -248,7 +251,7 @@ type
       var tb := new GTextBox;
       tb.Width := 100;
       tb.VerticalAlignment := VerticalAlignment.Stretch;
-      tb.Margin := new Thickness(0,0,0,8);
+      tb.Margin := new Thickness(0,0,0,GlobalHMargin);
       sp.Children.Add(tb);
       Text := Txt;
       if w > 0 then
@@ -266,6 +269,40 @@ type
     property FontSize: real read InvokeReal(()->tb.FontSize) write Invoke(procedure(t: real) -> begin tb.FontSize := t; l.FontSize := t; end,value);
   end;
 
+  ///!#
+  ListBoxT = class(CommonControl)
+  protected
+    function tb: GListBox := element as GListBox;
+    procedure CreateP(w,h: real);
+    begin
+      element := new GListBox;
+      element.HorizontalAlignment := HorizontalAlignment.Stretch;
+      element.Margin := new Thickness(0,0,0,GlobalHMargin);
+      if w > 0 then
+        Width := w;
+      Height := h;
+      ActivePanel.Children.Add(tb);
+    end;
+    procedure AddP(s: string);
+    begin
+      var lbi := new ListBoxItem();
+      lbi.Content := s;
+      tb.Items.Add(lbi);
+    end;  
+    procedure SortP := tb.Items.SortDescriptions.Add(new SortDescription('Content', ListSortDirection.Ascending));
+    procedure SortPDescending := tb.Items.SortDescriptions.Add(new SortDescription('Content', ListSortDirection.Descending));
+  public 
+    event Click: procedure;
+    constructor Create(w: real := 0; h: real := 200) := Invoke(CreateP,w,h);
+    procedure Sort := Invoke(SortP);
+    procedure SortDescending := Invoke(SortPDescending);
+    procedure Add(s: string) := Invoke(AddP,s);
+    property FontSize: real read InvokeReal(()->tb.FontSize) write Invoke(procedure(t: real) -> tb.FontSize := t,value);
+    property Count: integer read InvokeInteger(()->tb.Items.Count);
+    property SelectedIndex: integer read InvokeInteger(()->tb.SelectedIndex) write Invoke(procedure(t: integer) -> tb.SelectedIndex := t,value);
+    property SelectedText: string read InvokeString(()->tb.SelectedItem as string) write Invoke(procedure(t: string) -> tb.SelectedItem := t,value);
+  end;
+  
   SliderT = class(CommonControl)
   private
     function sl: Slider := element as Slider;
@@ -313,6 +350,7 @@ function TextLabel(x,y: real; Txt: string; fontsize: real := 12): TextLabelT;
 function IntegerLabel(message: string; fontsize: real := 12; initValue: integer := 0): IntegerLabelT;
 function RealLabel(message: string; fontsize: real := 12; initValue: real := 0): RealLabelT;
 function TextBox(Txt: string := ''; w: real := 0): TextBoxT;
+function ListBox(w: real := 0; h: real := 200): ListBoxT;
 function IntegerBox(w: real := 0): IntegerBoxT;
 function Slider(min: real := 0; max: real := 10; val: real := 0): SliderT;
 
@@ -390,6 +428,7 @@ function TextLabel(x,y: real; Txt: string; fontsize: real): TextLabelT := TextLa
 function IntegerLabel(message: string; fontsize: real; initValue: integer): IntegerLabelT := IntegerLabelT.Create(message,fontsize,initValue);
 function RealLabel(message: string; fontsize: real; initValue: real): RealLabelT := RealLabelT.Create(message,fontsize,initValue);
 function TextBox(Txt: string; w: real): TextBoxT := TextBoxT.Create(Txt,w);
+function ListBox(w,h: real): ListBoxT := ListBoxT.Create(w,h);
 function IntegerBox(w: real): IntegerBoxT := IntegerBoxT.Create(w);
 function Slider(min,max,val: real): SliderT := SliderT.Create(min,max,val);
 
