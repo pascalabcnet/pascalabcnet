@@ -4,7 +4,7 @@ begin
   var c := new CircleWPF(Window.Center, 20, Colors.Green);
   
   BeginFrameBasedAnimationTime(dt->begin
-    c.Move(dt);    
+    c.MoveTime(dt);    
   end);
   
   OnKeyDown := k -> begin

@@ -461,7 +461,7 @@ namespace PascalABCCompiler.NETGenerator
                 an.Name = name;// + ".exe";
             else an.Name = name; //+ ".dll";
 
-            if (name == "PABCRtl" || name == "PABCRtl32")
+            if (name == "PABCRtl")
             {
                 pabc_rtl_converted = true;
                 an.Flags = AssemblyNameFlags.PublicKey;
@@ -883,7 +883,7 @@ namespace PascalABCCompiler.NETGenerator
             {
 
             }
-            if (an.Name == "PABCRtl" || an.Name == "PABCRtl32")
+            if (an.Name == "PABCRtl")
             {
                 CustomAttributeBuilder cab = new CustomAttributeBuilder(typeof(AssemblyKeyFileAttribute).GetConstructor(new Type[] { typeof(string) }), new object[] { an.Name == "PABCRtl" ? "PublicKey.snk" : "PublicKey32.snk" });
                 ab.SetCustomAttribute(cab);

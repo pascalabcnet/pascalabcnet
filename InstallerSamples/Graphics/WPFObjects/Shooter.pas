@@ -3,11 +3,12 @@
 type 
   BulletWPF = class(CircleWPF) end;
   MonsterWPF = class(SquareWPF) end;
+  PlayerWPF = class(EllipseWPF) end;
 
 begin
-  var c := new EllipseWPF(200, 300, 30, 50, RandomColor);
-  c.Velocity := 100;
-  c.Number := 0;
+  var Player := new PlayerWPF(GraphWindow.Center, 30, 50, RandomColor);
+  Player.Velocity := 100;
+  Player.Number := 0;
   
   loop 5 do
   begin
@@ -15,11 +16,11 @@ begin
     m.Velocity := 50;
   end;  
   
-  OnMouseMove := (x,y,mb) -> c.RotateToPoint(x,y);
+  OnMouseMove := (x,y,mb) -> Player.RotateToPoint(x,y);
   
   OnMouseDown := (x,y,mb) -> begin
-    var cc := new BulletWPF(c.CenterTop,5,Colors.Red);
-    cc.Direction := (x-c.Center.X,y-c.Center.Y);
+    var cc := new BulletWPF(Player.CenterTop,5,Colors.Red);
+    cc.Direction := (x-Player.Center.X,y-Player.Center.Y);
     cc.Velocity := 300;
   end;
   
@@ -27,49 +28,58 @@ begin
 
   BeginFrameBasedAnimationTime(dt->begin
     Window.Title := 'Количество объектов: '+Objects.Count;
+    // Перемещение игрока
     if kr then 
-      c.Dx := 1
+      Player.Dx := 1
     else if kl then 
-      c.Dx := -1
-    else c.Dx := 0;  
+      Player.Dx := -1
+    else Player.Dx := 0;  
     if ku then 
-      c.Dy := -1
+      Player.Dy := -1
     else if kd then 
-      c.Dy := 1
-    else c.Dy := 0; 
+      Player.Dy := 1
+    else Player.Dy := 0; 
     
     for var i:=Objects.Count-1 downto 0 do // все перемещаются в своём направлении со своей скоростью
     begin
       var o := Objects[i];
       if o is MonsterWPF then 
-        o.Direction := (c.Center.X - o.Center.X,c.Center.Y-o.Center.Y);
-      o.Move(dt);
-    end;  
+        o.Direction := (Player.Center.X - o.Center.X,Player.Center.Y-o.Center.Y);
+      o.MoveTime(dt);
+    end;
+    
+    if Player.IntersectionList.Any(o -> o is MonsterWPF) then
+    begin
+      // Конец игры
+      
+    end;
   end);
   
-  CreateTimer(100,procedure -> // Таймер убивания монстров и умирания объектов за пределами экрана
+  CreateTimerAndStart(100,procedure -> // Таймер убивания монстров и умирания объектов за пределами экрана
   begin
     for var i:=Objects.Count-1 downto 0 do
     begin
       var o := Objects[i];
       if (o.Center.X < 0) or (o.Center.X > Window.Width) or
          (o.Center.Y < 0) or (o.Center.Y > Window.Height) then
-        o.Destroy;   
+        if not (o is PlayerWPF) then 
+          o.Destroy;   
       if o is BulletWPF then
         foreach var x in o.IntersectionList do
           if x is MonsterWPF then
           begin
             x.Destroy;
             o.Destroy;
-            c.Number += 1;
+            Player.Number += 1;
             break;
           end;
     end;
   end);
   
-  CreateTimer(500,procedure -> // Таймер рождения монстров
+  CreateTimerAndStart(1000,procedure -> // Таймер рождения монстров
   begin
-    var m := new MonsterWPF(750,Random(10,550),30,RandomColor);
+    var x := Random(2)=0 ? 750 : 50;
+    var m := new MonsterWPF(x,Random(10,550),30,RandomColor);
     m.Velocity := 50;
   end);
   

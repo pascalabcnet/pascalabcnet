@@ -15,7 +15,7 @@ namespace VisualPascalABC
         public bool ConverTabsToSpaces = true;
         public bool deleteEXEAfterExecute = false;
         public bool deletePDBAfterExecute = true;
-        public bool UseOutputDirectory = false;
+        public bool UseOutputDirectory = true;
         public string OutputDirectory = null;
         public bool PauseInRunModeIfConsole = true;
         public string DefaultSourceFileNameFormat = "Program{0}.pas";
