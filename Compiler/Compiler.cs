@@ -2773,6 +2773,7 @@ namespace PascalABCCompiler
             }
             return false;
         }
+     
 
         private Dictionary<string, SyntaxTree.syntax_namespace_node> IncludeNamespaces(CompilationUnit Unit)
         {
@@ -2811,7 +2812,7 @@ namespace PascalABCCompiler
 
                 }
             }
-            Dictionary<string, SyntaxTree.syntax_namespace_node> namespaces = new Dictionary<string, SyntaxTree.syntax_namespace_node>();
+            Dictionary<string, SyntaxTree.syntax_namespace_node> namespaces = new Dictionary<string, SyntaxTree.syntax_namespace_node>(StringComparer.OrdinalIgnoreCase);
             List<SyntaxTree.unit_or_namespace> namespace_modules = new List<SyntaxTree.unit_or_namespace>();
             foreach (string file in files)
             {
@@ -3304,7 +3305,7 @@ namespace PascalABCCompiler
                 
                 for (int i = SyntaxUsesList.Count - 1 - CurrentUnit.InterfaceUsedUnits.Count; i >= 0; i--)
                 {
-                    if (IsPossibleNamespace(SyntaxUsesList[i], true))
+                    if (IsPossibleNamespace(SyntaxUsesList[i], true) || namespaces.ContainsKey(SyntaxUsesList[i].name.idents[0].name))
                     {
                         CurrentUnit.InterfaceUsedUnits.AddElement(new TreeRealization.namespace_unit_node(GetNamespace(SyntaxUsesList[i])));
                         CurrentUnit.PossibleNamespaces.Add(SyntaxUsesList[i]);
