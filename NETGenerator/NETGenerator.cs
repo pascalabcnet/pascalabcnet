@@ -6122,6 +6122,15 @@ namespace PascalABCCompiler.NETGenerator
             cur_meth = tmp;
             il = tmp_il;
             num_scope--;
+            if (value.overrided_method != null && value.name.IndexOf('.') != -1)
+            {
+                MethodInfo mi = null;
+                if (helper.GetMethod(value.overrided_method) != null)
+                    mi = helper.GetMethod(value.overrided_method).mi;
+                else
+                    mi = (value.overrided_method as ICompiledMethodNode).method_info;
+                cur_type.DefineMethodOverride(methb, mi);
+            }
         }
 
         private MethInfo ConvertMethodWithNested(SemanticTree.ICommonMethodNode meth, ConstructorBuilder methodb)

@@ -2723,7 +2723,8 @@ namespace PascalABCCompiler.TreeConverter
                                 }
                                 else
                                 {
-                                    fn_common.SetName(meth.name);
+                                    if (fn_common.name.IndexOf('.') == -1)
+                                        fn_common.SetName(meth.name);
                                     fn_common.name_case_fixed = true;
                                 }
 
@@ -2790,6 +2791,8 @@ namespace PascalABCCompiler.TreeConverter
                     //Делаем её virtual final
                     commn.is_final = true;
                     commn.newslot_awaited = true;
+                    if (commn.name.IndexOf('.') != -1)
+                        commn.overrided_method = meth;
                 }
             }
             else

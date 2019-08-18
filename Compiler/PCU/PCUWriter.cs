@@ -2843,7 +2843,8 @@ namespace PascalABCCompiler.PCU
 			bw.Write((byte)meth.polymorphic_state);
 			bw.Write(meth.num_of_default_variables);
 			bw.Write(meth.num_of_for_cycles);
-			bw.Write(meth.overrided_method != null);
+			bw.Write(meth.overrided_method != null && meth.name.IndexOf('.') != -1);
+            
             //ssyy-
 			//if (meth.pascal_associated_constructor != null)
 			//{
@@ -3057,6 +3058,8 @@ namespace PascalABCCompiler.PCU
             {
                 VisitStatement(meth.function_code);
             }
+            if (meth.overrided_method != null && meth.name.IndexOf('.') != -1)
+                WriteMethodReference(meth.overrided_method);
             //}
         }
 

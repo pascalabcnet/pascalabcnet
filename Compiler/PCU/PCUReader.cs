@@ -652,6 +652,16 @@ namespace PascalABCCompiler.PCU
 			return sn;
 		}
 		
+        public statement_node GetCodeWithOverridedMethod(common_method_node meth, int offset)
+		{
+			int tmp = (int)br.BaseStream.Position;
+			br.BaseStream.Seek(start_pos+offset,SeekOrigin.Begin);
+			statement_node sn = CreateStatement();
+            meth.overrided_method = GetMethodReference();
+			br.BaseStream.Seek(tmp,SeekOrigin.Begin);
+			return sn;
+		}
+        
         //перейти на указанную позицию в списке импорт. сущ-тей
 		private void SeekInExternal(int pos)
 		{
@@ -1739,7 +1749,8 @@ namespace PascalABCCompiler.PCU
                 cmn.cont_type.static_constr = cmn;
             cmn.num_of_default_variables = br.ReadInt32();
             cmn.num_of_for_cycles = br.ReadInt32();
-            br.ReadBoolean();
+            bool has_overrided_method = br.ReadBoolean();
+            
             int num_var = br.ReadInt32();
             GetVariables(cmn, num_var);
             int num_consts = br.ReadInt32();
@@ -1753,7 +1764,10 @@ namespace PascalABCCompiler.PCU
                 cmn.functions_nodes_list.AddElement(GetNestedFunction());
             //br.ReadInt32();//code;
             cmn.loc = ReadDebugInfo();
-            cmn.function_code = GetCode(br.ReadInt32());
+            if (has_overrided_method)
+                cmn.function_code = GetCodeWithOverridedMethod(cmn, br.ReadInt32());
+            else
+                cmn.function_code = GetCode(br.ReadInt32());
             cmn.cont_type.methods.AddElement(cmn);
             if (cmn.name == "op_Equality")
                 cmn.cont_type.scope.AddSymbol(compiler_string_consts.eq_name, new SymbolInfo(cmn));
