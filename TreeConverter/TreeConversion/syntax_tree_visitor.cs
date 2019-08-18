@@ -12904,6 +12904,15 @@ namespace PascalABCCompiler.TreeConverter
                     // end frninja
                     context.leave_type_method();
                 }
+                /*else
+                {
+                    if (context._cmn != null && context._cmn.functions != null && (context.top_function is common_namespace_function_node) && 
+                        (context.top_function as common_namespace_function_node).is_yield_helper &&
+                        context.top_function.name.ToLower().StartsWith("<yield_helper"))
+                    {
+                        context._cmn.functions.remove(context.top_function as common_namespace_function_node);
+                    }
+                }*/
                 context.is_order_independed_method_description = false;
                 context.leave_block();
             }

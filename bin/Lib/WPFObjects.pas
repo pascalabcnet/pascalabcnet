@@ -397,6 +397,11 @@ type
       Rotate(da);
       Result := Self;
     end;
+    /// Объект находится вне границ графического окна
+    function OutOfGraphWindow: boolean;
+    begin
+      Result := (Left < 0) or (Top < 0) or (Right > GraphWindow.Width) or (Bottom > GraphWindow.Height);
+    end;
   end;
   
 // -----------------------------------------------------
