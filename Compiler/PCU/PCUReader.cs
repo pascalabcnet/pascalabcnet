@@ -712,9 +712,10 @@ namespace PascalABCCompiler.PCU
             TypeSpec ts = new TypeSpec();
             Type t = null;
             string type_name = pcu_file.dotnet_names[off].name;
+            
             //if (!type_name.EndsWith("]"))
                 t = NetHelper.NetHelper.FindTypeOrCreate(type_name);
-            if (t == null)
+            if (t == null || type_name.IndexOf('.') == -1)
             {
                 ts.name = type_name;
                 return ts;
@@ -875,6 +876,7 @@ namespace PascalABCCompiler.PCU
                 {
                     List<MemberInfo> mis2 = NetHelper.NetHelper.GetMembers(t, pcu_file.dotnet_names[off].name);
                     mi = ChooseMethod(t, mis2, param_types);
+                    
                     //mi = t.GetMethod(pcu_file.dotnet_names[off].name, new Type[1] { param_types[0].t });
                 }
             }

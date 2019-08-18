@@ -1337,11 +1337,16 @@ begin
   if (al=Alignment.RightTop) or (al=Alignment.RightCenter) or (al=Alignment.RightBottom) then
     ch.Left := Width-ch.Width
   else if (al=Alignment.CenterTop) or (al=Alignment.Center) or (al=Alignment.CenterBottom) then 
-    ch.Left := (Width-ch.Width)/2;
+    ch.Left := (Width-ch.Width)/2
+  else if (al=Alignment.LeftTop) or (al=Alignment.LeftCenter) or (al=Alignment.LeftBottom) then  
+    ch.Left := 0;
+    
   if (al=Alignment.RightBottom) or (al=Alignment.CenterBottom) or (al=Alignment.LeftBottom) then
     ch.Top := Height-ch.Height
   else if (al=Alignment.RightCenter) or (al=Alignment.Center) or (al=Alignment.LeftCenter) then
-    ch.Top := (Height-ch.Height)/2;
+    ch.Top := (Height-ch.Height)/2
+  else if (al=Alignment.LeftTop) or (al=Alignment.CenterTop) or (al=Alignment.RightTop) then  
+    ch.Top := 0;
 
   ChildrenWPF.Add(ch);
   Objects.Destroy(ch);
