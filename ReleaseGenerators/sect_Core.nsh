@@ -133,7 +133,6 @@
     File ..\bin\Lib\OpenGLABC.pcu
 
     File ..\bin\Lib\PABCRtl.dll
-    File ..\bin\Lib\PABCRtl32.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
     File ..\bin\Lib\HelixToolkit.dll
 

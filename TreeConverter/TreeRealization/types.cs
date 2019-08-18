@@ -1522,7 +1522,7 @@ namespace PascalABCCompiler.TreeRealization
             this.SetBaseType(base_type);
 		}
         bool _sealed = false;
-        bool _is_abstract = false;
+        public bool _is_abstract = false;
         bool _is_partial = false;
         bool _is_static = false;
 

@@ -18456,6 +18456,8 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.new_expr _new_expr)
         {
             type_node tn = ret.visit(_new_expr.type);
+            if (tn is generic_instance_type_node gitn) // SSM 07/08/19 #2070
+                gitn._is_abstract = gitn.original_generic.IsAbstract;
             //if (tn == SystemLibrary.SystemLibrary.void_type)
             //	AddError(new VoidNotValid(get_location(_new_expr.type)));
             if (tn.IsDelegate && !_new_expr.new_array)
@@ -18626,7 +18628,14 @@ namespace PascalABCCompiler.TreeConverter
                 switch (tn.type_special_kind)
                 {
                 	case SemanticTree.type_special_kind.enum_kind:
-                		return_value(new int_const_node(sizeof(int),get_location(ntr))); break;
+                        if (tn is compiled_type_node ctn)
+                        {
+                            return_value(new int_const_node(System.Runtime.InteropServices.Marshal.SizeOf(ctn.compiled_type.GetEnumUnderlyingType()), get_location(ntr))); break;
+                        }
+                		else
+                        {
+                            return_value(new int_const_node(sizeof(int), get_location(ntr))); break;
+                        }
                 default:
                 	if (tn.is_generic_parameter || tn.is_generic_type_definition || tn.is_generic_type_instance)
                 	{

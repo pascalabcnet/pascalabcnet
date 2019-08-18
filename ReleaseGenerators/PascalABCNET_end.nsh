@@ -3,9 +3,6 @@
   ExecWait '"$INSTDIR\ExecHide.exe" "$INSTDIR\gacutil.exe" /u "PABCRtl"'
   ExecWait '"$INSTDIR\ExecHide.exe" "$INSTDIR\gacutil.exe" /i "$INSTDIR\Lib\PABCRtl.dll"'
   
-  ExecWait '"$INSTDIR\ExecHide.exe" "$INSTDIR\gacutil.exe" /u "PABCRtl32"'
-  ExecWait '"$INSTDIR\ExecHide.exe" "$INSTDIR\gacutil.exe" /i "$INSTDIR\Lib\PABCRtl32.dll"'
-
   ExecWait '"$INSTDIR\ExecHide.exe" "$INSTDIR\gacutil.exe" /u "HelixToolkit.Wpf"'
   ExecWait '"$INSTDIR\ExecHide.exe" "$INSTDIR\gacutil.exe" /i "$INSTDIR\Lib\HelixToolkit.Wpf.dll"'
 

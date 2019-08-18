@@ -1,48 +1,48 @@
 ﻿uses 
-  GraphABC,
-  ABCObjects,
+  GraphWPF,
+  WPFObjects,
   System.Reflection;
 
 const lim = 127 + 32;
 
 var 
-  CurrentBackColor := clWhite;
-  InfoString: RectangleABC;
+  CurrentBackColor := Colors.White;
+  InfoString: RectangleWPF;
 
 procedure ChangeInfoStringText(colorName: string);
 begin
-  var c := Color.FromName(colorName);
-  InfoString.Text := string.Format('Color.{0}: (R: {1}  G: {2}  B: {3})   (H: {4:f1}  S: {5:f1}  B: {6:f1})',colorName,c.R,c.G,c.B,c.GetHue,c.GetSaturation,c.GetBrightness);
+  var c := Colors.LightGray;//Color.FromName(colorName);
+  InfoString.Text := $'Colors.{colorName}: (R: {c.R}  G: {c.G}  B: {c.B})';
   InfoString.Color := c;
   if c.R*c.R+c.G*c.G+c.B*c.B <= 3*lim*lim then 
-    InfoString.FontColor := clWhite
-  else InfoString.FontColor := clBlack;
+    InfoString.FontColor := Colors.White
+  else InfoString.FontColor := Colors.Black;
   if c.A = 0 then 
-   InfoString.FontColor := clGray;
+    InfoString.FontColor := Colors.Gray;
 end;
 
 procedure CreateStandardColors(backColor: Color);
 begin
-  ClearWindow(backColor);
-  var t := typeof(Color);
+  Window.Clear(backColor);
+  var t := typeof(Colors);
   var mi := t.GetProperties();
-  var y := 10;
-  var x := 10;
-  var h := Window.Width div 5 - 11;
+  var y := 10.0;
+  var x := 10.0;
+  var h := Window.Width / 5 - 11;
   foreach m: PropertyInfo in mi do
   begin
     if m.GetGetMethod(true).IsStatic then
     begin
       var c := Color(m.GetValue(nil,nil)); 
-      var r := new RectangleABC(x,y,h,22,c);
+      var r := new RectangleWPF(x,y,h,22,c);
       r.Text := m.Name;
-      r.TextScale := 0.9;
-      r.Bordered := False;
+      r.FontSize := 16;//.TextScale := 0.9;
+      //r.Bordered := False;
       if c.R*c.R+c.G*c.G+c.B*c.B <= 3*lim*lim then 
-        r.FontColor := clWhite
-      else r.FontColor := clBlack;
+        r.FontColor := Colors.White
+      else r.FontColor := Colors.Black;
       if c.A = 0 then 
-        r.FontColor := clGray;
+        r.FontColor := Colors.Gray;
       y += 25;
       if y > Window.Height-40 then
       begin
@@ -54,10 +54,10 @@ begin
 end;
 
 var 
-  ob: ObjectABC;
-  dx,dy: integer;
+  ob: ObjectWPF;
+  dx,dy: real;
 
-procedure MouseDown(x,y,mb: integer);
+procedure MouseDown(x,y: real; mb: integer);
 begin
   ob := ObjectUnderPoint(x,y);
   if ob=InfoString then
@@ -69,12 +69,12 @@ begin
     dy := y - ob.Top;
     var c := ob.Color;
     if (mb=2) then 
-      ob.Scale(2)
+      ob.ScaleFactor := 2
     else ob.Color := Color.FromArgb(128,c.R,c.G,c.B);
   end;  
 end;
 
-procedure MouseUp(x,y,mb: integer);
+procedure MouseUp(x,y: real; mb: integer);
 begin
   if ob<>nil then
   begin
@@ -91,7 +91,7 @@ begin
   end;
 end;
 
-procedure MouseMove(x,y,mb: integer);
+procedure MouseMove(x,y: real; mb: integer);
 begin
   if (ob<>nil) and (mb=1) then
   begin
@@ -111,32 +111,32 @@ begin
     ChangeInfoStringText(ob1.Text);
 end;
 
-procedure KeyDown(Key: integer);
+procedure KeyDown(k: Key);
 begin
-  if Key=vk_Space then
+  if k=Key.Space then
   begin
-    if CurrentBackColor=clWhite then 
+    if CurrentBackColor=Colors.White then 
     begin
-      CurrentBackColor := clBlack;
-      InfoString.BorderColor := clWhite;
+      CurrentBackColor := Colors.Black;
+      InfoString.BorderColor := Colors.White;
     end  
     else 
     begin
-      CurrentBackColor := clWhite;
-      InfoString.BorderColor := clBlack;
+      CurrentBackColor := Colors.White;
+      InfoString.BorderColor := Colors.Black;
     end;  
-    ClearWindow(CurrentBackColor);
-    RedrawObjects;
+    Window.Clear(CurrentBackColor);
+    //RedrawObjects;
   end;  
 end;
 
 begin
-  SetWindowSize(1024,768);
-  Window.IsFixedSize := True;
+  Window.SetSize(1024,768);
+  //Window.IsFixedSize := True;
   Window.CenterOnScreen;
   Window.Title := 'Стандартные цвета (нажмите Пробел для изменения фонового цвета)';
   CreateStandardColors(CurrentBackColor);
-  InfoString := new RectangleABC(10,Window.Height-30,Window.Width-20,25);
+  InfoString := new RectangleWPF(10,Window.Height-30,Window.Width-20,25,Colors.LightGray);
   OnMouseMove := MouseMove;
   OnMouseDown := MouseDown;
   OnMouseUp := MouseUp;
