@@ -17317,6 +17317,8 @@ namespace PascalABCCompiler.TreeConverter
         {
             string module_name = "";
             string name = "";
+            if (context.converted_func_stack.size > 1)
+                AddError(context.top_function.loc, "EXTERNAL_METHOD_CANNOT_BE_NESTED");
             if (context.converted_func_stack.top() is common_method_node && (context.converted_func_stack.top() as common_method_node).polymorphic_state != SemanticTree.polymorphic_state.ps_static)
                 AddError(context.top_function.loc, "EXTERNAL_METHOD_SHOULD_BE_STATIC");
             if (context.converted_func_stack.top().is_generic_function)
