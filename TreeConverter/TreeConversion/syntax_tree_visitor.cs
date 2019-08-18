@@ -5136,8 +5136,15 @@ namespace PascalABCCompiler.TreeConverter
             else
             {
                 id = deref_value as SyntaxTree.ident;
+                if (id != null && id.name != null && id.name.IndexOf('.') != -1)
+                {
+                    var arr = id.name.Split('.');
+                    deref_value = new dot_node(new ident(id.name.Substring(0, id.name.LastIndexOf('.')), id.source_context), new ident(arr[arr.Length-1],id.source_context));
+                    id = null;
+                }
                 if (id != null)
                 {
+                    
                     if (templ_args_count != 0)
                     {
                         //Ищем generics
@@ -16895,6 +16902,13 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.ident _ident)
         {
+            if (_ident.name.IndexOf('.') != -1)
+            {
+                var arr = _ident.name.Split('.');
+                var dn = new dot_node(new ident(_ident.name.Substring(0, _ident.name.LastIndexOf('.')), _ident.source_context), new ident(arr[arr.Length - 1], _ident.source_context));
+                dn.visit(this);
+                return;
+            }
             var mot = motivation_keeper.motivation;
             motivation_keeper.reset();
             switch (mot)
