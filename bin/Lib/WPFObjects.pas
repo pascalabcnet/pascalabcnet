@@ -283,6 +283,7 @@ type
     procedure MoveOn(v: (real,real)) := MoveTo(Left+v[0],Top+v[1]);
     /// Перемещает графический объект на вектор (dx,dy)
     procedure Move; virtual := MoveOn(dx,dy);
+    /// Перемещает графический объект вдоль вектора Direction со скоростью Velocity за время dt
     procedure MoveTime(dt: real); virtual;
     begin
       var len := Sqrt(dx*dx+dy*dy);
