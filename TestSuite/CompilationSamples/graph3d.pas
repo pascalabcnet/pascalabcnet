@@ -428,6 +428,10 @@ type
     property Y: real read GetY write SetY;
   /// Координата Z
     property Z: real read GetZ write SetZ;
+  /// Направление движения (используется методом MoveTime)
+    auto property Direction: Vector3D;
+  /// Скорость в направлении Direction
+    auto property Velocity: real := 3;
   /// Перемещает 3D-объект к точке (xx,yy,zz)
     function MoveTo(xx, yy, zz: real): Object3D := 
     Invoke&<Object3D>(()->begin
@@ -448,6 +452,20 @@ type
     function MoveOnY(dy: real): Object3D := MoveOn(0, dy, 0);
   /// Перемещает z-координату 3D-объекта на dz
     function MoveOnZ(dz: real): Object3D := MoveOn(0, 0, dz);
+  /// Перемещает 3D-объект вдоль вектора Direction со скоростью Velocity за время dt
+    procedure MoveTime(dt: real); virtual;
+    begin
+      var dx := Direction.X;
+      var dy := Direction.Y;
+      var dz := Direction.Z;
+      var len := Sqrt(dx*dx+dy*dy+dz*dz);
+      if len = 0 then
+        exit;
+      var dvx := dx/len*Velocity;
+      var dvy := dy/len*Velocity;
+      var dvz := dz/len*Velocity;
+      MoveOn(dvx*dt,dvy*dt,dvz*dt);
+    end;
   /// Цвет 3D-объекта
     property Color: GColor read GetColor write SetColor; virtual;
   private
@@ -2603,6 +2621,12 @@ function PointOnPlane(Plane: Plane3D; x, y: real): Point3D;
 /// Возвращает ближайшую точку на линии Line с лучом, выпущенным из камеры и проходящем через точку (x,y) экрана
 function NearestPointOnLine(Line: Ray3D; x, y: real): Point3D;
 
+/// Начинает анимацию, основанную на кадре, и передаёт в каждый обработчик кадра время dt, прошедшее с момента последней перерисовки
+procedure BeginFrameBasedAnimationTime(Draw: procedure(dt: real));
+
+/// Заканчивает анимацию, основанную на кадре
+procedure EndFrameBasedAnimation;
+
 var  
 // -----------------------------------------------------
 //>>     События модуля Graph3D # Graph3D events
@@ -2619,6 +2643,8 @@ var
   OnKeyUp: procedure(k: Key);
   /// Событие нажатия символьной клавиши
   OnKeyPress: procedure(ch: char);
+  /// Событие перерисовки графического 3D-окна
+  OnDrawTime: procedure(dt: real);
 
 var
 // -----------------------------------------------------
@@ -3686,6 +3712,32 @@ function Any(x, y, z: real; c: Color): AnyT := Inv(()->AnyT.Create(x, y, z, c));
 
 // Сервисные функции и классы
 
+var LastUpdatedTime := new System.TimeSpan(0); 
+
+procedure RenderFrame(o: Object; e: System.EventArgs);
+begin
+  if OnDrawTime<>nil then
+  begin
+    var e1 := RenderingEventArgs(e).RenderingTime;
+    var dt := e1 - LastUpdatedTime;
+    if LastUpdatedTime.TotalMilliseconds<>0 then 
+      if OnDrawTime<>nil then
+        OnDrawTime(dt.Milliseconds/1000);
+    LastUpdatedTime := e1;  
+  end;  
+end;
+
+procedure BeginFrameBasedAnimationTime(Draw: procedure(dt: real));
+begin
+  OnDrawTime := Draw;
+end;
+
+procedure EndFrameBasedAnimation;
+begin
+  OnDrawTime := nil;
+end;  
+
+
 type
   Graph3DWindow = class(GMainWindow)
   public 
@@ -3804,6 +3856,8 @@ type
       
       hvp.Focus();
       Closed += procedure(sender, e) -> begin Halt; end;
+      
+      CompositionTarget.Rendering += RenderFrame;
     end;
   end;
 

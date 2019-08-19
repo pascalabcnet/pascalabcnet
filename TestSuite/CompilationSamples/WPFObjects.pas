@@ -283,6 +283,7 @@ type
     procedure MoveOn(v: (real,real)) := MoveTo(Left+v[0],Top+v[1]);
     /// Перемещает графический объект на вектор (dx,dy)
     procedure Move; virtual := MoveOn(dx,dy);
+    /// Перемещает графический объект вдоль вектора Direction со скоростью Velocity за время dt
     procedure MoveTime(dt: real); virtual;
     begin
       var len := Sqrt(dx*dx+dy*dy);
@@ -396,6 +397,11 @@ type
     begin
       Rotate(da);
       Result := Self;
+    end;
+    /// Объект находится вне границ графического окна
+    function OutOfGraphWindow: boolean;
+    begin
+      Result := (Left < 0) or (Top < 0) or (Right > GraphWindow.Width) or (Bottom > GraphWindow.Height);
     end;
   end;
   
