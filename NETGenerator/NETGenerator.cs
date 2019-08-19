@@ -2569,8 +2569,6 @@ namespace PascalABCCompiler.NETGenerator
             return false;
         }
 
-
-        //Ета штуковина все жутко тормозит. особенно генерацию EXE
         private void AddSpecialDebugVariables()
         {
             if (this.add_special_debug_variables)
@@ -2610,7 +2608,10 @@ namespace PascalABCCompiler.NETGenerator
             foreach (ICommonNestedInFunctionFunctionNode f in func.functions_nodes)
                 ConvertFunctionBody(f);
             //перевод тела
-            ConvertBody(func.function_code);
+            if (func.name.IndexOf("<yield_helper_error_checkerr>") == -1)
+                ConvertBody(func.function_code);
+            else
+                il.Emit(OpCodes.Ret);
             //ivan for debug
             if (save_debug_info)
             {
@@ -6100,7 +6101,8 @@ namespace PascalABCCompiler.NETGenerator
             }
             else
             {
-                ConvertFunctionBody(value, copy_mi, true);
+                if (value.name.IndexOf("<yield_helper_error_checkerr>") == -1)
+                    ConvertFunctionBody(value, copy_mi, true);
                 //вызов статического метода-клона
                 //при этом явно передается this
                 il = methb.GetILGenerator();

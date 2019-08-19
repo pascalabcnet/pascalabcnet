@@ -4158,8 +4158,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             throw new NotSupportedError(get_location(_index_property));
         }
-
-        //TODO: Если одного из акцессоров нет?
+        
         public override void visit(SyntaxTree.simple_property _simple_property)
         {
             if (_simple_property.accessors == null)
