@@ -345,7 +345,7 @@ function Rect(x,y,w,h: real): GRect;
 function ColorBrush(c: Color): GBrush;
 /// Возвращает однотонное цветное перо, заданное цветом
 function ColorPen(c: Color): GPen;
-/// Процедура синхронизации вывода графики
+/// Процедура ускорения вывода нескольких графических команд
 procedure Redraw(d: ()->());
 
 
