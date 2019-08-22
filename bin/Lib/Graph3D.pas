@@ -75,8 +75,8 @@ var
 //>>     Короткие функции модуля Graph3D # Graph3D short functions
 // -----------------------------------------------------
 
-procedure Invoke(p: ()->());
-
+/// Процедура ускорения вывода. Обновляет экран после всех изменений
+procedure Redraw(p: ()->());
 /// Возвращает цвет по красной, зеленой и синей составляющей (в диапазоне 0..255)
 function RGB(r, g, b: byte): Color;
 /// Возвращает цвет по красной, зеленой и синей составляющей и параметру прозрачности (в диапазоне 0..255)
@@ -182,6 +182,13 @@ type
     property ShowCameraInfo: boolean read GetSCI write SetSCI;
   /// Отображать ли ViewCube
     property ShowViewCube: boolean read GetSVC write SetSVC;
+  /// Не отображать координатную систему, координатную сетку и ViewCube 
+    procedure HideAll;
+    begin
+      ShowCoordinateSystem := False;
+      ShowGridLines := False;
+      ShowViewCube := False;
+    end;
   /// Заголовок пространства отображения
     property Title: string read GetT write SetT;
   /// Подзаголовок пространства отображения
@@ -410,10 +417,18 @@ type
     begin
       Result := CreateObject;
       Result.CloneChildren(Self);
-      
       var ind := (model.Transform as Transform3DGroup).Children.IndexOf(rotatetransform);
       (Result.model.Transform as Transform3DGroup).Children[ind] := (model.Transform as Transform3DGroup).Children[ind].Clone;
       Result.rotatetransform := (Result.model.Transform as Transform3DGroup).Children[ind] as MatrixTransform3d;
+      
+      ind := transfgroup.Children.IndexOf(rotatetransform_absolute);
+      (Result.model.Transform as Transform3DGroup).Children[ind] := (model.Transform as Transform3DGroup).Children[ind].Clone;
+      Result.rotatetransform_absolute := (Result.model.Transform as Transform3DGroup).Children[ind] as MatrixTransform3d;
+      
+      ind := transfgroup.Children.IndexOf(transltransform);
+      (Result.model.Transform as Transform3DGroup).Children[ind] := (model.Transform as Transform3DGroup).Children[ind].Clone;
+      Result.transltransform := (Result.model.Transform as Transform3DGroup).Children[ind] as TranslateTransform3D;
+
       //(Result.model.Transform as Transform3DGroup).Children[1] := (model.Transform as Transform3DGroup).Children[1].Clone;
       //(Result.model.Transform as Transform3DGroup).Children[2] := (model.Transform as Transform3DGroup).Children[2].Clone;
       //(Result.model.Transform as Transform3DGroup).Children[3] := (model.Transform as Transform3DGroup).Children[3].Clone; //- почему-то это не нужно!!! с ним не работает!
@@ -474,6 +489,24 @@ type
   public 
   /// Позиция 3D-объекта
     property Position: Point3D read GetPos write MoveToProp;
+    
+  /// Будущая позиция 3D-объекта по прошествии времени dt
+    function PositionAfterTime(dt: real): Point3D;
+    begin
+      var dx := Direction.X;
+      var dy := Direction.Y;
+      var dz := Direction.Z;
+      var len := Sqrt(dx*dx+dy*dy+dz*dz);
+      if len = 0 then
+      begin  
+        Result := Position;
+        exit;
+      end;
+      var dvx := dx/len*Velocity;
+      var dvy := dy/len*Velocity;
+      var dvz := dz/len*Velocity;
+      Result := P3D(X + dvx*dt, Y + dvy*dt, Z + dvz*dt);
+    end;
     
   /// Масштабирует 3D-объект в f раз
     function Scale(f: real): Object3D := 
@@ -707,6 +740,8 @@ type
   public  
   /// Добавить дочерний подобъект
     procedure AddChild(obj: Object3D) := Invoke(AddT, obj);
+  /// Добавить дочерний подобъект
+    procedure AddChilds(params arr: array of Object3D) := arr.ForEach(obj->AddChild(obj));
   /// Удалить дочерний подобъект
     procedure RemoveChild(obj: Object3D) := Invoke(RemoveT, obj);
   /// i-тый дочерний подобъект
@@ -2643,8 +2678,9 @@ var
   OnKeyUp: procedure(k: Key);
   /// Событие нажатия символьной клавиши
   OnKeyPress: procedure(ch: char);
-  /// Событие перерисовки графического 3D-окна
-  OnDrawTime: procedure(dt: real);
+  /// Событие перерисовки графического 3D-окна. 
+  ///Инициализируется процедурой с вещественным параметром dt - временем, прошедшим с момента последнего обновления экрана
+  OnDrawFrame: procedure(dt: real);
 
 var
 // -----------------------------------------------------
@@ -2668,6 +2704,8 @@ var
   OrtY: Vector3D := V3D(0, 1, 0);
 /// Орт (единичный вектор) оси OZ
   OrtZ: Vector3D := V3D(0, 0, 1);
+/// Нулевой вектор
+  ZeroVector: Vector3D := V3D(0, 0, 0);
 /// Точка начала координат
   Origin: Point3D := P3D(0, 0, 0);
 /// Плоскость OXY
@@ -2694,7 +2732,7 @@ procedure __FinalizeModule__;
 
 implementation
 
-procedure Invoke(p: ()->()) := GraphWPFBase.Invoke(p);
+procedure Redraw(p: ()->()) := GraphWPFBase.Invoke(p);
 
 function RGB(r, g, b: byte) := Color.Fromrgb(r, g, b);
 function ARGB(a, r, g, b: byte) := Color.FromArgb(a, r, g, b);
@@ -3435,7 +3473,6 @@ function PointOnPlane(Plane: Plane3D; x, y: real): Point3D := Plane.PointOnPlane
 function NearestPointOnLine(Line: Ray3D; x, y: real): Point3D := Line.NearestPointOnLine(x,y);
 
 
-
 // Методы расширения для анимаций 
 
 function Sec(Self: integer): real; extensionmethod := Self;
@@ -3716,25 +3753,25 @@ var LastUpdatedTime := new System.TimeSpan(0);
 
 procedure RenderFrame(o: Object; e: System.EventArgs);
 begin
-  if OnDrawTime<>nil then
+  if OnDrawFrame<>nil then
   begin
     var e1 := RenderingEventArgs(e).RenderingTime;
     var dt := e1 - LastUpdatedTime;
     if LastUpdatedTime.TotalMilliseconds<>0 then 
-      if OnDrawTime<>nil then
-        OnDrawTime(dt.Milliseconds/1000);
+      if OnDrawFrame<>nil then
+        OnDrawFrame(dt.Milliseconds/1000);
     LastUpdatedTime := e1;  
   end;  
 end;
 
 procedure BeginFrameBasedAnimationTime(Draw: procedure(dt: real));
 begin
-  OnDrawTime := Draw;
+  OnDrawFrame := Draw;
 end;
 
 procedure EndFrameBasedAnimation;
 begin
-  OnDrawTime := nil;
+  OnDrawFrame := nil;
 end;  
 
 
@@ -3788,6 +3825,8 @@ type
     /// --- SystemKeyEvents
     procedure SystemOnKeyDown(sender: Object; e: System.Windows.Input.KeyEventArgs);
     begin
+      if (e.Key = Key.F4) and (e.KeyboardDevice.Modifiers = ModifierKeys.Control) then
+        Close;
       if Graph3D.OnKeyDown <> nil then
         Graph3D.OnKeyDown(e.Key);
       e.Handled := True;
@@ -3876,8 +3915,7 @@ begin
   end;
   
   MainWindow := new Graph3DWindow;
-  //MainWindow.MainPanel;
-  
+
   mre.Set();
   
   app.Run(MainWindow);

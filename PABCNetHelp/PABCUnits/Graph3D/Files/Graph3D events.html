@@ -1,5 +1,6 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
-<param name="Keyword" value="OnDrawTime">
+<param name="Keyword" value="OnDrawFrame">
+<param name="Keyword" value="OnInit">
 <param name="Keyword" value="OnKeyDown">
 <param name="Keyword" value="OnKeyPress">
 <param name="Keyword" value="OnKeyUp">
@@ -8,8 +9,10 @@
 <param name="Keyword" value="OnMouseUp"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>События модуля Graph3D</H1>
-<table border=0 cellpadding=5><tr><td><code>OnDrawTime: <b>procedure</b>(dt: real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие перерисовки графического 3D-окна</td></tr>
+<table border=0 cellpadding=5><tr><td><code>OnDrawFrame: <b>procedure</b>(dt: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие перерисовки графического 3D-окна.Инициализируется процедурой с вещественным параметром dt - временем, прошедшим с момента последнего обновления экрана</td></tr>
+<tr><td><code>OnInit: <b>procedure</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие инициализации объектов графического окна. Используется чтобы объекты не прорисовывались до конца инициализации</td></tr>
 <tr><td><code>OnKeyDown: <b>procedure</b>(k: Key);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие нажатия клавиши</td></tr>
 <tr><td><code>OnKeyPress: <b>procedure</b>(ch: char);</code>

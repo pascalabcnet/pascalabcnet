@@ -80,7 +80,7 @@ function Rect(x,y,w,h: real): GRect;
 function ColorBrush(c: Color): SolidColorBrush;
 /// Возвращает случайную точку графического окна. Необязательный параметр z задаёт отступ от края  
 function RandomWindowPoint(z: real := 0): GPoint;
-/// Процедура ускорения вывода нескольких графических команд
+/// Процедура ускорения вывода. Обновляет экран после всех изменений
 procedure Redraw(p: ()->());
 //{{{--doc: Конец секции 1 }}} 
 

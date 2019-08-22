@@ -27,7 +27,6 @@ type
       g.LastChildFill := True;
       Result := g;
     end;
-    
     procedure InitMainGraphControl; virtual;
     begin
     end;
