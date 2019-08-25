@@ -4165,6 +4165,7 @@ namespace PascalABCCompiler.TreeConverter
                 AddError(get_location(_simple_property), "PROPERTYACCESSOR_{0}_OR_{1}_EXPECTED", compiler_string_consts.PascalReadAccessorName, compiler_string_consts.PascalWriteAccessorName);
             if (_simple_property.property_type == null)
                 AddError(get_location(_simple_property.property_name), "TYPE_NAME_EXPECTED");
+            
             common_property_node pn = context.add_property(_simple_property.property_name.name,
                 get_location(_simple_property.property_name));
             assign_doc_info(pn, _simple_property);

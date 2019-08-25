@@ -912,16 +912,29 @@ namespace PascalABCCompiler.TreeConverter
                         if (cfn.is_generic_function || !syntax_tree_visitor.context.has_nested_functions && syntax_tree_visitor.context.converted_func_stack.size == 1)
                         {
                             vdn = syntax_tree_visitor.context.add_var_definition(get_temp_arr_name(), loc);
+                            
                         }
                         else if (syntax_tree_visitor.context.converted_type != null)
+                        {
                             vdn = syntax_tree_visitor.context.add_field(get_temp_arr_name(), loc, pr.type, polymorphic_state.ps_static);
+                            syntax_tree_visitor.context.converted_type.fields.RemoveElement(vdn as class_field);
+                        }
                         else
+                        {
                             vdn = syntax_tree_visitor.context.add_var_definition_in_entry_scope(get_temp_arr_name(), loc);
+                            syntax_tree_visitor.context.converted_namespace.variables.RemoveElement(vdn as namespace_variable);
+                        }
                     }
                     else if (syntax_tree_visitor.context.converted_type != null)
+                    {
                         vdn = syntax_tree_visitor.context.add_field(get_temp_arr_name(), loc, pr.type, polymorphic_state.ps_static);
+                        syntax_tree_visitor.context.converted_type.fields.RemoveElement(vdn as class_field);
+                    }
                     else
+                    {
                         vdn = syntax_tree_visitor.context.add_var_definition_in_entry_scope(get_temp_arr_name(), loc);
+                        syntax_tree_visitor.context.converted_namespace.variables.RemoveElement(vdn as namespace_variable);
+                    }
                     syntax_tree_visitor.context.close_var_definition_list(pr.type,null);
                     
                     expression_node fst=null;
@@ -973,7 +986,6 @@ namespace PascalABCCompiler.TreeConverter
 
                     expression_node bfc = create_simple_function_call(SystemLibrary.SystemLibrary.resize_func,
                         loc, fst, icn);
-                    tc.snl.AddElement(bfc);
                     /*if (factparams.Count == 0)
                     {
                     	possible_type_convertions ptci=new possible_type_convertions();
@@ -1615,10 +1627,14 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     //statement_list_stack.top().statements.AddRange(ptcal.snl);
                     statements_expression_node sre = new statements_expression_node(ptcal.snl, ptcal.var_ref, ptcal.var_ref.location);
+                    List<expression_node> args = new List<expression_node>();
+                    for (int j = fn.parameters.Count - 1; j < exprs.Count; j++)
+                        args.Add(convert_type(exprs[j], fn.parameters[fn.parameters.Count - 1].type.element_type));
                     exprs.remove_range(fn.parameters.Count - 1, exprs.Count - fn.parameters.Count);
                     //exprs.AddElement(ptcal.var_ref);
                     //exprs[i] = ptcal.var_ref;
-                    exprs[i] = sre;
+                    exprs[i] = new array_initializer(args, ptcal.var_ref.location);
+                    exprs[i].type = fn.parameters[fn.parameters.Count - 1].type;
                     break;
                 }
                 if ((ptcal[i]==null)||(ptcal[i].first==null)||exprs[i] is null_const_node)
@@ -1643,7 +1659,9 @@ namespace PascalABCCompiler.TreeConverter
                     //exprs.remove_range(fn.parameters.Count - 1, exprs.Count - fn.parameters.Count);
                     //exprs.AddElement(ptcal.var_ref);
                     //exprs[i] = ptcal.var_ref;
-                    exprs.AddElement(sre);
+                    var arri = new array_initializer(new List<expression_node>(), ptcal.var_ref.location);
+                    arri.type = fn.parameters[fn.parameters.Count - 1].type;
+                    exprs.AddElement(arri);
                 }
                 common_function_node cfn = (common_function_node)fn;
                 for (int j = exprs.Count; j < cfn.parameters.Count; j++)
@@ -1660,7 +1678,10 @@ namespace PascalABCCompiler.TreeConverter
                     && fn.parameters != null && fn.parameters.Count - 1 == exprs.Count && fn.parameters[fn.parameters.Count - 1].is_params)
                 {
                     statements_expression_node sre = new statements_expression_node(ptcal.snl, ptcal.var_ref, ptcal.var_ref.location);
-                    exprs.AddElement(sre);
+                    //exprs.AddElement(sre);
+                    var arri = new array_initializer(new List<expression_node>(), ptcal.var_ref.location);
+                    arri.type = fn.parameters[fn.parameters.Count - 1].type;
+                    exprs.AddElement(arri);
                 }
                 //compiled_function_node cfn = (compiled_function_node)fn;
                 for (int j = exprs.Count; j < fn.parameters.Count; j++)

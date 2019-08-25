@@ -74,7 +74,13 @@ namespace PascalABCCompiler.Collections
             _elements.Add(element);
             _elements_as_arr = null;
         }
-
+        
+        public void RemoveElement(T element)
+        {
+            _elements.Remove(element);
+            _elements_as_arr = null;
+        }
+        
         /// <summary>
         /// Добавляет список элементов к списку.
         /// </summary>

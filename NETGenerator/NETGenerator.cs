@@ -4029,7 +4029,7 @@ namespace PascalABCCompiler.NETGenerator
         private void GenerateArrayInitCode(ILGenerator il, LocalBuilder lb, IArrayInitializer InitalValue, ITypeNode ArrayType)
         {
             IExpressionNode[] ElementValues = InitalValue.ElementValues;
-            if (ElementValues[0] is IArrayInitializer)
+            if (ElementValues.Length > 0 && ElementValues[0] is IArrayInitializer)
             {
                 bool is_unsized_array;
                 Type FieldType, ArrType;
@@ -4076,7 +4076,7 @@ namespace PascalABCCompiler.NETGenerator
                 }
             }
             else
-                if (ElementValues[0] is IRecordConstantNode || ElementValues[0] is IRecordInitializer)
+                if (ElementValues.Length > 0 && (ElementValues[0] is IRecordConstantNode || ElementValues[0] is IRecordInitializer))
                 {
                     TypeInfo ti = helper.GetTypeReference(ElementValues[0].type);
                     LocalBuilder llb = il.DeclareLocal(ti.tp.MakePointerType());
@@ -4127,14 +4127,19 @@ namespace PascalABCCompiler.NETGenerator
                             PushIntConst(il, i);
                             this.il = ilb;
                         }
-                        if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && !ti.tp.IsEnum)
-                            il.Emit(OpCodes.Ldelema, ti.tp);
+                        
+                        if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && lb.LocalType.GetElementType().IsValueType && (helper.IsConstructedGenericType(ti.tp) || ti.tp.IsGenericType || !ti.tp.IsEnum))
+                        {
+                            if (!(ti.tp is EnumBuilder))
+                                il.Emit(OpCodes.Ldelema, ti.tp);
+                        }
                         else
-                            if (ti != null && ti.assign_meth != null)
+                            if (ti != null && ti.assign_meth != null && lb.LocalType.GetElementType() != TypeFactory.ObjectType)
                                 il.Emit(OpCodes.Ldelem_Ref);
+                       
                         this.il = il;
                         ElementValues[i].visit(this);
-                        if (ti != null && ti.assign_meth != null)
+                        if (ti != null && ti.assign_meth != null && lb.LocalType.GetElementType() != TypeFactory.ObjectType)
                         {
                             il.Emit(OpCodes.Call, ti.assign_meth);
                             this.il = ilb;
@@ -10853,7 +10858,7 @@ namespace PascalABCCompiler.NETGenerator
             else
                 il.Emit(OpCodes.Ldsfld, helper.GetVariable((value.Event as ICommonNamespaceEventNode).Field).fb);
         }
-
+        
         public override void visit(SemanticTree.ILambdaFunctionNode value)
         {
         }
