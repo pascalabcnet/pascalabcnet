@@ -1728,7 +1728,7 @@ namespace CodeFormatters
                 //IncOffset();
                 add_new_line_else_specific = true;
                 IncOffset();
-                if (!(_case_node.else_statement is statement_list sl && sl.list.Count == 1 && sl.list[0] is empty_statement))
+                //if (!(_case_node.else_statement is statement_list sl && sl.list.Count == 1 && sl.list[0] is empty_statement))
                     visit_node(_case_node.else_statement);
                 //DecOffset();
             }
