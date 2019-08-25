@@ -78,12 +78,11 @@ function Pnt(x,y: real): GPoint;
 function Rect(x,y,w,h: real): GRect;
 /// Возвращает однотонную цветную кисть, заданную цветом
 function ColorBrush(c: Color): SolidColorBrush;
-//{{{--doc: Конец секции 1 }}} 
 /// Возвращает случайную точку графического окна. Необязательный параметр z задаёт отступ от края  
 function RandomWindowPoint(z: real := 0): GPoint;
-
-
+/// Процедура ускорения вывода. Обновляет экран после всех изменений
 procedure Redraw(p: ()->());
+//{{{--doc: Конец секции 1 }}} 
 
 //{{{doc: Начало секции 2 }}} 
 type

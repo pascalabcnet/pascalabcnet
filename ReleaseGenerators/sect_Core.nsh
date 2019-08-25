@@ -101,6 +101,7 @@
     File ..\bin\Lib\Countries.pcu
     File ..\bin\Lib\Graph3D.pcu
     File ..\bin\Lib\GraphABCHelper.pcu
+    File ..\bin\Lib\BBCMicroBit.pcu
     File ..\bin\Lib\IniFile.pcu
     File ..\bin\Lib\PABCSystem.pcu
     File ..\bin\Lib\PABCExtensions.pcu
@@ -166,6 +167,7 @@
     ${AddFile} "Countries.pcu"
     ${AddFile} "Graph3D.pcu"
     ${AddFile} "GraphABCHelper.pcu"
+    ${AddFile} "BBCMicroBit.pcu"
     ${AddFile} "IniFile.pcu"
     ${AddFile} "PABCSystem.pcu"
     ${AddFile} "PABCExtensions.pcu"
@@ -241,6 +243,7 @@
     File ..\bin\Lib\Countries.pas
     File ..\bin\Lib\Graph3D.pas
     File ..\bin\Lib\GraphABCHelper.pas
+    File ..\bin\Lib\BBCMicroBit.pas
     File ..\bin\Lib\IniFile.pas
     File ..\bin\Lib\PABCSystem.pas
     File ..\bin\Lib\PABCExtensions.pas
@@ -302,6 +305,7 @@
     ${AddFile} "Countries.pas"
     ${AddFile} "Graph3D.pas"
     ${AddFile} "GraphABCHelper.pas"
+    ${AddFile} "BBCMicroBit.pas"
     ${AddFile} "IniFile.pas"
     ${AddFile} "PABCSystem.pas"
     ${AddFile} "PABCExtensions.pas"
