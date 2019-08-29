@@ -2325,15 +2325,22 @@ namespace PascalABCCompiler.TreeConverter
                     var kres = funcs.Select(f => get_type(f.parameters[i].type).GetGenericArguments()[cnt - 1]).ToArray();
 
                     //if (funcs[0].is_extension_method)
-                    var fldiResType = funcs[0].is_extension_method ? // странно, но всегда кво параметров в syntax_nodes_parameters на 1 меньше. Иначе падает
-                        ((syntax_nodes_parameters[i - 1] as SyntaxTree.function_lambda_definition).RealSemTypeOfResult as compiled_type_node).compiled_type :
-                        ((syntax_nodes_parameters[i - 1] as SyntaxTree.function_lambda_definition).RealSemTypeOfResult as compiled_type_node).compiled_type;
-                    // Две последние строчки одинаковы. Это странно
+                    Type fldiResType = null;
+                    if (funcs[0].is_extension_method)
+                    {
+                        fldiResType = ((syntax_nodes_parameters[i - 1] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
+                    }
+                    else
+                    {
+                        fldiResType = ((syntax_nodes_parameters[i] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
+                    }
+                        // странно, но всегда кво параметров в syntax_nodes_parameters на 1 меньше. Иначе падает
+
                     // Получается, что fldiResType рассчитывается только если фактическими функциональными параметрами выступают лямбда-выражения. Если имена функций - это не сработает. Это - ОШИБКА!
 
                     for (int n = 0; n < bools.Count; n++)
                     {
-                        if (!fldiResType.Equals(kres[n]))
+                        if (fldiResType == null || !fldiResType.Equals(kres[n]))
                             bools[n] = false;
                     }
                 }
