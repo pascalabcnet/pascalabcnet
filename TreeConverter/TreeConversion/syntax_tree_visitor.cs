@@ -13749,8 +13749,11 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(get_location(_procedure_attributes_list), "EXTENSION_ATTRIBUTE_ONLY_FOR_NAMESPACE_FUNCTIONS_ALLOWED");
                             if (context.top_function.parameters.Count == 0)
                                 AddError(context.top_function.loc, "EXTENSION_METHODS_MUST_HAVE_LEAST_ONE_PARAMETER");
-                            if (!context.top_function.IsOperator && context.top_function.parameters[0].parameter_type != SemanticTree.parameter_type.value)
-                                AddError(context.top_function.loc, "FIRST_PARAMETER_SHOULDBE_ONLY_VALUE_PARAMETER");
+                            if (SemanticRules.OnlyValueTypesInVarSelfExtensionmethods)
+                            {
+                                if (!context.top_function.IsOperator && context.top_function.parameters[0].parameter_type != SemanticTree.parameter_type.value && context.top_function.parameters[0].type.is_class)
+                                    AddError(context.top_function.loc, "FIRST_PARAMETER_SHOULDBE_ONLY_VALUETYPE_PARAMETER");
+                            }
                             if (!context.top_function.IsOperator && context.top_function.parameters[0].name.ToLower() != compiler_string_consts.self_word)
                                 AddError(context.top_function.loc,"FIRST_PARAMETER_MUST_HAVE_NAME_SELF");
                             

@@ -121,6 +121,11 @@ namespace PascalABCCompiler.TreeConverter
         /// </summary>
         public static bool ImplicitConversionFormPointerToTypedPointer = true;
 
+        /// <summary>
+        /// Запретить ссылочные типы в var-self методах расширения
+        /// </summary>
+        public static bool OnlyValueTypesInVarSelfExtensionmethods = true;
+
 
         public static type_node ClassBaseType = null;
         public static type_node StringType = null;
