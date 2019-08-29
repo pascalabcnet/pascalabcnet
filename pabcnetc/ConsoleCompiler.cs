@@ -192,7 +192,12 @@ namespace PascalABCCompiler
             {
                 files = di.GetFiles(mask);
             }
-            catch(DirectoryNotFoundException)
+            catch (DirectoryNotFoundException)
+            {
+                WriteErrorText(StringResourcesGet("ERROR_DIRECTORY_NOT_FOUND") + Environment.NewLine);
+                return;
+            }
+            catch (ArgumentException)
             {
                 WriteErrorText(StringResourcesGet("ERROR_INVALID_DIRECTORY") + Environment.NewLine);
                 return;
@@ -207,7 +212,7 @@ namespace PascalABCCompiler
                 AllLinesCompiled += Compiler.LinesCompiled;
                 length += fi.Length;
             }
-            if(!short_output)
+            if (!short_output)
             if (GlobalErrorsList.Count > 0 && files.Length > 1)
             {
                 WriteErrorText(StringResourcesGet("FULL_ERROR_LIST") + Environment.NewLine);

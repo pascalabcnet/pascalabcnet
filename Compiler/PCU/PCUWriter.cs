@@ -3050,7 +3050,7 @@ namespace PascalABCCompiler.PCU
             //else
             //{
             //    bw.Write((byte)1);
-            if (meth.function_code == null)
+            if (meth.function_code == null || meth.name.IndexOf("<yield_helper_error_checkerr>") != -1)
             {
                 VisitStatement(new empty_statement(null));
             }
@@ -3071,7 +3071,10 @@ namespace PascalABCCompiler.PCU
             //(ssyy) метки
             VisitLabelDeclarations(func.label_nodes_list);
 			FixupCode(func);
-			VisitStatement(func.function_code);
+            if (func.name.IndexOf("<yield_helper_error_checkerr>") != -1)
+                VisitStatement(new empty_statement(null));
+            else            
+                VisitStatement(func.function_code);
 		}
 		
 		private void VisitNestedFunctionImplementation(common_in_function_function_node func)

@@ -2569,8 +2569,6 @@ namespace PascalABCCompiler.NETGenerator
             return false;
         }
 
-
-        //Ета штуковина все жутко тормозит. особенно генерацию EXE
         private void AddSpecialDebugVariables()
         {
             if (this.add_special_debug_variables)
@@ -2610,7 +2608,10 @@ namespace PascalABCCompiler.NETGenerator
             foreach (ICommonNestedInFunctionFunctionNode f in func.functions_nodes)
                 ConvertFunctionBody(f);
             //перевод тела
-            ConvertBody(func.function_code);
+            if (func.name.IndexOf("<yield_helper_error_checkerr>") == -1)
+                ConvertBody(func.function_code);
+            else
+                il.Emit(OpCodes.Ret);
             //ivan for debug
             if (save_debug_info)
             {
@@ -4028,7 +4029,7 @@ namespace PascalABCCompiler.NETGenerator
         private void GenerateArrayInitCode(ILGenerator il, LocalBuilder lb, IArrayInitializer InitalValue, ITypeNode ArrayType)
         {
             IExpressionNode[] ElementValues = InitalValue.ElementValues;
-            if (ElementValues[0] is IArrayInitializer)
+            if (ElementValues.Length > 0 && ElementValues[0] is IArrayInitializer)
             {
                 bool is_unsized_array;
                 Type FieldType, ArrType;
@@ -4075,7 +4076,7 @@ namespace PascalABCCompiler.NETGenerator
                 }
             }
             else
-                if (ElementValues[0] is IRecordConstantNode || ElementValues[0] is IRecordInitializer)
+                if (ElementValues.Length > 0 && (ElementValues[0] is IRecordConstantNode || ElementValues[0] is IRecordInitializer))
                 {
                     TypeInfo ti = helper.GetTypeReference(ElementValues[0].type);
                     LocalBuilder llb = il.DeclareLocal(ti.tp.MakePointerType());
@@ -4126,14 +4127,19 @@ namespace PascalABCCompiler.NETGenerator
                             PushIntConst(il, i);
                             this.il = ilb;
                         }
-                        if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && !ti.tp.IsEnum)
-                            il.Emit(OpCodes.Ldelema, ti.tp);
+                        
+                        if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && lb.LocalType.GetElementType().IsValueType && (helper.IsConstructedGenericType(ti.tp) || ti.tp.IsGenericType || !ti.tp.IsEnum))
+                        {
+                            if (!(ti.tp is EnumBuilder))
+                                il.Emit(OpCodes.Ldelema, ti.tp);
+                        }
                         else
-                            if (ti != null && ti.assign_meth != null)
+                            if (ti != null && ti.assign_meth != null && lb.LocalType.GetElementType() != TypeFactory.ObjectType)
                                 il.Emit(OpCodes.Ldelem_Ref);
+                       
                         this.il = il;
                         ElementValues[i].visit(this);
-                        if (ti != null && ti.assign_meth != null)
+                        if (ti != null && ti.assign_meth != null && lb.LocalType.GetElementType() != TypeFactory.ObjectType)
                         {
                             il.Emit(OpCodes.Call, ti.assign_meth);
                             this.il = ilb;
@@ -6100,7 +6106,8 @@ namespace PascalABCCompiler.NETGenerator
             }
             else
             {
-                ConvertFunctionBody(value, copy_mi, true);
+                if (value.name.IndexOf("<yield_helper_error_checkerr>") == -1)
+                    ConvertFunctionBody(value, copy_mi, true);
                 //вызов статического метода-клона
                 //при этом явно передается this
                 il = methb.GetILGenerator();
@@ -10851,7 +10858,7 @@ namespace PascalABCCompiler.NETGenerator
             else
                 il.Emit(OpCodes.Ldsfld, helper.GetVariable((value.Event as ICommonNamespaceEventNode).Field).fb);
         }
-
+        
         public override void visit(SemanticTree.ILambdaFunctionNode value)
         {
         }

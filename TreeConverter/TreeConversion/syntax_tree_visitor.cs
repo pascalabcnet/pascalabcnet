@@ -4158,14 +4158,14 @@ namespace PascalABCCompiler.TreeConverter
         {
             throw new NotSupportedError(get_location(_index_property));
         }
-
-        //TODO: Если одного из акцессоров нет?
+        
         public override void visit(SyntaxTree.simple_property _simple_property)
         {
             if (_simple_property.accessors == null)
                 AddError(get_location(_simple_property), "PROPERTYACCESSOR_{0}_OR_{1}_EXPECTED", compiler_string_consts.PascalReadAccessorName, compiler_string_consts.PascalWriteAccessorName);
             if (_simple_property.property_type == null)
                 AddError(get_location(_simple_property.property_name), "TYPE_NAME_EXPECTED");
+            
             common_property_node pn = context.add_property(_simple_property.property_name.name,
                 get_location(_simple_property.property_name));
             assign_doc_info(pn, _simple_property);
@@ -12911,6 +12911,15 @@ namespace PascalABCCompiler.TreeConverter
                     // end frninja
                     context.leave_type_method();
                 }
+                /*else
+                {
+                    if (context._cmn != null && context._cmn.functions != null && (context.top_function is common_namespace_function_node) && 
+                        (context.top_function as common_namespace_function_node).is_yield_helper &&
+                        context.top_function.name.ToLower().StartsWith("<yield_helper"))
+                    {
+                        context._cmn.functions.remove(context.top_function as common_namespace_function_node);
+                    }
+                }*/
                 context.is_order_independed_method_description = false;
                 context.leave_block();
             }

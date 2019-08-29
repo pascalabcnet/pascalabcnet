@@ -78,12 +78,11 @@ function Pnt(x,y: real): GPoint;
 function Rect(x,y,w,h: real): GRect;
 /// Возвращает однотонную цветную кисть, заданную цветом
 function ColorBrush(c: Color): SolidColorBrush;
-//{{{--doc: Конец секции 1 }}} 
 /// Возвращает случайную точку графического окна. Необязательный параметр z задаёт отступ от края  
 function RandomWindowPoint(z: real := 0): GPoint;
-
-
+/// Процедура ускорения вывода. Обновляет экран после всех изменений
 procedure Redraw(p: ()->());
+//{{{--doc: Конец секции 1 }}} 
 
 //{{{doc: Начало секции 2 }}} 
 type
@@ -283,6 +282,7 @@ type
     procedure MoveOn(v: (real,real)) := MoveTo(Left+v[0],Top+v[1]);
     /// Перемещает графический объект на вектор (dx,dy)
     procedure Move; virtual := MoveOn(dx,dy);
+    /// Перемещает графический объект вдоль вектора Direction со скоростью Velocity за время dt
     procedure MoveTime(dt: real); virtual;
     begin
       var len := Sqrt(dx*dx+dy*dy);
@@ -396,6 +396,11 @@ type
     begin
       Rotate(da);
       Result := Self;
+    end;
+    /// Объект находится вне границ графического окна
+    function OutOfGraphWindow: boolean;
+    begin
+      Result := (Left < 0) or (Top < 0) or (Right > GraphWindow.Width) or (Bottom > GraphWindow.Height);
     end;
   end;
   

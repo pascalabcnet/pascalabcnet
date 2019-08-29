@@ -345,7 +345,7 @@ function Rect(x,y,w,h: real): GRect;
 function ColorBrush(c: Color): GBrush;
 /// Возвращает однотонное цветное перо, заданное цветом
 function ColorPen(c: Color): GPen;
-/// Процедура синхронизации вывода графики
+/// Процедура ускорения вывода. Обновляет экран после всех изменений
 procedure Redraw(d: ()->());
 
 
@@ -354,9 +354,9 @@ procedure Redraw(d: ()->());
 // -----------------------------------------------------
 /// Начинает анимацию, основанную на кадре. Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw
 procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer := 61);
-/// Начинает анимацию, основанную на кадре Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw с параметром, равным номеру кадра
+/// Начинает анимацию, основанную на кадре. Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw с параметром, равным номеру кадра
 procedure BeginFrameBasedAnimation(Draw: procedure(frame: integer); frate: integer := 61);
-
+/// Начинает анимацию, основанную на кадре, и передаёт в каждый обработчик кадра время dt, прошедшее с момента последней перерисовки
 procedure BeginFrameBasedAnimationTime(Draw: procedure(dt: real));
 /// Завершает анимацию, основанную на кадре
 procedure EndFrameBasedAnimation;
@@ -483,6 +483,9 @@ var OnKeyUp: procedure(k: Key);
 var OnKeyPress: procedure(ch: char);
 /// Событие изменения размера графического окна
 var OnResize: procedure;
+/// Событие перерисовки графического окна.
+///Инициализируется процедурой с вещественным параметром dt - временем, прошедшим с момента последнего обновления экрана
+var OnDrawFrame: procedure(dt: real) := nil;
 
 //{{{--doc: Конец секции 3 }}} 
 
@@ -1566,7 +1569,6 @@ procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) :=
 
 var OnDraw: procedure := nil;
 var OnDraw1: procedure(frame: integer) := nil;
-var OnDrawTime: procedure(dt: real) := nil;
 
 var FrameRate := 61; // кадров в секунду. Можно меньше!
 var LastUpdatedTime := new System.TimeSpan(integer.MinValue); 
@@ -1575,12 +1577,12 @@ var FrameNum := 0;
 
 procedure RenderFrame(o: Object; e: System.EventArgs);
 begin
-  if (OnDraw<>nil) or (OnDraw1<>nil) or (OnDrawTime<>nil) then
+  if (OnDraw<>nil) or (OnDraw1<>nil) or (OnDrawFrame<>nil) then
   begin
     var e1 := RenderingEventArgs(e).RenderingTime;
     var dt := e1 - LastUpdatedTime;
     var delta := 1000/Framerate; // через какое время обновлять
-    if OnDrawTime<>nil then 
+    if OnDrawFrame<>nil then 
       delta := 0; // перерисовывать когда придёт время
     if dt.TotalMilliseconds < delta then
       exit
@@ -1591,8 +1593,8 @@ begin
       OnDraw() 
     else if OnDraw1<>nil then
       OnDraw1(FrameNum)
-    else if OnDrawTime<>nil then
-      OnDrawTime(dt.Milliseconds/1000);
+    else if OnDrawFrame<>nil then
+      OnDrawFrame(dt.Milliseconds/1000);
   end;  
 end;
 
@@ -1614,7 +1616,7 @@ end;
 
 procedure BeginFrameBasedAnimationTime(Draw: procedure(dt: real));
 begin
-  OnDrawTime := Draw;
+  OnDrawFrame := Draw;
 end;
 
 procedure EndFrameBasedAnimation;
