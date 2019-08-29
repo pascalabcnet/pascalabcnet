@@ -92,7 +92,7 @@ type
 // -----------------------------------------------------
   ///!#
   /// Класс списка графических объектов
-  ObjectsType = class//(IEnumerable<ObjectWPF>)
+  ObjectsType = class(IEnumerable<ObjectWPF>)
   private
     l := new List<ObjectWPF>;
     d := new Dictionary<FrameworkElement,ObjectWPF>;
@@ -130,14 +130,14 @@ type
     property Items[i: integer]: ObjectWPF read GetItem write SetItem; default;
   
     function Seq: sequence of ObjectWPF := l;
-    {function GetEnumerator: IEnumerator<ObjectWPF>;
+    function GetEnumerator: IEnumerator<ObjectWPF>;
     begin
       Result := l.GetEnumerator;
     end;
     function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator;
     begin
       Result := l.GetEnumerator;
-    end;}
+    end;
   end;
 
 

@@ -2644,6 +2644,9 @@ function EmptyAnim(sec: real): EmptyAnimation;
 // -----------------------------------------------------
 //>>     Graph3D: функции для определения ближайших точек и объектов # Graph3D functions for nearest points and objects
 // -----------------------------------------------------
+/// Создаёт траекторию в виде массива точек, заданную параметрически. Функция fun отображает параметр t на координаты точки в пространстве
+function ParametricTrajectory(a,b: real; N: integer; fun: real->Point3D): sequence of Point3D;
+
 /// Возвращает ближайший 3D-объект, который пересекает луч, выпущенный из камеры и проходящий через точку (x,y) экрана
 function FindNearestObject(x, y: real): Object3D;
 
@@ -3418,6 +3421,8 @@ function Triangle(p1, p2, p3: Point3D; m: Material): TriangleT := Inv(()->Triang
 //------------------------------------------------------------------------------------
 
 // Функции для точек, лучей, прямых, плоскостей
+
+function ParametricTrajectory(a,b: real; N: integer; fun: real->Point3D) := PartitionPoints(a,b,N).Select(fun);
 
 function FindNearestObject(x, y: real): Object3D;
 begin
