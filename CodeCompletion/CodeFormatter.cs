@@ -2513,8 +2513,13 @@ namespace CodeFormatters
             WriteKeyword("try");
             SetKeywordOffset("try");
             add_newline_after = true;
-            IncOffset();
-            visit_node(_try_stmt.stmt_list);
+            
+            if (!contains_only_empty_statements(_try_stmt.stmt_list.subnodes))
+            {
+                IncOffset();
+                visit_node(_try_stmt.stmt_list);
+            }
+                
             if (_try_stmt.handler is try_handler_except)
             {
                 try_handler_except hndlr = _try_stmt.handler as try_handler_except;
