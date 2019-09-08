@@ -2088,7 +2088,11 @@ namespace PascalABCCompiler.NetHelper
 			foreach (string s in namespaces.Keys)
 			{
 				if (s != name && s.StartsWith(name, StringComparison.CurrentCultureIgnoreCase))
-					lst.Add(s.Substring(name.Length+1));
+                {
+                    if (s.Length >= name.Length + 1)
+                        lst.Add(s.Substring(name.Length + 1));
+                }
+					
 			}
 			if (lst == null) return null;
 			return lst.ToArray();
