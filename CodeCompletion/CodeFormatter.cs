@@ -2519,7 +2519,7 @@ namespace CodeFormatters
             {
                 try_handler_except hndlr = _try_stmt.handler as try_handler_except;
                 visit_node(_try_stmt.handler);
-                if (hndlr.except_block.stmt_list != null && hndlr.except_block.stmt_list.subnodes.Count == 1 && hndlr.except_block.stmt_list.subnodes[0] is empty_statement)
+                if (hndlr.except_block.stmt_list != null && hndlr.except_block.stmt_list.subnodes.Count > 0 && contains_only_empty_statements(hndlr.except_block.stmt_list.subnodes))
                 {
                     add_space_before = true;
                     WriteNode(_try_stmt.handler, "except".Length);
@@ -2535,6 +2535,14 @@ namespace CodeFormatters
                 visit_node(_try_stmt.handler);
             }
             read_from_beg_pos = false;
+        }
+
+        private bool contains_only_empty_statements(List<statement> statements)
+        {
+            foreach (statement stmt in statements)
+                if (!(stmt is empty_statement))
+                    return false;
+            return true;
         }
 
         public override void visit(inherited_message _inherited_message)
