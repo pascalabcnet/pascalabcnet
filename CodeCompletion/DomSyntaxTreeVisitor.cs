@@ -5247,6 +5247,8 @@ namespace CodeCompletion
                     td.visit(this);
                     if (returned_scope is TypeScope)
                         template_params.Add(returned_scope as TypeScope);
+                    else if (returned_scope is ProcScope)
+                        template_params.Add(new ProcType(returned_scope as ProcScope));
                     else
                     {
                         returned_scope = ts;
