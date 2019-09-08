@@ -1729,7 +1729,14 @@ namespace CodeFormatters
                 add_new_line_else_specific = true;
                 IncOffset();
                 //if (!(_case_node.else_statement is statement_list sl && sl.list.Count == 1 && sl.list[0] is empty_statement))
-                    visit_node(_case_node.else_statement);
+                statement_list stmt_list = _case_node.else_statement as statement_list;
+                
+                visit_node(_case_node.else_statement);
+                if (stmt_list != null && stmt_list.subnodes.Count > 0 && contains_only_empty_statements(stmt_list.subnodes))
+                {
+                    WriteNode(stmt_list);
+                    add_space_after = false;
+                }
                 //DecOffset();
             }
         }
