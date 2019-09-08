@@ -10480,7 +10480,7 @@ namespace PascalABCCompiler.NETGenerator
             if (value.type is ICompiledTypeNode && (value.type as ICompiledTypeNode).compiled_type.IsEnum)
                 fb = cur_type.DefineField(value.name, TypeFactory.Int32Type, FieldAttributes.Literal | ConvertFALToFieldAttributes(value.field_access_level));
             else if (value.constant_value.value != null)
-                fb = cur_type.DefineField(value.name, helper.GetTypeReference(value.type).tp, FieldAttributes.Literal | ConvertFALToFieldAttributes(value.field_access_level));
+                fb = cur_type.DefineField(value.name, helper.GetTypeReference(value.type).tp, FieldAttributes.Literal | FieldAttributes.Static | ConvertFALToFieldAttributes(value.field_access_level));
             else
                 fb = cur_type.DefineField(value.name, helper.GetTypeReference(value.type).tp, FieldAttributes.Static | ConvertFALToFieldAttributes(value.field_access_level));
             if (value.constant_value.value != null)
