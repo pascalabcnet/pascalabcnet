@@ -3807,9 +3807,12 @@ namespace CodeCompletion
         {
             if (ts is NullTypeScope)
                 return true;
+            if (!(ts is PointerScope))
+                return false;
             if (ts is PointerScope)
                 if ((ts as PointerScope).ref_type == null)
                     return true;
+            
             return ref_type == (ts as PointerScope).ref_type;
         }
 
