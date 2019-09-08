@@ -1952,7 +1952,8 @@ namespace CodeFormatters
                 else
                     already_off = false;
                 visit_node(_class_members.access_mod);
-                if (first_decl != null && !(_class_members.members[0] is short_func_definition))
+                if (first_decl != null && !(_class_members.members[0] is short_func_definition) && 
+                    _class_members.access_mod.source_context.end_position.line_num == _class_members.source_context.begin_position.line_num)
                     sb.Append(" ");
                 if (!already_off)
                     IncOffset();
