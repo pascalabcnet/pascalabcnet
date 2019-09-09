@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -151,8 +151,15 @@ namespace SyntaxVisitors
 
             var iteratorClassName = GetClassName(pd);
 
+            /*var staticClass = false;
+
+            var classDef = GetMethodClassDefinition(pd);
+
+            if (classDef != null && (classDef.attribute & class_attribute.Static) != 0)
+                staticClass = true;*/
+
             // frninja 08/18/15 - Для захвата self
-            if (iteratorClassName != null)
+            if (iteratorClassName != null /*&& !staticClass*/)
             {
                 // frninja 20/04/16 - поддержка шаблонных классов
                 var iteratorClassRef = CreateClassReference(iteratorClassName);

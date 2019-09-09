@@ -1,4 +1,4 @@
-﻿// Copyright (©) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (©) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 ///Модуль графики
 unit GraphWPF;
@@ -166,6 +166,8 @@ type
     property Width: real read GetWidth;
     /// Высота графического окна
     property Height: real read GetHeight;
+    /// Центр графического окна
+    function Center: Point;
     /// Сохраняет содержимое графического окна в файл с именем fname
     procedure Save(fname: string);
     /// Восстанавливает содержимое графического окна из файла с именем fname
@@ -343,8 +345,8 @@ function Rect(x,y,w,h: real): GRect;
 function ColorBrush(c: Color): GBrush;
 /// Возвращает однотонное цветное перо, заданное цветом
 function ColorPen(c: Color): GPen;
-/// Процедура синхронизации вывода графики
-procedure Invoke(d: ()->());
+/// Процедура ускорения вывода. Обновляет экран после всех изменений
+procedure Redraw(d: ()->());
 
 
 // -----------------------------------------------------
@@ -352,8 +354,10 @@ procedure Invoke(d: ()->());
 // -----------------------------------------------------
 /// Начинает анимацию, основанную на кадре. Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw
 procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer := 61);
-/// Начинает анимацию, основанную на кадре Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw с параметром, равным номеру кадра
+/// Начинает анимацию, основанную на кадре. Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw с параметром, равным номеру кадра
 procedure BeginFrameBasedAnimation(Draw: procedure(frame: integer); frate: integer := 61);
+/// Начинает анимацию, основанную на кадре, и передаёт в каждый обработчик кадра время dt, прошедшее с момента последней перерисовки
+procedure BeginFrameBasedAnimationTime(Draw: procedure(dt: real));
 /// Завершает анимацию, основанную на кадре
 procedure EndFrameBasedAnimation;
 
@@ -479,6 +483,9 @@ var OnKeyUp: procedure(k: Key);
 var OnKeyPress: procedure(ch: char);
 /// Событие изменения размера графического окна
 var OnResize: procedure;
+/// Событие перерисовки графического окна.
+///Инициализируется процедурой с вещественным параметром dt - временем, прошедшим с момента последнего обновления экрана
+var OnDrawFrame: procedure(dt: real) := nil;
 
 //{{{--doc: Конец секции 3 }}} 
 
@@ -503,7 +510,7 @@ procedure __FinalizeModule__;
 
 implementation
 
-procedure Invoke(d: ()->()) := app.Dispatcher.Invoke(d);
+procedure Redraw(d: ()->()) := app.Dispatcher.Invoke(d);
 function getApp: Application := app;
 
 function RGB(r,g,b: byte) := Color.Fromrgb(r, g, b);
@@ -544,6 +551,7 @@ type
 
 var 
   Host: MyVisualHost;
+  Host1: Canvas;
   RTbmap: RenderTargetBitmap;
   rtbmapIsCleared := True;
 
@@ -1257,11 +1265,16 @@ function GraphWindowTypeGetLeftP: real;
 begin
   Result := 0;
   foreach var p in MainDockPanel.Children do
-    if (p is FrameworkElement) and (p<>host) then
+    if (p is FrameworkElement) and (p<>host1) then
     begin
       var d := DockPanel.GetDock(FrameworkElement(p));
       if d=Dock.Left then
-        Result += FrameworkElement(p).Width;
+      begin
+        var f := FrameworkElement(p).Width;
+        if real.IsNaN(f) then
+          continue;
+        Result += f;
+      end;    
     end;
 end;
 
@@ -1269,11 +1282,16 @@ function GraphWindowTypeGetTopP: real;
 begin
   Result := 0;
   foreach var p in MainDockPanel.Children do
-    if (p is FrameworkElement) and (p<>host) then
+    if (p is FrameworkElement) and (p<>host1) then
     begin
       var d := DockPanel.GetDock(FrameworkElement(p));
       if d=Dock.Top then
-        Result += FrameworkElement(p).Height;
+      begin
+        var f := FrameworkElement(p).Height;
+        if real.IsNaN(f) then
+          continue;
+        Result += f;
+      end;    
     end;
 end;
 
@@ -1287,11 +1305,17 @@ begin
   else Result := Size(host.DataContext).Width;}
   Result := Window.Width;
   foreach var p in MainDockPanel.Children do
-    if (p is FrameworkElement) and (p<>host) then
+    if (p is FrameworkElement) and (p<>host1) then
     begin
       var d := DockPanel.GetDock(FrameworkElement(p));
       if (d=Dock.Left) or (d=Dock.Right) then
-        Result -= FrameworkElement(p).Width;
+      begin
+        var f := FrameworkElement(p).Width;
+        //Print(f);
+        if real.IsNaN(f) then
+          continue;
+        Result -= f;
+      end;  
     end;
 end;
 function GraphWindowType.GetWidth := InvokeReal(GraphWindowTypeGetWidthP);
@@ -1303,11 +1327,16 @@ begin
   else Result := Size(host.DataContext).Height;}
   Result := Window.Height;
   foreach var p in MainDockPanel.Children do
-    if (p is FrameworkElement) and (p<>host) then
+    if (p is FrameworkElement) and (p<>host1) then
     begin
       var d := DockPanel.GetDock(FrameworkElement(p));
       if (d=Dock.Top) or (d=Dock.Bottom) then
-        Result -= FrameworkElement(p).Height;
+      begin  
+        var f := FrameworkElement(p).Height;
+        if real.IsNaN(f) then
+          continue;
+        Result -= f;
+      end;  
     end;
 end;
 function GraphWindowType.GetHeight := InvokeReal(GraphWindowTypeGetHeightP);
@@ -1349,6 +1378,9 @@ procedure GraphWindowType.Fill(fname: string);
 begin
   //FillWindow(fname);
 end;
+
+function GraphWindowType.Center: Point := Pnt(Width/2,Height/2);
+
 
 procedure WindowTypeWPF.Save(fname: string) := GraphWindow.Save(fname);
 
@@ -1545,11 +1577,13 @@ var FrameNum := 0;
 
 procedure RenderFrame(o: Object; e: System.EventArgs);
 begin
-  if (OnDraw<>nil) or (OnDraw1<>nil) then
+  if (OnDraw<>nil) or (OnDraw1<>nil) or (OnDrawFrame<>nil) then
   begin
     var e1 := RenderingEventArgs(e).RenderingTime;
     var dt := e1 - LastUpdatedTime;
     var delta := 1000/Framerate; // через какое время обновлять
+    if OnDrawFrame<>nil then 
+      delta := 0; // перерисовывать когда придёт время
     if dt.TotalMilliseconds < delta then
       exit
     else LastUpdatedTime := e1;  
@@ -1558,7 +1592,9 @@ begin
     if OnDraw<>nil then
       OnDraw() 
     else if OnDraw1<>nil then
-      OnDraw1(FrameNum);
+      OnDraw1(FrameNum)
+    else if OnDrawFrame<>nil then
+      OnDrawFrame(dt.Milliseconds/1000);
   end;  
 end;
 
@@ -1578,6 +1614,11 @@ begin
   FrameRate := frate;
 end;
 
+procedure BeginFrameBasedAnimationTime(Draw: procedure(dt: real));
+begin
+  OnDrawFrame := Draw;
+end;
+
 procedure EndFrameBasedAnimation;
 begin
   //CountVisuals := 0;
@@ -1593,7 +1634,7 @@ GraphWPFWindow = class(GMainWindow)
 public
   procedure InitMainGraphControl; override;
   begin
-    var host1 := new Canvas;
+    host1 := new Canvas;
     host := new MyVisualHost();
     host1.SizeChanged += (s,e) ->
     begin
@@ -1601,7 +1642,7 @@ public
       host.DataContext := sz;
     end;
     // Всегда последнее
-    var g := Content as DockPanel;
+    var g := MainPanel;
     
     var dpiXProperty := typeof(SystemParameters).GetProperty('DpiX', BindingFlags.NonPublic or BindingFlags.Static);
     var dpiYProperty := typeof(SystemParameters).GetProperty('Dpi', BindingFlags.NonPublic or BindingFlags.Static);

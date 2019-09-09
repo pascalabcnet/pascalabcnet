@@ -37,6 +37,7 @@ M_DELETE=Удалить
 
 MR_SERVICE=Сервис
 M_OPTIONS=Настройки...
+M_AUTOINSERT_CODE=Режим автозавершения кода
 
 MR_VIEW=Вид
 M_BOTTOMPANEL=Нижняя панель
@@ -363,6 +364,7 @@ EDITOR_OPTIONS=Редактор
 SHOW_DEBUG_PLAY_PAUSE_BUTTONS=Показывать дополнительные кнопки управления отладкой
 PASUSE_IN_RUNMODE_IF_CONSOLE=Делать паузу после завершения консольной программы
 SAVE_FILES_IF_COMPILATOIN_OK=Сохранять файлы если компиляция прошла успешно
+AUTO_INSERT_CODE_IS_ENABLED_ON_STARTUP=Режим автозавершения кода включён при запуске
 
 %PREFIX%=VP_OC_EDITOROPTIONS_
 NAME=Редактор

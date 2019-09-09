@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections;
@@ -3807,9 +3807,12 @@ namespace CodeCompletion
         {
             if (ts is NullTypeScope)
                 return true;
+            if (!(ts is PointerScope))
+                return false;
             if (ts is PointerScope)
                 if ((ts as PointerScope).ref_type == null)
                     return true;
+            
             return ref_type == (ts as PointerScope).ref_type;
         }
 

@@ -93,6 +93,6 @@ namespace VisualPascalABC
 
         private System.Windows.Forms.Panel basePanel;
         private System.Windows.Forms.Panel editorPanel;
-        internal CodeFileDocumentTextEditorControl TextEditor;
+        public CodeFileDocumentTextEditorControl TextEditor;
     }
 }

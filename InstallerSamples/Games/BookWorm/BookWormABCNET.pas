@@ -1,4 +1,4 @@
-uses GraphABC,ABCObjects,ABCButtons,Events;
+﻿uses GraphABC,ABCObjects,ABCButtons;
 
 const 
 /// Примерная частота повторяемости букв

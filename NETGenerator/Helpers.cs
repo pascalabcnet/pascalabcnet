@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using PascalABCCompiler.SemanticTree;
 using System;
@@ -853,8 +853,9 @@ namespace PascalABCCompiler.NETGenerator {
             return null;
         }
 
-        public MethodInfo GetEnumeratorMethod(Type t)
+        public MethodInfo GetEnumeratorMethod(Type t, out Type[] generic_args)
         {
+            generic_args = null;
             Type generic_def = null;
             if (t.IsGenericType && !t.IsGenericTypeDefinition)
                 generic_def = t.GetGenericTypeDefinition();
@@ -889,6 +890,13 @@ namespace PascalABCCompiler.NETGenerator {
                             return TypeBuilder.GetMethod(gt, mi);
                         else
                             return interf.GetGenericTypeDefinition().MakeGenericType(t.GetGenericArguments()).GetMethod("GetEnumerator");
+                    }
+                    else if (IsConstructedGenericType(interf))
+                    {
+                        //return TypeBuilder.GetMethod(TypeFactory.IEnumerableGenericType.MakeGenericType(interf.GetGenericArguments()), TypeFactory.IEnumerableGenericType.GetMethod("GetEnumerator"));
+                        //return TypeFactory.IEnumerableType.GetMethod("GetEnumerator", Type.EmptyTypes);
+                        generic_args = interf.GetGenericArguments();
+                        return TypeBuilder.GetMethod(interf, mi);
                     }
                     else
                         return interf.GetMethod("GetEnumerator");

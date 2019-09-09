@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -131,7 +131,7 @@ namespace VisualPascalABC
                 optionsContentEngine.UpdateOptionsForm();
         }
 
-        void AddWindowToDockPanel(DockContent dc, DockPanel dp, DockStyle dockStyle, DockState dockState, bool isFloat, DockPane dockToPane, int ind)
+        public void AddWindowToDockPanel(DockContent dc, DockPanel dp, DockStyle dockStyle, DockState dockState, bool isFloat, DockPane dockToPane, int ind)
         {
             if (dc.Visible && dc.Pane != null)
                 return;
@@ -246,7 +246,7 @@ namespace VisualPascalABC
         private CodeFileDocumentControl AddNewProgramToTab(DockPanel tabControl, string FileName)
         {
             CodeFileDocumentControl edit = AddNewTab(tabControl);
-            
+
             edit.FileName = FileName;
             SetTabPageText(edit);
             edit.SetHighlightingStrategyForFile(FileName);
@@ -262,6 +262,8 @@ namespace VisualPascalABC
                 AddEditorHandlers(edit);
             }
             CodeCompletionKeyHandler.Attach(edit.TextEditor);
+            edit.TextEditor.ActiveTextAreaControl.TextArea.KeyEventHandler += TextArea_KeyEventHandler;
+
             //HostCallbackImplementation.Register(this);
 
             //\ivan

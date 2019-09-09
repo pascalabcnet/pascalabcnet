@@ -2,6 +2,7 @@
 %PREFIX%=PABCNETC_
 
 ERROR_INVALID_DIRECTORY=Error: Invalid direcory
+ERROR_DIRECTORY_NOT_FOUND=Error: Directory not found
 FULL_ERROR_LIST=Full error list:
 OK_{0}MS_{1}LINES=OK {0}ms ({1}lines)
 TOTAL{0}_FILES{1}_LINES_{2}_TIME{3}=Total: {0} files ({1}kb,{2}lines). Time: {3}ms

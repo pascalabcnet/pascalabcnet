@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using PascalABCCompiler.SemanticTree;
@@ -2088,7 +2088,11 @@ namespace PascalABCCompiler.NetHelper
 			foreach (string s in namespaces.Keys)
 			{
 				if (s != name && s.StartsWith(name, StringComparison.CurrentCultureIgnoreCase))
-					lst.Add(s.Substring(name.Length+1));
+                {
+                    if (s.Length >= name.Length + 1)
+                        lst.Add(s.Substring(name.Length + 1));
+                }
+					
 			}
 			if (lst == null) return null;
 			return lst.ToArray();

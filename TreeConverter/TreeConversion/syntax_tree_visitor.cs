@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 //Посетитель синтаксического дерева.
 using System;
@@ -2406,7 +2406,14 @@ namespace PascalABCCompiler.TreeConverter
         	location loc = get_location(_raise_stmt);
         	if (_raise_stmt.expr == null)
         	{
-                if (current_catch_excep == null) AddError(loc, "RAISE_WITHOUT_PARAMETERS_MUST_BE_IN_CATCH_BLOCK");
+                var st = _raise_stmt.Parent;
+                while (st != null && !(st is exception_block))
+                {
+                    st = st.Parent;
+                }
+                //if (current_catch_excep == null)
+                if (st == null)
+                    AddError(loc, "RAISE_WITHOUT_PARAMETERS_MUST_BE_IN_CATCH_BLOCK");
         		return_value(new rethrow_statement_node(loc));
         		return;
         	}
@@ -4151,14 +4158,14 @@ namespace PascalABCCompiler.TreeConverter
         {
             throw new NotSupportedError(get_location(_index_property));
         }
-
-        //TODO: Если одного из акцессоров нет?
+        
         public override void visit(SyntaxTree.simple_property _simple_property)
         {
             if (_simple_property.accessors == null)
                 AddError(get_location(_simple_property), "PROPERTYACCESSOR_{0}_OR_{1}_EXPECTED", compiler_string_consts.PascalReadAccessorName, compiler_string_consts.PascalWriteAccessorName);
             if (_simple_property.property_type == null)
                 AddError(get_location(_simple_property.property_name), "TYPE_NAME_EXPECTED");
+            
             common_property_node pn = context.add_property(_simple_property.property_name.name,
                 get_location(_simple_property.property_name));
             assign_doc_info(pn, _simple_property);
@@ -5129,8 +5136,15 @@ namespace PascalABCCompiler.TreeConverter
             else
             {
                 id = deref_value as SyntaxTree.ident;
+                if (id != null && id.name != null && id.name.IndexOf('.') != -1)
+                {
+                    var arr = id.name.Split('.');
+                    deref_value = new dot_node(new ident(id.name.Substring(0, id.name.LastIndexOf('.')), id.source_context), new ident(arr[arr.Length-1],id.source_context));
+                    id = null;
+                }
                 if (id != null)
                 {
+                    
                     if (templ_args_count != 0)
                     {
                         //Ищем generics
@@ -9330,7 +9344,7 @@ namespace PascalABCCompiler.TreeConverter
             return bfc;
         }
 
-        private void try_convert_typed_expression_to_function_call(ref expression_node en)
+        public void try_convert_typed_expression_to_function_call(ref expression_node en)
         {
             if (en.semantic_node_type == semantic_node_type.typed_expression)
             {
@@ -10918,7 +10932,7 @@ namespace PascalABCCompiler.TreeConverter
                             }
                             scopes.Add(ns_scope2);
                         }
-                        else
+                        else if (si_list == null)
                             AddError(new NamespaceNotFound(nun.namespace_name.namespace_name, un.location));
                     }
                 }
@@ -11919,13 +11933,13 @@ namespace PascalABCCompiler.TreeConverter
                         if (attr.qualifier != null)
                             if (j == 0)
                             {
-                                if (string.Compare(attr.qualifier.name, "return", true) == 0)
+                                if (string.Compare(attr.qualifier.name, "return", true) == 0 || string.Compare(attr.qualifier.name, "result", true) == 0)
                                 {
                                     if (context.top_function == null)
                                         AddError(get_location(attr), "ATTRIBUTE_APPLICABLE_ONLY_TO_METHOD");
                                     if (context.top_function.return_value_type == null || context.top_function.return_value_type == SystemLibrary.SystemLibrary.void_type)
                                         AddError(get_location(attr), "EXPECTED_RETURN_VALUE_FOR_ATTRIBUTE");
-                                    throw new NotSupportedError(get_location(attr.qualifier));
+                                    //throw new NotSupportedError(get_location(attr.qualifier));
                                     qualifier = SemanticTree.attribute_qualifier_kind.return_kind;
                                 }
                                 else
@@ -12897,6 +12911,15 @@ namespace PascalABCCompiler.TreeConverter
                     // end frninja
                     context.leave_type_method();
                 }
+                /*else
+                {
+                    if (context._cmn != null && context._cmn.functions != null && (context.top_function is common_namespace_function_node) && 
+                        (context.top_function as common_namespace_function_node).is_yield_helper &&
+                        context.top_function.name.ToLower().StartsWith("<yield_helper"))
+                    {
+                        context._cmn.functions.remove(context.top_function as common_namespace_function_node);
+                    }
+                }*/
                 context.is_order_independed_method_description = false;
                 context.leave_block();
             }
@@ -16141,7 +16164,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 tn = convert_strong(_var_def_statement.vars_type);
                 //LambdaHelper.InferTypesFromVarStmt(tn, _var_def_statement.inital_value as SyntaxTree.function_lambda_definition, this);  //lroman//
-                if (tn.IsStatic)
+                if (tn.IsStatic && _var_def_statement.vars.idents[0].name != YieldHelpers.YieldConsts.Self) // SSM 10/07/19 fix #1639 в статическом классе можно только фиктивное поле с именем YieldHelpers.YieldConsts.Self описать - для того чтобы посмотреть на семантике его тип!!! 
                     AddError(get_location(_var_def_statement), "VARIABLES_OF_STATIC_CLASS_NOT_ALLOWED");
                 var fld1 = _var_def_statement.inital_value as SyntaxTree.function_lambda_definition;
                 if (fld1 != null)
@@ -16888,6 +16911,13 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.ident _ident)
         {
+            if (_ident.name.IndexOf('.') != -1)
+            {
+                var arr = _ident.name.Split('.');
+                var dn = new dot_node(new ident(_ident.name.Substring(0, _ident.name.LastIndexOf('.')), _ident.source_context), new ident(arr[arr.Length - 1], _ident.source_context));
+                dn.visit(this);
+                return;
+            }
             var mot = motivation_keeper.motivation;
             motivation_keeper.reset();
             switch (mot)
@@ -17031,6 +17061,8 @@ namespace PascalABCCompiler.TreeConverter
         {
             expression_node left = convert_strong(_bin_expr.left);
             expression_node right = convert_strong(_bin_expr.right);
+            if (_bin_expr.operation_type == Operators.In)
+                try_convert_typed_expression_to_function_call(ref left);
             expression_node res = find_operator(_bin_expr.operation_type, left, right, get_location(_bin_expr));
 
             if (res.type is undefined_type)
@@ -17308,6 +17340,8 @@ namespace PascalABCCompiler.TreeConverter
         {
             string module_name = "";
             string name = "";
+            if (context.converted_func_stack.size > 1)
+                AddError(context.top_function.loc, "EXTERNAL_METHOD_CANNOT_BE_NESTED");
             if (context.converted_func_stack.top() is common_method_node && (context.converted_func_stack.top() as common_method_node).polymorphic_state != SemanticTree.polymorphic_state.ps_static)
                 AddError(context.top_function.loc, "EXTERNAL_METHOD_SHOULD_BE_STATIC");
             if (context.converted_func_stack.top().is_generic_function)
@@ -18447,6 +18481,8 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.new_expr _new_expr)
         {
             type_node tn = ret.visit(_new_expr.type);
+            if (tn is generic_instance_type_node gitn) // SSM 07/08/19 #2070
+                gitn._is_abstract = gitn.original_generic.IsAbstract;
             //if (tn == SystemLibrary.SystemLibrary.void_type)
             //	AddError(new VoidNotValid(get_location(_new_expr.type)));
             if (tn.IsDelegate && !_new_expr.new_array)
@@ -18617,7 +18653,14 @@ namespace PascalABCCompiler.TreeConverter
                 switch (tn.type_special_kind)
                 {
                 	case SemanticTree.type_special_kind.enum_kind:
-                		return_value(new int_const_node(sizeof(int),get_location(ntr))); break;
+                        if (tn is compiled_type_node ctn)
+                        {
+                            return_value(new int_const_node(System.Runtime.InteropServices.Marshal.SizeOf(ctn.compiled_type.GetEnumUnderlyingType()), get_location(ntr))); break;
+                        }
+                		else
+                        {
+                            return_value(new int_const_node(sizeof(int), get_location(ntr))); break;
+                        }
                 default:
                 	if (tn.is_generic_parameter || tn.is_generic_type_definition || tn.is_generic_type_instance)
                 	{
@@ -20082,7 +20125,7 @@ namespace PascalABCCompiler.TreeConverter
             string Consts__Self = YieldHelpers.YieldConsts.Self;
 
             // Find semantic class containing iterator (yield-method) with unknown ident
-            var iteratorContainingClass = context._ctn.fields.Where(f => f.name == Consts__Self).First().type;
+            var iteratorContainingClass = context._ctn.fields.Where(f => f.name == Consts__Self).FirstOrDefault()?.type;
             //var iteratorContainingClass = context._cmn.types.Where(t => t.name == _unk.ClassName.name).First();
 
             isStaticIdent = false;
@@ -20091,7 +20134,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 // Search for unknown ident in class
                 var found = iteratorContainingClass.find(_unk.UnknownID.name);
-                if ((object)found != null)
+                if (found != null)
                 {
                     // class_field - поле класса
                     // common_method_node - метод класса

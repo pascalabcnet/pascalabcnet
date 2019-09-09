@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 // SSM 21/11/16 Ћ€мбда выражени€ вынесены на верхний уровень (п.ч. присваивани€ и параметры)
 %{
@@ -50,7 +50,8 @@
 %token <id> tkDirectiveName tkIdentifier 
 %token <stn> tkStringLiteral tkFormatStringLiteral tkAsciiChar
 %token <id> tkAbstract tkForward tkOverload tkReintroduce tkOverride tkVirtual tkExtensionMethod 
-%token <ex> tkInteger tkFloat tkHex 
+%token <ex> tkInteger tkFloat tkHex
+%token <id> tkUnknown
 
 %type <ti> unit_key_word class_or_static
 %type <stn> assignment 
@@ -360,6 +361,8 @@ used_unit_name
 		}
     | ident_or_keyword_pointseparator_list tkIn tkStringLiteral
         { 
+        	if ($3 is char_const _cc)
+        		$3 = new string_const(_cc.cconst.ToString());
 			$$ = new uses_unit_in($1 as ident_list, $3 as string_const, @$);
         }
     ;
@@ -4239,6 +4242,8 @@ keyword
 		{ $$ = $1; }
     | tkElse
 		{ $$ = $1; }
+    | tkEnd
+		{ $$ = $1; }
     | tkExcept
 		{ $$ = $1; }
     | tkFile
@@ -4329,8 +4334,6 @@ keyword
 
 reserved_keyword
     : tkOperator
-		{ $$ = $1; }
-    | tkEnd
 		{ $$ = $1; }
     ;
 

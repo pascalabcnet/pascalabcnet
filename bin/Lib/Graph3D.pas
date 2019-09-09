@@ -1,4 +1,4 @@
-﻿// Copyright (©) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (©) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 /// Модуль трёхмерной графики
 unit Graph3D;
@@ -75,8 +75,8 @@ var
 //>>     Короткие функции модуля Graph3D # Graph3D short functions
 // -----------------------------------------------------
 
-procedure Invoke(p: ()->());
-
+/// Процедура ускорения вывода. Обновляет экран после всех изменений
+procedure Redraw(p: ()->());
 /// Возвращает цвет по красной, зеленой и синей составляющей (в диапазоне 0..255)
 function RGB(r, g, b: byte): Color;
 /// Возвращает цвет по красной, зеленой и синей составляющей и параметру прозрачности (в диапазоне 0..255)
@@ -182,6 +182,13 @@ type
     property ShowCameraInfo: boolean read GetSCI write SetSCI;
   /// Отображать ли ViewCube
     property ShowViewCube: boolean read GetSVC write SetSVC;
+  /// Не отображать координатную систему, координатную сетку и ViewCube 
+    procedure HideAll;
+    begin
+      ShowCoordinateSystem := False;
+      ShowGridLines := False;
+      ShowViewCube := False;
+    end;
   /// Заголовок пространства отображения
     property Title: string read GetT write SetT;
   /// Подзаголовок пространства отображения
@@ -357,6 +364,7 @@ type
     rotatetransform := new MatrixTransform3D;
     scaletransform := new ScaleTransform3D;
     transltransform: TranslateTransform3D;
+    rotatetransform_absolute := new MatrixTransform3D;
 
     procedure AddToObject3DList;
     procedure DeleteFromObject3DList;
@@ -370,6 +378,7 @@ type
       transfgroup.Children.Add(rotatetransform);
       transfgroup.Children.Add(scaletransform); 
       transfgroup.Children.Add(transltransform);
+      transfgroup.Children.Add(rotatetransform_absolute);
       
       model.Transform := transfgroup;
       hvp.Children.Add(model);
@@ -408,10 +417,18 @@ type
     begin
       Result := CreateObject;
       Result.CloneChildren(Self);
-      
       var ind := (model.Transform as Transform3DGroup).Children.IndexOf(rotatetransform);
       (Result.model.Transform as Transform3DGroup).Children[ind] := (model.Transform as Transform3DGroup).Children[ind].Clone;
       Result.rotatetransform := (Result.model.Transform as Transform3DGroup).Children[ind] as MatrixTransform3d;
+      
+      ind := transfgroup.Children.IndexOf(rotatetransform_absolute);
+      (Result.model.Transform as Transform3DGroup).Children[ind] := (model.Transform as Transform3DGroup).Children[ind].Clone;
+      Result.rotatetransform_absolute := (Result.model.Transform as Transform3DGroup).Children[ind] as MatrixTransform3d;
+      
+      ind := transfgroup.Children.IndexOf(transltransform);
+      (Result.model.Transform as Transform3DGroup).Children[ind] := (model.Transform as Transform3DGroup).Children[ind].Clone;
+      Result.transltransform := (Result.model.Transform as Transform3DGroup).Children[ind] as TranslateTransform3D;
+
       //(Result.model.Transform as Transform3DGroup).Children[1] := (model.Transform as Transform3DGroup).Children[1].Clone;
       //(Result.model.Transform as Transform3DGroup).Children[2] := (model.Transform as Transform3DGroup).Children[2].Clone;
       //(Result.model.Transform as Transform3DGroup).Children[3] := (model.Transform as Transform3DGroup).Children[3].Clone; //- почему-то это не нужно!!! с ним не работает!
@@ -426,6 +443,10 @@ type
     property Y: real read GetY write SetY;
   /// Координата Z
     property Z: real read GetZ write SetZ;
+  /// Направление движения (используется методом MoveTime)
+    auto property Direction: Vector3D;
+  /// Скорость в направлении Direction
+    auto property Velocity: real := 3;
   /// Перемещает 3D-объект к точке (xx,yy,zz)
     function MoveTo(xx, yy, zz: real): Object3D := 
     Invoke&<Object3D>(()->begin
@@ -446,6 +467,20 @@ type
     function MoveOnY(dy: real): Object3D := MoveOn(0, dy, 0);
   /// Перемещает z-координату 3D-объекта на dz
     function MoveOnZ(dz: real): Object3D := MoveOn(0, 0, dz);
+  /// Перемещает 3D-объект вдоль вектора Direction со скоростью Velocity за время dt
+    procedure MoveTime(dt: real); virtual;
+    begin
+      var dx := Direction.X;
+      var dy := Direction.Y;
+      var dz := Direction.Z;
+      var len := Sqrt(dx*dx+dy*dy+dz*dz);
+      if len = 0 then
+        exit;
+      var dvx := dx/len*Velocity;
+      var dvy := dy/len*Velocity;
+      var dvz := dz/len*Velocity;
+      MoveOn(dvx*dt,dvy*dt,dvz*dt);
+    end;
   /// Цвет 3D-объекта
     property Color: GColor read GetColor write SetColor; virtual;
   private
@@ -454,6 +489,24 @@ type
   public 
   /// Позиция 3D-объекта
     property Position: Point3D read GetPos write MoveToProp;
+    
+  /// Будущая позиция 3D-объекта по прошествии времени dt
+    function PositionAfterTime(dt: real): Point3D;
+    begin
+      var dx := Direction.X;
+      var dy := Direction.Y;
+      var dz := Direction.Z;
+      var len := Sqrt(dx*dx+dy*dy+dz*dz);
+      if len = 0 then
+      begin  
+        Result := Position;
+        exit;
+      end;
+      var dvx := dx/len*Velocity;
+      var dvy := dy/len*Velocity;
+      var dvz := dz/len*Velocity;
+      Result := P3D(X + dvx*dt, Y + dvy*dt, Z + dvz*dt);
+    end;
     
   /// Масштабирует 3D-объект в f раз
     function Scale(f: real): Object3D := 
@@ -491,7 +544,7 @@ type
       transfgroup.Children[ind] := rotatetransform;
       Result := Self;
     end);
-    /// Поворачивает объект на угол angle вокруг оси axis относительно точки center
+    /// Поворачивает объект на угол angle вокруг оси axis относительно точки center (её координаты задаются относительно центра объекта)
     function RotateAt(axis: Vector3D; angle: real; center: Point3D): Object3D :=
     Invoke&<Object3D>(()->begin
       var m := Matrix3D.Identity;
@@ -499,6 +552,16 @@ type
       var ind := transfgroup.Children.IndexOf(rotatetransform);
       rotatetransform := new MatrixTransform3D(m * rotatetransform.Value);
       transfgroup.Children[ind] := rotatetransform;
+      Result := Self;
+    end);
+    /// Поворачивает объект на угол angle вокруг оси axis относительно точки center (в абсолютных координатах)
+    function RotateAtAbsolute(axis: Vector3D; angle: real; center: Point3D): Object3D :=
+    Invoke&<Object3D>(()->begin
+      var m := Matrix3D.Identity;
+      m.RotateAt(new Quaternion(axis, angle), center);
+      var ind := transfgroup.Children.IndexOf(rotatetransform_absolute);
+      rotatetransform_absolute := new MatrixTransform3D(rotatetransform_absolute.Value * m);
+      transfgroup.Children[ind] := rotatetransform_absolute;
       Result := Self;
     end);
     /// Возвращает анимацию перемещения объекта к точке (x, y, z) за seconds секунд. В конце анимации выполняется процедура Completed
@@ -573,10 +636,14 @@ type
     /// Возвращает анимацию поворота объекта вокруг вектора v, направленного из центра объекта, на величину angle за seconds секунд
     function AnimRotate(v: Vector3D; angle: real; seconds: real := 1) := AnimRotate(v.x, v.y, v.z, angle, seconds, nil);
     
-    /// Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center, на величину angle за seconds секунд. В конце анимации выполняется процедура Completed
+    /// Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center (её координаты задаются относительно центра объекта), на величину angle за seconds секунд. В конце анимации выполняется процедура Completed
     function AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real; Completed: procedure): AnimationBase;
-    /// Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center, на величину angle за seconds секунд
+    /// Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center (её координаты задаются относительно центра объекта), на величину angle за seconds секунд
     function AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real := 1): AnimationBase := AnimRotateAt(axis,angle,center,seconds,nil);
+    /// Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center (в абсолютных координатах), на величину angle за seconds секунд. В конце анимации выполняется процедура Completed
+    function AnimRotateAtAbsolute(axis: Vector3D; angle: real; center: Point3D; seconds: real; Completed: procedure): AnimationBase;
+    /// Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center (в абсолютных координатах), на величину angle за seconds секунд
+    function AnimRotateAtAbsolute(axis: Vector3D; angle: real; center: Point3D; seconds: real := 1): AnimationBase := AnimRotateAtAbsolute(axis,angle,center,seconds,nil);
 
     /// Клонирует 3D-объект
     function Clone: Object3D := Invoke&<Object3D>(CloneT);
@@ -673,6 +740,10 @@ type
   public  
   /// Добавить дочерний подобъект
     procedure AddChild(obj: Object3D) := Invoke(AddT, obj);
+  /// Добавить дочерний подобъект
+    procedure AddChilds(params arr: array of Object3D) := arr.ForEach(obj->AddChild(obj));
+  /// Удалить дочерний подобъект
+    procedure RemoveChild(obj: Object3D) := Invoke(RemoveT, obj);
   /// i-тый дочерний подобъект
     property Items[i: integer]: Object3D read GetObj; default;
     
@@ -766,6 +837,14 @@ type
       CreateBase0(new ModelVisual3D, x, y, z);
       foreach var xx in lst do
         AddChild(xx);
+    end;
+  public  
+    procedure UnGroup;
+    begin
+      for var i := l.Count-1 downto 0 do
+      begin
+        RemoveChild(l[i]);
+      end;  
     end;
     
   /// ВОзвращает клон группы 3D-объектов
@@ -1272,7 +1351,12 @@ type
     begin
       var rot := el.Rotation as AxisAngleRotation3D;
       if not da.AutoReverse then
-        Element.RotateAt(rot.Axis, angle, center);
+      begin
+        if Absolute then
+          Element.RotateAtAbsolute(rot.Axis, angle, center)
+        else  
+          Element.RotateAt(rot.Axis, angle, center);
+      end;  
       Element.transfgroup.Children.Remove(el);
       if Completed <> nil then 
         Completed();
@@ -1282,8 +1366,10 @@ type
     begin
       el := new RotateTransform3D();
       el.Rotation := new AxisAngleRotation3D();
-
-      Element.transfgroup.Children.Insert(0,el); // До основной матрицы, связанной с поворотом
+      
+      if Absolute then
+        Element.transfgroup.Children.Add(el) // После основной матрицы, связанной с поворотом
+      else Element.transfgroup.Children.Insert(0,el); // До основной матрицы, связанной с поворотом
       var rottransform := el;
       rottransform.CenterX := center.x;
       rottransform.CenterY := center.y;
@@ -1309,7 +1395,18 @@ type
       (vx, vy, vz, angle, center) := (vvx, vvy, vvz, a, c)
     end;
   public 
+    auto property Absolute: boolean; 
     function Clone: AnimationBase; override := new RotateAtAnimation(Element,Seconds,vx,vy,vz,angle,center,nil);    
+  end;
+  
+  RotateAtAbsoluteAnimation = class(RotateAtAnimation)
+  public 
+    constructor(e: Object3D; sec: real; vvx, vvy, vvz, a: real; c: Point3D; Completed: procedure := nil);
+    begin
+      inherited Create(e,sec,vvx,vvy,vvz,a,c,Completed);
+      Absolute := True;
+    end;
+    function Clone: AnimationBase; override := new RotateAtAbsoluteAnimation(Element,Seconds,vx,vy,vz,angle,center,nil);    
   end;
   
   CompositeAnimation = class(AnimationBase)
@@ -2547,6 +2644,9 @@ function EmptyAnim(sec: real): EmptyAnimation;
 // -----------------------------------------------------
 //>>     Graph3D: функции для определения ближайших точек и объектов # Graph3D functions for nearest points and objects
 // -----------------------------------------------------
+/// Создаёт траекторию в виде массива точек, заданную параметрически. Функция fun отображает параметр t на координаты точки в пространстве
+function ParametricTrajectory(a,b: real; N: integer; fun: real->Point3D): sequence of Point3D;
+
 /// Возвращает ближайший 3D-объект, который пересекает луч, выпущенный из камеры и проходящий через точку (x,y) экрана
 function FindNearestObject(x, y: real): Object3D;
 
@@ -2558,6 +2658,12 @@ function PointOnPlane(Plane: Plane3D; x, y: real): Point3D;
 
 /// Возвращает ближайшую точку на линии Line с лучом, выпущенным из камеры и проходящем через точку (x,y) экрана
 function NearestPointOnLine(Line: Ray3D; x, y: real): Point3D;
+
+/// Начинает анимацию, основанную на кадре, и передаёт в каждый обработчик кадра время dt, прошедшее с момента последней перерисовки
+procedure BeginFrameBasedAnimationTime(Draw: procedure(dt: real));
+
+/// Заканчивает анимацию, основанную на кадре
+procedure EndFrameBasedAnimation;
 
 var  
 // -----------------------------------------------------
@@ -2575,6 +2681,9 @@ var
   OnKeyUp: procedure(k: Key);
   /// Событие нажатия символьной клавиши
   OnKeyPress: procedure(ch: char);
+  /// Событие перерисовки графического 3D-окна. 
+  ///Инициализируется процедурой с вещественным параметром dt - временем, прошедшим с момента последнего обновления экрана
+  OnDrawFrame: procedure(dt: real);
 
 var
 // -----------------------------------------------------
@@ -2598,6 +2707,8 @@ var
   OrtY: Vector3D := V3D(0, 1, 0);
 /// Орт (единичный вектор) оси OZ
   OrtZ: Vector3D := V3D(0, 0, 1);
+/// Нулевой вектор
+  ZeroVector: Vector3D := V3D(0, 0, 0);
 /// Точка начала координат
   Origin: Point3D := P3D(0, 0, 0);
 /// Плоскость OXY
@@ -2624,7 +2735,7 @@ procedure __FinalizeModule__;
 
 implementation
 
-procedure Invoke(p: ()->()) := GraphWPFBase.Invoke(p);
+procedure Redraw(p: ()->()) := GraphWPFBase.Invoke(p);
 
 function RGB(r, g, b: byte) := Color.Fromrgb(r, g, b);
 function ARGB(a, r, g, b: byte) := Color.FromArgb(a, r, g, b);
@@ -2695,6 +2806,8 @@ function Object3D.AnimScaleZ(sc, seconds: real; Completed: procedure) := new Sca
 function Object3D.AnimRotate(vx, vy, vz, angle, seconds: real; Completed: procedure) := new RotateAtAnimation(Self, seconds, vx, vy, vz, angle, P3D(0, 0, 0), Completed);
 
 function Object3D.AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real; Completed: procedure) := new RotateAtAnimation(Self, seconds, axis.X, axis.y, axis.z, angle, center, Completed);
+
+function Object3D.AnimRotateAtAbsolute(axis: Vector3D; angle: real; center: Point3D; seconds: real; Completed: procedure) := new RotateAtAbsoluteAnimation(Self, seconds, axis.X, axis.y, axis.z, angle, center, Completed);
 
 procedure Object3D.AddToObject3DList := Object3DList.Add(Self);
 
@@ -3309,6 +3422,8 @@ function Triangle(p1, p2, p3: Point3D; m: Material): TriangleT := Inv(()->Triang
 
 // Функции для точек, лучей, прямых, плоскостей
 
+function ParametricTrajectory(a,b: real; N: integer; fun: real->Point3D) := PartitionPoints(a,b,N).Select(fun);
+
 function FindNearestObject(x, y: real): Object3D;
 begin
   Result := nil;
@@ -3361,7 +3476,6 @@ end;
 function PointOnPlane(Plane: Plane3D; x, y: real): Point3D := Plane.PointOnPlane(x,y);
 
 function NearestPointOnLine(Line: Ray3D; x, y: real): Point3D := Line.NearestPointOnLine(x,y);
-
 
 
 // Методы расширения для анимаций 
@@ -3640,6 +3754,32 @@ function Any(x, y, z: real; c: Color): AnyT := Inv(()->AnyT.Create(x, y, z, c));
 
 // Сервисные функции и классы
 
+var LastUpdatedTime := new System.TimeSpan(0); 
+
+procedure RenderFrame(o: Object; e: System.EventArgs);
+begin
+  if OnDrawFrame<>nil then
+  begin
+    var e1 := RenderingEventArgs(e).RenderingTime;
+    var dt := e1 - LastUpdatedTime;
+    if LastUpdatedTime.TotalMilliseconds<>0 then 
+      if OnDrawFrame<>nil then
+        OnDrawFrame(dt.Milliseconds/1000);
+    LastUpdatedTime := e1;  
+  end;  
+end;
+
+procedure BeginFrameBasedAnimationTime(Draw: procedure(dt: real));
+begin
+  OnDrawFrame := Draw;
+end;
+
+procedure EndFrameBasedAnimation;
+begin
+  OnDrawFrame := nil;
+end;  
+
+
 type
   Graph3DWindow = class(GMainWindow)
   public 
@@ -3690,6 +3830,8 @@ type
     /// --- SystemKeyEvents
     procedure SystemOnKeyDown(sender: Object; e: System.Windows.Input.KeyEventArgs);
     begin
+      if (e.Key = Key.F4) and (e.KeyboardDevice.Modifiers = ModifierKeys.Control) then
+        Close;
       if Graph3D.OnKeyDown <> nil then
         Graph3D.OnKeyDown(e.Key);
       e.Handled := True;
@@ -3758,6 +3900,8 @@ type
       
       hvp.Focus();
       Closed += procedure(sender, e) -> begin Halt; end;
+      
+      CompositionTarget.Rendering += RenderFrame;
     end;
   end;
 
@@ -3776,8 +3920,7 @@ begin
   end;
   
   MainWindow := new Graph3DWindow;
-  //MainWindow.MainPanel;
-  
+
   mre.Set();
   
   app.Run(MainWindow);

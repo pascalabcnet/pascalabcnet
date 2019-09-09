@@ -29,7 +29,7 @@ end;
 
 procedure CreateAll;
 begin
-  for var i:=1 to Count do
+  loop Count do
   begin
     var m: ObjectWPF := NewRandomABC;
     repeat
@@ -47,11 +47,11 @@ end;
 
 begin
   Window.Title := 'Движущиеся объекты';
-  Invoke(CreateAll);
+  Redraw(CreateAll);
   var k := 1;
   while True do
   begin
-    Invoke(MoveAll);
+    Redraw(MoveAll);
     k += 1;
     Window.Title := Format('{0,5:f2}',k/Milliseconds*1000)+' кадров в секунду';
   end;
