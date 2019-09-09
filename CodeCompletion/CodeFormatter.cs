@@ -1694,9 +1694,13 @@ namespace CodeFormatters
 
         public override void visit(case_variant _case_variant)
         {
+            List<case_variant> variants = (_case_variant.Parent as case_variants).variants;
             visit_node(_case_variant.conditions);
             //sb.Append(": ");
-            add_space_after = true;
+            
+            if (!(_case_variant.exec_if_true is empty_statement && variants.IndexOf(_case_variant) == variants.Count - 1))
+                add_space_after = true;
+            
             bool one_row = in_one_row(_case_variant.exec_if_true);
             if (!one_row)
             {
@@ -1708,6 +1712,7 @@ namespace CodeFormatters
             {
                 DecOffset();
             }
+            
             //sb.AppendLine(";");
         }
 
