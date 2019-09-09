@@ -15,46 +15,14 @@
 ///Код переведён отсюда:
 /// https://github.com/KhronosGroup/OpenCL-Headers/tree/master/CL
 ///
-<<<<<<< HEAD
 ///Спецификации всех версий:
 /// https://www.khronos.org/registry/OpenCL/
 ///
 ///Если не хватает функции, перечисления, или найдена ошибка - писать сюда:
-=======
-/// Спецификация:
-/// www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_API.html
-///
-/// Для замечаний:
->>>>>>> f5c2705c7d82a5914ebcf3b975f6ba0983ea4584
 /// https://github.com/SunSerega/POCGL/issues
 ///
 unit OpenCL;
 
-<<<<<<< HEAD
-=======
-//ToDo ^T -> pointer
-
-//ToDo расширения, с которыми непонятно что делать:
-//
-// - cl_ext.h
-// -- cl_qcom_ext_host_ptr
-// -- cl_qcom_ext_host_ptr_iocoherent
-// -- cl_qcom_ion_host_ptr
-// -- cl_qcom_android_native_buffer_host_ptr
-// -- cl_img_yuv_image
-//
-// - cl_d3d11.h
-// -- нет функций, есть только Enums и коды ошибок
-//
-// - cl_platform.h
-// -- есть только описание типов и констант, которые нигде не используются
-
-//ToDo .h файлы, которые осталось перевести:
-// - cl_ext_intel
-// - cl_va_api_media_sharing_intel
-// - cl_dx9_media_sharing_intel
-
->>>>>>> f5c2705c7d82a5914ebcf3b975f6ba0983ea4584
 uses System;
 uses System.Runtime.InteropServices;
 
