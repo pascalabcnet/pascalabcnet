@@ -3699,16 +3699,20 @@ namespace CodeCompletion
             ss.loc = get_location(_class_definition);
             cur_scope = ss;
             
-            if (_class_definition.template_args != null)
+            if (!parse_only_method_bodies)
             {
-                foreach (ident id in _class_definition.template_args.idents)
-                    ss.AddGenericParameter(id.name);
+                if (_class_definition.template_args != null)
+                {
+                    foreach (ident id in _class_definition.template_args.idents)
+                        ss.AddGenericParameter(id.name);
+                }
+                else if (template_args != null)
+                {
+                    foreach (ident id in template_args.idents)
+                        ss.AddGenericParameter(id.name);
+                }
             }
-            else if (template_args != null)
-            {
-                foreach (ident id in template_args.idents)
-                    ss.AddGenericParameter(id.name);
-            }
+            
             string tmp_name = cur_type_name;
             cur_type_name = null;
             if (_class_definition.body != null)
@@ -5297,9 +5301,9 @@ namespace CodeCompletion
                             if ((awaitedProcType as ProcType).target.parameters.Count > 0)
                                 param_type = (awaitedProcType as ProcType).target.parameters[i].sc as TypeScope;
                         }
-                        else if (awaitedProcType.IsDelegate && awaitedProcType.instances != null && awaitedProcType.instances.Count > i)
+                        else if (awaitedProcType.IsDelegate && awaitedProcType.instances != null && awaitedProcType.instances.Count > 0)
                         {
-                            param_type = awaitedProcType.instances[i];
+                            param_type = awaitedProcType.instances[Math.Min(i, awaitedProcType.instances.Count - 1)];
                         }
                         else if (awaitedProcType.IsDelegate)
                         {
