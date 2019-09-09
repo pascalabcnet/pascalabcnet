@@ -1,4 +1,4 @@
-// Движение по траектории
+﻿// Движение по траектории
 uses ABCObjects,GraphABC;
 
 const

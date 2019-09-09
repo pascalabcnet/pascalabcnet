@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-G8V08V4
-// DateTime: 29.06.2019 23:45:26
+// DateTime: 03.08.2019 21:12:00
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -47,7 +47,8 @@ public enum Tokens {
     tkShl=127,tkShr=128,tkNot=129,tkAs=130,tkIn=131,tkIs=132,
     tkImplicit=133,tkExplicit=134,tkAddressOf=135,tkDeref=136,tkIdentifier=137,tkStringLiteral=138,
     tkFormatStringLiteral=139,tkAsciiChar=140,tkAbstract=141,tkForward=142,tkOverload=143,tkReintroduce=144,
-    tkOverride=145,tkVirtual=146,tkExtensionMethod=147,tkInteger=148,tkFloat=149,tkHex=150};
+    tkOverride=145,tkVirtual=146,tkExtensionMethod=147,tkInteger=148,tkFloat=149,tkHex=150,
+    tkUnknown=151};
 
 // Abstract base class for GPLEX scanners
 public abstract class ScanBase : AbstractScanner<PascalABCSavParser.Union,LexLocation> {
@@ -179,13 +180,13 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     states[11] = new State(-21);
     states[12] = new State(-22);
     states[13] = new State(-23);
-    states[14] = new State(new int[]{137,23,80,25,81,26,75,28,73,29,79,32,78,33,77,34,76,35,66,36,61,37,122,38,19,39,18,40,60,41,20,42,123,43,124,44,125,45,126,46,127,47,128,48,129,49,130,50,131,51,132,52,21,53,71,54,85,55,22,56,23,57,26,58,27,59,28,60,69,61,93,62,29,63,30,64,31,65,24,66,98,67,95,68,32,69,33,70,34,71,37,72,38,73,39,74,97,75,40,76,41,77,43,78,44,79,45,80,91,81,46,82,96,83,47,84,25,85,48,86,68,87,92,88,49,89,50,90,51,91,52,92,53,93,54,94,55,95,56,96,58,97,99,98,100,99,103,100,101,101,102,102,59,103,72,104,35,105,36,106,42,108,86,109},new int[]{-289,15,-291,113,-142,19,-123,112,-132,22,-136,24,-137,27,-278,30,-135,31,-279,107});
+    states[14] = new State(new int[]{137,23,80,25,81,26,75,28,73,29,79,32,78,33,77,34,76,35,66,36,61,37,122,38,19,39,18,40,60,41,20,42,123,43,124,44,125,45,126,46,127,47,128,48,129,49,130,50,131,51,132,52,21,53,71,54,85,55,22,56,23,57,26,58,27,59,28,60,69,61,93,62,29,63,86,64,30,65,31,66,24,67,98,68,95,69,32,70,33,71,34,72,37,73,38,74,39,75,97,76,40,77,41,78,43,79,44,80,45,81,91,82,46,83,96,84,47,85,25,86,48,87,68,88,92,89,49,90,50,91,51,92,52,93,53,94,54,95,55,96,56,97,58,98,99,99,100,100,103,101,101,102,102,103,59,104,72,105,35,106,36,107,42,109},new int[]{-289,15,-291,113,-142,19,-123,112,-132,22,-136,24,-137,27,-278,30,-135,31,-279,108});
     states[15] = new State(new int[]{10,16,94,17});
     states[16] = new State(-37);
-    states[17] = new State(new int[]{137,23,80,25,81,26,75,28,73,29,79,32,78,33,77,34,76,35,66,36,61,37,122,38,19,39,18,40,60,41,20,42,123,43,124,44,125,45,126,46,127,47,128,48,129,49,130,50,131,51,132,52,21,53,71,54,85,55,22,56,23,57,26,58,27,59,28,60,69,61,93,62,29,63,30,64,31,65,24,66,98,67,95,68,32,69,33,70,34,71,37,72,38,73,39,74,97,75,40,76,41,77,43,78,44,79,45,80,91,81,46,82,96,83,47,84,25,85,48,86,68,87,92,88,49,89,50,90,51,91,52,92,53,93,54,94,55,95,56,96,58,97,99,98,100,99,103,100,101,101,102,102,59,103,72,104,35,105,36,106,42,108,86,109},new int[]{-291,18,-142,19,-123,112,-132,22,-136,24,-137,27,-278,30,-135,31,-279,107});
+    states[17] = new State(new int[]{137,23,80,25,81,26,75,28,73,29,79,32,78,33,77,34,76,35,66,36,61,37,122,38,19,39,18,40,60,41,20,42,123,43,124,44,125,45,126,46,127,47,128,48,129,49,130,50,131,51,132,52,21,53,71,54,85,55,22,56,23,57,26,58,27,59,28,60,69,61,93,62,29,63,86,64,30,65,31,66,24,67,98,68,95,69,32,70,33,71,34,72,37,73,38,74,39,75,97,76,40,77,41,78,43,79,44,80,45,81,91,82,46,83,96,84,47,85,25,86,48,87,68,88,92,89,49,90,50,91,51,92,52,93,53,94,54,95,55,96,56,97,58,98,99,99,100,100,103,101,101,102,102,103,59,104,72,105,35,106,36,107,42,109},new int[]{-291,18,-142,19,-123,112,-132,22,-136,24,-137,27,-278,30,-135,31,-279,108});
     states[18] = new State(-39);
     states[19] = new State(new int[]{7,20,131,110,10,-40,94,-40});
-    states[20] = new State(new int[]{137,23,80,25,81,26,75,28,73,29,79,32,78,33,77,34,76,35,66,36,61,37,122,38,19,39,18,40,60,41,20,42,123,43,124,44,125,45,126,46,127,47,128,48,129,49,130,50,131,51,132,52,21,53,71,54,85,55,22,56,23,57,26,58,27,59,28,60,69,61,93,62,29,63,30,64,31,65,24,66,98,67,95,68,32,69,33,70,34,71,37,72,38,73,39,74,97,75,40,76,41,77,43,78,44,79,45,80,91,81,46,82,96,83,47,84,25,85,48,86,68,87,92,88,49,89,50,90,51,91,52,92,53,93,54,94,55,95,56,96,58,97,99,98,100,99,103,100,101,101,102,102,59,103,72,104,35,105,36,106,42,108,86,109},new int[]{-123,21,-132,22,-136,24,-137,27,-278,30,-135,31,-279,107});
+    states[20] = new State(new int[]{137,23,80,25,81,26,75,28,73,29,79,32,78,33,77,34,76,35,66,36,61,37,122,38,19,39,18,40,60,41,20,42,123,43,124,44,125,45,126,46,127,47,128,48,129,49,130,50,131,51,132,52,21,53,71,54,85,55,22,56,23,57,26,58,27,59,28,60,69,61,93,62,29,63,86,64,30,65,31,66,24,67,98,68,95,69,32,70,33,71,34,72,37,73,38,74,39,75,97,76,40,77,41,78,43,79,44,80,45,81,91,82,46,83,96,84,47,85,25,86,48,87,68,88,92,89,49,90,50,91,51,92,52,93,53,94,54,95,55,96,56,97,58,98,99,99,100,100,103,101,101,102,102,103,59,104,72,105,35,106,36,107,42,109},new int[]{-123,21,-132,22,-136,24,-137,27,-278,30,-135,31,-279,108});
     states[21] = new State(-35);
     states[22] = new State(-776);
     states[23] = new State(-773);
@@ -272,8 +273,8 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     states[104] = new State(-868);
     states[105] = new State(-869);
     states[106] = new State(-870);
-    states[107] = new State(-778);
-    states[108] = new State(-871);
+    states[107] = new State(-871);
+    states[108] = new State(-778);
     states[109] = new State(-872);
     states[110] = new State(new int[]{138,111});
     states[111] = new State(-41);
@@ -309,7 +310,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     states[141] = new State(-702);
     states[142] = new State(-713);
     states[143] = new State(new int[]{7,144,132,-714,130,-714,112,-714,111,-714,125,-714,126,-714,127,-714,128,-714,124,-714,5,-714,110,-714,109,-714,122,-714,123,-714,120,-714,114,-714,119,-714,117,-714,115,-714,118,-714,116,-714,131,-714,16,-714,13,-714,86,-714,10,-714,92,-714,95,-714,30,-714,98,-714,94,-714,12,-714,9,-714,93,-714,29,-714,81,-714,80,-714,2,-714,79,-714,78,-714,77,-714,76,-714,113,-714,6,-714,48,-714,55,-714,135,-714,137,-714,75,-714,73,-714,42,-714,39,-714,8,-714,18,-714,19,-714,138,-714,140,-714,139,-714,148,-714,150,-714,149,-714,54,-714,85,-714,37,-714,22,-714,91,-714,51,-714,32,-714,52,-714,96,-714,44,-714,33,-714,50,-714,57,-714,72,-714,70,-714,35,-714,68,-714,69,-714,11,-737});
-    states[144] = new State(new int[]{137,23,80,25,81,26,75,28,73,29,79,32,78,33,77,34,76,35,66,36,61,37,122,38,19,39,18,40,60,41,20,42,123,43,124,44,125,45,126,46,127,47,128,48,129,49,130,50,131,51,132,52,21,53,71,54,85,55,22,56,23,57,26,58,27,59,28,60,69,61,93,62,29,63,30,64,31,65,24,66,98,67,95,68,32,69,33,70,34,71,37,72,38,73,39,74,97,75,40,76,41,77,43,78,44,79,45,80,91,81,46,82,96,83,47,84,25,85,48,86,68,87,92,88,49,89,50,90,51,91,52,92,53,93,54,94,55,95,56,96,58,97,99,98,100,99,103,100,101,101,102,102,59,103,72,104,35,105,36,106,42,108,86,109},new int[]{-123,145,-132,22,-136,24,-137,27,-278,30,-135,31,-279,107});
+    states[144] = new State(new int[]{137,23,80,25,81,26,75,28,73,29,79,32,78,33,77,34,76,35,66,36,61,37,122,38,19,39,18,40,60,41,20,42,123,43,124,44,125,45,126,46,127,47,128,48,129,49,130,50,131,51,132,52,21,53,71,54,85,55,22,56,23,57,26,58,27,59,28,60,69,61,93,62,29,63,86,64,30,65,31,66,24,67,98,68,95,69,32,70,33,71,34,72,37,73,38,74,39,75,97,76,40,77,41,78,43,79,44,80,45,81,91,82,46,83,96,84,47,85,25,86,48,87,68,88,92,89,49,90,50,91,51,92,52,93,53,94,54,95,55,96,56,97,58,98,99,99,100,100,103,101,101,102,102,103,59,104,72,105,35,106,36,107,42,109},new int[]{-123,145,-132,22,-136,24,-137,27,-278,30,-135,31,-279,108});
     states[145] = new State(-744);
     states[146] = new State(-721);
     states[147] = new State(new int[]{138,149,140,150,7,-762,11,-762,132,-762,130,-762,112,-762,111,-762,125,-762,126,-762,127,-762,128,-762,124,-762,5,-762,110,-762,109,-762,122,-762,123,-762,120,-762,114,-762,119,-762,117,-762,115,-762,118,-762,116,-762,131,-762,16,-762,13,-762,86,-762,10,-762,92,-762,95,-762,30,-762,98,-762,94,-762,12,-762,9,-762,93,-762,29,-762,81,-762,80,-762,2,-762,79,-762,78,-762,77,-762,76,-762,113,-762,6,-762,48,-762,55,-762,135,-762,137,-762,75,-762,73,-762,42,-762,39,-762,8,-762,18,-762,19,-762,139,-762,148,-762,150,-762,149,-762,54,-762,85,-762,37,-762,22,-762,91,-762,51,-762,32,-762,52,-762,96,-762,44,-762,33,-762,50,-762,57,-762,72,-762,70,-762,35,-762,68,-762,69,-762,121,-762,104,-762,4,-762,136,-762},new int[]{-151,148});
@@ -328,7 +329,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     states[160] = new State(new int[]{9,161});
     states[161] = new State(-711);
     states[162] = new State(new int[]{7,163,4,166,117,168,9,-592,130,-592,132,-592,112,-592,111,-592,125,-592,126,-592,127,-592,128,-592,124,-592,110,-592,109,-592,122,-592,123,-592,114,-592,119,-592,115,-592,118,-592,116,-592,131,-592,13,-592,6,-592,94,-592,12,-592,5,-592,86,-592,10,-592,92,-592,95,-592,30,-592,98,-592,93,-592,29,-592,81,-592,80,-592,2,-592,79,-592,78,-592,77,-592,76,-592,11,-592,8,-592,120,-592,16,-592,48,-592,55,-592,135,-592,137,-592,75,-592,73,-592,42,-592,39,-592,18,-592,19,-592,138,-592,140,-592,139,-592,148,-592,150,-592,149,-592,54,-592,85,-592,37,-592,22,-592,91,-592,51,-592,32,-592,52,-592,96,-592,44,-592,33,-592,50,-592,57,-592,72,-592,70,-592,35,-592,68,-592,69,-592,113,-592},new int[]{-284,165});
-    states[163] = new State(new int[]{137,23,80,25,81,26,75,28,73,29,79,32,78,33,77,34,76,35,66,36,61,37,122,38,19,39,18,40,60,41,20,42,123,43,124,44,125,45,126,46,127,47,128,48,129,49,130,50,131,51,132,52,21,53,71,54,85,55,22,56,23,57,26,58,27,59,28,60,69,61,93,62,29,63,30,64,31,65,24,66,98,67,95,68,32,69,33,70,34,71,37,72,38,73,39,74,97,75,40,76,41,77,43,78,44,79,45,80,91,81,46,82,96,83,47,84,25,85,48,86,68,87,92,88,49,89,50,90,51,91,52,92,53,93,54,94,55,95,56,96,58,97,99,98,100,99,103,100,101,101,102,102,59,103,72,104,35,105,36,106,42,108,86,109},new int[]{-123,164,-132,22,-136,24,-137,27,-278,30,-135,31,-279,107});
+    states[163] = new State(new int[]{137,23,80,25,81,26,75,28,73,29,79,32,78,33,77,34,76,35,66,36,61,37,122,38,19,39,18,40,60,41,20,42,123,43,124,44,125,45,126,46,127,47,128,48,129,49,130,50,131,51,132,52,21,53,71,54,85,55,22,56,23,57,26,58,27,59,28,60,69,61,93,62,29,63,86,64,30,65,31,66,24,67,98,68,95,69,32,70,33,71,34,72,37,73,38,74,39,75,97,76,40,77,41,78,43,79,44,80,45,81,91,82,46,83,96,84,47,85,25,86,48,87,68,88,92,89,49,90,50,91,51,92,52,93,53,94,54,95,55,96,56,97,58,98,99,99,100,100,103,101,101,102,102,103,59,104,72,105,35,106,36,107,42,109},new int[]{-123,164,-132,22,-136,24,-137,27,-278,30,-135,31,-279,108});
     states[164] = new State(-246);
     states[165] = new State(-593);
     states[166] = new State(new int[]{117,168},new int[]{-284,167});
@@ -685,7 +686,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     states[517] = new State(-745);
     states[518] = new State(-572);
     states[519] = new State(new int[]{7,520,132,-720,130,-720,112,-720,111,-720,125,-720,126,-720,127,-720,128,-720,124,-720,5,-720,110,-720,109,-720,122,-720,123,-720,120,-720,114,-720,119,-720,117,-720,115,-720,118,-720,116,-720,131,-720,16,-720,13,-720,86,-720,10,-720,92,-720,95,-720,30,-720,98,-720,94,-720,12,-720,9,-720,93,-720,29,-720,81,-720,80,-720,2,-720,79,-720,78,-720,77,-720,76,-720,113,-720,6,-720,48,-720,55,-720,135,-720,137,-720,75,-720,73,-720,42,-720,39,-720,8,-720,18,-720,19,-720,138,-720,140,-720,139,-720,148,-720,150,-720,149,-720,54,-720,85,-720,37,-720,22,-720,91,-720,51,-720,32,-720,52,-720,96,-720,44,-720,33,-720,50,-720,57,-720,72,-720,70,-720,35,-720,68,-720,69,-720});
-    states[520] = new State(new int[]{137,23,80,25,81,26,75,28,73,29,79,32,78,33,77,34,76,35,66,36,61,37,122,38,19,39,18,40,60,41,20,42,123,43,124,44,125,45,126,46,127,47,128,48,129,49,130,50,131,51,132,52,21,53,71,54,85,55,22,56,23,57,26,58,27,59,28,60,69,61,93,62,29,63,30,64,31,65,24,66,98,67,95,68,32,69,33,70,34,71,37,72,38,73,39,74,97,75,40,76,41,77,43,78,44,79,45,80,91,81,46,82,96,83,47,84,25,85,48,86,68,87,92,88,49,89,50,90,51,91,52,92,53,93,54,94,55,95,56,96,58,97,99,98,100,99,103,100,101,101,102,102,59,103,72,104,35,105,36,106,42,467},new int[]{-133,521,-132,522,-136,24,-137,27,-278,523,-135,31,-177,524});
+    states[520] = new State(new int[]{137,23,80,25,81,26,75,28,73,29,79,32,78,33,77,34,76,35,66,36,61,37,122,38,19,39,18,40,60,41,20,42,123,43,124,44,125,45,126,46,127,47,128,48,129,49,130,50,131,51,132,52,21,53,71,54,85,55,22,56,23,57,26,58,27,59,28,60,69,61,93,62,29,63,86,64,30,65,31,66,24,67,98,68,95,69,32,70,33,71,34,72,37,73,38,74,39,75,97,76,40,77,41,78,43,79,44,80,45,81,91,82,46,83,96,84,47,85,25,86,48,87,68,88,92,89,49,90,50,91,51,92,52,93,53,94,54,95,55,96,56,97,58,98,99,99,100,100,103,101,101,102,102,103,59,104,72,105,35,106,36,107,42,467},new int[]{-133,521,-132,522,-136,24,-137,27,-278,523,-135,31,-177,524});
     states[521] = new State(-749);
     states[522] = new State(-779);
     states[523] = new State(-780);
@@ -847,7 +848,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     states[679] = new State(-505);
     states[680] = new State(new int[]{137,23,80,25,81,26,75,28,73,29,42,467,39,497,8,532,18,247,19,252,138,149,140,150,139,152,148,154,150,155,149,156},new int[]{-99,681,-132,531,-136,24,-137,27,-177,466,-242,512,-280,513,-14,687,-150,146,-152,147,-151,151,-15,153,-16,514,-54,688});
     states[681] = new State(new int[]{17,443,8,454,7,682,136,684,4,685,9,-507,94,-507,11,-736});
-    states[682] = new State(new int[]{137,23,80,25,81,26,75,28,73,29,79,32,78,33,77,34,76,35,66,36,61,37,122,38,19,39,18,40,60,41,20,42,123,43,124,44,125,45,126,46,127,47,128,48,129,49,130,50,131,51,132,52,21,53,71,54,85,55,22,56,23,57,26,58,27,59,28,60,69,61,93,62,29,63,30,64,31,65,24,66,98,67,95,68,32,69,33,70,34,71,37,72,38,73,39,74,97,75,40,76,41,77,43,78,44,79,45,80,91,81,46,82,96,83,47,84,25,85,48,86,68,87,92,88,49,89,50,90,51,91,52,92,53,93,54,94,55,95,56,96,58,97,99,98,100,99,103,100,101,101,102,102,59,103,72,104,35,105,36,106,42,467},new int[]{-133,683,-132,522,-136,24,-137,27,-278,523,-135,31,-177,524});
+    states[682] = new State(new int[]{137,23,80,25,81,26,75,28,73,29,79,32,78,33,77,34,76,35,66,36,61,37,122,38,19,39,18,40,60,41,20,42,123,43,124,44,125,45,126,46,127,47,128,48,129,49,130,50,131,51,132,52,21,53,71,54,85,55,22,56,23,57,26,58,27,59,28,60,69,61,93,62,29,63,86,64,30,65,31,66,24,67,98,68,95,69,32,70,33,71,34,72,37,73,38,74,39,75,97,76,40,77,41,78,43,79,44,80,45,81,91,82,46,83,96,84,47,85,25,86,48,87,68,88,92,89,49,90,50,91,51,92,52,93,53,94,54,95,55,96,56,97,58,98,99,99,100,100,103,101,101,102,102,103,59,104,72,105,35,106,36,107,42,467},new int[]{-133,683,-132,522,-136,24,-137,27,-278,523,-135,31,-177,524});
     states[683] = new State(-748);
     states[684] = new State(-750);
     states[685] = new State(new int[]{117,168},new int[]{-284,686});
@@ -1532,7 +1533,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     states[1364] = new State(new int[]{5,1365,12,-673});
     states[1365] = new State(new int[]{137,23,80,25,81,26,75,28,73,227,138,149,140,150,139,152,148,154,150,155,149,156,39,244,18,247,19,252,11,363,53,367,135,368,8,370,129,373,110,377,109,378},new int[]{-83,1366,-75,191,-12,215,-10,225,-13,201,-132,226,-136,24,-137,27,-150,242,-152,147,-151,151,-15,243,-242,246,-280,251,-225,362,-185,375,-159,379,-250,380,-254,381,-227,382});
     states[1366] = new State(new int[]{13,187,12,-675});
-    states[1367] = new State(new int[]{137,23,80,25,81,26,75,28,73,29,79,32,78,33,77,34,76,35,66,36,61,37,122,38,19,39,18,40,60,41,20,42,123,43,124,44,125,45,126,46,127,47,128,48,129,49,130,50,131,51,132,52,21,53,71,54,85,55,22,56,23,57,26,58,27,59,28,60,69,61,93,62,29,63,30,64,31,65,24,66,98,67,95,68,32,69,33,70,34,71,37,72,38,73,39,74,97,75,40,76,41,77,43,78,44,79,45,80,91,81,46,82,96,83,47,84,25,85,48,86,68,87,92,88,49,89,50,90,51,91,52,92,53,93,54,94,55,95,56,96,58,97,99,98,100,99,103,100,101,101,102,102,59,103,72,104,35,105,36,106,42,108,86,109},new int[]{-123,1368,-132,22,-136,24,-137,27,-278,30,-135,31,-279,107});
+    states[1367] = new State(new int[]{137,23,80,25,81,26,75,28,73,29,79,32,78,33,77,34,76,35,66,36,61,37,122,38,19,39,18,40,60,41,20,42,123,43,124,44,125,45,126,46,127,47,128,48,129,49,130,50,131,51,132,52,21,53,71,54,85,55,22,56,23,57,26,58,27,59,28,60,69,61,93,62,29,63,86,64,30,65,31,66,24,67,98,68,95,69,32,70,33,71,34,72,37,73,38,74,39,75,97,76,40,77,41,78,43,79,44,80,45,81,91,82,46,83,96,84,47,85,25,86,48,87,68,88,92,89,49,90,50,91,51,92,52,93,53,94,54,95,55,96,56,97,58,98,99,99,100,100,103,101,101,102,102,103,59,104,72,105,35,106,36,107,42,109},new int[]{-123,1368,-132,22,-136,24,-137,27,-278,30,-135,31,-279,108});
     states[1368] = new State(-164);
     states[1369] = new State(-165);
     states[1370] = new State(new int[]{53,142,138,149,140,150,139,152,148,154,150,155,149,156,60,158,11,321,129,447,110,377,109,378,135,452,137,23,80,25,81,26,75,28,73,227,42,467,39,497,8,499,18,247,19,252,5,624,34,664,41,669,9,-169},new int[]{-70,1371,-66,1373,-82,518,-81,126,-91,127,-90,132,-89,290,-93,298,-76,330,-88,320,-14,143,-150,146,-152,147,-151,151,-15,153,-53,157,-185,449,-100,451,-117,441,-99,453,-132,460,-136,24,-137,27,-177,466,-242,512,-280,513,-16,514,-54,519,-103,525,-159,526,-253,527,-77,528,-249,581,-251,582,-252,621,-226,622,-105,623,-306,662,-307,663});
@@ -1694,7 +1695,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     states[1526] = new State(-48);
     states[1527] = new State(-46);
     states[1528] = new State(-47);
-    states[1529] = new State(new int[]{137,23,80,25,81,26,75,28,73,29,79,32,78,33,77,34,76,35,66,36,61,37,122,38,19,39,18,40,60,41,20,42,123,43,124,44,125,45,126,46,127,47,128,48,129,49,130,50,131,51,132,52,21,53,71,54,85,55,22,56,23,57,26,58,27,59,28,60,69,61,93,62,29,63,30,64,31,65,24,66,98,67,95,68,32,69,33,70,34,71,37,72,38,73,39,74,97,75,40,76,41,77,43,78,44,79,45,80,91,81,46,82,96,83,47,84,25,85,48,86,68,87,92,88,49,89,50,90,51,91,52,92,53,93,54,94,55,95,56,96,58,97,99,98,100,99,103,100,101,101,102,102,59,103,72,104,35,105,36,106,42,108,86,109},new int[]{-142,1530,-123,112,-132,22,-136,24,-137,27,-278,30,-135,31,-279,107});
+    states[1529] = new State(new int[]{137,23,80,25,81,26,75,28,73,29,79,32,78,33,77,34,76,35,66,36,61,37,122,38,19,39,18,40,60,41,20,42,123,43,124,44,125,45,126,46,127,47,128,48,129,49,130,50,131,51,132,52,21,53,71,54,85,55,22,56,23,57,26,58,27,59,28,60,69,61,93,62,29,63,86,64,30,65,31,66,24,67,98,68,95,69,32,70,33,71,34,72,37,73,38,74,39,75,97,76,40,77,41,78,43,79,44,80,45,81,91,82,46,83,96,84,47,85,25,86,48,87,68,88,92,89,49,90,50,91,51,92,52,93,53,94,54,95,55,96,56,97,58,98,99,99,100,100,103,101,101,102,102,103,59,104,72,105,35,106,36,107,42,109},new int[]{-142,1530,-123,112,-132,22,-136,24,-137,27,-278,30,-135,31,-279,108});
     states[1530] = new State(new int[]{10,1531,7,20});
     states[1531] = new State(new int[]{3,1455,40,-12,86,-12,97,-12,85,-12,49,-12,56,-12,26,-12,64,-12,47,-12,50,-12,59,-12,11,-12,41,-12,34,-12,25,-12,23,-12,27,-12,28,-12},new int[]{-171,1532,-172,1453,-170,1458});
     states[1532] = new State(-45);
@@ -1707,7 +1708,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     states[1539] = new State(new int[]{137,23,80,25,81,26,75,28,73,29},new int[]{-304,1540,-305,1541,-132,1545,-136,24,-137,27});
     states[1540] = new State(-7);
     states[1541] = new State(new int[]{7,1542,117,168,2,-734},new int[]{-284,1544});
-    states[1542] = new State(new int[]{137,23,80,25,81,26,75,28,73,29,79,32,78,33,77,34,76,35,66,36,61,37,122,38,19,39,18,40,60,41,20,42,123,43,124,44,125,45,126,46,127,47,128,48,129,49,130,50,131,51,132,52,21,53,71,54,85,55,22,56,23,57,26,58,27,59,28,60,69,61,93,62,29,63,30,64,31,65,24,66,98,67,95,68,32,69,33,70,34,71,37,72,38,73,39,74,97,75,40,76,41,77,43,78,44,79,45,80,91,81,46,82,96,83,47,84,25,85,48,86,68,87,92,88,49,89,50,90,51,91,52,92,53,93,54,94,55,95,56,96,58,97,99,98,100,99,103,100,101,101,102,102,59,103,72,104,35,105,36,106,42,108,86,109},new int[]{-123,1543,-132,22,-136,24,-137,27,-278,30,-135,31,-279,107});
+    states[1542] = new State(new int[]{137,23,80,25,81,26,75,28,73,29,79,32,78,33,77,34,76,35,66,36,61,37,122,38,19,39,18,40,60,41,20,42,123,43,124,44,125,45,126,46,127,47,128,48,129,49,130,50,131,51,132,52,21,53,71,54,85,55,22,56,23,57,26,58,27,59,28,60,69,61,93,62,29,63,86,64,30,65,31,66,24,67,98,68,95,69,32,70,33,71,34,72,37,73,38,74,39,75,97,76,40,77,41,78,43,79,44,80,45,81,91,82,46,83,96,84,47,85,25,86,48,87,68,88,92,89,49,90,50,91,51,92,52,93,53,94,54,95,55,96,56,97,58,98,99,99,100,100,103,101,101,102,102,103,59,104,72,105,35,106,36,107,42,109},new int[]{-123,1543,-132,22,-136,24,-137,27,-278,30,-135,31,-279,108});
     states[1543] = new State(-733);
     states[1544] = new State(-735);
     states[1545] = new State(-732);
@@ -2545,51 +2546,51 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     rules[825] = new Rule(-278, new int[]{69});
     rules[826] = new Rule(-278, new int[]{93});
     rules[827] = new Rule(-278, new int[]{29});
-    rules[828] = new Rule(-278, new int[]{30});
-    rules[829] = new Rule(-278, new int[]{31});
-    rules[830] = new Rule(-278, new int[]{24});
-    rules[831] = new Rule(-278, new int[]{98});
-    rules[832] = new Rule(-278, new int[]{95});
-    rules[833] = new Rule(-278, new int[]{32});
-    rules[834] = new Rule(-278, new int[]{33});
-    rules[835] = new Rule(-278, new int[]{34});
-    rules[836] = new Rule(-278, new int[]{37});
-    rules[837] = new Rule(-278, new int[]{38});
-    rules[838] = new Rule(-278, new int[]{39});
-    rules[839] = new Rule(-278, new int[]{97});
-    rules[840] = new Rule(-278, new int[]{40});
-    rules[841] = new Rule(-278, new int[]{41});
-    rules[842] = new Rule(-278, new int[]{43});
-    rules[843] = new Rule(-278, new int[]{44});
-    rules[844] = new Rule(-278, new int[]{45});
-    rules[845] = new Rule(-278, new int[]{91});
-    rules[846] = new Rule(-278, new int[]{46});
-    rules[847] = new Rule(-278, new int[]{96});
-    rules[848] = new Rule(-278, new int[]{47});
-    rules[849] = new Rule(-278, new int[]{25});
-    rules[850] = new Rule(-278, new int[]{48});
-    rules[851] = new Rule(-278, new int[]{68});
-    rules[852] = new Rule(-278, new int[]{92});
-    rules[853] = new Rule(-278, new int[]{49});
-    rules[854] = new Rule(-278, new int[]{50});
-    rules[855] = new Rule(-278, new int[]{51});
-    rules[856] = new Rule(-278, new int[]{52});
-    rules[857] = new Rule(-278, new int[]{53});
-    rules[858] = new Rule(-278, new int[]{54});
-    rules[859] = new Rule(-278, new int[]{55});
-    rules[860] = new Rule(-278, new int[]{56});
-    rules[861] = new Rule(-278, new int[]{58});
-    rules[862] = new Rule(-278, new int[]{99});
-    rules[863] = new Rule(-278, new int[]{100});
-    rules[864] = new Rule(-278, new int[]{103});
-    rules[865] = new Rule(-278, new int[]{101});
-    rules[866] = new Rule(-278, new int[]{102});
-    rules[867] = new Rule(-278, new int[]{59});
-    rules[868] = new Rule(-278, new int[]{72});
-    rules[869] = new Rule(-278, new int[]{35});
-    rules[870] = new Rule(-278, new int[]{36});
-    rules[871] = new Rule(-279, new int[]{42});
-    rules[872] = new Rule(-279, new int[]{86});
+    rules[828] = new Rule(-278, new int[]{86});
+    rules[829] = new Rule(-278, new int[]{30});
+    rules[830] = new Rule(-278, new int[]{31});
+    rules[831] = new Rule(-278, new int[]{24});
+    rules[832] = new Rule(-278, new int[]{98});
+    rules[833] = new Rule(-278, new int[]{95});
+    rules[834] = new Rule(-278, new int[]{32});
+    rules[835] = new Rule(-278, new int[]{33});
+    rules[836] = new Rule(-278, new int[]{34});
+    rules[837] = new Rule(-278, new int[]{37});
+    rules[838] = new Rule(-278, new int[]{38});
+    rules[839] = new Rule(-278, new int[]{39});
+    rules[840] = new Rule(-278, new int[]{97});
+    rules[841] = new Rule(-278, new int[]{40});
+    rules[842] = new Rule(-278, new int[]{41});
+    rules[843] = new Rule(-278, new int[]{43});
+    rules[844] = new Rule(-278, new int[]{44});
+    rules[845] = new Rule(-278, new int[]{45});
+    rules[846] = new Rule(-278, new int[]{91});
+    rules[847] = new Rule(-278, new int[]{46});
+    rules[848] = new Rule(-278, new int[]{96});
+    rules[849] = new Rule(-278, new int[]{47});
+    rules[850] = new Rule(-278, new int[]{25});
+    rules[851] = new Rule(-278, new int[]{48});
+    rules[852] = new Rule(-278, new int[]{68});
+    rules[853] = new Rule(-278, new int[]{92});
+    rules[854] = new Rule(-278, new int[]{49});
+    rules[855] = new Rule(-278, new int[]{50});
+    rules[856] = new Rule(-278, new int[]{51});
+    rules[857] = new Rule(-278, new int[]{52});
+    rules[858] = new Rule(-278, new int[]{53});
+    rules[859] = new Rule(-278, new int[]{54});
+    rules[860] = new Rule(-278, new int[]{55});
+    rules[861] = new Rule(-278, new int[]{56});
+    rules[862] = new Rule(-278, new int[]{58});
+    rules[863] = new Rule(-278, new int[]{99});
+    rules[864] = new Rule(-278, new int[]{100});
+    rules[865] = new Rule(-278, new int[]{103});
+    rules[866] = new Rule(-278, new int[]{101});
+    rules[867] = new Rule(-278, new int[]{102});
+    rules[868] = new Rule(-278, new int[]{59});
+    rules[869] = new Rule(-278, new int[]{72});
+    rules[870] = new Rule(-278, new int[]{35});
+    rules[871] = new Rule(-278, new int[]{36});
+    rules[872] = new Rule(-279, new int[]{42});
     rules[873] = new Rule(-186, new int[]{109});
     rules[874] = new Rule(-186, new int[]{110});
     rules[875] = new Rule(-186, new int[]{111});
@@ -2838,6 +2839,8 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 41: // used_unit_name -> ident_or_keyword_pointseparator_list, tkIn, tkStringLiteral
 { 
+        	if (ValueStack[ValueStack.Depth-1].stn is char_const _cc)
+        		ValueStack[ValueStack.Depth-1].stn = new string_const(_cc.cconst.ToString());
 			CurrentSemanticValue.stn = new uses_unit_in(ValueStack[ValueStack.Depth-3].stn as ident_list, ValueStack[ValueStack.Depth-1].stn as string_const, CurrentLocationSpan);
         }
         break;
@@ -6578,139 +6581,139 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 827: // keyword -> tkElse
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 828: // keyword -> tkExcept
+      case 828: // keyword -> tkEnd
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 829: // keyword -> tkFile
+      case 829: // keyword -> tkExcept
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 830: // keyword -> tkAuto
+      case 830: // keyword -> tkFile
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 831: // keyword -> tkFinalization
+      case 831: // keyword -> tkAuto
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 832: // keyword -> tkFinally
+      case 832: // keyword -> tkFinalization
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 833: // keyword -> tkFor
+      case 833: // keyword -> tkFinally
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 834: // keyword -> tkForeach
+      case 834: // keyword -> tkFor
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 835: // keyword -> tkFunction
+      case 835: // keyword -> tkForeach
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 836: // keyword -> tkIf
+      case 836: // keyword -> tkFunction
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 837: // keyword -> tkImplementation
+      case 837: // keyword -> tkIf
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 838: // keyword -> tkInherited
+      case 838: // keyword -> tkImplementation
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 839: // keyword -> tkInitialization
+      case 839: // keyword -> tkInherited
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 840: // keyword -> tkInterface
+      case 840: // keyword -> tkInitialization
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 841: // keyword -> tkProcedure
+      case 841: // keyword -> tkInterface
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 842: // keyword -> tkProperty
+      case 842: // keyword -> tkProcedure
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 843: // keyword -> tkRaise
+      case 843: // keyword -> tkProperty
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 844: // keyword -> tkRecord
+      case 844: // keyword -> tkRaise
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 845: // keyword -> tkRepeat
+      case 845: // keyword -> tkRecord
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 846: // keyword -> tkSet
+      case 846: // keyword -> tkRepeat
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 847: // keyword -> tkTry
+      case 847: // keyword -> tkSet
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 848: // keyword -> tkType
+      case 848: // keyword -> tkTry
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 849: // keyword -> tkStatic
+      case 849: // keyword -> tkType
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 850: // keyword -> tkThen
+      case 850: // keyword -> tkStatic
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 851: // keyword -> tkTo
+      case 851: // keyword -> tkThen
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 852: // keyword -> tkUntil
+      case 852: // keyword -> tkTo
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 853: // keyword -> tkUses
+      case 853: // keyword -> tkUntil
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 854: // keyword -> tkVar
+      case 854: // keyword -> tkUses
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 855: // keyword -> tkWhile
+      case 855: // keyword -> tkVar
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 856: // keyword -> tkWith
+      case 856: // keyword -> tkWhile
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 857: // keyword -> tkNil
+      case 857: // keyword -> tkWith
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 858: // keyword -> tkGoto
+      case 858: // keyword -> tkNil
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 859: // keyword -> tkOf
+      case 859: // keyword -> tkGoto
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 860: // keyword -> tkLabel
+      case 860: // keyword -> tkOf
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 861: // keyword -> tkProgram
+      case 861: // keyword -> tkLabel
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 862: // keyword -> tkUnit
+      case 862: // keyword -> tkProgram
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 863: // keyword -> tkLibrary
+      case 863: // keyword -> tkUnit
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 864: // keyword -> tkNamespace
+      case 864: // keyword -> tkLibrary
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 865: // keyword -> tkExternal
+      case 865: // keyword -> tkNamespace
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 866: // keyword -> tkParams
+      case 866: // keyword -> tkExternal
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 867: // keyword -> tkEvent
+      case 867: // keyword -> tkParams
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 868: // keyword -> tkYield
+      case 868: // keyword -> tkEvent
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 869: // keyword -> tkMatch
+      case 869: // keyword -> tkYield
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 870: // keyword -> tkWhen
+      case 870: // keyword -> tkMatch
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 871: // reserved_keyword -> tkOperator
+      case 871: // keyword -> tkWhen
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
-      case 872: // reserved_keyword -> tkEnd
+      case 872: // reserved_keyword -> tkOperator
 { CurrentSemanticValue.ti = ValueStack[ValueStack.Depth-1].ti; }
         break;
       case 873: // overload_operator -> tkMinus

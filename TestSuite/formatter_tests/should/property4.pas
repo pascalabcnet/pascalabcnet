@@ -1,9 +1,9 @@
 ﻿type
   TExample = class
-  private 
+  private
     fX: integer;
   
-  public 
+  public
     property X: integer
     read fX
     write

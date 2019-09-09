@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections;
@@ -2588,7 +2588,15 @@ namespace CodeCompletion
                                 string unit_name = null;
                                 string pcu_unit_name = FindPCUFileName(str);
                                 if (s is uses_unit_in)
-                                    unit_name = (s as uses_unit_in).in_file.Value;
+                                {
+                                    string unit_in_file = (s as uses_unit_in).in_file.Value;
+                                    string unit_in_dir = null;
+                                    if (Path.IsPathRooted(unit_in_file))
+                                        unit_in_dir = Path.GetDirectoryName(unit_in_file);
+                                    else
+                                        unit_in_dir = Path.Combine(Path.GetDirectoryName(_program_module.file_name),Path.GetDirectoryName(unit_in_file));
+                                    unit_name = CodeCompletionNameHelper.FindSourceFileName(Path.GetFileNameWithoutExtension(unit_in_file), unit_in_dir);
+                                }
                                 else
                                     unit_name = CodeCompletionNameHelper.FindSourceFileName(str, System.IO.Path.GetDirectoryName(_program_module.file_name));
                                 if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
@@ -4290,7 +4298,15 @@ namespace CodeCompletion
                                 string unit_name = null;
                                 string pcu_unit_name = FindPCUFileName(str);
                                 if (s is uses_unit_in)
-                                    unit_name = (s as uses_unit_in).in_file.Value;
+                                {
+                                    string unit_in_file = (s as uses_unit_in).in_file.Value;
+                                    string unit_in_dir = null;
+                                    if (Path.IsPathRooted(unit_in_file))
+                                        unit_in_dir = Path.GetDirectoryName(unit_in_file);
+                                    else
+                                        unit_in_dir = Path.Combine(Path.GetDirectoryName(this.cur_unit_file_name),Path.GetDirectoryName(unit_in_file));
+                                    unit_name = CodeCompletionNameHelper.FindSourceFileName(Path.GetFileNameWithoutExtension(unit_in_file), unit_in_dir);
+                                }
                                 else
                                     unit_name = CodeCompletionNameHelper.FindSourceFileName(str, System.IO.Path.GetDirectoryName(this.cur_unit_file_name));
                                 if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
@@ -5231,6 +5247,8 @@ namespace CodeCompletion
                     td.visit(this);
                     if (returned_scope is TypeScope)
                         template_params.Add(returned_scope as TypeScope);
+                    else if (returned_scope is ProcScope)
+                        template_params.Add(new ProcType(returned_scope as ProcScope));
                     else
                     {
                         returned_scope = ts;

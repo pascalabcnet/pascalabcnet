@@ -282,6 +282,11 @@ namespace PascalABCCompiler.SyntaxTree
             var ff = new procedure_header(fp, att, name, null, headsc);
             return BuildShortProcFuncDefinition(ff, st);
         }
+        public static procedure_definition BuildShortProcDefinition(formal_parameters fp, procedure_attributes_list att, method_name name, statement st, where_definition_list wdl, SourceContext headsc)
+        {
+            var ff = new procedure_header(fp, att, name, wdl, headsc);
+            return BuildShortProcFuncDefinition(ff, st);
+        }
 
         public static procedure_definition BuildShortProcFuncDefinition(procedure_header header, statement st)
         {

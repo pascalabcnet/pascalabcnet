@@ -37,6 +37,7 @@ M_DELETE=Delete
                 
 MR_SERVICE=Tools
 M_OPTIONS=Options...
+M_AUTOINSERT_CODE=Ñode autocomplete mode
 
 MR_VIEW=View
 M_BOTTOMPANEL=Bottom Panel
@@ -363,6 +364,7 @@ EDITOR_OPTIONS=Editor
 SHOW_DEBUG_PLAY_PAUSE_BUTTONS=Show additional debug buttons
 PASUSE_IN_RUNMODE_IF_CONSOLE=Make pause after a console program ends execution 
 SAVE_FILES_IF_COMPILATOIN_OK=Save files if compilation was successful
+AUTO_INSERT_CODE_IS_ENABLED_ON_STARTUP=Code completion mode is enabled on startup
 
 %PREFIX%=VP_OC_EDITOROPTIONS_
 NAME=Text Editor

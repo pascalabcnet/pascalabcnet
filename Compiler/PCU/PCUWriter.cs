@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.IO;
@@ -2843,7 +2843,8 @@ namespace PascalABCCompiler.PCU
 			bw.Write((byte)meth.polymorphic_state);
 			bw.Write(meth.num_of_default_variables);
 			bw.Write(meth.num_of_for_cycles);
-			bw.Write(meth.overrided_method != null);
+			bw.Write(meth.overrided_method != null && meth.name.IndexOf('.') != -1);
+            
             //ssyy-
 			//if (meth.pascal_associated_constructor != null)
 			//{
@@ -3049,7 +3050,7 @@ namespace PascalABCCompiler.PCU
             //else
             //{
             //    bw.Write((byte)1);
-            if (meth.function_code == null)
+            if (meth.function_code == null || meth.name.IndexOf("<yield_helper_error_checkerr>") != -1)
             {
                 VisitStatement(new empty_statement(null));
             }
@@ -3057,6 +3058,8 @@ namespace PascalABCCompiler.PCU
             {
                 VisitStatement(meth.function_code);
             }
+            if (meth.overrided_method != null && meth.name.IndexOf('.') != -1)
+                WriteMethodReference(meth.overrided_method);
             //}
         }
 
@@ -3068,7 +3071,10 @@ namespace PascalABCCompiler.PCU
             //(ssyy) метки
             VisitLabelDeclarations(func.label_nodes_list);
 			FixupCode(func);
-			VisitStatement(func.function_code);
+            if (func.name.IndexOf("<yield_helper_error_checkerr>") != -1)
+                VisitStatement(new empty_statement(null));
+            else            
+                VisitStatement(func.function_code);
 		}
 		
 		private void VisitNestedFunctionImplementation(common_in_function_function_node func)
