@@ -57,6 +57,11 @@ namespace VisualPascalABC
                         if (isClassPredefinition(end_off, textArea))
                             return;
                     }
+                    else if (string.Compare(word, "record", true) == 0)
+                    {
+                        if (isClassPredefinition(end_off, textArea))
+                            return;
+                    }
                     else if (string.Compare(word, "interface", true) == 0)
                     {
                         if (!isTypeDeclaration(beg_off, textArea))

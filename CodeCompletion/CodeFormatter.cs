@@ -1694,9 +1694,13 @@ namespace CodeFormatters
 
         public override void visit(case_variant _case_variant)
         {
+            List<case_variant> variants = (_case_variant.Parent as case_variants).variants;
             visit_node(_case_variant.conditions);
             //sb.Append(": ");
-            add_space_after = true;
+            
+            if (!(_case_variant.exec_if_true is empty_statement && variants.IndexOf(_case_variant) == variants.Count - 1))
+                add_space_after = true;
+            
             bool one_row = in_one_row(_case_variant.exec_if_true);
             if (!one_row)
             {
@@ -1708,6 +1712,7 @@ namespace CodeFormatters
             {
                 DecOffset();
             }
+            
             //sb.AppendLine(";");
         }
 
@@ -1729,7 +1734,14 @@ namespace CodeFormatters
                 add_new_line_else_specific = true;
                 IncOffset();
                 //if (!(_case_node.else_statement is statement_list sl && sl.list.Count == 1 && sl.list[0] is empty_statement))
-                    visit_node(_case_node.else_statement);
+                statement_list stmt_list = _case_node.else_statement as statement_list;
+                
+                visit_node(_case_node.else_statement);
+                if (stmt_list != null && stmt_list.subnodes.Count > 0 && contains_only_empty_statements(stmt_list.subnodes))
+                {
+                    WriteNode(stmt_list);
+                    add_space_after = false;
+                }
                 //DecOffset();
             }
         }
@@ -1945,7 +1957,8 @@ namespace CodeFormatters
                 else
                     already_off = false;
                 visit_node(_class_members.access_mod);
-                if (first_decl != null && !(_class_members.members[0] is short_func_definition))
+                if (first_decl != null && !(_class_members.members[0] is short_func_definition) && 
+                    _class_members.access_mod.source_context.end_position.line_num == _class_members.source_context.begin_position.line_num)
                     sb.Append(" ");
                 if (!already_off)
                     IncOffset();
@@ -2513,13 +2526,18 @@ namespace CodeFormatters
             WriteKeyword("try");
             SetKeywordOffset("try");
             add_newline_after = true;
-            IncOffset();
-            visit_node(_try_stmt.stmt_list);
+            
+            if (!contains_only_empty_statements(_try_stmt.stmt_list.subnodes))
+            {
+                IncOffset();
+                visit_node(_try_stmt.stmt_list);
+            }
+                
             if (_try_stmt.handler is try_handler_except)
             {
                 try_handler_except hndlr = _try_stmt.handler as try_handler_except;
                 visit_node(_try_stmt.handler);
-                if (hndlr.except_block.stmt_list != null && hndlr.except_block.stmt_list.subnodes.Count == 1 && hndlr.except_block.stmt_list.subnodes[0] is empty_statement)
+                if (hndlr.except_block.stmt_list != null && hndlr.except_block.stmt_list.subnodes.Count > 0 && contains_only_empty_statements(hndlr.except_block.stmt_list.subnodes))
                 {
                     add_space_before = true;
                     WriteNode(_try_stmt.handler, "except".Length);
@@ -2535,6 +2553,14 @@ namespace CodeFormatters
                 visit_node(_try_stmt.handler);
             }
             read_from_beg_pos = false;
+        }
+
+        private bool contains_only_empty_statements(List<statement> statements)
+        {
+            foreach (statement stmt in statements)
+                if (!(stmt is empty_statement))
+                    return false;
+            return true;
         }
 
         public override void visit(inherited_message _inherited_message)
