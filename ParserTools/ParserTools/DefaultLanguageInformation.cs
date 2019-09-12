@@ -1525,8 +1525,9 @@ namespace PascalABCCompiler.Parsers
             }
             else
             {
-                sb.Append("const " + fi.Name + " : " + GetFullTypeName(fi.FieldType));
-                sb.Append(" = " + fi.GetRawConstantValue().ToString());
+                var fitype = GetFullTypeName(fi.FieldType);
+                sb.Append("const " + fi.Name + " : " + fitype);
+                sb.Append(" = " + (fitype == "string" ? $"'{fi.GetRawConstantValue().ToString()}'" : fi.GetRawConstantValue().ToString()));
             }
             sb.Append(";");
             return sb.ToString();
@@ -1750,7 +1751,15 @@ namespace PascalABCCompiler.Parsers
                 {
                     sb.Append(GetFullTypeName(pis[i].ParameterType));
                     if (pis[i].IsOptional)
-                        sb.Append(":=" + (pis[i].DefaultValue != null ? pis[i].DefaultValue.ToString() : "nil"));
+                    {
+                        sb.Append(" := ");
+                        if (pis[i].DefaultValue != null)
+                        {
+                            if (pis[i].DefaultValue is string) sb.Append($"'{pis[i].DefaultValue.ToString()}'");
+                            else sb.Append(pis[i].DefaultValue.ToString());
+                        }
+                        else sb.Append("nil");
+                    }
                 }
                 else
                 {
@@ -1924,7 +1933,15 @@ namespace PascalABCCompiler.Parsers
                     else
                         sb.Append(inst_type);
                     if (pis[i].IsOptional)
-                        sb.Append(":=" + (pis[i].DefaultValue != null ? pis[i].DefaultValue.ToString() : "nil"));
+                    {
+                        sb.Append(" := ");
+                        if (pis[i].DefaultValue != null)
+                        {
+                            if (pis[i].DefaultValue is string) sb.Append($"'{pis[i].DefaultValue.ToString()}'");
+                            else sb.Append(pis[i].DefaultValue.ToString());
+                        }
+                        else sb.Append("nil");
+                    }
                 }
                 else
                 {
