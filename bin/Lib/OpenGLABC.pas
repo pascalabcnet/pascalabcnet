@@ -1,4 +1,8 @@
-﻿unit OpenGLABC;
+﻿
+///
+///Модуль, зарезервированный для высокоуровневой оболочки модуля OpenGL
+///
+unit OpenGLABC;
 
 interface
 
