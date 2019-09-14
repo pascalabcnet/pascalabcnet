@@ -1,6 +1,7 @@
-unit NumLibABC;
+﻿unit NumLibABC;
 
-const &NumLibABCVersion = 'NumLibABC 1.0.0 от 06.09.2017';
+const &NumLibABCVersion = 'NumLibABC 1.0.1 от 14.09.2019';
+// предыдущая версия 1.0.0 от 06.09.2017
 
 type
   Point=auto class
@@ -658,7 +659,7 @@ type
     
     /// Выбор результатов по лучшим из p проб, сделанных BPHS
     function BestP(a,b:array of real;
-                   eps:real;
+                   eps:real:=0.01; //- версия 1.0.1
                    p:integer:=10;
                    k:integer:=100;
                    m:integer:=1000):List<(real,array of real)>;
@@ -716,10 +717,13 @@ type
   end;
   
   /// НОД пары чисел
-  class function GCD(a,b:BigInteger):BigInteger;
+  class function GCD(a, b: BigInteger): BigInteger;
   begin
-    while b<>0 do (a,b):=(b,a mod b);
-    Result:=a
+    if a < 0 then
+      a := -a;
+    while b <> 0 do
+      (a, b) := (b, a mod b);
+    Result := a
   end;
 
   public

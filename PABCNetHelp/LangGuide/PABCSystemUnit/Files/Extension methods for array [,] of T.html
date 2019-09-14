@@ -10,6 +10,7 @@
 <param name="Keyword" value="Fill">
 <param name="Keyword" value="ForEach">
 <param name="Keyword" value="Indices">
+<param name="Keyword" value="MatrSlice">
 <param name="Keyword" value="Print">
 <param name="Keyword" value="Println">
 <param name="Keyword" value="Row">
@@ -49,6 +50,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Применяет действие к каждому элементу двумерного массива</td></tr>
 <tr><td><code><b>function</b> Indices&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; cond: T -&gt; boolean): <b>sequence </b>  <b>of</b> (integer, integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает по заданному двумерному массиву последовательность индексов элементов, удовлетворяющих заданному условию</td></tr>
+<tr><td><code><b>function</b> MatrSlice&lt;T&gt;(Self: array[,]  <b>of</b> T; RowIndex: <b>array</b>  <b>of</b> integer; ColIndex: <b>array</b>  <b>of</b> integer): array[,]  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает срез двумерного массива. RowIndex и ColIndex задают срезаемые строки и столбцы</td></tr>
+<tr><td><code><b>function</b> MatrSlice&lt;T&gt;(Self: array[,]  <b>of</b> T; FromRow, ToRow, FromCol, ToCol: integer): array[,]  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает срез двумерного массива между строками FromRow, ToRow и столбцами FromCol, ToCol</td></tr>
 <tr><td><code><b>function</b> Print&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; w: integer := 4): <b>array</b> [,]  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вывод двумерного массива, w - ширина поля вывода</td></tr>
 <tr><td><code><b>function</b> Print(Self: <b>array</b> [,]  <b>of</b> real; w: integer := 7; f: integer := 2): <b>array</b> [,]  <b>of</b> real;</code>
