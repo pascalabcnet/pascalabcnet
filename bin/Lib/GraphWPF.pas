@@ -483,9 +483,6 @@ var OnKeyUp: procedure(k: Key);
 var OnKeyPress: procedure(ch: char);
 /// Событие изменения размера графического окна
 var OnResize: procedure;
-/// Событие перерисовки графического окна.
-///Инициализируется процедурой с вещественным параметром dt - временем, прошедшим с момента последнего обновления экрана
-var OnDrawFrame: procedure(dt: real) := nil;
 
 //{{{--doc: Конец секции 3 }}} 
 
@@ -1569,6 +1566,7 @@ procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) :=
 
 var OnDraw: procedure := nil;
 var OnDraw1: procedure(frame: integer) := nil;
+var OnDrawT: procedure(dt: real) := nil;
 
 var FrameRate := 61; // кадров в секунду. Можно меньше!
 var LastUpdatedTime := new System.TimeSpan(integer.MinValue); 
@@ -1577,12 +1575,12 @@ var FrameNum := 0;
 
 procedure RenderFrame(o: Object; e: System.EventArgs);
 begin
-  if (OnDraw<>nil) or (OnDraw1<>nil) or (OnDrawFrame<>nil) then
+  if (OnDraw<>nil) or (OnDraw1<>nil) or (OnDrawT<>nil) then
   begin
     var e1 := RenderingEventArgs(e).RenderingTime;
     var dt := e1 - LastUpdatedTime;
     var delta := 1000/Framerate; // через какое время обновлять
-    if OnDrawFrame<>nil then 
+    if OnDrawT<>nil then 
       delta := 0; // перерисовывать когда придёт время
     if dt.TotalMilliseconds < delta then
       exit
@@ -1593,8 +1591,8 @@ begin
       OnDraw() 
     else if OnDraw1<>nil then
       OnDraw1(FrameNum)
-    else if OnDrawFrame<>nil then
-      OnDrawFrame(dt.Milliseconds/1000);
+    else if OnDrawT<>nil then
+      OnDrawT(dt.Milliseconds/1000);
   end;  
 end;
 
@@ -1616,7 +1614,7 @@ end;
 
 procedure BeginFrameBasedAnimationTime(Draw: procedure(dt: real));
 begin
-  OnDrawFrame := Draw;
+  OnDrawT := Draw;
 end;
 
 procedure EndFrameBasedAnimation;

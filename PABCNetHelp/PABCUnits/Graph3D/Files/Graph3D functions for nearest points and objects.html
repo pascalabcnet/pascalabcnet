@@ -4,6 +4,7 @@
 <param name="Keyword" value="FindNearestObject">
 <param name="Keyword" value="FindNearestObjectPoint">
 <param name="Keyword" value="NearestPointOnLine">
+<param name="Keyword" value="ParametricTrajectory">
 <param name="Keyword" value="PointOnPlane"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Graph3D: функции для определения ближайших точек и объектов</H1>
@@ -17,6 +18,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает точку на ближайшем 3D-объекте, который пересекает луч, выпущенный из камеры и проходящий через точку (x,y) экрана. Если пересечения нет, возвращается точка BadPoint</td></tr>
 <tr><td><code><b>function</b> NearestPointOnLine(Line: Ray3D; x, y: real): Point3D;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает ближайшую точку на линии Line с лучом, выпущенным из камеры и проходящем через точку (x,y) экрана</td></tr>
+<tr><td><code><b>function</b> ParametricTrajectory(a,b: real; N: integer; fun: real-&gt;Point3D): <b>sequence </b>  <b>of</b> Point3D;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создаёт траекторию в виде массива точек, заданную параметрически. Функция fun отображает параметр t на координаты точки в пространстве</td></tr>
 <tr><td><code><b>function</b> PointOnPlane(Plane: Plane3D; x, y: real): Point3D;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает точку на плоскости Plane, которую пересекает невизуальный луч, выпущенный из камеры и проходящий через точку (x,y) экрана</td></tr>
 </table>
