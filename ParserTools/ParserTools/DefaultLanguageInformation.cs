@@ -979,7 +979,7 @@ namespace PascalABCCompiler.Parsers
             {
                 var rank = ctn.GetArrayRank();
                 var strrank = rank > 1 ? "[" + new string(',', rank - 1) + "]" : "";
-                return $"array{strrank}" + " of " + GetFullTypeName(ctn.GetElementType());
+                return $"array{strrank}" + " of " + GetShortTypeName(ctn.GetElementType());
             }
             //if (ctn == Type.GetType("System.Void*")) return PascalABCCompiler.TreeConverter.compiler_string_consts.pointer_type_name;
             return ctn.Name;
