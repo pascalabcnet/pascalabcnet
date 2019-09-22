@@ -6,7 +6,9 @@
 <param name="Keyword" value="GrayColor">
 <param name="Keyword" value="Pnt">
 <param name="Keyword" value="RandomColor">
+<param name="Keyword" value="RandomWindowPoint">
 <param name="Keyword" value="Rect">
+<param name="Keyword" value="Redraw">
 <param name="Keyword" value="RGB"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Вспомогательные функции WPFObjects</H1>
@@ -14,7 +16,7 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цвет по красной, зеленой и синей составляющей и параметру прозрачности (в диапазоне 0..255)</td></tr>
 <tr><td><code><b>function</b> clRandom: Color;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайный цвет</td></tr>
-<tr><td><code><b>function</b> ColorBrush(c: Color): GBrush;</code>
+<tr><td><code><b>function</b> ColorBrush(c: Color): SolidColorBrush;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает однотонную цветную кисть, заданную цветом</td></tr>
 <tr><td><code><b>function</b> EmptyColor: Color;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает полностью прозрачный цвет</td></tr>
@@ -24,8 +26,12 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает точку с координатами (x,y)</td></tr>
 <tr><td><code><b>function</b> RandomColor: Color;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайный цвет</td></tr>
+<tr><td><code><b>function</b> RandomWindowPoint(z: real := 0): GPoint;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайную точку графического окна. Необязательный параметр z задаёт отступ от края</td></tr>
 <tr><td><code><b>function</b> Rect(x,y,w,h: real): GRect;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает прямоугольник с координатами угла (x,y), шириной w и высотой h</td></tr>
+<tr><td><code><b>procedure</b> Redraw(p: ()-&gt;());</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Процедура ускорения вывода. Обновляет экран после всех изменений</td></tr>
 <tr><td><code><b>function</b> RGB(r,g,b: byte): Color;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цвет по красной, зеленой и синей составляющей (в диапазоне 0..255)</td></tr>
 </table>

@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections;
@@ -2227,8 +2227,25 @@ namespace CodeCompletion
 
         public ProcScope GetInstance(List<TypeScope> gen_args)
         {
-            if (this.template_parameters == null || this.template_parameters.Count == 0)
-                return this;
+            List<string> template_parameters = this.template_parameters;
+            if ((this.template_parameters == null || this.template_parameters.Count == 0))
+            {
+                bool has_instance = false;
+                if (this.topScope is TypeScope)
+                {
+                    TypeScope ts = this.topScope as TypeScope;
+                    if (ts.instances != null && ts.instances.Count > 0 && gen_args.Count > 0)
+                    {
+                        has_instance = true;
+                        gen_args = ts.instances;
+                        template_parameters = new List<string>(ts.TemplateArguments);
+                    }
+                        
+                }
+                if (!has_instance)
+                    return this;
+            }
+                
             ProcScope instance = new ProcScope(this.name, this.topScope, this.is_constructor);
             instance.is_extension = this.is_extension;
             instance.original_function = this;
@@ -2241,7 +2258,7 @@ namespace CodeCompletion
                 i++;
                 if (parameter.sc is UnknownScope || (parameter.sc is TypeScope) && (parameter.sc as TypeScope).IsGenericParameter)
                 {
-                    int ind = this.template_parameters.IndexOf((parameter.sc as TypeScope).Name);
+                    int ind = template_parameters.IndexOf((parameter.sc as TypeScope).Name);
                     ElementScope inst_param = null;
                     if (gen_args.Count > ind && ind != -1)
                         inst_param = new ElementScope(new SymInfo(parameter.si.name, parameter.si.kind, parameter.si.description), gen_args[ind], parameter.topScope);
@@ -2267,7 +2284,7 @@ namespace CodeCompletion
             if (this.return_type != null)
             {
                 bool exact = true;
-                if (this.template_parameters != null && this.template_parameters.Count > 0)
+                if (template_parameters != null && template_parameters.Count > 0)
                 {
                     foreach (ElementScope parameter in this.parameters)
                     {
@@ -3807,9 +3824,12 @@ namespace CodeCompletion
         {
             if (ts is NullTypeScope)
                 return true;
+            if (!(ts is PointerScope))
+                return false;
             if (ts is PointerScope)
                 if ((ts as PointerScope).ref_type == null)
                     return true;
+            
             return ref_type == (ts as PointerScope).ref_type;
         }
 
@@ -3951,6 +3971,13 @@ namespace CodeCompletion
             {
                 return 0;
             }
+        }
+
+        public override void Clear()
+        {
+            base.Clear();
+            if (generic_params != null)
+                generic_params.Clear();
         }
 
         public virtual List<TypeScope> GetInstances()

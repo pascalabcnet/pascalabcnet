@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -149,8 +149,9 @@ namespace TreeConverter.LambdaExpressions.Closure
             _visitor.convertion_data_and_alghoritms.statement_list_stack_push(sl);
 
             _visitor.context.enter_code_block_without_bind();
-
-            _visitor.context.add_var_definition(eh.variable.name, _visitor.get_location(eh.variable), _visitor.convert_strong(eh.type_name), PascalABCCompiler.SemanticTree.polymorphic_state.ps_common, true);
+            
+            if (eh.variable != null)
+                _visitor.context.add_var_definition(eh.variable.name, _visitor.get_location(eh.variable), _visitor.convert_strong(eh.type_name), PascalABCCompiler.SemanticTree.polymorphic_state.ps_common, true);
             //SymbolInfo si = _visitor.context.find_first(eh.variable.name);
             //var csi = new CapturedVariablesTreeNode.CapturedSymbolInfo(eh, si);
             //_currentTreeNode.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(eh, si));

@@ -6,44 +6,22 @@
 // https://github.com/SunSerega/POCGL/blob/master/LICENSE
 //*****************************************************************************************************\\
 // Copyright (©) Сергей Латченко ( github.com/SunSerega | forum.mmcs.sfedu.ru/u/sun_serega )
-// Этот код распространяется под Unlicense
-// Для деталей смотрите в файл LICENSE или это:
+// Этот код распространяется с лицензией Unlicense
+// Подробнее в файле LICENSE или тут:
 // https://github.com/SunSerega/POCGL/blob/master/LICENSE
 //*****************************************************************************************************\\
 
 ///
-/// Код переведён отсюда:
+///Код переведён отсюда:
 /// https://github.com/KhronosGroup/OpenCL-Headers/tree/master/CL
 ///
-/// Справка:
-/// www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_API.html
+///Спецификации всех версий:
+/// https://www.khronos.org/registry/OpenCL/
 ///
-/// Если чего то не хватает - писать сюда:
+///Если не хватает функции, перечисления, или найдена ошибка - писать сюда:
 /// https://github.com/SunSerega/POCGL/issues
 ///
 unit OpenCL;
-
-//ToDo расширения с котороми я не знаю что делать:
-//
-// - cl_ext.h
-// -- cl_qcom_ext_host_ptr
-// -- cl_qcom_ext_host_ptr_iocoherent
-// -- cl_qcom_ion_host_ptr
-// -- cl_qcom_android_native_buffer_host_ptr
-// -- cl_img_yuv_image
-//
-// - cl_d3d11.h
-// -- там нет функций, есть только энумы и коды ошибок. Но в чём смысл если возвращать и принимать их нечему?
-//
-// - cl_platform.h
-// -- есть только описание типов и констант, которые нигде не используются. Где они нужны?
-//
-//ToDo кто что то знает - напишите в issue, пожалуйста
-
-//ToDo .h файлы которые осталось перевести:
-// - cl_ext_intel
-// - cl_va_api_media_sharing_intel
-// - cl_dx9_media_sharing_intel
 
 uses System;
 uses System.Runtime.InteropServices;
@@ -62,7 +40,7 @@ type
   cl_event                      = IntPtr;
   cl_sampler                    = IntPtr;
   
-  ///0=false, остальное=true
+  ///0 = false, остальное = true
   cl_bool                       = UInt32;
   cl_bitfield                   = UInt64;
   
@@ -76,7 +54,7 @@ type
   
 {$endregion Основные типы}
 
-{$region Энумы} type
+{$region Перечисления} type
   
   {$region case Result of}
   
@@ -1408,13 +1386,13 @@ type
   
   {$endregion Флаги}
   
-{$endregion Энумы}
+{$endregion Перечисления}
 
 {$region Делегаты}
 
 type
   [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-  CreateContext_Callback = procedure(errinfo: ^char; private_info: pointer; cb: UIntPtr; user_data: pointer);
+  CreateContext_Callback = procedure(errinfo_text: IntPtr; private_info: pointer; cb: UIntPtr; user_data: pointer);
   
   [UnmanagedFunctionPointer(CallingConvention.StdCall)]
   Program_Callback = procedure(&program: cl_program; user_data: pointer);
@@ -1935,7 +1913,7 @@ type
     
     static function CreateProgramWithSource(context: cl_context; count: UInt32; [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)] strings: array of string; [MarshalAs(UnmanagedType.LPArray)] lengths: array of UIntPtr; var errcode_ret: ErrorCode): cl_program;
     external 'opencl.dll' name 'clCreateProgramWithSource';
-    static function CreateProgramWithSource(context: cl_context; count: UInt32; strings: ^^char; lengths: ^UIntPtr; errcode_ret: ^ErrorCode): cl_program;
+    static function CreateProgramWithSource(context: cl_context; count: UInt32; strings: ^IntPtr; lengths: ^UIntPtr; errcode_ret: ^ErrorCode): cl_program;
     external 'opencl.dll' name 'clCreateProgramWithSource';
     
     static function CreateProgramWithIL(context: cl_context; il: IntPtr; length: UIntPtr; var errcode_ret: ErrorCode): cl_program;
@@ -1954,11 +1932,11 @@ type
     
     static function CreateProgramWithBuiltInKernels(context: cl_context; num_devices: UInt32; [MarshalAs(UnmanagedType.LPArray)] device_list: array of cl_device_id; [MarshalAs(UnmanagedType.LPStr)] kernel_names: string; var errcode_ret: ErrorCode): cl_program;
     external 'opencl.dll' name 'clCreateProgramWithBuiltInKernels';
-    static function CreateProgramWithBuiltInKernels(context: cl_context; num_devices: UInt32; [MarshalAs(UnmanagedType.LPArray)] device_list: array of cl_device_id; kernel_names: ^char; var errcode_ret: ErrorCode): cl_program;
+    static function CreateProgramWithBuiltInKernels(context: cl_context; num_devices: UInt32; [MarshalAs(UnmanagedType.LPArray)] device_list: array of cl_device_id; kernel_names: IntPtr; var errcode_ret: ErrorCode): cl_program;
     external 'opencl.dll' name 'clCreateProgramWithBuiltInKernels';
     static function CreateProgramWithBuiltInKernels(context: cl_context; num_devices: UInt32; device_list: ^cl_device_id; [MarshalAs(UnmanagedType.LPStr)] kernel_names: string; errcode_ret: ^ErrorCode): cl_program;
     external 'opencl.dll' name 'clCreateProgramWithBuiltInKernels';
-    static function CreateProgramWithBuiltInKernels(context: cl_context; num_devices: UInt32; device_list: ^cl_device_id; kernel_names: ^char; errcode_ret: ^ErrorCode): cl_program;
+    static function CreateProgramWithBuiltInKernels(context: cl_context; num_devices: UInt32; device_list: ^cl_device_id; kernel_names: IntPtr; errcode_ret: ^ErrorCode): cl_program;
     external 'opencl.dll' name 'clCreateProgramWithBuiltInKernels';
     
     static function RetainProgram(&program: cl_program): ErrorCode;
@@ -1979,17 +1957,29 @@ type
     
     static function BuildProgram(&program: cl_program; num_devices: UInt32; [MarshalAs(UnmanagedType.LPArray)] device_list: array of cl_device_id; [MarshalAs(UnmanagedType.LPStr)] options: string; pfn_notify: Program_Callback; user_data: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clBuildProgram';
-    static function BuildProgram(&program: cl_program; num_devices: UInt32; device_list: ^cl_device_id; options: ^char; pfn_notify: Program_Callback; user_data: pointer): ErrorCode;
+    static function BuildProgram(&program: cl_program; num_devices: UInt32; [MarshalAs(UnmanagedType.LPArray)] device_list: array of cl_device_id; [MarshalAs(UnmanagedType.LPStr)] options: IntPtr; pfn_notify: Program_Callback; user_data: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clBuildProgram';
+    static function BuildProgram(&program: cl_program; num_devices: UInt32; device_list: ^cl_device_id; options: string; pfn_notify: Program_Callback; user_data: pointer): ErrorCode;
+    external 'opencl.dll' name 'clBuildProgram';
+    static function BuildProgram(&program: cl_program; num_devices: UInt32; device_list: ^cl_device_id; options: IntPtr; pfn_notify: Program_Callback; user_data: pointer): ErrorCode;
     external 'opencl.dll' name 'clBuildProgram';
     
     static function CompileProgram(&program: cl_program; num_devices: UInt32; [MarshalAs(UnmanagedType.LPArray)] device_list: array of cl_device_id; [MarshalAs(UnmanagedType.LPStr)] options: string; num_input_headers: UInt32; [MarshalAs(UnmanagedType.LPArray)] input_headers: array of cl_program; [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)] header_include_names: array of string; pfn_notify: Program_Callback; user_data: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clCompileProgram';
-    static function CompileProgram(&program: cl_program; num_devices: UInt32; device_list: ^cl_device_id; options: ^char; num_input_headers: UInt32; input_headers: ^cl_program; header_include_names: ^^char; pfn_notify: Program_Callback; user_data: pointer): ErrorCode;
+    static function CompileProgram(&program: cl_program; num_devices: UInt32; [MarshalAs(UnmanagedType.LPArray)] device_list: array of cl_device_id; [MarshalAs(UnmanagedType.LPStr)] options: IntPtr; num_input_headers: UInt32; [MarshalAs(UnmanagedType.LPArray)] input_headers: array of cl_program; [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)] header_include_names: array of string; pfn_notify: Program_Callback; user_data: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clCompileProgram';
+    static function CompileProgram(&program: cl_program; num_devices: UInt32; device_list: ^cl_device_id; options: string; num_input_headers: UInt32; input_headers: ^cl_program; header_include_names: ^IntPtr; pfn_notify: Program_Callback; user_data: pointer): ErrorCode;
+    external 'opencl.dll' name 'clCompileProgram';
+    static function CompileProgram(&program: cl_program; num_devices: UInt32; device_list: ^cl_device_id; options: IntPtr; num_input_headers: UInt32; input_headers: ^cl_program; header_include_names: ^IntPtr; pfn_notify: Program_Callback; user_data: pointer): ErrorCode;
     external 'opencl.dll' name 'clCompileProgram';
 
     static function LinkProgram(context: cl_context; num_devices: UInt32; [MarshalAs(UnmanagedType.LPArray)] device_list: array of cl_device_id; [MarshalAs(UnmanagedType.LPStr)] options: string; num_input_programs: UInt32; [MarshalAs(UnmanagedType.LPArray)] input_programs: array of cl_program; pfn_notify: Program_Callback; user_data: IntPtr; var errcode_ret: ErrorCode): cl_program;
     external 'opencl.dll' name 'clLinkProgram';
-    static function LinkProgram(context: cl_context; num_devices: UInt32; device_list: ^cl_device_id; options: ^char; num_input_programs: UInt32; input_programs: ^cl_program; pfn_notify: Program_Callback; user_data: pointer; errcode_ret: ^ErrorCode): cl_program;
+    static function LinkProgram(context: cl_context; num_devices: UInt32; [MarshalAs(UnmanagedType.LPArray)] device_list: array of cl_device_id; [MarshalAs(UnmanagedType.LPStr)] options: IntPtr; num_input_programs: UInt32; [MarshalAs(UnmanagedType.LPArray)] input_programs: array of cl_program; pfn_notify: Program_Callback; user_data: IntPtr; var errcode_ret: ErrorCode): cl_program;
+    external 'opencl.dll' name 'clLinkProgram';
+    static function LinkProgram(context: cl_context; num_devices: UInt32; device_list: ^cl_device_id; options: string; num_input_programs: UInt32; input_programs: ^cl_program; pfn_notify: Program_Callback; user_data: pointer; errcode_ret: ^ErrorCode): cl_program;
+    external 'opencl.dll' name 'clLinkProgram';
+    static function LinkProgram(context: cl_context; num_devices: UInt32; device_list: ^cl_device_id; options: IntPtr; num_input_programs: UInt32; input_programs: ^cl_program; pfn_notify: Program_Callback; user_data: pointer; errcode_ret: ^ErrorCode): cl_program;
     external 'opencl.dll' name 'clLinkProgram';
     
     static function GetProgramInfo(&program: cl_program; param_name: ProgramInfoType; param_value_size: UIntPtr; param_value: pointer; var param_value_size_ret: UIntPtr): ErrorCode;
@@ -2008,7 +1998,7 @@ type
     
     static function CreateKernel(&program: cl_program; [MarshalAs(UnmanagedType.LPStr)] kernel_name: string; var errcode_ret: ErrorCode): cl_kernel;
     external 'opencl.dll' name 'clCreateKernel';
-    static function CreateKernel(&program: cl_program; kernel_name: ^char; errcode_ret: ^ErrorCode): cl_kernel;
+    static function CreateKernel(&program: cl_program; kernel_name: IntPtr; errcode_ret: ^ErrorCode): cl_kernel;
     external 'opencl.dll' name 'clCreateKernel';
     
     static function CreateKernelsInProgram(&program: cl_program; num_kernels: UInt32; [MarshalAs(UnmanagedType.LPArray)] kernels: array of cl_kernel; var num_kernels_ret: UInt32): ErrorCode;

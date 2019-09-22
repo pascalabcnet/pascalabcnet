@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections;
@@ -71,8 +71,8 @@ namespace VisualPascalABC
         internal DebugWatchListWindowForm DebugWatchListWindow;
         internal DisassemblyWindow DisassemblyWindow;
         internal ProjectExplorerForm ProjectExplorerWindow = null;
-        WeifenLuo.WinFormsUI.Docking.DockPane BottomPane;
-        WeifenLuo.WinFormsUI.Docking.DockPane ProjectPane;
+        public WeifenLuo.WinFormsUI.Docking.DockPane BottomPane;
+        public WeifenLuo.WinFormsUI.Docking.DockPane ProjectPane;
         FSWatcherService WatcherService = new FSWatcherService();
 
         private bool LoadComplete = false;
@@ -370,9 +370,9 @@ namespace VisualPascalABC
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            // Автовставка кода по умолчанию включена
-            tsAutoInsertCode.Checked = true;
-            mAUTOINSERTToolStripMenuItem.Checked = true;
+            // Автовставка кода по умолчанию включена. Отключил это - теперь сохраняется в настройках!
+            //tsAutoInsertCode.Checked = true;
+            //mAUTOINSERTToolStripMenuItem.Checked = true;
 
             //CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.TextArea.KeyEventHandler += TextArea_KeyEventHandler;
 
@@ -1506,6 +1506,12 @@ namespace VisualPascalABC
         }
 
         private void tsAutoInsertCode_Click(object sender, EventArgs e)
+        {
+            tsAutoInsertCode.Checked = !tsAutoInsertCode.Checked;
+            mAUTOINSERTToolStripMenuItem.Checked = !mAUTOINSERTToolStripMenuItem.Checked;
+        }
+
+        private void mAUTOINSERTToolStripMenuItem_Click(object sender, EventArgs e)
         {
             tsAutoInsertCode.Checked = !tsAutoInsertCode.Checked;
             mAUTOINSERTToolStripMenuItem.Checked = !mAUTOINSERTToolStripMenuItem.Checked;

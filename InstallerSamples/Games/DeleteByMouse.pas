@@ -43,7 +43,7 @@ begin
   begin
     var x := Random(Window.Width-50);
     var y := Random(Window.Height-100);
-    var ob := RectangleWPF.Create(x,y,50,50,Colors.LightGreen).WithBorder;
+    var ob := RectangleWPF.Create(x,y,50,50,Colors.LightGreen,1);
     ob.FontSize := 25;
     ob.Number := i;
   end;

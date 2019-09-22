@@ -32,7 +32,7 @@ namespace VisualPascalABCPlugins
         {
             get
             {
-                return "Copyright © 2005-2018 by Ivan Bondarev, Stanislav Mihalkovich";
+                return "Copyright © 2005-2018 by Ivan Bondarev, Stanislav Mikhalkovich";
             }
         }
 

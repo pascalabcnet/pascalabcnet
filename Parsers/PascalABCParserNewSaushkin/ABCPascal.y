@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 // SSM 21/11/16 Ћ€мбда выражени€ вынесены на верхний уровень (п.ч. присваивани€ и параметры)
 %{
@@ -50,7 +50,8 @@
 %token <id> tkDirectiveName tkIdentifier 
 %token <stn> tkStringLiteral tkFormatStringLiteral tkAsciiChar
 %token <id> tkAbstract tkForward tkOverload tkReintroduce tkOverride tkVirtual tkExtensionMethod 
-%token <ex> tkInteger tkFloat tkHex 
+%token <ex> tkInteger tkFloat tkHex
+%token <id> tkUnknown
 
 %type <ti> unit_key_word class_or_static
 %type <stn> assignment 

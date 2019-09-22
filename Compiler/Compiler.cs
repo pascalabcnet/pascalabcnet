@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
  /***************************************************************************
  *   
@@ -2156,17 +2156,24 @@ namespace PascalABCCompiler
                         if (InternalDebug.CodeGeneration)
 #endif
                         {
+                            int n = 1;
                             try
                             {
-                                File.Create(CompilerOptions.OutputFileName).Close();
-                                //File.Delete(CompilerOptions.OutputFileName);
+                                n = 2;
+                                var fs = File.Create(CompilerOptions.OutputFileName);
+                                n = 3;
+                                fs.Close();
+                                n = 4;
+                                                                                                ///////File.Delete(CompilerOptions.OutputFileName);
                                 string pdb_file_name=Path.ChangeExtension(CompilerOptions.OutputFileName, ".pdb");
                                 if (File.Exists(pdb_file_name))
                                     File.Delete(pdb_file_name);
+                                    n = 5;
                             }
-                            catch (Exception)
+                            catch (Exception e)
                             {
-                                throw new UnauthorizedAccessToFile(CompilerOptions.OutputFileName);
+                                    throw new UnauthorizedAccessToFile(CompilerOptions.OutputFileName + " -- " + n + "  " + e.ToString());
+                                    //throw e;
                             }
                             OnChangeCompilerState(this, CompilerState.CodeGeneration, CompilerOptions.OutputFileName);
                             string[] ResourceFilesArray = null;
@@ -2773,6 +2780,7 @@ namespace PascalABCCompiler
             }
             return false;
         }
+     
 
         private Dictionary<string, SyntaxTree.syntax_namespace_node> IncludeNamespaces(CompilationUnit Unit)
         {
@@ -2811,7 +2819,7 @@ namespace PascalABCCompiler
 
                 }
             }
-            Dictionary<string, SyntaxTree.syntax_namespace_node> namespaces = new Dictionary<string, SyntaxTree.syntax_namespace_node>();
+            Dictionary<string, SyntaxTree.syntax_namespace_node> namespaces = new Dictionary<string, SyntaxTree.syntax_namespace_node>(StringComparer.OrdinalIgnoreCase);
             List<SyntaxTree.unit_or_namespace> namespace_modules = new List<SyntaxTree.unit_or_namespace>();
             foreach (string file in files)
             {
@@ -3304,7 +3312,7 @@ namespace PascalABCCompiler
                 
                 for (int i = SyntaxUsesList.Count - 1 - CurrentUnit.InterfaceUsedUnits.Count; i >= 0; i--)
                 {
-                    if (IsPossibleNamespace(SyntaxUsesList[i], true))
+                    if (IsPossibleNamespace(SyntaxUsesList[i], true) || namespaces.ContainsKey(SyntaxUsesList[i].name.idents[0].name))
                     {
                         CurrentUnit.InterfaceUsedUnits.AddElement(new TreeRealization.namespace_unit_node(GetNamespace(SyntaxUsesList[i])));
                         CurrentUnit.PossibleNamespaces.Add(SyntaxUsesList[i]);
@@ -3615,7 +3623,7 @@ namespace PascalABCCompiler
         public static Dictionary<string, string> standart_assembly_dict = new Dictionary<string, string>();
         static Compiler()
         {
-            string[] ss = new string[] { "mscorlib.dll","System.dll", "System.Core.dll", "System.Numerics.dll", "System.Windows.Forms.dll", "PABCRtl.dll", "PABCRtl32.dll" };
+            string[] ss = new string[] { "mscorlib.dll","System.dll", "System.Core.dll", "System.Numerics.dll", "System.Windows.Forms.dll", "PABCRtl.dll" };
             foreach (var x in ss)
                 standart_assembly_dict[x] = get_standart_assembly_path(x);
         }

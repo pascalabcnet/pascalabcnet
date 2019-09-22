@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 //Класс, хранящий текущий контекст. Где находится компилятор (в какой функции, типе, пространстве имен).
 using System;
@@ -2630,7 +2630,8 @@ namespace PascalABCCompiler.TreeConverter
                         if (convertion_data_and_alghoritms.function_eq_params_and_result(meth, fn))
                         {
                             //Нашли нужную функцию
-                            if (meth == fn || fn is common_method_node && (fn as common_method_node).overrided_method == null) sil = null;
+                            if (meth == fn || fn is common_method_node && (fn as common_method_node).overrided_method == null)
+                                sil = null;
                             break;
                         }
                     }
@@ -2723,7 +2724,8 @@ namespace PascalABCCompiler.TreeConverter
                                 }
                                 else
                                 {
-                                    fn_common.SetName(meth.name);
+                                    if (fn_common.name.IndexOf('.') == -1)
+                                        fn_common.SetName(meth.name);
                                     fn_common.name_case_fixed = true;
                                 }
 
@@ -2790,6 +2792,8 @@ namespace PascalABCCompiler.TreeConverter
                     //Делаем её virtual final
                     commn.is_final = true;
                     commn.newslot_awaited = true;
+                    if (commn.name.IndexOf('.') != -1)
+                        commn.overrided_method = meth;
                 }
             }
             else
@@ -2860,16 +2864,28 @@ namespace PascalABCCompiler.TreeConverter
                 while (tn != null)
                 {
                     common_type_node cint = tn as common_type_node;
+                    
                     if (cint != null)
                     {
                         if (_ctn.IsAbstract) return;
                         if (_ctn.IsStatic) return;
-                        foreach (common_method_node meth in cint.methods)
+                        
+                        if (cint is common_generic_instance_type_node cgnn)
                         {
-                            if (meth.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)
-                                check_implement_abstract_function(cnode, meth, cint);
+                            foreach (common_method_node meth in cgnn.base_generic_instance.all_methods)
+                            {
+                                if (meth.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)
+                                    check_implement_abstract_function(cnode, meth, cgnn.base_generic_instance);
+                            }
                         }
-
+                        else
+                        {
+                            foreach (common_method_node meth in cint.methods)
+                            {
+                                if (meth.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract)
+                                    check_implement_abstract_function(cnode, meth, cint);
+                            }
+                        }
                     }
                     else
                     {

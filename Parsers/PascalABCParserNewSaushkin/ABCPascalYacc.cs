@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-G8V08V4
-// DateTime: 14.07.2019 10:48:31
+// DateTime: 03.08.2019 21:12:00
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -47,7 +47,8 @@ public enum Tokens {
     tkShl=127,tkShr=128,tkNot=129,tkAs=130,tkIn=131,tkIs=132,
     tkImplicit=133,tkExplicit=134,tkAddressOf=135,tkDeref=136,tkIdentifier=137,tkStringLiteral=138,
     tkFormatStringLiteral=139,tkAsciiChar=140,tkAbstract=141,tkForward=142,tkOverload=143,tkReintroduce=144,
-    tkOverride=145,tkVirtual=146,tkExtensionMethod=147,tkInteger=148,tkFloat=149,tkHex=150};
+    tkOverride=145,tkVirtual=146,tkExtensionMethod=147,tkInteger=148,tkFloat=149,tkHex=150,
+    tkUnknown=151};
 
 // Abstract base class for GPLEX scanners
 public abstract class ScanBase : AbstractScanner<PascalABCSavParser.Union,LexLocation> {

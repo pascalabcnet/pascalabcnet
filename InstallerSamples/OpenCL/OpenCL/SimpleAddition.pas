@@ -16,6 +16,12 @@ begin
   var device: cl_device_id;
   cl.GetDeviceIDs(platform, DeviceTypeFlags.Default, 1, @device, nil).RaiseIfError;
   
+  // DeviceTypeFlags.Default это обычно GPU
+  // К примеру, в ноутбуке его может не быть
+  // Тогда надо хоть для чего то попытаться инициализировать
+  // DeviceTypeFlags.All выберет первый любой девайс, поддерживающий OpenCL
+//  cl.GetDeviceIDs(platform, DeviceTypeFlags.All, 1, @device, nil).RaiseIfError;
+  
   var context := cl.CreateContext(nil, 1, @device, nil, nil, @ec);
   ec.RaiseIfError;
   

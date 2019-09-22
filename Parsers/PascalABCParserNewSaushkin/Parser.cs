@@ -112,7 +112,7 @@ namespace PascalABCCompiler.PascalABCNewParser
         //public Preprocessor2.Preprocessor2 preprocessor2 = new PascalABCCompiler.Preprocessor2.Preprocessor2(null);
 
         public PascalABCNewLanguageParser()
-            : base("PascalABC.NET", "1.2", "Copyright © 2005-2019 by Ivan Bondarev, Stanislav Mihalkovich", false, new string[] { ".pas" })
+            : base("PascalABC.NET", "1.2", "Copyright © 2005-2019 by Ivan Bondarev, Stanislav Mikhalkovich", false, new string[] { ".pas" })
         {
         }
 

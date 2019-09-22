@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -574,8 +574,11 @@ namespace PascalABCCompiler
                 	is_break_stmt = false;
                 sn = stmt.statements[i];
                 VisitStatement(sn);
-                if (is_break_stmt  && !has_goto && i < stmt.statements.Count - 1 && stmt.statements[i + 1].semantic_node_type != semantic_node_type.empty_statement && stmt.statements[i + 1].location != null)
-                    warns.Add(new UnreachableCodeDetected(stmt.statements[i + 1].location));
+                if (is_break_stmt && !has_goto && i < stmt.statements.Count - 1 && stmt.statements[i + 1].semantic_node_type != semantic_node_type.empty_statement && stmt.statements[i + 1].location != null)
+                {   
+                    if (stmt.statements[i].location == null || stmt.statements[i + 1].location.ToString() != stmt.statements[i].location.ToString())
+                        warns.Add(new UnreachableCodeDetected(stmt.statements[i + 1].location));
+                }
                 if (!(i < stmt.statements.Count - 1 && stmt.statements[i + 1].semantic_node_type == semantic_node_type.empty_statement))
                 	is_break_stmt = false;
             }

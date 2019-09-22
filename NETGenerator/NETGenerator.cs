@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Linq;
@@ -461,7 +461,7 @@ namespace PascalABCCompiler.NETGenerator
                 an.Name = name;// + ".exe";
             else an.Name = name; //+ ".dll";
 
-            if (name == "PABCRtl" || name == "PABCRtl32")
+            if (name == "PABCRtl")
             {
                 pabc_rtl_converted = true;
                 an.Flags = AssemblyNameFlags.PublicKey;
@@ -883,7 +883,7 @@ namespace PascalABCCompiler.NETGenerator
             {
 
             }
-            if (an.Name == "PABCRtl" || an.Name == "PABCRtl32")
+            if (an.Name == "PABCRtl")
             {
                 CustomAttributeBuilder cab = new CustomAttributeBuilder(typeof(AssemblyKeyFileAttribute).GetConstructor(new Type[] { typeof(string) }), new object[] { an.Name == "PABCRtl" ? "PublicKey.snk" : "PublicKey32.snk" });
                 ab.SetCustomAttribute(cab);
@@ -2569,8 +2569,6 @@ namespace PascalABCCompiler.NETGenerator
             return false;
         }
 
-
-        //Ета штуковина все жутко тормозит. особенно генерацию EXE
         private void AddSpecialDebugVariables()
         {
             if (this.add_special_debug_variables)
@@ -2610,7 +2608,10 @@ namespace PascalABCCompiler.NETGenerator
             foreach (ICommonNestedInFunctionFunctionNode f in func.functions_nodes)
                 ConvertFunctionBody(f);
             //перевод тела
-            ConvertBody(func.function_code);
+            if (func.name.IndexOf("<yield_helper_error_checkerr>") == -1)
+                ConvertBody(func.function_code);
+            else
+                il.Emit(OpCodes.Ret);
             //ivan for debug
             if (save_debug_info)
             {
@@ -4028,7 +4029,7 @@ namespace PascalABCCompiler.NETGenerator
         private void GenerateArrayInitCode(ILGenerator il, LocalBuilder lb, IArrayInitializer InitalValue, ITypeNode ArrayType)
         {
             IExpressionNode[] ElementValues = InitalValue.ElementValues;
-            if (ElementValues[0] is IArrayInitializer)
+            if (ElementValues.Length > 0 && ElementValues[0] is IArrayInitializer)
             {
                 bool is_unsized_array;
                 Type FieldType, ArrType;
@@ -4075,7 +4076,7 @@ namespace PascalABCCompiler.NETGenerator
                 }
             }
             else
-                if (ElementValues[0] is IRecordConstantNode || ElementValues[0] is IRecordInitializer)
+                if (ElementValues.Length > 0 && (ElementValues[0] is IRecordConstantNode || ElementValues[0] is IRecordInitializer))
                 {
                     TypeInfo ti = helper.GetTypeReference(ElementValues[0].type);
                     LocalBuilder llb = il.DeclareLocal(ti.tp.MakePointerType());
@@ -4126,14 +4127,19 @@ namespace PascalABCCompiler.NETGenerator
                             PushIntConst(il, i);
                             this.il = ilb;
                         }
-                        if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && !ti.tp.IsEnum)
-                            il.Emit(OpCodes.Ldelema, ti.tp);
+                        
+                        if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && lb.LocalType.GetElementType().IsValueType && (helper.IsConstructedGenericType(ti.tp) || ti.tp.IsGenericType || !ti.tp.IsEnum))
+                        {
+                            if (!(ti.tp is EnumBuilder))
+                                il.Emit(OpCodes.Ldelema, ti.tp);
+                        }
                         else
-                            if (ti != null && ti.assign_meth != null)
+                            if (ti != null && ti.assign_meth != null && lb.LocalType.GetElementType() != TypeFactory.ObjectType)
                                 il.Emit(OpCodes.Ldelem_Ref);
+                       
                         this.il = il;
                         ElementValues[i].visit(this);
-                        if (ti != null && ti.assign_meth != null)
+                        if (ti != null && ti.assign_meth != null && lb.LocalType.GetElementType() != TypeFactory.ObjectType)
                         {
                             il.Emit(OpCodes.Call, ti.assign_meth);
                             this.il = ilb;
@@ -6100,7 +6106,8 @@ namespace PascalABCCompiler.NETGenerator
             }
             else
             {
-                ConvertFunctionBody(value, copy_mi, true);
+                if (value.name.IndexOf("<yield_helper_error_checkerr>") == -1)
+                    ConvertFunctionBody(value, copy_mi, true);
                 //вызов статического метода-клона
                 //при этом явно передается this
                 il = methb.GetILGenerator();
@@ -6122,6 +6129,15 @@ namespace PascalABCCompiler.NETGenerator
             cur_meth = tmp;
             il = tmp_il;
             num_scope--;
+            if (value.overrided_method != null && value.name.IndexOf('.') != -1)
+            {
+                MethodInfo mi = null;
+                if (helper.GetMethod(value.overrided_method) != null)
+                    mi = helper.GetMethod(value.overrided_method).mi;
+                else
+                    mi = (value.overrided_method as ICompiledMethodNode).method_info;
+                cur_type.DefineMethodOverride(methb, mi);
+            }
         }
 
         private MethInfo ConvertMethodWithNested(SemanticTree.ICommonMethodNode meth, ConstructorBuilder methodb)
@@ -10464,7 +10480,7 @@ namespace PascalABCCompiler.NETGenerator
             if (value.type is ICompiledTypeNode && (value.type as ICompiledTypeNode).compiled_type.IsEnum)
                 fb = cur_type.DefineField(value.name, TypeFactory.Int32Type, FieldAttributes.Literal | ConvertFALToFieldAttributes(value.field_access_level));
             else if (value.constant_value.value != null)
-                fb = cur_type.DefineField(value.name, helper.GetTypeReference(value.type).tp, FieldAttributes.Literal | ConvertFALToFieldAttributes(value.field_access_level));
+                fb = cur_type.DefineField(value.name, helper.GetTypeReference(value.type).tp, FieldAttributes.Literal | FieldAttributes.Static | ConvertFALToFieldAttributes(value.field_access_level));
             else
                 fb = cur_type.DefineField(value.name, helper.GetTypeReference(value.type).tp, FieldAttributes.Static | ConvertFALToFieldAttributes(value.field_access_level));
             if (value.constant_value.value != null)
@@ -10842,7 +10858,7 @@ namespace PascalABCCompiler.NETGenerator
             else
                 il.Emit(OpCodes.Ldsfld, helper.GetVariable((value.Event as ICommonNamespaceEventNode).Field).fb);
         }
-
+        
         public override void visit(SemanticTree.ILambdaFunctionNode value)
         {
         }
