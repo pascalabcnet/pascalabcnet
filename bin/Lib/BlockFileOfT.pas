@@ -367,7 +367,7 @@ type
   end;
   CannotReadAfterEOF = class(Exception)
     constructor :=
-    inherited Create($'Нельзя читать после конца потока');
+    inherited Create($'Нельзя читать за пределами файла');
   end;
 
 {$endregion Exception's}
