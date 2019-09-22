@@ -54,6 +54,7 @@ namespace VisualPascalABC
             this.tsOutputWindow = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
             this.tsFormat = new System.Windows.Forms.ToolStripButton();
+            this.tsAutoInsertCode = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.tstaSelect = new System.Windows.Forms.ToolStripDropDownButton();
             this.tsatConsoleApplication = new System.Windows.Forms.ToolStripMenuItem();
@@ -259,6 +260,7 @@ namespace VisualPascalABC
             this.cmiSendToBack = new System.Windows.Forms.ToolStripMenuItem();
             this.cmiTabOrder = new System.Windows.Forms.ToolStripMenuItem();
             this.cmiProperties = new System.Windows.Forms.ToolStripMenuItem();
+            this.mAUTOINSERTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -294,6 +296,7 @@ namespace VisualPascalABC
             this.ReCompileButton,
             this.tssRunStopSeparator,
             this.tsOutputWindow,
+            this.tsAutoInsertCode,
             this.toolStripSeparator13,
             this.tsFormat,
             this.toolStripSeparator4,
@@ -534,6 +537,17 @@ namespace VisualPascalABC
             this.tsFormat.Size = new System.Drawing.Size(23, 22);
             this.tsFormat.Text = "M_FORMAT";
             this.tsFormat.Click += new System.EventHandler(this.tsFormat_Click);
+            // 
+            // tsAutoInsertCode
+            // 
+            this.tsAutoInsertCode.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsAutoInsertCode.Image = global::VisualPascalABC.Properties.Resources.AutoInsertCode;
+            this.tsAutoInsertCode.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsAutoInsertCode.Name = "tsAutoInsertCode";
+            this.tsAutoInsertCode.Size = new System.Drawing.Size(23, 22);
+            this.tsAutoInsertCode.Text = "M_AUTOINSERT_CODE";
+            this.tsAutoInsertCode.ToolTipText = "M_AUTOINSERT_CODE";
+            this.tsAutoInsertCode.Click += new System.EventHandler(this.tsAutoInsertCode_Click);
             // 
             // toolStripSeparator4
             // 
@@ -1549,6 +1563,7 @@ namespace VisualPascalABC
             this.mrService.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mOPTIONSToolStripMenuItem,
             this.tssmIntellisence,
+            this.mAUTOINSERTToolStripMenuItem,
             this.tsGotoDefinition,
             this.tsGotoRealization,
             this.tsFindAllReferences,
@@ -2303,6 +2318,13 @@ namespace VisualPascalABC
             this.cmiProperties.Text = "M_SHOW_PROPERTIES";
             this.cmiProperties.Click += new System.EventHandler(this.cmiProperties_Click);
             // 
+            // mAUTOINSERTToolStripMenuItem
+            // 
+            this.mAUTOINSERTToolStripMenuItem.Image = global::VisualPascalABC.Properties.Resources.AutoInsertCode;
+            this.mAUTOINSERTToolStripMenuItem.Name = "mAUTOINSERTToolStripMenuItem";
+            this.mAUTOINSERTToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
+            this.mAUTOINSERTToolStripMenuItem.Text = "M_AUTOINSERT_CODE";
+            // 
             // Form1
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -2576,6 +2598,8 @@ namespace VisualPascalABC
         private System.Windows.Forms.ToolStripMenuItem miCheckUpdates;
         private System.Windows.Forms.ToolStripMenuItem cmCollapseRegions;
         private System.Windows.Forms.ToolStripMenuItem tsDisassembly;
+        private System.Windows.Forms.ToolStripButton tsAutoInsertCode;
+        private System.Windows.Forms.ToolStripMenuItem mAUTOINSERTToolStripMenuItem;
     }
 }
 

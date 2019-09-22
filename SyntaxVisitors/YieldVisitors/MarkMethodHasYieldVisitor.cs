@@ -100,12 +100,14 @@ namespace SyntaxVisitors
                 throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_NESTED_SUBROUTINES", pd.source_context);
             }
 
-            if (pd.has_yield && pd.DescendantNodes().OfType<try_stmt>().Count() > 0)
+            if (pd.has_yield && HasStatementWithBarrierVisitor<try_stmt,function_lambda_definition>.Has(pd))
+                //pd.DescendantNodes().OfType<try_stmt>().Count() > 0)
             {
                 throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_TRY_EXCEPT_FINALLY", pd.source_context);
             }
 
-            if (pd.has_yield && pd.DescendantNodes().OfType<lock_stmt>().Count() > 0)
+            if (pd.has_yield && HasStatementWithBarrierVisitor<lock_stmt,function_lambda_definition>.Has(pd))
+                //pd.DescendantNodes().OfType<lock_stmt>().Count() > 0)
             {
                 throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCK", pd.source_context);
             }

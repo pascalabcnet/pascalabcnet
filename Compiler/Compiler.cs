@@ -191,6 +191,15 @@ namespace PascalABCCompiler
         }
     }
 
+    public class NamespaceCannotHaveInSection : CompilerCompilationError
+    {
+        public NamespaceCannotHaveInSection(SyntaxTree.SourceContext sc)
+            : base(string.Format(StringResources.Get("COMPILATIONERROR_NAMESPACE_CANNOT_HAVE_IN_SECTION")))
+        {
+            this.source_context = sc;
+        }
+    }
+
     public class ProgramModuleExpected : CompilerCompilationError
     {
         public ProgramModuleExpected(string FileName, SyntaxTree.SourceContext sc)
@@ -313,6 +322,16 @@ namespace PascalABCCompiler
             this.source_context = sc;
         }
     }
+
+    public class NamespacesCanBeCompiledOnlyInProjects: CompilerCompilationError
+    {
+        public NamespacesCanBeCompiledOnlyInProjects(SyntaxTree.SourceContext sc)
+            : base(StringResources.Get("COMPILATIONERROR_NAMESPACE_CAN_BE_COMPILED_ONLY_IN_PROJECTS"))
+        {
+            this.source_context = sc;
+        }
+    }
+
     public class UnitNotFound : CompilerCompilationError
     {
         public string UnitName;
@@ -1805,6 +1824,8 @@ namespace PascalABCCompiler
                         //Console.WriteLine("ERROR! interface not compiled "+GetUnitFileName(CurrentUnit.SyntaxUnitName));//DEBUG
                         System.Collections.Generic.List<SyntaxTree.unit_or_namespace> SyntaxUsesList = GetSyntaxImplementationUsesList(CurrentUnit.SyntaxTree);
                         CurrentUnit.PossibleNamespaces.Clear();
+                        if (HasIncludeNamespacesDirective(CurrentUnit))
+                            compilerOptions.UseDllForSystemUnits = false;
                         if (SyntaxUsesList != null)
                         {
                             for (int i = SyntaxUsesList.Count - 1; i >= 0; i--)
@@ -2761,7 +2782,6 @@ namespace PascalABCCompiler
             SyntaxTree.unit_module main_library = Unit.SyntaxTree as SyntaxTree.unit_module;
             SyntaxTree.program_module main_program = Unit.SyntaxTree as SyntaxTree.program_module;
             List<string> files = new List<string>();
-            
             foreach (TreeRealization.compiler_directive cd in directives)
             {
                 if (cd.name.ToLower() == TreeConverter.compiler_string_consts.include_namespace_directive)
@@ -2828,7 +2848,7 @@ namespace PascalABCCompiler
                         {
                             if (IsPossibleNamespace(name_space, false))
                             {
-                                ns.referenced_units.AddElement(new TreeRealization.namespace_unit_node(GetNamespace(name_space)));
+                                ns.referenced_units.AddElement(new TreeRealization.namespace_unit_node(GetNamespace(name_space), get_location_from_treenode(name_space, tree.file_name)));
                             }
                             else
                             {
@@ -3101,6 +3121,12 @@ namespace PascalABCCompiler
             string UnitName = GetUnitFileName(SyntaxUsesUnit);
             //if (UnitName == null) throw new UnitNotFound(SyntaxUsesUnit.name,
             CompilationUnit CurrentUnit = UnitTable[UnitName];
+            if (CurrentUnit != null && CurrentUnit.SemanticTree is PascalABCCompiler.TreeRealization.dot_net_unit_node 
+                && SyntaxUsesUnit is PascalABCCompiler.SyntaxTree.uses_unit_in ui && ui.in_file != null) // значит, это пространство имен и секция in у него должна отсутствовать
+            {
+                ErrorsList.Add(new NamespaceCannotHaveInSection(ui.in_file.source_context));
+            }
+
             string name = Path.GetFileNameWithoutExtension(UnitName);
             if (Path.GetExtension(UnitName).ToLower() == CompilerOptions.CompiledUnitExtension)
             {
@@ -3188,7 +3214,7 @@ namespace PascalABCCompiler
                 else
                     DefinesList.Add("DEBUG");
                 CurrentUnit.SyntaxTree = InternalParseText(UnitName, SourceText, errorsList, warnings, DefinesList);
-
+                
                 if (errorsList.Count == 0) // SSM 2/05/16 - для преобразования синтаксических деревьев извне
                 {
                     CurrentUnit.SyntaxTree = syntaxTreeConvertersController.Convert(CurrentUnit.SyntaxTree) as SyntaxTree.compilation_unit;
@@ -3205,7 +3231,12 @@ namespace PascalABCCompiler
                     }
                 }
                 if (CurrentUnit.SyntaxTree is SyntaxTree.unit_module)
+                {
+                    if ((CurrentUnit.SyntaxTree as SyntaxTree.unit_module).unit_name.HeaderKeyword == SyntaxTree.UnitHeaderKeyword.Namespace)
+                        throw new NamespacesCanBeCompiledOnlyInProjects(CurrentUnit.SyntaxTree.source_context);
                     compilerOptions.UseDllForSystemUnits = false;
+                }
+                    
                 if (is_dll(CurrentUnit.SyntaxTree))
                     compilerOptions.OutputFileType = PascalABCCompiler.CompilerOptions.OutputType.ClassLibrary;
                 CurrentUnit.CaseSensitive = ParsersController.LastParser.CaseSensitive;

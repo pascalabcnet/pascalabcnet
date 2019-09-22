@@ -33,7 +33,7 @@ namespace SyntaxVisitors
                 return;
             }
 
-            if (td.type_name.name != _className.name)
+            if (td.type_name.name.ToLower() != _className.name.ToLower())
             {
                 // Not the class we search for
                 // Yoda

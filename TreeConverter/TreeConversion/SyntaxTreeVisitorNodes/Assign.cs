@@ -36,6 +36,10 @@ namespace PascalABCCompiler.TreeConverter
             
             
             assign_is_converting = true;
+            if (to.type.type_special_kind == type_special_kind.set_type && from.type.type_special_kind == type_special_kind.set_type && // SSM 12/07/19 fix #1795
+                convertion_data_and_alghoritms.is_value_int_type(to.type.element_type) &&
+                convertion_data_and_alghoritms.is_value_real_type(from.type.element_type))
+                AddError(new CanNotConvertTypes(from, from.type, to.type, from.location));
             statement_node en = find_operator(_assign.operator_type, to, from, get_location(_assign));
             assign_is_converting = false;
             return_value(en);

@@ -163,19 +163,28 @@ namespace SyntaxVisitors.SugarVisitors
             if (st == null)
                 throw new SyntaxVisitorError("?._CANNOT_BE_IN_THIS_CONTEXT", dqn.source_context);
             var tname = "#dqn_temp" + UniqueNumStr();
-            var tt = new var_statement(new ident(tname), dqn.left, dqn.source_context);
+
+            dot_question_node rif = null;
+            var qce = ConvertToQCE1(dqn, tname);
+            if (qce.ret_if_false is dot_question_node dn)
+            {
+                rif = dn;
+                var expr = new question_colon_expression(qce.condition, qce.ret_if_true, rif.left);
+                rif.left.ExprToQCE = expr;
+            }
+            var sug = sugared_addressed_value.NewP(dqn, qce, dqn.source_context);
+            ReplaceUsingParent(dqn, sug);
+            //Replace(dqn, sug); // Этот не подходит!
+
+            var dl = (dqn.left.ExprToQCE == null ? dqn.left : dqn.left.ExprToQCE) as addressed_value;
+            var tt = new var_statement(new ident(tname), dl, dqn.source_context);
             tt.var_def.Parent = tt;
             var l = new List<statement>();
             l.Add(tt);
             l.Add(st as statement);
 
-            var qce = ConvertToQCE1(dqn, tname);
-            var sug = sugared_addressed_value.NewP(dqn, qce, dqn.source_context);
-            //ReplaceUsingParent(dqn, sug);
-            Replace(dqn, sug); // SSM 30/09/18
-            visit(qce);
-
             ReplaceStatementUsingParent(st as statement, l);
+            visit(qce);
             visit(tt);
         }
         /*public override void visit(dot_question_node dqn)

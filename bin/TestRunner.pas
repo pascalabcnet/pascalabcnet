@@ -44,6 +44,7 @@ begin
     var content := &File.ReadAllText(files[i]);
     if content.StartsWith('//winonly') and IsUnix then
       continue;
+    
     var co: CompilerOptions := new CompilerOptions(files[i], CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
     co.OutputDirectory := TestSuiteDir + PathSeparator + 'errors';
@@ -79,6 +80,8 @@ begin
   begin
     var content := &File.ReadAllText(files[i]);
     if content.StartsWith('//winonly') and IsUnix then
+      continue;
+    if content.StartsWith('//nopabcrtl') and withdll then
       continue;
     var co: CompilerOptions := new CompilerOptions(files[i], CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;

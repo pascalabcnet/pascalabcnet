@@ -58,7 +58,7 @@
 %type <stn> attribute_declarations  
 %type <stn> ot_visibility_specifier  
 %type <stn> one_attribute attribute_variable 
-%type <ex> const_factor const_variable_2 const_term const_variable const_pattern_variable literal_or_number unsigned_number variable_or_literal_or_number 
+%type <ex> const_factor const_variable_2 const_term const_variable literal_or_number unsigned_number variable_or_literal_or_number 
 %type <stn> program_block  
 %type <ob> optional_var class_attribute class_attributes class_attributes1 
 %type <stn> member_list_section optional_component_list_seq_end  
@@ -175,9 +175,8 @@
 %type <stn> full_lambda_fp_list lambda_simple_fp_sect lambda_function_body lambda_procedure_body common_lambda_body optional_full_lambda_fp_list
 %type <ob> field_in_unnamed_object list_fields_in_unnamed_object func_class_name_ident_list rem_lambda variable_list var_ident_list
 %type <ti> tkAssignOrEqual
-%type <stn> pattern pattern_optional_var const_pattern collection_pattern tuple_pattern collection_pattern_list_item tuple_pattern_item collection_pattern_var_item match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var const_pattern_expr_list 
-%type <ob> pattern_out_param_list pattern_out_param_list_optional_var collection_pattern_expr_list tuple_pattern_item_list
-%type <ex> const_pattern_expression
+%type <stn> const_pattern_expression pattern deconstruction_or_const_pattern pattern_optional_var collection_pattern tuple_pattern collection_pattern_list_item tuple_pattern_item collection_pattern_var_item match_with pattern_case pattern_cases pattern_out_param pattern_out_param_optional_var 
+%type <ob> pattern_out_param_list pattern_out_param_list_optional_var collection_pattern_expr_list tuple_pattern_item_list const_pattern_expr_list
 
 %%
 
@@ -361,6 +360,8 @@ used_unit_name
 		}
     | ident_or_keyword_pointseparator_list tkIn tkStringLiteral
         { 
+        	if ($3 is char_const _cc)
+        		$3 = new string_const(_cc.cconst.ToString());
 			$$ = new uses_unit_in($1 as ident_list, $3 as string_const, @$);
         }
     ;
@@ -890,53 +891,6 @@ sign
     | tkMinus
 		{ $$ = $1; }
     ;
-
-const_pattern_variable
-    : identifier
-		{ $$ = $1; }
-    | sizeof_expr
-		{ $$ = $1; }
-    | typeof_expr
-		{ $$ = $1; }
-    /*| const_pattern_variable const_pattern_variable_2        
-        {
-			$$ = NewConstVariable($1, $2, @$);
-        }
-    | const_pattern_variable tkAmpersend template_type_params                
-        {
-			$$ = new ident_with_templateparams($1 as addressed_value, $3 as template_param_list, @$);
-        }
-    | const_pattern_variable tkSquareOpen format_const_expr tkSquareClose
-        { 
-    		var fe = $3 as format_expr;
-            if (!parsertools.build_tree_for_formatter)
-            {
-                if (fe.expr == null)
-                    fe.expr = new int32_const(int.MaxValue,@3);
-                if (fe.format1 == null)
-                    fe.format1 = new int32_const(int.MaxValue,@3);
-            }
-    		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
-		}*/
-    ;
-
-/*
-const_pattern_variable_2
-    : tkPoint identifier_or_keyword                               
-        { 
-			$$ = new dot_node(null, $2 as addressed_value, @$); 
-		}
-    | tkDeref                                            
-        { 
-			$$ = new roof_dereference();  
-			$$.source_context = @$;
-		}
-    | tkSquareOpen const_elem_list tkSquareClose     
-        { 
-			$$ = new indexer($2 as expression_list, @$);  
-		}
-    ;
-	*/
 
 const_variable
     : identifier
@@ -2851,18 +2805,10 @@ pattern_case
         {
             $$ = new pattern_case($1 as pattern_node, $5 as statement, $3, @$);
         }
-    | pattern_optional_var tkColon unlabelled_stmt
+    | deconstruction_or_const_pattern tkColon unlabelled_stmt
         {
             $$ = new pattern_case($1 as pattern_node, $3 as statement, null, @$);
-        }  
-	| const_pattern tkWhen expr_l1 tkColon unlabelled_stmt
-		{
-			$$ = new pattern_case($1 as pattern_node, $5 as statement, $3, @$);
-		}
-	| const_pattern tkColon unlabelled_stmt
-		{
-			$$ = new pattern_case($1 as pattern_node, $3 as statement, null, @$);
-		}
+        }
 	| collection_pattern tkColon unlabelled_stmt
 		{
 			$$ = new pattern_case($1 as pattern_node, $3 as statement, null, @$);
@@ -3378,6 +3324,47 @@ pattern_optional_var
         }
     ;  
 
+deconstruction_or_const_pattern
+    : simple_or_template_type_reference tkRoundOpen pattern_out_param_list_optional_var tkRoundClose
+        { 
+            $$ = new deconstructor_pattern($3 as List<pattern_parameter>, $1, null, @$); 
+        }
+	| const_pattern_expr_list
+		{
+		    $$ = new const_pattern($1 as List<syntax_tree_node>, @$); 
+		}
+    ;  
+
+const_pattern_expr_list
+	: const_pattern_expression
+		{ 
+			$$ = new List<syntax_tree_node>(); 
+			($$ as List<syntax_tree_node>).Add($1);
+		}
+	| const_pattern_expr_list tkComma const_pattern_expression 
+		{ 
+			var list = $1 as List<syntax_tree_node>;
+            list.Add($3);
+            $$ = list;
+		}
+	;
+
+const_pattern_expression
+	: literal_or_number  
+		{ $$ = $1; }
+	| simple_or_template_type_reference 
+		{ $$ = $1; }
+	| tkNil 
+		{ 
+			$$ = new nil_const();  
+			$$.source_context = @$;
+		}
+	| sizeof_expr
+		{ $$ = $1; }
+    | typeof_expr
+		{ $$ = $1; }
+	;
+
 collection_pattern
 	: tkSquareOpen collection_pattern_expr_list tkSquareClose
 		{
@@ -3439,35 +3426,7 @@ collection_pattern_var_item
         {
             $$ = new collection_pattern_var_parameter($2, null, @$);
         }
-    ;   
-
-const_pattern
-	: const_pattern_expr_list
-		{
-			$$ = new const_pattern($1 as expression_list, @$); 
-		}
-	;
-
-const_pattern_expr_list
-	: const_pattern_expression 
-		{ 
-			$$ = new expression_list($1, @$); 
-		}
-	| const_pattern_expr_list tkComma const_pattern_expression 
-		{ 
-			$$ = ($1 as expression_list).Add($3, @$);
-		}
-	;
-
-const_pattern_expression
-	: literal_or_number  { $$ = $1; }
-	| const_pattern_variable { $$ = $1; }
-	| tkNil 
-		{ 
-			$$ = new nil_const();  
-			$$.source_context = @$;
-		}
-	;
+    ;
 
 tuple_pattern
 	: tkRoundOpen tuple_pattern_item_list tkRoundClose
@@ -4282,6 +4241,8 @@ keyword
 		{ $$ = $1; }
     | tkElse
 		{ $$ = $1; }
+    | tkEnd
+		{ $$ = $1; }
     | tkExcept
 		{ $$ = $1; }
     | tkFile
@@ -4372,8 +4333,6 @@ keyword
 
 reserved_keyword
     : tkOperator
-		{ $$ = $1; }
-    | tkEnd
 		{ $$ = $1; }
     ;
 
@@ -4689,7 +4648,7 @@ common_lambda_body
 
 
 lambda_function_body
-	: expr_l1 
+	: expr_l1_func_decl_lambda 
 		{
 		    var id = SyntaxVisitors.ExprHasNameVisitor.HasName($1, "Result"); 
             if (id != null)

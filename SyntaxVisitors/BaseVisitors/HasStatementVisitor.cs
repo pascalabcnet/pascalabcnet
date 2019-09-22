@@ -30,7 +30,38 @@ namespace SyntaxVisitors
         {
             if (node is T)
                 foundT = true;
-            else 
+            else
+                base.DefaultVisit(node);
+        }
+    }
+    public class HasStatementWithBarrierVisitor<T,Barrier> : BaseEnterExitVisitor
+        where T : statement 
+        where Barrier: syntax_tree_node
+    {
+        private bool foundT = false;
+
+        public static bool Has(syntax_tree_node node)
+        {
+            HasStatementWithBarrierVisitor<T, Barrier> vis = new HasStatementWithBarrierVisitor<T, Barrier>();
+
+            vis.ProcessNode(node);
+
+            return vis.foundT;
+        }
+
+        public override void Enter(syntax_tree_node sn) // Искать всюду, но не заходить в узлы Barrier и вложенные
+        {
+            if (sn is Barrier)
+            {
+                visitNode = false;
+            }
+        }
+
+        public override void DefaultVisit(syntax_tree_node node)
+        {
+            if (node is T)
+                foundT = true;
+            else
                 base.DefaultVisit(node);
         }
     }
