@@ -1,14 +1,13 @@
-﻿
-//*****************************************************************************************************\\
+﻿//*****************************************************************************************************\\
 // Copyright (©) Cergey Latchenko ( github.com/SunSerega | forum.mmcs.sfedu.ru/u/sun_serega )
 // This code is distributed under the Unlicense
-// For details see LICENSE file or this:
-// https://github.com/SunSerega/POCGL/blob/master/LICENSE
+// For details see LICENSE.md file or this:
+// https://github.com/SunSerega/PascalABC.Net-BlockFileOfT/blob/master/LICENSE.md
 //*****************************************************************************************************\\
 // Copyright (©) Сергей Латченко ( github.com/SunSerega | forum.mmcs.sfedu.ru/u/sun_serega )
-// Этот код распространяется с лицензией Unlicense
-// Подробнее в файле LICENSE или тут:
-// https://github.com/SunSerega/POCGL/blob/master/LICENSE
+// Этот код распространяется под Unlicense
+// Для деталей смотрите в файл LICENSE.md или это:
+// https://github.com/SunSerega/PascalABC.Net-BlockFileOfT/blob/master/LICENSE.md
 //*****************************************************************************************************\\
 
 ///Модуль, содержащий тип BlockFileOf<T>
@@ -28,6 +27,8 @@ type
     protected fi: FileInfo;
     protected _offset: int64;
     protected str: FileStream;
+    protected bw: BinaryWriter;
+    protected br: BinaryReader;
     
     protected linked := new List<BlockFileBase>;
     
@@ -40,22 +41,21 @@ type
   end;
   
   ///Тип, записывающий данные в файл по схожему с "file of <T>" принципу
-  ///Но, в отличии от типизированных файлов, данный тип сохраняет всю запись одним блоком так, как она записа в памяти.
+  ///В отличие от типизированных файлов данный тип сохраняет всю запись одним блоком так как она записана в памяти.
   ///Это даёт значительное преимущество по скорости, но ограничивает типы, которые могут быть использованы в качестве полей типа <T>
   ///
-  ///Это значит, что поля записи T и всех вложенных записей не могут быть:
-  /// - Указателями
-  /// - Ссылочными типами (классами / динамическими массивами)
-  ///Однако, эти ограничения можно обойти, об этом в справке
-  BlockFileOf<T> = class(BlockFileBase) where T: record;
-    
-    {$region Internal}
+  ///В частности, поля записи T и всех вложенных записей не могут быть:
+  /// - Указателями 
+  /// - Ссылочными типами (классами, динамическими массивами) 
+  /// - Типами char и System.DateTime
+  ///Эти ограничения можно обойти, об чем сказано в справке
+  BlockFileOf<T> = class(BlockFileBase)
     
     private static sz: integer;
     
     private static procedure TestForRefT(tt: System.Type);
     begin
-      if tt.IsClass and not (tt=typeof(pointer)) then
+      if tt.IsClass then
       begin
         MessageBox(new System.IntPtr(nil),
           $'Тип {tt} ссылочный.{#10}Ссылочные типы нельзя сохранять в типизированный файл.{#10}Нажмите OK для выхода.',
@@ -72,7 +72,7 @@ type
         System.Reflection.BindingFlags.NonPublic
       ) do
         if not fi.IsLiteral then
-          if fi.FieldType <> tt then // тип integer имеет поле типа integer, без этой строчки StackOverflowException
+          if fi.FieldType <> tt then//integer имеет поле типа integer, без этой строчки StackOwerflow
             TestForRefT(fi.FieldType);
     end;
     
@@ -80,13 +80,30 @@ type
     try
       TestForRefT(typeof(T));
       
-      sz := Marshal.SizeOf&<T>;
+      (*
+      try
+        var a := new T[0];
+        GCHandle.Alloc(a,GCHandleType.Pinned).Free;
+      except
+        on e: System.ArgumentException do
+        begin
+          MessageBox(new System.IntPtr(nil),
+            $'.Net не принимает какой то из типов полей записи, для которой создан BlockFileOf<T>{#10}Нажмите OK для выхода.',
+            $'Тип T содержит ссылочные типы',
+            $10
+          );
+          Halt(-1);
+        end;
+      end;
+      (**)
+      
+      sz := Marshal.SizeOf(typeof(T));
     except
       on e:Exception do
       begin
         MessageBox(new System.IntPtr(nil),
           e.ToString,
-          $'BlockFileOf<{typeof(T)}> не может инициализироваться:',
+          $'При инициализации BlockFileOf<{typeof(T)}> произошла ошибка',
           $10
         );
         Halt(-1);
@@ -109,9 +126,7 @@ type
     private function GetPosByte: int64;
     private procedure SetPosByte(pos: int64);
     
-    {$endregion Internal}
-    
-    {$region constructor's}
+    private function InternalReadLazy(c: integer; start_pos: int64):sequence of T;
     
     ///Инициализирует переменную файла, не привязывая её к файлу на диске
     public constructor := exit;
@@ -121,21 +136,17 @@ type
     Assign(fname);
     
     ///Инициализирует переменную файла, привязывая её к файлу с именем fname
-    ///Устанавливает значение смещения от начала файла в байтах на offset
+    ///Устанавливает значение смещения от начала в байтах на offset
     public constructor(fname: string; offset: int64) :=
     Assign(fname, offset);
     
-    ///- constructor BlockFileOf<>(f: BlockFileOf<>);
+    ///- constructor BlockFileOf<>(f:BlockFileOf<>);
     ///Инициализирует новую переменную, создавая связку с заданной переменной
     ///После вызова этого конструктора переданная и созданная переменные будут использовать общий файловый поток, но записывать разные типы данных (у них может быть разный T)
     ///Это значит, что переменная, которую передали в конструктор, уже должна иметь открытый файловый поток
     ///Метод Close разрывает эту связь.
     public constructor(f: BlockFileBase) :=
     Link(f);
-    
-    {$endregion constructor's}
-    
-    {$region property's}
     
     ///Возвращает или задаёт размер блока из одного элемента в байтах
     ///Задавать это свойство не рекомендуется
@@ -161,31 +172,35 @@ type
     ///Определяет, существует ли файл
     public property Exists: boolean read GetExists;
     
-    ///Возвращает или задаёт номер текущего элемета в файле (нумеруя с 0)
+    ///Возвращает номер текущего элемета в файле (нумеруя с 0)
     public property Pos: int64 read GetPos write SetPos;
     
-    ///Возвращает или задаёт номер текущего байта от начала файла (нумеруя с 0)
+    ///Возвращает номер текущего байта от начала файла (нумеруя с 0)
     public property PosByte: int64 read GetPosByte write SetPosByte;
     
     ///Определяет, привязана ли переменная к файлу
-    public property Assigned: boolean read fi<>nil;
+    public property Assigned: boolean read fi <> nil;
     
     ///Определяет, открыт ли файл
-    public property Opened: boolean read str<>nil;
+    public property Opened: boolean read str <> nil;
     
     ///Определяет, достигнут ли конец файла
     public property EOF: boolean read ByteSize-PosByte < sz;
     
     ///Возвращает поток текущего файла (или nil если файл не открыт)
-    ///Внимание! Любое действие, связанное с изменением данного потока файла приведёт к неожиданным последствиям, используйте его только если знаете, что вы делаете
+    ///Внимание! Любое действие, связанное с изменением данного потока файла, приведёт к неожиданным последствиям. Используйте его только если знаете, что вы делаете
     public property BaseStream: FileStream read str;
     
-    ///Возвращает FileInfo текущего файла (или nil, если переменная не привязана к файлу)
+    ///Возвращает BinaryWriter текущего файла (или nil если файл не открыт)
+    ///Внимание! Любое действие, связанное с изменением основного потока файла приведёт к неожиданным последствиям. Используйте его только если знаете, что вы делаете
+    public property BinWriter: BinaryWriter read bw;
+    
+    ///Возвращает BinaryReader текущего файла (или nil если файл не открыт)
+    ///Внимание! Любое действие, связанное с изменением основного потока файла приведёт к неожиданным последствиям. Используйте его только если знаете, что вы делаете
+    public property BinReader: BinaryReader read br;
+    
+    ///Возвращает FileInfo текущего файла (или nil если переменная не привязана к файлу)
     public property FileInfo: System.IO.FileInfo read fi;
-    
-    {$endregion property's}
-    
-    {$region Setup IO}
     
     ///Привязывает текущий экземпляр BlockFileOf<T> к файлу с именем fname
     ///Привязывать можно и к несуществующим файлам, при открытии на запись будет создан новый файл
@@ -193,7 +208,7 @@ type
     
     ///Привязывает данную переменную к файлу с именем fname
     ///Устанавливает смещение от начала файла до начала элементов в байтах на offset
-    ///Привязывать можно и к несуществующим файлам, при открытии чем то вроде Rewrite будет создан новый файл
+    ///Привязывать можно и к несуществующим файлам, при открытии с использованием Rewrite будет создан новый файл
     public procedure Assign(fname: string; offset: int64);
     
     ///Удаляет связь переменной с файлом, если связь есть
@@ -209,7 +224,7 @@ type
     ///При указании иного расположения файл будет перемещён
     public procedure Rename(NewName: string);
     
-    ///Создает (или обнуляет) файл
+    ///Создает файл
     public procedure Rewrite;
     
     ///Привязывает данную переменную к файлу с именем fname и создает (или обнуляет) его
@@ -239,17 +254,19 @@ type
     ///Устанавливает смещение от начала файла до начала элементов в байтах на offset
     public procedure Append(fname: string; offset: int64);
     
+    ///Ставит позицию в файле на элемент pos (нумеруя с 0)
+    public procedure Seek(pos: int64) := self.Pos := pos;
+    
+    ///Ставит файловый курсор на байт pos (нумеруя с 0) от начала файла
+    public procedure SeekByte(pos: int64) := self.PosByte := pos;
+    
     ///Записывает все изменения в файл и отчищает внутренние буферы
     ///До вызова Flush или Close все изменения и кеш хранятся в оперативной памяти
-    ///Если вы проводите операции с большими объёмами памяти - рекомендуется вызывать Flush время от времени
+    ///Поэтому, если вы проводите операции с большими объёмами памяти, лучше вызывать Flush время от времени
     public procedure Flush;
     
     ///Сохраняет и закрывает файл, если он открыт
     public procedure Close;
-    
-    {$endregion Setup IO}
-    
-    {$region Write}
     
     ///Записывает один элемент одним блоком в файл
     ///Переставляет файловый курсор на 1 элемет вперёд
@@ -279,10 +296,6 @@ type
     ///После каждого элемента переставляет файловый курсор на 1 элемет вперёд
     public procedure Write(o: sequence of T; from, count: integer);
     
-    {$endregion Write}
-    
-    {$region Read}
-    
     ///Читает один элемент из файла одним блоком
     ///Переставляет файловый курсор на 1 элемет вперёд
     public function Read: T;
@@ -295,44 +308,15 @@ type
     ///И переставляет файловый курсор на count элеметов вперёд
     public function Read(start_elm, count: integer): array of T;
     
-    ///Читает один элемент из файла одним блоком и записывает в уже существующую переменную
-    ///Переставляет файловый курсор на 1 элемет вперёд
-    public procedure Read(var o: T);
-    
-    ///Читает o.Length элементов из файла одним блоком и записывает их в уже существующий массив
-    ///Переставляет файловый курсор на o.Length элеметов вперёд
-    public procedure Read(o: array of T);
-    
-    ///Читает count элементов одним блоком, начиная с элемента start_elm
-    ///Записывает их в массив o начиная с индекса arr_offset
-    ///И переставляет файловый курсор на count элеметов вперёд
-    public procedure Read(o: array of T; start_elm, arr_offset, count: integer);
-    
-    private function InternalReadLazy(c: integer; start_pos: int64): sequence of T;
-    
     ///Возвращает ленивую последовательность из count элементов
     ///После завершения чтения курсор окажется на последнем элементе возвращаемой последовательности
-    ///Перед чтением каждого элемента файловый курсор переставляется на start_elm+n
-    ///Где start_elm - значение Pos на момент вызова ReadLazy, а n - количество уже считанных элементов
+    ///Каждый раз чтение будет происходить, начиная с элемента, на котором в данный момент стоит файловый курсор
     public function ReadLazy(count: integer): sequence of T := InternalReadLazy(count, PosByte);
     
     ///Возвращает ленивую последовательность из count элементов, начиная с элемента start_elm
     ///После завершения чтения курсор окажется на последнем элементе возвращаемой последовательности
-    ///Перед чтением каждого элемента файловый курсор переставляется на start_elm+n
-    ///Где n - количество уже считанных элементов
+    ///Каждый раз чтение будет происходить, начиная с элемента start_elm
     public function ReadLazy(start_elm, count: integer): sequence of T := InternalReadLazy(count, _offset + start_elm*sz);
-    
-    {$endregion Read}
-    
-    {$region Utils}
-    
-    ///Ставит позицию в файле на элемент pos (нумеруя с 0)
-    ///Рекомендуется использовать свойство Pos вместо данного метода
-    public procedure Seek(pos: int64) := self.Pos := pos;
-    
-    ///Ставит файловый курсор на байт pos (нумеруя с 0) от начала файла
-    ///Рекомендуется использовать свойство PosByte вместо данного метода
-    public procedure SeekByte(pos: int64) := self.PosByte := pos;
     
     ///Возвращает ленивую последовательность из блоков-массивов с элементами типа T
     ///Каждый блок хранит такое количество байт, которое не превышает 4 КБ
@@ -353,8 +337,6 @@ type
       Close;
     end;
     
-    {$endregion Utils}
-    
   end;
 
 {$region Exception's}
@@ -370,11 +352,11 @@ type
   end;
   FileNotClosedException = class(Exception)
     constructor(fname:string) :=
-    inherited Create($'Файл {fname} открыт, закройте его методом Close перед тем как продолжить');
+    inherited Create($'Файл {fname} открыт, закройте его методом Close перед тем как продолжать');
   end;
   CannotReadAfterEOF = class(Exception)
     constructor :=
-    inherited Create($'Нельзя читать после конца потока');
+    inherited Create($'Нельзя читать за пределами файла');
   end;
 
 {$endregion Exception's}
@@ -395,6 +377,8 @@ begin
   end;
   
   self.str := f.str;
+  self.br := f.br;
+  self.bw := f.bw;
   self.fi := new FileInfo(f.fi.FullName);
   
 end;
@@ -423,7 +407,7 @@ end;
 function BlockFileOf<T>.GetFullName: string;
 begin
   if fi = nil then raise new FileNotAssignedException;
-  //fi.Refresh; // А тут не надо
+  //fi.Refresh;//А тут не надо
   Result := fi.FullName;
 end;
 
@@ -433,11 +417,12 @@ function BlockFileOf<T>.GetByteFileSize: int64;
 begin
   if fi = nil then raise new FileNotAssignedException;
   if str <> nil then
-    Result := str.Length else
   begin
-    fi.Refresh;
-    Result := fi.Length;
+    Result := str.Length;
+    exit;
   end;
+  fi.Refresh;
+  Result := fi.Length;
 end;
 
 procedure BlockFileOf<T>.SetByteFileSize(size: int64);
@@ -492,6 +477,8 @@ begin
   if fi = nil then raise new FileNotAssignedException;
   if str <> nil then raise new FileNotClosedException(fi.FullName);
   str := fi.Open(mode);
+  bw := new BinaryWriter(str);
+  br := new BinaryReader(str);
 end;
 
 procedure BlockFileOf<T>.Delete;
@@ -593,22 +580,14 @@ begin
       UnLink else
       str.Close;
     str := nil;
+    br := nil;
+    bw := nil;
   end;
 end;
 
 {$endregion Closing}
 
 {$endregion Setup IO}
-
-{$region IO Utils}
-
-procedure CopyMem<T1,T2>(var o1: T1; var o2: T2; count: integer) :=
-System.Buffer.MemoryCopy(
-  @o1, @o2,
-  count, count
-);
-
-{$endregion IO Utils}
 
 {$region Write}
 
@@ -617,8 +596,17 @@ begin
   if fi = nil then raise new FileNotAssignedException;
   if str = nil then raise new FileNotOpenedException(fi.FullName);
   var a := new byte[sz];
-  CopyMem(o,a[0],sz);
-  str.Write(a,0,sz);
+  var gc_hnd := GCHandle.Alloc(a, GCHandleType.Pinned);
+  try
+    System.Buffer.MemoryCopy(
+      @o,
+      gc_hnd.AddrOfPinnedObject.ToPointer,
+      sz,sz
+    );
+  finally
+    gc_hnd.Free;
+  end;
+  bw.Write(a);
 end;
 
 procedure BlockFileOf<T>.Write(params o: array of T);
@@ -628,31 +616,58 @@ begin
   
   var bl := sz*o.Length;
   var a := new byte[bl];
-  CopyMem(o[0],a[0],bl);
-  str.Write(a,0,bl);
+  var gc_hnd1 := GCHandle.Alloc(o, GCHandleType.Pinned);
+  try
+    var gc_hnd2 := GCHandle.Alloc(a, GCHandleType.Pinned);
+    try
+      System.Buffer.MemoryCopy(
+        gc_hnd1.AddrOfPinnedObject.ToPointer,
+        gc_hnd2.AddrOfPinnedObject.ToPointer,
+        bl,bl
+      );
+    finally
+      gc_hnd2.Free;
+    end;
+  finally
+    gc_hnd1.Free;
+  end;
+  bw.Write(a);
 end;
 
 procedure BlockFileOf<T>.Write(o: ICollection<T>);
+type TArr = array of T;
 begin
+  if o is TArr(var a) then
+  begin
+    Write(a);
+    exit;
+  end;
+  
   if fi = nil then raise new FileNotAssignedException;
   if str = nil then raise new FileNotOpenedException(fi.FullName);
   
-  var bl := sz*o.Count;
-  var a := new byte[bl];
-  
-  var p := 0;
-  var enm: IEnumerator<T> := o.GetEnumerator();
-  while enm.MoveNext do
-  begin
-    var v := enm.Current;
-    CopyMem(v,a[p],sz);
-    p += sz;
+  var a := new byte[sz*o.Count];
+  var gc_hnd := GCHandle.Alloc(a, GCHandleType.Pinned);
+  try
+    var hnd := gc_hnd.AddrOfPinnedObject;
+    foreach var el in o do
+    begin
+      System.Buffer.MemoryCopy(
+        @el,
+        hnd.ToPointer,
+        sz,sz
+      );
+      System.IntPtr.Add(hnd, sz);
+    end;
+  finally
+    gc_hnd.Free;
   end;
-  
-  str.Write(a,0,bl);
+  bw.Write(a);
 end;
 
 procedure BlockFileOf<T>.Write(o: sequence of T) :=
+if o is ICollection<T>(var c) then
+  Write(c) else
 foreach var el in o do
   Write(el);
 
@@ -660,37 +675,65 @@ procedure BlockFileOf<T>.Write(o: array of T; from, count: integer);
 begin
   if fi = nil then raise new FileNotAssignedException;
   if str = nil then raise new FileNotOpenedException(fi.FullName);
-  if from+count > o.Length then raise new System.IndexOutOfRangeException;
   
   var bl := sz*count;
   var a := new byte[bl];
-  CopyMem(o[from],a[0],bl);
-  str.Write(a,0,bl);
+  var gc_hnd1 := GCHandle.Alloc(o, GCHandleType.Pinned);
+  try
+    var gc_hnd2 := GCHandle.Alloc(a, GCHandleType.Pinned);
+    try
+      System.Buffer.MemoryCopy(
+        System.IntPtr.Add(gc_hnd1.AddrOfPinnedObject, from * sz).ToPointer,
+        gc_hnd2.AddrOfPinnedObject.ToPointer,
+        bl,bl
+      );
+    finally
+      gc_hnd2.Free;
+    end;
+  finally
+    gc_hnd1.Free;
+  end;
+  bw.Write(a);
 end;
 
 procedure BlockFileOf<T>.Write(o: ICollection<T>; from, count: integer);
+type TArr = array of T;
 begin
-  if fi = nil then raise new FileNotAssignedException;
-  if str = nil then raise new FileNotOpenedException(fi.FullName);
-  if from+count > o.Count then raise new System.IndexOutOfRangeException;
-  
-  var bl := sz*count;
-  var a := new byte[bl];
-  
-  var p := 0;
-  var enm: IEnumerator<T> := o.Skip(from).Take(count).GetEnumerator;
-  while enm.MoveNext do
+  if o is TArr(var a) then
   begin
-    var v := enm.Current;
-    CopyMem(v,a[p],sz);
-    p += sz;
+    Write(a, from, count);
+    exit;
   end;
   
-  str.Write(a,0,bl);
+  if fi = nil then raise new FileNotAssignedException;
+  if str = nil then raise new FileNotOpenedException(fi.FullName);
+  
+  var a := new byte[sz*o.Count];
+  var gc_hnd := GCHandle.Alloc(a, GCHandleType.Pinned);
+  try
+    var hnd := gc_hnd.AddrOfPinnedObject;
+    foreach var el in o do
+      if from > 0 then from -= 1 else
+      if count > 0 then
+      begin
+        System.Buffer.MemoryCopy(
+          @el,
+          hnd.ToPointer,
+          sz,sz
+        );
+        hnd := System.IntPtr.Add(hnd, sz);
+        count -= 1;
+      end;
+  finally
+    gc_hnd.Free;
+  end;
+  bw.Write(a);
 end;
 
 procedure BlockFileOf<T>.Write(o: sequence of T; from, count: integer) :=
-Write(o.Skip(from).Take(count));
+if o is ICollection<T>(var c) then
+  Write(c,from,count) else
+  Write(o.Skip(from).Take(count));
 
 {$endregion Write}
 
@@ -702,10 +745,17 @@ begin
   if str = nil then raise new FileNotOpenedException(fi.FullName);
   if str.Length - str.Position < sz then raise new CannotReadAfterEOF;
   
-  var a := new byte[sz];
-  str.Read(a,0,sz);
-  CopyMem(a[0],Result,sz);
-  
+  var a := br.ReadBytes(sz);
+  var gc_hnd := GCHandle.Alloc(a, GCHandleType.Pinned);
+  try
+    System.Buffer.MemoryCopy(
+      gc_hnd.AddrOfPinnedObject.ToPointer,
+      @Result,
+      sz,sz
+    );
+  finally
+    gc_hnd.Free;
+  end;
 end;
 
 function BlockFileOf<T>.Read(count: integer): array of T;
@@ -715,69 +765,30 @@ begin
   if str.Length - str.Position < sz*count then raise new CannotReadAfterEOF;
   
   var bl := sz*count;
-  var a := new byte[bl];
-  str.Read(a,0,bl);
+  var a := br.ReadBytes(bl);
   Result := new T[count];
-  CopyMem(a[0],Result[0],bl);
-  
+  var gc_hnd1 := GCHandle.Alloc(a, GCHandleType.Pinned);
+  try
+    var gc_hnd2 := GCHandle.Alloc(Result, GCHandleType.Pinned);
+    try
+      System.Buffer.MemoryCopy(
+        gc_hnd1.AddrOfPinnedObject.ToPointer,
+        gc_hnd2.AddrOfPinnedObject.ToPointer,
+        bl,bl
+      );
+    finally
+      gc_hnd2.Free;
+    end;
+  finally
+    gc_hnd1.Free;
+  end;
 end;
 
 function BlockFileOf<T>.Read(start_elm, count:integer): array of T;
 begin
-  if fi = nil then raise new FileNotAssignedException;
-  if str = nil then raise new FileNotOpenedException(fi.FullName);
-  if str.Length - str.Position < sz*count then raise new CannotReadAfterEOF;
-  
   Pos := start_elm;
   Result := Read(count);
-  
 end;
-
-procedure BlockFileOf<T>.Read(var o: T);
-begin
-  if fi = nil then raise new FileNotAssignedException;
-  if str = nil then raise new FileNotOpenedException(fi.FullName);
-  if str.Length - str.Position < sz then raise new CannotReadAfterEOF;
-  
-  var a := new byte[sz];
-  str.Read(a,0,sz);
-  CopyMem(a[0],o,sz);
-  
-end;
-
-procedure BlockFileOf<T>.Read(o: array of T);
-begin
-  var bl := sz*o.Length;
-  
-  if fi = nil then raise new FileNotAssignedException;
-  if str = nil then raise new FileNotOpenedException(fi.FullName);
-  if str.Length - str.Position < bl then raise new CannotReadAfterEOF;
-  
-  var a := new byte[bl];
-  str.Read(a,0,bl);
-  CopyMem(a[0],o[0],bl);
-  
-end;
-
-procedure BlockFileOf<T>.Read(o: array of T; start_elm, arr_offset, count: integer);
-begin
-  var bl := sz*count;
-  
-  if fi = nil then raise new FileNotAssignedException;
-  if str = nil then raise new FileNotOpenedException(fi.FullName);
-  if str.Length - str.Position < bl then raise new CannotReadAfterEOF;
-  if arr_offset+count > o.Length then raise new System.IndexOutOfRangeException;
-  
-  Pos := start_elm;
-  var a := new byte[bl];
-  str.Read(a,0,bl);
-  CopyMem(a[0],o[start_elm],bl);
-  
-end;
-
-{$endregion Read}
-
-{$region Utils}
 
 function BlockFileOf<T>.InternalReadLazy(c: integer; start_pos: int64): sequence of T;
 begin
@@ -785,20 +796,17 @@ begin
   if str = nil then raise new FileNotOpenedException(fi.FullName);
   if str.Length - start_pos < sz*c then raise new CannotReadAfterEOF;
   
-  loop c do
+  for var i := 0 to c-1 do
   begin
-    PosByte := start_pos;
+    PosByte := start_pos + i*sz;
     yield Read;
-    start_pos += sz;
   end;
-  
 end;
 
 function BlockFileOf<T>.ToSeqBlocks(blocks_size: integer): sequence of array of T;
 begin
   var c := blocks_size div sz;
   var i := 0;
-  
   while true do
   begin
     var left := Size - i;
@@ -817,24 +825,20 @@ begin
       yield Read(c);
       i += c;
     end;
-    
   end;
-  
 end;
 
 function BlockFileOf<T>.ToSeq: sequence of T;
 begin
   var i := 0;
-  
   while not EOF do
   begin
     Pos := i;
     yield Read;
     i += 1;
   end;
-  
 end;
 
-{$endregion Utils}
+{$endregion Read}
 
 end.
