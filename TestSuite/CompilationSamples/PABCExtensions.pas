@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 ///--
 unit PABCExtensions;
@@ -81,7 +81,9 @@ end;
 function CreateFile<T>(fname: string): file of T;
 begin
   if ContainsReferenceTypes(typeof(T)) then
+  begin
     raise new System.SystemException(GetTranslation(BAD_TYPE_IN_TYPED_FILE));
+  end;  
   var res: file of T;
   PABCSystem.Rewrite(res, fname);
   Result := res;

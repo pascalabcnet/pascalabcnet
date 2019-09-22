@@ -162,6 +162,7 @@ USING_{0}_NOT_ALLOWED_IN_THIS_CONTEXT=Using of {0} is not allowed in this contex
 OPERATORS_IN_INTERFACES_NOT_ALLOWED=Interfaces can not contain operators
 STATIC_CLASS_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR=Static classes can not be used as generic constraints
 ENUM_MUST_HAVE_SEQUENCED_VALUES=Enum must have sequenced values
+EXTERNAL_METHOD_CANNOT_BE_NESTED=Nested functions cannot be external
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Unit expected, library found
 ASSEMBLY_{0}_READING_ERROR=Error by reading assembly '{0}'

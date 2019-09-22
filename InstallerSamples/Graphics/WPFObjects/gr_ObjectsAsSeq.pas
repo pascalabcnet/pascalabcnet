@@ -20,6 +20,6 @@ begin
     match o with
       CircleWPF(c): c.Radius += 10;
       EllipseWPF(e): e.AnimMoveOn(Random(-50,50),Random(-50,50),1);
-      RegularPolygonWPF(r) when r.Count<6: r.WithBorder;  
+      RegularPolygonWPF(r) when r.Count<6: r.SetBorder;  
     end
 end.

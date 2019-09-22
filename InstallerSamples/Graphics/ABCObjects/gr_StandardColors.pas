@@ -1,4 +1,4 @@
-uses 
+﻿uses 
   GraphABC,
   ABCObjects,
   System.Reflection;

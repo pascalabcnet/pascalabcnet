@@ -1,4 +1,5 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="OnDrawFrame">
 <param name="Keyword" value="OnKeyDown">
 <param name="Keyword" value="OnKeyPress">
 <param name="Keyword" value="OnKeyUp">
@@ -8,7 +9,9 @@
 <param name="Keyword" value="OnResize"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>События модуля WPFObjects</H1>
-<table border=0 cellpadding=5><tr><td><code>OnKeyDown: <b>procedure</b>(k: Key);</code>
+<table border=0 cellpadding=5><tr><td><code>OnDrawFrame: <b>procedure</b>(dt: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие перерисовки графического окна. Параметр dt обозначает количество миллисекунд с момента последнего вызова OnDrawFrame</td></tr>
+<tr><td><code>OnKeyDown: <b>procedure</b>(k: Key);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие нажатия клавиши</td></tr>
 <tr><td><code>OnKeyPress: <b>procedure</b>(ch: char);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Событие нажатия символьной клавиши</td></tr>

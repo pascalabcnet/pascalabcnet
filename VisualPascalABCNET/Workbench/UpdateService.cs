@@ -27,7 +27,7 @@ namespace VisualPascalABC
             {
                 using (var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full"))
                 {
-                    return key != null && (key.GetValue("Version") as string).StartsWith("4.7");
+                    return key != null && ((key.GetValue("Version") as string).StartsWith("4.7") || (key.GetValue("Version") as string).StartsWith("4.8"));
                 }
             }
             catch (Exception ex)

@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -62,6 +62,7 @@ namespace VisualPascalABC.OptionsContent
                         languageSelect.SelectedItem = PascalABCCompiler.StringResourcesLanguage.CurrentLanguageName;
                         cbSaveFilesIfComilationOk.Checked = MainForm.UserOptions.SaveSourceFilesIfComilationOk;
                         cbPauseInRunModeIfConsole.Checked = MainForm.UserOptions.PauseInRunModeIfConsole;
+                        cbAutoInsertCodeIsEnabledOnStartup.Checked = MainForm.UserOptions.AutoInsertCodeIsEnabledOnStartup;
                         addErrorStrategyComboBox();
 
                         cbShowDebugPlayPauseButtons.Checked = MainForm.PlayPauseButtonsVisibleInPanel;
@@ -71,6 +72,7 @@ namespace VisualPascalABC.OptionsContent
                 case OptionsContentAction.Ok:
                     UserOptions UsOpt = MainForm.UserOptions;
                     UsOpt.SaveSourceFilesIfComilationOk = cbSaveFilesIfComilationOk.Checked;
+                    UsOpt.AutoInsertCodeIsEnabledOnStartup = cbAutoInsertCodeIsEnabledOnStartup.Checked;
                     MainForm.ErrorsManager.Strategy = (ErrorsStrategy)cbErrorsStrategy.Items.IndexOf(cbErrorsStrategy.SelectedItem);
                     switch (cbErrorsStrategy.Items.IndexOf(cbErrorsStrategy.SelectedItem))
                     {

@@ -97,6 +97,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YieldHelpers", "Yield\Yield
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxVisitors", "SyntaxVisitors\SyntaxVisitors.csproj", "{A9AB4282-83B4-41A7-86C3-E5BF6A45E7E2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeTemplatesPlugin", "VisualPlugins\CodeTemplatesPlugin\CodeTemplatesPlugin.csproj", "{3AA92A45-7142-4C59-B12F-56DAE32A40E3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -429,6 +431,18 @@ Global
 		{A9AB4282-83B4-41A7-86C3-E5BF6A45E7E2}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{A9AB4282-83B4-41A7-86C3-E5BF6A45E7E2}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{A9AB4282-83B4-41A7-86C3-E5BF6A45E7E2}.Release|x86.ActiveCfg = Release|Any CPU
+		{3AA92A45-7142-4C59-B12F-56DAE32A40E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AA92A45-7142-4C59-B12F-56DAE32A40E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AA92A45-7142-4C59-B12F-56DAE32A40E3}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3AA92A45-7142-4C59-B12F-56DAE32A40E3}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3AA92A45-7142-4C59-B12F-56DAE32A40E3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3AA92A45-7142-4C59-B12F-56DAE32A40E3}.Debug|x86.Build.0 = Debug|Any CPU
+		{3AA92A45-7142-4C59-B12F-56DAE32A40E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AA92A45-7142-4C59-B12F-56DAE32A40E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AA92A45-7142-4C59-B12F-56DAE32A40E3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3AA92A45-7142-4C59-B12F-56DAE32A40E3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3AA92A45-7142-4C59-B12F-56DAE32A40E3}.Release|x86.ActiveCfg = Release|Any CPU
+		{3AA92A45-7142-4C59-B12F-56DAE32A40E3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -469,5 +483,9 @@ Global
 		{F10A5330-DCF4-4533-877C-7B1B1BE23884} = {F8CE2712-826B-450B-A72F-D32D80C99858}
 		{CE5C55C2-A11C-4E94-A9FA-3FC6CA3E4C09} = {F8CE2712-826B-450B-A72F-D32D80C99858}
 		{A9AB4282-83B4-41A7-86C3-E5BF6A45E7E2} = {F8CE2712-826B-450B-A72F-D32D80C99858}
+		{3AA92A45-7142-4C59-B12F-56DAE32A40E3} = {EC68A3D8-6D63-4A79-ABA6-BF8E9D7756D7}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {68E993E6-EE86-4DDF-B0A1-4FE884F8AC39}
 	EndGlobalSection
 EndGlobal

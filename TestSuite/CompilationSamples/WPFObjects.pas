@@ -1,4 +1,4 @@
-﻿// Copyright (©) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (©) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 ///Модуль векторных графических объектов на основе WPF
 unit WPFObjects;
@@ -77,10 +77,12 @@ function Pnt(x,y: real): GPoint;
 /// Возвращает прямоугольник с координатами угла (x,y), шириной w и высотой h
 function Rect(x,y,w,h: real): GRect;
 /// Возвращает однотонную цветную кисть, заданную цветом
-function ColorBrush(c: Color): GBrush;
+function ColorBrush(c: Color): SolidColorBrush;
+/// Возвращает случайную точку графического окна. Необязательный параметр z задаёт отступ от края  
+function RandomWindowPoint(z: real := 0): GPoint;
+/// Процедура ускорения вывода. Обновляет экран после всех изменений
+procedure Redraw(p: ()->());
 //{{{--doc: Конец секции 1 }}} 
-
-procedure Invoke(p: ()->());
 
 //{{{doc: Начало секции 2 }}} 
 type
@@ -90,7 +92,7 @@ type
 // -----------------------------------------------------
   ///!#
   /// Класс списка графических объектов
-  ObjectsType = class//(IEnumerable<ObjectWPF>)
+  ObjectsType = class(IEnumerable<ObjectWPF>)
   private
     l := new List<ObjectWPF>;
     d := new Dictionary<FrameworkElement,ObjectWPF>;
@@ -104,7 +106,7 @@ type
     procedure Destroy(ob: ObjectWPF);
     begin
       if not l.Contains(ob) then
-        raise new Exception('Нельзя удалить дочерний объект');
+        raise new Exception('Объект отсутствует в списке Objects');
       Invoke(DeleteP,ob);
     end;  
   public
@@ -128,14 +130,14 @@ type
     property Items[i: integer]: ObjectWPF read GetItem write SetItem; default;
   
     function Seq: sequence of ObjectWPF := l;
-    {function GetEnumerator: IEnumerator<ObjectWPF>;
+    function GetEnumerator: IEnumerator<ObjectWPF>;
     begin
       Result := l.GetEnumerator;
     end;
     function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator;
     begin
       Result := l.GetEnumerator;
-    end;}
+    end;
   end;
 
 
@@ -162,10 +164,18 @@ type
     auto property Dx: real;
     /// Направление движения по оси Y. Используется методом Move
     auto property Dy: real;
-    /// Отступ графического объекта от левого края 
+    /// Направление движения. Используется методом Move
+    property Direction: (real,real) read (Dx,Dy) write (Dx,Dy) := (value[0],value[1]);
+    /// Скорость движения в направлении Direction. Используется методом Move
+    auto property Velocity: real := 300;
+    /// Отступ графического объекта от левого края окна
     property Left: real read InvokeReal(()->transl.X{Canvas.GetLeft(can)}) write Invoke(procedure->transl.X := value{Canvas.SetLeft(can,value)}); 
-    /// Отступ графического объекта от верхнего края 
+    /// Отступ графического объекта от верхнего края окна
     property Top: real read InvokeReal(()->transl.Y{Canvas.GetTop(can)}) write Invoke(procedure->transl.Y := value{Canvas.SetTop(can,value)}); 
+    /// Отступ правтого края графического объекта от левого края окна
+    property Right: real read InvokeReal(()->transl.X + gr.Width{Canvas.GetLeft(can)}) write Invoke(procedure->transl.X := value - gr.Width{Canvas.SetLeft(can,value)}); 
+    /// Отступ низа графического объекта от верхнего края окна
+    property Bottom: real read InvokeReal(()->transl.Y + gr.Height{Canvas.GetTop(can)}) write Invoke(procedure->transl.Y := value - gr.Height{Canvas.SetTop(can,value)}); 
     /// Ширина графического объекта 
     property Width: real read InvokeReal(()->gr.Width) write Invoke(procedure->begin gr.Width := value; ob.Width := value end); virtual;
     /// Высота графического объекта
@@ -185,6 +195,8 @@ type
     property Text: string read InvokeString(()->t.Text) write Invoke(procedure->t.Text := value); virtual;
     /// Целое число, выводимое в центре графического объекта. Используется свойство Text
     property Number: integer read Text.ToInteger(0) write Text := Value.ToString; 
+    /// Вещественное число, выводимое в центре графического объекта. Используется свойство Text
+    property RealNumber: real read Text.ToReal(0.0) write Text := string.Format('{0:f1}',Value).Replace(',','.');
   private  
     procedure WTA(value: Alignment);
     begin
@@ -226,7 +238,7 @@ type
     /// Цвет шрифта текста внутри графического объекта
     property FontColor: Color 
       read Invoke&<GColor>(()->(t.Foreground as SolidColorBrush).Color)
-      write Invoke(procedure->t.Foreground := new SolidColorBrush(value));
+      write Invoke(procedure->t.Foreground := ColorBrush(value));
     /// Центр графического объекта
     property Center: Point 
       read Pnt(Left + Width/2, Top + Height/2)
@@ -236,9 +248,13 @@ type
     /// Левый нижний угол графического объекта
     property LeftBottom: Point read Pnt(Left,Top + Height);
     /// Правый верхний угол графического объекта
-    property RightTop: Point read Pnt(Left + Height,Top);
+    property RightTop: Point read Pnt(Left + Width,Top);
     /// Правый нижний угол графического объекта
-    property RightBottom: Point read Pnt(Left + Height,Top + Height);
+    property RightBottom: Point read Pnt(Left + Width,Top + Height);
+    /// Центральная верхняя точка графического объекта
+    property CenterTop: Point read transfgroup.Transform(Pnt(Width/2,0));
+    /// Центральная нижняя точка графического объекта
+    property CenterBottom: Point read Pnt(Left + Width/2,Top + Height);
     /// Угол поворота графического объекта (по часовой стрелке)
     property RotateAngle: real read InvokeReal(()->rot.Angle) write Invoke(procedure->begin rot.CenterX := Width/2; rot.CenterY := Height/2; rot.Angle := value end);
     /// Множитель масштабирования объекта  
@@ -257,18 +273,48 @@ type
     /// Перемещает графический объект в направлении RotateAngle (вверх при RotateAngle=0)
     procedure MoveForward(r: real);
     begin
-      Left := Left + r*Cos(Pi/180*(90-RotateAngle));
-      Top := Top - r*Sin(Pi/180*(90-RotateAngle));
+      var a := Pi/180*(90-RotateAngle);
+      MoveOn(r*Cos(a),-r*Sin(a));
     end;
     /// Перемещает графический объект на вектор (a,b)
     procedure MoveOn(a,b: real) := MoveTo(Left+a,Top+b);
+    /// Перемещает графический объект на вектор (a,b)
+    procedure MoveOn(v: (real,real)) := MoveTo(Left+v[0],Top+v[1]);
     /// Перемещает графический объект на вектор (dx,dy)
     procedure Move; virtual := MoveOn(dx,dy);
+    /// Перемещает графический объект вдоль вектора Direction со скоростью Velocity за время dt
+    procedure MoveTime(dt: real); virtual;
+    begin
+      var len := Sqrt(dx*dx+dy*dy);
+      if len = 0 then
+        exit;
+      var dvx := dx/len*Velocity;
+      var dvy := dy/len*Velocity;
+      MoveOn(dvx*dt,dvy*dt);
+    end;
     /// Поворачивает графический объект по часовой стрелке на угол a
     procedure Rotate(a: real) := RotateAngle += a;
+    /// Поворачивает графический объект так чтобы он "смотрел" на точку (x,y)
+    procedure RotateToPoint(x,y: real);
+    begin
+      x -= Center.X;
+      y -= Center.y;
+      // Надо определить угол
+      var phi := 0.0;
+      if x>0 then
+      begin
+        phi := ArcTan(y/x)*180/Pi+90
+      end  
+      else if x<0 then   
+      begin
+        phi := (Pi+ArcTan(y/x))*180/Pi+90;
+      end;  
+      RotateAngle := phi;  
+    end;
     /// Масштабирует графический объект в r раз относительно текущего размера
     procedure Scale(r: real) := ScaleFactor *= r;
-    
+  
+  private
     procedure AnimMoveOnP(a,b,sec: real);
     begin
       var ax := new DoubleAnimation(a + transl.X, System.TimeSpan.FromSeconds(sec));
@@ -276,9 +322,7 @@ type
       transl.BeginAnimation(TranslateTransform.XProperty, ax, HandoffBehavior.Compose);
       transl.BeginAnimation(TranslateTransform.YProperty, ay, HandoffBehavior.Compose);
     end;
-    /// Анимирует перемещение графического объекта на вектор (a,b) в течение sec секунд
-    procedure AnimMoveOn(a,b: real; sec: real := 1) := Invoke(AnimMoveOnP,a,b,sec);
-
+  private
     procedure AnimMoveToP(x,y,sec: real);
     begin
       var ax := new DoubleAnimation(x, System.TimeSpan.FromSeconds(sec));
@@ -286,9 +330,6 @@ type
       transl.BeginAnimation(TranslateTransform.XProperty, ax, HandoffBehavior.Compose);
       transl.BeginAnimation(TranslateTransform.YProperty, ay, HandoffBehavior.Compose);
     end;
-    /// Анимирует перемещение графического объекта к точке (x,y) в течение sec секунд
-    procedure AnimMoveTo(x,y: real; sec: real := 1) := Invoke(AnimMoveToP,x,y,sec);
-
     procedure AnimMoveEndP;
     begin
       var animation := new DoubleAnimation();
@@ -296,26 +337,34 @@ type
       transl.BeginAnimation(TranslateTransform.XProperty, animation);
       transl.BeginAnimation(TranslateTransform.YProperty, animation);
     end;
-    /// Завершает анимацию перемещения
-    procedure AnimMoveEnd := Invoke(AnimMoveEndP);
-
     procedure AnimRotateP(a,sec: real);
     begin
       var an := new DoubleAnimation(a, System.TimeSpan.FromSeconds(sec));
       rot.BeginAnimation(RotateTransform.AngleProperty, an, HandoffBehavior.Compose);
     end;
-    /// Анимирует вращение графического объекта на угол a в течение sec секунд
-    procedure AnimRotate(a: real; sec: real := 1) := Invoke(AnimRotateP,a,sec);
-
     procedure AnimScaleP(a,sec: real);
     begin
       var an := new DoubleAnimation(a, System.TimeSpan.FromSeconds(sec));
       sca.BeginAnimation(ScaleTransform.ScaleXProperty, an, HandoffBehavior.Compose);
       sca.BeginAnimation(ScaleTransform.ScaleYProperty, an, HandoffBehavior.Compose);
     end;
+  public
+    /// Анимирует перемещение графического объекта на вектор (a,b) в течение sec секунд
+    procedure AnimMoveOn(a,b: real; sec: real := 1) := Invoke(AnimMoveOnP,a,b,sec);
+    /// Анимирует перемещение графического объекта в направлении RotateAngle (вверх при RotateAngle=0)
+    procedure AnimMoveForward(r: real);
+    begin
+      var a := Pi/180*(90-RotateAngle);
+      AnimMoveOn(r*Cos(a),-r*Sin(a));
+    end;
+    /// Анимирует перемещение графического объекта к точке (x,y) в течение sec секунд
+    procedure AnimMoveTo(x,y: real; sec: real := 1) := Invoke(AnimMoveToP,x,y,sec);
+    /// Завершает анимацию перемещения
+    procedure AnimMoveEnd := Invoke(AnimMoveEndP);
+    /// Анимирует вращение графического объекта на угол a в течение sec секунд
+    procedure AnimRotate(a: real; sec: real := 1) := Invoke(AnimRotateP,a,sec);
     /// Анимирует масштабирование графического объекта на величину a в течение sec секунд
     procedure AnimScale(a: real; sec: real := 1) := Invoke(AnimScaleP,a,sec);
-        
     /// Добавляет к графическому объекту дочерний
     procedure AddChild(ch: ObjectWPF; al: Alignment := Alignment.LeftTop);
     /// Удаляет из графического объекта дочерний
@@ -334,7 +383,7 @@ type
     /// Определяет, пересекается ли объект с объектом ob
     function Intersects(ob: ObjectWPF): boolean;
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): ObjectWPF;
+    function SetText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): ObjectWPF;
     begin
       Text := txt; 
       FontSize := size;
@@ -343,10 +392,15 @@ type
       Result := Self;
     end;
     /// Декоратор поворота объекта
-    function WithRotate(da: real): ObjectWPF;
+    function SetRotate(da: real): ObjectWPF;
     begin
       Rotate(da);
       Result := Self;
+    end;
+    /// Объект находится вне границ графического окна
+    function OutOfGraphWindow: boolean;
+    begin
+      Result := (Left < 0) or (Top < 0) or (Right > GraphWindow.Width) or (Bottom > GraphWindow.Height);
     end;
   end;
   
@@ -363,15 +417,15 @@ type
       Color := c;
       //BorderColor := Colors.Black;
     end;
-    procedure EF(value: GColor) := Element.Fill := new SolidColorBrush(Value);
-    procedure ES(value: GColor) := Element.Stroke := new SolidColorBrush(Value);
+    procedure EF(value: GColor) := Element.Fill := ColorBrush(Value);
+    procedure ES(value: GColor) := Element.Stroke := ColorBrush(Value);
     procedure EST(value: real);
     begin
       Element.StrokeThickness := Value;
       if Element.Stroke = nil then
-        Element.Stroke := new SolidColorBrush(Colors.Black)
+        Element.Stroke := ColorBrush(Colors.Black)
     end;  
-    function WithNoBorderP: BoundedObjectWPF;
+    function RemoveBorderP: BoundedObjectWPF;
     begin
       Element.Stroke := nil;
       Result := Self;
@@ -393,16 +447,17 @@ type
       read InvokeReal(()->Element.StrokeThickness)
       write Invoke(EST,value);
     /// Декоратор включения границы объекта
-    function WithBorder(w: real := -1): BoundedObjectWPF;
+    function SetBorder(w: real := 1; c: GColor := Colors.Black): BoundedObjectWPF;
     begin
-      BorderColor := BorderColor;
-      if (w>=0) then
-        BorderWidth := w;
+      //if c<>BorderColor then
+      BorderColor := c;
+      //if w<>BorderWidth then  
+      BorderWidth := w;
       Result := Self;
     end;
     /// Декоратор выключения границы объекта
-    function WithNoBorder: BoundedObjectWPF 
-      := Invoke&<BoundedObjectWPF>(WithNoBorderP);
+    function RemoveBorder: BoundedObjectWPF 
+      := Invoke&<BoundedObjectWPF>(RemoveBorderP);
   end;
 
 // -----------------------------------------------------
@@ -411,23 +466,46 @@ type
   /// Класс графических объектов "Эллипс"
   EllipseWPF = class(BoundedObjectWPF)
   private
-    procedure InitOb2(x,y,w,h: real; c: GColor) := InitOb1(x,y,w,h,c,new System.Windows.Shapes.Ellipse());
+    procedure InitOb2(x,y,r1,r2: real; c: GColor) := InitOb1(x-r1,y-r2,2*r1,2*r2,c,new System.Windows.Shapes.Ellipse());
     function GetInternalGeometry: Geometry; override := (ob as Shape).RenderedGeometry;
+    procedure RadX(value: real);
+    begin
+      Left -= value - gr.Width/2;
+      gr.Width := value*2;
+      ob.Width := value*2;
+    end;  
+    procedure RadY(value: real);
+    begin
+      Top -= value - gr.Width/2;
+      gr.Height := value*2;
+      ob.Height := value*2;
+    end;  
   public
-    /// Создает эллипс размера (w,h) заданного цвета с координатами левого верхнего угла (x,y)
-    constructor (x,y,w,h: real; c: GColor) := Invoke(InitOb2,x,y,w,h,c);
-    /// Создает эллипс размера (w,h) заданного цвета с координатами левого верхнего угла, задаваемыми точкой
-    constructor (p: Point; w,h: real; c: GColor) := Invoke(InitOb2,p.x,p.y,w,h,c);
+    /// Создает эллипс с центром в точке (x,y), радиусами (rx,ry) и цветом внутренности с
+    constructor (x,y,rx,ry: real; c: GColor) := Invoke(InitOb2,x,y,rx,ry,c);
+    /// Создает эллипс с центром в точке (x,y), радиусами (rx,ry) и цветом внутренности с, с границей ширины borderWidth и цвета borderColor
+    constructor (x,y,rx,ry: real; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black) := begin Invoke(InitOb2,x,y,rx,ry,c); if borderWidth > 0 then SetBorder(borderWidth,borderColor); end;
+    /// Создает эллипс с центром в точке p, радиусами (rx,ry) и цветом внутренности с
+    constructor (p: Point; rx,ry: real; c: GColor) := Invoke(InitOb2,p.x,p.y,rx,ry,c);
+    /// Создает эллипс с центром в точке p, радиусами (rx,ry) и цветом внутренности с, с границей ширины borderWidth и цвета borderColor
+    constructor (p: Point; rx,ry: real; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black) := begin Invoke(InitOb2,p.x,p.y,rx,ry,c); if borderWidth > 0 then SetBorder(borderWidth,borderColor); end;
     /// Декоратор включения границы объекта
-    function WithBorder(w: real := -1) := inherited WithBorder(w) as EllipseWPF;
+    function SetBorder(w: real := 1; c: GColor := Colors.Black) := inherited SetBorder(w,c) as EllipseWPF;
     /// Декоратор выключения границы объекта
-    function WithNoBorder := inherited WithNoBorder as EllipseWPF;
+    function RemoveBorder := inherited RemoveBorder as EllipseWPF;
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): EllipseWPF 
-      := inherited WithText(txt,size,fontname,c) as EllipseWPF;
+    function SetText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): EllipseWPF 
+      := inherited SetText(txt,size,fontname,c) as EllipseWPF;
     /// Декоратор поворота объекта
-    function WithRotate(da: real): EllipseWPF 
-      := inherited WithRotate(da) as EllipseWPF;
+    function SetRotate(da: real): EllipseWPF := inherited SetRotate(da) as EllipseWPF;
+    /// Радиус эллипса по оси OX
+    property RadiusX: real 
+      read InvokeReal(()->ob.Width/2) 
+      write Invoke(RadX,Value);
+    /// Радиус эллипса по оси OY
+    property RadiusY: real 
+      read InvokeReal(()->ob.Height/2) 
+      write Invoke(RadY,Value);
   end;
 
 // -----------------------------------------------------
@@ -440,15 +518,6 @@ type
     procedure WT(value: real) := begin (ob.Width,ob.Height) := (value,value); (gr.Width,gr.Height) := (value,value); end;
     procedure HT(value: real) := begin (ob.Width,ob.Height) := (value,value); (gr.Width,gr.Height) := (value,value); end;
     
-    {procedure Rad(value: real); 
-    begin
-      var delta := value - gr.Width/2;
-      Left -= delta;
-      Top -= delta;
-      (gr.Width,gr.Height) := (value*2,value*2);
-      Element.Points := ChangePointCollection(value,n);
-    end;}
-
     procedure Rad(value: real);
     begin
       //(ob as Ellipse).RenderedGeometry
@@ -463,6 +532,10 @@ type
     constructor (x,y,r: real; c: GColor) := Invoke(InitOb2,x,y,r,c);
     /// Создает круг радиуса r заданного цвета с центром p
     constructor (p: Point; r: real; c: GColor) := Invoke(InitOb2,p.x,p.y,r,c);
+    /// Создает круг радиуса r заданного цвета с координатами центра (x,y), с границей ширины borderWidth и цвета borderColor
+    constructor (x,y,r: real; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black) := begin Invoke(InitOb2,x,y,r,c); SetBorder(borderWidth,borderColor); end;
+    /// Создает круг радиуса r заданного цвета с центром p, с границей ширины borderWidth и цвета borderColor
+    constructor (p: Point; r: real; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black) := begin Invoke(InitOb2,p.x,p.y,r,c); SetBorder(borderWidth,borderColor); end;
     /// Ширина круга
     property Width: real 
       read InvokeReal(()->ob.Width) 
@@ -476,14 +549,14 @@ type
       read InvokeReal(()->ob.Height/2) 
       write Invoke(Rad,Value);
     /// Декоратор включения границы объекта
-    function WithBorder(w: real := -1) := inherited WithBorder(w) as CircleWPF;
+    function SetBorder(w: real := 1; c: GColor := Colors.Black) := inherited SetBorder(w,c) as CircleWPF;
     /// Декоратор выключения границы объекта
-    function WithNoBorder := inherited WithNoBorder as CircleWPF;
+    function RemoveBorder := inherited RemoveBorder as CircleWPF;
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): CircleWPF
-      := inherited WithText(txt,size,fontname,c) as CircleWPF;
+    function SetText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): CircleWPF
+      := inherited SetText(txt,size,fontname,c) as CircleWPF;
     /// Декоратор поворота объекта
-    function WithRotate(da: real): CircleWPF := inherited WithRotate(da) as CircleWPF;
+    function SetRotate(da: real): CircleWPF := inherited SetRotate(da) as CircleWPF;
   end;
 
 // -----------------------------------------------------
@@ -501,17 +574,21 @@ type
   public
     /// Создает прямоугольник размера (w,h) заданного цвета с координатами левого верхнего угла (x,y)
     constructor (x,y,w,h: real; c: GColor) := Invoke(InitOb2,x,y,w,h,c);
-    /// Создает прямоугольник размера (w,h) заданного цвета с координатами левого верхнего угла, задаваемыми точкой
+    /// Создает прямоугольник размера (w,h) заданного цвета с координатами левого верхнего угла, задаваемыми точкой p
     constructor (p: Point; w,h: real; c: GColor) := Invoke(InitOb2,p.x,p.y,w,h,c);
+    /// Создает прямоугольник размера (w,h) заданного цвета с координатами левого верхнего угла (x,y), с границей ширины borderWidth и цвета borderColor
+    constructor (x,y,w,h: real; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black) := begin Invoke(InitOb2,x,y,w,h,c); SetBorder(borderWidth,borderColor); end;
+    /// Создает прямоугольник размера (w,h) заданного цвета с координатами левого верхнего угла, задаваемыми точкой p, с границей ширины borderWidth и цвета borderColor
+    constructor (p: Point; w,h: real; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black) := begin Invoke(InitOb2,p.x,p.y,w,h,c); SetBorder(borderWidth,borderColor); end;
     /// Декоратор включения границы объекта
-    function WithBorder(w: real := -1) := inherited WithBorder(w) as RectangleWPF;
+    function SetBorder(w: real := 1; c: GColor := Colors.Black) := inherited SetBorder(w,c) as RectangleWPF;
     /// Декоратор выключения границы объекта
-    function WithNoBorder := inherited WithNoBorder as RectangleWPF;
+    function RemoveBorder := inherited RemoveBorder as RectangleWPF;
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): RectangleWPF
-      := inherited WithText(txt,size,fontname,c) as RectangleWPF;
+    function SetText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): RectangleWPF
+      := inherited SetText(txt,size,fontname,c) as RectangleWPF;
     /// Декоратор поворота объекта
-    function WithRotate(da: real): RectangleWPF := inherited WithRotate(da) as RectangleWPF;
+    function SetRotate(da: real): RectangleWPF := inherited SetRotate(da) as RectangleWPF;
   end;
   
 // -----------------------------------------------------
@@ -525,18 +602,22 @@ type
   public
     /// Создает квадрат со стороной w заданного цвета с координатами левого верхнего угла (x,y)
     constructor (x,y,w: real; c: GColor) := Invoke(InitOb2,x,y,w,c);
-    /// Создает квадрат со стороной w заданного цвета с координатами левого верхнего угла, задаваемыми точкой
+    /// Создает квадрат со стороной w заданного цвета с координатами левого верхнего угла, задаваемыми точкой p
     constructor (p: Point; w: real; c: GColor) := Invoke(InitOb2,p.x,p.y,w,c);
+    /// Создает квадрат со стороной w заданного цвета с координатами левого верхнего угла (x,y), с границей ширины borderWidth и цвета borderColor
+    constructor (x,y,w: real; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black) := begin Invoke(InitOb2,x,y,w,c); SetBorder(borderWidth,borderColor); end;
+    /// Создает квадрат со стороной w заданного цвета с координатами левого верхнего угла, задаваемыми точкой p, с границей ширины borderWidth и цвета borderColor
+    constructor (p: Point; w: real; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black) := begin Invoke(InitOb2,p.x,p.y,w,c); SetBorder(borderWidth,borderColor); end;
     /// Декоратор включения границы объекта
-    function WithBorder(w: real := -1) := inherited WithBorder(w) as SquareWPF;
+    function SetBorder(w: real := 1; c: GColor := Colors.Black) := inherited SetBorder(w,c) as SquareWPF;
     /// Декоратор выключения границы объекта
-    function WithNoBorder := inherited WithNoBorder as SquareWPF;
+    function RemoveBorder := inherited RemoveBorder as SquareWPF;
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): SquareWPF
-      := inherited WithText(txt,size,fontname,c) as SquareWPF;
+    function SetText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): SquareWPF
+      := inherited SetText(txt,size,fontname,c) as SquareWPF;
     /// Декоратор поворота объекта
-    function WithRotate(da: real): SquareWPF
-      := inherited WithRotate(da) as SquareWPF;
+    function SetRotate(da: real): SquareWPF
+      := inherited SetRotate(da) as SquareWPF;
   end;
   
 // -----------------------------------------------------
@@ -556,17 +637,21 @@ type
   public
     /// Создает прямоугольник со скругленными краями размера (w,h) с радиусом скругления r заданного цвета с координатами левого верхнего угла (x,y)
     constructor (x,y,w,h,r: real; c: GColor) := Invoke(InitOb2,x,y,w,h,r,c);
-    /// Создает прямоугольник со скругленными краями размера (w,h) с радиусом скругления r заданного цвета с координатами левого верхнего угла, задаваемыми точкой
+    /// Создает прямоугольник со скругленными краями размера (w,h) с радиусом скругления r заданного цвета с координатами левого верхнего угла, задаваемыми точкой p
     constructor (p: Point; w,h,r: real; c: GColor) := Invoke(InitOb2,p.x,p.y,w,h,r,c);
+    /// Создает прямоугольник со скругленными краями размера (w,h) с радиусом скругления r заданного цвета с координатами левого верхнего угла (x,y), с границей ширины borderWidth и цвета borderColor
+    constructor (x,y,w,h,r: real; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black) := begin Invoke(InitOb2,x,y,w,h,r,c); SetBorder(borderWidth,borderColor); end;
+    /// Создает прямоугольник со скругленными краями размера (w,h) с радиусом скругления r заданного цвета с координатами левого верхнего угла, задаваемыми точкой p, с границей ширины borderWidth и цвета borderColor
+    constructor (p: Point; w,h,r: real; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black) := begin Invoke(InitOb2,p.x,p.y,w,h,r,c); SetBorder(borderWidth,borderColor); end;
     /// Декоратор включения границы объекта
-    function WithBorder(w: real := -1) := inherited WithBorder(w) as RoundRectWPF;
+    function SetBorder(w: real := 1; c: GColor := Colors.Black) := inherited SetBorder(w,c) as RoundRectWPF;
     /// Декоратор выключения границы объекта
-    function WithNoBorder := inherited WithNoBorder as RoundRectWPF;
+    function RemoveBorder := inherited RemoveBorder as RoundRectWPF;
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): RoundRectWPF
-      := inherited WithText(txt,size,fontname,c) as RoundRectWPF;
+    function SetText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): RoundRectWPF
+      := inherited SetText(txt,size,fontname,c) as RoundRectWPF;
     /// Декоратор поворота объекта
-    function WithRotate(da: real): RoundRectWPF := inherited WithRotate(da) as RoundRectWPF;
+    function SetRotate(da: real): RoundRectWPF := inherited SetRotate(da) as RoundRectWPF;
     /// Радиус скругления
     property RoundRadius: real 
       read InvokeReal(()->(ob as Rectangle).RadiusX)
@@ -591,20 +676,24 @@ type
   public
     /// Создает квадрат со скругленными краями со стороной w с радиусом скругления r заданного цвета с координатами левого верхнего угла (x,y)
     constructor (x,y,w,r: real; c: GColor) := Invoke(InitOb2,x,y,w,r,c);
-    /// Создает квадрат со скругленными краями со стороной w с радиусом скругления r заданного цвета с координатами левого верхнего угла, задаваемыми точкой
+    /// Создает квадрат со скругленными краями со стороной w с радиусом скругления r заданного цвета с координатами левого верхнего угла, задаваемыми точкой p
     constructor (p: Point; w,r: real; c: GColor) := Invoke(InitOb2,p.x,p.y,w,r,c);
+    /// Создает квадрат со скругленными краями со стороной w с радиусом скругления r заданного цвета с координатами левого верхнего угла (x,y), с границей ширины borderWidth и цвета borderColor
+    constructor (x,y,w,r: real; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black) := begin Invoke(InitOb2,x,y,w,r,c); SetBorder(borderWidth,borderColor); end;
+    /// Создает квадрат со скругленными краями со стороной w с радиусом скругления r заданного цвета с координатами левого верхнего угла, задаваемыми точкой p, с границей ширины borderWidth и цвета borderColor
+    constructor (p: Point; w,r: real; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black) := begin Invoke(InitOb2,p.x,p.y,w,r,c); SetBorder(borderWidth,borderColor); end;
     /// Декоратор включения границы объекта
-    function WithBorder(w: real := -1): RoundSquareWPF 
-      := inherited WithBorder(w) as RoundSquareWPF;
+    function SetBorder(w: real := 1; c: GColor := Colors.Black): RoundSquareWPF 
+      := inherited SetBorder(w,c) as RoundSquareWPF;
     /// Декоратор выключения границы объекта
-    function WithNoBorder: RoundSquareWPF
-      := inherited WithNoBorder as RoundSquareWPF;
+    function RemoveBorder: RoundSquareWPF
+      := inherited RemoveBorder as RoundSquareWPF;
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): RoundSquareWPF 
-      := inherited WithText(txt,size,fontname,c) as RoundSquareWPF;
+    function SetText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): RoundSquareWPF 
+      := inherited SetText(txt,size,fontname,c) as RoundSquareWPF;
     /// Декоратор поворота объекта
-    function WithRotate(da: real): RoundSquareWPF 
-      := inherited WithRotate(da) as RoundSquareWPF;
+    function SetRotate(da: real): RoundSquareWPF 
+      := inherited SetRotate(da) as RoundSquareWPF;
   end;
 
   MyText = class(FrameworkElement)
@@ -624,14 +713,14 @@ type
       begin
         ft := new FormattedText(text,new System.Globalization.CultureInfo('ru-ru'), 
                 System.Windows.FlowDirection.LeftToRight,
-                new Typeface(name), sz, new SolidColorBrush(c));
+                new Typeface(name), sz, ColorBrush(c));
         Width := ft.Width;
         Height := ft.Height;
       end;
       procedure OnRender(dc: DrawingContext); override;
       begin
         if bc<>EmptyColor then
-          dc.DrawRectangle(new SolidColorBrush(bc),nil,Rect(0,0,Width,Height));
+          dc.DrawRectangle(ColorBrush(bc),nil,Rect(0,0,Width,Height));
         dc.DrawText(ft,new Point(0,0));
       end;
   end;
@@ -644,9 +733,9 @@ type
   private
     function Element := ob as MyText;
 
-    procedure InitOb2(x,y: real; txt: string; c: GColor);
+    procedure InitOb2(x,y,sz: real; txt: string; c: GColor);
     begin
-      var rr := new MyText(txt,'Arial',16,c);
+      var rr := new MyText(txt,'Arial',sz,c);
       InitOb(x,y,rr.Width,rr.Height,rr);
     end;
     function GetInternalGeometry: Geometry; override;
@@ -655,8 +744,10 @@ type
       Result := new RectangleGeometry(r);
     end;  
   public
-    /// Создает прямоугольник размера (w,h) заданного цвета с координатами левого верхнего угла (x,y)
-    constructor (x,y: real; txt: string; c: GColor := Colors.Black) := Invoke(InitOb2,x,y,txt,c);
+    /// Создает текст заданного цвета с координатами левого верхнего угла (x,y)
+    constructor (x,y: real; txt: string; c: GColor := Colors.Black) := Invoke(InitOb2,x,y,16,txt,c);
+    /// Создает текст заданного цвета с координатами левого верхнего угла (x,y) и размером шрифта sz
+    constructor (x,y,sz: real; txt: string; c: GColor := Colors.Black) := begin Invoke(InitOb2,x,y,sz,txt,c); FontSize := sz; end;
     /// Размер шрифта
     property FontSize: real read InvokeReal(()->Self.Element.sz) write 
       Invoke(procedure->begin Self.Element.sz := value; Self.Element.RecreateFormText; Width := Self.Element.Width; Height := Self.Element.Height; ob.InvalidateVisual; end); override;
@@ -673,7 +764,7 @@ type
     property Text: string read InvokeString(()->Element.Text) 
       write Invoke(procedure->begin Self.Element.Text := value; Self.Element.RecreateFormText; Width := Self.Element.Width; Height := Self.Element.Height; ob.InvalidateVisual end); override;
     /// Декоратор поворота объекта
-    function WithRotate(da: real): TextWPF := inherited WithRotate(da) as TextWPF;
+    function SetRotate(da: real): TextWPF := inherited SetRotate(da) as TextWPF;
   end;
   
 // -----------------------------------------------------
@@ -695,7 +786,7 @@ type
     end;
     procedure RecalcXW(x1,x2: real) := (Left,Width) := (min(x1,x2),abs(x1-x2));
     procedure RecalcYH(y1,y2: real) := (Top,Height) := (min(y1,y2),abs(y1-y2));
-    procedure ES(value: GColor) := Element.Stroke := new SolidColorBrush(Value);
+    procedure ES(value: GColor) := Element.Stroke := ColorBrush(Value);
     procedure EST(value: real) := Element.StrokeThickness := Value;
     procedure WX1(value: real);
     begin
@@ -774,13 +865,13 @@ type
         Invoke(procedure->begin gr1.Height := value; end); 
       end; override; 
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): LineWPF
-      := inherited WithText(txt,size,fontname,c) as LineWPF;
+    function SetText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): LineWPF
+      := inherited SetText(txt,size,fontname,c) as LineWPF;
     /// Декоратор поворота объекта
-    function WithRotate(da: real): LineWPF
-      := inherited WithRotate(da) as LineWPF;
+    function SetRotate(da: real): LineWPF
+      := inherited SetRotate(da) as LineWPF;
     /// Декоратор ширины линии отрезка
-    function WithLineWidth(lw: real): LineWPF;
+    function SetLineWidth(lw: real): LineWPF;
     begin
       LineWidth := lw;
       Result := Self;
@@ -827,8 +918,12 @@ type
   public
     /// Создает правильный многоугольник заданного цвета с координатами центра (x,y) и радиусом описанной окружности r
     constructor (x,y,r: real; n: integer; c: GColor) := Invoke(InitOb2,x,y,r,n,c);
-    /// Создает правильный многоугольник заданного цвета с центром в заданной точке и радиусом описанной окружности r
+    /// Создает правильный многоугольник заданного цвета с центром в заданной точке p и радиусом описанной окружности r
     constructor (p: Point; r: real; n: integer; c: GColor) := Create(p.X,p.Y,r,n,c);
+    /// Создает правильный многоугольник заданного цвета с координатами центра (x,y) и радиусом описанной окружности r, с границей ширины borderWidth и цвета borderColor
+    constructor (x,y,r: real; n: integer; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black) := begin Invoke(InitOb2,x,y,r,n,c); SetBorder(borderWidth,borderColor); end;
+    /// Создает правильный многоугольник заданного цвета с центром в заданной точке p и радиусом описанной окружности r, с границей ширины borderWidth и цвета borderColor
+    constructor (p: Point; r: real; n: integer; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black) := begin Invoke(InitOb2,p.x,p.y,r,n,c); SetBorder(borderWidth,borderColor); end;
     /// Ширина объекта
     property Width: real 
       read InvokeReal(()->gr.Width) 
@@ -846,17 +941,17 @@ type
       read InvokeInteger(()->n) 
       write Invoke(Cnt,Value);
     /// Декоратор включения границы объекта
-    function WithBorder(w: real := -1): RegularPolygonWPF
-      := inherited WithBorder(w) as RegularPolygonWPF;
+    function SetBorder(w: real := 1; c: GColor := Colors.Black): RegularPolygonWPF
+      := inherited SetBorder(w,c) as RegularPolygonWPF;
     /// Декоратор выключения границы объекта
-    function WithNoBorder: RegularPolygonWPF 
-      := inherited WithNoBorder as RegularPolygonWPF;
+    function RemoveBorder: RegularPolygonWPF 
+      := inherited RemoveBorder as RegularPolygonWPF;
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): RegularPolygonWPF  
-      := inherited WithText(txt,size,fontname,c) as RegularPolygonWPF;
+    function SetText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): RegularPolygonWPF  
+      := inherited SetText(txt,size,fontname,c) as RegularPolygonWPF;
     /// Декоратор поворота объекта
-    function WithRotate(da: real): RegularPolygonWPF  
-      := inherited WithRotate(da) as RegularPolygonWPF;
+    function SetRotate(da: real): RegularPolygonWPF  
+      := inherited SetRotate(da) as RegularPolygonWPF;
   end;
   
 // -----------------------------------------------------
@@ -913,6 +1008,16 @@ type
     end; 
     /// Создает звезду заданного цвета c центром в точке p, радиусом описанной окружности r и внутренним радиусом rinternal
     constructor (p: Point; r,rinternal: real; n: integer; c: GColor) := Create(p.X,p.Y,r,rinternal,n,c);
+    /// Создает звезду заданного цвета с координатами центра (x,y), радиусом описанной окружности r и внутренним радиусом rinternal, с границей ширины borderWidth и цвета borderColor
+    constructor (x,y,r,rinternal: real; n: integer; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black);
+    begin
+      if rinternal<r then
+        Invoke(InitOb2,x,y,r,rinternal,n,c)
+      else Invoke(InitOb2,x,y,rinternal,r,n,c);
+      SetBorder(borderWidth,borderColor);
+    end; 
+    /// Создает звезду заданного цвета c центром в точке p, радиусом описанной окружности r и внутренним радиусом rinternal, с границей ширины borderWidth и цвета borderColor
+    constructor (p: Point; r,rinternal: real; n: integer; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black) := begin Invoke(InitOb2,p.X,p.Y,r,rinternal,n,c); SetBorder(borderWidth,borderColor); end;
     /// Радиус описанной окружности
     property Radius: real 
       read InvokeReal(()->gr.Height/2) 
@@ -926,17 +1031,17 @@ type
       read InvokeInteger(()->n) 
       write Invoke(Cnt,Value);
     /// Декоратор включения границы объекта
-    function WithBorder(w: real := -1): StarWPF 
-      := inherited WithBorder(w) as StarWPF;
+    function SetBorder(w: real := 1; c: GColor := Colors.Black): StarWPF 
+      := inherited SetBorder(w,c) as StarWPF;
     /// Декоратор выключения границы объекта
-    function WithNoBorder: StarWPF 
-      := inherited WithNoBorder as StarWPF;
+    function RemoveBorder: StarWPF 
+      := inherited RemoveBorder as StarWPF;
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): StarWPF 
-      := inherited WithText(txt,size,fontname,c) as StarWPF;
+    function SetText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): StarWPF 
+      := inherited SetText(txt,size,fontname,c) as StarWPF;
     /// Декоратор поворота объекта
-    function WithRotate(da: real): StarWPF 
-      := inherited WithRotate(da) as StarWPF;
+    function SetRotate(da: real): StarWPF 
+      := inherited SetRotate(da) as StarWPF;
   end;
 
   PointsArray = array of Point;
@@ -970,6 +1075,8 @@ type
     function Element := ob as System.Windows.Shapes.Polygon;
     /// Создает многоугольник заданного цвета с координатами вершин, заданными массивом точек pp
     constructor (pp: array of Point; c: GColor) := Invoke(InitOb2,pp,c);
+    /// Создает многоугольник заданного цвета с координатами вершин, заданными массивом точек pp, с границей ширины borderWidth и цвета borderColor
+    constructor (pp: array of Point; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black) := begin Invoke(InitOb2,pp,c); SetBorder(borderWidth,borderColor); end;
     /// Массив вершин
     property Points: array of Point
       read Invoke&<PointsArray>(GetPointsArrayP)
@@ -987,17 +1094,17 @@ type
         Invoke(procedure -> ob1.Points := new PointCollection(a));
       end;  
     /// Декоратор включения границы объекта
-    function WithBorder(w: real := -1): PolygonWPF
-      := inherited WithBorder(w) as PolygonWPF;
+    function SetBorder(w: real := 1; c: GColor := Colors.Black): PolygonWPF
+      := inherited SetBorder(w,c) as PolygonWPF;
     /// Декоратор выключения границы объекта
-    function WithNoBorder: PolygonWPF 
-      := inherited WithNoBorder as PolygonWPF;
+    function RemoveBorder: PolygonWPF 
+      := inherited RemoveBorder as PolygonWPF;
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): PolygonWPF 
-      := inherited WithText(txt,size,fontname,c) as PolygonWPF;
+    function SetText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): PolygonWPF 
+      := inherited SetText(txt,size,fontname,c) as PolygonWPF;
     /// Декоратор поворота объекта
-    function WithRotate(da: real): PolygonWPF
-      := inherited WithRotate(da) as PolygonWPF;
+    function SetRotate(da: real): PolygonWPF
+      := inherited SetRotate(da) as PolygonWPF;
   end;
 
 // -----------------------------------------------------
@@ -1043,10 +1150,10 @@ type
     /// Создает рисунок из файла fname  с координатой левого верхнего угла, заданной точкой p, и размерами (w,h)
     constructor (p: Point; w,h: real; fname: string) := Invoke(InitOb3,p.x,p.y,w,h,fname);
     /// Декоратор текста объекта
-    function WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): PictureWPF  
-      := inherited WithText(txt,size,fontname,c) as PictureWPF;
+    function SetText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): PictureWPF  
+      := inherited SetText(txt,size,fontname,c) as PictureWPF;
     /// Декоратор поворота объекта
-    function WithRotate(da: real): PictureWPF := inherited WithRotate(da) as PictureWPF;
+    function SetRotate(da: real): PictureWPF := inherited SetRotate(da) as PictureWPF;
   end;
 
 // -----------------------------------------------------
@@ -1077,6 +1184,8 @@ var
   OnKeyPress: procedure(ch: char);
   /// Событие изменения размера графического окна
   OnResize: procedure;
+  /// Событие перерисовки графического окна. Параметр dt обозначает количество миллисекунд с момента последнего вызова OnDrawFrame
+  OnDrawFrame: procedure(dt: real) := nil;
 
 // -----------------------------------------------------
 //>>     Функции пересечения# Intersection functions
@@ -1100,12 +1209,16 @@ procedure __InitModule__;
 procedure __FinalizeModule__;
 //{{{--doc: Конец секции 2 }}} 
 
-procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer := 61);
+//procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer := 61);
+
+//procedure BeginFrameBasedAnimationTime(DrawT: procedure(dt: real));
+
 
 implementation
 
-procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer) := GraphWPF.BeginFrameBasedAnimation(Draw,frate);
+//procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer) := GraphWPF.BeginFrameBasedAnimation(Draw,frate);
 
+//procedure BeginFrameBasedAnimationTime(DrawT: procedure(dt: real)) := GraphWPF.BeginFrameBasedAnimationTime(DrawT);
 
 function RGB(r,g,b: byte) := Color.Fromrgb(r, g, b);
 function ARGB(a,r,g,b: byte) := Color.FromArgb(a, r, g, b);
@@ -1115,9 +1228,24 @@ function EmptyColor := ARGB(0,0,0,0);
 function clRandom := RandomColor();
 function Pnt(x,y: real) := new Point(x,y);
 function Rect(x,y,w,h: real) := new System.Windows.Rect(x,y,w,h);
-function ColorBrush(c: Color) := new SolidColorBrush(c);
+function RandomWindowPoint(z: real): GPoint := Pnt(Random(z,GraphWindow.Width-z),Random(z,GraphWindow.Height-z));
 
-procedure Invoke(p: ()->()) := GraphWPFBase.Invoke(p);
+var ColorsDict := new Dictionary<GColor,SolidColorBrush>;
+
+function ColorBrush(c: Color): SolidColorBrush;
+begin
+  {if ColorsDict.ContainsKey(c) then
+    Result := ColorsDict[c]
+  else
+  begin
+    var scb := new SolidColorBrush(c);
+    ColorsDict[c] := scb;
+    Result := scb
+  end;}
+  Result := new SolidColorBrush(c);
+end;  
+
+procedure Redraw(p: ()->()) := GraphWPFBase.Invoke(p);
 
 procedure SetLeft(Self: UIElement; l: integer) := Self.SetLeft(l);
 procedure SetTop(Self: UIElement; t: integer) := Self.SetTop(t);
@@ -1217,11 +1345,16 @@ begin
   if (al=Alignment.RightTop) or (al=Alignment.RightCenter) or (al=Alignment.RightBottom) then
     ch.Left := Width-ch.Width
   else if (al=Alignment.CenterTop) or (al=Alignment.Center) or (al=Alignment.CenterBottom) then 
-    ch.Left := (Width-ch.Width)/2;
+    ch.Left := (Width-ch.Width)/2
+  else if (al=Alignment.LeftTop) or (al=Alignment.LeftCenter) or (al=Alignment.LeftBottom) then  
+    ch.Left := 0;
+    
   if (al=Alignment.RightBottom) or (al=Alignment.CenterBottom) or (al=Alignment.LeftBottom) then
     ch.Top := Height-ch.Height
   else if (al=Alignment.RightCenter) or (al=Alignment.Center) or (al=Alignment.LeftCenter) then
-    ch.Top := (Height-ch.Height)/2;
+    ch.Top := (Height-ch.Height)/2
+  else if (al=Alignment.LeftTop) or (al=Alignment.CenterTop) or (al=Alignment.RightTop) then  
+    ch.Top := 0;
 
   ChildrenWPF.Add(ch);
   Objects.Destroy(ch);
@@ -1361,6 +1494,8 @@ procedure ToFront(Self: ObjectWPF); extensionmethod := Objects.ToFront(Self);
 
 procedure ToBack(Self: ObjectWPF); extensionmethod := Objects.ToBack(Self);
 
+function operator implicit (t: (integer,integer)): (real,real); extensionmethod := (real(t[0]),real(t[1])); 
+
 var
   ///--
   __initialized := false;
@@ -1408,6 +1543,19 @@ procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) :=
   if OnResize<>nil then
     OnResize();
 
+var LastUpdatedTimeWPF := new System.TimeSpan(integer.MinValue); 
+
+procedure RenderFrameWPF(o: Object; e: System.EventArgs);
+begin
+  if OnDrawFrame<>nil then
+  begin
+    var e1 := RenderingEventArgs(e).RenderingTime;
+    var dt := e1 - LastUpdatedTimeWPF;
+    LastUpdatedTimeWPF := e1;  
+    OnDrawFrame(dt.Milliseconds/1000);
+  end;  
+end;
+
 procedure __InitModule;
 begin
   AdditionalInit := procedure ->
@@ -1421,6 +1569,8 @@ begin
     MainWindow.KeyUp += SystemOnKeyUp;
     MainWindow.TextInput += SystemOnKeyPress;
     MainWindow.SizeChanged += SystemOnResize;
+    
+    CompositionTarget.Rendering += RenderFrameWPF;
     
     Objects := new ObjectsType;
     Window := GraphWPF.Window;

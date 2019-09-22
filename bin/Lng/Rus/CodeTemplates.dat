@@ -1,0 +1,5 @@
+﻿//PT4 Provider Plugin
+
+%PREFIX%=VPP_CODE_TEMPLATES_PLUGIN_
+NAME=Образцы кода
+DESCRIPTION=Образцы кода

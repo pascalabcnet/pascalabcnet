@@ -36,8 +36,8 @@ begin
   
   // match .. with
   match a with
-    [1, 9, 8, _, 2]: print(1);
-    [.., var y, var x]: print(x + y);
-    [_, .., _]: print(3);
+    [1, 9, 8, _, 2]: Print(1);
+    [.., var y, var x]: Print(x + y);
+    [_, .., _]: Print(3);
   end;
 end.

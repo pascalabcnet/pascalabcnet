@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 ///Исполнитель Робот действует на прямоугольном клеточном поле. Между некоторыми клетками, а также по периметру поля находятся стены. 
@@ -396,6 +396,10 @@ begin
   RegisterTask('p13',p13);
   RegisterTask('p14',p14);
   RegisterTask('p15',p15);
+
+  RegisterTask('ps1',ps1);
+  RegisterTask('ps2',ps2);
+  RegisterTask('ps3',ps3);
 
   RegisterTask('pp1',pp1);
   RegisterTask('pp2',pp2);

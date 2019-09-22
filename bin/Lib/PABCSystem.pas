@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 /// Стандартный модуль
@@ -1228,8 +1228,8 @@ function ExpandFileName(fname: string): string;
 // -----------------------------------------------------
 //>>     Математические подпрограммы # Math subroutines
 // -----------------------------------------------------
-///-function Sign(x: число): число;
-/// Возвращает знак числа x
+///-function Sign(x: число): integer;
+/// Возвращает -1, 0 или +1 в зависимости от знака числа x
 function Sign(x: shortint): integer;
 ///--
 function Sign(x: smallint): integer;
@@ -2358,7 +2358,7 @@ const
   EOLN_FOR_TEXT_WRITEOPENED = 'Функция Eoln не может быть вызвана для текстового файла, открытого на запись!!Eoln function can''t be called for file, opened on writing';
   SEEKEOF_FOR_TEXT_WRITEOPENED = 'Функция SeekEof не может быть вызвана для текстового файла, открытого на запись!!SeekEof function can''t be called for file, opened on writing';
   SEEKEOLN_FOR_TEXT_WRITEOPENED = 'Функция SeekEoln не может быть вызвана для текстового файла, открытого на запись!!SeekEoln function can''t be called for file, opened on writing';
-  BAD_TYPE_IN_RUNTIMESIZEOF = 'Bad Type in RunTimeSizeOf';
+  BAD_TYPE_IN_RUNTIMESIZEOF = 'Для типизированных файлов нельзя указывать тип элементов, являющийся ссылочным или содержащий ссылочные поля!!Bad Type in RunTimeSizeOf';
   PARAMETER_MUST_BE_GREATER_EQUAL_0 = 'Параметр должен быть >= 0!!Parameter must be >= 0';
   PARAMETER_MUST_BE_GREATER_0 = 'Параметр должен быть > 0!!Parameter must be > 0';
   PARAMETER_MUST_BE_GREATER_1 = 'Параметр должен быть > 1!!Parameter must be > 1';
@@ -2369,6 +2369,12 @@ const
   ARR_LENGTH_MUST_BE_MATCH_TO_MATR_SIZE = 'Размер одномерного массива не согласован с размером двумерного массива!!The 1-dim array length does not match 2-dim array size';
   INITELEM_COUNT_MUST_BE_EQUAL_TO_MATRIX_ELEMS_COUNT = 'Количество инициализирующих элементов не совпадает с количеством элементов матрицы!!The number of elements in init list must be equal to the number of elements in matrix';
   TYPED_FILE_CANBE_OPENED_IN_SINGLEBYTE_ENCODING_ONLY = 'При открытии типизированного файла можно указывать только однобайтную кодировку!!Typed file can be opened in single byte encoding only';
+  BAD_ROW_INDEX = 'Один из элементов массива RowIndex выходит за пределы индексов строк двумерного массива!!One of the elements of RowIndex array is out of range of 2-dim array row indexes';
+  BAD_COL_INDEX = 'Один из элементов массива ColIndex выходит за пределы индексов столбцов двумерного массива!!One of the elements of ColIndex array is out of range of 2-dim array column indexes';
+  BAD_ROW_INDEX_FROM = 'FromRow выходит за пределы индексов строк двумерного массива!!FromRow is out of range of 2-dim array row indexes';
+  BAD_ROW_INDEX_TO = 'ToRow выходит за пределы индексов строк двумерного массива!!ToRow is out of range of 2-dim array row indexes';
+  BAD_COL_INDEX_FROM = 'FromCol выходит за пределы индексов строк двумерного массива!!FromCol is out of range of 2-dim array column indexes';
+  BAD_COL_INDEX_TO = 'ToCol выходит за пределы индексов строк двумерного массива!!ToCol is out of range of 2-dim array column indexes';
 
 // -----------------------------------------------------
 //                  WINAPI
@@ -3486,16 +3492,18 @@ begin
       sb.Append('{')
     else sb.Append('[');
     if g.MoveNext() then
+    begin  
       sb.Append(StructuredObjectToString(g.Current, n + 1));
-    var cnt := 1;  
-    while g.MoveNext() and (cnt < nmax) do 
-    begin
-      sb.Append(',');
-      sb.Append(StructuredObjectToString(g.Current, n + 1));
-      cnt += 1;
-    end;
-    if cnt >= nmax then 
-      sb.Append(',...');
+      var cnt := 1;  
+      while g.MoveNext() and (cnt < nmax) do 
+      begin
+        sb.Append(',');
+        sb.Append(StructuredObjectToString(g.Current, n + 1));
+        cnt += 1;
+      end;
+      if cnt >= nmax then 
+        sb.Append(',...');
+    end;    
     
     if isdictorset then
       sb.Append('}')
@@ -8658,11 +8666,13 @@ function Print<T>(Self: sequence of T; delim: string): sequence of T; extensionm
 begin
   var g := Self.GetEnumerator();
   if g.MoveNext() then
+  begin  
     Write(g.Current);
-  while g.MoveNext() do
-    if delim <> '' then
-      Write(delim, g.Current)
-    else Write(g.Current);
+    while g.MoveNext() do
+      if delim <> '' then
+        Write(delim, g.Current)
+      else Write(g.Current);
+  end;  
   Result := Self; 
 end;
 
@@ -8719,9 +8729,11 @@ begin
   var g := Self.GetEnumerator();
   var sb := new System.Text.StringBuilder('');
   if g.MoveNext() then
+  begin
     sb.Append(g.Current.ToString());
-  while g.MoveNext() do 
-    sb.Append(delim + g.Current.ToString());
+    while g.MoveNext() do 
+      sb.Append(delim + g.Current.ToString());
+  end;  
   Result := sb.ToString;  
 end;
 
@@ -9915,6 +9927,61 @@ begin
   for var i := 0 to Self.RowCount - 1 do
     for var j := 0 to Self.ColCount - 1 do
       act(Self[i, j],i,j);
+end;
+
+function InR(Self: integer; a,b: integer): boolean;
+begin
+  Result := (a <= Self) and (Self <= b);
+end;
+
+
+/// Возвращает срез двумерного массива. RowIndex и ColIndex задают срезаемые строки и столбцы
+function MatrSlice<T>(Self: array[,] of T; RowIndex: array of integer; ColIndex: array of integer): array[,] of T; extensionmethod;
+begin
+  if RowIndex = nil then
+    raise new System.ArgumentNullException('RowIndex');
+  if ColIndex = nil then
+    raise new System.ArgumentNullException('ColIndex');
+  if RowIndex.Any(i->not InR(i,0,Self.RowCount-1)) then  
+    raise new System.ArgumentOutOfRangeException(GetTranslation(BAD_ROW_INDEX),new Exception);
+  if ColIndex.Any(i->not InR(i,0,Self.ColCount-1)) then  
+    raise new System.ArgumentOutOfRangeException(GetTranslation(BAD_COL_INDEX),new Exception);
+  Result := new T[RowIndex.Length, ColIndex.Length];
+  var r := 0;
+  foreach var ir in RowIndex do
+  begin
+    var c := 0;
+    foreach var jc in ColIndex do
+    begin
+      Result[r, c] := Self[ir, jc];
+      c += 1;
+    end;
+    r += 1;
+  end
+end;
+
+/// Возвращает срез двумерного массива между строками FromRow, ToRow и столбцами FromCol, ToCol
+function MatrSlice<T>(Self: array[,] of T; FromRow, ToRow, FromCol, ToCol: integer): array[,] of T; extensionmethod;
+begin
+  if not InR(FromRow,0,Self.RowCount-1) then  
+    raise new System.ArgumentOutOfRangeException(GetTranslation(BAD_ROW_INDEX_FROM),new Exception);
+  if not InR(ToRow,0,Self.RowCount-1) then      raise new System.ArgumentOutOfRangeException(GetTranslation(BAD_ROW_INDEX_TO),new Exception);
+  if not InR(FromCol,0,Self.ColCount-1) then  
+    raise new System.ArgumentOutOfRangeException(GetTranslation(BAD_COL_INDEX_FROM),new Exception);
+  if not InR(ToCol,0,Self.ColCount-1) then  
+    raise new System.ArgumentOutOfRangeException(GetTranslation(BAD_COL_INDEX_TO),new Exception);
+  Result := new T[ToRow-FromRow+1, ToCol-FromCol+1];
+  var r := 0;
+  for var ir:=FromRow to ToRow do
+  begin
+    var c := 0;
+    for var jc:=FromCol to ToCol do
+    begin
+      Result[r, c] := Self[ir, jc];
+      c += 1;
+    end;
+    r += 1;
+  end
 end;
 
 // -----------------------------------------------------

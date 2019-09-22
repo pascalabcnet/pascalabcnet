@@ -101,6 +101,7 @@
     File ..\bin\Lib\Countries.pcu
     File ..\bin\Lib\Graph3D.pcu
     File ..\bin\Lib\GraphABCHelper.pcu
+    File ..\bin\Lib\BBCMicroBit.pcu
     File ..\bin\Lib\IniFile.pcu
     File ..\bin\Lib\PABCSystem.pcu
     File ..\bin\Lib\PABCExtensions.pcu
@@ -129,9 +130,10 @@
     File ..\bin\Lib\BlockFileOfT.pcu
     File ..\bin\Lib\OpenCL.pcu
     File ..\bin\Lib\OpenCLABC.pcu
+    File ..\bin\Lib\OpenGL.pcu
+    File ..\bin\Lib\OpenGLABC.pcu
 
     File ..\bin\Lib\PABCRtl.dll
-    File ..\bin\Lib\PABCRtl32.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
     File ..\bin\Lib\HelixToolkit.dll
 
@@ -165,6 +167,7 @@
     ${AddFile} "Countries.pcu"
     ${AddFile} "Graph3D.pcu"
     ${AddFile} "GraphABCHelper.pcu"
+    ${AddFile} "BBCMicroBit.pcu"
     ${AddFile} "IniFile.pcu"
     ${AddFile} "PABCSystem.pcu"
     ${AddFile} "PABCExtensions.pcu"
@@ -193,6 +196,8 @@
     ${AddFile} "BlockFileOfT.pcu"
     ${AddFile} "OpenCL.pcu"
     ${AddFile} "OpenCLABC.pcu"
+    ${AddFile} "OpenGL.pcu"
+    ${AddFile} "OpenGLABC.pcu"
     ${AddFile} "PABCRtl.dll"
     ${AddFile} "HelixToolkit.Wpf.dll"
     ${AddFile} "HelixToolkit.dll"
@@ -238,6 +243,7 @@
     File ..\bin\Lib\Countries.pas
     File ..\bin\Lib\Graph3D.pas
     File ..\bin\Lib\GraphABCHelper.pas
+    File ..\bin\Lib\BBCMicroBit.pas
     File ..\bin\Lib\IniFile.pas
     File ..\bin\Lib\PABCSystem.pas
     File ..\bin\Lib\PABCExtensions.pas
@@ -266,6 +272,8 @@
     File ..\bin\Lib\BlockFileOfT.pas
     File ..\bin\Lib\OpenCL.pas
     File ..\bin\Lib\OpenCLABC.pas
+    File ..\bin\Lib\OpenGL.pas
+    File ..\bin\Lib\OpenGLABC.pas
 	File ..\bin\Lib\__RedirectIOMode.vb
 	File ..\bin\Lib\VBSystem.vb
 	
@@ -297,6 +305,7 @@
     ${AddFile} "Countries.pas"
     ${AddFile} "Graph3D.pas"
     ${AddFile} "GraphABCHelper.pas"
+    ${AddFile} "BBCMicroBit.pas"
     ${AddFile} "IniFile.pas"
     ${AddFile} "PABCSystem.pas"
     ${AddFile} "PABCExtensions.pas"
@@ -325,6 +334,8 @@
     ${AddFile} "BlockFileOfT.pas"
     ${AddFile} "OpenCL.pas"
     ${AddFile} "OpenCLABC.pas"
+    ${AddFile} "OpenGL.pas"
+    ${AddFile} "OpenGLABC.pas"
 	${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"
 	

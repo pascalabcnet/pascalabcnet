@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 
@@ -74,7 +74,13 @@ namespace PascalABCCompiler.Collections
             _elements.Add(element);
             _elements_as_arr = null;
         }
-
+        
+        public void RemoveElement(T element)
+        {
+            _elements.Remove(element);
+            _elements_as_arr = null;
+        }
+        
         /// <summary>
         /// Добавляет список элементов к списку.
         /// </summary>
