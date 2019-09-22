@@ -55,17 +55,11 @@ type
     
     private static procedure TestForRefT(tt: System.Type);
     begin
-      if tt.IsClass and not (tt=typeof(pointer)) then
-      begin
-        MessageBox(new System.IntPtr(nil),
-          $'Тип {tt} ссылочный.{#10}Ссылочные типы нельзя сохранять в типизированный файл.{#10}Нажмите OK для выхода.',
-          $'Тип T из BlockFileOf<T> содержет ссылочные типы',
-          $10
-        );
-        Halt(-1);
-      end;
-      foreach var fi in
-      tt.GetFields(
+      if tt = typeof(System.IntPtr) then exit; // IntPtr содержит 1 поле типа pointer. Но IntPtr это не указатель а число, с размером как у pointer
+      
+      if tt.IsClass then raise new System.InvalidOperationException($'Тип {tt} ссылочный.{#10}Ссылочные типы нельзя сохранять в типизированный файл');
+      
+      foreach var fi in tt.GetFields(
         System.Reflection.BindingFlags.GetField or
         System.Reflection.BindingFlags.Instance or
         System.Reflection.BindingFlags.Public or
@@ -79,7 +73,6 @@ type
     private static constructor :=
     try
       TestForRefT(typeof(T));
-      
       sz := Marshal.SizeOf&<T>;
     except
       on e:Exception do
