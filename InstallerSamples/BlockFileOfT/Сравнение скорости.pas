@@ -1,116 +1,97 @@
 ﻿uses BlockFileOfT;
 
+// Эта процедура позволяет копировать память между содержимым массива и другим массивом/стеком
+// При этом не волнуясь о блокировках массивов в памяти
+// Если элемент массива передан как var-параметр, то сборщик мусора не трогает этот массив
+procedure CopyMem<T1,T2>(var o1: T1; var o2: T2; count: integer) :=
+System.Buffer.MemoryCopy(
+  @o1, @o2,
+  count, count
+);
+
 type
   StructLayout = System.Runtime.InteropServices.StructLayoutAttribute;
   LayoutKind = System.Runtime.InteropServices.LayoutKind;
   FieldOffset = System.Runtime.InteropServices.FieldOffsetAttribute;
   
-  GCHandle = System.Runtime.InteropServices.GCHandle;
-  GCHandleType = System.Runtime.InteropServices.GCHandleType;
   
   
-  
-  //Эти 2 типа взят из справки, и по рекомендациям от туда переделан под наш случай
-  //имеется в виду справка, которая html файл, лежащий в папке с этим примером
-  [StructLayout(LayoutKind.&Explicit)]	
-  CharArr255Body = record	
-    private const MaxLength = 255;	
-    private const TSize = 2;	
-    private const Size = MaxLength * TSize;	
-    [FieldOffset(Size-1)] last: byte;	
-  end;
-  [StructLayout(LayoutKind.&Explicit)]	
-  CharArr255 = record	
+  // Size контролирует размер записи. Его можно не указывать, тогда его выберет автоматически
+  // В нашем случае нужен один байт для поля length
+  // А затем место под 255 символов (масимум, который может хранить эта строка)
+  // При этом каждый символ занимает два байта в памяти
+  [StructLayout(LayoutKind.&Explicit, Size= 1 + 255*2 )]
+  ValueString255 = record	
     public [FieldOffset(0)] length: byte;	
-    public [FieldOffset(1)] body: CharArr255Body;	
+    public [FieldOffset(1)] body: char;	
     
-    public class function operator explicit(a: array of char): CharArr255;
+    public const MaxLength = 255;
+    
+    // operator explicit, принимающий array of char и возвращающий ValueString255 выглядит в коде как:
+    // var s := ValueString255(a);
+    // Где тип у "a" — array of char
+    public static function operator explicit(a: array of char): ValueString255;
     begin
-      Result.length := Min(CharArr255Body.MaxLength, a.Length);//если a.Length>MaxLength - length присвоит MaxLength
-      
-      if a.Length < CharArr255Body.MaxLength then 
-        a := a + new char[CharArr255Body.MaxLength - a.Length];//если a.Length<MaxLength - надо удлинить
-                                                              //иначе можем иногда получать ошибки чтения защищённой памяти
-                                                              //если откажет в доступе к памяти, которая находиться полсе массива
-      
-      //надо заблокировать массив на 1 месте в памяти, чтоб сборщик мусора не двигал пока мы копируем
-      var hnd := GCHandle.Alloc(a, GCHandleType.Pinned);	
-      try
-        var ptr: ^CharArr255Body := pointer(hnd.AddrOfPinnedObject);	
-        Result.body := ptr^;
-      finally
-        hnd.Free;//в finally, чтоб если возникнет какая то ошибка - блокировку всё равно сняло
-                 //иначе получим утечку памяти, потому что блокировка запрещает сборщику мусора освобождать память
-      end;	
+      Result.length := Min(MaxLength, a.Length); // если a.Length>MaxLength, то length надо обрезать до MaxLength
+      if Result.length=0 then exit; // иначе упадёт a[0]
+      CopyMem(a[0], Result.body, Result.length*2); // char занимает два байта, поэтому копируем length*2
     end;
     
-    public class function operator explicit(s: string): CharArr255 :=
-    CharArr255(s.ToCharArray);
-    
-    public class function operator explicit(a: CharArr255): array of char;
+    public static function operator explicit(s: string): ValueString255;
     begin
-      //Если кол-во сохранённых байт < MaxLength - a.body будет занимать бОльший объём в памяти, чем поместится в Result	
-      //Поэтому надо сначала прочитать всё, включая пустые символы на конце, во временную переменную	
-      //А затем скопировать нужное кол-во символов в Result	
-      var temp := new char[CharArr255Body.MaxLength];	
-      
-      var hnd := GCHandle.Alloc(temp, GCHandleType.Pinned);	
-      try
-        var ptr: ^CharArr255Body := pointer(hnd.AddrOfPinnedObject);	
-        ptr^ := a.body;
-      finally
-        hnd.Free;	
-      end;
-      
-      if a.length = CharArr255Body.MaxLength then
-      begin
-        Result := temp;//всё же, копирование ссылки - это быстрее, чем копировать всё содержимое массива
-        exit;
-      end;
-      
-      Result := new char[a.length];	
-      System.Array.Copy(temp, Result, a.length);
+      Result.length := Min(MaxLength, s.Length);
+      if Result.length=0 then exit;
+      CopyMem(s[1], Result.body, Result.length*2);
     end;
     
-    public function ToRefArr: array of char;
-    type
-      CharArr = array of char;
+    public static function operator explicit(s: ValueString255): array of char;
+    begin
+      Result := new char[s.length];
+      if s.length=0 then exit;
+      CopyMem(s.body, Result[0], s.length*2);
+    end;
+    
+    // объявлять тип CharArr может быть неудобно
+    public function ToCharArray: array of char;
+    type CharArr = array of char;
     begin
       Result := CharArr(self);	
     end;
     
-    public function ToString: string; override :=
-    new string(ToRefArr);
+    public static function operator explicit(s: ValueString255): string :=
+    new string(@s.body, 0, s.length);
     
-    public class function operator explicit(s: CharArr255): string :=
-    s.ToString;
+    public function ToString: string; override :=
+    string(self);
     
   end;
   
   ///Это будет сохранять в file of T
   AR = record
     s: string[255];
-    //dt: System.DateTime;//Не даёт ¯\_(ツ)_/¯
-    dt: int64;//Ну ландо, в System.DateTime всё хранится в 1 поле типа int64
+    
+    //dt: DateTime; // Не даёт ¯\_(ツ)_/¯
+    dt: int64; // Ну и ладно, в System.DateTime всё хранится в одном поле типа int64
+    
     i: integer;
     ch: char;
     b: byte;
   end;
-  ///Это будет сохранять в BlockFileOfT
+  ///Это будет сохранять в BlockFileOf<T>
   BR = record
-    s: CharArr255;
-    //dt: System.DateTime;//И тут тоже - DateTime это "особый тип", подробнее в справке
-    dt: int64;//Ну а мы - знаем 1 версию, ту что сейчас, и в ней всё хранится как внутренне поле типа int64
+    s: ValueString255;
+    dt: DateTime; // А BlockFileOf<T> принимает любые размерные типы без ограничений
     i: integer;
-    //ch: char;//И тут, опять, особый тип. Ну, word хранит информацию так же как char
-    ch: word;//В типе IOR описаны все преобразования, как превратить эти типы в System.DateTime и char
+    ch: char;
     b: byte;
   end;
   
-  ///Этот тип для ввода/вывода
-  ///Чтоб и string[255] и CharArr255 преобразовывало в string
-  ///Так честнее
-  ///Хотя при преобразовании string[255] к string почти ничего не происходит, только копируется одна ссылка
+  ///Это тип для ввода/вывода
+  ///В нём хранятся входные данные, общие и для file of T, и для BlockFileOf<T>
+  ///Тут же описаны и преобразования всех особых типов
+  ///Заметьте, преобразование string[255] к string и назад ничего не копирует и не преобразовывает, если изначальная строка уже была <= 255 символов
+  ///Поэтому преобразования между ValueString255 и string работают медленнее
+  ///И даже при этом BlockFileOf<T> всё равно быстрее
   IOR = record
     s: string;
     dt: System.DateTime;
@@ -118,43 +99,43 @@ type
     ch: char;
     b: byte;
     
-    class function operator explicit(a: IOR): AR;
+    static function operator explicit(a: IOR): AR;
     begin
       Result.s := a.s;
-      Result.dt := a.dt.Ticks;
+      Result.dt := a.dt.Ticks; // Ticks возвращает никак не преобразованное значение единственного внутреннего поля DateTime
       Result.i := a.i;
       Result.ch := a.ch;
       Result.b := a.b;
     end;
     
-    class function operator explicit(a: IOR): BR;
+    static function operator explicit(a: IOR): BR;
     begin
-      Result.s := CharArr255(a.s);
-      Result.dt := a.dt.Ticks;
-      Result.i := a.i;
-      Result.ch := word(a.ch);
-      Result.b := a.b;
-    end;
-    
-    class function operator explicit(a: AR): IOR;
-    begin
-      Result.s := a.s;
-      Result.dt := new System.DateTime(a.dt);
+      Result.s := ValueString255(a.s); // вызываем наш operator explicit
+      Result.dt := a.dt;
       Result.i := a.i;
       Result.ch := a.ch;
       Result.b := a.b;
     end;
     
-    class function operator explicit(a: BR): IOR;
+    static function operator explicit(a: AR): IOR;
     begin
-      Result.s := new string(a.s.ToRefArr);
-      Result.dt := new System.DateTime(a.dt);
+      Result.s := a.s;
+      Result.dt := new DateTime(a.dt); // Единственный конструктор DateTime принимающий 1 параметр - принимает кол-во тиков. И напрямую присваивает это значение внутреннему полю
       Result.i := a.i;
-      Result.ch := char(a.ch);
+      Result.ch := a.ch;
       Result.b := a.b;
     end;
     
-    class function GetRandom: IOR;
+    static function operator explicit(a: BR): IOR;
+    begin
+      Result.s := string(a.s);
+      Result.dt := a.dt;
+      Result.i := a.i;
+      Result.ch := a.ch;
+      Result.b := a.b;
+    end;
+    
+    static function GetRandom: IOR;
     begin
       Result.s := new string(ArrGen(Random(256), i -> ChrAnsi(Random(byte.MaxValue))));
       Result.dt := System.DateTime.Now.AddTicks(System.Convert.ToInt64(((Random * 2 - 1) * 1024 * 1024 * 1024 * 1024)));
@@ -233,9 +214,9 @@ end;
 
 procedure TestIntegrity;
 begin
-  TestIntegrity1(1);
+  TestIntegrity1(10000);
   writeln('тест 1 ok');
-  TestIntegrity2(1024);
+  TestIntegrity2(10000);
   writeln('тест 2 ok');
   writeln('тесты ok');
 end;
@@ -243,10 +224,10 @@ end;
 procedure TestSpeed;
 begin
   
-  var sw := new System.Diagnostics.Stopwatch;//точнее чем этим замерить невозможно
+  var sw := new System.Diagnostics.Stopwatch; // Точнее, чем этим, замерить невозможно
   var lc := 10;
-  var ec := 10000;//Чем больше элементов - тем больше преимущество BlockFileOf<T>, потому что он сохраняет их всех сразу.
-                  //Но он быстрее даже если сохранять по 1 элементу
+  var ec := 10000;//Чем больше элементов, тем больше преимущество BlockFileOf<T>, потому что он сохраняет их всех сразу.
+                  //Но он быстрее даже если сохранять по одному элементу
   var t1, t2: int64;
   
   var f1: file of AR;
@@ -295,10 +276,14 @@ begin
   
 end;
 
-begin//Уберите флажок "Debug версия" в сервис>>настройки>>опции компиляции и запускайте по Shift+F9, иначе не честно
+begin
+  // Уберите флажок "Debug версия" в "Сервис>>Настройки>>Опции компиляции" и запускайте по Shift+F9, иначе отладка может неравномерно влиять на результаты
   
-  TestIntegrity;//можно закомментировать
+  // Тест на отсутствие ошибок. Можно убрать
+  TestIntegrity;
   
+  // Тест скорости
+  // Он бесконечный, чем дольше тестируется - тем более усреднённые, а значит и более точные результаты
   TestSpeed;
   
 end.
