@@ -2684,6 +2684,8 @@ var
   /// Событие перерисовки графического 3D-окна. 
   ///Инициализируется процедурой с вещественным параметром dt - временем, прошедшим с момента последнего обновления экрана
   OnDrawFrame: procedure(dt: real);
+  /// Событие закрытия графического окна
+  OnClose: procedure(var canceled: boolean);
 
 var
 // -----------------------------------------------------
@@ -3887,6 +3889,14 @@ type
       if Graph3D.OnMouseMove <> nil then  
         Graph3D.OnMouseMove(p.x, p.y, mb);
     end;
+
+    procedure SystemClosing(sender: Object; e: System.ComponentModel.CancelEventArgs);
+    begin
+      var bool := e.Cancel;
+      if OnClose <> nil then
+        OnClose(bool);
+      e.Cancel := bool;
+    end;
     
     procedure InitHandlers; override;
     begin
@@ -3899,6 +3909,7 @@ type
       hvp.PreviewTextInput += SystemOnKeyPress; // не работает
       
       hvp.Focus();
+      Closing += SystemClosing;
       Closed += procedure(sender, e) -> begin Halt; end;
       
       CompositionTarget.Rendering += RenderFrame;

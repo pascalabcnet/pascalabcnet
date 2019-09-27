@@ -1186,6 +1186,8 @@ var
   OnResize: procedure;
   /// Событие перерисовки графического окна. Параметр dt обозначает количество миллисекунд с момента последнего вызова OnDrawFrame
   OnDrawFrame: procedure(dt: real) := nil;
+  /// Событие закрытия графического окна
+  OnClose: procedure(var canceled: boolean);
 
 // -----------------------------------------------------
 //>>     Функции пересечения# Intersection functions
@@ -1543,6 +1545,14 @@ procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) :=
   if OnResize<>nil then
     OnResize();
 
+procedure SystemClosing(sender: Object; e: System.ComponentModel.CancelEventArgs);
+begin
+  var bool := e.Cancel;
+  if OnClose <> nil then
+    OnClose(bool);
+  e.Cancel := bool;
+end;
+
 var LastUpdatedTimeWPF := new System.TimeSpan(integer.MinValue); 
 
 procedure RenderFrameWPF(o: Object; e: System.EventArgs);
@@ -1562,6 +1572,7 @@ begin
   begin
     MainWindow.Title := 'Графика WPF';
     // Свои события. Без этого не работают
+    MainWindow.Closing += SystemClosing;
     MainWindow.MouseDown += SystemOnMouseDown;
     MainWindow.MouseUp += SystemOnMouseUp;
     MainWindow.MouseMove += SystemOnMouseMove;

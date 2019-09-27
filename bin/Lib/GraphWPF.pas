@@ -483,6 +483,8 @@ var OnKeyUp: procedure(k: Key);
 var OnKeyPress: procedure(ch: char);
 /// Событие изменения размера графического окна
 var OnResize: procedure;
+/// Событие закрытия графического окна
+var OnClose: procedure(var canceled: boolean);
 
 //{{{--doc: Конец секции 3 }}} 
 
@@ -1562,6 +1564,14 @@ procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) :=
   if OnResize<>nil then
     OnResize();
 
+procedure SystemClosing(sender: Object; e: System.ComponentModel.CancelEventArgs);
+begin
+  var bool := e.Cancel;
+  if OnClose <> nil then
+    OnClose(bool);
+  e.Cancel := bool;
+end;
+
 ///----------------------------------------------------------------------
 
 var OnDraw: procedure := nil;
@@ -1681,6 +1691,7 @@ public
   procedure InitHandlers; override;
   begin
     Closed += procedure(sender,e) -> begin Halt; end;
+    Closing += SystemClosing;
     MouseDown += SystemOnMouseDown;
     MouseUp += SystemOnMouseUp;
     MouseMove += SystemOnMouseMove;
