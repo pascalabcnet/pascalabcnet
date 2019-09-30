@@ -484,7 +484,7 @@ var OnKeyPress: procedure(ch: char);
 /// Событие изменения размера графического окна
 var OnResize: procedure;
 /// Событие закрытия графического окна
-var OnClose: procedure(var canceled: boolean);
+var OnClose: procedure;
 
 //{{{--doc: Конец секции 3 }}} 
 
@@ -1566,10 +1566,8 @@ procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) :=
 
 procedure SystemClosing(sender: Object; e: System.ComponentModel.CancelEventArgs);
 begin
-  var bool := e.Cancel;
   if OnClose <> nil then
-    OnClose(bool);
-  e.Cancel := bool;
+    OnClose();
 end;
 
 ///----------------------------------------------------------------------

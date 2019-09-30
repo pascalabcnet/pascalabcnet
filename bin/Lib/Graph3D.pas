@@ -2685,7 +2685,7 @@ var
   ///Инициализируется процедурой с вещественным параметром dt - временем, прошедшим с момента последнего обновления экрана
   OnDrawFrame: procedure(dt: real);
   /// Событие закрытия графического окна
-  OnClose: procedure(var canceled: boolean);
+  OnClose: procedure;
 
 var
 // -----------------------------------------------------
@@ -3892,10 +3892,8 @@ type
 
     procedure SystemClosing(sender: Object; e: System.ComponentModel.CancelEventArgs);
     begin
-      var bool := e.Cancel;
       if OnClose <> nil then
-        OnClose(bool);
-      e.Cancel := bool;
+        OnClose();
     end;
     
     procedure InitHandlers; override;
