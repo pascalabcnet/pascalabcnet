@@ -1816,7 +1816,7 @@ namespace PascalABCCompiler
                 
                 CompileUnit(Units, CurrentSyntaxUnit);
                 Environment.CurrentDirectory = CompilerOptions.SourceFileDirectory; // 02.10.19 SunSerega: CompileUnit меняет CurrentDirectory чтоб работало относительное uses-in
-
+                
                 //Console.WriteLine(timer.ElapsedMilliseconds / 1000.0);  //////
                 foreach (CompilationUnit CurrentUnit in UnitsToCompile)
                     if (CurrentUnit.State != UnitState.Compiled)
@@ -3133,6 +3133,7 @@ namespace PascalABCCompiler
         public CompilationUnit CompileUnit(PascalABCCompiler.TreeRealization.unit_node_list Units, SyntaxTree.unit_or_namespace SyntaxUsesUnit)
         {
             string UnitName = GetUnitFileName(SyntaxUsesUnit);
+            if (!UnitName.Contains("\\")) UnitName = Path.GetFullPath(UnitName);
             Environment.CurrentDirectory = Path.GetDirectoryName(UnitName); // 02.10.19 SunSerega: Эта строчка нужна чтоб работало рекурсивное uses-in
             //if (UnitName == null) throw new UnitNotFound(SyntaxUsesUnit.name,
             CompilationUnit CurrentUnit = UnitTable[UnitName];
