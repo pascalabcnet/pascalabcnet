@@ -1246,7 +1246,10 @@ namespace PascalABCCompiler.TreeConverter
                     base_function_call bfc = ((left as typed_expression).type as delegated_methods).proper_methods[0];
                     left = convertion_data_and_alghoritms.explicit_convert_type(left, CreateDelegate(bfc.simple_function_node));
                     sil = left.type.find_in_type(name);
-                    bfc = ((right as typed_expression).type as delegated_methods).proper_methods[0];
+                    if (!(right is typed_expression) && right.type is delegated_methods)
+                        bfc = (right.type as delegated_methods).proper_methods[0];
+                    else
+                        bfc = ((right as typed_expression).type as delegated_methods).proper_methods[0];
                     right = convertion_data_and_alghoritms.explicit_convert_type(right, CreateDelegate(bfc.simple_function_node));
                     sil2 = right.type.find_in_type(name);
                     if (saved_sil != null && sil != null)
