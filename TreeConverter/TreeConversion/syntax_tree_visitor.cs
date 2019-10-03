@@ -3684,6 +3684,12 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(get_location(_class_definition.class_parents.types[0]), "CAN_NOT_INHERIT_FROM_GENERIC_PARAMETER");
                             }
                             context.converted_type.SetBaseType(tn);
+                            var type_instances = generic_convertions.get_type_instances(context.converted_type);
+                            if (type_instances != null)
+                                foreach (generic_type_instance_info gti in type_instances)
+                                {
+                                    gti.pseudo_instance.SetBaseType(tn);
+                                }
                         }
                         //Теперь добавляем интерфейсы.
                         //Цикл с единицы, т.к. нулевой элемент уже был рассмотрен.
