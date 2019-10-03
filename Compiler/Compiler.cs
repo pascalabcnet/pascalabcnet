@@ -2523,11 +2523,14 @@ namespace PascalABCCompiler
             if (SourceFileNamesDictionary.ContainsKey(UnitName))
                 return SourceFileNamesDictionary[UnitName];
 
+            /*
             string d = CompilerOptions.SourceFileDirectory;
             if (CurrentCompilationUnit != null && CurrentCompilationUnit.SyntaxTree != null)
                 d = Path.GetDirectoryName(CurrentCompilationUnit.SyntaxTree.file_name);
             if (Path.GetDirectoryName(UnitName) != string.Empty)
                 d = Path.GetDirectoryName(UnitName);
+            */
+            string d = Environment.CurrentDirectory; // 03.10.19 SunSerega: вообще использовать Environment.CurrentDirectory всюду - говнокод, но если без него - надо очень много переписывать, проще уже всюду его использовать
 
             string fsfn = null;
             if (d.Equals(CompilerOptions.SourceFileDirectory))
