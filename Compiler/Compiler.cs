@@ -2257,6 +2257,8 @@ namespace PascalABCCompiler
 #endif
                 }
             }
+            Environment.CurrentDirectory = CompilerOptions.SourceFileDirectory; // 03.10.19 SunSerega: CompileUnit меняет CurrentDirectory чтоб работало относительное uses-in
+            
             //удаляем лишние ошибки
             /*foreach(Error er in errorsList)
             {
