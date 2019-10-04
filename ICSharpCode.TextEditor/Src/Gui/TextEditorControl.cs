@@ -335,7 +335,7 @@ namespace ICSharpCode.TextEditor
 		{
 			float xPos = 0;
 			float fontHeight = Font.GetHeight(g);
-//			bool  gotNonWhitespace = false;
+			bool  gotNonWhitespace = false;
 			curTabIndent = 0 ;
 			
 			FontContainer fontContainer = TextEditorProperties.FontContainer;
@@ -343,21 +343,21 @@ namespace ICSharpCode.TextEditor
 				switch (word.Type) {
 					case TextWordType.Space:
 						Advance(ref xPos, ref yPos, margin.Width, primaryTextArea.TextArea.TextView.SpaceWidth, fontHeight);
-//						if (!gotNonWhitespace) {
-//							curTabIndent = xPos;
-//						}
+						if (!gotNonWhitespace) {
+							curTabIndent = xPos;
+						}
 						break;
 					case TextWordType.Tab:
 						Advance(ref xPos, ref yPos, margin.Width, TabIndent * primaryTextArea.TextArea.TextView.WideSpaceWidth, fontHeight);
-//						if (!gotNonWhitespace) {
-//							curTabIndent = xPos;
-//						}
+						if (!gotNonWhitespace) {
+							curTabIndent = xPos;
+						}
 						break;
 					case TextWordType.Word:
-//						if (!gotNonWhitespace) {
-//							gotNonWhitespace = true;
+						if (!gotNonWhitespace) {
+							gotNonWhitespace = true;
 //							curTabIndent    += TabIndent * primaryTextArea.TextArea.TextView.GetWidth(' ');
-//						}
+						}
 						g.DrawString(word.Word, word.GetFont(fontContainer), BrushRegistry.GetBrush(word.Color), xPos + margin.X, yPos);
 						SizeF drawingSize = g.MeasureString(word.Word, word.GetFont(fontContainer), new SizeF(margin.Width, fontHeight * 100), printingStringFormat);
 						Advance(ref xPos, ref yPos, margin.Width, drawingSize.Width, fontHeight);
