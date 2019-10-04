@@ -64,7 +64,7 @@ begin
       if comp.ErrorsList[0].GetType() = typeof(PascalABCCompiler.Errors.CompilerInternalError) then
         System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
     end;
-    if i mod 20 = 0 then
+    if i mod 50 = 0 then
       System.GC.Collect();
   end;
   
@@ -99,7 +99,7 @@ begin
       System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       Halt();
     end;
-    if i mod 20 = 0 then
+    if i mod 50 = 0 then
     begin
       System.GC.Collect();
     end;  
@@ -133,7 +133,7 @@ begin
       System.Windows.Forms.MessageBox.Show('Compilation of ' + files[i] + ' failed' + System.Environment.NewLine + comp.ErrorsList[0].ToString());
       Halt();
     end;
-    if i mod 20 = 0 then
+    if i mod 50 = 0 then
       System.GC.Collect();
   end;
   
@@ -367,16 +367,32 @@ begin
     end;
     if (ParamCount = 0) or (ParamStr(1) = '5') then
     begin
-      CompileAllRunTests(true);
-      writeln('Tests with pabcrtl compiled successfully');
-      CompileAllCompilationTests('pabcrtl_tests', true);
-      RunAllTests(false);
-      writeln('Tests with pabcrtl run successfully');
-      ClearExeDir;
-      CompileAllRunTests(false, true);
-      writeln('Tests in 32bit mode compiled successfully');
-      RunAllTests(false);
-      writeln('Tests in 32bit run successfully');
+      if ParamStr(1) = '5' then
+      begin
+        CompileAllRunTests(false, true);
+        writeln('Tests in 32bit mode compiled successfully');
+        RunAllTests(false);
+        writeln('Tests in 32bit run successfully');
+        ClearExeDir;
+        CompileAllRunTests(true);
+        writeln('Tests with pabcrtl compiled successfully');
+        CompileAllCompilationTests('pabcrtl_tests', true);
+        RunAllTests(false);
+        writeln('Tests with pabcrtl run successfully');
+      end
+      else
+      begin
+        CompileAllRunTests(true);
+        writeln('Tests with pabcrtl compiled successfully');
+        CompileAllCompilationTests('pabcrtl_tests', true);
+        RunAllTests(false);
+        writeln('Tests with pabcrtl run successfully');
+        ClearExeDir;
+        CompileAllRunTests(false, true);
+        writeln('Tests in 32bit mode compiled successfully');
+        RunAllTests(false);
+        writeln('Tests in 32bit run successfully');
+      end;
       System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
       RunExpressionsExtractTests;
       writeln('Intellisense expression tests run successfully');
