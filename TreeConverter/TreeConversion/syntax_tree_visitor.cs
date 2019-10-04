@@ -11697,7 +11697,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 List<SymbolInfo> sil = context.find_only_in_namespace(_type_declaration.type_name.name + compiler_string_consts.generic_params_infix +
                         cl_def.template_args.idents.Count.ToString());
-                if (!(sil != null && sil.FirstOrDefault().sym_info is common_type_node && context.types_predefined.IndexOf(sil.FirstOrDefault().sym_info as common_type_node) != -1))
+                if (!(sil != null && sil.FirstOrDefault().sym_info is common_type_node && ((sil.FirstOrDefault().sym_info as common_type_node).IsPartial || context.types_predefined.IndexOf(sil.FirstOrDefault().sym_info as common_type_node) != -1)))
                 {
                     context.check_name_free(_type_declaration.type_name.name, get_location(_type_declaration.type_name));
                 }
