@@ -59,9 +59,11 @@ namespace CodeTemplatesPlugin
             var ta = MainForm.CurrentSyntaxEditor.TextEditor.ActiveTextAreaControl.TextArea;
             if (firstTime)
             {
-                MainForm.ProjectPane = null;
+                //MainForm.ProjectPane = null;
                 MainForm.AddWindowToDockPanel(ctForm, MainForm.MainDockPanel, ctForm.Dock, DockState.DockLeft, false, MainForm.ProjectPane, -1);
-                MainForm.ProjectPane = ctForm.Pane;
+                ctForm.Hide();
+                ctForm.Show();
+                //MainForm.ProjectPane = ctForm.Pane;
                 firstTime = false;
             }
             else

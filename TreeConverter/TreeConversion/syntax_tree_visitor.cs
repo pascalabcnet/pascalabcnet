@@ -16625,7 +16625,7 @@ namespace PascalABCCompiler.TreeConverter
             	sil = context.converted_type.base_type.find_in_type(cmn.name, context.CurrentScope);
             if (sil != null)
             {
-                while (sil.Count() != 0)
+                while (sil.Count != 0)
                 {
                     if (!cmn.is_constructor)
                     {
