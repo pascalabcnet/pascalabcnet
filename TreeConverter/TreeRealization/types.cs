@@ -3164,6 +3164,16 @@ namespace PascalABCCompiler.TreeRealization
         	this.scope = new NetHelper.NetTypeScope(_compiled_type, SystemLibrary.SystemLibrary.symtab);
         }
         
+        public type_node element_type
+		{
+			get
+			{
+                if (compiled_type.GetElementType() == null)
+                    return null;
+				return compiled_type_node.get_type_node(compiled_type.GetElementType());
+			}
+		}
+        
         public static compiled_type_node get_type_node(System.Type st)
 		{
             //(ssyy) Обрабатываем параметры generic-типов

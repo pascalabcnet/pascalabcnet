@@ -40,7 +40,11 @@ ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 cd ..\bin
-TestRunner.exe
+TestRunner.exe 1
+TestRunner.exe 2
+TestRunner.exe 3
+TestRunner.exe 4
+TestRunner.exe 5
 
 cd ..\ReleaseGenerators
 call PascalABCNET_ALL.bat

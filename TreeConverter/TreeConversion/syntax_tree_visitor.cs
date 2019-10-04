@@ -1246,7 +1246,10 @@ namespace PascalABCCompiler.TreeConverter
                     base_function_call bfc = ((left as typed_expression).type as delegated_methods).proper_methods[0];
                     left = convertion_data_and_alghoritms.explicit_convert_type(left, CreateDelegate(bfc.simple_function_node));
                     sil = left.type.find_in_type(name);
-                    bfc = ((right as typed_expression).type as delegated_methods).proper_methods[0];
+                    if (!(right is typed_expression) && right.type is delegated_methods)
+                        bfc = (right.type as delegated_methods).proper_methods[0];
+                    else
+                        bfc = ((right as typed_expression).type as delegated_methods).proper_methods[0];
                     right = convertion_data_and_alghoritms.explicit_convert_type(right, CreateDelegate(bfc.simple_function_node));
                     sil2 = right.type.find_in_type(name);
                     if (saved_sil != null && sil != null)
@@ -3681,6 +3684,12 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(get_location(_class_definition.class_parents.types[0]), "CAN_NOT_INHERIT_FROM_GENERIC_PARAMETER");
                             }
                             context.converted_type.SetBaseType(tn);
+                            var type_instances = generic_convertions.get_type_instances(context.converted_type);
+                            if (type_instances != null)
+                                foreach (generic_type_instance_info gti in type_instances)
+                                {
+                                    gti.pseudo_instance.SetBaseType(tn);
+                                }
                         }
                         //Теперь добавляем интерфейсы.
                         //Цикл с единицы, т.к. нулевой элемент уже был рассмотрен.
@@ -12347,25 +12356,28 @@ namespace PascalABCCompiler.TreeConverter
             List<common_type_node> used_types = new List<common_type_node>(where_list.defs.Count);
             foreach (SyntaxTree.where_definition wd in where_list.defs)
             {
-                bool param_not_found = true;
-                foreach (common_type_node param in gparams)
+                foreach (SyntaxTree.ident wd_id in wd.names.idents)
                 {
-                    if (String.Equals(param.name, wd.names.idents[0].name, StringComparison.InvariantCultureIgnoreCase))
+                    bool param_not_found = true;
+                    foreach (common_type_node param in gparams)
                     {
-                        //Нашли нужный шаблонный параметр
-                        if (used_types.Contains(param))
+                        if (String.Equals(param.name, wd_id.name, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            AddError(get_location(wd.names), "SPECIFICATORS_FOR_{0}_ALREADY_EXIST", wd.names.idents[0].name);
+                            //Нашли нужный шаблонный параметр
+                            if (used_types.Contains(param))
+                            {
+                                AddError(get_location(wd.names), "SPECIFICATORS_FOR_{0}_ALREADY_EXIST", wd_id.name);
+                            }
+                            add_generic_eliminations(param, wd.types.defs);
+                            used_types.Add(param);
+                            param_not_found = false;
+                            break;
                         }
-                        add_generic_eliminations(param, wd.types.defs);
-                        used_types.Add(param);
-                        param_not_found = false;
-                        break;
                     }
-                }
-                if (param_not_found)
-                {
-                    AddError(new UndefinedNameReference(wd.names.idents[0].name, get_location(wd.names)));
+                    if (param_not_found)
+                    {
+                        AddError(new UndefinedNameReference(wd.names.idents[0].name, get_location(wd.names)));
+                    }
                 }
             }
             context.EndSkipGenericInstanceChecking();
