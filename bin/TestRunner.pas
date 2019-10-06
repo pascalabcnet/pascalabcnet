@@ -367,8 +367,7 @@ begin
     end;
     if (ParamCount = 0) or (ParamStr(1) = '5') then
     begin
-      if ParamStr(1) = '5' then
-      begin
+      
         CompileAllRunTests(false, true);
         writeln('Tests in 32bit mode compiled successfully');
         RunAllTests(false);
@@ -377,22 +376,11 @@ begin
         CompileAllRunTests(true);
         writeln('Tests with pabcrtl compiled successfully');
         CompileAllCompilationTests('pabcrtl_tests', true);
-        RunAllTests(false);
-        writeln('Tests with pabcrtl run successfully');
-      end
-      else
-      begin
-        CompileAllRunTests(true);
-        writeln('Tests with pabcrtl compiled successfully');
-        CompileAllCompilationTests('pabcrtl_tests', true);
-        RunAllTests(false);
-        writeln('Tests with pabcrtl run successfully');
-        ClearExeDir;
-        CompileAllRunTests(false, true);
-        writeln('Tests in 32bit mode compiled successfully');
-        RunAllTests(false);
-        writeln('Tests in 32bit run successfully');
-      end;
+    end;
+    if (ParamCount = 0) or (ParamStr(1) = '6') then
+    begin
+      RunAllTests(false);
+      writeln('Tests with pabcrtl run successfully');
       System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
       RunExpressionsExtractTests;
       writeln('Intellisense expression tests run successfully');

@@ -9630,10 +9630,11 @@ namespace PascalABCCompiler.NETGenerator
             {
                 is_dot_expr = false;
             }
-            if (init_call_awaited && !value.new_obj_awaited())
+            if (init_call_awaited && !value.new_obj_awaited() && cnstr.DeclaringType != cur_type)
             {
                 il.Emit(OpCodes.Ldarg_0);
                 il.Emit(OpCodes.Call, cur_ti.init_meth);
+                //throw new Exception(cnstr.DeclaringType.Name+"-"+cur_meth.DeclaringType.Name);
                 init_call_awaited = false;
             }
         }

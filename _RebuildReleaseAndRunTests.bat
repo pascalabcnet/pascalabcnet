@@ -28,6 +28,7 @@ TestRunner.exe 2
 TestRunner.exe 3
 TestRunner.exe 4
 TestRunner.exe 5
+TestRunner.exe 6
 cd ..
 GOTO EXIT
 
