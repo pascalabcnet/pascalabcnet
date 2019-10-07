@@ -9413,7 +9413,7 @@ end;
 /// Возвращает индекс последнего минимального элемента
 function LastIndexMin<T>(Self: array of T): integer; extensionmethod; where T: System.IComparable<T>;
 begin
-  Result := Self.LastIndexMin(Self.Count - 1);
+  Result := Self.LastIndexMin(Self.Length - 1);
 end;  
 
 /// Возвращает индекс последнего минимального элемента в диапазоне [0,index-1]
