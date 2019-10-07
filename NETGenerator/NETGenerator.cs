@@ -2731,7 +2731,7 @@ namespace PascalABCCompiler.NETGenerator
             else if (var.inital_value is IArrayInitializer)
                 CreateArrayForClassField(cb.GetILGenerator(), fb, ti, var.inital_value as IArrayInitializer, var.type);
             else
-                if (var.type.is_value_type || var.inital_value is IConstantNode && !(var.inital_value is INullConstantNode))
+                if (var.type.is_value_type && var.inital_value == null || var.inital_value is IConstantNode && !(var.inital_value is INullConstantNode))
                     AddInitCall(vi, fb, ti.init_meth, var.inital_value as IConstantNode);
             in_var_init = true;
             GenerateInitCode(var, il);
@@ -2774,7 +2774,7 @@ namespace PascalABCCompiler.NETGenerator
             else if (var.inital_value is IArrayInitializer)
                 CreateArrayLocalVariable(il, lb, ti, var.inital_value as IArrayInitializer, var.type);
             else
-                if (var.type.is_value_type || var.inital_value is IConstantNode && !(var.inital_value is INullConstantNode))
+                if (var.type.is_value_type  && var.inital_value == null || var.inital_value is IConstantNode && !(var.inital_value is INullConstantNode))
                     AddInitCall(lb, ti.init_meth, var.inital_value as IConstantNode, var.type);
             if (ti.is_set && var.type.type_special_kind == type_special_kind.set_type && var.inital_value == null)
             {
@@ -4436,7 +4436,7 @@ namespace PascalABCCompiler.NETGenerator
             else if (var.inital_value is IArrayInitializer)
                 CreateArrayGlobalVariable(il, fb, ti, var.inital_value as IArrayInitializer, var.type);
             else
-                if (var.type.is_value_type || var.inital_value is IConstantNode && !(var.inital_value is INullConstantNode))
+                if (var.type.is_value_type  && var.inital_value == null || var.inital_value is IConstantNode && !(var.inital_value is INullConstantNode))
                     AddInitCall(il, fb, ti.init_meth, var.inital_value as IConstantNode);
             if (ti.is_set && var.type.type_special_kind == type_special_kind.set_type && var.inital_value == null)
             {
@@ -4876,7 +4876,7 @@ namespace PascalABCCompiler.NETGenerator
             else if (value.inital_value is IArrayInitializer)
                 CreateArrayForClassField(cur_ti.static_cnstr.GetILGenerator(), fb, ti, value.inital_value as IArrayInitializer, value.type);
             else
-                if (value.type.is_value_type || value.inital_value is IConstantNode && !(value.inital_value is INullConstantNode))
+                if (value.type.is_value_type  && value.inital_value == null || value.inital_value is IConstantNode && !(value.inital_value is INullConstantNode))
                     AddInitCall(fb, cur_ti.static_cnstr.GetILGenerator(), ti.init_meth, ti.def_cnstr, value.inital_value as IConstantNode);
             in_var_init = true;
             GenerateInitCode(value, cur_ti.static_cnstr.GetILGenerator());
@@ -4903,7 +4903,7 @@ namespace PascalABCCompiler.NETGenerator
             else if (value.inital_value is IArrayInitializer)
                 CreateArrayForClassField((cur_ti.init_meth as MethodBuilder).GetILGenerator(), fb, ti, value.inital_value as IArrayInitializer, value.type);
             else
-                if (value.type.is_value_type || value.inital_value is IConstantNode && !(value.inital_value is INullConstantNode))
+                if (value.type.is_value_type && value.inital_value == null || value.inital_value is IConstantNode && !(value.inital_value is INullConstantNode))
                     AddInitCall(fb, (cur_ti.init_meth as MethodBuilder).GetILGenerator(), ti.init_meth, ti.def_cnstr, value.inital_value as IConstantNode);
             in_var_init = true;
             GenerateInitCode(value, (cur_ti.init_meth as MethodBuilder).GetILGenerator());
@@ -6007,10 +6007,15 @@ namespace PascalABCCompiler.NETGenerator
                         il.Emit(OpCodes.Ldarg_0);
                         il.Emit(OpCodes.Call, TypeFactory.ObjectType.GetConstructor(Type.EmptyTypes));
                     }*/
+                    
                     if (value.polymorphic_state != polymorphic_state.ps_static)
                     {
                         init_call_awaited = true;
-
+                        if (cur_type.IsValueType)
+                        {
+                            il.Emit(OpCodes.Ldarg_0);
+                            il.Emit(OpCodes.Call, cur_ti.init_meth);
+                        }
                         //il.Emit(OpCodes.Ldarg_0);
                         //il.Emit(OpCodes.Call, cur_ti.init_meth);
                     }
@@ -9602,14 +9607,14 @@ namespace PascalABCCompiler.NETGenerator
             {
                 il.Emit(OpCodes.Newobj, cnstr);
                 var ti = helper.GetTypeReference(value.common_type);
-                if (ti != null && ti.init_meth != null && value.common_type.is_value_type)
+                /*if (ti != null && ti.init_meth != null && value.common_type.is_value_type)
                 {
                     LocalBuilder lb = il.DeclareLocal(ti.tp);
                     il.Emit(OpCodes.Stloc, lb);
                     il.Emit(OpCodes.Ldloca, lb);
                     il.Emit(OpCodes.Call, ti.init_meth);
                     il.Emit(OpCodes.Ldloc, lb);
-                }
+                }*/
             }
             else
             {
@@ -9630,10 +9635,11 @@ namespace PascalABCCompiler.NETGenerator
             {
                 is_dot_expr = false;
             }
-            if (init_call_awaited && !value.new_obj_awaited())
+            if (init_call_awaited && !value.new_obj_awaited() && cnstr.DeclaringType != cur_type)
             {
                 il.Emit(OpCodes.Ldarg_0);
                 il.Emit(OpCodes.Call, cur_ti.init_meth);
+                //throw new Exception(cnstr.DeclaringType.Name+"-"+cur_meth.DeclaringType.Name);
                 init_call_awaited = false;
             }
         }

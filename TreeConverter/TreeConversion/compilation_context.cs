@@ -2550,6 +2550,7 @@ namespace PascalABCCompiler.TreeConverter
                 //cnode.ForwardDeclarationOnly = false;
                 return cnode;
             }
+            
             if (cnode != null && is_partial && cnode.IsPartial)
             {
                 return cnode;
