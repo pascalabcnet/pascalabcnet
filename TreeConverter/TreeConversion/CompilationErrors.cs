@@ -2936,7 +2936,7 @@ namespace PascalABCCompiler.TreeConverter
         public ThisTypeOfVariablesCannotBeCaptured(location loc)
             : base(loc)
         {
-
+            
         }
 
         public override string ToString()
