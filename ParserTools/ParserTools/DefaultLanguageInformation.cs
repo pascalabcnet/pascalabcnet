@@ -126,6 +126,7 @@ namespace PascalABCCompiler.Parsers
             keywords.Add("exit", "exit"); keys.Add("exit");
             keywords.Add("event", "event"); keys.Add("event");
             keywords.Add("match", "match"); keys.Add("match");
+            keywords.Add("when", "when"); keys.Add("when");
             keywords.Add("static", "static"); keys.Add("static");
             //keywords.Add("typeof", "typeof"); //keys.Add("typeof");
             //keywords.Add("sizeof", "sizeof"); //keys.Add("sizeof");
@@ -483,7 +484,12 @@ namespace PascalABCCompiler.Parsers
                 sb.Append('>');
                 return sb.ToString();
             }
-            if (ctn.IsArray) return "array of " + GetFullTypeName(ctn.GetElementType());
+            if (ctn.IsArray)
+            {
+                var rank = ctn.GetArrayRank();
+                var strrank = rank > 1 ? "[" + new string(',', rank - 1) + "]" : "";
+                return $"array{strrank}" + " of " + GetFullTypeName(ctn.GetElementType());
+            }
             if (ctn == Type.GetType("System.Void*")) return "pointer";
             if (ctn.IsNested)
                 return ctn.Name;
@@ -969,10 +975,15 @@ namespace PascalABCCompiler.Parsers
 				}
 				sb.Append('>');*/
 				return sb.ToString();
-			}
-			if (ctn.IsArray) return "array of "+GetShortTypeName(ctn.GetElementType());
-			//if (ctn == Type.GetType("System.Void*")) return PascalABCCompiler.TreeConverter.compiler_string_consts.pointer_type_name;
-			return ctn.Name;
+            }
+            if (ctn.IsArray)
+            {
+                var rank = ctn.GetArrayRank();
+                var strrank = rank > 1 ? "[" + new string(',', rank - 1) + "]" : "";
+                return $"array{strrank}" + " of " + GetShortTypeName(ctn.GetElementType());
+            }
+            //if (ctn == Type.GetType("System.Void*")) return PascalABCCompiler.TreeConverter.compiler_string_consts.pointer_type_name;
+            return ctn.Name;
 		}
 		
 		protected virtual string GetTopScopeName(IBaseScope sc)
@@ -1525,8 +1536,9 @@ namespace PascalABCCompiler.Parsers
             }
             else
             {
-                sb.Append("const " + fi.Name + " : " + GetFullTypeName(fi.FieldType));
-                sb.Append(" = " + fi.GetRawConstantValue().ToString());
+                var fitype = GetFullTypeName(fi.FieldType);
+                sb.Append("const " + fi.Name + " : " + fitype);
+                sb.Append(" = " + (fitype == "string" ? $"'{fi.GetRawConstantValue().ToString()}'" : fi.GetRawConstantValue().ToString()));
             }
             sb.Append(";");
             return sb.ToString();
@@ -1750,7 +1762,15 @@ namespace PascalABCCompiler.Parsers
                 {
                     sb.Append(GetFullTypeName(pis[i].ParameterType));
                     if (pis[i].IsOptional)
-                        sb.Append(":=" + (pis[i].DefaultValue != null ? pis[i].DefaultValue.ToString() : "nil"));
+                    {
+                        sb.Append(" := ");
+                        if (pis[i].DefaultValue != null)
+                        {
+                            if (pis[i].DefaultValue is string) sb.Append($"'{pis[i].DefaultValue.ToString()}'");
+                            else sb.Append(pis[i].DefaultValue.ToString());
+                        }
+                        else sb.Append("nil");
+                    }
                 }
                 else
                 {
@@ -1924,7 +1944,15 @@ namespace PascalABCCompiler.Parsers
                     else
                         sb.Append(inst_type);
                     if (pis[i].IsOptional)
-                        sb.Append(":=" + (pis[i].DefaultValue != null ? pis[i].DefaultValue.ToString() : "nil"));
+                    {
+                        sb.Append(" := ");
+                        if (pis[i].DefaultValue != null)
+                        {
+                            if (pis[i].DefaultValue is string) sb.Append($"'{pis[i].DefaultValue.ToString()}'");
+                            else sb.Append(pis[i].DefaultValue.ToString());
+                        }
+                        else sb.Append("nil");
+                    }
                 }
                 else
                 {

@@ -1184,6 +1184,8 @@ var
   OnKeyPress: procedure(ch: char);
   /// Событие изменения размера графического окна
   OnResize: procedure;
+  /// Событие перерисовки графического окна. Параметр dt обозначает количество миллисекунд с момента последнего вызова OnDrawFrame
+  OnDrawFrame: procedure(dt: real) := nil;
 
 // -----------------------------------------------------
 //>>     Функции пересечения# Intersection functions
@@ -1207,15 +1209,16 @@ procedure __InitModule__;
 procedure __FinalizeModule__;
 //{{{--doc: Конец секции 2 }}} 
 
-procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer := 61);
+//procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer := 61);
 
-procedure BeginFrameBasedAnimationTime(DrawT: procedure(dt: real));
+//procedure BeginFrameBasedAnimationTime(DrawT: procedure(dt: real));
+
 
 implementation
 
-procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer) := GraphWPF.BeginFrameBasedAnimation(Draw,frate);
+//procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer) := GraphWPF.BeginFrameBasedAnimation(Draw,frate);
 
-procedure BeginFrameBasedAnimationTime(DrawT: procedure(dt: real)) := GraphWPF.BeginFrameBasedAnimationTime(DrawT);
+//procedure BeginFrameBasedAnimationTime(DrawT: procedure(dt: real)) := GraphWPF.BeginFrameBasedAnimationTime(DrawT);
 
 function RGB(r,g,b: byte) := Color.Fromrgb(r, g, b);
 function ARGB(a,r,g,b: byte) := Color.FromArgb(a, r, g, b);
@@ -1540,6 +1543,19 @@ procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) :=
   if OnResize<>nil then
     OnResize();
 
+var LastUpdatedTimeWPF := new System.TimeSpan(integer.MinValue); 
+
+procedure RenderFrameWPF(o: Object; e: System.EventArgs);
+begin
+  if OnDrawFrame<>nil then
+  begin
+    var e1 := RenderingEventArgs(e).RenderingTime;
+    var dt := e1 - LastUpdatedTimeWPF;
+    LastUpdatedTimeWPF := e1;  
+    OnDrawFrame(dt.Milliseconds/1000);
+  end;  
+end;
+
 procedure __InitModule;
 begin
   AdditionalInit := procedure ->
@@ -1553,6 +1569,8 @@ begin
     MainWindow.KeyUp += SystemOnKeyUp;
     MainWindow.TextInput += SystemOnKeyPress;
     MainWindow.SizeChanged += SystemOnResize;
+    
+    CompositionTarget.Rendering += RenderFrameWPF;
     
     Objects := new ObjectsType;
     Window := GraphWPF.Window;

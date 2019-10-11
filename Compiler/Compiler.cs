@@ -2156,17 +2156,24 @@ namespace PascalABCCompiler
                         if (InternalDebug.CodeGeneration)
 #endif
                         {
+                            int n = 1;
                             try
                             {
-                                File.Create(CompilerOptions.OutputFileName).Close();
-                                //File.Delete(CompilerOptions.OutputFileName);
+                                n = 2;
+                                var fs = File.Create(CompilerOptions.OutputFileName);
+                                n = 3;
+                                fs.Close();
+                                n = 4;
+                                                                                                ///////File.Delete(CompilerOptions.OutputFileName);
                                 string pdb_file_name=Path.ChangeExtension(CompilerOptions.OutputFileName, ".pdb");
                                 if (File.Exists(pdb_file_name))
                                     File.Delete(pdb_file_name);
+                                    n = 5;
                             }
-                            catch (Exception)
+                            catch (Exception e)
                             {
-                                throw new UnauthorizedAccessToFile(CompilerOptions.OutputFileName);
+                                    throw new UnauthorizedAccessToFile(CompilerOptions.OutputFileName + " -- " + n + "  " + e.ToString());
+                                    //throw e;
                             }
                             OnChangeCompilerState(this, CompilerState.CodeGeneration, CompilerOptions.OutputFileName);
                             string[] ResourceFilesArray = null;

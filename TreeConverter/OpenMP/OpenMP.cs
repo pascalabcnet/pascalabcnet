@@ -1234,7 +1234,10 @@ namespace PascalABCCompiler.TreeConverter
             if (sem_type.IsPointer)// если указатель
             {
                 SyntaxTree.ref_type rt = new PascalABCCompiler.SyntaxTree.ref_type();
-                rt.pointed_to = ConvertToSyntaxType((sem_type as ref_type_node).pointed_type);
+                if (sem_type is compiled_type_node)
+                    rt.pointed_to = ConvertToSyntaxType((sem_type as compiled_type_node).element_type);
+                else
+                    rt.pointed_to = ConvertToSyntaxType((sem_type as ref_type_node).pointed_type);
                 return rt;
 
             }
