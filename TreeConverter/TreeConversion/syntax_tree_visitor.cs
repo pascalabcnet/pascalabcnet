@@ -14807,16 +14807,20 @@ namespace PascalABCCompiler.TreeConverter
         {
         	array_internal_interface aii = tn.get_internal_interface(internal_interface_kind.unsized_array_interface) as array_internal_interface;
         	int rank = aii.rank;
+            int size = -1;
         	for (int i=0; i<constant.element_values.Count; i++)
         	{
         		expression_node e = constant.element_values[i];
         		if (e is array_initializer)
         		{
-        			if (cur_rank>=rank)
-        				constant.element_values[i] = ConvertArrayInitializer(tn.element_type,e as array_initializer);
+                    if (size != -1 && size != (e as array_initializer).element_values.Count)
+                        AddError(e.location, "ARRAY_CONST_{0}_ELEMENTS_EXPECTED", size);
+                    size = (e as array_initializer).element_values.Count;
+        			if (cur_rank >= rank)
+        				constant.element_values[i] = ConvertArrayInitializer(tn.element_type, e as array_initializer);
         				//AddError(new CanNotConvertTypes(e,e.type,tn.element_type,e.location));
         			else
-        			constant.element_values[i] = ConvertNDimArrayInitializer(tn,cur_rank+1,element_type,e as array_initializer);
+                        constant.element_values[i] = ConvertNDimArrayInitializer(tn,cur_rank + 1, element_type, e as array_initializer);
         		}
         		else if (e is record_initializer)
             	{
@@ -14890,16 +14894,20 @@ namespace PascalABCCompiler.TreeConverter
         {
         	array_internal_interface aii = tn.get_internal_interface(internal_interface_kind.unsized_array_interface) as array_internal_interface;
         	int rank = aii.rank;
+            int size = -1;
         	for (int i=0; i<constant.element_values.Count; i++)
         	{
         		expression_node e = constant.element_values[i];
         		if (e is array_const)
         		{
+                    if (size != -1 && size != (e as array_const).element_values.Count)
+                        AddError(e.location, "ARRAY_CONST_{0}_ELEMENTS_EXPECTED", size);
+                    size = (e as array_const).element_values.Count;
         			if (cur_rank>=rank)
         				constant.element_values[i] = ConvertArrayConst(tn.element_type,e as array_const);
         				//AddError(new CanNotConvertTypes(e,e.type,tn.element_type,e.location));
         			else
-        			constant.element_values[i] = ConvertNDimArrayConst(tn,cur_rank+1,element_type,e as array_const);
+                        constant.element_values[i] = ConvertNDimArrayConst(tn,cur_rank+1,element_type,e as array_const);
         		}
         		else if (e is record_constant)
             	{
