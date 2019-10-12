@@ -506,8 +506,6 @@ uses System.Runtime.CompilerServices;
 //===================================
 // Обязательно сделать до следующего пула:
 
-//ToDo мультиюзбл хаб не должен использоваться для обычных Buffer.NewQueue
-
 //ToDo разбить BufferCommandCopy на 2 типа +1 базовый, чтоб не использовать лишнюю очередь
 
 //ToDo Написать в справке про implicit, типа способ создать очередь
@@ -517,8 +515,6 @@ uses System.Runtime.CompilerServices;
 
 //===================================
 // Запланированное:
-
-//ToDo DummyQueue.Multiusable может тупо возвращать себя несколько раз
 
 //ToDo система создания описаний через отдельные файлы
 
@@ -2021,12 +2017,13 @@ type
     
     protected procedure Invoke(c: Context; var cq: __SafeNativQueue; prev_ev: cl_event; tasks: List<Task>); override;
     begin
-      MakeBusy;
       self.ev := prev_ev;
       if prev_ev=cl_event.Zero then
         SignalMWEvent else
         cl.SetEventCallback(prev_ev, CommandExecutionStatus.COMPLETE, CLSignalMWEvent, nil).RaiseIfError;
     end;
+    
+    protected procedure UnInvoke; override := exit;
     
     protected function InternalClone(muhs: Dictionary<object, object>; cache: Dictionary<CommandQueueBase, CommandQueueBase>): CommandQueueBase; override :=
     new DummyCommandQueue<T>(self.res);
@@ -2208,14 +2205,22 @@ end;
 
 function CommandQueue<T>.Multiusable(n: integer): array of CommandQueue<T>;
 begin
-  var hub := new MultiusableCommandQueueHub<T>(self);
-  Result := ArrGen(n, i-> new MultiusableCommandQueueNode<T>(hub) as CommandQueue<T> );
+  if self is DummyCommandQueue<T> then
+    Result := ArrFill(n, self) else
+  begin
+    var hub := new MultiusableCommandQueueHub<T>(self);
+    Result := ArrGen(n, i-> new MultiusableCommandQueueNode<T>(hub) as CommandQueue<T> );
+  end;
 end;
 
 function CommandQueue<T>.Multiusable: ()->CommandQueue<T>;
 begin
-  var hub := new MultiusableCommandQueueHub<T>(self);
-  Result := ()-> new MultiusableCommandQueueNode<T>(hub) as CommandQueue<T>;
+  if self is DummyCommandQueue<T> then
+    Result := ()->self else
+  begin
+    var hub := new MultiusableCommandQueueHub<T>(self);
+    Result := ()-> new MultiusableCommandQueueNode<T>(hub) as CommandQueue<T>;
+  end;
 end;
 
 {$endregion Multiusable}
@@ -3971,29 +3976,47 @@ end;
 function Buffer.GetArrayAt<TArray>(offset: CommandQueue<integer>; szs: CommandQueue<array of integer>): TArray;
 begin
   var el_t := typeof(TArray).GetElementType;
-  var res: &Array;
   
-  var Qs_szs := szs.Multiusable(2);
-  
-  var Q_res := Qs_szs[0].ThenConvert(szs_val->
+  if szs is DummyCommandQueue<array of integer>(var dcq) then
   begin
-    Result := System.Array.CreateInstance(
+    var res := System.Array.CreateInstance(
+      el_t,
+      dcq.res
+    );
+    
+    self.ReadArray(res, 0,Marshal.SizeOf(el_t)*res.Length);
+    
+    Result := TArray(res);
+  end else
+  begin
+    var Qs_szs := szs.Multiusable(2);
+    
+    var Q_a_base := Qs_szs[0].ThenConvert(szs_val->
+    System.Array.CreateInstance(
       el_t,
       szs_val
+    ));
+    var Qs_a_base := Q_a_base.Multiusable(2);
+    
+    var Q_a := Qs_a_base[0];
+    var Q_a_len := Qs_szs[1].ThenConvert( szs_val -> Marshal.SizeOf(el_t)*szs_val.Aggregate((i1,i2)->i1*i2) );
+    var Q_res := Qs_a_base[1];
+    
+    Result := TArray(
+      Context.Default.SyncInvoke(
+        self.NewQueue
+        .AddReadArray(Q_a, offset, Q_a_len) as CommandQueue<Buffer>
+      *
+        Q_res
+      )
     );
-    res := Result;
-  end);
-  var Q_res_len := Qs_szs[1].ThenConvert( szs_val -> Marshal.SizeOf(el_t)*szs_val.Aggregate((i1,i2)->i1*i2) );
+  end;
   
-  Context.Default.SyncInvoke(
-    self.NewQueue
-    .AddReadArray(Q_res, offset, Q_res_len) as CommandQueue<Buffer>
-  );
-  
-  Result := TArray(res);
 end;
 
 function Buffer.GetArrayAt<TArray>(offset: CommandQueue<integer>; params szs: array of CommandQueue<integer>) :=
+szs.All(q->q is DummyCommandQueue<integer>) ?
+GetArrayAt&<TArray>(offset, CommandQueue&<array of integer>( szs.ConvertAll(q->DummyCommandQueue&<integer>(q).res) )) :
 GetArrayAt&<TArray>(offset, CombineAsyncQueue(a->a, szs));
 
 function Buffer.GetValueAt<TRecord>(offset: CommandQueue<integer>): TRecord;
