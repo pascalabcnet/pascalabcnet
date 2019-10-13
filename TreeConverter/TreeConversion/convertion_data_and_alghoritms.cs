@@ -669,7 +669,8 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return from;
             }
-
+            
+            
             possible_type_convertions ptc = type_table.get_convertions(from.type, to, false);
             if (ptc.second != null)
             {
@@ -687,7 +688,7 @@ namespace PascalABCCompiler.TreeConverter
                     ret.conversion_type = conv_type;
                 return ret;
             }
-
+            
             if ((type_table.is_derived(from.type, to)) || (type_table.is_derived(to, from.type)) || from.type.IsInterface || to.IsInterface && !(from.type is delegated_methods))
             {
                 if (from.type.IsSealed && to.IsInterface && !from.type.ImplementingInterfaces.Contains(to) ||
