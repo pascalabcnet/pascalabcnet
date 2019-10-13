@@ -1087,7 +1087,8 @@ namespace PascalABCCompiler.TreeConverter
             {
             	if ( !type_table.is_with_nil_allowed(left.type) && !left.type.IsPointer)
                     AddError(right.location, "NIL_WITH_VALUE_TYPES_NOT_ALLOWED");
-            	right = null_const_node.get_const_node_with_type(left.type, (null_const_node)right);
+                if (right.conversion_type == null)
+                    right = null_const_node.get_const_node_with_type(left.type, (null_const_node)right);
             }
 
             /*if (left.semantic_node_type == semantic_node_type.null_const_node)
