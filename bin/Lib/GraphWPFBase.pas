@@ -89,6 +89,8 @@ type
     function GetHeight: real;
     procedure SetCaption(c: string);
     function GetCaption: string;
+    procedure SetFixedSize(b: boolean);
+    function GetFixedSize: boolean;
   public 
     /// Отступ главного окна от левого края экрана 
     property Left: real read GetLeft write SetLeft;
@@ -102,6 +104,8 @@ type
     property Caption: string read GetCaption write SetCaption;
     /// Заголовок окна
     property Title: string read GetCaption write SetCaption;
+    /// Имеет ли графическое окно фиксированный размер
+    property IsFixedSize: boolean read GetFixedSize write SetFixedSize;
     /// Очищает графическое окно белым цветом
     procedure Clear; virtual;
     /// Очищает графическое окно цветом c
@@ -163,6 +167,12 @@ procedure WindowType.SetCaption(c: string) := Invoke(WindowTypeSetCaptionP,c);
 
 function WindowTypeGetCaptionP := MainWindow.Title;
 function WindowType.GetCaption := Invoke&<string>(WindowTypeGetCaptionP);
+
+procedure WindowTypeSetFixedSizeP(b: boolean) := if b then MainWindow.ResizeMode := ResizeMode.NoResize else MainWindow.ResizeMode := ResizeMode.CanResize;
+procedure WindowType.SetFixedSize(b: boolean) := Invoke(WindowTypeSetFixedSizeP,b);
+
+function WindowTypeGetFixedSizeP := MainWindow.ResizeMode = ResizeMode.NoResize;
+function WindowType.GetFixedSize := Invoke&<boolean>(WindowTypeGetFixedSizeP);
 
 procedure WindowTypeClearP := begin {Host.children.Clear; CountVisuals := 0;} end;
 procedure WindowType.Clear := Invoke(WindowTypeClearP);

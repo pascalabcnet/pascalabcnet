@@ -2484,9 +2484,9 @@ function Sphere(center: Point3D; Radius: real; m: Material := DefaultMaterial): 
 function Ellipsoid(x, y, z, RadiusX, RadiusY, RadiusZ: real; m: Material := DefaultMaterial): EllipsoidT;
 /// Возвращает эллипсоид с центром в точке center и радиусами RadiusX, RadiusY, RadiusZ
 function Ellipsoid(center: Point3D; RadiusX, RadiusY, RadiusZ: real; m: Material := DefaultMaterial): EllipsoidT;
-/// Возвращает эллипсоид с центром в точке (x, y, z) и длиной стороны SideLength
+/// Возвращает куб с центром в точке (x, y, z) и длиной стороны SideLength
 function Cube(x, y, z, SideLength: real; m: Material := DefaultMaterial): CubeT;
-/// Возвращает эллипсоид с центром в точке center и длиной стороны SideLength
+/// Возвращает куб с центром в точке center и длиной стороны SideLength
 function Cube(center: Point3D; SideLength: real; m: Material := DefaultMaterial): CubeT;
 /// Возвращает паралеллепипед с центром в точке (x, y, z) и размерами SizeX, SizeY, SizeZ
 function Box(x, y, z, SizeX, SizeY, SizeZ: real; m: Material := DefaultMaterial): BoxT;
