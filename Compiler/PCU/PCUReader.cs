@@ -740,7 +740,10 @@ namespace PascalABCCompiler.PCU
             if (template_types.Length > 0)
             {
                 if (!pure_template)
-                    t = t.MakeGenericType(template_types);
+                {
+                    if (t.IsGenericTypeDefinition)
+                        t = t.MakeGenericType(template_types);
+                }
                 else
                 {
                     ts.name = type_name.Remove(0, type_name.LastIndexOf('.') + 1);
