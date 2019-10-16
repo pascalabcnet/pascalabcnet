@@ -150,16 +150,39 @@ procedure WindowType.SetTop(t: real) := Invoke(WindowTypeSetTopP,t);
 function WindowTypeGetTopP := MainWindow.Top;
 function WindowType.GetTop := InvokeReal(WindowTypeGetTopP);
 
-procedure WindowTypeSetWidthP(w: real) := MainWindow.Width := w + wplus;
+procedure WindowTypeSetWidthP(w: real);
+begin
+  if MainWindow.ResizeMode = ResizeMode.NoResize then
+    MainWindow.Width := w + 2.5
+  else MainWindow.Width := w + wplus; 
+end;  
+  
 procedure WindowType.SetWidth(w: real) := Invoke(WindowTypeSetWidthP,w);
 
-function WindowTypeGetWidthP := MainWindow.ActualWidth - wplus;
+function WindowTypeGetWidthP: real;
+begin
+  if MainWindow.ResizeMode = ResizeMode.NoResize then
+    Result := MainWindow.ActualWidth - 2.5
+  else Result := MainWindow.ActualWidth - wplus; 
+end; 
 function WindowType.GetWidth := InvokeReal(WindowTypeGetWidthP);
 
-procedure WindowTypeSetHeightP(h: real) := MainWindow.Height := h + hplus;
+procedure WindowTypeSetHeightP(h: real);
+begin
+  if MainWindow.ResizeMode = ResizeMode.NoResize then
+    MainWindow.Height := h + SystemParameters.WindowCaptionHeight + 2.5
+  else MainWindow.Height := h + hplus;
+end;
 procedure WindowType.SetHeight(h: real) := Invoke(WindowTypeSetHeightP,h);
 
-function WindowTypeGetHeightP := MainWindow.ActualHeight - hplus;
+function WindowTypeGetHeightP: real;
+begin
+  if MainWindow.ResizeMode = ResizeMode.NoResize then
+    Result := MainWindow.ActualHeight - SystemParameters.WindowCaptionHeight - 2.5
+  else Result := MainWindow.ActualHeight - hplus;
+  Print(SystemParameters.FixedFrameHorizontalBorderHeight);
+  //Print(SystemParameters.WindowCaptionHeight, SystemParameters.WindowResizeBorderThickness.Top, SystemParameters.WindowResizeBorderThickness.Bottom);
+end; 
 function WindowType.GetHeight := InvokeReal(WindowTypeGetHeightP);
 
 procedure WindowTypeSetCaptionP(c: string) := MainWindow.Title := c;
@@ -168,7 +191,12 @@ procedure WindowType.SetCaption(c: string) := Invoke(WindowTypeSetCaptionP,c);
 function WindowTypeGetCaptionP := MainWindow.Title;
 function WindowType.GetCaption := Invoke&<string>(WindowTypeGetCaptionP);
 
-procedure WindowTypeSetFixedSizeP(b: boolean) := if b then MainWindow.ResizeMode := ResizeMode.NoResize else MainWindow.ResizeMode := ResizeMode.CanResize;
+procedure WindowTypeSetFixedSizeP(b: boolean);
+begin
+  if b then 
+    MainWindow.ResizeMode := ResizeMode.NoResize 
+  else MainWindow.ResizeMode := ResizeMode.CanResize;
+end;  
 procedure WindowType.SetFixedSize(b: boolean) := Invoke(WindowTypeSetFixedSizeP,b);
 
 function WindowTypeGetFixedSizeP := MainWindow.ResizeMode = ResizeMode.NoResize;
