@@ -4353,7 +4353,10 @@ namespace PascalABCCompiler.TreeRealization
                         if (cmn.num_of_default_parameters == cmn.parameters.Count)
                             return bfc;
                     }
-                    else if (bfc.function is compiled_function_node)
+                }
+                foreach (base_function_call bfc in _proper_methods)
+                {
+                    if (bfc.function is compiled_function_node)
                     {
                         compiled_function_node cfn = bfc.function as compiled_function_node;
                         if (cfn.ConnectedToType != null && (bfc.simple_function_node.parameters.Count == 1 || bfc.simple_function_node.parameters.Count == 2 && (bfc.simple_function_node.parameters[1].is_params || bfc.simple_function_node.parameters[1].default_value != null)))
