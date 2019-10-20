@@ -1876,6 +1876,7 @@ namespace PascalABCCompiler.TreeConverter
             bool is_alone_method_defined = (functions.Count() == 1);
             function_node first_function = functions.FirstOrDefault().sym_info as function_node;
             bool _is_assigment = first_function.name == compiler_string_consts.assign_name;
+            bool is_op = compiler_string_consts.GetNETOperName(first_function.name) != null;
             basic_function_node _tmp_bfn = functions.FirstOrDefault().sym_info as basic_function_node;
 
             List<function_node> indefinits = new List<function_node>();
@@ -2137,6 +2138,8 @@ namespace PascalABCCompiler.TreeConverter
                     return AddError<function_node>(new CanNotConvertTypes(parameters[1], parameters[1].type, parameters[0].type, parameters[1].location));
                 if (_tmp_bfn != null && parameters.Count == 2)
                     return AddError<function_node>(new OperatorCanNotBeAppliedToThisTypes(_tmp_bfn.name, parameters[0], parameters[1], loc));
+                if (is_op)
+                    return AddError<function_node>(new OperatorCanNotBeAppliedToThisTypes(first_function.name, parameters[0], parameters.Count > 1?parameters[1]:null, loc));
                 return AddError<function_node>(new NoFunctionWithSameArguments(loc, is_alone_method_defined));
             }
 
