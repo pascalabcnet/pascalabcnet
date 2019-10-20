@@ -1160,10 +1160,21 @@ namespace PascalABCCompiler.NETGenerator
                         throw ex;
                 }
             }
-                
+            List<TypeBuilder> failed_types = new List<TypeBuilder>();
             for (int i = 0; i < types.Count; i++)
                 if (!types[i].IsInterface)
-                    types[i].CreateType();
+                {
+                    try
+                    {
+                        types[i].CreateType();
+                    }
+                    catch (TypeLoadException ex)
+                    {
+                        failed_types.Add(types[i]);
+                    }
+                }
+            for (int i = 0; i < failed_types.Count; i++)
+                failed_types[i].CreateType();
         }
 
         //перевод тела
