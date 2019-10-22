@@ -11,4 +11,4 @@
 !ERROR=Error
 !FILE_NOT_FOUND{0}=File "{0}" not found.
 !WARNING=Warning
-!ERROR_ON_CREATE_DIRECORY=Error when creating directory
+!ERROR_ON_CREATE_DIRECTORY=Error when creating directory

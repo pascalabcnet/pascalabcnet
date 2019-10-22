@@ -77,8 +77,8 @@ namespace VisualPascalABC.OptionsContent
                         checkBox1.Checked = CompOpt.Debug;
                         cbDeleteExe.Checked = opt.DeleteEXEAfterExecute;
                         cbDeletePdb.Checked = opt.DeletePDBAfterExecute;
-                        cbUseOutputDirecory.Checked = opt.UseOutputDirectory;
-                        cbUseOutputDirecory_CheckedChanged(null, null);
+                        cbUseOutputDirectory.Checked = opt.UseOutputDirectory;
+                        cbUseOutputDirectory_CheckedChanged(null, null);
                         tbOutputDirectory.Text = opt.OutputDirectory;
                         cbUseDllForSystemUnits.Checked = opt.UseDllForSystemUnits;
                         alreadyShown = true;
@@ -110,12 +110,12 @@ namespace VisualPascalABC.OptionsContent
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show(ex.Message, PascalABCCompiler.StringResources.Get("!ERROR_ON_CREATE_DIRECORY"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show(ex.Message, PascalABCCompiler.StringResources.Get("!ERROR_ON_CREATE_DIRECTORY"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                             ActiveControl = tbOutputDirectory;
                             return;
                         }
                     }
-                    opt.UseOutputDirectory = cbUseOutputDirecory.Checked;
+                    opt.UseOutputDirectory = cbUseOutputDirectory.Checked;
                     opt.OutputDirectory = tbOutputDirectory.Text;
                     opt.UseDllForSystemUnits = cbUseDllForSystemUnits.Checked;
                     if (opt.UseOutputDirectory)
@@ -141,9 +141,9 @@ namespace VisualPascalABC.OptionsContent
 
         }
 
-        private void cbUseOutputDirecory_CheckedChanged(object sender, EventArgs e)
+        private void cbUseOutputDirectory_CheckedChanged(object sender, EventArgs e)
         {
-            tbOutputDirectory.Enabled = btSelectOutpotDirectory.Enabled = cbUseOutputDirecory.Checked;
+            tbOutputDirectory.Enabled = btSelectOutpotDirectory.Enabled = cbUseOutputDirectory.Checked;
         }
 
  
