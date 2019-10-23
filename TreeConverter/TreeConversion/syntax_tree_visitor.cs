@@ -4040,7 +4040,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     generate_default_constructor();
                 }
-                if (!context.namespace_converted)
+                if (!context.namespace_converted || context.converted_type.name.IndexOf("<>") != -1)
                     visit_class_member_realizations(_class_body);
             }
             
@@ -10991,6 +10991,10 @@ namespace PascalABCCompiler.TreeConverter
                         }
 
                     }
+                    else if (decl is procedure_definition && get_location(decl) == null)
+                    {
+                        //yield 
+                    }
                     else
                         AddError(get_location(decl), "NAMESPACE_SHOULD_CONTAINS_ONLY_TYPES");
                 }
@@ -11042,6 +11046,20 @@ namespace PascalABCCompiler.TreeConverter
                                 ctn.SetName(_syntax_namespace_node.name + "." + ctn.name);
                             }
                         }
+                    }
+                    
+                }
+                context.leave_scope();
+            }
+            foreach (syntax_namespace_node _syntax_namespace_node in namespaces)
+            {
+                common_namespace_node cmn = dict[_syntax_namespace_node];
+                context.enter_scope(cmn.scope);
+                foreach (declaration decl in _syntax_namespace_node.defs)
+                {
+                    if (decl is procedure_definition)
+                    {
+                        hard_node_test_and_visit(decl);
                     }
                 }
                 context.leave_scope();
