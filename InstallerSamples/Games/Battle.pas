@@ -1,4 +1,4 @@
-uses GraphABC;
+﻿uses GraphABC;
  
 const types = 3;               //число типов рыб минус 1
       rmax = 4;                //радиус всех рыб

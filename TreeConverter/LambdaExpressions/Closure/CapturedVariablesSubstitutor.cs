@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -879,7 +879,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 {
                     var genericParameters = AllGenericParameters;
 
-                    if (_visitor.context._ctn != null && _visitor.context._ctn.generic_params != null)
+                    if (_visitor.context._ctn != null /* && _visitor.context._ctn.generic_params != null */)
                     {
                         var tr = upperField.vars_type as named_type_reference;
                         if (tr != null && tr.names != null && tr.names.Count == 1)
@@ -891,10 +891,11 @@ namespace TreeConverter.LambdaExpressions.Closure
                         }
                     }
 
-                    upperField.vars_type =
-                        new template_type_reference(
-                            (named_type_reference)upperField.vars_type,
-                            new template_param_list(genericParameters.Select(l => SyntaxTreeBuilder.BuildSimpleType(l.name)).ToList()));
+                    if (genericParameters.Count > 0)
+                        upperField.vars_type = // SSM 26/06/19 - было вне if - поставил в if -  #1947 - что-то легло. Оставил вне if
+                            new template_type_reference(
+                                (named_type_reference)upperField.vars_type,
+                                new template_param_list(genericParameters.Select(l => SyntaxTreeBuilder.BuildSimpleType(l.name)).ToList()));
                 }
 
                 if (clDecl.Value.GeneratedVarStatementForScope != null)
@@ -938,6 +939,14 @@ namespace TreeConverter.LambdaExpressions.Closure
             }
         }
 
+        private bool IsInGenericClass
+        {
+            get
+            {
+                return _visitor.context._ctn != null && _visitor.context._ctn.generic_params != null;
+
+            }
+        }
         private List<ident> AllGenericParameters
         {
             get

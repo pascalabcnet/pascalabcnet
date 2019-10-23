@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 //Здесь описана реализация generic-типов
 //Файлом владеет ssyy.
@@ -141,11 +141,13 @@ namespace PascalABCCompiler.TreeRealization
         public static CompilationErrorWithLocation check_type_list(List<type_node> tparams, List<generic_parameter_eliminations> gpe_list, bool method_param_types, out int i)
         {
             int count = tparams.Count;
+            
             for (i = 0; i < count; i++)
             {
                 generic_parameter_eliminations gpe = gpe_list[i];
                 type_node tn = tparams[i];
-                if (gpe.is_class && !tn.is_class)
+                
+                if (gpe.is_class && !tn.is_class && !(tn.is_generic_parameter && tn.base_type != null && tn.base_type.is_class))
                 {
                     return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_REFERENCE_TYPE", tn.PrintableName);
                 }
@@ -801,7 +803,7 @@ namespace PascalABCCompiler.TreeRealization
                                     if (DeduceInstanceTypes(last_params_type, (fact[i].type as delegated_methods).empty_param_method.type, deduced, nils))
                                         continue;
                                 }
-                                else
+                                else if (alone)
                                     throw new SimpleSemanticError(loc, "GENERIC_FUNCTION_{0}_CAN_NOT_BE_CALLED_WITH_THESE_PARAMETERS", func.name);
                                 return null;
                             }
@@ -1924,8 +1926,20 @@ namespace PascalABCCompiler.TreeRealization
             {
                 foreach (SymbolInfo si in start)
                 {
-                    definition_node dnode = ConvertMember(si.sym_info);
-                    rez_si = new SymbolInfo(dnode, si.access_level, si.symbol_kind);
+                    // Бурмистров Артем 13.06.19 begin
+                    // Поправил странное поведение для локальных переменных, у которых не generic тип
+                    // Исправление для #1993
+                    if (si.sym_info is /*var_definition_node*/ local_block_variable vdn && !vdn.type.is_generic_parameter)
+                    {
+                        rez_si = si;
+                    }
+                    else
+                    {
+                        definition_node dnode = ConvertMember(si.sym_info);
+                        rez_si = new SymbolInfo(dnode, si.access_level, si.symbol_kind);
+                        rez_si.scope = si.scope;
+                    }
+                    // aab 13.06.19 end
                     //Дополняем список SymbolInfo преобразованным значением
                     if (rez_start == null)
                     {

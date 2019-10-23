@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 ///--
 unit GraphWPFBase;
@@ -27,7 +27,6 @@ type
       g.LastChildFill := True;
       Result := g;
     end;
-    
     procedure InitMainGraphControl; virtual;
     begin
     end;
@@ -90,6 +89,8 @@ type
     function GetHeight: real;
     procedure SetCaption(c: string);
     function GetCaption: string;
+    procedure SetFixedSize(b: boolean);
+    function GetFixedSize: boolean;
   public 
     /// Отступ главного окна от левого края экрана 
     property Left: real read GetLeft write SetLeft;
@@ -103,6 +104,8 @@ type
     property Caption: string read GetCaption write SetCaption;
     /// Заголовок окна
     property Title: string read GetCaption write SetCaption;
+    /// Имеет ли графическое окно фиксированный размер
+    property IsFixedSize: boolean read GetFixedSize write SetFixedSize;
     /// Очищает графическое окно белым цветом
     procedure Clear; virtual;
     /// Очищает графическое окно цветом c
@@ -147,16 +150,39 @@ procedure WindowType.SetTop(t: real) := Invoke(WindowTypeSetTopP,t);
 function WindowTypeGetTopP := MainWindow.Top;
 function WindowType.GetTop := InvokeReal(WindowTypeGetTopP);
 
-procedure WindowTypeSetWidthP(w: real) := MainWindow.Width := w + wplus;
+procedure WindowTypeSetWidthP(w: real);
+begin
+  if MainWindow.ResizeMode = ResizeMode.NoResize then
+    MainWindow.Width := w + 2.5
+  else MainWindow.Width := w + wplus; 
+end;  
+  
 procedure WindowType.SetWidth(w: real) := Invoke(WindowTypeSetWidthP,w);
 
-function WindowTypeGetWidthP := MainWindow.ActualWidth - wplus;
+function WindowTypeGetWidthP: real;
+begin
+  if MainWindow.ResizeMode = ResizeMode.NoResize then
+    Result := MainWindow.ActualWidth - 2.5
+  else Result := MainWindow.ActualWidth - wplus; 
+end; 
 function WindowType.GetWidth := InvokeReal(WindowTypeGetWidthP);
 
-procedure WindowTypeSetHeightP(h: real) := MainWindow.Height := h + hplus;
+procedure WindowTypeSetHeightP(h: real);
+begin
+  if MainWindow.ResizeMode = ResizeMode.NoResize then
+    MainWindow.Height := h + SystemParameters.WindowCaptionHeight + 2.5
+  else MainWindow.Height := h + hplus;
+end;
 procedure WindowType.SetHeight(h: real) := Invoke(WindowTypeSetHeightP,h);
 
-function WindowTypeGetHeightP := MainWindow.ActualHeight - hplus;
+function WindowTypeGetHeightP: real;
+begin
+  if MainWindow.ResizeMode = ResizeMode.NoResize then
+    Result := MainWindow.ActualHeight - SystemParameters.WindowCaptionHeight - 2.5
+  else Result := MainWindow.ActualHeight - hplus;
+  Print(SystemParameters.FixedFrameHorizontalBorderHeight);
+  //Print(SystemParameters.WindowCaptionHeight, SystemParameters.WindowResizeBorderThickness.Top, SystemParameters.WindowResizeBorderThickness.Bottom);
+end; 
 function WindowType.GetHeight := InvokeReal(WindowTypeGetHeightP);
 
 procedure WindowTypeSetCaptionP(c: string) := MainWindow.Title := c;
@@ -164,6 +190,17 @@ procedure WindowType.SetCaption(c: string) := Invoke(WindowTypeSetCaptionP,c);
 
 function WindowTypeGetCaptionP := MainWindow.Title;
 function WindowType.GetCaption := Invoke&<string>(WindowTypeGetCaptionP);
+
+procedure WindowTypeSetFixedSizeP(b: boolean);
+begin
+  if b then 
+    MainWindow.ResizeMode := ResizeMode.NoResize 
+  else MainWindow.ResizeMode := ResizeMode.CanResize;
+end;  
+procedure WindowType.SetFixedSize(b: boolean) := Invoke(WindowTypeSetFixedSizeP,b);
+
+function WindowTypeGetFixedSizeP := MainWindow.ResizeMode = ResizeMode.NoResize;
+function WindowType.GetFixedSize := Invoke&<boolean>(WindowTypeGetFixedSizeP);
 
 procedure WindowTypeClearP := begin {Host.children.Clear; CountVisuals := 0;} end;
 procedure WindowType.Clear := Invoke(WindowTypeClearP);
@@ -229,9 +266,9 @@ function operator implicit(Self: array of (real, real)): array of Point; extensi
 function operator implicit(Self: array of (integer, integer)): array of Point; extensionmethod := 
   Self.Select(t->new Point(t[0],t[1])).ToArray;
  
-procedure SetLeft(Self: UIElement; l: integer); extensionmethod := Canvas.SetLeft(Self,l);
+procedure SetLeft(Self: UIElement; l: real); extensionmethod := Canvas.SetLeft(Self,l);
 
-procedure SetTop(Self: UIElement; t: integer); extensionmethod := Canvas.SetTop(Self,t);
+procedure SetTop(Self: UIElement; t: real); extensionmethod := Canvas.SetTop(Self,t);
 
 var __initialized: boolean;
 

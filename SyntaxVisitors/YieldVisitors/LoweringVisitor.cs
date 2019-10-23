@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -339,7 +339,11 @@ namespace SyntaxVisitors
             bl.defs.Add(new label_definitions(gotoBreak.label, gotoContinue.label));
         }
 
-        
+        public override void visit(function_lambda_definition fld)
+        {
+            // Нельзя Lowerить содержимое лямбды !!! Баг #1641!
+        }
+
         public override void visit(for_node fn)
         {
             var b = HasStatementVisitor<yield_node>.Has(fn);

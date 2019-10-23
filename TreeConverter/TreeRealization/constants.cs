@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -1094,6 +1094,11 @@ namespace PascalABCCompiler.TreeRealization
         {
             _method_call = method_call;
         }
+        
+        public override constant_node get_constant_copy(location loc)
+		{
+			return new basic_function_call_as_constant(this.method_call,loc);
+		}
 
         SemanticTree.IBasicFunctionCallNode SemanticTree.IBasicFunctionCallNodeAsConstant.MethodCall
         {

@@ -491,7 +491,7 @@ namespace PascalABCCompiler.SyntaxTree
 				case 234:
 					return new deconstructor_pattern();
 				case 235:
-					return new pattern_deconstructor_parameter();
+					return new pattern_parameter();
 				case 236:
 					return new desugared_deconstruction();
 				case 237:
@@ -504,6 +504,32 @@ namespace PascalABCCompiler.SyntaxTree
 					return new var_tuple_def_statement();
 				case 241:
 					return new semantic_check_sugared_var_def_statement_node();
+				case 242:
+					return new const_pattern();
+				case 243:
+					return new tuple_pattern_wild_card();
+				case 244:
+					return new const_pattern_parameter();
+				case 245:
+					return new wild_card_deconstructor_parameter();
+				case 246:
+					return new collection_pattern();
+				case 247:
+					return new collection_pattern_gap_parameter();
+				case 248:
+					return new collection_pattern_wild_card();
+				case 249:
+					return new collection_pattern_var_parameter();
+				case 250:
+					return new recursive_collection_parameter();
+				case 251:
+					return new recursive_pattern_parameter();
+				case 252:
+					return new tuple_pattern();
+				case 253:
+					return new tuple_pattern_var_parameter();
+				case 254:
+					return new recursive_tuple_parameter();
 			}
 			return null;
 		}
@@ -4048,6 +4074,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_pattern_node(pattern_node _pattern_node)
 		{
 			read_syntax_tree_node(_pattern_node);
+			if (br.ReadByte() == 0)
+			{
+				_pattern_node.parameters = null;
+			}
+			else
+			{
+				_pattern_node.parameters = new List<pattern_parameter>();
+				Int32 ssyy_count = br.ReadInt32();
+				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
+				{
+					_pattern_node.parameters.Add(_read_node() as pattern_parameter);
+				}
+			}
 		}
 
 
@@ -4137,31 +4176,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_deconstructor_pattern(deconstructor_pattern _deconstructor_pattern)
 		{
 			read_pattern_node(_deconstructor_pattern);
-			if (br.ReadByte() == 0)
-			{
-				_deconstructor_pattern.parameters = null;
-			}
-			else
-			{
-				_deconstructor_pattern.parameters = new List<pattern_deconstructor_parameter>();
-				Int32 ssyy_count = br.ReadInt32();
-				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
-				{
-					_deconstructor_pattern.parameters.Add(_read_node() as pattern_deconstructor_parameter);
-				}
-			}
 			_deconstructor_pattern.type = _read_node() as type_definition;
+			_deconstructor_pattern.const_params_check = _read_node() as expression;
 		}
 
 
-		public void visit(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		public void visit(pattern_parameter _pattern_parameter)
 		{
-			read_pattern_deconstructor_parameter(_pattern_deconstructor_parameter);
+			read_pattern_parameter(_pattern_parameter);
 		}
 
-		public void read_pattern_deconstructor_parameter(pattern_deconstructor_parameter _pattern_deconstructor_parameter)
+		public void read_pattern_parameter(pattern_parameter _pattern_parameter)
 		{
-			read_syntax_tree_node(_pattern_deconstructor_parameter);
+			read_syntax_tree_node(_pattern_parameter);
 		}
 
 
@@ -4185,9 +4212,10 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_var_deconstructor_parameter(var_deconstructor_parameter _var_deconstructor_parameter)
 		{
-			read_pattern_deconstructor_parameter(_var_deconstructor_parameter);
+			read_pattern_parameter(_var_deconstructor_parameter);
 			_var_deconstructor_parameter.identifier = _read_node() as ident;
 			_var_deconstructor_parameter.type = _read_node() as type_definition;
+			_var_deconstructor_parameter.var_keyword_used = br.ReadBoolean();
 		}
 
 
@@ -4198,8 +4226,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_recursive_deconstructor_parameter(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
 		{
-			read_pattern_deconstructor_parameter(_recursive_deconstructor_parameter);
-			_recursive_deconstructor_parameter.pattern = _read_node() as pattern_node;
+			read_recursive_pattern_parameter(_recursive_deconstructor_parameter);
 		}
 
 
@@ -4260,6 +4287,156 @@ namespace PascalABCCompiler.SyntaxTree
 					_semantic_check_sugared_var_def_statement_node.lst.Add(_read_node() as syntax_tree_node);
 				}
 			}
+		}
+
+
+		public void visit(const_pattern _const_pattern)
+		{
+			read_const_pattern(_const_pattern);
+		}
+
+		public void read_const_pattern(const_pattern _const_pattern)
+		{
+			read_pattern_node(_const_pattern);
+			_const_pattern.pattern_expressions = _read_node() as expression_list;
+		}
+
+
+		public void visit(tuple_pattern_wild_card _tuple_pattern_wild_card)
+		{
+			read_tuple_pattern_wild_card(_tuple_pattern_wild_card);
+		}
+
+		public void read_tuple_pattern_wild_card(tuple_pattern_wild_card _tuple_pattern_wild_card)
+		{
+			read_pattern_parameter(_tuple_pattern_wild_card);
+		}
+
+
+		public void visit(const_pattern_parameter _const_pattern_parameter)
+		{
+			read_const_pattern_parameter(_const_pattern_parameter);
+		}
+
+		public void read_const_pattern_parameter(const_pattern_parameter _const_pattern_parameter)
+		{
+			read_pattern_parameter(_const_pattern_parameter);
+			_const_pattern_parameter.const_param = _read_node() as expression;
+		}
+
+
+		public void visit(wild_card_deconstructor_parameter _wild_card_deconstructor_parameter)
+		{
+			read_wild_card_deconstructor_parameter(_wild_card_deconstructor_parameter);
+		}
+
+		public void read_wild_card_deconstructor_parameter(wild_card_deconstructor_parameter _wild_card_deconstructor_parameter)
+		{
+			read_pattern_parameter(_wild_card_deconstructor_parameter);
+		}
+
+
+		public void visit(collection_pattern _collection_pattern)
+		{
+			read_collection_pattern(_collection_pattern);
+		}
+
+		public void read_collection_pattern(collection_pattern _collection_pattern)
+		{
+			read_pattern_node(_collection_pattern);
+		}
+
+
+		public void visit(collection_pattern_gap_parameter _collection_pattern_gap_parameter)
+		{
+			read_collection_pattern_gap_parameter(_collection_pattern_gap_parameter);
+		}
+
+		public void read_collection_pattern_gap_parameter(collection_pattern_gap_parameter _collection_pattern_gap_parameter)
+		{
+			read_pattern_parameter(_collection_pattern_gap_parameter);
+		}
+
+
+		public void visit(collection_pattern_wild_card _collection_pattern_wild_card)
+		{
+			read_collection_pattern_wild_card(_collection_pattern_wild_card);
+		}
+
+		public void read_collection_pattern_wild_card(collection_pattern_wild_card _collection_pattern_wild_card)
+		{
+			read_pattern_parameter(_collection_pattern_wild_card);
+		}
+
+
+		public void visit(collection_pattern_var_parameter _collection_pattern_var_parameter)
+		{
+			read_collection_pattern_var_parameter(_collection_pattern_var_parameter);
+		}
+
+		public void read_collection_pattern_var_parameter(collection_pattern_var_parameter _collection_pattern_var_parameter)
+		{
+			read_pattern_parameter(_collection_pattern_var_parameter);
+			_collection_pattern_var_parameter.identifier = _read_node() as ident;
+			_collection_pattern_var_parameter.type = _read_node() as type_definition;
+		}
+
+
+		public void visit(recursive_collection_parameter _recursive_collection_parameter)
+		{
+			read_recursive_collection_parameter(_recursive_collection_parameter);
+		}
+
+		public void read_recursive_collection_parameter(recursive_collection_parameter _recursive_collection_parameter)
+		{
+			read_recursive_pattern_parameter(_recursive_collection_parameter);
+		}
+
+
+		public void visit(recursive_pattern_parameter _recursive_pattern_parameter)
+		{
+			read_recursive_pattern_parameter(_recursive_pattern_parameter);
+		}
+
+		public void read_recursive_pattern_parameter(recursive_pattern_parameter _recursive_pattern_parameter)
+		{
+			read_pattern_parameter(_recursive_pattern_parameter);
+			_recursive_pattern_parameter.pattern = _read_node() as pattern_node;
+		}
+
+
+		public void visit(tuple_pattern _tuple_pattern)
+		{
+			read_tuple_pattern(_tuple_pattern);
+		}
+
+		public void read_tuple_pattern(tuple_pattern _tuple_pattern)
+		{
+			read_pattern_node(_tuple_pattern);
+		}
+
+
+		public void visit(tuple_pattern_var_parameter _tuple_pattern_var_parameter)
+		{
+			read_tuple_pattern_var_parameter(_tuple_pattern_var_parameter);
+		}
+
+		public void read_tuple_pattern_var_parameter(tuple_pattern_var_parameter _tuple_pattern_var_parameter)
+		{
+			read_pattern_parameter(_tuple_pattern_var_parameter);
+			_tuple_pattern_var_parameter.identifier = _read_node() as ident;
+			_tuple_pattern_var_parameter.type = _read_node() as type_definition;
+		}
+
+
+		public void visit(recursive_tuple_parameter _recursive_tuple_parameter)
+		{
+			read_recursive_tuple_parameter(_recursive_tuple_parameter);
+		}
+
+		public void read_recursive_tuple_parameter(recursive_tuple_parameter _recursive_tuple_parameter)
+		{
+			read_recursive_pattern_parameter(_recursive_tuple_parameter);
 		}
 
 	}

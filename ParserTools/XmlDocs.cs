@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections;
@@ -203,7 +203,7 @@ namespace CodeCompletionTools
                     return xdoc.GetDocumentation("T:" + t.FullName, false);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
             }

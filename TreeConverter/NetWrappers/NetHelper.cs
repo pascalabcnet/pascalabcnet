@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using PascalABCCompiler.SemanticTree;
@@ -64,6 +64,22 @@ namespace PascalABCCompiler.NetHelper
                 }
             }
             return null;
+        }
+        
+        public List<TypeInfo> GetTypesByNamespaceList(using_namespace_list unl)
+        {
+            List<TypeInfo> types = new List<TypeInfo>();
+            foreach (TypeNamespaceInfo tni in type_infos)
+            {
+                foreach (using_namespace un in unl)
+                {
+                    if (string.Compare(un.namespace_name, tni.us_ns.namespace_name, true) == 0)
+                    {
+                        types.Add(tni.type_info);
+                    }
+                }
+            }
+            return types;
         }
     }
 
@@ -447,7 +463,8 @@ namespace PascalABCCompiler.NetHelper
                         //if (namespaces[s] == null) ns_ht.Add(s,s);
                         ns_ht[s] = s;
                         namespaces[s] = t;
-                        if (pos != -1)
+                        // SSM 17.05.19 Запретил uses Reflection: https://github.com/pascalabcnet/pascalabcnet/issues/1941
+                        /*if (pos != -1)
                         {
                             string[] sub_ns_arr = s.Split('.');
                             string sub_ns_str = sub_ns_arr[sub_ns_arr.Length - 1];
@@ -459,7 +476,7 @@ namespace PascalABCCompiler.NetHelper
                                 sub_ns_str = sub_ns_arr[ind] + "." + sub_ns_str;
                                 ind--;
                             }
-                        }
+                        }*/
                         while (pos != -1)
                         {
                             s = s.Substring(0, pos);
@@ -1843,6 +1860,7 @@ namespace PascalABCCompiler.NetHelper
                 fi = new FoundInfo(false);
                 type_search_cache[name] = fi;
             }
+            
 			return null;
 		}
 
@@ -1929,8 +1947,8 @@ namespace PascalABCCompiler.NetHelper
             {
                 if (!fi.exists)
                     return null;
-                TypeInfo ti = fi.GetTypeByNamespaceList(_unar);
-                if (ti != null)
+                List<TypeInfo> ti_list = fi.GetTypesByNamespaceList(_unar);
+                foreach (TypeInfo ti in ti_list)
                     if (cur_used_assemblies.ContainsKey(ti.type.Assembly))
                         return ti.type;
             }
@@ -1984,8 +2002,8 @@ namespace PascalABCCompiler.NetHelper
                             }
                             if (cur_used_assemblies.ContainsKey(t.type.Assembly))
                                 return t.type;
-                            else
-                                return null;
+                            //else
+                            //    return null;
                         }
                     }
                 }
@@ -2087,7 +2105,11 @@ namespace PascalABCCompiler.NetHelper
 			foreach (string s in namespaces.Keys)
 			{
 				if (s != name && s.StartsWith(name, StringComparison.CurrentCultureIgnoreCase))
-					lst.Add(s.Substring(name.Length+1));
+                {
+                    if (s.Length >= name.Length + 1)
+                        lst.Add(s.Substring(name.Length + 1));
+                }
+					
 			}
 			if (lst == null) return null;
 			return lst.ToArray();

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.IO;
@@ -868,11 +868,91 @@ namespace PascalABCCompiler.PCU
         }
         //\ssyy
 		
+        private void AddIndirectInteraceUsedUnits()
+        {
+            if (cun.namespaces.Count == 0)
+                return;
+            Dictionary<common_namespace_node, bool> interf_ns_dict = new Dictionary<common_namespace_node, bool>();
+            common_unit_node unt = null;
+            for (int j = 0; j < unit.InterfaceUsedUnits.Count; j++)
+            {
+                unt = unit.InterfaceUsedUnits[j] as common_unit_node;
+                if (unt == null) continue;
+                foreach (common_namespace_node ns in unt.namespaces)
+                {
+                    interf_ns_dict[ns] = true;
+                }
+            }
+            common_namespace_node cnn = cun.namespaces[0];
+            foreach (common_type_node ctn in cnn.types)
+            {
+                foreach (common_method_node cmn in ctn.methods)
+                {
+                    if (cmn.is_constructor && cmn.function_code != null && cmn.function_code.location == null)
+                    {
+                        foreach (common_parameter cp in cmn.parameters)
+                        {
+                            if (cp.type is common_type_node)
+                            {
+                                common_namespace_node comp_cnn = (cp.type as common_type_node).comprehensive_namespace;
+                                if (comp_cnn != null && !interf_ns_dict.ContainsKey(comp_cnn))
+                                {
+                                    unit.InterfaceUsedUnits.AddElement(comp_cnn.cont_unit);
+                                    interf_ns_dict[comp_cnn] = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        private void AddIndirectImplementationUsedUnits()
+        {
+            if (cun.namespaces.Count < 2)
+                return;
+            common_unit_node unt = null;
+            Dictionary<common_namespace_node, bool> impl_ns_dict = new Dictionary<common_namespace_node, bool>();
+            for (int j = 0; j < unit.ImplementationUsedUnits.Count; j++)
+            {
+                unt = unit.ImplementationUsedUnits[j] as common_unit_node;
+                if (unt == null) continue;
+                foreach (common_namespace_node ns in unt.namespaces)
+                {
+                    impl_ns_dict[ns] = true;
+                }
+            }
+            common_namespace_node cnn = cun.namespaces[1];
+            foreach (common_type_node ctn in cnn.types)
+            {
+                foreach (common_method_node cmn in ctn.methods)
+                {
+                    if (cmn.is_constructor && cmn.function_code != null && cmn.function_code.location == null)
+                    {
+                        foreach (common_parameter cp in cmn.parameters)
+                        {
+                            if (cp.type is common_type_node)
+                            {
+                                common_namespace_node comp_cnn = (cp.type as common_type_node).comprehensive_namespace;
+                                if (comp_cnn != null && !impl_ns_dict.ContainsKey(comp_cnn))
+                                {
+                                    unit.ImplementationUsedUnits.AddElement(comp_cnn.cont_unit);
+                                    impl_ns_dict[comp_cnn] = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
         //заполнение списка подключаемых модулей
 		private void GetUsedUnits()
 		{
 			int num = 0;
             common_unit_node unt = null;
+            AddIndirectInteraceUsedUnits();
+            AddIndirectImplementationUsedUnits();
             for (int j = 0; j < unit.InterfaceUsedUnits.Count; j++)
             {
                 unt = unit.InterfaceUsedUnits[j] as common_unit_node;
@@ -887,6 +967,7 @@ namespace PascalABCCompiler.PCU
                 if (unt.namespaces.Count != 0) 
                 	num += 1;//unt.namespaces.Count;
             }
+            
 			pcu_file.incl_modules = new string[num];
             int i = 0; num = 0;
 			for (i=0; i<unit.InterfaceUsedUnits.Count; i++)
@@ -927,6 +1008,8 @@ namespace PascalABCCompiler.PCU
                     }*/
 				}
 			}
+            
+            
 			pcu_file.used_namespaces = cun.used_namespaces.ToArray();
 		}
 		
@@ -2106,6 +2189,7 @@ namespace PascalABCCompiler.PCU
             else
                 bw.Write(cnst.name);
             bw.Write(GetUnitReference(cnst.comprehensive_namespace));
+            WriteTypeReference(cnst.type);
             SaveExpressionAndOffset(cnst.const_value);
             bw.Write(0);
             //VisitExpression(cnst.const_value);
@@ -2180,10 +2264,12 @@ namespace PascalABCCompiler.PCU
 		{
 			bw.Write(cur_cnn.non_template_types.Count);
 			for (int i=0; i<cur_cnn.non_template_types.Count; i++)
-                if (cur_cnn.non_template_types[i].type_special_kind != SemanticTree.type_special_kind.array_wrapper)
-				VisitTypeDefinition(cur_cnn.non_template_types[i]);
+                if (!(cur_cnn.non_template_types[i].type_special_kind == SemanticTree.type_special_kind.array_wrapper && 
+                    cur_cnn.non_template_types[i].name.StartsWith("$") && cur_cnn.non_template_types[i].element_type is common_type_node && cur_cnn.non_template_types[i].element_type.is_class))
+                    VisitTypeDefinition(cur_cnn.non_template_types[i]);
             for (int i = 0; i < cur_cnn.non_template_types.Count; i++)
-                if (cur_cnn.non_template_types[i].type_special_kind == SemanticTree.type_special_kind.array_wrapper)
+                if (cur_cnn.non_template_types[i].type_special_kind == SemanticTree.type_special_kind.array_wrapper && 
+                    cur_cnn.non_template_types[i].name.StartsWith("$") && cur_cnn.non_template_types[i].element_type is common_type_node && cur_cnn.non_template_types[i].element_type.is_class)
                     VisitTypeDefinition(cur_cnn.non_template_types[i]);
             bw.Write(cur_cnn.runtime_types.Count);
 			for (int i=0; i<cur_cnn.runtime_types.Count; i++)
@@ -2840,7 +2926,8 @@ namespace PascalABCCompiler.PCU
 			bw.Write((byte)meth.polymorphic_state);
 			bw.Write(meth.num_of_default_variables);
 			bw.Write(meth.num_of_for_cycles);
-			bw.Write(meth.overrided_method != null);
+			bw.Write(meth.overrided_method != null && meth.name.IndexOf('.') != -1);
+            
             //ssyy-
 			//if (meth.pascal_associated_constructor != null)
 			//{
@@ -3046,7 +3133,7 @@ namespace PascalABCCompiler.PCU
             //else
             //{
             //    bw.Write((byte)1);
-            if (meth.function_code == null)
+            if (meth.function_code == null || meth.name.IndexOf("<yield_helper_error_checkerr>") != -1)
             {
                 VisitStatement(new empty_statement(null));
             }
@@ -3054,6 +3141,8 @@ namespace PascalABCCompiler.PCU
             {
                 VisitStatement(meth.function_code);
             }
+            if (meth.overrided_method != null && meth.name.IndexOf('.') != -1)
+                WriteMethodReference(meth.overrided_method);
             //}
         }
 
@@ -3065,7 +3154,10 @@ namespace PascalABCCompiler.PCU
             //(ssyy) метки
             VisitLabelDeclarations(func.label_nodes_list);
 			FixupCode(func);
-			VisitStatement(func.function_code);
+            if (func.name.IndexOf("<yield_helper_error_checkerr>") != -1)
+                VisitStatement(new empty_statement(null));
+            else            
+                VisitStatement(func.function_code);
 		}
 		
 		private void VisitNestedFunctionImplementation(common_in_function_function_node func)
@@ -3790,7 +3882,10 @@ namespace PascalABCCompiler.PCU
 		{
 			bw.Write((System.Int16)expr.function_node.basic_function_type);
             WriteTypeReference(expr.ret_type);
-            WriteTypeReference(expr.conversion_type);
+            if (expr.conversion_type is delegated_methods)
+                WriteTypeReference(null);
+            else
+                WriteTypeReference(expr.conversion_type);
             bw.Write(expr.parameters.Count);
 			for (int i=0; i<expr.parameters.Count; i++)
 			    VisitExpression(expr.parameters[i]);

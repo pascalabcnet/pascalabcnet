@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -53,21 +53,24 @@ namespace PascalABCCompiler
             	string name = Path.Combine(di.FullName, ".LanguageName");
                 if (File.Exists(name))
                 {
-                    StreamReader sr = new StreamReader(name, System.Text.Encoding.GetEncoding(1251));
-                    string lname = sr.ReadLine();
-                    string twoLetterISO = sr.ReadLine();
-                    string LCID = sr.ReadLine();
-                    if (!sr.EndOfStream && sr.ReadLine() == "default")
-                    {
-                        DefaultLanguage = lname;
-                        DefaultTwoLetterISO = twoLetterISO;
+                    using (StreamReader sr = new StreamReader(name, System.Text.Encoding.GetEncoding(1251)))
+                    { 
+                        string lname = sr.ReadLine();
+                        string twoLetterISO = sr.ReadLine();
+                        string LCID = sr.ReadLine();
+                        if (lname == null || twoLetterISO == null || LCID == null)
+                            continue;
+                        if (!sr.EndOfStream && sr.ReadLine() == "default")
+                        {
+                            DefaultLanguage = lname;
+                            DefaultTwoLetterISO = twoLetterISO;
+                        }
+                        AccessibleLanguagesHashtable.Add(lname, di.FullName+Path.DirectorySeparatorChar/*"\\"*/);
+                        AccessibleTwoLetterISOHashtable.Add(lname, twoLetterISO);
+                        AccessibleLCIDHashtable.Add(twoLetterISO, LCID);
+                        accessibleLanguages.Add(lname);
+                        twoLetterISOLanguages.Add(twoLetterISO);
                     }
-                    sr.Close();
-                    AccessibleLanguagesHashtable.Add(lname, di.FullName+Path.DirectorySeparatorChar/*"\\"*/);
-                    AccessibleTwoLetterISOHashtable.Add(lname, twoLetterISO);
-                    AccessibleLCIDHashtable.Add(twoLetterISO, LCID);
-                    accessibleLanguages.Add(lname);
-                    twoLetterISOLanguages.Add(twoLetterISO);
                 }
             }
             /*StreamReader sr = new StreamReader(configFileName, System.Text.Encoding.GetEncoding(1251));

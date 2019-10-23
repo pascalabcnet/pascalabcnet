@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections;
@@ -17,6 +17,21 @@ namespace CodeCompletion
     public struct RetValue
     {
         public object prim_val;
+
+        public string string_val
+        {
+            get
+            {
+                string s = (string)prim_val;
+                if (s != null && s.StartsWith("'") && s.EndsWith("'"))
+                    s = s.Substring(1, s.Length - 2);
+                return s;
+            }
+            set
+            {
+                prim_val = "'" + value + "'";
+            }
+        }
     }
 
     public class DomConverter : ICodeCompletionDomConverter
@@ -897,7 +912,7 @@ namespace CodeCompletion
                     ss = null;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
             }

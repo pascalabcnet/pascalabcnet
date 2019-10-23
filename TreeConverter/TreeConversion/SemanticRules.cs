@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using PascalABCCompiler.TreeRealization;
 namespace PascalABCCompiler.TreeConverter
@@ -129,8 +129,8 @@ namespace PascalABCCompiler.TreeConverter
         public static bool AllowUseFormatExprAnywhere = false;
 		public static bool AllowChangeLoopVariable = true;
 
-		public static bool AllowGlobalVisibilityForPABCDll = false;
-
+		public static bool AllowGlobalVisibilityForPABCDll = true; // SSM не знаю, зачем понадобилось по умолчанию присваивать false. Сделал по умолчанию True. Исправляется тем самым баг  #1575
+        // !!! Не присваивать false! Иначе ложится компиляция библиотек, использующих модули, и наоборот!!!
 
         public static bool AddressOfOperatorNonOverloaded=true;
 

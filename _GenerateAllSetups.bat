@@ -32,12 +32,6 @@ cd PABCRtl
 ..\sn.exe -Vu PABCRtl.dll
 copy PABCRtl.dll ..\..\bin\Lib
 
-..\..\bin\pabcnetc PABCRtl32.pas /rebuild
-@IF %ERRORLEVEL% NEQ 0 GOTO ERROR
-..\sn.exe -Vr PABCRtl32.dll
-..\sn.exe -R PABCRtl32.dll KeyPair32.snk
-..\sn.exe -Vu PABCRtl32.dll
-copy PABCRtl32.dll ..\..\bin\Lib
 cd ..
 ExecHide.exe gacutil.exe /u PABCRtl
 ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
@@ -46,7 +40,12 @@ ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 cd ..\bin
-TestRunner.exe
+TestRunner.exe 1
+TestRunner.exe 2
+TestRunner.exe 3
+TestRunner.exe 4
+TestRunner.exe 5
+TestRunner.exe 6
 
 cd ..\ReleaseGenerators
 call PascalABCNET_ALL.bat

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -86,7 +86,7 @@ namespace CodeCompletion
             {
                 expr.visit(this);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 returned_scope = null;
             }
@@ -752,6 +752,8 @@ namespace CodeCompletion
 
         public SymScope CheckForAccess(ElementScope ss, ElementScope es)
         {
+            if (es.is_static)
+                return null;
             if (es.acc_mod == access_modifer.none || es.acc_mod == access_modifer.public_modifer || es.acc_mod == access_modifer.published_modifer || es.acc_mod == access_modifer.internal_modifer)
                 return es;
             if (es.acc_mod == access_modifer.private_modifer)

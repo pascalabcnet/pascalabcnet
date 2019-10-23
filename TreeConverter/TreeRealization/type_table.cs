@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections;
@@ -810,6 +810,17 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
+        static bool not_contains_type(type_node right, type_node left) // вызывать только если left - generic parameter
+        {
+            System.Diagnostics.Debug.Assert(left.is_generic_parameter); // вроде рекурсивно не надо просматривать right т.к. это обрезается другой проверкой - один из типов должен быть t1<T>
+            if (right.is_generic_type_instance)
+                for (int i = 0; i < right.instance_params.Count; i++)
+                {
+                    if (right.instance_params[i] == left)
+                        return false;
+                }
+            return true;
+        }
         public static bool is_type_or_original_generics_equal(type_node left, type_node right)
         {
             if (left == right)
@@ -827,8 +838,9 @@ namespace PascalABCCompiler.TreeRealization
                 }
                 return true;
             }
-            if (left.is_generic_parameter)
-                return true;
+            if (left.is_generic_parameter) // SSM 29.05.19 надо проверять, что right не содержит T
+                return not_contains_type(right, left); // нет, другие тесты падают
+                //return true;
             if (left.type_special_kind == SemanticTree.type_special_kind.set_type && right == SystemLibrary.SystemLibInitializer.TypedSetType.sym_info
                 || right.type_special_kind == SemanticTree.type_special_kind.set_type && left == SystemLibrary.SystemLibInitializer.TypedSetType.sym_info)
                 return true;

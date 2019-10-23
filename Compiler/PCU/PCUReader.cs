@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.IO;
@@ -287,7 +287,7 @@ namespace PascalABCCompiler.PCU
                 ChangeState(this, PCUReaderWriterState.EndReadTree, unit);
                 return unit;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 CloseUnit();
                 throw;
@@ -652,6 +652,16 @@ namespace PascalABCCompiler.PCU
 			return sn;
 		}
 		
+        public statement_node GetCodeWithOverridedMethod(common_method_node meth, int offset)
+		{
+			int tmp = (int)br.BaseStream.Position;
+			br.BaseStream.Seek(start_pos+offset,SeekOrigin.Begin);
+			statement_node sn = CreateStatement();
+            meth.overrided_method = GetMethodReference();
+			br.BaseStream.Seek(tmp,SeekOrigin.Begin);
+			return sn;
+		}
+        
         //перейти на указанную позицию в списке импорт. сущ-тей
 		private void SeekInExternal(int pos)
 		{
@@ -702,9 +712,10 @@ namespace PascalABCCompiler.PCU
             TypeSpec ts = new TypeSpec();
             Type t = null;
             string type_name = pcu_file.dotnet_names[off].name;
+            
             //if (!type_name.EndsWith("]"))
                 t = NetHelper.NetHelper.FindTypeOrCreate(type_name);
-            if (t == null)
+            if (t == null || type_name.IndexOf('.') == -1)
             {
                 ts.name = type_name;
                 return ts;
@@ -729,7 +740,10 @@ namespace PascalABCCompiler.PCU
             if (template_types.Length > 0)
             {
                 if (!pure_template)
-                    t = t.MakeGenericType(template_types);
+                {
+                    if (t.IsGenericTypeDefinition)
+                        t = t.MakeGenericType(template_types);
+                }
                 else
                 {
                     ts.name = type_name.Remove(0, type_name.LastIndexOf('.') + 1);
@@ -865,6 +879,7 @@ namespace PascalABCCompiler.PCU
                 {
                     List<MemberInfo> mis2 = NetHelper.NetHelper.GetMembers(t, pcu_file.dotnet_names[off].name);
                     mi = ChooseMethod(t, mis2, param_types);
+                    
                     //mi = t.GetMethod(pcu_file.dotnet_names[off].name, new Type[1] { param_types[0].t });
                 }
             }
@@ -1688,6 +1703,7 @@ namespace PascalABCCompiler.PCU
             type_node type = GetTypeReference();
             common_type_node cont = (common_type_node)GetTypeReference(br.ReadInt32());
             constant_node expr = (constant_node)CreateExpressionWithOffset();
+            expr.type = type;
             SemanticTree.field_access_level fal = (SemanticTree.field_access_level)br.ReadByte();
             location loc = ReadDebugInfo();
             ccd = new class_constant_definition(name, expr, loc, cont, fal);
@@ -1738,7 +1754,8 @@ namespace PascalABCCompiler.PCU
                 cmn.cont_type.static_constr = cmn;
             cmn.num_of_default_variables = br.ReadInt32();
             cmn.num_of_for_cycles = br.ReadInt32();
-            br.ReadBoolean();
+            bool has_overrided_method = br.ReadBoolean();
+            
             int num_var = br.ReadInt32();
             GetVariables(cmn, num_var);
             int num_consts = br.ReadInt32();
@@ -1752,7 +1769,10 @@ namespace PascalABCCompiler.PCU
                 cmn.functions_nodes_list.AddElement(GetNestedFunction());
             //br.ReadInt32();//code;
             cmn.loc = ReadDebugInfo();
-            cmn.function_code = GetCode(br.ReadInt32());
+            if (has_overrided_method)
+                cmn.function_code = GetCodeWithOverridedMethod(cmn, br.ReadInt32());
+            else
+                cmn.function_code = GetCode(br.ReadInt32());
             cmn.cont_type.methods.AddElement(cmn);
             if (cmn.name == "op_Equality")
                 cmn.cont_type.scope.AddSymbol(compiler_string_consts.eq_name, new SymbolInfo(cmn));
@@ -2961,7 +2981,9 @@ namespace PascalABCCompiler.PCU
             br.ReadBoolean();
             br.ReadInt32();
             br.ReadInt32();//namespace
+            type_node tn = GetTypeReference();
             constant_node en = (constant_node)CreateExpressionWithOffset();
+            en.type = tn;
             location loc = ReadDebugInfo();
             ncd = new namespace_constant_definition(name,en,loc,cun.namespaces[0]);
             cun.namespaces[0].constants.AddElement(ncd);
@@ -2991,7 +3013,9 @@ namespace PascalABCCompiler.PCU
                 name = br.ReadString();
             }
             br.ReadInt32();//namespace
+            type_node cnst_type = GetTypeReference();
             constant_node en = (constant_node)CreateExpressionWithOffset();
+            en.type = cnst_type;
             location loc = ReadDebugInfo();
             ncd = new namespace_constant_definition(name, en, loc, cun.namespaces[(is_interface)?0:1]);
             cun.namespaces[(is_interface) ? 0 : 1].constants.AddElement(ncd);        

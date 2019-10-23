@@ -30,7 +30,7 @@ namespace VisualPascalABC.OptionsContent
         {
             this.btSelectOutpotDirectory = new System.Windows.Forms.Button();
             this.tbOutputDirectory = new System.Windows.Forms.TextBox();
-            this.cbUseOutputDirecory = new System.Windows.Forms.CheckBox();
+            this.cbUseOutputDirectory = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.cbUseDllForSystemUnits = new System.Windows.Forms.CheckBox();
             this.cbDeletePdb = new System.Windows.Forms.CheckBox();
@@ -61,17 +61,17 @@ namespace VisualPascalABC.OptionsContent
             this.tbOutputDirectory.Size = new System.Drawing.Size(207, 20);
             this.tbOutputDirectory.TabIndex = 26;
             // 
-            // cbUseOutputDirecory
+            // cbUseOutputDirectory
             // 
-            this.cbUseOutputDirecory.AutoSize = true;
-            this.cbUseOutputDirecory.Location = new System.Drawing.Point(5, 120);
-            this.cbUseOutputDirecory.Name = "cbUseOutputDirecory";
-            this.cbUseOutputDirecory.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.cbUseOutputDirecory.Size = new System.Drawing.Size(168, 17);
-            this.cbUseOutputDirecory.TabIndex = 25;
-            this.cbUseOutputDirecory.Text = "USE_OUTPUT_DIRECTORY";
-            this.cbUseOutputDirecory.UseVisualStyleBackColor = true;
-            this.cbUseOutputDirecory.CheckedChanged += new System.EventHandler(this.cbUseOutputDirecory_CheckedChanged);
+            this.cbUseOutputDirectory.AutoSize = true;
+            this.cbUseOutputDirectory.Location = new System.Drawing.Point(5, 120);
+            this.cbUseOutputDirectory.Name = "cbUseOutputDirectory";
+            this.cbUseOutputDirectory.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.cbUseOutputDirectory.Size = new System.Drawing.Size(168, 17);
+            this.cbUseOutputDirectory.TabIndex = 25;
+            this.cbUseOutputDirectory.Text = "USE_OUTPUT_DIRECTORY";
+            this.cbUseOutputDirectory.UseVisualStyleBackColor = true;
+            this.cbUseOutputDirectory.CheckedChanged += new System.EventHandler(this.cbUseOutputDirectory_CheckedChanged);
             // 
             // groupBox2
             // 
@@ -157,7 +157,7 @@ namespace VisualPascalABC.OptionsContent
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.btSelectOutpotDirectory);
             this.Controls.Add(this.tbOutputDirectory);
-            this.Controls.Add(this.cbUseOutputDirecory);
+            this.Controls.Add(this.cbUseOutputDirectory);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.comboBox1);
@@ -175,7 +175,7 @@ namespace VisualPascalABC.OptionsContent
 
         private System.Windows.Forms.Button btSelectOutpotDirectory;
         private System.Windows.Forms.TextBox tbOutputDirectory;
-        private System.Windows.Forms.CheckBox cbUseOutputDirecory;
+        private System.Windows.Forms.CheckBox cbUseOutputDirectory;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.CheckBox cbDeletePdb;
         private System.Windows.Forms.CheckBox cbDeleteExe;

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using PascalABCCompiler;
 using System;
@@ -14,7 +14,7 @@ namespace VisualPascalABC
     public partial class Form1 : IWorkbenchProjectService
     {
         public List<string> LastOpenProjects;
-
+        
         public void NewProject()
         {
             NewProjectForm npf = new NewProjectForm();
@@ -141,7 +141,7 @@ namespace VisualPascalABC
             {
                 MessageBox.Show(Form1StringResources.Get("TOO_OLD_PROJECT_FILE_VERSION"), PascalABCCompiler.StringResources.Get("!ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 MessageBox.Show(Form1StringResources.Get("ERROR_OPEN_PROJECT"), PascalABCCompiler.StringResources.Get("!ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

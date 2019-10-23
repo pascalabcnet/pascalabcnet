@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -24,35 +24,44 @@ namespace VisualPascalABC
             Workbench.BeginInvoke(new SetTextDelegate(RunnerManager_Started_Sync), fileName);
         }
 
-        void RunnerManager_Started_Sync(string fileName)
+        void ButtonsEnableDisable_RunStart()
         {
-            if (!ProjectFactory.Instance.ProjectLoaded)
-            {
-                fileName = Tools.FileNameToLower(fileName);
-                if (Tools.FileNameToLower(Workbench.CurrentEXEFileName) == fileName)
-                {
-                    Workbench.WidgetController.SetStopEnabled(true);
-                    Workbench.WidgetController.SetCompilingButtonsEnabled(false);
-                    Workbench.WidgetController.SetDebugButtonsEnabled(false);
-                    Workbench.WidgetController.SetOptionsEnabled(false);
-                }
-                RunTabs[fileName].Run = true;
-                WorkbenchServiceFactory.DocumentService.SetTabPageText(RunTabs[fileName]);
-            }
-            else
-            {
-                fileName = Tools.FileNameToLower(fileName);
-                Workbench.WidgetController.SetStopEnabled(true);
-                Workbench.WidgetController.SetCompilingButtonsEnabled(false);
-                Workbench.WidgetController.SetDebugButtonsEnabled(false);
-                Workbench.WidgetController.SetOptionsEnabled(false);
-                RunTabs[fileName].Run = true;
-            }
+            Workbench.WidgetController.SetStopEnabled(true);
+            Workbench.WidgetController.SetCompilingButtonsEnabled(false);
+            Workbench.WidgetController.SetDebugButtonsEnabled(false);
+            Workbench.WidgetController.SetOptionsEnabled(false);
         }
 
-        void RunnerManager_Started_Sync_Thread(object fileName)
+        void ButtonsEnableDisable_RunStop()
         {
-            RunnerManager_Started_Sync(fileName as string);
+            Workbench.WidgetController.SetStopEnabled(false);
+            Workbench.WidgetController.SetCompilingButtonsEnabled(true);
+            Workbench.WidgetController.SetDebugButtonsEnabled(true);
+            Workbench.WidgetController.SetOptionsEnabled(true);
+        }
+
+        Object o = new Object();
+        void RunnerManager_Started_Sync(string fileName)
+        {
+            //lock (o)
+            {
+                if (!ProjectFactory.Instance.ProjectLoaded)
+                {
+                    fileName = Tools.FileNameToLower(fileName);
+                    if (Tools.FileNameToLower(Workbench.CurrentEXEFileName) == fileName)
+                    {
+                        ButtonsEnableDisable_RunStart();
+                    }
+                    RunTabs[fileName].Run = true;
+                    WorkbenchServiceFactory.DocumentService.SetTabPageText(RunTabs[fileName]);
+                }
+                else
+                {
+                    fileName = Tools.FileNameToLower(fileName);
+                    ButtonsEnableDisable_RunStart();
+                    RunTabs[fileName].Run = true;
+                }
+            }
         }
 
         void RunnerManager_OutputStringReceived(string fileName, RunManager.StreamType streamType, string text)
@@ -62,43 +71,39 @@ namespace VisualPascalABC
 
         void RunnerManager_Exited_Sync(string fileName)
         {
-            fileName = Tools.FileNameToLower(fileName);
-            if (!RunTabs.ContainsKey(fileName))
+            lock (o)
             {
-                string s = fileName + " ";
-                foreach (string ss in RunTabs.Keys)
-                    s += ss + " ";
-                throw new Exception(s);
-            }
-            if (!ProjectFactory.Instance.ProjectLoaded)
-            {
-                if (Tools.FileNameToLower(WorkbenchServiceFactory.Workbench.CurrentEXEFileName) == fileName)
+                fileName = Tools.FileNameToLower(fileName);
+                if (!RunTabs.ContainsKey(fileName))
                 {
-                    Workbench.WidgetController.SetStopEnabled(false);
-                    Workbench.WidgetController.SetCompilingButtonsEnabled(true);
-                    Workbench.WidgetController.SetDebugButtonsEnabled(true);
-                    //if (IsOneProgramStarted())
-                        Workbench.WidgetController.SetOptionsEnabled(true);
+                    string s = "Closing: " + fileName + " \nRunTabs: ";
+                    foreach (string ss in RunTabs.Keys)
+                        s += ss + " ";
+                    throw new Exception(s);
                 }
+                RunTabs[fileName].Run = false;
+                WorkbenchServiceFactory.DocumentService.SetTabPageText(RunTabs[fileName]);
+                if (ReadRequests.ContainsKey(RunTabs[fileName]))
+                    ReadRequests.Remove(RunTabs[fileName]);
+                UpdateReadRequest(false);
+                WorkbenchServiceFactory.EditorService.SetFocusToEditor();
+                if (TerminateAllPrograms)
+                    WaitCallback_DeleteEXEAndPDB(fileName); 
+                else
+                    System.Threading.ThreadPool.QueueUserWorkItem(WaitCallback_DeleteEXEAndPDB, fileName); 
+
+                if (!ProjectFactory.Instance.ProjectLoaded)
+                {
+                    if (Tools.FileNameToLower(WorkbenchServiceFactory.Workbench.CurrentEXEFileName) == fileName)
+                    {
+                        ButtonsEnableDisable_RunStop();
+                    }
+                }
+                else
+                {
+                    ButtonsEnableDisable_RunStop();
+                } 
             }
-            else
-            {
-                Workbench.WidgetController.SetStopEnabled(false);
-                Workbench.WidgetController.SetCompilingButtonsEnabled(true);
-                Workbench.WidgetController.SetDebugButtonsEnabled(true);
-                //if (IsOneProgramStarted())
-                    Workbench.WidgetController.SetOptionsEnabled(true);
-            }
-            RunTabs[fileName].Run = false;
-            WorkbenchServiceFactory.DocumentService.SetTabPageText(RunTabs[fileName]);
-            if (ReadRequests.ContainsKey(RunTabs[fileName]))
-                ReadRequests.Remove(RunTabs[fileName]);
-            UpdateReadRequest(false);
-            WorkbenchServiceFactory.EditorService.SetFocusToEditor();
-            if (TerminateAllPrograms)
-                WaitCallback_DeleteEXEAndPDB(fileName);
-            else
-                System.Threading.ThreadPool.QueueUserWorkItem(WaitCallback_DeleteEXEAndPDB, fileName);
         }
 
         void RunnerManager_RunnerManagerUnhanledRuntimeException(string id, string ExceptionType, string ExceptionMessage, string StackTraceData, List<RunManager.StackTraceItem> StackTrace)
@@ -151,21 +156,35 @@ namespace VisualPascalABC
 
         void WaitCallback_DeleteEXEAndPDB(object state)
         {
-            int i = 0;
+            //int i = 0;
             string fileName = (string)state;
-            while (i < 20)
+            //while (i < 20) // 20 раз пытаться удалять! Это сильно!
+            //{
+            try
             {
-                try
+                if (Workbench.UserOptions.DeleteEXEAfterExecute && File.Exists(fileName))
+                    File.Delete(fileName);
+            }
+            catch
+            {
+                WorkbenchServiceFactory.OperationsService.AddTextToCompilerMessagesSync("Не удалось удалить EXE-файл");
+            }
+            try
+            {
+                if (Workbench.UserOptions.DeletePDBAfterExecute)
                 {
-                    if (Workbench.UserOptions.DeleteEXEAfterExecute && File.Exists(fileName))
-                        File.Delete(fileName);
-                    if (Workbench.UserOptions.DeletePDBAfterExecute)
-                    {
-                        string pdbFileName = Path.ChangeExtension(fileName, ".pdb");
-                        if (File.Exists(pdbFileName) && File.Exists(pdbFileName))
-                            File.Delete(pdbFileName);
-                    }
-                    if (RunnerManager.TempBatFiles.ContainsKey(fileName))
+                    string pdbFileName = Path.ChangeExtension(fileName, ".pdb");
+                    if (File.Exists(pdbFileName))
+                        File.Delete(pdbFileName);
+                }
+            }
+            catch
+            {
+                WorkbenchServiceFactory.OperationsService.AddTextToCompilerMessagesSync("Не удалось удалить PDB-файл");
+            }
+            try
+            {
+                if (RunnerManager.TempBatFiles.ContainsKey(fileName))
                     {
                         string batname = RunnerManager.TempBatFiles[fileName];
                         if (File.Exists(batname))
@@ -174,13 +193,10 @@ namespace VisualPascalABC
                             RunnerManager.TempBatFiles.Remove(fileName);
                         }
                     }
-                    return;
-                }
-                catch
-                {
-                }
-                System.Threading.Thread.Sleep(20);
-                i++;
+            }
+            catch
+            {
+                WorkbenchServiceFactory.OperationsService.AddTextToCompilerMessagesSync("Не удалось удалить bat-файл из словаря RunnerManager.TempBatFiles");
             }
         }
 

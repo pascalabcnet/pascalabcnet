@@ -26,3 +26,7 @@ UNNAMED_RECORD_CANNOT_CONTAIN_METHODS=Unnamed records can not contain methods
 UNNAMED_RECORD_CANNOT_CONTAIN_CONSTRUCTORS=Unnamed records can not contain constructors
 UNNAMED_RECORD_CAN_CONTAIN_ONLY_ONE_PUBLIC_VISIBILITY_SECTION=Unnamed records can contain only one section with public visibility 
 UNNAMED_RECORD_CANNOT_CONTAIN_SEVERAL_VISIBILITY_SECTIONS=Unnamed records can not contain several visibility section
+OPENMP_CONTROLLED_CONSTRUCTIONS_CANNOT_CONTAIN_LAMBDAS=OpenMP-directive-based constructions cannot contain lambdas
+LAMBDAS_IN_CONSTRUCTOR_PARAMETERS_ARE_FORBIDDEN_IN_THIS_CONTEXT=Lambda-expressions as constructor parameters are forbidden in this context
+PROCEDURE_TYPE_SHOULD_BE_REPLACED_BY_TYPE_NAME_IN_THIS_CONTEXT=Procedure type should be replaced by type name in this context
+ACCESS_TO_ENUM_CONST_THROUGH_OBJECT=Enum constant can not be accessed through an object

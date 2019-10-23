@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -130,7 +130,7 @@ namespace VisualPascalABC
             if (comp != null)
             {
                 Assembly a = Assembly.GetAssembly(comp.GetType());
-                dgvModules.Items.Add(MakeItem("Core", "PascalABCCompiler.Core", a.GetName().Version.ToString(), "Copyright © 2005-2018 by Ivan Bondarev, Stanislav Mihalkovich"));
+                dgvModules.Items.Add(MakeItem("Core", "PascalABCCompiler.Core", a.GetName().Version.ToString(), "Copyright © 2005-2019 by Ivan Bondarev, Stanislav Mikhalkovich"));
                 foreach (PascalABCCompiler.Parsers.IParser parser in comp.ParsersController.Parsers)
                     dgvModules.Items.Add(MakeItem("Parser",parser.Name, parser.Version, parser.Copyright));
                 foreach (PascalABCCompiler.SemanticTreeConverters.ISemanticTreeConverter conv in comp.SemanticTreeConvertersController.SemanticTreeConverters)

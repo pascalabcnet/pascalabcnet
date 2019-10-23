@@ -12,4 +12,4 @@
 !FILE_NOT_FOUND{0}=Файл "{0}" не найден.
 !PROJECT_NOT_FOUND{0}=Проект "{0}" не найден.
 !WARNING=Предупреждение
-!ERROR_ON_CREATE_DIRECORY=Ошибка при создании папки
+!ERROR_ON_CREATE_DIRECTORY=Ошибка при создании папки

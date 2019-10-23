@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -240,6 +240,7 @@ namespace VisualPascalABCPlugins
         bool HighlightOperatorBrackets { get; set; }
         bool UseDllForSystemUnits { get; set; }
         bool PABCDllChecked { get; set; }
+        bool AutoInsertCodeIsEnabledOnStartup { get; set; }
     }
 
     public interface IListItem
@@ -396,6 +397,7 @@ namespace VisualPascalABCPlugins
         void WriteToOutputBox(string message, bool is_exc);
         void ClearOutputTextBoxForTabPage(ICodeFileDocument tabPage);
         void AddTabWithUrl(string title, string url);
+        void AddTextToCompilerMessagesSync(string text);
     }
 
     public interface IWorkbenchOptionService

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -29,7 +29,7 @@ namespace SyntaxVisitors
             var IdentsToDeleteInVarDef = idents.FindAll(id => idsToDelete.Contains(id.name)); // найти в операторе все идентификаторы для удаления
             if (IdentsToDeleteInVarDef.Count != 0)
             {
-                deletedIdsToDeleteInLocalScope.UnionWith(IdentsToDeleteInVarDef.Select(id => id.name)); // добавить те идентификаторы, которые мы удаляем из данного описания
+                deletedIdsToDeleteInLocalScope.UnionWith(IdentsToDeleteInVarDef.Select(id => id.name.ToLower())); // добавить те идентификаторы, которые мы удаляем из данного описания
 
                 LocalDeletedIds.Add(new var_def_statement(new ident_list(IdentsToDeleteInVarDef), vs.var_def.vars_type, vs.var_def.inital_value)); // добавить описание из удаленных в данном разделе описаний идентификаторов
                 idents.RemoveAll(id => idsToDelete.Contains(id.name)); // удалить в операторе все идентификаторы для удаления
@@ -45,13 +45,13 @@ namespace SyntaxVisitors
         {
             var idents = vd.vars.idents;
 
-            var IdentsToDeleteInVarDef = idents.FindAll(id => idsToDelete.Contains(id.name)); // найти в операторе все идентификаторы для удаления
+            var IdentsToDeleteInVarDef = idents.FindAll(id => idsToDelete.Contains(id.name.ToLower())); // найти в операторе все идентификаторы для удаления
             if (IdentsToDeleteInVarDef.Count != 0)
             {
-                deletedIdsToDeleteInLocalScope.UnionWith(IdentsToDeleteInVarDef.Select(id => id.name)); // добавить те идентификаторы, которые мы удаляем из данного описания
+                deletedIdsToDeleteInLocalScope.UnionWith(IdentsToDeleteInVarDef.Select(id => id.name.ToLower())); // добавить те идентификаторы, которые мы удаляем из данного описания
 
                 BlockDeletedIds.Add(new var_def_statement(new ident_list(IdentsToDeleteInVarDef), vd.vars_type, vd.inital_value)); // добавить описание из удаленных в данном разделе описаний идентификаторов
-                idents.RemoveAll(id => idsToDelete.Contains(id.name)); // удалить в операторе все идентификаторы для удаления
+                idents.RemoveAll(id => idsToDelete.Contains(id.name.ToLower())); // удалить в операторе все идентификаторы для удаления
 
                 if (idents.Count == 0)
                 {

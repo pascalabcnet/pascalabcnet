@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -21,8 +21,8 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             root.FillParentsInAllChilds();
             // Выносим выражения с лямбдами из заголовка foreach
             StandOutExprWithLambdaInForeachSequenceVisitor.New.ProcessNode(root);
-
-            // type classes - пока закомментировал SSM 20/10/18. Грязный кусок кода. FillParentsInAllChilds вызывается повторно
+            VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer.New.ProcessNode(root); // SSM bug fix #1147
+            FindOnExceptVarsAndApplyRenameVisitor.New.ProcessNode(root);
 
             {
                 var typeclasses = SyntaxVisitors.TypeclassVisitors.FindTypeclassesVisitor.New;
@@ -55,7 +55,8 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
             // Patterns
             // SingleDeconstructChecker.New.ProcessNode(root); // SSM 21.10.18 - пока разрешил множественные деконструкторы. Если будут проблемы - запретить
-            PatternsDesugaringVisitor.New.ProcessNode(root);
+            ExtendedIsDesugaringVisitor.New.ProcessNode(root); // Десахаризация расширенного is, который используется в сложных логических выражениях
+            PatternsDesugaringVisitor.New.ProcessNode(root);  // Обязательно в этом порядке.
 
             // simple_property
             PropertyDesugarVisitor.New.ProcessNode(root);
@@ -76,13 +77,13 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
             /*try
             {
-                root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz4.txt"));
+                root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz1.txt"));
             }
             catch(Exception e)
             {
 
-                System.IO.File.AppendAllText(@"d:\\zzz4.txt",e.Message);
-            }*/ 
+                System.IO.File.AppendAllText(@"d:\\zzz1.txt",e.Message);
+            }*/
 
 
 #endif

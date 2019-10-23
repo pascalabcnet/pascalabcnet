@@ -1,4 +1,4 @@
-﻿// Copyright (©) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (©) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 ///Модуль графики
 unit GraphWPF;
@@ -166,6 +166,8 @@ type
     property Width: real read GetWidth;
     /// Высота графического окна
     property Height: real read GetHeight;
+    /// Центр графического окна
+    function Center: Point;
     /// Сохраняет содержимое графического окна в файл с именем fname
     procedure Save(fname: string);
     /// Восстанавливает содержимое графического окна из файла с именем fname
@@ -200,11 +202,13 @@ type
 //>>     Графические примитивы # GraphWPF primitives
 // -----------------------------------------------------
 /// Рисует пиксел в точке (x,y) цветом c
-procedure SetPixels(x,y: real; w,h: integer; f: (integer,integer)->Color);
-/// Рисует пиксел в точке (x,y) цветом c
 procedure SetPixel(x,y: real; c: Color);
-/// Рисует двумерный массив пикселов с координатами левой верхней вершины (x,y)
-procedure DrawPixels(x,y: real; a: array [,] of Color);
+/// Рисует прямоугольник пикселей размера (w,h), задаваемых отображением f, начиная с левого верхнего угла с координатами (x,y)
+procedure SetPixels(x,y: real; w,h: integer; f: (integer,integer)->Color);
+/// Рисует двумерный массив пикселей pixels начиная с левого верхнего угла с координатами (x,y)
+procedure DrawPixels(x,y: real; pixels: array [,] of Color);
+/// Рисует прямоугольную область (px,py,pw,ph) двумерного массива пикселей pixels начиная с левого верхнего угла с координатами (x,y)
+procedure DrawPixels(x,y: real; pixels: array [,] of Color; px,py,pw,ph: integer);
 /// Рисует эллипс с центром в точке (x,y) и радиусами rx и ry
 procedure Ellipse(x,y,rx,ry: real);
 /// Рисует контур эллипса с центром в точке (x,y) и радиусами rx и ry
@@ -341,17 +345,19 @@ function Rect(x,y,w,h: real): GRect;
 function ColorBrush(c: Color): GBrush;
 /// Возвращает однотонное цветное перо, заданное цветом
 function ColorPen(c: Color): GPen;
-/// Процедура синхронизации вывода графики
-procedure Invoke(d: ()->());
+/// Процедура ускорения вывода. Обновляет экран после всех изменений
+procedure Redraw(d: ()->());
 
 
 // -----------------------------------------------------
 //>>     Процедуры покадровой анимации # GraphWPF FrameBasedAnimation functions
 // -----------------------------------------------------
 /// Начинает анимацию, основанную на кадре. Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw
-procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer := 60);
-/// Начинает анимацию, основанную на кадре Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw с параметром, равным номеру кадра
-procedure BeginFrameBasedAnimation(Draw: procedure(frame: integer); frate: integer := 60);
+procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer := 61);
+/// Начинает анимацию, основанную на кадре. Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw с параметром, равным номеру кадра
+procedure BeginFrameBasedAnimation(Draw: procedure(frame: integer); frate: integer := 61);
+/// Начинает анимацию, основанную на кадре, и передаёт в каждый обработчик кадра время dt, прошедшее с момента последней перерисовки
+procedure BeginFrameBasedAnimationTime(Draw: procedure(dt: real));
 /// Завершает анимацию, основанную на кадре
 procedure EndFrameBasedAnimation;
 
@@ -501,7 +507,7 @@ procedure __FinalizeModule__;
 
 implementation
 
-procedure Invoke(d: ()->()) := app.Dispatcher.Invoke(d);
+procedure Redraw(d: ()->()) := app.Dispatcher.Invoke(d);
 function getApp: Application := app;
 
 function RGB(r,g,b: byte) := Color.Fromrgb(r, g, b);
@@ -542,6 +548,7 @@ type
 
 var 
   Host: MyVisualHost;
+  Host1: Canvas;
   RTbmap: RenderTargetBitmap;
   rtbmapIsCleared := True;
 
@@ -753,36 +760,59 @@ var dpic := new Dictionary<string, BitmapImage>;
 function GetBitmapImage(fname: string): BitmapImage;
 begin
   if not dpic.ContainsKey(fname) then 
-    dpic[fname] := new BitmapImage(new System.Uri(fname,System.UriKind.Relative));
+  begin
+    var b := new BitmapImage();
+    var s := System.IO.File.OpenRead(fname);
+    b.BeginInit();
+    b.CacheOption := BitmapCacheOption.OnLoad;
+    b.StreamSource := s;
+    b.EndInit();
+    s.Close();    
+    //dpic[fname] := new BitmapImage(new System.Uri(fname,System.UriKind.Relative));
+    dpic[fname] := b;
+  end;  
   Result := dpic[fname];
 end;
 
-procedure DrawPixelsP(x,y: real; a: array [,] of Color);
+procedure DrawPixelsP(x,y:real; px,py,pw,ph: integer; a: array [,] of Color);
 begin
   var (scalex,scaley) := ScaleToDevice;
-  var sw := a.ColCount;
-  var sh := a.RowCount;
-  var bitmap := new WriteableBitmap(sw, sh, 96*scalex, 96*scaley, PixelFormats.Bgra32, nil);
-  var stride := sw * (bitmap.Format.BitsPerPixel div 8); // stride - это длина одной строки
+  var bitmap := new WriteableBitmap(pw, ph, 96*scalex, 96*scaley, PixelFormats.Bgra32, nil);
   
-  var pixels := new byte[a.RowCount*a.ColCount*4];
-  var p := 0;
-  for var i := 0 to a.RowCount-1 do
-  for var j := 0 to a.ColCount-1 do
-  begin
-    pixels[p] := a[i,j].B;
-    p += 1;
-    pixels[p] := a[i,j].G;
-    p += 1;
-    pixels[p] := a[i,j].R;
-    p += 1;
-    pixels[p] := a[i,j].A;
-    p += 1;
-  end;
-  bitmap.WritePixels(new Int32Rect(0, 0, sw, sh), pixels, stride, 0);
+  var stride := pw*4; // stride - это размер одной строки в байтах
+  var size := stride*ph;
+  
+  
+//  var pixels := new byte[w*h*4];
+//  var p := 0;
+//  for var dy := ay to ay+h-1 do
+//    for var dx := ax to ax+w-1 do
+//    begin
+//      pixels[p] := a[dx,dy].B; p += 1;
+//      pixels[p] := a[dx,dy].G; p += 1;
+//      pixels[p] := a[dx,dy].R; p += 1;
+//      pixels[p] := a[dx,dy].A; p += 1;
+//    end;
+//  bitmap.WritePixels(new Int32Rect(0, 0, w, h), pixels, stride, 0);
+  
+  
+  //так на 10-20% быстрее
+  var pixels := System.Runtime.InteropServices.Marshal.AllocHGlobal(size);
+  var curr_ptr := pixels;
+  for var dy := py to py+ph-1 do
+    for var dx := px to px+pw-1 do
+    begin
+      var c := a[dx,dy];
+      PByte(curr_ptr.ToPointer)^ := c.B; curr_ptr := curr_ptr + 1;
+      PByte(curr_ptr.ToPointer)^ := c.G; curr_ptr := curr_ptr + 1;
+      PByte(curr_ptr.ToPointer)^ := c.R; curr_ptr := curr_ptr + 1;
+      PByte(curr_ptr.ToPointer)^ := c.A; curr_ptr := curr_ptr + 1;
+    end;
+  bitmap.WritePixels(new Int32Rect(0, 0, pw, ph), pixels, size, stride);
+  System.Runtime.InteropServices.Marshal.FreeHGlobal(pixels);
   
   var dc := GetDC();
-  dc.DrawImage(bitmap, Rect(x, y, bitmap.PixelWidth, bitmap.PixelHeight));
+  dc.DrawImage(bitmap, Rect(x, y, pw, ph));
   ReleaseDC(dc);
 end;
 
@@ -905,7 +935,9 @@ procedure SetPixel(x,y: real; c: Color) := InvokeVisual(SetPixelP, x, y, c);
 procedure SetPixels(x,y: real; w,h: integer; f: (integer,integer)->Color)
   := InvokeVisual(SetPixelsP, x, y, w, h, f);
   
-procedure DrawPixels(x,y: real; a: array [,] of Color) := InvokeVisual(DrawPixelsP,x,y,a);
+procedure DrawPixels(x,y: real; pixels: array [,] of Color) := InvokeVisual(DrawPixelsP,x,y,0,0,pixels.GetLength(0),pixels.GetLength(1),pixels);
+
+procedure DrawPixels(x,y: real; pixels: array [,] of Color; px,py,pw,ph: integer) := InvokeVisual(DrawPixelsP,x,y,px,py,pw,ph,pixels);
 
 procedure ArcPFull(x, y, r, angle1, angle2: real; p: GPen) := ArcSectorPFull(x, y, r, angle1, angle2, nil, p, false);
 
@@ -1230,11 +1262,16 @@ function GraphWindowTypeGetLeftP: real;
 begin
   Result := 0;
   foreach var p in MainDockPanel.Children do
-    if (p is FrameworkElement) and (p<>host) then
+    if (p is FrameworkElement) and (p<>host1) then
     begin
       var d := DockPanel.GetDock(FrameworkElement(p));
       if d=Dock.Left then
-        Result += FrameworkElement(p).Width;
+      begin
+        var f := FrameworkElement(p).Width;
+        if real.IsNaN(f) then
+          continue;
+        Result += f;
+      end;    
     end;
 end;
 
@@ -1242,11 +1279,16 @@ function GraphWindowTypeGetTopP: real;
 begin
   Result := 0;
   foreach var p in MainDockPanel.Children do
-    if (p is FrameworkElement) and (p<>host) then
+    if (p is FrameworkElement) and (p<>host1) then
     begin
       var d := DockPanel.GetDock(FrameworkElement(p));
       if d=Dock.Top then
-        Result += FrameworkElement(p).Height;
+      begin
+        var f := FrameworkElement(p).Height;
+        if real.IsNaN(f) then
+          continue;
+        Result += f;
+      end;    
     end;
 end;
 
@@ -1260,11 +1302,17 @@ begin
   else Result := Size(host.DataContext).Width;}
   Result := Window.Width;
   foreach var p in MainDockPanel.Children do
-    if (p is FrameworkElement) and (p<>host) then
+    if (p is FrameworkElement) and (p<>host1) then
     begin
       var d := DockPanel.GetDock(FrameworkElement(p));
       if (d=Dock.Left) or (d=Dock.Right) then
-        Result -= FrameworkElement(p).Width;
+      begin
+        var f := FrameworkElement(p).Width;
+        //Print(f);
+        if real.IsNaN(f) then
+          continue;
+        Result -= f;
+      end;  
     end;
 end;
 function GraphWindowType.GetWidth := InvokeReal(GraphWindowTypeGetWidthP);
@@ -1276,11 +1324,16 @@ begin
   else Result := Size(host.DataContext).Height;}
   Result := Window.Height;
   foreach var p in MainDockPanel.Children do
-    if (p is FrameworkElement) and (p<>host) then
+    if (p is FrameworkElement) and (p<>host1) then
     begin
       var d := DockPanel.GetDock(FrameworkElement(p));
       if (d=Dock.Top) or (d=Dock.Bottom) then
-        Result -= FrameworkElement(p).Height;
+      begin  
+        var f := FrameworkElement(p).Height;
+        if real.IsNaN(f) then
+          continue;
+        Result -= f;
+      end;  
     end;
 end;
 function GraphWindowType.GetHeight := InvokeReal(GraphWindowTypeGetHeightP);
@@ -1322,6 +1375,9 @@ procedure GraphWindowType.Fill(fname: string);
 begin
   //FillWindow(fname);
 end;
+
+function GraphWindowType.Center: Point := Pnt(Width/2,Height/2);
+
 
 procedure WindowTypeWPF.Save(fname: string) := GraphWindow.Save(fname);
 
@@ -1510,19 +1566,22 @@ procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) :=
 
 var OnDraw: procedure := nil;
 var OnDraw1: procedure(frame: integer) := nil;
+var OnDrawT: procedure(dt: real) := nil;
 
-var FrameRate := 60; // кадров в секунду. Можно меньше!
+var FrameRate := 61; // кадров в секунду. Можно меньше!
 var LastUpdatedTime := new System.TimeSpan(integer.MinValue); 
 
 var FrameNum := 0;
 
 procedure RenderFrame(o: Object; e: System.EventArgs);
 begin
-  if (OnDraw<>nil) or (OnDraw1<>nil) then
+  if (OnDraw<>nil) or (OnDraw1<>nil) or (OnDrawT<>nil) then
   begin
     var e1 := RenderingEventArgs(e).RenderingTime;
     var dt := e1 - LastUpdatedTime;
     var delta := 1000/Framerate; // через какое время обновлять
+    if OnDrawT<>nil then 
+      delta := 0; // перерисовывать когда придёт время
     if dt.TotalMilliseconds < delta then
       exit
     else LastUpdatedTime := e1;  
@@ -1531,7 +1590,9 @@ begin
     if OnDraw<>nil then
       OnDraw() 
     else if OnDraw1<>nil then
-      OnDraw1(FrameNum);
+      OnDraw1(FrameNum)
+    else if OnDrawT<>nil then
+      OnDrawT(dt.Milliseconds/1000);
   end;  
 end;
 
@@ -1551,12 +1612,17 @@ begin
   FrameRate := frate;
 end;
 
+procedure BeginFrameBasedAnimationTime(Draw: procedure(dt: real));
+begin
+  OnDrawT := Draw;
+end;
+
 procedure EndFrameBasedAnimation;
 begin
   //CountVisuals := 0;
   OnDraw := nil;
   OnDraw1 := nil;
-  FrameRate := 60;
+  FrameRate := 61;
 end;  
 
 var mre := new ManualResetEvent(false);
@@ -1566,7 +1632,7 @@ GraphWPFWindow = class(GMainWindow)
 public
   procedure InitMainGraphControl; override;
   begin
-    var host1 := new Canvas;
+    host1 := new Canvas;
     host := new MyVisualHost();
     host1.SizeChanged += (s,e) ->
     begin
@@ -1574,7 +1640,7 @@ public
       host.DataContext := sz;
     end;
     // Всегда последнее
-    var g := Content as DockPanel;
+    var g := MainPanel;
     
     var dpiXProperty := typeof(SystemParameters).GetProperty('DpiX', BindingFlags.NonPublic or BindingFlags.Static);
     var dpiYProperty := typeof(SystemParameters).GetProperty('Dpi', BindingFlags.NonPublic or BindingFlags.Static);

@@ -10,7 +10,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
 using PascalABCCompiler.SemanticTree;
-using System.Text.RegularExpressions;
 using System.Reflection;
 
 namespace VisualPascalABCPlugins

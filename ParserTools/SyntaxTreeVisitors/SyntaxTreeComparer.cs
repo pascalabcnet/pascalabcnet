@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -2313,7 +2313,7 @@ namespace PascalABCCompiler.SyntaxTree
             }
         }
 
-        public void CompareInternal(pattern_deconstructor_parameter left, pattern_deconstructor_parameter right)
+        public void CompareInternal(pattern_parameter left, pattern_parameter right)
         {
             if (left == null && right != null || left != null && right == null)
                 throw_not_equal(left, right);

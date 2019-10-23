@@ -1,10 +1,9 @@
 ﻿begin
   var n := 10;
   loop n do
-    Print(1);
+    Assert(n=n);
   var p: procedure;
   p := ()->begin
-    Print(n);
-  end;
-  Assert(1=1);
+    Assert(n=n);
+  end; 
 end.

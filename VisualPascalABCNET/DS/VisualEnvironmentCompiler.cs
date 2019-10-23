@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -139,6 +139,11 @@ namespace VisualPascalABC
         {
             standartCompiler = new PascalABCCompiler.Compiler(SourceFilesProvider, OnChangeCompilerState);
             CodeCompletion.CodeCompletionController.comp = new PascalABCCompiler.Compiler((PascalABCCompiler.Compiler)standartCompiler, SourceFilesProvider, OnChangeCompilerState);
+            if (ProjectFactory.Instance.CurrentProject != null)
+            {
+            	CodeCompletion.CodeCompletionController.comp.CompilerOptions.CurrentProject = ProjectFactory.Instance.CurrentProject;
+            	ProjectFactory.Instance.Dirty = true;
+            }
             CodeCompletion.CodeCompletionController.ParsersController = standartCompiler.ParsersController;
             CodeCompletion.CodeCompletionController.StandartDirectories = StandartDirectories;
 
@@ -383,7 +388,7 @@ namespace VisualPascalABC
                     {
                         if (Compiler == sender)
                         {
-                            SetCompilingButtonsEnabled(true);
+                            SetCompilingButtonsEnabled(true); 
                         }
                     }
                     break;

@@ -24,9 +24,8 @@
 	<body>
 		<font size="3"><a href="../Справка.html"><=</a></font><br>
 		<br>
-		Перед тем как начать, хоть уточнить:<br>
-		Ожидается что у вас есть хоть какое то представление о "file of T".<br>
-		Конечно, без того можно разобраться, но будет сложнее.
+		Основной упор данной страницы - сравнение "file of T" и "BlockFileOf&ltT>".<br>
+		Но она также подходит и для обучения основам "BlockFileOf&ltT>".
 		<hr />
 		
 		
@@ -45,7 +44,7 @@
 				<br><t style="margin-left: 00px">																										</t>
 				<br><t style="margin-left: 00px">begin																									</t>
 				<br><t style="margin-left: 10px">var f: BlockFileOf&ltT>;																				</t>
-				<br><t style="margin-left: 10px">f := new BlockFileOf&ltT>;//В отличии от file of T - BlockFileOf&ltT> надо всегда инициализировать		</t>
+				<br><t style="margin-left: 10px">f := new BlockFileOf&ltT>; // В отличии от file of T - BlockFileOf&ltT> нужно всегда инициализировать	</t>
 				<br><t style="margin-left: 10px">f.Assign('temp.bin');																					</t>
 				<br><t style="margin-left: 00px">end.																									</t>
 			</p>
@@ -58,7 +57,7 @@
 				<br><t style="margin-left: 10px">f.Assign('temp.bin');																					</t>
 				<br><t style="margin-left: 00px">end.																									</t>
 			</p>
-			<font size="3">И ещё больше сократить:</font>
+			<font size="3">Или ещё больше сократить:</font>
 			<p class=code_block>
 					<t style="margin-left: 00px">uses BlockFileOfT;																						</t>
 				<br><t style="margin-left: 00px">																										</t>
@@ -110,8 +109,8 @@
 				<br><t style="margin-left: 00px">																										</t>
 				<br><t style="margin-left: 00px">end.																									</t>
 			</p>
-			В случае с "BlockFileOf&ltT>" все 5 элементов читаются как 1 блок памяти.<br>
-			В то время как "file of T" может прочитать только по 1 элементу.<br>
+			В случае с "BlockFileOf&ltT>" все 5 элементов читаются одним блоком памяти.<br>
+			В то время как "file of T" читает по одному элементу.<br>
 			<hr />
 		</div>
 		
@@ -155,14 +154,14 @@
 				<br><t style="margin-left: 00px">																										</t>
 				<br><t style="margin-left: 00px">end.																									</t>
 			</p>
-			"BlockFileOf&ltT>.ToSeq" работает так же как и "(file of T).ReadElements" (если не считать более продвинутой защиты от дурака):<br>
-			Они оба читают файл по 1 элементу, и после каждого из них проверяют, не достигнут ли конец файла.<br>
+			"BlockFileOf&ltT>.ToSeq" работает так же, как и "(file of T).ReadElements" (если не считать более продвинутой защиты от дурака):<br>
+			Они оба читают файл по одному элементу и после каждого из них проверяют, не достигнут ли конец файла.<br>
 			<br>
 			Но в "BlockFileOf&ltT>" есть альтернатива - "ToSeqBlocks".<br>
-			Эта функция читает всё из файла блоками заданной (в байтах) длины. Если её не задать - будет по умолчанию, то есть 4КБ.<br>
-			В нашем случае, "integer" занимает 4 байта в памяти, значит в каждом блоке по 4КБ поместится 1024 элемента типа "integer"<br>
+			Эта функция читает всё из файла блоками заданной длины в байтах. Если не задавать длину, данные будут читаться блоками по 4 килобайта.<br>
+			В нашем случае, "integer" занимает 4 байта в памяти, значит в каждом блоке по 4 КБ поместится 1024 элемента типа "integer"<br>
 			(Объём типа T можно узнать из свойства "BlockFileOf&ltT>.TSize", или с помощью sizeof(T) )<br>
-			В случае с 5 элементами это едва ли даст преимущество, но если записывать и считывать сразу много элементов - считывание блоками будет на много быстрее:
+			В случае с пятью элементами это едва ли даст преимущество, но если записывать и считывать сразу большое количество элементов - считывание блоками будет намного быстрее:
 			<p class=code_block>
 					<t style="margin-left: 00px">uses BlockFileOfT;																						</t>
 				<br><t style="margin-left: 00px">																										</t>
@@ -199,62 +198,64 @@
 		<p onClick="toggle_show('bfo_record')"><font size="4" color="008000" style="cursor: pointer">Основное преимущество: сохранение записей (record)</font></p>
 		<div id=bfo_record style="display: none">
 			<p class=code_block>
-					<t style="margin-left: 00px">uses BlockFileOfT;		</t>
-				<br><t style="margin-left: 00px">		</t>
-				<br><t style="margin-left: 00px">type		</t>
-				<br><t style="margin-left: 10px">r1=record		</t>
-				<br><t style="margin-left: 20px">b1:byte;		</t>
-				<br><t style="margin-left: 20px">i:integer;		</t>
-				<br><t style="margin-left: 20px">b2:byte;		</t>
-				<br><t style="margin-left: 00px">		</t>
-				<br><t style="margin-left: 20px">constructor(b1:byte; i:integer; b2:byte);		</t>
-				<br><t style="margin-left: 20px">begin		</t>
-				<br><t style="margin-left: 30px">self.b1 := b1;		</t>
-				<br><t style="margin-left: 30px">self.i := i;		</t>
-				<br><t style="margin-left: 30px">self.b2 := b2;		</t>
-				<br><t style="margin-left: 20px">end;		</t>
-				<br><t style="margin-left: 20px">///Эта функция определяет, как данную запись выведет на экран		</t>
-				<br><t style="margin-left: 20px">function ToString:string; override :=		</t>
-				<br><t style="margin-left: 20px">$'r1(b1={b1}, i={i}, b2={b2})';		</t>
-				<br><t style="margin-left: 10px">end;		</t>
-				<br><t style="margin-left: 00px">		</t>
-				<br><t style="margin-left: 00px">begin		</t>
-				<br><t style="margin-left: 10px">var f := new BlockFileOf&ltr1>('temp.bin');		</t>
-				<br><t style="margin-left: 00px">		</t>
-				<br><t style="margin-left: 10px">f.Rewrite;		</t>
-				<br><t style="margin-left: 10px">f.Write(		</t>
-				<br><t style="margin-left: 20px">new r1(1,2,3)		</t>
-				<br><t style="margin-left: 10px">);		</t>
-				<br><t style="margin-left: 10px">f.Close;		</t>
-				<br><t style="margin-left: 00px">		</t>
-				<br><t style="margin-left: 10px">f.Reset;		</t>
-				<br><t style="margin-left: 10px">writeln(f.Read);		</t>
-				<br><t style="margin-left: 10px">f.Close;		</t>
-				<br><t style="margin-left: 00px">		</t>
-				<br><t style="margin-left: 00px">end.		</t>
-
+					<t style="margin-left: 00px">uses BlockFileOfT;												</t>
+				<br><t style="margin-left: 00px">																</t>
+				<br><t style="margin-left: 00px">type															</t>
+				<br><t style="margin-left: 10px">r1 = record													</t>
+				<br><t style="margin-left: 20px">b1: byte;														</t>
+				<br><t style="margin-left: 20px">i: integer;													</t>
+				<br><t style="margin-left: 20px">b2: byte;														</t>
+				<br><t style="margin-left: 00px">																</t>
+				<br><t style="margin-left: 20px">constructor(b1: byte; i: integer; b2: byte);					</t>
+				<br><t style="margin-left: 20px">begin															</t>
+				<br><t style="margin-left: 30px">self.b1 := b1;													</t>
+				<br><t style="margin-left: 30px">self.i := i;													</t>
+				<br><t style="margin-left: 30px">self.b2 := b2;													</t>
+				<br><t style="margin-left: 20px">end;															</t>
+				<br><t style="margin-left: 00px">																</t>
+				<br><t style="margin-left: 20px">///Эта функция определяет то, как данную запись выведет на экран	</t>
+				<br><t style="margin-left: 20px">function ToString: string; override :=							</t>
+				<br><t style="margin-left: 20px">$'r1(b1={b1}, i={i}, b2={b2})';								</t>
+				<br><t style="margin-left: 00px">																</t>
+				<br><t style="margin-left: 10px">end;															</t>
+				<br><t style="margin-left: 00px">																</t>
+				<br><t style="margin-left: 00px">begin															</t>
+				<br><t style="margin-left: 10px">var f := new BlockFileOf&ltr1>('temp.bin');					</t>
+				<br><t style="margin-left: 00px">																</t>
+				<br><t style="margin-left: 10px">f.Rewrite;														</t>
+				<br><t style="margin-left: 10px">f.Write(														</t>
+				<br><t style="margin-left: 20px">new r1(1,2,3)													</t>
+				<br><t style="margin-left: 10px">);																</t>
+				<br><t style="margin-left: 10px">f.Close;														</t>
+				<br><t style="margin-left: 00px">																</t>
+				<br><t style="margin-left: 10px">f.Reset;														</t>
+				<br><t style="margin-left: 10px">writeln(f.Read);												</t>
+				<br><t style="margin-left: 10px">f.Close;														</t>
+				<br><t style="margin-left: 00px">																</t>
+				<br><t style="margin-left: 00px">end.															</t>
+				
 			</p>
 			Казалось бы, тот же самый код будет работать и для "file of T".<br>
 			Но вся разница находится в реализации:<br>
 			<br>
-			"file of T" в данном случае, при вызове "Read" сначала прочитал бы названия и типы полей "r1" из его типа (через "System.Runtime"),<br>
+			"file of T" в данном случае при вызове "Read" сначала прочитал бы названия и типы полей "r1" (через "System.Reflection"),<br>
 			а затем, по очереди, читал бы из файла значение того же типа, что и у поля ("byte", затем "integer" и снова "byte"),<br>
 			сохраняя прочитаные значения в соответствующих полях результата.<br>
 			<br>
 			А "BlockFileOf&ltT>" подходит к этому с другой стороны.<br>
 			Когда вы первый раз инициализируете переменную типа "BlockFileOf&ltr1>" -<br>
-			объём в памяти занимаемый переменными типа "r1" вычисляется и сохраняется во внутрее статичное поле<br>
+			объём в памяти, занимаемый переменными типа "r1", вычисляется и сохраняется во внутреннее статическое поле<br>
 			(Его можно получить через свойство "TSize")<br>
 			И когда вызывается функция "Read" - "BlockFileOf&ltT>" читает из файла столько байт, сколько занимают переменные типа "r1",<br>
 			А потом копирует содержимое полученного массива байт в результат.<br>
 			<br>
-			То есть, "file of T" читает 3 блока, а "BlockFileOf&ltT>" только 1.<br>
+			То есть, "file of T" читает три блока, а "BlockFileOf&ltT>" только один.<br>
 			И когда объём данных одинаковый - количество блоков очень важный фактор.<br>
 			Поэтому "BlockFileOf&ltT>" будет быстрее.<br>
-			И размер 1 блока не ограничивается размером 1 переменной типа "r1".<br>
-			"Read(10)", к примеру, прочитает 1 блоком то, что "file of T" читал бы как 30 блоков.<br>
+			И размер одного блока не ограничивается размером одной переменной типа "r1".<br>
+			"Read(10)", к примеру, прочитает одним блоком то, что "file of T" читал бы как 30 блоков.<br>
 			<br>
-			Ну и, конечно, всё то же самое касается и "Write", не только "Read".<br>
+			Ну и, конечно, всё то же самое касается и "Write".<br>
 			<hr />
 		</div>
 		

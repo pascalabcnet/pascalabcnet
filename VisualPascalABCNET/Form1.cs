@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections;
@@ -71,8 +71,8 @@ namespace VisualPascalABC
         internal DebugWatchListWindowForm DebugWatchListWindow;
         internal DisassemblyWindow DisassemblyWindow;
         internal ProjectExplorerForm ProjectExplorerWindow = null;
-        WeifenLuo.WinFormsUI.Docking.DockPane BottomPane;
-        WeifenLuo.WinFormsUI.Docking.DockPane ProjectPane;
+        public WeifenLuo.WinFormsUI.Docking.DockPane BottomPane;
+        public WeifenLuo.WinFormsUI.Docking.DockPane ProjectPane;
         FSWatcherService WatcherService = new FSWatcherService();
 
         private bool LoadComplete = false;
@@ -220,7 +220,9 @@ namespace VisualPascalABC
                 DesignerUseable = false;
                 //DebuggerVisible = false;
             }
-        	PascalABCCompiler.StringResourcesLanguage.LoadDefaultConfig();
+
+            PascalABCCompiler.StringResourcesLanguage.LoadDefaultConfig();
+            
             //if (PascalABCCompiler.StringResourcesLanguage.AccessibleLanguages.Count > 0)
             //    PascalABCCompiler.StringResourcesLanguage.CurrentLanguageName = PascalABCCompiler.StringResourcesLanguage.AccessibleLanguages[0];
            
@@ -233,6 +235,7 @@ namespace VisualPascalABC
             this.mADDFILEToolStripMenuItem.Image = miNew.Image;
             this.mADDEXISTFILEToolStripMenuItem.Image = miOpen.Image;
             this.mADDFORMToolStripMenuItem.Image = new System.Drawing.Bitmap(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("VisualPascalABC.Resources.Icons.16x16.Form.png"));
+
             //toolStripPanel.Size = new Size(toolStripPanel.Size.Width, toolStrip1.Height);
             toolStripPanel.AutoSize = true;
             var gr = Graphics.FromHwnd(Handle);
@@ -367,6 +370,12 @@ namespace VisualPascalABC
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            // Автовставка кода по умолчанию включена. Отключил это - теперь сохраняется в настройках!
+            //tsAutoInsertCode.Checked = true;
+            //mAUTOINSERTToolStripMenuItem.Checked = true;
+
+            //CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.TextArea.KeyEventHandler += TextArea_KeyEventHandler;
+
             init = true;
             foreach (string FileName in VisualPascalABCProgram.CommandLineArgs)
             {
@@ -1474,9 +1483,16 @@ namespace VisualPascalABC
             __showhelpinqueue();
         }
 
+        /*private void __checkforupdate(object state)
+        {
+            WorkbenchServiceFactory.UpdateService.CheckForUpdates();
+        }*/
+
         private void miCheckUpdates_Click(object sender, EventArgs e)
         {
             WorkbenchServiceFactory.UpdateService.CheckForUpdates();
+            //if (!ThreadPool.QueueUserWorkItem(__checkforupdate))
+            //    __checkforupdate(null);
         }
 
         private void cmCollapseRegions_Click(object sender, EventArgs e)
@@ -1487,6 +1503,18 @@ namespace VisualPascalABC
         private void tsDisassembly_Click(object sender, EventArgs e)
         {
             DisassemblyWindowVisible = true;
+        }
+
+        private void tsAutoInsertCode_Click(object sender, EventArgs e)
+        {
+            tsAutoInsertCode.Checked = !tsAutoInsertCode.Checked;
+            mAUTOINSERTToolStripMenuItem.Checked = !mAUTOINSERTToolStripMenuItem.Checked;
+        }
+
+        private void mAUTOINSERTToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            tsAutoInsertCode.Checked = !tsAutoInsertCode.Checked;
+            mAUTOINSERTToolStripMenuItem.Checked = !mAUTOINSERTToolStripMenuItem.Checked;
         }
 
         private void tsHelp_Click(object sender, EventArgs e)

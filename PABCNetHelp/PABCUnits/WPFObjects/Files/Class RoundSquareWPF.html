@@ -1,9 +1,9 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="RemoveBorder">
 <param name="Keyword" value="RoundSquareWPF">
-<param name="Keyword" value="WithBorder">
-<param name="Keyword" value="WithNoBorder">
-<param name="Keyword" value="WithRotate">
-<param name="Keyword" value="WithText"></object>
+<param name="Keyword" value="SetBorder">
+<param name="Keyword" value="SetRotate">
+<param name="Keyword" value="SetText"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Класс графических объектов RoundSquareWPF</H1>Класс графических объектов "Квадрат со скругленными краями". Базовый класс - <code>CircleWPF</code>.
 <table border=0 cellpadding=5><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Конструкторы класса RoundSquareWPF</font></td></tr>
@@ -11,16 +11,20 @@
 <tr><tr><td><code><b>constructor</b> (x,y,w,r: real; c: GColor);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает квадрат со скругленными краями со стороной w с радиусом скругления r заданного цвета с координатами левого верхнего угла (x,y)</td></tr>
 <tr><td><code><b>constructor</b> (p: Point; w,r: real; c: GColor);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает квадрат со скругленными краями со стороной w с радиусом скругления r заданного цвета с координатами левого верхнего угла, задаваемыми точкой</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает квадрат со скругленными краями со стороной w с радиусом скругления r заданного цвета с координатами левого верхнего угла, задаваемыми точкой p</td></tr>
+<tr><td><code><b>constructor</b> (x,y,w,r: real; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает квадрат со скругленными краями со стороной w с радиусом скругления r заданного цвета с координатами левого верхнего угла (x,y), с границей ширины borderWidth и цвета borderColor</td></tr>
+<tr><td><code><b>constructor</b> (p: Point; w,r: real; c: GColor; borderWidth: real; borderColor: GColor := Colors.Black);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создает квадрат со скругленными краями со стороной w с радиусом скругления r заданного цвета с координатами левого верхнего угла, задаваемыми точкой p, с границей ширины borderWidth и цвета borderColor</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы класса RoundSquareWPF</font></td></tr>
 
-<tr><tr><td><code><b>function</b> WithBorder(w: real := -1): RoundSquareWPF;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
-<tr><td><code><b>function</b> WithNoBorder: RoundSquareWPF;</code>
+<tr><tr><td><code><b>function</b> RemoveBorder: RoundSquareWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор выключения границы объекта</td></tr>
-<tr><td><code><b>function</b> WithRotate(da: real): RoundSquareWPF;</code>
+<tr><td><code><b>function</b> SetBorder(w: real := 1; c: GColor := Colors.Black): RoundSquareWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
+<tr><td><code><b>function</b> SetRotate(da: real): RoundSquareWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор поворота объекта</td></tr>
-<tr><td><code><b>function</b> WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): RoundSquareWPF;</code>
+<tr><td><code><b>function</b> SetText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): RoundSquareWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор текста объекта</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства базового класса CircleWPF</font></td></tr>
 
@@ -32,13 +36,13 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ширина круга</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы базового класса CircleWPF</font></td></tr>
 
-<tr><tr><td><code><b>function</b> WithBorder(w: real := -1);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
-<tr><td><code><b>function</b> WithNoBorder;</code>
+<tr><tr><td><code><b>function</b> RemoveBorder;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор выключения границы объекта</td></tr>
-<tr><td><code><b>function</b> WithRotate(da: real): CircleWPF;</code>
+<tr><td><code><b>function</b> SetBorder(w: real := 1; c: GColor := Colors.Black);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
+<tr><td><code><b>function</b> SetRotate(da: real): CircleWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор поворота объекта</td></tr>
-<tr><td><code><b>function</b> WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): CircleWPF;</code>
+<tr><td><code><b>function</b> SetText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): CircleWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор текста объекта</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства базового класса BoundedObjectWPF</font></td></tr>
 
@@ -50,56 +54,88 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет графического объекта</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы базового класса BoundedObjectWPF</font></td></tr>
 
-<tr><tr><td><code><b>function</b> WithBorder(w: real := -1): BoundedObjectWPF;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
-<tr><td><code><b>function</b> WithNoBorder: BoundedObjectWPF;</code>
+<tr><tr><td><code><b>function</b> RemoveBorder: BoundedObjectWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор выключения границы объекта</td></tr>
+<tr><td><code><b>function</b> SetBorder(w: real := 1; c: GColor := Colors.Black): BoundedObjectWPF;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор включения границы объекта</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства базового класса ObjectWPF</font></td></tr>
 
-<tr><tr><td><code><b>property</b> Bounds: GRect;</code>
+<tr><tr><td><code><b>property</b> Bottom: real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отступ низа графического объекта от верхнего края окна</td></tr>
+<tr><td><code><b>property</b> Bounds: GRect;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Прямоугольник графического объекта</td></tr>
 <tr><td><code><b>property</b> Center: Point;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Центр графического объекта</td></tr>
+<tr><td><code><b>property</b> CenterBottom: Point;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Центральная нижняя точка графического объекта</td></tr>
+<tr><td><code><b>property</b> CenterTop: Point;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Центральная верхняя точка графического объекта</td></tr>
 <tr><td><code><b>property</b> Color: GColor;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет графического объекта</td></tr>
+<tr><td><code><b>property</b> Direction: (real,real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Направление движения. Используется методом Move</td></tr>
 <tr><td><code><b>property</b> FontColor: Color;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет шрифта текста внутри графического объекта</td></tr>
 <tr><td><code><b>property</b> FontName: string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Имя шрифта текста внутри графического объекта</td></tr>
 <tr><td><code><b>property</b> FontSize: real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Размер текста внутри графического объекта</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Размер шрифта текста внутри графического объекта</td></tr>
 <tr><td><code><b>property</b> Height: real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Высота графического объекта</td></tr>
 <tr><td><code><b>property</b> Left: real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отступ графического объекта от левого края</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отступ графического объекта от левого края окна</td></tr>
 <tr><td><code><b>property</b> LeftBottom: Point;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Левый нижний угол графического объекта</td></tr>
 <tr><td><code><b>property</b> LeftTop: Point;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Левый верхний угол графического объекта</td></tr>
 <tr><td><code><b>property</b> Number: integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Целое число, выводимое в центре графического объекта. Используется свойство Text</td></tr>
+<tr><td><code><b>property</b> RealNumber: real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вещественное число, выводимое в центре графического объекта. Используется свойство Text</td></tr>
+<tr><td><code><b>property</b> Right: real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отступ правтого края графического объекта от левого края окна</td></tr>
 <tr><td><code><b>property</b> RightBottom: Point;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Правый нижний угол графического объекта</td></tr>
 <tr><td><code><b>property</b> RightTop: Point;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Правый верхний угол графического объекта</td></tr>
 <tr><td><code><b>property</b> RotateAngle: real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Угол поворота графического объекта (по часовой стрелке)</td></tr>
-<tr><td><code><b>property</b> RotateCenter: Point;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Центр поворота графического объекта</td></tr>
+<tr><td><code><b>property</b> ScaledHeight: real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отмасштабированная высота графического объекта</td></tr>
+<tr><td><code><b>property</b> ScaledSize: GSize;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отмасштабированный размер графического объекта</td></tr>
+<tr><td><code><b>property</b> ScaledWidth: real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отмасштабированная ширина графического объекта</td></tr>
+<tr><td><code><b>property</b> ScaleFactor: real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Множитель масштабирования объекта</td></tr>
+<tr><td><code><b>property</b> Size: GSize;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Размер графического объекта</td></tr>
 <tr><td><code><b>property</b> Text: string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Текст внутри графического объекта</td></tr>
 <tr><td><code><b>property</b> TextAlignment: Alignment;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выравнивание текста внутри графического объекта</td></tr>
 <tr><td><code><b>property</b> Top: real;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отступ графического объекта от верхнего края</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Отступ графического объекта от верхнего края окна</td></tr>
 <tr><td><code><b>property</b> Visible: boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Видимость графического объекта</td></tr>
 <tr><td><code><b>property</b> Width: real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ширина графического объекта</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы базового класса ObjectWPF</font></td></tr>
 
-<tr><tr><td><code><b>procedure</b> AddChild(ch: ObjectWPF);</code>
+<tr><tr><td><code><b>procedure</b> AddChild(ch: ObjectWPF; al: Alignment := Alignment.LeftTop);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Добавляет к графическому объекту дочерний</td></tr>
+<tr><td><code><b>procedure</b> AnimMoveEnd;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Завершает анимацию перемещения</td></tr>
+<tr><td><code><b>procedure</b> AnimMoveForward(r: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Анимирует перемещение графического объекта в направлении RotateAngle (вверх при RotateAngle=0)</td></tr>
+<tr><td><code><b>procedure</b> AnimMoveOn(a,b: real; sec: real := 1);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Анимирует перемещение графического объекта на вектор (a,b) в течение sec секунд</td></tr>
+<tr><td><code><b>procedure</b> AnimMoveTo(x,y: real; sec: real := 1);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Анимирует перемещение графического объекта к точке (x,y) в течение sec секунд</td></tr>
+<tr><td><code><b>procedure</b> AnimRotate(a: real; sec: real := 1);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Анимирует вращение графического объекта на угол a в течение sec секунд</td></tr>
+<tr><td><code><b>procedure</b> AnimScale(a: real; sec: real := 1);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Анимирует масштабирование графического объекта на величину a в течение sec секунд</td></tr>
 <tr><td><code><b>procedure</b> DeleteChild(ch: ObjectWPF);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет из графического объекта дочерний</td></tr>
 <tr><td><code><b>procedure</b> Destroy;</code>
@@ -110,18 +146,30 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает графический объект в направлении RotateAngle (вверх при RotateAngle=0)</td></tr>
 <tr><td><code><b>procedure</b> MoveOn(a,b: real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает графический объект на вектор (a,b)</td></tr>
+<tr><td><code><b>procedure</b> MoveOn(v: (real,real));</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает графический объект на вектор (a,b)</td></tr>
+<tr><td><code><b>procedure</b> MoveTime(dt: real); <b>virtual</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает графический объект вдоль вектора Direction со скоростью Velocity за время dt</td></tr>
 <tr><td><code><b>procedure</b> MoveTo(x,y: real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает левый верхний угол графического объекта к точке (x,y)</td></tr>
-<tr><td><code><b>procedure</b> Rotate(da: real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Поворачивает графический объект по часовой стрелке на угол da</td></tr>
+<tr><td><code><b>procedure</b> Rotate(a: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Поворачивает графический объект по часовой стрелке на угол a</td></tr>
+<tr><td><code><b>procedure</b> RotateToPoint(x,y: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Поворачивает графический объект так чтобы он "смотрел" на точку (x,y)</td></tr>
+<tr><td><code><b>procedure</b> Scale(r: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Масштабирует графический объект в r раз относительно текущего размера</td></tr>
 <tr><td><code><b>procedure</b> ToBack;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переносит графический объект на задний план</td></tr>
 <tr><td><code><b>procedure</b> ToFront;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Переносит графический объект на передний план</td></tr>
 </tr>
-<tr><tr><td><code><b>function</b> WithRotate(da: real): ObjectWPF;</code>
+<tr><tr><td><code><b>function</b> Intersects(ob: ObjectWPF): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Определяет, пересекается ли объект с объектом ob</td></tr>
+<tr><td><code><b>function</b> OutOfGraphWindow: boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Объект находится вне границ графического окна</td></tr>
+<tr><td><code><b>function</b> SetRotate(da: real): ObjectWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор поворота объекта</td></tr>
-<tr><td><code><b>function</b> WithText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): ObjectWPF;</code>
+<tr><td><code><b>function</b> SetText(txt: string; size: real := 16; fontname: string := 'Arial'; c: GColor := Colors.Black): ObjectWPF;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор текста объекта</td></tr>
 </tr></table>
 </body></HTML>

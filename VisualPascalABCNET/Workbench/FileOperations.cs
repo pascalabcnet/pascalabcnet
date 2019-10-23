@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -392,7 +392,7 @@ namespace VisualPascalABC
                 if (TbPage == CurrentCodeFileDocument)
                     UpdateSaveButtonsEnabled();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 MessageBox.Show(String.Format(Form1StringResources.Get("SAVE_FILE_ERROR_TEXT{0}"), FileName), PascalABCCompiler.StringResources.Get("!ERROR"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -483,7 +483,10 @@ namespace VisualPascalABC
             //}
             CodeFileDocumentControl bakTab = CurrentCodeFileDocument;
             CurrentCodeFileDocument = TbPage;
-            saveFileDialog1.FileName = Path.GetFileName(CurrentSourceFileName);
+            var s = Path.GetFileName(CurrentSourceFileName);
+            if (s.ToLower().StartsWith("program"))
+                s = "";
+            saveFileDialog1.FileName = s;
             string id = Path.GetDirectoryName(CurrentSourceFileName);
             if (id == "")
             {

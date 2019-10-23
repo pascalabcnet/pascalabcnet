@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections;
@@ -1682,7 +1682,7 @@ namespace CodeCompletion
         public override void visit(deconstructor_pattern _deconstructor_pattern)
         {
             _deconstructor_pattern.type.visit(this);
-            foreach (pattern_deconstructor_parameter pdp in _deconstructor_pattern.parameters)
+            foreach (pattern_parameter pdp in _deconstructor_pattern.parameters)
                 pdp.visit(this);
         }
         public override void visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter)

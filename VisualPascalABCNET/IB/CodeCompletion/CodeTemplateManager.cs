@@ -1,7 +1,6 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
@@ -10,13 +9,30 @@ namespace VisualPascalABC
 {
 	public class CodeTemplateManager
 	{
-		private Hashtable ht = new Hashtable();
-		
-		public CodeTemplateManager()
+        public Dictionary<string, string> ht = new Dictionary<string, string>();
+
+        public CodeTemplateManager(string filename = "template.pct", bool searchFromLocalDirectory = false)
 		{
 			try
 			{
-				StreamReader sr = File.OpenText(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName),"template.pct"));
+                StreamReader sr;
+                string PABCExeDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
+                if (!searchFromLocalDirectory)
+                {
+                    sr = File.OpenText(Path.Combine(PABCExeDirectory, filename));
+                }
+                else
+                {
+                    if (File.Exists(filename))
+                        sr = File.OpenText(filename);
+                    else
+                    {
+                        var ss = Path.Combine(@"..\", filename);
+                        if (File.Exists(ss))
+                            sr = File.OpenText(ss);
+                        else sr = File.OpenText(Path.Combine(PABCExeDirectory, filename));
+                    }
+                }
 				ParseFile(sr);
 				sr.Close();
 			}

@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections;
@@ -302,7 +302,7 @@ namespace VisualPascalABC
                 File.AppendAllText("logRun.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
 #endif
                 RemoveFromTables(fileName);
-                throw;
+                throw; // Это не перехватывается и приводит к вылету оболочки - SSM 22/04/19
             }
         }
 

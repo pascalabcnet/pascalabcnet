@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -25,13 +25,26 @@ namespace PascalABCCompiler.TreeRealization
     {
         public using_namespace namespace_name;
         public SymbolTable.Scope scope;
+        public location loc;
         public namespace_unit_node(using_namespace namespace_name)
         {
             this.namespace_name = namespace_name;
         }
+        public namespace_unit_node(using_namespace namespace_name, location loc)
+        {
+            this.namespace_name = namespace_name;
+            this.loc = loc;
+        }
         public override List<TreeConverter.SymbolInfo> find_only_in_namespace(string name)
         {
             throw new NotSupportedException();
+        }
+        public override location location
+        {
+            get
+            {
+                return loc;
+            }
         }
         public override semantic_node_type semantic_node_type
         {

@@ -23,7 +23,11 @@
 
 <tr><tr><td><code><b>procedure</b> AddChild(obj: Object3D);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Добавить дочерний подобъект</td></tr>
+<tr><td><code><b>procedure</b> AddChilds(<b>params</b> arr: <b>array</b>  <b>of</b> Object3D);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Добавить дочерний подобъект</td></tr>
 <tr><td><code><b>procedure</b> Destroy; override;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удалить дочерний подобъект</td></tr>
+<tr><td><code><b>procedure</b> RemoveChild(obj: Object3D);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удалить дочерний подобъект</td></tr>
 </tr>
 <tr><tr><td><code><b>function</b> Count: integer;</code>
@@ -89,9 +93,13 @@
 <tr><td><code><b>function</b> AnimRotate(v: Vector3D; angle: real; seconds: real := 1);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию поворота объекта вокруг вектора v, направленного из центра объекта, на величину angle за seconds секунд</td></tr>
 <tr><td><code><b>function</b> AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real; Completed: <b>procedure</b>): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center, на величину angle за seconds секунд. В конце анимации выполняется процедура Completed</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center (её координаты задаются относительно центра объекта), на величину angle за seconds секунд. В конце анимации выполняется процедура Completed</td></tr>
 <tr><td><code><b>function</b> AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real := 1): AnimationBase;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center, на величину angle за seconds секунд</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center (её координаты задаются относительно центра объекта), на величину angle за seconds секунд</td></tr>
+<tr><td><code><b>function</b> AnimRotateAtAbsolute(axis: Vector3D; angle: real; center: Point3D; seconds: real; Completed: <b>procedure</b>): AnimationBase;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center (в абсолютных координатах), на величину angle за seconds секунд. В конце анимации выполняется процедура Completed</td></tr>
+<tr><td><code><b>function</b> AnimRotateAtAbsolute(axis: Vector3D; angle: real; center: Point3D; seconds: real := 1): AnimationBase;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию поворота объекта вокруг вектора axis, направленного из точки center (в абсолютных координатах), на величину angle за seconds секунд</td></tr>
 <tr><td><code><b>function</b> AnimScale(sc: real; seconds: real; Completed: <b>procedure</b>): AnimationBase;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает анимацию масштабирования объекта на величину sc за seconds секунд. В конце анимации выполняется процедура Completed</td></tr>
 <tr><td><code><b>function</b> AnimScale(sc: real; seconds: real := 1): AnimationBase;</code>
@@ -124,10 +132,14 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает 3D-объект к точке (xx,yy,zz)</td></tr>
 <tr><td><code><b>function</b> MoveTo(p: Point3D): Object3D;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает 3D-объект к точке p</td></tr>
+<tr><td><code><b>function</b> PositionAfterTime(dt: real): Point3D;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Будущая позиция 3D-объекта по прошествии времени dt</td></tr>
 <tr><td><code><b>function</b> Rotate(axis: Vector3D; angle: real): Object3D;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Поворачивает объект на угол angle вокруг оси axis</td></tr>
 <tr><td><code><b>function</b> RotateAt(axis: Vector3D; angle: real; center: Point3D): Object3D;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Поворачивает объект на угол angle вокруг оси axis относительно точки center</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Поворачивает объект на угол angle вокруг оси axis относительно точки center (её координаты задаются относительно центра объекта)</td></tr>
+<tr><td><code><b>function</b> RotateAtAbsolute(axis: Vector3D; angle: real; center: Point3D): Object3D;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Поворачивает объект на угол angle вокруг оси axis относительно точки center (в абсолютных координатах)</td></tr>
 <tr><td><code><b>function</b> Scale(f: real): Object3D;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Масштабирует 3D-объект в f раз</td></tr>
 <tr><td><code><b>function</b> ScaleX(f: real): Object3D;</code>
@@ -139,6 +151,8 @@
 </tr>
 <tr><tr><td><code><b>procedure</b> Destroy(); <b>virtual</b>;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удаляет 3D-объект</td></tr>
+<tr><td><code><b>procedure</b> MoveTime(dt: real); <b>virtual</b>;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает 3D-объект вдоль вектора Direction со скоростью Velocity за время dt</td></tr>
 <tr><td><code><b>procedure</b> Save(fname: string); <b>virtual</b>;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сохраняет 3D-объект в файл</td></tr>
 </tr></table>

@@ -33,7 +33,7 @@ namespace PascalABCCompiler.SyntaxTree
         DirectDescendants
     }
 
-    public enum SemanticCheckType { MatchedExpression, MatchedExpressionAndType }
+    public enum SemanticCheckType { MatchedExpression, MatchedExpressionAndType, MatchedExpressionAndExpression, MatchedTuple }
 
     public partial class syntax_tree_node
     {
@@ -332,6 +332,11 @@ namespace PascalABCCompiler.SyntaxTree
         {
             get { return new statement_list(); }
         }
+
+        public override string ToString()
+        {
+            return "begin " + list.Select(st=>st is empty_statement ? "" : st.ToString()+"; ").Aggregate((s,x)=>s+x)+ "end";
+        }
         //-- List members end
     }
 
@@ -391,6 +396,11 @@ namespace PascalABCCompiler.SyntaxTree
         public static bin_expr LogicalAnd(expression left, expression right)
         {
             return new bin_expr(left, right, Operators.LogicalAND);
+        }
+
+        public static bin_expr LogicalOr(expression left, expression right)
+        {
+            return new bin_expr(left, right, Operators.LogicalOR);
         }
 
         public override string ToString()
@@ -559,7 +569,7 @@ namespace PascalABCCompiler.SyntaxTree
                 sb.Append(" := ");
                 sb.Append(inital_value.ToString());
             }
-            sb.Append("; ");
+            //sb.Append("; ");
             return sb.ToString();
         }
     }
@@ -756,14 +766,15 @@ namespace PascalABCCompiler.SyntaxTree
             if (name != null)
                 sb.Append(name.ToString());
             else
-                sb.Append("NONAME");
+                sb.Append("");
 
             if (template_args != null)
                 sb.Append("<" + template_args.ToString() + ">");
 
             if (parameters != null)
                 sb.Append("(" + parameters.ToString() + ")");
-            sb.Append(";");
+            if (name != null)
+                sb.Append(";");
             if (this.proc_attributes != null)
                 foreach (var pa in this.proc_attributes.proc_attributes)
                     sb.Append(" " + pa.ToString() + " ");
@@ -1093,8 +1104,8 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class simple_property
     {
-        public simple_property(ident name, type_definition type, property_accessors accessors, SourceContext sc = null) 
-            : this(name, type, null, accessors, null, null, definition_attribute.None,proc_attribute.attr_none,false, null, sc)
+        public simple_property(ident name, type_definition type, property_accessors accessors, SourceContext sc = null)
+            : this(name, type, null, accessors, null, null, definition_attribute.None, proc_attribute.attr_none, false, null, sc)
         { }
     }
 
@@ -1664,7 +1675,11 @@ namespace PascalABCCompiler.SyntaxTree
     {
         public override string ToString()
         {
-            return "" + this._ident_list.ToString() + " -> lambda_body";
+            var s = this._ident_list.ToString();
+            if (_ident_list.Count != 1)
+                s = "(" + s + ")";
+            var b = this.proc_body.ToString();
+            return "" + s + " -> "+b;
         }
     }
 
@@ -1705,10 +1720,15 @@ namespace PascalABCCompiler.SyntaxTree
         {
             return new SyntaxTree.dot_node(this, id, sc);
         }
+        /// <summary>
+        /// Сервисное поле для реализации механизма ?. Оно - типа question_colon_expression
+        /// </summary>
+        public object ExprToQCE = null;
     }
 
     public partial class expression
     {
+        //public object semantic_ex; 
         public expression Plus(expression e)
         {
             return new bin_expr(this, e, Operators.Plus);
@@ -1813,19 +1833,12 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class deconstructor_pattern
     {
-        public bool IsRecursive => parameters.Any(x => x is recursive_deconstructor_parameter);
-
         public override string ToString() => $"{type}({string.Join(", ", parameters.Select(x => x.ToString()))})";
     }
 
-    public partial class var_deconstructor_parameter
+    public partial class pattern_node
     {
-        public override string ToString() => identifier.ToString() + (type == null ? "" : $": {type}");
-    }
-
-    public partial class recursive_deconstructor_parameter
-    {
-        public override string ToString() => pattern.ToString();
+        public bool IsRecursive => parameters.Any(x => x is recursive_pattern_parameter);
     }
 
     public partial class typecast_node
@@ -1841,5 +1854,109 @@ namespace PascalABCCompiler.SyntaxTree
         public bool visited = false;
     }
 
+    public partial class var_deconstructor_parameter
+    {
+        public override string ToString() => identifier.ToString() + (type == null ? "" : $": {type}");
     }
+
+    public partial class recursive_deconstructor_parameter
+    {
+        public override string ToString() => pattern.ToString();
+    }
+
+    public partial class tuple_pattern_wild_card
+    {
+        ///<summary>
+        ///Конструктор c параметрами
+        ///</summary>
+        public tuple_pattern_wild_card(SourceContext sc)
+        {
+            this.source_context = sc;
+        }
+    }
+
+    public partial class collection_pattern_wild_card
+    {
+        ///<summary>
+        ///Конструктор c параметрами
+        ///</summary>
+        public collection_pattern_wild_card(SourceContext sc)
+        {
+            this.source_context = sc;
+        }
+    }
+
+    public partial class collection_pattern_gap_parameter
+    {
+        ///<summary>
+        ///Конструктор c параметрами
+        ///</summary>
+        public collection_pattern_gap_parameter(SourceContext sc)
+        {
+            this.source_context = sc;
+        }
+    }
+
+    public partial class wild_card_deconstructor_parameter
+    {
+        ///<summary>
+        ///Конструктор c параметрами
+        ///</summary>
+        public wild_card_deconstructor_parameter(SourceContext sc)
+        {
+            this.source_context = sc;
+        }
+    }
+
+    public partial class const_pattern
+    {
+        ///<summary>
+        ///Конструктор c параметрами
+        ///</summary>
+        public const_pattern(List<syntax_tree_node> pattern_nodes, SourceContext sc)
+        {
+            source_context = sc;
+            pattern_expressions = new expression_list();
+            pattern_expressions.source_context = sc;
+
+            foreach (var elem in pattern_nodes)
+            {
+                if (elem is named_type_reference type)
+                {
+                    expression pattern_expr = null;
+                    if (type.names.Count == 1)
+                    {
+                        pattern_expr = type.names[0];
+                    }
+                    else
+                    {
+                        pattern_expr = new dot_node(null, type.names[type.names.Count - 1], sc);
+                        var curr_dot_node = pattern_expr as dot_node;
+
+                        for (var i = type.names.Count - 2; i >= 1; --i)
+                        {
+                            curr_dot_node.left = new dot_node(null, type.names[i], sc);
+                            curr_dot_node = curr_dot_node.left as dot_node;
+                        }
+                        curr_dot_node.left = type.names[0];
+                    }
+                    pattern_expressions.Add(pattern_expr, type.source_context);
+                } 
+                else if (elem is expression expr)
+                {
+                    pattern_expressions.Add(expr, elem.source_context);
+                }
+            }
+        }
+    }
+
+    public partial class empty_statement
+    {
+        public override string ToString() => "<>";
+    }
+    public partial class modern_proc_type
+    {
+        public override string ToString() => "<proc_type>";
+    }
+}
 

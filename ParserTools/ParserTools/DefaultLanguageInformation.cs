@@ -1,7 +1,8 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Text;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using PascalABCCompiler.SyntaxTree;
@@ -125,6 +126,7 @@ namespace PascalABCCompiler.Parsers
             keywords.Add("exit", "exit"); keys.Add("exit");
             keywords.Add("event", "event"); keys.Add("event");
             keywords.Add("match", "match"); keys.Add("match");
+            keywords.Add("when", "when"); keys.Add("when");
             keywords.Add("static", "static"); keys.Add("static");
             //keywords.Add("typeof", "typeof"); //keys.Add("typeof");
             //keywords.Add("sizeof", "sizeof"); //keys.Add("sizeof");
@@ -274,7 +276,7 @@ namespace PascalABCCompiler.Parsers
 		
 		public virtual string GetDescriptionForModule(IInterfaceUnitScope scope)
 		{
-			return "unit "+scope.Name;
+			return (scope.IsNamespaceUnit?"namespace ":"unit ")+scope.Name;
 		}
 		
 		public virtual string GetShortName(ICompiledTypeScope scope)
@@ -482,7 +484,12 @@ namespace PascalABCCompiler.Parsers
                 sb.Append('>');
                 return sb.ToString();
             }
-            if (ctn.IsArray) return "array of " + GetFullTypeName(ctn.GetElementType());
+            if (ctn.IsArray)
+            {
+                var rank = ctn.GetArrayRank();
+                var strrank = rank > 1 ? "[" + new string(',', rank - 1) + "]" : "";
+                return $"array{strrank}" + " of " + GetFullTypeName(ctn.GetElementType());
+            }
             if (ctn == Type.GetType("System.Void*")) return "pointer";
             if (ctn.IsNested)
                 return ctn.Name;
@@ -518,9 +525,35 @@ namespace PascalABCCompiler.Parsers
             return sb.ToString();
         }
 
+        private bool enum_out_of_order(FieldInfo[] fields) //возвращает true, если значения полей этого enum'а идут не по порядку или не с нуля (IDE issue #117)
+        {
+            for (int i = 0; i < fields.Length; i++)
+            {
+                if (fields[i].Name != "value__")
+                {
+                    object o = fields[i].GetRawConstantValue(); //ошибка была здесь, так как я не знал, что у констант enum'а может быть другой тип помимо int
+                    switch (o)
+                    {
+                        case byte b: if (b != i - 1) return true; break;
+                        case sbyte b: if (b != i - 1) return true; break;
+                        case short b: if (b != i - 1) return true; break;
+                        case ushort b: if (b != i - 1) return true; break;
+                        case int b: if (b != i - 1) return true; break;
+                        case uint b: return true; break;
+                        case long b: return true; break;
+                        case ulong b: return true; break;
+                    }
+                }
+            }
+            return false;
+        }
+
         private string get_enum_constants(Type t)
         {
             FieldInfo[] fields = t.GetFields(BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static);
+            bool outoforder = enum_out_of_order(fields);
+			bool is_flags = Attribute.IsDefined(t, typeof(FlagsAttribute));
+			int max_name_len = fields.Max(fi => fi.Name.Length);
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("(");
             for (int i = 0; i < fields.Length; i++)
@@ -529,6 +562,14 @@ namespace PascalABCCompiler.Parsers
                 {
                     sb.Append(' ', 4);
                     sb.Append(fields[i].Name);
+                    if (outoforder)
+                    {
+                        if (is_flags) sb.Append(' ', max_name_len - fields[i].Name.Length);
+                        sb.Append(" = ");
+                        if (is_flags)
+							sb.Append('$' + Convert.ToInt64(fields[i].GetRawConstantValue()).ToString("X")); else
+							sb.Append(fields[i].GetRawConstantValue());
+                    }
                     if (i < fields.Length - 1)
                         sb.AppendLine(",");
                     else
@@ -588,7 +629,7 @@ namespace PascalABCCompiler.Parsers
             }
             else
                 sb.Append(prepare_member_name(t.Name));
-            sb.Append(" = " + GetClassKeyword(t));
+            sb.Append(" = " + (t.IsSealed && t.IsAbstract ? "static ":"")+GetClassKeyword(t));
             bool bracket = false;
             if (t.IsEnum)
             {
@@ -934,10 +975,15 @@ namespace PascalABCCompiler.Parsers
 				}
 				sb.Append('>');*/
 				return sb.ToString();
-			}
-			if (ctn.IsArray) return "array of "+GetShortTypeName(ctn.GetElementType());
-			//if (ctn == Type.GetType("System.Void*")) return PascalABCCompiler.TreeConverter.compiler_string_consts.pointer_type_name;
-			return ctn.Name;
+            }
+            if (ctn.IsArray)
+            {
+                var rank = ctn.GetArrayRank();
+                var strrank = rank > 1 ? "[" + new string(',', rank - 1) + "]" : "";
+                return $"array{strrank}" + " of " + GetShortTypeName(ctn.GetElementType());
+            }
+            //if (ctn == Type.GetType("System.Void*")) return PascalABCCompiler.TreeConverter.compiler_string_consts.pointer_type_name;
+            return ctn.Name;
 		}
 		
 		protected virtual string GetTopScopeName(IBaseScope sc)
@@ -1490,8 +1536,9 @@ namespace PascalABCCompiler.Parsers
             }
             else
             {
-                sb.Append("const " + fi.Name + " : " + GetFullTypeName(fi.FieldType));
-                sb.Append(" = " + fi.GetRawConstantValue().ToString());
+                var fitype = GetFullTypeName(fi.FieldType);
+                sb.Append("const " + fi.Name + " : " + fitype);
+                sb.Append(" = " + (fitype == "string" ? $"'{fi.GetRawConstantValue().ToString()}'" : fi.GetRawConstantValue().ToString()));
             }
             sb.Append(";");
             return sb.ToString();
@@ -1715,7 +1762,15 @@ namespace PascalABCCompiler.Parsers
                 {
                     sb.Append(GetFullTypeName(pis[i].ParameterType));
                     if (pis[i].IsOptional)
-                        sb.Append(":=" + (pis[i].DefaultValue != null ? pis[i].DefaultValue.ToString() : "nil"));
+                    {
+                        sb.Append(" := ");
+                        if (pis[i].DefaultValue != null)
+                        {
+                            if (pis[i].DefaultValue is string) sb.Append($"'{pis[i].DefaultValue.ToString()}'");
+                            else sb.Append(pis[i].DefaultValue.ToString());
+                        }
+                        else sb.Append("nil");
+                    }
                 }
                 else
                 {
@@ -1889,7 +1944,15 @@ namespace PascalABCCompiler.Parsers
                     else
                         sb.Append(inst_type);
                     if (pis[i].IsOptional)
-                        sb.Append(":=" + (pis[i].DefaultValue != null ? pis[i].DefaultValue.ToString() : "nil"));
+                    {
+                        sb.Append(" := ");
+                        if (pis[i].DefaultValue != null)
+                        {
+                            if (pis[i].DefaultValue is string) sb.Append($"'{pis[i].DefaultValue.ToString()}'");
+                            else sb.Append(pis[i].DefaultValue.ToString());
+                        }
+                        else sb.Append("nil");
+                    }
                 }
                 else
                 {

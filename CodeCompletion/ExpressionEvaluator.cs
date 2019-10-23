@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections;
@@ -37,7 +37,7 @@ namespace CodeCompletion
 								case TypeCode.Int32 : res.prim_val = (int)left.prim_val + (int)right.prim_val; break;
 								case TypeCode.Double : res.prim_val = (int)left.prim_val + (double)right.prim_val; break;
 								case TypeCode.Int64 : res.prim_val = (int)left.prim_val + (long)right.prim_val; break;
-								case TypeCode.String : res.prim_val = ((int)left.prim_val).ToString() + (string)right.prim_val; break;
+								case TypeCode.String : res.string_val = ((int)left.prim_val).ToString() + right.string_val; break;
 								case TypeCode.Int16 : res.prim_val = (int)left.prim_val + (System.Int16)right.prim_val; break;
 								case TypeCode.SByte : res.prim_val = (int)left.prim_val + (sbyte)right.prim_val; break;
 								case TypeCode.UInt16 : res.prim_val = (int)left.prim_val + (System.UInt16)right.prim_val; break;
@@ -55,7 +55,7 @@ namespace CodeCompletion
 								case TypeCode.Int32 : res.prim_val = (double)left.prim_val + (int)right.prim_val; break;
 								case TypeCode.Double : res.prim_val = (double)left.prim_val + (double)right.prim_val; break;
 								case TypeCode.Int64 : res.prim_val = (double)left.prim_val + (long)right.prim_val; break;
-								case TypeCode.String : res.prim_val = ((double)left.prim_val).ToString() + (string)right.prim_val; break;
+								case TypeCode.String : res.string_val = ((double)left.prim_val).ToString() + right.string_val; break;
 								case TypeCode.Int16 : res.prim_val = (double)left.prim_val + (System.Int16)right.prim_val; break;
 								case TypeCode.SByte : res.prim_val = (double)left.prim_val + (sbyte)right.prim_val; break;
 								case TypeCode.UInt16 : res.prim_val = (double)left.prim_val + (System.UInt16)right.prim_val; break;
@@ -73,7 +73,7 @@ namespace CodeCompletion
 								case TypeCode.Int32 : res.prim_val = (byte)left.prim_val + (int)right.prim_val; break;
 								case TypeCode.Double : res.prim_val = (byte)left.prim_val + (double)right.prim_val; break;
 								case TypeCode.Int64 : res.prim_val = (byte)left.prim_val + (long)right.prim_val; break;
-								case TypeCode.String : res.prim_val = ((byte)left.prim_val).ToString() + (string)right.prim_val; break;
+								case TypeCode.String : res.string_val = ((byte)left.prim_val).ToString() + right.string_val; break;
 								case TypeCode.Int16 : res.prim_val = (byte)left.prim_val + (System.Int16)right.prim_val; break;
 								case TypeCode.SByte : res.prim_val = (byte)left.prim_val + (sbyte)right.prim_val; break;
 								case TypeCode.UInt16 : res.prim_val = (byte)left.prim_val + (System.UInt16)right.prim_val; break;
@@ -91,7 +91,7 @@ namespace CodeCompletion
 								case TypeCode.Int32 : res.prim_val = (System.Int16)left.prim_val + (int)right.prim_val; break;
 								case TypeCode.Double : res.prim_val = (System.Int16)left.prim_val + (double)right.prim_val; break;
 								case TypeCode.Int64 : res.prim_val = (System.Int16)left.prim_val + (long)right.prim_val; break;
-								case TypeCode.String : res.prim_val = ((System.Int16)left.prim_val).ToString() + (string)right.prim_val; break;
+								case TypeCode.String : res.string_val = ((System.Int16)left.prim_val).ToString() + right.string_val; break;
 								case TypeCode.Int16 : res.prim_val = (System.Int16)left.prim_val + (System.Int16)right.prim_val; break;
 								case TypeCode.SByte : res.prim_val = (System.Int16)left.prim_val + (sbyte)right.prim_val; break;
 								case TypeCode.UInt16 : res.prim_val = (System.Int16)left.prim_val + (System.UInt16)right.prim_val; break;
@@ -109,7 +109,7 @@ namespace CodeCompletion
 								case TypeCode.Int32 : res.prim_val = (System.Int64)left.prim_val + (int)right.prim_val; break;
 								case TypeCode.Double : res.prim_val = (System.Int64)left.prim_val + (double)right.prim_val; break;
 								case TypeCode.Int64 : res.prim_val = (System.Int64)left.prim_val + (long)right.prim_val; break;
-								case TypeCode.String : res.prim_val = ((System.Int64)left.prim_val).ToString() + (string)right.prim_val; break;
+								case TypeCode.String : res.string_val = ((System.Int64)left.prim_val).ToString() + right.string_val; break;
 								case TypeCode.Int16 : res.prim_val = (System.Int64)left.prim_val + (System.Int16)right.prim_val; break;
 								case TypeCode.SByte : res.prim_val = (System.Int64)left.prim_val + (sbyte)right.prim_val; break;
 								case TypeCode.UInt16 : res.prim_val = (System.Int64)left.prim_val + (System.UInt16)right.prim_val; break;
@@ -123,18 +123,18 @@ namespace CodeCompletion
 						{
 							switch(rcode)
 							{
-								case TypeCode.Byte : res.prim_val = (string)left.prim_val + right.prim_val.ToString(); break;
-								case TypeCode.Int32 : res.prim_val = (string)left.prim_val + right.prim_val.ToString(); break;
-								case TypeCode.Double : res.prim_val = (string)left.prim_val + right.prim_val.ToString(); break;
-								case TypeCode.Int64 : res.prim_val = (string)left.prim_val + right.prim_val.ToString(); break;
-								case TypeCode.String : res.prim_val = (string)left.prim_val + right.prim_val.ToString(); break;
-								case TypeCode.Int16 : res.prim_val = (string)left.prim_val + right.prim_val.ToString(); break;
-								case TypeCode.SByte : res.prim_val = (string)left.prim_val + right.prim_val.ToString(); break;
-								case TypeCode.UInt16 : res.prim_val = (string)left.prim_val + right.prim_val.ToString(); break;
-								case TypeCode.UInt32 : res.prim_val = (string)left.prim_val + right.prim_val.ToString(); break;
-								case TypeCode.UInt64 : res.prim_val = (string)left.prim_val + right.prim_val.ToString(); break;
-								case TypeCode.Single : res.prim_val = (string)left.prim_val + right.prim_val.ToString(); break;
-								case TypeCode.Char : res.prim_val = (string)left.prim_val + right.prim_val.ToString(); break;
+								case TypeCode.Byte : res.string_val = left.string_val + right.prim_val.ToString(); break;
+								case TypeCode.Int32 : res.string_val = left.string_val + right.prim_val.ToString(); break;
+								case TypeCode.Double : res.string_val = left.string_val + right.prim_val.ToString(); break;
+								case TypeCode.Int64 : res.string_val = left.string_val + right.prim_val.ToString(); break;
+								case TypeCode.String : res.string_val = left.string_val + right.string_val; break;
+								case TypeCode.Int16 : res.string_val = left.string_val + right.prim_val.ToString(); break;
+								case TypeCode.SByte : res.string_val = left.string_val + right.prim_val.ToString(); break;
+								case TypeCode.UInt16 : res.string_val = left.string_val + right.prim_val.ToString(); break;
+								case TypeCode.UInt32 : res.string_val = left.string_val + right.prim_val.ToString(); break;
+								case TypeCode.UInt64 : res.string_val = left.string_val + right.prim_val.ToString(); break;
+								case TypeCode.Single : res.string_val = left.string_val + right.prim_val.ToString(); break;
+								case TypeCode.Char : res.string_val = left.string_val + right.prim_val.ToString(); break;
 							}
 						}
 						break;
@@ -146,7 +146,7 @@ namespace CodeCompletion
 								case TypeCode.Int32 : res.prim_val = (System.SByte)left.prim_val + (int)right.prim_val; break;
 								case TypeCode.Double : res.prim_val = (System.SByte)left.prim_val + (double)right.prim_val; break;
 								case TypeCode.Int64 : res.prim_val = (System.SByte)left.prim_val + (long)right.prim_val; break;
-								case TypeCode.String : res.prim_val = ((System.SByte)left.prim_val).ToString() + (string)right.prim_val; break;
+								case TypeCode.String : res.string_val = ((System.SByte)left.prim_val).ToString() + right.string_val; break;
 								case TypeCode.Int16 : res.prim_val = (System.SByte)left.prim_val + (System.Int16)right.prim_val; break;
 								case TypeCode.SByte : res.prim_val = (System.SByte)left.prim_val + (sbyte)right.prim_val; break;
 								case TypeCode.UInt16 : res.prim_val = (System.SByte)left.prim_val + (System.UInt16)right.prim_val; break;
@@ -164,7 +164,7 @@ namespace CodeCompletion
 								case TypeCode.Int32 : res.prim_val = (System.UInt16)left.prim_val + (int)right.prim_val; break;
 								case TypeCode.Double : res.prim_val = (System.UInt16)left.prim_val + (double)right.prim_val; break;
 								case TypeCode.Int64 : res.prim_val = (System.UInt16)left.prim_val + (long)right.prim_val; break;
-								case TypeCode.String : res.prim_val = ((System.UInt16)left.prim_val).ToString() + (string)right.prim_val; break;
+								case TypeCode.String : res.string_val = ((System.UInt16)left.prim_val).ToString() + right.string_val; break;
 								case TypeCode.Int16 : res.prim_val = (System.UInt16)left.prim_val + (System.Int16)right.prim_val; break;
 								case TypeCode.SByte : res.prim_val = (System.UInt16)left.prim_val + (sbyte)right.prim_val; break;
 								case TypeCode.UInt16 : res.prim_val = (System.UInt16)left.prim_val + (System.UInt16)right.prim_val; break;
@@ -182,7 +182,7 @@ namespace CodeCompletion
 								case TypeCode.Int32 : res.prim_val = (System.UInt32)left.prim_val + (int)right.prim_val; break;
 								case TypeCode.Double : res.prim_val = (System.UInt32)left.prim_val + (double)right.prim_val; break;
 								case TypeCode.Int64 : res.prim_val = (System.UInt32)left.prim_val + (long)right.prim_val; break;
-								case TypeCode.String : res.prim_val = ((System.UInt32)left.prim_val).ToString() + (string)right.prim_val; break;
+								case TypeCode.String : res.string_val = ((System.UInt32)left.prim_val).ToString() + right.string_val; break;
 								case TypeCode.Int16 : res.prim_val = (System.UInt32)left.prim_val + (System.Int16)right.prim_val; break;
 								case TypeCode.SByte : res.prim_val = (System.UInt32)left.prim_val + (sbyte)right.prim_val; break;
 								case TypeCode.UInt16 : res.prim_val = (System.UInt32)left.prim_val + (System.UInt16)right.prim_val; break;
@@ -200,7 +200,7 @@ namespace CodeCompletion
 								case TypeCode.Int32 : res.prim_val = (System.UInt64)left.prim_val + (System.UInt64)((int)right.prim_val); break;
 								case TypeCode.Double : res.prim_val = (System.UInt64)left.prim_val + (double)right.prim_val; break;
 								case TypeCode.Int64 : res.prim_val = (System.UInt64)left.prim_val + (System.UInt64)((long)right.prim_val); break;
-								case TypeCode.String : res.prim_val = ((System.UInt64)left.prim_val).ToString() + (string)right.prim_val; break;
+								case TypeCode.String : res.string_val = ((System.UInt64)left.prim_val).ToString() + right.string_val; break;
 								case TypeCode.Int16 : res.prim_val = (System.UInt64)left.prim_val + (System.UInt64)((System.Int16)right.prim_val); break;
 								case TypeCode.SByte : res.prim_val = (System.UInt64)left.prim_val + (System.UInt64)((sbyte)right.prim_val); break;
 								case TypeCode.UInt16 : res.prim_val = (System.UInt64)left.prim_val + (System.UInt16)right.prim_val; break;
@@ -218,7 +218,7 @@ namespace CodeCompletion
 								case TypeCode.Int32 : res.prim_val = (System.Single)left.prim_val + (int)right.prim_val; break;
 								case TypeCode.Double : res.prim_val = (System.Single)left.prim_val + (double)right.prim_val; break;
 								case TypeCode.Int64 : res.prim_val = (System.Single)left.prim_val + (long)right.prim_val; break;
-								case TypeCode.String : res.prim_val = ((System.Single)left.prim_val).ToString() + (string)right.prim_val; break;
+								case TypeCode.String : res.string_val = ((System.Single)left.prim_val).ToString() + right.string_val; break;
 								case TypeCode.Int16 : res.prim_val = (System.Single)left.prim_val + (System.Int16)right.prim_val; break;
 								case TypeCode.SByte : res.prim_val = (System.Single)left.prim_val + (sbyte)right.prim_val; break;
 								case TypeCode.UInt16 : res.prim_val = (System.Single)left.prim_val + (System.UInt16)right.prim_val; break;
@@ -232,8 +232,8 @@ namespace CodeCompletion
 						{
 							switch(rcode)
 							{
-								case TypeCode.Char : res.prim_val = (string)left.prim_val + (string)right.prim_val; break;
-								case TypeCode.String : res.prim_val = left.prim_val.ToString() + (string)right.prim_val; break;
+								case TypeCode.Char : res.string_val = left.string_val + right.string_val; break;
+								case TypeCode.String : res.string_val = left.prim_val.ToString() + right.string_val; break;
 							}
 						}
 						break;

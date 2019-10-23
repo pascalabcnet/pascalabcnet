@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using Microsoft.Win32;
 using System;
@@ -58,12 +58,13 @@ namespace VisualPascalABC
         private string OptionsItemNameDockLeftPortion = "DockLeftPortion";
         private string OptionsItemNameDockRightPortion = "DockRightPortion";
         private string OptionsItemNameShowQuickClassBrowserPanel = "ShowQuickClassBrowserPanel";
-        private string OptionsItemNameSkipStakTraceItemIfSourceFileInSystemDirectory = "SkipStakTraceItemIfSourceFileInSystemDirectory";
+        private string OptionsItemNameSkipStackTraceItemIfSourceFileInSystemDirectory = "SkipStakTraceItemIfSourceFileInSystemDirectory";
         private string OptionsItemNameShowFoundedNamesTab = "ShowFoundedNamesTab";
         private string OptionsItemNameShowWatchTab = "ShowWatchTab";
         private string OptionsItemNameShowLocalVarsTab = "ShowLocalVarsTab";
         private string OptionsItemUseDllForSystemModules = "UseDllForSystemModules";
         private string OptionsItemPABCDllChecked = "PABCDllChecked";
+        private string OptionsItemNameAutoInsertCode = "AutoInsertCodeIsEnabledOnStartup";
 
         bool _mainFormWindowStateMaximized = false;
 
@@ -155,6 +156,13 @@ namespace VisualPascalABC
                     UserOptions.EnableFolding = Convert.ToBoolean(value);
                 if ((value = (string)Options[OptionsItemNameSaveSourceFilesIfComilationOk]) != null)
                     UserOptions.SaveSourceFilesIfComilationOk = Convert.ToBoolean(value);
+                if ((value = (string)Options[OptionsItemNameAutoInsertCode]) != null)
+                {
+                    UserOptions.AutoInsertCodeIsEnabledOnStartup = Convert.ToBoolean(value);
+                    tsAutoInsertCode.Checked = UserOptions.AutoInsertCodeIsEnabledOnStartup;
+                    mAUTOINSERTToolStripMenuItem.Checked = UserOptions.AutoInsertCodeIsEnabledOnStartup;
+                }
+
                 if ((value = (string)Options[OptionsItemNameMainFormTitle]) != null)
                     MainFormText = value;
                 if ((value = (string)Options[OptionsItemNameDeleteEXEAfterExecute]) != null)
@@ -215,8 +223,8 @@ namespace VisualPascalABC
                     UserOptions.DefaultSourceFileNameFormat = value;
                 if ((value = (string)Options[OptionsItemNameAllowCodeCompletion]) != null)
                     UserOptions.AllowCodeCompletion = Convert.ToBoolean(value);
-                if ((value = (string)Options[OptionsItemNameSkipStakTraceItemIfSourceFileInSystemDirectory]) != null)
-                    UserOptions.SkipStakTraceItemIfSourceFileInSystemDirectory = Convert.ToBoolean(value);
+                if ((value = (string)Options[OptionsItemNameSkipStackTraceItemIfSourceFileInSystemDirectory]) != null)
+                    UserOptions.SkipStackTraceItemIfSourceFileInSystemDirectory = Convert.ToBoolean(value);
                 if ((value = (string)Options[OptionsItemNameCodeCompletionNamespaceVisibleRange]) != null)
                     UserOptions.CodeCompletionNamespaceVisibleRange = Convert.ToInt32(value);
                 if ((value = (string)Options[OptionsItemNameDockBottomPortion]) != null)
@@ -278,7 +286,8 @@ namespace VisualPascalABC
             Options.Add(OptionsItemNameCodeCompletionNamespaceVisibleRange, UserOptions.CodeCompletionNamespaceVisibleRange);
             Options.Add(OptionsItemNameSaveSourceFilesIfComilationOk, UserOptions.SaveSourceFilesIfComilationOk);
             Options.Add(OptionsItemNameShowQuickClassBrowserPanel, UserOptions.ShowQuickClassBrowserPanel);
-            Options.Add(OptionsItemNameSkipStakTraceItemIfSourceFileInSystemDirectory, UserOptions.SkipStakTraceItemIfSourceFileInSystemDirectory);
+            Options.Add(OptionsItemNameSkipStackTraceItemIfSourceFileInSystemDirectory, UserOptions.SkipStackTraceItemIfSourceFileInSystemDirectory);
+            Options.Add(OptionsItemNameAutoInsertCode, UserOptions.AutoInsertCodeIsEnabledOnStartup);
 
             Options.Add(OptionsItemNameConvertTabsToSpaces, UserOptions.ConverTabsToSpaces);
             Options.Add(OptionsItemNameTabIdent, UserOptions.TabIndent);

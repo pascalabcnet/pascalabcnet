@@ -1,4 +1,4 @@
-
+﻿
 type TRec = record
 a : object;
 arr : array of object;
@@ -17,5 +17,6 @@ var v : object := nil;
     rec2 : TRec:=(a:nil;arr:(nil,nil));
     
 begin
-
+  assert(arr4[2] = nil);
+  assert(rec2.a = nil);
 end.

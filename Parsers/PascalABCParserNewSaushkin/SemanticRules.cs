@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -73,7 +73,7 @@ namespace GPPGParserScanner
                 if (i < nname.idents.Count - 1)
                     sb.Append(".");
             }
-            ident uname = new ident(sb.ToString());
+            ident uname = new ident(sb.ToString(), nname.source_context);
             var un = new unit_name(uname, UnitHeaderKeyword.Unit, loc);
             un.HeaderKeyword = UnitHeaderKeyword.Namespace;
             return un;
@@ -421,6 +421,7 @@ namespace GPPGParserScanner
                 if (!str.Value.Contains("{"))
                     return str;
                 string val = str.Value.Replace("{{","![&").Replace("}}}","}&]!").Replace("}}", "&]!");
+                
                 string[] arr = Regex.Split(val, @"\{[^\}]+\}");
                 Match match = Regex.Match(val, @"\{[^\}]+\}");
                 List<string> vars = new List<string>();
@@ -442,13 +443,18 @@ namespace GPPGParserScanner
                         var_formats.Add(ind, s.Substring(colon_pos));
                         s = s.Substring(0, colon_pos);
                         
-                    }  
+                    }
+                    if (s.IndexOf("&]!") != -1 || s.IndexOf("![&") != -1)
+                    {
+                        parsertools.errors.Add(new bad_format_string(parsertools.CurrentFileName, str.source_context, str));
+                        return str;
+                    }
                     vars.Add(s);
                     var_offsets.Add(match.Index);
                     match = match.NextMatch();
                     ind++;
                 }
-                if (vars.Count == 0)
+                if (vars.Count == 0 && val.IndexOf("![&") == -1 && val.IndexOf("{") != -1)
                 {
                     parsertools.errors.Add(new bad_format_string(parsertools.CurrentFileName, str.source_context, str));
                     return str;
@@ -457,6 +463,11 @@ namespace GPPGParserScanner
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < arr.Length; i++)
                 {
+                    if (arr[i].IndexOf("{") != -1 || arr[i].IndexOf("}") != -1)
+                    {
+                        parsertools.errors.Add(new bad_format_string(parsertools.CurrentFileName, str.source_context, str));
+                        return str;
+                    }
                     sb.Append(arr[i].Replace("![&", "{{").Replace("&]!", "}}"));
                     if (i < arr.Length - 1)
                     {

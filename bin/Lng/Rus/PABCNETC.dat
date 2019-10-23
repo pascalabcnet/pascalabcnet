@@ -2,6 +2,7 @@
 %PREFIX%=PABCNETC_
 
 ERROR_INVALID_DIRECTORY=Ошибка: неправильная директория
+ERROR_DIRECTORY_NOT_FOUND=Ошибка: директория не найдена
 FULL_ERROR_LIST=Полный список ошибок:
 OK_{0}MS_{1}LINES=OK {0}ms ({1}строк)
 TOTAL{0}_FILES{1}_LINES_{2}_TIME{3}=Всего: {0} файлов ({1}kb,{2}строк). Время: {3}ms

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -433,17 +433,17 @@ namespace TreeConverter.LambdaExpressions.Closure
                                     Tuple<string, class_field, semantic_node> publicProperty;
                                     if (classScope.NonPublicMembersNamesMapping.TryGetValue(varName, out publicProperty))
                                     {
-                                        dotnode1 = new dot_node(dotnode1, new ident(publicProperty.Item1, sourceCtxt), sourceCtxt);
+                                        dotnode1 = new dot_node(dotnode1.left, new ident(publicProperty.Item1, sourceCtxt), sourceCtxt); // SSM #869 добавил .left - была ошибка
                                     }
                                     else
                                     {
                                         if (!(ClassField != null && ClassField.IsStatic))
-                                            dotnode1 = new dot_node(dotnode1, new ident(varName, sourceCtxt), sourceCtxt);
+                                            dotnode1 = new dot_node(dotnode1, new ident(varName, sourceCtxt), sourceCtxt); // ?? dotnode1.left ??
                                     }
                                 }
                                 else
                                 {
-                                    dotnode1 = new dot_node(dotnode1, new ident(varName, sourceCtxt), sourceCtxt);
+                                    dotnode1 = new dot_node(dotnode1, new ident(varName, sourceCtxt), sourceCtxt); // ?? dotnode1.left ??
                                 }
                             }
                             _lambdaIdReferences.Add(new LambdaReferencesSubstitutionInfo
@@ -544,6 +544,14 @@ namespace TreeConverter.LambdaExpressions.Closure
 
         private void AddReferencesToIdentInLambda(type_declaration upperScopeWhereVarsAreCapturedClass, CapturedVariablesTreeNode scope, string varName, syntax_tree_node syntaxTreeNodeWithVarDeclaration, dot_node substDotNode, bool nestedLambda)
         {
+/*#if DEBUG
+            var pp = scope.ToString().IndexOf("TreeNode");
+            var ss = scope.ToString().Remove(0, pp + 8).Replace("Scope"," ");
+            var cn = "";
+            if (scope.ChildNodes.Count>0)
+                cn = "Childs: "+ scope.ChildNodes.Aggregate("",(s, x) => s + x.ScopeIndex.ToString() + " ");
+            System.IO.File.AppendAllText("d:\\w.txt", "AddR enter: " + ss + scope.ScopeIndex + " " + cn + "" +scope.CorrespondingSyntaxTreeNode + "\n");
+#endif*/
             for (var i = 0; i < scope.ChildNodes.Count; i++)
             {
                 if (!(scope.ChildNodes[i] is CapturedVariablesTreeNodeLambdaScope))
@@ -579,6 +587,10 @@ namespace TreeConverter.LambdaExpressions.Closure
 
                     if (!_substitutions.ContainsKey(substKey))
                     {
+/*#if DEBUG
+                        System.IO.File.AppendAllText("d:\\w.txt", "1 substitutions.Add: " + substKey + " " + substDotNode + "\n");
+#endif*/
+
                         _substitutions.Add(substKey, substDotNode);
                     }
 
@@ -634,19 +646,26 @@ namespace TreeConverter.LambdaExpressions.Closure
                                                        scope.ChildNodes[0].CorrespondingSyntaxTreeNode);
                         if (!_substitutions.ContainsKey(substKey))
                         {
+/*#if DEBUG
+                            System.IO.File.AppendAllText("d:\\w.txt", "2 substitutions.Add: " + substKey + " " + substDotNode + "\n");
+#endif*/
+
                             _substitutions.Add(substKey, substDotNode1);
                         }
-
                         AddReferencesToIdentInLambda(_capturedVarsClassDefs[scopeAsLambda.ScopeIndexOfClassWhereLambdaWillBeAddedAsMethod.Value].ClassDeclaration, scopeAsLambda.ChildNodes[0], varName, syntaxTreeNodeWithVarDeclaration, substDotNode1, true);
                     }
                     else
                     {
-                        AddReferencesToIdentInLambda(upperScopeWhereVarsAreCapturedClass, scope.ChildNodes[0], varName, syntaxTreeNodeWithVarDeclaration, substDotNode, nestedLambda);
+                        // SSM 25.06.19 fix #1988 - заменил ошибочное scope.ChildNodes[0] на scope.ChildNodes[i]
+                        AddReferencesToIdentInLambda(upperScopeWhereVarsAreCapturedClass, scope.ChildNodes[i], varName, syntaxTreeNodeWithVarDeclaration, substDotNode, nestedLambda);
                     }
                 }
             }
+/*#if DEBUG
+            System.IO.File.AppendAllText("d:\\w.txt", "AddR exit: " + scope.ScopeIndex+"\n");
+#endif*/
         }
-        
+
         private void VisitTreeAndBuildClassDefinitions(CapturedVariablesTreeNode currentNode)
         {
             var variablesFromThisScopeWhichWereCaptured = currentNode

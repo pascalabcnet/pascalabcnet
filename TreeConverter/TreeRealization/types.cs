@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections;
@@ -31,7 +31,7 @@ namespace PascalABCCompiler.TreeRealization
         private System.Collections.Generic.Dictionary<type_node, type_intersection_node> type_intersections;
             //new System.Collections.Generic.Dictionary<type_node, type_intersection_node>();
         private List<type_node> generated_type_intersections = null;//new List<type_node>();
-        private System.Collections.Generic.Dictionary<internal_interface_kind, internal_interface> internal_interfaces;
+        public System.Collections.Generic.Dictionary<internal_interface_kind, internal_interface> internal_interfaces;
         //new System.Collections.Generic.Dictionary<internal_interface_kind, internal_interface>();
 
         //private System.Collections.Generic.Dictionary<type_node, type_conversion> explicit_type_conversions =
@@ -196,6 +196,9 @@ namespace PascalABCCompiler.TreeRealization
         	}
         }
 
+        /// <summary>
+        /// В частности, процедурная переменная
+        /// </summary>
         public virtual bool IsDelegate
         {
             get
@@ -1057,7 +1060,13 @@ namespace PascalABCCompiler.TreeRealization
             }
             if (rtn == null)
             {
-            	return null;
+                if (ctn is compiled_type_node && (ctn as compiled_type_node).compiled_type.IsPointer)
+                {
+                    if (this.pointed_type == compiled_type_node.get_type_node((ctn as compiled_type_node).compiled_type.GetElementType()))
+                        return PascalABCCompiler.TreeConverter.convertion_data_and_alghoritms.get_empty_conversion(this, ctn, false);
+                    return get_implicit_conversion_to(new ref_type_node(compiled_type_node.get_type_node((ctn as compiled_type_node).compiled_type.GetElementType())));
+                }
+                return null;
             }
             if (rtn.pointed_type == null || this.pointed_type == null)
                 return null;
@@ -1513,7 +1522,7 @@ namespace PascalABCCompiler.TreeRealization
             this.SetBaseType(base_type);
 		}
         bool _sealed = false;
-        bool _is_abstract = false;
+        public bool _is_abstract = false;
         bool _is_partial = false;
         bool _is_static = false;
 
@@ -3155,6 +3164,16 @@ namespace PascalABCCompiler.TreeRealization
         	this.scope = new NetHelper.NetTypeScope(_compiled_type, SystemLibrary.SystemLibrary.symtab);
         }
         
+        public type_node element_type
+		{
+			get
+			{
+                if (compiled_type.GetElementType() == null)
+                    return null;
+				return compiled_type_node.get_type_node(compiled_type.GetElementType());
+			}
+		}
+        
         public static compiled_type_node get_type_node(System.Type st)
 		{
             //(ssyy) Обрабатываем параметры generic-типов
@@ -3372,7 +3391,7 @@ namespace PascalABCCompiler.TreeRealization
             {
                 List<SymbolInfo> sil = compiled_find(name);
                 List<SymbolInfo> sil2 = find_in_additional_names(name);
-                if (sil == null && sil2 == null && string.Compare(name,"Create",true) != 0)
+                if (/*sil == null &&*/ sil2 == null && string.Compare(name,"Create",true) != 0)
                 {
                     compiled_type_node bas_type = base_type as compiled_type_node;
                     while (sil == null && bas_type != null && bas_type.scope != null)
@@ -4253,8 +4272,9 @@ namespace PascalABCCompiler.TreeRealization
         }
     }
 
-
-    //Псевдотип. Не идет в выходное дерево. Используется как промежуточный при работе с делегатами.
+    /// <summary>
+    /// Псевдотип. Не идет в выходное дерево. Используется как промежуточный при работе с делегатами. Этому типу принадлежат имена функций
+    /// </summary>
     [Serializable]
     public class delegated_methods : wrapped_type
     {
@@ -4333,7 +4353,10 @@ namespace PascalABCCompiler.TreeRealization
                         if (cmn.num_of_default_parameters == cmn.parameters.Count)
                             return bfc;
                     }
-                    else if (bfc.function is compiled_function_node)
+                }
+                foreach (base_function_call bfc in _proper_methods)
+                {
+                    if (bfc.function is compiled_function_node)
                     {
                         compiled_function_node cfn = bfc.function as compiled_function_node;
                         if (cfn.ConnectedToType != null && (bfc.simple_function_node.parameters.Count == 1 || bfc.simple_function_node.parameters.Count == 2 && (bfc.simple_function_node.parameters[1].is_params || bfc.simple_function_node.parameters[1].default_value != null)))

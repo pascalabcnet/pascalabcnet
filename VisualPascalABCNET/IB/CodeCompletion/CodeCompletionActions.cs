@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections;
@@ -130,6 +130,9 @@ namespace VisualPascalABC
                 expressionResult = expressionResult.Trim();
             if (expressionResult != full_expr && full_expr.StartsWith("("))
                 return new List<Position>();
+            
+            if (full_expr != null && full_expr.Contains("^"))
+            	full_expr = full_expr.Replace("^","");
             List<Position> poses = ccp.GetDefinition(full_expr, textArea.MotherTextEditorControl.FileName, textArea.Caret.Line, textArea.Caret.Column, only_check);
             if (poses == null || poses.Count == 0)
                 poses = ccp.GetDefinition(expressionResult, textArea.MotherTextEditorControl.FileName, textArea.Caret.Line, textArea.Caret.Column, only_check);
@@ -344,7 +347,9 @@ namespace VisualPascalABC
                 }
         }
 
-        public static void GenerateTemplate(string pattern, TextArea textArea)
+        public static void GenerateTemplate(string pattern, TextArea textArea) => GenerateTemplate(pattern, textArea, templateManager);
+
+        public static void GenerateTemplate(string pattern, TextArea textArea, CodeTemplateManager templateManager, bool withPatternLength = true, Func<string,string> PostAction = null)
         {
             try
             {
@@ -356,7 +361,7 @@ namespace VisualPascalABC
                 string name = templateManager.GetTemplateHeader(pattern);
                 if (name == null) return;
                 string templ = templateManager.GetTemplate(name);
-                int ind = pattern.Length;
+                int ind = withPatternLength ? pattern.Length : 0;
                 int cline;
                 int ccol;
                 find_cursor_pos(templ, out cline, out ccol);
@@ -379,7 +384,12 @@ namespace VisualPascalABC
                 doc.Replace(offset, ind, "");
                 doc.CommitUpdate();
                 textArea.Caret.Column = col - ind;
-                textArea.InsertString(sb.ToString());
+                var sbs = sb.ToString();
+                if (PostAction != null)
+                {
+                    sbs = PostAction(sbs);
+                }
+                textArea.InsertString(sbs);
                 textArea.Caret.Line = line + cline;
                 textArea.Caret.Column = col - ind + ccol;
             }

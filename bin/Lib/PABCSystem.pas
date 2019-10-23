@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 /// Стандартный модуль
@@ -901,6 +901,8 @@ procedure WritelnFormat(f: Text; formatstr: string; params args: array of object
 
 ///- procedure Print(a,b,...);
 /// Выводит значения a,b,... на экран, после каждого значения выводит пробел
+procedure Print(o: object);
+///--
 procedure Print(s: string);
 ///--
 procedure Print(params args: array of object);
@@ -1148,8 +1150,10 @@ function ChangeFileNameExtension(name, newext: string): string;
 /// Возвращает True, если файл с именем name существует
 function FileExists(name: string): boolean;
 
+///- procedure Assert(cond: boolean);
 /// Выводит в специальном окне стек вызовов подпрограмм если условие не выполняется
 procedure Assert(cond: boolean; sourceFile: string := ''; line: integer := 0);
+///- procedure Assert(cond: boolean; message: string);
 /// Выводит в специальном окне диагностическое сообщение и стек вызовов подпрограмм если условие не выполняется
 procedure Assert(cond: boolean; message: string; sourceFile: string := ''; line: integer := 0);
 
@@ -1224,38 +1228,46 @@ function ExpandFileName(fname: string): string;
 // -----------------------------------------------------
 //>>     Математические подпрограммы # Math subroutines
 // -----------------------------------------------------
-///-function Sign(x: число): число;
-/// Возвращает знак числа x
+///-function Sign(x: число): integer;
+/// Возвращает -1, 0 или +1 в зависимости от знака числа x
 function Sign(x: shortint): integer;
 ///--
 function Sign(x: smallint): integer;
 ///--
 function Sign(x: integer): integer;
 ///--
-function Sign(x: BigInteger): integer;
+function Sign(x: int64): integer;
+///--
+function Sign(x: byte): integer;
+///--
+function Sign(x: word): integer;
 ///--
 function Sign(x: longword): integer;
-///--
-function Sign(x: int64): integer;
 ///--
 function Sign(x: uint64): integer;
 ///--
 function Sign(x: real): integer;
+///--
+function Sign(x: BigInteger): integer;
 ///-function Abs(x: число): число;
 /// Возвращает модуль числа x
-function Abs(x: integer): integer;
-///--
 function Abs(x: shortint): shortint;
 ///--
 function Abs(x: smallint): smallint;
 ///--
-function Abs(x: BigInteger): BigInteger;
-///--
-function Abs(x: longword): longword;
+function Abs(x: integer): integer;
 ///--
 function Abs(x: int64): int64;
 ///--
+function Abs(x: byte): byte;
+///--
+function Abs(x: word): word;
+///--
+function Abs(x: longword): longword;
+///--
 function Abs(x: uint64): uint64;
+///--
+function Abs(x: BigInteger): BigInteger;
 ///--
 function Abs(x: real): real;
 ///--
@@ -1295,19 +1307,23 @@ function LogN(base, x: real): real;
 function Sqrt(x: real): real;
 ///-function Sqr(x: число): число;
 /// Возвращает квадрат числа x
-function Sqr(x: integer): int64;
-///--
 function Sqr(x: shortint): integer;
 ///--
 function Sqr(x: smallint): integer;
 ///--
-function Sqr(x: BigInteger): BigInteger;
-///--
-function Sqr(x: longword): uint64;
+function Sqr(x: integer): int64;
 ///--
 function Sqr(x: int64): int64;
 ///--
+function Sqr(x: byte): integer;
+///--
+function Sqr(x: word): uint64;
+///--
+function Sqr(x: longword): uint64;
+///--
 function Sqr(x: uint64): uint64;
+///--
+function Sqr(x: BigInteger): BigInteger;
 ///--
 function Sqr(x: real): real;
 /// Возвращает x в степени y
@@ -1910,7 +1926,7 @@ function MatrRandomInteger(m: integer := 5; n: integer := 5; a: integer := 0; b:
 function MatrRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real := 10): array [,] of real;
 /// Возвращает двумерный массив размера m x n, заполненный элементами x 
 function MatrFill<T>(m, n: integer; x: T): array [,] of T;
-/// Возвращает двумерный массив размера m x n, заполненный элементами x 
+/// Возвращает двумерный массив размера m x n, заполненный элементами gen(i,j) 
 function MatrGen<T>(m, n: integer; gen: (integer,integer)->T): array [,] of T;
 /// Транспонирует двумерный массив 
 function Transpose<T>(a: array [,] of T): array [,] of T;
@@ -1970,6 +1986,37 @@ function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 // -----------------------------------------------------
 
 function __TypeCheckAndAssignForIsMatch<T>(obj: object; var res: T): boolean;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4>(
+    first: Tuple<T1, T2>; 
+    second: Tuple<T3, T4>;
+    elemsToCompare: sequence of integer): boolean;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6>(
+    first: Tuple<T1, T2, T3>; 
+    second: Tuple<T4, T5, T6>;
+    elemsToCompare: sequence of integer): boolean;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8>(
+    first: Tuple<T1, T2, T3, T4>; 
+    second: Tuple<T5, T6, T7, T8>;
+    elemsToCompare: sequence of integer): boolean;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
+    first: Tuple<T1, T2, T3, T4, T5>; 
+    second: Tuple<T6, T7, T8, T9, T10>;
+    elemsToCompare: sequence of integer): boolean;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
+    first: Tuple<T1, T2, T3, T4, T5, T6>; 
+    second: Tuple<T7, T8, T9, T10, T11, T12>;
+    elemsToCompare: sequence of integer): boolean;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
+    first: Tuple<T1, T2, T3, T4, T5, T6, T7>; 
+    second: Tuple<T8, T9, T10, T11, T12, T13, T14>;
+    elemsToCompare: sequence of integer): boolean;
+
 
 // -----------------------------------------------------
 //     Стандартные классы исключений
@@ -2311,7 +2358,7 @@ const
   EOLN_FOR_TEXT_WRITEOPENED = 'Функция Eoln не может быть вызвана для текстового файла, открытого на запись!!Eoln function can''t be called for file, opened on writing';
   SEEKEOF_FOR_TEXT_WRITEOPENED = 'Функция SeekEof не может быть вызвана для текстового файла, открытого на запись!!SeekEof function can''t be called for file, opened on writing';
   SEEKEOLN_FOR_TEXT_WRITEOPENED = 'Функция SeekEoln не может быть вызвана для текстового файла, открытого на запись!!SeekEoln function can''t be called for file, opened on writing';
-  BAD_TYPE_IN_RUNTIMESIZEOF = 'Bad Type in RunTimeSizeOf';
+  BAD_TYPE_IN_RUNTIMESIZEOF = 'Для типизированных файлов нельзя указывать тип элементов, являющийся ссылочным или содержащий ссылочные поля!!Bad Type in RunTimeSizeOf';
   PARAMETER_MUST_BE_GREATER_EQUAL_0 = 'Параметр должен быть >= 0!!Parameter must be >= 0';
   PARAMETER_MUST_BE_GREATER_0 = 'Параметр должен быть > 0!!Parameter must be > 0';
   PARAMETER_MUST_BE_GREATER_1 = 'Параметр должен быть > 1!!Parameter must be > 1';
@@ -2322,6 +2369,12 @@ const
   ARR_LENGTH_MUST_BE_MATCH_TO_MATR_SIZE = 'Размер одномерного массива не согласован с размером двумерного массива!!The 1-dim array length does not match 2-dim array size';
   INITELEM_COUNT_MUST_BE_EQUAL_TO_MATRIX_ELEMS_COUNT = 'Количество инициализирующих элементов не совпадает с количеством элементов матрицы!!The number of elements in init list must be equal to the number of elements in matrix';
   TYPED_FILE_CANBE_OPENED_IN_SINGLEBYTE_ENCODING_ONLY = 'При открытии типизированного файла можно указывать только однобайтную кодировку!!Typed file can be opened in single byte encoding only';
+  BAD_ROW_INDEX = 'Один из элементов массива RowIndex выходит за пределы индексов строк двумерного массива!!One of the elements of RowIndex array is out of range of 2-dim array row indexes';
+  BAD_COL_INDEX = 'Один из элементов массива ColIndex выходит за пределы индексов столбцов двумерного массива!!One of the elements of ColIndex array is out of range of 2-dim array column indexes';
+  BAD_ROW_INDEX_FROM = 'FromRow выходит за пределы индексов строк двумерного массива!!FromRow is out of range of 2-dim array row indexes';
+  BAD_ROW_INDEX_TO = 'ToRow выходит за пределы индексов строк двумерного массива!!ToRow is out of range of 2-dim array row indexes';
+  BAD_COL_INDEX_FROM = 'FromCol выходит за пределы индексов строк двумерного массива!!FromCol is out of range of 2-dim array column indexes';
+  BAD_COL_INDEX_TO = 'ToCol выходит за пределы индексов строк двумерного массива!!ToCol is out of range of 2-dim array column indexes';
 
 // -----------------------------------------------------
 //                  WINAPI
@@ -3439,16 +3492,18 @@ begin
       sb.Append('{')
     else sb.Append('[');
     if g.MoveNext() then
+    begin  
       sb.Append(StructuredObjectToString(g.Current, n + 1));
-    var cnt := 1;  
-    while g.MoveNext() and (cnt < nmax) do 
-    begin
-      sb.Append(',');
-      sb.Append(StructuredObjectToString(g.Current, n + 1));
-      cnt += 1;
-    end;
-    if cnt >= nmax then 
-      sb.Append(',...');
+      var cnt := 1;  
+      while g.MoveNext() and (cnt < nmax) do 
+      begin
+        sb.Append(',');
+        sb.Append(StructuredObjectToString(g.Current, n + 1));
+        cnt += 1;
+      end;
+      if cnt >= nmax then 
+        sb.Append(',...');
+    end;    
     
     if isdictorset then
       sb.Append('}')
@@ -3906,6 +3961,8 @@ end;
 //------------------------------------------------------------------------------
 
 function operator**(x: real; n: integer): real; extensionmethod := Power(x, n);
+
+function operator**(x: single; n: integer): real; extensionmethod := Power(x, n);
 
 function operator**(x, y: integer): real; extensionmethod := Power(real(x), y);
 
@@ -4485,6 +4542,112 @@ begin
     Result := false;
   end;
 end;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4>(
+    first: Tuple<T1, T2>; 
+    second: Tuple<T3, T4>;
+    elemsToCompare: sequence of integer): boolean;
+begin
+Result := True;
+foreach var ind in elemsToCompare do
+begin
+  case ind of
+  0: Result := Result and first.Item1.Equals(second.Item1);
+  1: Result := Result and first.Item2.Equals(second.Item2);
+  end;
+end;
+end;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6>(
+    first: Tuple<T1, T2, T3>; 
+    second: Tuple<T4, T5, T6>;
+    elemsToCompare: sequence of integer): boolean;
+begin
+Result := True;
+foreach var ind in elemsToCompare do
+begin
+  case ind of
+  0: Result := Result and first.Item1.Equals(second.Item1);
+  1: Result := Result and first.Item2.Equals(second.Item2);
+  2: Result := Result and first.Item3.Equals(second.Item3);
+  end;
+end;
+end;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8>(
+    first: Tuple<T1, T2, T3, T4>; 
+    second: Tuple<T5, T6, T7, T8>;
+    elemsToCompare: sequence of integer): boolean;
+begin
+Result := True;
+foreach var ind in elemsToCompare do
+begin
+  case ind of
+  0: Result := Result and first.Item1.Equals(second.Item1);
+  1: Result := Result and first.Item2.Equals(second.Item2);
+  2: Result := Result and first.Item3.Equals(second.Item3);
+  3: Result := Result and first.Item4.Equals(second.Item4);
+  end;
+end;
+end;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
+    first: Tuple<T1, T2, T3, T4, T5>; 
+    second: Tuple<T6, T7, T8, T9, T10>;
+    elemsToCompare: sequence of integer): boolean;
+begin
+Result := True;
+foreach var ind in elemsToCompare do
+begin
+  case ind of
+  0: Result := Result and first.Item1.Equals(second.Item1);
+  1: Result := Result and first.Item2.Equals(second.Item2);
+  2: Result := Result and first.Item3.Equals(second.Item3);
+  3: Result := Result and first.Item4.Equals(second.Item4);
+  4: Result := Result and first.Item5.Equals(second.Item5);
+  end;
+end;
+end;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
+    first: Tuple<T1, T2, T3, T4, T5, T6>; 
+    second: Tuple<T7, T8, T9, T10, T11, T12>;
+    elemsToCompare: sequence of integer): boolean;
+begin
+Result := True;
+foreach var ind in elemsToCompare do
+begin
+  case ind of
+  0: Result := Result and first.Item1.Equals(second.Item1);
+  1: Result := Result and first.Item2.Equals(second.Item2);
+  2: Result := Result and first.Item3.Equals(second.Item3);
+  3: Result := Result and first.Item4.Equals(second.Item4);
+  4: Result := Result and first.Item5.Equals(second.Item5);
+  5: Result := Result and first.Item6.Equals(second.Item6);
+  end;
+end;
+end;
+
+function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
+    first: Tuple<T1, T2, T3, T4, T5, T6, T7>; 
+    second: Tuple<T8, T9, T10, T11, T12, T13, T14>;
+    elemsToCompare: sequence of integer): boolean;
+begin
+Result := True;
+foreach var ind in elemsToCompare do
+begin
+  case ind of
+  0: Result := Result and first.Item1.Equals(second.Item1);
+  1: Result := Result and first.Item2.Equals(second.Item2);
+  2: Result := Result and first.Item3.Equals(second.Item3);
+  3: Result := Result and first.Item4.Equals(second.Item4);
+  4: Result := Result and first.Item5.Equals(second.Item5);
+  5: Result := Result and first.Item6.Equals(second.Item6);
+  6: Result := Result and first.Item7.Equals(second.Item7);
+  end;
+end;
+end;
+
 
 ///--
 procedure Deconstruct<T>(self: T; var res: T); extensionmethod;
@@ -5975,6 +6138,14 @@ begin
   else Write(s)  
 end;
 
+procedure Print(o: object);
+begin
+  if PrintDelimDefault<>'' then
+    Write(o, PrintDelimDefault)
+  else     
+    Write(o)
+end; 
+
 procedure Print(params args: array of object);
 begin
   if args.Length = 0 then
@@ -7082,90 +7253,47 @@ end;
 // -----------------------------------------------------
 //                Mathematical functions: implementation
 // -----------------------------------------------------
-function Sign(x: shortint): integer;
-begin
-  Result := Math.Sign(x);
-end;
+function Sign(x: shortint): integer := Math.Sign(x);
 
-function Sign(x: smallint): integer;
-begin
-  Result := Math.Sign(x);
-end;
+function Sign(x: smallint): integer := Math.Sign(x);
 
-function Sign(x: integer): integer;
-begin
-  Result := Math.Sign(x);
-end;
+function Sign(x: integer): integer := Math.Sign(x);
 
-function Sign(x: BigInteger): integer;
-begin
-  Result := x.Sign;
-end;
+function Sign(x: BigInteger) := x.Sign;
 
-function Sign(x: int64): integer;
-begin
-  Result := Math.Sign(x);
-end;
+function Sign(x: int64) := Math.Sign(x);
 
-function Sign(x: longword): integer;
-begin
-  Result := Math.Sign(int64(x));
-end;
+function Sign(x: byte): integer := 1;
 
-function Sign(x: uint64): integer;
-begin
-  Result := Math.Sign(int64(x));
-end;
+function Sign(x: word): integer := 1;
 
-function Sign(x: real): integer;
-begin
-  Result := Math.Sign(x);
-end;
+function Sign(x: longword): integer := 1;
 
-function Abs(x: shortint): shortint;
-begin
-  Result := Math.Abs(x);
-end;
+function Sign(x: uint64): integer := 1;
 
-function Abs(x: smallint): smallint;
-begin
-  Result := Math.Abs(x);
-end;
+function Sign(x: real): integer := Math.Sign(x);
 
-function Abs(x: integer): integer;
-begin
-  Result := Math.Abs(x);
-end;
+function Abs(x: shortint): shortint := Math.Abs(x);
 
-function Abs(x: BigInteger): BigInteger;
-begin
-  Result := BigInteger.Abs(x)
-end;
+function Abs(x: smallint): smallint := Math.Abs(x);
 
-function Abs(x: int64): int64;
-begin
-  Result := Math.Abs(x);
-end;
+function Abs(x: integer): integer := Math.Abs(x);
 
-function Abs(x: longword): longword;
-begin
-  Result := Math.Abs(int64(x));
-end;
+function Abs(x: int64): int64 := Math.Abs(x);
 
-function Abs(x: uint64): uint64;
-begin
-  Result := Math.Abs(int64(x));
-end;
+function Abs(x: BigInteger): BigInteger := BigInteger.Abs(x);
 
-function Abs(x: real): real;
-begin
-  Result := Math.Abs(x);
-end;
+function Abs(x: byte): byte := x;
 
-function Abs(x: single): single;
-begin
-  Result := Math.Abs(x);
-end;
+function Abs(x: word): word := x;
+
+function Abs(x: longword): longword := x;
+
+function Abs(x: uint64): uint64 := x;
+
+function Abs(x: real): real := Math.Abs(x);
+
+function Abs(x: single): single := Math.Abs(x);
 
 function Sin(x: real) := Math.Sin(x);
 
@@ -7206,6 +7334,10 @@ function Sqr(x: shortint): integer := x * x;
 function Sqr(x: smallint): integer := x * x;
 
 function Sqr(x: BigInteger): BigInteger := x * x;
+
+function Sqr(x: byte): integer := x * x;
+
+function Sqr(x: word): uint64 := x * x;
 
 function Sqr(x: longword): uint64 := x * x;
 
@@ -7968,8 +8100,8 @@ function StrToReal(s: string) := Convert.ToDouble(s, nfi);
 function StrToFloat(s: string) := StrToReal(s);
 
 function TryStrToInt64(s: string; var value: int64) := int64.TryParse(s, value);
-function TryStrToReal(s: string; var value: real) := real.TryParse(s,System.Globalization.NumberStyles.Float,new Globalization.NumberFormatInfo,value);
-function TryStrToSingle(s: string; var value: single) := single.TryParse(s,System.Globalization.NumberStyles.Float,new Globalization.NumberFormatInfo,value);
+function TryStrToReal(s: string; var value: real) := real.TryParse(s,System.Globalization.NumberStyles.Float,new System.Globalization.NumberFormatInfo,value);
+function TryStrToSingle(s: string; var value: single) := single.TryParse(s,System.Globalization.NumberStyles.Float,new System.Globalization.NumberFormatInfo,value);
 function TryStrToFloat(s: string; var value: real) := TryStrToReal(s, value);
 function TryStrToFloat(s: string; var value: single) := TryStrToSingle(s, value);
 
@@ -8534,11 +8666,13 @@ function Print<T>(Self: sequence of T; delim: string): sequence of T; extensionm
 begin
   var g := Self.GetEnumerator();
   if g.MoveNext() then
+  begin  
     Write(g.Current);
-  while g.MoveNext() do
-    if delim <> '' then
-      Write(delim, g.Current)
-    else Write(g.Current);
+    while g.MoveNext() do
+      if delim <> '' then
+        Write(delim, g.Current)
+      else Write(g.Current);
+  end;  
   Result := Self; 
 end;
 
@@ -8595,9 +8729,11 @@ begin
   var g := Self.GetEnumerator();
   var sb := new System.Text.StringBuilder('');
   if g.MoveNext() then
+  begin
     sb.Append(g.Current.ToString());
-  while g.MoveNext() do 
-    sb.Append(delim + g.Current.ToString());
+    while g.MoveNext() do 
+      sb.Append(delim + g.Current.ToString());
+  end;  
   Result := sb.ToString;  
 end;
 
@@ -9277,7 +9413,7 @@ end;
 /// Возвращает индекс последнего минимального элемента
 function LastIndexMin<T>(Self: array of T): integer; extensionmethod; where T: System.IComparable<T>;
 begin
-  Result := Self.LastIndexMin(Self.Count - 1);
+  Result := Self.LastIndexMin(Self.Length - 1);
 end;  
 
 /// Возвращает индекс последнего минимального элемента в диапазоне [0,index-1]
@@ -9791,6 +9927,61 @@ begin
   for var i := 0 to Self.RowCount - 1 do
     for var j := 0 to Self.ColCount - 1 do
       act(Self[i, j],i,j);
+end;
+
+function InR(Self: integer; a,b: integer): boolean;
+begin
+  Result := (a <= Self) and (Self <= b);
+end;
+
+
+/// Возвращает срез двумерного массива. RowIndex и ColIndex задают срезаемые строки и столбцы
+function MatrSlice<T>(Self: array[,] of T; RowIndex: array of integer; ColIndex: array of integer): array[,] of T; extensionmethod;
+begin
+  if RowIndex = nil then
+    raise new System.ArgumentNullException('RowIndex');
+  if ColIndex = nil then
+    raise new System.ArgumentNullException('ColIndex');
+  if RowIndex.Any(i->not InR(i,0,Self.RowCount-1)) then  
+    raise new System.ArgumentOutOfRangeException(GetTranslation(BAD_ROW_INDEX),new Exception);
+  if ColIndex.Any(i->not InR(i,0,Self.ColCount-1)) then  
+    raise new System.ArgumentOutOfRangeException(GetTranslation(BAD_COL_INDEX),new Exception);
+  Result := new T[RowIndex.Length, ColIndex.Length];
+  var r := 0;
+  foreach var ir in RowIndex do
+  begin
+    var c := 0;
+    foreach var jc in ColIndex do
+    begin
+      Result[r, c] := Self[ir, jc];
+      c += 1;
+    end;
+    r += 1;
+  end
+end;
+
+/// Возвращает срез двумерного массива между строками FromRow, ToRow и столбцами FromCol, ToCol
+function MatrSlice<T>(Self: array[,] of T; FromRow, ToRow, FromCol, ToCol: integer): array[,] of T; extensionmethod;
+begin
+  if not InR(FromRow,0,Self.RowCount-1) then  
+    raise new System.ArgumentOutOfRangeException(GetTranslation(BAD_ROW_INDEX_FROM),new Exception);
+  if not InR(ToRow,0,Self.RowCount-1) then      raise new System.ArgumentOutOfRangeException(GetTranslation(BAD_ROW_INDEX_TO),new Exception);
+  if not InR(FromCol,0,Self.ColCount-1) then  
+    raise new System.ArgumentOutOfRangeException(GetTranslation(BAD_COL_INDEX_FROM),new Exception);
+  if not InR(ToCol,0,Self.ColCount-1) then  
+    raise new System.ArgumentOutOfRangeException(GetTranslation(BAD_COL_INDEX_TO),new Exception);
+  Result := new T[ToRow-FromRow+1, ToCol-FromCol+1];
+  var r := 0;
+  for var ir:=FromRow to ToRow do
+  begin
+    var c := 0;
+    for var jc:=FromCol to ToCol do
+    begin
+      Result[r, c] := Self[ir, jc];
+      c += 1;
+    end;
+    r += 1;
+  end
 end;
 
 // -----------------------------------------------------
@@ -11562,7 +11753,7 @@ var
 
 function ExecuteAssemlyIsDll: boolean;
 begin
-  Result := not __from_dll and (IO.Path.GetExtension(System.Reflection.Assembly.GetExecutingAssembly.ManifestModule.FullyQualifiedName).ToLower = '.dll');
+  Result := not __from_dll and (System.IO.Path.GetExtension(System.Reflection.Assembly.GetExecutingAssembly.ManifestModule.FullyQualifiedName).ToLower = '.dll');
 end;
 
 function IsUnix: boolean;

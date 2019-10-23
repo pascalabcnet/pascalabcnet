@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 /*
  * algoritm formatirovanija sledujushij:
@@ -1694,9 +1694,13 @@ namespace CodeFormatters
 
         public override void visit(case_variant _case_variant)
         {
+            List<case_variant> variants = (_case_variant.Parent as case_variants).variants;
             visit_node(_case_variant.conditions);
             //sb.Append(": ");
-            add_space_after = true;
+            
+            if (!(_case_variant.exec_if_true is empty_statement && variants.IndexOf(_case_variant) == variants.Count - 1))
+                add_space_after = true;
+            
             bool one_row = in_one_row(_case_variant.exec_if_true);
             if (!one_row)
             {
@@ -1708,6 +1712,7 @@ namespace CodeFormatters
             {
                 DecOffset();
             }
+            
             //sb.AppendLine(";");
         }
 
@@ -1728,7 +1733,15 @@ namespace CodeFormatters
                 //IncOffset();
                 add_new_line_else_specific = true;
                 IncOffset();
+                //if (!(_case_node.else_statement is statement_list sl && sl.list.Count == 1 && sl.list[0] is empty_statement))
+                statement_list stmt_list = _case_node.else_statement as statement_list;
+                
                 visit_node(_case_node.else_statement);
+                if (stmt_list != null && stmt_list.subnodes.Count > 0 && contains_only_empty_statements(stmt_list.subnodes))
+                {
+                    WriteNode(stmt_list);
+                    add_space_after = false;
+                }
                 //DecOffset();
             }
         }
@@ -1944,7 +1957,8 @@ namespace CodeFormatters
                 else
                     already_off = false;
                 visit_node(_class_members.access_mod);
-                if (first_decl != null && !(_class_members.members[0] is short_func_definition))
+                if (first_decl != null && !(_class_members.members[0] is short_func_definition) && 
+                    _class_members.access_mod.source_context.end_position.line_num == _class_members.source_context.begin_position.line_num)
                     sb.Append(" ");
                 if (!already_off)
                     IncOffset();
@@ -2512,13 +2526,18 @@ namespace CodeFormatters
             WriteKeyword("try");
             SetKeywordOffset("try");
             add_newline_after = true;
-            IncOffset();
-            visit_node(_try_stmt.stmt_list);
+            
+            if (!contains_only_empty_statements(_try_stmt.stmt_list.subnodes))
+            {
+                IncOffset();
+                visit_node(_try_stmt.stmt_list);
+            }
+                
             if (_try_stmt.handler is try_handler_except)
             {
                 try_handler_except hndlr = _try_stmt.handler as try_handler_except;
                 visit_node(_try_stmt.handler);
-                if (hndlr.except_block.stmt_list != null && hndlr.except_block.stmt_list.subnodes.Count == 1 && hndlr.except_block.stmt_list.subnodes[0] is empty_statement)
+                if (hndlr.except_block.stmt_list != null && hndlr.except_block.stmt_list.subnodes.Count > 0 && contains_only_empty_statements(hndlr.except_block.stmt_list.subnodes))
                 {
                     add_space_before = true;
                     WriteNode(_try_stmt.handler, "except".Length);
@@ -2534,6 +2553,14 @@ namespace CodeFormatters
                 visit_node(_try_stmt.handler);
             }
             read_from_beg_pos = false;
+        }
+
+        private bool contains_only_empty_statements(List<statement> statements)
+        {
+            foreach (statement stmt in statements)
+                if (!(stmt is empty_statement))
+                    return false;
+            return true;
         }
 
         public override void visit(inherited_message _inherited_message)
@@ -3166,7 +3193,11 @@ namespace CodeFormatters
             if (_is_pattern_expr.left != null)
                 visit_node(_is_pattern_expr.left);
 
-            sb.Append(" is ");
+            if (_is_pattern_expr.right == null || 
+                !(_is_pattern_expr.right is collection_pattern) && !(_is_pattern_expr.right is tuple_pattern))
+                sb.Append(" is ");
+            else
+                add_space_before = true;
 
             if (_is_pattern_expr.right != null)
                 visit_node(_is_pattern_expr.right);
@@ -3211,6 +3242,80 @@ namespace CodeFormatters
             DecOffset();
         }
 
+        public override void visit(const_pattern _const_pattern)
+        {
+            visit_node(_const_pattern.pattern_expressions);
+            add_space_after = false;
+        }
+
+        public override void visit(const_pattern_parameter _const_parameter)
+        {
+            visit_node(_const_parameter.const_param);
+            add_space_after = false;
+        }
+
+        public override void visit(wild_card_deconstructor_parameter _wild_card_deconstructor_parameter)
+        {
+            sb.Append("_");
+            add_space_after = true;
+        }
+
+        public override void visit(tuple_pattern_var_parameter _tuple_pattern_var_parameter)
+        {
+            sb.Append("var");
+            SetKeywordOffset("var");
+            read_from_beg_pos = true;
+            visit_node(_tuple_pattern_var_parameter.identifier);
+        }
+
+        public override void visit(tuple_pattern_wild_card _tuple_pattern_wild_card)
+        {
+            sb.Append("_");
+            add_space_after = true;
+        }
+
+        public override void visit(tuple_pattern _tuple_pattern)
+        {
+            sb.Append("(");
+            foreach (var parameter in _tuple_pattern.parameters)
+            {
+                visit_node(parameter);
+                add_space_after = true;
+            }
+            add_space_after = false;
+        }
+
+        public override void visit(collection_pattern _collection_pattern)
+        {
+            sb.Append("[");
+            foreach (var parameter in _collection_pattern.parameters)
+            {
+                visit_node(parameter);
+                add_space_after = true;
+            }
+            add_space_after = false;
+        }
+
+        public override void visit(collection_pattern_gap_parameter _collection_pattern_gap_parameter)
+        {
+            sb.Append("..");
+            add_space_after = true;
+        }
+
+        public override void visit(collection_pattern_var_parameter _collection_pattern_var_parameter)
+        {
+            sb.Append("var");
+            SetKeywordOffset("var");
+            read_from_beg_pos = true;
+            visit_node(_collection_pattern_var_parameter.identifier);
+        }
+
+        public override void visit(collection_pattern_wild_card _collection_pattern_wild_card)
+        {
+            sb.Append("_");
+            add_space_after = true;
+        }
+
         public override void visit(deconstructor_pattern _deconstructor_pattern)
         {
             visit_node(_deconstructor_pattern.type);
@@ -3224,17 +3329,33 @@ namespace CodeFormatters
 
         public override void visit(var_deconstructor_parameter _var_deconstructor_parameter)
         {
-            sb.Append("var");
-            SetKeywordOffset("var");
-            read_from_beg_pos = true;
+            if (_var_deconstructor_parameter.var_keyword_used)
+            {
+                sb.Append("var");
+                SetKeywordOffset("var");
+                read_from_beg_pos = true;
+            }
             visit_node(_var_deconstructor_parameter.identifier);
             if (_var_deconstructor_parameter.type != null)
                 visit_node(_var_deconstructor_parameter.type);
         }
 
+        public override void visit(recursive_pattern_parameter _recursive_pattern_parameter)
+        {
+            visit_node(_recursive_pattern_parameter.pattern);
+        }
+
         public override void visit(recursive_deconstructor_parameter _recursive_deconstructor_parameter)
         {
             visit_node(_recursive_deconstructor_parameter.pattern);
+        }
+        public override void visit(recursive_tuple_parameter _recursive_tuple_parameter)
+        {
+            visit_node(_recursive_tuple_parameter.pattern);
+        }
+        public override void visit(recursive_collection_parameter _recursive_collection_parameter)
+        {
+            visit_node(_recursive_collection_parameter.pattern);
         }
 
         public override void visit(var_tuple_def_statement _var_tuple_def_statement)

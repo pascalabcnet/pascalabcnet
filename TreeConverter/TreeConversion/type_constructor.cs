@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 //Конструирует типы массивов и делегатов (и enum-ов).
 
@@ -566,7 +566,7 @@ namespace PascalABCCompiler.TreeConverter
             }
 			
 			//= operation
-			SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(ctn.scope, _cmn.scope, "= operator from " + ctn.scope);
+			SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(ctn.scope, _cmn.scope, null, "= operator from " + ctn.scope);
         	common_method_node cmn_eq = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.eq_name),SystemLibrary.SystemLibrary.bool_type,null,ctn,
         	                                                SemanticTree.polymorphic_state.ps_static,SemanticTree.field_access_level.fal_public,scope);
         	cmn_eq.IsOperator = true;
@@ -601,7 +601,7 @@ namespace PascalABCCompiler.TreeConverter
         	ctn.Scope.AddSymbol(compiler_string_consts.eq_name,new SymbolInfo(cmn_eq));
         	
         	//<> operation
-			scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(ctn.scope, _cmn.scope, "<> operator from " + ctn.scope);
+			scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(ctn.scope, _cmn.scope, null, "<> operator from " + ctn.scope);
         	common_method_node cmn_noteq = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.noteq_name),SystemLibrary.SystemLibrary.bool_type,null,ctn,
         	                                                SemanticTree.polymorphic_state.ps_static,SemanticTree.field_access_level.fal_public,scope);
         	cmn_noteq.IsOperator = true;

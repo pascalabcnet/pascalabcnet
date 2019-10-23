@@ -10,6 +10,11 @@
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title>
 <link rel="StyleSheet" href="../../default.css">
+<style type="text/css">
+.auto-style1 {
+	color: #000080;
+}
+</style>
 </head>
 
 <body>
@@ -93,6 +98,48 @@ value: Complex);<br>&nbsp;&nbsp;&nbsp; <b>begin</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&
 	integer): string; <strong>extensionmethod</strong>;<br><strong>begin</strong><br>&nbsp; result := str + 
 	n.ToString;<br><strong>end</strong>;</code></p>
 </blockquote>
+<p>Можно перегружать расширенные операции присваивания +=, -= и т.д.: </p>
+<blockquote>
+	<pre><code><strong>type</strong>
+  t0 = <strong>class
+</strong>    x: integer;
+    <strong>static</strong> <strong>function</strong> <strong>operator</strong>+=(a: t0; i: integer): t0;
+    <strong>begin</strong>
+      a.x += i;
+    <strong>end</strong>;
+  <strong>end</strong>;
+<strong>begin</strong>
+  <strong>var</strong> t := new t0;
+  t += 2;  
+</code><span class="auto-style1"><font size="2"><strong>end</strong>.</font></span></pre>
+</blockquote>
+<p>Важно отметить, что если слева от расширенного присваивания находится 
+свойство, то перегруженная форма расширенного присваивания игнорируется и само 
+расширенное присваивание разворачивается в присваивание и соответствующую 
+операцию: </p>
+<blockquote>
+	<pre><code><strong>type</strong>
+  t0 = <strong>class
+</strong>    x: integer;
+    <strong>static</strong> <strong>function</strong> <strong>operator</strong>+=(a: t0; i: integer): t0;
+    <strong>begin</strong>
+      a.x += i;
+    <strong>end</strong>;
+  <strong>end</strong>;
+  t1 = class
+    <strong>property</strong> p1: t0 <strong>read</strong> ...<strong> write</strong> ...;
+  <strong>end</strong>;  
+<strong>begin</strong>
+  <strong>var</strong> t := new t1;
+  t.p1 += 2;  
+</code><span class="auto-style1"><font size="2"><strong>end</strong>.</font></span></pre>
+</blockquote>
+<p>В данном коде последний оператор расширенного присваивания принудительно 
+развернется в </p>
+<blockquote>
+	<pre><code>t.p1 := t.p1 + 2;  </code></pre>
+</blockquote>
+<p>и поскольку для t0 не перегружена операция +, то компилятор выдаст ошибку.</p>
 </body>
 
 </html>

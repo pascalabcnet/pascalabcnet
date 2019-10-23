@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("SyntaxVisitors")]
-[assembly: AssemblyCopyright("Copyright © 2005-2018 by Ivan Bondarev, Stanislav Mihalkovich")]
+[assembly: AssemblyCopyright("Copyright © 2005-2019 by Ivan Bondarev, Stanislav Mikhalkovich")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -69,6 +69,20 @@ namespace TreeConverter.LambdaExpressions
             syntaxTreeVisitor.visit(varStmt);
         }
 
+        public override void visit(PascalABCCompiler.SyntaxTree.for_node fn)
+        {
+            syntaxTreeVisitor.visit(fn);
+        }
+
+        public override void visit(PascalABCCompiler.SyntaxTree.foreach_stmt fn)
+        {
+            syntaxTreeVisitor.visit(fn);
+        }
+
+        /*public override void visit(PascalABCCompiler.SyntaxTree.exception_block fn)
+        {
+            syntaxTreeVisitor.visit(fn);
+        }*/
         // Patterns
         public override void visit(desugared_deconstruction _desugared_deconstruction)
         {
