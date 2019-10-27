@@ -1952,6 +1952,15 @@ namespace CodeCompletion
         {
         }
         
+        public override void visit(slice_expr _slice_expr)
+		{
+			_slice_expr.v.visit(this);
+		}
+
+        public override void visit(slice_expr_question _slice_expr_question)
+        {
+            _slice_expr_question.v.visit(this);
+        }
         public override void visit(tuple_node _tuple_node)
         {
             method_call mc = new method_call();
