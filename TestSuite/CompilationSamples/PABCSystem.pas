@@ -1797,6 +1797,10 @@ procedure Sort<T>(l: List<T>);
 procedure Sort<T>(l: List<T>; cmp: (T,T)->integer);
 /// Сортирует список по критерию сортировки, задаваемому функцией сравнения less
 procedure Sort<T>(l: List<T>; less: (T,T)->boolean);
+/// Сортирует динамический массив по убыванию
+procedure SortDescending<T>(a: array of T);
+/// Сортирует список по убыванию
+procedure SortDescending<T>(l: List<T>);
 /// Изменяет порядок элементов в динамическом массиве на противоположный
 procedure Reverse<T>(a: array of T);
 /// Изменяет порядок элементов на противоположный в диапазоне динамического массива длины count, начиная с индекса index
@@ -7599,6 +7603,18 @@ end;
 procedure Sort<T>(l: List<T>; less: (T,T)->boolean);
 begin
   l.Sort((x, y)-> less(x, y) ? -1 : (less(y, x) ? 1 : 0));
+end;
+
+procedure SortDescending<T>(a: array of T);
+begin
+  Sort(a);
+  Reverse(a);
+end;
+
+procedure SortDescending<T>(l: List<T>);
+begin
+  Sort(l);
+  Reverse(l);
 end;
 
 procedure Reverse<T>(a: array of T);

@@ -180,7 +180,6 @@ begin
   if MainWindow.ResizeMode = ResizeMode.NoResize then
     Result := MainWindow.ActualHeight - SystemParameters.WindowCaptionHeight - 2.5
   else Result := MainWindow.ActualHeight - hplus;
-  Print(SystemParameters.FixedFrameHorizontalBorderHeight);
   //Print(SystemParameters.WindowCaptionHeight, SystemParameters.WindowResizeBorderThickness.Top, SystemParameters.WindowResizeBorderThickness.Bottom);
 end; 
 function WindowType.GetHeight := InvokeReal(WindowTypeGetHeightP);

@@ -173,6 +173,7 @@ end.
 [wf]
 {$reference System.Windows.Forms.dll}
 {$reference System.Drawing.dll}
+{$apptype windows}
 
 uses System.Windows.Forms;
 uses System.Drawing;
