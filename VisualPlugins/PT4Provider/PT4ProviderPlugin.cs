@@ -125,6 +125,7 @@ namespace VisualPascalABCPlugins
             if (i < 1 || filename.ToString() == "") 
                 return;*/
             VisualEnvironmentCompiler.ExecuteAction(VisualEnvironmentCompilerAction.OpenFile, filename.ToString());
+            VisualEnvironmentCompiler.ExecuteAction(VisualEnvironmentCompilerAction.PT4PositionCursorAfterTask, null);
         }
         public void ExecuteB_R()
         {

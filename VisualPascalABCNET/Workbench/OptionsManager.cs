@@ -346,6 +346,12 @@ namespace VisualPascalABC
                 if (si.TextEditor.quickClassBrowserPanel.Visible != UserOptions.ShowQuickClassBrowserPanel)
                     si.TextEditor.quickClassBrowserPanel.Visible = UserOptions.ShowQuickClassBrowserPanel;
             }
+
+            foreach (var rtb in this.OutputTextBoxs.Values)
+            {
+                rtb.Font = OpenDocuments.Values.First().TextEditor.Font;
+            }
+
             tsViewIntellisensePanel.Checked = UserOptions.ShowQuickClassBrowserPanel;
             tsViewIntellisensePanel.Visible = tssmIntellisence.Visible = tsGotoDefinition.Visible = tsGotoRealization.Visible =
                 tsFindAllReferences.Visible = miGenerateRealization.Visible =

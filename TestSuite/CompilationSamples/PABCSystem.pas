@@ -10556,6 +10556,32 @@ begin
   Result := Range(0, Self - 1);
 end;
 
+/// Возвращает число, ограниченное диапазоном от bottom до top включительно
+function Clamp(Self: integer; bottom,top: integer): integer; extensionmethod;
+begin
+  if Self < bottom then 
+    Result := bottom
+  else if Self > top then 
+    Result := top
+  else Result := Self;  
+end;
+
+/// Возвращает число, ограниченное величиной top сверху
+function ClampTop(Self: integer; top: integer): integer; extensionmethod;
+begin
+  if Self > top then 
+    Result := top
+  else Result := Self;  
+end;
+
+/// Возвращает число, ограниченное величиной bottom снизу
+function Clamp(Self: integer; bottom: integer): integer; extensionmethod;
+begin
+  if Self < bottom then 
+    Result := bottom
+  else Result := Self;  
+end;
+
 // -----------------------------------------------------
 //>>     Методы расширения типа BigInteger # Extension methods for BigInteger
 // -----------------------------------------------------
@@ -10630,6 +10656,32 @@ begin
   if frac >= 100 then
     raise new System.ArgumentOutOfRangeException('frac', 'frac>=100');
   Result := Format('{0:f' + frac + '}', Self)
+end;
+
+/// Возвращает число, ограниченное диапазоном от bottom до top включительно
+function Clamp(Self: real; bottom,top: real): real; extensionmethod;
+begin
+  if Self < bottom then 
+    Result := bottom
+  else if Self > top then 
+    Result := top
+  else Result := Self;  
+end;
+
+/// Возвращает число, ограниченное величиной top сверху
+function ClampTop(Self: real; top: real): real; extensionmethod;
+begin
+  if Self > top then 
+    Result := top
+  else Result := Self;  
+end;
+
+/// Возвращает число, ограниченное величиной bottom снизу
+function Clamp(Self: real; bottom: real): real; extensionmethod;
+begin
+  if Self < bottom then 
+    Result := bottom
+  else Result := Self;  
 end;
 
 
