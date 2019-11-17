@@ -10575,7 +10575,7 @@ begin
 end;
 
 /// Возвращает число, ограниченное величиной bottom снизу
-function Clamp(Self: integer; bottom: integer): integer; extensionmethod;
+function ClampBottom(Self: integer; bottom: integer): integer; extensionmethod;
 begin
   if Self < bottom then 
     Result := bottom
@@ -10677,7 +10677,7 @@ begin
 end;
 
 /// Возвращает число, ограниченное величиной bottom снизу
-function Clamp(Self: real; bottom: real): real; extensionmethod;
+function ClampBottom(Self: real; bottom: real): real; extensionmethod;
 begin
   if Self < bottom then 
     Result := bottom
