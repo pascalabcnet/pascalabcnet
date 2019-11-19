@@ -3164,6 +3164,16 @@ namespace PascalABCCompiler.TreeRealization
         	this.scope = new NetHelper.NetTypeScope(_compiled_type, SystemLibrary.SystemLibrary.symtab);
         }
         
+        public type_node element_type
+		{
+			get
+			{
+                if (compiled_type.GetElementType() == null)
+                    return null;
+				return compiled_type_node.get_type_node(compiled_type.GetElementType());
+			}
+		}
+        
         public static compiled_type_node get_type_node(System.Type st)
 		{
             //(ssyy) Обрабатываем параметры generic-типов
@@ -4343,7 +4353,10 @@ namespace PascalABCCompiler.TreeRealization
                         if (cmn.num_of_default_parameters == cmn.parameters.Count)
                             return bfc;
                     }
-                    else if (bfc.function is compiled_function_node)
+                }
+                foreach (base_function_call bfc in _proper_methods)
+                {
+                    if (bfc.function is compiled_function_node)
                     {
                         compiled_function_node cfn = bfc.function as compiled_function_node;
                         if (cfn.ConnectedToType != null && (bfc.simple_function_node.parameters.Count == 1 || bfc.simple_function_node.parameters.Count == 2 && (bfc.simple_function_node.parameters[1].is_params || bfc.simple_function_node.parameters[1].default_value != null)))

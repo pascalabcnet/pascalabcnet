@@ -88,7 +88,8 @@ namespace VisualPascalABCPlugins
         SaveFile,
         BuildUnit,
         AddMessageToErrorListWindow,
-        SetCurrentSourceFileTextFormatting
+        SetCurrentSourceFileTextFormatting,
+        PT4PositionCursorAfterTask
     }
 
     public delegate IAsyncResult InvokeDegegate(Delegate method, params object[] args);

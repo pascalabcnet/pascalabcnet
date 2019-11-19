@@ -16,7 +16,7 @@ begin
     new t1(10)
   ));
   
-  Result.f0.Println; // до #1986 было AccessViolationException
+  assert(Result.f0 = 10); // до #1986 было AccessViolationException
   
 end;
 

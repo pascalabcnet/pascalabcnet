@@ -2509,7 +2509,10 @@ namespace PascalABCCompiler.TreeConverter
 				return;
 			location first_loc=convertion_data_and_alghoritms.get_location(sil.FirstOrDefault().sym_info);
             //TODO: Можно передавать список всех повторных объявлений.
-            AddError(new NameRedefinition(name, first_loc, name_loc));
+            if (converting_block() == block_type.type_block && (name.ToLower().StartsWith("get_") || name.ToLower().StartsWith("set_")))
+                AddError(name_loc as location, "CANNOT_USE_RESERVED_ACCESSOR_NAMES");
+            else
+                AddError(new NameRedefinition(name, first_loc, name_loc));
 		}
 		
         //ssyy
@@ -2550,6 +2553,7 @@ namespace PascalABCCompiler.TreeConverter
                 //cnode.ForwardDeclarationOnly = false;
                 return cnode;
             }
+            
             if (cnode != null && is_partial && cnode.IsPartial)
             {
                 return cnode;

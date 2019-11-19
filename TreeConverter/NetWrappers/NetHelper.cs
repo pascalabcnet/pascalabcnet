@@ -65,6 +65,22 @@ namespace PascalABCCompiler.NetHelper
             }
             return null;
         }
+        
+        public List<TypeInfo> GetTypesByNamespaceList(using_namespace_list unl)
+        {
+            List<TypeInfo> types = new List<TypeInfo>();
+            foreach (TypeNamespaceInfo tni in type_infos)
+            {
+                foreach (using_namespace un in unl)
+                {
+                    if (string.Compare(un.namespace_name, tni.us_ns.namespace_name, true) == 0)
+                    {
+                        types.Add(tni.type_info);
+                    }
+                }
+            }
+            return types;
+        }
     }
 
 	public class NetScope : SymbolTable.DotNETScope {
@@ -1844,6 +1860,7 @@ namespace PascalABCCompiler.NetHelper
                 fi = new FoundInfo(false);
                 type_search_cache[name] = fi;
             }
+            
 			return null;
 		}
 
@@ -1930,8 +1947,8 @@ namespace PascalABCCompiler.NetHelper
             {
                 if (!fi.exists)
                     return null;
-                TypeInfo ti = fi.GetTypeByNamespaceList(_unar);
-                if (ti != null)
+                List<TypeInfo> ti_list = fi.GetTypesByNamespaceList(_unar);
+                foreach (TypeInfo ti in ti_list)
                     if (cur_used_assemblies.ContainsKey(ti.type.Assembly))
                         return ti.type;
             }
@@ -1985,8 +2002,8 @@ namespace PascalABCCompiler.NetHelper
                             }
                             if (cur_used_assemblies.ContainsKey(t.type.Assembly))
                                 return t.type;
-                            else
-                                return null;
+                            //else
+                            //    return null;
                         }
                     }
                 }

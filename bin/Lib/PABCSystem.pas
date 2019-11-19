@@ -1797,6 +1797,10 @@ procedure Sort<T>(l: List<T>);
 procedure Sort<T>(l: List<T>; cmp: (T,T)->integer);
 /// Сортирует список по критерию сортировки, задаваемому функцией сравнения less
 procedure Sort<T>(l: List<T>; less: (T,T)->boolean);
+/// Сортирует динамический массив по убыванию
+procedure SortDescending<T>(a: array of T);
+/// Сортирует список по убыванию
+procedure SortDescending<T>(l: List<T>);
 /// Изменяет порядок элементов в динамическом массиве на противоположный
 procedure Reverse<T>(a: array of T);
 /// Изменяет порядок элементов на противоположный в диапазоне динамического массива длины count, начиная с индекса index
@@ -7601,6 +7605,18 @@ begin
   l.Sort((x, y)-> less(x, y) ? -1 : (less(y, x) ? 1 : 0));
 end;
 
+procedure SortDescending<T>(a: array of T);
+begin
+  Sort(a);
+  Reverse(a);
+end;
+
+procedure SortDescending<T>(l: List<T>);
+begin
+  Sort(l);
+  Reverse(l);
+end;
+
 procedure Reverse<T>(a: array of T);
 begin
   System.Array.Reverse(a);
@@ -9413,7 +9429,7 @@ end;
 /// Возвращает индекс последнего минимального элемента
 function LastIndexMin<T>(Self: array of T): integer; extensionmethod; where T: System.IComparable<T>;
 begin
-  Result := Self.LastIndexMin(Self.Count - 1);
+  Result := Self.LastIndexMin(Self.Length - 1);
 end;  
 
 /// Возвращает индекс последнего минимального элемента в диапазоне [0,index-1]
@@ -10540,6 +10556,32 @@ begin
   Result := Range(0, Self - 1);
 end;
 
+/// Возвращает число, ограниченное диапазоном от bottom до top включительно
+function Clamp(Self: integer; bottom,top: integer): integer; extensionmethod;
+begin
+  if Self < bottom then 
+    Result := bottom
+  else if Self > top then 
+    Result := top
+  else Result := Self;  
+end;
+
+/// Возвращает число, ограниченное величиной top сверху
+function ClampTop(Self: integer; top: integer): integer; extensionmethod;
+begin
+  if Self > top then 
+    Result := top
+  else Result := Self;  
+end;
+
+/// Возвращает число, ограниченное величиной bottom снизу
+function ClampBottom(Self: integer; bottom: integer): integer; extensionmethod;
+begin
+  if Self < bottom then 
+    Result := bottom
+  else Result := Self;  
+end;
+
 // -----------------------------------------------------
 //>>     Методы расширения типа BigInteger # Extension methods for BigInteger
 // -----------------------------------------------------
@@ -10614,6 +10656,32 @@ begin
   if frac >= 100 then
     raise new System.ArgumentOutOfRangeException('frac', 'frac>=100');
   Result := Format('{0:f' + frac + '}', Self)
+end;
+
+/// Возвращает число, ограниченное диапазоном от bottom до top включительно
+function Clamp(Self: real; bottom,top: real): real; extensionmethod;
+begin
+  if Self < bottom then 
+    Result := bottom
+  else if Self > top then 
+    Result := top
+  else Result := Self;  
+end;
+
+/// Возвращает число, ограниченное величиной top сверху
+function ClampTop(Self: real; top: real): real; extensionmethod;
+begin
+  if Self > top then 
+    Result := top
+  else Result := Self;  
+end;
+
+/// Возвращает число, ограниченное величиной bottom снизу
+function ClampBottom(Self: real; bottom: real): real; extensionmethod;
+begin
+  if Self < bottom then 
+    Result := bottom
+  else Result := Self;  
 end;
 
 

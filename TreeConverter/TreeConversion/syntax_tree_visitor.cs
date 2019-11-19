@@ -1087,7 +1087,8 @@ namespace PascalABCCompiler.TreeConverter
             {
             	if ( !type_table.is_with_nil_allowed(left.type) && !left.type.IsPointer)
                     AddError(right.location, "NIL_WITH_VALUE_TYPES_NOT_ALLOWED");
-            	right = null_const_node.get_const_node_with_type(left.type, (null_const_node)right);
+                if (right.conversion_type == null)
+                    right = null_const_node.get_const_node_with_type(left.type, (null_const_node)right);
             }
 
             /*if (left.semantic_node_type == semantic_node_type.null_const_node)
@@ -1246,7 +1247,10 @@ namespace PascalABCCompiler.TreeConverter
                     base_function_call bfc = ((left as typed_expression).type as delegated_methods).proper_methods[0];
                     left = convertion_data_and_alghoritms.explicit_convert_type(left, CreateDelegate(bfc.simple_function_node));
                     sil = left.type.find_in_type(name);
-                    bfc = ((right as typed_expression).type as delegated_methods).proper_methods[0];
+                    if (!(right is typed_expression) && right.type is delegated_methods)
+                        bfc = (right.type as delegated_methods).proper_methods[0];
+                    else
+                        bfc = ((right as typed_expression).type as delegated_methods).proper_methods[0];
                     right = convertion_data_and_alghoritms.explicit_convert_type(right, CreateDelegate(bfc.simple_function_node));
                     sil2 = right.type.find_in_type(name);
                     if (saved_sil != null && sil != null)
@@ -3681,6 +3685,12 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(get_location(_class_definition.class_parents.types[0]), "CAN_NOT_INHERIT_FROM_GENERIC_PARAMETER");
                             }
                             context.converted_type.SetBaseType(tn);
+                            var type_instances = generic_convertions.get_type_instances(context.converted_type);
+                            if (type_instances != null)
+                                foreach (generic_type_instance_info gti in type_instances)
+                                {
+                                    gti.pseudo_instance.SetBaseType(tn);
+                                }
                         }
                         //Теперь добавляем интерфейсы.
                         //Цикл с единицы, т.к. нулевой элемент уже был рассмотрен.
@@ -4030,7 +4040,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     generate_default_constructor();
                 }
-                if (!context.namespace_converted)
+                if (!context.namespace_converted || context.converted_type.name.IndexOf("<>") != -1)
                     visit_class_member_realizations(_class_body);
             }
             
@@ -10959,9 +10969,9 @@ namespace PascalABCCompiler.TreeConverter
                                     AddError(get_location(cl_def), "TYPE_PREDEFINITION_NOT_ALLOWED");
                                 common_type_node ctn = null;
                                 if (td.type_name is template_type_name)
-                                    ctn = context.advanced_create_type(td.type_name.name + "`" + (td.type_name as template_type_name).template_args.Count, get_location(td.type_name), (td.type_def as class_definition).keyword == class_keyword.Interface, false);
+                                    ctn = context.advanced_create_type(td.type_name.name + "`" + (td.type_name as template_type_name).template_args.Count, get_location(td.type_name), (td.type_def as class_definition).keyword == class_keyword.Interface, (cl_def.attribute & SyntaxTree.class_attribute.Partial) == SyntaxTree.class_attribute.Partial);
                                 else
-                                    ctn = context.advanced_create_type(td.type_name.name, get_location(td.type_name), (td.type_def as class_definition).keyword == class_keyword.Interface, false);
+                                    ctn = context.advanced_create_type(td.type_name.name, get_location(td.type_name), (td.type_def as class_definition).keyword == class_keyword.Interface, (cl_def.attribute & SyntaxTree.class_attribute.Partial) == SyntaxTree.class_attribute.Partial);
                                 ctn.ForwardDeclarationOnly = true;
                                 if ((td.type_def as class_definition).keyword == class_keyword.Interface)
                                     ctn.IsInterface = true;
@@ -10980,6 +10990,10 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(get_location(decl), "NAMESPACE_SHOULD_CONTAINS_ONLY_TYPES");
                         }
 
+                    }
+                    else if (decl is procedure_definition && get_location(decl) == null)
+                    {
+                        //yield 
                     }
                     else
                         AddError(get_location(decl), "NAMESPACE_SHOULD_CONTAINS_ONLY_TYPES");
@@ -11032,6 +11046,20 @@ namespace PascalABCCompiler.TreeConverter
                                 ctn.SetName(_syntax_namespace_node.name + "." + ctn.name);
                             }
                         }
+                    }
+                    
+                }
+                context.leave_scope();
+            }
+            foreach (syntax_namespace_node _syntax_namespace_node in namespaces)
+            {
+                common_namespace_node cmn = dict[_syntax_namespace_node];
+                context.enter_scope(cmn.scope);
+                foreach (declaration decl in _syntax_namespace_node.defs)
+                {
+                    if (decl is procedure_definition)
+                    {
+                        hard_node_test_and_visit(decl);
                     }
                 }
                 context.leave_scope();
@@ -11688,7 +11716,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 List<SymbolInfo> sil = context.find_only_in_namespace(_type_declaration.type_name.name + compiler_string_consts.generic_params_infix +
                         cl_def.template_args.idents.Count.ToString());
-                if (!(sil != null && sil.FirstOrDefault().sym_info is common_type_node && context.types_predefined.IndexOf(sil.FirstOrDefault().sym_info as common_type_node) != -1))
+                if (!(sil != null && sil.FirstOrDefault().sym_info is common_type_node && ((sil.FirstOrDefault().sym_info as common_type_node).IsPartial || context.types_predefined.IndexOf(sil.FirstOrDefault().sym_info as common_type_node) != -1)))
                 {
                     context.check_name_free(_type_declaration.type_name.name, get_location(_type_declaration.type_name));
                 }
@@ -12347,25 +12375,28 @@ namespace PascalABCCompiler.TreeConverter
             List<common_type_node> used_types = new List<common_type_node>(where_list.defs.Count);
             foreach (SyntaxTree.where_definition wd in where_list.defs)
             {
-                bool param_not_found = true;
-                foreach (common_type_node param in gparams)
+                foreach (SyntaxTree.ident wd_id in wd.names.idents)
                 {
-                    if (String.Equals(param.name, wd.names.idents[0].name, StringComparison.InvariantCultureIgnoreCase))
+                    bool param_not_found = true;
+                    foreach (common_type_node param in gparams)
                     {
-                        //Нашли нужный шаблонный параметр
-                        if (used_types.Contains(param))
+                        if (String.Equals(param.name, wd_id.name, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            AddError(get_location(wd.names), "SPECIFICATORS_FOR_{0}_ALREADY_EXIST", wd.names.idents[0].name);
+                            //Нашли нужный шаблонный параметр
+                            if (used_types.Contains(param))
+                            {
+                                AddError(get_location(wd.names), "SPECIFICATORS_FOR_{0}_ALREADY_EXIST", wd_id.name);
+                            }
+                            add_generic_eliminations(param, wd.types.defs);
+                            used_types.Add(param);
+                            param_not_found = false;
+                            break;
                         }
-                        add_generic_eliminations(param, wd.types.defs);
-                        used_types.Add(param);
-                        param_not_found = false;
-                        break;
                     }
-                }
-                if (param_not_found)
-                {
-                    AddError(new UndefinedNameReference(wd.names.idents[0].name, get_location(wd.names)));
+                    if (param_not_found)
+                    {
+                        AddError(new UndefinedNameReference(wd.names.idents[0].name, get_location(wd.names)));
+                    }
                 }
             }
             context.EndSkipGenericInstanceChecking();
@@ -14795,16 +14826,20 @@ namespace PascalABCCompiler.TreeConverter
         {
         	array_internal_interface aii = tn.get_internal_interface(internal_interface_kind.unsized_array_interface) as array_internal_interface;
         	int rank = aii.rank;
+            int size = -1;
         	for (int i=0; i<constant.element_values.Count; i++)
         	{
         		expression_node e = constant.element_values[i];
         		if (e is array_initializer)
         		{
-        			if (cur_rank>=rank)
-        				constant.element_values[i] = ConvertArrayInitializer(tn.element_type,e as array_initializer);
+                    if (size != -1 && size != (e as array_initializer).element_values.Count)
+                        AddError(e.location, "ARRAY_CONST_{0}_ELEMENTS_EXPECTED", size);
+                    size = (e as array_initializer).element_values.Count;
+        			if (cur_rank >= rank)
+        				constant.element_values[i] = ConvertArrayInitializer(tn.element_type, e as array_initializer);
         				//AddError(new CanNotConvertTypes(e,e.type,tn.element_type,e.location));
         			else
-        			constant.element_values[i] = ConvertNDimArrayInitializer(tn,cur_rank+1,element_type,e as array_initializer);
+                        constant.element_values[i] = ConvertNDimArrayInitializer(tn,cur_rank + 1, element_type, e as array_initializer);
         		}
         		else if (e is record_initializer)
             	{
@@ -14878,16 +14913,20 @@ namespace PascalABCCompiler.TreeConverter
         {
         	array_internal_interface aii = tn.get_internal_interface(internal_interface_kind.unsized_array_interface) as array_internal_interface;
         	int rank = aii.rank;
+            int size = -1;
         	for (int i=0; i<constant.element_values.Count; i++)
         	{
         		expression_node e = constant.element_values[i];
         		if (e is array_const)
         		{
+                    if (size != -1 && size != (e as array_const).element_values.Count)
+                        AddError(e.location, "ARRAY_CONST_{0}_ELEMENTS_EXPECTED", size);
+                    size = (e as array_const).element_values.Count;
         			if (cur_rank>=rank)
         				constant.element_values[i] = ConvertArrayConst(tn.element_type,e as array_const);
         				//AddError(new CanNotConvertTypes(e,e.type,tn.element_type,e.location));
         			else
-        			constant.element_values[i] = ConvertNDimArrayConst(tn,cur_rank+1,element_type,e as array_const);
+                        constant.element_values[i] = ConvertNDimArrayConst(tn,cur_rank+1,element_type,e as array_const);
         		}
         		else if (e is record_constant)
             	{
@@ -16613,7 +16652,7 @@ namespace PascalABCCompiler.TreeConverter
             	sil = context.converted_type.base_type.find_in_type(cmn.name, context.CurrentScope);
             if (sil != null)
             {
-                while (sil.Count() != 0)
+                while (sil.Count != 0)
                 {
                     if (!cmn.is_constructor)
                     {

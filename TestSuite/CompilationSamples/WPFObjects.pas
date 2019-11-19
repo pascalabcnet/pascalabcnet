@@ -43,6 +43,8 @@ type
   /// Тип размера
   GSize = System.Windows.Size;
   /// Тип точки
+  Point = System.Windows.Point;
+  /// Тип точки
   GPoint = System.Windows.Point;
   /// Тип окна
   GWindow = System.Windows.Window;

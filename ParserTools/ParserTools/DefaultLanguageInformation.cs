@@ -126,6 +126,7 @@ namespace PascalABCCompiler.Parsers
             keywords.Add("exit", "exit"); keys.Add("exit");
             keywords.Add("event", "event"); keys.Add("event");
             keywords.Add("match", "match"); keys.Add("match");
+            keywords.Add("when", "when"); keys.Add("when");
             keywords.Add("static", "static"); keys.Add("static");
             //keywords.Add("typeof", "typeof"); //keys.Add("typeof");
             //keywords.Add("sizeof", "sizeof"); //keys.Add("sizeof");
