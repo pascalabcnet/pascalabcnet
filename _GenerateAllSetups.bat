@@ -56,7 +56,7 @@ cd ReleaseGenerators
 call PascalABCNETWithDotNet40.bat
 
 cd ..
-call Studio.bat /t:rebuild "/property:Configuration=Release" PascalABCNET.sln
+%call Studio.bat /t:rebuild "/property:Configuration=Release" PascalABCNET.sln
 
 GOTO EXIT
 
