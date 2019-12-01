@@ -8995,7 +8995,7 @@ end;
 /// Разделяет последовательность на две по заданному условию, в котором участвует индекс. Реализуется двухпроходным алгоритмом
 function Partition<T>(Self: sequence of T; cond: (T,integer)->boolean): (sequence of T, sequence of T); extensionmethod;
 begin
-  Result := (Self.Where(cond), Self.Where((x, i)-> not cond(x, i)));
+  Result := (Self.Where(cond), Self.Where((x, i) -> not cond(x, i)));
 end;
 
 /// Объединяет две последовательности в последовательность двухэлементных кортежей
@@ -9003,7 +9003,7 @@ function ZipTuple<T, T1>(Self: sequence of T; a: sequence of T1): sequence of (T
 begin
   if a = nil then
     raise new System.ArgumentNullException('a');
-  Result := Self.Zip(a, (x, y)-> (x, y));
+  Result := Self.Zip(a, (x, y) -> (x, y));
 end;
 
 /// Объединяет три последовательности в последовательность трехэлементных кортежей
@@ -9013,7 +9013,7 @@ begin
     raise new System.ArgumentNullException('a');
   if b = nil then
     raise new System.ArgumentNullException('b');
-  Result := Self.Zip(a, (x, y)-> (x, y)).Zip(b, (p, z)-> (p[0], p[1], z));
+  Result := Self.Zip(a, (x, y) -> (x, y)).Zip(b, (p, z) -> (p[0], p[1], z));
 end;
 
 /// Объединяет четыре последовательности в последовательность четырехэлементных кортежей
@@ -9081,13 +9081,23 @@ end;
 /// Нумерует последовательность с единицы
 function Numerate<T>(Self: sequence of T): sequence of (integer, T); extensionmethod;
 begin
-  Result := 1.Step.ZipTuple(Self);
+  var i := 1;
+  foreach var x in Self do
+  begin
+    yield (i,x);
+    i += 1;
+  end;  
 end;
 
 /// Нумерует последовательность с номера from
 function Numerate<T>(Self: sequence of T; from: integer): sequence of (integer, T); extensionmethod;
 begin
-  Result := from.Step.ZipTuple(Self);
+  var i := from;
+  foreach var x in Self do
+  begin
+    yield (i,x);
+    i += 1;
+  end;  
 end;
 
 /// Табулирует функцию последовательностью
