@@ -1809,6 +1809,10 @@ procedure Reverse<T>(a: array of T; index, count: integer);
 procedure Reverse<T>(a: List<T>);
 /// Изменяет порядок элементов на противоположный в диапазоне списка длины count, начиная с индекса index
 procedure Reverse<T>(a: List<T>; index, count: integer);
+/// Изменяет порядок символов в строке на противоположный
+procedure Reverse(var s: string);
+/// Изменяет порядок символов в части строки длины count на противоположный, начиная с индекса index
+procedure Reverse(var s: string; index, count: integer);
 /// Перемешивает динамический массив случайным образом
 procedure Shuffle<T>(a: array of T);
 /// Перемешивает список случайным образом
@@ -7637,6 +7641,19 @@ begin
   a.Reverse(index, count)
 end;
 
+procedure Reverse(var s: string);
+begin
+  var cc := s.ToCharArray;
+  Reverse(cc);
+  s := new string(cc);
+end;
+
+procedure Reverse(var s: string; index, count: integer);
+begin
+  var cc := s.ToCharArray;
+  Reverse(cc,index-1,count);
+  s := new string(cc);
+end;
 
 procedure Shuffle<T>(a: array of T);
 begin

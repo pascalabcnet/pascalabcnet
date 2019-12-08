@@ -4504,7 +4504,8 @@ namespace PascalABCCompiler.TreeRealization
             	{
             		common_type_node del =
             			type_constructor.instance.create_delegate(compilation_context.instance.get_delegate_type_name(), this.proper_methods[0].simple_function_node.return_value_type, this.proper_methods[0].simple_function_node.parameters, compilation_context.instance.converted_namespace, null);
-            		compilation_context.instance.converted_namespace.types.AddElement(del);
+            		if (compilation_context.instance.converted_namespace != null)
+                    compilation_context.instance.converted_namespace.types.AddElement(del);
             		ii = del.get_internal_interface(internal_interface_kind.delegate_interface);
             	}
             	else
