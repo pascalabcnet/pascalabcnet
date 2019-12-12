@@ -5208,10 +5208,13 @@ namespace PascalABCCompiler.NETGenerator
         public override void visit(SemanticTree.ICommonParameterReferenceNode value)
         {
             bool must_push_addr = false;//должен ли упаковываться, но это если после идет точка
-            if (is_dot_expr == true)//если после идет точка
+            if (is_dot_expr)//если после идет точка
             {
                 if (value.type.is_value_type || value.type.is_generic_parameter)
-                    must_push_addr = true;
+                {
+                    if (!(value.type.is_generic_parameter && value.type.base_type != null && value.type.base_type.is_class && value.type.base_type.base_type != null))
+                        must_push_addr = true;
+                }
             }
             ParamInfo pi = helper.GetParameter(value.parameter);
             if (pi.kind == ParamKind.pkNone)
@@ -5227,7 +5230,7 @@ namespace PascalABCCompiler.NETGenerator
                 if (value.parameter.parameter_type == parameter_type.value)
                 {
                     //напомним, что is_addr - передается ли он в качестве факт. параметра по ссылке
-                    if (is_addr == false)
+                    if (!is_addr)
                     {
                         if (must_push_addr)
                         {
@@ -5244,7 +5247,7 @@ namespace PascalABCCompiler.NETGenerator
                 {
                     //это var-параметр
                     PushParameter(pos);
-                    if (is_addr == false && !must_push_addr)
+                    if (!is_addr && !must_push_addr)
                     {
                         TypeInfo ti = helper.GetTypeReference(value.parameter.type);
                         NETGeneratorTools.PushParameterDereference(il, ti.tp);

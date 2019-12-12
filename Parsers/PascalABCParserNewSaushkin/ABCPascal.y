@@ -2814,6 +2814,10 @@ pattern_case
 		{
 			$$ = new pattern_case($1 as pattern_node, $3 as statement, null, @$);
 		}
+	| tuple_pattern tkWhen expr_l1 tkColon unlabelled_stmt
+		{
+			$$ = new pattern_case($1 as pattern_node, $5 as statement, $3, @$);
+		}
 	| tuple_pattern tkColon unlabelled_stmt
 		{
 			$$ = new pattern_case($1 as pattern_node, $3 as statement, null, @$);

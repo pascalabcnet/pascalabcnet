@@ -11,7 +11,8 @@ namespace PascalABCCompiler
         public const int MaxProcessMemoryMB = 150;
         
         public const string DataSeparator = "]\r\n[";
-        public const string MessageSeparator = "***";
+        //public const string MessageSeparator = "***";
+        public const string MessageSeparator = "\002\002\002";
 
         //1xx to remoteCompiler
         public const int CommandStartNumber = 100;
