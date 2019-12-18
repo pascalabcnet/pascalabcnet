@@ -4066,19 +4066,17 @@ begin
   Result := Result.Concat(a);
 end;
 
-///--
-function operator*<T>(a: sequence of T; n: integer): sequence of T; extensionmethod;
+{function operator*<T>(a: sequence of T; n: integer): sequence of T; extensionmethod;
 begin
   Result := System.Linq.Enumerable.Empty&<T>();
   loop n do
     Result := Result.Concat(a);
 end;
 
-///--
 function operator*<T>(n: integer; a: sequence of T): sequence of T; extensionmethod;
 begin
   Result := a * n;
-end;
+end;}
 
 ///--
 function operator in<T>(x: T; Self: sequence of T): boolean; extensionmethod;

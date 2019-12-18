@@ -2,7 +2,7 @@
 <!-- syntaxdefinition for PascalABC.NET (c) Ivan Bondarev, Stanislav Mikhalkovich -->
 
 <SyntaxDefinition name = "PascalABC.NET" extensions = ".pas;.paspart_">
-	
+
 	<Properties>
 		<Property name="LineComment" value="//"/>
 	</Properties>
