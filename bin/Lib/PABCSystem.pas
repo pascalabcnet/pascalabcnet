@@ -1926,6 +1926,8 @@ function ReadArrString(prompt: string; n: integer): array of string;
 // -----------------------------------------------------
 /// Возвращает двумерный массив размера m x n, заполненный указанными значениями по строкам
 function Matr<T>(m,n: integer; params data: array of T): array [,] of T;
+/// Возвращает двумерный массив, заполненный значениями из одномерных массивов 
+function Matr<T>(params aa: array of array of T): array [,] of T;
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
@@ -10042,6 +10044,18 @@ begin
     Result[i,j] := data[k];
     k += 1;
   end;
+end;
+
+function Matr<T>(params aa: array of array of T): array [,] of T;
+begin
+  var cols := aa.Max(a -> a.Length);
+  var r := new T[aa.Length,cols];
+  
+  for var i:=0 to aa.Length-1 do
+    for var j:=0 to aa[i].Length-1 do
+      r[i,j] := aa[i][j];
+  
+  Result := r;
 end;
 
 // Реализация операций с матрицами - только после введения RowCount и ColCount
