@@ -2156,6 +2156,12 @@ namespace PascalABCCompiler.TreeConverter
             // Потому что не учитывается вызов - в вызове может быть функция!!
             delete_greater_functions(set_of_possible_functions,tcll); // SSM 06/06/19 refactoring
 
+            if (set_of_possible_functions.Count == 1)
+            {
+                check_single_possible_convertion(loc, tcll[0]);
+                convert_function_call_expressions(set_of_possible_functions[0], parameters, tcll[0]);
+                return set_of_possible_functions[0];
+            }
             //Тупая заглушка для примитивных типов. иначе не работает +=, у нас лишком много неявных приведений
             //в дальнейшем может вызвать странное поведение, это надо проверить
             if (set_of_possible_functions.Count == 2 && indefinits.Count == 0)
