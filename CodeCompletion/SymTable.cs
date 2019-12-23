@@ -691,7 +691,7 @@ namespace CodeCompletion
             if (res == null && ts != null && ts.predef_loc != null && IsInScope(ts.predef_loc, line, column))
                 res = this;
             foreach (SymScope ss in members)
-                if (this != ss && ss.loc != null && (loc == null || loc != null && loc.doc != null && ss.loc.doc.file_name == loc.doc.file_name))
+                if (this != ss && this.topScope != ss && ss.loc != null && (loc == null || loc != null && loc.doc != null && ss.loc.doc.file_name == loc.doc.file_name))
                 {
                     if (IsInScope(ss.loc, line, column))
                     {
