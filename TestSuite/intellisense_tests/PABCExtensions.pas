@@ -1,14 +1,33 @@
-﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 ///--
 unit PABCExtensions;
 
 uses PABCSystem;
 
+function GetCurrentLocale: string;
+begin
+  var locale: object;
+  if __CONFIG__.TryGetValue('locale', locale) then
+    Result := locale as string
+  else
+    Result := 'ru';
+end;
+
+function GetTranslation(message: string): string;
+begin
+  var cur_locale := GetCurrentLocale();
+  var arr := message.Split(new string[1]('!!'), System.StringSplitOptions.None);
+  if (cur_locale = 'en') and (arr.Length > 1) then
+    Result := arr[1]
+  else
+    Result := arr[0]
+end;
+
 //{{{doc: Начало секции подпрограмм для типизированных файлов для документации }}} 
 
 // -----------------------------------------------------
-//>>     Подпрограммы для работы с типизированными файлами # Subroutines for typed files
+//>>     Подпрограммы для работы с типизированными и бестиповыми файлами # Subroutines for typed and untyped files
 // -----------------------------------------------------
 
 /// Открывает бестиповой файл и возвращает значение для инициализации файловой переменной
@@ -35,15 +54,36 @@ begin
   PABCSystem.Rewrite(Result, fname, en);
 end;
 
+function ContainsReferenceTypes(t: System.Type): boolean;
+begin
+  if t.IsPrimitive then
+    Result := False
+  else if t.IsValueType then 
+  begin
+    var fa := t.GetFields(System.Reflection.BindingFlags.GetField or System.Reflection.BindingFlags.Instance or System.Reflection.BindingFlags.Public or System.Reflection.BindingFlags.NonPublic);
+    Result := fa.Any(x->ContainsReferenceTypes(x.FieldType));
+  end
+  else Result := True;
+end;
+
+const
+  BAD_TYPE_IN_TYPED_FILE = 'Для типизированных файлов нельзя указывать тип элементов, являющийся ссылочным или содержащий ссылочные поля!!Typed file cannot contain elements that are references or contains fields-references';
+
 /// Открывает типизированный файл и возвращает значение для инициализации файловой переменной
 function OpenFile<T>(fname: string): file of T;
 begin
+  if ContainsReferenceTypes(typeof(T)) then
+    raise new System.SystemException(GetTranslation(BAD_TYPE_IN_TYPED_FILE));
   PABCSystem.Reset(Result, fname);
 end;
 
 /// Создаёт или обнуляет типизированный файл и возвращает значение для инициализации файловой переменной
 function CreateFile<T>(fname: string): file of T;
 begin
+  if ContainsReferenceTypes(typeof(T)) then
+  begin
+    raise new System.SystemException(GetTranslation(BAD_TYPE_IN_TYPED_FILE));
+  end;  
   var res: file of T;
   PABCSystem.Rewrite(res, fname);
   Result := res;
@@ -52,12 +92,16 @@ end;
 /// Открывает типизированный файл в заданной кодировке и возвращает значение для инициализации файловой переменной
 function OpenFile<T>(fname: string; en: Encoding): file of T;
 begin
+  if ContainsReferenceTypes(typeof(T)) then
+    raise new System.SystemException(GetTranslation(BAD_TYPE_IN_TYPED_FILE));
   PABCSystem.Reset(Result, fname, en);
 end;
 
 /// Создаёт или обнуляет типизированный файл в заданной кодировке и возвращает значение для инициализации файловой переменной
 function CreateFile<T>(fname: string; en: Encoding): file of T;
 begin
+  if ContainsReferenceTypes(typeof(T)) then
+    raise new System.SystemException(GetTranslation(BAD_TYPE_IN_TYPED_FILE));
   var res: file of T;
   PABCSystem.Rewrite(res, fname, en);
   Result := res;
@@ -141,6 +185,14 @@ begin
     yield x;
   end;
 end;
+
+/// Возвращает последовательность элементов открытого типизированного файла
+function Elements<T>(Self: file of T): sequence of T; extensionmethod;
+begin
+  Reset(Self); // Если файл открыт, то файловый указатель просто устанавливается на 0 позицию
+  Result := Self.ReadElements;
+end;
+
 
 /// Открывает типизированный файл, возвращает последовательность его элементов и закрывает его
 function ReadElements<T>(fname: string): sequence of T;

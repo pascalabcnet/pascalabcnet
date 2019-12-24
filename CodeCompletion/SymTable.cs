@@ -1145,9 +1145,13 @@ namespace CodeCompletion
 
         public override void AddName(string name, SymScope sc)
         {
-            sc.si.name = name;
-            object o = symbol_table[name];
-            if (o != null && !IsHiddenName(name))
+            string pure_name = name;
+            int ind = name.IndexOf('`');
+            if (ind != -1)
+                pure_name = name.Substring(0, ind);
+            sc.si.name = pure_name;
+            object o = symbol_table[pure_name];
+            if (o != null && !IsHiddenName(pure_name))
             {
                 if (o is SymScope)
                 {
@@ -1155,6 +1159,8 @@ namespace CodeCompletion
                     lst.Add(o as SymScope);
                     lst.Add(sc);
                     symbol_table[name] = lst;
+                    if (pure_name != name)
+                        symbol_table[pure_name] = lst;
                 }
                 else
                 {
@@ -1162,7 +1168,12 @@ namespace CodeCompletion
                 }
             }
             else
+            {
                 symbol_table[name] = sc;
+                if (pure_name != name)
+                    symbol_table[pure_name] = sc;
+            }
+                
             members.Add(sc);
         }
 
@@ -1323,9 +1334,13 @@ namespace CodeCompletion
 
         public override void AddName(string name, SymScope sc)
         {
-            sc.si.name = name;
-            object o = symbol_table[name];
-            if (o != null && !IsHiddenName(name))
+            string pure_name = name;
+            int ind = name.IndexOf('`');
+            if (ind != -1)
+                pure_name = name.Substring(0, ind);
+            sc.si.name = pure_name;
+            object o = symbol_table[pure_name];
+            if (o != null && !IsHiddenName(pure_name))
             {
                 if (o is SymScope)
                 {
@@ -1333,6 +1348,8 @@ namespace CodeCompletion
                     lst.Add(o as SymScope);
                     lst.Add(sc);
                     symbol_table[name] = lst;
+                    if (pure_name != name)
+                        symbol_table[pure_name] = lst;
                 }
                 else
                 {
@@ -1340,7 +1357,12 @@ namespace CodeCompletion
                 }
             }
             else
+            {
                 symbol_table[name] = sc;
+                if (pure_name != name)
+                    symbol_table[pure_name] = sc;
+            }
+
             members.Add(sc);
         }
 

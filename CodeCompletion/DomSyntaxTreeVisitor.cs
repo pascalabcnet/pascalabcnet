@@ -3656,7 +3656,13 @@ namespace CodeCompletion
                     if (cur_type_name == null) cur_type_name = "$record";
                 }
                 if (ss != null)
-                    cur_scope.AddName(cur_type_name, ss);
+                {
+                    if (template_args != null && template_args.Count > 0)
+                        cur_scope.AddName(cur_type_name+"`"+ template_args.Count, ss);
+                    else
+                        cur_scope.AddName(cur_type_name, ss);
+                }
+                    
             }
             else
             {
