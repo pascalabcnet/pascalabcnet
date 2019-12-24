@@ -2470,7 +2470,7 @@ namespace CodeCompletion
             //List<Scope> netScopes = new List<Scope>();
             //PascalABCCompiler.NetHelper.NetScope ns=new PascalABCCompiler.NetHelper.NetScope(unl,_as,tcst);
             InterfaceUnitScope unit_scope = null;
-            cur_scope = unit_scope = new InterfaceUnitScope(new SymInfo("", SymbolKind.Namespace, "program"), null);
+            cur_scope = unit_scope = new InterfaceUnitScope(new SymInfo(_program_module.program_name != null? _program_module.program_name.prog_name.name:"", SymbolKind.Namespace, "program"), null);
             CodeCompletionController.comp_modules[_program_module.file_name] = this.converter;
             Stack<Position> regions_stack = new Stack<Position>();
             if (CodeCompletionController.comp != null && CodeCompletionController.comp.CompilerOptions.CurrentProject != null && CodeCompletionController.comp.CompilerOptions.CurrentProject.ContainsSourceFile(_program_module.file_name))
@@ -2548,9 +2548,14 @@ namespace CodeCompletion
 
             doc = new document(_program_module.file_name);
             cur_scope.loc = get_location(_program_module);
+            cur_scope.file_name = _program_module.file_name;
             entry_scope = cur_scope;
             if (_program_module.program_name != null)
+            {
                 cur_scope.head_loc = get_location(_program_module.program_name);
+                cur_scope.AddName(_program_module.program_name.prog_name.name, cur_scope);
+            }
+                
 
             Hashtable ns_cache = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
             bool has_system_unit = false;
