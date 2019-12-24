@@ -4954,6 +4954,10 @@ namespace CodeCompletion
         		case Operators.Explicit : return "explicit";
                 case Operators.In: return PascalABCCompiler.TreeConverter.compiler_string_consts.in_name;
                 case Operators.Power: return PascalABCCompiler.TreeConverter.compiler_string_consts.power_name;
+                case Operators.LogicalOR: return PascalABCCompiler.TreeConverter.compiler_string_consts.or_name;
+                case Operators.LogicalAND: return PascalABCCompiler.TreeConverter.compiler_string_consts.and_name;
+                case Operators.BitwiseXOR: return PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name;
+                case Operators.LogicalNOT: return PascalABCCompiler.TreeConverter.compiler_string_consts.not_name;
             }
         	return "";
         }
