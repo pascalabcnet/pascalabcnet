@@ -2599,9 +2599,9 @@ namespace CodeCompletion
                                 }
                                 else
                                     unit_name = CodeCompletionNameHelper.FindSourceFileName(str, System.IO.Path.GetDirectoryName(_program_module.file_name));
-                                if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
+                                /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                     && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
-                                    unit_name = null;
+                                    unit_name = null;*/
                                 if (unit_name != null)
                                 {
                                     DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
@@ -4319,9 +4319,9 @@ namespace CodeCompletion
                                 }
                                 else
                                     unit_name = CodeCompletionNameHelper.FindSourceFileName(str, System.IO.Path.GetDirectoryName(this.cur_unit_file_name));
-                                if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
+                                /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                     && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
-                                    unit_name = null;
+                                    unit_name = null;*/
                                 if (unit_name != null)
                                 {
                                     DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
@@ -4444,9 +4444,9 @@ namespace CodeCompletion
                                     unit_name = (s as uses_unit_in).in_file.Value;
                                 else
                                     unit_name = CodeCompletionNameHelper.FindSourceFileName(str, System.IO.Path.GetDirectoryName(this.cur_unit_file_name));
-                                if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
+                                /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                        && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
-                                    unit_name = null;
+                                    unit_name = null;*/
                                 if (unit_name != null)
                                 {
                                     DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
