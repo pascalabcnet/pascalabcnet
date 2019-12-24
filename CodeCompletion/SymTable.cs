@@ -4819,6 +4819,8 @@ namespace CodeCompletion
                 }
             if (sc == null && original_type != null)
                 return original_type.FindNameOnlyInType(name);
+            if (sc != null && is_static && sc is ProcScope && (sc as ProcScope).IsConstructor())
+                return null;
             return sc;
         }
 
@@ -7268,6 +7270,7 @@ namespace CodeCompletion
                 this.acc_mod = access_modifer.internal_modifer;
                 this.si.acc_mod = access_modifer.internal_modifer;
             }
+            is_constructor = mi.IsConstructor;
         }
 
         public CompiledMethodScope(SymInfo si, MethodInfo mi, CompiledScope declaringType, bool is_global)
@@ -7312,6 +7315,7 @@ namespace CodeCompletion
                 this.acc_mod = access_modifer.internal_modifer;
                 this.si.acc_mod = access_modifer.internal_modifer;
             }
+            is_constructor = mi.IsConstructor;
         }
 
         public override ScopeKind Kind
@@ -7368,7 +7372,7 @@ namespace CodeCompletion
 
         public override bool IsConstructor()
         {
-            return false;
+            return mi.IsConstructor;
         }
 
         public override int GetParametersCount()

@@ -3680,7 +3680,11 @@ namespace CodeCompletion
                     ss.baseScope = TypeTable.obj_type;
             }
             if ((_class_definition.attribute & class_attribute.Static) == class_attribute.Static)
+            {
                 ss.is_static = true;
+                ss.si.is_static = true;
+            }
+                
             int num = 0;
             if (_class_definition.keyword != class_keyword.Interface)
                 num = 1;
