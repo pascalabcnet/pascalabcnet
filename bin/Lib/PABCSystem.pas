@@ -9585,6 +9585,7 @@ end;
 
 procedure CorrectFromTo(situation: integer; Len: integer; var from, &to: integer; step: integer);
 begin
+  if situation=0 then exit;
   if step > 0 then
   begin
     case situation of
@@ -9651,7 +9652,17 @@ begin
     if (&to < -1) or (&to > Len) then
       raise new ArgumentException(GetTranslation(PARAMETER_TO_OUT_OF_RANGE));
   
-  CorrectFromTo(situation, Len, from, &to, step);
+  if situation > 0 then
+    CorrectFromTo(situation, Len, from, &to, step);
+  
+  // s[a:b] - Opt
+  if step = 1 then
+  begin
+    Result := &to - from;
+    if Result<0 then 
+      Result := 0;
+    exit;  
+  end;
   
   var count: integer;
   
@@ -11001,7 +11012,9 @@ begin
   var tov := &to - 1;
   var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, Self.Length, fromv, tov, step);
   
-  Result := CreateSliceFromStringInternal(Self, fromv + 1, step, count)
+  if step = 1 then // Opt s[a:b]
+    Result := Self.Substring(fromv,count) 
+  else Result := CreateSliceFromStringInternal(Self, fromv + 1, step, count)
 end;
 
 ///--

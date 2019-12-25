@@ -120,8 +120,10 @@ namespace VisualPascalABCPlugins
             try
             {
                 string s;
-                if((s= GetVS8Dir())==null) return null;
-                s = s + "\\SDK\\v2.0\\bin\\ildasm.exe";
+                //if((s= GetVS8Dir())==null) return null;
+                string program_files_x86_folder = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+                s = program_files_x86_folder+"\\ILSpy\\ILSpy.exe";
+                //s = s + "\\SDK\\v2.0\\bin\\ildasm.exe";
                 if (System.IO.File.Exists(s))
                     return s;
             }
