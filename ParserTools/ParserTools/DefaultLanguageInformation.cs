@@ -2241,12 +2241,16 @@ namespace PascalABCCompiler.Parsers
             {
                 ITypeScope ts = scope as ITypeScope;
                 if (ts == null) return null;
-                if (tmp_si is ITypeScope) return null;
                 ITypeScope[] indexers = ts.Indexers;
+                if (tmp_si is ITypeScope)
+                    indexers = ts.StaticIndexers;
                 if ((indexers == null || indexers.Length == 0) && !(ts is IArrayScope))
                     return null;
                 StringBuilder sb = new StringBuilder();
-                sb.Append("this");
+                if (!(tmp_si is ITypeScope))
+                    sb.Append("this");
+                else
+                    sb.Append(GetSimpleDescriptionWithoutNamespace(tmp_si as ITypeScope));
                 sb.Append('[');
                 if (indexers != null)
                     for (int i = 0; i < indexers.Length; i++)
@@ -2750,8 +2754,19 @@ namespace PascalABCCompiler.Parsers
                             i--;
                             if (kav.Count == 0)
                                 kav.Push('\'');
-                            while (i >= 0 && Text[i] != '\'')
-                                i--;
+                            while (i >= 0)
+                            {
+                                if (Text[i] != '\'')
+                                    i--;
+                                else
+                                {
+                                    if (i >= 1 && Text[i - 1] == '\'')
+                                        i -= 2;
+                                    else
+                                        break;
+                                }
+                            }
+                            
                             if (i >= 0)
                                 i--;
                         }
@@ -2790,7 +2805,7 @@ namespace PascalABCCompiler.Parsers
                     }
                     else
                         if (ch == '\'')
-                        kav.Push('\'');
+                            kav.Push('\'');
                     sb.Insert(0, ch);//.Append(Text[i]);
                 }
                 else if (ch == '.' || ch == '^' || ch == '&' || ch == '?' && IsPunctuation(Text, i + 1))

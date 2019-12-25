@@ -166,7 +166,8 @@ begin
     
     var sprog := InitProgram(vertex_shader, 0 {fragment_shader});
     
-    var uniform_rot_k :=      gl.GetUniformLocation(sprog, 'rot_k');
+    var uniform_rot_k :=     gl.GetUniformLocation(sprog, 'rot_k');
+    
     var attribute_position := gl.GetAttribLocation(sprog, 'position');
     var attribute_color :=    gl.GetAttribLocation(sprog, 'color');
     

@@ -59,6 +59,22 @@ namespace CodeCompletion
                     ind = tmp.IndexOf("{@");
                 }
 
+                ind = tmp.IndexOf("{[");
+                while (ind != -1)
+                {
+                    var lines = tmp.Split(new string[] { System.Environment.NewLine }, System.StringSplitOptions.None);
+                    var pos = ind - 1;
+                    var line = GetLineByPos(lines, pos);
+                    var col = GetColByPos(lines, pos);
+                    var desc = CodeCompletion.CodeCompletionTester.GetIndexDescription(pos, tmp, line, col, FileName, dc, comp.ParsersController);
+                    var should_desc = tmp.Substring(ind + 2, tmp.IndexOf("]}") - ind - 2);
+                    if (desc == null)
+                        desc = "";
+                    desc = desc.Split(new string[] { "\n" }, StringSplitOptions.None)[0].Trim();
+                    assert(desc.Replace(", ", ",") == should_desc.Replace(", ", ","), FileName + ", should: " + should_desc + ", is: " + desc);
+                    tmp = tmp.Remove(ind, tmp.IndexOf("]}") + 2 - ind);
+                    ind = tmp.IndexOf("{[");
+                }
             }
         }
         
@@ -112,7 +128,23 @@ namespace CodeCompletion
             return desc;
         }
 
-    	private static void assert(bool cond, string message=null)
+        public static string GetIndexDescription(int pos, string content, int line, int col, string FileName, DomConverter dc, PascalABCCompiler.Parsers.Controller controller)
+        {
+            string expr_without_brackets = null;
+            PascalABCCompiler.Parsers.KeywordKind keyw;
+            var expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
+            if (expr == null)
+                expr = expr_without_brackets;
+            var errors = new List<PascalABCCompiler.Errors.Error>();
+            var warnings = new List<CompilerWarning>();
+            var tree = controller.GetExpression("test" + Path.GetExtension(FileName), expr, errors, warnings);
+            var desc = dc.GetIndex(tree, line, col);
+            if (desc != null && desc.Length > 0)
+                return desc[0];
+            return "";
+        }
+
+        private static void assert(bool cond, string message=null)
     	{
             if (message != null)
     		    System.Diagnostics.Debug.Assert(cond, message);
@@ -399,6 +431,30 @@ namespace CodeCompletion
             off = test_str.Length;
             s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
             assert(s.Trim('\n', ' ', '\t') == test_str);
+            
+            test_str = "a[2:]";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            assert(s.Trim('\n', ' ', '\t') == test_str);
+
+            test_str = "' '' '";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            assert(s.Trim('\n', ' ', '\t') == test_str);
+
+            test_str = "' '' '' '";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            assert(s.Trim('\n', ' ', '\t') == test_str);
+
+            test_str = "' ' '";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            assert(s.Trim('\n', ' ', '\t') == "");
+
+
+
+
 
             int num_param = 0;
     		//testirovanie nazhatija skobki

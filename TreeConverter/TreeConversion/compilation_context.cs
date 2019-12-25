@@ -989,7 +989,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         compar = si.sym_info as function_node;
                         if (fn != compar && convertion_data_and_alghoritms.function_eq_params(fn, compar))
-                            //if (fn is common_namespace_function_node && compar is common_namespace_function_node && (fn as common_namespace_function_node).comprehensive_namespace == (compar as common_namespace_function_node).comprehensive_namespace)
+                            if (fn is common_namespace_function_node && compar is common_namespace_function_node && (fn as common_namespace_function_node).comprehensive_namespace == (compar as common_namespace_function_node).comprehensive_namespace)
 
                             AddError(new FunctionDuplicateDefinition(compar, fn));
                     }
@@ -2509,7 +2509,10 @@ namespace PascalABCCompiler.TreeConverter
 				return;
 			location first_loc=convertion_data_and_alghoritms.get_location(sil.FirstOrDefault().sym_info);
             //TODO: Можно передавать список всех повторных объявлений.
-            AddError(new NameRedefinition(name, first_loc, name_loc));
+            if (converting_block() == block_type.type_block && (name.ToLower().StartsWith("get_") || name.ToLower().StartsWith("set_")))
+                AddError(name_loc as location, "CANNOT_USE_RESERVED_ACCESSOR_NAMES");
+            else
+                AddError(new NameRedefinition(name, first_loc, name_loc));
 		}
 		
         //ssyy
@@ -2720,7 +2723,8 @@ namespace PascalABCCompiler.TreeConverter
                                 {
                                     if (fn_common.name != meth.name)
                                     {
-                                        syntax_tree_visitor.AddError(fn_common.loc, "AMBIGUITY_BETWEEN_NAMES_{0}_AND_{1}", fn_common.name, meth.name);
+                                        // SSM 21.12.19 - закомментировал - исправляет баг #2163. Не пойму, зачем эта проверка
+                                        //syntax_tree_visitor.AddError(fn_common.loc, "AMBIGUITY_BETWEEN_NAMES_{0}_AND_{1}", fn_common.name, meth.name);
                                     }
                                 }
                                 else

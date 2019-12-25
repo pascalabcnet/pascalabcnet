@@ -29,8 +29,9 @@ type
   end;
 
   ТипПола = (Муж, Жен);
-
+  ///!#
   Pupil = auto class
+  private
     _name: string;
     _gender: ТипПола; 
     _height: integer;

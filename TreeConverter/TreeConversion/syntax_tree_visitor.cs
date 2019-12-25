@@ -1087,7 +1087,8 @@ namespace PascalABCCompiler.TreeConverter
             {
             	if ( !type_table.is_with_nil_allowed(left.type) && !left.type.IsPointer)
                     AddError(right.location, "NIL_WITH_VALUE_TYPES_NOT_ALLOWED");
-            	right = null_const_node.get_const_node_with_type(left.type, (null_const_node)right);
+                if (right.conversion_type == null)
+                    right = null_const_node.get_const_node_with_type(left.type, (null_const_node)right);
             }
 
             /*if (left.semantic_node_type == semantic_node_type.null_const_node)
@@ -4039,7 +4040,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     generate_default_constructor();
                 }
-                if (!context.namespace_converted)
+                if (!context.namespace_converted || context.converted_type.name.IndexOf("<>") != -1)
                     visit_class_member_realizations(_class_body);
             }
             
@@ -10990,6 +10991,10 @@ namespace PascalABCCompiler.TreeConverter
                         }
 
                     }
+                    else if (decl is procedure_definition && get_location(decl) == null)
+                    {
+                        //yield 
+                    }
                     else
                         AddError(get_location(decl), "NAMESPACE_SHOULD_CONTAINS_ONLY_TYPES");
                 }
@@ -11041,6 +11046,20 @@ namespace PascalABCCompiler.TreeConverter
                                 ctn.SetName(_syntax_namespace_node.name + "." + ctn.name);
                             }
                         }
+                    }
+                    
+                }
+                context.leave_scope();
+            }
+            foreach (syntax_namespace_node _syntax_namespace_node in namespaces)
+            {
+                common_namespace_node cmn = dict[_syntax_namespace_node];
+                context.enter_scope(cmn.scope);
+                foreach (declaration decl in _syntax_namespace_node.defs)
+                {
+                    if (decl is procedure_definition)
+                    {
+                        hard_node_test_and_visit(decl);
                     }
                 }
                 context.leave_scope();
@@ -14807,16 +14826,20 @@ namespace PascalABCCompiler.TreeConverter
         {
         	array_internal_interface aii = tn.get_internal_interface(internal_interface_kind.unsized_array_interface) as array_internal_interface;
         	int rank = aii.rank;
+            int size = -1;
         	for (int i=0; i<constant.element_values.Count; i++)
         	{
         		expression_node e = constant.element_values[i];
         		if (e is array_initializer)
         		{
-        			if (cur_rank>=rank)
-        				constant.element_values[i] = ConvertArrayInitializer(tn.element_type,e as array_initializer);
+                    if (size != -1 && size != (e as array_initializer).element_values.Count)
+                        AddError(e.location, "ARRAY_CONST_{0}_ELEMENTS_EXPECTED", size);
+                    size = (e as array_initializer).element_values.Count;
+        			if (cur_rank >= rank)
+        				constant.element_values[i] = ConvertArrayInitializer(tn.element_type, e as array_initializer);
         				//AddError(new CanNotConvertTypes(e,e.type,tn.element_type,e.location));
         			else
-        			constant.element_values[i] = ConvertNDimArrayInitializer(tn,cur_rank+1,element_type,e as array_initializer);
+                        constant.element_values[i] = ConvertNDimArrayInitializer(tn,cur_rank + 1, element_type, e as array_initializer);
         		}
         		else if (e is record_initializer)
             	{
@@ -14890,16 +14913,20 @@ namespace PascalABCCompiler.TreeConverter
         {
         	array_internal_interface aii = tn.get_internal_interface(internal_interface_kind.unsized_array_interface) as array_internal_interface;
         	int rank = aii.rank;
+            int size = -1;
         	for (int i=0; i<constant.element_values.Count; i++)
         	{
         		expression_node e = constant.element_values[i];
         		if (e is array_const)
         		{
+                    if (size != -1 && size != (e as array_const).element_values.Count)
+                        AddError(e.location, "ARRAY_CONST_{0}_ELEMENTS_EXPECTED", size);
+                    size = (e as array_const).element_values.Count;
         			if (cur_rank>=rank)
         				constant.element_values[i] = ConvertArrayConst(tn.element_type,e as array_const);
         				//AddError(new CanNotConvertTypes(e,e.type,tn.element_type,e.location));
         			else
-        			constant.element_values[i] = ConvertNDimArrayConst(tn,cur_rank+1,element_type,e as array_const);
+                        constant.element_values[i] = ConvertNDimArrayConst(tn,cur_rank+1,element_type,e as array_const);
         		}
         		else if (e is record_constant)
             	{

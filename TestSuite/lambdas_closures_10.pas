@@ -1,4 +1,4 @@
-type
+﻿type
   Recurrent<T> = class 
     first: T;
     next: Func<T,T>;

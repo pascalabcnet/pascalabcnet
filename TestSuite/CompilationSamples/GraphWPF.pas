@@ -41,6 +41,8 @@ type
   GWindow = System.Windows.Window;
   GPen = System.Windows.Media.Pen;
   /// Тип точки
+  Point = System.Windows.Point;
+  /// Тип точки
   GPoint = System.Windows.Point;
   GBrush = System.Windows.Media.Brush;
   /// Тип стиля шрифта

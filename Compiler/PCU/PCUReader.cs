@@ -74,6 +74,12 @@ namespace PascalABCCompiler.PCU
             AddReadOrWritedDefinitionNode(dn, offset);
         }
         
+        internal void RemoveMember(int offset, definition_node dn)
+        {
+            members.Remove(offset);
+            AllReadOrWritedDefinitionNodesOffsets.Remove(dn);
+        }
+        
         internal void AddVarToOrderList(var_definition_node vdn, int ind)
         {
         	interf_var_list.Add(ind,vdn);
@@ -740,7 +746,10 @@ namespace PascalABCCompiler.PCU
             if (template_types.Length > 0)
             {
                 if (!pure_template)
-                    t = t.MakeGenericType(template_types);
+                {
+                    if (t.IsGenericTypeDefinition)
+                        t = t.MakeGenericType(template_types);
+                }
                 else
                 {
                     ts.name = type_name.Remove(0, type_name.LastIndexOf('.') + 1);
@@ -2132,7 +2141,7 @@ namespace PascalABCCompiler.PCU
             AddMember(ctn, offset);
             
             int_members.Insert(0,ctn);
-
+            common_type_node saved_ctn = ctn;
             type_node base_type = GetTypeReference();
             bool is_value_type = br.ReadBoolean();
 
@@ -2199,10 +2208,22 @@ namespace PascalABCCompiler.PCU
             if (ctn.type_special_kind == SemanticTree.type_special_kind.set_type)
             {
             	ctn = compilation_context.AddTypeToSetTypeList(ctn);
+                if (saved_ctn != ctn)
+                {
+                    RemoveMember(offset, saved_ctn);
+                    int_members.Remove(saved_ctn);
+                    AddMember(ctn, offset);
+                }
             }
             if (ctn.type_special_kind == SemanticTree.type_special_kind.typed_file)
             {
             	ctn = compilation_context.AddTypeToTypedFileList(ctn);
+                if (saved_ctn != ctn)
+                {
+                    RemoveMember(offset, saved_ctn);
+                    int_members.Remove(saved_ctn);
+                    AddMember(ctn, offset);
+                }
             }
             br.ReadInt32();//comprehensive unit;
             ctn.attributes.AddRange(GetAttributes());

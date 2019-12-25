@@ -691,7 +691,7 @@ namespace CodeCompletion
             if (res == null && ts != null && ts.predef_loc != null && IsInScope(ts.predef_loc, line, column))
                 res = this;
             foreach (SymScope ss in members)
-                if (this != ss && ss.loc != null && (loc == null || loc != null && loc.doc != null && ss.loc.doc.file_name == loc.doc.file_name))
+                if (this != ss && this.topScope != ss && ss.loc != null && (loc == null || loc != null && loc.doc != null && ss.loc.doc.file_name == loc.doc.file_name))
                 {
                     if (IsInScope(ss.loc, line, column))
                     {
@@ -1145,9 +1145,13 @@ namespace CodeCompletion
 
         public override void AddName(string name, SymScope sc)
         {
-            sc.si.name = name;
-            object o = symbol_table[name];
-            if (o != null && !IsHiddenName(name))
+            string pure_name = name;
+            int ind = name.IndexOf('`');
+            if (ind != -1)
+                pure_name = name.Substring(0, ind);
+            sc.si.name = pure_name;
+            object o = symbol_table[pure_name];
+            if (o != null && !IsHiddenName(pure_name))
             {
                 if (o is SymScope)
                 {
@@ -1155,6 +1159,8 @@ namespace CodeCompletion
                     lst.Add(o as SymScope);
                     lst.Add(sc);
                     symbol_table[name] = lst;
+                    if (pure_name != name)
+                        symbol_table[pure_name] = lst;
                 }
                 else
                 {
@@ -1162,7 +1168,12 @@ namespace CodeCompletion
                 }
             }
             else
+            {
                 symbol_table[name] = sc;
+                if (pure_name != name)
+                    symbol_table[pure_name] = sc;
+            }
+                
             members.Add(sc);
         }
 
@@ -1323,9 +1334,13 @@ namespace CodeCompletion
 
         public override void AddName(string name, SymScope sc)
         {
-            sc.si.name = name;
-            object o = symbol_table[name];
-            if (o != null && !IsHiddenName(name))
+            string pure_name = name;
+            int ind = name.IndexOf('`');
+            if (ind != -1)
+                pure_name = name.Substring(0, ind);
+            sc.si.name = pure_name;
+            object o = symbol_table[pure_name];
+            if (o != null && !IsHiddenName(pure_name))
             {
                 if (o is SymScope)
                 {
@@ -1333,6 +1348,8 @@ namespace CodeCompletion
                     lst.Add(o as SymScope);
                     lst.Add(sc);
                     symbol_table[name] = lst;
+                    if (pure_name != name)
+                        symbol_table[pure_name] = lst;
                 }
                 else
                 {
@@ -1340,7 +1357,12 @@ namespace CodeCompletion
                 }
             }
             else
+            {
                 symbol_table[name] = sc;
+                if (pure_name != name)
+                    symbol_table[pure_name] = sc;
+            }
+
             members.Add(sc);
         }
 
@@ -3060,9 +3082,9 @@ namespace CodeCompletion
             }
         }
 
-        public override void AddIndexer(TypeScope ts)
+        public override void AddIndexer(TypeScope ts, bool is_static)
         {
-            actType.AddIndexer(ts);
+            actType.AddIndexer(ts, is_static);
         }
 
         public override SymScope FindNameOnlyInType(string name)
@@ -3226,9 +3248,9 @@ namespace CodeCompletion
             return actType.GetIndexers();
         }
 
-        public override void AddIndexer(TypeScope ts)
+        public override void AddIndexer(TypeScope ts, bool is_static)
         {
-            actType.AddIndexer(ts);
+            actType.AddIndexer(ts, is_static);
         }
 
         public override SymScope FindNameOnlyInType(string name)
@@ -3500,7 +3522,7 @@ namespace CodeCompletion
             return null;
         }
 
-        public override void AddIndexer(TypeScope ts)
+        public override void AddIndexer(TypeScope ts, bool is_static)
         {
 
         }
@@ -3915,6 +3937,7 @@ namespace CodeCompletion
         public TypeScope elementType;
         public TypeScope original_type;
         private List<TypeScope> indexers;
+        private List<TypeScope> static_indexers;
         public List<TypeScope> implemented_interfaces;
         public List<TypeScope> instances;
         protected List<string> generic_params;
@@ -3939,14 +3962,11 @@ namespace CodeCompletion
                         case SymbolKind.Enum: this.baseScope = TypeTable.get_compiled_type(new SymInfo(typeof(Enum).Name, SymbolKind.Enum, typeof(Enum).FullName), typeof(Enum)); break;
                     }
             }
-            //this.symbol_table = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
-            //this.ht = new Hashtable(CaseInsensitiveHashCodeProvider.Default,CaseInsensitiveComparer.Default);
             this.members = new List<SymScope>();
-            this.indexers = new List<TypeScope>();
+            //this.indexers = new List<TypeScope>();
             this.instances = new List<TypeScope>();
-            //this.generic_params = new List<string>();
+            //this.static_indexers = new List<TypeScope>();
             si = new SymInfo("type", kind, "type");
-            //UnitDocCache.AddDescribeToComplete(this);
             switch (kind)
             {
                 case SymbolKind.Struct: si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetKeyword(PascalABCCompiler.Parsers.SymbolKind.Struct); break;
@@ -4038,6 +4058,14 @@ namespace CodeCompletion
             get
             {
                 return this.GetIndexers();
+            }
+        }
+
+        public virtual ITypeScope[] StaticIndexers
+        {
+            get
+            {
+                return this.GetStaticIndexers();
             }
         }
 
@@ -4721,15 +4749,34 @@ namespace CodeCompletion
 
         public virtual TypeScope[] GetIndexers()
         {
+            if (indexers == null)
+                return new TypeScope[0];
             if (indexers.Count > 0)
                 return indexers.ToArray();
             if (baseScope != null) return baseScope.GetIndexers();
             else return indexers.ToArray();
         }
 
-        public virtual void AddIndexer(TypeScope ts)
+        public virtual TypeScope[] GetStaticIndexers()
         {
-            indexers.Add(ts);
+            if (static_indexers == null)
+                return new TypeScope[0];
+            if (static_indexers.Count > 0)
+                return static_indexers.ToArray();
+            if (baseScope != null) return baseScope.GetStaticIndexers();
+            else return static_indexers.ToArray();
+        }
+
+        public virtual void AddIndexer(TypeScope ts, bool is_static)
+        {
+            if (indexers == null)
+                indexers = new List<TypeScope>();
+            if (static_indexers == null)
+                static_indexers = new List<TypeScope>();
+            if (!is_static)
+                indexers.Add(ts);
+            else
+                static_indexers.Add(ts);
         }
 
         //poisk v classe, nadklassah i scope v kotorom klass opisan a takzhe vo vseh uses
@@ -4797,6 +4844,8 @@ namespace CodeCompletion
                 }
             if (sc == null && original_type != null)
                 return original_type.FindNameOnlyInType(name);
+            if (sc != null && is_static && sc is ProcScope && (sc as ProcScope).IsConstructor())
+                return null;
             return sc;
         }
 
@@ -5826,7 +5875,7 @@ namespace CodeCompletion
             return this.ctn == cs.ctn;
         }
 
-        public override void AddIndexer(TypeScope ts)
+        public override void AddIndexer(TypeScope ts, bool is_static)
         {
 
         }
@@ -7246,6 +7295,7 @@ namespace CodeCompletion
                 this.acc_mod = access_modifer.internal_modifer;
                 this.si.acc_mod = access_modifer.internal_modifer;
             }
+            is_constructor = mi.IsConstructor;
         }
 
         public CompiledMethodScope(SymInfo si, MethodInfo mi, CompiledScope declaringType, bool is_global)
@@ -7290,6 +7340,7 @@ namespace CodeCompletion
                 this.acc_mod = access_modifer.internal_modifer;
                 this.si.acc_mod = access_modifer.internal_modifer;
             }
+            is_constructor = mi.IsConstructor;
         }
 
         public override ScopeKind Kind
@@ -7346,7 +7397,7 @@ namespace CodeCompletion
 
         public override bool IsConstructor()
         {
-            return false;
+            return mi.IsConstructor;
         }
 
         public override int GetParametersCount()

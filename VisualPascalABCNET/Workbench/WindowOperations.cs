@@ -193,6 +193,7 @@ namespace VisualPascalABC
             if (OpenDocuments.Count > 0)
                 tb = CopyTextBox(OutputWindow.outputTextBox);
             AddWindowToDockPanel(tp, tabControl, tp.Dock != dockStyle?dockStyle:tp.Dock, DockState.Document, tp.IsFloat, null, 0);
+            tb.Font = tp.TextEditor.Font;
             OutputTextBoxs.Add(tp, tb);
 
             WorkbenchServiceFactory.CodeCompletionParserController.ParseInformationUpdated += tp.TextEditor.UpdateFolding;
@@ -311,6 +312,7 @@ namespace VisualPascalABC
             res.ForeColor = orig.ForeColor;
             res.BackColor = orig.BackColor;
             res.Parent = orig.Parent;
+            res.ContextMenuStrip = orig.ContextMenuStrip;
             return res;
         }
 

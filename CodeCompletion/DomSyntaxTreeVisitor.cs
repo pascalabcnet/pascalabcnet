@@ -2470,7 +2470,7 @@ namespace CodeCompletion
             //List<Scope> netScopes = new List<Scope>();
             //PascalABCCompiler.NetHelper.NetScope ns=new PascalABCCompiler.NetHelper.NetScope(unl,_as,tcst);
             InterfaceUnitScope unit_scope = null;
-            cur_scope = unit_scope = new InterfaceUnitScope(new SymInfo("", SymbolKind.Namespace, "program"), null);
+            cur_scope = unit_scope = new InterfaceUnitScope(new SymInfo(_program_module.program_name != null? _program_module.program_name.prog_name.name:"", SymbolKind.Namespace, "program"), null);
             CodeCompletionController.comp_modules[_program_module.file_name] = this.converter;
             Stack<Position> regions_stack = new Stack<Position>();
             if (CodeCompletionController.comp != null && CodeCompletionController.comp.CompilerOptions.CurrentProject != null && CodeCompletionController.comp.CompilerOptions.CurrentProject.ContainsSourceFile(_program_module.file_name))
@@ -2548,9 +2548,14 @@ namespace CodeCompletion
 
             doc = new document(_program_module.file_name);
             cur_scope.loc = get_location(_program_module);
+            cur_scope.file_name = _program_module.file_name;
             entry_scope = cur_scope;
             if (_program_module.program_name != null)
+            {
                 cur_scope.head_loc = get_location(_program_module.program_name);
+                cur_scope.AddName(_program_module.program_name.prog_name.name, cur_scope);
+            }
+                
 
             Hashtable ns_cache = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
             bool has_system_unit = false;
@@ -2599,9 +2604,9 @@ namespace CodeCompletion
                                 }
                                 else
                                     unit_name = CodeCompletionNameHelper.FindSourceFileName(str, System.IO.Path.GetDirectoryName(_program_module.file_name));
-                                if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
+                                /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                     && string.Compare(System.IO.Path.GetDirectoryName(_program_module.file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
-                                    unit_name = null;
+                                    unit_name = null;*/
                                 if (unit_name != null)
                                 {
                                     DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
@@ -3436,7 +3441,7 @@ namespace CodeCompletion
                         _simple_property.parameter_list.parameters[i].type.visit(this);
                         if (returned_scope == null || !(returned_scope is TypeScope)) return;
                         for (int j = 0; j < _simple_property.parameter_list.parameters[i].names.idents.Count; j++)
-                            ts.AddIndexer(returned_scope as TypeScope);
+                            ts.AddIndexer(returned_scope as TypeScope, _simple_property.attr == definition_attribute.Static);
                     }
 
                 }
@@ -3497,9 +3502,10 @@ namespace CodeCompletion
                     for (int i = 0; i < _index_property.parameter_list.parameters.Count; i++)
                     {
                         _index_property.parameter_list.parameters[i].type.visit(this);
-                        if (returned_scope == null || !(returned_scope is TypeScope)) return;
+                        if (returned_scope == null || !(returned_scope is TypeScope))
+                            return;
                         for (int j = 0; j < _index_property.parameter_list.parameters[i].names.idents.Count; j++)
-                            ts.AddIndexer(returned_scope as TypeScope);
+                            ts.AddIndexer(returned_scope as TypeScope, _index_property.attr == definition_attribute.Static);
                     }
 
                 }
@@ -3656,7 +3662,13 @@ namespace CodeCompletion
                     if (cur_type_name == null) cur_type_name = "$record";
                 }
                 if (ss != null)
-                    cur_scope.AddName(cur_type_name, ss);
+                {
+                    if (template_args != null && template_args.Count > 0)
+                        cur_scope.AddName(cur_type_name+"`"+ template_args.Count, ss);
+                    else
+                        cur_scope.AddName(cur_type_name, ss);
+                }
+                    
             }
             else
             {
@@ -3669,7 +3681,11 @@ namespace CodeCompletion
                     ss.baseScope = TypeTable.obj_type;
             }
             if ((_class_definition.attribute & class_attribute.Static) == class_attribute.Static)
+            {
                 ss.is_static = true;
+                ss.si.is_static = true;
+            }
+                
             int num = 0;
             if (_class_definition.keyword != class_keyword.Interface)
                 num = 1;
@@ -4313,9 +4329,9 @@ namespace CodeCompletion
                                 }
                                 else
                                     unit_name = CodeCompletionNameHelper.FindSourceFileName(str, System.IO.Path.GetDirectoryName(this.cur_unit_file_name));
-                                if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
+                                /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                     && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
-                                    unit_name = null;
+                                    unit_name = null;*/
                                 if (unit_name != null)
                                 {
                                     DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
@@ -4438,9 +4454,9 @@ namespace CodeCompletion
                                     unit_name = (s as uses_unit_in).in_file.Value;
                                 else
                                     unit_name = CodeCompletionNameHelper.FindSourceFileName(str, System.IO.Path.GetDirectoryName(this.cur_unit_file_name));
-                                if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
+                                /*if (pcu_unit_name != null && unit_name != null && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(pcu_unit_name), true) == 0
                                        && string.Compare(System.IO.Path.GetDirectoryName(this.cur_unit_file_name), System.IO.Path.GetDirectoryName(unit_name), true) != 0)
-                                    unit_name = null;
+                                    unit_name = null;*/
                                 if (unit_name != null)
                                 {
                                     DomConverter dc = CodeCompletionController.comp_modules[unit_name] as DomConverter;
@@ -4954,6 +4970,10 @@ namespace CodeCompletion
         		case Operators.Explicit : return "explicit";
                 case Operators.In: return PascalABCCompiler.TreeConverter.compiler_string_consts.in_name;
                 case Operators.Power: return PascalABCCompiler.TreeConverter.compiler_string_consts.power_name;
+                case Operators.LogicalOR: return PascalABCCompiler.TreeConverter.compiler_string_consts.or_name;
+                case Operators.LogicalAND: return PascalABCCompiler.TreeConverter.compiler_string_consts.and_name;
+                case Operators.BitwiseXOR: return PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name;
+                case Operators.LogicalNOT: return PascalABCCompiler.TreeConverter.compiler_string_consts.not_name;
             }
         	return "";
         }
