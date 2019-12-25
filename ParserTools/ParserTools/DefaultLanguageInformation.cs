@@ -2754,8 +2754,19 @@ namespace PascalABCCompiler.Parsers
                             i--;
                             if (kav.Count == 0)
                                 kav.Push('\'');
-                            while (i >= 0 && Text[i] != '\'')
-                                i--;
+                            while (i >= 0)
+                            {
+                                if (Text[i] != '\'')
+                                    i--;
+                                else
+                                {
+                                    if (i >= 1 && Text[i - 1] == '\'')
+                                        i -= 2;
+                                    else
+                                        break;
+                                }
+                            }
+                            
                             if (i >= 0)
                                 i--;
                         }
@@ -2794,7 +2805,7 @@ namespace PascalABCCompiler.Parsers
                     }
                     else
                         if (ch == '\'')
-                        kav.Push('\'');
+                            kav.Push('\'');
                     sb.Insert(0, ch);//.Append(Text[i]);
                 }
                 else if (ch == '.' || ch == '^' || ch == '&' || ch == '?' && IsPunctuation(Text, i + 1))

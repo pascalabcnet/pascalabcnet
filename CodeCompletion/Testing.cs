@@ -437,6 +437,25 @@ namespace CodeCompletion
             s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
             assert(s.Trim('\n', ' ', '\t') == test_str);
 
+            test_str = "' '' '";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            assert(s.Trim('\n', ' ', '\t') == test_str);
+
+            test_str = "' '' '' '";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            assert(s.Trim('\n', ' ', '\t') == test_str);
+
+            test_str = "' ' '";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            assert(s.Trim('\n', ' ', '\t') == "");
+
+
+
+
+
             int num_param = 0;
     		//testirovanie nazhatija skobki
     		test_str = "writeln";
