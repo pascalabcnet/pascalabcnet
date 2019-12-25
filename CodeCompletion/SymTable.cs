@@ -3012,6 +3012,13 @@ namespace CodeCompletion
             }
         }
 
+        public TypeScope GetLeafActType(int level=0)
+        {
+            if (actType is TypeSynonim && level < 10)
+                return (actType as TypeSynonim).GetLeafActType(level+1);
+            return actType;
+        }
+
         public override SymInfo[] GetNames()
         {
             //SortedDictionary<string,SymInfo> dict = new SortedDictionary<string,SymInfo>();
@@ -3079,6 +3086,14 @@ namespace CodeCompletion
             get
             {
                 return actType.ElementType;
+            }
+        }
+
+        public override bool IsDelegate
+        {
+            get
+            {
+                return actType.IsDelegate;
             }
         }
 

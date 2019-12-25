@@ -75,6 +75,23 @@ namespace CodeCompletion
                     tmp = tmp.Remove(ind, tmp.IndexOf("]}") + 2 - ind);
                     ind = tmp.IndexOf("{[");
                 }
+
+                ind = tmp.IndexOf("{(");
+                while (ind != -1)
+                {
+                    var lines = tmp.Split(new string[] { System.Environment.NewLine }, System.StringSplitOptions.None);
+                    var pos = ind - 1;
+                    var line = GetLineByPos(lines, pos);
+                    var col = GetColByPos(lines, pos);
+                    var desc = CodeCompletion.CodeCompletionTester.GetMethodDescription(pos, tmp, line, col, FileName, dc, comp.ParsersController, 1, 1);
+                    var should_desc = tmp.Substring(ind + 2, tmp.IndexOf(")}") - ind - 2);
+                    if (desc == null)
+                        desc = "";
+                    desc = desc.Split(new string[] { "\n" }, StringSplitOptions.None)[0].Trim();
+                    assert(desc.Replace(", ", ",") == should_desc.Replace(", ", ","), FileName + ", should: " + should_desc + ", is: " + desc);
+                    tmp = tmp.Remove(ind, tmp.IndexOf(")}") + 2 - ind);
+                    ind = tmp.IndexOf("{(");
+                }
             }
         }
         
@@ -139,6 +156,25 @@ namespace CodeCompletion
             var warnings = new List<CompilerWarning>();
             var tree = controller.GetExpression("test" + Path.GetExtension(FileName), expr, errors, warnings);
             var desc = dc.GetIndex(tree, line, col);
+            if (desc != null && desc.Length > 0)
+                return desc[0];
+            return "";
+        }
+
+        public static string GetMethodDescription(int pos, string content, int line, int col, string FileName, DomConverter dc, PascalABCCompiler.Parsers.Controller controller,
+                                                int num_param, int cur_param_num)
+        {
+            string expr_without_brackets = null;
+            PascalABCCompiler.Parsers.KeywordKind keyw;
+            var expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
+            if (expr == null)
+                expr = expr_without_brackets;
+            var errors = new List<PascalABCCompiler.Errors.Error>();
+            var warnings = new List<CompilerWarning>();
+            var tree = controller.GetExpression("test" + Path.GetExtension(FileName), expr, errors, warnings);
+            int defaultIndex = 0;
+            int param_count = 0;
+            var desc = dc.GetNameOfMethod(tree, expr, line, col, num_param, ref defaultIndex, cur_param_num, out param_count);
             if (desc != null && desc.Length > 0)
                 return desc[0];
             return "";

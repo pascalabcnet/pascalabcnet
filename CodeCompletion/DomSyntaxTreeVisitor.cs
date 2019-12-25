@@ -5315,7 +5315,7 @@ namespace CodeCompletion
                     if (awaitedProcType != null)
                     {
                         if (awaitedProcType is TypeSynonim)
-                            awaitedProcType = (awaitedProcType as TypeSynonim).actType;
+                            awaitedProcType = (awaitedProcType as TypeSynonim).GetLeafActType();
                         if (awaitedProcType is ProcType)
                         {
                             if ((awaitedProcType as ProcType).target.parameters.Count > 0)
