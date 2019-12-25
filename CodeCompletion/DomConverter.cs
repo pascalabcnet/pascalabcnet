@@ -964,6 +964,12 @@ namespace CodeCompletion
                 ExpressionVisitor ev = new ExpressionVisitor(expr, ss, visitor);
                 ev.mouse_hover = true;
                 ss = ev.GetScopeOfExpression();
+                if (ss == null && keyword == PascalABCCompiler.Parsers.KeywordKind.SquareBracket && 
+                    expr is ident && !(expr as ident).name.EndsWith("Attribute"))
+                {
+                    (expr as ident).name = (expr as ident).name + "Attribute";
+                    ss = ev.GetScopeOfExpression();
+                }
             }
             if (ss != null && ss.si != null)
             {

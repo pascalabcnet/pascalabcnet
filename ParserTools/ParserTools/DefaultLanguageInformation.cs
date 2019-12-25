@@ -20,7 +20,7 @@ namespace PascalABCCompiler.Parsers
 		protected Dictionary<string, string> keywords = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
 		protected Hashtable ignored_keywords = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
 		protected Hashtable keyword_kinds = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
-		
+
 		public DefaultLanguageInformation()
 		{
 			
@@ -2952,7 +2952,14 @@ namespace PascalABCCompiler.Parsers
                                     }
                                 }
                                 else
+                                {
                                     end = true;
+                                    if (ch == '[')
+                                    {
+                                        keyw = KeywordKind.SquareBracket;
+                                    }
+                                }
+                                    
                             }
                             else sb.Insert(0, ch); punkt_sym = true;
                             break;
