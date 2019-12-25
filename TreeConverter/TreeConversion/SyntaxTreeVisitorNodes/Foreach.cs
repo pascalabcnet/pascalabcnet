@@ -13,6 +13,22 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(foreach_stmt _foreach_stmt)
         {
+            // SSM 24.12.19 lambda_capture_foreach_counter.pas не проходит если откомментировать эти 2 строки
+            // Причина - лямбда уже начала разбираться
+            // Пробую сделать так: если foreach в лямбде, то оптимизация не делается, а если нет, то делается
+
+            syntax_tree_node p = _foreach_stmt;
+            do
+            {
+                p = p.Parent;
+            } while (!(p == null || p is procedure_definition || p is function_lambda_definition));
+
+            if (!(p is function_lambda_definition)) // тогда оптимизируем
+            {
+                var feWhat = convert_strong(_foreach_stmt.in_what);
+                if (OptimizeForeachInCase1DArray(_foreach_stmt, feWhat)) return;
+            }
+
             statements_list sl2 = new statements_list(get_location(_foreach_stmt));            
             convertion_data_and_alghoritms.statement_list_stack_push(sl2);
 
@@ -120,6 +136,35 @@ namespace PascalABCCompiler.TreeConverter
         }
 
 
+        private bool IsIList(expression_node en)
+        {
+            var ii = en.type.ImplementingInterfaces;
+            foreach (var itn in ii)
+            {
+                System.Type tt = null;
+                if (itn is compiled_type_node ctn)
+                {
+                    tt = ctn.compiled_type;
+                    if (tt.IsGenericType)
+                        tt = tt.GetGenericTypeDefinition();
+                    if (tt == typeof(System.Collections.Generic.IList<>))
+                    {
+                        return true;
+                    }
+                }
+                else if (itn is compiled_generic_instance_type_node itnc)
+                {
+                    tt = (itnc.original_generic as compiled_type_node).compiled_type;
+                    if (tt == typeof(System.Collections.Generic.IList<>))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
 
         /// <summary>
         /// Преобразует foreach в for, если коллекция это одномерный массив.
@@ -141,13 +186,14 @@ namespace PascalABCCompiler.TreeConverter
                 if (comtn != null && comtn.internal_type_special_kind == type_special_kind.array_kind &&
                     comtn.rank == 1)
                 {
-                    is1dimdynarr = true;
+                    is1dimdynarr = true; 
                 }
             }
 
+            var il = IsIList(in_what);
 
             // SSM 23.08.16 Закомментировал оптимизацию. Не работает с лямбдами. Лямбды обходят старое дерево. А заменить foreach на for на этом этапе пока не получается - не развита инфраструктура
-
+            // SSM 24.12.19 Раскомментировал оптимизацию, но только если foreach не вложен в лямбду
             if (is1dimdynarr) // Замена foreach на for для массива
             {
                 // сгенерировать код для for и вызвать соответствующий visit
@@ -175,7 +221,7 @@ namespace PascalABCCompiler.TreeConverter
                 var newbody = _foreach_stmt.stmt.ToStatementList();
                 newbody.AddFirst(vd);
 
-                var high = arrid.dot_node("Length").Minus(1);
+                var high = arrid.dot_node("Count").Minus(1);
 
                 var fornode = new for_node(i, 0, high, newbody, for_cycle_type.to, null, null, true);
 
