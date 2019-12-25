@@ -3441,7 +3441,7 @@ namespace CodeCompletion
                         _simple_property.parameter_list.parameters[i].type.visit(this);
                         if (returned_scope == null || !(returned_scope is TypeScope)) return;
                         for (int j = 0; j < _simple_property.parameter_list.parameters[i].names.idents.Count; j++)
-                            ts.AddIndexer(returned_scope as TypeScope);
+                            ts.AddIndexer(returned_scope as TypeScope, _simple_property.attr == definition_attribute.Static);
                     }
 
                 }
@@ -3502,9 +3502,10 @@ namespace CodeCompletion
                     for (int i = 0; i < _index_property.parameter_list.parameters.Count; i++)
                     {
                         _index_property.parameter_list.parameters[i].type.visit(this);
-                        if (returned_scope == null || !(returned_scope is TypeScope)) return;
+                        if (returned_scope == null || !(returned_scope is TypeScope))
+                            return;
                         for (int j = 0; j < _index_property.parameter_list.parameters[i].names.idents.Count; j++)
-                            ts.AddIndexer(returned_scope as TypeScope);
+                            ts.AddIndexer(returned_scope as TypeScope, _index_property.attr == definition_attribute.Static);
                     }
 
                 }

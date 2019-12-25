@@ -2241,12 +2241,16 @@ namespace PascalABCCompiler.Parsers
             {
                 ITypeScope ts = scope as ITypeScope;
                 if (ts == null) return null;
-                if (tmp_si is ITypeScope) return null;
                 ITypeScope[] indexers = ts.Indexers;
+                if (tmp_si is ITypeScope)
+                    indexers = ts.StaticIndexers;
                 if ((indexers == null || indexers.Length == 0) && !(ts is IArrayScope))
                     return null;
                 StringBuilder sb = new StringBuilder();
-                sb.Append("this");
+                if (!(tmp_si is ITypeScope))
+                    sb.Append("this");
+                else
+                    sb.Append(GetSimpleDescriptionWithoutNamespace(tmp_si as ITypeScope));
                 sb.Append('[');
                 if (indexers != null)
                     for (int i = 0; i < indexers.Length; i++)

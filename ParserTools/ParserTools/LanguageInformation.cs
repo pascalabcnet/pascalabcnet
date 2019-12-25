@@ -640,8 +640,13 @@ namespace PascalABCCompiler.Parsers
     	{
     		get;
     	}
-    	
-    	ITypeScope[] GenericInstances
+
+        ITypeScope[] StaticIndexers
+        {
+            get;
+        }
+
+        ITypeScope[] GenericInstances
     	{
     		get;
     	}

@@ -3082,9 +3082,9 @@ namespace CodeCompletion
             }
         }
 
-        public override void AddIndexer(TypeScope ts)
+        public override void AddIndexer(TypeScope ts, bool is_static)
         {
-            actType.AddIndexer(ts);
+            actType.AddIndexer(ts, is_static);
         }
 
         public override SymScope FindNameOnlyInType(string name)
@@ -3248,9 +3248,9 @@ namespace CodeCompletion
             return actType.GetIndexers();
         }
 
-        public override void AddIndexer(TypeScope ts)
+        public override void AddIndexer(TypeScope ts, bool is_static)
         {
-            actType.AddIndexer(ts);
+            actType.AddIndexer(ts, is_static);
         }
 
         public override SymScope FindNameOnlyInType(string name)
@@ -3522,7 +3522,7 @@ namespace CodeCompletion
             return null;
         }
 
-        public override void AddIndexer(TypeScope ts)
+        public override void AddIndexer(TypeScope ts, bool is_static)
         {
 
         }
@@ -3937,6 +3937,7 @@ namespace CodeCompletion
         public TypeScope elementType;
         public TypeScope original_type;
         private List<TypeScope> indexers;
+        private List<TypeScope> static_indexers;
         public List<TypeScope> implemented_interfaces;
         public List<TypeScope> instances;
         protected List<string> generic_params;
@@ -3961,14 +3962,11 @@ namespace CodeCompletion
                         case SymbolKind.Enum: this.baseScope = TypeTable.get_compiled_type(new SymInfo(typeof(Enum).Name, SymbolKind.Enum, typeof(Enum).FullName), typeof(Enum)); break;
                     }
             }
-            //this.symbol_table = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
-            //this.ht = new Hashtable(CaseInsensitiveHashCodeProvider.Default,CaseInsensitiveComparer.Default);
             this.members = new List<SymScope>();
-            this.indexers = new List<TypeScope>();
+            //this.indexers = new List<TypeScope>();
             this.instances = new List<TypeScope>();
-            //this.generic_params = new List<string>();
+            //this.static_indexers = new List<TypeScope>();
             si = new SymInfo("type", kind, "type");
-            //UnitDocCache.AddDescribeToComplete(this);
             switch (kind)
             {
                 case SymbolKind.Struct: si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetKeyword(PascalABCCompiler.Parsers.SymbolKind.Struct); break;
@@ -4060,6 +4058,14 @@ namespace CodeCompletion
             get
             {
                 return this.GetIndexers();
+            }
+        }
+
+        public virtual ITypeScope[] StaticIndexers
+        {
+            get
+            {
+                return this.GetStaticIndexers();
             }
         }
 
@@ -4743,15 +4749,34 @@ namespace CodeCompletion
 
         public virtual TypeScope[] GetIndexers()
         {
+            if (indexers == null)
+                return new TypeScope[0];
             if (indexers.Count > 0)
                 return indexers.ToArray();
             if (baseScope != null) return baseScope.GetIndexers();
             else return indexers.ToArray();
         }
 
-        public virtual void AddIndexer(TypeScope ts)
+        public virtual TypeScope[] GetStaticIndexers()
         {
-            indexers.Add(ts);
+            if (static_indexers == null)
+                return new TypeScope[0];
+            if (static_indexers.Count > 0)
+                return static_indexers.ToArray();
+            if (baseScope != null) return baseScope.GetStaticIndexers();
+            else return static_indexers.ToArray();
+        }
+
+        public virtual void AddIndexer(TypeScope ts, bool is_static)
+        {
+            if (indexers == null)
+                indexers = new List<TypeScope>();
+            if (static_indexers == null)
+                static_indexers = new List<TypeScope>();
+            if (!is_static)
+                indexers.Add(ts);
+            else
+                static_indexers.Add(ts);
         }
 
         //poisk v classe, nadklassah i scope v kotorom klass opisan a takzhe vo vseh uses
@@ -5850,7 +5875,7 @@ namespace CodeCompletion
             return this.ctn == cs.ctn;
         }
 
-        public override void AddIndexer(TypeScope ts)
+        public override void AddIndexer(TypeScope ts, bool is_static)
         {
 
         }
