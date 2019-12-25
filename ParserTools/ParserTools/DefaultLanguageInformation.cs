@@ -3534,6 +3534,8 @@ namespace PascalABCCompiler.Parsers
                                 else
                                     kav.Pop();
                                 sb.Insert(0, ch);
+                                if (kav.Count == 0 && tokens.Count == 0)
+                                    end = true;
                                 break;
                             default:
                                 if (!(ch == ' ' || char.IsControl(ch)))

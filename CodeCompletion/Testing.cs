@@ -629,6 +629,11 @@ namespace CodeCompletion
             s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
             assert(s.Trim('\n', ' ', '\t') == "seq1.Where(i ->(i = 1) or (i = 2)).JoinIntoString");
 
+            test_str = "seq1.Where(i ->(i = '1') or (i = '2')).JoinIntoString";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            assert(s.Trim('\n', ' ', '\t') == "seq1.Where(i ->(i = '1') or (i = '2')).JoinIntoString");
+
             test_str = "f1&<array of byte>";
             off = test_str.Length;
             s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
@@ -653,6 +658,33 @@ namespace CodeCompletion
             off = test_str.Length;
             s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
             assert(s.Trim('\n', ' ', '\t') == "f1&<byte>\n.ToString");
+
+            test_str = "begin ''.PadLeft";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            assert(s.Trim('\n', ' ', '\t') == "''.PadLeft");
+
+            test_str = "begin var s := ''.PadLeft";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            assert(s.Trim('\n', ' ', '\t') == "''.PadLeft");
+
+            test_str = "begin \n var s := ''.PadLeft";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            assert(s.Trim('\n', ' ', '\t') == "''.PadLeft");
+
+            test_str = "writeln(23);\n ''.PadLeft";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            assert(s.Trim('\n', ' ', '\t') == "''.PadLeft");
+
+            test_str = "writeln(23);\n ''.PadLeft(2).ToString";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            assert(s.Trim('\n', ' ', '\t') == "''.PadLeft(2).ToString");
+
+
 
             //testirovanie nazhatija zapjatoj
             test_str = ";test(3,aa.bb";
