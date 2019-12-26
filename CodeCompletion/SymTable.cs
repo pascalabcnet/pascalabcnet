@@ -1610,13 +1610,26 @@ namespace CodeCompletion
 
         public override bool IsEqual(SymScope ts)
         {
-            /*ElementScope es = ts as ElementScope;
+           
+            if (this == ts)
+                return true;
+            if (this.Name != ts.Name)
+                return false;
+            
+            ElementScope es = ts as ElementScope;
             if (es == null)
                 return false;
-            if (this.ElemKind != es.ElemKind || this.param_kind != es.param_kind)
+            if (this.sc != es.sc)
                 return false;
-            return sc.IsEqual(es.sc);*/
-            return this == ts;
+            if (this.si.kind != SymbolKind.Parameter || ts.si.kind != SymbolKind.Parameter)
+                return false;
+            ProcScope ps1 = this.topScope as ProcScope;
+            ProcScope ps2 = es.topScope as ProcScope;
+            if (ps1 == null || ps2 == null)
+                return false;
+            if (ps1 == ps2 || ps1 is ProcRealization && (ps1 as ProcRealization).def_proc == ps2 || ps1.procRealization == ps2)
+                return true;
+            return false;
         }
 
         public override string ToString()
