@@ -94,7 +94,82 @@ namespace CodeCompletion
                 }
             }
         }
-        
+
+        public static void TestRename(string dir)
+        {
+            //string dir = Path.Combine(@"c:\Work\Miks\_PABCNETGitHub\TestSuite", "intellisense_tests");
+            var comp = new PascalABCCompiler.Compiler();
+            var controller = new CodeCompletion.CodeCompletionController();
+            CodeCompletion.CodeCompletionController.comp = comp;
+            CodeCompletion.CodeCompletionController.SetParser(".pas");
+            CodeCompletion.CodeCompletionController.ParsersController = comp.ParsersController;
+            var files = Directory.GetFiles(dir, "*.pas");
+            var parser = comp.ParsersController;
+            for (int i = 0; i < files.Length; i++)
+            {
+                var FileName = files[i];
+                var content = File.ReadAllText(FileName);
+                var dc = controller.Compile(FileName, content);
+
+                var tmp = content;
+                var ind = -1;
+                ind = content.IndexOf("{!}");
+                var shouldPositions = new List<Position>();
+                var lines = content.Split(new string[] { System.Environment.NewLine }, System.StringSplitOptions.None);
+                var cu = controller.ParseOnlySyntaxTree(FileName, content);
+
+                while (ind != -1)
+                {
+                    var pos = ind + 3;
+                    var line = GetLineByPos(lines, pos);
+                    var col = GetColByPos(lines, pos);
+                    shouldPositions.Add(new Position(line+1, col+1, 0, 0, null));
+                    ind = content.IndexOf("{!}", pos);
+                }
+                ind = content.IndexOf("{@}");
+                if (ind != -1)
+                {
+                    var pos = ind + 3;
+                    var line = GetLineByPos(lines, pos);
+                    var col = GetColByPos(lines, pos);
+                    shouldPositions.Add(new Position(line + 1, col + 1, 0, 0, null));
+                    string expr_without_brackets = null;
+                    PascalABCCompiler.Parsers.KeywordKind keyw = PascalABCCompiler.Parsers.KeywordKind.None;
+                    string full_expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
+                    expression expr = new ident(expr_without_brackets.Replace("{@}","").Trim());
+                    var fnd_scope = dc.GetSymDefinition(expr, line, col, keyw);
+                    var rf = new CodeCompletion.ReferenceFinder(fnd_scope, dc.visitor.entry_scope, cu, FileName, true);
+                    var positions = rf.FindPositions();
+                    compare_positions(FileName, shouldPositions.ToArray(), positions);
+                }
+            }
+        }
+
+        private static int position_comparer(Position x, Position y)
+        {
+            if (x.line > y.line)
+                return 1;
+            if (x.line < y.line)
+                return -1;
+            if (x.column > y.column)
+                return 1;
+            if (x.column < y.column)
+                return -1;
+            return 0;
+        }
+
+        private static void compare_positions(string FileName, Position[] shouldPositions, Position[] isPositions)
+        {
+            Array.Sort(shouldPositions, position_comparer);
+            Array.Sort(isPositions, position_comparer);
+            assert(isPositions.Length == shouldPositions.Length, FileName + ", should: " + shouldPositions.Length + ", is: " + isPositions.Length);
+            for (int i = 0; i<shouldPositions.Length; i++)
+            {
+                assert(isPositions[i].line == shouldPositions[i].line && isPositions[i].column == shouldPositions[i].column, 
+                    FileName + ", should: " + "("+ shouldPositions[i].line + ","+ shouldPositions[i].column + ")" + ", is: " + "(" + isPositions[i].line + "," + isPositions[i].column + ")" + isPositions.Length);
+            }
+        }
+
         private static int GetLineByPos(string[] lines, int pos)
         {
             var cum_pos = 0;

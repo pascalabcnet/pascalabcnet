@@ -2561,6 +2561,7 @@ namespace CodeCompletion
             if (ps is ProcRealization) ps = (ps as ProcRealization).def_proc;
             if (this == ps) return true;
             if (ps.nextProc != null) return IsEqual(ps.nextProc);
+            if (this.nextProc != null) return this.nextProc.IsEqual(ts);
             return false;
         }
 
