@@ -136,7 +136,10 @@ namespace CodeCompletion
                     string expr_without_brackets = null;
                     PascalABCCompiler.Parsers.KeywordKind keyw = PascalABCCompiler.Parsers.KeywordKind.None;
                     string full_expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
-                    expression expr = new ident(expr_without_brackets.Replace("{@}","").Trim());
+                    List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
+                    var errors = new List<PascalABCCompiler.Errors.Error>();
+                    expression expr = comp.ParsersController.GetExpression("test" + System.IO.Path.GetExtension(FileName), full_expr, errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+                    //expression expr = new ident(expr_without_brackets.Replace("{@}","").Replace("new ","").Trim());
                     var fnd_scope = dc.GetSymDefinition(expr, line, col, keyw);
                     var rf = new CodeCompletion.ReferenceFinder(fnd_scope, dc.visitor.entry_scope, cu, FileName, true);
                     var positions = rf.FindPositions();
@@ -163,11 +166,12 @@ namespace CodeCompletion
             Array.Sort(shouldPositions, position_comparer);
             Array.Sort(isPositions, position_comparer);
             assert(isPositions.Length == shouldPositions.Length, FileName + ", should: " + shouldPositions.Length + ", is: " + isPositions.Length);
-            for (int i = 0; i<shouldPositions.Length; i++)
-            {
-                assert(isPositions[i].line == shouldPositions[i].line && isPositions[i].column == shouldPositions[i].column, 
-                    FileName + ", should: " + "("+ shouldPositions[i].line + ","+ shouldPositions[i].column + ")" + ", is: " + "(" + isPositions[i].line + "," + isPositions[i].column + ")" + isPositions.Length);
-            }
+            if (isPositions.Length == shouldPositions.Length)
+                for (int i = 0; i < shouldPositions.Length; i++)
+                {
+                    assert(isPositions[i].line == shouldPositions[i].line && isPositions[i].column == shouldPositions[i].column,
+                        FileName + ", should: " + "(" + shouldPositions[i].line + "," + shouldPositions[i].column + ")" + ", is: " + "(" + isPositions[i].line + "," + isPositions[i].column + ")" + isPositions.Length);
+                }
         }
 
         private static int GetLineByPos(string[] lines, int pos)

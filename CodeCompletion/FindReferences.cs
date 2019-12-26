@@ -29,6 +29,8 @@ namespace CodeCompletion
 
         public ReferenceFinder(IBaseScope founded_scope, IBaseScope entry_scope, compilation_unit cu, string FileName, bool for_refactoring)
         {
+            if (founded_scope is IProcScope && (founded_scope as IProcScope).IsConstructor())
+                founded_scope = (founded_scope as IProcScope).DeclaringType;
             this.founded_scope = founded_scope;
             this.entry_scope = entry_scope;
             this.cur_scope = entry_scope;
