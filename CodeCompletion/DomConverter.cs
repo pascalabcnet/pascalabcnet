@@ -1047,7 +1047,18 @@ namespace CodeCompletion
                 if (ps.is_constructor)
                     si = new ElementScope(ps.declaringType);
             }
-            return CodeCompletionController.CurrentParser.LanguageInformation.GetIndexerString(si);
+            string[] description = CodeCompletionController.CurrentParser.LanguageInformation.GetIndexerString(si);
+            if (description != null)
+                for (int i = 0; i < description.Length; i++)
+                {
+                    var arr = si.si.description.Split(new string[1] { "\r\n" }, StringSplitOptions.None);
+                    if (arr.Length > 1 && !string.IsNullOrEmpty(arr[1]))
+                    {
+                        description[i] += si.si.description.Substring(si.si.description.IndexOf("\r\n"));
+                    }
+
+                }
+            return description;
         }
 
         /// <summary>
