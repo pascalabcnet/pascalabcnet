@@ -52,7 +52,7 @@ namespace PascalABCCompiler.TreeConverter
             var v = (mc.dereferencing_value as dot_node).left;
             var from = mc.parameters.expressions[1];
             var to = mc.parameters.expressions[2];
-            expression step = mc.parameters.expressions.Count > 3 ? mc.parameters.expressions[3] : null;
+            expression step = mc.parameters.expressions.Count > 5 ? mc.parameters.expressions[3] : null;
 
             var semvar = convert_strong(v);
             if (semvar is typed_expression)
@@ -124,6 +124,19 @@ namespace PascalABCCompiler.TreeConverter
             var b = convertion_data_and_alghoritms.can_convert_type(sem_ex, SystemLibrary.SystemLibrary.integer_type);
             if (!b)
                 AddError(sem_ex.location, "INTEGER_VALUE_EXPECTED");
+        }
+
+        public void semantic_check_slice_assignment_types(SyntaxTree.expression expr1, SyntaxTree.expression expr2)
+        {
+            var leftValue = convert_strong(expr1);
+            var leftType = leftValue.type;
+            var rightValue = convert_strong(expr2);
+            var rightType = rightValue.type;
+
+            if (AreTheSameType(leftType, rightType))
+                return;
+
+            AddError(get_location(expr2), "EXPRESSION_OF_TYPE_{0}_CANNOT_BE_ASSIGNED_TO_SLICE_OF_TYPE_{1}", rightType.PrintableName, leftType.PrintableName);
         }
     }
 }

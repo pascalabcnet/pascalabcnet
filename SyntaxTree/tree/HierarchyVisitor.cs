@@ -1997,6 +1997,14 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(simple_expr_with_deref _simple_expr_with_deref)
+		{
+		}
+
+		public virtual void post_do_visit(simple_expr_with_deref _simple_expr_with_deref)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -4122,6 +4130,14 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_recursive_tuple_parameter);
 			pre_do_visit(_recursive_tuple_parameter);
 			post_do_visit(_recursive_tuple_parameter);
+		}
+
+		public override void visit(simple_expr_with_deref _simple_expr_with_deref)
+		{
+			DefaultVisit(_simple_expr_with_deref);
+			pre_do_visit(_simple_expr_with_deref);
+			visit(simple_expr_with_deref.simple_expr);
+			post_do_visit(_simple_expr_with_deref);
 		}
 	}
 

@@ -26633,28 +26633,34 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public format_expr(expression _expr,expression _format1,expression _format2)
+		public format_expr(expression _expr,expression _format1,expression _format2,bool _index_inversion_from,bool _index_inversion_to)
 		{
 			this._expr=_expr;
 			this._format1=_format1;
 			this._format2=_format2;
+			this._index_inversion_from=_index_inversion_from;
+			this._index_inversion_to=_index_inversion_to;
 			FillParentsInDirectChilds();
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public format_expr(expression _expr,expression _format1,expression _format2,SourceContext sc)
+		public format_expr(expression _expr,expression _format1,expression _format2,bool _index_inversion_from,bool _index_inversion_to,SourceContext sc)
 		{
 			this._expr=_expr;
 			this._format1=_format1;
 			this._format2=_format2;
+			this._index_inversion_from=_index_inversion_from;
+			this._index_inversion_to=_index_inversion_to;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
 		protected expression _expr;
 		protected expression _format1;
 		protected expression _format2;
+		protected bool _index_inversion_from;
+		protected bool _index_inversion_to;
 
 		///<summary>
 		///
@@ -26707,6 +26713,36 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+		///<summary>
+		///
+		///</summary>
+		public bool index_inversion_from
+		{
+			get
+			{
+				return _index_inversion_from;
+			}
+			set
+			{
+				_index_inversion_from=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public bool index_inversion_to
+		{
+			get
+			{
+				return _index_inversion_to;
+			}
+			set
+			{
+				_index_inversion_to=value;
+			}
+		}
+
 
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -26735,6 +26771,8 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.format2 = (expression)format2.Clone();
 				copy.format2.Parent = copy;
 			}
+			copy.index_inversion_from = index_inversion_from;
+			copy.index_inversion_to = index_inversion_to;
 			return copy;
 		}
 
@@ -45886,24 +45924,28 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public slice_expr(addressed_value _v,expression _from,expression _to,expression _step)
+		public slice_expr(addressed_value _v,expression _from,expression _to,expression _step,bool _index_inversion_from,bool _index_inversion_to)
 		{
 			this._v=_v;
 			this._from=_from;
 			this._to=_to;
 			this._step=_step;
+			this._index_inversion_from=_index_inversion_from;
+			this._index_inversion_to=_index_inversion_to;
 			FillParentsInDirectChilds();
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public slice_expr(addressed_value _v,expression _from,expression _to,expression _step,SourceContext sc)
+		public slice_expr(addressed_value _v,expression _from,expression _to,expression _step,bool _index_inversion_from,bool _index_inversion_to,SourceContext sc)
 		{
 			this._v=_v;
 			this._from=_from;
 			this._to=_to;
 			this._step=_step;
+			this._index_inversion_from=_index_inversion_from;
+			this._index_inversion_to=_index_inversion_to;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
@@ -45911,26 +45953,30 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public slice_expr(addressed_value _dereferencing_value,addressed_value _v,expression _from,expression _to,expression _step)
+		public slice_expr(addressed_value _dereferencing_value,addressed_value _v,expression _from,expression _to,expression _step,bool _index_inversion_from,bool _index_inversion_to)
 		{
 			this._dereferencing_value=_dereferencing_value;
 			this._v=_v;
 			this._from=_from;
 			this._to=_to;
 			this._step=_step;
+			this._index_inversion_from=_index_inversion_from;
+			this._index_inversion_to=_index_inversion_to;
 			FillParentsInDirectChilds();
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public slice_expr(addressed_value _dereferencing_value,addressed_value _v,expression _from,expression _to,expression _step,SourceContext sc)
+		public slice_expr(addressed_value _dereferencing_value,addressed_value _v,expression _from,expression _to,expression _step,bool _index_inversion_from,bool _index_inversion_to,SourceContext sc)
 		{
 			this._dereferencing_value=_dereferencing_value;
 			this._v=_v;
 			this._from=_from;
 			this._to=_to;
 			this._step=_step;
+			this._index_inversion_from=_index_inversion_from;
+			this._index_inversion_to=_index_inversion_to;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
@@ -45938,6 +45984,8 @@ namespace PascalABCCompiler.SyntaxTree
 		protected expression _from;
 		protected expression _to;
 		protected expression _step;
+		protected bool _index_inversion_from;
+		protected bool _index_inversion_to;
 
 		///<summary>
 		///
@@ -46007,6 +46055,36 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+		///<summary>
+		///
+		///</summary>
+		public bool index_inversion_from
+		{
+			get
+			{
+				return _index_inversion_from;
+			}
+			set
+			{
+				_index_inversion_from=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public bool index_inversion_to
+		{
+			get
+			{
+				return _index_inversion_to;
+			}
+			set
+			{
+				_index_inversion_to=value;
+			}
+		}
+
 
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -46045,6 +46123,8 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.step = (expression)step.Clone();
 				copy.step.Parent = copy;
 			}
+			copy.index_inversion_from = index_inversion_from;
+			copy.index_inversion_to = index_inversion_to;
 			return copy;
 		}
 
@@ -47064,26 +47144,30 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public slice_expr_question(addressed_value _dereferencing_value,addressed_value _v,expression _from,expression _to,expression _step)
+		public slice_expr_question(addressed_value _dereferencing_value,addressed_value _v,expression _from,expression _to,expression _step,bool _index_inversion_from,bool _index_inversion_to)
 		{
 			this._dereferencing_value=_dereferencing_value;
 			this._v=_v;
 			this._from=_from;
 			this._to=_to;
 			this._step=_step;
+			this._index_inversion_from=_index_inversion_from;
+			this._index_inversion_to=_index_inversion_to;
 			FillParentsInDirectChilds();
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public slice_expr_question(addressed_value _dereferencing_value,addressed_value _v,expression _from,expression _to,expression _step,SourceContext sc)
+		public slice_expr_question(addressed_value _dereferencing_value,addressed_value _v,expression _from,expression _to,expression _step,bool _index_inversion_from,bool _index_inversion_to,SourceContext sc)
 		{
 			this._dereferencing_value=_dereferencing_value;
 			this._v=_v;
 			this._from=_from;
 			this._to=_to;
 			this._step=_step;
+			this._index_inversion_from=_index_inversion_from;
+			this._index_inversion_to=_index_inversion_to;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
@@ -47124,6 +47208,8 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.step = (expression)step.Clone();
 				copy.step.Parent = copy;
 			}
+			copy.index_inversion_from = index_inversion_from;
+			copy.index_inversion_to = index_inversion_to;
 			return copy;
 		}
 
@@ -53251,6 +53337,182 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						pattern = (pattern_node)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class simple_expr_with_deref : expression
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public simple_expr_with_deref()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public simple_expr_with_deref(expression _simple_expr,bool _has_deref)
+		{
+			this._simple_expr=_simple_expr;
+			this._has_deref=_has_deref;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public simple_expr_with_deref(expression _simple_expr,bool _has_deref,SourceContext sc)
+		{
+			this._simple_expr=_simple_expr;
+			this._has_deref=_has_deref;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected expression _simple_expr;
+		protected bool _has_deref;
+
+		///<summary>
+		///
+		///</summary>
+		public expression simple_expr
+		{
+			get
+			{
+				return _simple_expr;
+			}
+			set
+			{
+				_simple_expr=value;
+				if (_simple_expr != null)
+					_simple_expr.Parent = this;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public bool has_deref
+		{
+			get
+			{
+				return _has_deref;
+			}
+			set
+			{
+				_has_deref=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			simple_expr_with_deref copy = new simple_expr_with_deref();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (simple_expr != null)
+			{
+				copy.simple_expr = (expression)simple_expr.Clone();
+				copy.simple_expr.Parent = copy;
+			}
+			copy.has_deref = has_deref;
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new simple_expr_with_deref TypedClone()
+		{
+			return Clone() as simple_expr_with_deref;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (simple_expr != null)
+				simple_expr.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			simple_expr?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return simple_expr;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						simple_expr = (expression)value;
 						break;
 				}
 			}

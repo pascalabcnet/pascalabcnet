@@ -14,6 +14,12 @@ begin
     Result := 'ru';
 end;
 
+procedure p();
+begin
+  var s := 'sdfh';
+  s[1] := 'd';
+end;
+
 function GetTranslation(message: string): string;
 begin
   var cur_locale := GetCurrentLocale();
