@@ -1087,14 +1087,16 @@ namespace PascalABCCompiler.Parsers
 			return scope.TopScope.Name + "." +scope.Name;
 			else return scope.Name;
 		}
-		
-		protected virtual string GetSimpleDescriptionForType(ITypeScope scope)
-		{
-			string template_str=GetTemplateString(scope);
-			if (scope.Name.StartsWith("$"))
-				return scope.Name.Substring(1,scope.Name.Length-1)+template_str;
-			return scope.Name+template_str;
-		}
+
+        protected virtual string GetSimpleDescriptionForType(ITypeScope scope)
+        {
+            string template_str = GetTemplateString(scope);
+            if (scope.Name.StartsWith("$"))
+                return scope.Name.Substring(1, scope.Name.Length - 1) + template_str;
+            if (!string.IsNullOrEmpty(template_str))
+                return scope.Name.Replace("<>", "") + template_str;
+            return scope.Name + template_str;
+        }
 		
 		protected virtual string GetDescriptionForCompiledType(ICompiledTypeScope scope)
 		{
