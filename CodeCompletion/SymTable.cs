@@ -6589,7 +6589,11 @@ namespace CodeCompletion
             List<PascalABCCompiler.TreeConverter.SymbolInfo> sil = PascalABCCompiler.NetHelper.NetHelper.FindNameIncludeProtected(ctn, name);
             //IEnumerable<MemberInfo> ext_meths = PascalABCCompiler.NetHelper.NetHelper.GetExtensionMethods(ctn);
             List<ProcScope> pascal_ext_meths = this.GetExtensionMethods(name, this);
-
+            if (sil != null && sil.Count > 1 && sil.FirstOrDefault().sym_info.semantic_node_type == semantic_node_type.basic_property_node)
+            {
+                sil.Add(sil.FirstOrDefault());
+                sil.RemoveAt(0);
+            }
             if (sil == null && names.Count == 0)
             {
                 if (string.Compare(name, "Create", true) == 0 && this.ctn != typeof(object))
