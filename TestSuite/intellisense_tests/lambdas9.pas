@@ -5,5 +5,5 @@
     begin
       Result{@var Result: Object;@} := new object;
     end
-  )
+  );
 end.
