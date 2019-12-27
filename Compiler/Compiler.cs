@@ -1813,7 +1813,10 @@ namespace PascalABCCompiler
                 Environment.CurrentDirectory = CompilerOptions.SourceFileDirectory; // нужно для подключения *.inc и *.resources
                 Units = new PascalABCCompiler.TreeRealization.unit_node_list();
                 CurrentSyntaxUnit = new SyntaxTree.uses_unit_in(new SyntaxTree.string_const(CompilerOptions.SourceFileName));
+                
                 CompileUnit(Units, CurrentSyntaxUnit);
+                Environment.CurrentDirectory = CompilerOptions.SourceFileDirectory; // 02.10.19 SunSerega: CompileUnit меняет CurrentDirectory чтоб работало относительное uses-in
+                
                 //Console.WriteLine(timer.ElapsedMilliseconds / 1000.0);  //////
                 foreach (CompilationUnit CurrentUnit in UnitsToCompile)
                     if (CurrentUnit.State != UnitState.Compiled)
@@ -1836,7 +1839,10 @@ namespace PascalABCCompiler
                                 }
                             for (int i = SyntaxUsesList.Count - 1; i >= 0; i--)
                                 if (!IsPossibleNamespace(SyntaxUsesList[i], true))
+                                {
                                     CompileUnit(CurrentUnit.ImplementationUsedUnits, SyntaxUsesList[i]);
+                                    Environment.CurrentDirectory = CompilerOptions.SourceFileDirectory; // 02.10.19 SunSerega: CompileUnit меняет CurrentDirectory чтоб работало относительное uses-in
+                                }
                                 else
                                 {
                                     CurrentUnit.ImplementationUsedUnits.AddElement(new TreeRealization.namespace_unit_node(GetNamespace(SyntaxUsesList[i])));
@@ -2251,6 +2257,8 @@ namespace PascalABCCompiler
 #endif
                 }
             }
+            Environment.CurrentDirectory = CompilerOptions.SourceFileDirectory; // 03.10.19 SunSerega: CompileUnit меняет CurrentDirectory чтоб работало относительное uses-in
+            
             //удаляем лишние ошибки
             /*foreach(Error er in errorsList)
             {
@@ -2517,11 +2525,14 @@ namespace PascalABCCompiler
             if (SourceFileNamesDictionary.ContainsKey(UnitName))
                 return SourceFileNamesDictionary[UnitName];
 
+            /*
             string d = CompilerOptions.SourceFileDirectory;
             if (CurrentCompilationUnit != null && CurrentCompilationUnit.SyntaxTree != null)
                 d = Path.GetDirectoryName(CurrentCompilationUnit.SyntaxTree.file_name);
             if (Path.GetDirectoryName(UnitName) != string.Empty)
                 d = Path.GetDirectoryName(UnitName);
+            */
+            string d = Environment.CurrentDirectory; // 03.10.19 SunSerega: вообще использовать Environment.CurrentDirectory всюду - говнокод, но если без него - надо очень много переписывать, проще уже всюду его использовать
 
             string fsfn = null;
             if (d.Equals(CompilerOptions.SourceFileDirectory))
@@ -3127,6 +3138,8 @@ namespace PascalABCCompiler
         public CompilationUnit CompileUnit(PascalABCCompiler.TreeRealization.unit_node_list Units, SyntaxTree.unit_or_namespace SyntaxUsesUnit)
         {
             string UnitName = GetUnitFileName(SyntaxUsesUnit);
+            if (!UnitName.Contains("\\")) UnitName = Path.GetFullPath(UnitName);
+            Environment.CurrentDirectory = Path.GetDirectoryName(UnitName); // 02.10.19 SunSerega: Эта строчка нужна чтоб работало рекурсивное uses-in
             //if (UnitName == null) throw new UnitNotFound(SyntaxUsesUnit.name,
             CompilationUnit CurrentUnit = UnitTable[UnitName];
             if (CurrentUnit != null && CurrentUnit.SemanticTree is PascalABCCompiler.TreeRealization.dot_net_unit_node 
@@ -3336,6 +3349,7 @@ namespace PascalABCCompiler
                                 }
                             }
                         CompileUnit(CurrentUnit.InterfaceUsedUnits, SyntaxUsesList[i]);
+                        Environment.CurrentDirectory = Path.GetDirectoryName(UnitName); // 02.10.19 SunSerega: CompileUnit меняет CurrentDirectory чтоб работало относительное uses-in
                         if (CurrentUnit.State == UnitState.Compiled)
                         {
                             Units.AddElement(CurrentUnit.SemanticTree);
@@ -3408,7 +3422,10 @@ namespace PascalABCCompiler
 #endif
                         }
                         else
+                        {
                             CompileUnit(CurrentUnit.ImplementationUsedUnits, SyntaxUsesList[i]);
+                            Environment.CurrentDirectory = Path.GetDirectoryName(UnitName); // 02.10.19 SunSerega: CompileUnit меняет CurrentDirectory чтоб работало относительное uses-in
+                        }
                     }
                     else
                     {
