@@ -218,6 +218,21 @@ namespace CodeCompletion
             }
             else if (has_lambdas(_assign.from))
                 _assign.from.visit(this);
+            else if (_assign.to is ident && cur_scope != null && cur_scope.Name.StartsWith("<>lambda") && string.Compare((_assign.to as ident).name, "Result", true) == 0)
+            {
+                var sc = cur_scope.FindNameOnlyInThisType("Result");
+                if (sc is ElementScope)
+                {
+                    ElementScope es = sc as ElementScope;
+                    if (es.sc is TypeScope && (es.sc as TypeScope).IsDelegate)
+                    {
+                        _assign.from.visit(this);
+                        (cur_scope as ProcScope).return_type = returned_scope as TypeScope;
+                        es.sc = returned_scope;
+                        es.MakeDescription();
+                    }
+                }
+            }
         }
 
         public override void visit(bin_expr _bin_expr)
