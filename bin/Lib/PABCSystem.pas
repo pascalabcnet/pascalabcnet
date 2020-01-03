@@ -1995,33 +1995,40 @@ function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 //>>     Вспомогательные функции для pattern matching # 
 // -----------------------------------------------------
 
+///--
 function __TypeCheckAndAssignForIsMatch<T>(obj: object; var res: T): boolean;
 
+///--
 function __WildCardsTupleEqual<T1, T2, T3, T4>(
     first: Tuple<T1, T2>; 
     second: Tuple<T3, T4>;
     elemsToCompare: sequence of integer): boolean;
 
+///--
 function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6>(
     first: Tuple<T1, T2, T3>; 
     second: Tuple<T4, T5, T6>;
     elemsToCompare: sequence of integer): boolean;
 
+///--
 function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8>(
     first: Tuple<T1, T2, T3, T4>; 
     second: Tuple<T5, T6, T7, T8>;
     elemsToCompare: sequence of integer): boolean;
 
+///--
 function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
     first: Tuple<T1, T2, T3, T4, T5>; 
     second: Tuple<T6, T7, T8, T9, T10>;
     elemsToCompare: sequence of integer): boolean;
 
+///--
 function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
     first: Tuple<T1, T2, T3, T4, T5, T6>; 
     second: Tuple<T7, T8, T9, T10, T11, T12>;
     elemsToCompare: sequence of integer): boolean;
 
+///--
 function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
     first: Tuple<T1, T2, T3, T4, T5, T6, T7>; 
     second: Tuple<T8, T9, T10, T11, T12, T13, T14>;
@@ -3497,7 +3504,16 @@ begin
     var sb := new StringBuilder();
     var g := (o as System.Collections.IEnumerable).GetEnumerator();
     
-    var isdictorset := o.GetType.Name.Equals('Dictionary`2') or o.GetType.Name.Equals('SortedDictionary`2') or (o.GetType = typeof(TypedSet)) or o.GetType.Name.Equals('HashSet`1') or o.GetType.Name.Equals('SortedSet`1');
+    var otype := o.GetType;
+    
+    //var isdictorset := otype.Name.Equals('Dictionary`2') or otype.Name.Equals('SortedDictionary`2') or otype.Name.Equals('HashSet`1') or otype.Name.Equals('SortedSet`1');
+    var isdictorset := o.GetType.IsGenericType and 
+      ((otype.GetGenericTypeDefinition = typeof(Dictionary<,>))
+      or (otype.GetGenericTypeDefinition = typeof(SortedDictionary<,>))
+      or (otype.GetGenericTypeDefinition = typeof(HashSet<>))
+      or (otype.GetGenericTypeDefinition = typeof(SortedSet<>)));
+    isdictorset := isdictorset or (otype = typeof(TypedSet));
+    
     if isdictorset then
       sb.Append('{')
     else sb.Append('[');
