@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-G8V08V4
-// DateTime: 04.01.2020 10:28:08
+// DateTime: 04.01.2020 20:22:59
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -5441,7 +5441,12 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 { CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; }
         break;
       case 583: // expr_l1 -> expr_l1, tkDotDot, expr_dq
-{ CurrentSemanticValue.ex = new diapason_expr_new(ValueStack[ValueStack.Depth-3].ex,ValueStack[ValueStack.Depth-1].ex,CurrentLocationSpan); }
+{ 
+		if (parsertools.build_tree_for_formatter)
+			CurrentSemanticValue.ex = new diapason_expr(ValueStack[ValueStack.Depth-3].ex,ValueStack[ValueStack.Depth-1].ex,CurrentLocationSpan);
+		else 
+			CurrentSemanticValue.ex = new diapason_expr_new(ValueStack[ValueStack.Depth-3].ex,ValueStack[ValueStack.Depth-1].ex,CurrentLocationSpan); 
+	}
         break;
       case 584: // expr_l1_func_decl_lambda -> expr_l1
 { CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; }

@@ -3123,7 +3123,12 @@ expr_l1
     | question_expr
 		{ $$ = $1; }
     | expr_l1 tkDotDot expr_dq 
-		{ $$ = new diapason_expr_new($1,$3,@$); }
+	{ 
+		if (parsertools.build_tree_for_formatter)
+			$$ = new diapason_expr($1,$3,@$);
+		else 
+			$$ = new diapason_expr_new($1,$3,@$); 
+	}
     ;
     
 expr_l1_func_decl_lambda
