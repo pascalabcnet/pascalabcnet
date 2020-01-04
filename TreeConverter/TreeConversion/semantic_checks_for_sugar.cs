@@ -125,5 +125,22 @@ namespace PascalABCCompiler.TreeConverter
             if (!b)
                 AddError(sem_ex.location, "INTEGER_VALUE_EXPECTED");
         }
+
+        void semantic_check_method_call_as_diapason_expr(SyntaxTree.method_call mc)
+        {
+            var from = mc.parameters.expressions[0];
+            var to = mc.parameters.expressions[1];
+            var semfrom = convert_strong(from);
+
+            var b = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type);
+            if (!b)
+                AddError(get_location(from), "INTEGER_VALUE_EXPECTED");
+
+            var semto = convert_strong(to);
+            b = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.integer_type);
+            if (!b)
+                AddError(get_location(to), "INTEGER_VALUE_EXPECTED");
+        }
+
     }
 }

@@ -244,8 +244,9 @@ program_file
 			$$ = NewProgramModule($1 as program_name, $2, $3 as uses_list, $4, $5, @$);
         }
 	;
-		
-optional_tk_point /* это нужно для intellisensа чтобы строилось дерево при отсутствии точки в конце */
+
+/* это нужно для intellisensа чтобы строилось дерево при отсутствии точки в конце */
+optional_tk_point 
     : tkPoint
         { $$ = $1; }
     | tkSemiColon
@@ -539,7 +540,8 @@ decl_sect
 		{ $$ = $1; }
     ;
 
-proc_func_constr_destr_decl /* SSM 2.1.13 упрощение грамматики */
+/* SSM 2.1.13 упрощение грамматики */
+proc_func_constr_destr_decl 
 	: proc_func_decl              
 		{ $$ = $1; }
 	| constr_destr_decl 
@@ -3120,6 +3122,8 @@ expr_l1
 		{ $$ = $1; }
     | question_expr
 		{ $$ = $1; }
+    | expr_l1 tkDotDot expr_dq 
+		{ $$ = new diapason_expr_new($1,$3,@$); }
     ;
     
 expr_l1_func_decl_lambda

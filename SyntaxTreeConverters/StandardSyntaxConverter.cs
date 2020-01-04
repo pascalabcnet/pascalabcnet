@@ -26,6 +26,9 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 #if DEBUG
             //new SimplePrettyPrinterVisitor("E:/projs/out.txt").ProcessNode(root);
 #endif
+            // new range
+            NewRangeDesugarVisitor.New.ProcessNode(root);
+
             // loop
             LoopDesugarVisitor.New.ProcessNode(root);
 

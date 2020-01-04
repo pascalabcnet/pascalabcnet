@@ -20375,7 +20375,11 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.sugared_addressed_value av)
         {
-            if (av.sugared_expr is SyntaxTree.slice_expr) // и slice_expr_question
+            if (av.sugared_expr is SyntaxTree.diapason_expr_new) 
+            {
+                semantic_check_method_call_as_diapason_expr(av.new_addr_value as SyntaxTree.method_call);
+            }
+            else if (av.sugared_expr is SyntaxTree.slice_expr) // и slice_expr_question
             {
                 semantic_check_method_call_as_slice_expr(av.new_addr_value as SyntaxTree.method_call);
             }

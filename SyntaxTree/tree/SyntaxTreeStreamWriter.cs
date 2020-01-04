@@ -6795,6 +6795,36 @@ namespace PascalABCCompiler.SyntaxTree
 			write_recursive_pattern_parameter(_recursive_tuple_parameter);
 		}
 
+
+		public void visit(diapason_expr_new _diapason_expr_new)
+		{
+			bw.Write((Int16)249);
+			write_diapason_expr_new(_diapason_expr_new);
+		}
+
+		public void write_diapason_expr_new(diapason_expr_new _diapason_expr_new)
+		{
+			write_addressed_value(_diapason_expr_new);
+			if (_diapason_expr_new.left == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_diapason_expr_new.left.visit(this);
+			}
+			if (_diapason_expr_new.right == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_diapason_expr_new.right.visit(this);
+			}
+		}
+
 	}
 
 
