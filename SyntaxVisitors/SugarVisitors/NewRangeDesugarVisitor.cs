@@ -75,6 +75,22 @@ namespace SyntaxVisitors.SugarVisitors
 
                 ReplaceStatementUsingParent(fe, sl);
             }
+            else if (fe.in_what is dot_node dn && dn.right is ident id && id.name.ToLower() == "indices")
+            {
+                var typ = fe.type_name;
+                if (typ != null && typ is no_type_foreach)
+                    typ = null;
+                var cr = fe.type_name is no_type_foreach;
+
+                var left = new int32_const(0, fe.identifier.source_context);
+                var right = dn.left.dot_node("Count").Minus(1);
+
+                var fn = new for_node(fe.identifier, left, right, fe.stmt, for_cycle_type.to, null, typ, cr);
+                var sl = new List<statement>();
+                sl.Add(fn);
+
+                ReplaceStatementUsingParent(fe, sl);
+            }
             else base.visit(fe);
         }
     }
