@@ -1,5 +1,8 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="Between">
+<param name="Keyword" value="Clamp">
+<param name="Keyword" value="ClampBottom">
+<param name="Keyword" value="ClampTop">
 <param name="Keyword" value="InRange">
 <param name="Keyword" value="Round">
 <param name="Keyword" value="RoundBigInteger">
@@ -12,6 +15,12 @@
 </HEAD><body><H1>Методы расширения типа real</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Between(Self: real; a, b: real): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если значение находится между двумя другими</td></tr>
+<tr><td><code><b>function</b> Clamp(Self: real; bottom,top: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает число, ограниченное диапазоном от bottom до top включительно</td></tr>
+<tr><td><code><b>function</b> ClampBottom(Self: real; bottom: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает число, ограниченное величиной bottom снизу</td></tr>
+<tr><td><code><b>function</b> ClampTop(Self: real; top: real): real;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает число, ограниченное величиной top сверху</td></tr>
 <tr><td><code><b>function</b> InRange(Self: real; a,b: real): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если значение находится между двумя другими</td></tr>
 <tr><td><code><b>function</b> Round(Self: real): integer;</code>

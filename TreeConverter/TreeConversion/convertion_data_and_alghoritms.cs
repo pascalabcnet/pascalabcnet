@@ -587,12 +587,24 @@ namespace PascalABCCompiler.TreeConverter
             if (pct.first == null)
                 throw new CanNotConvertTypes(en, en.type, to, loc);
         }
-        
+
         public bool can_convert_type(expression_node en, type_node to)
         {
             if (en.type == to)
                 return true;
             possible_type_convertions pct = type_table.get_convertions(en.type, to);
+            if (pct.second != null)
+                return false;
+            if (pct.first == null)
+                return false;
+            return true;
+        }
+
+        public bool can_convert_type(type_node from, type_node to)
+        {
+            if (from == to)
+                return true;
+            possible_type_convertions pct = type_table.get_convertions(from, to);
             if (pct.second != null)
                 return false;
             if (pct.first == null)
@@ -1876,7 +1888,7 @@ namespace PascalABCCompiler.TreeConverter
             bool is_alone_method_defined = (functions.Count() == 1);
             function_node first_function = functions.FirstOrDefault().sym_info as function_node;
             bool _is_assigment = first_function.name == compiler_string_consts.assign_name;
-            bool is_op = compiler_string_consts.GetNETOperName(first_function.name) != null;
+            bool is_op = compiler_string_consts.GetNETOperName(first_function.name) != null || first_function.name.ToLower() == "in";
             basic_function_node _tmp_bfn = functions.FirstOrDefault().sym_info as basic_function_node;
 
             List<function_node> indefinits = new List<function_node>();

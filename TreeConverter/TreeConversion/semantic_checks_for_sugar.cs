@@ -126,21 +126,124 @@ namespace PascalABCCompiler.TreeConverter
                 AddError(sem_ex.location, "INTEGER_VALUE_EXPECTED");
         }
 
+
+        /*void common_diap_check(expression from, expression to)
+        {
+
+        }*/
+
         void semantic_check_method_call_as_diapason_expr(SyntaxTree.method_call mc)
         {
             var from = mc.parameters.expressions[0];
             var to = mc.parameters.expressions[1];
-            var semfrom = convert_strong(from);
 
+            var semfrom = convert_strong(from);
             var b = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type);
+            var b1 = false;
             if (!b)
-                AddError(get_location(from), "INTEGER_VALUE_EXPECTED");
+                b1 = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.char_type);
+            if (!b && !b1)
+                AddError(get_location(from), "INTEGER_OR_CHAR_VALUE_EXPECTED");
 
             var semto = convert_strong(to);
-            b = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.integer_type);
-            if (!b)
-                AddError(get_location(to), "INTEGER_VALUE_EXPECTED");
+            var c = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.integer_type);
+            var c1 = false;
+            if (!c)
+                c1 = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.char_type);
+            if (!c && !c1)
+                AddError(get_location(to), "INTEGER_OR_CHAR_VALUE_EXPECTED");
+            if (b != c || c1 != b1)
+                AddError(get_location(to), "INCOMPATIBLE_DIAPASON_BOUNDS_TYPES");
         }
+
+        void semantic_check_method_call_as_inrange_expr(SyntaxTree.method_call mc)
+        {
+            var v = mc.parameters.expressions[0];
+            var from = mc.parameters.expressions[1];
+            var to = mc.parameters.expressions[2];
+
+            var semv = convert_strong(v);
+            var a = convertion_data_and_alghoritms.can_convert_type(semv, SystemLibrary.SystemLibrary.integer_type);
+            var a1 = false;
+            if (!a)
+                a1 = convertion_data_and_alghoritms.can_convert_type(semv, SystemLibrary.SystemLibrary.char_type);
+            if (!a && !a1)
+                AddError(get_location(v), "INTEGER_OR_CHAR_VALUE_EXPECTED");
+
+            var semfrom = convert_strong(from);
+            var b = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type);
+            var b1 = false;
+            if (!b)
+                b1 = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.char_type);
+            if (!b && !b1)
+                AddError(get_location(from), "INTEGER_OR_CHAR_VALUE_EXPECTED");
+
+            var semto = convert_strong(to);
+            var c = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.integer_type);
+            var c1 = false;
+            if (!c)
+                c1 = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.char_type);
+            if (!c && !c1)
+                AddError(get_location(to), "INTEGER_OR_CHAR_VALUE_EXPECTED");
+
+            if (b != c || c1 != b1)
+                AddError(get_location(to), "INCOMPATIBLE_DIAPASON_BOUNDS_TYPES");
+            if (a != b || a1 != b1)
+                AddError(get_location(v), "INCOMPATIBLE_TYPES_OF_ELEMENT_AND_DIAPASON");
+        }
+
+        void semantic_check_for_new_range(SyntaxTree.diapason_expr_new diap, type_definition td, ident id)
+        {
+            var from = diap.left;
+            var to = diap.right;
+
+            var semfrom = convert_strong(from);
+            var b = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type);
+            var b1 = false;
+            if (!b)
+                b1 = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.char_type);
+            if (!b && !b1)
+                AddError(get_location(from), "INTEGER_OR_CHAR_VALUE_EXPECTED");
+
+            var semto = convert_strong(to);
+            var c = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.integer_type);
+            var c1 = false;
+            if (!c)
+                c1 = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.char_type);
+            if (!c && !c1)
+                AddError(get_location(to), "INTEGER_OR_CHAR_VALUE_EXPECTED");
+
+            if (b != c || c1 != b1)
+                AddError(get_location(to), "INCOMPATIBLE_DIAPASON_BOUNDS_TYPES");
+
+            if (td != null && !(td is no_type_foreach))
+            {
+                // то мы определили тип явно в заголовке
+                var semtype = convert_strong(td);
+                var d = convertion_data_and_alghoritms.can_convert_type(semtype, SystemLibrary.SystemLibrary.integer_type);
+                var d1 = false;
+                if (!d)
+                    d1 = convertion_data_and_alghoritms.can_convert_type(semtype, SystemLibrary.SystemLibrary.char_type);
+                if (!d && !d1)
+                    AddError(get_location(td), "INTEGER_OR_CHAR_VALUE_EXPECTED");
+                if (b != d || b1 != d1)
+                    AddError(get_location(id), "INCOMPATIBLE_TYPES_OF_ELEMENT_AND_DIAPASON");
+            }
+            else if (td == null)
+            {
+                var semid = convert_strong(id);
+                var e = convertion_data_and_alghoritms.can_convert_type(semid, SystemLibrary.SystemLibrary.integer_type);
+                var e1 = false;
+                if (!e)
+                    e1 = convertion_data_and_alghoritms.can_convert_type(semid, SystemLibrary.SystemLibrary.char_type);
+                if (!e && !e1)
+                    AddError(get_location(id), "INTEGER_OR_CHAR_VALUE_EXPECTED");
+
+                if (b != e || b1 != e1)
+                    AddError(get_location(id), "INCOMPATIBLE_TYPES_OF_ELEMENT_AND_DIAPASON");
+            }
+        }
+
 
     }
 }

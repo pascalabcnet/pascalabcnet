@@ -2035,6 +2035,13 @@ function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12
     elemsToCompare: sequence of integer): boolean;
 
 
+// Вспомогательные функции для a..b
+///--
+function InRangeInternal(x: integer; a,b: integer): boolean; 
+
+///--
+function InRangeInternal(x: char; a,b: char): boolean; 
+
 // -----------------------------------------------------
 //     Стандартные классы исключений
 // -----------------------------------------------------
@@ -10581,6 +10588,17 @@ begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
 
+///--
+function InRangeInternal(x: integer; a,b: integer): boolean; 
+begin
+  Result := (a <= x) and (x <= b)
+end;
+
+///--
+function InRangeInternal(x: char; a,b: char): boolean; 
+begin
+  Result := (a <= x) and (x <= b)
+end;
 
 // Дополнения февраль 2016: IsEven, IsOdd
 

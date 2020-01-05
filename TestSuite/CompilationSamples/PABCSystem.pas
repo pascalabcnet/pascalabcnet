@@ -10581,6 +10581,12 @@ begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
 
+///--
+function InRangeInternal(Self: integer; a,b: integer): boolean; extensionmethod;
+begin
+  Result := (a <= Self) and (Self <= b)
+end;
+
 
 // Дополнения февраль 2016: IsEven, IsOdd
 
