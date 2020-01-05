@@ -3164,6 +3164,12 @@ question_expr
             	parsertools.AddErrorFromResource("TWO_NILS_IN_QUESTION_EXPR",@3);
 			$$ = new question_colon_expression($1, $3, $5, @$);  
 		}
+    | tkIf expr_dq tkThen expr_l1 tkElse expr_l1 
+        { 
+            if ($4 is nil_const && $6 is nil_const)
+            	parsertools.AddErrorFromResource("TWO_NILS_IN_QUESTION_EXPR",@4);
+			$$ = new question_colon_expression($2, $4, $6, @$);  
+		}
     ;
 
 empty_template_type_reference
