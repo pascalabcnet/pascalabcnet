@@ -53458,6 +53458,229 @@ namespace PascalABCCompiler.SyntaxTree
 	}
 
 
+	///<summary>
+	///Новое условное выражение в стиле Паскаля. Доступно только при форматировании
+	///</summary>
+	[Serializable]
+	public partial class if_expr_new : expression
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public if_expr_new()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public if_expr_new(expression _condition,expression _if_true,expression _if_false)
+		{
+			this._condition=_condition;
+			this._if_true=_if_true;
+			this._if_false=_if_false;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public if_expr_new(expression _condition,expression _if_true,expression _if_false,SourceContext sc)
+		{
+			this._condition=_condition;
+			this._if_true=_if_true;
+			this._if_false=_if_false;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected expression _condition;
+		protected expression _if_true;
+		protected expression _if_false;
+
+		///<summary>
+		///
+		///</summary>
+		public expression condition
+		{
+			get
+			{
+				return _condition;
+			}
+			set
+			{
+				_condition=value;
+				if (_condition != null)
+					_condition.Parent = this;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public expression if_true
+		{
+			get
+			{
+				return _if_true;
+			}
+			set
+			{
+				_if_true=value;
+				if (_if_true != null)
+					_if_true.Parent = this;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public expression if_false
+		{
+			get
+			{
+				return _if_false;
+			}
+			set
+			{
+				_if_false=value;
+				if (_if_false != null)
+					_if_false.Parent = this;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			if_expr_new copy = new if_expr_new();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (condition != null)
+			{
+				copy.condition = (expression)condition.Clone();
+				copy.condition.Parent = copy;
+			}
+			if (if_true != null)
+			{
+				copy.if_true = (expression)if_true.Clone();
+				copy.if_true.Parent = copy;
+			}
+			if (if_false != null)
+			{
+				copy.if_false = (expression)if_false.Clone();
+				copy.if_false.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new if_expr_new TypedClone()
+		{
+			return Clone() as if_expr_new;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (condition != null)
+				condition.Parent = this;
+			if (if_true != null)
+				if_true.Parent = this;
+			if (if_false != null)
+				if_false.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			condition?.FillParentsInAllChilds();
+			if_true?.FillParentsInAllChilds();
+			if_false?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return condition;
+					case 1:
+						return if_true;
+					case 2:
+						return if_false;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						condition = (expression)value;
+						break;
+					case 1:
+						if_true = (expression)value;
+						break;
+					case 2:
+						if_false = (expression)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
 
 }
 

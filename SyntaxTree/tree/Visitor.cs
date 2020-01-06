@@ -1504,6 +1504,12 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_diapason_expr_new">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(diapason_expr_new _diapason_expr_new);
+		///<summary>
+		///Method to visit if_expr_new.
+		///</summary>
+		///<param name="_if_expr_new">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(if_expr_new _if_expr_new);
 	}
 
 

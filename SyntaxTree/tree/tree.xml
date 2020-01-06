@@ -3236,6 +3236,18 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="if_expr_new" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="condition" SyntaxType="expression" />
+        <SyntaxField Name="if_true" SyntaxType="expression" />
+        <SyntaxField Name="if_false" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3285,6 +3297,7 @@
       <HelpData Key=".body" Value="" />
       <HelpData Key=".cconst" Value="Значение константы." />
       <HelpData Key=".char_num" Value="Номер символа." />
+      <HelpData Key=".condition" Value="" />
       <HelpData Key=".count" Value="" />
       <HelpData Key=".def" Value="" />
       <HelpData Key=".definitions" Value="" />
@@ -3299,6 +3312,8 @@
       <HelpData Key=".guardstats" Value="" />
       <HelpData Key=".handlers" Value="" />
       <HelpData Key=".i" Value="" />
+      <HelpData Key=".if_false" Value="" />
+      <HelpData Key=".if_true" Value="" />
       <HelpData Key=".item_expression" Value="" />
       <HelpData Key=".left" Value="" />
       <HelpData Key=".lists" Value="" />
@@ -3856,6 +3871,10 @@
       <HelpData Key="ident_with_templateparams." Value="" />
       <HelpData Key="ident_with_templateparams.name" Value="" />
       <HelpData Key="ident_with_templateparams.template_params" Value="" />
+      <HelpData Key="if_expr_new" Value="Новое условное выражение в стиле Паскаля. Доступно только при форматировании" />
+      <HelpData Key="if_expr_new.condition" Value="" />
+      <HelpData Key="if_expr_new.if_false" Value="" />
+      <HelpData Key="if_expr_new.if_true" Value="" />
       <HelpData Key="if_node" Value="Условный оператор" />
       <HelpData Key="if_node.condition" Value="Условие" />
       <HelpData Key="if_node.else_body" Value="Оператор по ветви else" />

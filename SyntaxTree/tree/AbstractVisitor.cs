@@ -1257,6 +1257,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_diapason_expr_new);
 		}
+
+		public virtual void visit(if_expr_new _if_expr_new)
+		{
+			DefaultVisit(_if_expr_new);
+		}
 	}
 
 

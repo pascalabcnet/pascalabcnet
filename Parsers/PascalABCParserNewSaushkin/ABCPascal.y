@@ -3166,9 +3166,16 @@ question_expr
 		}
     | tkIf expr_dq tkThen expr_l1 tkElse expr_l1 
         { 
-            if ($4 is nil_const && $6 is nil_const)
-            	parsertools.AddErrorFromResource("TWO_NILS_IN_QUESTION_EXPR",@4);
-			$$ = new question_colon_expression($2, $4, $6, @$);  
+        	if (parsertools.build_tree_for_formatter)
+        	{
+        		$$ = new if_expr_new($2, $4, $6, @$);
+        	}
+        	else
+        	{
+            	if ($4 is nil_const && $6 is nil_const)
+            		parsertools.AddErrorFromResource("TWO_NILS_IN_QUESTION_EXPR",@4);
+				$$ = new question_colon_expression($2, $4, $6, @$);
+			}			
 		}
     ;
 
