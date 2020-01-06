@@ -9,6 +9,7 @@ using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors.SugarVisitors
 {
+
     public class NewRangeDesugarVisitor : BaseChangeVisitor
     {
         public static NewRangeDesugarVisitor New
@@ -83,10 +84,11 @@ namespace SyntaxVisitors.SugarVisitors
                 var cr = fe.type_name is no_type_foreach;
 
                 var left = new int32_const(0, fe.identifier.source_context);
-                var right = dn.left.dot_node("Count").Minus(1);
+                var right = dn.left.dot_node("Count").Minus(1); // Строки таким образом сделать не получится. Разве что в семантическом контроле чуть довернуть этот узел ))
 
                 var fn = new for_node(fe.identifier, left, right, fe.stmt, for_cycle_type.to, null, typ, cr);
                 var sl = new List<statement>();
+                sl.Add(new semantic_check_sugared_statement_node(typeof(foreach_stmt), new List<syntax_tree_node> { dn.right }, fe.source_context));
                 sl.Add(fn);
 
                 ReplaceStatementUsingParent(fe, sl);

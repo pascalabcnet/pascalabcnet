@@ -244,6 +244,11 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
+        void semantic_check_for_indices(SyntaxTree.expression expr)
+        {
+            // Надо проверить, что expr - это одноразмерный массив или список. Эта проверка была в visit(foreach)
+        }
+
 
     }
 }

@@ -165,14 +165,7 @@ namespace PascalABCCompiler.TreeConverter
             return false;
         }
 
-
-        /// <summary>
-        /// Преобразует foreach в for, если коллекция это одномерный массив.
-        /// </summary>
-        /// <param name="_foreach_stmt"></param>
-        /// <param name="in_what"></param>
-        /// <returns>True - если преобразование удалось, иначе False</returns>
-        private bool OptimizeForeachInCase1DArray(foreach_stmt _foreach_stmt, expression_node in_what)
+        private bool Is1DArray(expression_node in_what)
         {
             var is1dimdynarr = false;
             var comptn = in_what.type as compiled_type_node;
@@ -186,15 +179,28 @@ namespace PascalABCCompiler.TreeConverter
                 if (comtn != null && comtn.internal_type_special_kind == type_special_kind.array_kind &&
                     comtn.rank == 1)
                 {
-                    is1dimdynarr = true; 
+                    is1dimdynarr = true;
                 }
             }
+            return is1dimdynarr;
+        }
+
+
+        /// <summary>
+        /// Преобразует foreach в for, если коллекция это одномерный массив.
+        /// </summary>
+        /// <param name="_foreach_stmt"></param>
+        /// <param name="in_what"></param>
+        /// <returns>True - если преобразование удалось, иначе False</returns>
+        private bool OptimizeForeachInCase1DArray(foreach_stmt _foreach_stmt, expression_node in_what)
+        {
+            var is1dimdynarr = Is1DArray(in_what);
 
             var il = IsIList(in_what);
 
             // SSM 23.08.16 Закомментировал оптимизацию. Не работает с лямбдами. Лямбды обходят старое дерево. А заменить foreach на for на этом этапе пока не получается - не развита инфраструктура
             // SSM 24.12.19 Раскомментировал оптимизацию, но только если foreach не вложен в лямбду
-            if (is1dimdynarr) // Замена foreach на for для массива
+            if (is1dimdynarr || il) // Замена foreach на for для массива
             {
                 // сгенерировать код для for и вызвать соответствующий visit
                 var arrid = GenIdentName();

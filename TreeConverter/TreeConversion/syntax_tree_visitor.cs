@@ -20305,12 +20305,17 @@ namespace PascalABCCompiler.TreeConverter
                 var expr = st.lst[0] as SyntaxTree.expression;
                 semantic_check_loop_stmt(expr);
             }
-            else if (st.typ as System.Type == typeof(SyntaxTree.foreach_stmt)) // для NewRange Visitorа. Если будет перекрытие, то надоделать новые типы-маркеры
+            else if (st.typ as System.Type == typeof(SyntaxTree.foreach_stmt) && st.lst.Count == 3) // для NewRange Visitorа. Если будет перекрытие, то надоделать новые типы-маркеры
             {
                 var expr = st.lst[0] as SyntaxTree.diapason_expr_new;
                 var td = st.lst[1] as SyntaxTree.type_definition;
                 var id = st.lst[2] as SyntaxTree.ident;
-                semantic_check_for_new_range(expr,td,id);
+                semantic_check_for_new_range(expr, td, id);
+            }
+            else if (st.typ as System.Type == typeof(SyntaxTree.foreach_stmt) && st.lst.Count == 3) // для a.Indices. Пока непонятно, где описывать тип-маркер
+            {
+                var expr = st.lst[0] as SyntaxTree.expression;
+                semantic_check_for_indices(expr);
             }
             // Patterns
             else if (st.typ is SemanticCheckType.MatchedExpression)
