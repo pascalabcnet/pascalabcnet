@@ -9354,6 +9354,26 @@ end;
 //>>     Методы расширения списков # Extension methods for List T
 // -----------------------------------------------------
 
+/// Возвращает последовательность индексов списка
+function Indices<T>(Self: List<T>): sequence of integer; extensionmethod := Range(0, Self.Count - 1);
+
+/// Возвращает последовательность индексов элементов списка, удовлетворяющих условию
+function Indices<T>(Self: List<T>; cond: T->boolean): sequence of integer; extensionmethod;
+begin
+  for var i := 0 to Self.Count - 1 do
+    if cond(Self[i]) then
+      yield i;
+end;
+
+/// Возвращает последовательность индексов элементов списка, удовлетворяющих условию
+function Indices<T>(Self: List<T>; cond: (T,integer) ->boolean): sequence of integer; extensionmethod;
+begin
+  for var i := 0 to Self.Count - 1 do
+    if cond(Self[i], i) then
+      yield i;
+end;
+
+
 /// Перемешивает элементы списка случайным образом
 function Shuffle<T>(Self: List<T>): List<T>; extensionmethod;
 begin

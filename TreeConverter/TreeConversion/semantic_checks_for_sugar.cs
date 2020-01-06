@@ -247,6 +247,11 @@ namespace PascalABCCompiler.TreeConverter
         void semantic_check_for_indices(SyntaxTree.expression expr)
         {
             // Надо проверить, что expr - это одноразмерный массив или список. Эта проверка была в visit(foreach)
+            var semexpr = convert_strong(expr);
+            var Is1DArr = Is1DArray(semexpr);
+            var il = IsIList(semexpr);
+            if (!Is1DArr && !il)
+                AddError(get_location(expr), "ONE_DIM_ARRAY_OR_LIST_EXPECTED");
         }
 
 

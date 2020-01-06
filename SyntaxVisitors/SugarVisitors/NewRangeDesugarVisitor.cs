@@ -75,6 +75,7 @@ namespace SyntaxVisitors.SugarVisitors
                 sl.Add(fn);
 
                 ReplaceStatementUsingParent(fe, sl);
+                visit(fn);
             }
             else if (fe.in_what is dot_node dn && dn.right is ident id && id.name.ToLower() == "indices")
             {
@@ -88,10 +89,11 @@ namespace SyntaxVisitors.SugarVisitors
 
                 var fn = new for_node(fe.identifier, left, right, fe.stmt, for_cycle_type.to, null, typ, cr);
                 var sl = new List<statement>();
-                sl.Add(new semantic_check_sugared_statement_node(typeof(foreach_stmt), new List<syntax_tree_node> { dn.right }, fe.source_context));
+                sl.Add(new semantic_check_sugared_statement_node(typeof(foreach_stmt), new List<syntax_tree_node> { dn.left }, fe.source_context));
                 sl.Add(fn);
 
                 ReplaceStatementUsingParent(fe, sl);
+                visit(fn);
             }
             else base.visit(fe);
         }

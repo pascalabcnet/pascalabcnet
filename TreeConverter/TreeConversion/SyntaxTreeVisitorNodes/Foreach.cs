@@ -227,7 +227,11 @@ namespace PascalABCCompiler.TreeConverter
                 var newbody = _foreach_stmt.stmt.ToStatementList();
                 newbody.AddFirst(vd);
 
-                var high = arrid.dot_node("Count").Minus(1);
+                expression high = null;
+                
+                if (is1dimdynarr)
+                    high = arrid.dot_node("Length").Minus(1);
+                else high = arrid.dot_node("Count").Minus(1);
 
                 var fornode = new for_node(i, 0, high, newbody, for_cycle_type.to, null, null, true);
 
