@@ -53,9 +53,6 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SyntaxTree, Version=1.0.2514.32118, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -114,6 +111,10 @@
     <ProjectReference Include="..\..\PluginsSupport\PluginsSupport.csproj">
       <Project>{cfc683f8-0165-4a9f-9c3f-bb8c5bab507f}</Project>
       <Name>PluginsSupport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SyntaxTree\SyntaxTree.csproj">
+      <Project>{C2CAC65A-B2AE-4CCC-B067-E6B8E75DF73A}</Project>
+      <Name>SyntaxTree</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
