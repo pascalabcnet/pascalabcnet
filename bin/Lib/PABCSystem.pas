@@ -10545,8 +10545,12 @@ end;
 function SystemSliceArrayImpl<T>(Self: array of T; situation: integer; from, &to: integer; step: integer := 1): array of T;
 begin
   var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, Self.Length, from, &to, step);
-  
-  Result := CreateSliceFromArrayInternal(Self, from, step, count)
+  if step = 1 then
+  begin
+    Result := new T[count];
+    System.Array.Copy(Self,from,Result,0,count);
+  end
+  else Result := CreateSliceFromArrayInternal(Self, from, step, count)
 end;
 
 ///--
