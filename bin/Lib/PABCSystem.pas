@@ -628,6 +628,8 @@ function TryRead(var x: single): boolean;
 
 /// Возвращает значение типа integer, введенное с клавиатуры
 function ReadInteger: integer;
+/// Возвращает значение типа int64, введенное с клавиатуры
+function ReadInt64: int64;
 /// Возвращает значение типа real, введенное с клавиатуры
 function ReadReal: real;
 /// Возвращает значение типа char, введенное с клавиатуры
@@ -639,6 +641,8 @@ function ReadBoolean: boolean;
 
 /// Возвращает значение типа integer, введенное с клавиатуры, и переходит на следующую строку ввода
 function ReadlnInteger: integer;
+/// Возвращает значение типа int64, введенное с клавиатуры, и переходит на следующую строку ввода
+function ReadlnInt64: int64;
 /// Возвращает значение типа real, введенное с клавиатуры, и переходит на следующую строку ввода
 function ReadlnReal: real;
 /// Возвращает значение типа char, введенное с клавиатуры, и переходит на следующую строку ввода
@@ -752,6 +756,8 @@ function ReadlnString4(prompt: string): (string, string, string, string);
 
 /// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры
 function ReadInteger(prompt: string): integer;
+/// Выводит приглашение к вводу и возвращает значение типа int64, введенное с клавиатуры
+function ReadInt64(prompt: string): int64;
 /// Выводит приглашение к вводу и возвращает значение типа real, введенное с клавиатуры
 function ReadReal(prompt: string): real;
 /// Выводит приглашение к вводу и возвращает значение типа char, введенное с клавиатуры
@@ -764,6 +770,9 @@ function ReadBoolean(prompt: string): boolean;
 /// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры, 
 ///и осуществляет переход на следующую строку ввода
 function ReadlnInteger(prompt: string): integer;
+/// Выводит приглашение к вводу и возвращает значение типа int64, введенное с клавиатуры, 
+///и осуществляет переход на следующую строку ввода
+function ReadlnInt64(prompt: string): int64;
 /// Выводит приглашение к вводу и возвращает значение типа real, введенное с клавиатуры, 
 ///и осуществляет переход на следующую строку ввода
 function ReadlnReal(prompt: string): real;
@@ -821,6 +830,8 @@ procedure Readln(f: Text; var x: string);
 
 /// Возвращает значение типа integer, введенное из текстового файла f
 function ReadInteger(f: Text): integer;
+/// Возвращает значение типа int64, введенное из текстового файла f
+function ReadInt64(f: Text): int64;
 /// Возвращает значение типа real, введенное из текстового файла f
 function ReadReal(f: Text): real;
 /// Возвращает значение типа char, введенное из текстового файла f
@@ -833,6 +844,9 @@ function ReadBoolean(f: Text): boolean;
 /// Возвращает значение типа integer, введенное из текстового файла f, 
 ///и осуществляет переход на следующую строку
 function ReadlnInteger(f: Text): integer;
+/// Возвращает значение типа int64, введенное из текстового файла f, 
+///и осуществляет переход на следующую строку
+function ReadlnInt64(f: Text): int64;
 /// Возвращает значение типа real, введенное из текстового файла f, 
 ///и осуществляет переход на следующую строку
 function ReadlnReal(f: Text): real;
@@ -5220,59 +5234,59 @@ begin
   end
 end;
 
-
 function ReadInteger: integer;
 begin
-  var x: integer;
-  read(x);
-  Result := x;
+  Read(Result);
+end;
+
+function ReadInt64: int64;
+begin
+  Read(Result);
 end;
 
 function ReadReal: real;
 begin
-  var x: real;
-  read(x);
-  Result := x;
+  Read(Result);
 end;
 
 function ReadChar: char;
 begin
-  var x: char;
-  read(x);
-  Result := x;
+  Read(Result);
 end;
 
 function ReadString: string;
 begin
-  var x: string;
-  read(x);
+  Read(Result);
   readln();
-  Result := x;
 end;
 
 function ReadBoolean: boolean;
 begin
-  var x: boolean;
-  read(x);
-  Result := x;
+  Read(Result);
 end;
 
 function ReadlnInteger: integer;
 begin
   Result := ReadInteger;
-  readln();
+  Readln();
+end;
+
+function ReadlnInt64: int64;
+begin
+  Result := ReadInt64;
+  Readln();
 end;
 
 function ReadlnReal: real;
 begin
   Result := ReadReal;
-  readln();
+  Readln();
 end;
 
 function ReadlnChar: char;
 begin
   Result := ReadChar;
-  readln();
+  Readln();
 end;
 
 function ReadlnString: string;
@@ -5283,7 +5297,7 @@ end;
 function ReadlnBoolean: boolean;
 begin
   Result := ReadBoolean;
-  readln();
+  Readln();
 end;
 
 function ReadInteger2 := (ReadInteger, ReadInteger);
@@ -5395,6 +5409,12 @@ begin
   Result := ReadInteger;
 end;
 
+function ReadInt64(prompt: string): int64;
+begin
+  Print(prompt);
+  Result := ReadInt64;
+end;
+
 function ReadReal(prompt: string): real;
 begin
   Print(prompt);
@@ -5423,6 +5443,12 @@ function ReadlnInteger(prompt: string): integer;
 begin
   Print(prompt);
   Result := ReadlnInteger;
+end;
+
+function ReadlnInt64(prompt: string): int64;
+begin
+  Print(prompt);
+  Result := ReadlnInt64;
 end;
 
 function ReadlnReal(prompt: string): real;
@@ -5681,56 +5707,57 @@ end;
 
 function ReadInteger(f: Text): integer;
 begin
-  var x: integer;
-  read(f, x);
-  Result := x;
+  Read(f, Result);
+end;
+
+function ReadInt64(f: Text): int64;
+begin
+  Read(f, Result);
 end;
 
 function ReadReal(f: Text): real;
 begin
-  var x: real;
-  read(f, x);
-  Result := x;
+  Read(f, Result);
 end;
 
 function ReadChar(f: Text): char;
 begin
-  var x: char;
-  read(f, x);
-  Result := x;
+  Read(f, Result);
 end;
 
 function ReadString(f: Text): string;
 begin
-  var x: string;
-  read(f, x);
-  readln(f);
-  Result := x;
+  Read(f, Result);
+  Readln(f);
 end;
 
 function ReadBoolean(f: Text): boolean;
 begin
-  var x: boolean;
-  read(f, x);
-  Result := x;
+  Read(f, Result);
 end;
 
 function ReadlnInteger(f: Text): integer;
 begin
   Result := ReadInteger(f);
-  readln(f);
+  Readln(f);
+end;
+
+function ReadlnInt64(f: Text): int64;
+begin
+  Result := ReadInt64(f);
+  Readln(f);
 end;
 
 function ReadlnReal(f: Text): real;
 begin
   Result := ReadReal(f);
-  readln(f);
+  Readln(f);
 end;
 
 function ReadlnChar(f: Text): char;
 begin
   Result := ReadChar(f);
-  readln(f);
+  Readln(f);
 end;
 
 function ReadlnString(f: Text): string;
@@ -5741,7 +5768,7 @@ end;
 function ReadlnBoolean(f: Text): boolean;
 begin
   Result := ReadBoolean(f);
-  readln(f);
+  Readln(f);
 end;
 // -----------------------------------------------------
 //                   TextFile methods
@@ -9752,8 +9779,11 @@ end;
 function SystemSliceListImpl<T>(Self: List<T>; situation: integer; from, &to: integer; step: integer := 1): List<T>;
 begin
   var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, Self.Count, from, &to, step);
-  
-  Result := CreateSliceFromListInternal(Self, from, step, count);
+  {if (step=1) and (count>32) then // 32 - empirical
+  begin
+    Result := Self.GetRange(from,count);
+  end
+  else} Result := CreateSliceFromListInternal(Self, from, step, count);
 end;
 
 ///--
@@ -10545,12 +10575,12 @@ end;
 function SystemSliceArrayImpl<T>(Self: array of T; situation: integer; from, &to: integer; step: integer := 1): array of T;
 begin
   var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, Self.Length, from, &to, step);
-  if step = 1 then
+  {if (step = 1) and (count>32) then // 32 - empirical
   begin
     Result := new T[count];
     System.Array.Copy(Self,from,Result,0,count);
   end
-  else Result := CreateSliceFromArrayInternal(Self, from, step, count)
+  else} Result := CreateSliceFromArrayInternal(Self, from, step, count)
 end;
 
 ///--
