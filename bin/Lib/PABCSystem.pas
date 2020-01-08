@@ -1927,6 +1927,13 @@ function ReadArrInteger(n: integer): array of integer;
 function ReadArrReal(n: integer): array of real;
 /// Возвращает массив из n строк, введенных с клавиатуры
 function ReadArrString(n: integer): array of string;
+///--
+function ReadArrInteger: array of integer;
+///--
+function ReadArrReal: array of real;
+///--
+function ReadArrString: array of string;
+
 
 /// Выводит приглашение к вводу и возвращает массив из n целых, введенных с клавиатуры
 function ReadArrInteger(prompt: string; n: integer): array of integer;
@@ -4412,6 +4419,26 @@ begin
   Print(prompt);
   Result := ReadArrString(n);
 end;
+
+///--
+function ReadArrInteger: array of integer;
+begin
+  Result := nil;
+  raise new System.ArgumentException('Функцию ReadArrInteger запрещено вызывать без параметров')
+end;
+///--
+function ReadArrReal: array of real;
+begin
+  Result := nil;
+  raise new System.ArgumentException('Функцию ReadArrReal запрещено вызывать без параметров')
+end;
+///--
+function ReadArrString: array of string;
+begin
+  Result := nil;
+  raise new System.ArgumentException('Функцию ReadArrString запрещено вызывать без параметров')
+end;
+
 
 function ReadSeqInteger(n: integer): sequence of integer;
 begin
