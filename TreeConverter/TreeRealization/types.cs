@@ -4443,6 +4443,7 @@ namespace PascalABCCompiler.TreeRealization
                     || fn.simple_function_node is compiled_function_node && (fn.simple_function_node as compiled_function_node).ConnectedToType != null)
                     && fn.simple_function_node.parameters.Count == 2 && fn.simple_function_node.parameters[1].default_value != null)
                 {
+                    
                     int param_num = (fn.simple_function_node is common_namespace_function_node && (fn.simple_function_node as common_namespace_function_node).ConnectedToType != null || fn.simple_function_node is compiled_function_node && (fn.simple_function_node as compiled_function_node).ConnectedToType != null) ? 1 : 0;
                     base_function_call copy_fn = null;
                     if (fn.simple_function_node.return_value_type == ctn)
@@ -4457,6 +4458,7 @@ namespace PascalABCCompiler.TreeRealization
                     {
                         continue;
                     }
+                    
                     //TODO: Очень внимательно рассмотреть. Если преобразование типов должно идти через compile_time_executor.
                     possible_type_convertions ptc = type_table.get_convertions(fn.simple_function_node.return_value_type, ctn);
                     if ((ptc.first == null) || (ptc.first.convertion_method == null))

@@ -989,7 +989,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         compar = si.sym_info as function_node;
                         if (fn != compar && convertion_data_and_alghoritms.function_eq_params(fn, compar))
-                            //if (fn is common_namespace_function_node && compar is common_namespace_function_node && (fn as common_namespace_function_node).comprehensive_namespace == (compar as common_namespace_function_node).comprehensive_namespace)
+                            if (fn is common_namespace_function_node && compar is common_namespace_function_node && (fn as common_namespace_function_node).comprehensive_namespace == (compar as common_namespace_function_node).comprehensive_namespace)
 
                             AddError(new FunctionDuplicateDefinition(compar, fn));
                     }
@@ -2723,7 +2723,8 @@ namespace PascalABCCompiler.TreeConverter
                                 {
                                     if (fn_common.name != meth.name)
                                     {
-                                        syntax_tree_visitor.AddError(fn_common.loc, "AMBIGUITY_BETWEEN_NAMES_{0}_AND_{1}", fn_common.name, meth.name);
+                                        // SSM 21.12.19 - закомментировал - исправляет баг #2163. Не пойму, зачем эта проверка
+                                        //syntax_tree_visitor.AddError(fn_common.loc, "AMBIGUITY_BETWEEN_NAMES_{0}_AND_{1}", fn_common.name, meth.name);
                                     }
                                 }
                                 else

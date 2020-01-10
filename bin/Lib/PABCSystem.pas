@@ -628,6 +628,8 @@ function TryRead(var x: single): boolean;
 
 /// Возвращает значение типа integer, введенное с клавиатуры
 function ReadInteger: integer;
+/// Возвращает значение типа int64, введенное с клавиатуры
+function ReadInt64: int64;
 /// Возвращает значение типа real, введенное с клавиатуры
 function ReadReal: real;
 /// Возвращает значение типа char, введенное с клавиатуры
@@ -639,6 +641,8 @@ function ReadBoolean: boolean;
 
 /// Возвращает значение типа integer, введенное с клавиатуры, и переходит на следующую строку ввода
 function ReadlnInteger: integer;
+/// Возвращает значение типа int64, введенное с клавиатуры, и переходит на следующую строку ввода
+function ReadlnInt64: int64;
 /// Возвращает значение типа real, введенное с клавиатуры, и переходит на следующую строку ввода
 function ReadlnReal: real;
 /// Возвращает значение типа char, введенное с клавиатуры, и переходит на следующую строку ввода
@@ -752,6 +756,8 @@ function ReadlnString4(prompt: string): (string, string, string, string);
 
 /// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры
 function ReadInteger(prompt: string): integer;
+/// Выводит приглашение к вводу и возвращает значение типа int64, введенное с клавиатуры
+function ReadInt64(prompt: string): int64;
 /// Выводит приглашение к вводу и возвращает значение типа real, введенное с клавиатуры
 function ReadReal(prompt: string): real;
 /// Выводит приглашение к вводу и возвращает значение типа char, введенное с клавиатуры
@@ -764,6 +770,9 @@ function ReadBoolean(prompt: string): boolean;
 /// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры, 
 ///и осуществляет переход на следующую строку ввода
 function ReadlnInteger(prompt: string): integer;
+/// Выводит приглашение к вводу и возвращает значение типа int64, введенное с клавиатуры, 
+///и осуществляет переход на следующую строку ввода
+function ReadlnInt64(prompt: string): int64;
 /// Выводит приглашение к вводу и возвращает значение типа real, введенное с клавиатуры, 
 ///и осуществляет переход на следующую строку ввода
 function ReadlnReal(prompt: string): real;
@@ -821,6 +830,8 @@ procedure Readln(f: Text; var x: string);
 
 /// Возвращает значение типа integer, введенное из текстового файла f
 function ReadInteger(f: Text): integer;
+/// Возвращает значение типа int64, введенное из текстового файла f
+function ReadInt64(f: Text): int64;
 /// Возвращает значение типа real, введенное из текстового файла f
 function ReadReal(f: Text): real;
 /// Возвращает значение типа char, введенное из текстового файла f
@@ -833,6 +844,9 @@ function ReadBoolean(f: Text): boolean;
 /// Возвращает значение типа integer, введенное из текстового файла f, 
 ///и осуществляет переход на следующую строку
 function ReadlnInteger(f: Text): integer;
+/// Возвращает значение типа int64, введенное из текстового файла f, 
+///и осуществляет переход на следующую строку
+function ReadlnInt64(f: Text): int64;
 /// Возвращает значение типа real, введенное из текстового файла f, 
 ///и осуществляет переход на следующую строку
 function ReadlnReal(f: Text): real;
@@ -1913,6 +1927,13 @@ function ReadArrInteger(n: integer): array of integer;
 function ReadArrReal(n: integer): array of real;
 /// Возвращает массив из n строк, введенных с клавиатуры
 function ReadArrString(n: integer): array of string;
+///--
+function ReadArrInteger: array of integer;
+///--
+function ReadArrReal: array of real;
+///--
+function ReadArrString: array of string;
+
 
 /// Выводит приглашение к вводу и возвращает массив из n целых, введенных с клавиатуры
 function ReadArrInteger(prompt: string; n: integer): array of integer;
@@ -1926,6 +1947,8 @@ function ReadArrString(prompt: string; n: integer): array of string;
 // -----------------------------------------------------
 /// Возвращает двумерный массив размера m x n, заполненный указанными значениями по строкам
 function Matr<T>(m,n: integer; params data: array of T): array [,] of T;
+/// Возвращает двумерный массив, заполненный значениями из одномерных массивов 
+function Matr<T>(params aa: array of array of T): array [,] of T;
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
@@ -1993,38 +2016,52 @@ function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 //>>     Вспомогательные функции для pattern matching # 
 // -----------------------------------------------------
 
+///--
 function __TypeCheckAndAssignForIsMatch<T>(obj: object; var res: T): boolean;
 
+///--
 function __WildCardsTupleEqual<T1, T2, T3, T4>(
     first: Tuple<T1, T2>; 
     second: Tuple<T3, T4>;
     elemsToCompare: sequence of integer): boolean;
 
+///--
 function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6>(
     first: Tuple<T1, T2, T3>; 
     second: Tuple<T4, T5, T6>;
     elemsToCompare: sequence of integer): boolean;
 
+///--
 function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8>(
     first: Tuple<T1, T2, T3, T4>; 
     second: Tuple<T5, T6, T7, T8>;
     elemsToCompare: sequence of integer): boolean;
 
+///--
 function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
     first: Tuple<T1, T2, T3, T4, T5>; 
     second: Tuple<T6, T7, T8, T9, T10>;
     elemsToCompare: sequence of integer): boolean;
 
+///--
 function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
     first: Tuple<T1, T2, T3, T4, T5, T6>; 
     second: Tuple<T7, T8, T9, T10, T11, T12>;
     elemsToCompare: sequence of integer): boolean;
 
+///--
 function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
     first: Tuple<T1, T2, T3, T4, T5, T6, T7>; 
     second: Tuple<T8, T9, T10, T11, T12, T13, T14>;
     elemsToCompare: sequence of integer): boolean;
 
+
+// Вспомогательные функции для a..b
+///--
+function InRangeInternal(x: integer; a,b: integer): boolean; 
+
+///--
+function InRangeInternal(x: char; a,b: char): boolean; 
 
 // -----------------------------------------------------
 //     Стандартные классы исключений
@@ -3495,7 +3532,16 @@ begin
     var sb := new StringBuilder();
     var g := (o as System.Collections.IEnumerable).GetEnumerator();
     
-    var isdictorset := o.GetType.Name.Equals('Dictionary`2') or o.GetType.Name.Equals('SortedDictionary`2') or (o.GetType = typeof(TypedSet)) or o.GetType.Name.Equals('HashSet`1') or o.GetType.Name.Equals('SortedSet`1');
+    var otype := o.GetType;
+    
+    //var isdictorset := otype.Name.Equals('Dictionary`2') or otype.Name.Equals('SortedDictionary`2') or otype.Name.Equals('HashSet`1') or otype.Name.Equals('SortedSet`1');
+    var isdictorset := o.GetType.IsGenericType and 
+      ((otype.GetGenericTypeDefinition = typeof(Dictionary<,>))
+      or (otype.GetGenericTypeDefinition = typeof(SortedDictionary<,>))
+      or (otype.GetGenericTypeDefinition = typeof(HashSet<>))
+      or (otype.GetGenericTypeDefinition = typeof(SortedSet<>)));
+    isdictorset := isdictorset or (otype = typeof(TypedSet));
+    
     if isdictorset then
       sb.Append('{')
     else sb.Append('[');
@@ -4066,19 +4112,17 @@ begin
   Result := Result.Concat(a);
 end;
 
-///--
-function operator*<T>(a: sequence of T; n: integer): sequence of T; extensionmethod;
+{function operator*<T>(a: sequence of T; n: integer): sequence of T; extensionmethod;
 begin
   Result := System.Linq.Enumerable.Empty&<T>();
   loop n do
     Result := Result.Concat(a);
 end;
 
-///--
 function operator*<T>(n: integer; a: sequence of T): sequence of T; extensionmethod;
 begin
   Result := a * n;
-end;
+end;}
 
 ///--
 function operator in<T>(x: T; Self: sequence of T): boolean; extensionmethod;
@@ -4375,6 +4419,26 @@ begin
   Print(prompt);
   Result := ReadArrString(n);
 end;
+
+///--
+function ReadArrInteger: array of integer;
+begin
+  Result := nil;
+  raise new System.ArgumentException('Функцию ReadArrInteger запрещено вызывать без параметров')
+end;
+///--
+function ReadArrReal: array of real;
+begin
+  Result := nil;
+  raise new System.ArgumentException('Функцию ReadArrReal запрещено вызывать без параметров')
+end;
+///--
+function ReadArrString: array of string;
+begin
+  Result := nil;
+  raise new System.ArgumentException('Функцию ReadArrString запрещено вызывать без параметров')
+end;
+
 
 function ReadSeqInteger(n: integer): sequence of integer;
 begin
@@ -5197,59 +5261,59 @@ begin
   end
 end;
 
-
 function ReadInteger: integer;
 begin
-  var x: integer;
-  read(x);
-  Result := x;
+  Read(Result);
+end;
+
+function ReadInt64: int64;
+begin
+  Read(Result);
 end;
 
 function ReadReal: real;
 begin
-  var x: real;
-  read(x);
-  Result := x;
+  Read(Result);
 end;
 
 function ReadChar: char;
 begin
-  var x: char;
-  read(x);
-  Result := x;
+  Read(Result);
 end;
 
 function ReadString: string;
 begin
-  var x: string;
-  read(x);
+  Read(Result);
   readln();
-  Result := x;
 end;
 
 function ReadBoolean: boolean;
 begin
-  var x: boolean;
-  read(x);
-  Result := x;
+  Read(Result);
 end;
 
 function ReadlnInteger: integer;
 begin
   Result := ReadInteger;
-  readln();
+  Readln();
+end;
+
+function ReadlnInt64: int64;
+begin
+  Result := ReadInt64;
+  Readln();
 end;
 
 function ReadlnReal: real;
 begin
   Result := ReadReal;
-  readln();
+  Readln();
 end;
 
 function ReadlnChar: char;
 begin
   Result := ReadChar;
-  readln();
+  Readln();
 end;
 
 function ReadlnString: string;
@@ -5260,7 +5324,7 @@ end;
 function ReadlnBoolean: boolean;
 begin
   Result := ReadBoolean;
-  readln();
+  Readln();
 end;
 
 function ReadInteger2 := (ReadInteger, ReadInteger);
@@ -5372,6 +5436,12 @@ begin
   Result := ReadInteger;
 end;
 
+function ReadInt64(prompt: string): int64;
+begin
+  Print(prompt);
+  Result := ReadInt64;
+end;
+
 function ReadReal(prompt: string): real;
 begin
   Print(prompt);
@@ -5400,6 +5470,12 @@ function ReadlnInteger(prompt: string): integer;
 begin
   Print(prompt);
   Result := ReadlnInteger;
+end;
+
+function ReadlnInt64(prompt: string): int64;
+begin
+  Print(prompt);
+  Result := ReadlnInt64;
 end;
 
 function ReadlnReal(prompt: string): real;
@@ -5658,56 +5734,57 @@ end;
 
 function ReadInteger(f: Text): integer;
 begin
-  var x: integer;
-  read(f, x);
-  Result := x;
+  Read(f, Result);
+end;
+
+function ReadInt64(f: Text): int64;
+begin
+  Read(f, Result);
 end;
 
 function ReadReal(f: Text): real;
 begin
-  var x: real;
-  read(f, x);
-  Result := x;
+  Read(f, Result);
 end;
 
 function ReadChar(f: Text): char;
 begin
-  var x: char;
-  read(f, x);
-  Result := x;
+  Read(f, Result);
 end;
 
 function ReadString(f: Text): string;
 begin
-  var x: string;
-  read(f, x);
-  readln(f);
-  Result := x;
+  Read(f, Result);
+  Readln(f);
 end;
 
 function ReadBoolean(f: Text): boolean;
 begin
-  var x: boolean;
-  read(f, x);
-  Result := x;
+  Read(f, Result);
 end;
 
 function ReadlnInteger(f: Text): integer;
 begin
   Result := ReadInteger(f);
-  readln(f);
+  Readln(f);
+end;
+
+function ReadlnInt64(f: Text): int64;
+begin
+  Result := ReadInt64(f);
+  Readln(f);
 end;
 
 function ReadlnReal(f: Text): real;
 begin
   Result := ReadReal(f);
-  readln(f);
+  Readln(f);
 end;
 
 function ReadlnChar(f: Text): char;
 begin
   Result := ReadChar(f);
-  readln(f);
+  Readln(f);
 end;
 
 function ReadlnString(f: Text): string;
@@ -5718,7 +5795,7 @@ end;
 function ReadlnBoolean(f: Text): boolean;
 begin
   Result := ReadBoolean(f);
-  readln(f);
+  Readln(f);
 end;
 // -----------------------------------------------------
 //                   TextFile methods
@@ -9331,6 +9408,26 @@ end;
 //>>     Методы расширения списков # Extension methods for List T
 // -----------------------------------------------------
 
+/// Возвращает последовательность индексов списка
+function Indices<T>(Self: List<T>): sequence of integer; extensionmethod := Range(0, Self.Count - 1);
+
+/// Возвращает последовательность индексов элементов списка, удовлетворяющих условию
+function Indices<T>(Self: List<T>; cond: T->boolean): sequence of integer; extensionmethod;
+begin
+  for var i := 0 to Self.Count - 1 do
+    if cond(Self[i]) then
+      yield i;
+end;
+
+/// Возвращает последовательность индексов элементов списка, удовлетворяющих условию
+function Indices<T>(Self: List<T>; cond: (T,integer) ->boolean): sequence of integer; extensionmethod;
+begin
+  for var i := 0 to Self.Count - 1 do
+    if cond(Self[i], i) then
+      yield i;
+end;
+
+
 /// Перемешивает элементы списка случайным образом
 function Shuffle<T>(Self: List<T>): List<T>; extensionmethod;
 begin
@@ -9585,6 +9682,7 @@ end;
 
 procedure CorrectFromTo(situation: integer; Len: integer; var from, &to: integer; step: integer);
 begin
+  if situation=0 then exit;
   if step > 0 then
   begin
     case situation of
@@ -9651,7 +9749,17 @@ begin
     if (&to < -1) or (&to > Len) then
       raise new ArgumentException(GetTranslation(PARAMETER_TO_OUT_OF_RANGE));
   
-  CorrectFromTo(situation, Len, from, &to, step);
+  if situation > 0 then
+    CorrectFromTo(situation, Len, from, &to, step);
+  
+  // s[a:b] - Opt
+  if step = 1 then
+  begin
+    Result := &to - from;
+    if Result<0 then 
+      Result := 0;
+    exit;  
+  end;
   
   var count: integer;
   
@@ -9698,8 +9806,11 @@ end;
 function SystemSliceListImpl<T>(Self: List<T>; situation: integer; from, &to: integer; step: integer := 1): List<T>;
 begin
   var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, Self.Count, from, &to, step);
-  
-  Result := CreateSliceFromListInternal(Self, from, step, count);
+  {if (step=1) and (count>32) then // 32 - empirical
+  begin
+    Result := Self.GetRange(from,count);
+  end
+  else} Result := CreateSliceFromListInternal(Self, from, step, count);
 end;
 
 ///--
@@ -10044,6 +10155,18 @@ begin
     Result[i,j] := data[k];
     k += 1;
   end;
+end;
+
+function Matr<T>(params aa: array of array of T): array [,] of T;
+begin
+  var cols := aa.Max(a -> a.Length);
+  var r := new T[aa.Length,cols];
+  
+  for var i:=0 to aa.Length-1 do
+    for var j:=0 to aa[i].Length-1 do
+      r[i,j] := aa[i][j];
+  
+  Result := r;
 end;
 
 // Реализация операций с матрицами - только после введения RowCount и ColCount
@@ -10479,8 +10602,12 @@ end;
 function SystemSliceArrayImpl<T>(Self: array of T; situation: integer; from, &to: integer; step: integer := 1): array of T;
 begin
   var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, Self.Length, from, &to, step);
-  
-  Result := CreateSliceFromArrayInternal(Self, from, step, count)
+  {if (step = 1) and (count>32) then // 32 - empirical
+  begin
+    Result := new T[count];
+    System.Array.Copy(Self,from,Result,0,count);
+  end
+  else} Result := CreateSliceFromArrayInternal(Self, from, step, count)
 end;
 
 ///--
@@ -10542,6 +10669,17 @@ begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
 
+///--
+function InRangeInternal(x: integer; a,b: integer): boolean; 
+begin
+  Result := (a <= x) and (x <= b)
+end;
+
+///--
+function InRangeInternal(x: char; a,b: char): boolean; 
+begin
+  Result := (a <= x) and (x <= b)
+end;
 
 // Дополнения февраль 2016: IsEven, IsOdd
 
@@ -10989,7 +11127,9 @@ begin
   var tov := &to - 1;
   var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, Self.Length, fromv, tov, step);
   
-  Result := CreateSliceFromStringInternal(Self, fromv + 1, step, count)
+  if step = 1 then // Opt s[a:b]
+    Result := Self.Substring(fromv,count) 
+  else Result := CreateSliceFromStringInternal(Self, fromv + 1, step, count)
 end;
 
 ///--

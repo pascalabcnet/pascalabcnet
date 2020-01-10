@@ -20,7 +20,7 @@ namespace PascalABCCompiler.Parsers
 		protected Dictionary<string, string> keywords = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
 		protected Hashtable ignored_keywords = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
 		protected Hashtable keyword_kinds = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
-		
+
 		public DefaultLanguageInformation()
 		{
 			
@@ -1087,14 +1087,16 @@ namespace PascalABCCompiler.Parsers
 			return scope.TopScope.Name + "." +scope.Name;
 			else return scope.Name;
 		}
-		
-		protected virtual string GetSimpleDescriptionForType(ITypeScope scope)
-		{
-			string template_str=GetTemplateString(scope);
-			if (scope.Name.StartsWith("$"))
-				return scope.Name.Substring(1,scope.Name.Length-1)+template_str;
-			return scope.Name+template_str;
-		}
+
+        protected virtual string GetSimpleDescriptionForType(ITypeScope scope)
+        {
+            string template_str = GetTemplateString(scope);
+            if (scope.Name.StartsWith("$"))
+                return scope.Name.Substring(1, scope.Name.Length - 1) + template_str;
+            if (!string.IsNullOrEmpty(template_str))
+                return scope.Name.Replace("<>", "") + template_str;
+            return scope.Name + template_str;
+        }
 		
 		protected virtual string GetDescriptionForCompiledType(ICompiledTypeScope scope)
 		{
@@ -2241,12 +2243,16 @@ namespace PascalABCCompiler.Parsers
             {
                 ITypeScope ts = scope as ITypeScope;
                 if (ts == null) return null;
-                if (tmp_si is ITypeScope) return null;
                 ITypeScope[] indexers = ts.Indexers;
+                if (tmp_si is ITypeScope)
+                    indexers = ts.StaticIndexers;
                 if ((indexers == null || indexers.Length == 0) && !(ts is IArrayScope))
                     return null;
                 StringBuilder sb = new StringBuilder();
-                sb.Append("this");
+                if (!(tmp_si is ITypeScope))
+                    sb.Append("this");
+                else
+                    sb.Append(GetSimpleDescriptionWithoutNamespace(tmp_si as ITypeScope));
                 sb.Append('[');
                 if (indexers != null)
                     for (int i = 0; i < indexers.Length; i++)
@@ -2750,8 +2756,19 @@ namespace PascalABCCompiler.Parsers
                             i--;
                             if (kav.Count == 0)
                                 kav.Push('\'');
-                            while (i >= 0 && Text[i] != '\'')
-                                i--;
+                            while (i >= 0)
+                            {
+                                if (Text[i] != '\'')
+                                    i--;
+                                else
+                                {
+                                    if (i >= 1 && Text[i - 1] == '\'')
+                                        i -= 2;
+                                    else
+                                        break;
+                                }
+                            }
+                            
                             if (i >= 0)
                                 i--;
                         }
@@ -2790,7 +2807,7 @@ namespace PascalABCCompiler.Parsers
                     }
                     else
                         if (ch == '\'')
-                        kav.Push('\'');
+                            kav.Push('\'');
                     sb.Insert(0, ch);//.Append(Text[i]);
                 }
                 else if (ch == '.' || ch == '^' || ch == '&' || ch == '?' && IsPunctuation(Text, i + 1))
@@ -2937,7 +2954,14 @@ namespace PascalABCCompiler.Parsers
                                     }
                                 }
                                 else
+                                {
                                     end = true;
+                                    if (ch == '[')
+                                    {
+                                        keyw = KeywordKind.SquareBracket;
+                                    }
+                                }
+                                    
                             }
                             else sb.Insert(0, ch); punkt_sym = true;
                             break;
@@ -3519,6 +3543,8 @@ namespace PascalABCCompiler.Parsers
                                 else
                                     kav.Pop();
                                 sb.Insert(0, ch);
+                                if (kav.Count == 0 && tokens.Count == 0)
+                                    end = true;
                                 break;
                             default:
                                 if (!(ch == ' ' || char.IsControl(ch)))

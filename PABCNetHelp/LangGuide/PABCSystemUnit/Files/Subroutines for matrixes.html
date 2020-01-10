@@ -12,6 +12,8 @@
 </HEAD><body><H1>ѕодпрограммы дл€ создани€ двумерных динамических массивов</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Matr&lt;T&gt;(m,n: integer; <b>params</b> data: <b>array</b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает двумерный массив размера m x n, заполненный указанными значени€ми по строкам</td></tr>
+<tr><td><code><b>function</b> Matr&lt;T&gt;(<b>params</b> aa: <b>array</b>  <b>of</b> <b>array</b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает двумерный массив, заполненный значени€ми из одномерных массивов</td></tr>
 <tr><td><code><b>function</b> MatrFill&lt;T&gt;(m, n: integer; x: T): <b>array</b> [,]  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает двумерный массив размера m x n, заполненный элементами x</td></tr>
 <tr><td><code><b>function</b> MatrGen&lt;T&gt;(m, n: integer; gen: (integer,integer)-&gt;T): <b>array</b> [,]  <b>of</b> T;</code>

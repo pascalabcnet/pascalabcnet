@@ -57,6 +57,7 @@
     <Compile Include="SugarVisitors\PropertyDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\QuestionPointDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\PatternsDesugaringVisitor.cs" />
+    <Compile Include="SugarVisitors\NewRangeDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\SliceDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\TupleVisitor.cs" />
     <Compile Include="VisitorsForLambdas\RenameOnExceptVarsVisitor.cs" />

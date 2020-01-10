@@ -778,7 +778,6 @@ namespace PascalABCCompiler.VBNETParser
             //if (j>= 0 && Text[j] == '\'') return CodeCompletion.KeywordKind.kw_punkt;
             while (i >= 0 && (Text[i] == ' ' || char.IsControl(Text[i]))) i--;
             if (i >= 0 && Text[i] == ':') return PascalABCCompiler.Parsers.KeywordKind.Colon;
-
             if (i >= 0 && Text[i] == ',')
             {
 

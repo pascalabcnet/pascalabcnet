@@ -82,7 +82,7 @@
 %type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 /*const_func_expr_list*/ case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
-%type <ex> const_simple_expr term simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda simple_expr range_term range_factor 
+%type <ex> const_simple_expr term term1 simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda simple_expr range_term range_factor 
 %type <ex> external_directive_ident init_const_expr case_label variable var_reference /*optional_write_expr*/ optional_read_expr simple_expr_or_nothing var_question_point
 %type <ob> for_cycle_type  
 %type <ex> format_expr format_const_expr const_expr_or_nothing  
@@ -244,8 +244,9 @@ program_file
 			$$ = NewProgramModule($1 as program_name, $2, $3 as uses_list, $4, $5, @$);
         }
 	;
-		
-optional_tk_point /* это нужно для intellisensа чтобы строилось дерево при отсутствии точки в конце */
+
+/* это нужно для intellisensа чтобы строилось дерево при отсутствии точки в конце */
+optional_tk_point 
     : tkPoint
         { $$ = $1; }
     | tkSemiColon
@@ -539,7 +540,8 @@ decl_sect
 		{ $$ = $1; }
     ;
 
-proc_func_constr_destr_decl /* SSM 2.1.13 упрощение грамматики */
+/* SSM 2.1.13 упрощение грамматики */
+proc_func_constr_destr_decl 
 	: proc_func_decl              
 		{ $$ = $1; }
 	| constr_destr_decl 
@@ -3162,6 +3164,19 @@ question_expr
             	parsertools.AddErrorFromResource("TWO_NILS_IN_QUESTION_EXPR",@3);
 			$$ = new question_colon_expression($1, $3, $5, @$);  
 		}
+    | tkIf expr_dq tkThen expr_l1 tkElse expr_l1 
+        { 
+        	if (parsertools.build_tree_for_formatter)
+        	{
+        		$$ = new if_expr_new($2, $4, $6, @$);
+        	}
+        	else
+        	{
+            	if ($4 is nil_const && $6 is nil_const)
+            		parsertools.AddErrorFromResource("TWO_NILS_IN_QUESTION_EXPR",@4);
+				$$ = new question_colon_expression($2, $4, $6, @$);
+			}			
+		}
     ;
 
 empty_template_type_reference
@@ -3672,9 +3687,21 @@ relop
     ;
 
 simple_expr                                                    
+    : term1
+		{ $$ = $1; }
+    | simple_expr tkDotDot term1 
+	{ 
+		if (parsertools.build_tree_for_formatter)
+			$$ = new diapason_expr($1,$3,@$);
+		else 
+			$$ = new diapason_expr_new($1,$3,@$); 
+	}
+    ;
+
+term1                                                    
     : term
 		{ $$ = $1; }
-    | simple_expr addop term                        
+    | term1 addop term                        
         { 
 			$$ = new bin_expr($1, $3, $2.type, @$); 
 		}

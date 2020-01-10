@@ -9601,7 +9601,13 @@ namespace PascalABCCompiler.NETGenerator
                         }
                     }
                     PushObjectCommand(ifc);
-                    il.Emit(OpCodes.Ldftn, mi);
+                    if (mi.IsVirtual || mi.IsAbstract)
+                    {
+                        il.Emit(OpCodes.Dup);
+                        il.Emit(OpCodes.Ldvirtftn, mi);
+                    }
+                    else
+                        il.Emit(OpCodes.Ldftn, mi);
                     il.Emit(OpCodes.Newobj, cnstr);
                     return;
                 }
@@ -9614,8 +9620,6 @@ namespace PascalABCCompiler.NETGenerator
             }
 
             is_dot_expr = false;
-            bool need_fee = false;
-            bool is_comp_gen = false;
             EmitArguments(parameters, real_parameters);
             if (value.new_obj_awaited())
             {
@@ -9689,7 +9693,13 @@ namespace PascalABCCompiler.NETGenerator
                     }
                 }
                 PushObjectCommand(ifc);
-                il.Emit(OpCodes.Ldftn, mi);
+                if (mi.IsVirtual || mi.IsAbstract)
+                {
+                    il.Emit(OpCodes.Dup);
+                    il.Emit(OpCodes.Ldvirtftn, mi);
+                }
+                else
+                    il.Emit(OpCodes.Ldftn, mi);
                 il.Emit(OpCodes.Newobj, value.constructor.constructor_info);
                 return;
             }
