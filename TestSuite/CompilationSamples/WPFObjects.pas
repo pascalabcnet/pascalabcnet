@@ -43,6 +43,8 @@ type
   /// Тип размера
   GSize = System.Windows.Size;
   /// Тип точки
+  Point = System.Windows.Point;
+  /// Тип точки
   GPoint = System.Windows.Point;
   /// Тип окна
   GWindow = System.Windows.Window;
@@ -228,7 +230,7 @@ type
     /// Видимость графического объекта
     property Visible: boolean 
       read InvokeBoolean(()->ob.Visibility = Visibility.Visible)
-      write Invoke(procedure -> if value then ob.Visibility := Visibility.Visible else ob.Visibility := Visibility.Hidden);
+      write Invoke(procedure -> if value then begin gr.Visibility := Visibility.Visible; ob.Visibility := Visibility.Visible end else begin gr.Visibility := Visibility.Hidden; ob.Visibility := Visibility.Hidden end);
     /// Выравнивание текста внутри графического объекта
     property TextAlignment: Alignment write Invoke(WTA,Value);
     /// Размер шрифта текста внутри графического объекта

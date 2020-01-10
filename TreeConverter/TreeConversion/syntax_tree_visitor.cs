@@ -1087,7 +1087,8 @@ namespace PascalABCCompiler.TreeConverter
             {
             	if ( !type_table.is_with_nil_allowed(left.type) && !left.type.IsPointer)
                     AddError(right.location, "NIL_WITH_VALUE_TYPES_NOT_ALLOWED");
-            	right = null_const_node.get_const_node_with_type(left.type, (null_const_node)right);
+                if (right.conversion_type == null)
+                    right = null_const_node.get_const_node_with_type(left.type, (null_const_node)right);
             }
 
             /*if (left.semantic_node_type == semantic_node_type.null_const_node)
@@ -4039,7 +4040,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     generate_default_constructor();
                 }
-                if (!context.namespace_converted)
+                if (!context.namespace_converted || context.converted_type.name.IndexOf("<>") != -1)
                     visit_class_member_realizations(_class_body);
             }
             
@@ -10990,6 +10991,10 @@ namespace PascalABCCompiler.TreeConverter
                         }
 
                     }
+                    else if (decl is procedure_definition && get_location(decl) == null)
+                    {
+                        //yield 
+                    }
                     else
                         AddError(get_location(decl), "NAMESPACE_SHOULD_CONTAINS_ONLY_TYPES");
                 }
@@ -11041,6 +11046,20 @@ namespace PascalABCCompiler.TreeConverter
                                 ctn.SetName(_syntax_namespace_node.name + "." + ctn.name);
                             }
                         }
+                    }
+                    
+                }
+                context.leave_scope();
+            }
+            foreach (syntax_namespace_node _syntax_namespace_node in namespaces)
+            {
+                common_namespace_node cmn = dict[_syntax_namespace_node];
+                context.enter_scope(cmn.scope);
+                foreach (declaration decl in _syntax_namespace_node.defs)
+                {
+                    if (decl is procedure_definition)
+                    {
+                        hard_node_test_and_visit(decl);
                     }
                 }
                 context.leave_scope();
@@ -20286,8 +20305,20 @@ namespace PascalABCCompiler.TreeConverter
                 var expr = st.lst[0] as SyntaxTree.expression;
                 semantic_check_loop_stmt(expr);
             }
+            else if (st.typ as System.Type == typeof(SyntaxTree.foreach_stmt) && st.lst.Count == 3) // для NewRange Visitorа. Если будет перекрытие, то надоделать новые типы-маркеры
+            {
+                var expr = st.lst[0] as SyntaxTree.diapason_expr_new;
+                var td = st.lst[1] as SyntaxTree.type_definition;
+                var id = st.lst[2] as SyntaxTree.ident;
+                semantic_check_for_new_range(expr, td, id);
+            }
+            else if (st.typ as System.Type == typeof(SyntaxTree.foreach_stmt) && st.lst.Count == 1) // для a.Indices. Пока непонятно, где описывать тип-маркер
+            {
+                var expr = st.lst[0] as SyntaxTree.expression;
+                semantic_check_for_indices(expr);
+            }
             // Patterns
-            else if (st.typ is SemanticCheckType.MatchedExpression)
+            else if (st.typ is SemanticCheckType.MatchedExpression)  // Это безобразие - SemanticCheckType в TreeHelper.cs помещать!!!
             {
                 var expr = st.lst[0] as expression;
                 CheckMatchedExpression(expr);
@@ -20356,7 +20387,11 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.sugared_addressed_value av)
         {
-            if (av.sugared_expr is SyntaxTree.slice_expr) // и slice_expr_question
+            if (av.sugared_expr is SyntaxTree.diapason_expr_new) 
+            {
+                semantic_check_method_call_as_diapason_expr(av.new_addr_value as SyntaxTree.method_call);
+            }
+            else if (av.sugared_expr is SyntaxTree.slice_expr) // и slice_expr_question
             {
                 semantic_check_method_call_as_slice_expr(av.new_addr_value as SyntaxTree.method_call);
             }
@@ -20377,6 +20412,10 @@ namespace PascalABCCompiler.TreeConverter
                         //new method_call(dn, new expression_list(avqce.ret_if_false), av.source_context);*/
                 }
                 semantic_check_dot_question(av.new_addr_value as SyntaxTree.question_colon_expression);
+            }
+            else if (av.sugared_expr is SyntaxTree.bin_expr) // Это пришло от i in (2..5). Плохо, что могут быть другие bin_expr
+            {
+                semantic_check_method_call_as_inrange_expr(av.new_addr_value as SyntaxTree.method_call);
             }
             else
             {

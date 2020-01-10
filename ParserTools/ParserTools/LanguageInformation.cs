@@ -346,10 +346,11 @@ namespace PascalABCCompiler.Parsers
         public string addit_name;
         public string description;
         public SymbolKind kind;
-        public bool IsUnitNamespace = false;
+        public bool IsUnitNamespace;
         public access_modifer acc_mod;
-        public bool has_doc = false;
-        public bool not_include = false;
+        public bool is_static;
+        public bool has_doc;
+        public bool not_include;
 
         public SymInfo(string name, SymbolKind kind, string description)
         {
@@ -639,8 +640,13 @@ namespace PascalABCCompiler.Parsers
     	{
     		get;
     	}
-    	
-    	ITypeScope[] GenericInstances
+
+        ITypeScope[] StaticIndexers
+        {
+            get;
+        }
+
+        ITypeScope[] GenericInstances
     	{
     		get;
     	}

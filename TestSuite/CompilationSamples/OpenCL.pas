@@ -2093,7 +2093,7 @@ type
     static function GetEventInfo(&event: cl_event; param_name: EventInfoType; param_value_size: UIntPtr; param_value: pointer; param_value_size_ret: ^UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetEventInfo';
     
-    static function SetEventCallback(&event: cl_event; command_exec_callback_type: ErrorCode; pfn_notify: Event_Callback; user_data: pointer): ErrorCode;
+    static function SetEventCallback(&event: cl_event; command_exec_callback_type: CommandExecutionStatus; pfn_notify: Event_Callback; user_data: pointer): ErrorCode;
     external 'opencl.dll' name 'clSetEventCallback';
     
     static function RetainEvent(&event: cl_event): ErrorCode;

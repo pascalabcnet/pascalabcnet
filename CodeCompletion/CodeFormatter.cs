@@ -3382,6 +3382,11 @@ namespace CodeFormatters
             visit_node(_dot_question_node.left);
             visit_node(_dot_question_node.right);
         }
+        public override void visit(diapason_expr_new diap)
+        {
+            visit_node(diap.left);
+            visit_node(diap.right);
+        }
         #endregion
     }
 }

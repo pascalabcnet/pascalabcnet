@@ -1797,6 +1797,10 @@ procedure Sort<T>(l: List<T>);
 procedure Sort<T>(l: List<T>; cmp: (T,T)->integer);
 /// Сортирует список по критерию сортировки, задаваемому функцией сравнения less
 procedure Sort<T>(l: List<T>; less: (T,T)->boolean);
+/// Сортирует динамический массив по убыванию
+procedure SortDescending<T>(a: array of T);
+/// Сортирует список по убыванию
+procedure SortDescending<T>(l: List<T>);
 /// Изменяет порядок элементов в динамическом массиве на противоположный
 procedure Reverse<T>(a: array of T);
 /// Изменяет порядок элементов на противоположный в диапазоне динамического массива длины count, начиная с индекса index
@@ -1805,6 +1809,10 @@ procedure Reverse<T>(a: array of T; index, count: integer);
 procedure Reverse<T>(a: List<T>);
 /// Изменяет порядок элементов на противоположный в диапазоне списка длины count, начиная с индекса index
 procedure Reverse<T>(a: List<T>; index, count: integer);
+/// Изменяет порядок символов в строке на противоположный
+procedure Reverse(var s: string);
+/// Изменяет порядок символов в части строки длины count на противоположный, начиная с индекса index
+procedure Reverse(var s: string; index, count: integer);
 /// Перемешивает динамический массив случайным образом
 procedure Shuffle<T>(a: array of T);
 /// Перемешивает список случайным образом
@@ -1918,6 +1926,8 @@ function ReadArrString(prompt: string; n: integer): array of string;
 // -----------------------------------------------------
 /// Возвращает двумерный массив размера m x n, заполненный указанными значениями по строкам
 function Matr<T>(m,n: integer; params data: array of T): array [,] of T;
+/// Возвращает двумерный массив, заполненный значениями из одномерных массивов 
+function Matr<T>(params aa: array of array of T): array [,] of T;
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
@@ -1985,33 +1995,40 @@ function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 //>>     Вспомогательные функции для pattern matching # 
 // -----------------------------------------------------
 
+///--
 function __TypeCheckAndAssignForIsMatch<T>(obj: object; var res: T): boolean;
 
+///--
 function __WildCardsTupleEqual<T1, T2, T3, T4>(
     first: Tuple<T1, T2>; 
     second: Tuple<T3, T4>;
     elemsToCompare: sequence of integer): boolean;
 
+///--
 function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6>(
     first: Tuple<T1, T2, T3>; 
     second: Tuple<T4, T5, T6>;
     elemsToCompare: sequence of integer): boolean;
 
+///--
 function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8>(
     first: Tuple<T1, T2, T3, T4>; 
     second: Tuple<T5, T6, T7, T8>;
     elemsToCompare: sequence of integer): boolean;
 
+///--
 function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
     first: Tuple<T1, T2, T3, T4, T5>; 
     second: Tuple<T6, T7, T8, T9, T10>;
     elemsToCompare: sequence of integer): boolean;
 
+///--
 function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
     first: Tuple<T1, T2, T3, T4, T5, T6>; 
     second: Tuple<T7, T8, T9, T10, T11, T12>;
     elemsToCompare: sequence of integer): boolean;
 
+///--
 function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
     first: Tuple<T1, T2, T3, T4, T5, T6, T7>; 
     second: Tuple<T8, T9, T10, T11, T12, T13, T14>;
@@ -3487,7 +3504,16 @@ begin
     var sb := new StringBuilder();
     var g := (o as System.Collections.IEnumerable).GetEnumerator();
     
-    var isdictorset := o.GetType.Name.Equals('Dictionary`2') or o.GetType.Name.Equals('SortedDictionary`2') or (o.GetType = typeof(TypedSet)) or o.GetType.Name.Equals('HashSet`1') or o.GetType.Name.Equals('SortedSet`1');
+    var otype := o.GetType;
+    
+    //var isdictorset := otype.Name.Equals('Dictionary`2') or otype.Name.Equals('SortedDictionary`2') or otype.Name.Equals('HashSet`1') or otype.Name.Equals('SortedSet`1');
+    var isdictorset := o.GetType.IsGenericType and 
+      ((otype.GetGenericTypeDefinition = typeof(Dictionary<,>))
+      or (otype.GetGenericTypeDefinition = typeof(SortedDictionary<,>))
+      or (otype.GetGenericTypeDefinition = typeof(HashSet<>))
+      or (otype.GetGenericTypeDefinition = typeof(SortedSet<>)));
+    isdictorset := isdictorset or (otype = typeof(TypedSet));
+    
     if isdictorset then
       sb.Append('{')
     else sb.Append('[');
@@ -4058,19 +4084,17 @@ begin
   Result := Result.Concat(a);
 end;
 
-///--
-function operator*<T>(a: sequence of T; n: integer): sequence of T; extensionmethod;
+{function operator*<T>(a: sequence of T; n: integer): sequence of T; extensionmethod;
 begin
   Result := System.Linq.Enumerable.Empty&<T>();
   loop n do
     Result := Result.Concat(a);
 end;
 
-///--
 function operator*<T>(n: integer; a: sequence of T): sequence of T; extensionmethod;
 begin
   Result := a * n;
-end;
+end;}
 
 ///--
 function operator in<T>(x: T; Self: sequence of T): boolean; extensionmethod;
@@ -7601,6 +7625,18 @@ begin
   l.Sort((x, y)-> less(x, y) ? -1 : (less(y, x) ? 1 : 0));
 end;
 
+procedure SortDescending<T>(a: array of T);
+begin
+  Sort(a);
+  Reverse(a);
+end;
+
+procedure SortDescending<T>(l: List<T>);
+begin
+  Sort(l);
+  Reverse(l);
+end;
+
 procedure Reverse<T>(a: array of T);
 begin
   System.Array.Reverse(a);
@@ -7621,6 +7657,19 @@ begin
   a.Reverse(index, count)
 end;
 
+procedure Reverse(var s: string);
+begin
+  var cc := s.ToCharArray;
+  Reverse(cc);
+  s := new string(cc);
+end;
+
+procedure Reverse(var s: string; index, count: integer);
+begin
+  var cc := s.ToCharArray;
+  Reverse(cc,index-1,count);
+  s := new string(cc);
+end;
 
 procedure Shuffle<T>(a: array of T);
 begin
@@ -8979,7 +9028,7 @@ end;
 /// Разделяет последовательность на две по заданному условию, в котором участвует индекс. Реализуется двухпроходным алгоритмом
 function Partition<T>(Self: sequence of T; cond: (T,integer)->boolean): (sequence of T, sequence of T); extensionmethod;
 begin
-  Result := (Self.Where(cond), Self.Where((x, i)-> not cond(x, i)));
+  Result := (Self.Where(cond), Self.Where((x, i) -> not cond(x, i)));
 end;
 
 /// Объединяет две последовательности в последовательность двухэлементных кортежей
@@ -8987,7 +9036,7 @@ function ZipTuple<T, T1>(Self: sequence of T; a: sequence of T1): sequence of (T
 begin
   if a = nil then
     raise new System.ArgumentNullException('a');
-  Result := Self.Zip(a, (x, y)-> (x, y));
+  Result := Self.Zip(a, (x, y) -> (x, y));
 end;
 
 /// Объединяет три последовательности в последовательность трехэлементных кортежей
@@ -8997,7 +9046,7 @@ begin
     raise new System.ArgumentNullException('a');
   if b = nil then
     raise new System.ArgumentNullException('b');
-  Result := Self.Zip(a, (x, y)-> (x, y)).Zip(b, (p, z)-> (p[0], p[1], z));
+  Result := Self.Zip(a, (x, y) -> (x, y)).Zip(b, (p, z) -> (p[0], p[1], z));
 end;
 
 /// Объединяет четыре последовательности в последовательность четырехэлементных кортежей
@@ -9065,13 +9114,23 @@ end;
 /// Нумерует последовательность с единицы
 function Numerate<T>(Self: sequence of T): sequence of (integer, T); extensionmethod;
 begin
-  Result := 1.Step.ZipTuple(Self);
+  var i := 1;
+  foreach var x in Self do
+  begin
+    yield (i,x);
+    i += 1;
+  end;  
 end;
 
 /// Нумерует последовательность с номера from
 function Numerate<T>(Self: sequence of T; from: integer): sequence of (integer, T); extensionmethod;
 begin
-  Result := from.Step.ZipTuple(Self);
+  var i := from;
+  foreach var x in Self do
+  begin
+    yield (i,x);
+    i += 1;
+  end;  
 end;
 
 /// Табулирует функцию последовательностью
@@ -9542,6 +9601,7 @@ end;
 
 procedure CorrectFromTo(situation: integer; Len: integer; var from, &to: integer; step: integer);
 begin
+  if situation=0 then exit;
   if step > 0 then
   begin
     case situation of
@@ -9608,7 +9668,17 @@ begin
     if (&to < -1) or (&to > Len) then
       raise new ArgumentException(GetTranslation(PARAMETER_TO_OUT_OF_RANGE));
   
-  CorrectFromTo(situation, Len, from, &to, step);
+  if situation > 0 then
+    CorrectFromTo(situation, Len, from, &to, step);
+  
+  // s[a:b] - Opt
+  if step = 1 then
+  begin
+    Result := &to - from;
+    if Result<0 then 
+      Result := 0;
+    exit;  
+  end;
   
   var count: integer;
   
@@ -10001,6 +10071,18 @@ begin
     Result[i,j] := data[k];
     k += 1;
   end;
+end;
+
+function Matr<T>(params aa: array of array of T): array [,] of T;
+begin
+  var cols := aa.Max(a -> a.Length);
+  var r := new T[aa.Length,cols];
+  
+  for var i:=0 to aa.Length-1 do
+    for var j:=0 to aa[i].Length-1 do
+      r[i,j] := aa[i][j];
+  
+  Result := r;
 end;
 
 // Реализация операций с матрицами - только после введения RowCount и ColCount
@@ -10499,6 +10581,12 @@ begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
 
+///--
+function InRangeInternal(Self: integer; a,b: integer): boolean; extensionmethod;
+begin
+  Result := (a <= Self) and (Self <= b)
+end;
+
 
 // Дополнения февраль 2016: IsEven, IsOdd
 
@@ -10538,6 +10626,32 @@ end;
 function Times(Self: integer): sequence of integer; extensionmethod;
 begin
   Result := Range(0, Self - 1);
+end;
+
+/// Возвращает число, ограниченное диапазоном от bottom до top включительно
+function Clamp(Self: integer; bottom,top: integer): integer; extensionmethod;
+begin
+  if Self < bottom then 
+    Result := bottom
+  else if Self > top then 
+    Result := top
+  else Result := Self;  
+end;
+
+/// Возвращает число, ограниченное величиной top сверху
+function ClampTop(Self: integer; top: integer): integer; extensionmethod;
+begin
+  if Self > top then 
+    Result := top
+  else Result := Self;  
+end;
+
+/// Возвращает число, ограниченное величиной bottom снизу
+function ClampBottom(Self: integer; bottom: integer): integer; extensionmethod;
+begin
+  if Self < bottom then 
+    Result := bottom
+  else Result := Self;  
 end;
 
 // -----------------------------------------------------
@@ -10614,6 +10728,32 @@ begin
   if frac >= 100 then
     raise new System.ArgumentOutOfRangeException('frac', 'frac>=100');
   Result := Format('{0:f' + frac + '}', Self)
+end;
+
+/// Возвращает число, ограниченное диапазоном от bottom до top включительно
+function Clamp(Self: real; bottom,top: real): real; extensionmethod;
+begin
+  if Self < bottom then 
+    Result := bottom
+  else if Self > top then 
+    Result := top
+  else Result := Self;  
+end;
+
+/// Возвращает число, ограниченное величиной top сверху
+function ClampTop(Self: real; top: real): real; extensionmethod;
+begin
+  if Self > top then 
+    Result := top
+  else Result := Self;  
+end;
+
+/// Возвращает число, ограниченное величиной bottom снизу
+function ClampBottom(Self: real; bottom: real): real; extensionmethod;
+begin
+  if Self < bottom then 
+    Result := bottom
+  else Result := Self;  
 end;
 
 
@@ -10894,7 +11034,9 @@ begin
   var tov := &to - 1;
   var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, Self.Length, fromv, tov, step);
   
-  Result := CreateSliceFromStringInternal(Self, fromv + 1, step, count)
+  if step = 1 then // Opt s[a:b]
+    Result := Self.Substring(fromv,count) 
+  else Result := CreateSliceFromStringInternal(Self, fromv + 1, step, count)
 end;
 
 ///--

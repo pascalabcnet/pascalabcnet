@@ -35,7 +35,7 @@ namespace VisualPascalABCPlugins
         {
             get
             {
-                return "Copyright © 2005-2018 by Ivan Bondarev, Stanislav Mikhalkovich";
+                return "Copyright © 2005-2020 by Ivan Bondarev, Stanislav Mikhalkovich";
             }
         }
 
@@ -125,6 +125,7 @@ namespace VisualPascalABCPlugins
             if (i < 1 || filename.ToString() == "") 
                 return;*/
             VisualEnvironmentCompiler.ExecuteAction(VisualEnvironmentCompilerAction.OpenFile, filename.ToString());
+            VisualEnvironmentCompiler.ExecuteAction(VisualEnvironmentCompilerAction.PT4PositionCursorAfterTask, null);
         }
         public void ExecuteB_R()
         {

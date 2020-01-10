@@ -1,0 +1,500 @@
+﻿//Translator: 郑建平@夏宗萍 aka  robsean <robsean@126.com>
+//MainForm
+%PREFIX%=VP_MF_
+//MainMenu
+MR_FILE=文件
+M_NEW=新建
+M_NEW_ADV=创建
+M_NEW_ASP=创建外观
+M_UNIT_WITH_FORM=窗体
+M_FORM_PROGRAM=当前窗体的主程序
+M_OPEN=打开...
+M_SAVE=保存
+M_SAVEAS=另存为...
+M_SAVEALL=保存所有
+M_CLOSE=关闭
+M_CLOSEALLBUTTHIS=除这个以外全部关闭
+M_PRINT=打印...
+M_RECENTFILES=当前文件
+M_RECENTPROJECTS=当前工程
+M_EXIT=退出
+
+MR_EDIT=编辑
+M_UNDO=撤销
+M_REDO=重做
+M_CUT=剪切
+M_COPY=复制
+M_PASTE=粘贴
+M_FIND=查找...
+M_FINDNEXT=查找下一个
+M_REPLACE=替换...
+M_BOOKMARS=书签
+M_TOGGLEBOOKMARK=切换书签
+M_GOTONEXTBOOKMARK=下一个书签
+M_GOTOPREVBOOKMARK=上一个书签
+M_CLEARBOOKMARKS=清理所有书签
+M_DELETE=删除
+                
+MR_SERVICE=工具
+M_OPTIONS=选项...
+M_AUTOINSERT_CODE=Ñode自动完成模式
+
+MR_VIEW=查看
+M_BOTTOMPANEL=底部面板
+M_OUTPUTWINDOW=输出窗口
+M_CLEAROUTPUT=清理输出
+M_NAVIGBACK=向后导航
+M_NAVIGFORW=向前导航
+M_STYLE=接口样式...
+M_GOTO_LINE=转到行...
+M_SELECT_ALL=选择全部
+M_INTELLISENSEPANEL=快速类浏览器面板
+M_TOOLBOX=工具箱
+M_PROPERTIES=属性
+M_PROJECTEXPLORER=工程浏览器
+
+MR_INTELLISENSE=代码分析 
+M_GENERATE_REALIZATION=生成实现
+
+MR_PROJECT=工程
+M_ADD_FORM=添加窗体
+M_ADD_NEW_FILE=添加新文件
+M_ADD_EXIST_FILE=添加已经存在的文件
+M_ADD_REFERENCE=添加引用
+M_PROJECT_PROPERTIES=属性
+
+MR_PROGRAM=程序
+M_RUN_DEBUG=运行
+M_RUN_NODEBUG=在IDE外运行
+M_BUILD=构建
+M_REBUILD=重新构建
+M_STOP=停止
+M_ADD_EXPR=添加观察点
+M_DELETE_EXPR=删除观察点
+M_CLEAR_ALL=清理所有
+M_RUN_PARAMETERS=命令行参数...
+M_ARGUMENTS=参数
+
+MR_DESIGNER=设计器
+M_VIEW_CODE=查看代码
+M_SHOW_PROPERTIES=属性
+M_SHOW_GRID=显示网格
+M_SNAP_TO_GRID=捕捉到网格
+M_ALIGN=对齐 
+M_ALIGN_LEFTS=左
+M_ALIGN_RIGHTS=右
+M_ALIGN_TOPS=顶
+M_ALIGN_BOTTOMS=底
+M_ALIGN_MIDDLES=水平居中
+M_ALIGN_CENTERS=垂直居中
+M_ALIGN_TO_GRID=To Grid
+M_CENTER=中心
+M_CENTER_HORIZONTALLY=水平
+M_CENTER_VERTICALLY=垂直
+M_Z_ORDER=Z-order
+M_BRING_TO_FRONT=Bring to Front
+M_SEND_TO_BACK=Send to Back
+M_TAB_ORDER=Tab Order
+M_SIZE_TO=Size to
+M_SIZE_TO_CONTROL=控件
+M_SIZE_TO_CONTROL_WIDTH=控件宽度
+M_SIZE_TO_CONTROL_HEIGHT=控件高度
+M_SIZE_TO_GRID=网格
+M_PROGRAM_TAB=代码
+M_FORM_TAB=设计器
+M_COMMON_COMPONENTS=Common
+M_VISUAL_COMPONENTS=Visual
+M_DATA_COMPONENTS=Data
+M_NON_VISUAL_COMPONENTS=Non Visual
+NOTHING_SELECTED=Nothing selected
+{0}_COMPONENTS1_SELECTED={0} component is selected
+{0}_COMPONENTS2_SELECTED={0} components are selected
+{0}_COMPONENTS5_SELECTED={0} components are selected
+
+MR_DEBUG=调试
+M_DEBUGSTART=开始调试
+M_DEBUGCONT=继续
+M_DEBUGSTOP=断开
+M_STEPOUT=单步跳出
+M_STEPOVER=单步跳过
+M_STEPIN=单步进入
+M_RUNTOCUR=Run to Cursor
+M_ENDDEBUG=停止调试
+
+M_GOTO_DEFINITION=转到声明
+M_GOTO_REALIZATION=转到定义
+M_FIND_ALL_REFERENCES=Find References
+M_RENAME=重命令
+M_FORMAT=格式化代码
+M_SAMPLES=示例
+M_COLLAPSE_REGIONS=Collapse regions
+
+TP_WARNINGLIST=警告
+TP_VARLIST=局部变量
+TP_WATCHLIST=观察点列表
+TP_DISASSEMBLY=反汇编窗口
+TP_FIND_SYMBOL_RESULTS=搜索结果
+CLMN_VAR=Var
+CLMN_TYPE=Type
+CLMN_VALUE=Value
+
+TP_IMMEDIATE_WINDOW=Immediate Window
+
+RF_RENAME=重命名
+RF_ENTER_NEW_NAME=Enter the new name of the member
+RF_OK=OK
+RF_CANCEL=取消
+
+M_DELETE_BREAKPOINT=移除
+M_BREAKPOINT_CONDITION=Condition...
+
+M_BREAKPOINT_CONDITION_FORM=Breakpoint Condition
+M_CONDITION2=Condition:
+M_IF_TRUE=Is true
+M_IF_CHANGED=Changed
+
+WT_EXPR=Expression
+WT_TYPE=Type
+WT_VALUE=Value
+
+MR_PLUGINS=插件
+
+MR_OPTIONS=选项
+M_COMPILEROPTIONS=编译器选项
+M_VIEWOPTIONS=查看
+
+MR_HELP=帮助
+M_HELP=Contents
+M_DOTNET_HELP=.NET Framework 帮助 (MSDN)
+M_EXAMPLES=示例
+M_MAINFEATURES=Main Features
+M_ABOUT=关于
+M_OPENSAMPLES=示例
+M_OPENTUTORIAL=学习PascalABC.NET
+
+M_SET_ACTIVE=Set Active
+
+TP_OUTPUTWINDOW=输出窗口 
+TP_ERRORSLIST=错误列表 
+TP_COMPILERMESSAGES=编译器信息
+
+SB_LN=行
+SB_COL=列
+
+TS_RUN=运行
+
+FROM_METADATA=Metadata
+AT_SELECT=应用程序类型
+AT_CONSOLE=控制台
+AT_WINDOWS=Windows
+AT_DLL=DLL
+
+RUN_DLL_WARNING_TEXT=不能运行DLL
+
+RUN_PCU_WARNING_TEXT=不能运行编译的单元
+
+SAVE_CHANGES_IN_FILE{0}=Save changes in file '{0}' ?
+SAVE_CHANGES_IN_PROJECT{0}=Save changes in project '{0}' ?
+
+SHOULD_CREATE_FORM_FIRST=Create main form firstly 
+CAN_NOT_GENERATE_CODE=It is impossible to generate source code.\r\nPerhaps pseudo-comments are deleted
+CODE_GENERATION_UNSUCCEFULL=Source code generation is unsuccessful due to syntax errors
+CAN_NOT_NAVIGATE_TO_EVENT_HANDLER=It is impossible to navigate event handler due to syntax errors
+FORM_DESIGNER=Form designer
+TOOLBOX_LOADING_UNSUCCEFULL=Toolbox loading is unsuccessful
+
+CT_STANDARD_ELEMENTS=Common Controls
+CT_CONTAINERS=Containers
+CT_MENUS_PANES=Menus & Toolbar
+CT_DATA=Data
+CT_COMPONENTS=Components
+CT_PRINTING=打印
+CT_DIALOG_WINDOWS=对话框
+
+FTS_LOADING=加载...
+FTS_KILLPROCESS=杀死进程...
+FTS_CANCELLOADING=中专加载...
+
+ER_NUM=
+ER_LINE=行
+ER_FILE=文件名称
+ER_DESCRIPTION=描述
+ER_PATH=文件路径
+ER_COPY=复制
+
+MSGTYPE=[VisualPascalABCNET]
+ERROR_CREATING_WORKDIR_{0}_{1}=Work directory '{0}' creating error : {1}
+
+INPUT=输入数据:
+INPUT_OK=Enter
+
+OW_RUNTIME_EXCEPTION{0}_MESSAGE{1}=运行时异常: {0}: {1}
+OW_RUNTIME_EXCEPTION_STACKTRACE{0}=2LINES
+Stack trace:
+{0}
+
+ERRORLIST_RUNTIME_EXCEPTION_MESSAGE{0}=运行时异常: {0}
+
+EXCEPTION_IN_START_EXE{0}=Error occured under attempt to run exe {0}. Perhaps, exe-files are denied to run from this disk. To solve problem redirect exe saving to another disk (Service->Options->Compiler options) 
+
+ERROR_FILE_EXISTS_IN_CODEPAGES=It is impossible to save file with this name, because another file with tiis name is opened
+
+SAVE_FILE_ERROR_TEXT{0}=错误，在保存文件{0}
+
+FILE_ALREADY_EXISTS{0}=文件 {0} 已经存在
+TOO_LONG_FILE_NAME{0}=太长的文件名称
+PROJECT_NAME_EMPTY=工程名称是空的
+FILE_NAME_EMPTY=文件名称是空的
+PROJECT_DIRECTORY_EMPTY=工程目录是空的
+DIRECTORY_ALREADY_EXISTS{0}=目录 {0} 已经存在
+ERROR_IN_FILE_CREATION=错误，在文件创建期间
+ERROR_IN_PROJECT_CREATION=错误，在工程创建期间
+ERROR_IN_PATH=Illegal symbols in file path
+PROJECT_TEMPLATE_NOT_SELECTED=工程类未选择
+FILE_TEMPLATE_NOT_SELECTED=文件类型未选择
+TOO_OLD_PROJECT_FILE_VERSION=不能打开工程的早期版本。尝试重新创建一个工程 
+MAJOR_VERSION_MUST_BE_SET=Major version must be set
+MAJOR_VERSION_LESS_ZERO=Major version must be non negative
+MAJOR_VERSION_MUST_BE_INT=Major version must be non negative integer
+MINOR_VERSION_MUST_BE_SET=Minor version must be set
+MINOR_VERSION_LESS_ZERO=Minor version must be non negative
+MINOR_VERSION_MUST_BE_INT=Minor version must be non negative integer
+BUILD_VERSION_MUST_BE_SET=Build version must be set
+BUILD_VERSION_LESS_ZERO=Build version must be non negative
+BUILD_VERSION_MUST_BE_INT=Build version must be non negative integer
+REVISION_VERSION_MUST_BE_SET=Revision version must be set
+REVISION_VERSION_LESS_ZERO=Revision version must be non negative
+REVISION_VERSION_MUST_BE_INT=Revision version must be non negative integer
+ERROR_OPEN_PROJECT=Error during project open
+CHANGED_FILE=Changed file
+FILE_CHANGED_MESSAGE=File has been changed by another program. Download it again?
+FILE_NOT_EXIST_MESSAGE=No file on disk. Leave it open in the editor?
+INVALID_SOURCE_FILE_NAME=Invalid characters in file name
+INVALID_SOURCE_FILE_EXTENSION=Invalid file extension
+CANNOT_EXCLUDE_MAIN_FILE=Can not exclude main file from the project
+M_NEW_PROJECT=新建工程
+M_OPEN_PROJECT=打开工程...
+M_CLOSE_PROJECT=关闭工程
+PRJ_NEW_PROJECT=新建工程
+PRJ_PROJECT_TYPES=工程模板
+PRJ_PROJECT_NAME=工程名称
+PRJ_PROJECT_DIR=工程目录
+PRJ_CONSOLE_APP=控制台应用程序
+PRJ_WINFORMS_APP=Windows窗体应用程序
+PRJ_CLASS_LIBRARY=类库
+PRJ_PROJECT_EXPLORER=工程浏览器
+PRJ_REFERENCES=References
+PRJ_PROJECT_REFERENCES=References
+PRJ_ADD_REFERENCE=Add Reference
+PRJ_GAC=GAC
+PRJ_ASSEMBLIES=Assemblies
+PRJ_COMPONENT_NAME=Assembly Name
+PRJ_VERSION=版本
+PRJ_OPEN_FILE=打开 
+PRJ_SHOW_FORM=打开窗体
+PRJ_VIEW_CODE=查看代码
+PRJ_EXCLUDE=Exclude from Project
+PRJ_RENAME=重命名
+PRJ_BUILD=构建
+PRJ_BUILD_ALL=构建所有
+PRJ_RUN=运行
+PRJ_ADD=添加
+PRJ_NEW_FILE=新建文件
+PRJ_EXIST_FILE=Existing File
+PRJ_FORM=窗体
+PRJ_PROPERTIES=属性
+PRJ_REMOVE=异常
+PRJ_FILE_NAME=文件名称
+PRJ_TEMPLATES=工程模板
+PRJ_UNIT=单元
+PRJ_SEARCH=搜索...
+PRJ_COM=COM
+PRJ_PATH=路径
+PRJ_COM_NAME=COM名称
+PRJ_PROJECT_PROPERTIES=工程属性
+PRJ_DEBUG_RELEASE=配置
+PRJ_DEBUG=调试
+PRJ_RELEASE=发布
+PRJ_ENVIRONMENT_RUNMODE=在IDE下运行
+PRJ_DELETE_EXE=在运行后删除EXE
+PRJ_DELETE_PDB=在运行后删除PDB
+PRJ_OUTPUT_DIR=输出文件生成到目录
+PRJ_BROWSE=Browse
+PRJ_COMMAND_LINE_ARGS=Command line args
+PRJ_APP_ICON=应用程序图标
+PRJ_APP_VERSION=应用程序版本
+PRJ_APP_INFO=应用程序信息
+PRJ_PRODUCT=产品名称
+PRJ_VER_MAJOR=主要版本
+PRJ_VER_MINOR=次要版本
+PRJ_VER_BUILD=构建版本
+PRJ_VER_REVISION=修订版本
+PRJ_COMPANY=公司
+PRJ_TRADEMARK=商标
+PRJ_COPYRIGHT=版权
+PRJ_GENERATE_XML_DOC=生成XML文档
+PRJ_NUGET=NuGet
+PRJ_NAMESPACE=Namespace
+PRJ_FILENAME_EXAMPLE=Unit1.pas, dir/Unit1.pas
+NUGET_PACKAGE=Package Id
+NUGET_INSTALL=安装软件包
+NUGET_LOG=Log
+VERSION_IS_UP_TO_DATE=PascalABC.NET是最新的
+UPDATE_AVAILABLE=PascalABC.NET的新的版本是可用的。你想访问下载的页面?
+UPDATE_AVAILABLE_CURRENT_VESION{0}=安装的版本: {0}
+UPDATE_AVAILABLE_NEW_VESION{0}=可用的版本: {0}
+UPDATE_CHECK_ERROR=An error occurred while checking for updates
+UPDATE_CHECK=检查更新
+PABC_DOWNLOAD_PAGE=http://pascalabc.net/en/download
+M_CHECKUPDATES=检查更新
+FRAMEWORK_DOWNLOAD_PAGE=https://www.microsoft.com/en-US/download/details.aspx?id=56116
+DOTNET_UPDATE_CHECK=检查.NET Framework的更新
+DOTNET_AVAILABLE=.NET Framework的新的版本是可用的(.NET Framework 4.7.1)。你想访问下载的页面?
+//Options
+%PREFIX%=VP_OC_VIEWOPTIONS_
+NAME=一般
+DESCRIPTION=一般
+LANGUAGE=语言
+REDIRECT_OUTPUT=重定向输出
+ERRORS_STRATEGY=显示错误
+ES_ALL=所有
+ES_FIRSTONLY=First only
+ES_FIRSTSEMANTICANDSYNTAX=First semantic and syntax
+EDITOR_OPTIONS=编辑器
+SHOW_DEBUG_PLAY_PAUSE_BUTTONS=Show additional debug buttons
+PASUSE_IN_RUNMODE_IF_CONSOLE=Make pause after a console program ends execution 
+SAVE_FILES_IF_COMPILATOIN_OK=Save files if compilation was successful
+AUTO_INSERT_CODE_IS_ENABLED_ON_STARTUP=Code completion mode is enabled on startup
+
+%PREFIX%=VP_OC_EDITOROPTIONS_
+NAME=文本编辑器
+DESCRIPTION=文本编辑器选项 
+ERROR_CURSOR_POS=Position cursor by error
+SHOW_LINES_NUM=显示行号
+SHOW_MATH_BRACKET=Highlight matching bracket
+SHOW_MATCH_OPERATOR_BRACKET=Highlight matching operator bracket
+ENABLE_FOLDING=Enable folding
+FONT=字体
+FONT_SIZE=字体大小
+EP_BEGIN=转到begin
+EP_END=转到end
+EP_SELECTBEGIN=Select and goto begin
+EP_SELECTEND=Select and goto end
+CONVERT_TABS_TO_SPACES=Convert tabs to spaces
+GOTO_ERRORPOS_IN_STANDART_MODULES=Goto error position in standard units
+
+%PREFIX%=VP_OPTIONSFORM_
+FORMTEXT=选项
+
+//Intellisense options
+%PREFIX%=VP_OC_INTELLISENSEOPTIONS_
+NAME=代码补全
+DESCRIPTION=代码补全
+ALLOW_CODE_COMPLETION=启用代码补全
+CODE_COMPLETION_HINT=Show tooltip when moving mouse over expression
+CODE_COMPLETION_DOT=Show tooltip when writing dot
+CODE_COMPLETION_PARAMS=Show tooltip when writing method calls
+CODE_COMPLETION_KEYPRESSED=Show tooltip by key pressing
+SHOW_INTELLISENCE_PANEL=Show quick class browser panel
+NAMESPACE_VISIBLE_RANGE=Level of nesting namespaces (0 - all)
+
+//CompilerOptions
+%PREFIX%=VP_OC_COMPILEROPTIONS_
+NAME=编译器选项
+DESCRIPTION=编译器选项
+OUTPUT_FILE_TYPE=输出文件类型
+GENERATE_PDP_FILES=生成调试信息
+USE_OUTPUT_DIRECTORY=生成输出文件到目录
+BROWSE=Browse...
+
+ENVORIMENT_RUNMODE=Environment Runmode
+DELETE_EXE=在运行后删除EXE
+DELETE_PDB=在运行后删除PDB
+USE_DLL_FOR_SYSTEM_UNITS=Accelerate run from IDE
+
+//AboutBox
+%PREFIX%=VP_ABOUTBOXFORM_
+FORMTEXT=关于PascalABC.NET
+VERSION=版本
+PROJECT_ADMIN=项目经理:
+PROJECT_ADMIN_FIO=Mikhalkovich S.S.
+DEVELOPERS=开发者
+DEVELOPERS1=Bondarev I.V. (Germany)
+DEVELOPERS2=Tkachuk A.V.
+DEVELOPERS3=Ivanov S.O.
+MADEIN=Russia, SFedU, mechmath; Germany
+CORE=Core:
+VISUAL=Visual:
+COMPONENTS=组件
+TESTING_SYSTEM=测试系统:
+TYPE=类型
+NAME=名称
+VERSION=版本
+COPYRIGHT=
+
+//Find Form
+%PREFIX%=VP_FINDFORM_
+FORMTEXT=查找
+L_FIND=Find what:
+G_OPTIONS=选项
+MATH_CASE=Match case
+MATH_WHOLE_WORD=匹配整个单词
+SEARCH_UP=Search up
+USE_REGEX=Regular expressions
+FINDNEXT=查找下一个
+
+//Replace Form
+%PREFIX%=VP_REPLACEFORM_
+FORMTEXT=替换
+L_FIND=Find what:
+L_REPLACETO=Replace to
+G_OPTIONS=选项
+MATH_CASE=Math case
+MATH_WHOLE_WORD=匹配整个单词
+SEARCH_UP=Search up
+USE_REGEX=Regular expressions
+FINDNEXT=查找下一个
+REPLACE=替换
+REPLACEALL=替换所有
+REGEXPERR{0}=Error in regular expression. {0}
+
+//ReplaceConfirmDialog Form
+%PREFIX%=VP_REPLACECONFIRMDLGFORM_
+REPLACE{0}TO{1}=替换 '{0}' 为 '{1}' ?
+
+//GotoLineForm
+%PREFIX%=VP_GOTOLINEFORM_
+FORMTEXT=转到行号
+GOTO_LINE_{0}_{1}=行号 ({0} - {1}):
+
+%PREFIX%=EXPR_VALUE_
+UNDEFINED_VALUE=未定义值
+UNDEFINED_TYPE=未定义类型
+SYNTAX_ERROR_IN_EXPR=Syntax error in expression
+INCOMPATIBLE_TYPES_IN_EXPRESSION=Incompatible types in expression
+OPERATOR_{0}_NOT_IN_TYPE=Cannot apply operator '{0}' to this type
+WRONG_NUMBER_ARGUMENTS_IN_{0}=Invalid number of arguments in the call '{0}'
+WRONG_TYPE_OF_ARGUMENT_IN_{0}=Invalid argument type in the call '{0}'
+UNKNOWN_NAME_{0}=未定义名称 '{0}'
+WRONG_TYPE_IN_INDEXER=Invalid type in indexer expression
+WRONG_INDEXERS_NUMBER=Invalid number of indexers
+NO_INDEXER_PROPERTY=Expression hasn't indexer property
+NAME_{0}_IS_NOT_STATIC='{0}' isn't a static member
+VARIABLE_EXPECTED_TYPE_{0}_FOUND='{0}' 必需是一个变量
+LOWER_BOUND_GREATER_THAN_UPPER_BOUND=Lower bound is greater than upper bound
+INVALID_EXPRESSION_TYPE_IN_DIAPASON=Invalid expression type in subrange
+NO_SUITABLE_METHOD=No suitable method for such arguments
+
+%PREFIX%=DEBUG_VIEW_
+RAW_VIEW=Raw view
+BASE=Base
+MODULE=Globals
+PRIVATE=Private
+STATIC=Static
+PRIVATE_STATIC=Private static
+TOO_LONG_EVALUATION=Too long evaluated
+
+%PREFIX%=CODE_COMPLETION_
+RETURN=Returns
+PARAMETERS=Parameters
+DESCRIPTION=Description

@@ -608,6 +608,23 @@ namespace VisualPascalABC
                     if (s != null) 
                         return s;
                     return WorkbenchStorage.StandartDirectories[(string)obj] as string;
+                case VisualEnvironmentCompilerAction.PT4PositionCursorAfterTask: // SSM 09.11.19
+                    {
+                        var ta = CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.TextArea;
+                        var d = ta.Document;
+                        for (var i = 0; i<d.TotalNumberOfLines; i++)
+                        {
+                            var line = ICSharpCode.TextEditor.Document.TextUtilities.GetLineAsString(d, i);
+                            if (line.Equals("  "))
+                            {
+                                var p = 1;
+                                ta.Caret.Line = i;
+                                ta.Caret.Column = 2;
+                                return true;
+                            }
+                        }
+                        return true;
+                    }
                 case VisualEnvironmentCompilerAction.GetCurrentSourceFileName:
                     return CurrentSourceFileName;
                 case VisualEnvironmentCompilerAction.SetCurrentSourceFileTextFormatting:

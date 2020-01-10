@@ -587,12 +587,24 @@ namespace PascalABCCompiler.TreeConverter
             if (pct.first == null)
                 throw new CanNotConvertTypes(en, en.type, to, loc);
         }
-        
+
         public bool can_convert_type(expression_node en, type_node to)
         {
             if (en.type == to)
                 return true;
             possible_type_convertions pct = type_table.get_convertions(en.type, to);
+            if (pct.second != null)
+                return false;
+            if (pct.first == null)
+                return false;
+            return true;
+        }
+
+        public bool can_convert_type(type_node from, type_node to)
+        {
+            if (from == to)
+                return true;
+            possible_type_convertions pct = type_table.get_convertions(from, to);
             if (pct.second != null)
                 return false;
             if (pct.first == null)
@@ -669,7 +681,8 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return from;
             }
-
+            
+            
             possible_type_convertions ptc = type_table.get_convertions(from.type, to, false);
             if (ptc.second != null)
             {
@@ -687,7 +700,7 @@ namespace PascalABCCompiler.TreeConverter
                     ret.conversion_type = conv_type;
                 return ret;
             }
-
+            
             if ((type_table.is_derived(from.type, to)) || (type_table.is_derived(to, from.type)) || from.type.IsInterface || to.IsInterface && !(from.type is delegated_methods))
             {
                 if (from.type.IsSealed && to.IsInterface && !from.type.ImplementingInterfaces.Contains(to) ||
@@ -1875,6 +1888,7 @@ namespace PascalABCCompiler.TreeConverter
             bool is_alone_method_defined = (functions.Count() == 1);
             function_node first_function = functions.FirstOrDefault().sym_info as function_node;
             bool _is_assigment = first_function.name == compiler_string_consts.assign_name;
+            bool is_op = compiler_string_consts.GetNETOperName(first_function.name) != null || first_function.name.ToLower() == "in";
             basic_function_node _tmp_bfn = functions.FirstOrDefault().sym_info as basic_function_node;
 
             List<function_node> indefinits = new List<function_node>();
@@ -2031,6 +2045,8 @@ namespace PascalABCCompiler.TreeConverter
 
             if (set_of_possible_functions.Count == 0 && indefinits.Count == 0)
             {
+                if (is_op)
+                    return AddError<function_node>(new OperatorCanNotBeAppliedToThisTypes(first_function.name, parameters[0], parameters.Count > 1 ? parameters[1] : null, loc));
                 return AddError<function_node>(loc, "CAN_NOT_CALL_ANY_GENERIC_FUNCTION_{0}_WITH_THESE_PARAMETERS", first_function.name);
             }
 
@@ -2136,6 +2152,8 @@ namespace PascalABCCompiler.TreeConverter
                     return AddError<function_node>(new CanNotConvertTypes(parameters[1], parameters[1].type, parameters[0].type, parameters[1].location));
                 if (_tmp_bfn != null && parameters.Count == 2)
                     return AddError<function_node>(new OperatorCanNotBeAppliedToThisTypes(_tmp_bfn.name, parameters[0], parameters[1], loc));
+                if (is_op)
+                    return AddError<function_node>(new OperatorCanNotBeAppliedToThisTypes(first_function.name, parameters[0], parameters.Count > 1?parameters[1]:null, loc));
                 return AddError<function_node>(new NoFunctionWithSameArguments(loc, is_alone_method_defined));
             }
 
@@ -2150,6 +2168,12 @@ namespace PascalABCCompiler.TreeConverter
             // Потому что не учитывается вызов - в вызове может быть функция!!
             delete_greater_functions(set_of_possible_functions,tcll); // SSM 06/06/19 refactoring
 
+            if (set_of_possible_functions.Count == 1)
+            {
+                check_single_possible_convertion(loc, tcll[0]);
+                convert_function_call_expressions(set_of_possible_functions[0], parameters, tcll[0]);
+                return set_of_possible_functions[0];
+            }
             //Тупая заглушка для примитивных типов. иначе не работает +=, у нас лишком много неявных приведений
             //в дальнейшем может вызвать странное поведение, это надо проверить
             if (set_of_possible_functions.Count == 2 && indefinits.Count == 0)

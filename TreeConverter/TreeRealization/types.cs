@@ -4353,7 +4353,10 @@ namespace PascalABCCompiler.TreeRealization
                         if (cmn.num_of_default_parameters == cmn.parameters.Count)
                             return bfc;
                     }
-                    else if (bfc.function is compiled_function_node)
+                }
+                foreach (base_function_call bfc in _proper_methods)
+                {
+                    if (bfc.function is compiled_function_node)
                     {
                         compiled_function_node cfn = bfc.function as compiled_function_node;
                         if (cfn.ConnectedToType != null && (bfc.simple_function_node.parameters.Count == 1 || bfc.simple_function_node.parameters.Count == 2 && (bfc.simple_function_node.parameters[1].is_params || bfc.simple_function_node.parameters[1].default_value != null)))
@@ -4440,6 +4443,7 @@ namespace PascalABCCompiler.TreeRealization
                     || fn.simple_function_node is compiled_function_node && (fn.simple_function_node as compiled_function_node).ConnectedToType != null)
                     && fn.simple_function_node.parameters.Count == 2 && fn.simple_function_node.parameters[1].default_value != null)
                 {
+                    
                     int param_num = (fn.simple_function_node is common_namespace_function_node && (fn.simple_function_node as common_namespace_function_node).ConnectedToType != null || fn.simple_function_node is compiled_function_node && (fn.simple_function_node as compiled_function_node).ConnectedToType != null) ? 1 : 0;
                     base_function_call copy_fn = null;
                     if (fn.simple_function_node.return_value_type == ctn)
@@ -4454,6 +4458,7 @@ namespace PascalABCCompiler.TreeRealization
                     {
                         continue;
                     }
+                    
                     //TODO: Очень внимательно рассмотреть. Если преобразование типов должно идти через compile_time_executor.
                     possible_type_convertions ptc = type_table.get_convertions(fn.simple_function_node.return_value_type, ctn);
                     if ((ptc.first == null) || (ptc.first.convertion_method == null))
@@ -4501,7 +4506,8 @@ namespace PascalABCCompiler.TreeRealization
             	{
             		common_type_node del =
             			type_constructor.instance.create_delegate(compilation_context.instance.get_delegate_type_name(), this.proper_methods[0].simple_function_node.return_value_type, this.proper_methods[0].simple_function_node.parameters, compilation_context.instance.converted_namespace, null);
-            		compilation_context.instance.converted_namespace.types.AddElement(del);
+            		if (compilation_context.instance.converted_namespace != null)
+                    compilation_context.instance.converted_namespace.types.AddElement(del);
             		ii = del.get_internal_interface(internal_interface_kind.delegate_interface);
             	}
             	else

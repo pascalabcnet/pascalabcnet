@@ -167,7 +167,7 @@ namespace CodeCompletion
                     {
                         if (!((returned_scopes[i] as ProcScope).is_constructor && returned_scopes[i].is_static))
                             proces.Add(returned_scopes[i] as ProcScope);
-                    }  
+                    }
                     else if (returned_scopes[i] is ElementScope && (returned_scopes[i] as ElementScope).sc is CompiledScope)
                     {
                         //ProcType pt = new ProcType();
@@ -175,6 +175,28 @@ namespace CodeCompletion
                         ProcScope ps = cs.FindNameOnlyInThisType("Invoke") as ProcScope;
                         if (ps != null)
                             proces.Add(ps);
+                    }
+                    else if (returned_scopes[i] is ElementScope && (returned_scopes[i] as ElementScope).sc is TypeSynonim)
+                    {
+                        TypeSynonim ts = (returned_scopes[i] as ElementScope).sc as TypeSynonim;
+                        TypeScope act_ts = ts.GetLeafActType();
+                        ProcType procType =act_ts as ProcType;
+                        if (procType != null)
+                        {
+                            ProcScope tmp = procType.target;
+                            if (tmp != null)
+                                proces.Add(tmp);
+                        }
+                        else
+                        {
+                            CompiledScope cs = act_ts as CompiledScope;
+                            if (cs != null)
+                            {
+                                ProcScope ps = cs.FindNameOnlyInThisType("Invoke") as ProcScope;
+                                if (ps != null)
+                                    proces.Add(ps);
+                            }
+                        }
                     }
                     else if (i == 0)
                         return proces;
@@ -914,6 +936,10 @@ namespace CodeCompletion
                         {
                             returned_scopes[i] = null;
                         }
+                        else if (left_scope is TypeScope && returned_scopes[i] is ProcScope && !(returned_scopes[i] as ProcScope).IsStatic && !(returned_scopes[i] as ProcScope).IsConstructor())
+                        {
+                            returned_scopes[i] = null;
+                        }
                     }
                     returned_scopes.RemoveAll(x => x == null);
 
@@ -1099,7 +1125,7 @@ namespace CodeCompletion
             _method_call.dereferencing_value.visit(this);
             search_all = false;
             SymScope[] names = returned_scopes.ToArray();
-            if (names.Length > 0 && names[0] is ElementScope && ((names[0] as ElementScope).sc is ProcType || (names[0] as ElementScope).sc is CompiledScope))
+            if (names.Length > 0 && names[0] is ElementScope && (names[0] as ElementScope).sc is TypeScope && ((names[0] as ElementScope).sc as TypeScope).IsDelegate)
             {
                 returned_scope = names[0];
                 return;
@@ -1952,6 +1978,15 @@ namespace CodeCompletion
         {
         }
         
+        public override void visit(slice_expr _slice_expr)
+		{
+			_slice_expr.v.visit(this);
+		}
+
+        public override void visit(slice_expr_question _slice_expr_question)
+        {
+            _slice_expr_question.v.visit(this);
+        }
         public override void visit(tuple_node _tuple_node)
         {
             method_call mc = new method_call();
