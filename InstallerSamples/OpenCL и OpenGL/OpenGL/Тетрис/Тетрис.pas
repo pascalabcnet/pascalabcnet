@@ -1,5 +1,0 @@
-﻿uses GraphEngine;
-
-begin
-  
-end.
