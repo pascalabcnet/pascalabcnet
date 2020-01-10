@@ -10,13 +10,13 @@ const
 // - #1981
 
 begin
-  Randomize(0); // нужно чтоб каждое выполнение давало одинаковый результат
   try
+    Randomize(0); // делает так, чтобы каждое выполнение давало одинаковый результат
     
     // Чтение и компиляция .cl файла
     
     {$resource MatrMlt.cl} // Засовывает файл MatrMlt.cl внуть .exe
-    // Вообще, по хорошему - надо прекомпилировать .cl файл (загружать в переменную ProgramCode)
+    // Вообще лучше прекомпилировать .cl файл (загружать в переменную ProgramCode)
     // И сохранять с помощью метода ProgramCode.SerializeTo
     // А полученный бинарник уже подключать через $resource
     var code := new ProgramCode(
@@ -29,12 +29,12 @@ begin
     
     'Матрица A:'.Println;
     var A_Matr := MatrRandomReal(MatrW,MatrW,0,1).Println;
-    writeln;
+    Writeln;
     var A := new Buffer(MatrByteSize);
     
     'Матрица B:'.Println;
     var B_Mart := MatrRandomReal(MatrW,MatrW,0,1).Println;
-    writeln;
+    Writeln;
     var B := new Buffer(MatrByteSize);
     
     var C := new Buffer(MatrByteSize);
@@ -42,7 +42,7 @@ begin
     'Вектор V1:'.Println;
     var V1_Arr := ArrRandomReal(MatrW);
     V1_Arr.Println;
-    writeln;
+    Writeln;
     var V1 := new Buffer(VecByteSize);
     
     var V2 := new Buffer(VecByteSize);
@@ -68,7 +68,7 @@ begin
       begin
         'Матрица С = A*B:'.Println;
         A_Matr.Println;
-        writeln;
+        Writeln;
       end);
     
     var Calc_V2_Q :=
@@ -76,7 +76,7 @@ begin
         C,
         V1.NewQueue.AddWriteArray(V1_Arr) as CommandQueue<Buffer>,
         V2,
-        N
+        N // значение записывается в Calc_C_Q, тут можно использовать уже готовое
       ) as CommandQueue<Kernel>;
     
     var Otp_V2_Q :=
@@ -86,7 +86,7 @@ begin
       begin
         'Вектор V2 = C*V1:'.Println;
         V1_Arr.Println;
-        writeln;
+        Writeln;
       end);
     
     // Выполнение всего и сразу асинхронный вывод
@@ -105,6 +105,6 @@ begin
     );
     
   except
-    on e: Exception do writeln(e); // Эта строчка позволяет выводить всю ошибку, если при выполнении Context.SyncInvoke возникла ошибка
+    on e: Exception do Writeln(e); // Эта строчка позволяет выводить всю ошибку, если при выполнении Context.SyncInvoke возникла ошибка
   end;
 end.
