@@ -188,6 +188,8 @@ parse_goal
 		{ root = $1; }
     | parts 
 		{ root = $1; }
+//	| stmt_list	
+//		{ root = $$ = NewProgramModule(null, null, null, null, new block(null, $1 as statement_list, @$), @$); }
     ;
 
 parts
