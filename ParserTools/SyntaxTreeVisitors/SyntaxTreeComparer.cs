@@ -710,6 +710,8 @@ namespace PascalABCCompiler.SyntaxTree
                     CompareInternal(left as slice_expr, right as slice_expr);
                 else if (left is is_pattern_expr)
                     CompareInternal(left as is_pattern_expr, right as is_pattern_expr);
+                else if (left is if_expr_new)
+                    CompareInternal(left as if_expr_new, right as if_expr_new);
                 else
                     throw new NotImplementedException(left.GetType().ToString());
 
@@ -2346,6 +2348,18 @@ namespace PascalABCCompiler.SyntaxTree
             if (left != null && right != null)
             {
                 CompareInternal(left.pattern, right.pattern);
+            }
+        }
+
+        public void CompareInternal(if_expr_new left, if_expr_new right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                CompareInternal(left.condition, right.condition);
+                CompareInternal(left.if_true, right.if_true);
+                CompareInternal(left.if_false, right.if_false);
             }
         }
     }
