@@ -16,8 +16,9 @@ namespace PascalABCCompiler.TreeConverter
             // SSM 24.12.19 lambda_capture_foreach_counter.pas не проходит если откомментировать эти 2 строки
             // Причина - лямбда уже начала разбираться
             // Пробую сделать так: если foreach в лямбде, то оптимизация не делается, а если нет, то делается
-
-            syntax_tree_node p = _foreach_stmt;
+            // Пока не получилось - ошибка err0157.pas начинает быть правильной программой
+            // Надо как-то переменную x в стек context.loop_var_stack.Push(foreachVariable); помещать !!! Но не сейчас... (SSM 12.01.20)
+            /*syntax_tree_node p = _foreach_stmt;
             do
             {
                 p = p.Parent;
@@ -27,7 +28,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 var feWhat = convert_strong(_foreach_stmt.in_what);
                 if (OptimizeForeachInCase1DArray(_foreach_stmt, feWhat)) return;
-            }
+            }*/
 
             statements_list sl2 = new statements_list(get_location(_foreach_stmt));            
             convertion_data_and_alghoritms.statement_list_stack_push(sl2);
