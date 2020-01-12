@@ -932,10 +932,13 @@ namespace PascalABCCompiler.NetHelper
         {
             try
             {
+                
                 if (curr_inited_assm_path != null)
                 {
                     Assembly assm = null;
                     string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(curr_inited_assm_path), args.Name.Substring(0, args.Name.IndexOf(",")) + ".dll");
+                    if (!System.IO.File.Exists(path))
+                        path = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), args.Name.Substring(0, args.Name.IndexOf(",")) + ".dll");
                     if (System.IO.File.Exists(path))
                         assm = LoadAssembly(path);
                     curr_inited_assm_path = null;

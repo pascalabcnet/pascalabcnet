@@ -4187,6 +4187,8 @@ property_modificator
 		{ $$ = $1; }
     | tkAbstract
 		{ $$ = $1; }
+    | tkReintroduce
+		{ $$ = $1; }
 	;
     
 property_specifier_directives
