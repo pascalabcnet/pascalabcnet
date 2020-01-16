@@ -183,6 +183,12 @@ type
   /// Тип кодировки символов  
   Encoding = System.Text.Encoding;
   
+  /// Класс, управляющий консольным окном и консольным вводом-выводом
+  Console = System.Console;
+
+  /// Класс, управляющий сборкой мусора
+  GC = System.GC;
+
   /// Представляет действие без параметров
   Action0 = System.Action;
   
@@ -1426,6 +1432,8 @@ function Max(a, b: int64): int64;
 function Max(a, b: uint64): uint64;
 ///--
 function Max(a, b: real): real;
+
+
 ///-function Min(a: число, b: число): число;
 /// Возвращает минимальное из чисел a,b
 function Min(a, b: byte): byte;
@@ -1447,6 +1455,27 @@ function Min(a, b: int64): int64;
 function Min(a, b: uint64): uint64;
 ///--
 function Min(a, b: real): real;
+
+///-function Min(a,b,...: число): число;
+/// Возвращает минимальное из чисел a,b,...
+function Min(params a: array of integer): integer;
+///--
+function Min(params a: array of real): real;
+///--
+function Min(a, b, c: real): real;
+///--
+function Min(a, b, c, d: real): real;
+
+///-function Max(a,b,...: число): число;
+/// Возвращает ммксиимальное из чисел a,b,...
+function Max(params a: array of integer): integer;
+///--
+function Max(params a: array of real): real;
+///--
+function Max(a, b, c: real): real;
+///--
+function Max(a, b, c, d: real): real;
+
 ///-function Odd(i: целое): boolean;
 /// Возвращает True, если i нечетно, и False в противном случае
 function Odd(i: byte): boolean;
@@ -1923,6 +1952,8 @@ function ArrFill<T>(count: integer; x: T): array of T;
 
 /// Возвращает массив из n целых, введенных с клавиатуры
 function ReadArrInteger(n: integer): array of integer;
+/// Возвращает массив из n целых int64, введенных с клавиатуры
+function ReadArrInt64(n: integer): array of int64;
 /// Возвращает массив из n вещественных, введенных с клавиатуры
 function ReadArrReal(n: integer): array of real;
 /// Возвращает массив из n строк, введенных с клавиатуры
@@ -4386,6 +4417,13 @@ begin
   Result := new integer[n];
   for var i := 0 to Result.Length - 1 do
     Result[i] := ReadInteger;
+end;
+
+function ReadArrInt64(n: integer): array of int64;
+begin
+  Result := new int64[n];
+  for var i := 0 to Result.Length - 1 do
+    Result[i] := ReadInt64;
 end;
 
 function ReadArrInteger(prompt: string; n: integer): array of integer;
@@ -7558,6 +7596,26 @@ function Max(a, b: uint64) := Math.Max(a, b);
 
 function Max(a, b: real) := Math.Max(a, b);
 
+function Max(a, b, c: real): real;
+begin
+  Result := a;
+  if b > Result then Result := b;
+  if c > Result then Result := c;
+end;
+
+function Max(a, b, c, d: real): real;
+begin
+  Result := a;
+  if b > Result then Result := b;
+  if c < Result then Result := c;
+  if d > Result then Result := d;
+end;
+
+function Max(params a: array of integer): integer := a.Max;
+
+function Max(params a: array of real): real := a.Max;
+
+
 function Min(a, b: byte) := Math.Min(a, b);
 
 function Min(a, b: shortint) := Math.Min(a, b);
@@ -7577,6 +7635,26 @@ function Min(a, b: int64) := Math.Min(a, b);
 function Min(a, b: uint64) := Math.Min(a, b);
 
 function Min(a, b: real) := Math.Min(a, b);
+
+function Min(a, b, c: real): real;
+begin
+  Result := a;
+  if b < Result then Result := b;
+  if c < Result then Result := c;
+end;
+
+function Min(a, b, c, d: real): real;
+begin
+  Result := a;
+  if b < Result then Result := b;
+  if c < Result then Result := c;
+  if d < Result then Result := d;
+end;
+
+function Min(params a: array of integer): integer := a.Min;
+
+function Min(params a: array of real): real := a.Min;
+
 
 function Odd(i: byte) := (i mod 2) <> 0;
 
