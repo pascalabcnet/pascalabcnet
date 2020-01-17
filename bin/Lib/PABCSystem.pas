@@ -307,6 +307,7 @@ type
     procedure read(var x: single);
     procedure read(var x: boolean);
     procedure readln;
+    function ReadLine: string;
     procedure write(obj: object);
     procedure write(p: pointer);
     procedure writeln;
@@ -333,6 +334,7 @@ type
     procedure read(var x: single); virtual;
     procedure read(var x: boolean); virtual;
     procedure readln; virtual;
+    function ReadLine: string; virtual;
     procedure write(p: pointer); virtual;
     procedure write(obj: object); virtual;
     procedure writeln; virtual;
@@ -4967,6 +4969,21 @@ begin
   end;
 end;
 
+function IOStandardSystem.ReadLine: string;
+begin
+  // Надо учесть sym
+  if not console_alloc then
+    AllocConsole;
+  if state = 1 then
+  begin
+    state := 0;
+    Result := char(sym) + Console.ReadLine;
+    sym := -1;
+  end
+  else 
+    Result := Console.ReadLine;
+end;
+
 procedure IOStandardSystem.write(obj: object);
 begin
   if not console_alloc then
@@ -5303,8 +5320,17 @@ end;
 
 function ReadString: string;
 begin
-  Read(Result);
-  readln();
+//  Read(Result);
+//  readln();
+  if input.sr <> nil then
+    Result := input.sr.ReadLine
+  else 
+    try
+      Result := CurrentIOSystem.ReadLine;
+    except
+      on e: Exception do
+        raise e;
+    end;
 end;
 
 function ReadBoolean: boolean;

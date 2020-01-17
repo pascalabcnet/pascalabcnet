@@ -307,6 +307,7 @@ type
     procedure read(var x: single);
     procedure read(var x: boolean);
     procedure readln;
+    function ReadLine: string;
     procedure write(obj: object);
     procedure write(p: pointer);
     procedure writeln;
@@ -333,6 +334,7 @@ type
     procedure read(var x: single); virtual;
     procedure read(var x: boolean); virtual;
     procedure readln; virtual;
+    function ReadLine: string; virtual;
     procedure write(p: pointer); virtual;
     procedure write(obj: object); virtual;
     procedure writeln; virtual;
@@ -4787,12 +4789,11 @@ end;}
 function read_lexem: string;// SSM 08.03.11 - пытаюсь исправить с peekом ситуацию с вводом '1 hello'. Должно работать
 var
   c: char;
-  sb: System.Text.StringBuilder;
 begin
   repeat
     c := CurrentIOSystem.read_symbol;
   until not char.IsWhiteSpace(c);
-  sb := new System.Text.StringBuilder;
+  var sb := new System.Text.StringBuilder;
   repeat
     sb.Append(c);
     c := char(CurrentIOSystem.peek);
@@ -4894,34 +4895,17 @@ end;}
 
 procedure IOStandardSystem.read(var x: string);
 begin
-  if IsWDE then
+  var sb := new System.Text.StringBuilder;
+  // SSM 8.04.10
+  var c := char(peek()); // первый раз может быть char(-1) - это значит, что в потоке ввода ничего нет, тогда мы читаем символ
+  while (c <> #13) and (c <> #10) do 
   begin
-    var sb := new System.Text.StringBuilder;
-    var c := read_symbol;
-    if (c <> #13) and (c <> #10) then
+    c := read_symbol;
+    if (c <> #13) and (c <> #10) then // SSM 13.12.13
       sb.Append(c);
-    while (c <> #13) and (c <> #10) do
-    begin
-      c := read_symbol;
-      sb.Append(c);
-      c := char(peek());
-    end;
-    x := sb.ToString;
-  end
-  else
-  begin
-    var sb := new System.Text.StringBuilder;
-    // SSM 8.04.10
-    var c := char(peek()); // первый раз может быть char(-1) - это значит, что в потоке ввода ничего нет, тогда мы читаем символ
-    while (c <> #13) and (c <> #10) do 
-    begin
-      c := read_symbol;
-      if (c <> #13) and (c <> #10) then // SSM 13.12.13
-        sb.Append(c);
-      c := char(peek());
-    end;
-    x := sb.ToString;
+    c := char(peek());
   end;
+  x := sb.ToString;
 end;
 
 procedure IOStandardSystem.read(var x: byte);
@@ -4983,6 +4967,21 @@ begin
     if (sym = END_OF_LINE_SYMBOL) or (sym = char(-1)) then
       exit;
   end;
+end;
+
+function IOStandardSystem.ReadLine: string;
+begin
+  // Надо учесть sym
+  if not console_alloc then
+    AllocConsole;
+  if state = 1 then
+  begin
+    state := 0;
+    Result := char(sym) + Console.ReadLine;
+    sym := -1;
+  end
+  else 
+    Result := Console.ReadLine;
 end;
 
 procedure IOStandardSystem.write(obj: object);
@@ -5321,8 +5320,17 @@ end;
 
 function ReadString: string;
 begin
-  Read(Result);
-  readln();
+//  Read(Result);
+//  readln();
+  if input.sr <> nil then
+    Result := input.sr.ReadLine
+  else 
+    try
+      Result := CurrentIOSystem.ReadLine;
+    except
+      on e: Exception do
+        raise e;
+    end;
 end;
 
 function ReadBoolean: boolean;
