@@ -4787,12 +4787,11 @@ end;}
 function read_lexem: string;// SSM 08.03.11 - пытаюсь исправить с peekом ситуацию с вводом '1 hello'. Должно работать
 var
   c: char;
-  sb: System.Text.StringBuilder;
 begin
   repeat
     c := CurrentIOSystem.read_symbol;
   until not char.IsWhiteSpace(c);
-  sb := new System.Text.StringBuilder;
+  var sb := new System.Text.StringBuilder;
   repeat
     sb.Append(c);
     c := char(CurrentIOSystem.peek);
@@ -4894,34 +4893,17 @@ end;}
 
 procedure IOStandardSystem.read(var x: string);
 begin
-  if IsWDE then
+  var sb := new System.Text.StringBuilder;
+  // SSM 8.04.10
+  var c := char(peek()); // первый раз может быть char(-1) - это значит, что в потоке ввода ничего нет, тогда мы читаем символ
+  while (c <> #13) and (c <> #10) do 
   begin
-    var sb := new System.Text.StringBuilder;
-    var c := read_symbol;
-    if (c <> #13) and (c <> #10) then
+    c := read_symbol;
+    if (c <> #13) and (c <> #10) then // SSM 13.12.13
       sb.Append(c);
-    while (c <> #13) and (c <> #10) do
-    begin
-      c := read_symbol;
-      sb.Append(c);
-      c := char(peek());
-    end;
-    x := sb.ToString;
-  end
-  else
-  begin
-    var sb := new System.Text.StringBuilder;
-    // SSM 8.04.10
-    var c := char(peek()); // первый раз может быть char(-1) - это значит, что в потоке ввода ничего нет, тогда мы читаем символ
-    while (c <> #13) and (c <> #10) do 
-    begin
-      c := read_symbol;
-      if (c <> #13) and (c <> #10) then // SSM 13.12.13
-        sb.Append(c);
-      c := char(peek());
-    end;
-    x := sb.ToString;
+    c := char(peek());
   end;
+  x := sb.ToString;
 end;
 
 procedure IOStandardSystem.read(var x: byte);
