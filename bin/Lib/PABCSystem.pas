@@ -11075,11 +11075,36 @@ begin
   Result := Self.Split(delim, System.StringSplitOptions.RemoveEmptyEntries);
 end;
 
+procedure PassSpaces(var s: string; var from: integer); 
+begin
+  while (from <= s.Length) and (s[from]=' ') do
+    from += 1;
+end;
+
 /// Преобразует строку в массив целых
 function ToIntegers(Self: string): array of integer; extensionmethod;
 begin
-  Result := Self.ToWords().ConvertAll(s -> StrToInt(s));
+  //Result := Self.ToWords().ConvertAll(s -> StrToInt(s));
+  // SSM ускорение в 5 раз 19.01.20
+  var l := new List<integer>(10);
+  var from := 1;
+  while from <= Self.Length do
+  begin
+    l.Add(ReadIntegerFromString(Self,from));
+    PassSpaces(Self,from);
+  end;  
+  Result := l.ToArray;
 end;
+
+/// Считывает из строки массив из N целых
+function ToIntegers(Self: string; N: integer): array of integer; extensionmethod;
+begin
+  // SSM Скорость работы на 30% выше чем у ToIntegers без параметров
+  Result := new integer[N];
+  var from := 1;
+  for var i:=0 to N-1 do
+    Result[i] := Self.ReadInteger(from);
+end; 
 
 /// Преобразует строку в массив вещественных
 function ToReals(Self: string): array of real; extensionmethod;
