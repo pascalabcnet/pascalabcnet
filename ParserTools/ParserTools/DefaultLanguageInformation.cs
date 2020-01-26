@@ -2812,7 +2812,7 @@ namespace PascalABCCompiler.Parsers
                 }
                 else if (ch == '.' || ch == '^' || ch == '&' || ch == '?' && IsPunctuation(Text, i + 1))
                 {
-                    if (ch == '.' && i >= 1 && Text[i - 1] == '.')
+                    if (ch == '.' && i >= 1 && Text[i - 1] == '.' && tokens.Count == 0)
                         end = true;
                     else if (ch == '?' && i + 1 < Text.Length && Text[i + 1] != '.')
                         end = true;

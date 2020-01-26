@@ -2331,6 +2331,17 @@ namespace CodeCompletion
                                 if (this.template_parameters.Contains(inst_ts.name))
                                 {
                                     exact = false;
+                                    if (ts.IsDelegate)
+                                    {
+                                        for (int j=0; j<gen_args.Count; j++)
+                                        {
+                                            TypeScope gen_ts = gen_args[j];
+                                            if (gen_ts is ProcType)
+                                            {
+                                                gen_args[j] = (gen_ts as ProcType).InvokeMethod.return_type;
+                                            }
+                                        }
+                                    }
                                     break;
                                 }
                             }
