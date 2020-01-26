@@ -144,6 +144,7 @@ namespace PascalABCCompiler.NETGenerator
         protected bool is_constructor = false;//флаг, переводим ли мы конструктор
         protected bool init_call_awaited = false;
         protected bool save_debug_info = false;
+        protected ILocation next_location;
         protected bool add_special_debug_variables = false;
         protected bool make_next_spoint = true;
         protected SemanticTree.ILocation EntryPointLocation;
@@ -5613,9 +5614,13 @@ namespace PascalABCCompiler.NETGenerator
                     il.Emit(OpCodes.Nop);
                 return;
             }
-
+            next_location = null;
             for (int i = 0; i < statements.Length - 1; i++)
             {
+                if (i < statements.Length - 2)
+                    next_location = statements[i + 1].Location;
+                else
+                    next_location = value.RightLogicalBracketLocation;
                 ConvertStatement(statements[i]);
             }
 
@@ -5624,7 +5629,7 @@ namespace PascalABCCompiler.NETGenerator
                     //если return не имеет location то метим точку на месте закрывающей логической скобки
                     if (statements[statements.Length - 1].Location == null)
                         MarkSequencePoint(value.RightLogicalBracketLocation);
-
+            next_location = value.RightLogicalBracketLocation;
             ConvertStatement(statements[statements.Length - 1]);
 
             //TODO: переделать. сдель функцию которая ложет ret и MarkSequencePoint
@@ -5905,6 +5910,8 @@ namespace PascalABCCompiler.NETGenerator
 
             ConvertStatement(value.then_body);
             il.Emit(OpCodes.Br, EndLabel);
+            if (value.else_body == null && next_location != null)
+                il.MarkSequencePoint(doc, next_location.begin_line_num, 1, next_location.begin_line_num, next_location.begin_column_num);
             il.MarkLabel(FalseLabel);
             if (value.else_body != null)
                 ConvertStatement(value.else_body);
