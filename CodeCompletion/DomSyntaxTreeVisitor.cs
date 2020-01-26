@@ -436,8 +436,11 @@ namespace CodeCompletion
                 }
                 if (returned_scope is ElementScope)
                 {
-                    cnst_val.prim_val = (returned_scope as ElementScope).cnst_val;
-                    returned_scope = (returned_scope as ElementScope).sc;
+                    ElementScope es = returned_scope as ElementScope;
+                    cnst_val.prim_val = es.cnst_val;
+                    returned_scope = es.sc;
+                    if (es.IsIndexedProperty)
+                        returned_scope = new IndexedPropertyType(es.sc as TypeScope);
                     return;
                 }
                 else
@@ -699,7 +702,9 @@ namespace CodeCompletion
             if (returned_scope != null && returned_scope is TypeScope)
             {
                 TypeScope ts = returned_scope as TypeScope;
-                if (ts.GetFullName() != null && (ts.GetFullName().IndexOf("System.Tuple") == 0 || ts.original_type != null && ts.original_type.GetFullName() != null && ts.original_type.GetFullName().IndexOf("(T1,") == 0))
+                if (ts is IndexedPropertyType)
+                    returned_scope = (ts as IndexedPropertyType).propertyType;
+                else if (ts.GetFullName() != null && (ts.GetFullName().IndexOf("System.Tuple") == 0 || ts.original_type != null && ts.original_type.GetFullName() != null && ts.original_type.GetFullName().IndexOf("(T1,") == 0))
                 {
                     if (_indexer.indexes.expressions[0] is int32_const)
                     {
@@ -1220,6 +1225,8 @@ namespace CodeCompletion
                             pr.already_defined = true;
                             pr.loc = cur_loc;
                             pr.head_loc = loc;
+                            if (topScope.ElemKind == SymbolKind.Interface)
+                                pr.si.not_include = true;
                             is_realization = true;
                             entry_scope.AddName("$method", pr);
                         }
@@ -2867,7 +2874,7 @@ namespace CodeCompletion
         	if (_method_name.meth_name is operator_name_ident)
         		_method_name.meth_name.visit(this);
         	else
-        		meth_name = _method_name.meth_name.name;
+                meth_name = _method_name.meth_name.name;
         }
 
         public override void visit(dot_node _dot_node)
@@ -2921,8 +2928,11 @@ namespace CodeCompletion
 						}
 						else if (returned_scope is ElementScope)
 						{
-							this.cnst_val.prim_val = (returned_scope as ElementScope).cnst_val;
-							returned_scope = (returned_scope as ElementScope).sc;
+                            ElementScope es = returned_scope as ElementScope;
+							this.cnst_val.prim_val = es.cnst_val;
+							returned_scope = es.sc;
+                            if (es.IsIndexedProperty)
+                                returned_scope = new IndexedPropertyType(es.sc as TypeScope);
 							return;
 						}
 						else if (returned_scope is TypeScope)

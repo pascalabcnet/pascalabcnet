@@ -1446,6 +1446,15 @@ namespace CodeCompletion
             }
         }
 
+        public bool IsIndexedProperty
+        {
+            get
+            {
+                return this.ElemKind == SymbolKind.Property && indexers != null && indexers.Count > 0;
+            }
+           
+        }
+
         public PascalABCCompiler.SyntaxTree.parametr_kind ParamKind
         {
             get
@@ -1851,6 +1860,16 @@ namespace CodeCompletion
         public override string ToString()
         {
             return def_proc.ToString();
+        }
+    }
+
+    public class IndexedPropertyType : TypeScope
+    {
+        public TypeScope propertyType;
+
+        public IndexedPropertyType(TypeScope propertyType)
+        {
+            this.propertyType = propertyType;
         }
     }
 

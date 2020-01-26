@@ -507,15 +507,18 @@ namespace CodeCompletion
             _indexer.dereferencing_value.visit(this);
             if (returned_scope != null)
             {
+                ElementScope es = returned_scope as ElementScope;
                 if (returned_scope != null)
-                    if (returned_scope is ElementScope && (returned_scope as ElementScope).sc is ProcScope && ((returned_scope as ElementScope).sc as ProcScope).return_type != null)
-                        returned_scope = new ElementScope(((returned_scope as ElementScope).sc as ProcScope).return_type.GetElementType());
+                    if (es != null && es.sc is ProcScope && (es.sc as ProcScope).return_type != null)
+                        returned_scope = new ElementScope((es.sc as ProcScope).return_type.GetElementType());
                     else if (returned_scope is ProcScope && (returned_scope as ProcScope).is_constructor)
                         returned_scope = new ElementScope((returned_scope as ProcScope).declaringType.GetElementType());
-                    else if (returned_scope is ElementScope && (returned_scope as ElementScope).sc is TypeScope)
+                    else if (es != null && es.sc is TypeScope)
                     {
-                        TypeScope ts = (returned_scope as ElementScope).sc as TypeScope;
-                        if (ts.GetFullName() != null && (ts.GetFullName().IndexOf("System.Tuple") == 0 || ts.original_type != null && ts.original_type.GetFullName() != null && ts.original_type.GetFullName().IndexOf("(T1,") == 0))
+                        TypeScope ts = es.sc as TypeScope;
+                        if (es.IsIndexedProperty)
+                            returned_scope = new ElementScope(ts);
+                        else if (ts.GetFullName() != null && (ts.GetFullName().IndexOf("System.Tuple") == 0 || ts.original_type != null && ts.original_type.GetFullName() != null && ts.original_type.GetFullName().IndexOf("(T1,") == 0))
                         {
                             if (_indexer.indexes.expressions[0] is int32_const)
                             {
