@@ -1549,8 +1549,12 @@ procedure Dec(var c: char);
 procedure Dec(var c: char; n: integer);
 /// Возвращает предшествующий x символ
 function Pred(x: char): char;
+// Возвращает символ, отстоящий от x на n позиций назад
+//function Pred(x: char; n: integer): char;
 /// Возвращает следующий за x символ
 function Succ(x: char): char;
+// Возвращает символ, отстоящий от x на n позиций вперёд
+//function Succ(x: char; n: integer): char;
 /// Преобразует код в символ в кодировке Windows
 function ChrAnsi(a: byte): char;
 /// Преобразует символ в код в кодировке Windows
@@ -8601,7 +8605,14 @@ end;
 
 function Succ(x: char): char;
 begin
-  Result := System.Convert.ToChar(System.Convert.ToUInt16(x) + 1);
+  //Result := System.Convert.ToChar(System.Convert.ToUInt16(x) + 1);
+  Result := char(integer(x)+1);
+end;
+
+function Succ(x: char; n: integer): char;
+begin
+  //Result := System.Convert.ToChar(System.Convert.ToUInt16(x) + 1);
+  Result := char(integer(x)+n);
 end;
 
 function Pred(x: boolean): boolean;
@@ -8651,7 +8662,13 @@ end;
 
 function Pred(x: char): char;
 begin
-  Result := System.Convert.ToChar(System.Convert.ToUInt16(x) - 1);
+  Result := char(integer(x)-1);
+  //Result := System.Convert.ToChar(System.Convert.ToUInt16(x) - 1);
+end;
+
+function Pred(x: char; n: integer): char;
+begin
+  Result := char(integer(x)-n);
 end;
 
 procedure Swap<T>(var a, b: T);
@@ -8920,7 +8937,7 @@ begin
 end;
 
 /// Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя delim в качестве разделителя
-function JoinIntoString<T>(Self: sequence of T; delim: string): string; extensionmethod;
+function JoinToString<T>(Self: sequence of T; delim: string): string; extensionmethod;
 begin
   var g := Self.GetEnumerator();
   var sb := new System.Text.StringBuilder('');
@@ -8933,13 +8950,21 @@ begin
   Result := sb.ToString;  
 end;
 
+///--
+function JoinIntoString<T>(Self: sequence of T; delim: string): string; extensionmethod
+  := Self.JoinToString(delim);
+
 /// Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя пробел в качестве разделителя
-function JoinIntoString<T>(Self: sequence of T): string; extensionmethod;
+function JoinToString<T>(Self: sequence of T): string; extensionmethod;
 begin
   if typeof(T) = typeof(char) then
     Result := Self.JoinIntoString('') 
   else Result := Self.JoinIntoString(' ');  
 end;
+
+///--
+function JoinIntoString<T>(Self: sequence of T): string; extensionmethod
+  := Self.JoinToString();
 
 /// Применяет действие к каждому элементу последовательности
 procedure &ForEach<T>(Self: sequence of T; action: T -> ()); extensionmethod;
@@ -11186,6 +11211,49 @@ begin
     Result := Self.Substring(0, length)
   else Result := Self;
 end;
+
+function PrefixFunction(s: string): array of integer;
+// возвращает массив граней для строки-аргумента
+begin
+  var n := s.Length;
+  Result := ArrFill(n + 1, 0);
+  for var i := 1 to n - 1 do
+  begin
+    var temp := Result[i];
+    while (temp > 0) and (s[i + 1] <> s[temp + 1]) do
+      temp := Result[temp];
+    Result[i + 1] := s[i + 1] = s[temp + 1] ? temp + 1 : 0
+  end
+end;
+
+/// Возвращает массив индексов вхождений подстроки в основную строку 
+///Параметр overlay определяет, разрешены ли перекрытия вхождений подстрок
+function IndicesOf(Self, SubS: string; overlay: boolean := False): array of integer; extensionmethod;
+// Реализует КМП-алгоритм.
+// Возвращает массив начальных позиций вхождений подстроки P в строку
+// Параметр overlay определяет, разрешены ли перекрытия положений подстрок.
+begin
+  var L := new List<integer>;
+  var (n, m) := (Self.Length, SubS.Length);
+  var border := PrefixFunction(SubS);
+  var temp := 0;
+  for var i := 1 to n do
+  begin
+    while (temp > 0) and (SubS[temp + 1] <> Self[i]) do
+      temp := border[temp];
+    if SubS[temp + 1] = Self[i] then
+      temp += 1;
+    if temp = m then
+    begin
+      var pos := i - m + 1;
+      if overlay or (L.Count = 0) or (pos >= L[L.Count - 1] + m) then 
+        L.Add(pos);
+      temp := border[m]
+    end;
+  end;
+  Result := L.Select(i -> i - 1).ToArray
+end;
+
 
 ///-- 
 function CreateSliceFromStringInternal(Self: string; from, step, count: integer): string;

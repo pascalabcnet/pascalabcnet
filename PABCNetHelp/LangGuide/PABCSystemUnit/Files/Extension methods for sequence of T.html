@@ -5,7 +5,7 @@
 <param name="Keyword" value="ForEach">
 <param name="Keyword" value="Incremental">
 <param name="Keyword" value="Interleave">
-<param name="Keyword" value="JoinIntoString">
+<param name="Keyword" value="JoinToString">
 <param name="Keyword" value="LastMaxBy">
 <param name="Keyword" value="LastMinBy">
 <param name="Keyword" value="MaxBy">
@@ -74,9 +74,9 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Чередует элементы трех последовательностей</td></tr>
 <tr><td><code><b>function</b> Interleave&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; a, b, c: <b>sequence </b>  <b>of</b> T): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Чередует элементы четырех последовательностей</td></tr>
-<tr><td><code><b>function</b> JoinIntoString&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; delim: string): string;</code>
+<tr><td><code><b>function</b> JoinToString&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T; delim: string): string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя delim в качестве разделителя</td></tr>
-<tr><td><code><b>function</b> JoinIntoString&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): string;</code>
+<tr><td><code><b>function</b> JoinToString&lt;T&gt;(Self: <b>sequence </b>  <b>of</b> T): string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя пробел в качестве разделителя</td></tr>
 <tr><td><code><b>function</b> LastMaxBy&lt;T, TKey&gt;(Self: <b>sequence </b>  <b>of</b> T; selector: T-&gt;TKey): T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последний элемент последовательности с максимальным значением ключа</td></tr>
