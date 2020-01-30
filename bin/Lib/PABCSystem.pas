@@ -11377,6 +11377,18 @@ begin
     Result := default(Value);
 end;
 
+/// Возвращает словарь, сопоставляющий ключу группы количество элементов с данным ключом
+function EachCount<T,Res>(Self: sequence of System.Linq.IGrouping<T,Res>): Dictionary<T,integer>; extensionmethod;
+begin
+  Result := Self.ToDictionary(g -> g.Key, g -> g.Count);
+end;
+
+/// Возвращает словарь, сопоставляющий ключу группы результат групповой операции
+function Each<T,T1,Res>(Self: sequence of System.Linq.IGrouping<T,Res>; grOperation: System.Linq.IGrouping<T,Res> -> T1): Dictionary<T,integer>; extensionmethod;
+begin
+  Result := Self.ToDictionary(g -> g.Key, g -> g.Count);
+end;
+
 
 //{{{--doc: Конец методов расширения }}}
 
