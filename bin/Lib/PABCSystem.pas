@@ -8993,7 +8993,7 @@ begin
 end;
 
 /// Возвращает произведение элементов последовательности
-function Product(Self: sequence of integer): integer; extensionmethod;
+function Product(Self: sequence of integer): int64; extensionmethod;
 begin
   Result := 1;
   foreach var x in Self do
