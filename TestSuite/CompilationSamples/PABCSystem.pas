@@ -285,6 +285,7 @@ type
   PDouble = ^double;//double  //ошибка, не сохранится, надо исправить
   //------------------------------------------------------------------------------
 
+
 // -----------------------------------------------------
 // IOSystem interface & IOStandardSystem implementation
 // -----------------------------------------------------
@@ -308,6 +309,7 @@ type
     procedure read(var x: boolean);
     procedure readln;
     function ReadLine: string;
+    function ReadLexem: string;
     procedure write(obj: object);
     procedure write(p: pointer);
     procedure writeln;
@@ -317,9 +319,15 @@ type
   IOStandardSystem = class(IOSystem)
     state := 0; // 0 - нет символа в буфере char, 1 - есть символ в буфере char
     sym: integer;  // буфер в 1 символ для моделирования Peek в консоли
+    buf: array of char;
+    pos := 0;
+    realbuflen := -1; // только вначале
+    tr: TextReader;
   public 
-    function peek: integer; virtual;// использует state и sym
-    function read_symbol: char; virtual;// использует state и sym 
+    constructor Create;
+    procedure ReadNextBuf;
+    function peek: integer; virtual;// использует state и sym (стар) или буфер buf (нов)
+    function read_symbol: char; virtual;// использует state и sym (стар) или буфер buf (нов)
     procedure read(var x: integer); virtual;
     procedure read(var x: real); virtual;
     procedure read(var x: char); virtual;
@@ -335,6 +343,7 @@ type
     procedure read(var x: boolean); virtual;
     procedure readln; virtual;
     function ReadLine: string; virtual;
+    function ReadLexem: string; virtual;
     procedure write(p: pointer); virtual;
     procedure write(obj: object); virtual;
     procedure writeln; virtual;
@@ -646,6 +655,8 @@ function ReadChar: char;
 function ReadString: string;
 /// Возвращает значение типа boolean, введенное с клавиатуры
 function ReadBoolean: boolean;
+/// Возвращает следующую лексему
+function ReadLexem: string;
 
 /// Возвращает значение типа integer, введенное с клавиатуры, и переходит на следующую строку ввода
 function ReadlnInteger: integer;
@@ -848,6 +859,8 @@ function ReadChar(f: Text): char;
 function ReadString(f: Text): string;
 /// Возвращает значение типа boolean, введенное из текстового файла f
 function ReadBoolean(f: Text): boolean;
+/// Возвращает следующую лексему из текстового файла f
+function ReadLexem(f: Text): string;
 
 /// Возвращает значение типа integer, введенное из текстового файла f, 
 ///и осуществляет переход на следующую строку
@@ -1549,8 +1562,12 @@ procedure Dec(var c: char);
 procedure Dec(var c: char; n: integer);
 /// Возвращает предшествующий x символ
 function Pred(x: char): char;
+// Возвращает символ, отстоящий от x на n позиций назад
+//function Pred(x: char; n: integer): char;
 /// Возвращает следующий за x символ
 function Succ(x: char): char;
+// Возвращает символ, отстоящий от x на n позиций вперёд
+//function Succ(x: char; n: integer): char;
 /// Преобразует код в символ в кодировке Windows
 function ChrAnsi(a: byte): char;
 /// Преобразует символ в код в кодировке Windows
@@ -2431,6 +2448,7 @@ const
   FILE_NOT_OPENED_FOR_READING = 'Файл не открыт на чтение!!File is not opened for reading';
   FILE_NOT_OPENED_FOR_WRITING = 'Файл не открыт на запись!!File is not opened for writing';
   READ_LEXEM_AFTER_END_OF_TEXT_FILE = 'Попытка считывания за концом текстового файла!!Read after end of text file';
+  READ_LEXEM_AFTER_END_OF_INPUT_STREAM = 'Попытка считывания за концом потока ввода!!Read after end of input stream';
   RANGE_ERROR_MESSAGE = 'Выход за границы диапазона!!Out of range';
   EOF_FOR_TEXT_WRITEOPENED = 'Функция Eof не может быть вызвана для текстового файла, открытого на запись!!Eof function can''t be called for file, opened on writing';
   EOLN_FOR_TEXT_WRITEOPENED = 'Функция Eoln не может быть вызвана для текстового файла, открытого на запись!!Eoln function can''t be called for file, opened on writing';
@@ -4767,29 +4785,13 @@ begin
   res := self;
 end;
 
-{function read_lexem: string; 
-var
-  c: char;
-  sb: System.Text.StringBuilder;
-begin
-  repeat
-    c := CurrentIOSystem.read_symbol;
-  until not char.IsWhiteSpace(c); // pass spaces
-  sb := new System.Text.StringBuilder;
-  repeat
-    sb.Append(c);
-    c := CurrentIOSystem.read_symbol;
-  until char.IsWhiteSpace(c) or (c = char(-1)); // accumulate nonspaces
-  Result := sb.ToString;
-end;}
+// -----------------------------------------------------------------------------
+//                ReadLexem
+// -----------------------------------------------------------------------------
 
-// -----------------------------------------------------------------------------
-//                read_lexem
-// -----------------------------------------------------------------------------
-function read_lexem: string;// SSM 08.03.11 - пытаюсь исправить с peekом ситуацию с вводом '1 hello'. Должно работать
-var
-  c: char;
+{function ReadLexem: string;
 begin
+  var c: char;
   repeat
     c := CurrentIOSystem.read_symbol;
   until not char.IsWhiteSpace(c);
@@ -4802,23 +4804,21 @@ begin
     c := CurrentIOSystem.read_symbol;
   until False; // accumulate nonspaces
   Result := sb.ToString;
-end;
+end;}
 
-function read_lexem(f: Text): string;
-var
-  c: char;
-  i: integer;
+function ReadLexem(f: Text): string;
 begin
   if f.fi = nil then
     raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
   if f.sr = nil then 
     raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED_FOR_READING));
+  var i: integer;
   repeat
     i := f.sr.Read();
   until not char.IsWhiteSpace(char(i)); // pass spaces
   if i=-1 then 
     raise new System.IO.IOException(GetTranslation(READ_LEXEM_AFTER_END_OF_TEXT_FILE));
-  c := char(i);
+  var c := char(i);
   var sb := System.Text.StringBuilder.Create;
   repeat
     sb.Append(c);
@@ -4836,49 +4836,323 @@ end;
 // -----------------------------------------------------
 //          IOStandardSystem: implementation
 // -----------------------------------------------------
-function IOStandardSystem.peek: integer;
+
+// размер буфера. Определен эмпирически
+const
+  buflen = 256;
+
+constructor IOStandardSystem.Create;
 begin
-  if not console_alloc then
-    AllocConsole;
-  // SSM 29.11.14  
-  if state = 1 then // в sym - символ, считанный предыдущим Peek
-    Result := sym
-  else // в sym ничего нет
-  begin
-    state := 1;
-    sym := Console.Read(); // считываение в буфер
-    Result := sym;
-  end;   
+  tr := Console.In; 
+  buf := new char[buflen];
 end;
 
-function IOStandardSystem.read_symbol: char;
+procedure IOStandardSystem.ReadNextBuf;
 begin
-  if not console_alloc then
-    AllocConsole;
-  // SSM 29.11.14  
-  if state = 1 then // в sym - символ, считанный предыдущим Peek
+  realbuflen := tr.ReadBlock(buf, 0, buflen);
+  if realbuflen < buflen then
+    buf[realbuflen] := char(-1);
+  pos := 0;
+end;
+
+const
+  m = char(-1);
+
+var
+  _IsPipedRedirectedQuery := False;
+  _IsPipedRedirected := False;
+
+function IsInputPipedOrRedirectedFromFile: boolean;
+begin
+  if _IsPipedRedirectedQuery then
+    Result := _IsPipedRedirected
+  else 
   begin
-    state := 0;
-    Result := char(sym);
-    sym := -1;
+    _IsPipedRedirectedQuery := True;
+    _IsPipedRedirected := Console.IsInputRedirected and (CurrentIOSystem.GetType = typeof(IOStandardSystem));
+    Result := _IsPipedRedirected;
+  end;
+end;
+
+function IOStandardSystem.peek: integer;// +
+begin
+  if IsInputPipedOrRedirectedFromFile then
+  begin// новый код
+    if pos >= realbuflen then
+      ReadNextBuf;
+    Result := integer(buf[pos]);
   end
-  else // в sym ничего нет
-    Result := char(Console.Read());
+  else // старый код
+  begin
+    if not console_alloc then
+      AllocConsole;
+    // SSM 29.11.14  
+    if state = 1 then // в sym - символ, считанный предыдущим Peek
+      Result := sym
+    else // в sym ничего нет
+    begin
+      state := 1;
+      sym := tr.Read(); // считываение в буфер из одного символа
+      Result := sym;
+    end; 
+  end;
 end;
 
-procedure IOStandardSystem.read(var x: integer);
+function IOStandardSystem.read_symbol: char;// +
 begin
-  x := Convert.ToInt32(read_lexem);
+  if IsInputPipedOrRedirectedFromFile then
+  begin// новый код
+    if pos >= realbuflen then
+      ReadNextBuf;
+    Result := buf[pos];
+    if Result <> m then
+      pos += 1;
+  end
+  else // старый код
+  begin
+    if not console_alloc then
+      AllocConsole;
+    // SSM 29.11.14  
+    if state = 1 then // в sym - символ, считанный предыдущим Peek
+    begin
+      state := 0;
+      Result := char(sym);
+      sym := -1;
+    end
+    else // в sym ничего нет
+      Result := char(tr.Read());
+    exit;  
+  end;
+end;
+
+function IOStandardSystem.ReadLine: string;// +
+begin
+  {ReadNextBuf;
+  while realbuflen>0 do
+  begin
+    sb.Append(buf,0,realbuflen);
+    ReadNextBuf;
+  end;}
+  if IsInputPipedOrRedirectedFromFile then
+  begin// новый код
+    {var sb := new StringBuilder(10); // старый новый код
+    var c: char;
+    repeat
+      
+      if pos >= realbuflen then
+        ReadNextBuf;
+      c := buf[pos];
+      
+      if c = char(-1) then
+        break;
+      
+      pos += 1;
+      
+      if c = #13 then
+        break;
+      if c = #10 then
+        break;
+      
+      sb.Append(c);
+    until False;
+    
+    if c = #13 then
+    begin
+      if peek = 10 then
+        read_symbol;
+    end;  
+    Result := sb.ToString;}
+    
+    
+    var sb := new StringBuilder(10); // новый новый код
+    var c: char;
+    repeat
+      if pos >= realbuflen then
+        break;
+      c := buf[pos];
+      
+      if c = char(-1) then
+        break;
+      
+      pos += 1;
+      
+      if c = #13 then
+        break;
+      if c = #10 then
+        break;
+      
+      sb.Append(c);
+    until False;
+    
+    if pos >= realbuflen then // Если дочитали до конца буфера, то вернуть sb.ToString + tr.ReadLine
+    begin
+      Result := sb.ToString + tr.ReadLine;
+      ReadNextBuf;
+    end
+    else // Если мы не дочитали до конца буфера, то просто вернуть sb.ToString
+    begin
+      Result := sb.ToString;
+      if c = #13 then
+      begin
+        if peek = 10 then
+          read_symbol;
+      end;
+    end;
+  end  
+  else // старый код
+  begin
+    if not console_alloc then
+      AllocConsole;
+    if state = 1 then
+    begin
+      state := 0;
+      Result := char(sym) + Console.ReadLine;
+      sym := -1;
+    end
+    else 
+      Result := Console.ReadLine;
+  end;
+end;
+
+function ReadLexem: string;
+begin
+  if input.sr <> nil then
+    Result := ReadLexem(input)
+  else Result := CurrentIOSystem.ReadLexem; 
+end;
+
+function IOStandardSystem.ReadLexem: string;// +
+begin
+  if IsInputPipedOrRedirectedFromFile then
+  begin// новый код
+    var c: char;
+    repeat
+      c := read_symbol;
+    until (c <> ' ') and (c <> #10) and (c <> #13);
+    
+    if c = char(-1) then
+      raise new System.IO.IOException(GetTranslation(READ_LEXEM_AFTER_END_OF_INPUT_STREAM));
+    
+    var sb := new StringBuilder;
+    repeat
+      sb.Append(c);
+      
+      if pos >= realbuflen then
+        ReadNextBuf;
+      c := buf[pos]; //c := read_symbol;
+      if c = ' ' then
+        break;
+      if c = #10 then
+        break;
+      if c = #13 then
+        break;
+      if c = char(-1) then
+        break;
+      
+      pos += 1;
+    until False;
+    
+    Result := sb.ToString;
+  end
+  else // старый код
+  begin
+    var c: char;
+    repeat
+      c := read_symbol;
+    until not char.IsWhiteSpace(c);
+    var sb := new System.Text.StringBuilder;
+    repeat
+      sb.Append(c);
+      c := char(peek);
+      if char.IsWhiteSpace(c) or (c = char(-1)) then // char(-1) - Ctrl-Z во входном потоке
+        break;
+      c := read_symbol;
+    until False; // accumulate nonspaces
+    Result := sb.ToString;
+  end;
+end;
+
+function ErrorStringFromResource(s: string): string;
+begin
+  var _rm := new System.Resources.ResourceManager('mscorlib', typeof(object).Assembly);
+  Result := _rm.GetString(s);
+end;
+
+procedure IOStandardSystem.read(var x: integer);// +
+begin
+  if IsInputPipedOrRedirectedFromFile then
+  begin// новый код
+    var c: char;
+    repeat
+      c := read_symbol;
+    until (c <> ' ') and (c <> #10) and (c <> #13);
+    
+    if c = char(-1) then
+      raise new System.IO.IOException(GetTranslation(READ_LEXEM_AFTER_END_OF_INPUT_STREAM));
+    
+    var sign := 0;  
+    if c = '-' then
+    begin
+      sign := -1;
+      c := read_symbol;
+    end  
+    else if c = '+' then
+    begin
+      sign := 1;
+      c := read_symbol;
+    end;
+    if c = char(-1) then
+      raise new System.IO.IOException(GetTranslation(READ_LEXEM_AFTER_END_OF_INPUT_STREAM));
+    
+    if (c < #48) or (c > #57) then
+      raise new System.FormatException(ErrorStringFromResource('Format_InvalidString') + ' ' + Ord(c));
+    x := integer(c) - 48;
+    repeat
+      
+      if pos >= realbuflen then
+        ReadNextBuf;
+      c := buf[pos]; //c := read_symbol;
+      if c = ' ' then
+        break;
+      if c = #10 then
+        break;
+      if c = #13 then
+        break;
+      if c = char(-1) then
+        break;
+      
+      if c > #57 then
+        raise new System.FormatException(ErrorStringFromResource('Format_InvalidString') + ' ' + Ord(c));
+      if c < #48 then
+        raise new System.FormatException(ErrorStringFromResource('Format_InvalidString') + ' ' + Ord(c));
+      if x > 214748364 then
+        raise new System.OverflowException(ErrorStringFromResource('Overflow_Int32'));
+      x := x * 10 + (integer(c) - 48);
+      
+      pos += 1;
+    until False;
+    
+    if x < 0 then 
+      if (x = -2147483648) and (sign = -1) then
+        exit
+      else raise new System.OverflowException(ErrorStringFromResource('Overflow_Int32'));
+    if sign = -1 then
+      x := -x;
+  end    
+  else // старый код
+  begin
+    x := StrToInt(ReadLexem);
+  end;
 end;
 
 procedure IOStandardSystem.read(var x: real);
 begin
-  x := Convert.ToDouble(read_lexem, nfi);
+  x := Convert.ToDouble(ReadLexem, nfi);
 end;
 
 procedure IOStandardSystem.read(var x: char);
 begin
-  x := CurrentIOSystem.read_symbol;
+  x := read_symbol;
 end;
 
 {procedure IOStandardSystem.read(var x: string);
@@ -4895,62 +5169,62 @@ end;}
 
 procedure IOStandardSystem.read(var x: string);
 begin
-  var sb := new System.Text.StringBuilder;
-  // SSM 8.04.10
+  var sb := new StringBuilder;
+    // SSM 8.04.10
   var c := char(peek()); // первый раз может быть char(-1) - это значит, что в потоке ввода ничего нет, тогда мы читаем символ
   while (c <> #13) and (c <> #10) do 
   begin
     c := read_symbol;
     if (c <> #13) and (c <> #10) then // SSM 13.12.13
       sb.Append(c);
-    c := char(peek());
+    c := char(peek);
   end;
   x := sb.ToString;
 end;
 
 procedure IOStandardSystem.read(var x: byte);
 begin
-  x := Convert.ToByte(read_lexem);
+  x := Convert.ToByte(ReadLexem);
 end;
 
 procedure IOStandardSystem.read(var x: shortint);
 begin
-  x := Convert.ToSByte(read_lexem);
+  x := Convert.ToSByte(ReadLexem);
 end;
 
 procedure IOStandardSystem.read(var x: smallint);
 begin
-  x := Convert.ToInt16(read_lexem);
+  x := Convert.ToInt16(ReadLexem);
 end;
 
 procedure IOStandardSystem.read(var x: word);
 begin
-  x := Convert.ToUInt16(read_lexem);
+  x := Convert.ToUInt16(ReadLexem);
 end;
 
 procedure IOStandardSystem.read(var x: longword);
 begin
-  x := Convert.ToUInt32(read_lexem);
+  x := Convert.ToUInt32(ReadLexem);
 end;
 
 procedure IOStandardSystem.read(var x: int64);
 begin
-  x := Convert.ToInt64(read_lexem);
+  x := Convert.ToInt64(ReadLexem);
 end;
 
 procedure IOStandardSystem.read(var x: uint64);
 begin
-  x := Convert.ToUInt64(read_lexem);
+  x := Convert.ToUInt64(ReadLexem);
 end;
 
 procedure IOStandardSystem.read(var x: single);
 begin
-  x := Convert.ToSingle(read_lexem, nfi);
+  x := Convert.ToSingle(ReadLexem, nfi);
 end;
 
 procedure IOStandardSystem.read(var x: boolean);
 begin
-  var s := read_lexem.ToLower;
+  var s := ReadLexem.ToLower;
   if s = 'true' then
     x := True
   else if s = 'false' then
@@ -4958,7 +5232,7 @@ begin
   else raise new System.FormatException('Входная строка имела неверный формат');
 end;
 
-procedure IOStandardSystem.readln; // SSM 4.11.17 - проверять правку, потенциально могут быть ошибки
+procedure IOStandardSystem.readln; 
 begin
   // while CurrentIOSystem.read_symbol <> END_OF_LINE_SYMBOL do; // было
   while True do
@@ -4969,7 +5243,7 @@ begin
   end;
 end;
 
-function IOStandardSystem.ReadLine: string;
+{function IOStandardSystem.ReadLine: string;
 begin
   // Надо учесть sym
   if not console_alloc then
@@ -4982,7 +5256,7 @@ begin
   end
   else 
     Result := Console.ReadLine;
-end;
+end;}
 
 procedure IOStandardSystem.write(obj: object);
 begin
@@ -5018,184 +5292,72 @@ end;
 
 procedure Readln;
 begin
-  if input.sr <> nil then
-    input.sr.ReadLine
-  else 
-    try
-      CurrentIOSystem.readln
-    except
-      on e: Exception do
-        raise e;
-    end;
+  CurrentIOSystem.readln
 end;
 
 procedure Read(var x: integer);
 begin
-  if input.sr <> nil then
-    Read(input, x)
-  else 
-    try
-      CurrentIOSystem.read(x)
-    except
-      on e: Exception do
-        raise e;
-    end;
+  CurrentIOSystem.read(x)
 end;
 
 procedure Read(var x: real);
 begin
-  if input.sr <> nil then
-    Read(input, x)
-  else 
-    try
-      CurrentIOSystem.read(x)
-    except
-      on e: Exception do
-        raise e;
-    end;
+  CurrentIOSystem.read(x)
 end;
 
 procedure Read(var x: char);
 begin
-  if input.sr <> nil then
-    Read(input, x)
-  else 
-    try
-      CurrentIOSystem.read(x)
-    except
-      on e: Exception do
-        raise e;
-    end;
+  CurrentIOSystem.read(x)
 end;
 
 procedure Read(var x: string);
 begin
-  if input.sr <> nil then
-    Read(input, x)
-  else 
-    try
-      CurrentIOSystem.read(x)
-    except
-      on e: Exception do
-        raise e;
-    end;
+  CurrentIOSystem.read(x)
 end;
 
 procedure Read(var x: byte);
 begin
-  if input.sr <> nil then
-    Read(input, x)
-  else 
-    try
-      CurrentIOSystem.read(x)
-    except
-      on e: Exception do
-        raise e;
-    end;
+  CurrentIOSystem.read(x)
 end;
 
 procedure Read(var x: shortint);
 begin
-  if input.sr <> nil then
-    Read(input, x)
-  else 
-    try
-      CurrentIOSystem.read(x)
-    except
-      on e: Exception do
-        raise e;
-    end;
+  CurrentIOSystem.read(x)
 end;
 
 procedure Read(var x: smallint);
 begin
-  if input.sr <> nil then
-    Read(input, x)
-  else 
-    try
-      CurrentIOSystem.read(x)
-    except
-      on e: Exception do
-        raise e;
-    end;
+  CurrentIOSystem.read(x)
 end;
 
 procedure Read(var x: word);
 begin
-  if input.sr <> nil then
-    Read(input, x)
-  else 
-    try
-      CurrentIOSystem.read(x)
-    except
-      on e: Exception do
-        raise e;
-    end;
+  CurrentIOSystem.read(x)
 end;
 
 procedure Read(var x: longword);
 begin
-  if input.sr <> nil then
-    Read(input, x)
-  else 
-    try
-      CurrentIOSystem.read(x)
-    except
-      on e: Exception do
-        raise e;
-    end;
+  CurrentIOSystem.read(x)
 end;
 
 procedure Read(var x: int64);
 begin
-  if input.sr <> nil then
-    Read(input, x)
-  else 
-    try
-      CurrentIOSystem.read(x)
-    except
-      on e: Exception do
-        raise e;
-    end;
+  CurrentIOSystem.read(x)
 end;
 
 procedure Read(var x: uint64);
 begin
-  if input.sr <> nil then
-    Read(input, x)
-  else 
-    try
-      CurrentIOSystem.read(x)
-    except
-      on e: Exception do
-        raise e;
-    end;
+  CurrentIOSystem.read(x)
 end;
 
 procedure Read(var x: single);
 begin
-  if input.sr <> nil then
-    Read(input, x)
-  else 
-    try
-      CurrentIOSystem.read(x)
-    except
-      on e: Exception do
-        raise e;
-    end;
+  CurrentIOSystem.read(x)
 end;
 
 procedure Read(var x: boolean);
 begin
-  if input.sr <> nil then
-    Read(input, x)
-  else 
-    try
-      CurrentIOSystem.read(x)
-    except
-      on e: Exception do
-        raise e;
-    end;
+  CurrentIOSystem.read(x)
 end;
 
 function TryRead(var x: integer): boolean;
@@ -5320,17 +5482,7 @@ end;
 
 function ReadString: string;
 begin
-//  Read(Result);
-//  readln();
-  if input.sr <> nil then
-    Result := input.sr.ReadLine
-  else 
-    try
-      Result := CurrentIOSystem.ReadLine;
-    except
-      on e: Exception do
-        raise e;
-    end;
+  Result := CurrentIOSystem.ReadLine;
 end;
 
 function ReadBoolean: boolean;
@@ -5364,7 +5516,7 @@ end;
 
 function ReadlnString: string;
 begin
-  Result := ReadString;
+  Result := CurrentIOSystem.ReadLine;
 end;
 
 function ReadlnBoolean: boolean;
@@ -5573,11 +5725,12 @@ end;
 
 procedure ReadShortString(var s: string; n: integer);// Снова сделал peek. В прошлый раз была ошибка
 begin
-  if (input.fi <> nil) and (input.sr <> nil) then
+  // SSM 30/01/20 - закомментировал это, поскольку мы перешли на буфер, и read_symbol и peek сами переключают потоки при Assign(input,...) и считывают из буфера
+  {if (input.fi <> nil) and (input.sr <> nil) then
   begin
     ReadShortStringFromFile(input, s, n);
     exit;
-  end;
+  end;}
   
   {  var sb := new System.Text.StringBuilder;
     var c := CurrentIOSystem.read_symbol;
@@ -5621,7 +5774,7 @@ end;
 procedure read(f: Text; var x: integer);
 begin
   try
-    x := Convert.ToInt32(read_lexem(f));
+    x := Convert.ToInt32(ReadLexem(f));
   except
     on e: Exception do
       raise e;
@@ -5631,7 +5784,7 @@ end;
 procedure read(f: Text; var x: real);
 begin
   try
-    x := Convert.ToDouble(read_lexem(f), nfi);
+    x := Convert.ToDouble(ReadLexem(f), nfi);
   except
     on e: Exception do
       raise e;
@@ -5691,7 +5844,7 @@ end;
 procedure read(f: Text; var x: byte);
 begin
   try
-    x := Convert.ToByte(read_lexem(f));
+    x := Convert.ToByte(ReadLexem(f));
   except
     on e: Exception do
       raise e;
@@ -5701,7 +5854,7 @@ end;
 procedure read(f: Text; var x: shortint);
 begin
   try
-    x := Convert.ToSByte(read_lexem(f));
+    x := Convert.ToSByte(ReadLexem(f));
   except
     on e: Exception do
       raise e;
@@ -5711,7 +5864,7 @@ end;
 procedure read(f: Text; var x: smallint);
 begin
   try
-    x := Convert.ToInt16(read_lexem(f));
+    x := Convert.ToInt16(ReadLexem(f));
   except
     on e: Exception do
       raise e;
@@ -5721,7 +5874,7 @@ end;
 procedure read(f: Text; var x: word);
 begin
   try
-    x := Convert.ToUInt16(read_lexem(f));
+    x := Convert.ToUInt16(ReadLexem(f));
   except
     on e: Exception do
       raise e;
@@ -5731,7 +5884,7 @@ end;
 procedure read(f: Text; var x: longword);
 begin
   try
-    x := Convert.ToUInt32(read_lexem(f));
+    x := Convert.ToUInt32(ReadLexem(f));
   except
     on e: Exception do
       raise e;
@@ -5741,7 +5894,7 @@ end;
 procedure read(f: Text; var x: int64);
 begin
   try
-    x := Convert.ToInt64(read_lexem(f));
+    x := Convert.ToInt64(ReadLexem(f));
   except
     on e: Exception do
       raise e;
@@ -5751,7 +5904,7 @@ end;
 procedure read(f: Text; var x: uint64);
 begin
   try
-    x := Convert.ToUInt64(read_lexem(f));
+    x := Convert.ToUInt64(ReadLexem(f));
   except
     on e: Exception do
       raise e;
@@ -5761,7 +5914,7 @@ end;
 procedure read(f: Text; var x: single);
 begin
   try
-    x := Convert.ToSingle(read_lexem(f));
+    x := Convert.ToSingle(ReadLexem(f));
   except
     on e: Exception do
       raise e;
@@ -5770,7 +5923,7 @@ end;
 
 procedure read(f: Text; var x: boolean);
 begin
-  var s := read_lexem(f).ToLower;
+  var s := ReadLexem(f).ToLower;
   if s = 'true' then
     x := True
   else if s = 'false' then
@@ -5854,7 +6007,7 @@ function Text.ReadChar := PABCSystem.ReadChar(Self);
 
 function Text.ReadString := PABCSystem.ReadString(Self);
 
-function Text.ReadWord := read_lexem(Self);
+function Text.ReadWord := ReadLexem(Self);
 
 function Text.ReadBoolean := PABCSystem.ReadBoolean(Self);
 
@@ -6326,7 +6479,12 @@ begin
   if f = output then
     f.sw := new StreamWriter(f.fi.FullName);
   if f = input then
-    f.sr := new StreamReader(f.fi.FullName, DefaultEncoding);
+  begin  
+    f.sr := new StreamReader(f.fi.FullName, Encoding.UTF8);
+    (CurrentIOSystem as IOStandardSystem).tr := f.sr;
+    _IsPipedRedirected := True;
+    _IsPipedRedirectedQuery := True;
+  end;  
 end;
 
 procedure AssignFile(f: Text; name: string) := Assign(f, name);
@@ -8165,12 +8323,6 @@ begin
   Result := s.TrimEnd(' ');
 end;
 
-function ErrorStringFromResource(s: string): string;
-begin
-  var _rm := new System.Resources.ResourceManager('mscorlib', typeof(object).Assembly);
-  Result := _rm.GetString(s);
-end;
-
 function StrToInt(s: string): integer;
 begin
   var j := 1;
@@ -8601,7 +8753,14 @@ end;
 
 function Succ(x: char): char;
 begin
-  Result := System.Convert.ToChar(System.Convert.ToUInt16(x) + 1);
+  //Result := System.Convert.ToChar(System.Convert.ToUInt16(x) + 1);
+  Result := char(integer(x)+1);
+end;
+
+function Succ(x: char; n: integer): char;
+begin
+  //Result := System.Convert.ToChar(System.Convert.ToUInt16(x) + 1);
+  Result := char(integer(x)+n);
 end;
 
 function Pred(x: boolean): boolean;
@@ -8651,7 +8810,13 @@ end;
 
 function Pred(x: char): char;
 begin
-  Result := System.Convert.ToChar(System.Convert.ToUInt16(x) - 1);
+  Result := char(integer(x)-1);
+  //Result := System.Convert.ToChar(System.Convert.ToUInt16(x) - 1);
+end;
+
+function Pred(x: char; n: integer): char;
+begin
+  Result := char(integer(x)-n);
 end;
 
 procedure Swap<T>(var a, b: T);
@@ -8920,7 +9085,7 @@ begin
 end;
 
 /// Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя delim в качестве разделителя
-function JoinIntoString<T>(Self: sequence of T; delim: string): string; extensionmethod;
+function JoinToString<T>(Self: sequence of T; delim: string): string; extensionmethod;
 begin
   var g := Self.GetEnumerator();
   var sb := new System.Text.StringBuilder('');
@@ -8933,13 +9098,21 @@ begin
   Result := sb.ToString;  
 end;
 
+///--
+function JoinIntoString<T>(Self: sequence of T; delim: string): string; extensionmethod
+  := Self.JoinToString(delim);
+
 /// Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя пробел в качестве разделителя
-function JoinIntoString<T>(Self: sequence of T): string; extensionmethod;
+function JoinToString<T>(Self: sequence of T): string; extensionmethod;
 begin
   if typeof(T) = typeof(char) then
     Result := Self.JoinIntoString('') 
   else Result := Self.JoinIntoString(' ');  
 end;
+
+///--
+function JoinIntoString<T>(Self: sequence of T): string; extensionmethod
+  := Self.JoinToString();
 
 /// Применяет действие к каждому элементу последовательности
 procedure &ForEach<T>(Self: sequence of T; action: T -> ()); extensionmethod;
@@ -8968,7 +9141,7 @@ begin
 end;
 
 /// Возвращает произведение элементов последовательности
-function Product(Self: sequence of integer): integer; extensionmethod;
+function Product(Self: sequence of integer): int64; extensionmethod;
 begin
   Result := 1;
   foreach var x in Self do
@@ -11187,6 +11360,49 @@ begin
   else Result := Self;
 end;
 
+function PrefixFunction(s: string): array of integer;
+// возвращает массив граней для строки-аргумента
+begin
+  var n := s.Length;
+  Result := ArrFill(n + 1, 0);
+  for var i := 1 to n - 1 do
+  begin
+    var temp := Result[i];
+    while (temp > 0) and (s[i + 1] <> s[temp + 1]) do
+      temp := Result[temp];
+    Result[i + 1] := s[i + 1] = s[temp + 1] ? temp + 1 : 0
+  end
+end;
+
+/// Возвращает массив индексов вхождений подстроки в основную строку 
+///Параметр overlay определяет, разрешены ли перекрытия вхождений подстрок
+function IndicesOf(Self, SubS: string; overlay: boolean := False): array of integer; extensionmethod;
+// Реализует КМП-алгоритм.
+// Возвращает массив начальных позиций вхождений подстроки P в строку
+// Параметр overlay определяет, разрешены ли перекрытия положений подстрок.
+begin
+  var L := new List<integer>;
+  var (n, m) := (Self.Length, SubS.Length);
+  var border := PrefixFunction(SubS);
+  var temp := 0;
+  for var i := 1 to n do
+  begin
+    while (temp > 0) and (SubS[temp + 1] <> Self[i]) do
+      temp := border[temp];
+    if SubS[temp + 1] = Self[i] then
+      temp += 1;
+    if temp = m then
+    begin
+      var pos := i - m + 1;
+      if overlay or (L.Count = 0) or (pos >= L[L.Count - 1] + m) then 
+        L.Add(pos);
+      temp := border[m]
+    end;
+  end;
+  Result := L.Select(i -> i - 1).ToArray
+end;
+
+
 ///-- 
 function CreateSliceFromStringInternal(Self: string; from, step, count: integer): string;
 begin
@@ -11307,6 +11523,18 @@ begin
   var b := Self.TryGetValue(K, Result);
   if not b then 
     Result := default(Value);
+end;
+
+/// Возвращает словарь, сопоставляющий ключу группы количество элементов с данным ключом
+function EachCount<T,Res>(Self: sequence of System.Linq.IGrouping<T,Res>): Dictionary<T,integer>; extensionmethod;
+begin
+  Result := Self.ToDictionary(g -> g.Key, g -> g.Count);
+end;
+
+/// Возвращает словарь, сопоставляющий ключу группы результат групповой операции
+function Each<T,T1,Res>(Self: sequence of System.Linq.IGrouping<T,Res>; grOperation: System.Linq.IGrouping<T,Res> -> T1): Dictionary<T,integer>; extensionmethod;
+begin
+  Result := Self.ToDictionary(g -> g.Key, g -> g.Count);
 end;
 
 
