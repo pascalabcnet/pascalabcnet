@@ -2357,7 +2357,41 @@ namespace CodeCompletion
                                     exact = false;
                                     if (ts.IsDelegate)
                                     {
-                                        for (int j=0; j<gen_args.Count; j++)
+                                        for (int j = 0; j < gen_args.Count; j++)
+                                        {
+                                            TypeScope gen_ts = gen_args[j];
+                                            if (gen_ts is ProcType)
+                                            {
+                                                gen_args[j] = (gen_ts as ProcType).InvokeMethod.return_type;
+                                            }
+                                        }
+                                    }
+                                    /*for (int j = 0; j < gen_args.Count; j++)
+                                    {
+                                        TypeScope gen_ts = gen_args[j];
+                                        if (gen_ts.IsGeneric && gen_ts.original_type != null)
+                                        {
+                                            int ind = gen_ts.original_type.generic_params.IndexOf(inst_ts.name);
+                                            if (ind != -1)
+                                            {
+                                                gen_args[j] = gen_ts.instances[ind];
+                                            }
+                                        }
+                                    }*/
+                                    break;
+                                }
+                            }
+                        }
+                        else if (ts.GetElementType() != null && ts.GetElementType().IsGeneric)
+                        {
+                            foreach (TypeScope inst_ts in ts.GetElementType().instances)
+                            {
+                                if (this.template_parameters.Contains(inst_ts.name))
+                                {
+                                    exact = false;
+                                    if (ts.IsDelegate)
+                                    {
+                                        for (int j = 0; j < gen_args.Count; j++)
                                         {
                                             TypeScope gen_ts = gen_args[j];
                                             if (gen_ts is ProcType)
@@ -2370,7 +2404,14 @@ namespace CodeCompletion
                                 }
                             }
                         }
-                    }
+                        /*else if (ts.GetElementType() != null && ts.GetElementType().IsGenericParameter)
+                        {
+                            if (this.template_parameters.Contains(ts.GetElementType().name))
+                            {
+                                exact = false;
+                            }
+                        }*/
+                        }
                 }
                 instance.return_type = this.return_type.GetInstance(gen_args, exact);
             }
@@ -4004,7 +4045,7 @@ namespace CodeCompletion
         private List<TypeScope> static_indexers;
         public List<TypeScope> implemented_interfaces;
         public List<TypeScope> instances;
-        protected List<string> generic_params;
+        public List<string> generic_params;
         public bool is_final;
         public bool aliased = false;
         internal bool lazy_instance = false;
@@ -5578,6 +5619,18 @@ namespace CodeCompletion
                     if (this.instances[i] is UnknownScope || this.instances[i] is TemplateParameterScope)
                     {
                         List<TypeScope> lst = new List<TypeScope>();
+                        TypeScope ts = gen_args[Math.Min(i, gen_args.Count - 1)];
+                        if (ts.instances != null && ts.instances.Count > 0 && !exact)
+                        {
+                            List<string> template_args = ts.original_type.generic_params;
+                            int ind = template_args.IndexOf(this.instances[i].name);
+                            if (ind != -1)
+                            {
+                                sc.instances.Add(ts.instances[ind]);
+                                sc.generic_params.Add(ts.generic_params[ind]);
+                                continue;
+                            }
+                        }
                         lst.Add(gen_args[Math.Min(i, gen_args.Count - 1)]);
                         if (lst[0].instances != null && lst[0].instances.Count > 0)
                             lst[0] = lst[0].instances[Math.Min(i, lst[0].instances.Count - 1)];
