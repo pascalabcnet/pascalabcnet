@@ -3143,9 +3143,11 @@ namespace PascalABCCompiler.Parsers
                     }
                     break;
                 }
-                else if (c == '<' && !in_comment)
+                else if ((c == '<' || c == '&' && j < Text.Length - 1 && Text[j+1] == '<') && !in_comment)
                 {
                     Stack<char> sk_stack = new Stack<char>();
+                    if (c == '&')
+                        j++;
                     sk_stack.Push('<');
                     j++;
                     bool generic = false;

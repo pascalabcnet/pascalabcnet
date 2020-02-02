@@ -2294,12 +2294,12 @@ namespace CodeCompletion
                         gen_args = ts.instances;
                         template_parameters = new List<string>(ts.TemplateArguments);
                     }
-                        
+
                 }
                 if (!has_instance)
                     return this;
             }
-                
+
             ProcScope instance = new ProcScope(this.name, this.topScope, this.is_constructor);
             instance.is_extension = this.is_extension;
             instance.original_function = this;
@@ -2325,7 +2325,7 @@ namespace CodeCompletion
                     ElementScope inst_param = null;
                     if ((parameter.sc as TypeScope).IsGeneric)
                         inst_param = new ElementScope(new SymInfo(parameter.si.name, parameter.si.kind, parameter.si.description), (parameter.sc as TypeScope).GetInstance(gen_args), parameter.topScope);
-                    else if (parameter.param_kind == parametr_kind.params_parametr && (parameter.sc as TypeScope).IsArray && (parameter.sc as TypeScope).GetElementType().IsGenericParameter && gen_args[i-1].IsArray)
+                    else if (parameter.param_kind == parametr_kind.params_parametr && (parameter.sc as TypeScope).IsArray && (parameter.sc as TypeScope).GetElementType().IsGenericParameter && gen_args[i - 1].IsArray)
                     {
                         gen_args[i - 1] = gen_args[i - 1].GetElementType();
                         inst_param = new ElementScope(new SymInfo(parameter.si.name, parameter.si.kind, parameter.si.description), (parameter.sc as TypeScope).GetInstance(gen_args), parameter.topScope);
@@ -2352,7 +2352,7 @@ namespace CodeCompletion
                         {
                             foreach (TypeScope inst_ts in ts.instances)
                             {
-                                if (this.template_parameters.Contains(inst_ts.name))
+                                if (this.template_parameters != null && this.template_parameters.Contains(inst_ts.name))
                                 {
                                     exact = false;
                                     if (ts.IsDelegate)
@@ -2411,11 +2411,11 @@ namespace CodeCompletion
                                 exact = false;
                             }
                         }*/
-                        }
+                    }
                 }
                 instance.return_type = this.return_type.GetInstance(gen_args, exact);
             }
-                
+
             return instance;
         }
 
