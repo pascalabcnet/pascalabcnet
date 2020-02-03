@@ -567,7 +567,10 @@ namespace CodeCompletion
             s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
             assert(s.Trim('\n', ' ', '\t') == "");
 
-
+            test_str = "(2..4)";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            assert(s.Trim('\n', ' ', '\t') == test_str);
 
 
 
@@ -1004,6 +1007,11 @@ namespace CodeCompletion
             off = test_str.Length;
             s = parser.LanguageInformation.FindExpressionFromAnyPosition(off, test_str, line, col, out keyw, out str);
             assert(s.Trim('\n', ' ', '\t') == "t1&<byte>.x");
+
+            test_str = "Arr(0).Select&<integer,ft>";
+            off = 8;
+            s = parser.LanguageInformation.FindExpressionFromAnyPosition(off, test_str, line, col, out keyw, out str);
+            assert(s.Trim('\n', ' ', '\t') == "Arr(0).Select&<integer,ft>");
 
             //----
             Type[] types = typeof(int).Assembly.GetExportedTypes();

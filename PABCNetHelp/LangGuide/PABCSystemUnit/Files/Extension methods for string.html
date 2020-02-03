@@ -1,5 +1,6 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="Between">
+<param name="Keyword" value="IndicesOf">
 <param name="Keyword" value="InRange">
 <param name="Keyword" value="Inverse">
 <param name="Keyword" value="IsMatch">
@@ -26,6 +27,8 @@
 </HEAD><body><H1>Методы расширения типа string</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Between(Self: string; a, b: string): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если значение находится между двумя другими</td></tr>
+<tr><td><code><b>function</b> IndicesOf(Self, SubS: string; overlay: boolean := False): <b>array</b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает массив индексов вхождений подстроки в основную строкуПараметр overlay определяет, разрешены ли перекрытия вхождений подстрок</td></tr>
 <tr><td><code><b>function</b> InRange(Self: string; a,b: string): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает True если значение находится между двумя другими</td></tr>
 <tr><td><code><b>function</b> Inverse(Self: string): string;</code>
@@ -66,6 +69,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в целоеПри невозможности преобразования возвращается defaultvalue</td></tr>
 <tr><td><code><b>function</b> ToIntegers(Self: string): <b>array</b>  <b>of</b> integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в массив целых</td></tr>
+<tr><td><code><b>function</b> ToIntegers(Self: string; N: integer): <b>array</b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Считывает из строки массив из N целых</td></tr>
 <tr><td><code><b>function</b> ToReal(Self: string): real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует строку в вещественное</td></tr>
 <tr><td><code><b>function</b> ToReal(Self: string; defaultvalue: real): real;</code>
