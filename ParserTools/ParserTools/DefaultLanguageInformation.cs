@@ -2812,7 +2812,7 @@ namespace PascalABCCompiler.Parsers
                 }
                 else if (ch == '.' || ch == '^' || ch == '&' || ch == '?' && IsPunctuation(Text, i + 1))
                 {
-                    if (ch == '.' && i >= 1 && Text[i - 1] == '.')
+                    if (ch == '.' && i >= 1 && Text[i - 1] == '.' && tokens.Count == 0)
                         end = true;
                     else if (ch == '?' && i + 1 < Text.Length && Text[i + 1] != '.')
                         end = true;
@@ -3143,9 +3143,11 @@ namespace PascalABCCompiler.Parsers
                     }
                     break;
                 }
-                else if (c == '<' && !in_comment)
+                else if ((c == '<' || c == '&' && j < Text.Length - 1 && Text[j+1] == '<') && !in_comment)
                 {
                     Stack<char> sk_stack = new Stack<char>();
+                    if (c == '&')
+                        j++;
                     sk_stack.Push('<');
                     j++;
                     bool generic = false;

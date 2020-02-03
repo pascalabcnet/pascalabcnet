@@ -10074,7 +10074,7 @@ namespace PascalABCCompiler.TreeConverter
                         AddError(get_location(_method_name), "EXTENSION_METHOD_FOR_GENERIC_INSTANCES");
                     List<SymbolInfo> sil = tp.scope.FindOnlyInScope(_method_name.meth_name.name);
 
-                    if (tp.original_template == null && ((sil == null && this._compiled_unit.namespaces.IndexOf(tp.comprehensive_namespace) == -1) || (sil != null && this._compiled_unit.namespaces.IndexOf(tp.comprehensive_namespace) == -1)))
+                    if (tp.original_template == null && ((sil == null && this._compiled_unit.namespaces.IndexOf(tp.comprehensive_namespace) == -1) || (sil != null && this._compiled_unit.namespaces.IndexOf(tp.comprehensive_namespace) == -1)) && !explicit_impl)
                     {
                         
                         if (def_temp is common_type_node)

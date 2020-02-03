@@ -13,18 +13,27 @@
 
 ///
 ///Код переведён отсюда:
-/// https://github.com/KhronosGroup/OpenCL-Headers/tree/master/CL
+///   https://github.com/KhronosGroup/OpenCL-Headers/tree/master/CL
 ///
 ///Спецификации всех версий:
-/// https://www.khronos.org/registry/OpenCL/
+///   https://www.khronos.org/registry/OpenCL/
 ///
 ///Если не хватает функции, перечисления, или найдена ошибка - писать сюда:
-/// https://github.com/SunSerega/POCGL/issues
+///   https://github.com/SunSerega/POCGL/issues
 ///
 unit OpenCL;
 
 uses System;
 uses System.Runtime.InteropServices;
+
+{$region Debug}
+
+{ $define DebugMode}
+{$ifdef DebugMode}
+
+{$endif DebugMode}
+
+{$endregion Debug}
 
 {$region Основные типы}
 
@@ -37,18 +46,22 @@ type
   cl_mem                        = IntPtr;
   cl_program                    = IntPtr;
   cl_kernel                     = IntPtr;
-  cl_event                      = IntPtr;
   cl_sampler                    = IntPtr;
+  {$ifndef DebugMode}
+  cl_event                      = IntPtr;
+  {$endif !DebugMode}
   
   ///0 = false, остальное = true
   cl_bool                       = UInt32;
   cl_bitfield                   = UInt64;
   
 type
-  OpenCLException = class(Exception)
+  OpenCLException = sealed class(Exception)
     
-    constructor(text: string) :=
+    public constructor(text: string) :=
     inherited Create($'Ошибка OpenCL: "{text}"');
+    
+    public constructor(err_code: UInt32);
     
   end;
   
@@ -134,8 +147,10 @@ type
         res.Name.ToWords('_').Select(w->w[1].ToUpper+w.Substring(1).ToLower).JoinIntoString;
     end;
     
+    public function IS_ERROR := val<>SUCCESS;
+    
     public procedure RaiseIfError :=
-    if val<>SUCCESS then raise new OpenCLException(self.ToString);
+    if IS_ERROR then raise new OpenCLException(self.ToString);
     
   end;
   
@@ -906,6 +921,9 @@ type
           $'CommandExecutionStatus[{self.val}]';
     end;
     
+    public procedure RaiseIfError :=
+    if val<0 then ErrorCode.Create(val).RaiseIfError;
+    
   end;
   
   //SR
@@ -1388,6 +1406,29 @@ type
   
 {$endregion Перечисления}
 
+{$region Debug}
+
+{$ifdef DebugMode}
+
+type
+  cl_event = record
+    public val: IntPtr;
+    public constructor := exit;
+    public static Zero := new cl_event;
+    public static Size := sizeof(cl_event);
+    
+    private function GetRefCount: IntPtr;
+    public property RefCount: IntPtr read GetRefCount;
+    
+    private function GetState: CommandExecutionStatus;
+    public property State: CommandExecutionStatus read GetState;
+    
+  end;
+  
+{$endif DebugMode}
+
+{$endregion Debug}
+
 {$region Делегаты}
 
 type
@@ -1632,18 +1673,18 @@ type
     external 'opencl.dll' name 'clEnqueueReadBuffer';
     static function EnqueueReadBuffer(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: cl_bool; offset: UIntPtr; size: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueReadBuffer';
-    static function EnqueueReadBuffer(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: cl_bool; offset: UIntPtr; size: UIntPtr; ptr: pointer; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    static function EnqueueReadBuffer(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: cl_bool; offset: UIntPtr; size: UIntPtr; [MarshalAs(UnmanagedType.LPArray)] data: &Array; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueReadBuffer';
-    static function EnqueueReadBuffer(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: cl_bool; offset: UIntPtr; size: UIntPtr; ptr: pointer; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    static function EnqueueReadBuffer(command_queue: cl_command_queue; buffer: cl_mem; blocking_read: cl_bool; offset: UIntPtr; size: UIntPtr; [MarshalAs(UnmanagedType.LPArray)] data: &Array; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueReadBuffer';
     
     static function EnqueueWriteBuffer(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: cl_bool; offset: UIntPtr; size: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueWriteBuffer';
     static function EnqueueWriteBuffer(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: cl_bool; offset: UIntPtr; size: UIntPtr; ptr: IntPtr; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueWriteBuffer';
-    static function EnqueueWriteBuffer(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: cl_bool; offset: UIntPtr; size: UIntPtr; ptr: pointer; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    static function EnqueueWriteBuffer(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: cl_bool; offset: UIntPtr; size: UIntPtr; [MarshalAs(UnmanagedType.LPArray)] data: &Array; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueWriteBuffer';
-    static function EnqueueWriteBuffer(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: cl_bool; offset: UIntPtr; size: UIntPtr; ptr: pointer; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    static function EnqueueWriteBuffer(command_queue: cl_command_queue; buffer: cl_mem; blocking_write: cl_bool; offset: UIntPtr; size: UIntPtr; [MarshalAs(UnmanagedType.LPArray)] data: &Array; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueWriteBuffer';
     
     static function EnqueueCopyBuffer(command_queue: cl_command_queue; src_buffer: cl_mem; dst_buffer: cl_mem; src_offset: UIntPtr; dst_offset: UIntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
@@ -1678,9 +1719,9 @@ type
     static function EnqueueCopyBufferRect(command_queue: cl_command_queue; src_buffer: cl_mem; dst_buffer: cl_mem; src_origin: ^UIntPtr; dst_origin: ^UIntPtr; region: ^UIntPtr; src_row_pitch: UIntPtr; src_slice_pitch: UIntPtr; dst_row_pitch: UIntPtr; dst_slice_pitch: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueCopyBufferRect';
     
-    static function EnqueueFillBuffer(command_queue: cl_command_queue; buffer: cl_mem; [MarshalAs(UnmanagedType.LPArray)] pattern: array of byte; pattern_size: UIntPtr; offset: UIntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
+    static function EnqueueFillBuffer(command_queue: cl_command_queue; buffer: cl_mem; [MarshalAs(UnmanagedType.LPArray)] pattern: &Array; pattern_size: UIntPtr; offset: UIntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueFillBuffer';
-    static function EnqueueFillBuffer(command_queue: cl_command_queue; buffer: cl_mem; [MarshalAs(UnmanagedType.LPArray)] pattern: array of byte; pattern_size: UIntPtr; offset: UIntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
+    static function EnqueueFillBuffer(command_queue: cl_command_queue; buffer: cl_mem; [MarshalAs(UnmanagedType.LPArray)] pattern: &Array; pattern_size: UIntPtr; offset: UIntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: ^cl_event; &event: ^cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueFillBuffer';
     static function EnqueueFillBuffer(command_queue: cl_command_queue; buffer: cl_mem; pattern: IntPtr; pattern_size: UIntPtr; offset: UIntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; [MarshalAs(UnmanagedType.LPArray)] event_wait_list: array of cl_event; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueFillBuffer';
@@ -2337,4 +2378,29 @@ type
     
   end;
   
+{$region Impl}
+
+constructor OpenCLException.Create(err_code: UInt32) :=
+Create(ErrorCode.Create(err_code).ToString);
+
+{$region Debug}
+
+{$ifdef DebugMode}
+
+function cl_event.GetRefCount: IntPtr;
+begin
+  cl.GetEventInfo(self, EventInfoType.REFERENCE_COUNT, new UIntPtr(IntPtr.Size), @Result, nil).RaiseIfError;
+end;
+
+function cl_event.GetState: CommandExecutionStatus;
+begin
+  cl.GetEventInfo(self, EventInfoType.COMMAND_EXECUTION_STATUS, new UIntPtr(4), @Result, nil).RaiseIfError;
+end;
+
+{$endif DebugMode}
+
+{$endregion Debug}
+
+{$endregion Impl}
+
 end.

@@ -17,10 +17,12 @@ begin
   cl.GetDeviceIDs(platform, DeviceTypeFlags.Default, 1, @device, nil).RaiseIfError;
   
   // DeviceTypeFlags.Default это обычно GPU
-  // К примеру, в ноутбуке его может не быть
+  // Но, к примеру, в ноутбуке его может не быть
   // Тогда надо хоть для чего то попытаться инициализировать
-  // DeviceTypeFlags.All выберет первый любой девайс, поддерживающий OpenCL
+  // DeviceTypeFlags.All выберет первые любое устройство, поддерживающее OpenCL
 //  cl.GetDeviceIDs(platform, DeviceTypeFlags.All, 1, @device, nil).RaiseIfError;
+  // Если всё ещё пишет что устройств нет - обновите драйверы,
+  // потому что даже встроенные видеокарты поддерживают OpenCL (хоть и криво)
   
   var context := cl.CreateContext(nil, 1, @device, nil, nil, @ec);
   ec.RaiseIfError;
@@ -61,7 +63,7 @@ begin
   
   // Чтение и вывод результата
   
-  cl.EnqueueReadBuffer(command_queue, memobj, 1, new UIntPtr(0), new UIntPtr(40), pointer(mem), 0,nil,nil).RaiseIfError;
+  cl.EnqueueReadBuffer(command_queue, memobj, 1, new UIntPtr(0), new UIntPtr(40), mem, 0,nil,nil).RaiseIfError;
   
   var res := new integer[10];
   Marshal.Copy(mem,res,0,10);

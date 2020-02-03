@@ -25,6 +25,7 @@ type
   public
     function peek: integer; override;
     function read_symbol: char; override;
+    function ReadLine: string; override;
   end;
 
 ///--
@@ -42,7 +43,7 @@ const
   N = #13;
   
 var 
-  ReadlnSignalSendet := false;
+  ReadlnSignalSended := false;
   LastReadSymbol := #0;
   
 procedure WriteToProcessErrorStream(text: string);
@@ -55,14 +56,14 @@ end;
 
 procedure SendReadlnRequest;
 begin
-  ReadlnSignalSendet := true;
+  ReadlnSignalSended := true;
   WriteToProcessErrorStream(ReadlnSignalCommand);
 end;
 
 function __ReadSignalOISystem.peek: integer;
 var i: integer;
 begin
-  if not ReadlnSignalSendet then
+  if not ReadlnSignalSended then
     SendReadlnRequest;
   i := inherited peek;
   result := i;
@@ -71,13 +72,23 @@ end;
 function __ReadSignalOISystem.read_symbol: char;
 var c: char;
 begin
-  if not ReadlnSignalSendet then
+  if not ReadlnSignalSended then
     SendReadlnRequest;
   c := inherited read_symbol;
   if (LastReadSymbol=N) and (c=R) then
-    ReadlnSignalSendet := false;  
+    ReadlnSignalSended := false;  
   LastReadSymbol := c;
   result := c;
+end;
+
+function __ReadSignalOISystem.ReadLine: string; 
+begin
+  if not ReadlnSignalSended then
+    SendReadlnRequest;
+  var s := inherited ReadLine;
+  ReadlnSignalSended := false;
+  LastReadSymbol := R;
+  Result := s;
 end;
 
 procedure SendExceptionToProcessErrorStream(e: Exception);
