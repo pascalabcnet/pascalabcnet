@@ -7121,7 +7121,7 @@ namespace PascalABCCompiler.NETGenerator
             if (!tmp_dot)
                 is_dot_expr = true;
             value.obj.visit(this);
-            if ((value.obj.type.is_value_type) && !value.method.common_comprehensive_type.is_value_type)
+            if ((value.obj.type.is_value_type) && !value.method.comperehensive_type.is_value_type)
             {
                 il.Emit(OpCodes.Box, helper.GetTypeReference(value.obj.type).tp);
             }
@@ -7131,7 +7131,7 @@ namespace PascalABCCompiler.NETGenerator
                 il.Emit(OpCodes.Stloc, lb);
                 il.Emit(OpCodes.Ldloca, lb);
             }
-            else if (value.obj.conversion_type != null && value.obj.conversion_type.is_value_type && !value.method.common_comprehensive_type.is_value_type)
+            else if (value.obj.conversion_type != null && value.obj.conversion_type.is_value_type && !value.method.comperehensive_type.is_value_type)
             {
             	il.Emit(OpCodes.Box, helper.GetTypeReference(value.obj.conversion_type).tp);
             }
