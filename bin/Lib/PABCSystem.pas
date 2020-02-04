@@ -11184,7 +11184,7 @@ begin
 end;
 
 /// Возвращает True если значение находится между двумя другими
-function InRange(Self: string; a,b: string): boolean; extensionmethod;
+function InRange(Self: string; a, b: string): boolean; extensionmethod;
 begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
@@ -11208,7 +11208,7 @@ begin
 end;
 
 /// Преобразует строку в целое
-function ToInteger(Self: string): integer; extensionmethod := integer.Parse(Self);
+function ToInteger(Self: string): integer; extensionmethod := StrToInt(Self);
 
 /// Преобразует строку в BigInteger
 function ToBigInteger(Self: string): BigInteger; extensionmethod := BigInteger.Parse(Self);
@@ -12377,6 +12377,7 @@ var
 procedure __InitModule;
 begin
   DefaultEncoding := Encoding.GetEncoding(1251);
+  
   var arg := Environment.GetCommandLineArgs();
   if arg.Length > 1 then begin
     CommandLineArgs := new string[arg.Length - 1];
@@ -12384,6 +12385,7 @@ begin
       CommandLineArgs[i - 1] := arg[i];
   end else
     CommandLineArgs := new string[0];
+    
   CurrentIOSystem := new IOStandardSystem;
   //  ENCultureInfo := new System.Globalization.CultureInfo('en-US');
   var locale: object;
@@ -12409,7 +12411,6 @@ begin
   // SSM 10/11/18 восстановил эту строку чтобы в главном потоке в вещественных была точка
   System.Threading.Thread.CurrentThread.CurrentCulture := new System.Globalization.CultureInfo('en-US');
   //rnd := new System.Random;
-  StartTime := DateTime.Now;
   output := new TextFile();
   input := new TextFile();
   //var tmp := __CONFIG__;
@@ -12417,6 +12418,7 @@ begin
     foreach var listener in System.Diagnostics.Trace.Listeners do
       if listener is System.Diagnostics.DefaultTraceListener then
         (listener as System.Diagnostics.DefaultTraceListener).AssertUiEnabled := true; 
+  StartTime := DateTime.Now;
 end;
 
 procedure __InitModule__;
