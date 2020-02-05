@@ -438,12 +438,20 @@ namespace PascalABCCompiler.NETGenerator
             }
         }
 
+        bool IsDllAndSystemNamespace(string name, string DllFileName)
+        {
+            return comp_opt.target == TargetType.Dll && DllFileName != "PABCRtl.dll" &&
+                (name == "PABCSystem" || name == "PABCExtensions" ||
+                 name.EndsWith(PascalABCCompiler.TreeConverter.compiler_string_consts.ImplementationSectionNamespaceName));
+        }
+
         //Метод, переводящий семантическое дерево в сборку .NET
         public void ConvertFromTree(SemanticTree.IProgramNode p, string TargetFileName, string SourceFileName, CompilerOptions options, string[] ResourceFiles)
         {
             //SystemLibrary.SystemLibInitializer.RestoreStandardFunctions();
             bool RunOnly = false;
             string fname = TargetFileName;
+            var onlyfname = System.IO.Path.GetFileName(fname);
             comp_opt = options;
             ad = Thread.GetDomain(); //получаем домен приложения
             an = new AssemblyName(); //создаем имя сборки
@@ -585,7 +593,11 @@ namespace PascalABCCompiler.NETGenerator
                 ICommonNamespaceNode cnn = cnns[iii];
                 cur_type = entry_type;
                 if (!is_main_namespace)
-                    cur_unit = cnn.namespace_name;
+                { 
+                    cur_unit = cnn.namespace_name; // SSM 05.02.20 here change
+                    if (IsDllAndSystemNamespace(cur_unit, onlyfname))
+                        cur_unit = "$" + cur_unit;
+                }
                 else
                     cur_unit = entry_cur_unit;
                 if (iii == cnns.Length - 1 && comp_opt.target != TargetType.Dll || comp_opt.target == TargetType.Dll && iii == cnns.Length - 1)
@@ -606,21 +618,25 @@ namespace PascalABCCompiler.NETGenerator
                 bool is_main_namespace = cnns[iii].namespace_name == "" && comp_opt.target != TargetType.Dll || comp_opt.target == TargetType.Dll && cnns[iii].namespace_name == "";
                 if (!is_main_namespace)
                 {
+                    // SSM 05.02.20 here change
+                    var cnnsnamespace_name = cnns[iii].namespace_name;
+                    if (IsDllAndSystemNamespace(cnnsnamespace_name, onlyfname))
+                        cnnsnamespace_name = "$" + cnnsnamespace_name;
                     //определяем синтетический класс для модуля
-                    cur_type = mb.DefineType(cnns[iii].namespace_name + "." + cnns[iii].namespace_name, TypeAttributes.Public);
+                    cur_type = mb.DefineType(cnnsnamespace_name + "." + cnns[iii].namespace_name, TypeAttributes.Public);
                     types.Add(cur_type);
                     NamespaceTypesList.Add(cur_type);
                     NamespacesTypes.Add(cnns[iii], cur_type);
                     if (cnns[iii].IsMain)
-                    {
-                        TypeBuilder attr_class = mb.DefineType(cnns[iii].namespace_name + "." + "$GlobAttr", TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
+                    {   // SSM 05.02.20 here change
+                        TypeBuilder attr_class = mb.DefineType(cnnsnamespace_name + "." + "$GlobAttr", TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
                         ConstructorInfo attr_ci = attr_class.DefineDefaultConstructor(MethodAttributes.Public);
                         cur_type.SetCustomAttribute(attr_ci, new byte[4] { 0x01, 0x00, 0x00, 0x00 });
                         attr_class.CreateType();
                     }
                     else
-                    {
-                        TypeBuilder attr_class = mb.DefineType(cnns[iii].namespace_name + "." + "$ClassUnitAttr", TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
+                    {   // SSM 05.02.20 here change
+                        TypeBuilder attr_class = mb.DefineType(cnnsnamespace_name + "." + "$ClassUnitAttr", TypeAttributes.Public | TypeAttributes.BeforeFieldInit, typeof(Attribute));
                         ConstructorInfo attr_ci = attr_class.DefineDefaultConstructor(MethodAttributes.Public);
                         cur_type.SetCustomAttribute(attr_ci, new byte[4] { 0x01, 0x00, 0x00, 0x00 });
                         attr_class.CreateType();
@@ -639,7 +655,11 @@ namespace PascalABCCompiler.NETGenerator
                 {
                     string tmp = cur_unit;
                     if (cnns[iii].namespace_name != "")
-                        cur_unit = cnns[iii].namespace_name;
+                    {
+                        cur_unit = cnns[iii].namespace_name; // SSM 05.02.20 here change
+                        if (IsDllAndSystemNamespace(cur_unit, onlyfname))
+                            cur_unit = "$" + cur_unit;
+                    }
                     else
                         cur_unit = entry_cur_unit;
                     foreach (ITemplateClass tc in cnns[iii].templates)
@@ -652,7 +672,11 @@ namespace PascalABCCompiler.NETGenerator
                 {
                     string tmp = cur_unit;
                     if (cnns[iii].namespace_name != "")
-                        cur_unit = cnns[iii].namespace_name;
+                    {
+                        cur_unit = cnns[iii].namespace_name; // SSM 05.02.20 here change
+                        if (IsDllAndSystemNamespace(cur_unit, onlyfname))
+                            cur_unit = "$" + cur_unit;
+                    }
                     else
                         cur_unit = entry_cur_unit;
                     foreach (ITypeSynonym ts in cnns[iii].type_synonims)
@@ -720,7 +744,11 @@ namespace PascalABCCompiler.NETGenerator
                 ICommonNamespaceNode cnn = cnns[iii];
                 string tmp_unit_name = cur_unit;
                 if (!is_main_namespace)
+                {
                     cur_unit = cnn.namespace_name;
+                    if (IsDllAndSystemNamespace(cur_unit, onlyfname))
+                        cur_unit = "$" + cur_unit;
+                }
                 else
                     cur_unit = entry_cur_unit;
                 cur_type = NamespacesTypes[cnn];
@@ -779,7 +807,12 @@ namespace PascalABCCompiler.NETGenerator
                 bool is_main_namespace = iii == 0 && comp_opt.target != TargetType.Dll;
                 ICommonNamespaceNode cnn = cnns[iii];
                 string tmp_unit_name = cur_unit;
-                if (!is_main_namespace) cur_unit = cnn.namespace_name;
+                if (!is_main_namespace)
+                {
+                    cur_unit = cnn.namespace_name; // SSM 05.02.20 here change
+                    if (IsDllAndSystemNamespace(cur_unit, onlyfname))
+                        cur_unit = "$" + cur_unit;
+                }
                 //if (iii > 0) is_in_unit = true;
                 cur_unit_type = NamespacesTypes[cnns[iii]];
                 cur_type = cur_unit_type;
