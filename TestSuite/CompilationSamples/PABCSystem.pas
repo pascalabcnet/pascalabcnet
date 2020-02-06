@@ -4892,7 +4892,7 @@ begin
     else // в sym ничего нет
     begin
       state := 1;
-      sym := tr.Read(); // считываение в буфер из одного символа
+      sym := Console.Read(); // считываение в буфер из одного символа
       Result := sym;
     end; 
   end;
@@ -4920,7 +4920,7 @@ begin
       sym := -1;
     end
     else // в sym ничего нет
-      Result := char(tr.Read());
+      Result := char(Console.Read());
     exit;  
   end;
 end;
@@ -6480,7 +6480,7 @@ begin
     f.sw := new StreamWriter(f.fi.FullName);
   if f = input then
   begin  
-    f.sr := new StreamReader(f.fi.FullName, Encoding.UTF8);
+    f.sr := new StreamReader(f.fi.FullName, DefaultEncoding);
     (CurrentIOSystem as IOStandardSystem).tr := f.sr;
     _IsPipedRedirected := True;
     _IsPipedRedirectedQuery := True;

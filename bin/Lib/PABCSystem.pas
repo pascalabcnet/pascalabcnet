@@ -307,6 +307,7 @@ type
     procedure read(var x: uint64);
     procedure read(var x: single);
     procedure read(var x: boolean);
+    procedure read(var x: BigInteger);
     procedure readln;
     function ReadLine: string;
     function ReadLexem: string;
@@ -341,6 +342,7 @@ type
     procedure read(var x: uint64); virtual;
     procedure read(var x: single); virtual;
     procedure read(var x: boolean); virtual;
+    procedure read(var x: BigInteger); virtual;
     procedure readln; virtual;
     function ReadLine: string; virtual;
     function ReadLexem: string; virtual;
@@ -618,6 +620,8 @@ procedure Read(var x: uint64);
 procedure Read(var x: single);
 ///--
 procedure Read(var x: boolean);
+///--
+procedure Read(var x: BigInteger);
 ///- procedure Readln(a,b,...);
 /// Вводит значения a,b,... с клавиатуры и осуществляет переход на следующую строку
 procedure Readln;
@@ -642,6 +646,8 @@ function TryRead(var x: int64): boolean;
 function TryRead(var x: uint64): boolean;
 ///--
 function TryRead(var x: single): boolean;
+///--
+function TryRead(var x: BigInteger): boolean;
 
 /// Возвращает значение типа integer, введенное с клавиатуры
 function ReadInteger: integer;
@@ -655,6 +661,8 @@ function ReadChar: char;
 function ReadString: string;
 /// Возвращает значение типа boolean, введенное с клавиатуры
 function ReadBoolean: boolean;
+/// Возвращает значение типа BigInteger, введенное с клавиатуры
+function ReadBigInteger: BigInteger;
 /// Возвращает следующую лексему
 function ReadLexem: string;
 
@@ -670,6 +678,9 @@ function ReadlnChar: char;
 function ReadlnString: string;
 /// Возвращает значение типа boolean, введенное с клавиатуры, и переходит на следующую строку ввода
 function ReadlnBoolean: boolean;
+/// Возвращает значение типа BigInteger, введенное с клавиатуры, и переходит на следующую строку ввода
+function ReadlnBigInteger: BigInteger;
+
 
 /// Возвращает кортеж из двух значений типа integer, введенных с клавиатуры
 function ReadInteger2: (integer, integer);
@@ -4892,7 +4903,7 @@ begin
     else // в sym ничего нет
     begin
       state := 1;
-      sym := tr.Read(); // считываение в буфер из одного символа
+      sym := Console.Read(); // считываение в буфер из одного символа
       Result := sym;
     end; 
   end;
@@ -4920,7 +4931,7 @@ begin
       sym := -1;
     end
     else // в sym ничего нет
-      Result := char(tr.Read());
+      Result := char(Console.Read());
     exit;  
   end;
 end;
@@ -5232,6 +5243,11 @@ begin
   else raise new System.FormatException('Входная строка имела неверный формат');
 end;
 
+procedure IOStandardSystem.read(var x: BigInteger);
+begin
+  x := Biginteger.Parse(ReadLexem)
+end;
+
 procedure IOStandardSystem.readln; 
 begin
   // while CurrentIOSystem.read_symbol <> END_OF_LINE_SYMBOL do; // было
@@ -5360,7 +5376,22 @@ begin
   CurrentIOSystem.read(x)
 end;
 
+procedure Read(var x: BigInteger);
+begin
+  CurrentIOSystem.read(x)
+end;
+
 function TryRead(var x: integer): boolean;
+begin
+  Result := True;
+  try
+    Read(x)
+  except
+    Result := False;
+  end
+end;
+
+function TryRead(var x: BigInteger): boolean;
 begin
   Result := True;
   try
@@ -5490,6 +5521,11 @@ begin
   Read(Result);
 end;
 
+function ReadBigInteger: BigInteger;
+begin
+  Read(Result);
+end;
+
 function ReadlnInteger: integer;
 begin
   Result := ReadInteger;
@@ -5524,6 +5560,13 @@ begin
   Result := ReadBoolean;
   Readln();
 end;
+
+function ReadlnBigInteger: BigInteger;
+begin
+  Result := ReadBigInteger;
+  Readln();
+end;
+
 
 function ReadInteger2 := (ReadInteger, ReadInteger);
 
@@ -6480,7 +6523,7 @@ begin
     f.sw := new StreamWriter(f.fi.FullName);
   if f = input then
   begin  
-    f.sr := new StreamReader(f.fi.FullName, Encoding.UTF8);
+    f.sr := new StreamReader(f.fi.FullName, DefaultEncoding);
     (CurrentIOSystem as IOStandardSystem).tr := f.sr;
     _IsPipedRedirected := True;
     _IsPipedRedirectedQuery := True;
