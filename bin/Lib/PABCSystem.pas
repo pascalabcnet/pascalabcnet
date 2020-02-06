@@ -11526,15 +11526,15 @@ begin
 end;
 
 /// Возвращает словарь, сопоставляющий ключу группы количество элементов с данным ключом
-function EachCount<T,Res>(Self: sequence of System.Linq.IGrouping<T,Res>): Dictionary<T,integer>; extensionmethod;
+function EachCount<Key,Source>(Self: sequence of System.Linq.IGrouping<Key,Source>): Dictionary<Key,integer>; extensionmethod;
 begin
   Result := Self.ToDictionary(g -> g.Key, g -> g.Count);
 end;
 
 /// Возвращает словарь, сопоставляющий ключу группы результат групповой операции
-function Each<T,T1,Res>(Self: sequence of System.Linq.IGrouping<T,Res>; grOperation: System.Linq.IGrouping<T,Res> -> T1): Dictionary<T,integer>; extensionmethod;
+function Each<Key,Source,Res>(Self: sequence of System.Linq.IGrouping<Key,Source>; grOperation: System.Linq.IGrouping<Key,Source> -> Res): Dictionary<Key,Res>; extensionmethod;
 begin
-  Result := Self.ToDictionary(g -> g.Key, g -> g.Count);
+  Result := Self.ToDictionary(g -> g.Key, g -> grOperation(g));
 end;
 
 
