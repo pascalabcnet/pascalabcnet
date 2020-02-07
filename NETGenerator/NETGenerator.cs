@@ -534,8 +534,12 @@ namespace PascalABCCompiler.NETGenerator
 
             cur_unit = Path.GetFileNameWithoutExtension(SourceFileName);
             string entry_cur_unit = cur_unit;
-            entry_type = mb.DefineType(cur_unit + ".Program", TypeAttributes.Public);//определяем синтетический статический класс основной программы
-            cur_type = entry_type;
+            // SSM 07.02.20
+            if (comp_opt.target != TargetType.Dll)
+                entry_type = mb.DefineType(cur_unit + ".Program", TypeAttributes.Public);//определяем синтетический статический класс основной программы
+            // SSM 07.02.20
+            if (entry_type != null)
+                cur_type = entry_type;
             //точка входа в приложение
             if (p.main_function != null)
             {
@@ -591,7 +595,9 @@ namespace PascalABCCompiler.NETGenerator
                 if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
                 bool is_main_namespace = cnns[iii].namespace_name == "" && comp_opt.target != TargetType.Dll || comp_opt.target == TargetType.Dll && cnns[iii].namespace_name == "";
                 ICommonNamespaceNode cnn = cnns[iii];
-                cur_type = entry_type;
+                // SSM 07.02.20
+                if (entry_type != null)
+                    cur_type = entry_type;
                 if (!is_main_namespace)
                 { 
                     cur_unit = cnn.namespace_name; // SSM 05.02.20 here change
@@ -644,7 +650,9 @@ namespace PascalABCCompiler.NETGenerator
                 }
                 else
                 {
-                    NamespacesTypes.Add(cnns[iii], entry_type);
+                    // SSM 07.02.20
+                    if (entry_type != null)
+                        NamespacesTypes.Add(cnns[iii], entry_type);
                 }
 
             }
@@ -798,7 +806,9 @@ namespace PascalABCCompiler.NETGenerator
                 }
                 il = tmp_il;
             }
-            cur_type = entry_type;
+            // SSM 07.02.20
+            if (entry_type != null)
+                cur_type = entry_type;
             //is_in_unit = false;
             //переводим реализации
             for (int iii = 0; iii < cnns.Length; iii++)
@@ -841,10 +851,13 @@ namespace PascalABCCompiler.NETGenerator
                 MakeAttribute(cnns[iii]);
             }
             doc = first_doc;
-            cur_type = entry_type;
+            // SSM 07.02.20
+            if (entry_type != null)
+                cur_type = entry_type;
 
             CloseTypes();//закрываем типы
-            entry_type.CreateType();
+            // SSM 07.02.20  ?
+            entry_type?.CreateType();
             switch (comp_opt.target)
             {
                 case TargetType.Exe: ab.SetEntryPoint(entry_meth, PEFileKinds.ConsoleApplication); break;
@@ -909,7 +922,8 @@ namespace PascalABCCompiler.NETGenerator
                             bytes[6] = (byte)(0x80 | ((sb.Length & 0xFF00) >> 8));
                         }
                     }
-                    entry_type.SetCustomAttribute(attr_ci, bytes);
+                    // SSM 07.02.20  ?
+                    entry_type?.SetCustomAttribute(attr_ci, bytes);
                     attr_class.CreateType();
                 }
             }

@@ -307,6 +307,7 @@ type
     procedure read(var x: uint64);
     procedure read(var x: single);
     procedure read(var x: boolean);
+    procedure read(var x: BigInteger);
     procedure readln;
     function ReadLine: string;
     function ReadLexem: string;
@@ -341,6 +342,7 @@ type
     procedure read(var x: uint64); virtual;
     procedure read(var x: single); virtual;
     procedure read(var x: boolean); virtual;
+    procedure read(var x: BigInteger); virtual;
     procedure readln; virtual;
     function ReadLine: string; virtual;
     function ReadLexem: string; virtual;
@@ -618,6 +620,8 @@ procedure Read(var x: uint64);
 procedure Read(var x: single);
 ///--
 procedure Read(var x: boolean);
+///--
+procedure Read(var x: BigInteger);
 ///- procedure Readln(a,b,...);
 /// Вводит значения a,b,... с клавиатуры и осуществляет переход на следующую строку
 procedure Readln;
@@ -642,6 +646,8 @@ function TryRead(var x: int64): boolean;
 function TryRead(var x: uint64): boolean;
 ///--
 function TryRead(var x: single): boolean;
+///--
+function TryRead(var x: BigInteger): boolean;
 
 /// Возвращает значение типа integer, введенное с клавиатуры
 function ReadInteger: integer;
@@ -655,6 +661,8 @@ function ReadChar: char;
 function ReadString: string;
 /// Возвращает значение типа boolean, введенное с клавиатуры
 function ReadBoolean: boolean;
+/// Возвращает значение типа BigInteger, введенное с клавиатуры
+function ReadBigInteger: BigInteger;
 /// Возвращает следующую лексему
 function ReadLexem: string;
 
@@ -670,6 +678,9 @@ function ReadlnChar: char;
 function ReadlnString: string;
 /// Возвращает значение типа boolean, введенное с клавиатуры, и переходит на следующую строку ввода
 function ReadlnBoolean: boolean;
+/// Возвращает значение типа BigInteger, введенное с клавиатуры, и переходит на следующую строку ввода
+function ReadlnBigInteger: BigInteger;
+
 
 /// Возвращает кортеж из двух значений типа integer, введенных с клавиатуры
 function ReadInteger2: (integer, integer);
@@ -2344,7 +2355,7 @@ type
   end;
 
 
-type
+{type
   ///--
   __TypeclassRestrictedFunctionAttribute = class(Attribute)
   public
@@ -2384,7 +2395,7 @@ type
     constructor(instanceName: string);
     begin
     end;
-  end;
+  end;}
   
 type 
 // Смысл полей Num, Width и Fmt соответствует
@@ -4114,6 +4125,10 @@ procedure BigInteger.operator*=(var p: BigInteger; q: BigInteger) := p := p * q;
 
 procedure BigInteger.operator-=(var p: BigInteger; q: BigInteger) := p := p - q;
 
+function BigInteger.operator div(p: BigInteger; q: integer) := BigInteger.Divide(p,q);
+
+function BigInteger.operator mod(p: BigInteger; q: integer) := BigInteger.Remainder(p,q);
+
 //function BigInteger.operator div(p,q: BigInteger) := BigInteger.Divide(p,q);
 
 //function BigInteger.operator mod(p,q: BigInteger) := BigInteger.Remainder(p,q);
@@ -5232,6 +5247,11 @@ begin
   else raise new System.FormatException('Входная строка имела неверный формат');
 end;
 
+procedure IOStandardSystem.read(var x: BigInteger);
+begin
+  x := Biginteger.Parse(ReadLexem)
+end;
+
 procedure IOStandardSystem.readln; 
 begin
   // while CurrentIOSystem.read_symbol <> END_OF_LINE_SYMBOL do; // было
@@ -5360,7 +5380,22 @@ begin
   CurrentIOSystem.read(x)
 end;
 
+procedure Read(var x: BigInteger);
+begin
+  CurrentIOSystem.read(x)
+end;
+
 function TryRead(var x: integer): boolean;
+begin
+  Result := True;
+  try
+    Read(x)
+  except
+    Result := False;
+  end
+end;
+
+function TryRead(var x: BigInteger): boolean;
 begin
   Result := True;
   try
@@ -5490,6 +5525,11 @@ begin
   Read(Result);
 end;
 
+function ReadBigInteger: BigInteger;
+begin
+  Read(Result);
+end;
+
 function ReadlnInteger: integer;
 begin
   Result := ReadInteger;
@@ -5524,6 +5564,13 @@ begin
   Result := ReadBoolean;
   Readln();
 end;
+
+function ReadlnBigInteger: BigInteger;
+begin
+  Result := ReadBigInteger;
+  Readln();
+end;
+
 
 function ReadInteger2 := (ReadInteger, ReadInteger);
 
@@ -11537,6 +11584,11 @@ begin
   Result := Self.ToDictionary(g -> g.Key, g -> grOperation(g));
 end;
 
+/// Операция удаления из словаря пары с указанным значением ключа
+procedure operator-=<Key,Value>(Self: IDictionary<Key,Value>; k: Key); extensionmethod;
+begin
+  Self.Remove(k);
+end;
 
 //{{{--doc: Конец методов расширения }}}
 

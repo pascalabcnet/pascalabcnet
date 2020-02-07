@@ -396,7 +396,14 @@ namespace PascalABCCompiler.TreeRealization
                 //generic-типе.
                 if (method_param_types == (t.DeclaringMethod != null))
                 {
-                    return param_types[t.GenericParameterPosition];
+                    try
+                    {
+                        return param_types[t.GenericParameterPosition];
+                    }
+                    catch(Exception e)
+                    {
+                        e = e;
+                    }
                 }
                 else
                 {

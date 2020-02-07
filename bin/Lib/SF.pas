@@ -37,6 +37,36 @@ function RlnR3 := ReadlnReal3;
 function RlnC3 := ReadlnChar3;
 function RlnS3 := ReadlnString3;
 
+procedure ReMin(var min: integer; x: integer);
+begin
+  if x < min then 
+    min := x
+end;
 
+procedure ReMax(var max: integer; x: integer);
+begin
+  if x > max then 
+    max := x
+end;
+
+procedure ReMin(var min: real; x: real);
+begin
+  if x < min then 
+    min := x
+end;
+
+procedure ReMax(var max: real; x: real);
+begin
+  if x > max then 
+    max := x
+end;
+
+function ToI(Self: string); extensionmethod := Self.ToInteger;
+
+function ToR(Self: string); extensionmethod := Self.ToReal;
+
+function operator-(c,c1: char): integer; extensionmethod := Ord(c) - Ord(c1);
+
+function Len(Self: string): integer; extensionmethod := Self.Length;
 
 end.

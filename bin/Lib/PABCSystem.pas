@@ -2355,7 +2355,7 @@ type
   end;
 
 
-type
+{type
   ///--
   __TypeclassRestrictedFunctionAttribute = class(Attribute)
   public
@@ -2395,7 +2395,7 @@ type
     constructor(instanceName: string);
     begin
     end;
-  end;
+  end;}
   
 type 
 // Смысл полей Num, Width и Fmt соответствует
@@ -4124,6 +4124,10 @@ procedure BigInteger.operator+=(var p: BigInteger; q: BigInteger) := p := p + q;
 procedure BigInteger.operator*=(var p: BigInteger; q: BigInteger) := p := p * q;
 
 procedure BigInteger.operator-=(var p: BigInteger; q: BigInteger) := p := p - q;
+
+function BigInteger.operator div(p: BigInteger; q: integer) := BigInteger.Divide(p,q);
+
+function BigInteger.operator mod(p: BigInteger; q: integer) := BigInteger.Remainder(p,q);
 
 //function BigInteger.operator div(p,q: BigInteger) := BigInteger.Divide(p,q);
 
@@ -11580,6 +11584,11 @@ begin
   Result := Self.ToDictionary(g -> g.Key, g -> grOperation(g));
 end;
 
+/// Операция удаления из словаря пары с указанным значением ключа
+procedure operator-=<Key,Value>(Self: IDictionary<Key,Value>; k: Key); extensionmethod;
+begin
+  Self.Remove(k);
+end;
 
 //{{{--doc: Конец методов расширения }}}
 
