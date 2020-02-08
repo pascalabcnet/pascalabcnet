@@ -146,7 +146,7 @@ namespace VisualPascalABC
                     return true;
                 }
 
-                else if (Text.ToLower() == "repeat")
+                else if (Text.ToLower() == "repeat") // repeat .. until
                 {
                     string cur, next, prev;
                     GetCurNextLines(out cur, out next, out prev);
@@ -159,6 +159,24 @@ namespace VisualPascalABC
                         var tl_beg = new TextLocation(ta.Caret.Column, ta.Caret.Line);
                         int offset = doc.PositionToOffset(tl_beg);
                         var send = "\n" + Spaces(icur) + "until ;";
+                        doc.Insert(offset, send);
+                    }
+                    return true;
+                }
+
+                else if (Text.ToLower() == "class" || Text.ToLower() == "record") // class .. end, record .. end
+                {
+                    string cur, next, prev;
+                    GetCurNextLines(out cur, out next, out prev);
+                    if (!string.IsNullOrWhiteSpace(cur.Substring(caret.Column)))
+                        return false;
+                    var icur = Indent(cur);
+                    ta.InsertString("\n" + Spaces(icur + 2));
+                    if (next == null || Indent(next) < icur || Indent(next) == icur && !next.TrimStart().ToLower().StartsWith("until"))
+                    {
+                        var tl_beg = new TextLocation(ta.Caret.Column, ta.Caret.Line);
+                        int offset = doc.PositionToOffset(tl_beg);
+                        var send = "\n" + Spaces(icur) + "end;";
                         doc.Insert(offset, send);
                     }
                     return true;
@@ -182,21 +200,34 @@ namespace VisualPascalABC
                     return true;
                 }
 
-                else if (Text.ToLower() == "then" || Text.ToLower() == "else" || Text.ToLower() == "do")
+                else if (Text.ToLower() == "then" || Text.ToLower() == "else" || Text.ToLower() == "do" 
+                    || Text.ToLower() == "try" || Text.ToLower() == "except" || Text.ToLower() == "finally"
+                    || Text.ToLower() == "var")
                 {
                     var cur = GetLine(ta.Caret.Line);
                     var icur = Indent(cur);
                     ta.InsertString("\n" + Spaces(icur + 2));
                     return true;
                 }
-
-                else
+                else 
                 {
-                    var seg = doc.GetLineSegment(ta.Caret.Line);
-                    var curline = doc.GetText(seg).TrimEnd();
-                    if (ta.Caret.Column >= curline.Length)
-                        //if (curline.Contains(":=") && !curline.TrimStart().ToLower().StartsWith("for"))  // Это наиболее спорно. Надо проверять, что до присваивания - одно имя
-                        if (Regex.IsMatch(curline, @"^\s*\w+\s*:=", RegexOptions.IgnoreCase))
+                    string cur, next, prev;
+                    GetCurNextLines(out cur, out next, out prev);
+                    if (ta.Caret.Column >= cur.Length)
+                    {
+                        // если prev заканчивается на then, а cur не начинается с begin, то отступ назад
+                        if ((prev.TrimEnd().EndsWith("then",StringComparison.InvariantCultureIgnoreCase) ||
+                            prev.TrimEnd().EndsWith("else", StringComparison.InvariantCultureIgnoreCase) ||
+                            prev.TrimEnd().EndsWith("do", StringComparison.InvariantCultureIgnoreCase))
+                            &&
+                            !(cur.TrimStart().StartsWith("begin", StringComparison.InvariantCultureIgnoreCase)))
+                        {
+                            var iprev = Indent(prev);
+                            ta.InsertString("\n" + Spaces(iprev));
+                            return true;
+                        }
+
+                        /* if (Regex.IsMatch(curline, @"^\s*\w+\s*:=", RegexOptions.IgnoreCase)) // пока тут добавление ; после присваивания. Плохо перед else! И плохо если выражение продолжается на следующей строке! Убираем.
                         {
                             if (curline.Length > 0)
                             {
@@ -205,13 +236,14 @@ namespace VisualPascalABC
                                     return false;
                             }
 
-                            var curlinenew = Regex.Replace(curline, @"(\s*)(\S+)(\s*):=(\s*)([^;]+)(\s*)(;?)$", @"$1$2 := $5;",RegexOptions.IgnoreCase);
+                            var curlinenew = Regex.Replace(curline, @"(\s*)(\S+)(\s*):=(\s*)([^;]+)(\s*)(;?)$", @"$1$2 := $5;", RegexOptions.IgnoreCase);
                             while (curlinenew.EndsWith(";;"))
                                 curlinenew = curlinenew.Remove(curlinenew.Length - 1);
                             doc.Replace(seg.Offset, curline.Length, curlinenew);
                             ta.Caret.Column = curlinenew.Length;
                             return false;
-                        }
+                        } */
+                    }
                 }
                 return false;
             }
