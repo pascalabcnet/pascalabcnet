@@ -1833,7 +1833,15 @@ namespace PascalABCCompiler.NETGenerator
                 if (attrs[i].qualifier == SemanticTree.attribute_qualifier_kind.return_kind)
                 {
                     var constr = (attrs[i].AttributeConstructor is ICompiledConstructorNode) ? (attrs[i].AttributeConstructor as ICompiledConstructorNode).constructor_info : helper.GetConstructor(attrs[i].AttributeConstructor).cnstr;
-                    mb.SetMarshal(UnmanagedMarshal.DefineUnmanagedMarshal((UnmanagedType)attrs[i].Arguments[0].value));
+                    
+                    try
+                    {
+                        mb.SetMarshal(UnmanagedMarshal.DefineUnmanagedMarshal((UnmanagedType)attrs[i].Arguments[0].value));
+                    }
+                    catch(ArgumentException ex)
+                    {
+                        throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message.Replace(", переданный для DefineUnmanagedMarshal,",""), attrs[i].Location.document.file_name, attrs[i].Location.begin_line_num, attrs[i].Location.begin_column_num);
+                    }
                 }
                 else
                     mb.SetCustomAttribute(cab);
