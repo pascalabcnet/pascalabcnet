@@ -3422,9 +3422,20 @@ namespace PascalABCCompiler.TreeConverter
                     var si = context.CurrentScope.Find(id.name);
                     if ((si==null) || !(si.FirstOrDefault().sym_info is type_node))
                     {
+                        if (si != null && si.FirstOrDefault().sym_info is constant_definition_node)
+                        {
+                            constant_definition_node ncd = si.FirstOrDefault().sym_info as constant_definition_node;
+                            if (_enum_type_definition.source_context != null && ncd.type.location != null && ncd.type.location.begin_line_num == _enum_type_definition.source_context.begin_position.line_num
+                                && ncd.type.location.begin_column_num == _enum_type_definition.source_context.begin_position.column_num && ncd.type.location.doc.file_name == _enum_type_definition.source_context.FileName)
+                            {
+                                return_value(ncd.type);
+                                return;
+                            }
+                        }
                         is_enum = true;
                         break;
                     }
+                    
                 }
 
             if (!is_enum) // Значит, это определение типа
