@@ -11102,55 +11102,6 @@ begin
 end;
 
 ///-- 
-procedure SystemSliceAssignmentStringImpl(Self: string; rightValue: string; situation: integer; from, &to: integer; step: integer := 1);
-begin
-  var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, Self.Count, from, &to, step);
-  if count <> rightValue.Length then
-    raise new System.ArgumentException(GetTranslation(SLICE_SIZE_AND_RIGHT_VALUE_SIZE_MUST_BE_EQUAL));
-    
-  var f := from;
-  var temp := new char[Self.Length];
-  for var i := 0 to Self.Length - 1 do
-    temp[i] := Self[i+1];
-  
-  var strInd := 1;
-  loop count do
-  begin
-    temp[f] := rightValue[strInd];
-    f += step;
-    strInd += 1;
-  end;
-  
-  //var res := new StringBuilder(Self.Length);
-  //for var i := 0 to Self.Length - 1 do
-    //Self[i] := temp[i];
-end;
-
-///--
-procedure SystemSliceAssignment(Self: string; rightValue: string; situation: integer; from, &to: integer; inverseFrom, inverseTo: boolean); extensionmethod;
-begin
-  if inverseFrom then
-    from := Self.Length - from;
-  if inverseTo then
-    &to := Self.Length - &to;
-  //Self[1] := 'a';
-  var s2 := 'string';
-  //s2[1] := 'a';
-  SystemSliceAssignmentStringImpl(Self, rightValue, situation, from, &to, 1);
-end;
-
-///--
-procedure SystemSliceAssignment(Self: string; rightValue: string; situation: integer; from, &to, step: integer; inverseFrom, inverseTo: boolean); extensionmethod;
-begin
-  if inverseFrom then
-    from := Self.Length - from;
-  if inverseTo then
-    &to := Self.Length - &to;
-  SystemSliceAssignmentStringImpl(Self, rightValue, situation, from, &to, step);
-end;
-
-
-///-- 
 function SystemSliceStringImplQuestion(Self: string; situation: integer; from, &to: integer; step: integer := 1): string;
 begin
   var fromv := from - 1;
