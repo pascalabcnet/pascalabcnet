@@ -2423,6 +2423,73 @@ type
   end;
   
   
+type 
+  /// Тип диапазона целых
+  IntRange = class(IEnumerable<integer>)
+    private
+      l,h: integer;
+    public
+    constructor(l,h: integer);
+    begin
+      Self.l := l;
+      Self.h := h;
+    end;
+    property Low: integer read l;
+    property High: integer read h;
+
+    static function operator in(x: integer; r: IntRange): boolean := (x >= r.l) and (x <= r.h); 
+    static function operator=(r1,r2: IntRange): boolean := (r1.l = r2.l) and (r1.h = r2.h);
+    
+    function IsEmpty: boolean := l<=h;
+
+    function GetEnumerator(): IEnumerator<integer> := Range(l,h).GetEnumerator;
+    function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := Range(l,h).GetEnumerator;
+
+    function ToString: string; override := $'({l},{h})';
+    function Equals(o: Object): boolean; override;
+    begin
+      var r2 := IntRange(o);
+      Result := (l = r2.l) and (h = r2.h);
+    end;
+    function GetHashCode: integer; override := l.GetHashCode xor h.GetHashCode;
+  end;
+
+  /// Тип диапазона символов
+  CharRange = class(IEnumerable<char>)
+    private
+      l,h: char;
+    public
+    constructor(l,h: char);
+    begin
+      Self.l := l;
+      Self.h := h;
+    end;
+    property Low: char read l;
+    property High: char read h;
+
+    static function operator in(x: char; r: CharRange): boolean := (x >= r.l) and (x <= r.h); 
+    static function operator=(r1,r2: CharRange): boolean := (r1.l = r2.l) and (r1.h = r2.h);
+    
+    function IsEmpty: boolean := l<=h;
+
+    function GetEnumerator(): IEnumerator<char> := Range(l,h).GetEnumerator;
+    function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := Range(l,h).GetEnumerator;
+
+    function ToString: string; override := $'({l},{h})';
+    function Equals(o: Object): boolean; override;
+    begin
+      var r2 := CharRange(o);
+      Result := (l = r2.l) and (h = r2.h);
+    end;
+    function GetHashCode: integer; override := l.GetHashCode xor h.GetHashCode;
+  end;
+
+///--
+function InternalRange(l,r: integer): IntRange;
+///--
+function InternalRange(l,r: char): CharRange;
+  
+  
 // -----------------------------------------------------
 //                  Internal procedures for PABCRTL.dll
 // -----------------------------------------------------
@@ -4884,8 +4951,18 @@ begin
   else 
   begin
     _IsPipedRedirectedQuery := True;
-    _IsPipedRedirected := Console.IsInputRedirected and (CurrentIOSystem.GetType = typeof(IOStandardSystem));
-    Result := _IsPipedRedirected;
+    var pi := typeof(Console).GetProperty('IsInputRedirected');
+    if pi = nil then
+    begin
+      _IsPipedRedirected := False; // просто работаем без буфера на старых системах
+      Result := _IsPipedRedirected;
+    end
+    else
+    begin
+      var IsInputRedirected := boolean(pi?.GetValue(nil,nil));
+      _IsPipedRedirected := IsInputRedirected {Console.IsInputRedirected} and (CurrentIOSystem.GetType = typeof(IOStandardSystem));
+      Result := _IsPipedRedirected;
+    end;
   end;
 end;
 
@@ -12403,6 +12480,11 @@ begin
   if not FileExists(Result) then 
     Result := '';
 end;
+
+function InternalRange(l,r: integer): IntRange := new IntRange(l,r);
+
+function InternalRange(l,r: char): CharRange := new CharRange(l,r);
+
 
 //------------------------------------------------------------------------------
 //OMP

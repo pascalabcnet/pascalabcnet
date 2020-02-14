@@ -17,7 +17,7 @@ namespace VisualPascalABC
             var ta = CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.TextArea;
             var doc = ta.Document;
             if (lineNum < doc.TotalNumberOfLines)
-                return TextUtilities.GetLineAsString(doc, lineNum); 
+                return TextUtilities.GetLineAsString(doc, lineNum);
             else return null;
         }
 
@@ -99,9 +99,10 @@ namespace VisualPascalABC
                 int start = TextUtilities.FindPrevWordStart(editor.Document, caret.Offset);
                 // Нужно, чтобы в Text было последнее слово в строке !!! Исключение - когда в следующей надо сделать просто сдвиг
                 var Text = editor.Document.GetText(start, caret.Offset - start).TrimEnd();
+                var TextToLower = Text.ToLower();
                 //var curStrEnd = TextUtilities.GetLineAsString(editor.Document, caret.Line).Substring(caret.Column);
 
-                if (Text.ToLower() == "begin")
+                if (TextToLower == "begin")
                 {
                     string cur, next, prev;
                     GetCurNextLines(out cur, out next, out prev);
@@ -116,7 +117,8 @@ namespace VisualPascalABC
                         // Проанализируем предыдущий оператор по первому слову
                         var pst = prev?.TrimStart().ToLower();
                         if (pst != null)
-                            if (pst.StartsWith("if") || pst.StartsWith("for") || pst.StartsWith("loop") || pst.StartsWith("with") || pst.StartsWith("on") || pst.StartsWith("while") || pst.StartsWith("else") || pst.StartsWith("foreach")) // потом улучшу - для нескольких выборов
+                            //if (pst.StartsWith("if") || pst.StartsWith("for") || pst.StartsWith("loop") || pst.StartsWith("with") || pst.StartsWith("on") || pst.StartsWith("while") || pst.StartsWith("else") || pst.StartsWith("foreach")) // потом улучшу - для нескольких выборов
+                            if (Regex.IsMatch(pst, "^(if|else|for|loop|while|foreach|with|on)"))
                             {
                                 // Надо удалить в текущей строке пробелы чтобы выровнять begin по if
                                 var iprev = Indent(prev);
@@ -146,7 +148,7 @@ namespace VisualPascalABC
                     return true;
                 }
 
-                else if (Text.ToLower() == "repeat") // repeat .. until
+                else if (TextToLower == "repeat") // repeat .. until
                 {
                     string cur, next, prev;
                     GetCurNextLines(out cur, out next, out prev);
@@ -164,7 +166,7 @@ namespace VisualPascalABC
                     return true;
                 }
 
-                else if (Text.ToLower() == "class" || Text.ToLower() == "record") // class .. end, record .. end
+                else if (Regex.IsMatch(TextToLower,"class|record")) // class .. end, record .. end
                 {
                     string cur, next, prev;
                     GetCurNextLines(out cur, out next, out prev);
@@ -182,7 +184,7 @@ namespace VisualPascalABC
                     return true;
                 }
 
-                else if (Text.ToLower() == "of")
+                else if (TextToLower == "of")
                 {
                     string cur, next, prev;
                     GetCurNextLines(out cur, out next, out prev);
@@ -200,25 +202,37 @@ namespace VisualPascalABC
                     return true;
                 }
 
-                else if (Text.ToLower() == "then" || Text.ToLower() == "else" || Text.ToLower() == "do" 
-                    || Text.ToLower() == "try" || Text.ToLower() == "except" || Text.ToLower() == "finally"
-                    || Text.ToLower() == "var")
+                else if (Regex.IsMatch(TextToLower, "then|else|do|try|except|finally|var"))
                 {
+                    if (ta.Caret.Line > 0 && TextToLower == "else")
+                    {
+                        var prevSeg = doc.GetLineSegment(ta.Caret.Line - 1);
+                        var prev = GetLine(ta.Caret.Line - 1).TrimEnd();
+
+                        if (prev[prev.Length-1] == ';')
+                        {
+                            doc.Replace(prevSeg.Offset + prevSeg.Length - 1, 1, "");
+                        }
+                    }
+
                     var cur = GetLine(ta.Caret.Line);
                     var icur = Indent(cur);
                     ta.InsertString("\n" + Spaces(icur + 2));
+
                     return true;
                 }
-                else 
+
+                else
                 {
                     string cur, next, prev;
                     GetCurNextLines(out cur, out next, out prev);
                     if (ta.Caret.Column >= cur.Length)
                     {
+                        var prevTrimEnd = prev.TrimEnd();
                         // если prev заканчивается на then, а cur не начинается с begin, то отступ назад
-                        if ((prev.TrimEnd().EndsWith("then",StringComparison.InvariantCultureIgnoreCase) ||
-                            prev.TrimEnd().EndsWith("else", StringComparison.InvariantCultureIgnoreCase) ||
-                            prev.TrimEnd().EndsWith("do", StringComparison.InvariantCultureIgnoreCase))
+                        if ((prevTrimEnd.EndsWith("then",StringComparison.InvariantCultureIgnoreCase) ||
+                            prevTrimEnd.EndsWith("else", StringComparison.InvariantCultureIgnoreCase) ||
+                            prevTrimEnd.EndsWith("do", StringComparison.InvariantCultureIgnoreCase))
                             &&
                             !(cur.TrimStart().StartsWith("begin", StringComparison.InvariantCultureIgnoreCase)))
                         {

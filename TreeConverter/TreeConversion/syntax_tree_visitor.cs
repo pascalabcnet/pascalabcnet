@@ -19545,6 +19545,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     _function_lambda_definition.return_type = null;
                 }
+                else _function_lambda_definition.usedkeyword = 1; // значит, это наверняка функция
             }
         }
 
