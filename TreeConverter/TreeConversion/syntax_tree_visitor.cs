@@ -19536,6 +19536,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         _function_lambda_definition.return_type = null;
                     }
+                    else _function_lambda_definition.usedkeyword = 1; // значит, это наверняка функция
                 }
             }
             else if (_function_lambda_definition.return_type is lambda_inferred_type && stl != null && stl.list.Count > 1 && _function_lambda_definition.usedkeyword == 0)
