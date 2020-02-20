@@ -2510,7 +2510,6 @@ implementation
 
 var
   rnd := new System.Random;
-  //  ENCultureInfo: System.Globalization.CultureInfo;
   nfi: System.Globalization.NumberFormatInfo;
   LastReadChar := #0;
   AnsiOrdChrEncoding := Encoding.GetEncoding(1251);
@@ -12521,7 +12520,7 @@ begin
     CommandLineArgs := new string[0];
     
   CurrentIOSystem := new IOStandardSystem;
-  //  ENCultureInfo := new System.Globalization.CultureInfo('en-US');
+  
   var locale: object;
   var locale_str := 'ru-RU';
   if __CONFIG__.TryGetValue('full_locale', locale) then
@@ -12544,14 +12543,14 @@ begin
   
   // SSM 10/11/18 восстановил эту строку чтобы в главном потоке в вещественных была точка
   System.Threading.Thread.CurrentThread.CurrentCulture := new System.Globalization.CultureInfo('en-US');
-  //rnd := new System.Random;
+
   output := new TextFile();
   input := new TextFile();
-  //var tmp := __CONFIG__;
-  if (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX) then
+
+  {if (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX) then
     foreach var listener in System.Diagnostics.Trace.Listeners do
       if listener is System.Diagnostics.DefaultTraceListener then
-        (listener as System.Diagnostics.DefaultTraceListener).AssertUiEnabled := true; 
+        (listener as System.Diagnostics.DefaultTraceListener).AssertUiEnabled := true; }
   StartTime := DateTime.Now;
 end;
 

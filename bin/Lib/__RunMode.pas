@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 ///--
 unit __RunMode;
@@ -42,10 +42,12 @@ begin
     AppDomain.CurrentDomain.UnhandledException += DbgExceptionHandler;
     if IsConsoleApplication then
         Console.Title := ExtractFileName(GetEXEFileName);
+    
     var _a := new string[CommandLineArgs.Length-1];
     for var i:=1 to CommandLineArgs.Length-1 do
       _a[i-1] := CommandLineArgs[i];
     CommandLineArgs := _a;
+    
   end;
 end;
 
