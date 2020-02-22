@@ -1833,6 +1833,8 @@ procedure Swap<T>(var a, b: T);
 function Eoln: boolean;
 /// Возвращает True, если достигнут конец потока ввода
 function Eof: boolean;
+/// Возвращает аргумены командой строки, с которыми была запущена программа
+function CommandLineArgs: array of string;
 
 // -----------------------------------------------------
 //>>     Подпрограммы для работы с динамическими массивами # Subroutines for array of T
@@ -2163,7 +2165,7 @@ type
 // -----------------------------------------------------
 var
   /// Содержит аргумены командой строки, с которыми была запущена программа
-  CommandLineArgs: array of string;
+  _CommandLineArgs: array of string := nil;
   /// Стандартный текстовый файл для вывода. Связывается процедурой Assign с файлом на диске, после чего весь вывод на консоль перенаправляется в этот файл
   output: TextFile;
   /// Стандартный текстовый файл для ввода. Связывается процедурой Assign с файлом на диске, после чего весь ввод с консоли перенаправляется из этого файла
@@ -2509,12 +2511,8 @@ function DQNToNullable<T>(v: T): Nullable<T>; where T: record;
 implementation
 
 var
-  rnd := new System.Random;
+  rnd: System.Random;
   nfi: System.Globalization.NumberFormatInfo;
-  LastReadChar := #0;
-  AnsiOrdChrEncoding := Encoding.GetEncoding(1251);
-  __one_char := new char[1];
-  __one_byte := new byte[1];
   StartTime: DateTime;// Для Milliseconds
 
 const
@@ -5112,7 +5110,7 @@ begin
   else Result := CurrentIOSystem.ReadLexem; 
 end;
 
-function IOStandardSystem.ReadLexem: string;// +
+function IOStandardSystem.ReadLexem: string;
 begin
   if IsInputPipedOrRedirectedFromFile then
   begin// новый код
@@ -5169,7 +5167,7 @@ begin
   Result := _rm.GetString(s);
 end;
 
-procedure IOStandardSystem.read(var x: integer);// +
+procedure IOStandardSystem.read(var x: integer);
 begin
   if IsInputPipedOrRedirectedFromFile then
   begin// новый код
@@ -5245,18 +5243,6 @@ procedure IOStandardSystem.read(var x: char);
 begin
   x := read_symbol;
 end;
-
-{procedure IOStandardSystem.read(var x: string);
-begin
-  var sb := new System.Text.StringBuilder;
-  var c := read_symbol;
-  while c <> #13 do 
-  begin
-    sb.Append(c);
-    c := read_symbol;
-  end;
-  x := sb.ToString;
-end;}
 
 procedure IOStandardSystem.read(var x: string);
 begin
@@ -6335,11 +6321,30 @@ begin
 end;
 
 // -----------------------------------------------------
+//                  CommandLineArgs # CommandLineArgs subroutine
+// -----------------------------------------------------
+function CommandLineArgs: array of string;
+begin
+  Result := _CommandLineArgs;
+  if Result = nil then
+  begin
+    var arg := Environment.GetCommandLineArgs();
+    if arg.Length > 1 then begin
+      _CommandLineArgs := new string[arg.Length - 1];
+      for var i := 1 to arg.Length - 1 do
+        _CommandLineArgs[i - 1] := arg[i];
+    end else
+      _CommandLineArgs := new string[0];
+    Result := _CommandLineArgs;
+  end;
+end;
+
+// -----------------------------------------------------
 //                  Write - Writeln # Write subroutines
 // -----------------------------------------------------
 function PointerOutput.ToString: string;
 begin
-  result := PointerToString(p);
+  Result := PointerToString(p);
 end;
 
 constructor PointerOutput.Create(ptr: pointer);
@@ -8120,14 +8125,15 @@ end;
 // -----------------------------------------------------
 //                Char and String: implementation
 // -----------------------------------------------------
+
 function ChrAnsi(a: Byte): char;
 begin
   if a < 128 then
     Result := char(a)
   else
   begin
-    __one_byte[0] := a;
-    Result := AnsiOrdChrEncoding.GetChars(__one_byte)[0];
+    //__one_byte[0] := a;
+    Result := Encoding.GetEncoding(1251).GetChars(new byte[1](a))[0];
   end;
 end;
 
@@ -8137,8 +8143,8 @@ begin
     Result := byte(a)
   else
   begin
-    __one_char[0] := a;
-    Result := AnsiOrdChrEncoding.GetBytes(__one_char)[0];
+    //__one_char[0] := a;
+    Result := Encoding.GetEncoding(1251).GetBytes(new char[1](a))[0];
   end;
 end;
 
@@ -11497,12 +11503,10 @@ begin
   end
 end;
 
-/// Возвращает массив индексов вхождений подстроки в основную строку 
+/// Возвращает последовательность индексов вхождений подстроки в основную строку 
 ///Параметр overlay определяет, разрешены ли перекрытия вхождений подстрок
-function IndicesOf(Self, SubS: string; overlay: boolean := False): array of integer; extensionmethod;
+function IndicesOf(Self, SubS: string; overlay: boolean := False): sequence of integer; extensionmethod;
 // Реализует КМП-алгоритм.
-// Возвращает массив начальных позиций вхождений подстроки P в строку
-// Параметр overlay определяет, разрешены ли перекрытия положений подстрок.
 begin
   var L := new List<integer>;
   var (n, m) := (Self.Length, SubS.Length);
@@ -11522,7 +11526,7 @@ begin
       temp := border[m]
     end;
   end;
-  Result := L.Select(i -> i - 1).ToArray
+  Result := L.Select(i -> i - 1)
 end;
 
 
@@ -12510,15 +12514,8 @@ var
 procedure __InitModule;
 begin
   DefaultEncoding := Encoding.GetEncoding(1251);
+  rnd := new System.Random;
   
-  var arg := Environment.GetCommandLineArgs();
-  if arg.Length > 1 then begin
-    CommandLineArgs := new string[arg.Length - 1];
-    for var i := 1 to arg.Length - 1 do
-      CommandLineArgs[i - 1] := arg[i];
-  end else
-    CommandLineArgs := new string[0];
-    
   CurrentIOSystem := new IOStandardSystem;
   
   var locale: object;

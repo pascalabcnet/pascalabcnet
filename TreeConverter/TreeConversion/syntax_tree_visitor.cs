@@ -18654,7 +18654,7 @@ namespace PascalABCCompiler.TreeConverter
 		
         private bool can_evaluate_size(type_node tn)
         {
-            if (tn is compiled_type_node)
+            if (tn is compiled_type_node ctn1)
             {
                 if (tn.type_special_kind == SemanticTree.type_special_kind.array_wrapper || tn.type_special_kind == SemanticTree.type_special_kind.set_type
                     || tn.type_special_kind == SemanticTree.type_special_kind.short_string || tn.type_special_kind == SemanticTree.type_special_kind.typed_file || tn.type_special_kind == SemanticTree.type_special_kind.text_file
@@ -18666,8 +18666,10 @@ namespace PascalABCCompiler.TreeConverter
                     return true;
                 if (tn.is_generic_parameter || tn.is_generic_type_definition || tn.is_generic_type_instance)
                     return false;
+                if (ctn1.compiled_type == typeof(System.IntPtr))
+                    return false;
             }
-        	if (tn is common_type_node)
+            if (tn is common_type_node)
         	{
         		common_type_node ctn = tn as common_type_node;
         		
