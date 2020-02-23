@@ -13791,7 +13791,8 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(get_location(_procedure_attributes_list), "EXTENSION_ATTRIBUTE_ONLY_FOR_NAMESPACE_FUNCTIONS_ALLOWED");
                             if (context.top_function.parameters.Count == 0)
                                 AddError(context.top_function.loc, "EXTENSION_METHODS_MUST_HAVE_LEAST_ONE_PARAMETER");
-                            if (!context.top_function.IsOperator && context.top_function.parameters[0].parameter_type != SemanticTree.parameter_type.value)
+                            if (!context.top_function.IsOperator && context.top_function.parameters[0].parameter_type != SemanticTree.parameter_type.value
+                                && !(context.top_function.parameters[0].type is compiled_type_node ctn && ctn.compiled_type == typeof(string)))
                                 AddError(context.top_function.loc, "FIRST_PARAMETER_SHOULDBE_ONLY_VALUE_PARAMETER");
                             if (!context.top_function.IsOperator && context.top_function.parameters[0].name.ToLower() != compiler_string_consts.self_word)
                                 AddError(context.top_function.loc,"FIRST_PARAMETER_MUST_HAVE_NAME_SELF");
@@ -18653,7 +18654,7 @@ namespace PascalABCCompiler.TreeConverter
 		
         private bool can_evaluate_size(type_node tn)
         {
-            if (tn is compiled_type_node)
+            if (tn is compiled_type_node ctn1)
             {
                 if (tn.type_special_kind == SemanticTree.type_special_kind.array_wrapper || tn.type_special_kind == SemanticTree.type_special_kind.set_type
                     || tn.type_special_kind == SemanticTree.type_special_kind.short_string || tn.type_special_kind == SemanticTree.type_special_kind.typed_file || tn.type_special_kind == SemanticTree.type_special_kind.text_file
@@ -18665,8 +18666,10 @@ namespace PascalABCCompiler.TreeConverter
                     return true;
                 if (tn.is_generic_parameter || tn.is_generic_type_definition || tn.is_generic_type_instance)
                     return false;
+                if (ctn1.compiled_type == typeof(System.IntPtr) || ctn1.compiled_type == typeof(System.UIntPtr))
+                    return false;
             }
-        	if (tn is common_type_node)
+            if (tn is common_type_node)
         	{
         		common_type_node ctn = tn as common_type_node;
         		
