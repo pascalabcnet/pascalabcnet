@@ -47,7 +47,8 @@ namespace PascalABCCompiler.NETGenerator
         public bool NeedDefineVersionInfo = false;
         private string _Product = "";
         private PlatformTarget _platformtarget = PlatformTarget.AnyCPU;
-
+        public Type RtlPABCSystemType;
+        
         public PlatformTarget platformtarget
         {
             get { return _platformtarget; }
@@ -164,7 +165,8 @@ namespace PascalABCCompiler.NETGenerator
 
         private static MethodInfo ActivatorCreateInstance = typeof(Activator).GetMethod("CreateInstance", Type.EmptyTypes);
         //\ssyy
-
+        
+        private MethodInfo fix_pointer_meth = null;
         private Dictionary<TypeBuilder, TypeBuilder> marked_with_extension_attribute = new Dictionary<TypeBuilder, TypeBuilder>();
 
         private LocalBuilder current_index_lb;
@@ -2303,6 +2305,7 @@ namespace PascalABCCompiler.NETGenerator
                         Type[] param_types = GetParamTypes(funcs[i]);//получаем параметры процедуры
 
                         MethodBuilder methb = cur_type.DefineMethod(func.name, MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.PinvokeImpl | MethodAttributes.HideBySig, ret_type, param_types);//определяем PInvoke-метод
+                        
                         methb.SetImplementationFlags(MethodImplAttributes.PreserveSig);
                         helper.AddMethod(funcs[i], methb);
                         IParameterNode[] parameters = funcs[i].parameters;
@@ -2435,7 +2438,8 @@ namespace PascalABCCompiler.NETGenerator
             //определяем саму процедуру/функцию
             MethodBuilder methb = null;
             methb = tb.DefineMethod(func.name, attrs);
-
+            if (func.name == "__FixPointer" && cur_type.FullName == "PABCSystem.PABCSystem")
+                fix_pointer_meth = methb;
             if (func.is_generic_function)
             {
                 int count = func.generic_params.Count;
@@ -7460,9 +7464,21 @@ namespace PascalABCCompiler.NETGenerator
 
         private void FixPointer()
         {
-            il.Emit(OpCodes.Ldc_I4, (int)GCHandleType.Pinned);
-            il.Emit(OpCodes.Call, TypeFactory.GCHandleAllocPinned);
-            il.Emit(OpCodes.Pop);
+            if (fix_pointer_meth == null && comp_opt.RtlPABCSystemType != null)
+            {
+                fix_pointer_meth = comp_opt.RtlPABCSystemType.GetMethod("__FixPointer");
+            }
+            if (fix_pointer_meth != null)
+            {
+                il.Emit(OpCodes.Call, fix_pointer_meth);
+                il.Emit(OpCodes.Pop);
+            }
+            else
+            {
+                il.Emit(OpCodes.Ldc_I4, (int)GCHandleType.Pinned);
+                il.Emit(OpCodes.Call, TypeFactory.GCHandleAllocPinned);
+                il.Emit(OpCodes.Pop);
+            }
         }
 
         //вызов глобальной процедуры

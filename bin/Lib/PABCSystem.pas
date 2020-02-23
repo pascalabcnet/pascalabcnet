@@ -2247,6 +2247,8 @@ function ExecuteAssemlyIsDll: boolean;
 function __StandardFilesDirectory: string;
 ///--
 function __FindFile(filename: string): string;
+///--
+function __FixPointer(obj: object): GCHandle;
 
 // -----------------------------------------------------
 //                  Internal for OpenMPSupport
@@ -12507,6 +12509,24 @@ end;
 // -----------------------------------------------------
 var
   __initialized := false;
+  notPinnableTypes := new HashSet<&Type>;
+
+[System.Diagnostics.DebuggerStepThrough] 
+function __FixPointer(obj: object): GCHandle;
+begin
+  if obj <> nil then
+  begin
+    try
+      if notPinnableTypes.Contains(obj.GetType()) then
+        Result := GCHandle.Alloc(obj)
+      else
+        Result := GCHandle.Alloc(obj, GCHandleType.Pinned);
+    except
+      notPinnableTypes.Add(obj.GetType());
+      Result := GCHandle.Alloc(obj);
+    end;
+  end;
+end;
 
 procedure __InitModule;
 begin
@@ -12553,6 +12573,7 @@ begin
       if listener is System.Diagnostics.DefaultTraceListener then
         (listener as System.Diagnostics.DefaultTraceListener).AssertUiEnabled := true; 
   StartTime := DateTime.Now;
+  __FixPointer(nil);
 end;
 
 procedure __InitModule__;
