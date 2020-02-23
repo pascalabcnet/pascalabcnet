@@ -10543,7 +10543,7 @@ namespace PascalABCCompiler.NETGenerator
         {
             //void.System.Runtime.InteropServices.Marshal.SizeOf()
             Type tp = helper.GetTypeReference(value.oftype).tp;
-            if (tp.IsPrimitive)
+            if (tp.IsPrimitive && tp != typeof(System.IntPtr) && tp != typeof(System.UIntPtr))
             {
                 PushIntConst(TypeFactory.GetPrimitiveTypeSize(tp));
                 return;
