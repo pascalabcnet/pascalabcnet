@@ -18666,7 +18666,7 @@ namespace PascalABCCompiler.TreeConverter
                     return true;
                 if (tn.is_generic_parameter || tn.is_generic_type_definition || tn.is_generic_type_instance)
                     return false;
-                if (ctn1.compiled_type == typeof(System.IntPtr))
+                if (ctn1.compiled_type == typeof(System.IntPtr) || ctn1.compiled_type == typeof(System.UIntPtr))
                     return false;
             }
             if (tn is common_type_node)
