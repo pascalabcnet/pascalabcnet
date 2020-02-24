@@ -19,6 +19,9 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // FillParentNodeVisitor расположен в SyntaxTree/tree как базовый визитор, отвечающий за построение дерева
             //FillParentNodeVisitor.New.ProcessNode(root); // почему-то перепрошивает не всё. А следующий вызов - всё
             root.FillParentsInAllChilds();
+            // new range - до всего! До выноса выражения с лямбдой из foreach
+            NewRangeDesugarVisitor.New.ProcessNode(root);
+
             // Выносим выражения с лямбдами из заголовка foreach
             StandOutExprWithLambdaInForeachSequenceVisitor.New.ProcessNode(root);
             VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer.New.ProcessNode(root); // SSM bug fix #1147
@@ -26,6 +29,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 #if DEBUG
             //new SimplePrettyPrinterVisitor("E:/projs/out.txt").ProcessNode(root);
 #endif
+
             // loop
             LoopDesugarVisitor.New.ProcessNode(root);
 

@@ -9,6 +9,7 @@
 <param name="Keyword" value="shr">
 <param name="Keyword" value="xor">
 <param name="Keyword" value="in">
+<param name="Keyword" value="Операция ..">
 </object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title>
@@ -16,6 +17,7 @@
 <body><H1>Выражения и операции</H1>
 <p><strong>// устарело и отсутствует в справке</strong></p>
 Любое выражение имеет определенный тип и после вычисления возвращает некоторое значение. Простейшими выражениями являются переменные и константы. Более сложные выражения строятся из более простых с использованием операций, скобок, вызовов функций, индексов и приведений типов. Данные, к которым применяются операции, называются <i>операндами</i>. <p>В <b>Pascal ABC</b> имеются следующие операции: <code>@</code>, </span></span></span></span><b><code>not</code></b>, <code>^</code>, <code>*</code>, <code>/</code>, <b><code>div</code></b>, <code><b>mod</b></code>, <code><b>and</b></code>, <code><b>shl</b></code>, <code><b>shr</b></code>, <code>+</code>, <code>-</code>, <code><b>or</b></code>, <code><b>xor</b></code>, 
+<code><b>..</b></code>, 
 <code><b>in</b></code>, <code>=&gt;</code>, <code>=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>&lt;&gt;</code>, <code>&lt;=</code> и <code>&gt;=</code>.</p>
 <h2>Арифметические операции</h2><p>К <i>арифметическим</i> относятся бинарные операции 
 <code>+</code> <code>-</code> <code>*</code> <code>/</code> для вещественных и целых чисел, бинарные операции
@@ -88,18 +90,40 @@ b=1</code>, то <code>b <b>shl</b> 10=1024</code>, а <code><b>not</b> b=254</code
 	<p><code>1 <b>in</b> [2..5] // False<br>
 	3 <b>in</b> [2..5] // True</code></p>
 </blockquote>
+<h2>Операция ..</h2><p>Операция .. формирует диапазон значений и является 
+синоним функции Range:</p>
+<blockquote>
+	<p><code><strong>foreach var</strong> x <strong>in</strong> 2..5 <strong>do</strong> 
+	// <strong>foreach var</strong> x <strong>in</strong> Range(2,5) <strong>do</strong><br>&nbsp; 
+	Print(x);<br>(2..5).Select(x -&gt; x*x).Println;<br>
+	<strong>var</strong> a := Arr(2..5);<br><strong>var</strong> h := 
+	HSet('2'..'5');</code></p>
+</blockquote>
+<p>В качестве границ диапазона могут выступать целые или символьные значения.</p>
+<p>Выражение </p>
+<blockquote>
+	<p><code>x <strong>in</strong> 2..5</code></p>
+</blockquote>
+<p>предельно эффективно, поскольку преобразуется на этапе компиляции в </p>
+<blockquote>
+	<p><code>(x &gt;= 2) <strong>and</strong> (x &lt;= 5)</code></p>
+</blockquote>
 <h2>Приоритет операций</h2>
 <p>Приоритет определяет порядок выполнения операций в выражении. 
 Первыми выполняются операции, имеющие высший приоритет. Операции, имеющие 
 одинаковый приоритет, выполняются слева направо.</p>
-<p style="margin-bottom: 3pt"><b>Таблица приоритетов операций</b></p>
-<table border="0" width="382">
+<p><b>Таблица приоритетов операций</b></p>
+<table border="0" width="444" id="table1">
 	<tr>
 		<td><code>@</code>,
 		<b><code>not</code></b>,
-		^
+		<code>^</code>, <code>+</code>, <code>-</code> (унарные), <code>new</code>
 		</td>
-		<td width="131">1 (наивысший)</td>
+		<td>1 (наивысший)</td>
+	</tr>
+	<tr>
+		<td><code>**</code></td>
+		<td style="width: 142px">2</td>
 	</tr>
 	<tr>
 		<td><code>*</code>,
@@ -108,15 +132,21 @@ b=1</code>, то <code>b <b>shl</b> 10=1024</code>, а <code><b>not</b> b=254</code
 		<code><b>mod</b></code>,
 		<code><b>and</b></code>,
 		<code><b>shl</b></code>,
-		<code><b>shr</b></code></td>
-		<td width="131">2</td>
+		<code><b>shr</b></code>,
+		<code><b>as</b></code>,
+		<code><b>is</b></code></td>
+		<td>3</td>
 	</tr>
 	<tr>
 		<td><code>+</code>,
-		<code>-</code>,
+		<code>-</code> (бинарные),
 		<code><b>or</b></code>,
 		<code><b>xor</b></code> </td>
-		<td width="131">3</td>
+		<td>4</td>
+	</tr>
+	<tr>
+		<td><code>..</code></td>
+		<td>5</td>
 	</tr>
 	<tr>
 		<td><code>=</code>,
@@ -125,10 +155,12 @@ b=1</code>, то <code>b <b>shl</b> 10=1024</code>, а <code><b>not</b> b=254</code
 		<code>&gt;</code>,
 		<code>&lt;=</code>,
 		<code>&gt;=</code>,
-		<code><b>in</b></code>,
-		<code>=></code>
-		</td>
-		<td width="131">4 (низший)</td>
+		<code><b>in</b></code></td>
+		<td>6</td>
+	</tr>
+	<tr>
+		<td><code>?: </code>&nbsp;</td>
+		<td>7 (низший)</td>
 	</tr>
 </table>
 

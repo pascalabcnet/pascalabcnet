@@ -3422,9 +3422,20 @@ namespace PascalABCCompiler.TreeConverter
                     var si = context.CurrentScope.Find(id.name);
                     if ((si==null) || !(si.FirstOrDefault().sym_info is type_node))
                     {
+                        if (si != null && si.FirstOrDefault().sym_info is constant_definition_node)
+                        {
+                            constant_definition_node ncd = si.FirstOrDefault().sym_info as constant_definition_node;
+                            if (_enum_type_definition.source_context != null && ncd.type.location != null && ncd.type.location.begin_line_num == _enum_type_definition.source_context.begin_position.line_num
+                                && ncd.type.location.begin_column_num == _enum_type_definition.source_context.begin_position.column_num && ncd.type.location.doc.file_name == _enum_type_definition.source_context.FileName)
+                            {
+                                return_value(ncd.type);
+                                return;
+                            }
+                        }
                         is_enum = true;
                         break;
                     }
+                    
                 }
 
             if (!is_enum) // Значит, это определение типа
@@ -10074,7 +10085,7 @@ namespace PascalABCCompiler.TreeConverter
                         AddError(get_location(_method_name), "EXTENSION_METHOD_FOR_GENERIC_INSTANCES");
                     List<SymbolInfo> sil = tp.scope.FindOnlyInScope(_method_name.meth_name.name);
 
-                    if (tp.original_template == null && ((sil == null && this._compiled_unit.namespaces.IndexOf(tp.comprehensive_namespace) == -1) || (sil != null && this._compiled_unit.namespaces.IndexOf(tp.comprehensive_namespace) == -1)))
+                    if (tp.original_template == null && ((sil == null && this._compiled_unit.namespaces.IndexOf(tp.comprehensive_namespace) == -1) || (sil != null && this._compiled_unit.namespaces.IndexOf(tp.comprehensive_namespace) == -1)) && !explicit_impl)
                     {
                         
                         if (def_temp is common_type_node)
@@ -13780,7 +13791,8 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(get_location(_procedure_attributes_list), "EXTENSION_ATTRIBUTE_ONLY_FOR_NAMESPACE_FUNCTIONS_ALLOWED");
                             if (context.top_function.parameters.Count == 0)
                                 AddError(context.top_function.loc, "EXTENSION_METHODS_MUST_HAVE_LEAST_ONE_PARAMETER");
-                            if (!context.top_function.IsOperator && context.top_function.parameters[0].parameter_type != SemanticTree.parameter_type.value)
+                            if (!context.top_function.IsOperator && context.top_function.parameters[0].parameter_type != SemanticTree.parameter_type.value
+                                && !(context.top_function.parameters[0].type is compiled_type_node ctn && ctn.compiled_type == typeof(string)))
                                 AddError(context.top_function.loc, "FIRST_PARAMETER_SHOULDBE_ONLY_VALUE_PARAMETER");
                             if (!context.top_function.IsOperator && context.top_function.parameters[0].name.ToLower() != compiler_string_consts.self_word)
                                 AddError(context.top_function.loc,"FIRST_PARAMETER_MUST_HAVE_NAME_SELF");
@@ -18642,7 +18654,7 @@ namespace PascalABCCompiler.TreeConverter
 		
         private bool can_evaluate_size(type_node tn)
         {
-            if (tn is compiled_type_node)
+            if (tn is compiled_type_node ctn1)
             {
                 if (tn.type_special_kind == SemanticTree.type_special_kind.array_wrapper || tn.type_special_kind == SemanticTree.type_special_kind.set_type
                     || tn.type_special_kind == SemanticTree.type_special_kind.short_string || tn.type_special_kind == SemanticTree.type_special_kind.typed_file || tn.type_special_kind == SemanticTree.type_special_kind.text_file
@@ -18654,8 +18666,10 @@ namespace PascalABCCompiler.TreeConverter
                     return true;
                 if (tn.is_generic_parameter || tn.is_generic_type_definition || tn.is_generic_type_instance)
                     return false;
+                /*if (ctn1.compiled_type == typeof(System.IntPtr) || ctn1.compiled_type == typeof(System.UIntPtr))
+                    return false;*/
             }
-        	if (tn is common_type_node)
+            if (tn is common_type_node)
         	{
         		common_type_node ctn = tn as common_type_node;
         		
@@ -19525,6 +19539,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         _function_lambda_definition.return_type = null;
                     }
+                    else _function_lambda_definition.usedkeyword = 1; // значит, это наверняка функция
                 }
             }
             else if (_function_lambda_definition.return_type is lambda_inferred_type && stl != null && stl.list.Count > 1 && _function_lambda_definition.usedkeyword == 0)
@@ -19534,6 +19549,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     _function_lambda_definition.return_type = null;
                 }
+                else _function_lambda_definition.usedkeyword = 1; // значит, это наверняка функция
             }
         }
 
@@ -20305,8 +20321,20 @@ namespace PascalABCCompiler.TreeConverter
                 var expr = st.lst[0] as SyntaxTree.expression;
                 semantic_check_loop_stmt(expr);
             }
+            else if (st.typ as System.Type == typeof(SyntaxTree.foreach_stmt) && st.lst.Count == 3) // для NewRange Visitorа. Если будет перекрытие, то надоделать новые типы-маркеры
+            {
+                var expr = st.lst[0] as SyntaxTree.diapason_expr_new;
+                var td = st.lst[1] as SyntaxTree.type_definition;
+                var id = st.lst[2] as SyntaxTree.ident;
+                semantic_check_for_new_range(expr, td, id);
+            }
+            else if (st.typ as System.Type == typeof(SyntaxTree.foreach_stmt) && st.lst.Count == 1) // для a.Indices. Пока непонятно, где описывать тип-маркер
+            {
+                var expr = st.lst[0] as SyntaxTree.expression;
+                semantic_check_for_indices(expr);
+            }
             // Patterns
-            else if (st.typ is SemanticCheckType.MatchedExpression)
+            else if (st.typ is SemanticCheckType.MatchedExpression)  // Это безобразие - SemanticCheckType в TreeHelper.cs помещать!!!
             {
                 var expr = st.lst[0] as expression;
                 CheckMatchedExpression(expr);
@@ -20383,7 +20411,11 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.sugared_addressed_value av)
         {
-            if (av.sugared_expr is SyntaxTree.slice_expr) // и slice_expr_question
+            if (av.sugared_expr is SyntaxTree.diapason_expr_new) 
+            {
+                semantic_check_method_call_as_diapason_expr(av.new_addr_value as SyntaxTree.method_call);
+            }
+            else if (av.sugared_expr is SyntaxTree.slice_expr) // и slice_expr_question
             {
                 semantic_check_method_call_as_slice_expr(av.new_addr_value as SyntaxTree.method_call);
             }
@@ -20404,6 +20436,10 @@ namespace PascalABCCompiler.TreeConverter
                         //new method_call(dn, new expression_list(avqce.ret_if_false), av.source_context);*/
                 }
                 semantic_check_dot_question(av.new_addr_value as SyntaxTree.question_colon_expression);
+            }
+            else if (av.sugared_expr is SyntaxTree.bin_expr) // Это пришло от i in (2..5). Плохо, что могут быть другие bin_expr
+            {
+                semantic_check_method_call_as_inrange_expr(av.new_addr_value as SyntaxTree.method_call);
             }
             else
             {

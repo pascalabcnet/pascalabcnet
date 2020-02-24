@@ -3382,6 +3382,28 @@ namespace CodeFormatters
             visit_node(_dot_question_node.left);
             visit_node(_dot_question_node.right);
         }
+        public override void visit(diapason_expr_new diap)
+        {
+            visit_node(diap.left);
+            visit_node(diap.right);
+        }
+
+        public override void visit(if_expr_new _if_expr_new)
+        {
+            sb.Append("if"); //sb.Append(" ");
+            SetKeywordOffset("if");
+            read_from_beg_pos = true;
+            visit_node(_if_expr_new.condition);
+            if (!in_one_row(_if_expr_new.condition))
+                add_newline_after = true;
+            add_space_before = true;
+            visit_node(_if_expr_new.if_true);
+            if (_if_expr_new.if_false != null)
+            {
+                add_space_before = true;
+                visit_node(_if_expr_new.if_false);
+            }
+        }
         #endregion
     }
 }

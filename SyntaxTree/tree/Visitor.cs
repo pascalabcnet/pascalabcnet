@@ -1499,11 +1499,17 @@ namespace PascalABCCompiler.SyntaxTree
 		///<returns> Return value is void </returns>
 		void visit(recursive_tuple_parameter _recursive_tuple_parameter);
 		///<summary>
-		///Method to visit simple_expr_with_deref.
+		///Method to visit diapason_expr_new.
 		///</summary>
-		///<param name="_simple_expr_with_deref">Node to visit</param>
+		///<param name="_diapason_expr_new">Node to visit</param>
 		///<returns> Return value is void </returns>
-		void visit(simple_expr_with_deref _simple_expr_with_deref);
+		void visit(diapason_expr_new _diapason_expr_new);
+		///<summary>
+		///Method to visit if_expr_new.
+		///</summary>
+		///<param name="_if_expr_new">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(if_expr_new _if_expr_new);
 	}
 
 

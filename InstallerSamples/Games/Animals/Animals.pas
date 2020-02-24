@@ -32,7 +32,6 @@ end;
 function LoadFromFile: TNode;
 var
   s: string;
-  p: TNode;
 begin
   readln(f,s);
   if s='' then
@@ -40,7 +39,7 @@ begin
     Result := nil;
     exit
   end;
-  p := new TNode(s);
+  var p := new TNode(s);
   p.left := LoadFromFile;
   p.right := LoadFromFile;
   Result := p;
@@ -66,7 +65,7 @@ begin
   p := root;
   while p.left<>nil do
   begin
-    write(p.s+'? (0 - Нет, 1 - Да): ');
+    Print(p.s+'? (0 - Нет, 1 - Да):');
     readln(x);
     if x=1 then 
       p := p.left
@@ -90,6 +89,9 @@ begin
     p.left := p1;
     p.right := p2;
   end;
+  
+  
+  
   Rewrite(f);
   SaveToFile(root);
   Close(f);

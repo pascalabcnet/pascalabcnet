@@ -167,7 +167,7 @@ namespace CodeCompletion
                     {
                         if (!((returned_scopes[i] as ProcScope).is_constructor && returned_scopes[i].is_static))
                             proces.Add(returned_scopes[i] as ProcScope);
-                    }  
+                    }
                     else if (returned_scopes[i] is ElementScope && (returned_scopes[i] as ElementScope).sc is CompiledScope)
                     {
                         //ProcType pt = new ProcType();
@@ -175,6 +175,28 @@ namespace CodeCompletion
                         ProcScope ps = cs.FindNameOnlyInThisType("Invoke") as ProcScope;
                         if (ps != null)
                             proces.Add(ps);
+                    }
+                    else if (returned_scopes[i] is ElementScope && (returned_scopes[i] as ElementScope).sc is TypeSynonim)
+                    {
+                        TypeSynonim ts = (returned_scopes[i] as ElementScope).sc as TypeSynonim;
+                        TypeScope act_ts = ts.GetLeafActType();
+                        ProcType procType =act_ts as ProcType;
+                        if (procType != null)
+                        {
+                            ProcScope tmp = procType.target;
+                            if (tmp != null)
+                                proces.Add(tmp);
+                        }
+                        else
+                        {
+                            CompiledScope cs = act_ts as CompiledScope;
+                            if (cs != null)
+                            {
+                                ProcScope ps = cs.FindNameOnlyInThisType("Invoke") as ProcScope;
+                                if (ps != null)
+                                    proces.Add(ps);
+                            }
+                        }
                     }
                     else if (i == 0)
                         return proces;
@@ -485,15 +507,18 @@ namespace CodeCompletion
             _indexer.dereferencing_value.visit(this);
             if (returned_scope != null)
             {
+                ElementScope es = returned_scope as ElementScope;
                 if (returned_scope != null)
-                    if (returned_scope is ElementScope && (returned_scope as ElementScope).sc is ProcScope && ((returned_scope as ElementScope).sc as ProcScope).return_type != null)
-                        returned_scope = new ElementScope(((returned_scope as ElementScope).sc as ProcScope).return_type.GetElementType());
+                    if (es != null && es.sc is ProcScope && (es.sc as ProcScope).return_type != null)
+                        returned_scope = new ElementScope((es.sc as ProcScope).return_type.GetElementType());
                     else if (returned_scope is ProcScope && (returned_scope as ProcScope).is_constructor)
                         returned_scope = new ElementScope((returned_scope as ProcScope).declaringType.GetElementType());
-                    else if (returned_scope is ElementScope && (returned_scope as ElementScope).sc is TypeScope)
+                    else if (es != null && es.sc is TypeScope)
                     {
-                        TypeScope ts = (returned_scope as ElementScope).sc as TypeScope;
-                        if (ts.GetFullName() != null && (ts.GetFullName().IndexOf("System.Tuple") == 0 || ts.original_type != null && ts.original_type.GetFullName() != null && ts.original_type.GetFullName().IndexOf("(T1,") == 0))
+                        TypeScope ts = es.sc as TypeScope;
+                        if (es.IsIndexedProperty)
+                            returned_scope = new ElementScope(ts);
+                        else if (ts.GetFullName() != null && (ts.GetFullName().IndexOf("System.Tuple") == 0 || ts.original_type != null && ts.original_type.GetFullName() != null && ts.original_type.GetFullName().IndexOf("(T1,") == 0))
                         {
                             if (_indexer.indexes.expressions[0] is int32_const)
                             {
@@ -914,6 +939,10 @@ namespace CodeCompletion
                         {
                             returned_scopes[i] = null;
                         }
+                        else if (left_scope is TypeScope && returned_scopes[i] is ProcScope && !(returned_scopes[i] as ProcScope).IsStatic && !(returned_scopes[i] as ProcScope).IsConstructor())
+                        {
+                            returned_scopes[i] = null;
+                        }
                     }
                     returned_scopes.RemoveAll(x => x == null);
 
@@ -1099,7 +1128,7 @@ namespace CodeCompletion
             _method_call.dereferencing_value.visit(this);
             search_all = false;
             SymScope[] names = returned_scopes.ToArray();
-            if (names.Length > 0 && names[0] is ElementScope && ((names[0] as ElementScope).sc is ProcType || (names[0] as ElementScope).sc is CompiledScope))
+            if (names.Length > 0 && names[0] is ElementScope && (names[0] as ElementScope).sc is TypeScope && ((names[0] as ElementScope).sc as TypeScope).IsDelegate)
             {
                 returned_scope = names[0];
                 return;
@@ -1966,6 +1995,23 @@ namespace CodeCompletion
             method_call mc = new method_call();
             mc.parameters = _tuple_node.el;
             mc.dereferencing_value = new dot_node(new ident("Tuple"), new ident("Create"));
+            mc.visit(this);
+        }
+
+        public override void visit(diapason_expr_new _diapason_expr_new)
+        {
+            /*_diapason_expr_new.left.visit(this);
+            TypeScope ts = TypeTable.get_compiled_type(new SymInfo("IEnumerable`1", SymbolKind.Type, "System.Collections.Generic.IEnumerable`1"), typeof(IEnumerable<>));
+            TypeScope elem_ts = null;
+            if (returned_scope is ElementScope)
+                elem_ts = (returned_scope as ElementScope).sc as TypeScope;
+            if (elem_ts != null)
+                ts = ts.GetInstance(new List<TypeScope>() { elem_ts });
+            returned_scope = new ElementScope(ts);*/
+
+            method_call mc = new method_call();
+            mc.parameters = new expression_list(new List<expression> { _diapason_expr_new.left, _diapason_expr_new.right});
+            mc.dereferencing_value = new dot_node(new ident("PABCSystem"), new ident("InternalRange"));
             mc.visit(this);
         }
     }

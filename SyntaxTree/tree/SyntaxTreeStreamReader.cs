@@ -519,7 +519,9 @@ namespace PascalABCCompiler.SyntaxTree
 				case 248:
 					return new recursive_tuple_parameter();
 				case 249:
-					return new simple_expr_with_deref();
+					return new diapason_expr_new();
+				case 250:
+					return new if_expr_new();
 			}
 			return null;
 		}
@@ -2428,8 +2430,6 @@ namespace PascalABCCompiler.SyntaxTree
 			_format_expr.expr = _read_node() as expression;
 			_format_expr.format1 = _read_node() as expression;
 			_format_expr.format2 = _read_node() as expression;
-			_format_expr.index_inversion_from = br.ReadBoolean();
-			_format_expr.index_inversion_to = br.ReadBoolean();
 		}
 
 
@@ -3839,8 +3839,6 @@ namespace PascalABCCompiler.SyntaxTree
 			_slice_expr.from = _read_node() as expression;
 			_slice_expr.to = _read_node() as expression;
 			_slice_expr.step = _read_node() as expression;
-			_slice_expr.index_inversion_from = br.ReadBoolean();
-			_slice_expr.index_inversion_to = br.ReadBoolean();
 		}
 
 
@@ -4362,16 +4360,30 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(simple_expr_with_deref _simple_expr_with_deref)
+		public void visit(diapason_expr_new _diapason_expr_new)
 		{
-			read_simple_expr_with_deref(_simple_expr_with_deref);
+			read_diapason_expr_new(_diapason_expr_new);
 		}
 
-		public void read_simple_expr_with_deref(simple_expr_with_deref _simple_expr_with_deref)
+		public void read_diapason_expr_new(diapason_expr_new _diapason_expr_new)
 		{
-			read_expression(_simple_expr_with_deref);
-			_simple_expr_with_deref.simple_expr = _read_node() as expression;
-			_simple_expr_with_deref.has_deref = br.ReadBoolean();
+			read_addressed_value(_diapason_expr_new);
+			_diapason_expr_new.left = _read_node() as expression;
+			_diapason_expr_new.right = _read_node() as expression;
+		}
+
+
+		public void visit(if_expr_new _if_expr_new)
+		{
+			read_if_expr_new(_if_expr_new);
+		}
+
+		public void read_if_expr_new(if_expr_new _if_expr_new)
+		{
+			read_expression(_if_expr_new);
+			_if_expr_new.condition = _read_node() as expression;
+			_if_expr_new.if_true = _read_node() as expression;
+			_if_expr_new.if_false = _read_node() as expression;
 		}
 
 	}

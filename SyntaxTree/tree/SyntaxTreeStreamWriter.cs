@@ -3491,8 +3491,6 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_format_expr.format2.visit(this);
 			}
-			bw.Write(_format_expr.index_inversion_from);
-			bw.Write(_format_expr.index_inversion_to);
 		}
 
 
@@ -5959,8 +5957,6 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_slice_expr.step.visit(this);
 			}
-			bw.Write(_slice_expr.index_inversion_from);
-			bw.Write(_slice_expr.index_inversion_to);
 		}
 
 
@@ -6800,25 +6796,72 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(simple_expr_with_deref _simple_expr_with_deref)
+		public void visit(diapason_expr_new _diapason_expr_new)
 		{
 			bw.Write((Int16)249);
-			write_simple_expr_with_deref(_simple_expr_with_deref);
+			write_diapason_expr_new(_diapason_expr_new);
 		}
 
-		public void write_simple_expr_with_deref(simple_expr_with_deref _simple_expr_with_deref)
+		public void write_diapason_expr_new(diapason_expr_new _diapason_expr_new)
 		{
-			write_expression(_simple_expr_with_deref);
-			if (_simple_expr_with_deref.simple_expr == null)
+			write_addressed_value(_diapason_expr_new);
+			if (_diapason_expr_new.left == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				_simple_expr_with_deref.simple_expr.visit(this);
+				_diapason_expr_new.left.visit(this);
 			}
-			bw.Write(_simple_expr_with_deref.has_deref);
+			if (_diapason_expr_new.right == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_diapason_expr_new.right.visit(this);
+			}
+		}
+
+
+		public void visit(if_expr_new _if_expr_new)
+		{
+			bw.Write((Int16)250);
+			write_if_expr_new(_if_expr_new);
+		}
+
+		public void write_if_expr_new(if_expr_new _if_expr_new)
+		{
+			write_expression(_if_expr_new);
+			if (_if_expr_new.condition == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_if_expr_new.condition.visit(this);
+			}
+			if (_if_expr_new.if_true == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_if_expr_new.if_true.visit(this);
+			}
+			if (_if_expr_new.if_false == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_if_expr_new.if_false.visit(this);
+			}
 		}
 
 	}

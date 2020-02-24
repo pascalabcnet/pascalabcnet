@@ -1253,9 +1253,14 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_recursive_tuple_parameter);
 		}
 
-		public virtual void visit(simple_expr_with_deref _simple_expr_with_deref)
+		public virtual void visit(diapason_expr_new _diapason_expr_new)
 		{
-			DefaultVisit(_simple_expr_with_deref);
+			DefaultVisit(_diapason_expr_new);
+		}
+
+		public virtual void visit(if_expr_new _if_expr_new)
+		{
+			DefaultVisit(_if_expr_new);
 		}
 	}
 

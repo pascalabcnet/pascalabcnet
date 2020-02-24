@@ -22,7 +22,6 @@
     <name value="question_expr" />
     <name value="new_expr" />
     <name value="relop_expr" />
-    <name value="simple_expr" />
     <name value="as_is_expr" />
     <name value="term" />
     <name value="default_expr" />
