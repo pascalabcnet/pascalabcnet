@@ -12512,7 +12512,7 @@ end;
 // -----------------------------------------------------
 var
   __initialized := false;
-  notPinnableTypes := new HashSet<&Type>;
+  notPinnableTypes: HashSet<&Type> := nil;
 
 [System.Diagnostics.DebuggerStepThrough] 
 function __FixPointer(obj: object): GCHandle;
@@ -12525,6 +12525,8 @@ begin
       else
         Result := GCHandle.Alloc(obj, GCHandleType.Pinned);
     except
+      if notPinnableTypes = nil then 
+        notPinnableTypes := new HashSet<&Type>;
       notPinnableTypes.Add(obj.GetType());
       Result := GCHandle.Alloc(obj);
     end;
@@ -12568,8 +12570,8 @@ begin
     foreach var listener in System.Diagnostics.Trace.Listeners do
       if listener is System.Diagnostics.DefaultTraceListener then
         (listener as System.Diagnostics.DefaultTraceListener).AssertUiEnabled := true; }
-  StartTime := DateTime.Now;
   __FixPointer(nil);
+  StartTime := DateTime.Now;
 end;
 
 procedure __InitModule__;
