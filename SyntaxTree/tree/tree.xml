@@ -1642,6 +1642,8 @@
         <SyntaxField Name="expr" SyntaxType="expression" />
         <SyntaxField Name="format1" SyntaxType="expression" />
         <SyntaxField Name="format2" SyntaxType="expression" />
+        <ExtendedField Name="index_inversion_from" Type="bool" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="index_inversion_to" Type="bool" CreateVariable="false" DeleteVariable="false" />
       </Fields>
       <Methods />
       <Tags>
@@ -2740,6 +2742,8 @@
         <SyntaxField Name="from" SyntaxType="expression" />
         <SyntaxField Name="to" SyntaxType="expression" />
         <SyntaxField Name="step" SyntaxType="expression" />
+        <ExtendedField Name="index_inversion_from" Type="bool" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="index_inversion_to" Type="bool" CreateVariable="false" DeleteVariable="false" />
       </Fields>
       <Methods />
       <Tags>
@@ -3248,6 +3252,17 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="simple_expr_with_deref" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="simple_expr" SyntaxType="expression" />
+        <ExtendedField Name="has_deref" Type="bool" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3311,6 +3326,7 @@
       <HelpData Key=".from" Value="" />
       <HelpData Key=".guardstats" Value="" />
       <HelpData Key=".handlers" Value="" />
+      <HelpData Key=".has_deref" Value="" />
       <HelpData Key=".i" Value="" />
       <HelpData Key=".if_false" Value="" />
       <HelpData Key=".if_true" Value="" />
@@ -3336,6 +3352,7 @@
       <HelpData Key=".restriction_args" Value="" />
       <HelpData Key=".right" Value="" />
       <HelpData Key=".sharp_consts" Value="Список символьных констант в строке вида #123#124#125" />
+      <HelpData Key=".simple_expr" Value="" />
       <HelpData Key=".specificator" Value="" />
       <HelpData Key=".stat" Value="" />
       <HelpData Key=".statements" Value="" />
@@ -3794,6 +3811,8 @@
       <HelpData Key="format_expr.expr" Value="" />
       <HelpData Key="format_expr.format1" Value="" />
       <HelpData Key="format_expr.format2" Value="" />
+      <HelpData Key="format_expr.index_inversion_from" Value="" />
+      <HelpData Key="format_expr.index_inversion_to" Value="" />
       <HelpData Key="forward_directive" Value="" />
       <HelpData Key="forward_directr" Value="" />
       <HelpData Key="fptype_and_expr" Value="" />
@@ -4386,6 +4405,9 @@
       <HelpData Key="simple_const_definition" Value="" />
       <HelpData Key="simple_const_definition." Value="" />
       <HelpData Key="simple_const_definition.simple_const_definition(ident name, expression value, SourceContext sc)" Value="" />
+      <HelpData Key="simple_expr_with_deref" Value="" />
+      <HelpData Key="simple_expr_with_deref.has_deref" Value="" />
+      <HelpData Key="simple_expr_with_deref.simple_expr" Value="" />
       <HelpData Key="simple_property" Value="property property_name[parameter_list]:property_type index index_expression accessors; [virtual;] array_default;" />
       <HelpData Key="simple_property." Value="" />
       <HelpData Key="simple_property.accessors" Value="" />
@@ -4408,6 +4430,8 @@
       <HelpData Key="sizeof_operator.type_name" Value="" />
       <HelpData Key="slice_expr" Value="" />
       <HelpData Key="slice_expr.from" Value="" />
+      <HelpData Key="slice_expr.index_inversion_from" Value="" />
+      <HelpData Key="slice_expr.index_inversion_to" Value="" />
       <HelpData Key="slice_expr.step" Value="" />
       <HelpData Key="slice_expr.to" Value="" />
       <HelpData Key="slice_expr.v" Value="" />

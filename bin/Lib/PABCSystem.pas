@@ -11101,6 +11101,18 @@ begin
   SystemSliceAssignmentArrayImpl(Self, rightValue, situation, from, &to, step);
 end;
 
+///--
+procedure SystemSliceAssignment(Self: string; rightValue: string; situation: integer; from, &to: integer; inverseFrom, inverseTo: boolean); extensionmethod;
+begin
+  Self[1] := 'Q';
+end;
+
+///--
+procedure SystemSliceAssignment(Self: string; rightValue: string; situation: integer; from, &to, step: integer; inverseFrom, inverseTo: boolean); extensionmethod;
+begin
+  Self[1] := 'Q';
+end;
+
 ///-- 
 function SystemSliceArrayImplQuestion<T>(Self: array of T; situation: integer; from, &to: integer; step: integer := 1): array of T;
 begin

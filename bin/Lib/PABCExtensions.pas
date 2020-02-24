@@ -100,7 +100,7 @@ begin
   
   Result := count;
 end;
-
+{
 ///--
 procedure SystemSliceAssignment(Self: string; rightValue: string; situation: integer; from, &to: integer; inverseFrom, inverseTo: boolean); extensionmethod;
 begin
@@ -118,9 +118,6 @@ begin
     raise new System.ArgumentException(GetTranslation(SLICE_SIZE_AND_RIGHT_VALUE_SIZE_MUST_BE_EQUAL));
     
   var f := from + 1;
-  {var temp := new char[Self.Length];
-  for var i := 0 to Self.Length - 1 do
-    temp[i] := Self[i+1];}
   
   var strInd := 1;
   loop count do
@@ -129,6 +126,7 @@ begin
     f += step;
     strInd += 1;
   end;
+  Self[1] := 'Q';
 end;
 
 ///--
@@ -147,9 +145,6 @@ begin
     raise new System.ArgumentException(GetTranslation(SLICE_SIZE_AND_RIGHT_VALUE_SIZE_MUST_BE_EQUAL));
     
   var f := from + 1;
-  {var temp := new char[Self.Length];
-  for var i := 0 to Self.Length - 1 do
-    temp[i] := Self[i+1];}
   
   var strInd := 1;
   loop count do
@@ -158,8 +153,9 @@ begin
     f += step;
     strInd += 1;
   end;
+  Self[1] := 'Q';
 end;
-
+}
 //{{{--doc: Конец секции расширений строк для срезов }}} 
 
 //{{{doc: Начало секции подпрограмм для типизированных файлов для документации }}} 
