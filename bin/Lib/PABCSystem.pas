@@ -12512,7 +12512,8 @@ end;
 // -----------------------------------------------------
 var
   __initialized := false;
-  notPinnableTypes: HashSet<&Type> := nil;
+  nonPinnableLock := new object;
+  notPinnableTypes: HashSet<&Type>;
 
 [System.Diagnostics.DebuggerStepThrough] 
 function __FixPointer(obj: object): GCHandle;
@@ -12525,9 +12526,13 @@ begin
       else
         Result := GCHandle.Alloc(obj, GCHandleType.Pinned);
     except
-      if notPinnableTypes = nil then 
-        notPinnableTypes := new HashSet<&Type>;
-      notPinnableTypes.Add(obj.GetType());
+      lock nonPinnableLock do
+      begin 
+        if notPinnableTypes = nil then 
+          notPinnableTypes := new HashSet<&Type>;
+        notPinnableTypes.Add(obj.GetType());
+      end;
+      
       Result := GCHandle.Alloc(obj);
     end;
   end;
