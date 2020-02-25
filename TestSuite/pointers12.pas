@@ -40,5 +40,4 @@ begin
   p := @x[2];
   p^.name := 'def';
   assert(p^.name = 'def');
-  readln;
 end.
