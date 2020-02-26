@@ -1927,7 +1927,14 @@ namespace PascalABCCompiler.TreeConverter
                     if ((parameters.Count >= cfn.parameters.Count - cfn.num_of_default_variables) &&
                         (parameters.Count <= cfn.parameters.Count) || parameters.Count == 0 && cfn.parameters.Count == 1 && cfn.parameters[0].is_params)
                     {
-                        if (is_exist_eq_method_in_list(fn, set_of_possible_functions) != null)
+                        var fm = find_eq_method_in_list(fn, set_of_possible_functions); // без возвращаемого значения в отличие от is_exist_eq_method_in_list
+
+                        bool bo = fm != null;
+                        if (bo)
+                            bo = eq_type_nodes(fn.return_value_type, fm.return_value_type);
+
+                        //var bo = is_exist_eq_method_in_list(fn, set_of_possible_functions) != null;
+                        if (bo)
                         {
                             if (set_of_possible_functions.Count > 0)
                                 if (set_of_possible_functions[0] is basic_function_node)
@@ -1938,7 +1945,12 @@ namespace PascalABCCompiler.TreeConverter
 
                             continue;
                         }
-                        set_of_possible_functions.Add(fn);
+                        if (fm != null && fn is common_method_node cmnfn && fm is common_method_node cmnfm && cmnfn.comperehensive_type != cmnfm.comperehensive_type)
+                        {
+                            //fn = fn;
+                        }
+                        // Если fm и fn принадлежат к разным классам, то не добавлять fn - она принадлежит предку поскольку встречалась позже
+                        else set_of_possible_functions.Add(fn);
                     }
                 }
                 else
