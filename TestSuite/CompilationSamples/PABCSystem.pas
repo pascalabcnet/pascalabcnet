@@ -12507,27 +12507,31 @@ begin
     result := 0;
 end;
 
+type NotPinnableWrapper = class
+  [ThreadStatic]
+  static notPinnableTypes: HashSet<&Type>;
+end;
+
 // -----------------------------------------------------
 // Internal procedures for PABCRTL.dll: implementation
 // -----------------------------------------------------
 var
   __initialized := false;
-  notPinnableTypes: HashSet<&Type> := nil;
-
+  
 [System.Diagnostics.DebuggerStepThrough] 
 function __FixPointer(obj: object): GCHandle;
 begin
   if obj <> nil then
   begin
     try
-      if notPinnableTypes.Contains(obj.GetType()) then
+      if (NotPinnableWrapper.notPinnableTypes <> nil) and NotPinnableWrapper.notPinnableTypes.Contains(obj.GetType()) then
         Result := GCHandle.Alloc(obj)
       else
         Result := GCHandle.Alloc(obj, GCHandleType.Pinned);
     except
-      if notPinnableTypes = nil then 
-        notPinnableTypes := new HashSet<&Type>;
-      notPinnableTypes.Add(obj.GetType());
+      if NotPinnableWrapper.notPinnableTypes = nil then 
+          NotPinnableWrapper.notPinnableTypes := new HashSet<&Type>;
+      NotPinnableWrapper.notPinnableTypes.Add(obj.GetType());
       Result := GCHandle.Alloc(obj);
     end;
   end;
