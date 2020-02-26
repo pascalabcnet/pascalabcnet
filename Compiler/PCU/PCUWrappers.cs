@@ -321,6 +321,35 @@ namespace PascalABCCompiler.PCU
                     return base_type.find_in_type(name, CurrentScope, null, no_search_in_extension_methods);
                 else if (name == compiler_string_consts.deconstruct_method_name)
                     return SystemLibrary.SystemLibrary.object_type.find_in_type(name, CurrentScope, null, no_search_in_extension_methods);
+
+                // SSM перенес из common_type_node (types.cs 2116) - без этого не работали методы расширения последовательностей для типов в pcu, реализующих IEnumerable<T>
+                if (ImplementingInterfaces != null)
+                {
+                    Dictionary<definition_node, definition_node> cache = new Dictionary<definition_node, definition_node>();
+                    List<SymbolInfo> props = new List<SymbolInfo>();
+                    foreach (type_node ii_tn in ImplementingInterfaces)
+                    {
+                        List<SymbolInfo> isi = ii_tn.find_in_type(name, CurrentScope);
+                        if (isi != null)
+                        {
+                            if (sil == null)
+                                sil = new List<SymbolInfo>();
+                            foreach (SymbolInfo si in isi)
+                            {
+                                if (!cache.ContainsKey(si.sym_info))
+                                {
+                                    if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method
+                                        && sil.FindIndex(ssi => ssi.sym_info == si.sym_info) == -1)  // SSM 12.12.18 - за счёт методов интерфейсов тоже могут добавляться одинаковые - исключаем их
+                                        sil.Add(si);
+                                    cache.Add(si.sym_info, si.sym_info);
+                                }
+                            }
+                        }
+                    }
+                    if (sil != null && sil.Count == 0)
+                        sil = null;
+                }
+
                 return sil;
             }
                 

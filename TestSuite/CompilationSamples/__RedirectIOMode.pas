@@ -131,10 +131,12 @@ begin
         begin
           WriteToProcessErrorStream(string.Format(CodePageCommandTemplate, 65001)); // IB 5.08.08
         end;
-        var _a := new string[CommandLineArgs.Length-1];
-        for var i:=1 to CommandLineArgs.Length - 1 do
-          _a[i-1] := CommandLineArgs[i];
-        CommandLineArgs := _a;
+        
+        var _a := new string[_CommandLineArgs.Length-1];
+        for var i:=1 to _CommandLineArgs.Length - 1 do
+          _a[i-1] := _CommandLineArgs[i];
+        _CommandLineArgs := _a;
+        
         Console.OutputEncoding := System.Text.Encoding.UTF8;
         Console.InputEncoding := System.Text.Encoding.UTF8;
     end;

@@ -265,9 +265,9 @@ end;
 
 var __initialized: boolean;
 
-procedure __InitModule;
+{procedure __InitModule;
 begin
-end;
+end;}
 
 procedure __InitModule__;
 begin
@@ -275,10 +275,10 @@ begin
   begin
     __initialized := true;
     __InitPABCSystem;
-    __InitModule;
+    //__InitModule;
   end;
 end;
 
 begin
-  __InitModule;
+  //__InitModule;
 end.

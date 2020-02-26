@@ -10,6 +10,7 @@
 <param name="Keyword" value="ReadInteger2">
 <param name="Keyword" value="ReadInteger3">
 <param name="Keyword" value="ReadInteger4">
+<param name="Keyword" value="ReadLexem">
 <param name="Keyword" value="Readln">
 <param name="Keyword" value="ReadlnBoolean">
 <param name="Keyword" value="ReadlnChar">
@@ -92,6 +93,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа integer, введенных с клавиатуры</td></tr>
 <tr><td><code><b>function</b> ReadInteger4(prompt: string): (integer, integer, integer, integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа integer, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadLexem: string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующую лексему</td></tr>
+<tr><td><code><b>function</b> ReadLexem(f: Text): string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующую лексему из текстового файла f</td></tr>
 <tr><td><code><b>procedure</b> Readln(a,b,...);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вводит значения a,b,... с клавиатуры и осуществляет переход на следующую строку</td></tr>
 <tr><td><code><b>procedure</b> Readln(f: Text; a,b,...);</code>
