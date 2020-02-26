@@ -8,43 +8,24 @@ const
   VecByteSize = MatrW*8;
   MatrL = MatrW*MatrW;
   MatrByteSize = MatrL*8;
-
-procedure MatrToUnmanagedArr(m: array[,] of real; mem: IntPtr);
+  
 begin
-  var a := new real[m.Length];
-  Buffer.BlockCopy(m,0, a,0, a.Length*8); // вообще не хорошо, лучше через GCHandle, тогда копировать не надо ничего
-  Marshal.Copy(a,0, mem,a.Length);
-end;
-
-procedure UnmanagedArrToMatr(mem: IntPtr; m: array[,] of real);
-begin
-  var a := new real[m.Length];
-  Marshal.Copy(mem,a, 0,a.Length);
-  Buffer.BlockCopy(a,0, m,0, a.Length*8);
-end;
-
-begin
-  Randomize(0);
+  Randomize(0); // чтоб при каждом выполнении были одинаковые результаты
   var ec: ErrorCode;
   
   // Инициализация
   
   var platform: cl_platform_id;
-  cl.GetPlatformIDs(1, @platform, nil).RaiseIfError;
+  cl.GetPlatformIDs(1, platform, IntPtr.Zero).RaiseIfError;
   
   var device: cl_device_id;
-  cl.GetDeviceIDs(platform, DeviceTypeFlags.Default, 1, @device, nil).RaiseIfError;
+  cl.GetDeviceIDs(platform, DeviceType.DEVICE_TYPE_DEFAULT, 1,device,IntPtr.Zero).RaiseIfError;
+//  cl.GetDeviceIDs(platform, DeviceType.DEVICE_TYPE_ALL, 1,device,IntPtr.Zero).RaiseIfError;
   
-  // DeviceTypeFlags.Default это обычно GPU
-  // К примеру, в ноутбуке его может не быть
-  // Тогда надо хоть для чего то попытаться инициализировать
-  // DeviceTypeFlags.All выберет первый любой девайс, поддерживающий OpenCL
-//  cl.GetDeviceIDs(platform, DeviceTypeFlags.All, 1, @device, nil).RaiseIfError;
-  
-  var context := cl.CreateContext(nil, 1, @device, nil, nil, @ec);
+  var context := cl.CreateContext(nil, 1,device, nil,IntPtr.Zero, ec);
   ec.RaiseIfError;
   
-  var command_queue := cl.CreateCommandQueue(context, device, CommandQueuePropertyFlags.NONE, ec);
+  var command_queue := cl.CreateCommandQueueWithProperties(context, device, nil, ec);
   ec.RaiseIfError;
   
   // Чтение и компиляция .cl файла
@@ -60,7 +41,7 @@ begin
   );
   ec.RaiseIfError;
   
-  cl.BuildProgram(prog, 1, @device, nil, nil, nil).RaiseIfError;
+  cl.BuildProgram(prog, 1,device, nil, nil,IntPtr.Zero).RaiseIfError;
   
   var MatrMltMatrKernel := cl.CreateKernel(prog, 'MatrMltMatr', ec);
   ec.RaiseIfError;
@@ -70,73 +51,70 @@ begin
   
   // Подготовка параметров
   
-  writeln('Матрица A:');
+  Writeln('Матрица A:');
   var A := MatrRandomReal(MatrW,MatrW,0,1).Println;
-  writeln;
-  var Amem := Marshal.AllocHGlobal(MatrByteSize);
-  MatrToUnmanagedArr(A,Amem);
-  var AmemObj := cl.CreateBuffer(context, MemoryFlags.READ_WRITE or MemoryFlags.USE_HOST_PTR, new UIntPtr(MatrByteSize), Amem, ec);
+  Writeln;
+  var A_buf := cl.CreateBuffer(context, MemFlags.MEM_READ_WRITE, new UIntPtr(MatrByteSize),IntPtr.Zero, ec);
   ec.RaiseIfError;
+  cl.EnqueueWriteBuffer(command_queue, A_buf, Bool.BLOCKING, new UIntPtr(0),new UIntPtr(MatrByteSize), A[0,0], 0,nil,IntPtr.Zero).RaiseIfError;
   
-  writeln('Матрица B:');
+  Writeln('Матрица B:');
   var B := MatrRandomReal(MatrW,MatrW,0,1).Println;
-  writeln;
-  var Bmem := Marshal.AllocHGlobal(MatrByteSize);
-  MatrToUnmanagedArr(B,Bmem);
-  var BmemObj := cl.CreateBuffer(context, MemoryFlags.READ_WRITE or MemoryFlags.USE_HOST_PTR, new UIntPtr(MatrByteSize), Bmem, ec);
+  Writeln;
+  var B_buf := cl.CreateBuffer(context, MemFlags.MEM_READ_WRITE, new UIntPtr(MatrByteSize),IntPtr.Zero, ec);
   ec.RaiseIfError;
+  cl.EnqueueWriteBuffer(command_queue, B_buf, Bool.BLOCKING, new UIntPtr(0),new UIntPtr(MatrByteSize), B[0,0], 0,nil,IntPtr.Zero).RaiseIfError;
   
-  writeln('Вектор V1:');
+  Writeln('Вектор V1:');
   var V1 := ArrRandomReal(MatrW);
   V1.Println;
-  writeln;
-  var V1mem := Marshal.AllocHGlobal(VecByteSize);
-  Marshal.Copy(V1,0, V1mem,MatrW);
-  var V1memObj := cl.CreateBuffer(context, MemoryFlags.READ_WRITE or MemoryFlags.USE_HOST_PTR, new UIntPtr(VecByteSize), V1mem, ec);
+  Writeln;
+  var V1_buf := cl.CreateBuffer(context, MemFlags.MEM_READ_WRITE, new UIntPtr(VecByteSize),IntPtr.Zero, ec);
+  ec.RaiseIfError;
+  cl.EnqueueWriteBuffer(command_queue, V1_buf, Bool.BLOCKING, new UIntPtr(0),new UIntPtr(VecByteSize), V1[0], 0,nil,IntPtr.Zero).RaiseIfError;
+  
+  var C_buf := cl.CreateBuffer(context, MemFlags.MEM_READ_WRITE, new UIntPtr(MatrByteSize),IntPtr.Zero, ec);
   ec.RaiseIfError;
   
-  var CmemObj := cl.CreateBuffer(context, MemoryFlags.READ_WRITE, new UIntPtr(MatrByteSize), nil, @ec);
-  ec.RaiseIfError;
-  
-  var V2memObj := cl.CreateBuffer(context, MemoryFlags.READ_WRITE, new UIntPtr(VecByteSize), nil, @ec);
+  var V2_buf := cl.CreateBuffer(context, MemFlags.MEM_READ_WRITE, new UIntPtr(VecByteSize),IntPtr.Zero, ec);
   ec.RaiseIfError;
   
   var MatrWParam := MatrW;
-  var WmemObj := cl.CreateBuffer(context, MemoryFlags.READ_WRITE or MemoryFlags.USE_HOST_PTR, new UIntPtr(4), @MatrWParam, @ec);
+  var W_buf := cl.CreateBuffer(context, MemFlags.MEM_READ_WRITE or MemFlags.MEM_USE_HOST_PTR, new UIntPtr(sizeof(integer)),new IntPtr(@MatrWParam), ec);
   ec.RaiseIfError;
   
   // Выполнение C := A*B
   
-  cl.SetKernelArg(MatrMltMatrKernel, 0, new UIntPtr(UIntPtr.Size), AmemObj).RaiseIfError;
-  cl.SetKernelArg(MatrMltMatrKernel, 1, new UIntPtr(UIntPtr.Size), BmemObj).RaiseIfError;
-  cl.SetKernelArg(MatrMltMatrKernel, 2, new UIntPtr(UIntPtr.Size), CmemObj).RaiseIfError;
-  cl.SetKernelArg(MatrMltMatrKernel, 3, new UIntPtr(UIntPtr.Size), WmemObj).RaiseIfError;
+  cl.SetKernelArg(MatrMltMatrKernel, 0, new UIntPtr(UIntPtr.Size), A_buf).RaiseIfError;
+  cl.SetKernelArg(MatrMltMatrKernel, 1, new UIntPtr(UIntPtr.Size), B_buf).RaiseIfError;
+  cl.SetKernelArg(MatrMltMatrKernel, 2, new UIntPtr(UIntPtr.Size), C_buf).RaiseIfError;
+  cl.SetKernelArg(MatrMltMatrKernel, 3, new UIntPtr(UIntPtr.Size), W_buf).RaiseIfError;
   
-  cl.EnqueueNDRangeKernel(command_queue, MatrMltMatrKernel, 2, nil,new UIntPtr[](new UIntPtr(MatrW),new UIntPtr(MatrW)),nil, 0,nil,nil).RaiseIfError;
+  var k1_ev: cl_event;
+  cl.EnqueueNDRangeKernel(command_queue, MatrMltMatrKernel, 2, nil,new UIntPtr[](new UIntPtr(MatrW),new UIntPtr(MatrW)),nil, 0,nil,k1_ev).RaiseIfError;
   
   // Выполнение V2 := C*V
   
-  cl.SetKernelArg(MatrMltVecKernel, 0, new UIntPtr(UIntPtr.Size), CmemObj).RaiseIfError;
-  cl.SetKernelArg(MatrMltVecKernel, 1, new UIntPtr(UIntPtr.Size), V1memObj).RaiseIfError;
-  cl.SetKernelArg(MatrMltVecKernel, 2, new UIntPtr(UIntPtr.Size), V2memobj).RaiseIfError;
-  cl.SetKernelArg(MatrMltVecKernel, 3, new UIntPtr(UIntPtr.Size), WmemObj).RaiseIfError;
+  cl.SetKernelArg(MatrMltVecKernel, 0, new UIntPtr(UIntPtr.Size),  C_buf).RaiseIfError;
+  cl.SetKernelArg(MatrMltVecKernel, 1, new UIntPtr(UIntPtr.Size), V1_buf).RaiseIfError;
+  cl.SetKernelArg(MatrMltVecKernel, 2, new UIntPtr(UIntPtr.Size), V2_buf).RaiseIfError;
+  cl.SetKernelArg(MatrMltVecKernel, 3, new UIntPtr(UIntPtr.Size),  W_buf).RaiseIfError;
   
-  cl.EnqueueNDRangeKernel(command_queue, MatrMltVecKernel, 1, nil,new UIntPtr[](new UIntPtr(MatrW)),nil, 0,nil,nil).RaiseIfError;
+  var k2_ev: cl_event;
+  cl.EnqueueNDRangeKernel(command_queue, MatrMltVecKernel, 1, nil,new UIntPtr[](new UIntPtr(MatrW)),nil, 1,k1_ev,k2_ev).RaiseIfError;
   
   // Чтение и вывод результата
   
-  cl.EnqueueReadBuffer(command_queue, CmemObj,  0, new UIntPtr(0), new UIntPtr(MatrByteSize), Amem, 0,nil,nil).RaiseIfError;
-  cl.EnqueueReadBuffer(command_queue, V2memObj, 0, new UIntPtr(0), new UIntPtr(VecByteSize),  V1mem, 0,nil,nil).RaiseIfError;
-  
-  cl.Finish(command_queue).RaiseIfError;
-  
-  writeln('Матрица С = A*B:');
-  UnmanagedArrToMatr(Amem,A);
+  // Внимание! В отличии от OpenCLABC - тут чтение "C_buf" не обязательно начнётся сразу после выполнения "k1_ev"
+  // Большинство реализаций OpenCL не поддерживают асинхронные очереди
+  // Чтоб получить асинхронное выполнение "cl.Enqueue*" команд - надо несколько вызовов "cl.CreateCommandQueueWithProperties"
+  cl.EnqueueReadBuffer(command_queue, C_buf,  Bool.BLOCKING, new UIntPtr(0), new UIntPtr(MatrByteSize), A[0,0], 1,k1_ev,IntPtr.Zero).RaiseIfError;
+  Writeln('Матрица С = A*B:');
   A.Println;
-  writeln;
+  Writeln;
   
-  writeln('Вектор V2 = C*V1:');
-  Marshal.Copy(V1mem,V1,0,MatrW);
+  cl.EnqueueReadBuffer(command_queue, V2_buf, Bool.NON_BLOCKING, new UIntPtr(0), new UIntPtr(VecByteSize), V1[0], 1,k2_ev,IntPtr.Zero).RaiseIfError;
+  Writeln('Вектор V2 = C*V1:');
   V1.Println;
   
 end.
