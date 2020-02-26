@@ -3726,7 +3726,11 @@ namespace PascalABCCompiler.PCU
         //считывание константы nil
         private expression_node CreateNullConstNode()
         {
-            return new null_const_node(null_type_node.get_type_node(), null);
+            bool has_type = br.ReadByte() == 1;
+            type_node tn = null_type_node.get_type_node();
+            if (has_type)
+                tn = GetTypeReference();
+            return new null_const_node(tn, null);
         }
 
         private expression_node CreateNonStaticEventReference()

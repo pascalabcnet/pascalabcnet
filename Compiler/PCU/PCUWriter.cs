@@ -3787,7 +3787,15 @@ namespace PascalABCCompiler.PCU
 		
         private void VisitNullConstNode(null_const_node expr)
         {
-            
+            if (expr.type != null && !(expr.type is null_type_node))
+            {
+                bw.Write((byte)1);
+                WriteTypeReference(expr.type);
+            }
+            else
+            {
+                bw.Write((byte)0);
+            }
         }
 
         private void VisitEnumConstNode(enum_const_node en)
