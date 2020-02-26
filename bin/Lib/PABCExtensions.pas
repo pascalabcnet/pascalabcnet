@@ -100,9 +100,9 @@ begin
   
   Result := count;
 end;
-{
+
 ///--
-procedure SystemSliceAssignment(Self: string; rightValue: string; situation: integer; from, &to: integer; inverseFrom, inverseTo: boolean); extensionmethod;
+procedure SystemSliceAssignment(var Self: string; rightValue: string; situation: integer; from, &to: integer; inverseFrom, inverseTo: boolean); extensionmethod;
 begin
   if inverseFrom then
     from := Self.Length - from;
@@ -126,11 +126,10 @@ begin
     f += step;
     strInd += 1;
   end;
-  Self[1] := 'Q';
 end;
 
 ///--
-procedure SystemSliceAssignment(Self: string; rightValue: string; situation: integer; from, &to, step: integer; inverseFrom, inverseTo: boolean); extensionmethod;
+procedure SystemSliceAssignment(var Self: string; rightValue: string; situation: integer; from, &to, step: integer; inverseFrom, inverseTo: boolean); extensionmethod;
 begin
   if inverseFrom then
     from := Self.Length - from;
@@ -153,9 +152,8 @@ begin
     f += step;
     strInd += 1;
   end;
-  Self[1] := 'Q';
 end;
-}
+
 //{{{--doc: Конец секции расширений строк для срезов }}} 
 
 //{{{doc: Начало секции подпрограмм для типизированных файлов для документации }}} 
