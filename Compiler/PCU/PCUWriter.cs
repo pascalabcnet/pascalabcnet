@@ -3787,7 +3787,7 @@ namespace PascalABCCompiler.PCU
 		
         private void VisitNullConstNode(null_const_node expr)
         {
-            if (expr.type != null && !(expr.type is null_type_node))
+            if (expr.type != null && !(expr.type is null_type_node) && !(expr.type is delegated_methods))
             {
                 bw.Write((byte)1);
                 WriteTypeReference(expr.type);
