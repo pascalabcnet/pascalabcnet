@@ -1409,9 +1409,6 @@ namespace PascalABCCompiler.TreeConverter
             return method_compare.not_comparable_methods;
 		}
 
-        //DS добавил этот метод
-        //А так ли это надо делать?
-        //Сергей, может ты знаеш?
         internal static bool eq_type_nodes(type_node tn1, type_node tn2, bool strong)
         {
             if (tn1 == tn2)
@@ -1550,6 +1547,13 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
+                if (left.return_value_type != null && right.return_value_type != null && left.return_value_type.is_generic_parameter && right.return_value_type.is_generic_parameter)
+                {
+                    if (string.Compare(left.return_value_type.name, right.return_value_type.name, true) != 0)
+                        return false;
+                    return eq_type_nodes(left.return_value_type, right.return_value_type, false);
+                }
+                    
                 return eq_type_nodes(left.return_value_type, right.return_value_type, weak);
             }
         }
