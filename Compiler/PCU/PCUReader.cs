@@ -1434,21 +1434,30 @@ namespace PascalABCCompiler.PCU
         {
             common_namespace_function_node orig = GetNamespaceFunctionByOffset();
             List<type_node> parameters = GetTypesList();
-            return orig.get_instance(parameters, false, null) as generic_namespace_function_instance_node;
+            int tmp_pos = (int)br.BaseStream.Position;
+            var instance = orig.get_instance(parameters, false, null) as generic_namespace_function_instance_node;
+            br.BaseStream.Seek(tmp_pos, SeekOrigin.Begin);
+            return instance;
         }
 
         private function_node GetCompiledGenericMethodInstanceReference()
         {
             compiled_function_node orig = GetCompiledMethod(br.ReadInt32());
             List<type_node> parameters = GetTypesList();
-            return orig.get_instance(parameters, false, null);
+            int tmp_pos = (int)br.BaseStream.Position;
+            var instance = orig.get_instance(parameters, false, null);
+            br.BaseStream.Seek(tmp_pos, SeekOrigin.Begin);
+            return instance;
         }
 
         private generic_method_instance_node GetCommonGenericMethodInstanceReference()
         {
             common_method_node orig = GetMethodByOffset();
             List<type_node> parameters = GetTypesList();
-            return orig.get_instance(parameters, false, null) as generic_method_instance_node;
+            int tmp_pos = (int)br.BaseStream.Position;
+            var instance = orig.get_instance(parameters, false, null) as generic_method_instance_node;
+            br.BaseStream.Seek(tmp_pos, SeekOrigin.Begin);
+            return instance;
         }
 
         private common_type_node GetGenericParameterOfType()
@@ -4551,6 +4560,16 @@ namespace PascalABCCompiler.PCU
 
             br.BaseStream.Seek(pos, SeekOrigin.Begin);
             return lab;
+        }
+
+        public int GetStreamPosition()
+        {
+            return (int)br.BaseStream.Position;
+        }
+
+        public void SetStreamPosition(int pos)
+        {
+            br.BaseStream.Seek(pos, SeekOrigin.Begin);
         }
 
         /*private List<label_node> CreateLabels()

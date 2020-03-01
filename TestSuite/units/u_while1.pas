@@ -1,4 +1,4 @@
-unit u_while1;
+﻿unit u_while1;
 begin
 var i := 1;
 var s := 0;
