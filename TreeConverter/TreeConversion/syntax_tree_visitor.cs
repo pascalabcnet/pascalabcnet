@@ -3582,8 +3582,12 @@ namespace PascalABCCompiler.TreeConverter
                 if (_class_definition.class_parents != null && _class_definition.class_parents.Count>0)
                     AddError(new SimpleSemanticError(get_location(_class_definition), "UNNAMED_RECORD_CANNOT_IMPLEMENT_INTERFACE"));
                 var pds = _class_definition.DescendantNodes().OfType<procedure_definition>();
-                if (pds.Count()>0)
+                if (pds.Count() > 0)
                     AddError(new SimpleSemanticError(get_location(pds.First()), "UNNAMED_RECORD_CANNOT_CONTAIN_METHODS"));
+
+                var sps = _class_definition.DescendantNodes().OfType<simple_property>();
+                if (sps.Count() > 0)
+                    AddError(new SimpleSemanticError(get_location(sps.First()), "UNNAMED_RECORD_CANNOT_CONTAIN_PROPERTIES"));
 
                 /*var cds = _class_definition.DescendantNodes().OfType<constructor>();
                 if (cds.Count() > 0)
