@@ -1549,8 +1549,8 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (left.return_value_type != null && right.return_value_type != null && left.return_value_type.is_generic_parameter && right.return_value_type.is_generic_parameter)
                 {
-                    if (string.Compare(left.return_value_type.name, right.return_value_type.name, true) != 0)
-                        return false;
+                    //if (string.Compare(left.return_value_type.name, right.return_value_type.name, true) != 0)
+                    //    return false;
                     return eq_type_nodes(left.return_value_type, right.return_value_type, false);
                 }
                     
@@ -1575,13 +1575,13 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return false;
             }
-            for (int i = 0; i < left_type_params.Count; i++)
+            /*for (int i = 0; i < left_type_params.Count; i++)
             {
                 if (string.Compare(left_type_params[i].name, right_type_params[i].name, true) != 0)
                 {
                     return false;
                 }
-            }
+            }*/
             return true;
         }
 
