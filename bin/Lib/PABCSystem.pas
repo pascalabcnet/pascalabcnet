@@ -307,6 +307,7 @@ type
     procedure read(var x: uint64);
     procedure read(var x: single);
     procedure read(var x: boolean);
+    procedure read(var x: BigInteger);
     procedure readln;
     function ReadLine: string;
     function ReadLexem: string;
@@ -341,6 +342,7 @@ type
     procedure read(var x: uint64); virtual;
     procedure read(var x: single); virtual;
     procedure read(var x: boolean); virtual;
+    procedure read(var x: BigInteger); virtual;
     procedure readln; virtual;
     function ReadLine: string; virtual;
     function ReadLexem: string; virtual;
@@ -618,6 +620,8 @@ procedure Read(var x: uint64);
 procedure Read(var x: single);
 ///--
 procedure Read(var x: boolean);
+///--
+procedure Read(var x: BigInteger);
 ///- procedure Readln(a,b,...);
 /// Вводит значения a,b,... с клавиатуры и осуществляет переход на следующую строку
 procedure Readln;
@@ -642,6 +646,8 @@ function TryRead(var x: int64): boolean;
 function TryRead(var x: uint64): boolean;
 ///--
 function TryRead(var x: single): boolean;
+///--
+function TryRead(var x: BigInteger): boolean;
 
 /// Возвращает значение типа integer, введенное с клавиатуры
 function ReadInteger: integer;
@@ -655,6 +661,8 @@ function ReadChar: char;
 function ReadString: string;
 /// Возвращает значение типа boolean, введенное с клавиатуры
 function ReadBoolean: boolean;
+/// Возвращает значение типа BigInteger, введенное с клавиатуры
+function ReadBigInteger: BigInteger;
 /// Возвращает следующую лексему
 function ReadLexem: string;
 
@@ -670,6 +678,9 @@ function ReadlnChar: char;
 function ReadlnString: string;
 /// Возвращает значение типа boolean, введенное с клавиатуры, и переходит на следующую строку ввода
 function ReadlnBoolean: boolean;
+/// Возвращает значение типа BigInteger, введенное с клавиатуры, и переходит на следующую строку ввода
+function ReadlnBigInteger: BigInteger;
+
 
 /// Возвращает кортеж из двух значений типа integer, введенных с клавиатуры
 function ReadInteger2: (integer, integer);
@@ -1822,6 +1833,8 @@ procedure Swap<T>(var a, b: T);
 function Eoln: boolean;
 /// Возвращает True, если достигнут конец потока ввода
 function Eof: boolean;
+/// Возвращает аргумены командой строки, с которыми была запущена программа
+function CommandLineArgs: array of string;
 
 // -----------------------------------------------------
 //>>     Подпрограммы для работы с динамическими массивами # Subroutines for array of T
@@ -2152,7 +2165,7 @@ type
 // -----------------------------------------------------
 var
   /// Содержит аргумены командой строки, с которыми была запущена программа
-  CommandLineArgs: array of string;
+  _CommandLineArgs: array of string := nil;
   /// Стандартный текстовый файл для вывода. Связывается процедурой Assign с файлом на диске, после чего весь вывод на консоль перенаправляется в этот файл
   output: TextFile;
   /// Стандартный текстовый файл для ввода. Связывается процедурой Assign с файлом на диске, после чего весь ввод с консоли перенаправляется из этого файла
@@ -2236,6 +2249,8 @@ function ExecuteAssemlyIsDll: boolean;
 function __StandardFilesDirectory: string;
 ///--
 function __FindFile(filename: string): string;
+///--
+function __FixPointer(obj: object): GCHandle;
 
 // -----------------------------------------------------
 //                  Internal for OpenMPSupport
@@ -2344,7 +2359,7 @@ type
   end;
 
 
-type
+{type
   ///--
   __TypeclassRestrictedFunctionAttribute = class(Attribute)
   public
@@ -2384,7 +2399,7 @@ type
     constructor(instanceName: string);
     begin
     end;
-  end;
+  end;}
   
 type 
 // Смысл полей Num, Width и Fmt соответствует
@@ -2412,6 +2427,73 @@ type
   end;
   
   
+type 
+  /// Тип диапазона целых
+  IntRange = class(IEnumerable<integer>)
+    private
+      l,h: integer;
+    public
+    constructor(l,h: integer);
+    begin
+      Self.l := l;
+      Self.h := h;
+    end;
+    property Low: integer read l;
+    property High: integer read h;
+
+    static function operator in(x: integer; r: IntRange): boolean := (x >= r.l) and (x <= r.h); 
+    static function operator=(r1,r2: IntRange): boolean := (r1.l = r2.l) and (r1.h = r2.h);
+    
+    function IsEmpty: boolean := l<=h;
+
+    function GetEnumerator(): IEnumerator<integer> := Range(l,h).GetEnumerator;
+    function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := Range(l,h).GetEnumerator;
+
+    function ToString: string; override := $'({l},{h})';
+    function Equals(o: Object): boolean; override;
+    begin
+      var r2 := IntRange(o);
+      Result := (l = r2.l) and (h = r2.h);
+    end;
+    function GetHashCode: integer; override := l.GetHashCode xor h.GetHashCode;
+  end;
+
+  /// Тип диапазона символов
+  CharRange = class(IEnumerable<char>)
+    private
+      l,h: char;
+    public
+    constructor(l,h: char);
+    begin
+      Self.l := l;
+      Self.h := h;
+    end;
+    property Low: char read l;
+    property High: char read h;
+
+    static function operator in(x: char; r: CharRange): boolean := (x >= r.l) and (x <= r.h); 
+    static function operator=(r1,r2: CharRange): boolean := (r1.l = r2.l) and (r1.h = r2.h);
+    
+    function IsEmpty: boolean := l<=h;
+
+    function GetEnumerator(): IEnumerator<char> := Range(l,h).GetEnumerator;
+    function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := Range(l,h).GetEnumerator;
+
+    function ToString: string; override := $'({l},{h})';
+    function Equals(o: Object): boolean; override;
+    begin
+      var r2 := CharRange(o);
+      Result := (l = r2.l) and (h = r2.h);
+    end;
+    function GetHashCode: integer; override := l.GetHashCode xor h.GetHashCode;
+  end;
+
+///--
+function InternalRange(l,r: integer): IntRange;
+///--
+function InternalRange(l,r: char): CharRange;
+  
+  
 // -----------------------------------------------------
 //                  Internal procedures for PABCRTL.dll
 // -----------------------------------------------------
@@ -2431,13 +2513,8 @@ function DQNToNullable<T>(v: T): Nullable<T>; where T: record;
 implementation
 
 var
-  rnd := new System.Random;
-  //  ENCultureInfo: System.Globalization.CultureInfo;
+  rnd: System.Random;
   nfi: System.Globalization.NumberFormatInfo;
-  LastReadChar := #0;
-  AnsiOrdChrEncoding := Encoding.GetEncoding(1251);
-  __one_char := new char[1];
-  __one_byte := new byte[1];
   StartTime: DateTime;// Для Milliseconds
 
 const
@@ -4114,6 +4191,10 @@ procedure BigInteger.operator*=(var p: BigInteger; q: BigInteger) := p := p * q;
 
 procedure BigInteger.operator-=(var p: BigInteger; q: BigInteger) := p := p - q;
 
+function BigInteger.operator div(p: BigInteger; q: integer) := BigInteger.Divide(p,q);
+
+function BigInteger.operator mod(p: BigInteger; q: integer) := BigInteger.Remainder(p,q);
+
 //function BigInteger.operator div(p,q: BigInteger) := BigInteger.Divide(p,q);
 
 //function BigInteger.operator mod(p,q: BigInteger) := BigInteger.Remainder(p,q);
@@ -4869,8 +4950,18 @@ begin
   else 
   begin
     _IsPipedRedirectedQuery := True;
-    _IsPipedRedirected := Console.IsInputRedirected and (CurrentIOSystem.GetType = typeof(IOStandardSystem));
-    Result := _IsPipedRedirected;
+    var pi := typeof(Console).GetProperty('IsInputRedirected');
+    if pi = nil then
+    begin
+      _IsPipedRedirected := False; // просто работаем без буфера на старых системах
+      Result := _IsPipedRedirected;
+    end
+    else
+    begin
+      var IsInputRedirected := boolean(pi?.GetValue(nil,nil));
+      _IsPipedRedirected := IsInputRedirected {Console.IsInputRedirected} and (CurrentIOSystem.GetType = typeof(IOStandardSystem));
+      Result := _IsPipedRedirected;
+    end;
   end;
 end;
 
@@ -4892,7 +4983,7 @@ begin
     else // в sym ничего нет
     begin
       state := 1;
-      sym := tr.Read(); // считываение в буфер из одного символа
+      sym := Console.Read(); // считываение в буфер из одного символа
       Result := sym;
     end; 
   end;
@@ -4920,7 +5011,7 @@ begin
       sym := -1;
     end
     else // в sym ничего нет
-      Result := char(tr.Read());
+      Result := char(Console.Read());
     exit;  
   end;
 end;
@@ -5021,7 +5112,7 @@ begin
   else Result := CurrentIOSystem.ReadLexem; 
 end;
 
-function IOStandardSystem.ReadLexem: string;// +
+function IOStandardSystem.ReadLexem: string;
 begin
   if IsInputPipedOrRedirectedFromFile then
   begin// новый код
@@ -5078,7 +5169,7 @@ begin
   Result := _rm.GetString(s);
 end;
 
-procedure IOStandardSystem.read(var x: integer);// +
+procedure IOStandardSystem.read(var x: integer);
 begin
   if IsInputPipedOrRedirectedFromFile then
   begin// новый код
@@ -5155,18 +5246,6 @@ begin
   x := read_symbol;
 end;
 
-{procedure IOStandardSystem.read(var x: string);
-begin
-  var sb := new System.Text.StringBuilder;
-  var c := read_symbol;
-  while c <> #13 do 
-  begin
-    sb.Append(c);
-    c := read_symbol;
-  end;
-  x := sb.ToString;
-end;}
-
 procedure IOStandardSystem.read(var x: string);
 begin
   var sb := new StringBuilder;
@@ -5230,6 +5309,11 @@ begin
   else if s = 'false' then
     x := False  
   else raise new System.FormatException('Входная строка имела неверный формат');
+end;
+
+procedure IOStandardSystem.read(var x: BigInteger);
+begin
+  x := Biginteger.Parse(ReadLexem)
 end;
 
 procedure IOStandardSystem.readln; 
@@ -5360,7 +5444,22 @@ begin
   CurrentIOSystem.read(x)
 end;
 
+procedure Read(var x: BigInteger);
+begin
+  CurrentIOSystem.read(x)
+end;
+
 function TryRead(var x: integer): boolean;
+begin
+  Result := True;
+  try
+    Read(x)
+  except
+    Result := False;
+  end
+end;
+
+function TryRead(var x: BigInteger): boolean;
 begin
   Result := True;
   try
@@ -5490,6 +5589,11 @@ begin
   Read(Result);
 end;
 
+function ReadBigInteger: BigInteger;
+begin
+  Read(Result);
+end;
+
 function ReadlnInteger: integer;
 begin
   Result := ReadInteger;
@@ -5524,6 +5628,13 @@ begin
   Result := ReadBoolean;
   Readln();
 end;
+
+function ReadlnBigInteger: BigInteger;
+begin
+  Result := ReadBigInteger;
+  Readln();
+end;
+
 
 function ReadInteger2 := (ReadInteger, ReadInteger);
 
@@ -6212,11 +6323,30 @@ begin
 end;
 
 // -----------------------------------------------------
+//                  CommandLineArgs # CommandLineArgs subroutine
+// -----------------------------------------------------
+function CommandLineArgs: array of string;
+begin
+  Result := _CommandLineArgs;
+  if Result = nil then
+  begin
+    var arg := Environment.GetCommandLineArgs();
+    if arg.Length > 1 then begin
+      _CommandLineArgs := new string[arg.Length - 1];
+      for var i := 1 to arg.Length - 1 do
+        _CommandLineArgs[i - 1] := arg[i];
+    end else
+      _CommandLineArgs := new string[0];
+    Result := _CommandLineArgs;
+  end;
+end;
+
+// -----------------------------------------------------
 //                  Write - Writeln # Write subroutines
 // -----------------------------------------------------
 function PointerOutput.ToString: string;
 begin
-  result := PointerToString(p);
+  Result := PointerToString(p);
 end;
 
 constructor PointerOutput.Create(ptr: pointer);
@@ -6480,7 +6610,7 @@ begin
     f.sw := new StreamWriter(f.fi.FullName);
   if f = input then
   begin  
-    f.sr := new StreamReader(f.fi.FullName, Encoding.UTF8);
+    f.sr := new StreamReader(f.fi.FullName, DefaultEncoding);
     (CurrentIOSystem as IOStandardSystem).tr := f.sr;
     _IsPipedRedirected := True;
     _IsPipedRedirectedQuery := True;
@@ -7997,14 +8127,15 @@ end;
 // -----------------------------------------------------
 //                Char and String: implementation
 // -----------------------------------------------------
+
 function ChrAnsi(a: Byte): char;
 begin
   if a < 128 then
     Result := char(a)
   else
   begin
-    __one_byte[0] := a;
-    Result := AnsiOrdChrEncoding.GetChars(__one_byte)[0];
+    //__one_byte[0] := a;
+    Result := Encoding.GetEncoding(1251).GetChars(new byte[1](a))[0];
   end;
 end;
 
@@ -8014,8 +8145,8 @@ begin
     Result := byte(a)
   else
   begin
-    __one_char[0] := a;
-    Result := AnsiOrdChrEncoding.GetBytes(__one_char)[0];
+    //__one_char[0] := a;
+    Result := Encoding.GetEncoding(1251).GetBytes(new char[1](a))[0];
   end;
 end;
 
@@ -11184,7 +11315,7 @@ begin
 end;
 
 /// Возвращает True если значение находится между двумя другими
-function InRange(Self: string; a,b: string): boolean; extensionmethod;
+function InRange(Self: string; a, b: string): boolean; extensionmethod;
 begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
@@ -11208,7 +11339,7 @@ begin
 end;
 
 /// Преобразует строку в целое
-function ToInteger(Self: string): integer; extensionmethod := integer.Parse(Self);
+function ToInteger(Self: string): integer; extensionmethod := StrToInt(Self);
 
 /// Преобразует строку в BigInteger
 function ToBigInteger(Self: string): BigInteger; extensionmethod := BigInteger.Parse(Self);
@@ -11374,12 +11505,10 @@ begin
   end
 end;
 
-/// Возвращает массив индексов вхождений подстроки в основную строку 
+/// Возвращает последовательность индексов вхождений подстроки в основную строку 
 ///Параметр overlay определяет, разрешены ли перекрытия вхождений подстрок
-function IndicesOf(Self, SubS: string; overlay: boolean := False): array of integer; extensionmethod;
+function IndicesOf(Self, SubS: string; overlay: boolean := False): sequence of integer; extensionmethod;
 // Реализует КМП-алгоритм.
-// Возвращает массив начальных позиций вхождений подстроки P в строку
-// Параметр overlay определяет, разрешены ли перекрытия положений подстрок.
 begin
   var L := new List<integer>;
   var (n, m) := (Self.Length, SubS.Length);
@@ -11399,7 +11528,7 @@ begin
       temp := border[m]
     end;
   end;
-  Result := L.Select(i -> i - 1).ToArray
+  Result := L.Select(i -> i - 1)
 end;
 
 
@@ -11526,17 +11655,22 @@ begin
 end;
 
 /// Возвращает словарь, сопоставляющий ключу группы количество элементов с данным ключом
-function EachCount<T,Res>(Self: sequence of System.Linq.IGrouping<T,Res>): Dictionary<T,integer>; extensionmethod;
+function EachCount<Key,Source>(Self: sequence of System.Linq.IGrouping<Key,Source>): Dictionary<Key,integer>; extensionmethod;
 begin
   Result := Self.ToDictionary(g -> g.Key, g -> g.Count);
 end;
 
 /// Возвращает словарь, сопоставляющий ключу группы результат групповой операции
-function Each<T,T1,Res>(Self: sequence of System.Linq.IGrouping<T,Res>; grOperation: System.Linq.IGrouping<T,Res> -> T1): Dictionary<T,integer>; extensionmethod;
+function Each<Key,Source,Res>(Self: sequence of System.Linq.IGrouping<Key,Source>; grOperation: System.Linq.IGrouping<Key,Source> -> Res): Dictionary<Key,Res>; extensionmethod;
 begin
-  Result := Self.ToDictionary(g -> g.Key, g -> g.Count);
+  Result := Self.ToDictionary(g -> g.Key, g -> grOperation(g));
 end;
 
+/// Операция удаления из словаря пары с указанным значением ключа
+procedure operator-=<Key,Value>(Self: IDictionary<Key,Value>; k: Key); extensionmethod;
+begin
+  Self.Remove(k);
+end;
 
 //{{{--doc: Конец методов расширения }}}
 
@@ -12352,6 +12486,11 @@ begin
     Result := '';
 end;
 
+function InternalRange(l,r: integer): IntRange := new IntRange(l,r);
+
+function InternalRange(l,r: char): CharRange := new CharRange(l,r);
+
+
 //------------------------------------------------------------------------------
 //OMP
 
@@ -12368,24 +12507,43 @@ begin
     result := 0;
 end;
 
+type NotPinnableWrapper = class
+  [ThreadStatic]
+  static notPinnableTypes: HashSet<&Type>;
+end;
+
 // -----------------------------------------------------
 // Internal procedures for PABCRTL.dll: implementation
 // -----------------------------------------------------
 var
   __initialized := false;
+  
+[System.Diagnostics.DebuggerStepThrough] 
+function __FixPointer(obj: object): GCHandle;
+begin
+  if obj <> nil then
+  begin
+    try
+      if (NotPinnableWrapper.notPinnableTypes <> nil) and NotPinnableWrapper.notPinnableTypes.Contains(obj.GetType()) then
+        Result := GCHandle.Alloc(obj)
+      else
+        Result := GCHandle.Alloc(obj, GCHandleType.Pinned);
+    except
+      if NotPinnableWrapper.notPinnableTypes = nil then 
+          NotPinnableWrapper.notPinnableTypes := new HashSet<&Type>;
+      NotPinnableWrapper.notPinnableTypes.Add(obj.GetType());
+      Result := GCHandle.Alloc(obj);
+    end;
+  end;
+end;
 
 procedure __InitModule;
 begin
   DefaultEncoding := Encoding.GetEncoding(1251);
-  var arg := Environment.GetCommandLineArgs();
-  if arg.Length > 1 then begin
-    CommandLineArgs := new string[arg.Length - 1];
-    for var i := 1 to arg.Length - 1 do
-      CommandLineArgs[i - 1] := arg[i];
-  end else
-    CommandLineArgs := new string[0];
+  rnd := new System.Random;
+  
   CurrentIOSystem := new IOStandardSystem;
-  //  ENCultureInfo := new System.Globalization.CultureInfo('en-US');
+  
   var locale: object;
   var locale_str := 'ru-RU';
   if __CONFIG__.TryGetValue('full_locale', locale) then
@@ -12408,15 +12566,16 @@ begin
   
   // SSM 10/11/18 восстановил эту строку чтобы в главном потоке в вещественных была точка
   System.Threading.Thread.CurrentThread.CurrentCulture := new System.Globalization.CultureInfo('en-US');
-  //rnd := new System.Random;
-  StartTime := DateTime.Now;
+
   output := new TextFile();
   input := new TextFile();
-  //var tmp := __CONFIG__;
-  if (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX) then
+
+  {if (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX) then
     foreach var listener in System.Diagnostics.Trace.Listeners do
       if listener is System.Diagnostics.DefaultTraceListener then
-        (listener as System.Diagnostics.DefaultTraceListener).AssertUiEnabled := true; 
+        (listener as System.Diagnostics.DefaultTraceListener).AssertUiEnabled := true; }
+  __FixPointer(nil);
+  StartTime := DateTime.Now;
 end;
 
 procedure __InitModule__;

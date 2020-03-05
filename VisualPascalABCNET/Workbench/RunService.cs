@@ -93,7 +93,8 @@ namespace VisualPascalABC
                             Workbench.UserOptions.UseDllForSystemUnits = false;
                         Workbench.UserOptions.PABCDllChecked = true;
                     }
-                    if (Workbench.UserOptions.DeleteEXEAfterExecute && Workbench.UserOptions.UseDllForSystemUnits && !startWithGoto && !needFirstBreakpoint)
+                    // SSM 09.02.20 - UseDllForSystemUnits включать когда флаг установлен - безо всяких доп. условий
+                    if (/*Workbench.UserOptions.DeleteEXEAfterExecute &&*/ Workbench.UserOptions.UseDllForSystemUnits && !startWithGoto && !needFirstBreakpoint)
                         BuildService.CompilerOptions.UseDllForSystemUnits = true;
                 }
                 else

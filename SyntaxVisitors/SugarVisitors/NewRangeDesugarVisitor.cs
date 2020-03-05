@@ -33,7 +33,7 @@ namespace SyntaxVisitors.SugarVisitors
             el.Add(diap.right, diap.right.source_context);
 
             // Проблема в том, что тут тоже надо перепрошивать Parent!
-            var mc = method_call.NewP(dot_node.NewP(new ident("PABCSystem", diap.source_context), new ident("Range", diap.source_context), diap.source_context), el, diap.source_context);
+            var mc = method_call.NewP(dot_node.NewP(new ident("PABCSystem", diap.source_context), new ident("InternalRange", diap.source_context), diap.source_context), el, diap.source_context);
 
             var sug = sugared_addressed_value.NewP(diap, mc, diap.source_context);
 

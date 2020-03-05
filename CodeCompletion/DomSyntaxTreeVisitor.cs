@@ -5575,12 +5575,16 @@ namespace CodeCompletion
 
         public override void visit(diapason_expr_new _diapason_expr_new)
         {
-            _diapason_expr_new.left.visit(this);
+            /*_diapason_expr_new.left.visit(this);
             TypeScope ts = TypeTable.get_compiled_type(new SymInfo("IEnumerable`1", SymbolKind.Type, "System.Collections.Generic.IEnumerable`1"), typeof(IEnumerable<>));
             TypeScope elem_ts = returned_scope as TypeScope;
             if (elem_ts != null)
                 ts = ts.GetInstance(new List<TypeScope>() { elem_ts });
-            returned_scope = ts;
+            returned_scope = ts;*/
+            method_call mc = new method_call();
+            mc.parameters = new expression_list(new List<expression> { _diapason_expr_new.left, _diapason_expr_new.right });
+            mc.dereferencing_value = new dot_node(new ident("PABCSystem"), new ident("InternalRange"));
+            mc.visit(this);
         }
     }
 }
