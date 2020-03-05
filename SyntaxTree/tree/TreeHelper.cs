@@ -1761,6 +1761,10 @@ namespace PascalABCCompiler.SyntaxTree
         { }
         public slice_expr_question(addressed_value v, expression from, expression to, expression step, SourceContext sc) : base(v, from, to, step, sc)
         { }
+        public slice_expr_question(addressed_value v, expression from, expression to, expression step, bool ifrom, bool ito) : base(v, from, to, step, ifrom, ito)
+        { }
+        public slice_expr_question(addressed_value v, expression from, expression to, expression step, bool ifrom, bool ito, SourceContext sc) : base(v, from, to, step, ifrom, ito, sc)
+        { }
     }
 
     public partial class sugared_addressed_value

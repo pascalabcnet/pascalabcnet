@@ -78,9 +78,7 @@ namespace SyntaxVisitors.SugarVisitors
         {
             var el = construct_expression_list_for_slice_expr(sl);
             var mc = method_call.NewP(dot_node.NewP(sl.v, new ident("SystemSliceQuestion", sl.v.source_context), sl.v.source_context), el, sl.source_context);
-
             var sug = sugared_addressed_value.NewP(sl, mc, sl.source_context);
-
             ReplaceUsingParent(sl, sug);
             visit(mc); // обойти заменённое на предмет наличия такого же синтаксического сахара
         }

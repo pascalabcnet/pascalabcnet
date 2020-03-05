@@ -3,8 +3,7 @@
 ///--
 unit PABCExtensions;
 
-uses PABCSystem,
-     System;
+uses PABCSystem;
 
 function GetCurrentLocale: string;
 begin
@@ -13,12 +12,6 @@ begin
     Result := locale as string
   else
     Result := 'ru';
-end;
-
-procedure p();
-begin
-  var s := 'sdfh';
-  s[1] := 'd';
 end;
 
 function GetTranslation(message: string): string;
@@ -69,15 +62,15 @@ begin
   // situation = 2 - to отсутствует
   // situation = 3 - from и to отсутствуют
   if step = 0 then
-    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
+    raise new System.ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
   
   if (situation = 0) or (situation = 2) then
     if (from < 0) or (from > Len - 1) then
-      raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
+      raise new System.ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
   
   if (situation = 0) or (situation = 1) then
     if (&to < -1) or (&to > Len) then
-      raise new ArgumentException(GetTranslation(PARAMETER_TO_OUT_OF_RANGE));
+      raise new System.ArgumentException(GetTranslation(PARAMETER_TO_OUT_OF_RANGE));
   
   CorrectFromTo(situation, Len, from, &to, step);
   

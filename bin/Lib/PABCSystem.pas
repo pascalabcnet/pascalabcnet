@@ -10269,14 +10269,22 @@ begin
 end;
 
 ///--
-function SystemSliceQuestion<T>(Self: List<T>; situation: integer; from, &to: integer): List<T>; extensionmethod;
+function SystemSliceQuestion<T>(Self: List<T>; situation: integer; from, &to: integer; inverseFrom, inverseTo: boolean): List<T>; extensionmethod;
 begin
+  if inverseFrom then
+    from := Self.Count - from;
+  if inverseTo then
+    &to := Self.Count - &to;
   Result := SystemSliceListImplQuestion(Self, situation, from, &to, 1);
 end;
 
 ///--
-function SystemSliceQuestion<T>(Self: List<T>; situation: integer; from, &to, step: integer): List<T>; extensionmethod;
+function SystemSliceQuestion<T>(Self: List<T>; situation: integer; from, &to, step: integer; inverseFrom, inverseTo: boolean): List<T>; extensionmethod;
 begin
+  if inverseFrom then
+    from := Self.Count - from;
+  if inverseTo then
+    &to := Self.Count - &to;
   Result := SystemSliceListImplQuestion(Self, situation, from, &to, step);
 end;
 
@@ -11110,14 +11118,22 @@ begin
 end;
 
 ///--
-function SystemSliceQuestion<T>(Self: array of T; situation: integer; from, &to: integer): array of T; extensionmethod;
+function SystemSliceQuestion<T>(Self: array of T; situation: integer; from, &to: integer; inverseFrom, inverseTo: boolean): array of T; extensionmethod;
 begin
+  if inverseFrom then
+    from := Self.Count - from;
+  if inverseTo then
+    &to := Self.Count - &to;
   Result := SystemSliceArrayImplQuestion(Self, situation, from, &to, 1);
 end;
 
 ///--
-function SystemSliceQuestion<T>(Self: array of T; situation: integer; from, &to, step: integer): array of T; extensionmethod;
+function SystemSliceQuestion<T>(Self: array of T; situation: integer; from, &to, step: integer; inverseFrom, inverseTo: boolean): array of T; extensionmethod;
 begin
+  if inverseFrom then
+    from := Self.Count - from;
+  if inverseTo then
+    &to := Self.Count - &to;
   Result := SystemSliceArrayImplQuestion(Self, situation, from, &to, step);
 end;
 
@@ -11709,14 +11725,22 @@ begin
 end;
 
 ///--
-function SystemSliceQuestion(Self: string; situation: integer; from, &to: integer): string; extensionmethod;
+function SystemSliceQuestion(Self: string; situation: integer; from, &to: integer; inverseFrom, inverseTo: boolean): string; extensionmethod;
 begin
+  if inverseFrom then
+    from := Self.Count - from;
+  if inverseTo then
+    &to := Self.Count - &to;
   Result := SystemSliceStringImplQuestion(Self, situation, from, &to, 1);
 end;
 
 ///--
-function SystemSliceQuestion(Self: string; situation: integer; from, &to, step: integer): string; extensionmethod;
+function SystemSliceQuestion(Self: string; situation: integer; from, &to, step: integer; inverseFrom, inverseTo: boolean): string; extensionmethod;
 begin
+  if inverseFrom then
+    from := Self.Count - from;
+  if inverseTo then
+    &to := Self.Count - &to;
   Result := SystemSliceStringImplQuestion(Self, situation, from, &to, step);
 end;
 //--------------------------------------------

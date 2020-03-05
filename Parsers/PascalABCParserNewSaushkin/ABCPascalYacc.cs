@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-P4NLNB1
-// DateTime: 2/24/2020 4:29:36 PM
+// DateTime: 3/5/2020 11:52:52 AM
 // UserName: fatco
 // Input file <ABCPascal.y>
 
@@ -3438,7 +3438,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 if (fe.format1 == null)
                     fe.format1 = new int32_const(int.MaxValue,LocationStack[LocationStack.Depth-2]);
             }
-    		CurrentSemanticValue.ex = new slice_expr(ValueStack[ValueStack.Depth-4].ex as addressed_value,fe.expr,fe.format1,fe.format2,CurrentLocationSpan);
+    		CurrentSemanticValue.ex = new slice_expr(ValueStack[ValueStack.Depth-4].ex as addressed_value,fe.expr,fe.format1,fe.format2,fe.index_inversion_from,fe.index_inversion_to,CurrentLocationSpan);
 		}
         break;
       case 164: // const_variable_2 -> tkPoint, identifier_or_keyword
@@ -5132,7 +5132,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 if (fe.format1 == null)
                     fe.format1 = new int32_const(int.MaxValue,LocationStack[LocationStack.Depth-4]);
             }
-      		CurrentSemanticValue.stn = new slice_expr_question(ValueStack[ValueStack.Depth-6].ex as addressed_value,fe.expr,fe.format1,fe.format2,CurrentLocationSpan);
+      		CurrentSemanticValue.stn = new slice_expr_question(ValueStack[ValueStack.Depth-6].ex as addressed_value,fe.expr,fe.format1,fe.format2,fe.index_inversion_from,fe.index_inversion_to,CurrentLocationSpan);
 		}
         break;
       case 507: // variable_list -> variable
@@ -6445,7 +6445,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 if (fe.format1 == null)
                     fe.format1 = new int32_const(int.MaxValue,LocationStack[LocationStack.Depth-2]);
             }
-      		CurrentSemanticValue.ex = new slice_expr_question(ValueStack[ValueStack.Depth-4].ex as addressed_value,fe.expr,fe.format1,fe.format2,CurrentLocationSpan);
+      		CurrentSemanticValue.ex = new slice_expr_question(ValueStack[ValueStack.Depth-4].ex as addressed_value,fe.expr,fe.format1,fe.format2,fe.index_inversion_from,fe.index_inversion_to,CurrentLocationSpan);
         }
         break;
       case 763: // variable -> variable, tkRoundOpen, optional_expr_list, tkRoundClose
