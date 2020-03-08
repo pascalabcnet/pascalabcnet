@@ -1550,7 +1550,7 @@ object_type
         { 
             var cd = NewObjectType((class_attribute)$1, $2, $3 as named_type_reference_list, $4 as where_definition_list, $5 as class_body_list, @$); 
 			$$ = cd;
-            var tt = cd.DescendantNodes().OfType<class_definition>().Where(cld => cld.keyword == class_keyword.Record);
+            /*var tt = cd.DescendantNodes().OfType<class_definition>().Where(cld => cld.keyword == class_keyword.Record);
             if (tt.Count()>0)
             {
                 foreach (var ttt in tt)
@@ -1558,7 +1558,7 @@ object_type
 	                var sc = ttt.source_context;
 	                parsertools.AddErrorFromResource("NESTED_RECORD_DEFINITIONS_ARE_FORBIDDEN", new LexLocation(sc.begin_position.line_num, sc.begin_position.column_num-1, sc.end_position.line_num, sc.end_position.column_num, sc.FileName));
                 }
-            }
+            }*/
 		}
     ;
 

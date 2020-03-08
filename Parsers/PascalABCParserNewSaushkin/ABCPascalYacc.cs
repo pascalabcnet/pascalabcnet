@@ -1,9 +1,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-P4NLNB1
-// DateTime: 2/10/2020 2:41:46 PM
-// UserName: fatco
+// Machine:  DESKTOP-G8V08V4
+// DateTime: 07.03.2020 10:31:44
+// UserName: ?????????
 // Input file <ABCPascal.y>
 
 // options: no-lines gplex
@@ -3973,7 +3973,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 { 
             var cd = NewObjectType((class_attribute)ValueStack[ValueStack.Depth-5].ob, ValueStack[ValueStack.Depth-4].ti, ValueStack[ValueStack.Depth-3].stn as named_type_reference_list, ValueStack[ValueStack.Depth-2].stn as where_definition_list, ValueStack[ValueStack.Depth-1].stn as class_body_list, CurrentLocationSpan); 
 			CurrentSemanticValue.td = cd;
-            var tt = cd.DescendantNodes().OfType<class_definition>().Where(cld => cld.keyword == class_keyword.Record);
+            /*var tt = cd.DescendantNodes().OfType<class_definition>().Where(cld => cld.keyword == class_keyword.Record);
             if (tt.Count()>0)
             {
                 foreach (var ttt in tt)
@@ -3981,7 +3981,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 	                var sc = ttt.source_context;
 	                parsertools.AddErrorFromResource("NESTED_RECORD_DEFINITIONS_ARE_FORBIDDEN", new LexLocation(sc.begin_position.line_num, sc.begin_position.column_num-1, sc.end_position.line_num, sc.end_position.column_num, sc.FileName));
                 }
-            }
+            }*/
 		}
         break;
       case 284: // record_type -> tkRecord, optional_base_classes, optional_where_section, 
