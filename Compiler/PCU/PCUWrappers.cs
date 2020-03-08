@@ -142,6 +142,7 @@ namespace PascalABCCompiler.PCU
     public class WrappedClassScope : ClassScope
     {
         protected PCUReader pr;
+        internal common_type_node ctn;
         
         public WrappedClassScope(PCUReader pr, Scope top_scope, Scope up_scope)
             : base(SystemLibrary.SystemLibrary.symtab, top_scope, up_scope, "")
@@ -171,7 +172,19 @@ namespace PascalABCCompiler.PCU
             }
             return sil;
         }
-
+        
+        private bool hasNotRestoreAttribute()
+        {
+            if (ctn == null)
+                return false;
+            foreach (var attr in ctn.attributes)
+            {
+                if (string.Compare(attr.attribute_type.full_name, "PABCSystem.PCUNotRestoreAttribute", true) == 0)
+                    return true;
+            }
+            return false;
+        }
+        
         public void RestoreMembers(string name)
         {
             List<SymbolInfo> sil = SymbolTable.FindOnlyInThisClass(this, name);
@@ -181,7 +194,9 @@ namespace PascalABCCompiler.PCU
                 if (tsi.sym_info.semantic_node_type == semantic_node_type.wrap_def)
                 {
                     PCUSymbolInfo pcu_tsi = tsi as PCUSymbolInfo;
-                    if (!(pcu_tsi != null && pcu_tsi.semantic_node_type == semantic_node_type.common_method_node && !pcu_tsi.virtual_slot) || pr.comp.CompilerOptions.OutputFileType == CompilerOptions.OutputType.ClassLibrary || name == "op_Equality" || name == "op_Inequality")
+                    if (!(pcu_tsi != null && pcu_tsi.semantic_node_type == semantic_node_type.common_method_node && !pcu_tsi.virtual_slot) &&
+                        !(pcu_tsi != null && pcu_tsi.is_static) && !hasNotRestoreAttribute() || 
+                        pr.comp.CompilerOptions.OutputFileType == CompilerOptions.OutputType.ClassLibrary || name == "op_Equality" || name == "op_Inequality")
                     {
                         wrapped_definition_node wdn = (wrapped_definition_node)tsi.sym_info;
                         tsi.sym_info = wdn.PCUReader.CreateInterfaceInClassMember(wdn.offset, name);

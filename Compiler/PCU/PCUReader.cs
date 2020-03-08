@@ -2138,6 +2138,7 @@ namespace PascalABCCompiler.PCU
                 scope = new WrappedClassScope(this, cun.scope, null);
             }
             ctn = new wrapped_common_type_node(this, null, name, SemanticTree.type_access_level.tal_public, cun.namespaces[0], scope, null, offset);
+            scope.ctn = ctn;
             if (is_interface)
                 AddTypeToOrderList(ctn, ind);
             else
@@ -2620,6 +2621,7 @@ namespace PascalABCCompiler.PCU
                 si.symbol_kind = (symbol_kind)br.ReadByte();
                 si.semantic_node_type = (semantic_node_type)br.ReadByte();
                 si.virtual_slot = br.ReadBoolean();
+                si.is_static = br.ReadBoolean();
                 //Вроде это ненужно
                 //SymbolInfo si2 = scope.FindWithoutCreation(name);
                 //si.Next = si2;
