@@ -46,6 +46,7 @@
     <Compile Include="BaseVisitors\HasStatementVisitor.cs" />
     <Compile Include="BaseVisitors\SmallHelperVisitors.cs" />
     <Compile Include="ChangeWhileVisitor.cs" />
+    <Compile Include="CheckingVisitors\UnnamedRecordsCheckErrorsVisitor.cs" />
     <Compile Include="LightSymInfoVisitors\LightScopeHelperClasses.cs" />
     <Compile Include="LightSymInfoVisitors\SymInfoCollect1.cs" />
     <Compile Include="LightSymInfoVisitors\SymInfoCollect1Helper.cs" />
@@ -116,9 +117,7 @@
       <Name>YieldHelpers</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="CheckingVisitors\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
