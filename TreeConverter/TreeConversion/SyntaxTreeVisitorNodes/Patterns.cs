@@ -250,16 +250,19 @@ namespace PascalABCCompiler.TreeConverter
         private void CheckIfCanBeMatched(expression matchedExpression, type_definition targetType)
         {
             var type = convert_strong(targetType);
-            var expression = convert_strong(matchedExpression).type;
+            var expression = convert_strong(matchedExpression);
+            if (expression is typed_expression)
+                try_convert_typed_expression_to_function_call(ref expression);
 
-            if (type_table.is_derived(type, expression) ||
-                type_table.is_derived(expression, type) ||
-                AreTheSameType(type, expression) ||
+            var expressionType = expression.type;
+            if (type_table.is_derived(type, expressionType) ||
+                type_table.is_derived(expressionType, type) ||
+                AreTheSameType(type, expressionType) ||
                 type.IsInterface ||
-                expression.IsInterface)
+                expressionType.IsInterface)
                 return;
 
-            AddError(get_location(matchedExpression), "EXPRESSION_OF_TYPE_{0}_CANNOT_BE_MATCHED_AGAINST_PATTERN_WITH_TYPE_{1}", expression.name, type.name);
+            AddError(get_location(matchedExpression), "EXPRESSION_OF_TYPE_{0}_CANNOT_BE_MATCHED_AGAINST_PATTERN_WITH_TYPE_{1}", expressionType.name, type.name);
         }
 
         private void CheckIfCanBeMatched(expression matchedExpression, expression patternExpression)
@@ -267,6 +270,8 @@ namespace PascalABCCompiler.TreeConverter
             var patternNode = convert_strong(patternExpression);
             var patternType = patternNode.type;
             var expressionNode = convert_strong(matchedExpression);
+            if (expressionNode is typed_expression)
+                try_convert_typed_expression_to_function_call(ref expressionNode);
             var expressionType = expressionNode.type;
 
             if (!(patternNode is constant_node))

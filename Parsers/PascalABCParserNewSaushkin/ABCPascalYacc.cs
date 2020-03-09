@@ -1,9 +1,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-G8V08V4
-// DateTime: 07.03.2020 10:31:44
-// UserName: ?????????
+// Machine:  DESKTOP-P4NLNB1
+// DateTime: 3/9/2020 12:26:11 PM
+// UserName: fatco
 // Input file <ABCPascal.y>
 
 // options: no-lines gplex
