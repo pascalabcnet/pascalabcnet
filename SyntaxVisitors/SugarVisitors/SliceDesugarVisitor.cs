@@ -45,6 +45,12 @@ namespace SyntaxVisitors.SugarVisitors
             return el;
         }
 
+        public override void visit(assign _assign)
+        {
+            _assign.from.visit(this);
+            _assign.to.visit(this);
+        }
+
         public override void visit(slice_expr sl)
         {
             var el = construct_expression_list_for_slice_expr(sl);
@@ -63,10 +69,10 @@ namespace SyntaxVisitors.SugarVisitors
                 var checkAndDesugaredSliceBlock = new statement_list(typeCompatibilityCheck, systemSliceAssignmentCall);
                 checkAndDesugaredSliceBlock.source_context = sl.source_context;
                 ReplaceUsingParent(parent_assign, checkAndDesugaredSliceBlock);
+                //visit(systemSliceAssignmentCall); // обойти заменённое на предмет наличия такого же синтаксического сахара
             }
             else
             {
-                // Проблема в том, что тут тоже надо перепрошивать Parent!
                 var mc = method_call.NewP(dot_node.NewP(sl.v, new ident("SystemSlice", sl.v.source_context), sl.v.source_context), el, sl.source_context);
                 var sug = sugared_addressed_value.NewP(sl, mc, sl.source_context);
                 ReplaceUsingParent(sl, sug);
