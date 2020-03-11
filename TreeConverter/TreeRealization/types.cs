@@ -382,7 +382,7 @@ namespace PascalABCCompiler.TreeRealization
         {
             get
             {
-                return name;
+                return full_name;
             }
         }
 

@@ -770,7 +770,7 @@ procedure Read(var x: BigInteger);
 procedure Readln;
 
 ///- function TryRead(var x: число): boolean;
-/// Вводит числовое значение x клавиатуры. Возвращает False если при вводе произошла ошибка
+/// Вводит числовое значение x с клавиатуры. Возвращает False если при вводе произошла ошибка
 function TryRead(var x: integer): boolean;
 ///--
 function TryRead(var x: real): boolean;
@@ -793,7 +793,7 @@ function TryRead(var x: single): boolean;
 ///--
 function TryRead(var x: BigInteger): boolean;
 
-/// Вводит логическое значение x клавиатуры. Возвращает False если при вводе произошла ошибка
+/// Вводит логическое значение x с клавиатуры. Возвращает False если при вводе произошла ошибка
 function TryRead(var x: boolean): boolean;
 
 /// Возвращает значение типа integer, введенное с клавиатуры
