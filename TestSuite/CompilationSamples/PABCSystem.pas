@@ -2595,6 +2595,11 @@ type
     constructor (c: string; n, w: integer; f: string) := (Comment, Num, Width, Fmt) := (c, n, w, f);
   end;
   
+type 
+  [AttributeUsage(AttributeTargets.Class)]
+  PCUNotRestoreAttribute = class(System.Attribute)
+  public constructor := exit;
+  end;
   
 ///--
 function InternalRange(l,r: integer): IntRange;

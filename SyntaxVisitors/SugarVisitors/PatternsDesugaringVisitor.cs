@@ -94,6 +94,7 @@ namespace SyntaxVisitors.SugarVisitors
         private const string GeneratedPatternNamePrefix = "<>pattern";
         private const string GeneratedDeconstructParamPrefix = "<>deconstructParam";
         private const string GeneratedVisitElseBranchVariableName = "<>visitElseBranch";
+        private const string GeneratedMatchExprVariableName = "<>matchExprVariable";
 
         private int generalVariableCounter = 0;
         private int successVariableCounter = 0;
@@ -103,6 +104,7 @@ namespace SyntaxVisitors.SugarVisitors
         private if_node _previousIf;
         private statement desugaredMatchWith;
         private List<if_node> processedIfNodes = new List<if_node>();
+        private var_statement matchedExprVarDeclaration;
 
         //const matching
         private List<statement> typeChecks = new List<statement>();
@@ -114,6 +116,23 @@ namespace SyntaxVisitors.SugarVisitors
             desugaredMatchWith = null;
             _previousIf = null;
 
+            matchedExprVarDeclaration = new var_statement(
+                new ident(GeneratedMatchExprVariableName, matchWith.expr.source_context),
+                matchWith.expr.Clone() as expression,
+                matchWith.expr.source_context);
+            ReplaceUsingParent(matchWith.expr, new ident(GeneratedMatchExprVariableName, matchWith.expr.source_context));
+
+            /*if (matchWith.Parent is statement_list stl)
+            {
+                stl.InsertBefore(matchWith, matchedExprVarDeclaration);
+            }
+            else
+            {
+                var enclosingStl = new statement_list(matchedExprVarDeclaration, matchWith);
+                enclosingStl.source_context = matchWith.source_context;
+                ReplaceUsingParent(matchWith, enclosingStl);
+            }*/
+            
             // Кэшируем выражение для однократного вычисления
             //var cachedExpression = NewGeneralName();
             //AddDefinitionsInUpperStatementList(matchWith, new[] { new var_statement(cachedExpression, matchWith.expr) });
@@ -180,6 +199,8 @@ namespace SyntaxVisitors.SugarVisitors
                 typeChecks.Add(desugaredMatchWith);
                 desugaredMatchWith = new statement_list(typeChecks);
             }
+
+            desugaredMatchWith = new statement_list(matchedExprVarDeclaration, desugaredMatchWith);
 
             // Замена выражения match with на новое несахарное поддерево и его обход
             ReplaceUsingParent(matchWith, desugaredMatchWith);
@@ -528,7 +549,6 @@ namespace SyntaxVisitors.SugarVisitors
                                            bin_expr.LogicalAnd(successMatchingCheck, afterGapEqual);
                 }
             }
-            // если добавлять в and, то все равно ран тайм эррор, будто вычисляет все, даже если первое = false
             desugaringResult.CollectionLengthCheck = new bin_expr(
                 new dot_node(matchingExpression as addressed_value, new ident(CountPropertyName), pattern.source_context),
                 new int32_const(exprBeforeGap.Count + exprAfterGap.Count),

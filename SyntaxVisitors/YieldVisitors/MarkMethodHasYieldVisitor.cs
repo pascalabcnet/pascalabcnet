@@ -12,6 +12,27 @@ using PascalABCCompiler.Errors;
 
 namespace SyntaxVisitors
 {
+    public class CheckArrayRecordInitializersVisitor : WalkingVisitorNew
+    {
+        //procedure_definition PD;
+        public static CheckArrayRecordInitializersVisitor New
+        {
+            get { return new CheckArrayRecordInitializersVisitor(); }
+        }
+        public override void visit(function_lambda_definition ld)
+        {
+            // пропустить всё
+        }
+        public override void visit(var_def_statement vd)
+        {
+            if (vd.inital_value is array_const)
+                throw new SyntaxVisitorError("FUNCTION_WITH_YIELD_CANNOT_CONTAIN_OLDSTYLE_ARRAY_INITIALIZERS", vd.inital_value.source_context);
+            if (vd.inital_value is record_const)
+                throw new SyntaxVisitorError("FUNCTION_WITH_YIELD_CANNOT_CONTAIN_OLDSTYLE_RECORD_INITIALIZERS", vd.inital_value.source_context);
+        }
+
+    }
+
     public class MarkMethodHasYieldAndCheckSomeErrorsVisitor : WalkingVisitorNew
     {
         private bool HasYields = false;
@@ -75,6 +96,8 @@ namespace SyntaxVisitors
                         throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_INHERITED_CALLS", FirstInheritedIdent.First().source_context);
                     }
                 }
+
+                CheckArrayRecordInitializersVisitor.New.ProcessNode(pd);
             }
 
             /*if (pd.has_yield)
