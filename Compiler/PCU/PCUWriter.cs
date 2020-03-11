@@ -2571,7 +2571,7 @@ namespace PascalABCCompiler.PCU
                 if (type.methods[i - j].is_overload)
                     names[i].symbol_kind = symbol_kind.sk_overload_function;
                 names[i].virtual_slot = type.methods[i - j].newslot_awaited || type.methods[i - j].polymorphic_state == SemanticTree.polymorphic_state.ps_virtual || type.methods[i - j].polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract || type.methods[i - j].is_constructor;
-                names[i].is_static = type.methods[i - j].polymorphic_state == SemanticTree.polymorphic_state.ps_static;
+                names[i].is_static = type.methods[i - j].polymorphic_state == SemanticTree.polymorphic_state.ps_static && !type.methods[i - j].is_constructor;
                 size += names[i].Size;
 			}
 			j=i;

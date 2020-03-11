@@ -185,6 +185,21 @@ namespace PascalABCCompiler.PCU
             return false;
         }
         
+        private bool needRestore(PCUSymbolInfo pcu_tsi, string name)
+        {
+            if (pcu_tsi == null)
+                return true;
+            if (pcu_tsi.semantic_node_type == semantic_node_type.common_method_node && pcu_tsi.virtual_slot)
+                return true;
+            if (hasNotRestoreAttribute())
+                return false;
+            if (pcu_tsi.is_static)
+                return false;
+            if (pcu_tsi.semantic_node_type == semantic_node_type.common_method_node)
+                return false;
+            return true;
+        }
+        
         public void RestoreMembers(string name)
         {
             List<SymbolInfo> sil = SymbolTable.FindOnlyInThisClass(this, name);
@@ -194,9 +209,7 @@ namespace PascalABCCompiler.PCU
                 if (tsi.sym_info.semantic_node_type == semantic_node_type.wrap_def)
                 {
                     PCUSymbolInfo pcu_tsi = tsi as PCUSymbolInfo;
-                    if (!(pcu_tsi != null && pcu_tsi.semantic_node_type == semantic_node_type.common_method_node && !pcu_tsi.virtual_slot) &&
-                        !(pcu_tsi != null && pcu_tsi.is_static) && !hasNotRestoreAttribute() || 
-                        pr.comp.CompilerOptions.OutputFileType == CompilerOptions.OutputType.ClassLibrary || name == "op_Equality" || name == "op_Inequality")
+                    if (needRestore(pcu_tsi, name) || pr.comp.CompilerOptions.OutputFileType == CompilerOptions.OutputType.ClassLibrary || name == "op_Equality" || name == "op_Inequality")
                     {
                         wrapped_definition_node wdn = (wrapped_definition_node)tsi.sym_info;
                         tsi.sym_info = wdn.PCUReader.CreateInterfaceInClassMember(wdn.offset, name);
