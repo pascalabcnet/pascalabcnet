@@ -10610,6 +10610,22 @@ begin
       Self[i, j] := f(i, j);
 end;
 
+/// Заполняет элементы двумерного массива случайными значениями в диапазоне от a до b
+procedure FillRandom(Self: array [,] of integer; a,b: integer); extensionmethod;
+begin
+  for var i := 0 to Self.RowCount - 1 do
+    for var j := 0 to Self.ColCount - 1 do
+      Self[i, j] := Random(a,b);
+end;
+
+/// Заполняет элементы двумерного массива случайными значениями в диапазоне от a до b
+procedure FillRandom(Self: array [,] of real; a,b: real); extensionmethod;
+begin
+  for var i := 0 to Self.RowCount - 1 do
+    for var j := 0 to Self.ColCount - 1 do
+      Self[i, j] := a + Random*(b-a);
+end;
+
 /// Применяет действие к каждому элементу двумерного массива
 procedure &ForEach<T>(Self: array [,] of T; act: T -> ()); extensionmethod;
 begin
@@ -10786,6 +10802,28 @@ end;
 // Дополнения февраль 2016: Shuffle, AdjacentFind, IndexMin, IndexMax, Replace, Transform
 //   Статические методы - в методы расширения: BinarySearch, ConvertAll, Find, FindIndex, FindAll,  
 //   FindLast, FindLastIndex, IndexOf, Contains, LastIndexOf, Reverse, Sort
+
+// Дополнения март 2020: RandomElement, FillRandom
+
+/// Заполняет массив случайными значениями в диапазоне от a до b
+procedure FillRandom(Self: array of integer; a,b: integer); extensionmethod;
+begin
+  for var i:=0 to Self.Length-1 do
+    Self[i] := Random(a,b);
+end;
+
+/// Заполняет массив случайными значениями в диапазоне от a до b
+procedure FillRandom(Self: array of real; a,b: real); extensionmethod;
+begin
+  for var i:=0 to Self.Length-1 do
+    Self[i] := a + Random*(b-a);
+end;
+
+/// Возвращает случайный элемент массива
+function RandomElement<T>(Self: array of T): T; extensionmethod;
+begin
+  Result := Self[Random(Self.Length)];  
+end;
 
 /// Перемешивает элементы массива случайным образом
 function Shuffle<T>(Self: array of T): array of T; extensionmethod;
