@@ -114,7 +114,11 @@ namespace SyntaxVisitors.CheckingVisitors
         // Имена, захваченные записью. Их мы будем искать затем во внешних контекстах
         // Сюда не включаются имена во вложенных безымянных записях
         // Сюда не включаются имена, являющиеся определениями (в данном случае это только определения полей)
+
+        // Есть еще одна проблема - в имена, захваченные записью, не должны включаться имена, определенные в самой записи (!!!) - #2214
+
         public List<ident> idents = new List<ident>();
+        public List<ident> defIdents = new List<ident>();
         public class_definition StartUnnamedRecord;
         public static OneUnnamedRecordCaptureNamesVisitor New(class_definition cd)
         {
@@ -135,7 +139,7 @@ namespace SyntaxVisitors.CheckingVisitors
                 var id = q.vars.idents[0]; // это просто имя
                 var type = q.vars_type;
                 var initValue = q.inital_value;
-                // idents.Add(id); - вот как раз не надо добавлять определения - только использования!!!
+                defIdents.Add(id); // Определения надо добавлять в другой список. Потом вычитать его из определений в неглобальных контекстах
                 ProcessNode(type);
                 if (initValue != null)
                     ProcessNode(initValue);
@@ -247,6 +251,7 @@ namespace SyntaxVisitors.CheckingVisitors
 
                 var lvi = localsvis.idents.Select(id => id.name).ToArray();
                 var cvi = cdvis.idents;
+                var cvdi = cdvis.defIdents;
 
                 // Теперь проверим пересечение
                 foreach (var id in cvi)
@@ -254,8 +259,13 @@ namespace SyntaxVisitors.CheckingVisitors
                     var s = id.name;
                     foreach (var lname in lvi)
                     {
-                        if (string.Compare(s,lname,true)==0)
+                        var ind = cvdi.FindIndex(idd => string.Compare(idd.name, lname, true) == 0);
+                        bool b = ind != -1;
+                        if (b)
+                            b = cvdi[ind].source_context.Less(id.source_context);
+                        if (string.Compare(s,lname,true)==0 && !b)
                         {
+                            // то надо еще проверить cvdi чтобы там как раз не было этих имен
                             throw new SyntaxVisitorError("UNNAMED_RECORD_CANNOT_CATCH_NAMES_FROM_NONGLOBAL_CONTEXT", id);
                         }
                     }
