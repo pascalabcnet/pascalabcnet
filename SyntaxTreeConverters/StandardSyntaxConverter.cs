@@ -7,6 +7,7 @@ using System.Text;
 using PascalABCCompiler.SyntaxTree;
 using SyntaxVisitors;
 using SyntaxVisitors.SugarVisitors;
+using SyntaxVisitors.CheckingVisitors;
 
 namespace PascalABCCompiler.SyntaxTreeConverters
 {
@@ -21,6 +22,9 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             root.FillParentsInAllChilds();
             // new range - до всего! До выноса выражения с лямбдой из foreach
             NewRangeDesugarVisitor.New.ProcessNode(root);
+
+            // Unnamed Records перенёс сюда
+            UnnamedRecordsCheckVisitor.New.ProcessNode(root);
 
             // Выносим выражения с лямбдами из заголовка foreach
             StandOutExprWithLambdaInForeachSequenceVisitor.New.ProcessNode(root);

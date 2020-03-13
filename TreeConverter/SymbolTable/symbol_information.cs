@@ -79,6 +79,8 @@ namespace PascalABCCompiler.TreeConverter
 
         private bool _virtual_slot;
 
+        private bool _is_static;
+
         public semantic_node_type semantic_node_type
         {
             get
@@ -100,6 +102,18 @@ namespace PascalABCCompiler.TreeConverter
             set
             {
                 _virtual_slot = value;
+            }
+        }
+
+        public bool is_static
+        {
+            get
+            {
+                return _is_static;
+            }
+            set
+            {
+                _is_static = value;
             }
         }
     }

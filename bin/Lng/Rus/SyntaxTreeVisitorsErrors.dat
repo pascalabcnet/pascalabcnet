@@ -12,6 +12,8 @@ FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_TRY_EXCEPT_FINALLY=Функции с yield 
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_NESTED_SUBROUTINES=Функции с yield не могут содержать вложенные подпрограммы и сами быть вложенными 
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCAL_TYPE_DEFINITIONS=Функции с yield не могут содержать локальные определения типов
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_INHERITED_CALLS=Функции с yield не могут содержать вызовы inherited методов
+FUNCTION_WITH_YIELD_CANNOT_CONTAIN_OLDSTYLE_ARRAY_INITIALIZERS=Функции с yield не могут содержать инициализаторы массивов в стиле Delphi
+FUNCTION_WITH_YIELD_CANNOT_CONTAIN_OLDSTYLE_RECORD_INITIALIZERS=Функции с yield не могут содержать инициализаторы записей в стиле Delphi
 YIELDS_INSIDE_WITH_ARE_ILLEGAL=Оператор yield запрещен внутри with
 YIELDSEQUENCES_INSIDE_WITH_ARE_ILLEGAL=Оператор yield sequence запрещен внутри with
 LAMBDA_EXPRESSIONS_CANNOT_CONTAIN_YIELD=Лямбда-выражения не могут содержать yield
@@ -28,3 +30,11 @@ Var_{0}_is_already_defined=Переменная {0} уже определена
 
 INVALID_INTERFACE_MEMBER=Интерфейсы не могут содержать поля и реализацию методов
 INDEXED_AUTO_PROPERTY=Автосвойства не могут быть индексными
+
+UNNAMED_RECORD_CANNOT_IMPLEMENT_INTERFACE=Безымянные записи не могут реализовывать интерфейсы
+UNNAMED_RECORD_CANNOT_CONTAIN_METHODS=Безымянные записи не могут содержать методы
+UNNAMED_RECORD_CANNOT_CONTAIN_PROPERTIES=Безымянные записи не могут содержать свойства
+UNNAMED_RECORD_CANNOT_CONTAIN_CONSTRUCTORS=Безымянные записи не могут содержать конструкторы
+UNNAMED_RECORD_CAN_CONTAIN_ONLY_ONE_PUBLIC_VISIBILITY_SECTION=Безымянные записи могут содержать лишь одну секцию с public-видимостью
+UNNAMED_RECORD_CANNOT_CONTAIN_SEVERAL_VISIBILITY_SECTIONS=Безымянные записи не могут содержать несколько секций видимости
+UNNAMED_RECORD_CANNOT_CATCH_NAMES_FROM_NONGLOBAL_CONTEXT=Безымянные записи не могут захватывать имена из неглобального контекста

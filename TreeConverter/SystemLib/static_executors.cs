@@ -3703,7 +3703,8 @@ namespace PascalABCCompiler.SystemLibrary
             {
                 return null;
             }
-            return new byte_const_node((byte)bcn.constant_value, call_location);
+            // SSM 26.02.20 #2208 fix
+            return new int_const_node((int)bcn.constant_value, call_location);
         }
 
         private static expression_node ulong_to_uint_executor(location call_location, params expression_node[] parameters)

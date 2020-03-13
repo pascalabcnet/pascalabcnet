@@ -3579,15 +3579,20 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (_class_definition.keyword == class_keyword.Record && _class_definition.Parent is var_def_statement) // безымянная запись
             {
-                if (_class_definition.class_parents != null && _class_definition.class_parents.Count>0)
+                // SSM 27.02.12 - всё это перенес в синтаксический визитор UnnamedRecordsCheckVisitor
+                /*if (_class_definition.class_parents != null && _class_definition.class_parents.Count>0)
                     AddError(new SimpleSemanticError(get_location(_class_definition), "UNNAMED_RECORD_CANNOT_IMPLEMENT_INTERFACE"));
                 var pds = _class_definition.DescendantNodes().OfType<procedure_definition>();
-                if (pds.Count()>0)
+                if (pds.Count() > 0)
                     AddError(new SimpleSemanticError(get_location(pds.First()), "UNNAMED_RECORD_CANNOT_CONTAIN_METHODS"));
 
-                /*var cds = _class_definition.DescendantNodes().OfType<constructor>();
+                var sps = _class_definition.DescendantNodes().OfType<simple_property>();
+                if (sps.Count() > 0)
+                    AddError(new SimpleSemanticError(get_location(sps.First()), "UNNAMED_RECORD_CANNOT_CONTAIN_PROPERTIES"));
+
+                var cds = _class_definition.DescendantNodes().OfType<constructor>();
                 if (cds.Count() > 0)
-                    AddError(new SimpleSemanticError(get_location(cds.First()), "UNNAMED_RECORD_CANNOT_CONTAIN_CONSTRUCTORS"));*/
+                    AddError(new SimpleSemanticError(get_location(cds.First()), "UNNAMED_RECORD_CANNOT_CONTAIN_CONSTRUCTORS"));
                 if (_class_definition.body.class_def_blocks.First().access_mod.access_level != access_modifer.public_modifer)
                 {
                     var f = _class_definition.body.class_def_blocks.First();
@@ -3604,9 +3609,9 @@ namespace PascalABCCompiler.TreeConverter
                     if (loc == null)
                         loc = get_location(_class_definition);
                     AddError(new SimpleSemanticError(loc, "UNNAMED_RECORD_CANNOT_CONTAIN_SEVERAL_VISIBILITY_SECTIONS"));
-                }
-                    
-            }                                                                                                                                                                          
+                }*/
+
+            }
 
             if (_class_definition.attribute != class_attribute.None && _class_definition.body == null)
                 AddError(new SimpleSemanticError(get_location(_class_definition), "CLASS_ATTRIBUTE_NOT_ALLOWED_IN_CLASS_PREDEFINTIONS"));
@@ -12700,7 +12705,7 @@ namespace PascalABCCompiler.TreeConverter
                                 : null;
             if (_procedure_definition.proc_header.attributes != null && context.converted_func_stack.size >= 1)
                 AddError(get_location(_procedure_definition.proc_header), "ATTRIBUTES_FOR_NESTED_FUNCTIONS_NOT_ALLOWED");
-            if (context.top_function != null && context.top_function.generic_params != null && !LambdaHelper.IsLambdaName(proc_name))
+            if (context.top_function != null && context.top_function.generic_params != null && !LambdaHelper.IsLambdaName(proc_name) && !(_procedure_definition.proc_header is SyntaxTree.constructor))
                 AddError(get_location(_procedure_definition.proc_header), "NESTED_FUNCTIONS_IN_GENERIC_FUNCTIONS_NOT_ALLOWED");
             if (context.top_function != null && _procedure_definition.proc_header.template_args != null && !LambdaHelper.IsLambdaName(proc_name))
                 AddError(get_location(_procedure_definition.proc_header), "GENERIC_NESTED_FUNCTIONS_NOT_ALLOWED");

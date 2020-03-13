@@ -12,6 +12,8 @@ FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_TRY_EXCEPT_FINALLY=Functions with yield can
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_NESTED_SUBROUTINES=Functions with yield cannot contain nested subrotines or be nested
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCAL_TYPE_DEFINITIONS=Functions with yield cannot contain local type definitions
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_INHERITED_CALLS=Functions with yield cannot contain calls of inherited methods
+FUNCTION_WITH_YIELD_CANNOT_CONTAIN_OLDSTYLE_ARRAY_INITIALIZERS=Functions with yield cannot contain Delphi-style array initializers  
+FUNCTION_WITH_YIELD_CANNOT_CONTAIN_OLDSTYLE_RECORD_INITIALIZERS=Functions with yield cannot contain Delphi-style record initializers  
 YIELDS_INSIDE_WITH_ARE_ILLEGAL=with statement cannot contain yields
 YIELDSEQUENCES_INSIDE_WITH_ARE_ILLEGAL=with statement cannot contain yield sequence 
 LAMBDA_EXPRESSIONS_CANNOT_CONTAIN_YIELD=Lambda-expressions cannot contain yields
@@ -22,3 +24,14 @@ ONLY_ONE_DECONSTRUCT_ALLOWED=Only one user deconstructor is allowed
 Var_{0}_is_already_defined=Variable {0} is already defined
 
 ?._CANNOT_BE_IN_THIS_CONTEXT=Operator ?. cannot be in this context
+
+INVALID_INTERFACE_MEMBER=Interfaces cannot contain fields and method implementation
+INDEXED_AUTO_PROPERTY=Autoproperties cannot be indexed properties
+
+UNNAMED_RECORD_CANNOT_IMPLEMENT_INTERFACE=Unnamed records can not implement interfaces
+UNNAMED_RECORD_CANNOT_CONTAIN_METHODS=Unnamed records can not contain methods 
+UNNAMED_RECORD_CANNOT_CONTAIN_PROPERTIES=Unnamed records can not contain properties
+UNNAMED_RECORD_CANNOT_CONTAIN_CONSTRUCTORS=Unnamed records can not contain constructors
+UNNAMED_RECORD_CAN_CONTAIN_ONLY_ONE_PUBLIC_VISIBILITY_SECTION=Unnamed records can contain only one section with public visibility 
+UNNAMED_RECORD_CANNOT_CONTAIN_SEVERAL_VISIBILITY_SECTIONS=Unnamed records can not contain several visibility section
+UNNAMED_RECORD_CANNOT_CATCH_NAMES_FROM_NONGLOBAL_CONTEXT=Unnamed records cannot catch names from nonglobal context

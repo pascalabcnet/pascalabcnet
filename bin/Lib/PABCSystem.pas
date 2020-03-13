@@ -252,6 +252,9 @@ type
   /// Представляет результаты из набора групп при выполнении Regex.Match
   RegexGroupCollection = System.Text.RegularExpressions.GroupCollection;
   
+  /// Предоставляет методы для точного измерения затраченного времени
+  Stopwatch = System.Diagnostics.Stopwatch;
+  
   /// Представляет тип короткой строки фиксированной длины 255 символов
   ShortString = string[255];
   
@@ -585,6 +588,146 @@ type
     /// Считывает строку из бестипового файла
     function ReadString: string;
   end;
+  
+type 
+  /// Тип диапазона целых
+  IntRange = class(IEnumerable<integer>)
+    private
+      l,h: integer;
+      function GetCount: integer;
+      begin
+        Result := h-l+1;
+        if Result<0 then
+          Result := 0;
+      end;
+    public
+    constructor(l,h: integer);
+    begin
+      Self.l := l;
+      Self.h := h;
+    end;
+    property Low: integer read l;
+    property High: integer read h;
+    property Count: integer read GetCount;
+
+    static function operator in(x: integer; r: IntRange): boolean := (x >= r.l) and (x <= r.h); 
+    static function operator=(r1,r2: IntRange): boolean := (r1.l = r2.l) and (r1.h = r2.h);
+    
+    function IsEmpty: boolean := l<=h;
+
+    function GetEnumerator(): IEnumerator<integer>;
+    function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := Self.GetEnumerator;
+
+    function ToString: string; override := $'({l},{h})';
+    function Equals(o: Object): boolean; override;
+    begin
+      var r2 := IntRange(o);
+      Result := (l = r2.l) and (h = r2.h);
+    end;
+    function GetHashCode: integer; override := l.GetHashCode xor h.GetHashCode;
+    function ToArray: array of integer;
+    begin
+      Result := new integer[Count];
+      var x := l;
+      for var i := 0 to Result.Length - 1 do
+      begin
+        Result[i] := x;
+        x += 1;
+      end;  
+    end;
+    function ToList: List<integer>;
+    begin
+      Result := new List<integer>;
+      var x := l;
+      loop Count do
+      begin
+        Result.Add(x);
+        x += 1;
+      end;  
+    end;
+    function ToLinkedList: LinkedList<integer>;
+    begin
+      Result := new LinkedList<integer>(System.Linq.Enumerable.Range(l,Count));
+    end;
+    function ToHashSet: HashSet<integer>;
+    begin
+      Result := new HashSet<integer>(System.Linq.Enumerable.Range(l,Count));
+    end;
+    function ToSortedSet: SortedSet<integer>;
+    begin
+      Result := new SortedSet<integer>(System.Linq.Enumerable.Range(l,Count));
+    end;
+  end;
+
+  /// Тип диапазона символов
+  CharRange = class(IEnumerable<char>)
+    private
+      l,h: char;
+      function GetCount: integer;
+      begin
+        Result := integer(h) - integer(l)+1;
+        if Result<0 then
+          Result := 0;
+      end;
+    public
+    constructor(l,h: char);
+    begin
+      Self.l := l;
+      Self.h := h;
+    end;
+    property Low: char read l;
+    property High: char read h;
+    property Count: integer read GetCount;
+
+    static function operator in(x: char; r: CharRange): boolean := (x >= r.l) and (x <= r.h); 
+    static function operator=(r1,r2: CharRange): boolean := (r1.l = r2.l) and (r1.h = r2.h);
+    
+    function IsEmpty: boolean := l<=h;
+
+    function GetEnumerator(): IEnumerator<char>;
+    function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := GetEnumerator;
+
+    function ToString: string; override := $'({l},{h})';
+    function Equals(o: Object): boolean; override;
+    begin
+      var r2 := CharRange(o);
+      Result := (l = r2.l) and (h = r2.h);
+    end;
+    function GetHashCode: integer; override := l.GetHashCode xor h.GetHashCode;
+    
+    function ToArray: array of char;
+    begin
+      Result := new char[Count];
+      var x := l;
+      for var i := 0 to Result.Length - 1 do
+      begin
+        Result[i] := x;
+        x := char(integer(x) + 1);
+      end;  
+    end;  
+    function ToList: List<char>;
+    begin
+      Result := new List<char>;
+      var x := l;
+      loop Count do
+      begin
+        Result.Add(x);
+        x := char(integer(x) + 1);
+      end;  
+    end;
+    function ToLinkedList: LinkedList<char>;
+    begin
+      Result := new LinkedList<char>(System.Linq.Enumerable.Range(integer(l),Count).Select(i -> char(i)));
+    end;
+    function ToHashSet: HashSet<char>;
+    begin
+      Result := new HashSet<char>(System.Linq.Enumerable.Range(integer(l),Count).Select(i -> char(i)));
+    end;
+    function ToSortedSet: SortedSet<char>;
+    begin
+      Result := new SortedSet<char>(System.Linq.Enumerable.Range(integer(l),Count).Select(i -> char(i)));
+    end;
+  end;
 
 //{{{doc: Начало секции интерфейса для документации }}} 
 
@@ -626,7 +769,8 @@ procedure Read(var x: BigInteger);
 /// Вводит значения a,b,... с клавиатуры и осуществляет переход на следующую строку
 procedure Readln;
 
-/// Вводит числовое значение x клавиатуры. Возвращает False если при вводе произошла ошибка
+///- function TryRead(var x: число): boolean;
+/// Вводит числовое значение x с клавиатуры. Возвращает False если при вводе произошла ошибка
 function TryRead(var x: integer): boolean;
 ///--
 function TryRead(var x: real): boolean;
@@ -648,6 +792,9 @@ function TryRead(var x: uint64): boolean;
 function TryRead(var x: single): boolean;
 ///--
 function TryRead(var x: BigInteger): boolean;
+
+/// Вводит логическое значение x с клавиатуры. Возвращает False если при вводе произошла ошибка
+function TryRead(var x: boolean): boolean;
 
 /// Возвращает значение типа integer, введенное с клавиатуры
 function ReadInteger: integer;
@@ -1965,6 +2112,11 @@ function ReadSeqStringWhile(prompt: string; cond: string->boolean): sequence of 
 function Arr<T>(params a: array of T): array of T;
 /// Возвращает массив, заполненный значениями из последовательнсти
 function Arr<T>(a: sequence of T): array of T;
+/// Возвращает массив, заполненный диапазоном значений 
+function Arr(a: IntRange): array of integer;
+/// Возвращает массив, заполненный диапазоном значений 
+function Arr(a: CharRange): array of char;
+
 /// Возвращает массив размера n, заполненный случайными целыми значениями
 function ArrRandom(n: integer := 10; a: integer := 0; b: integer := 100): array of integer;
 /// Возвращает массив размера n, заполненный случайными целыми значениями
@@ -2054,18 +2206,39 @@ function Rec<T1, T2, T3, T4, T5, T6, T7>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5;
 function Lst<T>(params a: array of T): List<T>;
 /// Возвращает список, заполненный значениями из последовательности
 function Lst<T>(a: sequence of T): List<T>;
+/// Возвращает список, заполненный диапазоном значений 
+function Lst(a: IntRange): List<integer>;
+/// Возвращает список, заполненный диапазоном значений 
+function Lst(a: CharRange): List<char>;
+
 /// Возвращает двусвязный список, заполненный указанными значениями
 function LLst<T>(params a: array of T): LinkedList<T>;
 /// Возвращает двусвязный список, заполненный значениями из последовательности
 function LLst<T>(a: sequence of T): LinkedList<T>;
+/// Возвращает двусвязный список, заполненный диапазоном значений 
+function LLst(a: IntRange): LinkedList<integer>;
+/// Возвращает двусвязный список, заполненный диапазоном значений 
+function LLst(a: CharRange): LinkedList<char>;
+
 /// Возвращает множество на базе хеш таблицы, заполненное указанными значениями
 function HSet<T>(params a: array of T): HashSet<T>;
 /// Возвращает множество на базе хеш таблицы, заполненное значениями из последовательности
 function HSet<T>(a: sequence of T): HashSet<T>;
+/// Возвращает множество на базе хеш таблицы, заполненное диапазоном значений 
+function HSet(a: IntRange): HashSet<integer>;
+/// Возвращает множество на базе хеш таблицы, заполненное заполненный диапазоном значений 
+function HSet(a: CharRange): HashSet<char>;
+
 /// Возвращает множество на базе бинарного дерева поиска, заполненное значениями из последовательности
 function SSet<T>(params a: array of T): SortedSet<T>;
 /// Возвращает множество на базе бинарного дерева поиска, заполненное значениями из последовательности
 function SSet<T>(a: sequence of T): SortedSet<T>;
+/// Возвращает множество на базе на базе бинарного дерева поиска, заполненное диапазоном значений 
+function SSet(a: IntRange): SortedSet<integer>;
+/// Возвращает множество на базе на базе бинарного дерева поиска, заполненное заполненный диапазоном значений 
+function SSet(a: CharRange): SortedSet<char>;
+
+
 /// Возвращает словарь пар элементов (ключ, значение)
 function Dict<TKey, TVal>(params pairs: array of KeyValuePair<TKey, TVal>): Dictionary<TKey, TVal>;
 /// Возвращает словарь пар элементов (ключ, значение)
@@ -2426,68 +2599,12 @@ type
     constructor (c: string; n, w: integer; f: string) := (Comment, Num, Width, Fmt) := (c, n, w, f);
   end;
   
-  
 type 
-  /// Тип диапазона целых
-  IntRange = class(IEnumerable<integer>)
-    private
-      l,h: integer;
-    public
-    constructor(l,h: integer);
-    begin
-      Self.l := l;
-      Self.h := h;
-    end;
-    property Low: integer read l;
-    property High: integer read h;
-
-    static function operator in(x: integer; r: IntRange): boolean := (x >= r.l) and (x <= r.h); 
-    static function operator=(r1,r2: IntRange): boolean := (r1.l = r2.l) and (r1.h = r2.h);
-    
-    function IsEmpty: boolean := l<=h;
-
-    function GetEnumerator(): IEnumerator<integer> := Range(l,h).GetEnumerator;
-    function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := Range(l,h).GetEnumerator;
-
-    function ToString: string; override := $'({l},{h})';
-    function Equals(o: Object): boolean; override;
-    begin
-      var r2 := IntRange(o);
-      Result := (l = r2.l) and (h = r2.h);
-    end;
-    function GetHashCode: integer; override := l.GetHashCode xor h.GetHashCode;
+  [AttributeUsage(AttributeTargets.Class)]
+  PCUNotRestoreAttribute = class(System.Attribute)
+  public constructor := exit;
   end;
-
-  /// Тип диапазона символов
-  CharRange = class(IEnumerable<char>)
-    private
-      l,h: char;
-    public
-    constructor(l,h: char);
-    begin
-      Self.l := l;
-      Self.h := h;
-    end;
-    property Low: char read l;
-    property High: char read h;
-
-    static function operator in(x: char; r: CharRange): boolean := (x >= r.l) and (x <= r.h); 
-    static function operator=(r1,r2: CharRange): boolean := (r1.l = r2.l) and (r1.h = r2.h);
-    
-    function IsEmpty: boolean := l<=h;
-
-    function GetEnumerator(): IEnumerator<char> := Range(l,h).GetEnumerator;
-    function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := Range(l,h).GetEnumerator;
-
-    function ToString: string; override := $'({l},{h})';
-    function Equals(o: Object): boolean; override;
-    begin
-      var r2 := CharRange(o);
-      Result := (l = r2.l) and (h = r2.h);
-    end;
-    function GetHashCode: integer; override := l.GetHashCode xor h.GetHashCode;
-  end;
-
+  
 ///--
 function InternalRange(l,r: integer): IntRange;
 ///--
@@ -3761,6 +3878,10 @@ begin
   Result := sb.ToString;
 end;
 
+function IntRange.GetEnumerator(): IEnumerator<integer> := Range(l,h).GetEnumerator;
+
+function CharRange.GetEnumerator(): IEnumerator<char> := Range(l,h).GetEnumerator;
+
 //------------------------------------------------------------------------------
 //          Операции для string и char
 //------------------------------------------------------------------------------
@@ -4371,6 +4492,20 @@ begin
   Result := a.ToArray;
 end;
 
+function Arr(a: IntRange): array of integer := a.ToArray;
+
+function Arr(a: CharRange): array of char;
+begin
+  var n := integer(a.High) - integer(a.Low) + 1;
+  Result := new char[n];
+  var x := a.Low;
+  for var i := 0 to n-1 do
+  begin
+    Result[i] := x;
+    Inc(x)
+  end;  
+end;
+
 function Seq<T>(params a: array of T): sequence of T;
 begin
   var res := new T[a.Length];
@@ -4681,45 +4816,39 @@ function Rec<T1, T2, T3, T4, T5, T6, T7>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5;
 // -----------------------------------------------------------------------------
 //                Функции Lst, LLst, Dict, KV, HSet, SSet
 // -----------------------------------------------------------------------------
-function Lst<T>(params a: array of T): List<T>;
-begin
-  Result := new List<T>(a);
-end;
+function Lst<T>(params a: array of T): List<T> := new List<T>(a);
 
-function Lst<T>(a: sequence of T): List<T>;
-begin
-  Result := new List<T>(a);
-end;
+function Lst<T>(a: sequence of T): List<T> := new List<T>(a);
 
-function LLst<T>(params a: array of T): LinkedList<T>;
-begin
-  Result := new LinkedList<T>(a);
-end;
+function Lst(a: IntRange): List<integer> := a.ToList;
 
-function LLst<T>(a: sequence of T): LinkedList<T>;
-begin
-  Result := new LinkedList<T>(a);
-end;
+function Lst(a: CharRange): List<char> := a.ToList;
 
-function HSet<T>(params a: array of T): HashSet<T>;
-begin
-  Result := new HashSet<T>(a);
-end;
+function LLst<T>(params a: array of T): LinkedList<T> := new LinkedList<T>(a);
 
-function SSet<T>(params a: array of T): SortedSet<T>;
-begin
-  Result := new SortedSet<T>(a);
-end;
+function LLst<T>(a: sequence of T): LinkedList<T> := new LinkedList<T>(a);
 
-function HSet<T>(a: sequence of T): HashSet<T>;
-begin
-  Result := new HashSet<T>(a);
-end;
+function LLst(a: IntRange): LinkedList<integer> := a.ToLinkedList;
 
-function SSet<T>(a: sequence of T): SortedSet<T>;
-begin
-  Result := new SortedSet<T>(a);
-end;
+function LLst(a: CharRange): LinkedList<char> := a.ToLinkedList;
+
+
+function HSet<T>(params a: array of T): HashSet<T> := new HashSet<T>(a);
+
+function SSet<T>(params a: array of T): SortedSet<T> := new SortedSet<T>(a);
+
+function HSet<T>(a: sequence of T): HashSet<T> := new HashSet<T>(a);
+
+function SSet<T>(a: sequence of T): SortedSet<T> := new SortedSet<T>(a);
+
+function HSet(a: IntRange): HashSet<integer> := a.ToHashSet&<integer>;
+
+function HSet(a: CharRange): HashSet<char> := a.ToHashSet&<char>;
+
+function SSet(a: IntRange): SortedSet<integer> := a.ToSortedSet;
+
+function SSet(a: CharRange): SortedSet<char> := a.ToSortedSet;
+
 
 function Dict<TKey, TVal>(params pairs: array of KeyValuePair<TKey, TVal>): Dictionary<TKey, TVal>;
 begin
@@ -5550,6 +5679,16 @@ begin
 end;
 
 function TryRead(var x: single): boolean;
+begin
+  Result := True;
+  try
+    Read(x)
+  except
+    Result := False;
+  end
+end;
+
+function TryRead(var x: boolean): boolean;
 begin
   Result := True;
   try
@@ -9065,84 +9204,98 @@ type
 //------------------------------------------------------------------------------
 //>>     Метод расширения Print для элементарных типов # Print for elementary types
 //------------------------------------------------------------------------------
+/// Выводит значение на экран, после чего выводит пробел
 function Print(Self: integer): integer; extensionmethod;
 begin
   PABCSystem.Print(Self);
   Result := Self;
 end;
 
+/// Выводит значение на экран, после чего выводит пробел
 function Print(Self: int64): int64; extensionmethod;
 begin
   PABCSystem.Print(Self);
   Result := Self;
 end;
 
+/// Выводит значение на экран, после чего выводит пробел
 function Print(Self: real): real; extensionmethod;
 begin
   PABCSystem.Print(Self);
   Result := Self;
 end;
 
+/// Выводит значение на экран, после чего выводит пробел
 function Print(Self: char): char; extensionmethod;
 begin
   PABCSystem.Print(Self);
   Result := Self;
 end;
 
+/// Выводит значение на экран, после чего выводит пробел
 function Print(Self: boolean): boolean; extensionmethod;
 begin
   PABCSystem.Print(Self);
   Result := Self;
 end;
 
+/// Выводит значение на экран, после чего выводит пробел
 function Print(Self: BigInteger): BigInteger; extensionmethod;
 begin
   PABCSystem.Print(Self);
   Result := Self;
 end;
 
+/// Выводит значение на экран, после чего выводит пробел
 function Print(Self: string): string; extensionmethod;
 begin
   PABCSystem.Print(Self);
   Result := Self;
 end;
 
+/// Выводит значение на экран и переходит на новую строку
 function Println(Self: integer): integer; extensionmethod;
 begin
   PABCSystem.Println(Self);
   Result := Self;
 end;
 
+/// Выводит значение на экран и переходит на новую строку
 function Println(Self: int64): int64; extensionmethod;
 begin
   PABCSystem.Println(Self);
   Result := Self;
 end;
 
+/// Выводит значение на экран и переходит на новую строку
 function Println(Self: real): real; extensionmethod;
 begin
   PABCSystem.Println(Self);
   Result := Self;
 end;
 
+/// Выводит значение на экран и переходит на новую строку
 function Println(Self: char): char; extensionmethod;
 begin
   PABCSystem.Println(Self);
   Result := Self;
 end;
 
+/// Выводит значение на экран и переходит на новую строку
 function Println(Self: boolean): boolean; extensionmethod;
 begin
   PABCSystem.Println(Self);
   Result := Self;
 end;
 
+/// Выводит значение на экран и переходит на новую строку
 function Println(Self: BigInteger): BigInteger; extensionmethod;
 begin
   PABCSystem.Println(Self);
   Result := Self;
 end;
 
+/// Выводит значение на экран и переходит на новую строку
 function Println(Self: string): string; extensionmethod;
 begin
   PABCSystem.Println(Self);
@@ -10457,6 +10610,22 @@ begin
       Self[i, j] := f(i, j);
 end;
 
+/// Заполняет элементы двумерного массива случайными значениями в диапазоне от a до b
+procedure FillRandom(Self: array [,] of integer; a,b: integer); extensionmethod;
+begin
+  for var i := 0 to Self.RowCount - 1 do
+    for var j := 0 to Self.ColCount - 1 do
+      Self[i, j] := Random(a,b);
+end;
+
+/// Заполняет элементы двумерного массива случайными значениями в диапазоне от a до b
+procedure FillRandom(Self: array [,] of real; a,b: real); extensionmethod;
+begin
+  for var i := 0 to Self.RowCount - 1 do
+    for var j := 0 to Self.ColCount - 1 do
+      Self[i, j] := a + Random*(b-a);
+end;
+
 /// Применяет действие к каждому элементу двумерного массива
 procedure &ForEach<T>(Self: array [,] of T; act: T -> ()); extensionmethod;
 begin
@@ -10633,6 +10802,28 @@ end;
 // Дополнения февраль 2016: Shuffle, AdjacentFind, IndexMin, IndexMax, Replace, Transform
 //   Статические методы - в методы расширения: BinarySearch, ConvertAll, Find, FindIndex, FindAll,  
 //   FindLast, FindLastIndex, IndexOf, Contains, LastIndexOf, Reverse, Sort
+
+// Дополнения март 2020: RandomElement, FillRandom
+
+/// Заполняет массив случайными значениями в диапазоне от a до b
+procedure FillRandom(Self: array of integer; a,b: integer); extensionmethod;
+begin
+  for var i:=0 to Self.Length-1 do
+    Self[i] := Random(a,b);
+end;
+
+/// Заполняет массив случайными значениями в диапазоне от a до b
+procedure FillRandom(Self: array of real; a,b: real); extensionmethod;
+begin
+  for var i:=0 to Self.Length-1 do
+    Self[i] := a + Random*(b-a);
+end;
+
+/// Возвращает случайный элемент массива
+function RandomElement<T>(Self: array of T): T; extensionmethod;
+begin
+  Result := Self[Random(Self.Length)];  
+end;
 
 /// Перемешивает элементы массива случайным образом
 function Shuffle<T>(Self: array of T): array of T; extensionmethod;
