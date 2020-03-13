@@ -36,7 +36,7 @@ begin
     context,
     1,
     new string[](prog_str),
-    new UIntPtr[](new UIntPtr(prog_str.Length)),
+    nil,
     ec
   );
   ec.RaiseIfError;

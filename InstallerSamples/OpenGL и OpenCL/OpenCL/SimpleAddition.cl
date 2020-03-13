@@ -1,10 +1,10 @@
+п»ї
 
 
-
-// Это подпрограмма которую вызывает из "SimpleAddition.pas" 10 раз параллельно
+// Р­С‚Рѕ РїРѕРґРїСЂРѕРіСЂР°РјРјР° РєРѕС‚РѕСЂСѓСЋ РІС‹Р·С‹РІР°РµС‚ РёР· "SimpleAddition.pas" 10 СЂР°Р· РїР°СЂР°Р»Р»РµР»СЊРЅРѕ
 __kernel void TEST(__global int* message)
 {
-	int gid = get_global_id(0); // номер текущего вызова TEST
+	int gid = get_global_id(0); // РЅРѕРјРµСЂ С‚РµРєСѓС‰РµРіРѕ РІС‹Р·РѕРІР° TEST
 	
 	message[gid] += gid;
 }

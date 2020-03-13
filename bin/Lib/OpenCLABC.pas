@@ -1526,10 +1526,25 @@ type
     begin
       var ec: ErrorCode;
       
-      self._program := cl.CreateProgramWithSource(c._context, files_texts.Length, files_texts, files_texts.ConvertAll(s->new UIntPtr(s.Length)), ec);
+      self._program := cl.CreateProgramWithSource(c._context, files_texts.Length, files_texts, nil, ec);
       ec.RaiseIfError;
       
-      cl.BuildProgram(self._program, 1,c._device, nil, nil,IntPtr.Zero).RaiseIfError;
+      ec := cl.BuildProgram(self._program, 1,c._device, nil, nil,IntPtr.Zero);
+      if ec=ErrorCode.BUILD_PROGRAM_FAILURE then
+      begin
+        
+        var sz: UIntPtr;
+        cl.GetProgramBuildInfo(self._program, c._device, ProgramBuildInfo.PROGRAM_BUILD_LOG, UIntPtr.Zero,IntPtr.Zero,sz).RaiseIfError;
+        
+        var str_ptr := Marshal.AllocHGlobal(IntPtr(pointer(sz)));
+        cl.GetProgramBuildInfo(self._program, c._device, ProgramBuildInfo.PROGRAM_BUILD_LOG, sz,str_ptr,IntPtr.Zero).RaiseIfError;
+        
+        var str := Marshal.PtrToStringAnsi(str_ptr);
+        Marshal.FreeHGlobal(str_ptr);
+        
+        raise new OpenCLException(str);
+      end else
+        ec.RaiseIfError;
       
     end;
     
