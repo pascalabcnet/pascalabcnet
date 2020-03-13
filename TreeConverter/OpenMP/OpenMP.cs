@@ -1264,6 +1264,8 @@ namespace PascalABCCompiler.TreeConverter
                     return new PascalABCCompiler.SyntaxTree.named_type_reference(get_idents_from_dot_string(sem_type.name, sem_type.location), sem_type.location);
                 else if (sem_type is compiled_type_node ctn1 && ctn1.compiled_type == typeof(System.IntPtr))
                     return new PascalABCCompiler.SyntaxTree.named_type_reference(get_idents_from_dot_string("System.IntPtr", sem_type.location), sem_type.location);
+                else if (sem_type is compiled_type_node ctn2 && ctn2.compiled_type == typeof(System.UIntPtr))
+                    return new PascalABCCompiler.SyntaxTree.named_type_reference(get_idents_from_dot_string("System.UIntPtr", sem_type.location), sem_type.location);
                 else
                     return new PascalABCCompiler.SyntaxTree.named_type_reference(get_idents_from_dot_string(sem_type.PrintableName, sem_type.location), sem_type.location);
             }
