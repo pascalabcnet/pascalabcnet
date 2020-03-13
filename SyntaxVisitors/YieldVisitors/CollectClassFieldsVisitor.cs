@@ -57,18 +57,22 @@ namespace SyntaxVisitors
                 {
                     // Declaration: fields + procedure defs + headers + etc
                     // Need vars
-                    if (decl is var_def_statement)
+                    if (decl is var_def_statement vds)
                     {
-                        var vars = (decl as var_def_statement).vars;
+                        CollectedFields.UnionWith(vds.vars.idents);
                         // Fields
-                        foreach (var field in vars.idents)
+                        /*foreach (var field in vds.vars.idents)
                         {
                             CollectedFields.Add(field);
-                        }
+                        }*/
+                    }
+                    else if (decl is simple_const_definition scd)
+                    {
+                        CollectedFields.Add(scd.const_name);
                     }
                 }
             }
-        }
 
+        }
     }
 }

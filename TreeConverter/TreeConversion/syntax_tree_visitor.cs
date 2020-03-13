@@ -20215,6 +20215,7 @@ namespace PascalABCCompiler.TreeConverter
                     isStaticIdent = CheckIsStaticName(found_unit.sym_info);
 
                     if (found_unit.sym_info is class_field
+                        || found_unit.sym_info is class_constant_definition // SSM #2152
                         || found_unit.sym_info is common_method_node
                         || found_unit.sym_info is common_property_node
                         || found_unit.sym_info is compiled_function_node
