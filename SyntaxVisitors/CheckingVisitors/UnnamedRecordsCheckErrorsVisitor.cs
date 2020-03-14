@@ -136,6 +136,8 @@ namespace SyntaxVisitors.CheckingVisitors
             foreach (var member in defBlocks[0].members)
             {
                 var q = member as var_def_statement;
+                if (q == null)
+                    continue;
                 var id = q.vars.idents[0]; // это просто имя
                 var type = q.vars_type;
                 var initValue = q.inital_value;
@@ -180,52 +182,9 @@ namespace SyntaxVisitors.CheckingVisitors
             var cd = st as class_definition;
             if (cd == null)
                 return;
-            if (cd.keyword == class_keyword.Record && cd.Parent is var_def_statement) // безымянная запись
+            if (cd.keyword == class_keyword.Record) 
             {
-                if (cd.class_parents != null && cd.class_parents.Count > 0)
-                    throw new SyntaxVisitorError("UNNAMED_RECORD_CANNOT_IMPLEMENT_INTERFACE", cd.class_parents[0].source_context);
-
-                var defBlocks = cd.body.class_def_blocks;
-
-                if (defBlocks[0].access_mod.access_level != access_modifer.public_modifer)
-                {
-                    var f = cd.body.class_def_blocks.First();
-                    var loc = f.source_context;
-                    if (loc == null)
-                        loc = cd.source_context;
-                    throw new SyntaxVisitorError("UNNAMED_RECORD_CAN_CONTAIN_ONLY_ONE_PUBLIC_VISIBILITY_SECTION", loc);
-                }
-
-                if (defBlocks.Count > 1)
-                {
-                    var el1 = cd.body.class_def_blocks.ElementAt(1);
-                    var loc = el1.access_mod.source_context;
-                    if (loc == null)
-                        loc = cd.source_context;
-                    throw new SyntaxVisitorError("UNNAMED_RECORD_CANNOT_CONTAIN_SEVERAL_VISIBILITY_SECTIONS", loc);
-                }
-
-                // здесь уже известно, что defBlocks.Count = 1 - пройтись по этому блоку и проверить, нет ли методов или свойств
-
-                foreach (var d in defBlocks[0].members)
-                {
-                    var pd = d as procedure_definition;
-                    if (pd != null)
-                        throw new SyntaxVisitorError("UNNAMED_RECORD_CANNOT_CONTAIN_METHODS", pd.source_context);
-                    var sp = d as simple_property;
-                    if (sp != null)
-                        throw new SyntaxVisitorError("UNNAMED_RECORD_CANNOT_CONTAIN_PROPERTIES", sp.source_context);
-                }
-
-                var cdvis = OneUnnamedRecordCaptureNamesVisitor.New(cd);
-                cdvis.CollectNames();
-                // после накопления имен подниматься по внешнему контексту, пропуская эту запись, и искать переменные и типы
-                // Переменные - в var_def_statement. Типы - в type_definition, в типовых параметрах обобщенных процедур и в типовых параметрах имен типов
-
-                // Подняться вверх до program_module и запомнить последнюю class_definition, procedure_definition 
-                // или class_definition или type_declaration если это именованный тип
-                // То есть у class_definition проверять Parent - если это type_declaration, то смотреть на имя типа, а если это var_def_statement, то смотреть на имена переменных
-
+                // Проверить, что это неглобальная запись. Если глобальная, то можно всё - и выйти
                 syntax_tree_node MostUpperNodeWithNotGlobalNames = null;
 
                 syntax_tree_node sn = cd;
@@ -242,6 +201,59 @@ namespace SyntaxVisitors.CheckingVisitors
                             MostUpperNodeWithNotGlobalNames = sn;
                     }
                 }
+
+                if (MostUpperNodeWithNotGlobalNames == null) // то есть, это - глобальный уроень, и захватывать можно всё
+                    return;
+
+                // если попали сюда, то запись вложенная
+
+                //if (cd.Parent is var_def_statement) // безымянная запись
+                {
+                    if (cd.class_parents != null && cd.class_parents.Count > 0)
+                        throw new SyntaxVisitorError("NESTED_RECORD_CANNOT_IMPLEMENT_INTERFACE", cd.class_parents[0].source_context);
+
+                    var defBlocks = cd.body.class_def_blocks;
+
+                    if (defBlocks[0].access_mod.access_level != access_modifer.public_modifer)
+                    {
+                        var f = cd.body.class_def_blocks.First();
+                        var loc = f.source_context;
+                        if (loc == null)
+                            loc = cd.source_context;
+                        throw new SyntaxVisitorError("NESTED_RECORD_CAN_CONTAIN_ONLY_ONE_PUBLIC_VISIBILITY_SECTION", loc);
+                    }
+
+                    if (defBlocks.Count > 1)
+                    {
+                        var el1 = cd.body.class_def_blocks.ElementAt(1);
+                        var loc = el1.access_mod.source_context;
+                        if (loc == null)
+                            loc = cd.source_context;
+                        throw new SyntaxVisitorError("NESTED_RECORD_CANNOT_CONTAIN_SEVERAL_VISIBILITY_SECTIONS", loc);
+                    }
+
+                    // здесь уже известно, что defBlocks.Count = 1 - пройтись по этому блоку и проверить, нет ли методов или свойств
+
+                    foreach (var d in defBlocks[0].members)
+                    {
+                        var pd = d as procedure_definition;
+                        if (pd != null)
+                            throw new SyntaxVisitorError("NESTED_RECORD_CANNOT_CONTAIN_METHODS", pd.source_context);
+                        var sp = d as simple_property;
+                        if (sp != null)
+                            throw new SyntaxVisitorError("NESTED_RECORD_CANNOT_CONTAIN_PROPERTIES", sp.source_context);
+                    }
+                }
+
+                // после накопления имен подниматься по внешнему контексту, пропуская эту запись, и искать переменные и типы
+                // Переменные - в var_def_statement. Типы - в type_definition, в типовых параметрах обобщенных процедур и в типовых параметрах имен типов
+
+                // Подняться вверх до program_module и запомнить последнюю class_definition, procedure_definition 
+                // или class_definition или type_declaration если это именованный тип
+                // То есть у class_definition проверять Parent - если это type_declaration, то смотреть на имя типа, а если это var_def_statement, то смотреть на имена переменных
+
+                var cdvis = OneUnnamedRecordCaptureNamesVisitor.New(cd);
+                cdvis.CollectNames();
 
                 var localsvis = CollectDefNamesFromMostUpperLocalContextVisitor.New(cd);
                 if (MostUpperNodeWithNotGlobalNames != null)
@@ -266,7 +278,7 @@ namespace SyntaxVisitors.CheckingVisitors
                         if (string.Compare(s,lname,true)==0 && !b)
                         {
                             // то надо еще проверить cvdi чтобы там как раз не было этих имен
-                            throw new SyntaxVisitorError("UNNAMED_RECORD_CANNOT_CATCH_NAMES_FROM_NONGLOBAL_CONTEXT", id);
+                            throw new SyntaxVisitorError("NESTED_RECORD_CANNOT_CATCH_NAMES_FROM_NONGLOBAL_CONTEXT", id);
                         }
                     }
                 }
