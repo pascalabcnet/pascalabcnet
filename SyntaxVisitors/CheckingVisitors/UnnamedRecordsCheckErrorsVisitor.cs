@@ -280,7 +280,7 @@ namespace SyntaxVisitors.CheckingVisitors
                             // то надо еще проверить cvdi чтобы там как раз не было этих имен
                             throw new SyntaxVisitorError("NESTED_RECORD_CANNOT_CATCH_NAMES_FROM_NONGLOBAL_CONTEXT", id);
                         }
-                    }
+                    } 
                 }
             }
         }
