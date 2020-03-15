@@ -380,8 +380,13 @@ namespace PascalABCCompiler.PCU
 
                 return sil;
             }
-                
-            foreach(SymbolInfo si in sil)
+            if (this.base_generic_instance != null && sil != null)
+            {
+                var bsil = base_generic_instance.ConvertSymbolInfo(sil);
+                if (orig_generic_or_null == null)  
+                    return bsil;
+            }
+            foreach (SymbolInfo si in sil)
             {
                 if (si.sym_info.semantic_node_type == semantic_node_type.wrap_def)
                 {
