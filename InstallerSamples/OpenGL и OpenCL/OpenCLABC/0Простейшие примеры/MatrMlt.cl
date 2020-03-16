@@ -1,4 +1,4 @@
-
+﻿
 
 
 __kernel void MatrMltMatr(__global double* A, __global double* B, __global double* C, __global int* gW)
