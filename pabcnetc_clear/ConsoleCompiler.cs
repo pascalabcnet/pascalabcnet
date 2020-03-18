@@ -75,7 +75,11 @@ namespace PascalABCCompiler
                             return false;
                     }
                     case "output":
-                        co.OutputFileName = value;
+                        co.OutputFileName = Path.GetFileName(value);
+                        if (Path.IsPathRooted(value))
+                        {
+                            co.OutputDirectory = Path.GetDirectoryName(value);
+                        }
                         return true;
                 default:
                     Console.WriteLine("No such directive name: '{0}'", name);
