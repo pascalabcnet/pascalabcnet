@@ -46,15 +46,12 @@ namespace PascalABCCompiler
 
             name = null;
             value = null;
-            var ss = directive.Split(':');
-            if (ss.Length>2)
-            {
-                Console.WriteLine("Directive can contain only one ':' sign");
-                return false;
-            }
+            var ss = directive.Split( new[]{':'}, 2);
             name = ss[0].ToLower();
             if (ss.Length > 1)
-                value = ss[1].ToLower();
+            {
+                value = ss[1].Trim().ToLower();
+            }
 
             return true;
         }
@@ -77,6 +74,9 @@ namespace PascalABCCompiler
                             Console.WriteLine("Bad value in 'Debug' directive '{0}'. Acceptable values are 0 or 1", value);
                             return false;
                     }
+                    case "output":
+                        co.OutputFileName = value;
+                        return true;
                 default:
                     Console.WriteLine("No such directive name: '{0}'", name);
                     return false;
@@ -98,7 +98,8 @@ namespace PascalABCCompiler
         {
             Console.WriteLine("Command line: ");
             Console.WriteLine("pabcnetcclear /directive1:value1 /directive2:value2 ... [inputfile]\n");
-            Console.WriteLine("Available directives:\n  /Help  /H  /?\n  /Debug:0(1)\n");
+            Console.WriteLine("Available directives:\n  /Help  /H  /?\n  /Debug:0(1) /output:[executable name]\n");
+            Console.WriteLine("/output:[executable name] Sets name of result executable");
             Console.WriteLine("/Debug:0 generates code with all .NET optimizations!");
         }
 
