@@ -126,17 +126,67 @@ namespace PascalABCCompiler.TreeConverter
                 AddError(sem_ex.location, "INTEGER_VALUE_EXPECTED");
         }
 
-        public void semantic_check_slice_assignment_types(SyntaxTree.expression expr1, SyntaxTree.expression expr2)
+        public void semantic_check_slice_assignment_types(SyntaxTree.expression expr1, SyntaxTree.expression expr2, method_call mc)
         {
-            var leftValue = convert_strong(expr1);
+            var slice = expr1 as slice_expr;
+            var leftValue = convert_strong(slice.v);
             var leftType = leftValue.type;
             var rightValue = convert_strong(expr2);
             var rightType = rightValue.type;
 
-            if (AreTheSameType(leftType, rightType))
-                return;
+            var v = slice.v;
+            var from = mc.parameters.expressions[2];
+            var to = mc.parameters.expressions[3];
+            expression step = mc.parameters.expressions.Count > 6 ? mc.parameters.expressions[4] : null;
 
-            AddError(get_location(expr2), "EXPRESSION_OF_TYPE_{0}_CANNOT_BE_ASSIGNED_TO_SLICE_OF_TYPE_{1}", rightType.PrintableName, leftType.PrintableName);
+            var semvar = convert_strong(v);
+            if (semvar is typed_expression)
+                semvar = convert_typed_expression_to_function_call(semvar as typed_expression);
+
+            var IsSlicedType = 0; // проверим, является ли semvar.type динамическим массивом, списком List или строкой
+            if (semvar.type.type_special_kind == SemanticTree.type_special_kind.array_kind)
+                IsSlicedType = 1;
+
+            if (IsSlicedType == 0)
+            {
+                var t = ConvertSemanticTypeNodeToNETType(semvar.type); // не работает для array of T
+
+                // semvar.type должен быть array of T, List<T> или string
+                if (t == null)
+                    IsSlicedType = 0; // можно ничего не присваивать :)
+                                      //                else if (t.IsArray)
+                                      //                  IsSlicedType = 1;
+                else if (t == typeof(System.String))
+                    IsSlicedType = 2;
+                else if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(System.Collections.Generic.List<>))
+                    IsSlicedType = 3;
+            }
+
+            if (IsSlicedType == 0)
+                AddError(get_location(v), "BAD_SLICE_OBJECT");
+
+            var semfrom = convert_strong(from);
+            var b = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type);
+            if (!b)
+                AddError(get_location(from), "INTEGER_VALUE_EXPECTED");
+
+            var semto = convert_strong(to);
+            b = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.integer_type);
+            if (!b)
+                AddError(get_location(to), "INTEGER_VALUE_EXPECTED");
+
+            if (step != null)
+            {
+                var semstep = convert_strong(step);
+                b = convertion_data_and_alghoritms.can_convert_type(semstep, SystemLibrary.SystemLibrary.integer_type);
+                if (!b)
+                    AddError(get_location(step), "INTEGER_VALUE_EXPECTED");
+            }
+
+            if (!AreTheSameType(leftType, rightType))
+            {
+                AddError(get_location(expr2), "EXPRESSION_OF_TYPE_{0}_CANNOT_BE_ASSIGNED_TO_SLICE_OF_TYPE_{1}", rightType.PrintableName, leftType.PrintableName);
+            }
         }
 
         /*void common_diap_check(expression from, expression to)

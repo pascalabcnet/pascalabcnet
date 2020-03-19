@@ -20363,7 +20363,8 @@ namespace PascalABCCompiler.TreeConverter
             {
                 var to = st.lst[0] as expression;
                 var from = st.lst[1] as expression;
-                semantic_check_slice_assignment_types(to, from);
+                var mc = st.lst[2] as method_call;
+                semantic_check_slice_assignment_types(to, from, mc);
             }
             // !Slices
             else

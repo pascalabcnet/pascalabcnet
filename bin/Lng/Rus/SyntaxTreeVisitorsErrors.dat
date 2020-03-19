@@ -21,6 +21,7 @@ ONLY_ONE_DECONSTRUCT_ALLOWED=Можно определить только оди
 REPEATED_DECONSTRUCTION_TYPE=Повторение типов при сопоставлении с образцом
 REPEATED_DOTDOT_COLLECTION_PATTERN_EXPR=Конструкция '..' встречена более одного раза в выражении для сопоставления
 MATCHING_ASSIGN_NOT_SUPPORTED=Этот вид сопоставления с образцом не поддерживается в данном контексте
+CAN_NOT_ASSIGN_TO_LEFT_PART=Невозможно присвоить выражению в левой части оператора присваивания
 
 Var_{0}_is_already_defined=Переменная {0} уже определена
 

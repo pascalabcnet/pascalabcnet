@@ -2719,7 +2719,8 @@ assignment
                 if (fe.format1 == null)
                     fe.format1 = new int32_const(int.MaxValue,@3);
             }
-      		$$ = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,fe.index_inversion_from,fe.index_inversion_to,@$);
+      		var left = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,fe.index_inversion_from,fe.index_inversion_to,@$);
+            $$ = new assign(left, $6, $5.type, @$);
 		}
     ;
     
