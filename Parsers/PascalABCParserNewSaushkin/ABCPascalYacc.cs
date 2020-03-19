@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-P4NLNB1
-// DateTime: 3/19/2020 9:57:17 AM
+// DateTime: 3/9/2020 1:37:31 PM
 // UserName: fatco
 // Input file <ABCPascal.y>
 
@@ -3989,15 +3989,6 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 { 
             var cd = NewObjectType((class_attribute)ValueStack[ValueStack.Depth-5].ob, ValueStack[ValueStack.Depth-4].ti, ValueStack[ValueStack.Depth-3].stn as named_type_reference_list, ValueStack[ValueStack.Depth-2].stn as where_definition_list, ValueStack[ValueStack.Depth-1].stn as class_body_list, CurrentLocationSpan); 
 			CurrentSemanticValue.td = cd;
-            var tt = cd.DescendantNodes().OfType<class_definition>().Where(cld => cld.keyword == class_keyword.Record);
-            if (tt.Count()>0)
-            {
-                foreach (var ttt in tt)
-                {
-	                var sc = ttt.source_context;
-	                parsertools.AddErrorFromResource("NESTED_RECORD_DEFINITIONS_ARE_FORBIDDEN", new LexLocation(sc.begin_position.line_num, sc.begin_position.column_num-1, sc.end_position.line_num, sc.end_position.column_num, sc.FileName));
-                }
-            }
 		}
         break;
       case 284: // record_type -> tkRecord, optional_base_classes, optional_where_section, 

@@ -2,32 +2,33 @@
 uses System;
 uses System.Runtime.InteropServices;
 
-//Описания всех подпрограмм найдёте в справке по OpenCL:
-//www.khronos.org/registry/OpenCL/specs/2.2/html/OpenCL_API.html
-
+const
+  buf_size = 10;
+  buf_byte_size = buf_size * 4;
+  
 begin
   var ec: ErrorCode;
   
   // Инициализация
   
   var platform: cl_platform_id;
-  cl.GetPlatformIDs(1, @platform, nil).RaiseIfError;
+  cl.GetPlatformIDs(1, platform, IntPtr.Zero).RaiseIfError;
   
   var device: cl_device_id;
-  cl.GetDeviceIDs(platform, DeviceTypeFlags.Default, 1, @device, nil).RaiseIfError;
+  cl.GetDeviceIDs(platform, DeviceType.DEVICE_TYPE_DEFAULT, 1,device,IntPtr.Zero).RaiseIfError;
   
-  // DeviceTypeFlags.Default это обычно GPU
+  // DEVICE_TYPE_DEFAULT это, обычно, GPU
   // Но, к примеру, в ноутбуке его может не быть
   // Тогда надо хоть для чего то попытаться инициализировать
-  // DeviceTypeFlags.All выберет первые любое устройство, поддерживающее OpenCL
-//  cl.GetDeviceIDs(platform, DeviceTypeFlags.All, 1, @device, nil).RaiseIfError;
+  // DEVICE_TYPE_ALL выберет первое любое устройство, поддерживающее OpenCL
+//  cl.GetDeviceIDs(platform, DeviceType.DEVICE_TYPE_ALL, 1,device,IntPtr.Zero).RaiseIfError;
   // Если всё ещё пишет что устройств нет - обновите драйверы,
-  // потому что даже встроенные видеокарты поддерживают OpenCL (хоть и криво)
+  // потому что даже встроенные видеокарты поддерживают OpenCL
   
-  var context := cl.CreateContext(nil, 1, @device, nil, nil, @ec);
+  var context := cl.CreateContext(nil, 1,device, nil,IntPtr.Zero, ec);
   ec.RaiseIfError;
   
-  var command_queue := cl.CreateCommandQueue(context, device, CommandQueuePropertyFlags.NONE, ec);
+  var command_queue := cl.CreateCommandQueueWithProperties(context, device, nil, ec);
   ec.RaiseIfError;
   
   // Чтение и компиляция .cl файла
@@ -38,35 +39,34 @@ begin
     context,
     1,
     new string[](prog_str),
-    new UIntPtr[](new UIntPtr(prog_str.Length)),
+    nil,
     ec
   );
   ec.RaiseIfError;
   
-  cl.BuildProgram(prog, 1, @device, nil, nil, nil).RaiseIfError;
+  cl.BuildProgram(prog, 1,device, nil, nil,IntPtr.Zero).RaiseIfError;
   
   // Подготовка и запуск программы на GPU
   
-  var kernel := cl.CreateKernel(prog, 'TEST', ec); // Обязательно то же имя что у карнела из .cl файла. И регистр важен!
+  var kernel := cl.CreateKernel(prog, 'TEST', ec); // То же имя что у kernel'а из .cl файла. Регистр важен!
   ec.RaiseIfError;
   
-  var mem := Marshal.AllocHGlobal(40);
-  Marshal.Copy(ArrFill(10,1),0,mem,10);
-  var memobj := cl.CreateBuffer(context, MemoryFlags.READ_WRITE or MemoryFlags.USE_HOST_PTR, new UIntPtr(40), mem, ec); // USE_HOST_PTR значит что нужно скопировать память из mem в memobj
+  var buf := cl.CreateBuffer(context, MemFlags.MEM_READ_WRITE, new UIntPtr(buf_byte_size), IntPtr.Zero, ec);
   ec.RaiseIfError;
   
-  cl.SetKernelArg(kernel, 0, new UIntPtr(UIntPtr.Size), memobj).RaiseIfError;
+  var buf_fill_pattern := 1;
+  var buf_fill_ev: cl_event;
+  cl.EnqueueFillBuffer(command_queue, buf, buf_fill_pattern,new UIntPtr(sizeof(integer)), UIntPtr.Zero,new UIntPtr(buf_byte_size), 0,nil,buf_fill_ev).RaiseIfError;
   
-  cl.EnqueueNDRangeKernel(command_queue, kernel, 1, nil,new UIntPtr[](new UIntPtr(10)),nil, 0,nil,nil).RaiseIfError;
+  cl.SetKernelArg(kernel, 0, new UIntPtr(cl_mem.Size), buf).RaiseIfError;
   
-  cl.Finish(command_queue).RaiseIfError;
+  var k_ev: cl_event;
+  cl.EnqueueNDRangeKernel(command_queue, kernel, 1, nil,new UIntPtr[](new UIntPtr(buf_size)),nil, 1,buf_fill_ev,k_ev).RaiseIfError;
   
   // Чтение и вывод результата
   
-  cl.EnqueueReadBuffer(command_queue, memobj, 1, new UIntPtr(0), new UIntPtr(40), mem, 0,nil,nil).RaiseIfError;
-  
-  var res := new integer[10];
-  Marshal.Copy(mem,res,0,10);
+  var res := new integer[buf_size];
+  cl.EnqueueReadBuffer(command_queue, buf, Bool.BLOCKING, UIntPtr.Zero, new UIntPtr(buf_byte_size), res[0], 1,k_ev,IntPtr.Zero).RaiseIfError;
   res.Println;
   
 end.

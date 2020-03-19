@@ -39,7 +39,8 @@ namespace PascalABCCompiler.PCU
         public byte special_scope=0;//говорит о том что этот символ добавляется не в пространсво имен модуля
 		public int index;//не сериализуется
         public semantic_node_type semantic_node_type;
-        public bool virtual_slot = false;
+        public bool virtual_slot;
+        public bool is_static;
 
         public NameRef(string name, int index, TreeConverter.access_level access_level, semantic_node_type semantic_node_type)
 		{
@@ -56,7 +57,7 @@ namespace PascalABCCompiler.PCU
         }
         public int Size
         {
-            get { return (System.Text.UTF8Encoding.UTF8.GetByteCount(name) + 1) + 1 + 4 + 1 + 1 + 1 + 1; }
+            get { return (System.Text.UTF8Encoding.UTF8.GetByteCount(name) + 1) + 1 + 4 + 1 + 1 + 1 + 1 + 1; }
         }
     }
 
@@ -2551,6 +2552,7 @@ namespace PascalABCCompiler.PCU
 			{
                 names[i] = new NameRef(type.fields[i - j].name, i, convert_field_access_level(type.fields[i - j].field_access_level), type.fields[i - j].semantic_node_type);
                 name_pool[type.fields[i - j]] = names[i];
+                names[i].is_static = type.fields[i - j].polymorphic_state == SemanticTree.polymorphic_state.ps_static;
                 size += names[i].Size;
 			}
 			j=i;
@@ -2558,6 +2560,7 @@ namespace PascalABCCompiler.PCU
 			{
                 names[i] = new NameRef(type.properties[i - j].name, i, convert_field_access_level(type.properties[i - j].field_access_level), type.properties[i - j].semantic_node_type);
                 name_pool[type.properties[i - j]] = names[i];
+                names[i].is_static = type.properties[i - j].polymorphic_state == SemanticTree.polymorphic_state.ps_static;
                 size += names[i].Size;
 			}
 			j=i;
@@ -2568,6 +2571,7 @@ namespace PascalABCCompiler.PCU
                 if (type.methods[i - j].is_overload)
                     names[i].symbol_kind = symbol_kind.sk_overload_function;
                 names[i].virtual_slot = type.methods[i - j].newslot_awaited || type.methods[i - j].polymorphic_state == SemanticTree.polymorphic_state.ps_virtual || type.methods[i - j].polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract || type.methods[i - j].is_constructor;
+                names[i].is_static = type.methods[i - j].polymorphic_state == SemanticTree.polymorphic_state.ps_static && !type.methods[i - j].is_constructor;
                 size += names[i].Size;
 			}
 			j=i;
@@ -2750,6 +2754,7 @@ namespace PascalABCCompiler.PCU
                 bw.Write((byte)names[i].symbol_kind);
                 bw.Write((byte)names[i].semantic_node_type);
                 bw.Write(names[i].virtual_slot);
+                bw.Write(names[i].is_static);
             }
             bw.BaseStream.Seek(tmp, SeekOrigin.Begin);
         }
@@ -3787,7 +3792,15 @@ namespace PascalABCCompiler.PCU
 		
         private void VisitNullConstNode(null_const_node expr)
         {
-            
+            if (expr.type != null && !(expr.type is null_type_node) && !(expr.type is delegated_methods))
+            {
+                bw.Write((byte)1);
+                WriteTypeReference(expr.type);
+            }
+            else
+            {
+                bw.Write((byte)0);
+            }
         }
 
         private void VisitEnumConstNode(enum_const_node en)
