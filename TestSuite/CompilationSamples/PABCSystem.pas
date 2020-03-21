@@ -9517,8 +9517,7 @@ begin
   Result := Self.Aggregate((max, x)-> comp.Compare(selector(x), selector(max)) >= 0 ? x : max);
 end;
 
-/// Возвращает последние count элементов последовательности
-function TakeLast<T>(Self: sequence of T; count: integer): sequence of T; extensionmethod;
+{function TakeLast<T>(Self: sequence of T; count: integer): sequence of T; extensionmethod;
 begin
   if count < 0 then
     raise new System.ArgumentOutOfRangeException('count', count, GetTranslation(PARAMETER_MUST_BE_GREATER_EQUAL_0));
@@ -9549,15 +9548,15 @@ begin
     yield buf[p];    
     p := (p+1) mod count;      
   end;  
-end;
-
-{function TakeLast<T>(Self: sequence of T; count: integer): sequence of T; extensionmethod;
-begin
-  Result := Self.Reverse.Take(count).Reverse;
 end;}
 
-/// Возвращает последовательность без последних count элементов 
-function SkipLast<T>(Self: sequence of T; count: integer): sequence of T; extensionmethod;
+/// Возвращает последние count элементов последовательности
+function TakeLast<T>(Self: sequence of T; count: integer): sequence of T; extensionmethod;
+begin
+  Result := Self.Reverse.Take(count).Reverse;
+end;
+
+{function SkipLast<T>(Self: sequence of T; count: integer): sequence of T; extensionmethod;
 begin
   if count < 0 then
     raise new System.ArgumentOutOfRangeException('count', count, GetTranslation(PARAMETER_MUST_BE_GREATER_EQUAL_0));
@@ -9581,15 +9580,16 @@ begin
       buf[p] := x;
       p := (p+1) mod count;      
     end;
-end;
+end;}
 
-function SkipLast<T>(Self: sequence of T): sequence of T; extensionmethod := 
-  Self.SkipLast(1);
+{function SkipLast<T>(Self: sequence of T): sequence of T; extensionmethod := 
+  Self.SkipLast(1);}
 
-{function SkipLast<T>(self: sequence of T; count: integer := 1): sequence of T; extensionmethod;
+/// Возвращает последовательность без последних count элементов 
+function SkipLast<T>(self: sequence of T; count: integer := 1): sequence of T; extensionmethod;
 begin
   Result := Self.Reverse.Skip(count).Reverse;
-end;}
+end;
 
 /// Декартово произведение последовательностей
 function Cartesian<T, T1>(Self: sequence of T; b: sequence of T1): sequence of (T, T1); extensionmethod;
