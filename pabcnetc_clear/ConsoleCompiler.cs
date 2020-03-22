@@ -102,8 +102,8 @@ namespace PascalABCCompiler
         {
             Console.WriteLine("Command line: ");
             Console.WriteLine("pabcnetcclear /directive1:value1 /directive2:value2 ... [inputfile]\n");
-            Console.WriteLine("Available directives:\n  /Help  /H  /?\n  /Debug:0(1) /output:[executable name]\n");
-            Console.WriteLine("/output:[ <path>\\name ] Compile into an executable called \"name\" and save it in \"path\" directory");
+            Console.WriteLine("Available directives:\n  /Help  /H  /?\n  /Debug:0(1)\n  /output:[<path>\\name]\n");
+            Console.WriteLine("/output:[ <path>\\name ] compile into an executable called \"name\" and save it in \"path\" directory");
             Console.WriteLine("/Debug:0 generates code with all .NET optimizations!");
         }
 
