@@ -14310,7 +14310,13 @@ namespace PascalABCCompiler.TreeConverter
         private expression_node convert_strong_to_constant_or_function_call_for_varinit(expression_node exp, type_node tn)
         {
             if (exp is constant_node)
-                return convert_strong_to_constant_node(exp, tn);
+            {
+                possible_type_convertions pct = type_table.get_convertions(exp.type, tn);
+                if (pct.first != null && pct.first.convertion_method.IsOperator)
+                //if (convertion_data_and_alghoritms.can_convert_type(exp, tn))
+                    return convertion_data_and_alghoritms.convert_type(exp, tn);
+                else return convert_strong_to_constant_node(exp, tn);
+            }
             if (exp is array_initializer)
             {
             	//if (tn.type_special_kind != SemanticTree.type_special_kind.array_wrapper)
