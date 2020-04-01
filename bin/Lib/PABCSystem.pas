@@ -771,30 +771,31 @@ procedure Readln;
 
 ///- function TryRead(var x: число): boolean;
 /// Вводит числовое значение x с клавиатуры. Возвращает False если при вводе произошла ошибка
-function TryRead(var x: integer): boolean;
+function TryRead(var x: integer; message: string := ''): boolean;
+///- function TryRead(var x: число; message: string): boolean;
+/// Выводит приглашение к вводу и вводит числовое значение x с клавиатуры. Возвращает False если при вводе произошла ошибка
+function TryRead(var x: real; message: string := ''): boolean;
 ///--
-function TryRead(var x: real): boolean;
+function TryRead(var x: byte; message: string := ''): boolean;
 ///--
-function TryRead(var x: byte): boolean;
+function TryRead(var x: shortint; message: string := ''): boolean;
 ///--
-function TryRead(var x: shortint): boolean;
+function TryRead(var x: smallint; message: string := ''): boolean;
 ///--
-function TryRead(var x: smallint): boolean;
+function TryRead(var x: word; message: string := ''): boolean;
 ///--
-function TryRead(var x: word): boolean;
+function TryRead(var x: longword; message: string := ''): boolean;
 ///--
-function TryRead(var x: longword): boolean;
+function TryRead(var x: int64; message: string := ''): boolean;
 ///--
-function TryRead(var x: int64): boolean;
+function TryRead(var x: uint64; message: string := ''): boolean;
 ///--
-function TryRead(var x: uint64): boolean;
+function TryRead(var x: single; message: string := ''): boolean;
 ///--
-function TryRead(var x: single): boolean;
-///--
-function TryRead(var x: BigInteger): boolean;
+function TryRead(var x: BigInteger; message: string := ''): boolean;
 
 /// Вводит логическое значение x с клавиатуры. Возвращает False если при вводе произошла ошибка
-function TryRead(var x: boolean): boolean;
+function TryRead(var x: boolean; message: string := ''): boolean;
 
 /// Возвращает значение типа integer, введенное с клавиатуры
 function ReadInteger: integer;
@@ -5578,120 +5579,144 @@ begin
   CurrentIOSystem.read(x)
 end;
 
-function TryRead(var x: integer): boolean;
+function TryRead(var x: integer; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
   end
 end;
 
-function TryRead(var x: BigInteger): boolean;
+function TryRead(var x: BigInteger; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
   end
 end;
 
-function TryRead(var x: real): boolean;
+function TryRead(var x: real; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
   end
 end;
 
-function TryRead(var x: byte): boolean;
+function TryRead(var x: byte; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
   end
 end;
 
-function TryRead(var x: shortint): boolean;
+function TryRead(var x: shortint; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
   end
 end;
 
-function TryRead(var x: smallint): boolean;
+function TryRead(var x: smallint; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
   end
 end;
 
-function TryRead(var x: word): boolean;
+function TryRead(var x: word; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
   end
 end;
 
-function TryRead(var x: longword): boolean;
+function TryRead(var x: longword; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
   end
 end;
 
-function TryRead(var x: int64): boolean;
+function TryRead(var x: int64; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
   end
 end;
 
-function TryRead(var x: uint64): boolean;
+function TryRead(var x: uint64; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
   end
 end;
 
-function TryRead(var x: single): boolean;
+function TryRead(var x: single; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
   end
 end;
 
-function TryRead(var x: boolean): boolean;
+function TryRead(var x: boolean; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
