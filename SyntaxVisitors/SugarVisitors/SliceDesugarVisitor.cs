@@ -51,6 +51,24 @@ namespace SyntaxVisitors.SugarVisitors
             _assign.to.visit(this);
         }
 
+        public override void visit(indexer indexer)
+        {
+            for (int i = 0; i < indexer.indexes.expressions.Count; ++i)
+            {
+                var ind = indexer.indexes.expressions[i];
+                if (ind is simple_expr_with_deref indWithDeref)
+                {
+                    
+                    var countCall = new dot_node(
+                            indexer.dereferencing_value,
+                            new ident("Count", ind.source_context),
+                            ind.source_context);
+                    var inversedIndex = new bin_expr(countCall, indWithDeref.simple_expr, Operators.Minus, ind.source_context);
+                    ReplaceUsingParent(ind, inversedIndex);
+                }
+            }
+        }
+
         public override void visit(slice_expr sl)
         {
             var el = construct_expression_list_for_slice_expr(sl);
