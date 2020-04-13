@@ -415,25 +415,25 @@ function TextSize(text: string): Size;
 //>>     Функции для вывода графиков # GraphWPF graph functions
 // -----------------------------------------------------
 /// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
-procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h: real);
+procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h: real; title: string := '');
 /// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом параметрами x,y,w,h. Два последних параметра задают шаг сетки по OX и OY
-procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h: real; XTicks: real; YTicks: real);
+procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h: real; XTicks: real; YTicks: real; title: string := '');
 /// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике r
-procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect);  
+procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect; title: string := '');
 /// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике r. Два последних параметра задают шаг сетки по OX и OY
-procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect; XTicks, YTicks: real);
+procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect; XTicks, YTicks: real; title: string := '');
 /// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, на полное графическое окно
-procedure DrawGraph(f: real -> real; a, b, min, max: real);
+procedure DrawGraph(f: real -> real; a, b, min, max: real; title: string := '');
 /// Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
-procedure DrawGraph(f: real -> real; a, b: real; x, y, w, h: real);
+procedure DrawGraph(f: real -> real; a, b: real; x, y, w, h: real; title: string := '');
 /// Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике r 
-procedure DrawGraph(f: real -> real; a, b: real; r: GRect);
+procedure DrawGraph(f: real -> real; a, b: real; r: GRect; title: string := '');
 /// Рисует график функции f, заданной на отрезке [-5,5], в прямоугольнике r 
-procedure DrawGraph(f: real -> real; r: GRect);
+procedure DrawGraph(f: real -> real; r: GRect; title: string := '');
 /// Рисует график функции f, заданной на отрезке [a,b], на полное графическое окно 
-procedure DrawGraph(f: real -> real; a, b: real);
+procedure DrawGraph(f: real -> real; a, b: real; title: string := '');
 /// Рисует график функции f, заданной на отрезке [-5,5], на полное графическое окно  
-procedure DrawGraph(f: real -> real);
+procedure DrawGraph(f: real -> real; title: string := '');
 
 // -----------------------------------------------------
 //>>     Функции для настройки системы координат # GraphWPF coordinate system functions
@@ -1175,16 +1175,18 @@ type
     mx, my, a, b, min, max: real;
     x, y, w, h, XTicks, YTicks: real;
     f: real -> real;
+    title: string;
     marginY := 6;
     marginX := 6;
     spaceBetweenTextAndGraph := 4;
     
-    constructor (a, b, min, max, x, y, w, h: real; f: real -> real; XTicks: real := 1; YTicks: real := 1);
+    constructor (a, b, min, max, x, y, w, h: real; f: real -> real; XTicks: real := 1; YTicks: real := 1; title: string := '');
     begin
       Self.a := a.Round(5); Self.b := b.Round(5); 
       Self.min := min.Round(5); Self.max := max.Round(5);
       Self.x := x; Self.y := y; Self.w := w; Self.h := h; 
       Self.f := f; Self.XTicks := XTicks; Self.YTicks := YTicks;
+      Self.title := title;
     end;
     
     function Ticks(d: real): real;
@@ -1202,12 +1204,18 @@ type
     
     procedure CorrectBounds;
     begin
-      var digits := 5;
+      //var digits := 5;
       var tw := TextWidth('-99.9');
+      var th := TextHeight('0');
       w -= marginX * 2 + spaceBetweenTextAndGraph + tw;
-      h -= marginY * 2 + spaceBetweenTextAndGraph + TextHeight('0');
+      h -= marginY * 2 + spaceBetweenTextAndGraph + th;
       x += marginX + spaceBetweenTextAndGraph + tw; 
       y += marginY;
+      if title<>'' then
+      begin
+        y += spaceBetweenTextAndGraph + th;
+        h -= spaceBetweenTextAndGraph + th;
+      end;
       mx := w / (b - a);
       my := h / (max - min);
       if real.IsNaN(XTicks) then
@@ -1223,6 +1231,7 @@ type
     function ScreenToRealY(yy: real) := (y + h - yy) / my + min;
     
     procedure Draw;
+    var AxisColor := GrayColor(112);
     begin
       FillRectangle(x, y, w, h, Colors.White);
       CorrectBounds;
@@ -1237,7 +1246,9 @@ type
       var x0 := RealToScreenX(rx0);
       while x0<=x+w+0.000001 do
       begin
-        Line(x0,y,x0,y+h);
+        if Abs(rx0)<0.000001 then
+          Line(x0,y,x0,y+h,AxisColor)
+        else Line(x0,y,x0,y+h);
         TextOut(x0,y+h+4,rx0.Round(3),Alignment.CenterTop);
         x0 += sx;
         rx0 += XTicks;
@@ -1251,10 +1262,14 @@ type
       else ry0 := yt + YTicks;
       //var ry0 := min;
       //var y0 := y + h;
+      if title<>'' then
+        TextOut(x+w/2,y-spaceBetweenTextAndGraph,Title,Alignment.CenterBottom);
       var y0 := RealToScreenY(ry0);
       while y0>=y-0.000001 do
       begin
-        Line(x,y0,x+w,y0);
+        if Abs(ry0)<0.000001 then
+          Line(x,y0,x+w,y0,AxisColor)
+        else Line(x,y0,x+w,y0);  
         TextOut(x-4,y0,ry0.Round(5),Alignment.RightCenter);
         y0 -= sy;
         ry0 += YTicks;
@@ -1271,39 +1286,38 @@ type
   end;
 
 /// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом параметрами x,y,w,h 
-procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h: real);
+procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h: real; title: string);
 begin
-  var fso := new FS(a,b,min,max,x,y,w,h,f,real.NaN,real.NaN);
-  fso.Draw;
+  DrawGraph(f,a,b,min,max,x,y,w,h,real.NaN,real.NaN,title); 
 end;
 
 /// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом параметрами x,y,w,h. Два последних параметра задают шаг сетки по OX и OY
-procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h, XTicks, YTicks: real);
+procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h, XTicks, YTicks: real; title: string);
 begin
-  var fso := new FS(a,b,min,max,x,y,w,h,f,XTicks,YTicks);
+  var fso := new FS(a,b,min,max,x,y,w,h,f,XTicks,YTicks,title);
   fso.Draw;
 end;
 
-procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect) := DrawGraph(f, a, b, min, max, r.X, r.Y, r.Width, r.Height);  
+procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect; title: string) := DrawGraph(f, a, b, min, max, r.X, r.Y, r.Width, r.Height, title);
 
-procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect; XTicks, YTicks: real) := DrawGraph(f, a, b, min, max, r.X, r.Y, r.Width, r.Height, XTicks, YTicks);  
+procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect; XTicks, YTicks: real; title: string) := DrawGraph(f, a, b, min, max, r.X, r.Y, r.Width, r.Height, XTicks, YTicks, title);  
 
-procedure DrawGraph(f: real -> real; a, b, min, max: real) := DrawGraph(f, a, b, min, max, Window.ClientRect);
+procedure DrawGraph(f: real -> real; a, b, min, max: real; title: string) := DrawGraph(f, a, b, min, max, Window.ClientRect, title);
 
-procedure DrawGraph(f: real -> real; a, b: real; x, y, w, h: real);
+procedure DrawGraph(f: real -> real; a, b: real; x, y, w, h: real; title: string);
 begin
   var n := Round(w / 1);
   var q := PartitionPoints(a, b, n);
-  DrawGraph(f, a, b, q.Min(f), q.Max(f), x, y, w, h)
+  DrawGraph(f, a, b, q.Min(f), q.Max(f), x, y, w, h, title)
 end;
 
-procedure DrawGraph(f: real -> real; a, b: real; r: GRect) := DrawGraph(f, a, b, r.X, r.Y, r.Width, r.Height);
+procedure DrawGraph(f: real -> real; a, b: real; r: GRect; title: string) := DrawGraph(f, a, b, r.X, r.Y, r.Width, r.Height, title);
 
-procedure DrawGraph(f: real -> real; r: GRect) := DrawGraph(f, -5, 5, r);
+procedure DrawGraph(f: real -> real; r: GRect; title: string) := DrawGraph(f, -5, 5, r, title);
 
-procedure DrawGraph(f: real -> real; a, b: real) := DrawGraph(f, a, b, 0, 0, Window.Width - 1, Window.Height - 1);
+procedure DrawGraph(f: real -> real; a, b: real; title: string) := DrawGraph(f, a, b, 0, 0, Window.Width - 1, Window.Height - 1, title);
 
-procedure DrawGraph(f: real -> real) := DrawGraph(f, -5, 5);
+procedure DrawGraph(f: real -> real; title: string) := DrawGraph(f, -5, 5, title);
 
 function GraphWindowTypeGetLeftP: real;
 begin
