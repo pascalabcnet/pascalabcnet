@@ -17,7 +17,7 @@
     File "..\bin\samples.pct"
     File "..\bin\school.pct"
     File "..\bin\Pause.exe"
-    File "..\bin\nuget.exe"
+    ;File "..\bin\nuget.exe"
     File "..\bin\FormatterOptions.ini"
     File "..\bin\ProgrammRunner.exe"
     File "..\bin\pabcworknet.ini"
@@ -39,7 +39,7 @@
     ${AddFile} "samples.pct"
     ${AddFile} "school.pct"
     ${AddFile} "Pause.exe"
-    ${AddFile} "nuget.exe"
+    ;${AddFile} "nuget.exe"
     ${AddFile} "FormatterOptions.ini"
     ${AddFile} "ProgrammRunner.exe"
 	
