@@ -615,6 +615,9 @@ type
     
     function IsEmpty: boolean := l<=h;
 
+    function Step(n: integer): sequence of integer;
+    function Reverse: sequence of integer;
+
     function GetEnumerator(): IEnumerator<integer>;
     function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := Self.GetEnumerator;
 
@@ -683,6 +686,9 @@ type
     static function operator=(r1,r2: CharRange): boolean := (r1.l = r2.l) and (r1.h = r2.h);
     
     function IsEmpty: boolean := l<=h;
+
+    function Step(n: integer): sequence of char;
+    function Reverse: sequence of char;
 
     function GetEnumerator(): IEnumerator<char>;
     function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := GetEnumerator;
@@ -2046,12 +2052,14 @@ procedure Shuffle<T>(l: List<T>);
 // -----------------------------------------------------
 /// Возвращает последовательность целых от a до b
 function Range(a, b: integer): sequence of integer;
-/// Возвращает последовательность символов от c1 до c2
-function Range(c1, c2: char): sequence of char;
-/// Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей
-function PartitionPoints(a, b: real; n: integer): sequence of real;
 /// Возвращает последовательность целых от a до b с шагом step
 function Range(a, b, step: integer): sequence of integer;
+/// Возвращает последовательность символов от c1 до c2
+function Range(c1, c2: char): sequence of char;
+/// Возвращает последовательность символов от c1 до c2 с шагом step
+function Range(c1, c2: char; step: integer): sequence of char;
+/// Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей
+function PartitionPoints(a, b: real; n: integer): sequence of real;
 /// Возвращает последовательность указанных элементов
 function Seq<T>(params a: array of T): sequence of T;
 /// Возвращает последовательность из n случайных целых элементов
@@ -3880,8 +3888,12 @@ begin
 end;
 
 function IntRange.GetEnumerator(): IEnumerator<integer> := Range(l,h).GetEnumerator;
+function IntRange.Step(n: integer): sequence of integer := Range(l,h,n);
+function IntRange.Reverse: sequence of integer := Range(l,h).Reverse;
 
 function CharRange.GetEnumerator(): IEnumerator<char> := Range(l,h).GetEnumerator;
+function CharRange.Step(n: integer): sequence of char := Range(l,h,n);
+function CharRange.Reverse: sequence of char := Range(l,h).Reverse;
 
 //------------------------------------------------------------------------------
 //          Операции для string и char
@@ -4394,11 +4406,6 @@ begin
   else Result := System.Linq.Enumerable.Range(a, b - a + 1);
 end;
 
-function Range(c1, c2: char): sequence of char;
-begin
-  Result := Range(integer(c1), integer(c2)).Select(x -> Chr(x));
-end;
-
 function Range(a, b: real; n: integer): sequence of real;
 begin
   if n = 0 then
@@ -4412,6 +4419,16 @@ begin
     yield r;
     r += h
   end;
+end;
+
+function Range(c1, c2: char): sequence of char;
+begin
+  Result := Range(integer(c1), integer(c2)).Select(x -> Chr(x));
+end;
+
+function Range(c1, c2: char; step: integer): sequence of char;
+begin
+  Result := Range(integer(c1), integer(c2), step).Select(x -> Chr(x));
 end;
 
 function PartitionPoints(a, b: real; n: integer): sequence of real;
@@ -4842,9 +4859,9 @@ function HSet<T>(a: sequence of T): HashSet<T> := new HashSet<T>(a);
 
 function SSet<T>(a: sequence of T): SortedSet<T> := new SortedSet<T>(a);
 
-function HSet(a: IntRange): HashSet<integer> := a.ToHashSet&<integer>;
+function HSet(a: IntRange): HashSet<integer> := a.ToHashSet;
 
-function HSet(a: CharRange): HashSet<char> := a.ToHashSet&<char>;
+function HSet(a: CharRange): HashSet<char> := a.ToHashSet;
 
 function SSet(a: IntRange): SortedSet<integer> := a.ToSortedSet;
 

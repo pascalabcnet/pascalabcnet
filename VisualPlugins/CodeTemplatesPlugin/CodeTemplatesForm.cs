@@ -59,7 +59,7 @@ namespace CodeTemplatesPlugin
         public CodeTemplatesForm()
         {
             InitializeComponent();
-            var scale = ScreenScale.Calc();
+            var scale = VisualPascalABC.ScreenScale.Calc();
             listBox1.TileSize = new Size(listBox1.TileSize.Width, System.Convert.ToInt32(16 * scale));
             LoadTemplates();
         }

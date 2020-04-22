@@ -47,6 +47,7 @@
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -107,13 +108,9 @@
     <Compile Include="Docking\DockPaneCaptionBase.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Docking\VS2005DockPaneCaption.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Docking\VS2005DockPaneCaption.cs" />
     <Compile Include="Docking\DockPaneCollection.cs" />
-    <Compile Include="Docking\DockPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Docking\DockPanel.cs" />
     <Compile Include="Docking\DockPanelExtender.cs" />
     <Compile Include="Docking\DockPanel.Persistor.cs">
       <SubType>Component</SubType>
@@ -216,6 +213,13 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Docking\DockPanel.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Docking\Resources\DockPane_Close32.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Docking\Resources\Close_32.bmp" />
+    <None Include="Docking\Resources\DockPane_Option32.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

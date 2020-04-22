@@ -7,7 +7,21 @@ using System.Windows.Forms.VisualStyles;
 
 namespace WeifenLuo.WinFormsUI.Docking
 {
-	internal class VS2005DockPaneCaption : DockPaneCaptionBase
+    public static class ScreenScale
+    {
+        private static double scale = -1;
+        public static double Calc()
+        {
+            if (scale > 0)
+                return scale;
+            var dpiXProperty = typeof(System.Windows.SystemParameters).GetProperty("DpiX", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            var dpiX = (int)dpiXProperty.GetValue(null, null);
+            scale = (double)dpiX / 96;
+            return scale;
+        }
+    }
+
+    internal class VS2005DockPaneCaption : DockPaneCaptionBase
 	{
         private sealed class InertButton : InertButtonBase
         {
@@ -66,7 +80,12 @@ namespace WeifenLuo.WinFormsUI.Docking
             get
             {
                 if (_imageButtonClose == null)
-                    _imageButtonClose = Resources.DockPane_Close;
+                {
+                    var sc = ScreenScale.Calc();
+                    if (sc >= 1.99)
+                        _imageButtonClose = Resources.DockPane_Close32;
+                    else _imageButtonClose = Resources.DockPane_Close;
+                }
 
                 return _imageButtonClose;
             }
@@ -135,8 +154,14 @@ namespace WeifenLuo.WinFormsUI.Docking
         {
             get
             {
+
                 if (_imageButtonOptions == null)
-                    _imageButtonOptions = Resources.DockPane_Option;
+                {
+                    var sc = ScreenScale.Calc();
+                    if (sc >= 1.99)
+                        _imageButtonOptions = Resources.DockPane_Option32;
+                    else _imageButtonOptions = Resources.DockPane_Option;
+                }
 
                 return _imageButtonOptions;
             }

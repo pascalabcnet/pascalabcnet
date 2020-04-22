@@ -133,8 +133,22 @@ type
 //{{{--doc: Конец секции 1 }}} 
   
 
-function wplus := SystemParameters.WindowResizeBorderThickness.Left + SystemParameters.WindowResizeBorderThickness.Right;
-function hplus := SystemParameters.WindowCaptionHeight + SystemParameters.WindowResizeBorderThickness.Top + SystemParameters.WindowResizeBorderThickness.Bottom;
+var wp: real := -1;
+var hp: real := -1;
+
+function wplus: real;
+begin
+  if wp = -1 then
+    wp := (SystemParameters.BorderWidth + SystemParameters.FixedFrameVerticalBorderWidth) * 2;
+  Result := wp;
+end; 
+
+function hplus: real;
+begin
+  if hp = -1 then
+    hp := SystemParameters.WindowCaptionHeight + (SystemParameters.BorderWidth + SystemParameters.FixedFrameHorizontalBorderHeight) * 2;
+  Result := hp;
+end;
 
 ///---- Window -----
 

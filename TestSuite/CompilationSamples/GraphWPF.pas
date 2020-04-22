@@ -54,18 +54,21 @@ type
   Alignment = (LeftTop,CenterTop,RightTop,LeftCenter,Center,RightCenter,LeftBottom,CenterBottom,RightBottom);
   
 //{{{--doc: Конец секции 1 }}} 
+
+function GetBrush(c: Color): GBrush;
   
 //{{{doc: Начало секции 2 }}} 
 
 // -----------------------------------------------------
 //>>     Класс BrushType # BrushType class
 // -----------------------------------------------------
+type
   ///!#
   /// Тип кисти
   BrushType = class
   private
     c := Colors.White;
-    function BrushConstruct := new SolidColorBrush(c);
+    function BrushConstruct := GetBrush(c);
   public  
     /// Цвет кисти
     property Color: GColor read c write c;
@@ -84,7 +87,7 @@ type
     rc: boolean := false;
     function PenConstruct: GPen;
     begin
-      Result := new GPen(new SolidColorBrush(c),th);
+      Result := new GPen(GetBrush(c),th);
       Result.LineJoin := PenLineJoin.Round;
       if rc then 
       begin
@@ -136,7 +139,7 @@ type
     end;
     procedure SetFS(fs: FontStyle) := Invoke(SetFSP,fs);
     function TypefaceClone := tf;
-    function BrushConstruct := new SolidColorBrush(c);
+    function BrushConstruct := GetBrush(c);
   public
     /// Цвет шрифта
     property Color: GColor read c write c;
@@ -513,6 +516,20 @@ procedure __FinalizeModule__;
 
 implementation
 
+var BrushesDict := new Dictionary<Color,GBrush>;
+
+function GetBrush(c: Color): GBrush;
+begin
+  if not (c in BrushesDict) then
+  begin
+    var b := new SolidColorBrush(c);
+    BrushesDict[c] := b;
+    Result := b
+  end
+  else Result := BrushesDict[c];
+end;
+
+
 procedure Redraw(d: ()->()) := app.Dispatcher.Invoke(d);
 function getApp: Application := app;
 
@@ -524,8 +541,8 @@ function EmptyColor: Color := ARGB(0,0,0,0);
 function clRandom := RandomColor();
 function Pnt(x,y: real) := new Point(x,y);
 function Rect(x,y,w,h: real) := new System.Windows.Rect(x,y,w,h);
-function ColorBrush(c: Color) := new SolidColorBrush(c);
-function ColorPen(c: Color) := new GPen(ColorBrush(c),Pen.Width);
+function ColorBrush(c: Color) := GetBrush(c);
+function ColorPen(c: Color) := new GPen(GetBrush(c),Pen.Width);
 
 procedure InvokeVisual(d: System.Delegate; params args: array of object);
 begin
@@ -662,7 +679,7 @@ end;
 procedure SetPixelP(x,y: real; c: Color);
 begin
   var dc := GetDC();
-  dc.DrawRectangle(new SolidColorBrush(c), nil, Rect(x,y,1,1));
+  dc.DrawRectangle(GetBrush(c), nil, Rect(x,y,1,1));
   ReleaseDC(dc);
 end;
 
@@ -673,7 +690,7 @@ begin
   for var ix:=0 to w-1 do
   for var iy:=0 to h-1 do
   begin
-    dc.DrawRectangle(ColorBrush(f(ix,iy)), nil, Rect(x+ix,y+iy,1,1));
+    dc.DrawRectangle(GetBrush(f(ix,iy)), nil, Rect(x+ix,y+iy,1,1));
   end;  
   ReleaseDC(dc);
 end;
@@ -691,7 +708,7 @@ function FormText(text: string) :=
   
 function FormTextC(text: string; c: GColor): FormattedText := 
   new FormattedText(text,new System.Globalization.CultureInfo('ru-ru'), FlowDirection.LeftToRight, 
-                    Font.TypefaceClone, Font.Size, ColorBrush(c));
+                    Font.TypefaceClone, Font.Size, GetBrush(c));
     
 function TextWidthP(text: string) := FormText(text).Width;
 function TextHeightP(text: string) := FormText(text).Height;
@@ -952,16 +969,16 @@ procedure SectorPFull(x, y, r, angle1, angle2: real; b: GBrush; p: GPen) := ArcS
 procedure EllipseP(x,y,r1,r2: real) := EllipsePFull(x,y,r1,r2,Brush.BrushConstruct,Pen.PenConstruct);
 procedure DrawEllipseP(x,y,r1,r2: real) := EllipsePFull(x,y,r1,r2,nil,Pen.PenConstruct);
 procedure FillEllipseP(x,y,r1,r2: real) := EllipsePFull(x,y,r1,r2,Brush.BrushConstruct,nil);
-procedure EllipsePC(x,y,r1,r2: real; c: GColor) := EllipsePFull(x,y,r1,r2,ColorBrush(c),Pen.PenConstruct);
+procedure EllipsePC(x,y,r1,r2: real; c: GColor) := EllipsePFull(x,y,r1,r2,GetBrush(c),Pen.PenConstruct);
 procedure DrawEllipsePC(x,y,r1,r2: real; c: GColor) := EllipsePFull(x,y,r1,r2,nil,ColorPen(c));
-procedure FillEllipsePC(x,y,r1,r2: real; c: GColor) := EllipsePFull(x,y,r1,r2,ColorBrush(c),nil);
+procedure FillEllipsePC(x,y,r1,r2: real; c: GColor) := EllipsePFull(x,y,r1,r2,GetBrush(c),nil);
 
 procedure RectangleP(x,y,w,h: real) := RectanglePFull(x,y,w,h,Brush.BrushConstruct,Pen.PenConstruct);
 procedure DrawRectangleP(x,y,w,h: real) := RectanglePFull(x,y,w,h,nil,Pen.PenConstruct);
 procedure FillRectangleP(x,y,w,h: real) := RectanglePFull(x,y,w,h,Brush.BrushConstruct,nil);
-procedure RectanglePC(x,y,r1,r2: real; c: GColor) := RectanglePFull(x,y,r1,r2,ColorBrush(c),Pen.PenConstruct);
+procedure RectanglePC(x,y,r1,r2: real; c: GColor) := RectanglePFull(x,y,r1,r2,GetBrush(c),Pen.PenConstruct);
 procedure DrawRectanglePC(x,y,r1,r2: real; c: GColor) := RectanglePFull(x,y,r1,r2,nil,ColorPen(c));
-procedure FillRectanglePC(x,y,r1,r2: real; c: GColor) := RectanglePFull(x,y,r1,r2,ColorBrush(c),nil);
+procedure FillRectanglePC(x,y,r1,r2: real; c: GColor) := RectanglePFull(x,y,r1,r2,GetBrush(c),nil);
 
 procedure ArcP(x, y, r, angle1, angle2: real) := ArcPFull(x, y, r, angle1, angle2, Pen.PenConstruct);
 procedure ArcPC(x, y, r, angle1, angle2: real; c: GColor) := ArcPFull(x, y, r, angle1, angle2, ColorPen(c));
@@ -969,9 +986,9 @@ procedure ArcPC(x, y, r, angle1, angle2: real; c: GColor) := ArcPFull(x, y, r, a
 procedure SectorP(x, y, r, angle1, angle2: real) := SectorPFull(x, y, r, angle1, angle2, Brush.BrushConstruct, Pen.PenConstruct);
 procedure DrawSectorP(x, y, r, angle1, angle2: real) := SectorPFull(x, y, r, angle1, angle2, nil, Pen.PenConstruct);
 procedure FillSectorP(x, y, r, angle1, angle2: real) := SectorPFull(x, y, r, angle1, angle2, Brush.BrushConstruct, nil);
-procedure SectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, ColorBrush(c), Pen.PenConstruct);
+procedure SectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, GetBrush(c), Pen.PenConstruct);
 procedure DrawSectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, nil, ColorPen(c));
-procedure FillSectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, ColorBrush(c), nil);
+procedure FillSectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, GetBrush(c), nil);
 
 procedure LineP(x,y,x1,y1: real) := LinePFull(x,y,x1,y1,Pen.PenConstruct);
 procedure LinePC(x,y,x1,y1: real; c: GColor) := LinePFull(x,y,x1,y1,ColorPen(c));
@@ -996,7 +1013,7 @@ procedure DrawEllipse(x,y,rx,ry: real) := InvokeVisual(DrawEllipseP,x,y,rx,ry);
 procedure FillEllipse(x,y,rx,ry: real) := InvokeVisual(FillEllipseP,x,y,rx,ry);
 procedure Ellipse(x,y,rx,ry: real; c: GColor) := InvokeVisual(EllipsePC,x,y,rx,ry,c);
 procedure DrawEllipse(x,y,rx,ry: real; c: GColor) := InvokeVisual(DrawEllipsePC,x,y,rx,ry,c);
-procedure FillEllipse(x,y,rx,ry: real; c: GColor) := app.Dispatcher.Invoke(()->FillEllipsePC(x,y,rx,ry,c));
+procedure FillEllipse(x,y,rx,ry: real; c: GColor) := InvokeVisual(FillEllipsePC,x,y,rx,ry,c);
 
 procedure Circle(x,y,r: real) := InvokeVisual(EllipseP,x,y,r,r);
 procedure DrawCircle(x,y,r: real) := InvokeVisual(DrawEllipseP,x,y,r,r);

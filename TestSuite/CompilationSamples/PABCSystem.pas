@@ -4842,9 +4842,9 @@ function HSet<T>(a: sequence of T): HashSet<T> := new HashSet<T>(a);
 
 function SSet<T>(a: sequence of T): SortedSet<T> := new SortedSet<T>(a);
 
-function HSet(a: IntRange): HashSet<integer> := a.ToHashSet&<integer>;
+function HSet(a: IntRange): HashSet<integer> := a.ToHashSet;
 
-function HSet(a: CharRange): HashSet<char> := a.ToHashSet&<char>;
+function HSet(a: CharRange): HashSet<char> := a.ToHashSet;
 
 function SSet(a: IntRange): SortedSet<integer> := a.ToSortedSet;
 
