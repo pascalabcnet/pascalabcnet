@@ -615,6 +615,9 @@ type
     
     function IsEmpty: boolean := l<=h;
 
+    function Step(n: integer): sequence of integer;
+    function Reverse: sequence of integer;
+
     function GetEnumerator(): IEnumerator<integer>;
     function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := Self.GetEnumerator;
 
@@ -683,6 +686,9 @@ type
     static function operator=(r1,r2: CharRange): boolean := (r1.l = r2.l) and (r1.h = r2.h);
     
     function IsEmpty: boolean := l<=h;
+
+    function Step(n: integer): sequence of char;
+    function Reverse: sequence of char;
 
     function GetEnumerator(): IEnumerator<char>;
     function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := GetEnumerator;
@@ -1630,25 +1636,33 @@ function Min(a, b: uint64): uint64;
 ///--
 function Min(a, b: real): real;
 
-///-function Min(a,b,...: число): число;
-/// Возвращает минимальное из чисел a,b,...
-function Min(params a: array of integer): integer;
+///-function Min(a,b,...: T): T;
+/// Возвращает минимальное из a,b,...
+function Min<T>(params a: array of T): T;
 ///--
-function Min(params a: array of real): real;
+//function Min(params a: array of real): real;
 ///--
 function Min(a, b, c: real): real;
 ///--
 function Min(a, b, c, d: real): real;
-
-///-function Max(a,b,...: число): число;
-/// Возвращает ммксиимальное из чисел a,b,...
-function Max(params a: array of integer): integer;
 ///--
-function Max(params a: array of real): real;
+function Min(a, b, c: integer): integer;
+///--
+function Min(a, b, c, d: integer): integer;
+
+///-function Max(a,b,...: T): T;
+/// Возвращает максиимальное из a,b,...
+function Max<T>(params a: array of T): T;
+///--
+//function Max(params a: array of real): real;
 ///--
 function Max(a, b, c: real): real;
 ///--
 function Max(a, b, c, d: real): real;
+///--
+function Max(a, b, c: integer): integer;
+///--
+function Max(a, b, c, d: integer): integer;
 
 ///-function Odd(i: целое): boolean;
 /// Возвращает True, если i нечетно, и False в противном случае
@@ -2046,12 +2060,14 @@ procedure Shuffle<T>(l: List<T>);
 // -----------------------------------------------------
 /// Возвращает последовательность целых от a до b
 function Range(a, b: integer): sequence of integer;
-/// Возвращает последовательность символов от c1 до c2
-function Range(c1, c2: char): sequence of char;
-/// Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей
-function PartitionPoints(a, b: real; n: integer): sequence of real;
 /// Возвращает последовательность целых от a до b с шагом step
 function Range(a, b, step: integer): sequence of integer;
+/// Возвращает последовательность символов от c1 до c2
+function Range(c1, c2: char): sequence of char;
+/// Возвращает последовательность символов от c1 до c2 с шагом step
+function Range(c1, c2: char; step: integer): sequence of char;
+/// Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей
+function PartitionPoints(a, b: real; n: integer): sequence of real;
 /// Возвращает последовательность указанных элементов
 function Seq<T>(params a: array of T): sequence of T;
 /// Возвращает последовательность из n случайных целых элементов
@@ -3880,8 +3896,12 @@ begin
 end;
 
 function IntRange.GetEnumerator(): IEnumerator<integer> := Range(l,h).GetEnumerator;
+function IntRange.Step(n: integer): sequence of integer := Range(l,h,n);
+function IntRange.Reverse: sequence of integer := Range(l,h).Reverse;
 
 function CharRange.GetEnumerator(): IEnumerator<char> := Range(l,h).GetEnumerator;
+function CharRange.Step(n: integer): sequence of char := Range(l,h,n);
+function CharRange.Reverse: sequence of char := Range(l,h).Reverse;
 
 //------------------------------------------------------------------------------
 //          Операции для string и char
@@ -4394,11 +4414,6 @@ begin
   else Result := System.Linq.Enumerable.Range(a, b - a + 1);
 end;
 
-function Range(c1, c2: char): sequence of char;
-begin
-  Result := Range(integer(c1), integer(c2)).Select(x -> Chr(x));
-end;
-
 function Range(a, b: real; n: integer): sequence of real;
 begin
   if n = 0 then
@@ -4412,6 +4427,16 @@ begin
     yield r;
     r += h
   end;
+end;
+
+function Range(c1, c2: char): sequence of char;
+begin
+  Result := Range(integer(c1), integer(c2)).Select(x -> Chr(x));
+end;
+
+function Range(c1, c2: char; step: integer): sequence of char;
+begin
+  Result := Range(integer(c1), integer(c2), step).Select(x -> Chr(x));
 end;
 
 function PartitionPoints(a, b: real; n: integer): sequence of real;
@@ -8056,6 +8081,21 @@ function Max(a, b: uint64) := Math.Max(a, b);
 
 function Max(a, b: real) := Math.Max(a, b);
 
+function Max(a, b, c: integer): integer;
+begin
+  Result := a;
+  if b > Result then Result := b;
+  if c > Result then Result := c;
+end;
+
+function Max(a, b, c, d: integer): integer;
+begin
+  Result := a;
+  if b > Result then Result := b;
+  if c < Result then Result := c;
+  if d > Result then Result := d;
+end;
+
 function Max(a, b, c: real): real;
 begin
   Result := a;
@@ -8096,6 +8136,21 @@ function Min(a, b: uint64) := Math.Min(a, b);
 
 function Min(a, b: real) := Math.Min(a, b);
 
+function Min(a, b, c: integer): integer;
+begin
+  Result := a;
+  if b < Result then Result := b;
+  if c < Result then Result := c;
+end;
+
+function Min(a, b, c, d: integer): integer;
+begin
+  Result := a;
+  if b < Result then Result := b;
+  if c < Result then Result := c;
+  if d < Result then Result := d;
+end;
+
 function Min(a, b, c: real): real;
 begin
   Result := a;
@@ -8111,9 +8166,10 @@ begin
   if d < Result then Result := d;
 end;
 
-function Min(params a: array of integer): integer := a.Min;
+function Min<T>(params a: array of T): T := a.Min;
+function Max<T>(params a: array of T): T := a.Max;
 
-function Min(params a: array of real): real := a.Min;
+{function Min(params a: array of real): real := a.Min;}
 
 
 function Odd(i: byte) := (i mod 2) <> 0;
@@ -9456,6 +9512,39 @@ begin
   foreach var x in Self do
     Result *= x;
 end;
+
+/// Возвращает произведение элементов последовательности, спроектированных на числовое значение
+function Product<T>(Self: sequence of T; f: T->real): real; extensionmethod;
+begin
+  Result := 1.0;
+  foreach var x in Self do
+    Result *= f(x);
+end;
+
+/// Возвращает произведение элементов последовательности, спроектированных на числовое значение
+function Product<T>(Self: sequence of T; f: T->integer): int64; extensionmethod;
+begin
+  Result := 1;
+  foreach var x in Self do
+    Result *= f(x);
+end;
+
+/// Возвращает произведение элементов последовательности, спроектированных на числовое значение
+function Product<T>(Self: sequence of T; f: T->BigInteger): BigInteger; extensionmethod;
+begin
+  Result := 1;
+  foreach var x in Self do
+    Result *= f(x);
+end;
+
+/// Возвращает сумму элементов последовательности, спроектированных на числовое значение - пока не работает для Lst(1,2,3)
+{function Sum<T>(Self: sequence of T; f: T->BigInteger): BigInteger; extensionmethod;
+begin
+  Result := 0;
+  foreach var x in Self do
+    Result += f(x);
+end;}
+
 
 /// Возвращает отсортированную по возрастанию последовательность
 function Sorted<T>(Self: sequence of T): sequence of T; extensionmethod;

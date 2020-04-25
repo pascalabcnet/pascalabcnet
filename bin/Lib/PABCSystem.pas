@@ -1636,25 +1636,33 @@ function Min(a, b: uint64): uint64;
 ///--
 function Min(a, b: real): real;
 
-///-function Min(a,b,...: число): число;
-/// Возвращает минимальное из чисел a,b,...
-function Min(params a: array of integer): integer;
+///-function Min(a,b,...: T): T;
+/// Возвращает минимальное из a,b,...
+function Min<T>(params a: array of T): T;
 ///--
-function Min(params a: array of real): real;
+//function Min(params a: array of real): real;
 ///--
 function Min(a, b, c: real): real;
 ///--
 function Min(a, b, c, d: real): real;
-
-///-function Max(a,b,...: число): число;
-/// Возвращает ммксиимальное из чисел a,b,...
-function Max(params a: array of integer): integer;
 ///--
-function Max(params a: array of real): real;
+function Min(a, b, c: integer): integer;
+///--
+function Min(a, b, c, d: integer): integer;
+
+///-function Max(a,b,...: T): T;
+/// Возвращает максиимальное из a,b,...
+function Max<T>(params a: array of T): T;
+///--
+//function Max(params a: array of real): real;
 ///--
 function Max(a, b, c: real): real;
 ///--
 function Max(a, b, c, d: real): real;
+///--
+function Max(a, b, c: integer): integer;
+///--
+function Max(a, b, c, d: integer): integer;
 
 ///-function Odd(i: целое): boolean;
 /// Возвращает True, если i нечетно, и False в противном случае
@@ -8073,6 +8081,21 @@ function Max(a, b: uint64) := Math.Max(a, b);
 
 function Max(a, b: real) := Math.Max(a, b);
 
+function Max(a, b, c: integer): integer;
+begin
+  Result := a;
+  if b > Result then Result := b;
+  if c > Result then Result := c;
+end;
+
+function Max(a, b, c, d: integer): integer;
+begin
+  Result := a;
+  if b > Result then Result := b;
+  if c < Result then Result := c;
+  if d > Result then Result := d;
+end;
+
 function Max(a, b, c: real): real;
 begin
   Result := a;
@@ -8113,6 +8136,21 @@ function Min(a, b: uint64) := Math.Min(a, b);
 
 function Min(a, b: real) := Math.Min(a, b);
 
+function Min(a, b, c: integer): integer;
+begin
+  Result := a;
+  if b < Result then Result := b;
+  if c < Result then Result := c;
+end;
+
+function Min(a, b, c, d: integer): integer;
+begin
+  Result := a;
+  if b < Result then Result := b;
+  if c < Result then Result := c;
+  if d < Result then Result := d;
+end;
+
 function Min(a, b, c: real): real;
 begin
   Result := a;
@@ -8128,9 +8166,10 @@ begin
   if d < Result then Result := d;
 end;
 
-function Min(params a: array of integer): integer := a.Min;
+function Min<T>(params a: array of T): T := a.Min;
+function Max<T>(params a: array of T): T := a.Max;
 
-function Min(params a: array of real): real := a.Min;
+{function Min(params a: array of real): real := a.Min;}
 
 
 function Odd(i: byte) := (i mod 2) <> 0;
@@ -9473,6 +9512,39 @@ begin
   foreach var x in Self do
     Result *= x;
 end;
+
+/// Возвращает произведение элементов последовательности, спроектированных на числовое значение
+function Product<T>(Self: sequence of T; f: T->real): real; extensionmethod;
+begin
+  Result := 1.0;
+  foreach var x in Self do
+    Result *= f(x);
+end;
+
+/// Возвращает произведение элементов последовательности, спроектированных на числовое значение
+function Product<T>(Self: sequence of T; f: T->integer): int64; extensionmethod;
+begin
+  Result := 1;
+  foreach var x in Self do
+    Result *= f(x);
+end;
+
+/// Возвращает произведение элементов последовательности, спроектированных на числовое значение
+function Product<T>(Self: sequence of T; f: T->BigInteger): BigInteger; extensionmethod;
+begin
+  Result := 1;
+  foreach var x in Self do
+    Result *= f(x);
+end;
+
+/// Возвращает сумму элементов последовательности, спроектированных на числовое значение - пока не работает для Lst(1,2,3)
+{function Sum<T>(Self: sequence of T; f: T->BigInteger): BigInteger; extensionmethod;
+begin
+  Result := 0;
+  foreach var x in Self do
+    Result += f(x);
+end;}
+
 
 /// Возвращает отсортированную по возрастанию последовательность
 function Sorted<T>(Self: sequence of T): sequence of T; extensionmethod;
