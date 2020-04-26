@@ -3283,13 +3283,13 @@ namespace PascalABCCompiler.NETGenerator
                     lb = il.DeclareLocal(ti.arr_fld.FieldType);
                     il.Emit(OpCodes.Ldloc, fb);
                     il.Emit(OpCodes.Ldfld, ti.arr_fld);
+                    il.Emit(OpCodes.Stloc, lb);
                 }
                 else
                 {
-                    lb = il.DeclareLocal(ti.tp);
-                    il.Emit(OpCodes.Ldloc, fb);
+                    lb = fb;
                 }
-                il.Emit(OpCodes.Stloc, lb);
+                
                 if (rank == 1)
                     GenerateArrayInitCode(il, lb, InitalValue, ArrayType);
                 else
