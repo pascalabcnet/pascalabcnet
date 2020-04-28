@@ -114,7 +114,12 @@ namespace WeifenLuo.WinFormsUI.Docking
             get
             {
                 if (_imageButtonAutoHide == null)
-                    _imageButtonAutoHide = Resources.DockPane_AutoHide;
+                {
+                    var sc = ScreenScale.Calc();
+                    if (sc >= 1.99)
+                        _imageButtonAutoHide = Resources.DockPane_AutoHide32;
+                    else _imageButtonAutoHide = Resources.DockPane_AutoHide;
+                }
 
                 return _imageButtonAutoHide;
             }
@@ -126,7 +131,13 @@ namespace WeifenLuo.WinFormsUI.Docking
             get
             {
                 if (_imageButtonDock == null)
-                    _imageButtonDock = Resources.DockPane_Dock;
+                {
+                    var sc = ScreenScale.Calc();
+                    if (sc >= 1.99)
+                        _imageButtonDock = Resources.DockPane_Dock32;
+                    else _imageButtonDock = Resources.DockPane_Dock;
+                }
+                
 
                 return _imageButtonDock;
             }

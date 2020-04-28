@@ -16,7 +16,7 @@
     File "..\bin\ICSharpCode.NRefactory.dll"
     File "..\bin\TreeConverter.dll"
     File "..\bin\OptimizerConversion.dll"
-    File "..\bin\ICSharpCode.AvalonEdit.dll"
+    ;File "..\bin\ICSharpCode.AvalonEdit.dll"
     File "..\bin\ICSharpCode.SharpDevelop.dll"
     File "..\bin\ICSharpCode.SharpDevelop.Dom.dll"
     File "..\bin\ICSharpCode.Core.WinForms.dll"

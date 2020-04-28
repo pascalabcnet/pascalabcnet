@@ -241,12 +241,12 @@ namespace WeifenLuo.WinFormsUI.Docking
 
 		private static int ToolWindowImageHeight
 		{
-			get	{	return _ToolWindowImageHeight;	}
+			get	{	return Convert.ToInt32(_ToolWindowImageHeight * ScreenScale.Calc());	}
 		}
 
 		private static int ToolWindowImageWidth
 		{
-			get	{	return _ToolWindowImageWidth;	}
+			get	{	return Convert.ToInt32(_ToolWindowImageWidth * ScreenScale.Calc());	}
 		}
 
 		private static int ToolWindowImageGapTop

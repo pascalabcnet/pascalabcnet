@@ -175,6 +175,9 @@
   <data name="DockPane_AutoHide" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\DockPane_AutoHide.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="DockPane_AutoHide32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\DockPane_AutoHide32.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="DockPane_Close" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\DockPane_Close.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -183,6 +186,9 @@
   </data>
   <data name="DockPane_Dock" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\DockPane_Dock.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DockPane_Dock32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\DockPane_Dock32.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="DockPane_Option" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\DockPane_Option.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

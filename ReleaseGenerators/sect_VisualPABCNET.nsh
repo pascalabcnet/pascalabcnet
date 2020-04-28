@@ -2,7 +2,7 @@
     SectionIn 1 2 RO
     SetOutPath "$INSTDIR"
     File "..\bin\ICSharpCode.TextEditor.dll" 
-	File "..\bin\ICSharpCode.AvalonEdit.dll"	
+	;File "..\bin\ICSharpCode.AvalonEdit.dll"	
     File "..\bin\PluginsSupport.dll"    
     File "..\bin\PascalABCNET.exe"   
     ;File "..\bin\PascalABCNET.exe.manifest"   
@@ -17,14 +17,14 @@
     File "..\bin\samples.pct"
     File "..\bin\school.pct"
     File "..\bin\Pause.exe"
-    ;File "..\bin\nuget.exe"
+    File "..\bin\nuget.exe"
     File "..\bin\FormatterOptions.ini"
     File "..\bin\ProgrammRunner.exe"
     File "..\bin\pabcworknet.ini"
 	
 	;dobavljaem fajly v uninst.log
     ${AddFile} "ICSharpCode.TextEditor.dll"
-    ${AddFile} "ICSharpCode.AvalonEdit.dll"	
+    ;${AddFile} "ICSharpCode.AvalonEdit.dll"	
     ${AddFile} "PluginsSupport.dll"    
     ${AddFile} "PascalABCNET.exe"   
     ;File "..\bin\PascalABCNET.exe.manifest"   
@@ -39,7 +39,7 @@
     ${AddFile} "samples.pct"
     ${AddFile} "school.pct"
     ${AddFile} "Pause.exe"
-    ;${AddFile} "nuget.exe"
+    ${AddFile} "nuget.exe"
     ${AddFile} "FormatterOptions.ini"
     ${AddFile} "ProgrammRunner.exe"
 	

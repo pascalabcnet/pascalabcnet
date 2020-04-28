@@ -253,6 +253,16 @@ namespace WeifenLuo.WinFormsUI.Docking {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap DockPane_AutoHide32 {
+            get {
+                object obj = ResourceManager.GetObject("DockPane_AutoHide32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap DockPane_Close {
             get {
                 object obj = ResourceManager.GetObject("DockPane_Close", resourceCulture);
@@ -276,6 +286,16 @@ namespace WeifenLuo.WinFormsUI.Docking {
         internal static System.Drawing.Bitmap DockPane_Dock {
             get {
                 object obj = ResourceManager.GetObject("DockPane_Dock", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap DockPane_Dock32 {
+            get {
+                object obj = ResourceManager.GetObject("DockPane_Dock32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

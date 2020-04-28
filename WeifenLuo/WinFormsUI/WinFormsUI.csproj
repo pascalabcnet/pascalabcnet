@@ -219,6 +219,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Docking\Resources\Close_32.bmp" />
+    <None Include="Docking\Resources\DockPane_AutoHide32.bmp" />
+    <None Include="Docking\Resources\DockPane_Dock32.bmp" />
     <None Include="Docking\Resources\DockPane_Option32.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
