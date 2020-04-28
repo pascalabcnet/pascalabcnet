@@ -34,9 +34,11 @@ namespace VisualPascalABC
                 columnHeader7.Width = Convert.ToInt32(columnHeader7.Width * sc);
                 columnHeader8.Width = Convert.ToInt32(columnHeader8.Width * sc);
                 columnHeader9.Width = Convert.ToInt32(columnHeader9.Width * sc);
-                columnHeader10.Width = Convert.ToInt32(columnHeader10.Width * sc);
+                columnHeader10.Width = Convert.ToInt32(columnHeader10.Width * 0.9 * sc);
                 columnHeader11.Width = Convert.ToInt32(columnHeader11.Width * sc);
             }
+            if (sc >= 1.99)
+                this.lvErrorsList.SmallImageList = this.ilvlErrorList32;
         }
 
         private void ErrorsListWindowForm_VisibleChanged(object sender, EventArgs e)
