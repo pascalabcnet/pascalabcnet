@@ -1188,6 +1188,8 @@ var
   OnResize: procedure;
   /// Событие перерисовки графического окна. Параметр dt обозначает количество миллисекунд с момента последнего вызова OnDrawFrame
   OnDrawFrame: procedure(dt: real) := nil;
+  /// Событие, происходящее при закрытии основного окна
+  OnClose: procedure;
 
 // -----------------------------------------------------
 //>>     Функции пересечения# Intersection functions
@@ -1529,21 +1531,29 @@ begin
 end;
 
 /// --- SystemKeyEvents
-procedure SystemOnKeyDown(sender: Object; e: KeyEventArgs) := 
+procedure SystemOnKeyDown(sender: Object; e: KeyEventArgs);
+begin
   if OnKeyDown<>nil then
     OnKeyDown(e.Key);
+end;
 
 procedure SystemOnKeyUp(sender: Object; e: KeyEventArgs) := 
+begin
   if OnKeyUp<>nil then
     OnKeyUp(e.Key);
+end;
     
 procedure SystemOnKeyPress(sender: Object; e: TextCompositionEventArgs) := 
+begin
   if (OnKeyPress<>nil) and (e.Text<>nil) and (e.Text.Length>0) then
     OnKeyPress(e.Text[1]);
+end;
     
 procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) := 
+begin
   if OnResize<>nil then
     OnResize();
+end;
 
 var LastUpdatedTimeWPF := new System.TimeSpan(integer.MinValue); 
 
@@ -1571,6 +1581,10 @@ begin
     MainWindow.KeyUp += SystemOnKeyUp;
     MainWindow.TextInput += SystemOnKeyPress;
     MainWindow.SizeChanged += SystemOnResize;
+    MainWindow.Closing += (sender,e) -> begin 
+      if OnClose<>nil then
+        OnClose;
+    end;
     
     CompositionTarget.Rendering += RenderFrameWPF;
     

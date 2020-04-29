@@ -8092,7 +8092,7 @@ function Max(a, b, c, d: integer): integer;
 begin
   Result := a;
   if b > Result then Result := b;
-  if c < Result then Result := c;
+  if c > Result then Result := c;
   if d > Result then Result := d;
 end;
 
@@ -8107,7 +8107,7 @@ function Max(a, b, c, d: real): real;
 begin
   Result := a;
   if b > Result then Result := b;
-  if c < Result then Result := c;
+  if c > Result then Result := c;
   if d > Result then Result := d;
 end;
 

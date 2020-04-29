@@ -492,6 +492,8 @@ var OnKeyUp: procedure(k: Key);
 var OnKeyPress: procedure(ch: char);
 /// Событие изменения размера графического окна
 var OnResize: procedure;
+/// Событие, происходящее при закрытии основного окна
+var OnClose: procedure;
 
 //{{{--doc: Конец секции 3 }}} 
 
@@ -1758,7 +1760,11 @@ public
   
   procedure InitHandlers; override;
   begin
-    Closed += procedure(sender,e) -> begin Halt; end;
+    Closed += (sender,e) -> begin 
+      if OnClose<>nil then
+        OnClose;
+      Halt; 
+    end;
     MouseDown += SystemOnMouseDown;
     MouseUp += SystemOnMouseUp;
     MouseMove += SystemOnMouseMove;
