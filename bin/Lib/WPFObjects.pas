@@ -1187,7 +1187,7 @@ var
   /// Событие изменения размера графического окна
   OnResize: procedure;
   /// Событие перерисовки графического окна. Параметр dt обозначает количество миллисекунд с момента последнего вызова OnDrawFrame
-  OnDrawFrame: procedure(dt: real) := nil;
+  OnDrawFrame: procedure(dt: real);
   /// Событие, происходящее при закрытии основного окна
   OnClose: procedure;
 

@@ -222,7 +222,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 			
 			if (tab.Items.Count > 0) {
-				tab.ChoosedItem = tab.Items[0];
+				tab.ChosenItem = tab.Items[0];
 			}
 			sideBar.Refresh();
 		}
