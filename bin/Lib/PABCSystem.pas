@@ -10462,23 +10462,23 @@ begin
 end;
 
 ///--
-function SystemSliceQuestion<T>(Self: List<T>; situation: integer; from, &to: integer; inverseFrom, inverseTo: boolean): List<T>; extensionmethod;
+function SystemSliceQuestion<T>(Self: List<T>; situation: integer; from, &to: SystemIndex): List<T>; extensionmethod;
 begin
-  if inverseFrom then
-    from := Self.Count - from;
-  if inverseTo then
-    &to := Self.Count - &to;
-  Result := SystemSliceListImplQuestion(Self, situation, from, &to, 1);
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue;
+  Result := SystemSliceListImplQuestion(Self, situation, from.IndexValue, &to.IndexValue, 1);
 end;
 
 ///--
-function SystemSliceQuestion<T>(Self: List<T>; situation: integer; from, &to, step: integer; inverseFrom, inverseTo: boolean): List<T>; extensionmethod;
+function SystemSliceQuestion<T>(Self: List<T>; situation: integer; from, &to: SystemIndex; step: integer): List<T>; extensionmethod;
 begin
-  if inverseFrom then
-    from := Self.Count - from;
-  if inverseTo then
-    &to := Self.Count - &to;
-  Result := SystemSliceListImplQuestion(Self, situation, from, &to, step);
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue;
+  Result := SystemSliceListImplQuestion(Self, situation, from.IndexValue, &to.IndexValue, step);
 end;
 
 // -----------------------------------------------------
@@ -11349,23 +11349,23 @@ begin
 end;
 
 ///--
-function SystemSliceQuestion<T>(Self: array of T; situation: integer; from, &to: integer; inverseFrom, inverseTo: boolean): array of T; extensionmethod;
+function SystemSliceQuestion<T>(Self: array of T; situation: integer; from, &to: SystemIndex): array of T; extensionmethod;
 begin
-  if inverseFrom then
-    from := Self.Count - from;
-  if inverseTo then
-    &to := Self.Count - &to;
-  Result := SystemSliceArrayImplQuestion(Self, situation, from, &to, 1);
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue;
+  Result := SystemSliceArrayImplQuestion(Self, situation, from.IndexValue, &to.IndexValue, 1);
 end;
 
 ///--
-function SystemSliceQuestion<T>(Self: array of T; situation: integer; from, &to, step: integer; inverseFrom, inverseTo: boolean): array of T; extensionmethod;
+function SystemSliceQuestion<T>(Self: array of T; situation: integer; from, &to: SystemIndex; step: integer): array of T; extensionmethod;
 begin
-  if inverseFrom then
-    from := Self.Count - from;
-  if inverseTo then
-    &to := Self.Count - &to;
-  Result := SystemSliceArrayImplQuestion(Self, situation, from, &to, step);
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue;
+  Result := SystemSliceArrayImplQuestion(Self, situation, from.IndexValue, &to.IndexValue, step);
 end;
 
 // -----------------------------------------------------
@@ -11956,23 +11956,23 @@ begin
 end;
 
 ///--
-function SystemSliceQuestion(Self: string; situation: integer; from, &to: integer; inverseFrom, inverseTo: boolean): string; extensionmethod;
+function SystemSliceQuestion(Self: string; situation: integer; from, &to: SystemIndex): string; extensionmethod;
 begin
-  if inverseFrom then
-    from := Self.Count - from;
-  if inverseTo then
-    &to := Self.Count - &to;
-  Result := SystemSliceStringImplQuestion(Self, situation, from, &to, 1);
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue;
+  Result := SystemSliceStringImplQuestion(Self, situation, from.IndexValue, &to.IndexValue, 1);
 end;
 
 ///--
-function SystemSliceQuestion(Self: string; situation: integer; from, &to, step: integer; inverseFrom, inverseTo: boolean): string; extensionmethod;
+function SystemSliceQuestion(Self: string; situation: integer; from, &to: SystemIndex; step: integer): string; extensionmethod;
 begin
-  if inverseFrom then
-    from := Self.Count - from;
-  if inverseTo then
-    &to := Self.Count - &to;
-  Result := SystemSliceStringImplQuestion(Self, situation, from, &to, step);
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue;
+  Result := SystemSliceStringImplQuestion(Self, situation, from.IndexValue, &to.IndexValue, step);
 end;
 //--------------------------------------------
 //>>     Методы расширения типа Func # Extension methods for Func
