@@ -3355,6 +3355,10 @@ relop_expr
         { 
 			$$ = new bin_expr($1, $3, $2.type, @$); 
 		}
+    | relop_expr relop new_question_expr
+        { 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
     | is_type_expr tkRoundOpen pattern_out_param_list tkRoundClose
         {
             var isTypeCheck = $1 as typecast_node;
@@ -3773,6 +3777,10 @@ term1
         { 
 			$$ = new bin_expr($1, $3, $2.type, @$); 
 		}
+    | term1 addop new_question_expr                        
+        { 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
     ;
 
 addop
@@ -3840,6 +3848,8 @@ term
     | term mulop factor                             
         { $$ = new bin_expr($1,$3,($2).type, @$); }
     | term mulop power_expr                             
+        { $$ = new bin_expr($1,$3,($2).type, @$); }
+    | term mulop new_question_expr                             
         { $$ = new bin_expr($1,$3,($2).type, @$); }
     | as_is_expr
 		{ $$ = $1; }

@@ -134,10 +134,11 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(AcceleratorInfoIntel).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->AcceleratorInfoIntel(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'AcceleratorInfoIntel[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($4090) then Result := 'ACCELERATOR_DESCRIPTOR_INTEL' else
+      if self.val = UInt32($4091) then Result := 'ACCELERATOR_REFERENCE_COUNT_INTEL' else
+      if self.val = UInt32($4092) then Result := 'ACCELERATOR_CONTEXT_INTEL' else
+      if self.val = UInt32($4093) then Result := 'ACCELERATOR_TYPE_INTEL' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -152,10 +153,8 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(AcceleratorTypeIntel).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->AcceleratorTypeIntel(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'AcceleratorTypeIntel[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($0000) then Result := 'ACCELERATOR_TYPE_MOTION_ESTIMATION_INTEL' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -178,10 +177,12 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(AddressingMode).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->AddressingMode(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'AddressingMode[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($1130) then Result := 'ADDRESS_NONE' else
+      if self.val = UInt32($1131) then Result := 'ADDRESS_CLAMP_TO_EDGE' else
+      if self.val = UInt32($1132) then Result := 'ADDRESS_CLAMP' else
+      if self.val = UInt32($1133) then Result := 'ADDRESS_REPEAT' else
+      if self.val = UInt32($1134) then Result := 'ADDRESS_MIRRORED_REPEAT' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -202,10 +203,11 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(Bool).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->Bool(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'Bool[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($0000) then Result := 'FALSE' else
+      if self.val = UInt32($0000) then Result := 'NON_BLOCKING' else
+      if self.val = UInt32($0001) then Result := 'BLOCKING' else
+      if self.val = UInt32($0001) then Result := 'TRUE' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -220,10 +222,8 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(BufferCreateType).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->BufferCreateType(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'BufferCreateType[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($1220) then Result := 'BUFFER_CREATE_TYPE_REGION' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -232,22 +232,23 @@ uses System.Runtime.CompilerServices;
     public val: Int32;
     public constructor(val: Int32) := self.val := val;
     
-    private static _BUILD_IN_PROGRESS := new BuildStatus($FFFFFFFFFFFFFFFD);
-    private static _BUILD_ERROR       := new BuildStatus($FFFFFFFFFFFFFFFE);
-    private static _BUILD_NONE        := new BuildStatus($FFFFFFFFFFFFFFFF);
     private static _BUILD_SUCCESS     := new BuildStatus($0000);
+    private static _BUILD_NONE        := new BuildStatus(-1);
+    private static _BUILD_ERROR       := new BuildStatus(-2);
+    private static _BUILD_IN_PROGRESS := new BuildStatus(-3);
     
-    public static property BUILD_IN_PROGRESS: BuildStatus read _BUILD_IN_PROGRESS;
-    public static property BUILD_ERROR:       BuildStatus read _BUILD_ERROR;
-    public static property BUILD_NONE:        BuildStatus read _BUILD_NONE;
     public static property BUILD_SUCCESS:     BuildStatus read _BUILD_SUCCESS;
+    public static property BUILD_NONE:        BuildStatus read _BUILD_NONE;
+    public static property BUILD_ERROR:       BuildStatus read _BUILD_ERROR;
+    public static property BUILD_IN_PROGRESS: BuildStatus read _BUILD_IN_PROGRESS;
     
     public function ToString: string; override;
     begin
-      var res := typeof(BuildStatus).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->BuildStatus(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'BuildStatus[{ self.val=default(Int32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = Int32($0000) then Result := 'BUILD_SUCCESS' else
+      if self.val = Int32(-1) then Result := 'BUILD_NONE' else
+      if self.val = Int32(-2) then Result := 'BUILD_ERROR' else
+      if self.val = Int32(-3) then Result := 'BUILD_IN_PROGRESS' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -314,10 +315,34 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(ChannelOrder).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->ChannelOrder(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'ChannelOrder[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($10B0) then Result := 'R' else
+      if self.val = UInt32($10B1) then Result := 'A' else
+      if self.val = UInt32($10B2) then Result := 'RG' else
+      if self.val = UInt32($10B3) then Result := 'RA' else
+      if self.val = UInt32($10B4) then Result := 'RGB' else
+      if self.val = UInt32($10B5) then Result := 'RGBA' else
+      if self.val = UInt32($10B6) then Result := 'BGRA' else
+      if self.val = UInt32($10B7) then Result := 'ARGB' else
+      if self.val = UInt32($10B8) then Result := 'INTENSITY' else
+      if self.val = UInt32($10B9) then Result := 'LUMINANCE' else
+      if self.val = UInt32($10BA) then Result := 'Rx' else
+      if self.val = UInt32($10BB) then Result := 'RGx' else
+      if self.val = UInt32($10BC) then Result := 'RGBx' else
+      if self.val = UInt32($10BD) then Result := 'DEPTH' else
+      if self.val = UInt32($10BE) then Result := 'DEPTH_STENCIL' else
+      if self.val = UInt32($10BF) then Result := 'sRGB' else
+      if self.val = UInt32($10C0) then Result := 'sRGBx' else
+      if self.val = UInt32($10C1) then Result := 'sRGBA' else
+      if self.val = UInt32($10C2) then Result := 'sBGRA' else
+      if self.val = UInt32($10C3) then Result := 'ABGR' else
+      if self.val = UInt32($4076) then Result := 'YUYV_INTEL' else
+      if self.val = UInt32($4077) then Result := 'UYVY_INTEL' else
+      if self.val = UInt32($4078) then Result := 'YVYU_INTEL' else
+      if self.val = UInt32($4079) then Result := 'VYUY_INTEL' else
+      if self.val = UInt32($40D0) then Result := 'NV21_IMG' else
+      if self.val = UInt32($40D1) then Result := 'YV12_IMG' else
+      if self.val = UInt32($410E) then Result := 'NV12_INTEL' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -364,10 +389,24 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(ChannelType).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->ChannelType(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'ChannelType[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($10D0) then Result := 'SNORM_INT8' else
+      if self.val = UInt32($10D1) then Result := 'SNORM_INT16' else
+      if self.val = UInt32($10D2) then Result := 'UNORM_INT8' else
+      if self.val = UInt32($10D3) then Result := 'UNORM_INT16' else
+      if self.val = UInt32($10D4) then Result := 'UNORM_SHORT_565' else
+      if self.val = UInt32($10D5) then Result := 'UNORM_SHORT_555' else
+      if self.val = UInt32($10D6) then Result := 'UNORM_INT_101010' else
+      if self.val = UInt32($10D7) then Result := 'SIGNED_INT8' else
+      if self.val = UInt32($10D8) then Result := 'SIGNED_INT16' else
+      if self.val = UInt32($10D9) then Result := 'SIGNED_INT32' else
+      if self.val = UInt32($10DA) then Result := 'UNSIGNED_INT8' else
+      if self.val = UInt32($10DB) then Result := 'UNSIGNED_INT16' else
+      if self.val = UInt32($10DC) then Result := 'UNSIGNED_INT32' else
+      if self.val = UInt32($10DD) then Result := 'HALF_FLOAT' else
+      if self.val = UInt32($10DE) then Result := 'FLOAT' else
+      if self.val = UInt32($10DF) then Result := 'UNORM_INT24' else
+      if self.val = UInt32($10E0) then Result := 'UNORM_INT_101010_2' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -388,10 +427,11 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(CommandExecutionStatus).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->CommandExecutionStatus(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'CommandExecutionStatus[{ self.val=default(Int32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = Int32($0000) then Result := 'COMPLETE' else
+      if self.val = Int32($0001) then Result := 'RUNNING' else
+      if self.val = Int32($0002) then Result := 'SUBMITTED' else
+      if self.val = Int32($0003) then Result := 'QUEUED' else
+        Result := self.val.ToString;
     end;
     
     public function IS_ERROR := val < 0;
@@ -418,10 +458,13 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(CommandQueueInfo).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->CommandQueueInfo(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'CommandQueueInfo[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($1090) then Result := 'QUEUE_CONTEXT' else
+      if self.val = UInt32($1091) then Result := 'QUEUE_DEVICE' else
+      if self.val = UInt32($1092) then Result := 'QUEUE_REFERENCE_COUNT' else
+      if self.val = UInt32($1093) then Result := 'QUEUE_PROPERTIES' else
+      if self.val = UInt32($1094) then Result := 'QUEUE_SIZE' else
+      if self.val = UInt32($1095) then Result := 'QUEUE_DEVICE_DEFAULT' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -430,35 +473,44 @@ uses System.Runtime.CompilerServices;
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    private static _QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL := new CommandQueueProperties($FFFFFFFF80000000);
     private static _QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE  := new CommandQueueProperties($0001);
     private static _QUEUE_PROFILING_ENABLE               := new CommandQueueProperties($0002);
     private static _QUEUE_ON_DEVICE                      := new CommandQueueProperties($0004);
     private static _QUEUE_ON_DEVICE_DEFAULT              := new CommandQueueProperties($0008);
     private static _QUEUE_RESERVED_QCOM                  := new CommandQueueProperties($40000000);
+    private static _QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL := new CommandQueueProperties($FFFFFFFF80000000);
     
-    public static property QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL: CommandQueueProperties read _QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL;
     public static property QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE:  CommandQueueProperties read _QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE;
     public static property QUEUE_PROFILING_ENABLE:               CommandQueueProperties read _QUEUE_PROFILING_ENABLE;
     public static property QUEUE_ON_DEVICE:                      CommandQueueProperties read _QUEUE_ON_DEVICE;
     public static property QUEUE_ON_DEVICE_DEFAULT:              CommandQueueProperties read _QUEUE_ON_DEVICE_DEFAULT;
     public static property QUEUE_RESERVED_QCOM:                  CommandQueueProperties read _QUEUE_RESERVED_QCOM;
+    public static property QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL: CommandQueueProperties read _QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL;
     
     public static function operator or(f1,f2: CommandQueueProperties) := new CommandQueueProperties(f1.val or f2.val);
     
-    public property HAS_FLAG_QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL: boolean read self.val and $FFFFFFFF80000000 <> 0;
     public property HAS_FLAG_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE:  boolean read self.val and $0001 <> 0;
     public property HAS_FLAG_QUEUE_PROFILING_ENABLE:               boolean read self.val and $0002 <> 0;
     public property HAS_FLAG_QUEUE_ON_DEVICE:                      boolean read self.val and $0004 <> 0;
     public property HAS_FLAG_QUEUE_ON_DEVICE_DEFAULT:              boolean read self.val and $0008 <> 0;
     public property HAS_FLAG_QUEUE_RESERVED_QCOM:                  boolean read self.val and $40000000 <> 0;
+    public property HAS_FLAG_QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL: boolean read self.val and $FFFFFFFF80000000 <> 0;
     
     public function ToString: string; override;
     begin
-      var res := typeof(CommandQueueProperties).GetProperties.Where(prop->prop.Name.StartsWith('HAS_FLAG_') and boolean(prop.GetValue(self))).Select(prop->prop.Name.TrimStart('&')).ToList;
-      Result := res.Count=0?
-        $'CommandQueueProperties[{ self.val=default(UInt64) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.JoinToString('+');
+      var res := new StringBuilder;
+      if self.val and UInt64($0001) = UInt64($0001) then res += 'QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE+';
+      if self.val and UInt64($0002) = UInt64($0002) then res += 'QUEUE_PROFILING_ENABLE+';
+      if self.val and UInt64($0004) = UInt64($0004) then res += 'QUEUE_ON_DEVICE+';
+      if self.val and UInt64($0008) = UInt64($0008) then res += 'QUEUE_ON_DEVICE_DEFAULT+';
+      if self.val and UInt64($40000000) = UInt64($40000000) then res += 'QUEUE_RESERVED_QCOM+';
+      if self.val and UInt64($FFFFFFFF80000000) = UInt64($FFFFFFFF80000000) then res += 'QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL+';
+      if res.Length<>0 then
+      begin
+        res.Length -= 1;
+        Result := res.ToString;
+      end else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -497,6 +549,7 @@ uses System.Runtime.CompilerServices;
     private static _COMMAND_SVM_MEMFILL                         := new CommandType($120B);
     private static _COMMAND_SVM_MAP                             := new CommandType($120C);
     private static _COMMAND_SVM_UNMAP                           := new CommandType($120D);
+    private static _COMMAND_SVM_MIGRATE_MEM                     := new CommandType($120E);
     private static _COMMAND_GL_FENCE_SYNC_OBJECT_KHR            := new CommandType($200D);
     private static _COMMAND_ACQUIRE_DX9_MEDIA_SURFACES_KHR      := new CommandType($202B);
     private static _COMMAND_RELEASE_DX9_MEDIA_SURFACES_KHR      := new CommandType($202C);
@@ -544,6 +597,7 @@ uses System.Runtime.CompilerServices;
     public static property COMMAND_SVM_MEMFILL:                         CommandType read _COMMAND_SVM_MEMFILL;
     public static property COMMAND_SVM_MAP:                             CommandType read _COMMAND_SVM_MAP;
     public static property COMMAND_SVM_UNMAP:                           CommandType read _COMMAND_SVM_UNMAP;
+    public static property COMMAND_SVM_MIGRATE_MEM:                     CommandType read _COMMAND_SVM_MIGRATE_MEM;
     public static property COMMAND_GL_FENCE_SYNC_OBJECT_KHR:            CommandType read _COMMAND_GL_FENCE_SYNC_OBJECT_KHR;
     public static property COMMAND_ACQUIRE_DX9_MEDIA_SURFACES_KHR:      CommandType read _COMMAND_ACQUIRE_DX9_MEDIA_SURFACES_KHR;
     public static property COMMAND_RELEASE_DX9_MEDIA_SURFACES_KHR:      CommandType read _COMMAND_RELEASE_DX9_MEDIA_SURFACES_KHR;
@@ -563,10 +617,54 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(CommandType).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->CommandType(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'CommandType[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($11F0) then Result := 'COMMAND_NDRANGE_KERNEL' else
+      if self.val = UInt32($11F1) then Result := 'COMMAND_TASK' else
+      if self.val = UInt32($11F2) then Result := 'COMMAND_NATIVE_KERNEL' else
+      if self.val = UInt32($11F3) then Result := 'COMMAND_READ_BUFFER' else
+      if self.val = UInt32($11F4) then Result := 'COMMAND_WRITE_BUFFER' else
+      if self.val = UInt32($11F5) then Result := 'COMMAND_COPY_BUFFER' else
+      if self.val = UInt32($11F6) then Result := 'COMMAND_READ_IMAGE' else
+      if self.val = UInt32($11F7) then Result := 'COMMAND_WRITE_IMAGE' else
+      if self.val = UInt32($11F8) then Result := 'COMMAND_COPY_IMAGE' else
+      if self.val = UInt32($11F9) then Result := 'COMMAND_COPY_IMAGE_TO_BUFFER' else
+      if self.val = UInt32($11FA) then Result := 'COMMAND_COPY_BUFFER_TO_IMAGE' else
+      if self.val = UInt32($11FB) then Result := 'COMMAND_MAP_BUFFER' else
+      if self.val = UInt32($11FC) then Result := 'COMMAND_MAP_IMAGE' else
+      if self.val = UInt32($11FD) then Result := 'COMMAND_UNMAP_MEM_OBJECT' else
+      if self.val = UInt32($11FE) then Result := 'COMMAND_MARKER' else
+      if self.val = UInt32($11FF) then Result := 'COMMAND_ACQUIRE_GL_OBJECTS' else
+      if self.val = UInt32($1200) then Result := 'COMMAND_RELEASE_GL_OBJECTS' else
+      if self.val = UInt32($1201) then Result := 'COMMAND_READ_BUFFER_RECT' else
+      if self.val = UInt32($1202) then Result := 'COMMAND_WRITE_BUFFER_RECT' else
+      if self.val = UInt32($1203) then Result := 'COMMAND_COPY_BUFFER_RECT' else
+      if self.val = UInt32($1204) then Result := 'COMMAND_USER' else
+      if self.val = UInt32($1205) then Result := 'COMMAND_BARRIER' else
+      if self.val = UInt32($1206) then Result := 'COMMAND_MIGRATE_MEM_OBJECTS' else
+      if self.val = UInt32($1207) then Result := 'COMMAND_FILL_BUFFER' else
+      if self.val = UInt32($1208) then Result := 'COMMAND_FILL_IMAGE' else
+      if self.val = UInt32($1209) then Result := 'COMMAND_SVM_FREE' else
+      if self.val = UInt32($120A) then Result := 'COMMAND_SVM_MEMCPY' else
+      if self.val = UInt32($120B) then Result := 'COMMAND_SVM_MEMFILL' else
+      if self.val = UInt32($120C) then Result := 'COMMAND_SVM_MAP' else
+      if self.val = UInt32($120D) then Result := 'COMMAND_SVM_UNMAP' else
+      if self.val = UInt32($120E) then Result := 'COMMAND_SVM_MIGRATE_MEM' else
+      if self.val = UInt32($200D) then Result := 'COMMAND_GL_FENCE_SYNC_OBJECT_KHR' else
+      if self.val = UInt32($202B) then Result := 'COMMAND_ACQUIRE_DX9_MEDIA_SURFACES_KHR' else
+      if self.val = UInt32($202C) then Result := 'COMMAND_RELEASE_DX9_MEDIA_SURFACES_KHR' else
+      if self.val = UInt32($4017) then Result := 'COMMAND_ACQUIRE_D3D10_OBJECTS_KHR' else
+      if self.val = UInt32($4018) then Result := 'COMMAND_RELEASE_D3D10_OBJECTS_KHR' else
+      if self.val = UInt32($4020) then Result := 'COMMAND_ACQUIRE_D3D11_OBJECTS_KHR' else
+      if self.val = UInt32($4021) then Result := 'COMMAND_RELEASE_D3D11_OBJECTS_KHR' else
+      if self.val = UInt32($402A) then Result := 'COMMAND_ACQUIRE_DX9_OBJECTS_INTEL' else
+      if self.val = UInt32($402B) then Result := 'COMMAND_RELEASE_DX9_OBJECTS_INTEL' else
+      if self.val = UInt32($4040) then Result := 'COMMAND_MIGRATE_MEM_OBJECT_EXT' else
+      if self.val = UInt32($409A) then Result := 'COMMAND_ACQUIRE_VA_API_MEDIA_SURFACES_INTEL' else
+      if self.val = UInt32($409B) then Result := 'COMMAND_RELEASE_VA_API_MEDIA_SURFACES_INTEL' else
+      if self.val = UInt32($4204) then Result := 'COMMAND_MEMFILL_INTEL' else
+      if self.val = UInt32($4205) then Result := 'COMMAND_MEMCPY_INTEL' else
+      if self.val = UInt32($4206) then Result := 'COMMAND_MIGRATEMEM_INTEL' else
+      if self.val = UInt32($4207) then Result := 'COMMAND_MEMADVISE_INTEL' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -609,10 +707,22 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(ContextInfo).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->ContextInfo(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'ContextInfo[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($1080) then Result := 'CONTEXT_REFERENCE_COUNT' else
+      if self.val = UInt32($1081) then Result := 'CONTEXT_DEVICES' else
+      if self.val = UInt32($1082) then Result := 'CONTEXT_PROPERTIES' else
+      if self.val = UInt32($1083) then Result := 'CONTEXT_NUM_DEVICES' else
+      if self.val = UInt32($2025) then Result := 'CONTEXT_ADAPTER_D3D9_KHR' else
+      if self.val = UInt32($2026) then Result := 'CONTEXT_ADAPTER_D3D9EX_KHR' else
+      if self.val = UInt32($2027) then Result := 'CONTEXT_ADAPTER_DXVA_KHR' else
+      if self.val = UInt32($4014) then Result := 'CONTEXT_D3D10_DEVICE_KHR' else
+      if self.val = UInt32($401D) then Result := 'CONTEXT_D3D11_DEVICE_KHR' else
+      if self.val = UInt32($4026) then Result := 'CONTEXT_D3D9_DEVICE_INTEL' else
+      if self.val = UInt32($402C) then Result := 'CONTEXT_D3D10_PREFER_SHARED_RESOURCES_KHR' else
+      if self.val = UInt32($402D) then Result := 'CONTEXT_D3D11_PREFER_SHARED_RESOURCES_KHR' else
+      if self.val = UInt32($4072) then Result := 'CONTEXT_D3D9EX_DEVICE_INTEL' else
+      if self.val = UInt32($4073) then Result := 'CONTEXT_DXVA_DEVICE_INTEL' else
+      if self.val = UInt32($4097) then Result := 'CONTEXT_VA_API_DISPLAY_INTEL' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -646,10 +756,17 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(ContextProperties).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->ContextProperties(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'ContextProperties[{ self.val=default(IntPtr) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = IntPtr($1084) then Result := 'CONTEXT_PLATFORM' else
+      if self.val = IntPtr($1085) then Result := 'CONTEXT_INTEROP_USER_SYNC' else
+      if self.val = IntPtr($2008) then Result := 'GL_CONTEXT_KHR' else
+      if self.val = IntPtr($2009) then Result := 'EGL_DISPLAY_KHR' else
+      if self.val = IntPtr($200A) then Result := 'GLX_DISPLAY_KHR' else
+      if self.val = IntPtr($200B) then Result := 'WGL_HDC_KHR' else
+      if self.val = IntPtr($200C) then Result := 'CGL_SHAREGROUP_KHR' else
+      if self.val = IntPtr($2032) then Result := 'CONTEXT_TERMINATE_KHR' else
+      if self.val = IntPtr($40B0) then Result := 'PRINTF_CALLBACK_ARM' else
+      if self.val = IntPtr($40B1) then Result := 'PRINTF_BUFFERSIZE_ARM' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -683,10 +800,19 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(DeviceAffinityDomain).GetProperties.Where(prop->prop.Name.StartsWith('HAS_FLAG_') and boolean(prop.GetValue(self))).Select(prop->prop.Name.TrimStart('&')).ToList;
-      Result := res.Count=0?
-        $'DeviceAffinityDomain[{ self.val=default(UInt64) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.JoinToString('+');
+      var res := new StringBuilder;
+      if self.val and UInt64($0001) = UInt64($0001) then res += 'DEVICE_AFFINITY_DOMAIN_NUMA+';
+      if self.val and UInt64($0002) = UInt64($0002) then res += 'DEVICE_AFFINITY_DOMAIN_L4_CACHE+';
+      if self.val and UInt64($0004) = UInt64($0004) then res += 'DEVICE_AFFINITY_DOMAIN_L3_CACHE+';
+      if self.val and UInt64($0008) = UInt64($0008) then res += 'DEVICE_AFFINITY_DOMAIN_L2_CACHE+';
+      if self.val and UInt64($0010) = UInt64($0010) then res += 'DEVICE_AFFINITY_DOMAIN_L1_CACHE+';
+      if self.val and UInt64($0020) = UInt64($0020) then res += 'DEVICE_AFFINITY_DOMAIN_NEXT_PARTITIONABLE+';
+      if res.Length<>0 then
+      begin
+        res.Length -= 1;
+        Result := res.ToString;
+      end else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -708,10 +834,15 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(DeviceExecCapabilities).GetProperties.Where(prop->prop.Name.StartsWith('HAS_FLAG_') and boolean(prop.GetValue(self))).Select(prop->prop.Name.TrimStart('&')).ToList;
-      Result := res.Count=0?
-        $'DeviceExecCapabilities[{ self.val=default(UInt64) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.JoinToString('+');
+      var res := new StringBuilder;
+      if self.val and UInt64($0001) = UInt64($0001) then res += 'EXEC_KERNEL+';
+      if self.val and UInt64($0002) = UInt64($0002) then res += 'EXEC_NATIVE_KERNEL+';
+      if res.Length<>0 then
+      begin
+        res.Length -= 1;
+        Result := res.ToString;
+      end else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -751,10 +882,21 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(DeviceFPConfig).GetProperties.Where(prop->prop.Name.StartsWith('HAS_FLAG_') and boolean(prop.GetValue(self))).Select(prop->prop.Name.TrimStart('&')).ToList;
-      Result := res.Count=0?
-        $'DeviceFPConfig[{ self.val=default(UInt64) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.JoinToString('+');
+      var res := new StringBuilder;
+      if self.val and UInt64($0001) = UInt64($0001) then res += 'FP_DENORM+';
+      if self.val and UInt64($0002) = UInt64($0002) then res += 'FP_INF_NAN+';
+      if self.val and UInt64($0004) = UInt64($0004) then res += 'FP_ROUND_TO_NEAREST+';
+      if self.val and UInt64($0008) = UInt64($0008) then res += 'FP_ROUND_TO_ZERO+';
+      if self.val and UInt64($0010) = UInt64($0010) then res += 'FP_ROUND_TO_INF+';
+      if self.val and UInt64($0020) = UInt64($0020) then res += 'FP_FMA+';
+      if self.val and UInt64($0040) = UInt64($0040) then res += 'FP_SOFT_FLOAT+';
+      if self.val and UInt64($0080) = UInt64($0080) then res += 'FP_CORRECTLY_ROUNDED_DIVIDE_SQRT+';
+      if res.Length<>0 then
+      begin
+        res.Length -= 1;
+        Result := res.ToString;
+      end else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -859,6 +1001,16 @@ uses System.Runtime.CompilerServices;
     private static _DEVICE_IL_VERSION_KHR                              := new DeviceInfo($105B);
     private static _DEVICE_MAX_NUM_SUB_GROUPS                          := new DeviceInfo($105C);
     private static _DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS      := new DeviceInfo($105D);
+    private static _DEVICE_ATOMIC_MEMORY_CAPABILITIES                  := new DeviceInfo($1063);
+    private static _DEVICE_ATOMIC_FENCE_CAPABILITIES                   := new DeviceInfo($1064);
+    private static _DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT              := new DeviceInfo($1065);
+    private static _DEVICE_OPENCL_C_VERSIONS                           := new DeviceInfo($1066);
+    private static _DEVICE_MAX_WRITE_IMAGE3D_ARGS                      := new DeviceInfo($1067);
+    private static _DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT     := new DeviceInfo($1068);
+    private static _DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT               := new DeviceInfo($1069);
+    private static _DEVICE_OPENCL_C_FEATURES                           := new DeviceInfo($106F);
+    private static _DEVICE_DEVICE_ENQUEUE_SUPPORT                      := new DeviceInfo($1070);
+    private static _DEVICE_PIPE_SUPPORT                                := new DeviceInfo($1071);
     private static _PROGRAM_IL_KHR                                     := new DeviceInfo($1169);
     private static _DEVICE_TERMINATE_CAPABILITY_KHR                    := new DeviceInfo($2031);
     private static _DEVICE_MAX_NAMED_BARRIER_COUNT_KHR                 := new DeviceInfo($2035);
@@ -988,6 +1140,16 @@ uses System.Runtime.CompilerServices;
     public static property DEVICE_IL_VERSION_KHR:                              DeviceInfo read _DEVICE_IL_VERSION_KHR;
     public static property DEVICE_MAX_NUM_SUB_GROUPS:                          DeviceInfo read _DEVICE_MAX_NUM_SUB_GROUPS;
     public static property DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS:      DeviceInfo read _DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS;
+    public static property DEVICE_ATOMIC_MEMORY_CAPABILITIES:                  DeviceInfo read _DEVICE_ATOMIC_MEMORY_CAPABILITIES;
+    public static property DEVICE_ATOMIC_FENCE_CAPABILITIES:                   DeviceInfo read _DEVICE_ATOMIC_FENCE_CAPABILITIES;
+    public static property DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT:              DeviceInfo read _DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT;
+    public static property DEVICE_OPENCL_C_VERSIONS:                           DeviceInfo read _DEVICE_OPENCL_C_VERSIONS;
+    public static property DEVICE_MAX_WRITE_IMAGE3D_ARGS:                      DeviceInfo read _DEVICE_MAX_WRITE_IMAGE3D_ARGS;
+    public static property DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT:     DeviceInfo read _DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT;
+    public static property DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT:               DeviceInfo read _DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT;
+    public static property DEVICE_OPENCL_C_FEATURES:                           DeviceInfo read _DEVICE_OPENCL_C_FEATURES;
+    public static property DEVICE_DEVICE_ENQUEUE_SUPPORT:                      DeviceInfo read _DEVICE_DEVICE_ENQUEUE_SUPPORT;
+    public static property DEVICE_PIPE_SUPPORT:                                DeviceInfo read _DEVICE_PIPE_SUPPORT;
     public static property PROGRAM_IL_KHR:                                     DeviceInfo read _PROGRAM_IL_KHR;
     public static property DEVICE_TERMINATE_CAPABILITY_KHR:                    DeviceInfo read _DEVICE_TERMINATE_CAPABILITY_KHR;
     public static property DEVICE_MAX_NAMED_BARRIER_COUNT_KHR:                 DeviceInfo read _DEVICE_MAX_NAMED_BARRIER_COUNT_KHR;
@@ -1023,10 +1185,145 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(DeviceInfo).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->DeviceInfo(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'DeviceInfo[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($1000) then Result := 'DEVICE_TYPE' else
+      if self.val = UInt32($1001) then Result := 'DEVICE_VENDOR_ID' else
+      if self.val = UInt32($1002) then Result := 'DEVICE_MAX_COMPUTE_UNITS' else
+      if self.val = UInt32($1003) then Result := 'DEVICE_MAX_WORK_ITEM_DIMENSIONS' else
+      if self.val = UInt32($1004) then Result := 'DEVICE_MAX_WORK_GROUP_SIZE' else
+      if self.val = UInt32($1005) then Result := 'DEVICE_MAX_WORK_ITEM_SIZES' else
+      if self.val = UInt32($1006) then Result := 'DEVICE_PREFERRED_VECTOR_WIDTH_CHAR' else
+      if self.val = UInt32($1007) then Result := 'DEVICE_PREFERRED_VECTOR_WIDTH_SHORT' else
+      if self.val = UInt32($1008) then Result := 'DEVICE_PREFERRED_VECTOR_WIDTH_INT' else
+      if self.val = UInt32($1009) then Result := 'DEVICE_PREFERRED_VECTOR_WIDTH_LONG' else
+      if self.val = UInt32($100A) then Result := 'DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT' else
+      if self.val = UInt32($100B) then Result := 'DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE' else
+      if self.val = UInt32($100C) then Result := 'DEVICE_MAX_CLOCK_FREQUENCY' else
+      if self.val = UInt32($100D) then Result := 'DEVICE_ADDRESS_BITS' else
+      if self.val = UInt32($100E) then Result := 'DEVICE_MAX_READ_IMAGE_ARGS' else
+      if self.val = UInt32($100F) then Result := 'DEVICE_MAX_WRITE_IMAGE_ARGS' else
+      if self.val = UInt32($1010) then Result := 'DEVICE_MAX_MEM_ALLOC_SIZE' else
+      if self.val = UInt32($1011) then Result := 'DEVICE_IMAGE2D_MAX_WIDTH' else
+      if self.val = UInt32($1012) then Result := 'DEVICE_IMAGE2D_MAX_HEIGHT' else
+      if self.val = UInt32($1013) then Result := 'DEVICE_IMAGE3D_MAX_WIDTH' else
+      if self.val = UInt32($1014) then Result := 'DEVICE_IMAGE3D_MAX_HEIGHT' else
+      if self.val = UInt32($1015) then Result := 'DEVICE_IMAGE3D_MAX_DEPTH' else
+      if self.val = UInt32($1016) then Result := 'DEVICE_IMAGE_SUPPORT' else
+      if self.val = UInt32($1017) then Result := 'DEVICE_MAX_PARAMETER_SIZE' else
+      if self.val = UInt32($1018) then Result := 'DEVICE_MAX_SAMPLERS' else
+      if self.val = UInt32($1019) then Result := 'DEVICE_MEM_BASE_ADDR_ALIGN' else
+      if self.val = UInt32($101A) then Result := 'DEVICE_MIN_DATA_TYPE_ALIGN_SIZE' else
+      if self.val = UInt32($101B) then Result := 'DEVICE_SINGLE_FP_CONFIG' else
+      if self.val = UInt32($101C) then Result := 'DEVICE_GLOBAL_MEM_CACHE_TYPE' else
+      if self.val = UInt32($101D) then Result := 'DEVICE_GLOBAL_MEM_CACHELINE_SIZE' else
+      if self.val = UInt32($101E) then Result := 'DEVICE_GLOBAL_MEM_CACHE_SIZE' else
+      if self.val = UInt32($101F) then Result := 'DEVICE_GLOBAL_MEM_SIZE' else
+      if self.val = UInt32($1020) then Result := 'DEVICE_MAX_CONSTANT_BUFFER_SIZE' else
+      if self.val = UInt32($1021) then Result := 'DEVICE_MAX_CONSTANT_ARGS' else
+      if self.val = UInt32($1022) then Result := 'DEVICE_LOCAL_MEM_TYPE' else
+      if self.val = UInt32($1023) then Result := 'DEVICE_LOCAL_MEM_SIZE' else
+      if self.val = UInt32($1024) then Result := 'DEVICE_ERROR_CORRECTION_SUPPORT' else
+      if self.val = UInt32($1025) then Result := 'DEVICE_PROFILING_TIMER_RESOLUTION' else
+      if self.val = UInt32($1026) then Result := 'DEVICE_ENDIAN_LITTLE' else
+      if self.val = UInt32($1027) then Result := 'DEVICE_AVAILABLE' else
+      if self.val = UInt32($1028) then Result := 'DEVICE_COMPILER_AVAILABLE' else
+      if self.val = UInt32($1029) then Result := 'DEVICE_EXECUTION_CAPABILITIES' else
+      if self.val = UInt32($102A) then Result := 'DEVICE_QUEUE_ON_HOST_PROPERTIES' else
+      if self.val = UInt32($102A) then Result := 'DEVICE_QUEUE_PROPERTIES' else
+      if self.val = UInt32($102B) then Result := 'DEVICE_NAME' else
+      if self.val = UInt32($102C) then Result := 'DEVICE_VENDOR' else
+      if self.val = UInt32($102D) then Result := 'DRIVER_VERSION' else
+      if self.val = UInt32($102E) then Result := 'DEVICE_PROFILE' else
+      if self.val = UInt32($102F) then Result := 'DEVICE_VERSION' else
+      if self.val = UInt32($1030) then Result := 'DEVICE_EXTENSIONS' else
+      if self.val = UInt32($1031) then Result := 'DEVICE_PLATFORM' else
+      if self.val = UInt32($1032) then Result := 'DEVICE_DOUBLE_FP_CONFIG' else
+      if self.val = UInt32($1033) then Result := 'DEVICE_HALF_FP_CONFIG' else
+      if self.val = UInt32($1034) then Result := 'DEVICE_PREFERRED_VECTOR_WIDTH_HALF' else
+      if self.val = UInt32($1035) then Result := 'DEVICE_HOST_UNIFIED_MEMORY' else
+      if self.val = UInt32($1036) then Result := 'DEVICE_NATIVE_VECTOR_WIDTH_CHAR' else
+      if self.val = UInt32($1037) then Result := 'DEVICE_NATIVE_VECTOR_WIDTH_SHORT' else
+      if self.val = UInt32($1038) then Result := 'DEVICE_NATIVE_VECTOR_WIDTH_INT' else
+      if self.val = UInt32($1039) then Result := 'DEVICE_NATIVE_VECTOR_WIDTH_LONG' else
+      if self.val = UInt32($103A) then Result := 'DEVICE_NATIVE_VECTOR_WIDTH_FLOAT' else
+      if self.val = UInt32($103B) then Result := 'DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE' else
+      if self.val = UInt32($103C) then Result := 'DEVICE_NATIVE_VECTOR_WIDTH_HALF' else
+      if self.val = UInt32($103D) then Result := 'DEVICE_OPENCL_C_VERSION' else
+      if self.val = UInt32($103E) then Result := 'DEVICE_LINKER_AVAILABLE' else
+      if self.val = UInt32($103F) then Result := 'DEVICE_BUILT_IN_KERNELS' else
+      if self.val = UInt32($1040) then Result := 'DEVICE_IMAGE_MAX_BUFFER_SIZE' else
+      if self.val = UInt32($1041) then Result := 'DEVICE_IMAGE_MAX_ARRAY_SIZE' else
+      if self.val = UInt32($1042) then Result := 'DEVICE_PARENT_DEVICE' else
+      if self.val = UInt32($1043) then Result := 'DEVICE_PARTITION_MAX_SUB_DEVICES' else
+      if self.val = UInt32($1044) then Result := 'DEVICE_PARTITION_PROPERTIES' else
+      if self.val = UInt32($1045) then Result := 'DEVICE_PARTITION_AFFINITY_DOMAIN' else
+      if self.val = UInt32($1046) then Result := 'DEVICE_PARTITION_TYPE' else
+      if self.val = UInt32($1047) then Result := 'DEVICE_REFERENCE_COUNT' else
+      if self.val = UInt32($1048) then Result := 'DEVICE_PREFERRED_INTEROP_USER_SYNC' else
+      if self.val = UInt32($1049) then Result := 'DEVICE_PRINTF_BUFFER_SIZE' else
+      if self.val = UInt32($104A) then Result := 'DEVICE_IMAGE_PITCH_ALIGNMENT' else
+      if self.val = UInt32($104B) then Result := 'DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT' else
+      if self.val = UInt32($104C) then Result := 'DEVICE_MAX_READ_WRITE_IMAGE_ARGS' else
+      if self.val = UInt32($104D) then Result := 'DEVICE_MAX_GLOBAL_VARIABLE_SIZE' else
+      if self.val = UInt32($104E) then Result := 'DEVICE_QUEUE_ON_DEVICE_PROPERTIES' else
+      if self.val = UInt32($104F) then Result := 'DEVICE_QUEUE_ON_DEVICE_PREFERRED_SIZE' else
+      if self.val = UInt32($1050) then Result := 'DEVICE_QUEUE_ON_DEVICE_MAX_SIZE' else
+      if self.val = UInt32($1051) then Result := 'DEVICE_MAX_ON_DEVICE_QUEUES' else
+      if self.val = UInt32($1052) then Result := 'DEVICE_MAX_ON_DEVICE_EVENTS' else
+      if self.val = UInt32($1053) then Result := 'DEVICE_SVM_CAPABILITIES' else
+      if self.val = UInt32($1054) then Result := 'DEVICE_GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE' else
+      if self.val = UInt32($1055) then Result := 'DEVICE_MAX_PIPE_ARGS' else
+      if self.val = UInt32($1056) then Result := 'DEVICE_PIPE_MAX_ACTIVE_RESERVATIONS' else
+      if self.val = UInt32($1057) then Result := 'DEVICE_PIPE_MAX_PACKET_SIZE' else
+      if self.val = UInt32($1058) then Result := 'DEVICE_PREFERRED_PLATFORM_ATOMIC_ALIGNMENT' else
+      if self.val = UInt32($1059) then Result := 'DEVICE_PREFERRED_GLOBAL_ATOMIC_ALIGNMENT' else
+      if self.val = UInt32($105A) then Result := 'DEVICE_PREFERRED_LOCAL_ATOMIC_ALIGNMENT' else
+      if self.val = UInt32($105B) then Result := 'DEVICE_IL_VERSION' else
+      if self.val = UInt32($105B) then Result := 'DEVICE_IL_VERSION_KHR' else
+      if self.val = UInt32($105C) then Result := 'DEVICE_MAX_NUM_SUB_GROUPS' else
+      if self.val = UInt32($105D) then Result := 'DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS' else
+      if self.val = UInt32($1063) then Result := 'DEVICE_ATOMIC_MEMORY_CAPABILITIES' else
+      if self.val = UInt32($1064) then Result := 'DEVICE_ATOMIC_FENCE_CAPABILITIES' else
+      if self.val = UInt32($1065) then Result := 'DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT' else
+      if self.val = UInt32($1066) then Result := 'DEVICE_OPENCL_C_VERSIONS' else
+      if self.val = UInt32($1067) then Result := 'DEVICE_MAX_WRITE_IMAGE3D_ARGS' else
+      if self.val = UInt32($1068) then Result := 'DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT' else
+      if self.val = UInt32($1069) then Result := 'DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT' else
+      if self.val = UInt32($106F) then Result := 'DEVICE_OPENCL_C_FEATURES' else
+      if self.val = UInt32($1070) then Result := 'DEVICE_DEVICE_ENQUEUE_SUPPORT' else
+      if self.val = UInt32($1071) then Result := 'DEVICE_PIPE_SUPPORT' else
+      if self.val = UInt32($1169) then Result := 'PROGRAM_IL_KHR' else
+      if self.val = UInt32($2031) then Result := 'DEVICE_TERMINATE_CAPABILITY_KHR' else
+      if self.val = UInt32($2035) then Result := 'DEVICE_MAX_NAMED_BARRIER_COUNT_KHR' else
+      if self.val = UInt32($4000) then Result := 'DEVICE_COMPUTE_CAPABILITY_MAJOR_NV' else
+      if self.val = UInt32($4001) then Result := 'DEVICE_COMPUTE_CAPABILITY_MINOR_NV' else
+      if self.val = UInt32($4002) then Result := 'DEVICE_REGISTERS_PER_BLOCK_NV' else
+      if self.val = UInt32($4003) then Result := 'DEVICE_WARP_SIZE_NV' else
+      if self.val = UInt32($4004) then Result := 'DEVICE_GPU_OVERLAP_NV' else
+      if self.val = UInt32($4005) then Result := 'DEVICE_KERNEL_EXEC_TIMEOUT_NV' else
+      if self.val = UInt32($4006) then Result := 'DEVICE_INTEGRATED_MEMORY_NV' else
+      if self.val = UInt32($4036) then Result := 'DEVICE_PROFILING_TIMER_OFFSET_AMD' else
+      if self.val = UInt32($4054) then Result := 'DEVICE_PARENT_DEVICE_EXT' else
+      if self.val = UInt32($4055) then Result := 'DEVICE_PARTITION_TYPES_EXT' else
+      if self.val = UInt32($4056) then Result := 'DEVICE_AFFINITY_DOMAINS_EXT' else
+      if self.val = UInt32($4057) then Result := 'DEVICE_REFERENCE_COUNT_EXT' else
+      if self.val = UInt32($4058) then Result := 'DEVICE_PARTITION_STYLE_EXT' else
+      if self.val = UInt32($407E) then Result := 'DEVICE_ME_VERSION_INTEL' else
+      if self.val = UInt32($40BF) then Result := 'DEVICE_COMPUTE_UNITS_BITFIELD_ARM' else
+      if self.val = UInt32($40E0) then Result := 'DEVICE_SPIR_VERSIONS' else
+      if self.val = UInt32($4104) then Result := 'DEVICE_SIMULTANEOUS_INTEROPS_INTEL' else
+      if self.val = UInt32($4105) then Result := 'DEVICE_NUM_SIMULTANEOUS_INTEROPS_INTEL' else
+      if self.val = UInt32($4108) then Result := 'DEVICE_SUB_GROUP_SIZES_INTEL' else
+      if self.val = UInt32($410B) then Result := 'DEVICE_AVC_ME_VERSION_INTEL' else
+      if self.val = UInt32($410C) then Result := 'DEVICE_AVC_ME_SUPPORTS_TEXTURE_SAMPLER_USE_INTEL' else
+      if self.val = UInt32($410D) then Result := 'DEVICE_AVC_ME_SUPPORTS_PREEMPTION_INTEL' else
+      if self.val = UInt32($417E) then Result := 'DEVICE_PLANAR_YUV_MAX_WIDTH_INTEL' else
+      if self.val = UInt32($417F) then Result := 'DEVICE_PLANAR_YUV_MAX_HEIGHT_INTEL' else
+      if self.val = UInt32($4190) then Result := 'DEVICE_HOST_MEM_CAPABILITIES_INTEL' else
+      if self.val = UInt32($4191) then Result := 'DEVICE_DEVICE_MEM_CAPABILITIES_INTEL' else
+      if self.val = UInt32($4192) then Result := 'DEVICE_SINGLE_DEVICE_SHARED_MEM_CAPABILITIES_INTEL' else
+      if self.val = UInt32($4193) then Result := 'DEVICE_CROSS_DEVICE_SHARED_MEM_CAPABILITIES_INTEL' else
+      if self.val = UInt32($4194) then Result := 'DEVICE_SHARED_SYSTEM_MEM_CAPABILITIES_INTEL' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1043,10 +1340,9 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(DeviceLocalMemType).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->DeviceLocalMemType(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'DeviceLocalMemType[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($0001) then Result := 'LOCAL' else
+      if self.val = UInt32($0002) then Result := 'GLOBAL' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1065,10 +1361,10 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(DeviceMemCacheType).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->DeviceMemCacheType(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'DeviceMemCacheType[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($0000) then Result := 'NONE' else
+      if self.val = UInt32($0001) then Result := 'READ_ONLY_CACHE' else
+      if self.val = UInt32($0002) then Result := 'READ_WRITE_CACHE' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1090,10 +1386,11 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(DevicePartitionProperty).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->DevicePartitionProperty(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'DevicePartitionProperty[{ self.val=default(IntPtr) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = IntPtr($0000) then Result := 'DEVICE_PARTITION_BY_COUNTS_LIST_END' else
+      if self.val = IntPtr($1086) then Result := 'DEVICE_PARTITION_EQUALLY' else
+      if self.val = IntPtr($1087) then Result := 'DEVICE_PARTITION_BY_COUNTS' else
+      if self.val = IntPtr($1088) then Result := 'DEVICE_PARTITION_BY_AFFINITY_DOMAIN' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1102,17 +1399,17 @@ uses System.Runtime.CompilerServices;
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    private static _PARTITION_BY_NAMES_LIST_END_EXT         := new DevicePartitionPropertyExt($FFFFFFFFFFFFFFFF);
     private static _PARTITION_BY_COUNTS_LIST_END_EXT        := new DevicePartitionPropertyExt($0000);
     private static _PROPERTIES_LIST_END_EXT                 := new DevicePartitionPropertyExt($0000);
+    private static _PARTITION_BY_NAMES_LIST_END_EXT         := new DevicePartitionPropertyExt(-1);
     private static _DEVICE_PARTITION_EQUALLY_EXT            := new DevicePartitionPropertyExt($4050);
     private static _DEVICE_PARTITION_BY_COUNTS_EXT          := new DevicePartitionPropertyExt($4051);
     private static _DEVICE_PARTITION_BY_NAMES_EXT           := new DevicePartitionPropertyExt($4052);
     private static _DEVICE_PARTITION_BY_AFFINITY_DOMAIN_EXT := new DevicePartitionPropertyExt($4053);
     
-    public static property PARTITION_BY_NAMES_LIST_END_EXT:         DevicePartitionPropertyExt read _PARTITION_BY_NAMES_LIST_END_EXT;
     public static property PARTITION_BY_COUNTS_LIST_END_EXT:        DevicePartitionPropertyExt read _PARTITION_BY_COUNTS_LIST_END_EXT;
     public static property PROPERTIES_LIST_END_EXT:                 DevicePartitionPropertyExt read _PROPERTIES_LIST_END_EXT;
+    public static property PARTITION_BY_NAMES_LIST_END_EXT:         DevicePartitionPropertyExt read _PARTITION_BY_NAMES_LIST_END_EXT;
     public static property DEVICE_PARTITION_EQUALLY_EXT:            DevicePartitionPropertyExt read _DEVICE_PARTITION_EQUALLY_EXT;
     public static property DEVICE_PARTITION_BY_COUNTS_EXT:          DevicePartitionPropertyExt read _DEVICE_PARTITION_BY_COUNTS_EXT;
     public static property DEVICE_PARTITION_BY_NAMES_EXT:           DevicePartitionPropertyExt read _DEVICE_PARTITION_BY_NAMES_EXT;
@@ -1120,10 +1417,14 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(DevicePartitionPropertyExt).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->DevicePartitionPropertyExt(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'DevicePartitionPropertyExt[{ self.val=default(UInt64) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt64($0000) then Result := 'PARTITION_BY_COUNTS_LIST_END_EXT' else
+      if self.val = UInt64($0000) then Result := 'PROPERTIES_LIST_END_EXT' else
+      if self.val = UInt64(-1) then Result := 'PARTITION_BY_NAMES_LIST_END_EXT' else
+      if self.val = UInt64($4050) then Result := 'DEVICE_PARTITION_EQUALLY_EXT' else
+      if self.val = UInt64($4051) then Result := 'DEVICE_PARTITION_BY_COUNTS_EXT' else
+      if self.val = UInt64($4052) then Result := 'DEVICE_PARTITION_BY_NAMES_EXT' else
+      if self.val = UInt64($4053) then Result := 'DEVICE_PARTITION_BY_AFFINITY_DOMAIN_EXT' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1151,10 +1452,17 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(DeviceSVMCapabilities).GetProperties.Where(prop->prop.Name.StartsWith('HAS_FLAG_') and boolean(prop.GetValue(self))).Select(prop->prop.Name.TrimStart('&')).ToList;
-      Result := res.Count=0?
-        $'DeviceSVMCapabilities[{ self.val=default(UInt64) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.JoinToString('+');
+      var res := new StringBuilder;
+      if self.val and UInt64($0001) = UInt64($0001) then res += 'DEVICE_SVM_COARSE_GRAIN_BUFFER+';
+      if self.val and UInt64($0002) = UInt64($0002) then res += 'DEVICE_SVM_FINE_GRAIN_BUFFER+';
+      if self.val and UInt64($0004) = UInt64($0004) then res += 'DEVICE_SVM_FINE_GRAIN_SYSTEM+';
+      if self.val and UInt64($0008) = UInt64($0008) then res += 'DEVICE_SVM_ATOMICS+';
+      if res.Length<>0 then
+      begin
+        res.Length -= 1;
+        Result := res.ToString;
+      end else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1188,10 +1496,19 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(DeviceType).GetProperties.Where(prop->prop.Name.StartsWith('HAS_FLAG_') and boolean(prop.GetValue(self))).Select(prop->prop.Name.TrimStart('&')).ToList;
-      Result := res.Count=0?
-        $'DeviceType[{ self.val=default(UInt64) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.JoinToString('+');
+      var res := new StringBuilder;
+      if self.val and UInt64($0001) = UInt64($0001) then res += 'DEVICE_TYPE_DEFAULT+';
+      if self.val and UInt64($0002) = UInt64($0002) then res += 'DEVICE_TYPE_CPU+';
+      if self.val and UInt64($0004) = UInt64($0004) then res += 'DEVICE_TYPE_GPU+';
+      if self.val and UInt64($0008) = UInt64($0008) then res += 'DEVICE_TYPE_ACCELERATOR+';
+      if self.val and UInt64($0010) = UInt64($0010) then res += 'DEVICE_TYPE_CUSTOM+';
+      if self.val and UInt64($FFFFFFFF) = UInt64($FFFFFFFF) then res += 'DEVICE_TYPE_ALL+';
+      if res.Length<>0 then
+      begin
+        res.Length -= 1;
+        Result := res.ToString;
+      end else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1208,10 +1525,9 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(Dx9DeviceSetIntel).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->Dx9DeviceSetIntel(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'Dx9DeviceSetIntel[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($4024) then Result := 'PREFERRED_DEVICES_FOR_DX9_INTEL' else
+      if self.val = UInt32($4025) then Result := 'ALL_DEVICES_FOR_DX9_INTEL' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1230,10 +1546,10 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(Dx9DeviceSourceIntel).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->Dx9DeviceSourceIntel(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'Dx9DeviceSourceIntel[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($4022) then Result := 'D3D9_DEVICE_INTEL' else
+      if self.val = UInt32($4070) then Result := 'D3D9EX_DEVICE_INTEL' else
+      if self.val = UInt32($4071) then Result := 'DXVA_DEVICE_INTEL' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1249,10 +1565,8 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(EglImagePropertiesKhr).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->EglImagePropertiesKhr(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'EglImagePropertiesKhr[{ self.val=default(IntPtr) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = IntPtr($4107) then Result := 'EGL_YUV_PLANE_INTEL' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1261,206 +1575,299 @@ uses System.Runtime.CompilerServices;
     public val: Int32;
     public constructor(val: Int32) := self.val := val;
     
-    private static _PIPE_EMPTY_INTEL                            := new ErrorCode($FFFFFFFFFFFFFBAD);
-    private static _PIPE_FULL_INTEL                             := new ErrorCode($FFFFFFFFFFFFFBAE);
-    private static _VA_API_MEDIA_SURFACE_NOT_ACQUIRED_INTEL     := new ErrorCode($FFFFFFFFFFFFFBB3);
-    private static _VA_API_MEDIA_SURFACE_ALREADY_ACQUIRED_INTEL := new ErrorCode($FFFFFFFFFFFFFBB4);
-    private static _INVALID_VA_API_MEDIA_SURFACE_INTEL          := new ErrorCode($FFFFFFFFFFFFFBB5);
-    private static _INVALID_VA_API_MEDIA_ADAPTER_INTEL          := new ErrorCode($FFFFFFFFFFFFFBB6);
-    private static _ACCELERATOR_TYPE_NOT_SUPPORTED_INTEL        := new ErrorCode($FFFFFFFFFFFFFBB7);
-    private static _INVALID_ACCELERATOR_DESCRIPTOR_INTEL        := new ErrorCode($FFFFFFFFFFFFFBB8);
-    private static _INVALID_ACCELERATOR_TYPE_INTEL              := new ErrorCode($FFFFFFFFFFFFFBB9);
-    private static _INVALID_ACCELERATOR_INTEL                   := new ErrorCode($FFFFFFFFFFFFFBBA);
-    private static _INVALID_EGL_OBJECT_KHR                      := new ErrorCode($FFFFFFFFFFFFFBBB);
-    private static _EGL_RESOURCE_NOT_ACQUIRED_KHR               := new ErrorCode($FFFFFFFFFFFFFBBC);
-    private static _INVALID_PARTITION_NAME_EXT                  := new ErrorCode($FFFFFFFFFFFFFBDD);
-    private static _INVALID_PARTITION_COUNT_EXT                 := new ErrorCode($FFFFFFFFFFFFFBDE);
-    private static _DEVICE_PARTITION_FAILED_EXT                 := new ErrorCode($FFFFFFFFFFFFFBDF);
-    private static _DX9_MEDIA_SURFACE_NOT_ACQUIRED_KHR          := new ErrorCode($FFFFFFFFFFFFFC0B);
-    private static _DX9_RESOURCE_NOT_ACQUIRED_INTEL             := new ErrorCode($FFFFFFFFFFFFFC0B);
-    private static _DX9_MEDIA_SURFACE_ALREADY_ACQUIRED_KHR      := new ErrorCode($FFFFFFFFFFFFFC0C);
-    private static _DX9_RESOURCE_ALREADY_ACQUIRED_INTEL         := new ErrorCode($FFFFFFFFFFFFFC0C);
-    private static _INVALID_DX9_MEDIA_SURFACE_KHR               := new ErrorCode($FFFFFFFFFFFFFC0D);
-    private static _INVALID_DX9_RESOURCE_INTEL                  := new ErrorCode($FFFFFFFFFFFFFC0D);
-    private static _INVALID_DX9_DEVICE_INTEL                    := new ErrorCode($FFFFFFFFFFFFFC0E);
-    private static _INVALID_DX9_MEDIA_ADAPTER_KHR               := new ErrorCode($FFFFFFFFFFFFFC0E);
-    private static _D3D11_RESOURCE_NOT_ACQUIRED_KHR             := new ErrorCode($FFFFFFFFFFFFFC0F);
-    private static _D3D11_RESOURCE_ALREADY_ACQUIRED_KHR         := new ErrorCode($FFFFFFFFFFFFFC10);
-    private static _INVALID_D3D11_RESOURCE_KHR                  := new ErrorCode($FFFFFFFFFFFFFC11);
-    private static _INVALID_D3D11_DEVICE_KHR                    := new ErrorCode($FFFFFFFFFFFFFC12);
-    private static _D3D10_RESOURCE_NOT_ACQUIRED_KHR             := new ErrorCode($FFFFFFFFFFFFFC13);
-    private static _D3D10_RESOURCE_ALREADY_ACQUIRED_KHR         := new ErrorCode($FFFFFFFFFFFFFC14);
-    private static _INVALID_D3D10_RESOURCE_KHR                  := new ErrorCode($FFFFFFFFFFFFFC15);
-    private static _INVALID_D3D10_DEVICE_KHR                    := new ErrorCode($FFFFFFFFFFFFFC16);
-    private static _PLATFORM_NOT_FOUND_KHR                      := new ErrorCode($FFFFFFFFFFFFFC17);
-    private static _INVALID_GL_SHAREGROUP_REFERENCE_KHR         := new ErrorCode($FFFFFFFFFFFFFC18);
-    private static _MAX_SIZE_RESTRICTION_EXCEEDED               := new ErrorCode($FFFFFFFFFFFFFFB8);
-    private static _INVALID_SPEC_ID                             := new ErrorCode($FFFFFFFFFFFFFFB9);
-    private static _INVALID_DEVICE_QUEUE                        := new ErrorCode($FFFFFFFFFFFFFFBA);
-    private static _INVALID_PIPE_SIZE                           := new ErrorCode($FFFFFFFFFFFFFFBB);
-    private static _INVALID_DEVICE_PARTITION_COUNT              := new ErrorCode($FFFFFFFFFFFFFFBC);
-    private static _INVALID_LINKER_OPTIONS                      := new ErrorCode($FFFFFFFFFFFFFFBD);
-    private static _INVALID_COMPILER_OPTIONS                    := new ErrorCode($FFFFFFFFFFFFFFBE);
-    private static _INVALID_IMAGE_DESCRIPTOR                    := new ErrorCode($FFFFFFFFFFFFFFBF);
-    private static _INVALID_PROPERTY                            := new ErrorCode($FFFFFFFFFFFFFFC0);
-    private static _INVALID_GLOBAL_WORK_SIZE                    := new ErrorCode($FFFFFFFFFFFFFFC1);
-    private static _INVALID_MIP_LEVEL                           := new ErrorCode($FFFFFFFFFFFFFFC2);
-    private static _INVALID_BUFFER_SIZE                         := new ErrorCode($FFFFFFFFFFFFFFC3);
-    private static _INVALID_GL_OBJECT                           := new ErrorCode($FFFFFFFFFFFFFFC4);
-    private static _INVALID_OPERATION                           := new ErrorCode($FFFFFFFFFFFFFFC5);
-    private static _INVALID_EVENT                               := new ErrorCode($FFFFFFFFFFFFFFC6);
-    private static _INVALID_EVENT_WAIT_LIST                     := new ErrorCode($FFFFFFFFFFFFFFC7);
-    private static _INVALID_GLOBAL_OFFSET                       := new ErrorCode($FFFFFFFFFFFFFFC8);
-    private static _INVALID_WORK_ITEM_SIZE                      := new ErrorCode($FFFFFFFFFFFFFFC9);
-    private static _INVALID_WORK_GROUP_SIZE                     := new ErrorCode($FFFFFFFFFFFFFFCA);
-    private static _INVALID_WORK_DIMENSION                      := new ErrorCode($FFFFFFFFFFFFFFCB);
-    private static _INVALID_KERNEL_ARGS                         := new ErrorCode($FFFFFFFFFFFFFFCC);
-    private static _INVALID_ARG_SIZE                            := new ErrorCode($FFFFFFFFFFFFFFCD);
-    private static _INVALID_ARG_VALUE                           := new ErrorCode($FFFFFFFFFFFFFFCE);
-    private static _INVALID_ARG_INDEX                           := new ErrorCode($FFFFFFFFFFFFFFCF);
-    private static _INVALID_KERNEL                              := new ErrorCode($FFFFFFFFFFFFFFD0);
-    private static _INVALID_KERNEL_DEFINITION                   := new ErrorCode($FFFFFFFFFFFFFFD1);
-    private static _INVALID_KERNEL_NAME                         := new ErrorCode($FFFFFFFFFFFFFFD2);
-    private static _INVALID_PROGRAM_EXECUTABLE                  := new ErrorCode($FFFFFFFFFFFFFFD3);
-    private static _INVALID_PROGRAM                             := new ErrorCode($FFFFFFFFFFFFFFD4);
-    private static _INVALID_BUILD_OPTIONS                       := new ErrorCode($FFFFFFFFFFFFFFD5);
-    private static _INVALID_BINARY                              := new ErrorCode($FFFFFFFFFFFFFFD6);
-    private static _INVALID_SAMPLER                             := new ErrorCode($FFFFFFFFFFFFFFD7);
-    private static _INVALID_IMAGE_SIZE                          := new ErrorCode($FFFFFFFFFFFFFFD8);
-    private static _INVALID_IMAGE_FORMAT_DESCRIPTOR             := new ErrorCode($FFFFFFFFFFFFFFD9);
-    private static _INVALID_MEM_OBJECT                          := new ErrorCode($FFFFFFFFFFFFFFDA);
-    private static _INVALID_HOST_PTR                            := new ErrorCode($FFFFFFFFFFFFFFDB);
-    private static _INVALID_COMMAND_QUEUE                       := new ErrorCode($FFFFFFFFFFFFFFDC);
-    private static _INVALID_QUEUE_PROPERTIES                    := new ErrorCode($FFFFFFFFFFFFFFDD);
-    private static _INVALID_CONTEXT                             := new ErrorCode($FFFFFFFFFFFFFFDE);
-    private static _INVALID_DEVICE                              := new ErrorCode($FFFFFFFFFFFFFFDF);
-    private static _INVALID_PLATFORM                            := new ErrorCode($FFFFFFFFFFFFFFE0);
-    private static _INVALID_DEVICE_TYPE                         := new ErrorCode($FFFFFFFFFFFFFFE1);
-    private static _INVALID_VALUE                               := new ErrorCode($FFFFFFFFFFFFFFE2);
-    private static _KERNEL_ARG_INFO_NOT_AVAILABLE               := new ErrorCode($FFFFFFFFFFFFFFED);
-    private static _DEVICE_PARTITION_FAILED                     := new ErrorCode($FFFFFFFFFFFFFFEE);
-    private static _LINK_PROGRAM_FAILURE                        := new ErrorCode($FFFFFFFFFFFFFFEF);
-    private static _LINKER_NOT_AVAILABLE                        := new ErrorCode($FFFFFFFFFFFFFFF0);
-    private static _COMPILE_PROGRAM_FAILURE                     := new ErrorCode($FFFFFFFFFFFFFFF1);
-    private static _EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST   := new ErrorCode($FFFFFFFFFFFFFFF2);
-    private static _MISALIGNED_SUB_BUFFER_OFFSET                := new ErrorCode($FFFFFFFFFFFFFFF3);
-    private static _MAP_FAILURE                                 := new ErrorCode($FFFFFFFFFFFFFFF4);
-    private static _BUILD_PROGRAM_FAILURE                       := new ErrorCode($FFFFFFFFFFFFFFF5);
-    private static _IMAGE_FORMAT_NOT_SUPPORTED                  := new ErrorCode($FFFFFFFFFFFFFFF6);
-    private static _IMAGE_FORMAT_MISMATCH                       := new ErrorCode($FFFFFFFFFFFFFFF7);
-    private static _MEM_COPY_OVERLAP                            := new ErrorCode($FFFFFFFFFFFFFFF8);
-    private static _PROFILING_INFO_NOT_AVAILABLE                := new ErrorCode($FFFFFFFFFFFFFFF9);
-    private static _OUT_OF_HOST_MEMORY                          := new ErrorCode($FFFFFFFFFFFFFFFA);
-    private static _OUT_OF_RESOURCES                            := new ErrorCode($FFFFFFFFFFFFFFFB);
-    private static _MEM_OBJECT_ALLOCATION_FAILURE               := new ErrorCode($FFFFFFFFFFFFFFFC);
-    private static _COMPILER_NOT_AVAILABLE                      := new ErrorCode($FFFFFFFFFFFFFFFD);
-    private static _DEVICE_NOT_AVAILABLE                        := new ErrorCode($FFFFFFFFFFFFFFFE);
-    private static _DEVICE_NOT_FOUND                            := new ErrorCode($FFFFFFFFFFFFFFFF);
     private static _SUCCESS                                     := new ErrorCode($0000);
+    private static _DEVICE_NOT_FOUND                            := new ErrorCode(-1);
+    private static _DEVICE_NOT_AVAILABLE                        := new ErrorCode(-2);
+    private static _COMPILER_NOT_AVAILABLE                      := new ErrorCode(-3);
+    private static _MEM_OBJECT_ALLOCATION_FAILURE               := new ErrorCode(-4);
+    private static _OUT_OF_RESOURCES                            := new ErrorCode(-5);
+    private static _OUT_OF_HOST_MEMORY                          := new ErrorCode(-6);
+    private static _PROFILING_INFO_NOT_AVAILABLE                := new ErrorCode(-7);
+    private static _MEM_COPY_OVERLAP                            := new ErrorCode(-8);
+    private static _IMAGE_FORMAT_MISMATCH                       := new ErrorCode(-9);
+    private static _IMAGE_FORMAT_NOT_SUPPORTED                  := new ErrorCode(-10);
+    private static _BUILD_PROGRAM_FAILURE                       := new ErrorCode(-11);
+    private static _MAP_FAILURE                                 := new ErrorCode(-12);
+    private static _MISALIGNED_SUB_BUFFER_OFFSET                := new ErrorCode(-13);
+    private static _EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST   := new ErrorCode(-14);
+    private static _COMPILE_PROGRAM_FAILURE                     := new ErrorCode(-15);
+    private static _LINKER_NOT_AVAILABLE                        := new ErrorCode(-16);
+    private static _LINK_PROGRAM_FAILURE                        := new ErrorCode(-17);
+    private static _DEVICE_PARTITION_FAILED                     := new ErrorCode(-18);
+    private static _KERNEL_ARG_INFO_NOT_AVAILABLE               := new ErrorCode(-19);
+    private static _INVALID_VALUE                               := new ErrorCode(-30);
+    private static _INVALID_DEVICE_TYPE                         := new ErrorCode(-31);
+    private static _INVALID_PLATFORM                            := new ErrorCode(-32);
+    private static _INVALID_DEVICE                              := new ErrorCode(-33);
+    private static _INVALID_CONTEXT                             := new ErrorCode(-34);
+    private static _INVALID_QUEUE_PROPERTIES                    := new ErrorCode(-35);
+    private static _INVALID_COMMAND_QUEUE                       := new ErrorCode(-36);
+    private static _INVALID_HOST_PTR                            := new ErrorCode(-37);
+    private static _INVALID_MEM_OBJECT                          := new ErrorCode(-38);
+    private static _INVALID_IMAGE_FORMAT_DESCRIPTOR             := new ErrorCode(-39);
+    private static _INVALID_IMAGE_SIZE                          := new ErrorCode(-40);
+    private static _INVALID_SAMPLER                             := new ErrorCode(-41);
+    private static _INVALID_BINARY                              := new ErrorCode(-42);
+    private static _INVALID_BUILD_OPTIONS                       := new ErrorCode(-43);
+    private static _INVALID_PROGRAM                             := new ErrorCode(-44);
+    private static _INVALID_PROGRAM_EXECUTABLE                  := new ErrorCode(-45);
+    private static _INVALID_KERNEL_NAME                         := new ErrorCode(-46);
+    private static _INVALID_KERNEL_DEFINITION                   := new ErrorCode(-47);
+    private static _INVALID_KERNEL                              := new ErrorCode(-48);
+    private static _INVALID_ARG_INDEX                           := new ErrorCode(-49);
+    private static _INVALID_ARG_VALUE                           := new ErrorCode(-50);
+    private static _INVALID_ARG_SIZE                            := new ErrorCode(-51);
+    private static _INVALID_KERNEL_ARGS                         := new ErrorCode(-52);
+    private static _INVALID_WORK_DIMENSION                      := new ErrorCode(-53);
+    private static _INVALID_WORK_GROUP_SIZE                     := new ErrorCode(-54);
+    private static _INVALID_WORK_ITEM_SIZE                      := new ErrorCode(-55);
+    private static _INVALID_GLOBAL_OFFSET                       := new ErrorCode(-56);
+    private static _INVALID_EVENT_WAIT_LIST                     := new ErrorCode(-57);
+    private static _INVALID_EVENT                               := new ErrorCode(-58);
+    private static _INVALID_OPERATION                           := new ErrorCode(-59);
+    private static _INVALID_GL_OBJECT                           := new ErrorCode(-60);
+    private static _INVALID_BUFFER_SIZE                         := new ErrorCode(-61);
+    private static _INVALID_MIP_LEVEL                           := new ErrorCode(-62);
+    private static _INVALID_GLOBAL_WORK_SIZE                    := new ErrorCode(-63);
+    private static _INVALID_PROPERTY                            := new ErrorCode(-64);
+    private static _INVALID_IMAGE_DESCRIPTOR                    := new ErrorCode(-65);
+    private static _INVALID_COMPILER_OPTIONS                    := new ErrorCode(-66);
+    private static _INVALID_LINKER_OPTIONS                      := new ErrorCode(-67);
+    private static _INVALID_DEVICE_PARTITION_COUNT              := new ErrorCode(-68);
+    private static _INVALID_PIPE_SIZE                           := new ErrorCode(-69);
+    private static _INVALID_DEVICE_QUEUE                        := new ErrorCode(-70);
+    private static _INVALID_SPEC_ID                             := new ErrorCode(-71);
+    private static _MAX_SIZE_RESTRICTION_EXCEEDED               := new ErrorCode(-72);
+    private static _INVALID_GL_SHAREGROUP_REFERENCE_KHR         := new ErrorCode(-1000);
+    private static _PLATFORM_NOT_FOUND_KHR                      := new ErrorCode(-1001);
+    private static _INVALID_D3D10_DEVICE_KHR                    := new ErrorCode(-1002);
+    private static _INVALID_D3D10_RESOURCE_KHR                  := new ErrorCode(-1003);
+    private static _D3D10_RESOURCE_ALREADY_ACQUIRED_KHR         := new ErrorCode(-1004);
+    private static _D3D10_RESOURCE_NOT_ACQUIRED_KHR             := new ErrorCode(-1005);
+    private static _INVALID_D3D11_DEVICE_KHR                    := new ErrorCode(-1006);
+    private static _INVALID_D3D11_RESOURCE_KHR                  := new ErrorCode(-1007);
+    private static _D3D11_RESOURCE_ALREADY_ACQUIRED_KHR         := new ErrorCode(-1008);
+    private static _D3D11_RESOURCE_NOT_ACQUIRED_KHR             := new ErrorCode(-1009);
+    private static _INVALID_DX9_DEVICE_INTEL                    := new ErrorCode(-1010);
+    private static _INVALID_DX9_MEDIA_ADAPTER_KHR               := new ErrorCode(-1010);
+    private static _INVALID_DX9_MEDIA_SURFACE_KHR               := new ErrorCode(-1011);
+    private static _INVALID_DX9_RESOURCE_INTEL                  := new ErrorCode(-1011);
+    private static _DX9_MEDIA_SURFACE_ALREADY_ACQUIRED_KHR      := new ErrorCode(-1012);
+    private static _DX9_RESOURCE_ALREADY_ACQUIRED_INTEL         := new ErrorCode(-1012);
+    private static _DX9_MEDIA_SURFACE_NOT_ACQUIRED_KHR          := new ErrorCode(-1013);
+    private static _DX9_RESOURCE_NOT_ACQUIRED_INTEL             := new ErrorCode(-1013);
+    private static _DEVICE_PARTITION_FAILED_EXT                 := new ErrorCode(-1057);
+    private static _INVALID_PARTITION_COUNT_EXT                 := new ErrorCode(-1058);
+    private static _INVALID_PARTITION_NAME_EXT                  := new ErrorCode(-1059);
+    private static _EGL_RESOURCE_NOT_ACQUIRED_KHR               := new ErrorCode(-1092);
+    private static _INVALID_EGL_OBJECT_KHR                      := new ErrorCode(-1093);
+    private static _INVALID_ACCELERATOR_INTEL                   := new ErrorCode(-1094);
+    private static _INVALID_ACCELERATOR_TYPE_INTEL              := new ErrorCode(-1095);
+    private static _INVALID_ACCELERATOR_DESCRIPTOR_INTEL        := new ErrorCode(-1096);
+    private static _ACCELERATOR_TYPE_NOT_SUPPORTED_INTEL        := new ErrorCode(-1097);
+    private static _INVALID_VA_API_MEDIA_ADAPTER_INTEL          := new ErrorCode(-1098);
+    private static _INVALID_VA_API_MEDIA_SURFACE_INTEL          := new ErrorCode(-1099);
+    private static _VA_API_MEDIA_SURFACE_ALREADY_ACQUIRED_INTEL := new ErrorCode(-1100);
+    private static _VA_API_MEDIA_SURFACE_NOT_ACQUIRED_INTEL     := new ErrorCode(-1101);
+    private static _PIPE_FULL_INTEL                             := new ErrorCode(-1106);
+    private static _PIPE_EMPTY_INTEL                            := new ErrorCode(-1107);
     
-    public static property PIPE_EMPTY_INTEL:                            ErrorCode read _PIPE_EMPTY_INTEL;
-    public static property PIPE_FULL_INTEL:                             ErrorCode read _PIPE_FULL_INTEL;
-    public static property VA_API_MEDIA_SURFACE_NOT_ACQUIRED_INTEL:     ErrorCode read _VA_API_MEDIA_SURFACE_NOT_ACQUIRED_INTEL;
-    public static property VA_API_MEDIA_SURFACE_ALREADY_ACQUIRED_INTEL: ErrorCode read _VA_API_MEDIA_SURFACE_ALREADY_ACQUIRED_INTEL;
-    public static property INVALID_VA_API_MEDIA_SURFACE_INTEL:          ErrorCode read _INVALID_VA_API_MEDIA_SURFACE_INTEL;
-    public static property INVALID_VA_API_MEDIA_ADAPTER_INTEL:          ErrorCode read _INVALID_VA_API_MEDIA_ADAPTER_INTEL;
-    public static property ACCELERATOR_TYPE_NOT_SUPPORTED_INTEL:        ErrorCode read _ACCELERATOR_TYPE_NOT_SUPPORTED_INTEL;
-    public static property INVALID_ACCELERATOR_DESCRIPTOR_INTEL:        ErrorCode read _INVALID_ACCELERATOR_DESCRIPTOR_INTEL;
-    public static property INVALID_ACCELERATOR_TYPE_INTEL:              ErrorCode read _INVALID_ACCELERATOR_TYPE_INTEL;
-    public static property INVALID_ACCELERATOR_INTEL:                   ErrorCode read _INVALID_ACCELERATOR_INTEL;
-    public static property INVALID_EGL_OBJECT_KHR:                      ErrorCode read _INVALID_EGL_OBJECT_KHR;
-    public static property EGL_RESOURCE_NOT_ACQUIRED_KHR:               ErrorCode read _EGL_RESOURCE_NOT_ACQUIRED_KHR;
-    public static property INVALID_PARTITION_NAME_EXT:                  ErrorCode read _INVALID_PARTITION_NAME_EXT;
-    public static property INVALID_PARTITION_COUNT_EXT:                 ErrorCode read _INVALID_PARTITION_COUNT_EXT;
-    public static property DEVICE_PARTITION_FAILED_EXT:                 ErrorCode read _DEVICE_PARTITION_FAILED_EXT;
-    public static property DX9_MEDIA_SURFACE_NOT_ACQUIRED_KHR:          ErrorCode read _DX9_MEDIA_SURFACE_NOT_ACQUIRED_KHR;
-    public static property DX9_RESOURCE_NOT_ACQUIRED_INTEL:             ErrorCode read _DX9_RESOURCE_NOT_ACQUIRED_INTEL;
-    public static property DX9_MEDIA_SURFACE_ALREADY_ACQUIRED_KHR:      ErrorCode read _DX9_MEDIA_SURFACE_ALREADY_ACQUIRED_KHR;
-    public static property DX9_RESOURCE_ALREADY_ACQUIRED_INTEL:         ErrorCode read _DX9_RESOURCE_ALREADY_ACQUIRED_INTEL;
-    public static property INVALID_DX9_MEDIA_SURFACE_KHR:               ErrorCode read _INVALID_DX9_MEDIA_SURFACE_KHR;
-    public static property INVALID_DX9_RESOURCE_INTEL:                  ErrorCode read _INVALID_DX9_RESOURCE_INTEL;
+    public static property SUCCESS:                                     ErrorCode read _SUCCESS;
+    public static property DEVICE_NOT_FOUND:                            ErrorCode read _DEVICE_NOT_FOUND;
+    public static property DEVICE_NOT_AVAILABLE:                        ErrorCode read _DEVICE_NOT_AVAILABLE;
+    public static property COMPILER_NOT_AVAILABLE:                      ErrorCode read _COMPILER_NOT_AVAILABLE;
+    public static property MEM_OBJECT_ALLOCATION_FAILURE:               ErrorCode read _MEM_OBJECT_ALLOCATION_FAILURE;
+    public static property OUT_OF_RESOURCES:                            ErrorCode read _OUT_OF_RESOURCES;
+    public static property OUT_OF_HOST_MEMORY:                          ErrorCode read _OUT_OF_HOST_MEMORY;
+    public static property PROFILING_INFO_NOT_AVAILABLE:                ErrorCode read _PROFILING_INFO_NOT_AVAILABLE;
+    public static property MEM_COPY_OVERLAP:                            ErrorCode read _MEM_COPY_OVERLAP;
+    public static property IMAGE_FORMAT_MISMATCH:                       ErrorCode read _IMAGE_FORMAT_MISMATCH;
+    public static property IMAGE_FORMAT_NOT_SUPPORTED:                  ErrorCode read _IMAGE_FORMAT_NOT_SUPPORTED;
+    public static property BUILD_PROGRAM_FAILURE:                       ErrorCode read _BUILD_PROGRAM_FAILURE;
+    public static property MAP_FAILURE:                                 ErrorCode read _MAP_FAILURE;
+    public static property MISALIGNED_SUB_BUFFER_OFFSET:                ErrorCode read _MISALIGNED_SUB_BUFFER_OFFSET;
+    public static property EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST:   ErrorCode read _EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST;
+    public static property COMPILE_PROGRAM_FAILURE:                     ErrorCode read _COMPILE_PROGRAM_FAILURE;
+    public static property LINKER_NOT_AVAILABLE:                        ErrorCode read _LINKER_NOT_AVAILABLE;
+    public static property LINK_PROGRAM_FAILURE:                        ErrorCode read _LINK_PROGRAM_FAILURE;
+    public static property DEVICE_PARTITION_FAILED:                     ErrorCode read _DEVICE_PARTITION_FAILED;
+    public static property KERNEL_ARG_INFO_NOT_AVAILABLE:               ErrorCode read _KERNEL_ARG_INFO_NOT_AVAILABLE;
+    public static property INVALID_VALUE:                               ErrorCode read _INVALID_VALUE;
+    public static property INVALID_DEVICE_TYPE:                         ErrorCode read _INVALID_DEVICE_TYPE;
+    public static property INVALID_PLATFORM:                            ErrorCode read _INVALID_PLATFORM;
+    public static property INVALID_DEVICE:                              ErrorCode read _INVALID_DEVICE;
+    public static property INVALID_CONTEXT:                             ErrorCode read _INVALID_CONTEXT;
+    public static property INVALID_QUEUE_PROPERTIES:                    ErrorCode read _INVALID_QUEUE_PROPERTIES;
+    public static property INVALID_COMMAND_QUEUE:                       ErrorCode read _INVALID_COMMAND_QUEUE;
+    public static property INVALID_HOST_PTR:                            ErrorCode read _INVALID_HOST_PTR;
+    public static property INVALID_MEM_OBJECT:                          ErrorCode read _INVALID_MEM_OBJECT;
+    public static property INVALID_IMAGE_FORMAT_DESCRIPTOR:             ErrorCode read _INVALID_IMAGE_FORMAT_DESCRIPTOR;
+    public static property INVALID_IMAGE_SIZE:                          ErrorCode read _INVALID_IMAGE_SIZE;
+    public static property INVALID_SAMPLER:                             ErrorCode read _INVALID_SAMPLER;
+    public static property INVALID_BINARY:                              ErrorCode read _INVALID_BINARY;
+    public static property INVALID_BUILD_OPTIONS:                       ErrorCode read _INVALID_BUILD_OPTIONS;
+    public static property INVALID_PROGRAM:                             ErrorCode read _INVALID_PROGRAM;
+    public static property INVALID_PROGRAM_EXECUTABLE:                  ErrorCode read _INVALID_PROGRAM_EXECUTABLE;
+    public static property INVALID_KERNEL_NAME:                         ErrorCode read _INVALID_KERNEL_NAME;
+    public static property INVALID_KERNEL_DEFINITION:                   ErrorCode read _INVALID_KERNEL_DEFINITION;
+    public static property INVALID_KERNEL:                              ErrorCode read _INVALID_KERNEL;
+    public static property INVALID_ARG_INDEX:                           ErrorCode read _INVALID_ARG_INDEX;
+    public static property INVALID_ARG_VALUE:                           ErrorCode read _INVALID_ARG_VALUE;
+    public static property INVALID_ARG_SIZE:                            ErrorCode read _INVALID_ARG_SIZE;
+    public static property INVALID_KERNEL_ARGS:                         ErrorCode read _INVALID_KERNEL_ARGS;
+    public static property INVALID_WORK_DIMENSION:                      ErrorCode read _INVALID_WORK_DIMENSION;
+    public static property INVALID_WORK_GROUP_SIZE:                     ErrorCode read _INVALID_WORK_GROUP_SIZE;
+    public static property INVALID_WORK_ITEM_SIZE:                      ErrorCode read _INVALID_WORK_ITEM_SIZE;
+    public static property INVALID_GLOBAL_OFFSET:                       ErrorCode read _INVALID_GLOBAL_OFFSET;
+    public static property INVALID_EVENT_WAIT_LIST:                     ErrorCode read _INVALID_EVENT_WAIT_LIST;
+    public static property INVALID_EVENT:                               ErrorCode read _INVALID_EVENT;
+    public static property INVALID_OPERATION:                           ErrorCode read _INVALID_OPERATION;
+    public static property INVALID_GL_OBJECT:                           ErrorCode read _INVALID_GL_OBJECT;
+    public static property INVALID_BUFFER_SIZE:                         ErrorCode read _INVALID_BUFFER_SIZE;
+    public static property INVALID_MIP_LEVEL:                           ErrorCode read _INVALID_MIP_LEVEL;
+    public static property INVALID_GLOBAL_WORK_SIZE:                    ErrorCode read _INVALID_GLOBAL_WORK_SIZE;
+    public static property INVALID_PROPERTY:                            ErrorCode read _INVALID_PROPERTY;
+    public static property INVALID_IMAGE_DESCRIPTOR:                    ErrorCode read _INVALID_IMAGE_DESCRIPTOR;
+    public static property INVALID_COMPILER_OPTIONS:                    ErrorCode read _INVALID_COMPILER_OPTIONS;
+    public static property INVALID_LINKER_OPTIONS:                      ErrorCode read _INVALID_LINKER_OPTIONS;
+    public static property INVALID_DEVICE_PARTITION_COUNT:              ErrorCode read _INVALID_DEVICE_PARTITION_COUNT;
+    public static property INVALID_PIPE_SIZE:                           ErrorCode read _INVALID_PIPE_SIZE;
+    public static property INVALID_DEVICE_QUEUE:                        ErrorCode read _INVALID_DEVICE_QUEUE;
+    public static property INVALID_SPEC_ID:                             ErrorCode read _INVALID_SPEC_ID;
+    public static property MAX_SIZE_RESTRICTION_EXCEEDED:               ErrorCode read _MAX_SIZE_RESTRICTION_EXCEEDED;
+    public static property INVALID_GL_SHAREGROUP_REFERENCE_KHR:         ErrorCode read _INVALID_GL_SHAREGROUP_REFERENCE_KHR;
+    public static property PLATFORM_NOT_FOUND_KHR:                      ErrorCode read _PLATFORM_NOT_FOUND_KHR;
+    public static property INVALID_D3D10_DEVICE_KHR:                    ErrorCode read _INVALID_D3D10_DEVICE_KHR;
+    public static property INVALID_D3D10_RESOURCE_KHR:                  ErrorCode read _INVALID_D3D10_RESOURCE_KHR;
+    public static property D3D10_RESOURCE_ALREADY_ACQUIRED_KHR:         ErrorCode read _D3D10_RESOURCE_ALREADY_ACQUIRED_KHR;
+    public static property D3D10_RESOURCE_NOT_ACQUIRED_KHR:             ErrorCode read _D3D10_RESOURCE_NOT_ACQUIRED_KHR;
+    public static property INVALID_D3D11_DEVICE_KHR:                    ErrorCode read _INVALID_D3D11_DEVICE_KHR;
+    public static property INVALID_D3D11_RESOURCE_KHR:                  ErrorCode read _INVALID_D3D11_RESOURCE_KHR;
+    public static property D3D11_RESOURCE_ALREADY_ACQUIRED_KHR:         ErrorCode read _D3D11_RESOURCE_ALREADY_ACQUIRED_KHR;
+    public static property D3D11_RESOURCE_NOT_ACQUIRED_KHR:             ErrorCode read _D3D11_RESOURCE_NOT_ACQUIRED_KHR;
     public static property INVALID_DX9_DEVICE_INTEL:                    ErrorCode read _INVALID_DX9_DEVICE_INTEL;
     public static property INVALID_DX9_MEDIA_ADAPTER_KHR:               ErrorCode read _INVALID_DX9_MEDIA_ADAPTER_KHR;
-    public static property D3D11_RESOURCE_NOT_ACQUIRED_KHR:             ErrorCode read _D3D11_RESOURCE_NOT_ACQUIRED_KHR;
-    public static property D3D11_RESOURCE_ALREADY_ACQUIRED_KHR:         ErrorCode read _D3D11_RESOURCE_ALREADY_ACQUIRED_KHR;
-    public static property INVALID_D3D11_RESOURCE_KHR:                  ErrorCode read _INVALID_D3D11_RESOURCE_KHR;
-    public static property INVALID_D3D11_DEVICE_KHR:                    ErrorCode read _INVALID_D3D11_DEVICE_KHR;
-    public static property D3D10_RESOURCE_NOT_ACQUIRED_KHR:             ErrorCode read _D3D10_RESOURCE_NOT_ACQUIRED_KHR;
-    public static property D3D10_RESOURCE_ALREADY_ACQUIRED_KHR:         ErrorCode read _D3D10_RESOURCE_ALREADY_ACQUIRED_KHR;
-    public static property INVALID_D3D10_RESOURCE_KHR:                  ErrorCode read _INVALID_D3D10_RESOURCE_KHR;
-    public static property INVALID_D3D10_DEVICE_KHR:                    ErrorCode read _INVALID_D3D10_DEVICE_KHR;
-    public static property PLATFORM_NOT_FOUND_KHR:                      ErrorCode read _PLATFORM_NOT_FOUND_KHR;
-    public static property INVALID_GL_SHAREGROUP_REFERENCE_KHR:         ErrorCode read _INVALID_GL_SHAREGROUP_REFERENCE_KHR;
-    public static property MAX_SIZE_RESTRICTION_EXCEEDED:               ErrorCode read _MAX_SIZE_RESTRICTION_EXCEEDED;
-    public static property INVALID_SPEC_ID:                             ErrorCode read _INVALID_SPEC_ID;
-    public static property INVALID_DEVICE_QUEUE:                        ErrorCode read _INVALID_DEVICE_QUEUE;
-    public static property INVALID_PIPE_SIZE:                           ErrorCode read _INVALID_PIPE_SIZE;
-    public static property INVALID_DEVICE_PARTITION_COUNT:              ErrorCode read _INVALID_DEVICE_PARTITION_COUNT;
-    public static property INVALID_LINKER_OPTIONS:                      ErrorCode read _INVALID_LINKER_OPTIONS;
-    public static property INVALID_COMPILER_OPTIONS:                    ErrorCode read _INVALID_COMPILER_OPTIONS;
-    public static property INVALID_IMAGE_DESCRIPTOR:                    ErrorCode read _INVALID_IMAGE_DESCRIPTOR;
-    public static property INVALID_PROPERTY:                            ErrorCode read _INVALID_PROPERTY;
-    public static property INVALID_GLOBAL_WORK_SIZE:                    ErrorCode read _INVALID_GLOBAL_WORK_SIZE;
-    public static property INVALID_MIP_LEVEL:                           ErrorCode read _INVALID_MIP_LEVEL;
-    public static property INVALID_BUFFER_SIZE:                         ErrorCode read _INVALID_BUFFER_SIZE;
-    public static property INVALID_GL_OBJECT:                           ErrorCode read _INVALID_GL_OBJECT;
-    public static property INVALID_OPERATION:                           ErrorCode read _INVALID_OPERATION;
-    public static property INVALID_EVENT:                               ErrorCode read _INVALID_EVENT;
-    public static property INVALID_EVENT_WAIT_LIST:                     ErrorCode read _INVALID_EVENT_WAIT_LIST;
-    public static property INVALID_GLOBAL_OFFSET:                       ErrorCode read _INVALID_GLOBAL_OFFSET;
-    public static property INVALID_WORK_ITEM_SIZE:                      ErrorCode read _INVALID_WORK_ITEM_SIZE;
-    public static property INVALID_WORK_GROUP_SIZE:                     ErrorCode read _INVALID_WORK_GROUP_SIZE;
-    public static property INVALID_WORK_DIMENSION:                      ErrorCode read _INVALID_WORK_DIMENSION;
-    public static property INVALID_KERNEL_ARGS:                         ErrorCode read _INVALID_KERNEL_ARGS;
-    public static property INVALID_ARG_SIZE:                            ErrorCode read _INVALID_ARG_SIZE;
-    public static property INVALID_ARG_VALUE:                           ErrorCode read _INVALID_ARG_VALUE;
-    public static property INVALID_ARG_INDEX:                           ErrorCode read _INVALID_ARG_INDEX;
-    public static property INVALID_KERNEL:                              ErrorCode read _INVALID_KERNEL;
-    public static property INVALID_KERNEL_DEFINITION:                   ErrorCode read _INVALID_KERNEL_DEFINITION;
-    public static property INVALID_KERNEL_NAME:                         ErrorCode read _INVALID_KERNEL_NAME;
-    public static property INVALID_PROGRAM_EXECUTABLE:                  ErrorCode read _INVALID_PROGRAM_EXECUTABLE;
-    public static property INVALID_PROGRAM:                             ErrorCode read _INVALID_PROGRAM;
-    public static property INVALID_BUILD_OPTIONS:                       ErrorCode read _INVALID_BUILD_OPTIONS;
-    public static property INVALID_BINARY:                              ErrorCode read _INVALID_BINARY;
-    public static property INVALID_SAMPLER:                             ErrorCode read _INVALID_SAMPLER;
-    public static property INVALID_IMAGE_SIZE:                          ErrorCode read _INVALID_IMAGE_SIZE;
-    public static property INVALID_IMAGE_FORMAT_DESCRIPTOR:             ErrorCode read _INVALID_IMAGE_FORMAT_DESCRIPTOR;
-    public static property INVALID_MEM_OBJECT:                          ErrorCode read _INVALID_MEM_OBJECT;
-    public static property INVALID_HOST_PTR:                            ErrorCode read _INVALID_HOST_PTR;
-    public static property INVALID_COMMAND_QUEUE:                       ErrorCode read _INVALID_COMMAND_QUEUE;
-    public static property INVALID_QUEUE_PROPERTIES:                    ErrorCode read _INVALID_QUEUE_PROPERTIES;
-    public static property INVALID_CONTEXT:                             ErrorCode read _INVALID_CONTEXT;
-    public static property INVALID_DEVICE:                              ErrorCode read _INVALID_DEVICE;
-    public static property INVALID_PLATFORM:                            ErrorCode read _INVALID_PLATFORM;
-    public static property INVALID_DEVICE_TYPE:                         ErrorCode read _INVALID_DEVICE_TYPE;
-    public static property INVALID_VALUE:                               ErrorCode read _INVALID_VALUE;
-    public static property KERNEL_ARG_INFO_NOT_AVAILABLE:               ErrorCode read _KERNEL_ARG_INFO_NOT_AVAILABLE;
-    public static property DEVICE_PARTITION_FAILED:                     ErrorCode read _DEVICE_PARTITION_FAILED;
-    public static property LINK_PROGRAM_FAILURE:                        ErrorCode read _LINK_PROGRAM_FAILURE;
-    public static property LINKER_NOT_AVAILABLE:                        ErrorCode read _LINKER_NOT_AVAILABLE;
-    public static property COMPILE_PROGRAM_FAILURE:                     ErrorCode read _COMPILE_PROGRAM_FAILURE;
-    public static property EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST:   ErrorCode read _EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST;
-    public static property MISALIGNED_SUB_BUFFER_OFFSET:                ErrorCode read _MISALIGNED_SUB_BUFFER_OFFSET;
-    public static property MAP_FAILURE:                                 ErrorCode read _MAP_FAILURE;
-    public static property BUILD_PROGRAM_FAILURE:                       ErrorCode read _BUILD_PROGRAM_FAILURE;
-    public static property IMAGE_FORMAT_NOT_SUPPORTED:                  ErrorCode read _IMAGE_FORMAT_NOT_SUPPORTED;
-    public static property IMAGE_FORMAT_MISMATCH:                       ErrorCode read _IMAGE_FORMAT_MISMATCH;
-    public static property MEM_COPY_OVERLAP:                            ErrorCode read _MEM_COPY_OVERLAP;
-    public static property PROFILING_INFO_NOT_AVAILABLE:                ErrorCode read _PROFILING_INFO_NOT_AVAILABLE;
-    public static property OUT_OF_HOST_MEMORY:                          ErrorCode read _OUT_OF_HOST_MEMORY;
-    public static property OUT_OF_RESOURCES:                            ErrorCode read _OUT_OF_RESOURCES;
-    public static property MEM_OBJECT_ALLOCATION_FAILURE:               ErrorCode read _MEM_OBJECT_ALLOCATION_FAILURE;
-    public static property COMPILER_NOT_AVAILABLE:                      ErrorCode read _COMPILER_NOT_AVAILABLE;
-    public static property DEVICE_NOT_AVAILABLE:                        ErrorCode read _DEVICE_NOT_AVAILABLE;
-    public static property DEVICE_NOT_FOUND:                            ErrorCode read _DEVICE_NOT_FOUND;
-    public static property SUCCESS:                                     ErrorCode read _SUCCESS;
+    public static property INVALID_DX9_MEDIA_SURFACE_KHR:               ErrorCode read _INVALID_DX9_MEDIA_SURFACE_KHR;
+    public static property INVALID_DX9_RESOURCE_INTEL:                  ErrorCode read _INVALID_DX9_RESOURCE_INTEL;
+    public static property DX9_MEDIA_SURFACE_ALREADY_ACQUIRED_KHR:      ErrorCode read _DX9_MEDIA_SURFACE_ALREADY_ACQUIRED_KHR;
+    public static property DX9_RESOURCE_ALREADY_ACQUIRED_INTEL:         ErrorCode read _DX9_RESOURCE_ALREADY_ACQUIRED_INTEL;
+    public static property DX9_MEDIA_SURFACE_NOT_ACQUIRED_KHR:          ErrorCode read _DX9_MEDIA_SURFACE_NOT_ACQUIRED_KHR;
+    public static property DX9_RESOURCE_NOT_ACQUIRED_INTEL:             ErrorCode read _DX9_RESOURCE_NOT_ACQUIRED_INTEL;
+    public static property DEVICE_PARTITION_FAILED_EXT:                 ErrorCode read _DEVICE_PARTITION_FAILED_EXT;
+    public static property INVALID_PARTITION_COUNT_EXT:                 ErrorCode read _INVALID_PARTITION_COUNT_EXT;
+    public static property INVALID_PARTITION_NAME_EXT:                  ErrorCode read _INVALID_PARTITION_NAME_EXT;
+    public static property EGL_RESOURCE_NOT_ACQUIRED_KHR:               ErrorCode read _EGL_RESOURCE_NOT_ACQUIRED_KHR;
+    public static property INVALID_EGL_OBJECT_KHR:                      ErrorCode read _INVALID_EGL_OBJECT_KHR;
+    public static property INVALID_ACCELERATOR_INTEL:                   ErrorCode read _INVALID_ACCELERATOR_INTEL;
+    public static property INVALID_ACCELERATOR_TYPE_INTEL:              ErrorCode read _INVALID_ACCELERATOR_TYPE_INTEL;
+    public static property INVALID_ACCELERATOR_DESCRIPTOR_INTEL:        ErrorCode read _INVALID_ACCELERATOR_DESCRIPTOR_INTEL;
+    public static property ACCELERATOR_TYPE_NOT_SUPPORTED_INTEL:        ErrorCode read _ACCELERATOR_TYPE_NOT_SUPPORTED_INTEL;
+    public static property INVALID_VA_API_MEDIA_ADAPTER_INTEL:          ErrorCode read _INVALID_VA_API_MEDIA_ADAPTER_INTEL;
+    public static property INVALID_VA_API_MEDIA_SURFACE_INTEL:          ErrorCode read _INVALID_VA_API_MEDIA_SURFACE_INTEL;
+    public static property VA_API_MEDIA_SURFACE_ALREADY_ACQUIRED_INTEL: ErrorCode read _VA_API_MEDIA_SURFACE_ALREADY_ACQUIRED_INTEL;
+    public static property VA_API_MEDIA_SURFACE_NOT_ACQUIRED_INTEL:     ErrorCode read _VA_API_MEDIA_SURFACE_NOT_ACQUIRED_INTEL;
+    public static property PIPE_FULL_INTEL:                             ErrorCode read _PIPE_FULL_INTEL;
+    public static property PIPE_EMPTY_INTEL:                            ErrorCode read _PIPE_EMPTY_INTEL;
     
     public function ToString: string; override;
     begin
-      var res := typeof(ErrorCode).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->ErrorCode(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'ErrorCode[{ self.val=default(Int32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = Int32($0000) then Result := 'SUCCESS' else
+      if self.val = Int32(-1) then Result := 'DEVICE_NOT_FOUND' else
+      if self.val = Int32(-2) then Result := 'DEVICE_NOT_AVAILABLE' else
+      if self.val = Int32(-3) then Result := 'COMPILER_NOT_AVAILABLE' else
+      if self.val = Int32(-4) then Result := 'MEM_OBJECT_ALLOCATION_FAILURE' else
+      if self.val = Int32(-5) then Result := 'OUT_OF_RESOURCES' else
+      if self.val = Int32(-6) then Result := 'OUT_OF_HOST_MEMORY' else
+      if self.val = Int32(-7) then Result := 'PROFILING_INFO_NOT_AVAILABLE' else
+      if self.val = Int32(-8) then Result := 'MEM_COPY_OVERLAP' else
+      if self.val = Int32(-9) then Result := 'IMAGE_FORMAT_MISMATCH' else
+      if self.val = Int32(-10) then Result := 'IMAGE_FORMAT_NOT_SUPPORTED' else
+      if self.val = Int32(-11) then Result := 'BUILD_PROGRAM_FAILURE' else
+      if self.val = Int32(-12) then Result := 'MAP_FAILURE' else
+      if self.val = Int32(-13) then Result := 'MISALIGNED_SUB_BUFFER_OFFSET' else
+      if self.val = Int32(-14) then Result := 'EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST' else
+      if self.val = Int32(-15) then Result := 'COMPILE_PROGRAM_FAILURE' else
+      if self.val = Int32(-16) then Result := 'LINKER_NOT_AVAILABLE' else
+      if self.val = Int32(-17) then Result := 'LINK_PROGRAM_FAILURE' else
+      if self.val = Int32(-18) then Result := 'DEVICE_PARTITION_FAILED' else
+      if self.val = Int32(-19) then Result := 'KERNEL_ARG_INFO_NOT_AVAILABLE' else
+      if self.val = Int32(-30) then Result := 'INVALID_VALUE' else
+      if self.val = Int32(-31) then Result := 'INVALID_DEVICE_TYPE' else
+      if self.val = Int32(-32) then Result := 'INVALID_PLATFORM' else
+      if self.val = Int32(-33) then Result := 'INVALID_DEVICE' else
+      if self.val = Int32(-34) then Result := 'INVALID_CONTEXT' else
+      if self.val = Int32(-35) then Result := 'INVALID_QUEUE_PROPERTIES' else
+      if self.val = Int32(-36) then Result := 'INVALID_COMMAND_QUEUE' else
+      if self.val = Int32(-37) then Result := 'INVALID_HOST_PTR' else
+      if self.val = Int32(-38) then Result := 'INVALID_MEM_OBJECT' else
+      if self.val = Int32(-39) then Result := 'INVALID_IMAGE_FORMAT_DESCRIPTOR' else
+      if self.val = Int32(-40) then Result := 'INVALID_IMAGE_SIZE' else
+      if self.val = Int32(-41) then Result := 'INVALID_SAMPLER' else
+      if self.val = Int32(-42) then Result := 'INVALID_BINARY' else
+      if self.val = Int32(-43) then Result := 'INVALID_BUILD_OPTIONS' else
+      if self.val = Int32(-44) then Result := 'INVALID_PROGRAM' else
+      if self.val = Int32(-45) then Result := 'INVALID_PROGRAM_EXECUTABLE' else
+      if self.val = Int32(-46) then Result := 'INVALID_KERNEL_NAME' else
+      if self.val = Int32(-47) then Result := 'INVALID_KERNEL_DEFINITION' else
+      if self.val = Int32(-48) then Result := 'INVALID_KERNEL' else
+      if self.val = Int32(-49) then Result := 'INVALID_ARG_INDEX' else
+      if self.val = Int32(-50) then Result := 'INVALID_ARG_VALUE' else
+      if self.val = Int32(-51) then Result := 'INVALID_ARG_SIZE' else
+      if self.val = Int32(-52) then Result := 'INVALID_KERNEL_ARGS' else
+      if self.val = Int32(-53) then Result := 'INVALID_WORK_DIMENSION' else
+      if self.val = Int32(-54) then Result := 'INVALID_WORK_GROUP_SIZE' else
+      if self.val = Int32(-55) then Result := 'INVALID_WORK_ITEM_SIZE' else
+      if self.val = Int32(-56) then Result := 'INVALID_GLOBAL_OFFSET' else
+      if self.val = Int32(-57) then Result := 'INVALID_EVENT_WAIT_LIST' else
+      if self.val = Int32(-58) then Result := 'INVALID_EVENT' else
+      if self.val = Int32(-59) then Result := 'INVALID_OPERATION' else
+      if self.val = Int32(-60) then Result := 'INVALID_GL_OBJECT' else
+      if self.val = Int32(-61) then Result := 'INVALID_BUFFER_SIZE' else
+      if self.val = Int32(-62) then Result := 'INVALID_MIP_LEVEL' else
+      if self.val = Int32(-63) then Result := 'INVALID_GLOBAL_WORK_SIZE' else
+      if self.val = Int32(-64) then Result := 'INVALID_PROPERTY' else
+      if self.val = Int32(-65) then Result := 'INVALID_IMAGE_DESCRIPTOR' else
+      if self.val = Int32(-66) then Result := 'INVALID_COMPILER_OPTIONS' else
+      if self.val = Int32(-67) then Result := 'INVALID_LINKER_OPTIONS' else
+      if self.val = Int32(-68) then Result := 'INVALID_DEVICE_PARTITION_COUNT' else
+      if self.val = Int32(-69) then Result := 'INVALID_PIPE_SIZE' else
+      if self.val = Int32(-70) then Result := 'INVALID_DEVICE_QUEUE' else
+      if self.val = Int32(-71) then Result := 'INVALID_SPEC_ID' else
+      if self.val = Int32(-72) then Result := 'MAX_SIZE_RESTRICTION_EXCEEDED' else
+      if self.val = Int32(-1000) then Result := 'INVALID_GL_SHAREGROUP_REFERENCE_KHR' else
+      if self.val = Int32(-1001) then Result := 'PLATFORM_NOT_FOUND_KHR' else
+      if self.val = Int32(-1002) then Result := 'INVALID_D3D10_DEVICE_KHR' else
+      if self.val = Int32(-1003) then Result := 'INVALID_D3D10_RESOURCE_KHR' else
+      if self.val = Int32(-1004) then Result := 'D3D10_RESOURCE_ALREADY_ACQUIRED_KHR' else
+      if self.val = Int32(-1005) then Result := 'D3D10_RESOURCE_NOT_ACQUIRED_KHR' else
+      if self.val = Int32(-1006) then Result := 'INVALID_D3D11_DEVICE_KHR' else
+      if self.val = Int32(-1007) then Result := 'INVALID_D3D11_RESOURCE_KHR' else
+      if self.val = Int32(-1008) then Result := 'D3D11_RESOURCE_ALREADY_ACQUIRED_KHR' else
+      if self.val = Int32(-1009) then Result := 'D3D11_RESOURCE_NOT_ACQUIRED_KHR' else
+      if self.val = Int32(-1010) then Result := 'INVALID_DX9_DEVICE_INTEL' else
+      if self.val = Int32(-1010) then Result := 'INVALID_DX9_MEDIA_ADAPTER_KHR' else
+      if self.val = Int32(-1011) then Result := 'INVALID_DX9_MEDIA_SURFACE_KHR' else
+      if self.val = Int32(-1011) then Result := 'INVALID_DX9_RESOURCE_INTEL' else
+      if self.val = Int32(-1012) then Result := 'DX9_MEDIA_SURFACE_ALREADY_ACQUIRED_KHR' else
+      if self.val = Int32(-1012) then Result := 'DX9_RESOURCE_ALREADY_ACQUIRED_INTEL' else
+      if self.val = Int32(-1013) then Result := 'DX9_MEDIA_SURFACE_NOT_ACQUIRED_KHR' else
+      if self.val = Int32(-1013) then Result := 'DX9_RESOURCE_NOT_ACQUIRED_INTEL' else
+      if self.val = Int32(-1057) then Result := 'DEVICE_PARTITION_FAILED_EXT' else
+      if self.val = Int32(-1058) then Result := 'INVALID_PARTITION_COUNT_EXT' else
+      if self.val = Int32(-1059) then Result := 'INVALID_PARTITION_NAME_EXT' else
+      if self.val = Int32(-1092) then Result := 'EGL_RESOURCE_NOT_ACQUIRED_KHR' else
+      if self.val = Int32(-1093) then Result := 'INVALID_EGL_OBJECT_KHR' else
+      if self.val = Int32(-1094) then Result := 'INVALID_ACCELERATOR_INTEL' else
+      if self.val = Int32(-1095) then Result := 'INVALID_ACCELERATOR_TYPE_INTEL' else
+      if self.val = Int32(-1096) then Result := 'INVALID_ACCELERATOR_DESCRIPTOR_INTEL' else
+      if self.val = Int32(-1097) then Result := 'ACCELERATOR_TYPE_NOT_SUPPORTED_INTEL' else
+      if self.val = Int32(-1098) then Result := 'INVALID_VA_API_MEDIA_ADAPTER_INTEL' else
+      if self.val = Int32(-1099) then Result := 'INVALID_VA_API_MEDIA_SURFACE_INTEL' else
+      if self.val = Int32(-1100) then Result := 'VA_API_MEDIA_SURFACE_ALREADY_ACQUIRED_INTEL' else
+      if self.val = Int32(-1101) then Result := 'VA_API_MEDIA_SURFACE_NOT_ACQUIRED_INTEL' else
+      if self.val = Int32(-1106) then Result := 'PIPE_FULL_INTEL' else
+      if self.val = Int32(-1107) then Result := 'PIPE_EMPTY_INTEL' else
+        Result := self.val.ToString;
     end;
     
     public function IS_ERROR := val<>0;
@@ -1490,10 +1897,12 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(EventInfo).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->EventInfo(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'EventInfo[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($11D0) then Result := 'EVENT_COMMAND_QUEUE' else
+      if self.val = UInt32($11D1) then Result := 'EVENT_COMMAND_TYPE' else
+      if self.val = UInt32($11D2) then Result := 'EVENT_REFERENCE_COUNT' else
+      if self.val = UInt32($11D3) then Result := 'EVENT_COMMAND_EXECUTION_STATUS' else
+      if self.val = UInt32($11D4) then Result := 'EVENT_CONTEXT' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1510,10 +1919,9 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(FilterMode).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->FilterMode(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'FilterMode[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($1140) then Result := 'FILTER_NEAREST' else
+      if self.val = UInt32($1141) then Result := 'FILTER_LINEAR' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1530,10 +1938,9 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(GlContextInfo).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->GlContextInfo(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'GlContextInfo[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($2006) then Result := 'CURRENT_DEVICE_FOR_GL_CONTEXT_KHR' else
+      if self.val = UInt32($2007) then Result := 'DEVICES_FOR_GL_CONTEXT_KHR' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1562,10 +1969,15 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(GlObjectType).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->GlObjectType(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'GlObjectType[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($2000) then Result := 'GL_OBJECT_BUFFER' else
+      if self.val = UInt32($2001) then Result := 'GL_OBJECT_TEXTURE2D' else
+      if self.val = UInt32($2002) then Result := 'GL_OBJECT_TEXTURE3D' else
+      if self.val = UInt32($2003) then Result := 'GL_OBJECT_RENDERBUFFER' else
+      if self.val = UInt32($200E) then Result := 'GL_OBJECT_TEXTURE2D_ARRAY' else
+      if self.val = UInt32($200F) then Result := 'GL_OBJECT_TEXTURE1D' else
+      if self.val = UInt32($2010) then Result := 'GL_OBJECT_TEXTURE1D_ARRAY' else
+      if self.val = UInt32($2011) then Result := 'GL_OBJECT_TEXTURE_BUFFER' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1584,10 +1996,10 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(GlTextureInfo).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->GlTextureInfo(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'GlTextureInfo[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($2004) then Result := 'GL_TEXTURE_TARGET' else
+      if self.val = UInt32($2005) then Result := 'GL_MIPMAP_LEVEL' else
+      if self.val = UInt32($2012) then Result := 'GL_NUM_SAMPLES' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1632,10 +2044,23 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(ImageInfo).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->ImageInfo(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'ImageInfo[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($1110) then Result := 'IMAGE_FORMAT' else
+      if self.val = UInt32($1111) then Result := 'IMAGE_ELEMENT_SIZE' else
+      if self.val = UInt32($1112) then Result := 'IMAGE_ROW_PITCH' else
+      if self.val = UInt32($1113) then Result := 'IMAGE_SLICE_PITCH' else
+      if self.val = UInt32($1114) then Result := 'IMAGE_WIDTH' else
+      if self.val = UInt32($1115) then Result := 'IMAGE_HEIGHT' else
+      if self.val = UInt32($1116) then Result := 'IMAGE_DEPTH' else
+      if self.val = UInt32($1117) then Result := 'IMAGE_ARRAY_SIZE' else
+      if self.val = UInt32($1118) then Result := 'IMAGE_BUFFER' else
+      if self.val = UInt32($1119) then Result := 'IMAGE_NUM_MIP_LEVELS' else
+      if self.val = UInt32($111A) then Result := 'IMAGE_NUM_SAMPLES' else
+      if self.val = UInt32($202A) then Result := 'IMAGE_DX9_MEDIA_PLANE_KHR' else
+      if self.val = UInt32($4016) then Result := 'IMAGE_D3D10_SUBRESOURCE_KHR' else
+      if self.val = UInt32($401F) then Result := 'IMAGE_D3D11_SUBRESOURCE_KHR' else
+      if self.val = UInt32($4075) then Result := 'IMAGE_DX9_PLANE_INTEL' else
+      if self.val = UInt32($4099) then Result := 'IMAGE_VA_API_PLANE_INTEL' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1656,10 +2081,11 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(KernelArgAccessQualifier).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->KernelArgAccessQualifier(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'KernelArgAccessQualifier[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($11A0) then Result := 'KERNEL_ARG_ACCESS_READ_ONLY' else
+      if self.val = UInt32($11A1) then Result := 'KERNEL_ARG_ACCESS_WRITE_ONLY' else
+      if self.val = UInt32($11A2) then Result := 'KERNEL_ARG_ACCESS_READ_WRITE' else
+      if self.val = UInt32($11A3) then Result := 'KERNEL_ARG_ACCESS_NONE' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1680,10 +2106,11 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(KernelArgAddressQualifier).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->KernelArgAddressQualifier(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'KernelArgAddressQualifier[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($119B) then Result := 'KERNEL_ARG_ADDRESS_GLOBAL' else
+      if self.val = UInt32($119C) then Result := 'KERNEL_ARG_ADDRESS_LOCAL' else
+      if self.val = UInt32($119D) then Result := 'KERNEL_ARG_ADDRESS_CONSTANT' else
+      if self.val = UInt32($119E) then Result := 'KERNEL_ARG_ADDRESS_PRIVATE' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1706,10 +2133,12 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(KernelArgInfo).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->KernelArgInfo(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'KernelArgInfo[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($1196) then Result := 'KERNEL_ARG_ADDRESS_QUALIFIER' else
+      if self.val = UInt32($1197) then Result := 'KERNEL_ARG_ACCESS_QUALIFIER' else
+      if self.val = UInt32($1198) then Result := 'KERNEL_ARG_TYPE_NAME' else
+      if self.val = UInt32($1199) then Result := 'KERNEL_ARG_TYPE_QUALIFIER' else
+      if self.val = UInt32($119A) then Result := 'KERNEL_ARG_NAME' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1732,10 +2161,12 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(KernelArgTypeQualifier).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->KernelArgTypeQualifier(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'KernelArgTypeQualifier[{ self.val=default(UInt64) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt64($0000) then Result := 'KERNEL_ARG_TYPE_NONE' else
+      if self.val = UInt64($0001) then Result := 'KERNEL_ARG_TYPE_CONST' else
+      if self.val = UInt64($0002) then Result := 'KERNEL_ARG_TYPE_RESTRICT' else
+      if self.val = UInt64($0004) then Result := 'KERNEL_ARG_TYPE_VOLATILE' else
+      if self.val = UInt64($0008) then Result := 'KERNEL_ARG_TYPE_PIPE' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1760,10 +2191,13 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(KernelExecInfo).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->KernelExecInfo(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'KernelExecInfo[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($11B6) then Result := 'KERNEL_EXEC_INFO_SVM_PTRS' else
+      if self.val = UInt32($11B7) then Result := 'KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM' else
+      if self.val = UInt32($4200) then Result := 'KERNEL_EXEC_INFO_INDIRECT_HOST_ACCESS_INTEL' else
+      if self.val = UInt32($4201) then Result := 'KERNEL_EXEC_INFO_INDIRECT_DEVICE_ACCESS_INTEL' else
+      if self.val = UInt32($4202) then Result := 'KERNEL_EXEC_INFO_INDIRECT_SHARED_ACCESS_INTEL' else
+      if self.val = UInt32($4203) then Result := 'KERNEL_EXEC_INFO_USM_PTRS_INTEL' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1772,30 +2206,29 @@ uses System.Runtime.CompilerServices;
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _KERNEL_FUNCTION_NAME          := new KernelInfo($1190);
-    private static _KERNEL_NUM_ARGS               := new KernelInfo($1191);
-    private static _KERNEL_REFERENCE_COUNT        := new KernelInfo($1192);
-    private static _KERNEL_CONTEXT                := new KernelInfo($1193);
-    private static _KERNEL_PROGRAM                := new KernelInfo($1194);
-    private static _KERNEL_ATTRIBUTES             := new KernelInfo($1195);
-    private static _KERNEL_MAX_NUM_SUB_GROUPS     := new KernelInfo($11B9);
-    private static _KERNEL_COMPILE_NUM_SUB_GROUPS := new KernelInfo($11BA);
+    private static _KERNEL_FUNCTION_NAME   := new KernelInfo($1190);
+    private static _KERNEL_NUM_ARGS        := new KernelInfo($1191);
+    private static _KERNEL_REFERENCE_COUNT := new KernelInfo($1192);
+    private static _KERNEL_CONTEXT         := new KernelInfo($1193);
+    private static _KERNEL_PROGRAM         := new KernelInfo($1194);
+    private static _KERNEL_ATTRIBUTES      := new KernelInfo($1195);
     
-    public static property KERNEL_FUNCTION_NAME:          KernelInfo read _KERNEL_FUNCTION_NAME;
-    public static property KERNEL_NUM_ARGS:               KernelInfo read _KERNEL_NUM_ARGS;
-    public static property KERNEL_REFERENCE_COUNT:        KernelInfo read _KERNEL_REFERENCE_COUNT;
-    public static property KERNEL_CONTEXT:                KernelInfo read _KERNEL_CONTEXT;
-    public static property KERNEL_PROGRAM:                KernelInfo read _KERNEL_PROGRAM;
-    public static property KERNEL_ATTRIBUTES:             KernelInfo read _KERNEL_ATTRIBUTES;
-    public static property KERNEL_MAX_NUM_SUB_GROUPS:     KernelInfo read _KERNEL_MAX_NUM_SUB_GROUPS;
-    public static property KERNEL_COMPILE_NUM_SUB_GROUPS: KernelInfo read _KERNEL_COMPILE_NUM_SUB_GROUPS;
+    public static property KERNEL_FUNCTION_NAME:   KernelInfo read _KERNEL_FUNCTION_NAME;
+    public static property KERNEL_NUM_ARGS:        KernelInfo read _KERNEL_NUM_ARGS;
+    public static property KERNEL_REFERENCE_COUNT: KernelInfo read _KERNEL_REFERENCE_COUNT;
+    public static property KERNEL_CONTEXT:         KernelInfo read _KERNEL_CONTEXT;
+    public static property KERNEL_PROGRAM:         KernelInfo read _KERNEL_PROGRAM;
+    public static property KERNEL_ATTRIBUTES:      KernelInfo read _KERNEL_ATTRIBUTES;
     
     public function ToString: string; override;
     begin
-      var res := typeof(KernelInfo).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->KernelInfo(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'KernelInfo[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($1190) then Result := 'KERNEL_FUNCTION_NAME' else
+      if self.val = UInt32($1191) then Result := 'KERNEL_NUM_ARGS' else
+      if self.val = UInt32($1192) then Result := 'KERNEL_REFERENCE_COUNT' else
+      if self.val = UInt32($1193) then Result := 'KERNEL_CONTEXT' else
+      if self.val = UInt32($1194) then Result := 'KERNEL_PROGRAM' else
+      if self.val = UInt32($1195) then Result := 'KERNEL_ATTRIBUTES' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1805,6 +2238,8 @@ uses System.Runtime.CompilerServices;
     public constructor(val: UInt32) := self.val := val;
     
     private static _KERNEL_LOCAL_SIZE_FOR_SUB_GROUP_COUNT     := new KernelSubGroupInfo($11B8);
+    private static _KERNEL_MAX_NUM_SUB_GROUPS                 := new KernelSubGroupInfo($11B9);
+    private static _KERNEL_COMPILE_NUM_SUB_GROUPS             := new KernelSubGroupInfo($11BA);
     private static _KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE     := new KernelSubGroupInfo($2033);
     private static _KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE_KHR := new KernelSubGroupInfo($2033);
     private static _KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE        := new KernelSubGroupInfo($2034);
@@ -1812,6 +2247,8 @@ uses System.Runtime.CompilerServices;
     private static _KERNEL_COMPILE_SUB_GROUP_SIZE_INTEL       := new KernelSubGroupInfo($410A);
     
     public static property KERNEL_LOCAL_SIZE_FOR_SUB_GROUP_COUNT:     KernelSubGroupInfo read _KERNEL_LOCAL_SIZE_FOR_SUB_GROUP_COUNT;
+    public static property KERNEL_MAX_NUM_SUB_GROUPS:                 KernelSubGroupInfo read _KERNEL_MAX_NUM_SUB_GROUPS;
+    public static property KERNEL_COMPILE_NUM_SUB_GROUPS:             KernelSubGroupInfo read _KERNEL_COMPILE_NUM_SUB_GROUPS;
     public static property KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE:     KernelSubGroupInfo read _KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE;
     public static property KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE_KHR: KernelSubGroupInfo read _KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE_KHR;
     public static property KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE:        KernelSubGroupInfo read _KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE;
@@ -1820,10 +2257,15 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(KernelSubGroupInfo).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->KernelSubGroupInfo(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'KernelSubGroupInfo[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($11B8) then Result := 'KERNEL_LOCAL_SIZE_FOR_SUB_GROUP_COUNT' else
+      if self.val = UInt32($11B9) then Result := 'KERNEL_MAX_NUM_SUB_GROUPS' else
+      if self.val = UInt32($11BA) then Result := 'KERNEL_COMPILE_NUM_SUB_GROUPS' else
+      if self.val = UInt32($2033) then Result := 'KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE' else
+      if self.val = UInt32($2033) then Result := 'KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE_KHR' else
+      if self.val = UInt32($2034) then Result := 'KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE' else
+      if self.val = UInt32($2034) then Result := 'KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE_KHR' else
+      if self.val = UInt32($410A) then Result := 'KERNEL_COMPILE_SUB_GROUP_SIZE_INTEL' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1850,10 +2292,14 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(KernelWorkGroupInfo).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->KernelWorkGroupInfo(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'KernelWorkGroupInfo[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($11B0) then Result := 'KERNEL_WORK_GROUP_SIZE' else
+      if self.val = UInt32($11B1) then Result := 'KERNEL_COMPILE_WORK_GROUP_SIZE' else
+      if self.val = UInt32($11B2) then Result := 'KERNEL_LOCAL_MEM_SIZE' else
+      if self.val = UInt32($11B3) then Result := 'KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE' else
+      if self.val = UInt32($11B4) then Result := 'KERNEL_PRIVATE_MEM_SIZE' else
+      if self.val = UInt32($11B5) then Result := 'KERNEL_GLOBAL_WORK_SIZE' else
+      if self.val = UInt32($4109) then Result := 'KERNEL_SPILL_MEM_SIZE_INTEL' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1878,10 +2324,16 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(MapFlags).GetProperties.Where(prop->prop.Name.StartsWith('HAS_FLAG_') and boolean(prop.GetValue(self))).Select(prop->prop.Name.TrimStart('&')).ToList;
-      Result := res.Count=0?
-        $'MapFlags[{ self.val=default(UInt64) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.JoinToString('+');
+      var res := new StringBuilder;
+      if self.val and UInt64($0001) = UInt64($0001) then res += 'MAP_READ+';
+      if self.val and UInt64($0002) = UInt64($0002) then res += 'MAP_WRITE+';
+      if self.val and UInt64($0004) = UInt64($0004) then res += 'MAP_WRITE_INVALIDATE_REGION+';
+      if res.Length<>0 then
+      begin
+        res.Length -= 1;
+        Result := res.ToString;
+      end else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -1960,10 +2412,34 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(MemFlags).GetProperties.Where(prop->prop.Name.StartsWith('HAS_FLAG_') and boolean(prop.GetValue(self))).Select(prop->prop.Name.TrimStart('&')).ToList;
-      Result := res.Count=0?
-        $'MemFlags[{ self.val=default(UInt64) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.JoinToString('+');
+      var res := new StringBuilder;
+      if self.val and UInt64($0001) = UInt64($0001) then res += 'MEM_READ_WRITE+';
+      if self.val and UInt64($0001) = UInt64($0001) then res += 'MEM_RESERVED0_ARM+';
+      if self.val and UInt64($0002) = UInt64($0002) then res += 'MEM_RESERVED1_ARM+';
+      if self.val and UInt64($0002) = UInt64($0002) then res += 'MEM_WRITE_ONLY+';
+      if self.val and UInt64($0004) = UInt64($0004) then res += 'MEM_READ_ONLY+';
+      if self.val and UInt64($0004) = UInt64($0004) then res += 'MEM_RESERVED2_ARM+';
+      if self.val and UInt64($0008) = UInt64($0008) then res += 'MEM_RESERVED3_ARM+';
+      if self.val and UInt64($0008) = UInt64($0008) then res += 'MEM_USE_HOST_PTR+';
+      if self.val and UInt64($0010) = UInt64($0010) then res += 'MEM_ALLOC_HOST_PTR+';
+      if self.val and UInt64($0010) = UInt64($0010) then res += 'MEM_RESERVED4_ARM+';
+      if self.val and UInt64($0020) = UInt64($0020) then res += 'MEM_COPY_HOST_PTR+';
+      if self.val and UInt64($0080) = UInt64($0080) then res += 'MEM_HOST_WRITE_ONLY+';
+      if self.val and UInt64($0100) = UInt64($0100) then res += 'MEM_HOST_READ_ONLY+';
+      if self.val and UInt64($0200) = UInt64($0200) then res += 'MEM_HOST_NO_ACCESS+';
+      if self.val and UInt64($1000) = UInt64($1000) then res += 'MEM_KERNEL_READ_AND_WRITE+';
+      if self.val and UInt64($1000000) = UInt64($1000000) then res += 'MEM_NO_ACCESS_INTEL+';
+      if self.val and UInt64($2000000) = UInt64($2000000) then res += 'MEM_ACCESS_FLAGS_UNRESTRICTED_INTEL+';
+      if self.val and UInt64($4000000) = UInt64($4000000) then res += 'MEM_USE_UNCACHED_CPU_MEMORY_IMG+';
+      if self.val and UInt64($8000000) = UInt64($8000000) then res += 'MEM_USE_CACHED_CPU_MEMORY_IMG+';
+      if self.val and UInt64($10000000) = UInt64($10000000) then res += 'MEM_USE_GRALLOC_PTR_IMG+';
+      if self.val and UInt64($20000000) = UInt64($20000000) then res += 'MEM_EXT_HOST_PTR_QCOM+';
+      if res.Length<>0 then
+      begin
+        res.Length -= 1;
+        Result := res.ToString;
+      end else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -2010,10 +2486,24 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(MemInfo).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->MemInfo(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'MemInfo[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($1100) then Result := 'MEM_TYPE' else
+      if self.val = UInt32($1101) then Result := 'MEM_FLAGS' else
+      if self.val = UInt32($1102) then Result := 'MEM_SIZE' else
+      if self.val = UInt32($1103) then Result := 'MEM_HOST_PTR' else
+      if self.val = UInt32($1104) then Result := 'MEM_MAP_COUNT' else
+      if self.val = UInt32($1105) then Result := 'MEM_REFERENCE_COUNT' else
+      if self.val = UInt32($1106) then Result := 'MEM_CONTEXT' else
+      if self.val = UInt32($1107) then Result := 'MEM_ASSOCIATED_MEMOBJECT' else
+      if self.val = UInt32($1108) then Result := 'MEM_OFFSET' else
+      if self.val = UInt32($1109) then Result := 'MEM_USES_SVM_POINTER' else
+      if self.val = UInt32($2028) then Result := 'MEM_DX9_MEDIA_ADAPTER_TYPE_KHR' else
+      if self.val = UInt32($2029) then Result := 'MEM_DX9_MEDIA_SURFACE_INFO_KHR' else
+      if self.val = UInt32($4015) then Result := 'MEM_D3D10_RESOURCE_KHR' else
+      if self.val = UInt32($401E) then Result := 'MEM_D3D11_RESOURCE_KHR' else
+      if self.val = UInt32($4027) then Result := 'MEM_DX9_RESOURCE_INTEL' else
+      if self.val = UInt32($4074) then Result := 'MEM_DX9_SHARED_HANDLE_INTEL' else
+      if self.val = UInt32($4098) then Result := 'MEM_VA_API_MEDIA_SURFACE_INTEL' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -2035,10 +2525,15 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(MemMigrationFlags).GetProperties.Where(prop->prop.Name.StartsWith('HAS_FLAG_') and boolean(prop.GetValue(self))).Select(prop->prop.Name.TrimStart('&')).ToList;
-      Result := res.Count=0?
-        $'MemMigrationFlags[{ self.val=default(UInt64) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.JoinToString('+');
+      var res := new StringBuilder;
+      if self.val and UInt64($0001) = UInt64($0001) then res += 'MIGRATE_MEM_OBJECT_HOST+';
+      if self.val and UInt64($0002) = UInt64($0002) then res += 'MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED+';
+      if res.Length<>0 then
+      begin
+        res.Length -= 1;
+        Result := res.ToString;
+      end else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -2053,10 +2548,8 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(MemMigrationFlagsExt).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->MemMigrationFlagsExt(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'MemMigrationFlagsExt[{ self.val=default(UInt64) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt64($0001) then Result := 'MIGRATE_MEM_OBJECT_HOST_EXT' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -2065,14 +2558,17 @@ uses System.Runtime.CompilerServices;
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
+    private static _MIGRATE_MEM_OBJECT_HOST_INTEL              := new MemMigrationFlagsIntel($0001);
+    private static _MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED_INTEL := new MemMigrationFlagsIntel($0002);
     
+    public static property MIGRATE_MEM_OBJECT_HOST_INTEL:              MemMigrationFlagsIntel read _MIGRATE_MEM_OBJECT_HOST_INTEL;
+    public static property MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED_INTEL: MemMigrationFlagsIntel read _MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED_INTEL;
     
     public function ToString: string; override;
     begin
-      var res := typeof(MemMigrationFlagsIntel).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->MemMigrationFlagsIntel(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'MemMigrationFlagsIntel[{ self.val=default(UInt64) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt64($0001) then Result := 'MIGRATE_MEM_OBJECT_HOST_INTEL' else
+      if self.val = UInt64($0002) then Result := 'MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED_INTEL' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -2101,10 +2597,15 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(MemObjectType).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->MemObjectType(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'MemObjectType[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($10F0) then Result := 'MEM_OBJECT_BUFFER' else
+      if self.val = UInt32($10F1) then Result := 'MEM_OBJECT_IMAGE2D' else
+      if self.val = UInt32($10F2) then Result := 'MEM_OBJECT_IMAGE3D' else
+      if self.val = UInt32($10F3) then Result := 'MEM_OBJECT_IMAGE2D_ARRAY' else
+      if self.val = UInt32($10F4) then Result := 'MEM_OBJECT_IMAGE1D' else
+      if self.val = UInt32($10F5) then Result := 'MEM_OBJECT_IMAGE1D_ARRAY' else
+      if self.val = UInt32($10F6) then Result := 'MEM_OBJECT_IMAGE1D_BUFFER' else
+      if self.val = UInt32($10F7) then Result := 'MEM_OBJECT_PIPE' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -2119,10 +2620,8 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(MemPropertiesIntel).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->MemPropertiesIntel(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'MemPropertiesIntel[{ self.val=default(UInt64) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt64($4195) then Result := 'MEM_ALLOC_FLAGS_INTEL' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -2139,10 +2638,9 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(PipeInfo).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->PipeInfo(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'PipeInfo[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($1120) then Result := 'PIPE_PACKET_SIZE' else
+      if self.val = UInt32($1121) then Result := 'PIPE_MAX_PACKETS' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -2169,10 +2667,14 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(PlatformInfo).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->PlatformInfo(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'PlatformInfo[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($0900) then Result := 'PLATFORM_PROFILE' else
+      if self.val = UInt32($0901) then Result := 'PLATFORM_VERSION' else
+      if self.val = UInt32($0902) then Result := 'PLATFORM_NAME' else
+      if self.val = UInt32($0903) then Result := 'PLATFORM_VENDOR' else
+      if self.val = UInt32($0904) then Result := 'PLATFORM_EXTENSIONS' else
+      if self.val = UInt32($0905) then Result := 'PLATFORM_HOST_TIMER_RESOLUTION' else
+      if self.val = UInt32($0920) then Result := 'PLATFORM_ICD_SUFFIX_KHR' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -2195,10 +2697,12 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(ProfilingInfo).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->ProfilingInfo(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'ProfilingInfo[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($1280) then Result := 'PROFILING_COMMAND_QUEUED' else
+      if self.val = UInt32($1281) then Result := 'PROFILING_COMMAND_SUBMIT' else
+      if self.val = UInt32($1282) then Result := 'PROFILING_COMMAND_START' else
+      if self.val = UInt32($1283) then Result := 'PROFILING_COMMAND_END' else
+      if self.val = UInt32($1284) then Result := 'PROFILING_COMMAND_COMPLETE' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -2221,10 +2725,12 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(ProgramBinaryType).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->ProgramBinaryType(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'ProgramBinaryType[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($0000) then Result := 'PROGRAM_BINARY_TYPE_NONE' else
+      if self.val = UInt32($0001) then Result := 'PROGRAM_BINARY_TYPE_COMPILED_OBJECT' else
+      if self.val = UInt32($0002) then Result := 'PROGRAM_BINARY_TYPE_LIBRARY' else
+      if self.val = UInt32($0004) then Result := 'PROGRAM_BINARY_TYPE_EXECUTABLE' else
+      if self.val = UInt32($40E1) then Result := 'PROGRAM_BINARY_TYPE_INTERMEDIATE' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -2247,10 +2753,12 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(ProgramBuildInfo).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->ProgramBuildInfo(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'ProgramBuildInfo[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($1181) then Result := 'PROGRAM_BUILD_STATUS' else
+      if self.val = UInt32($1182) then Result := 'PROGRAM_BUILD_OPTIONS' else
+      if self.val = UInt32($1183) then Result := 'PROGRAM_BUILD_LOG' else
+      if self.val = UInt32($1184) then Result := 'PROGRAM_BINARY_TYPE' else
+      if self.val = UInt32($1185) then Result := 'PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -2287,10 +2795,19 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(ProgramInfo).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->ProgramInfo(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'ProgramInfo[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($1160) then Result := 'PROGRAM_REFERENCE_COUNT' else
+      if self.val = UInt32($1161) then Result := 'PROGRAM_CONTEXT' else
+      if self.val = UInt32($1162) then Result := 'PROGRAM_NUM_DEVICES' else
+      if self.val = UInt32($1163) then Result := 'PROGRAM_DEVICES' else
+      if self.val = UInt32($1164) then Result := 'PROGRAM_SOURCE' else
+      if self.val = UInt32($1165) then Result := 'PROGRAM_BINARY_SIZES' else
+      if self.val = UInt32($1166) then Result := 'PROGRAM_BINARIES' else
+      if self.val = UInt32($1167) then Result := 'PROGRAM_NUM_KERNELS' else
+      if self.val = UInt32($1168) then Result := 'PROGRAM_KERNEL_NAMES' else
+      if self.val = UInt32($1169) then Result := 'PROGRAM_IL' else
+      if self.val = UInt32($116A) then Result := 'PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT' else
+      if self.val = UInt32($116B) then Result := 'PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -2307,10 +2824,9 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(QueueProperties).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->QueueProperties(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'QueueProperties[{ self.val=default(UInt64) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt64($1096) then Result := 'QUEUE_PRIORITY_KHR' else
+      if self.val = UInt64($1097) then Result := 'QUEUE_THROTTLE_KHR' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -2339,10 +2855,15 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(SamplerInfo).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->SamplerInfo(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'SamplerInfo[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($1150) then Result := 'SAMPLER_REFERENCE_COUNT' else
+      if self.val = UInt32($1151) then Result := 'SAMPLER_CONTEXT' else
+      if self.val = UInt32($1152) then Result := 'SAMPLER_NORMALIZED_COORDS' else
+      if self.val = UInt32($1153) then Result := 'SAMPLER_ADDRESSING_MODE' else
+      if self.val = UInt32($1154) then Result := 'SAMPLER_FILTER_MODE' else
+      if self.val = UInt32($1155) then Result := 'SAMPLER_MIP_FILTER_MODE' else
+      if self.val = UInt32($1156) then Result := 'SAMPLER_LOD_MIN' else
+      if self.val = UInt32($1157) then Result := 'SAMPLER_LOD_MAX' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -2361,10 +2882,10 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(SamplerProperties).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->SamplerProperties(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'SamplerProperties[{ self.val=default(UInt64) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt64($1155) then Result := 'SAMPLER_MIP_FILTER_MODE' else
+      if self.val = UInt64($1156) then Result := 'SAMPLER_LOD_MIN' else
+      if self.val = UInt64($1157) then Result := 'SAMPLER_LOD_MAX' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -2401,10 +2922,19 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(SvmMemFlags).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->SvmMemFlags(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'SvmMemFlags[{ self.val=default(UInt64) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt64($0001) then Result := 'MEM_READ_WRITE' else
+      if self.val = UInt64($0002) then Result := 'MEM_WRITE_ONLY' else
+      if self.val = UInt64($0004) then Result := 'MEM_READ_ONLY' else
+      if self.val = UInt64($0008) then Result := 'MEM_USE_HOST_PTR' else
+      if self.val = UInt64($0010) then Result := 'MEM_ALLOC_HOST_PTR' else
+      if self.val = UInt64($0020) then Result := 'MEM_COPY_HOST_PTR' else
+      if self.val = UInt64($0080) then Result := 'MEM_HOST_WRITE_ONLY' else
+      if self.val = UInt64($0100) then Result := 'MEM_HOST_READ_ONLY' else
+      if self.val = UInt64($0200) then Result := 'MEM_HOST_NO_ACCESS' else
+      if self.val = UInt64($0400) then Result := 'MEM_SVM_FINE_GRAIN_BUFFER' else
+      if self.val = UInt64($0800) then Result := 'MEM_SVM_ATOMICS' else
+      if self.val = UInt64($1000) then Result := 'MEM_KERNEL_READ_AND_WRITE' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -2421,10 +2951,9 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(VaApiDeviceSetIntel).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->VaApiDeviceSetIntel(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'VaApiDeviceSetIntel[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($4095) then Result := 'PREFERRED_DEVICES_FOR_VA_API_INTEL' else
+      if self.val = UInt32($4096) then Result := 'ALL_DEVICES_FOR_VA_API_INTEL' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -2439,10 +2968,8 @@ uses System.Runtime.CompilerServices;
     
     public function ToString: string; override;
     begin
-      var res := typeof(VaApiDeviceSourceIntel).GetFields(System.Reflection.BindingFlags.Static or System.Reflection.BindingFlags.NonPublic).FirstOrDefault(fld->VaApiDeviceSourceIntel(fld.GetValue(nil)).val=self.val);
-      Result := res=nil?
-        $'VaApiDeviceSourceIntel[{ self.val=default(UInt32) ? ''NONE'' : self.val.ToString(''X'') }]':
-        res.Name.SubString(1);
+      if self.val = UInt32($4094) then Result := 'VA_API_DISPLAY_INTEL' else
+        Result := self.val.ToString;
     end;
     
   end;
@@ -2531,6 +3058,7 @@ uses System.Runtime.CompilerServices;
 
 type
   
+  [PCUNotRestore]
   cl = static class
     
     // added in cl1.0
@@ -5944,45 +6472,45 @@ type
     z_Flush_ovr_0(command_queue);
     
     // added in cl1.0
-    private static function z_GetCommandQueueInfo_ovr_0(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; param_value: cl_context; var param_value_size_ret: UIntPtr): ErrorCode;
+    private static function z_GetCommandQueueInfo_ovr_0(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; var param_value: cl_context; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetCommandQueueInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetCommandQueueInfo(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; param_value: cl_context; var param_value_size_ret: UIntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetCommandQueueInfo(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; var param_value: cl_context; var param_value_size_ret: UIntPtr): ErrorCode :=
     z_GetCommandQueueInfo_ovr_0(command_queue, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetCommandQueueInfo_ovr_1(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; param_value: cl_context; param_value_size_ret: IntPtr): ErrorCode;
+    private static function z_GetCommandQueueInfo_ovr_1(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; var param_value: cl_context; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetCommandQueueInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetCommandQueueInfo(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; param_value: cl_context; param_value_size_ret: IntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetCommandQueueInfo(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; var param_value: cl_context; param_value_size_ret: IntPtr): ErrorCode :=
     z_GetCommandQueueInfo_ovr_1(command_queue, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetCommandQueueInfo_ovr_2(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; param_value: cl_device_id; var param_value_size_ret: UIntPtr): ErrorCode;
+    private static function z_GetCommandQueueInfo_ovr_2(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; var param_value: cl_device_id; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetCommandQueueInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetCommandQueueInfo(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; param_value: cl_device_id; var param_value_size_ret: UIntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetCommandQueueInfo(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; var param_value: cl_device_id; var param_value_size_ret: UIntPtr): ErrorCode :=
     z_GetCommandQueueInfo_ovr_2(command_queue, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetCommandQueueInfo_ovr_3(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; param_value: cl_device_id; param_value_size_ret: IntPtr): ErrorCode;
+    private static function z_GetCommandQueueInfo_ovr_3(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; var param_value: cl_device_id; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetCommandQueueInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetCommandQueueInfo(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; param_value: cl_device_id; param_value_size_ret: IntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetCommandQueueInfo(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; var param_value: cl_device_id; param_value_size_ret: IntPtr): ErrorCode :=
     z_GetCommandQueueInfo_ovr_3(command_queue, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetCommandQueueInfo_ovr_4(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; param_value: UInt32; var param_value_size_ret: UIntPtr): ErrorCode;
+    private static function z_GetCommandQueueInfo_ovr_4(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; var param_value: UInt32; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetCommandQueueInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetCommandQueueInfo(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; param_value: UInt32; var param_value_size_ret: UIntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetCommandQueueInfo(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; var param_value: UInt32; var param_value_size_ret: UIntPtr): ErrorCode :=
     z_GetCommandQueueInfo_ovr_4(command_queue, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetCommandQueueInfo_ovr_5(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; param_value: UInt32; param_value_size_ret: IntPtr): ErrorCode;
+    private static function z_GetCommandQueueInfo_ovr_5(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; var param_value: UInt32; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetCommandQueueInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetCommandQueueInfo(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; param_value: UInt32; param_value_size_ret: IntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetCommandQueueInfo(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; var param_value: UInt32; param_value_size_ret: IntPtr): ErrorCode :=
     z_GetCommandQueueInfo_ovr_5(command_queue, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetCommandQueueInfo_ovr_6(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; param_value: CommandQueueProperties; var param_value_size_ret: UIntPtr): ErrorCode;
+    private static function z_GetCommandQueueInfo_ovr_6(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; var param_value: CommandQueueProperties; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetCommandQueueInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetCommandQueueInfo(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; param_value: CommandQueueProperties; var param_value_size_ret: UIntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetCommandQueueInfo(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; var param_value: CommandQueueProperties; var param_value_size_ret: UIntPtr): ErrorCode :=
     z_GetCommandQueueInfo_ovr_6(command_queue, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetCommandQueueInfo_ovr_7(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; param_value: CommandQueueProperties; param_value_size_ret: IntPtr): ErrorCode;
+    private static function z_GetCommandQueueInfo_ovr_7(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; var param_value: CommandQueueProperties; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetCommandQueueInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetCommandQueueInfo(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; param_value: CommandQueueProperties; param_value_size_ret: IntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetCommandQueueInfo(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; var param_value: CommandQueueProperties; param_value_size_ret: IntPtr): ErrorCode :=
     z_GetCommandQueueInfo_ovr_7(command_queue, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetCommandQueueInfo_ovr_8(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; param_value: cl_command_queue; var param_value_size_ret: UIntPtr): ErrorCode;
+    private static function z_GetCommandQueueInfo_ovr_8(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; var param_value: cl_command_queue; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetCommandQueueInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetCommandQueueInfo(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; param_value: cl_command_queue; var param_value_size_ret: UIntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetCommandQueueInfo(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; var param_value: cl_command_queue; var param_value_size_ret: UIntPtr): ErrorCode :=
     z_GetCommandQueueInfo_ovr_8(command_queue, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetCommandQueueInfo_ovr_9(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; param_value: cl_command_queue; param_value_size_ret: IntPtr): ErrorCode;
+    private static function z_GetCommandQueueInfo_ovr_9(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; var param_value: cl_command_queue; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetCommandQueueInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetCommandQueueInfo(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; param_value: cl_command_queue; param_value_size_ret: IntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetCommandQueueInfo(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; var param_value: cl_command_queue; param_value_size_ret: IntPtr): ErrorCode :=
     z_GetCommandQueueInfo_ovr_9(command_queue, param_name, param_value_size, param_value, param_value_size_ret);
     private static function z_GetCommandQueueInfo_ovr_10(command_queue: cl_command_queue; param_name: CommandQueueInfo; param_value_size: UIntPtr; param_value: pointer; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetCommandQueueInfo';
@@ -6586,13 +7114,13 @@ type
     z_GetPlatformInfo_ovr_3(platform, param_name, param_value_size, param_value, param_value_size_ret);
     
     // added in cl1.0
-    private static function z_GetProgramBuildInfo_ovr_0(&program: cl_program; device: cl_device_id; param_name: ProgramBuildInfo; param_value_size: UIntPtr; param_value: BuildStatus; var param_value_size_ret: UIntPtr): ErrorCode;
+    private static function z_GetProgramBuildInfo_ovr_0(&program: cl_program; device: cl_device_id; param_name: ProgramBuildInfo; param_value_size: UIntPtr; var param_value: BuildStatus; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetProgramBuildInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetProgramBuildInfo(&program: cl_program; device: cl_device_id; param_name: ProgramBuildInfo; param_value_size: UIntPtr; param_value: BuildStatus; var param_value_size_ret: UIntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetProgramBuildInfo(&program: cl_program; device: cl_device_id; param_name: ProgramBuildInfo; param_value_size: UIntPtr; var param_value: BuildStatus; var param_value_size_ret: UIntPtr): ErrorCode :=
     z_GetProgramBuildInfo_ovr_0(&program, device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetProgramBuildInfo_ovr_1(&program: cl_program; device: cl_device_id; param_name: ProgramBuildInfo; param_value_size: UIntPtr; param_value: BuildStatus; param_value_size_ret: IntPtr): ErrorCode;
+    private static function z_GetProgramBuildInfo_ovr_1(&program: cl_program; device: cl_device_id; param_name: ProgramBuildInfo; param_value_size: UIntPtr; var param_value: BuildStatus; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetProgramBuildInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetProgramBuildInfo(&program: cl_program; device: cl_device_id; param_name: ProgramBuildInfo; param_value_size: UIntPtr; param_value: BuildStatus; param_value_size_ret: IntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetProgramBuildInfo(&program: cl_program; device: cl_device_id; param_name: ProgramBuildInfo; param_value_size: UIntPtr; var param_value: BuildStatus; param_value_size_ret: IntPtr): ErrorCode :=
     z_GetProgramBuildInfo_ovr_1(&program, device, param_name, param_value_size, param_value, param_value_size_ret);
     private static function z_GetProgramBuildInfo_ovr_2(&program: cl_program; device: cl_device_id; param_name: ProgramBuildInfo; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetProgramBuildInfo';
@@ -6602,13 +7130,13 @@ type
     external 'opencl.dll' name 'clGetProgramBuildInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetProgramBuildInfo(&program: cl_program; device: cl_device_id; param_name: ProgramBuildInfo; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode :=
     z_GetProgramBuildInfo_ovr_3(&program, device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetProgramBuildInfo_ovr_4(&program: cl_program; device: cl_device_id; param_name: ProgramBuildInfo; param_value_size: UIntPtr; param_value: ProgramBinaryType; var param_value_size_ret: UIntPtr): ErrorCode;
+    private static function z_GetProgramBuildInfo_ovr_4(&program: cl_program; device: cl_device_id; param_name: ProgramBuildInfo; param_value_size: UIntPtr; var param_value: ProgramBinaryType; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetProgramBuildInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetProgramBuildInfo(&program: cl_program; device: cl_device_id; param_name: ProgramBuildInfo; param_value_size: UIntPtr; param_value: ProgramBinaryType; var param_value_size_ret: UIntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetProgramBuildInfo(&program: cl_program; device: cl_device_id; param_name: ProgramBuildInfo; param_value_size: UIntPtr; var param_value: ProgramBinaryType; var param_value_size_ret: UIntPtr): ErrorCode :=
     z_GetProgramBuildInfo_ovr_4(&program, device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetProgramBuildInfo_ovr_5(&program: cl_program; device: cl_device_id; param_name: ProgramBuildInfo; param_value_size: UIntPtr; param_value: ProgramBinaryType; param_value_size_ret: IntPtr): ErrorCode;
+    private static function z_GetProgramBuildInfo_ovr_5(&program: cl_program; device: cl_device_id; param_name: ProgramBuildInfo; param_value_size: UIntPtr; var param_value: ProgramBinaryType; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetProgramBuildInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetProgramBuildInfo(&program: cl_program; device: cl_device_id; param_name: ProgramBuildInfo; param_value_size: UIntPtr; param_value: ProgramBinaryType; param_value_size_ret: IntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetProgramBuildInfo(&program: cl_program; device: cl_device_id; param_name: ProgramBuildInfo; param_value_size: UIntPtr; var param_value: ProgramBinaryType; param_value_size_ret: IntPtr): ErrorCode :=
     z_GetProgramBuildInfo_ovr_5(&program, device, param_name, param_value_size, param_value, param_value_size_ret);
     private static function z_GetProgramBuildInfo_ovr_6(&program: cl_program; device: cl_device_id; param_name: ProgramBuildInfo; param_value_size: UIntPtr; var param_value: UIntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetProgramBuildInfo';
@@ -7074,9 +7602,9 @@ type
     external 'opencl.dll' name 'clSetKernelExecInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function SetKernelExecInfo(kernel: cl_kernel; param_name: KernelExecInfo; param_value_size: UIntPtr; var param_value: IntPtr): ErrorCode :=
     z_SetKernelExecInfo_ovr_0(kernel, param_name, param_value_size, param_value);
-    private static function z_SetKernelExecInfo_ovr_1(kernel: cl_kernel; param_name: KernelExecInfo; param_value_size: UIntPtr; param_value: Bool): ErrorCode;
+    private static function z_SetKernelExecInfo_ovr_1(kernel: cl_kernel; param_name: KernelExecInfo; param_value_size: UIntPtr; var param_value: Bool): ErrorCode;
     external 'opencl.dll' name 'clSetKernelExecInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function SetKernelExecInfo(kernel: cl_kernel; param_name: KernelExecInfo; param_value_size: UIntPtr; param_value: Bool): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function SetKernelExecInfo(kernel: cl_kernel; param_name: KernelExecInfo; param_value_size: UIntPtr; var param_value: Bool): ErrorCode :=
     z_SetKernelExecInfo_ovr_1(kernel, param_name, param_value_size, param_value);
     private static function z_SetKernelExecInfo_ovr_2(kernel: cl_kernel; param_name: KernelExecInfo; param_value_size: UIntPtr; param_value: pointer): ErrorCode;
     external 'opencl.dll' name 'clSetKernelExecInfo';
@@ -7169,6 +7697,7 @@ type
   
   {$region Extensions}
   
+  [PCUNotRestore]
   clD3d10SharingKHR = static class
     
     private static function z_GetDeviceIDsFromD3D10KHR_ovr_0(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; var devices: cl_device_id; var num_devices: UInt32): ErrorCode;
@@ -7673,6 +8202,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clD3d11SharingKHR = static class
     
     private static function z_GetDeviceIDsFromD3D11KHR_ovr_0(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; var devices: cl_device_id; var num_devices: UInt32): ErrorCode;
@@ -8177,6 +8707,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clDx9MediaSharingKHR = static class
     
     private static function z_GetDeviceIDsFromDX9MediaAdapterKHR_ovr_0(platform: cl_platform_id; num_media_adapters: UInt32; var media_adapter_type: UInt32; media_adapters: IntPtr; media_adapter_set: UInt32; num_entries: UInt32; var devices: cl_device_id; var num_devices: UInt32): ErrorCode;
@@ -8789,6 +9320,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clEglImageKHR = static class
     
     private static function z_CreateFromEGLImageKHR_ovr_0(context: cl_context; egldisplay: IntPtr; eglimage: IntPtr; flags: MemFlags; var properties: EglImagePropertiesKhr; var errcode_ret: ErrorCode): cl_mem;
@@ -9210,6 +9742,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clEglEventKHR = static class
     
     private static function z_CreateEventFromEGLSyncKHR_ovr_0(context: cl_context; sync: IntPtr; display: IntPtr; var errcode_ret: ErrorCode): cl_event;
@@ -9219,6 +9752,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clSetMemObjectDestructorAPPLE = static class
     
     private static function z_SetMemObjectDestructorAPPLE_ovr_0(memobj: cl_mem; pfn_notify: MemObjectDestructorCallback; user_data: IntPtr): ErrorCode;
@@ -9228,6 +9762,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clContextLoggingFunctionsAPPLE = static class
     
     private static procedure z_LogMessagesToSystemLogAPPLE_ovr_0(errstr: IntPtr; private_info: IntPtr; cb: UIntPtr; user_data: IntPtr);
@@ -9265,6 +9800,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clIcdKHR = static class
     
     private static function z_IcdGetPlatformIDsKHR_ovr_0(num_entries: UInt32; var platforms: cl_platform_id; var num_platforms: UInt32): ErrorCode;
@@ -9322,6 +9858,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clIlProgramKHR = static class
     
     private static function z_CreateProgramWithILKHR_ovr_0(context: cl_context; var il: byte; length: UIntPtr; var errcode_ret: ErrorCode): cl_program;
@@ -9341,6 +9878,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clTerminateContextKHR = static class
     
     private static function z_TerminateContextKHR_ovr_0(context: cl_context): ErrorCode;
@@ -9350,6 +9888,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clCreateCommandQueueKHR = static class
     
     private static function z_CreateCommandQueueWithPropertiesKHR_ovr_0(context: cl_context; device: cl_device_id; var properties: UInt64; var errcode_ret: ErrorCode): cl_command_queue;
@@ -9369,6 +9908,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clDeviceFissionEXT = static class
     
     private static function z_ReleaseDeviceEXT_ovr_0(device: cl_device_id): ErrorCode;
@@ -9584,6 +10124,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clMigrateMemobjectEXT = static class
     
     private static function z_EnqueueMigrateMemObjectEXT_ovr_0(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; flags: MemMigrationFlagsExt; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
@@ -9789,6 +10330,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clExtHostPtrQCOM = static class
     
     private static function z_GetDeviceImageInfoQCOM_ovr_0(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; var image_format: cl_image_format; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
@@ -9846,6 +10388,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clUseGrallocPtrIMG = static class
     
     private static function z_EnqueueAcquireGrallocObjectsIMG_ovr_0(command_queue: cl_command_queue; num_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
@@ -10252,6 +10795,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clSubgroupsKHR = static class
     
     private static function z_GetKernelSubGroupInfoKHR_ovr_0(in_kernel: cl_kernel; in_device: cl_device_id; param_name: KernelSubGroupInfo; input_value_size: UIntPtr; input_value: IntPtr; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
@@ -10271,6 +10815,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clImportMemoryARM = static class
     
     private static function z_ImportMemoryARM_ovr_0(context: cl_context; flags: MemFlags; var properties: IntPtr; memory: IntPtr; size: UIntPtr; var errcode_ret: ErrorCode): cl_mem;
@@ -10290,6 +10835,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clSharedVirtualMemoryARM = static class
     
     private static function z_SVMAllocARM_ovr_0(context: cl_context; flags: UInt64; size: UIntPtr; alignment: UInt32): IntPtr;
@@ -10579,6 +11125,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clAcceleratorINTEL = static class
     
     private static function z_CreateAcceleratorINTEL_ovr_0(context: cl_context; accelerator_type: AcceleratorTypeIntel; descriptor_size: UIntPtr; descriptor: IntPtr; var errcode_ret: ErrorCode): cl_accelerator_intel;
@@ -10613,6 +11160,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clGlEventKHR = static class
     
     private static function z_CreateEventFromGLsyncKHR_ovr_0(context: cl_context; sync: IntPtr; var errcode_ret: ErrorCode): cl_event;
@@ -10622,6 +11170,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clVaApiMediaSharingINTEL = static class
     
     private static function z_GetDeviceIDsFromVA_APIMediaAdapterINTEL_ovr_0(platform: cl_platform_id; media_adapter_type: VaApiDeviceSourceIntel; media_adapter: IntPtr; media_adapter_set: VaApiDeviceSetIntel; num_entries: UInt32; var devices: cl_device_id; var num_devices: UInt32): ErrorCode;
@@ -11096,6 +11645,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clDx9MediaSharingINTEL = static class
     
     private static function z_GetDeviceIDsFromDX9INTEL_ovr_0(platform: cl_platform_id; dx9_device_source: Dx9DeviceSourceIntel; dx9_object: IntPtr; dx9_device_set: Dx9DeviceSetIntel; num_entries: UInt32; var devices: cl_device_id; var num_devices: UInt32): ErrorCode;
@@ -11570,6 +12120,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clGlSharingKHR = static class
     
     private static function z_GetGLContextInfoKHR_ovr_0(var properties: ContextProperties; param_name: GlContextInfo; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
@@ -12122,6 +12673,7 @@ type
     
   end;
   
+  [PCUNotRestore]
   clUnifiedSharedMemoryINTEL = static class
     
     private static function z_HostMemAllocINTEL_ovr_0(context: cl_context; var properties: MemPropertiesIntel; size: UIntPtr; alignment: UInt32; var errcode_ret: ErrorCode): IntPtr;

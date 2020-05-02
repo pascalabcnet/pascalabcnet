@@ -615,6 +615,9 @@ type
     
     function IsEmpty: boolean := l<=h;
 
+    function Step(n: integer): sequence of integer;
+    function Reverse: sequence of integer;
+
     function GetEnumerator(): IEnumerator<integer>;
     function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := Self.GetEnumerator;
 
@@ -683,6 +686,9 @@ type
     static function operator=(r1,r2: CharRange): boolean := (r1.l = r2.l) and (r1.h = r2.h);
     
     function IsEmpty: boolean := l<=h;
+
+    function Step(n: integer): sequence of char;
+    function Reverse: sequence of char;
 
     function GetEnumerator(): IEnumerator<char>;
     function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := GetEnumerator;
@@ -771,30 +777,31 @@ procedure Readln;
 
 ///- function TryRead(var x: число): boolean;
 /// Вводит числовое значение x с клавиатуры. Возвращает False если при вводе произошла ошибка
-function TryRead(var x: integer): boolean;
+function TryRead(var x: integer; message: string := ''): boolean;
+///- function TryRead(var x: число; message: string): boolean;
+/// Выводит приглашение к вводу и вводит числовое значение x с клавиатуры. Возвращает False если при вводе произошла ошибка
+function TryRead(var x: real; message: string := ''): boolean;
 ///--
-function TryRead(var x: real): boolean;
+function TryRead(var x: byte; message: string := ''): boolean;
 ///--
-function TryRead(var x: byte): boolean;
+function TryRead(var x: shortint; message: string := ''): boolean;
 ///--
-function TryRead(var x: shortint): boolean;
+function TryRead(var x: smallint; message: string := ''): boolean;
 ///--
-function TryRead(var x: smallint): boolean;
+function TryRead(var x: word; message: string := ''): boolean;
 ///--
-function TryRead(var x: word): boolean;
+function TryRead(var x: longword; message: string := ''): boolean;
 ///--
-function TryRead(var x: longword): boolean;
+function TryRead(var x: int64; message: string := ''): boolean;
 ///--
-function TryRead(var x: int64): boolean;
+function TryRead(var x: uint64; message: string := ''): boolean;
 ///--
-function TryRead(var x: uint64): boolean;
+function TryRead(var x: single; message: string := ''): boolean;
 ///--
-function TryRead(var x: single): boolean;
-///--
-function TryRead(var x: BigInteger): boolean;
+function TryRead(var x: BigInteger; message: string := ''): boolean;
 
 /// Вводит логическое значение x с клавиатуры. Возвращает False если при вводе произошла ошибка
-function TryRead(var x: boolean): boolean;
+function TryRead(var x: boolean; message: string := ''): boolean;
 
 /// Возвращает значение типа integer, введенное с клавиатуры
 function ReadInteger: integer;
@@ -1629,25 +1636,33 @@ function Min(a, b: uint64): uint64;
 ///--
 function Min(a, b: real): real;
 
-///-function Min(a,b,...: число): число;
-/// Возвращает минимальное из чисел a,b,...
-function Min(params a: array of integer): integer;
+///-function Min(a,b,...: T): T;
+/// Возвращает минимальное из a,b,...
+function Min<T>(params a: array of T): T;
 ///--
-function Min(params a: array of real): real;
+//function Min(params a: array of real): real;
 ///--
 function Min(a, b, c: real): real;
 ///--
 function Min(a, b, c, d: real): real;
-
-///-function Max(a,b,...: число): число;
-/// Возвращает ммксиимальное из чисел a,b,...
-function Max(params a: array of integer): integer;
 ///--
-function Max(params a: array of real): real;
+function Min(a, b, c: integer): integer;
+///--
+function Min(a, b, c, d: integer): integer;
+
+///-function Max(a,b,...: T): T;
+/// Возвращает максиимальное из a,b,...
+function Max<T>(params a: array of T): T;
+///--
+//function Max(params a: array of real): real;
 ///--
 function Max(a, b, c: real): real;
 ///--
 function Max(a, b, c, d: real): real;
+///--
+function Max(a, b, c: integer): integer;
+///--
+function Max(a, b, c, d: integer): integer;
 
 ///-function Odd(i: целое): boolean;
 /// Возвращает True, если i нечетно, и False в противном случае
@@ -2045,12 +2060,14 @@ procedure Shuffle<T>(l: List<T>);
 // -----------------------------------------------------
 /// Возвращает последовательность целых от a до b
 function Range(a, b: integer): sequence of integer;
-/// Возвращает последовательность символов от c1 до c2
-function Range(c1, c2: char): sequence of char;
-/// Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей
-function PartitionPoints(a, b: real; n: integer): sequence of real;
 /// Возвращает последовательность целых от a до b с шагом step
 function Range(a, b, step: integer): sequence of integer;
+/// Возвращает последовательность символов от c1 до c2
+function Range(c1, c2: char): sequence of char;
+/// Возвращает последовательность символов от c1 до c2 с шагом step
+function Range(c1, c2: char; step: integer): sequence of char;
+/// Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей
+function PartitionPoints(a, b: real; n: integer): sequence of real;
 /// Возвращает последовательность указанных элементов
 function Seq<T>(params a: array of T): sequence of T;
 /// Возвращает последовательность из n случайных целых элементов
@@ -3879,8 +3896,12 @@ begin
 end;
 
 function IntRange.GetEnumerator(): IEnumerator<integer> := Range(l,h).GetEnumerator;
+function IntRange.Step(n: integer): sequence of integer := Range(l,h,n);
+function IntRange.Reverse: sequence of integer := Range(l,h).Reverse;
 
 function CharRange.GetEnumerator(): IEnumerator<char> := Range(l,h).GetEnumerator;
+function CharRange.Step(n: integer): sequence of char := Range(l,h,n);
+function CharRange.Reverse: sequence of char := Range(l,h).Reverse;
 
 //------------------------------------------------------------------------------
 //          Операции для string и char
@@ -4393,11 +4414,6 @@ begin
   else Result := System.Linq.Enumerable.Range(a, b - a + 1);
 end;
 
-function Range(c1, c2: char): sequence of char;
-begin
-  Result := Range(integer(c1), integer(c2)).Select(x -> Chr(x));
-end;
-
 function Range(a, b: real; n: integer): sequence of real;
 begin
   if n = 0 then
@@ -4411,6 +4427,16 @@ begin
     yield r;
     r += h
   end;
+end;
+
+function Range(c1, c2: char): sequence of char;
+begin
+  Result := Range(integer(c1), integer(c2)).Select(x -> Chr(x));
+end;
+
+function Range(c1, c2: char; step: integer): sequence of char;
+begin
+  Result := Range(integer(c1), integer(c2), step).Select(x -> Chr(x));
 end;
 
 function PartitionPoints(a, b: real; n: integer): sequence of real;
@@ -4841,9 +4867,9 @@ function HSet<T>(a: sequence of T): HashSet<T> := new HashSet<T>(a);
 
 function SSet<T>(a: sequence of T): SortedSet<T> := new SortedSet<T>(a);
 
-function HSet(a: IntRange): HashSet<integer> := a.ToHashSet&<integer>;
+function HSet(a: IntRange): HashSet<integer> := a.ToHashSet;
 
-function HSet(a: CharRange): HashSet<char> := a.ToHashSet&<char>;
+function HSet(a: CharRange): HashSet<char> := a.ToHashSet;
 
 function SSet(a: IntRange): SortedSet<integer> := a.ToSortedSet;
 
@@ -5578,120 +5604,144 @@ begin
   CurrentIOSystem.read(x)
 end;
 
-function TryRead(var x: integer): boolean;
+function TryRead(var x: integer; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
   end
 end;
 
-function TryRead(var x: BigInteger): boolean;
+function TryRead(var x: BigInteger; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
   end
 end;
 
-function TryRead(var x: real): boolean;
+function TryRead(var x: real; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
   end
 end;
 
-function TryRead(var x: byte): boolean;
+function TryRead(var x: byte; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
   end
 end;
 
-function TryRead(var x: shortint): boolean;
+function TryRead(var x: shortint; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
   end
 end;
 
-function TryRead(var x: smallint): boolean;
+function TryRead(var x: smallint; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
   end
 end;
 
-function TryRead(var x: word): boolean;
+function TryRead(var x: word; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
   end
 end;
 
-function TryRead(var x: longword): boolean;
+function TryRead(var x: longword; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
   end
 end;
 
-function TryRead(var x: int64): boolean;
+function TryRead(var x: int64; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
   end
 end;
 
-function TryRead(var x: uint64): boolean;
+function TryRead(var x: uint64; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
   end
 end;
 
-function TryRead(var x: single): boolean;
+function TryRead(var x: single; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
   end
 end;
 
-function TryRead(var x: boolean): boolean;
+function TryRead(var x: boolean; message: string): boolean;
 begin
   Result := True;
   try
+    if message<>'' then
+      Print(message);
     Read(x)
   except
     Result := False;
@@ -8031,6 +8081,21 @@ function Max(a, b: uint64) := Math.Max(a, b);
 
 function Max(a, b: real) := Math.Max(a, b);
 
+function Max(a, b, c: integer): integer;
+begin
+  Result := a;
+  if b > Result then Result := b;
+  if c > Result then Result := c;
+end;
+
+function Max(a, b, c, d: integer): integer;
+begin
+  Result := a;
+  if b > Result then Result := b;
+  if c > Result then Result := c;
+  if d > Result then Result := d;
+end;
+
 function Max(a, b, c: real): real;
 begin
   Result := a;
@@ -8042,7 +8107,7 @@ function Max(a, b, c, d: real): real;
 begin
   Result := a;
   if b > Result then Result := b;
-  if c < Result then Result := c;
+  if c > Result then Result := c;
   if d > Result then Result := d;
 end;
 
@@ -8071,6 +8136,21 @@ function Min(a, b: uint64) := Math.Min(a, b);
 
 function Min(a, b: real) := Math.Min(a, b);
 
+function Min(a, b, c: integer): integer;
+begin
+  Result := a;
+  if b < Result then Result := b;
+  if c < Result then Result := c;
+end;
+
+function Min(a, b, c, d: integer): integer;
+begin
+  Result := a;
+  if b < Result then Result := b;
+  if c < Result then Result := c;
+  if d < Result then Result := d;
+end;
+
 function Min(a, b, c: real): real;
 begin
   Result := a;
@@ -8086,9 +8166,10 @@ begin
   if d < Result then Result := d;
 end;
 
-function Min(params a: array of integer): integer := a.Min;
+function Min<T>(params a: array of T): T := a.Min;
+function Max<T>(params a: array of T): T := a.Max;
 
-function Min(params a: array of real): real := a.Min;
+{function Min(params a: array of real): real := a.Min;}
 
 
 function Odd(i: byte) := (i mod 2) <> 0;
@@ -9432,6 +9513,39 @@ begin
     Result *= x;
 end;
 
+/// Возвращает произведение элементов последовательности, спроектированных на числовое значение
+function Product<T>(Self: sequence of T; f: T->real): real; extensionmethod;
+begin
+  Result := 1.0;
+  foreach var x in Self do
+    Result *= f(x);
+end;
+
+/// Возвращает произведение элементов последовательности, спроектированных на числовое значение
+function Product<T>(Self: sequence of T; f: T->integer): int64; extensionmethod;
+begin
+  Result := 1;
+  foreach var x in Self do
+    Result *= f(x);
+end;
+
+/// Возвращает произведение элементов последовательности, спроектированных на числовое значение
+function Product<T>(Self: sequence of T; f: T->BigInteger): BigInteger; extensionmethod;
+begin
+  Result := 1;
+  foreach var x in Self do
+    Result *= f(x);
+end;
+
+/// Возвращает сумму элементов последовательности, спроектированных на числовое значение - пока не работает для Lst(1,2,3)
+{function Sum<T>(Self: sequence of T; f: T->BigInteger): BigInteger; extensionmethod;
+begin
+  Result := 0;
+  foreach var x in Self do
+    Result += f(x);
+end;}
+
+
 /// Возвращает отсортированную по возрастанию последовательность
 function Sorted<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
@@ -9517,8 +9631,7 @@ begin
   Result := Self.Aggregate((max, x)-> comp.Compare(selector(x), selector(max)) >= 0 ? x : max);
 end;
 
-/// Возвращает последние count элементов последовательности
-function TakeLast<T>(Self: sequence of T; count: integer): sequence of T; extensionmethod;
+{function TakeLast<T>(Self: sequence of T; count: integer): sequence of T; extensionmethod;
 begin
   if count < 0 then
     raise new System.ArgumentOutOfRangeException('count', count, GetTranslation(PARAMETER_MUST_BE_GREATER_EQUAL_0));
@@ -9549,15 +9662,15 @@ begin
     yield buf[p];    
     p := (p+1) mod count;      
   end;  
-end;
-
-{function TakeLast<T>(Self: sequence of T; count: integer): sequence of T; extensionmethod;
-begin
-  Result := Self.Reverse.Take(count).Reverse;
 end;}
 
-/// Возвращает последовательность без последних count элементов 
-function SkipLast<T>(Self: sequence of T; count: integer): sequence of T; extensionmethod;
+/// Возвращает последние count элементов последовательности
+function TakeLast<T>(Self: sequence of T; count: integer): sequence of T; extensionmethod;
+begin
+  Result := Self.Reverse.Take(count).Reverse;
+end;
+
+{function SkipLast<T>(Self: sequence of T; count: integer): sequence of T; extensionmethod;
 begin
   if count < 0 then
     raise new System.ArgumentOutOfRangeException('count', count, GetTranslation(PARAMETER_MUST_BE_GREATER_EQUAL_0));
@@ -9581,15 +9694,16 @@ begin
       buf[p] := x;
       p := (p+1) mod count;      
     end;
-end;
+end;}
 
-function SkipLast<T>(Self: sequence of T): sequence of T; extensionmethod := 
-  Self.SkipLast(1);
+{function SkipLast<T>(Self: sequence of T): sequence of T; extensionmethod := 
+  Self.SkipLast(1);}
 
-{function SkipLast<T>(self: sequence of T; count: integer := 1): sequence of T; extensionmethod;
+/// Возвращает последовательность без последних count элементов 
+function SkipLast<T>(self: sequence of T; count: integer := 1): sequence of T; extensionmethod;
 begin
   Result := Self.Reverse.Skip(count).Reverse;
-end;}
+end;
 
 /// Декартово произведение последовательностей
 function Cartesian<T, T1>(Self: sequence of T; b: sequence of T1): sequence of (T, T1); extensionmethod;

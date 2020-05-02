@@ -132,6 +132,8 @@
     File ..\bin\Lib\OpenCLABC.pcu
     File ..\bin\Lib\OpenGL.pcu
     File ..\bin\Lib\OpenGLABC.pcu
+    File ..\bin\Lib\School.pcu
+    File ..\bin\Lib\SF.pcu
 
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
@@ -198,6 +200,9 @@
     ${AddFile} "OpenCLABC.pcu"
     ${AddFile} "OpenGL.pcu"
     ${AddFile} "OpenGLABC.pcu"
+    ${AddFile} "School.pcu"
+    ${AddFile} "SF.pcu"
+
     ${AddFile} "PABCRtl.dll"
     ${AddFile} "HelixToolkit.Wpf.dll"
     ${AddFile} "HelixToolkit.dll"
@@ -274,6 +279,9 @@
     File ..\bin\Lib\OpenCLABC.pas
     File ..\bin\Lib\OpenGL.pas
     File ..\bin\Lib\OpenGLABC.pas
+    File ..\bin\Lib\School.pas
+    File ..\bin\Lib\SF.pas
+
 	File ..\bin\Lib\__RedirectIOMode.vb
 	File ..\bin\Lib\VBSystem.vb
 	
@@ -336,6 +344,9 @@
     ${AddFile} "OpenCLABC.pas"
     ${AddFile} "OpenGL.pas"
     ${AddFile} "OpenGLABC.pas"
+    ${AddFile} "School.pas"
+    ${AddFile} "SF.pas"
+
 	${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"
 	
