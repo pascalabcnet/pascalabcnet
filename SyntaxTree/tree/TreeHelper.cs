@@ -1754,16 +1754,12 @@ namespace PascalABCCompiler.SyntaxTree
     {
         public override string ToString() => this.v + "[" + this.from + ":" + this.to + ":" + this.step + "]";
     }
-
+    
     public partial class slice_expr_question
     {
         public slice_expr_question(addressed_value v, expression from, expression to, expression step) : base(v, from, to, step)
         { }
         public slice_expr_question(addressed_value v, expression from, expression to, expression step, SourceContext sc) : base(v, from, to, step, sc)
-        { }
-        public slice_expr_question(addressed_value v, expression from, expression to, expression step, bool ifrom, bool ito) : base(v, from, to, step, ifrom, ito)
-        { }
-        public slice_expr_question(addressed_value v, expression from, expression to, expression step, bool ifrom, bool ito, SourceContext sc) : base(v, from, to, step, ifrom, ito, sc)
         { }
     }
 
@@ -1969,22 +1965,7 @@ namespace PascalABCCompiler.SyntaxTree
     {
         public override string ToString() => "<proc_type>";
     }
-
-    public partial class format_expr : addressed_value
-    {
-        ///<summary>
-        ///Конструктор с параметрами.
-        ///</summary>
-        public format_expr(expression _expr, expression _format1, expression _format2)
-            : this(_expr, _format1, _format2, false, false) { }
-
-        ///<summary>
-        ///Конструктор с параметрами.
-        ///</summary>
-        public format_expr(expression _expr, expression _format1, expression _format2, SourceContext _sourceContext) 
-            : this(_expr, _format1, _format2, false, false, _sourceContext) { }
-    }
-    
+    /*
     public partial class slice_expr : dereference
     {
         ///<summary>
@@ -2010,5 +1991,5 @@ namespace PascalABCCompiler.SyntaxTree
         ///</summary>
         public slice_expr(addressed_value _dereferencing_value, addressed_value _v, expression _from, expression _to, expression _step, SourceContext sc)
             : this(_dereferencing_value, _v, _from, _to, _step, false, false, sc) { }
-    }
+    }*/
 }

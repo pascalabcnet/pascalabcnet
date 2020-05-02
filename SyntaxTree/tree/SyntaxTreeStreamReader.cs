@@ -524,6 +524,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new if_expr_new();
 				case 251:
 					return new simple_expr_with_deref();
+				case 252:
+					return new index();
 			}
 			return null;
 		}
@@ -2432,8 +2434,6 @@ namespace PascalABCCompiler.SyntaxTree
 			_format_expr.expr = _read_node() as expression;
 			_format_expr.format1 = _read_node() as expression;
 			_format_expr.format2 = _read_node() as expression;
-			_format_expr.index_inversion_from = br.ReadBoolean();
-			_format_expr.index_inversion_to = br.ReadBoolean();
 		}
 
 
@@ -3843,8 +3843,6 @@ namespace PascalABCCompiler.SyntaxTree
 			_slice_expr.from = _read_node() as expression;
 			_slice_expr.to = _read_node() as expression;
 			_slice_expr.step = _read_node() as expression;
-			_slice_expr.index_inversion_from = br.ReadBoolean();
-			_slice_expr.index_inversion_to = br.ReadBoolean();
 		}
 
 
@@ -4403,6 +4401,19 @@ namespace PascalABCCompiler.SyntaxTree
 			read_expression(_simple_expr_with_deref);
 			_simple_expr_with_deref.simple_expr = _read_node() as expression;
 			_simple_expr_with_deref.has_deref = br.ReadBoolean();
+		}
+
+
+		public void visit(index _index)
+		{
+			read_index(_index);
+		}
+
+		public void read_index(index _index)
+		{
+			read_expression(_index);
+			_index.index_expr = _read_node() as expression;
+			_index.inverted = br.ReadBoolean();
 		}
 
 	}

@@ -50,9 +50,9 @@ namespace PascalABCCompiler.TreeConverter
         // нельзя проверять сахарный узел, т.к.могут быть вложенные сахарные expression!!
         {
             var v = (mc.dereferencing_value as dot_node).left;
-            var from = mc.parameters.expressions[1];
-            var to = mc.parameters.expressions[2];
-            expression step = mc.parameters.expressions.Count > 5 ? mc.parameters.expressions[3] : null;
+            var from = mc.parameters.expressions[1] as expression;
+            var to = mc.parameters.expressions[2] as expression;
+            expression step = mc.parameters.expressions.Count > 3 ? mc.parameters.expressions[3] : null;
 
             var semvar = convert_strong(v);
             if (semvar is typed_expression)
@@ -82,12 +82,21 @@ namespace PascalABCCompiler.TreeConverter
 
             var semfrom = convert_strong(from);
             var b = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type);
-            if (!b)
+            var fromIsIndex = (semfrom is common_constructor_call fromCall) &&
+                fromCall.common_type.comprehensive_namespace.namespace_full_name.Equals("PABCSystem") &&
+                fromCall.common_type.PrintableName.Equals("SystemIndex");
+            if (!b && !fromIsIndex)
                 AddError(get_location(from), "INTEGER_VALUE_EXPECTED");
 
+            // semantic tree - type special kind
+            // staticSystemLib посмотреть.
+            // SystemIndex - переименовать.
             var semto = convert_strong(to);
             b = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.integer_type);
-            if (!b)
+            var toIsIndex = (semto is common_constructor_call toCall) &&
+                toCall.common_type.comprehensive_namespace.namespace_full_name.Equals("PABCSystem") &&
+                toCall.common_type.PrintableName.Equals("SystemIndex");
+            if (!b && !toIsIndex)
                 AddError(get_location(to), "INTEGER_VALUE_EXPECTED");
 
             if (step != null)
@@ -135,9 +144,9 @@ namespace PascalABCCompiler.TreeConverter
             var rightType = rightValue.type;
 
             var v = slice.v;
-            var from = mc.parameters.expressions[2];
-            var to = mc.parameters.expressions[3];
-            expression step = mc.parameters.expressions.Count > 6 ? mc.parameters.expressions[4] : null;
+            var from = mc.parameters.expressions[2] as expression;
+            var to = mc.parameters.expressions[3] as expression;
+            expression step = mc.parameters.expressions.Count > 4 ? mc.parameters.expressions[4] : null;
 
             var semvar = convert_strong(v);
             if (semvar is typed_expression)
@@ -166,13 +175,19 @@ namespace PascalABCCompiler.TreeConverter
                 AddError(get_location(v), "BAD_SLICE_OBJECT");
 
             var semfrom = convert_strong(from);
+            var fromIsIndex = (semfrom is common_constructor_call fromCall) &&
+                fromCall.common_type.comprehensive_namespace.namespace_full_name.Equals("PABCSystem") &&
+                fromCall.common_type.PrintableName.Equals("SystemIndex");
             var b = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type);
-            if (!b)
+            if (!b && !fromIsIndex)
                 AddError(get_location(from), "INTEGER_VALUE_EXPECTED");
 
             var semto = convert_strong(to);
+            var toIsIndex = (semto is common_constructor_call toCall) &&
+                toCall.common_type.comprehensive_namespace.namespace_full_name.Equals("PABCSystem") &&
+                toCall.common_type.PrintableName.Equals("SystemIndex");
             b = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.integer_type);
-            if (!b)
+            if (!b && !toIsIndex)
                 AddError(get_location(to), "INTEGER_VALUE_EXPECTED");
 
             if (step != null)

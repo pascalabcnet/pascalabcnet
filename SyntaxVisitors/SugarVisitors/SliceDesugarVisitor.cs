@@ -26,50 +26,57 @@ namespace SyntaxVisitors.SugarVisitors
             // step может просто отсутствовать - это параметр по умолчанию в SystemSlice
 
             int situation = 0;
+            var fromInverted = false;
+            var fromExpr = sl.from;
 
-            if ((sl.from is int32_const) && (sl.from as int32_const).val == int.MaxValue)
+            if (sl.from is index fromInd)
+            {
+                fromInverted = fromInd.inverted;
+                fromExpr = fromInd.index_expr;
+            }
+
+            var toInverted = false;
+            var toExpr = sl.to;
+            if (sl.to is index toInd)
+            {
+                toInverted = toInd.inverted;
+                toExpr = toInd.index_expr;
+            }
+
+            if ((fromExpr is int32_const) && (fromExpr as int32_const).val == int.MaxValue)
                 situation += 1;
-            if ((sl.to is int32_const) && (sl.to as int32_const).val == int.MaxValue)
+            if ((toExpr is int32_const) && (toExpr as int32_const).val == int.MaxValue)
                 situation += 2;
 
             var el = new expression_list();
             el.Add(new int32_const(situation));
-            el.Add(sl.from); // Это плохо - считается 2 раза. Надо делать semantic_expr_node !!!? Нет!!!
-                             // Если там будет лямбда, то не будет работать - известно, что semantic_expr_node не работает с лямбдами 
-                             // т.к. они несколько раз обходят код. 
+            el.Add(sl.from); 
+            // Это плохо - считается 2 раза. Надо делать semantic_expr_node !!!? Нет!!!
+            // Если там будет лямбда, то не будет работать - известно, что semantic_expr_node не работает с лямбдами 
+            // т.к. они несколько раз обходят код. 
             el.Add(sl.to);
             if (sl.step != null)
                 el.Add(sl.step);
-            el.Add(new bool_const(sl.index_inversion_from));
-            el.Add(new bool_const(sl.index_inversion_to));
             return el;
         }
-
+        public override void Exit(syntax_tree_node st)
+        {
+            if (st is slice_expr_question)
+            {
+                ProceedSliceQuestionExpr(st as slice_expr_question);
+            } else if (st is slice_expr)
+            {
+                ProceedSliceExpr(st as slice_expr); 
+            }
+           // base.Exit(st);
+        }
         public override void visit(assign _assign)
         {
-            _assign.from.visit(this);
-            _assign.to.visit(this);
+            Exit(_assign.from);
+            Exit(_assign.to);
         }
-
-        public override void visit(indexer indexer)
-        {
-            for (int i = 0; i < indexer.indexes.expressions.Count; ++i)
-            {
-                var ind = indexer.indexes.expressions[i];
-                if (ind is simple_expr_with_deref indWithDeref)
-                {
-                    
-                    var countCall = new dot_node(
-                            indexer.dereferencing_value,
-                            new ident("Count", ind.source_context),
-                            ind.source_context);
-                    var inversedIndex = new bin_expr(countCall, indWithDeref.simple_expr, Operators.Minus, ind.source_context);
-                    ReplaceUsingParent(ind, inversedIndex);
-                }
-            }
-        }
-
-        public override void visit(slice_expr sl)
+        
+        public void ProceedSliceExpr(slice_expr sl)
         {
             var el = construct_expression_list_for_slice_expr(sl);
             if (sl.Parent is assign parent_assign && parent_assign.to == sl)
@@ -97,7 +104,7 @@ namespace SyntaxVisitors.SugarVisitors
             }
         }
 
-        public override void visit(slice_expr_question sl)
+        public void ProceedSliceQuestionExpr(slice_expr_question sl)
         {
             if (sl.Parent is assign parent_assign && parent_assign.to == sl)
             {

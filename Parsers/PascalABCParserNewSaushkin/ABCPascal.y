@@ -83,9 +83,9 @@
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
 %type <ex> const_simple_expr term term1 simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda expr_l1_for_lambda simple_expr range_term range_factor 
-%type <ex> external_directive_ident init_const_expr case_label variable var_reference /*optional_write_expr*/ optional_read_expr /*simple_expr_or_nothing*/ var_question_point expr_l1_for_question_expr expr_l1_for_new_question_expr
+%type <ex> external_directive_ident init_const_expr case_label variable var_reference /*optional_write_expr*/ optional_read_expr simple_expr_or_nothing var_question_point expr_l1_for_question_expr expr_l1_for_new_question_expr
 %type <ob> for_cycle_type  
-%type <ex> format_expr format_const_expr const_expr_or_nothing simple_expr_with_deref_or_nothing simple_expr_with_deref /*expr_l1_for_indexer*/
+%type <ex> format_expr format_const_expr const_expr_or_nothing /* simple_expr_with_deref_or_nothing simple_expr_with_deref expr_l1_for_indexer*/
 %type <stn> foreach_stmt  
 %type <stn> for_stmt loop_stmt yield_stmt yield_sequence_stmt
 %type <stn> fp_list fp_sect_list  
@@ -939,7 +939,7 @@ const_variable
                 if (fe.format1 == null)
                     fe.format1 = new int32_const(int.MaxValue,@3);
             }
-    		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,fe.index_inversion_from,fe.index_inversion_to,@$);
+    		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
 		}
     ;
 
@@ -2710,7 +2710,7 @@ assignment
                 if (fe.format1 == null)
                     fe.format1 = new int32_const(int.MaxValue,@3);
             }
-      		var left = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,fe.index_inversion_from,fe.index_inversion_to,@$);
+      		var left = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
             $$ = new assign(left, $6, $5.type, @$);
 		}
     ;
@@ -3119,16 +3119,12 @@ expr_with_func_decl_lambda
 expr
     : expr_l1
 		{ $$ = $1; }
-    | tkDeref expr_l1
-        { $$ = new simple_expr_with_deref($2, true); }
     | format_expr
 		{ $$ = $1; }
     ;
     /*
 expr_l1_for_indexer
-    : tkDeref expr_l1
-        { $$ = new simple_expr_with_deref($2, true); }
-    | expr_l1 
+    : expr_l1 
         { $$ = $1; }
     | format_expr
 		{ $$ = $1; }
@@ -3654,7 +3650,7 @@ pattern_out_param_optional_var
 		}
     ;
     
-/*simple_expr_or_nothing
+simple_expr_or_nothing
 	: simple_expr 
 	{
 		$$ = $1;
@@ -3663,7 +3659,7 @@ pattern_out_param_optional_var
 	{
 		$$ = null;
 	}
-	;*/
+	;
 
 const_expr_or_nothing
 	: const_expr 
@@ -3675,7 +3671,7 @@ const_expr_or_nothing
 		$$ = null;
 	}
 	;
-
+/*
 simple_expr_with_deref_or_nothing
     : tkDeref simple_expr
     {
@@ -3701,43 +3697,23 @@ simple_expr_with_deref
         $$ = new simple_expr_with_deref($2, true);
     }
     ;
-
+*/
 format_expr 
-    : simple_expr_with_deref tkColon simple_expr_with_deref_or_nothing                        
-        { 
-            var to_has_deref = $3 is null ? false : ($3 as simple_expr_with_deref).has_deref;
-			$$ = new format_expr(
-                ($1 as simple_expr_with_deref).simple_expr,
-                ($3 as simple_expr_with_deref)?.simple_expr,
-                null, 
-                ($1 as simple_expr_with_deref).has_deref, to_has_deref, @$); 
+    : simple_expr tkColon simple_expr_or_nothing                        
+        {
+			$$ = new format_expr($1, $3, null, @$); 
 		}
-    | tkColon simple_expr_with_deref_or_nothing                        
+    | tkColon simple_expr_or_nothing                        
         { 
-            var to_has_deref = $2 is null ? false : ($2 as simple_expr_with_deref).has_deref;
-			$$ = new format_expr(
-                null,
-                ($2 as simple_expr_with_deref)?.simple_expr, 
-                null,
-                false, to_has_deref, @$); 
+			$$ = new format_expr(null, $2, null, @$); 
 		}
-    | simple_expr_with_deref tkColon simple_expr_with_deref_or_nothing tkColon simple_expr_with_deref   
+    | simple_expr tkColon simple_expr_or_nothing tkColon simple_expr  
         { 
-            var to_has_deref = $3 is null ? false : ($3 as simple_expr_with_deref).has_deref;
-			$$ = new format_expr(
-                ($1 as simple_expr_with_deref).simple_expr,
-                ($3 as simple_expr_with_deref)?.simple_expr,
-                ($5 as simple_expr_with_deref).simple_expr, 
-                ($1 as simple_expr_with_deref).has_deref, to_has_deref, @$); 
+			$$ = new format_expr($1, $3, $5, @$); 
 		}
-    | tkColon simple_expr_with_deref_or_nothing tkColon simple_expr_with_deref   
+    | tkColon simple_expr_or_nothing tkColon simple_expr
         { 
-            var to_has_deref = $2 is null ? false : ($2 as simple_expr_with_deref).has_deref;
-			$$ = new format_expr(
-                null,
-                ($2 as simple_expr_with_deref)?.simple_expr, 
-                ($4 as simple_expr_with_deref).simple_expr, 
-                false, to_has_deref, @$); 
+			$$ = new format_expr(null, $2, $4, @$); 
 		}
     ;
 
@@ -3952,6 +3928,10 @@ factor
 		
 			$$ = new un_expr($2, $1.type, @$); 
 		}
+    | tkDeref factor
+        {
+            $$ = new index($2, true, @$);
+        }
     | var_reference
 		{ $$ = $1; }
 	| tuple 
@@ -4070,7 +4050,7 @@ variable
                     if (fe.format1 == null)
                         fe.format1 = new int32_const(int.MaxValue,@3);
                 }
-        		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,fe.index_inversion_from,fe.index_inversion_to,@$);
+        		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
 			}   
 			else $$ = new indexer($1 as addressed_value, el, @$);
         }
@@ -4084,7 +4064,7 @@ variable
                 if (fe.format1 == null)
                     fe.format1 = new int32_const(int.MaxValue,@3);
             }
-      		$$ = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,fe.index_inversion_from,fe.index_inversion_to,@$);
+      		$$ = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
         }
     | variable tkRoundOpen optional_expr_list tkRoundClose                
         {

@@ -4,7 +4,7 @@
 // ==========================================================================
 //  Version:  1.3.6
 //  Machine:  DESKTOP-P4NLNB1
-//  DateTime: 2/24/2020 4:29:04 PM
+//  DateTime: 4/20/2020 4:00:49 PM
 //  UserName: fatco
 // ==========================================================================
 
@@ -94,9 +94,9 @@
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
 %type <ex> const_simple_expr term term1 simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda expr_l1_for_lambda simple_expr range_term range_factor 
-%type <ex> external_directive_ident init_const_expr case_label variable var_reference /*optional_write_expr*/ optional_read_expr /*simple_expr_or_nothing*/ var_question_point expr_l1_for_question_expr expr_l1_for_new_question_expr
+%type <ex> external_directive_ident init_const_expr case_label variable var_reference /*optional_write_expr*/ optional_read_expr simple_expr_or_nothing var_question_point expr_l1_for_question_expr expr_l1_for_new_question_expr
 %type <ob> for_cycle_type  
-%type <ex> format_expr format_const_expr const_expr_or_nothing simple_expr_with_deref_or_nothing simple_expr_with_deref
+%type <ex> format_expr format_const_expr const_expr_or_nothing simple_expr_with_deref_or_nothing simple_expr_with_deref /*expr_l1_for_indexer*/
 %type <stn> foreach_stmt  
 %type <stn> for_stmt loop_stmt yield_stmt yield_sequence_stmt
 %type <stn> fp_list fp_sect_list  
@@ -191,8 +191,17 @@
 %type <ob> pattern_out_param_list pattern_out_param_list_optional_var collection_pattern_expr_list tuple_pattern_item_list const_pattern_expr_list
 
 %%
-// Warning: NonTerminal symbol "simple_expr_or_nothing" is unreachable
-// -------------------------------------------------------------------
+// Error: NonTerminal symbol "simple_expr_with_deref_or_nothing" has no productions
+// Warning: NonTerminal symbol "simple_expr_with_deref" is unreachable
+// Error: NonTerminal symbol "simple_expr_with_deref" has no productions
+// Warning: NonTerminal symbol "simple_expr_with_deref_or_nothing" is unreachable
+// Error: There are 2 non-terminating NonTerminal Symbols
+   //  {simple_expr_with_deref_or_nothing, simple_expr_with_deref}
+// Warning: Terminating simple_expr_with_deref_or_nothing fixes the following size-1 NonTerminal set
+   // {simple_expr_with_deref_or_nothing}
+// Warning: Terminating simple_expr_with_deref fixes the following size-1 NonTerminal set
+   // {simple_expr_with_deref}
+// -------------------------------------------------------------------------------------------------
 
 parse_goal                
     : program_file 
@@ -952,7 +961,9 @@ const_variable
                 if (fe.format1 == null)
                     fe.format1 = new int32_const(int.MaxValue,@3);
             }
-    		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
+            var from = fe.expr is index ? fe.expr : new index(fe.expr, false, fe.expr.source_context);
+            var to = fe.format1 is index ? fe.format1 : new index(fe.format1, false, fe.format1.source_context);
+    		$$ = new slice_expr($1 as addressed_value,from,to,fe.format2,@$);
 		}
     ;
 
@@ -1563,15 +1574,6 @@ object_type
         { 
             var cd = NewObjectType((class_attribute)$1, $2, $3 as named_type_reference_list, $4 as where_definition_list, $5 as class_body_list, @$); 
 			$$ = cd;
-            var tt = cd.DescendantNodes().OfType<class_definition>().Where(cld => cld.keyword == class_keyword.Record);
-            if (tt.Count()>0)
-            {
-                foreach (var ttt in tt)
-                {
-	                var sc = ttt.source_context;
-	                parsertools.AddErrorFromResource("NESTED_RECORD_DEFINITIONS_ARE_FORBIDDEN", new LexLocation(sc.begin_position.line_num, sc.begin_position.column_num-1, sc.end_position.line_num, sc.end_position.column_num, sc.FileName));
-                }
-            }
 		}
     ;
 
@@ -2732,7 +2734,10 @@ assignment
                 if (fe.format1 == null)
                     fe.format1 = new int32_const(int.MaxValue,@3);
             }
-      		$$ = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
+            var from = fe.expr is index ? fe.expr : new index(fe.expr, false, fe.expr.source_context);
+            var to = fe.format1 is index ? fe.format1 : new index(fe.format1, false, fe.format1.source_context);
+      		var left = new slice_expr_question($1 as addressed_value,from.to,fe.format2,@$);
+            $$ = new assign(left, $6, $5.type, @$);
 		}
     ;
     
@@ -3140,9 +3145,20 @@ expr_with_func_decl_lambda
 expr
     : expr_l1
 		{ $$ = $1; }
+    | tkDeref expr_l1
+        { $$ = new simple_expr_with_deref($2, true); }
     | format_expr
 		{ $$ = $1; }
     ;
+    /*
+expr_l1_for_indexer
+    : tkDeref expr_l1
+        { $$ = new simple_expr_with_deref($2, true); }
+    | expr_l1 
+        { $$ = $1; }
+    | format_expr
+		{ $$ = $1; }
+    ;*/
 
 expr_l1
     : expr_dq
@@ -3673,11 +3689,7 @@ simple_expr_or_nothing
 	{
 		$$ = null;
 	}
-	;*/
-//-^
-// Error: This character is invalid in this context
-// Error: This character is invalid in this context
-// ------------------------------------------------
+	;
 
 const_expr_or_nothing
 	: const_expr 
@@ -3689,7 +3701,7 @@ const_expr_or_nothing
 		$$ = null;
 	}
 	;
-
+/*
 simple_expr_with_deref_or_nothing
     : tkDeref simple_expr
     {
@@ -3715,43 +3727,23 @@ simple_expr_with_deref
         $$ = new simple_expr_with_deref($2, true);
     }
     ;
-
+*/
 format_expr 
-    : simple_expr_with_deref tkColon simple_expr_with_deref_or_nothing                        
-        { 
-            var to_has_deref = $3 is null ? false : ($3 as simple_expr_with_deref).has_deref;
-			$$ = new format_expr(
-                ($1 as simple_expr_with_deref).simple_expr,
-                ($3 as simple_expr_with_deref)?.simple_expr,
-                null, 
-                ($1 as simple_expr_with_deref).has_deref, to_has_deref, @$); 
+    : simple_expr tkColon simple_expr_or_nothing                        
+        {
+			$$ = new format_expr($1, $3, null, @$); 
 		}
-    | tkColon simple_expr_with_deref_or_nothing                        
+    | tkColon simple_expr_or_nothing                        
         { 
-            var to_has_deref = $2 is null ? false : ($2 as simple_expr_with_deref).has_deref;
-			$$ = new format_expr(
-                null,
-                ($2 as simple_expr_with_deref)?.simple_expr, 
-                null,
-                false, to_has_deref, @$); 
+			$$ = new format_expr(null, $2, null, @$); 
 		}
-    | simple_expr_with_deref tkColon simple_expr_with_deref_or_nothing tkColon simple_expr_with_deref   
+    | simple_expr tkColon simple_expr_or_nothing tkColon simple_expr  
         { 
-            var to_has_deref = $3 is null ? false : ($3 as simple_expr_with_deref).has_deref;
-			$$ = new format_expr(
-                ($1 as simple_expr_with_deref).simple_expr,
-                ($3 as simple_expr_with_deref)?.simple_expr,
-                ($5 as simple_expr_with_deref).simple_expr, 
-                ($1 as simple_expr_with_deref).has_deref, to_has_deref, @$); 
+			$$ = new format_expr($1, $3, $5, @$); 
 		}
-    | tkColon simple_expr_with_deref_or_nothing tkColon simple_expr_with_deref   
+    | tkColon simple_expr_or_nothing tkColon simple_expr
         { 
-            var to_has_deref = $2 is null ? false : ($2 as simple_expr_with_deref).has_deref;
-			$$ = new format_expr(
-                null,
-                ($2 as simple_expr_with_deref)?.simple_expr, 
-                ($4 as simple_expr_with_deref).simple_expr, 
-                false, to_has_deref, @$); 
+			$$ = new format_expr(null, $2, $4, @$); 
 		}
     ;
 
@@ -3966,6 +3958,10 @@ factor
 		
 			$$ = new un_expr($2, $1.type, @$); 
 		}
+    | tkDeref factor
+        {
+            $$ = new index($2, true, @$);
+        }
     | var_reference
 		{ $$ = $1; }
 	| tuple 
@@ -4084,9 +4080,11 @@ variable
                     if (fe.format1 == null)
                         fe.format1 = new int32_const(int.MaxValue,@3);
                 }
-        		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,fe.index_inversion_from,fe.index_inversion_to,@$);
+                var from = fe.expr is index ? fe.expr : new index(fe.expr, false, fe.expr.source_context);
+                var to = fe.format1 is index ? fe.format1 : new index(fe.format1, false, fe.format1.source_context); 
+        		$$ = new slice_expr($1 as addressed_value,from,to,fe.format2,@$);
 			}   
-			else $$ = new indexer($1 as addressed_value,el, @$);
+			else $$ = new indexer($1 as addressed_value, el, @$);
         }
     | variable tkQuestionSquareOpen format_expr tkSquareClose                
         {
@@ -4098,7 +4096,9 @@ variable
                 if (fe.format1 == null)
                     fe.format1 = new int32_const(int.MaxValue,@3);
             }
-      		$$ = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
+            var from = fe.expr is index ? fe.expr : new index(fe.expr, false, fe.expr.source_context);
+            var to = fe.format1 is index ? fe.format1 : new index(fe.format1, false, fe.format1.source_context); 
+      		$$ = new slice_expr_question($1 as addressed_value,from,to,fe.format2,@$);
         }
     | variable tkRoundOpen optional_expr_list tkRoundClose                
         {

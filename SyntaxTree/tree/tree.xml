@@ -1642,8 +1642,6 @@
         <SyntaxField Name="expr" SyntaxType="expression" />
         <SyntaxField Name="format1" SyntaxType="expression" />
         <SyntaxField Name="format2" SyntaxType="expression" />
-        <ExtendedField Name="index_inversion_from" Type="bool" CreateVariable="false" DeleteVariable="false" />
-        <ExtendedField Name="index_inversion_to" Type="bool" CreateVariable="false" DeleteVariable="false" />
       </Fields>
       <Methods />
       <Tags>
@@ -2742,8 +2740,6 @@
         <SyntaxField Name="from" SyntaxType="expression" />
         <SyntaxField Name="to" SyntaxType="expression" />
         <SyntaxField Name="step" SyntaxType="expression" />
-        <ExtendedField Name="index_inversion_from" Type="bool" CreateVariable="false" DeleteVariable="false" />
-        <ExtendedField Name="index_inversion_to" Type="bool" CreateVariable="false" DeleteVariable="false" />
       </Fields>
       <Methods />
       <Tags>
@@ -3263,6 +3259,17 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="index" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="index_expr" SyntaxType="expression" />
+        <ExtendedField Name="inverted" Type="bool" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3330,6 +3337,8 @@
       <HelpData Key=".i" Value="" />
       <HelpData Key=".if_false" Value="" />
       <HelpData Key=".if_true" Value="" />
+      <HelpData Key=".index_expr" Value="" />
+      <HelpData Key=".inverted" Value="" />
       <HelpData Key=".item_expression" Value="" />
       <HelpData Key=".left" Value="" />
       <HelpData Key=".lists" Value="" />
@@ -3904,6 +3913,9 @@
       <HelpData Key="implementation_node.implementation_definitions" Value="" />
       <HelpData Key="implementation_node.uses_modules" Value="" />
       <HelpData Key="implementation_node.using_namespaces" Value="" />
+      <HelpData Key="index" Value="" />
+      <HelpData Key="index.index_expr" Value="" />
+      <HelpData Key="index.inverted" Value="" />
       <HelpData Key="index_property" Value="" />
       <HelpData Key="index_property.is_default" Value="" />
       <HelpData Key="index_property.property_parametres" Value="" />

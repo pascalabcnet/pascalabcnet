@@ -95,22 +95,24 @@ begin
 end;
 
 ///--
-procedure SystemSliceAssignment(var Self: string; rightValue: string; situation: integer; from, &to: integer; inverseFrom, inverseTo: boolean); extensionmethod;
+procedure SystemSliceAssignment(var Self: string; rightValue: string; situation: integer; from, &to: SystemIndex); extensionmethod;
 begin
-  if inverseFrom then
-    from := Self.Length - from;
-  if inverseTo then
-    &to := Self.Length - &to;
+  if from.IsInverted then
+    from.IndexValue := Self.Length - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Length - &to.IndexValue;
     
-  from := from - 1;
-  &to := &to - 1;
+  from.IndexValue := from.IndexValue - 1;
+  &to.IndexValue := &to.IndexValue - 1;
   
   var step := 1;
-  var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, Self.Count, from, &to, step);
+  var fromValue := from.IndexValue;
+  var toValue := &to.IndexValue;
+  var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, Self.Count, fromValue, toValue, step);
   if count <> rightValue.Length then
     raise new System.ArgumentException(GetTranslation(SLICE_SIZE_AND_RIGHT_VALUE_SIZE_MUST_BE_EQUAL));
     
-  var f := from + 1;
+  var f := fromValue + 1;
   
   var strInd := 1;
   loop count do
@@ -122,21 +124,23 @@ begin
 end;
 
 ///--
-procedure SystemSliceAssignment(var Self: string; rightValue: string; situation: integer; from, &to, step: integer; inverseFrom, inverseTo: boolean); extensionmethod;
+procedure SystemSliceAssignment(var Self: string; rightValue: string; situation: integer; from, &to: SystemIndex; step: integer); extensionmethod;
 begin
-  if inverseFrom then
-    from := Self.Length - from;
-  if inverseTo then
-    &to := Self.Length - &to;
+  if from.IsInverted then
+    from.IndexValue := Self.Length - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Length - &to.IndexValue;
     
-  from := from - 1;
-  &to := &to - 1;
+  from.IndexValue := from.IndexValue - 1;
+  &to.IndexValue := &to.IndexValue - 1;
   
-  var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, Self.Count, from, &to, step);
+  var fromValue := from.IndexValue;
+  var toValue := &to.IndexValue;
+  var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, Self.Count, fromValue, toValue, step);
   if count <> rightValue.Length then
     raise new System.ArgumentException(GetTranslation(SLICE_SIZE_AND_RIGHT_VALUE_SIZE_MUST_BE_EQUAL));
     
-  var f := from + 1;
+  var f := fromValue + 1;
   
   var strInd := 1;
   loop count do

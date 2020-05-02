@@ -3491,8 +3491,6 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_format_expr.format2.visit(this);
 			}
-			bw.Write(_format_expr.index_inversion_from);
-			bw.Write(_format_expr.index_inversion_to);
 		}
 
 
@@ -5959,8 +5957,6 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_slice_expr.step.visit(this);
 			}
-			bw.Write(_slice_expr.index_inversion_from);
-			bw.Write(_slice_expr.index_inversion_to);
 		}
 
 
@@ -6888,6 +6884,28 @@ namespace PascalABCCompiler.SyntaxTree
 				_simple_expr_with_deref.simple_expr.visit(this);
 			}
 			bw.Write(_simple_expr_with_deref.has_deref);
+		}
+
+
+		public void visit(index _index)
+		{
+			bw.Write((Int16)252);
+			write_index(_index);
+		}
+
+		public void write_index(index _index)
+		{
+			write_expression(_index);
+			if (_index.index_expr == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_index.index_expr.visit(this);
+			}
+			bw.Write(_index.inverted);
 		}
 
 	}

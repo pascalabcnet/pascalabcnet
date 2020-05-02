@@ -1267,6 +1267,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_simple_expr_with_deref);
 		}
+
+		public virtual void visit(index _index)
+		{
+			DefaultVisit(_index);
+		}
 	}
 
 
