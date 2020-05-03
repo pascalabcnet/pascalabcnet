@@ -5275,6 +5275,11 @@ namespace PascalABCCompiler.NETGenerator
                     if (!(value.type.is_generic_parameter && value.type.base_type != null && value.type.base_type.is_class && value.type.base_type.base_type != null))
                         must_push_addr = true;
                 }
+                else if (value.conversion_type != null && (value.conversion_type.is_generic_parameter))
+                {
+                    if (!(value.conversion_type.is_generic_parameter && value.conversion_type.base_type != null && value.conversion_type.base_type.is_class && value.conversion_type.base_type.base_type != null))
+                        must_push_addr = true;
+                }
             }
             ParamInfo pi = helper.GetParameter(value.parameter);
             if (pi.kind == ParamKind.pkNone)
@@ -7090,6 +7095,8 @@ namespace PascalABCCompiler.NETGenerator
             {
                 if (value.obj.type.is_generic_parameter)
                     il.Emit(OpCodes.Constrained, helper.GetTypeReference(value.obj.type).tp);
+                else if (value.obj.conversion_type != null && value.obj.conversion_type.is_generic_parameter)
+                    il.Emit(OpCodes.Constrained, helper.GetTypeReference(value.obj.conversion_type).tp);
                 il.EmitCall(OpCodes.Callvirt, mi, null);
             }
 
@@ -7219,6 +7226,8 @@ namespace PascalABCCompiler.NETGenerator
             {
                 if (value.obj.type.is_generic_parameter)
                     il.Emit(OpCodes.Constrained, helper.GetTypeReference(value.obj.type).tp);
+                else if (value.obj.conversion_type != null && value.obj.conversion_type.is_generic_parameter)
+                    il.Emit(OpCodes.Constrained, helper.GetTypeReference(value.obj.conversion_type).tp);
                 il.EmitCall(OpCodes.Callvirt, mi, null);
             }
             EmitFreePinnedVariables();
