@@ -1367,7 +1367,7 @@ function DiskFree(disk: integer): int64;
 function DiskSize(disk: integer): int64;
 /// Возвращает количество миллисекунд с момента начала работы программы
 function Milliseconds: integer;
-/// Возвращает количество миллисекунд с момента последнего вызова Milliseconds или MillisecondsDelta 
+/// Возвращает количество миллисекунд с момента последнего вызова Milliseconds или MillisecondsDelta или начала программы
 function MillisecondsDelta: integer;
 
 /// Завершает работу программы

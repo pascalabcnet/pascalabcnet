@@ -3763,6 +3763,8 @@ begin
   if OnDrawFrame<>nil then
   begin
     var e1 := RenderingEventArgs(e).RenderingTime;
+    if LastUpdatedTime.Ticks = integer.MinValue then // первый раз
+      LastUpdatedTime := e1;
     var dt := e1 - LastUpdatedTime;
     if LastUpdatedTime.TotalMilliseconds<>0 then 
       if OnDrawFrame<>nil then
