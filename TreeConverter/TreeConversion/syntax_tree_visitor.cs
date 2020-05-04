@@ -20375,6 +20375,15 @@ namespace PascalABCCompiler.TreeConverter
                 CheckIfCanBeMatched(tuple, length);
             }
             // !Patterns
+            // Slices
+            else if (st.typ is SemanticCheckType.SliceAssignmentTypeCompatibility)
+            {
+                var to = st.lst[0] as expression;
+                var from = st.lst[1] as expression;
+                var mc = st.lst[2] as method_call;
+                semantic_check_slice_assignment_types(to, from, mc);
+            }
+            // !Slices
             else
             {
                 AddError(get_location(st), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", (st.typ as System.Type)?.Name ?? "Unknown");

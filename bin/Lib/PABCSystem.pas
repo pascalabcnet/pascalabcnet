@@ -735,6 +735,46 @@ type
     end;
   end;
 
+  ///Тип для представления индекса
+  SystemIndex = class
+    private 
+      val: integer;
+      inverted: boolean;
+    public
+      property IndexValue: integer read val write val; 
+      property IsInverted: boolean read inverted;
+      constructor(val: integer; inverted: boolean);
+      begin
+        Self.val := val;
+        Self.inverted := inverted;
+      end;
+      
+      static function operator implicit(i: integer): SystemIndex;
+      begin
+        Result := new SystemIndex(i, false);
+      end;
+      
+      function Reverse<T>(list: List<T>): integer;
+      begin
+        Result := list.Count - IndexValue;
+      end;
+      
+      function Reverse<T>(arr: array of T): integer;
+      begin
+        Result := arr.Length - IndexValue;
+      end;
+      
+      function Reverse(str: string): integer;
+      begin
+        Result := str.Length - IndexValue + 1;
+      end;
+      
+      function Reverse(arr: System.Array; dim: integer): integer;
+      begin
+        Result := arr.GetLength(dim) - IndexValue;
+      end;
+  end;
+
 //{{{doc: Начало секции интерфейса для документации }}} 
 
 // -----------------------------------------------------
@@ -2682,6 +2722,7 @@ const
   BAD_ROW_INDEX_TO = 'ToRow выходит за пределы индексов строк двумерного массива!!ToRow is out of range of 2-dim array row indexes';
   BAD_COL_INDEX_FROM = 'FromCol выходит за пределы индексов строк двумерного массива!!FromCol is out of range of 2-dim array column indexes';
   BAD_COL_INDEX_TO = 'ToCol выходит за пределы индексов строк двумерного массива!!ToCol is out of range of 2-dim array column indexes';
+  SLICE_SIZE_AND_RIGHT_VALUE_SIZE_MUST_BE_EQUAL = 'Размеры среза и присваиваемого выражения должны быть равны!!Slice size and assigned expression size must be equal';
 
 // -----------------------------------------------------
 //                  WINAPI
@@ -10346,7 +10387,7 @@ begin
       raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
   
   if (situation = 0) or (situation = 1) then
-    if (&to < -1) or (&to > Len) then
+    if (&to < 0) or (&to > Len) then
       raise new ArgumentException(GetTranslation(PARAMETER_TO_OUT_OF_RANGE));
   
   if situation > 0 then
@@ -10414,15 +10455,59 @@ begin
 end;
 
 ///--
-function SystemSlice<T>(Self: List<T>; situation: integer; from, &to: integer): List<T>; extensionmethod;
+function SystemSlice<T>(Self: List<T>; situation: integer; from, &to: SystemIndex): List<T>; extensionmethod;
 begin
-  Result := SystemSliceListImpl(Self, situation, from, &to, 1);
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue;
+  Result := SystemSliceListImpl(Self, situation, from.IndexValue, &to.IndexValue, 1);
 end;
 
 ///--
-function SystemSlice<T>(Self: List<T>; situation: integer; from, &to, step: integer): List<T>; extensionmethod;
+function SystemSlice<T>(Self: List<T>; situation: integer; from, &to: SystemIndex; step: integer): List<T>; extensionmethod;
 begin
-  Result := SystemSliceListImpl(Self, situation, from, &to, step);
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue;
+  Result := SystemSliceListImpl(Self, situation, from.IndexValue, &to.IndexValue, step);
+end;
+
+///-- 
+procedure SystemSliceAssignmentListImpl<T>(Self: List<T>; rightValue: List<T>; situation: integer; from, &to: integer; step: integer := 1);
+begin
+  var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, Self.Count, from, &to, step);
+  if count <> rightValue.Count then
+    raise new System.ArgumentException(GetTranslation(SLICE_SIZE_AND_RIGHT_VALUE_SIZE_MUST_BE_EQUAL));
+  var f := from;
+  var i := 0;
+  loop count do
+  begin
+    Self[f] := rightValue[i];
+    f += step;
+    i += 1;
+  end;
+end;
+
+///--
+procedure SystemSliceAssignment<T>(Self: List<T>; rightValue: List<T>; situation: integer; from, &to: SystemIndex); extensionmethod;
+begin
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue;
+  SystemSliceAssignmentListImpl(Self, rightValue, situation, from.IndexValue, &to.IndexValue, 1);
+end;
+
+///--
+procedure SystemSliceAssignment<T>(Self: List<T>; rightValue: List<T>; situation: integer; from, &to: SystemIndex; step: integer); extensionmethod;
+begin
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue;
+  SystemSliceAssignmentListImpl(Self, rightValue, situation, from.IndexValue, &to.IndexValue, step);
 end;
 
 ///-- 
@@ -10434,15 +10519,23 @@ begin
 end;
 
 ///--
-function SystemSliceQuestion<T>(Self: List<T>; situation: integer; from, &to: integer): List<T>; extensionmethod;
+function SystemSliceQuestion<T>(Self: List<T>; situation: integer; from, &to: SystemIndex): List<T>; extensionmethod;
 begin
-  Result := SystemSliceListImplQuestion(Self, situation, from, &to, 1);
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue;
+  Result := SystemSliceListImplQuestion(Self, situation, from.IndexValue, &to.IndexValue, 1);
 end;
 
 ///--
-function SystemSliceQuestion<T>(Self: List<T>; situation: integer; from, &to, step: integer): List<T>; extensionmethod;
+function SystemSliceQuestion<T>(Self: List<T>; situation: integer; from, &to: SystemIndex; step: integer): List<T>; extensionmethod;
 begin
-  Result := SystemSliceListImplQuestion(Self, situation, from, &to, step);
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue;
+  Result := SystemSliceListImplQuestion(Self, situation, from.IndexValue, &to.IndexValue, step);
 end;
 
 // -----------------------------------------------------
@@ -11248,15 +11341,59 @@ begin
 end;
 
 ///--
-function SystemSlice<T>(Self: array of T; situation: integer; from, &to: integer): array of T; extensionmethod;
+function SystemSlice<T>(Self: array of T; situation: integer; from, &to: SystemIndex): array of T; extensionmethod;
 begin
-  Result := SystemSliceArrayImpl(Self, situation, from, &to, 1);
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue;
+  Result := SystemSliceArrayImpl(Self, situation, from.IndexValue, &to.IndexValue, 1);
 end;
 
 ///--
-function SystemSlice<T>(Self: array of T; situation: integer; from, &to, step: integer): array of T; extensionmethod;
+function SystemSlice<T>(Self: array of T; situation: integer; from, &to: SystemIndex; step: integer): array of T; extensionmethod;
 begin
-  Result := SystemSliceArrayImpl(Self, situation, from, &to, step);
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue;
+  Result := SystemSliceArrayImpl(Self, situation, from.IndexValue, &to.IndexValue, step);
+end;
+
+///-- 
+procedure SystemSliceAssignmentArrayImpl<T>(Self: array of T; rightValue: array of T; situation: integer; from, &to: integer; step: integer := 1);
+begin
+  var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, Self.Length, from, &to, step);
+  if count <> rightValue.Length then
+    raise new System.ArgumentException(GetTranslation(SLICE_SIZE_AND_RIGHT_VALUE_SIZE_MUST_BE_EQUAL));
+  var f := from;
+  var i := 0;
+  loop count do
+  begin
+    Self[f] := rightValue[i];
+    f += step;
+    i += 1;
+  end;
+end;
+
+///--
+procedure SystemSliceAssignment<T>(Self: array of T; rightValue: array of T; situation: integer; from, &to: SystemIndex); extensionmethod;
+begin
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue;
+  SystemSliceAssignmentArrayImpl(Self, rightValue, situation, from.IndexValue, &to.IndexValue, 1);
+end;
+
+///--
+procedure SystemSliceAssignment<T>(Self: array of T; rightValue: array of T; situation: integer; from, &to: SystemIndex; step: integer); extensionmethod;
+begin
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue;
+  SystemSliceAssignmentArrayImpl(Self, rightValue, situation, from.IndexValue, &to.IndexValue, step);
 end;
 
 ///-- 
@@ -11268,15 +11405,23 @@ begin
 end;
 
 ///--
-function SystemSliceQuestion<T>(Self: array of T; situation: integer; from, &to: integer): array of T; extensionmethod;
+function SystemSliceQuestion<T>(Self: array of T; situation: integer; from, &to: SystemIndex): array of T; extensionmethod;
 begin
-  Result := SystemSliceArrayImplQuestion(Self, situation, from, &to, 1);
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue;
+  Result := SystemSliceArrayImplQuestion(Self, situation, from.IndexValue, &to.IndexValue, 1);
 end;
 
 ///--
-function SystemSliceQuestion<T>(Self: array of T; situation: integer; from, &to, step: integer): array of T; extensionmethod;
+function SystemSliceQuestion<T>(Self: array of T; situation: integer; from, &to: SystemIndex; step: integer): array of T; extensionmethod;
 begin
-  Result := SystemSliceArrayImplQuestion(Self, situation, from, &to, step);
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue;
+  Result := SystemSliceArrayImplQuestion(Self, situation, from.IndexValue, &to.IndexValue, step);
 end;
 
 // -----------------------------------------------------
@@ -11836,15 +11981,23 @@ begin
 end;
 
 ///--
-function SystemSlice(Self: string; situation: integer; from, &to: integer): string; extensionmethod;
+function SystemSlice(Self: string; situation: integer; from, &to: SystemIndex): string; extensionmethod;
 begin
-  Result := SystemSliceStringImpl(Self, situation, from, &to, 1);
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue + 1;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue + 1;
+  Result := SystemSliceStringImpl(Self, situation, from.IndexValue, &to.IndexValue, 1);
 end;
 
 ///--
-function SystemSlice(Self: string; situation: integer; from, &to, step: integer): string; extensionmethod;
+function SystemSlice(Self: string; situation: integer; from, &to: SystemIndex; step: integer): string; extensionmethod;
 begin
-  Result := SystemSliceStringImpl(Self, situation, from, &to, step);
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue + 1;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue + 1;
+  Result := SystemSliceStringImpl(Self, situation, from.IndexValue, &to.IndexValue, step);
 end;
 
 ///-- 
@@ -11859,15 +12012,23 @@ begin
 end;
 
 ///--
-function SystemSliceQuestion(Self: string; situation: integer; from, &to: integer): string; extensionmethod;
+function SystemSliceQuestion(Self: string; situation: integer; from, &to: SystemIndex): string; extensionmethod;
 begin
-  Result := SystemSliceStringImplQuestion(Self, situation, from, &to, 1);
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue + 1;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue + 1;
+  Result := SystemSliceStringImplQuestion(Self, situation, from.IndexValue, &to.IndexValue, 1);
 end;
 
 ///--
-function SystemSliceQuestion(Self: string; situation: integer; from, &to, step: integer): string; extensionmethod;
+function SystemSliceQuestion(Self: string; situation: integer; from, &to: SystemIndex; step: integer): string; extensionmethod;
 begin
-  Result := SystemSliceStringImplQuestion(Self, situation, from, &to, step);
+  if from.IsInverted then
+    from.IndexValue := Self.Count - from.IndexValue + 1;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Count - &to.IndexValue + 1;
+  Result := SystemSliceStringImplQuestion(Self, situation, from.IndexValue, &to.IndexValue, step);
 end;
 //--------------------------------------------
 //>>     Методы расширения типа Func # Extension methods for Func

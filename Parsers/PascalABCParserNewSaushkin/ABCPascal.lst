@@ -1,9 +1,20 @@
+
+// ==========================================================================
+//  GPPG error listing for yacc source file <ABCPascal.y>
+// ==========================================================================
+//  Version:  1.3.6
+//  Machine:  DESKTOP-P4NLNB1
+//  DateTime: 4/20/2020 4:00:49 PM
+//  UserName: fatco
+// ==========================================================================
+
+
 // Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-// SSM 21/11/16 Лямбда выражения вынесены на верхний уровень (п.ч. присваивания и параметры)
+// SSM 21/11/16 Г‹ГїГ¬ГЎГ¤Г  ГўГ»Г°Г Г¦ГҐГ­ГЁГї ГўГ»Г­ГҐГ±ГҐГ­Г» Г­Г  ГўГҐГ°ГµГ­ГЁГ© ГіГ°Г®ГўГҐГ­Гј (ГЇ.Г·. ГЇГ°ГЁГ±ГўГ ГЁГўГ Г­ГЁГї ГЁ ГЇГ Г°Г Г¬ГҐГІГ°Г»)
 %{
-// Эти объявления добавляются в класс GPPGParser, представляющий собой парсер, генерируемый системой gppg
-    public syntax_tree_node root; // Корневой узел синтаксического дерева 
+// ГќГІГЁ Г®ГЎГєГїГўГ«ГҐГ­ГЁГї Г¤Г®ГЎГ ГўГ«ГїГѕГІГ±Гї Гў ГЄГ«Г Г±Г± GPPGParser, ГЇГ°ГҐГ¤Г±ГІГ ГўГ«ГїГѕГ№ГЁГ© Г±Г®ГЎГ®Г© ГЇГ Г°Г±ГҐГ°, ГЈГҐГ­ГҐГ°ГЁГ°ГіГҐГ¬Г»Г© Г±ГЁГ±ГІГҐГ¬Г®Г© gppg
+    public syntax_tree_node root; // ГЉГ®Г°Г­ГҐГўГ®Г© ГіГ§ГҐГ« Г±ГЁГ­ГІГ ГЄГ±ГЁГ·ГҐГ±ГЄГ®ГЈГ® Г¤ГҐГ°ГҐГўГ  
 
     public List<Error> errors;
     public string current_file_name;
@@ -85,7 +96,7 @@
 %type <ex> const_simple_expr term term1 simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda expr_l1_for_lambda simple_expr range_term range_factor 
 %type <ex> external_directive_ident init_const_expr case_label variable var_reference /*optional_write_expr*/ optional_read_expr simple_expr_or_nothing var_question_point expr_l1_for_question_expr expr_l1_for_new_question_expr
 %type <ob> for_cycle_type  
-%type <ex> format_expr format_const_expr const_expr_or_nothing /* simple_expr_with_deref_or_nothing simple_expr_with_deref expr_l1_for_indexer*/
+%type <ex> format_expr format_const_expr const_expr_or_nothing simple_expr_with_deref_or_nothing simple_expr_with_deref /*expr_l1_for_indexer*/
 %type <stn> foreach_stmt  
 %type <stn> for_stmt loop_stmt yield_stmt yield_sequence_stmt
 %type <stn> fp_list fp_sect_list  
@@ -180,6 +191,17 @@
 %type <ob> pattern_out_param_list pattern_out_param_list_optional_var collection_pattern_expr_list tuple_pattern_item_list const_pattern_expr_list
 
 %%
+// Error: NonTerminal symbol "simple_expr_with_deref_or_nothing" has no productions
+// Warning: NonTerminal symbol "simple_expr_with_deref" is unreachable
+// Error: NonTerminal symbol "simple_expr_with_deref" has no productions
+// Warning: NonTerminal symbol "simple_expr_with_deref_or_nothing" is unreachable
+// Error: There are 2 non-terminating NonTerminal Symbols
+   //  {simple_expr_with_deref_or_nothing, simple_expr_with_deref}
+// Warning: Terminating simple_expr_with_deref_or_nothing fixes the following size-1 NonTerminal set
+   // {simple_expr_with_deref_or_nothing}
+// Warning: Terminating simple_expr_with_deref fixes the following size-1 NonTerminal set
+   // {simple_expr_with_deref}
+// -------------------------------------------------------------------------------------------------
 
 parse_goal                
     : program_file 
@@ -247,7 +269,7 @@ program_file
         }
 	;
 
-/* это нужно для intellisensа чтобы строилось дерево при отсутствии точки в конце */
+/* ГЅГІГ® Г­ГіГ¦Г­Г® Г¤Г«Гї intellisensГ  Г·ГІГ®ГЎГ» Г±ГІГ°Г®ГЁГ«Г®Г±Гј Г¤ГҐГ°ГҐГўГ® ГЇГ°ГЁ Г®ГІГ±ГіГІГ±ГІГўГЁГЁ ГІГ®Г·ГЄГЁ Гў ГЄГ®Г­Г¶ГҐ */
 optional_tk_point 
     : tkPoint
         { $$ = $1; }
@@ -542,7 +564,7 @@ decl_sect
 		{ $$ = $1; }
     ;
 
-/* SSM 2.1.13 упрощение грамматики */
+/* SSM 2.1.13 ГіГЇГ°Г®Г№ГҐГ­ГЁГҐ ГЈГ°Г Г¬Г¬Г ГІГЁГЄГЁ */
 proc_func_constr_destr_decl 
 	: proc_func_decl              
 		{ $$ = $1; }
@@ -851,7 +873,7 @@ const_factor
 		}
     | sign const_factor                              
         { 
-		    // ручнаЯ коррекциЯ целых констант
+		    // Г°ГіГ·Г­Г Гџ ГЄГ®Г°Г°ГҐГЄГ¶ГЁГџ Г¶ГҐГ«Г»Гµ ГЄГ®Г­Г±ГІГ Г­ГІ
 			if ($1.type == Operators.Minus)
 			{
 			    var i64 = $2 as int64_const;
@@ -871,7 +893,7 @@ const_factor
 					parsertools.AddErrorFromResource("BAD_INT2",@$);
 					break;
 				}
-			    // можно сделать вычисление константы с вмонтированным минусом
+			    // Г¬Г®Г¦Г­Г® Г±Г¤ГҐГ«Г ГІГј ГўГ»Г·ГЁГ±Г«ГҐГ­ГЁГҐ ГЄГ®Г­Г±ГІГ Г­ГІГ» Г± ГўГ¬Г®Г­ГІГЁГ°Г®ГўГ Г­Г­Г»Г¬ Г¬ГЁГ­ГіГ±Г®Г¬
 			}
 			$$ = new un_expr($2, $1.type, @$); 
 		}
@@ -900,7 +922,7 @@ sign
 const_variable
     : identifier
 		{ $$ = $1; }
-    | literal // SSM 02.10.18 для '123'.Length при инициализации констант
+    | literal // SSM 02.10.18 Г¤Г«Гї '123'.Length ГЇГ°ГЁ ГЁГ­ГЁГ¶ГЁГ Г«ГЁГ§Г Г¶ГЁГЁ ГЄГ®Г­Г±ГІГ Г­ГІ
 		{ $$ = $1; }
     | unsigned_number
 		{ $$ = $1; }
@@ -939,7 +961,9 @@ const_variable
                 if (fe.format1 == null)
                     fe.format1 = new int32_const(int.MaxValue,@3);
             }
-    		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
+            var from = fe.expr is index ? fe.expr : new index(fe.expr, false, fe.expr.source_context);
+            var to = fe.format1 is index ? fe.format1 : new index(fe.format1, false, fe.format1.source_context);
+    		$$ = new slice_expr($1 as addressed_value,from,to,fe.format2,@$);
 		}
     ;
 
@@ -1511,7 +1535,7 @@ proc_type_decl
         { 
 			$$ = new function_header($2 as formal_parameters, null, null, null, $4 as type_definition, @$);
         }
-	| simple_type_identifier tkArrow template_param // эти 2 правила нельзя объединять в одно template_param - будет конфликт
+	| simple_type_identifier tkArrow template_param // ГЅГІГЁ 2 ГЇГ°Г ГўГЁГ«Г  Г­ГҐГ«ГјГ§Гї Г®ГЎГєГҐГ¤ГЁГ­ГїГІГј Гў Г®Г¤Г­Г® template_param - ГЎГіГ¤ГҐГІ ГЄГ®Г­ГґГ«ГЁГЄГІ
     	{
     		$$ = new modern_proc_type($1,null,$3,@$);            
     	}
@@ -1527,7 +1551,7 @@ proc_type_decl
     	{
     		$$ = new modern_proc_type(null,$2 as enumerator_list,$5,@$);
     	}
-    | simple_type_identifier tkArrow tkRoundOpen tkRoundClose // эти 2 правила нельзя объединять в одно template_param - будет конфликт
+    | simple_type_identifier tkArrow tkRoundOpen tkRoundClose // ГЅГІГЁ 2 ГЇГ°Г ГўГЁГ«Г  Г­ГҐГ«ГјГ§Гї Г®ГЎГєГҐГ¤ГЁГ­ГїГІГј Гў Г®Г¤Г­Г® template_param - ГЎГіГ¤ГҐГІ ГЄГ®Г­ГґГ«ГЁГЄГІ
     	{
     		$$ = new modern_proc_type($1,null,null,@$);
     	}
@@ -2059,17 +2083,17 @@ property_specifiers
     :
     | tkRead optional_read_expr write_property_specifiers   
         { 
-        	if ($2 == null || $2 is ident) // стандартные свойства
+        	if ($2 == null || $2 is ident) // Г±ГІГ Г­Г¤Г Г°ГІГ­Г»ГҐ Г±ГўГ®Г©Г±ГІГўГ 
         	{
         		$$ = NewPropertySpecifiersRead($1, $2 as ident, null, null, $3 as property_accessors, @$);
         	}
-        	else // расширенные свойства
+        	else // Г°Г Г±ГёГЁГ°ГҐГ­Г­Г»ГҐ Г±ГўГ®Г©Г±ГІГўГ 
         	{
 				var id = NewId("#GetGen", @2);
                 procedure_definition pr = null;
                 if (!parsertools.build_tree_for_formatter)
                     pr = CreateAndAddToClassReadFunc($2, id, @2);
-				$$ = NewPropertySpecifiersRead($1, id, pr, $2, $3 as property_accessors, @$); // $2 передаётся для форматирования 
+				$$ = NewPropertySpecifiersRead($1, id, pr, $2, $3 as property_accessors, @$); // $2 ГЇГҐГ°ГҐГ¤Г ВёГІГ±Гї Г¤Г«Гї ГґГ®Г°Г¬Г ГІГЁГ°Г®ГўГ Г­ГЁГї 
 			}
         }
     | tkWrite unlabelled_stmt read_property_specifiers     
@@ -2079,19 +2103,19 @@ property_specifiers
         	
         		$$ = NewPropertySpecifiersWrite($1, null, null, null, $3 as property_accessors, @$);
         	}
-        	else if ($2 is procedure_call && ($2 as procedure_call).is_ident) // стандартные свойства
+        	else if ($2 is procedure_call && ($2 as procedure_call).is_ident) // Г±ГІГ Г­Г¤Г Г°ГІГ­Г»ГҐ Г±ГўГ®Г©Г±ГІГўГ 
         	{
         	
-        		$$ = NewPropertySpecifiersWrite($1, ($2 as procedure_call).func_name as ident, null, null, $3 as property_accessors, @$);  // старые свойства - с идентификатором
+        		$$ = NewPropertySpecifiersWrite($1, ($2 as procedure_call).func_name as ident, null, null, $3 as property_accessors, @$);  // Г±ГІГ Г°Г»ГҐ Г±ГўГ®Г©Г±ГІГўГ  - Г± ГЁГ¤ГҐГ­ГІГЁГґГЁГЄГ ГІГ®Г°Г®Г¬
         	}
-        	else // расширенные свойства
+        	else // Г°Г Г±ГёГЁГ°ГҐГ­Г­Г»ГҐ Г±ГўГ®Г©Г±ГІГўГ 
         	{
 				var id = NewId("#SetGen", @2);
                 procedure_definition pr = null;
                 if (!parsertools.build_tree_for_formatter)
                     pr = CreateAndAddToClassWriteProc($2 as statement,id,@2);
                 if (parsertools.build_tree_for_formatter)
-					$$ = NewPropertySpecifiersWrite($1, id, pr, $2 as statement, $3 as property_accessors, @$); // $2 передаётся для форматирования
+					$$ = NewPropertySpecifiersWrite($1, id, pr, $2 as statement, $3 as property_accessors, @$); // $2 ГЇГҐГ°ГҐГ¤Г ВёГІГ±Гї Г¤Г«Гї ГґГ®Г°Г¬Г ГІГЁГ°Г®ГўГ Г­ГЁГї
 				else $$ = NewPropertySpecifiersWrite($1, id, pr, null, $3 as property_accessors, @$); 	
 			}
         }
@@ -2107,7 +2131,7 @@ write_property_specifiers
         	}
         	else if ($2 is procedure_call && ($2 as procedure_call).is_ident)
         	{
-        		$$ = NewPropertySpecifiersWrite($1, ($2 as procedure_call).func_name as ident, null, null, null, @$); // старые свойства - с идентификатором
+        		$$ = NewPropertySpecifiersWrite($1, ($2 as procedure_call).func_name as ident, null, null, null, @$); // Г±ГІГ Г°Г»ГҐ Г±ГўГ®Г©Г±ГІГўГ  - Г± ГЁГ¤ГҐГ­ГІГЁГґГЁГЄГ ГІГ®Г°Г®Г¬
         	}
         	else 
         	{
@@ -2175,7 +2199,7 @@ var_decl_part
         { 
 			$$ = new var_def_statement($1 as ident_list, null, $3, definition_attribute.None, false, @$);		
 		}
-    | ident_list tkColon type_ref tkAssignOrEqual typed_var_init_expression // typed_const_plus уже давно не константа :) Но сюда не попали Tuples, поскольку они конкурируют с дурацкими старыми инициализаторами массивов 
+    | ident_list tkColon type_ref tkAssignOrEqual typed_var_init_expression // typed_const_plus ГіГ¦ГҐ Г¤Г ГўГ­Г® Г­ГҐ ГЄГ®Г­Г±ГІГ Г­ГІГ  :) ГЌГ® Г±ГѕГ¤Г  Г­ГҐ ГЇГ®ГЇГ Г«ГЁ Tuples, ГЇГ®Г±ГЄГ®Г«ГјГЄГі Г®Г­ГЁ ГЄГ®Г­ГЄГіГ°ГЁГ°ГіГѕГІ Г± Г¤ГіГ°Г Г¶ГЄГЁГ¬ГЁ Г±ГІГ Г°Г»Г¬ГЁ ГЁГ­ГЁГ¶ГЁГ Г«ГЁГ§Г ГІГ®Г°Г Г¬ГЁ Г¬Г Г±Г±ГЁГўГ®Гў 
         { 
 			$$ = new var_def_statement($1 as ident_list, $3, $5, definition_attribute.None, false, @$); 
 		}
@@ -2710,7 +2734,9 @@ assignment
                 if (fe.format1 == null)
                     fe.format1 = new int32_const(int.MaxValue,@3);
             }
-      		var left = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
+            var from = fe.expr is index ? fe.expr : new index(fe.expr, false, fe.expr.source_context);
+            var to = fe.format1 is index ? fe.format1 : new index(fe.format1, false, fe.format1.source_context);
+      		var left = new slice_expr_question($1 as addressed_value,from.to,fe.format2,@$);
             $$ = new assign(left, $6, $5.type, @$);
 		}
     ;
@@ -3119,12 +3145,16 @@ expr_with_func_decl_lambda
 expr
     : expr_l1
 		{ $$ = $1; }
+    | tkDeref expr_l1
+        { $$ = new simple_expr_with_deref($2, true); }
     | format_expr
 		{ $$ = $1; }
     ;
     /*
 expr_l1_for_indexer
-    : expr_l1 
+    : tkDeref expr_l1
+        { $$ = new simple_expr_with_deref($2, true); }
+    | expr_l1 
         { $$ = $1; }
     | format_expr
 		{ $$ = $1; }
@@ -3337,7 +3367,7 @@ list_fields_in_unnamed_object
 /*array_name_for_new_expr
     : simple_type_identifier 
 		{ $$ = $1; }
-//    | unsized_array_type - и кому такое приснилось
+//    | unsized_array_type - ГЁ ГЄГ®Г¬Гі ГІГ ГЄГ®ГҐ ГЇГ°ГЁГ±Г­ГЁГ«Г®Г±Гј
 //		{ $$ = $1; }
     ;*/
 
@@ -3352,10 +3382,6 @@ relop_expr
     : simple_expr
 		{ $$ = $1; }
     | relop_expr relop simple_expr
-        { 
-			$$ = new bin_expr($1, $3, $2.type, @$); 
-		}
-    | relop_expr relop new_question_expr
         { 
 			$$ = new bin_expr($1, $3, $2.type, @$); 
 		}
@@ -3777,10 +3803,6 @@ term1
         { 
 			$$ = new bin_expr($1, $3, $2.type, @$); 
 		}
-    | term1 addop new_question_expr                        
-        { 
-			$$ = new bin_expr($1, $3, $2.type, @$); 
-		}
     ;
 
 addop
@@ -3849,8 +3871,6 @@ term
         { $$ = new bin_expr($1,$3,($2).type, @$); }
     | term mulop power_expr                             
         { $$ = new bin_expr($1,$3,($2).type, @$); }
-    | term mulop new_question_expr                             
-        { $$ = new bin_expr($1,$3,($2).type, @$); }
     | as_is_expr
 		{ $$ = $1; }
     ;
@@ -3880,7 +3900,7 @@ default_expr
     ;
 
 tuple
-	 : tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose // lambda_type_ref optional_full_lambda_fp_list нужно оставить чтобы не было конфликтов с грамматикой лямбд 
+	 : tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose // lambda_type_ref optional_full_lambda_fp_list Г­ГіГ¦Г­Г® Г®Г±ГІГ ГўГЁГІГј Г·ГІГ®ГЎГ» Г­ГҐ ГЎГ»Г«Г® ГЄГ®Г­ГґГ«ГЁГЄГІГ®Гў Г± ГЈГ°Г Г¬Г¬Г ГІГЁГЄГ®Г© Г«ГїГ¬ГЎГ¤ 
 		{
 			/*if ($5 != null) 
 				parsertools.AddErrorFromResource("BAD_TUPLE",@5);
@@ -3933,7 +3953,7 @@ factor
 					parsertools.AddErrorFromResource("BAD_INT2",@$);
 					break;
 				}
-			    // можно сделать вычисление константы с вмонтированным минусом
+			    // Г¬Г®Г¦Г­Г® Г±Г¤ГҐГ«Г ГІГј ГўГ»Г·ГЁГ±Г«ГҐГ­ГЁГҐ ГЄГ®Г­Г±ГІГ Г­ГІГ» Г± ГўГ¬Г®Г­ГІГЁГ°Г®ГўГ Г­Г­Г»Г¬ Г¬ГЁГ­ГіГ±Г®Г¬
 			}
 		
 			$$ = new un_expr($2, $1.type, @$); 
@@ -4060,7 +4080,9 @@ variable
                     if (fe.format1 == null)
                         fe.format1 = new int32_const(int.MaxValue,@3);
                 }
-        		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
+                var from = fe.expr is index ? fe.expr : new index(fe.expr, false, fe.expr.source_context);
+                var to = fe.format1 is index ? fe.format1 : new index(fe.format1, false, fe.format1.source_context); 
+        		$$ = new slice_expr($1 as addressed_value,from,to,fe.format2,@$);
 			}   
 			else $$ = new indexer($1 as addressed_value, el, @$);
         }
@@ -4074,7 +4096,9 @@ variable
                 if (fe.format1 == null)
                     fe.format1 = new int32_const(int.MaxValue,@3);
             }
-      		$$ = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
+            var from = fe.expr is index ? fe.expr : new index(fe.expr, false, fe.expr.source_context);
+            var to = fe.format1 is index ? fe.format1 : new index(fe.format1, false, fe.format1.source_context); 
+      		$$ = new slice_expr_question($1 as addressed_value,from,to,fe.format2,@$);
         }
     | variable tkRoundOpen optional_expr_list tkRoundClose                
         {
@@ -4771,7 +4795,7 @@ lambda_function_body
             {
                  parsertools.AddErrorFromResource("RESULT_IDENT_NOT_EXPECTED_IN_THIS_CONTEXT", id.source_context);
             }
-			var sl = new statement_list(new assign("result",$1,@$),@$); // надо помечать ещё и assign как автосгенерированный для лямбды - чтобы запретить явный Result
+			var sl = new statement_list(new assign("result",$1,@$),@$); // Г­Г Г¤Г® ГЇГ®Г¬ГҐГ·Г ГІГј ГҐГ№Вё ГЁ assign ГЄГ ГЄ Г ГўГІГ®Г±ГЈГҐГ­ГҐГ°ГЁГ°Г®ГўГ Г­Г­Г»Г© Г¤Г«Гї Г«ГїГ¬ГЎГ¤Г» - Г·ГІГ®ГЎГ» Г§Г ГЇГ°ГҐГІГЁГІГј ГїГўГ­Г»Г© Result
 			sl.expr_lambda_body = true;
 			$$ = sl;
 		}
@@ -4796,4 +4820,5 @@ lambda_procedure_body
 		}
 	;
 
-%%
+%%// ==========================================================================
+

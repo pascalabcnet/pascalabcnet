@@ -54,6 +54,7 @@
     <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\DoubleQuestionDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\ExtendedIsDesugaringVisitor.cs" />
+    <Compile Include="SugarVisitors\IndexVisitor.cs" />
     <Compile Include="SugarVisitors\LoopDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\PropertyDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\QuestionPointDesugarVisitor.cs" />
