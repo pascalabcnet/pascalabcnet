@@ -766,7 +766,7 @@ type
       
       function Reverse(str: string): integer;
       begin
-        Result := str.Length - IndexValue;
+        Result := str.Length - IndexValue + 1;
       end;
       
       function Reverse(arr: System.Array; dim: integer): integer;
@@ -10444,7 +10444,7 @@ begin
       raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
   
   if (situation = 0) or (situation = 1) then
-    if (&to < -1) or (&to > Len) then
+    if (&to < 0) or (&to > Len) then
       raise new ArgumentException(GetTranslation(PARAMETER_TO_OUT_OF_RANGE));
   
   if situation > 0 then
@@ -12042,9 +12042,9 @@ end;
 function SystemSlice(Self: string; situation: integer; from, &to: SystemIndex): string; extensionmethod;
 begin
   if from.IsInverted then
-    from.IndexValue := Self.Count - from.IndexValue;
+    from.IndexValue := Self.Count - from.IndexValue + 1;
   if &to.IsInverted then
-    &to.IndexValue := Self.Count - &to.IndexValue;
+    &to.IndexValue := Self.Count - &to.IndexValue + 1;
   Result := SystemSliceStringImpl(Self, situation, from.IndexValue, &to.IndexValue, 1);
 end;
 
@@ -12052,9 +12052,9 @@ end;
 function SystemSlice(Self: string; situation: integer; from, &to: SystemIndex; step: integer): string; extensionmethod;
 begin
   if from.IsInverted then
-    from.IndexValue := Self.Count - from.IndexValue;
+    from.IndexValue := Self.Count - from.IndexValue + 1;
   if &to.IsInverted then
-    &to.IndexValue := Self.Count - &to.IndexValue;
+    &to.IndexValue := Self.Count - &to.IndexValue + 1;
   Result := SystemSliceStringImpl(Self, situation, from.IndexValue, &to.IndexValue, step);
 end;
 
@@ -12073,9 +12073,9 @@ end;
 function SystemSliceQuestion(Self: string; situation: integer; from, &to: SystemIndex): string; extensionmethod;
 begin
   if from.IsInverted then
-    from.IndexValue := Self.Count - from.IndexValue;
+    from.IndexValue := Self.Count - from.IndexValue + 1;
   if &to.IsInverted then
-    &to.IndexValue := Self.Count - &to.IndexValue;
+    &to.IndexValue := Self.Count - &to.IndexValue + 1;
   Result := SystemSliceStringImplQuestion(Self, situation, from.IndexValue, &to.IndexValue, 1);
 end;
 
@@ -12083,9 +12083,9 @@ end;
 function SystemSliceQuestion(Self: string; situation: integer; from, &to: SystemIndex; step: integer): string; extensionmethod;
 begin
   if from.IsInverted then
-    from.IndexValue := Self.Count - from.IndexValue;
+    from.IndexValue := Self.Count - from.IndexValue + 1;
   if &to.IsInverted then
-    &to.IndexValue := Self.Count - &to.IndexValue;
+    &to.IndexValue := Self.Count - &to.IndexValue + 1;
   Result := SystemSliceStringImplQuestion(Self, situation, from.IndexValue, &to.IndexValue, step);
 end;
 //--------------------------------------------

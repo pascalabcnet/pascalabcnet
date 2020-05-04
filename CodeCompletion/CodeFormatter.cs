@@ -3188,6 +3188,13 @@ namespace CodeFormatters
                 visit_node(_slice_expr_question.step);
         }
 
+        public override void visit(index _index)
+        {
+            if (_index.inverted)
+                sb.Append("^");
+            visit_node(_index.index_expr);
+        }
+
         public override void visit(is_pattern_expr _is_pattern_expr)
         {
             if (_is_pattern_expr.left != null)

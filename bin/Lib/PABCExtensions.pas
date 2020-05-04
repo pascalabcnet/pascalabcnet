@@ -98,9 +98,9 @@ end;
 procedure SystemSliceAssignment(var Self: string; rightValue: string; situation: integer; from, &to: SystemIndex); extensionmethod;
 begin
   if from.IsInverted then
-    from.IndexValue := Self.Length - from.IndexValue;
+    from.IndexValue := Self.Length - from.IndexValue + 1;
   if &to.IsInverted then
-    &to.IndexValue := Self.Length - &to.IndexValue;
+    &to.IndexValue := Self.Length - &to.IndexValue + 1;
     
   from.IndexValue := from.IndexValue - 1;
   &to.IndexValue := &to.IndexValue - 1;
@@ -127,9 +127,9 @@ end;
 procedure SystemSliceAssignment(var Self: string; rightValue: string; situation: integer; from, &to: SystemIndex; step: integer); extensionmethod;
 begin
   if from.IsInverted then
-    from.IndexValue := Self.Length - from.IndexValue;
+    from.IndexValue := Self.Length - from.IndexValue + 1;
   if &to.IsInverted then
-    &to.IndexValue := Self.Length - &to.IndexValue;
+    &to.IndexValue := Self.Length - &to.IndexValue + 1;
     
   from.IndexValue := from.IndexValue - 1;
   &to.IndexValue := &to.IndexValue - 1;
