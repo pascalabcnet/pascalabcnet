@@ -121,7 +121,7 @@ type
   FontType = class
   private
     tf := new Typeface('Arial');
-    sz: real := 12;
+    sz: real := 14;
     c: GColor := Colors.Black;
     procedure SetNameP(s: string) := tf := new Typeface(new FontFamily(s),FontStyles.Normal,FontWeights.Normal,FontStretches.Normal); 
     function GetName := tf.FontFamily.ToString;
@@ -1429,8 +1429,20 @@ begin
   var sz := Size(host.DataContext);
   
   var bmp := new RenderTargetBitmap(Round(sz.Width*scalex), Round(sz.Height*scaley), dpiX, dpiY, PixelFormats.Pbgra32);
+
+  var myvis := new DrawingVisual();
+  var dc := myvis.RenderOpen;
+  var r := Rect(0,0,Window.Width,Window.Height);
+  var mm := (canvas as MyVisualHost).RenderTransform.Value;
+  mm.Invert;
+  r.Transform(mm);
+  dc.DrawRectangle(Brush.BrushConstruct,nil,r);
+  dc.Close;
+  (canvas as MyVisualHost).children.Insert(0,myvis);
   
   bmp.Render(canvas);
+
+  (canvas as MyVisualHost).children.RemoveAt(0);
   
   var ext := ExtractFileExt(filename).ToLower;
   
@@ -1660,6 +1672,8 @@ begin
   if (OnDraw<>nil) or (OnDraw1<>nil) or (OnDrawFrame<>nil) then
   begin
     var e1 := RenderingEventArgs(e).RenderingTime;
+    if LastUpdatedTime.Ticks = integer.MinValue then // первый раз
+      LastUpdatedTime := e1;
     var dt := e1 - LastUpdatedTime;
     var delta := 1000/Framerate; // через какое время обновлять
     if OnDrawFrame<>nil then 

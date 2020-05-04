@@ -1562,6 +1562,8 @@ begin
   if OnDrawFrame<>nil then
   begin
     var e1 := RenderingEventArgs(e).RenderingTime;
+    if LastUpdatedTimeWPF.Ticks = integer.MinValue then // первый раз
+      LastUpdatedTimeWPF := e1;
     var dt := e1 - LastUpdatedTimeWPF;
     LastUpdatedTimeWPF := e1;  
     OnDrawFrame(dt.Milliseconds/1000);

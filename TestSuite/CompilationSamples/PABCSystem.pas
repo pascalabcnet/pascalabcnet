@@ -1367,7 +1367,7 @@ function DiskFree(disk: integer): int64;
 function DiskSize(disk: integer): int64;
 /// Возвращает количество миллисекунд с момента начала работы программы
 function Milliseconds: integer;
-/// Возвращает количество миллисекунд с момента последнего вызова Milliseconds или MillisecondsDelta 
+/// Возвращает количество миллисекунд с момента последнего вызова Milliseconds или MillisecondsDelta или начала программы
 function MillisecondsDelta: integer;
 
 /// Завершает работу программы
@@ -10084,14 +10084,13 @@ begin
       yield i;
 end;
 
-
 /// Перемешивает элементы списка случайным образом
 function Shuffle<T>(Self: List<T>): List<T>; extensionmethod;
 begin
   var n := Self.Count;
   for var i := 0 to n - 1 do
   begin
-    var r := PABCSystem.Random(n);
+    var r := Random(n);
     var v := Self[i];
     Self[i] := Self[r];
     Self[r] := v;
@@ -10149,47 +10148,8 @@ begin
     end;
 end;
 
-/// Возвращает индекс первого минимального элемента начиная с позиции index
-function IndexMin<T>(Self: array of T; index: integer := 0): integer; extensionmethod; where T: IComparable<T>;
-begin
-  var min := Self[index];
-  Result := index;
-  for var i := index + 1 to Self.Count - 1 do
-    if Self[i].CompareTo(min) < 0 then 
-    begin
-      Result := i;
-      min := Self[i];
-    end;
-end;
-
-/// Возвращает индекс первого максимального элемента начиная с позиции index
-function IndexMax<T>(Self: array of T; index: integer := 0): integer; extensionmethod; where T: System.IComparable<T>;
-begin
-  var max := Self[index];
-  Result := index;
-  for var i := index + 1 to Self.Count - 1 do
-    if Self[i].CompareTo(max) > 0 then 
-    begin
-      Result := i;
-      max := Self[i];
-    end;
-end;
-
 /// Возвращает индекс последнего минимального элемента в диапазоне [0,index-1] 
 function LastIndexMin<T>(Self: List<T>; index: integer): integer; extensionmethod; where T: System.IComparable<T>;
-begin
-  var min := Self[index];
-  Result := index;
-  for var i := index - 1 downto 0 do
-    if Self[i].CompareTo(min) < 0 then 
-    begin
-      Result := i;
-      min := Self[i];
-    end;
-end;
-
-/// Возвращает индекс последнего минимального элемента в диапазоне [0,index-1] 
-function LastIndexMin<T>(Self: array of T; index: integer): integer; extensionmethod; where T: System.IComparable<T>;
 begin
   var min := Self[index];
   Result := index;
@@ -10207,27 +10167,8 @@ begin
   Result := Self.LastIndexMin(Self.Count - 1);
 end;  
 
-/// Возвращает индекс последнего минимального элемента
-function LastIndexMin<T>(Self: array of T): integer; extensionmethod; where T: System.IComparable<T>;
-begin
-  Result := Self.LastIndexMin(Self.Length - 1);
-end;  
-
 /// Возвращает индекс последнего минимального элемента в диапазоне [0,index-1]
 function LastIndexMax<T>(Self: List<T>; index: integer): integer; extensionmethod; where T: System.IComparable<T>;
-begin
-  var max := Self[index];
-  Result := index;
-  for var i := index - 1 downto 0 do
-    if Self[i].CompareTo(max) > 0 then 
-    begin
-      Result := i;
-      max := Self[i];
-    end;
-end;
-
-/// Возвращает индекс последнего минимального элемента в диапазоне [0,index-1]
-function LastIndexMax<T>(Self: array of T; index: integer): integer; extensionmethod; where T: System.IComparable<T>;
 begin
   var max := Self[index];
   Result := index;
@@ -10245,14 +10186,9 @@ begin
   Result := Self.LastIndexMax(Self.Count - 1);
 end;  
 
-/// Возвращает индекс последнего максимального элемента
-function LastIndexMax<T>(Self: array of T): integer; extensionmethod; where T: System.IComparable<T>;
-begin
-  Result := Self.LastIndexMax(Self.Count - 1);
-end;  
-
-/// Заменяет в массиве или списке все вхождения одного значения на другое
-procedure Replace<T>(Self: IList<T>; oldValue, newValue: T); extensionmethod;
+/// Заменяет в массиве все вхождения одного значения на другое
+/// Заменяет в списке все вхождения одного значения на другое
+procedure Replace<T>(Self: List<T>; oldValue, newValue: T); extensionmethod;
 begin
   for var i := 0 to Self.Count - 1 do
     if Self[i] = oldValue then
@@ -10260,21 +10196,28 @@ begin
 end;
 
 /// Преобразует элементы массива или списка по заданному правилу
-procedure Transform<T>(Self: IList<T>; f: T->T); extensionmethod;
+procedure Transform<T>(Self: List<T>; f: T->T); extensionmethod;
 begin
   for var i := 0 to Self.Count - 1 do
     Self[i] := f(Self[i]);
 end;
 
 /// Преобразует элементы массива или списка по заданному правилу
-procedure Transform<T>(Self: IList<T>; f: (T,integer)->T); extensionmethod;
+procedure Transform<T>(Self: List<T>; f: (T,integer)->T); extensionmethod;
 begin
   for var i := 0 to Self.Count - 1 do
     Self[i] := f(Self[i],i);
 end;
 
-/// Заполняет элементы массива или списка значениями, вычисляемыми по некоторому правилу
-procedure Fill<T>(Self: IList<T>; f: integer->T); extensionmethod;
+/// Заполняет элементы списка указанным значением
+procedure Fill<T>(Self: List<T>; x: T); extensionmethod;
+begin
+  for var i := 0 to Self.Count - 1 do
+    Self[i] := x;
+end;
+
+/// Заполняет элементы списка значениями, вычисляемыми по некоторому правилу
+procedure Fill<T>(Self: List<T>; f: integer->T); extensionmethod;
 begin
   for var i := 0 to Self.Count - 1 do
     Self[i] := f(i);
@@ -11026,13 +10969,13 @@ begin
       Result := Self[i];
 end;
 
-{/// Возвращает индекс первого минимального элемента начиная с позиции index
-function IndexMin<T>(Self: array of T; index: integer := 0): integer; extensionmethod; where T: System.IComparable<T>;
+/// Возвращает индекс первого минимального элемента начиная с позиции index
+function IndexMin<T>(Self: array of T; index: integer := 0): integer; extensionmethod; where T: IComparable<T>;
 begin
   var min := Self[index];
   Result := index;
-  for var i:=index+1 to Self.Length-1 do
-    if Self[i].CompareTo(min)<0 then 
+  for var i := index + 1 to Self.Count - 1 do
+    if Self[i].CompareTo(min) < 0 then 
     begin
       Result := i;
       min := Self[i];
@@ -11040,91 +10983,90 @@ begin
 end;
 
 /// Возвращает индекс первого максимального элемента начиная с позиции index
-function IndexMax<T>(self: array of T; index: integer := 0): integer; extensionmethod; where T: System.IComparable<T>;
+function IndexMax<T>(Self: array of T; index: integer := 0): integer; extensionmethod; where T: System.IComparable<T>;
 begin
   var max := Self[index];
   Result := index;
-  for var i:=index+1 to Self.Length-1 do
-    if Self[i].CompareTo(max)>0 then 
+  for var i := index + 1 to Self.Count - 1 do
+    if Self[i].CompareTo(max) > 0 then 
     begin
       Result := i;
       max := Self[i];
+    end;
+end;
+
+/// Возвращает индекс последнего минимального элемента в диапазоне [0,index-1] 
+function LastIndexMin<T>(Self: array of T; index: integer): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var min := Self[index];
+  Result := index;
+  for var i := index - 1 downto 0 do
+    if Self[i].CompareTo(min) < 0 then 
+    begin
+      Result := i;
+      min := Self[i];
     end;
 end;
 
 /// Возвращает индекс последнего минимального элемента
 function LastIndexMin<T>(Self: array of T): integer; extensionmethod; where T: System.IComparable<T>;
 begin
-  var min := Self[Self.Length-1];
-  Result := Self.Length-1;
-  for var i:=Self.Length-2 downto 0 do
-    if Self[i].CompareTo(min)<0 then 
-    begin
-      Result := i;
-      min := Self[i];
-    end;
-end;
+  Result := Self.LastIndexMin(Self.Length - 1);
+end;  
 
-/// Возвращает индекс последнего минимального элемента в диапазоне [0,index] 
-function LastIndexMin<T>(Self: array of T; index: integer): integer; extensionmethod; where T: System.IComparable<T>;
-begin
-  var min := Self[index];
-  Result := index;
-  for var i:=index-1 downto 0 do
-    if Self[i].CompareTo(min)<0 then 
-    begin
-      Result := i;
-      min := Self[i];
-    end;
-end;
-
-/// Возвращает индекс последнего минимального элемента
-function LastIndexMax<T>(Self: array of T): integer; extensionmethod; where T: System.IComparable<T>;
-begin
-  var max := Self[Self.Length-1];
-  Result := Self.Length-1;
-  for var i:=Self.Length-2 downto 0 do
-    if Self[i].CompareTo(max)>0 then 
-    begin
-      Result := i;
-      max := Self[i];
-    end;
-end;
-
-/// Возвращает индекс последнего минимального элемента в диапазоне [0,index]
+/// Возвращает индекс последнего минимального элемента в диапазоне [0,index-1]
 function LastIndexMax<T>(Self: array of T; index: integer): integer; extensionmethod; where T: System.IComparable<T>;
 begin
   var max := Self[index];
   Result := index;
-  for var i:=index-1 downto 0 do
-    if Self[i].CompareTo(max)>0 then 
+  for var i := index - 1 downto 0 do
+    if Self[i].CompareTo(max) > 0 then 
     begin
       Result := i;
       max := Self[i];
     end;
 end;
 
-/// Заменяет в массиве все вхождения одного значения на другое
-procedure Replace<T>(Self: array of T; oldValue,newValue: T); extensionmethod;
+/// Возвращает индекс последнего максимального элемента
+function LastIndexMax<T>(Self: array of T): integer; extensionmethod; where T: System.IComparable<T>;
 begin
-  for var i:=0 to Self.Length-1 do
+  Result := Self.LastIndexMax(Self.Length - 1);
+end;  
+
+/// Заполняет элементы массива указанным значением
+procedure Fill<T>(Self: array of T; x: T); extensionmethod;
+begin
+  for var i := 0 to Self.Length - 1 do
+    Self[i] := x;
+end;
+
+/// Заполняет элементы массива значениями, вычисляемыми по некоторому правилу
+procedure Fill<T>(Self: array of T; f: integer->T); extensionmethod;
+begin
+  for var i := 0 to Self.Length - 1 do
+    Self[i] := f(i);
+end;
+
+procedure Replace<T>(Self: array of T; oldValue, newValue: T); extensionmethod;
+begin
+  for var i := 0 to Self.Length - 1 do
     if Self[i] = oldValue then
       Self[i] := newValue;
 end;
 
 /// Преобразует элементы массива по заданному правилу
-procedure Transform<T>(self: array of T; f: T -> T); extensionmethod;
+procedure Transform<T>(Self: array of T; f: T->T); extensionmethod;
 begin
-  for var i:=0 to Self.Length-1 do
+  for var i := 0 to Self.Length - 1 do
     Self[i] := f(Self[i]);
 end;
 
-/// Заполняет элементы массива значениями, вычисляемыми по некоторому правилу
-procedure Fill<T>(Self: array of T; f: integer -> T); extensionmethod;
+/// Преобразует элементы массива по заданному правилу
+procedure Transform<T>(Self: array of T; f: (T,integer)->T); extensionmethod;
 begin
-  for var i:=0 to Self.Length-1 do
-    Self[i] := f(i);
-end;}
+  for var i := 0 to Self.Length - 1 do
+    Self[i] := f(Self[i],i);
+end;
 
 /// Выполняет бинарный поиск в отсортированном массиве
 function BinarySearch<T>(Self: array of T; x: T): integer; extensionmethod;
