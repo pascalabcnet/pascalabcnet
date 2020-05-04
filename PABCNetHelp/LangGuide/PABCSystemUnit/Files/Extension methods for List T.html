@@ -3,6 +3,7 @@
 <param name="Keyword" value="Fill">
 <param name="Keyword" value="IndexMax">
 <param name="Keyword" value="IndexMin">
+<param name="Keyword" value="Indices">
 <param name="Keyword" value="LastIndexMax">
 <param name="Keyword" value="LastIndexMin">
 <param name="Keyword" value="RemoveLast">
@@ -26,6 +27,12 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает индекс первого минимального элемента начина€ с позиции index</td></tr>
 <tr><td><code><b>function</b> IndexMin&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; index: integer := 0): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает индекс первого минимального элемента начина€ с позиции index</td></tr>
+<tr><td><code><b>function</b> Indices&lt;T&gt;(Self: List&lt;T&gt;): <b>sequence </b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает последовательность индексов списка</td></tr>
+<tr><td><code><b>function</b> Indices&lt;T&gt;(Self: List&lt;T&gt;; cond: T-&gt;boolean): <b>sequence </b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает последовательность индексов элементов списка, удовлетвор€ющих условию</td></tr>
+<tr><td><code><b>function</b> Indices&lt;T&gt;(Self: List&lt;T&gt;; cond: (T,integer) -&gt;boolean): <b>sequence </b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает последовательность индексов элементов списка, удовлетвор€ющих условию</td></tr>
 <tr><td><code><b>function</b> LastIndexMax&lt;T&gt;(Self: List&lt;T&gt;; index: integer): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает индекс последнего минимального элемента в диапазоне [0,index-1]</td></tr>
 <tr><td><code><b>function</b> LastIndexMax&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; index: integer): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>

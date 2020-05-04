@@ -82,8 +82,8 @@
 %type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 /*const_func_expr_list*/ case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
-%type <ex> const_simple_expr term simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda simple_expr range_term range_factor 
-%type <ex> external_directive_ident init_const_expr case_label variable var_reference /*optional_write_expr*/ optional_read_expr simple_expr_or_nothing var_question_point
+%type <ex> const_simple_expr term term1 simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda expr_l1_for_lambda simple_expr range_term range_factor 
+%type <ex> external_directive_ident init_const_expr case_label variable var_reference /*optional_write_expr*/ optional_read_expr simple_expr_or_nothing var_question_point expr_l1_for_question_expr expr_l1_for_new_question_expr
 %type <ob> for_cycle_type  
 %type <ex> format_expr format_const_expr const_expr_or_nothing  
 %type <stn> foreach_stmt  
@@ -134,7 +134,7 @@
 %type <stn> parameter_decl
 %type <stn> parameter_decl_list property_parameter_list
 %type <ex> const_set  
-%type <ex> question_expr question_constexpr  
+%type <ex> question_expr question_constexpr new_question_expr  
 %type <ex> record_const const_field_list_1 const_field_list  
 %type <stn> const_field  
 %type <stn> repeat_stmt  
@@ -188,6 +188,8 @@ parse_goal
 		{ root = $1; }
     | parts 
 		{ root = $1; }
+//	| stmt_list	
+//		{ root = $$ = NewProgramModule(null, null, null, null, new block(null, $1 as statement_list, @$), @$); }
     ;
 
 parts
@@ -244,8 +246,9 @@ program_file
 			$$ = NewProgramModule($1 as program_name, $2, $3 as uses_list, $4, $5, @$);
         }
 	;
-		
-optional_tk_point /* это нужно для intellisensа чтобы строилось дерево при отсутствии точки в конце */
+
+/* это нужно для intellisensа чтобы строилось дерево при отсутствии точки в конце */
+optional_tk_point 
     : tkPoint
         { $$ = $1; }
     | tkSemiColon
@@ -539,7 +542,8 @@ decl_sect
 		{ $$ = $1; }
     ;
 
-proc_func_constr_destr_decl /* SSM 2.1.13 упрощение грамматики */
+/* SSM 2.1.13 упрощение грамматики */
+proc_func_constr_destr_decl 
 	: proc_func_decl              
 		{ $$ = $1; }
 	| constr_destr_decl 
@@ -1546,15 +1550,6 @@ object_type
         { 
             var cd = NewObjectType((class_attribute)$1, $2, $3 as named_type_reference_list, $4 as where_definition_list, $5 as class_body_list, @$); 
 			$$ = cd;
-            var tt = cd.DescendantNodes().OfType<class_definition>().Where(cld => cld.keyword == class_keyword.Record);
-            if (tt.Count()>0)
-            {
-                foreach (var ttt in tt)
-                {
-	                var sc = ttt.source_context;
-	                parsertools.AddErrorFromResource("NESTED_RECORD_DEFINITIONS_ARE_FORBIDDEN", new LexLocation(sc.begin_position.line_num, sc.begin_position.column_num-1, sc.end_position.line_num, sc.end_position.column_num, sc.FileName));
-                }
-            }
 		}
     ;
 
@@ -3120,10 +3115,35 @@ expr_l1
 		{ $$ = $1; }
     | question_expr
 		{ $$ = $1; }
+    | new_question_expr
+		{ $$ = $1; }
     ;
     
+expr_l1_for_question_expr
+    : expr_dq
+		{ $$ = $1; }
+    | question_expr
+		{ $$ = $1; }
+    ;
+    
+expr_l1_for_new_question_expr
+    : expr_dq
+		{ $$ = $1; }
+    | new_question_expr
+		{ $$ = $1; }
+    ;
+
 expr_l1_func_decl_lambda
 	: expr_l1
+		{ $$ = $1; }
+    | func_decl_lambda
+        { $$ = $1; }
+    ;
+    
+expr_l1_for_lambda
+    : expr_dq
+		{ $$ = $1; }
+    | question_expr
 		{ $$ = $1; }
     | func_decl_lambda
         { $$ = $1; }
@@ -3156,13 +3176,30 @@ typeof_expr
     ;
 
 question_expr
-    : expr_l1 tkQuestion expr_l1 tkColon expr_l1 
+    : expr_l1_for_question_expr tkQuestion expr_l1_for_question_expr tkColon expr_l1_for_question_expr 
         { 
             if ($3 is nil_const && $5 is nil_const)
             	parsertools.AddErrorFromResource("TWO_NILS_IN_QUESTION_EXPR",@3);
 			$$ = new question_colon_expression($1, $3, $5, @$);  
 		}
     ;
+    
+new_question_expr
+	: tkIf expr_l1_for_new_question_expr tkThen expr_l1_for_new_question_expr tkElse expr_l1_for_new_question_expr 
+        { 
+        	if (parsertools.build_tree_for_formatter)
+        	{
+        		$$ = new if_expr_new($2, $4, $6, @$);
+        	}
+        	else
+        	{
+            	if ($4 is nil_const && $6 is nil_const)
+            		parsertools.AddErrorFromResource("TWO_NILS_IN_QUESTION_EXPR",@4);
+				$$ = new question_colon_expression($2, $4, $6, @$);
+			}			
+		}
+	;
+    
 
 empty_template_type_reference
     : simple_type_identifier template_type_empty_params
@@ -3295,6 +3332,10 @@ relop_expr
     : simple_expr
 		{ $$ = $1; }
     | relop_expr relop simple_expr
+        { 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
+    | relop_expr relop new_question_expr
         { 
 			$$ = new bin_expr($1, $3, $2.type, @$); 
 		}
@@ -3672,9 +3713,25 @@ relop
     ;
 
 simple_expr                                                    
+    : term1
+		{ $$ = $1; }
+    | simple_expr tkDotDot term1 
+	{ 
+		if (parsertools.build_tree_for_formatter)
+			$$ = new diapason_expr($1,$3,@$);
+		else 
+			$$ = new diapason_expr_new($1,$3,@$); 
+	}
+    ;
+
+term1                                                    
     : term
 		{ $$ = $1; }
-    | simple_expr addop term                        
+    | term1 addop term                        
+        { 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
+    | term1 addop new_question_expr                        
         { 
 			$$ = new bin_expr($1, $3, $2.type, @$); 
 		}
@@ -3745,6 +3802,8 @@ term
     | term mulop factor                             
         { $$ = new bin_expr($1,$3,($2).type, @$); }
     | term mulop power_expr                             
+        { $$ = new bin_expr($1,$3,($2).type, @$); }
+    | term mulop new_question_expr                             
         { $$ = new bin_expr($1,$3,($2).type, @$); }
     | as_is_expr
 		{ $$ = $1; }
@@ -4157,6 +4216,8 @@ property_modificator
 	| tkOverride
 		{ $$ = $1; }
     | tkAbstract
+		{ $$ = $1; }
+    | tkReintroduce
 		{ $$ = $1; }
 	;
     
@@ -4653,7 +4714,7 @@ common_lambda_body
 
 
 lambda_function_body
-	: expr_l1_func_decl_lambda 
+	: expr_l1_for_lambda 
 		{
 		    var id = SyntaxVisitors.ExprHasNameVisitor.HasName($1, "Result"); 
             if (id != null)

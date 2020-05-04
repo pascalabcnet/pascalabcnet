@@ -13,9 +13,9 @@ using System.Runtime.CompilerServices;
 internal static class RevisionClass
 {
 	public const string Major = "3";
-	public const string Minor = "5";
-	public const string Build = "1";
-	public const string Revision = "2287";
+	public const string Minor = "6";
+	public const string Build = "2";
+	public const string Revision = "2443";
 
         public const string MainVersion = Major + "." + Minor;
 	public const string FullVersion = Major + "." + Minor + "." + Build + "." + Revision;

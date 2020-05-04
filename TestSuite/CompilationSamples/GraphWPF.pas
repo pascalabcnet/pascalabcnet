@@ -54,18 +54,21 @@ type
   Alignment = (LeftTop,CenterTop,RightTop,LeftCenter,Center,RightCenter,LeftBottom,CenterBottom,RightBottom);
   
 //{{{--doc: Конец секции 1 }}} 
+
+function GetBrush(c: Color): GBrush;
   
 //{{{doc: Начало секции 2 }}} 
 
 // -----------------------------------------------------
 //>>     Класс BrushType # BrushType class
 // -----------------------------------------------------
+type
   ///!#
   /// Тип кисти
   BrushType = class
   private
     c := Colors.White;
-    function BrushConstruct := new SolidColorBrush(c);
+    function BrushConstruct := GetBrush(c);
   public  
     /// Цвет кисти
     property Color: GColor read c write c;
@@ -84,7 +87,7 @@ type
     rc: boolean := false;
     function PenConstruct: GPen;
     begin
-      Result := new GPen(new SolidColorBrush(c),th);
+      Result := new GPen(GetBrush(c),th);
       Result.LineJoin := PenLineJoin.Round;
       if rc then 
       begin
@@ -136,7 +139,7 @@ type
     end;
     procedure SetFS(fs: FontStyle) := Invoke(SetFSP,fs);
     function TypefaceClone := tf;
-    function BrushConstruct := new SolidColorBrush(c);
+    function BrushConstruct := GetBrush(c);
   public
     /// Цвет шрифта
     property Color: GColor read c write c;
@@ -415,21 +418,25 @@ function TextSize(text: string): Size;
 //>>     Функции для вывода графиков # GraphWPF graph functions
 // -----------------------------------------------------
 /// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
-procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h: real);
+procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h: real; title: string := '');
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом параметрами x,y,w,h. Два последних параметра задают шаг сетки по OX и OY
+procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h: real; XTicks: real; YTicks: real; title: string := '');
 /// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике r
-procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect);  
+procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect; title: string := '');
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике r. Два последних параметра задают шаг сетки по OX и OY
+procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect; XTicks, YTicks: real; title: string := '');
 /// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, на полное графическое окно
-procedure DrawGraph(f: real -> real; a, b, min, max: real);
+procedure DrawGraph(f: real -> real; a, b, min, max: real; title: string := '');
 /// Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
-procedure DrawGraph(f: real -> real; a, b: real; x, y, w, h: real);
+procedure DrawGraph(f: real -> real; a, b: real; x, y, w, h: real; title: string := '');
 /// Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике r 
-procedure DrawGraph(f: real -> real; a, b: real; r: GRect);
+procedure DrawGraph(f: real -> real; a, b: real; r: GRect; title: string := '');
 /// Рисует график функции f, заданной на отрезке [-5,5], в прямоугольнике r 
-procedure DrawGraph(f: real -> real; r: GRect);
+procedure DrawGraph(f: real -> real; r: GRect; title: string := '');
 /// Рисует график функции f, заданной на отрезке [a,b], на полное графическое окно 
-procedure DrawGraph(f: real -> real; a, b: real);
+procedure DrawGraph(f: real -> real; a, b: real; title: string := '');
 /// Рисует график функции f, заданной на отрезке [-5,5], на полное графическое окно  
-procedure DrawGraph(f: real -> real);
+procedure DrawGraph(f: real -> real; title: string := '');
 
 // -----------------------------------------------------
 //>>     Функции для настройки системы координат # GraphWPF coordinate system functions
@@ -485,6 +492,11 @@ var OnKeyUp: procedure(k: Key);
 var OnKeyPress: procedure(ch: char);
 /// Событие изменения размера графического окна
 var OnResize: procedure;
+/// Событие, происходящее при закрытии основного окна
+var OnClose: procedure;
+/// Событие перерисовки графического окна. Параметр dt обозначает количество миллисекунд с момента последнего вызова OnDrawFrame
+var OnDrawFrame: procedure(dt: real);
+
 
 //{{{--doc: Конец секции 3 }}} 
 
@@ -509,6 +521,20 @@ procedure __FinalizeModule__;
 
 implementation
 
+var BrushesDict := new Dictionary<Color,GBrush>;
+
+function GetBrush(c: Color): GBrush;
+begin
+  if not (c in BrushesDict) then
+  begin
+    var b := new SolidColorBrush(c);
+    BrushesDict[c] := b;
+    Result := b
+  end
+  else Result := BrushesDict[c];
+end;
+
+
 procedure Redraw(d: ()->()) := app.Dispatcher.Invoke(d);
 function getApp: Application := app;
 
@@ -520,8 +546,8 @@ function EmptyColor: Color := ARGB(0,0,0,0);
 function clRandom := RandomColor();
 function Pnt(x,y: real) := new Point(x,y);
 function Rect(x,y,w,h: real) := new System.Windows.Rect(x,y,w,h);
-function ColorBrush(c: Color) := new SolidColorBrush(c);
-function ColorPen(c: Color) := new GPen(ColorBrush(c),Pen.Width);
+function ColorBrush(c: Color) := GetBrush(c);
+function ColorPen(c: Color) := new GPen(GetBrush(c),Pen.Width);
 
 procedure InvokeVisual(d: System.Delegate; params args: array of object);
 begin
@@ -658,7 +684,7 @@ end;
 procedure SetPixelP(x,y: real; c: Color);
 begin
   var dc := GetDC();
-  dc.DrawRectangle(new SolidColorBrush(c), nil, Rect(x,y,1,1));
+  dc.DrawRectangle(GetBrush(c), nil, Rect(x,y,1,1));
   ReleaseDC(dc);
 end;
 
@@ -669,7 +695,7 @@ begin
   for var ix:=0 to w-1 do
   for var iy:=0 to h-1 do
   begin
-    dc.DrawRectangle(ColorBrush(f(ix,iy)), nil, Rect(x+ix,y+iy,1,1));
+    dc.DrawRectangle(GetBrush(f(ix,iy)), nil, Rect(x+ix,y+iy,1,1));
   end;  
   ReleaseDC(dc);
 end;
@@ -687,7 +713,7 @@ function FormText(text: string) :=
   
 function FormTextC(text: string; c: GColor): FormattedText := 
   new FormattedText(text,new System.Globalization.CultureInfo('ru-ru'), FlowDirection.LeftToRight, 
-                    Font.TypefaceClone, Font.Size, ColorBrush(c));
+                    Font.TypefaceClone, Font.Size, GetBrush(c));
     
 function TextWidthP(text: string) := FormText(text).Width;
 function TextHeightP(text: string) := FormText(text).Height;
@@ -948,16 +974,16 @@ procedure SectorPFull(x, y, r, angle1, angle2: real; b: GBrush; p: GPen) := ArcS
 procedure EllipseP(x,y,r1,r2: real) := EllipsePFull(x,y,r1,r2,Brush.BrushConstruct,Pen.PenConstruct);
 procedure DrawEllipseP(x,y,r1,r2: real) := EllipsePFull(x,y,r1,r2,nil,Pen.PenConstruct);
 procedure FillEllipseP(x,y,r1,r2: real) := EllipsePFull(x,y,r1,r2,Brush.BrushConstruct,nil);
-procedure EllipsePC(x,y,r1,r2: real; c: GColor) := EllipsePFull(x,y,r1,r2,ColorBrush(c),Pen.PenConstruct);
+procedure EllipsePC(x,y,r1,r2: real; c: GColor) := EllipsePFull(x,y,r1,r2,GetBrush(c),Pen.PenConstruct);
 procedure DrawEllipsePC(x,y,r1,r2: real; c: GColor) := EllipsePFull(x,y,r1,r2,nil,ColorPen(c));
-procedure FillEllipsePC(x,y,r1,r2: real; c: GColor) := EllipsePFull(x,y,r1,r2,ColorBrush(c),nil);
+procedure FillEllipsePC(x,y,r1,r2: real; c: GColor) := EllipsePFull(x,y,r1,r2,GetBrush(c),nil);
 
 procedure RectangleP(x,y,w,h: real) := RectanglePFull(x,y,w,h,Brush.BrushConstruct,Pen.PenConstruct);
 procedure DrawRectangleP(x,y,w,h: real) := RectanglePFull(x,y,w,h,nil,Pen.PenConstruct);
 procedure FillRectangleP(x,y,w,h: real) := RectanglePFull(x,y,w,h,Brush.BrushConstruct,nil);
-procedure RectanglePC(x,y,r1,r2: real; c: GColor) := RectanglePFull(x,y,r1,r2,ColorBrush(c),Pen.PenConstruct);
+procedure RectanglePC(x,y,r1,r2: real; c: GColor) := RectanglePFull(x,y,r1,r2,GetBrush(c),Pen.PenConstruct);
 procedure DrawRectanglePC(x,y,r1,r2: real; c: GColor) := RectanglePFull(x,y,r1,r2,nil,ColorPen(c));
-procedure FillRectanglePC(x,y,r1,r2: real; c: GColor) := RectanglePFull(x,y,r1,r2,ColorBrush(c),nil);
+procedure FillRectanglePC(x,y,r1,r2: real; c: GColor) := RectanglePFull(x,y,r1,r2,GetBrush(c),nil);
 
 procedure ArcP(x, y, r, angle1, angle2: real) := ArcPFull(x, y, r, angle1, angle2, Pen.PenConstruct);
 procedure ArcPC(x, y, r, angle1, angle2: real; c: GColor) := ArcPFull(x, y, r, angle1, angle2, ColorPen(c));
@@ -965,9 +991,9 @@ procedure ArcPC(x, y, r, angle1, angle2: real; c: GColor) := ArcPFull(x, y, r, a
 procedure SectorP(x, y, r, angle1, angle2: real) := SectorPFull(x, y, r, angle1, angle2, Brush.BrushConstruct, Pen.PenConstruct);
 procedure DrawSectorP(x, y, r, angle1, angle2: real) := SectorPFull(x, y, r, angle1, angle2, nil, Pen.PenConstruct);
 procedure FillSectorP(x, y, r, angle1, angle2: real) := SectorPFull(x, y, r, angle1, angle2, Brush.BrushConstruct, nil);
-procedure SectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, ColorBrush(c), Pen.PenConstruct);
+procedure SectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, GetBrush(c), Pen.PenConstruct);
 procedure DrawSectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, nil, ColorPen(c));
-procedure FillSectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, ColorBrush(c), nil);
+procedure FillSectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, GetBrush(c), nil);
 
 procedure LineP(x,y,x1,y1: real) := LinePFull(x,y,x1,y1,Pen.PenConstruct);
 procedure LinePC(x,y,x1,y1: real; c: GColor) := LinePFull(x,y,x1,y1,ColorPen(c));
@@ -992,7 +1018,7 @@ procedure DrawEllipse(x,y,rx,ry: real) := InvokeVisual(DrawEllipseP,x,y,rx,ry);
 procedure FillEllipse(x,y,rx,ry: real) := InvokeVisual(FillEllipseP,x,y,rx,ry);
 procedure Ellipse(x,y,rx,ry: real; c: GColor) := InvokeVisual(EllipsePC,x,y,rx,ry,c);
 procedure DrawEllipse(x,y,rx,ry: real; c: GColor) := InvokeVisual(DrawEllipsePC,x,y,rx,ry,c);
-procedure FillEllipse(x,y,rx,ry: real; c: GColor) := app.Dispatcher.Invoke(()->FillEllipsePC(x,y,rx,ry,c));
+procedure FillEllipse(x,y,rx,ry: real; c: GColor) := InvokeVisual(FillEllipsePC,x,y,rx,ry,c);
 
 procedure Circle(x,y,r: real) := InvokeVisual(EllipseP,x,y,r,r);
 procedure DrawCircle(x,y,r: real) := InvokeVisual(DrawEllipseP,x,y,r,r);
@@ -1168,97 +1194,152 @@ procedure TextOut(x, y: real; text: real; c: GColor; align: Alignment; angle: re
 
 type
   FS = auto class
-    mx, my, a, min, max: real;
-    x1, y1: real;
-    f: real-> real;
+    mx, my, a, b, min, max: real;
+    x, y, w, h, XTicks, YTicks: real;
+    f: real -> real;
+    title: string;
+    marginY := 6;
+    marginX := 6;
+    spaceBetweenTextAndGraph := 4;
     
-    function Apply(x: real) := Pnt(x1 + mx * (x - a), y1 + my * (max - f(x)));
-    function RealToScreenX(x: real) := x1 + mx * (x - a);
-    function RealToScreenY(y: real) := y1 - my * (y + min);
+    constructor (a, b, min, max, x, y, w, h: real; f: real -> real; XTicks: real := 1; YTicks: real := 1; title: string := '');
+    begin
+      Self.a := a.Round(5); Self.b := b.Round(5); 
+      Self.min := min.Round(5); Self.max := max.Round(5);
+      Self.x := x; Self.y := y; Self.w := w; Self.h := h; 
+      Self.f := f; Self.XTicks := XTicks; Self.YTicks := YTicks;
+      Self.title := title;
+    end;
+    
+    function Ticks(d: real): real;
+    begin
+      var n := floor(log10(d));
+      var p := Power(10,n);
+      var r := d / p;
+      // r = 1 .. 10
+      if r >= 5 then
+        Result := p
+      else if r >= 2 then  
+        Result := p/2
+      else Result := p/5
+    end;
+    
+    procedure CorrectBounds;
+    begin
+      //var digits := 5;
+      var tw := TextWidth('-99.9');
+      var th := TextHeight('0');
+      w -= marginX * 2 + spaceBetweenTextAndGraph + tw;
+      h -= marginY * 2 + spaceBetweenTextAndGraph + th;
+      x += marginX + spaceBetweenTextAndGraph + tw; 
+      y += marginY;
+      if title<>'' then
+      begin
+        y += spaceBetweenTextAndGraph + th;
+        h -= spaceBetweenTextAndGraph + th;
+      end;
+      mx := w / (b - a);
+      my := h / (max - min);
+      if real.IsNaN(XTicks) then
+        XTicks := Ticks(b-a);
+      if real.IsNaN(YTicks) then
+        YTicks := Ticks(max-min);
+    end;
+    
+    function Apply(xx: real) := Pnt(x + mx * (xx - a), y + my * (max - f(xx)));
+    function RealToScreenX(xx: real) := x + mx * (xx - a);
+    function RealToScreenY(yy: real) := y + h - my * (yy - min); // ?
+    function ScreenToRealX(xx: real) := (xx - x) / mx + a;
+    function ScreenToRealY(yy: real) := (y + h - yy) / my + min;
+    
+    procedure Draw;
+    var AxisColor := GrayColor(112);
+    begin
+      FillRectangle(x, y, w, h, Colors.White);
+      CorrectBounds;
+      Pen.Color := Colors.LightGray;
+      var sx := mx * XTicks;
+      var xt := XTicks * Trunc(Abs(a)/XTicks);
+      var rx0: real; 
+      if a <= 0 then 
+        rx0 := -xt 
+      else rx0 := xt + XTicks;
+      //var rx0 := a;
+      var x0 := RealToScreenX(rx0);
+      while x0<=x+w+0.000001 do
+      begin
+        if Abs(rx0)<0.000001 then
+          Line(x0,y,x0,y+h,AxisColor)
+        else Line(x0,y,x0,y+h);
+        TextOut(x0,y+h+4,rx0.Round(3),Alignment.CenterTop);
+        x0 += sx;
+        rx0 += XTicks;
+      end;
+      
+      var sy := my * YTicks;
+      var yt := YTicks * Trunc(Abs(min)/YTicks);
+      var ry0: real;
+      if min <= 0 then 
+        ry0 := -yt 
+      else ry0 := yt + YTicks;
+      //var ry0 := min;
+      //var y0 := y + h;
+      if title<>'' then
+        TextOut(x+w/2,y-spaceBetweenTextAndGraph,Title,Alignment.CenterBottom);
+      var y0 := RealToScreenY(ry0);
+      while y0>=y-0.000001 do
+      begin
+        if Abs(ry0)<0.000001 then
+          Line(x,y0,x+w,y0,AxisColor)
+        else Line(x,y0,x+w,y0);  
+        TextOut(x-4,y0,ry0.Round(5),Alignment.RightCenter);
+        y0 -= sy;
+        ry0 += YTicks;
+      end;
+      
+      DrawRectangle(x, y, w, h,Colors.Black);
+    
+      Pen.Color := Colors.Black;
+      var n := Round(w / 1);
+      var pp := PartitionPoints(a, b, n);
+      var fff: real -> Point := xx -> Pnt(x + mx * (xx - a), y + my * (max - f(xx).Clamp(min,max)));
+      Polyline(pp.Select(fff).ToArray);
+    end;
   end;
 
-/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом параметрами x,y,w,h, 
-procedure DrawGraph(f: real-> real; a, b, min, max, x, y, w, h: real);
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом параметрами x,y,w,h 
+procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h: real; title: string);
 begin
-  var coefx := w / (b - a);
-  var coefy := h / (max - min);
-  
-  var fso := new FS(coefx, coefy, a, min, max, x, y, f);
-  
-  // Линии 
-  {Pen.Color := Color.LightGray;
-  
-  var hx := 1.0;
-  var xx := hx;
-  while xx<b do
-  begin
-    var x0 := fso.RealToScreenX(xx);
-    Line(x0,y1,x0,y2);
-    xx += hx
-  end;
-  
-  xx := -hx;
-  while xx>a do
-  begin
-    var x0 := fso.RealToScreenX(xx);
-    Line(x0,y1,x0,y2);
-    xx -= hx
-  end;
-  
-  var hy := 1.0;
-  var yy := hy;
-  while yy<max do
-  begin
-    var y0 := fso.RealToScreenY(yy);
-    Line(x1,y0,x2,y0);
-    yy += hy
-  end;
-  
-  yy := -hy;
-  while yy>min do
-  begin
-    var y0 := fso.RealToScreenY(yy);
-    Line(x1,y0,x2,y0);
-    yy -= hy
-  end;
-  
-  // Оси 
-  Pen.Color := Color.Blue;
-  
-  var x0 := fso.RealToScreenX(0);
-  var y0 := fso.RealToScreenY(0);
-  
-  Line(x0,y1,x0,y2);
-  Line(x1,y0,x2,y0);}
-  
-  // График
-  
-  Pen.Color := Colors.Black;
-  Rectangle(x, y, w, h);
-  
-  Pen.Color := Colors.Black;
-  var n := Round(w / 3);
-  Polyline(PartitionPoints(a, b, n).Select(fso.Apply).ToArray);
+  DrawGraph(f,a,b,min,max,x,y,w,h,real.NaN,real.NaN,title); 
 end;
 
-procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect) := DrawGraph(f, a, b, min, max, r.X, r.Y, r.Width, r.Height);  
-
-procedure DrawGraph(f: real -> real; a, b, min, max: real) := DrawGraph(f, a, b, min, max, Window.ClientRect);
-
-procedure DrawGraph(f: real -> real; a, b: real; x, y, w, h: real);
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом параметрами x,y,w,h. Два последних параметра задают шаг сетки по OX и OY
+procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h, XTicks, YTicks: real; title: string);
 begin
-  var n := Round(w / 3);
+  var fso := new FS(a,b,min,max,x,y,w,h,f,XTicks,YTicks,title);
+  fso.Draw;
+end;
+
+procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect; title: string) := DrawGraph(f, a, b, min, max, r.X, r.Y, r.Width, r.Height, title);
+
+procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect; XTicks, YTicks: real; title: string) := DrawGraph(f, a, b, min, max, r.X, r.Y, r.Width, r.Height, XTicks, YTicks, title);  
+
+procedure DrawGraph(f: real -> real; a, b, min, max: real; title: string) := DrawGraph(f, a, b, min, max, Window.ClientRect, title);
+
+procedure DrawGraph(f: real -> real; a, b: real; x, y, w, h: real; title: string);
+begin
+  var n := Round(w / 1);
   var q := PartitionPoints(a, b, n);
-  DrawGraph(f, a, b, q.Min(f), q.Max(f), x, y, w, h)
+  DrawGraph(f, a, b, q.Min(f), q.Max(f), x, y, w, h, title)
 end;
 
-procedure DrawGraph(f: real -> real; a, b: real; r: GRect) := DrawGraph(f, a, b, r.X, r.Y, r.Width, r.Height);
+procedure DrawGraph(f: real -> real; a, b: real; r: GRect; title: string) := DrawGraph(f, a, b, r.X, r.Y, r.Width, r.Height, title);
 
-procedure DrawGraph(f: real -> real; r: GRect) := DrawGraph(f, -5, 5, r);
+procedure DrawGraph(f: real -> real; r: GRect; title: string) := DrawGraph(f, -5, 5, r, title);
 
-procedure DrawGraph(f: real -> real; a, b: real) := DrawGraph(f, a, b, 0, 0, Window.Width - 1, Window.Height - 1);
+procedure DrawGraph(f: real -> real; a, b: real; title: string) := DrawGraph(f, a, b, 0, 0, Window.Width - 1, Window.Height - 1, title);
 
-procedure DrawGraph(f: real -> real) := DrawGraph(f, -5, 5);
+procedure DrawGraph(f: real -> real; title: string) := DrawGraph(f, -5, 5, title);
 
 function GraphWindowTypeGetLeftP: real;
 begin
@@ -1566,9 +1647,8 @@ procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) :=
 
 ///----------------------------------------------------------------------
 
-var OnDraw: procedure := nil;
-var OnDraw1: procedure(frame: integer) := nil;
-var OnDrawT: procedure(dt: real) := nil;
+var OnDraw: procedure;
+var OnDraw1: procedure(frame: integer);
 
 var FrameRate := 61; // кадров в секунду. Можно меньше!
 var LastUpdatedTime := new System.TimeSpan(integer.MinValue); 
@@ -1577,12 +1657,12 @@ var FrameNum := 0;
 
 procedure RenderFrame(o: Object; e: System.EventArgs);
 begin
-  if (OnDraw<>nil) or (OnDraw1<>nil) or (OnDrawT<>nil) then
+  if (OnDraw<>nil) or (OnDraw1<>nil) or (OnDrawFrame<>nil) then
   begin
     var e1 := RenderingEventArgs(e).RenderingTime;
     var dt := e1 - LastUpdatedTime;
     var delta := 1000/Framerate; // через какое время обновлять
-    if OnDrawT<>nil then 
+    if OnDrawFrame<>nil then 
       delta := 0; // перерисовывать когда придёт время
     if dt.TotalMilliseconds < delta then
       exit
@@ -1593,8 +1673,8 @@ begin
       OnDraw() 
     else if OnDraw1<>nil then
       OnDraw1(FrameNum)
-    else if OnDrawT<>nil then
-      OnDrawT(dt.Milliseconds/1000);
+    else if OnDrawFrame<>nil then
+      OnDrawFrame(dt.Milliseconds/1000);
   end;  
 end;
 
@@ -1616,7 +1696,7 @@ end;
 
 procedure BeginFrameBasedAnimationTime(Draw: procedure(dt: real));
 begin
-  OnDrawT := Draw;
+  OnDrawFrame := Draw;
 end;
 
 procedure EndFrameBasedAnimation;
@@ -1682,7 +1762,11 @@ public
   
   procedure InitHandlers; override;
   begin
-    Closed += procedure(sender,e) -> begin Halt; end;
+    Closed += (sender,e) -> begin 
+      if OnClose<>nil then
+        OnClose;
+      Halt; 
+    end;
     MouseDown += SystemOnMouseDown;
     MouseUp += SystemOnMouseUp;
     MouseMove += SystemOnMouseMove;

@@ -2041,12 +2041,18 @@ namespace PascalABCCompiler.TreeRealization
                 //sil = (base_type as compiled_generic_instance_type_node).original_generic.find_in_type(name, CurrentScope);
                 return sil;
             }
-                
 
-            if (sil == null && base_type is compiled_type_node && string.Compare(name, "create", true) != 0)
+            type_node base_tn = base_type;
+            if (sil == null && string.Compare(name, "create", true) != 0)
             {
-                sil = (base_type as compiled_type_node).find_in_type(name, CurrentScope);
+                while (sil == null && base_tn != null)
+                {
+                    if (base_tn is compiled_type_node)
+                        sil = (base_tn as compiled_type_node).find_in_type(name, CurrentScope);
+                    base_tn = base_tn.base_type;
+                }
             }
+            
             if (this.is_generic_parameter && sil != null)
             {
                 sil = sil?.Select(x => x.copy()).ToList();

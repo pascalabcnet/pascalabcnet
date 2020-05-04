@@ -5,16 +5,19 @@
 <param name="Keyword" value="ReadChar2">
 <param name="Keyword" value="ReadChar3">
 <param name="Keyword" value="ReadChar4">
+<param name="Keyword" value="ReadInt64">
 <param name="Keyword" value="ReadInteger">
 <param name="Keyword" value="ReadInteger2">
 <param name="Keyword" value="ReadInteger3">
 <param name="Keyword" value="ReadInteger4">
+<param name="Keyword" value="ReadLexem">
 <param name="Keyword" value="Readln">
 <param name="Keyword" value="ReadlnBoolean">
 <param name="Keyword" value="ReadlnChar">
 <param name="Keyword" value="ReadlnChar2">
 <param name="Keyword" value="ReadlnChar3">
 <param name="Keyword" value="ReadlnChar4">
+<param name="Keyword" value="ReadlnInt64">
 <param name="Keyword" value="ReadlnInteger">
 <param name="Keyword" value="ReadlnInteger2">
 <param name="Keyword" value="ReadlnInteger3">
@@ -66,6 +69,12 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа char, введенных с клавиатуры</td></tr>
 <tr><td><code><b>function</b> ReadChar4(prompt: string): (char, char, char, char);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа char, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadInt64: int64;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа int64, введенное с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadInt64(prompt: string): int64;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает значение типа int64, введенное с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadInt64(f: Text): int64;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа int64, введенное из текстового файла f</td></tr>
 <tr><td><code><b>function</b> ReadInteger: integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа integer, введенное с клавиатуры</td></tr>
 <tr><td><code><b>function</b> ReadInteger(prompt: string): integer;</code>
@@ -84,6 +93,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа integer, введенных с клавиатуры</td></tr>
 <tr><td><code><b>function</b> ReadInteger4(prompt: string): (integer, integer, integer, integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа integer, введенных с клавиатуры</td></tr>
+<tr><td><code><b>function</b> ReadLexem: string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующую лексему</td></tr>
+<tr><td><code><b>function</b> ReadLexem(f: Text): string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает следующую лексему из текстового файла f</td></tr>
 <tr><td><code><b>procedure</b> Readln(a,b,...);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вводит значения a,b,... с клавиатуры и осуществляет переход на следующую строку</td></tr>
 <tr><td><code><b>procedure</b> Readln(f: Text; a,b,...);</code>
@@ -112,6 +125,12 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
 <tr><td><code><b>function</b> ReadlnChar4(prompt: string): (char, char, char, char);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnInt64: int64;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа int64, введенное с клавиатуры, и переходит на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnInt64(prompt: string): int64;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и возвращает значение типа int64, введенное с клавиатуры,и осуществляет переход на следующую строку ввода</td></tr>
+<tr><td><code><b>function</b> ReadlnInt64(f: Text): int64;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа int64, введенное из текстового файла f,и осуществляет переход на следующую строку</td></tr>
 <tr><td><code><b>function</b> ReadlnInteger: integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа integer, введенное с клавиатуры, и переходит на следующую строку ввода</td></tr>
 <tr><td><code><b>function</b> ReadlnInteger(prompt: string): integer;</code>

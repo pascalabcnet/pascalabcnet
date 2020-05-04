@@ -94,6 +94,7 @@ namespace SyntaxVisitors.SugarVisitors
         private const string GeneratedPatternNamePrefix = "<>pattern";
         private const string GeneratedDeconstructParamPrefix = "<>deconstructParam";
         private const string GeneratedVisitElseBranchVariableName = "<>visitElseBranch";
+        private const string GeneratedMatchExprVariableName = "<>matchExprVariable";
 
         private int generalVariableCounter = 0;
         private int successVariableCounter = 0;
@@ -103,6 +104,7 @@ namespace SyntaxVisitors.SugarVisitors
         private if_node _previousIf;
         private statement desugaredMatchWith;
         private List<if_node> processedIfNodes = new List<if_node>();
+        private var_statement matchedExprVarDeclaration;
 
         //const matching
         private List<statement> typeChecks = new List<statement>();
@@ -114,6 +116,23 @@ namespace SyntaxVisitors.SugarVisitors
             desugaredMatchWith = null;
             _previousIf = null;
 
+            matchedExprVarDeclaration = new var_statement(
+                new ident(GeneratedMatchExprVariableName, matchWith.expr.source_context),
+                matchWith.expr.Clone() as expression,
+                matchWith.expr.source_context);
+            ReplaceUsingParent(matchWith.expr, new ident(GeneratedMatchExprVariableName, matchWith.expr.source_context));
+
+            /*if (matchWith.Parent is statement_list stl)
+            {
+                stl.InsertBefore(matchWith, matchedExprVarDeclaration);
+            }
+            else
+            {
+                var enclosingStl = new statement_list(matchedExprVarDeclaration, matchWith);
+                enclosingStl.source_context = matchWith.source_context;
+                ReplaceUsingParent(matchWith, enclosingStl);
+            }*/
+            
             // Кэшируем выражение для однократного вычисления
             //var cachedExpression = NewGeneralName();
             //AddDefinitionsInUpperStatementList(matchWith, new[] { new var_statement(cachedExpression, matchWith.expr) });
@@ -124,14 +143,15 @@ namespace SyntaxVisitors.SugarVisitors
             {
                 if (patternCase == null)
                     continue;
+                DefaultDesugarPattern(matchWith.expr, patternCase);
 
-                switch (patternCase.pattern)
+                /*switch (patternCase.pattern)
                 {
                     case deconstructor_pattern pattern:
                         {
                             // Проверяем встречался ли уже такой тип при деконструкции
                             // SSM 02.01.19 пока закомментировал этот кусок т.к. при этом коде падает стандартный пример ArithmSimplify.cs. #1408 снова открыл
-                            /*var deconstructionType = (patternCase.pattern as deconstructor_pattern).
+                            var deconstructionType = (patternCase.pattern as deconstructor_pattern).
                                 type as named_type_reference;
                             if (deconstructionType != null &&
                                 deconstructionType.names != null &&
@@ -144,14 +164,15 @@ namespace SyntaxVisitors.SugarVisitors
                                                                  patternCase.pattern.source_context);
                                 }
                                 usedDeconstructionTypes.Add(deconstructionTypeName);
-                            } */
+                            } 
 
-                            DefaultDesugarPattern(matchWith.expr, patternCase);
+                DefaultDesugarPattern(matchWith.expr, patternCase);
                             break;
                         }
                     case const_pattern p:
                         {
-                            DesugarConstPatternCase(matchWith.expr, patternCase);
+                            //DesugarConstPatternCase(matchWith.expr, patternCase);
+                            DefaultDesugarPattern(matchWith.expr, patternCase);
                             break;
                         }
                     case collection_pattern p:
@@ -164,7 +185,7 @@ namespace SyntaxVisitors.SugarVisitors
                             DefaultDesugarPattern(matchWith.expr, patternCase);
                             break;
                         }
-                }
+                }*/
             }
 
             if (matchWith.defaultAction != null)
@@ -178,6 +199,8 @@ namespace SyntaxVisitors.SugarVisitors
                 typeChecks.Add(desugaredMatchWith);
                 desugaredMatchWith = new statement_list(typeChecks);
             }
+
+            desugaredMatchWith = new statement_list(matchedExprVarDeclaration, desugaredMatchWith);
 
             // Замена выражения match with на новое несахарное поддерево и его обход
             ReplaceUsingParent(matchWith, desugaredMatchWith);
@@ -526,7 +549,6 @@ namespace SyntaxVisitors.SugarVisitors
                                            bin_expr.LogicalAnd(successMatchingCheck, afterGapEqual);
                 }
             }
-            // если добавлять в and, то все равно ран тайм эррор, будто вычисляет все, даже если первое = false
             desugaringResult.CollectionLengthCheck = new bin_expr(
                 new dot_node(matchingExpression as addressed_value, new ident(CountPropertyName), pattern.source_context),
                 new int32_const(exprBeforeGap.Count + exprAfterGap.Count),
@@ -692,6 +714,9 @@ namespace SyntaxVisitors.SugarVisitors
                 case tuple_pattern cp:
                     statementsToAdd = ProcessDesugaringForTuplePattern(isExpression);
                     break;
+                case const_pattern cp:
+                    statementsToAdd = ProcessDesugaringForConstPattern(isExpression);
+                    break;
             }
 
             var enclosingIf = GetAscendant<if_node>(isExpression);
@@ -710,6 +735,33 @@ namespace SyntaxVisitors.SugarVisitors
 
                 elseBody?.visit(this);
             }
+        }
+
+        private List<statement> ProcessDesugaringForConstPattern(is_pattern_expr isExpression)
+        {
+            var patternExpressionNode = isExpression.right as const_pattern;
+
+            var statementsToAdd = new List<statement>();
+            var equalCalls = new List<bin_expr>();
+
+            foreach (var patternExpression in patternExpressionNode.pattern_expressions.expressions)
+            {
+                statementsToAdd.Add(GetTypeCompatibilityCheck(isExpression.left, patternExpression));
+
+                equalCalls.Add(
+                    new bin_expr(isExpression.left, patternExpression, Operators.Equal, isExpression.source_context
+                    )
+                );
+            }
+            typeChecks.AddRange(statementsToAdd);
+            expression orPatternCases = equalCalls[0];
+            for (int i = 1; i < equalCalls.Count; ++i)
+            {
+                orPatternCases = bin_expr.LogicalOr(orPatternCases, equalCalls[i]);
+            }
+
+            ReplaceUsingParent(isExpression, orPatternCases);
+            return statementsToAdd;
         }
 
         private List<statement> ProcessDesugaringForDeconstructorPattern(is_pattern_expr isExpression)

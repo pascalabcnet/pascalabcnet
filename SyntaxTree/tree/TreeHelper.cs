@@ -1601,7 +1601,7 @@ namespace PascalABCCompiler.SyntaxTree
         }
         public override string ToString()
         {
-            return /*""+this.ClassName+" "+this.name+" "+*/this.UnknownID.ToString();
+            return "yui(обраб.на сем.)"+this.ClassName+" "+this.UnknownID.ToString();
         }
 
     }

@@ -587,12 +587,24 @@ namespace PascalABCCompiler.TreeConverter
             if (pct.first == null)
                 throw new CanNotConvertTypes(en, en.type, to, loc);
         }
-        
+
         public bool can_convert_type(expression_node en, type_node to)
         {
             if (en.type == to)
                 return true;
             possible_type_convertions pct = type_table.get_convertions(en.type, to);
+            if (pct.second != null)
+                return false;
+            if (pct.first == null)
+                return false;
+            return true;
+        }
+
+        public bool can_convert_type(type_node from, type_node to)
+        {
+            if (from == to)
+                return true;
+            possible_type_convertions pct = type_table.get_convertions(from, to);
             if (pct.second != null)
                 return false;
             if (pct.first == null)
@@ -1141,23 +1153,21 @@ namespace PascalABCCompiler.TreeConverter
 						}
 						else
 						{
-                            if (is_alone_method_defined)
+                            //issue #2161 - SSM 12.03.2020
+                            //issue #348
+                            if (formal_param_type == SystemLibrary.SystemLibrary.object_type && factparams[i].type is delegated_methods)
                             {
-                                //issue #348
-                                if (formal_param_type == SystemLibrary.SystemLibrary.object_type && factparams[i].type is delegated_methods)
-                                {
-                                    possible_type_convertions ptci = new possible_type_convertions();
-                                    ptci.first = null;
-                                    ptci.second = null;
-                                    ptci.from = factparams[i].type;
-                                    ptci.to = formal_param_type;
-                                    tc.AddElement(ptci);
-                                    factparams[i] = syntax_tree_visitor.CreateDelegateCall((factparams[i].type as delegated_methods).proper_methods[0]);
-                                    return tc;
-                                }
-                                else
-                                    error = new CanNotConvertTypes(factparams[i], factparams[i].type, formal_param_type, locg);
+                                possible_type_convertions ptci = new possible_type_convertions();
+                                ptci.first = null;
+                                ptci.second = null;
+                                ptci.from = factparams[i].type;
+                                ptci.to = formal_param_type;
+                                tc.AddElement(ptci);
+                                factparams[i] = syntax_tree_visitor.CreateDelegateCall((factparams[i].type as delegated_methods).proper_methods[0]);
+                                return tc;
                             }
+                            if (is_alone_method_defined) // если мы сюда попали, то ошибка более явная
+                                error = new CanNotConvertTypes(factparams[i], factparams[i].type, formal_param_type, locg);
 							return null;
                             
 						}
@@ -1397,9 +1407,6 @@ namespace PascalABCCompiler.TreeConverter
             return method_compare.not_comparable_methods;
 		}
 
-        //DS добавил этот метод
-        //А так ли это надо делать?
-        //Сергей, может ты знаеш?
         internal static bool eq_type_nodes(type_node tn1, type_node tn2, bool strong)
         {
             if (tn1 == tn2)
@@ -1538,6 +1545,13 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
+                if (left.return_value_type != null && right.return_value_type != null && left.return_value_type.is_generic_parameter && right.return_value_type.is_generic_parameter)
+                {
+                    //if (string.Compare(left.return_value_type.name, right.return_value_type.name, true) != 0)
+                    //    return false;
+                    return eq_type_nodes(left.return_value_type, right.return_value_type, false);
+                }
+                    
                 return eq_type_nodes(left.return_value_type, right.return_value_type, weak);
             }
         }
@@ -1559,13 +1573,13 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return false;
             }
-            for (int i = 0; i < left_type_params.Count; i++)
+            /*for (int i = 0; i < left_type_params.Count; i++)
             {
                 if (string.Compare(left_type_params[i].name, right_type_params[i].name, true) != 0)
                 {
                     return false;
                 }
-            }
+            }*/
             return true;
         }
 
@@ -1876,7 +1890,7 @@ namespace PascalABCCompiler.TreeConverter
             bool is_alone_method_defined = (functions.Count() == 1);
             function_node first_function = functions.FirstOrDefault().sym_info as function_node;
             bool _is_assigment = first_function.name == compiler_string_consts.assign_name;
-            bool is_op = compiler_string_consts.GetNETOperName(first_function.name) != null;
+            bool is_op = compiler_string_consts.GetNETOperName(first_function.name) != null || first_function.name.ToLower() == "in";
             basic_function_node _tmp_bfn = functions.FirstOrDefault().sym_info as basic_function_node;
 
             List<function_node> indefinits = new List<function_node>();
@@ -1915,7 +1929,14 @@ namespace PascalABCCompiler.TreeConverter
                     if ((parameters.Count >= cfn.parameters.Count - cfn.num_of_default_variables) &&
                         (parameters.Count <= cfn.parameters.Count) || parameters.Count == 0 && cfn.parameters.Count == 1 && cfn.parameters[0].is_params)
                     {
-                        if (is_exist_eq_method_in_list(fn, set_of_possible_functions) != null)
+                        var fm = find_eq_method_in_list(fn, set_of_possible_functions); // без возвращаемого значения в отличие от is_exist_eq_method_in_list
+
+                        bool bo = fm != null;
+                        if (bo)
+                            bo = eq_type_nodes(fn.return_value_type, fm.return_value_type);
+
+                        //var bo = is_exist_eq_method_in_list(fn, set_of_possible_functions) != null;
+                        if (bo)
                         {
                             if (set_of_possible_functions.Count > 0)
                                 if (set_of_possible_functions[0] is basic_function_node)
@@ -1926,7 +1947,12 @@ namespace PascalABCCompiler.TreeConverter
 
                             continue;
                         }
-                        set_of_possible_functions.Add(fn);
+                        if (fm != null && fn is common_method_node cmnfn && fm is common_method_node cmnfm && cmnfn.comperehensive_type != cmnfm.comperehensive_type)
+                        {
+                            //fn = fn;
+                        }
+                        // Если fm и fn принадлежат к разным классам, то не добавлять fn - она принадлежит предку поскольку встречалась позже
+                        else set_of_possible_functions.Add(fn);
                     }
                 }
                 else

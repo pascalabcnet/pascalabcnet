@@ -20,7 +20,7 @@ namespace PascalABCCompiler.Parsers
 		protected Dictionary<string, string> keywords = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
 		protected Hashtable ignored_keywords = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
 		protected Hashtable keyword_kinds = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
-		
+
 		public DefaultLanguageInformation()
 		{
 			
@@ -1087,14 +1087,16 @@ namespace PascalABCCompiler.Parsers
 			return scope.TopScope.Name + "." +scope.Name;
 			else return scope.Name;
 		}
-		
-		protected virtual string GetSimpleDescriptionForType(ITypeScope scope)
-		{
-			string template_str=GetTemplateString(scope);
-			if (scope.Name.StartsWith("$"))
-				return scope.Name.Substring(1,scope.Name.Length-1)+template_str;
-			return scope.Name+template_str;
-		}
+
+        protected virtual string GetSimpleDescriptionForType(ITypeScope scope)
+        {
+            string template_str = GetTemplateString(scope);
+            if (scope.Name.StartsWith("$"))
+                return scope.Name.Substring(1, scope.Name.Length - 1) + template_str;
+            if (!string.IsNullOrEmpty(template_str))
+                return scope.Name.Replace("<>", "") + template_str;
+            return scope.Name + template_str;
+        }
 		
 		protected virtual string GetDescriptionForCompiledType(ICompiledTypeScope scope)
 		{
@@ -2810,7 +2812,7 @@ namespace PascalABCCompiler.Parsers
                 }
                 else if (ch == '.' || ch == '^' || ch == '&' || ch == '?' && IsPunctuation(Text, i + 1))
                 {
-                    if (ch == '.' && i >= 1 && Text[i - 1] == '.')
+                    if (ch == '.' && i >= 1 && Text[i - 1] == '.' && tokens.Count == 0)
                         end = true;
                     else if (ch == '?' && i + 1 < Text.Length && Text[i + 1] != '.')
                         end = true;
@@ -2952,7 +2954,14 @@ namespace PascalABCCompiler.Parsers
                                     }
                                 }
                                 else
+                                {
                                     end = true;
+                                    if (ch == '[')
+                                    {
+                                        keyw = KeywordKind.SquareBracket;
+                                    }
+                                }
+                                    
                             }
                             else sb.Insert(0, ch); punkt_sym = true;
                             break;
@@ -3134,9 +3143,11 @@ namespace PascalABCCompiler.Parsers
                     }
                     break;
                 }
-                else if (c == '<' && !in_comment)
+                else if ((c == '<' || c == '&' && j < Text.Length - 1 && Text[j+1] == '<') && !in_comment)
                 {
                     Stack<char> sk_stack = new Stack<char>();
+                    if (c == '&')
+                        j++;
                     sk_stack.Push('<');
                     j++;
                     bool generic = false;
@@ -3534,6 +3545,8 @@ namespace PascalABCCompiler.Parsers
                                 else
                                     kav.Pop();
                                 sb.Insert(0, ch);
+                                if (kav.Count == 0 && tokens.Count == 0)
+                                    end = true;
                                 break;
                             default:
                                 if (!(ch == ' ' || char.IsControl(ch)))
