@@ -59,6 +59,8 @@ namespace SyntaxVisitors.SugarVisitors
                 el.Add(sl.step);
             return el;
         }
+
+        /*
         public override void Exit(syntax_tree_node st)
         {
             if (st is slice_expr_question)
@@ -68,15 +70,15 @@ namespace SyntaxVisitors.SugarVisitors
             {
                 ProceedSliceExpr(st as slice_expr); 
             }
-           // base.Exit(st);
-        }
+        }*/
+
         public override void visit(assign _assign)
         {
-            ProcessNode(_assign.from);
-            ProcessNode(_assign.to);
+            _assign.from.visit(this);
+            _assign.to.visit(this);
         }
         
-        public void ProceedSliceExpr(slice_expr sl)
+        public override void visit(slice_expr sl)
         {
             var el = construct_expression_list_for_slice_expr(sl);
             if (sl.Parent is assign parent_assign && parent_assign.to == sl)
@@ -104,7 +106,7 @@ namespace SyntaxVisitors.SugarVisitors
             }
         }
 
-        public void ProceedSliceQuestionExpr(slice_expr_question sl)
+        public override void visit(slice_expr_question sl)
         {
             if (sl.Parent is assign parent_assign && parent_assign.to == sl)
             {
