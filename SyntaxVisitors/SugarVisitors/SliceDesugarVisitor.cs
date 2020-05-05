@@ -72,8 +72,8 @@ namespace SyntaxVisitors.SugarVisitors
         }
         public override void visit(assign _assign)
         {
-            Exit(_assign.from);
-            Exit(_assign.to);
+            ProcessNode(_assign.from);
+            ProcessNode(_assign.to);
         }
         
         public void ProceedSliceExpr(slice_expr sl)
