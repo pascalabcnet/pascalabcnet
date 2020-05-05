@@ -10387,7 +10387,7 @@ begin
       raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
   
   if (situation = 0) or (situation = 1) then
-    if (&to < 0) or (&to > Len) then
+    if (&to < -1) or (&to > Len) then
       raise new ArgumentException(GetTranslation(PARAMETER_TO_OUT_OF_RANGE));
   
   if situation > 0 then
