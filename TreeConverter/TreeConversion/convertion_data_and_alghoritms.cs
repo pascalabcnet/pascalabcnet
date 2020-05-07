@@ -637,8 +637,15 @@ namespace PascalABCCompiler.TreeConverter
 				return en;
 			}
 
+            if (en.type is compiled_type_node comptn1 && to is compiled_type_node comptn2) // SSM 5/05/20 - Rubantsev csfml - две dll - во второй функция с параметром из первой. Типы разные
+            {
+                if (comptn1.compiled_type == comptn2.compiled_type || comptn1.compiled_type.AssemblyQualifiedName == comptn2.compiled_type.AssemblyQualifiedName) // увы - тут типы Type разные и хеш-коды у них разные
+                    return en;
+            }
+
+
             //TODO: А если наследование?
-			possible_type_convertions pct=type_table.get_convertions(en.type,to);
+            possible_type_convertions pct =type_table.get_convertions(en.type,to);
 
 			if (pct.second!=null)
 			{
@@ -835,13 +842,15 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return true;
             }
-            /*var comptn1 = t1 as compiled_type_node;
-            var comptn2 = t2 as compiled_type_node;
-            if (comptn1 != null && comptn2 != null)
+            if (t1 is compiled_type_node comptn1 && t2 is compiled_type_node comptn2) // SSM 5/05/20 - Rubantsev csfml - две dll - во второй функция с параметром из первой. Типы разные
             {
-                if (comptn1.compiled_type == comptn2.compiled_type) // увы - тут типы Type разные и хеш-коды у них разные
+                var tt = comptn1.compiled_type.Assembly == comptn2.compiled_type.Assembly;
+                if (comptn1.compiled_type == comptn2.compiled_type 
+                    /*|| (comptn1.compiled_type.Assembly == comptn2.compiled_type.Assembly && comptn1.compiled_type.FullName == comptn2.compiled_type.FullName)*/
+                    || comptn1.compiled_type.AssemblyQualifiedName == comptn2.compiled_type.AssemblyQualifiedName
+                    ) // увы - тут типы Type разные и хеш-коды у них разные
                     return true;
-            } */
+            } 
             if (!t1.depended_from_indefinite && !t2.depended_from_indefinite)
             {
                 return false;

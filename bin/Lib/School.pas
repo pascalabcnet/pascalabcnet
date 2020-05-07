@@ -50,6 +50,12 @@ function FirstPrimes(n: integer): array of integer;
 /// Возвращает массив, содержащий цифры числа
 function Digits(n: int64): array of integer;
 
+/// Возвращает Sin угла, заданного в градусах
+function SinDegrees(x: real): real;
+
+/// Возвращает Cos угла, заданного в градусах
+function CosDegrees(x: real): real;
+
 implementation
 
 type
@@ -371,6 +377,11 @@ function Digits(Self: integer): array of integer;
 /// возвращает массив, содержащий цифры числа
 function Digits(Self: int64): array of integer;
     extensionmethod := Digits(Self);
+    
+function SinDegrees(x: real): real := Sin(DegToRad(x));
+
+function CosDegrees(x: real): real := Cos(DegToRad(x));
+    
 
 {$region}
 

@@ -10955,6 +10955,8 @@ end;
 
 // Дополнения март 2020: RandomElement, FillRandom
 
+// Дополнения май 2020: Combinations, Permutations
+
 /// Заполняет массив случайными значениями в диапазоне от a до b
 procedure FillRandom(Self: array of integer; a,b: integer); extensionmethod;
 begin
@@ -11283,6 +11285,79 @@ begin
     if cond(Self[i], i) then
       yield i;
 end;
+
+function NextCombHelper(ind: array of integer; m,n: integer): boolean;
+begin
+  for var i:=m-1 downto 0 do
+    if ind[i] < n - m + i then
+    begin
+      ind[i] += 1;
+      for var j:=i to m-1 do 
+        ind[j+1] := ind[j] + 1;
+      Result := True;
+      exit
+    end;
+  Result := False;  
+end;
+
+/// Возвращает все сочетания по m элементов
+function Combinations<T>(Self: array of T; m: integer): sequence of array of T; extensionmethod;
+begin
+  var res := new T[m];
+  var a := Self;
+  var n := a.Length;
+  var ind := Arr(0..n-1);
+  repeat
+    for var i:=0 to m-1 do
+      res[i] := a[ind[i]];
+    yield res;
+  until not NextCombHelper(ind,m,n);  
+end;
+
+// Возвращает все сочетания по 2 элемента в виде кортежей
+{function Combinations2<T>(Self: array of T): sequence of (T,T); extensionmethod;
+begin
+  var a := Self;
+  for var i:=0 to a.High-1 do
+  for var j:=i+1 to a.High do
+    yield (a[i],a[j]);
+end;}
+
+
+function NextPermutation(a: array of integer): boolean;
+begin
+  var n := a.Length;
+  var j := n - 2;
+  while (j <> -1) and (a[j] >= a[j + 1]) do
+    j -= 1;
+  if j = -1 then
+  begin  
+    Result := False;  
+    exit;
+  end;  
+  var k := n - 1;
+  while a[j] >= a[k] do 
+    k -= 1;
+  Swap(a[j], a[k]);
+  Reverse(a,j+1,n-1-j);
+  Result := True;
+end;
+
+/// Возвращает все перестановки
+function Permutations<T>(Self: array of T): sequence of array of T; extensionmethod;
+begin
+  var a := Self;
+  var n := a.Length;
+  var res := new T[n];
+  var ind := Arr(0..n-1);
+  repeat
+    for var i:=0 to n-1 do
+      res[i] := a[ind[i]];
+    yield res;
+  until not NextPermutation(ind);  
+end;
+
+// Внутренние функции для одномерных массивов
 
 ///-- 
 function CreateSliceFromArrayInternal<T>(Self: array of T; from, step, count: integer): array of T;
