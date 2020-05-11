@@ -198,6 +198,22 @@ type
     procedure Clear(c: Color); override;
   end;
 
+// -----------------------------------------------------
+//>>     Класс Vector # Vector class
+// -----------------------------------------------------
+  /// Класс Vector
+  Vector =  class
+  public
+    x,y: real;
+    /// Создаёт вектор с указанными координатами
+    constructor(vx,vy: real) := (x,y) := (vx,vy);
+    
+    static function operator*(v: Vector; r: real): Vector := new Vector(r*v.x,r*v.y);
+    static function operator*(r: real; v: Vector): Vector := new Vector(r*v.x,r*v.y);
+    static function operator+(v: Vector; p: Point): Point := new Point(p.x+v.x,p.y+v.y);
+    static function operator+(p: Point; v: Vector): Point := new Point(p.x+v.x,p.y+v.y);
+  end;
+  
 //{{{--doc: Конец секции 2 }}} 
   
  
@@ -277,6 +293,14 @@ procedure FillSector(x, y, r, angle1, angle2: real; c: Color);
 procedure Line(x,y,x1,y1: real);
 /// Рисует отрезок прямой от точки (x,y) до точки (x1,y1) цветом c
 procedure Line(x,y,x1,y1: real; c: Color);
+/// Рисует отрезок прямой от точки p до точки p1
+procedure Line(p,p1: Point);
+/// Рисует отрезок прямой от точки p до точки p1 цветом c
+procedure Line(p,p1: Point; c: Color);
+/// Рисует отрезки, заданные массивом пар точек 
+procedure Lines(a: array of (Point,Point));
+/// Рисует отрезки, заданные массивом пар точек, цветом c 
+procedure Lines(a: array of (Point,Point); c: Color);
 /// Устанавливает текущую позицию рисования в точку (x,y)
 procedure MoveTo(x,y: real);
 /// Рисует отрезок от текущей позиции до точки (x,y). Текущая позиция переносится в точку (x,y)
@@ -352,6 +376,12 @@ function ColorBrush(c: Color): GBrush;
 function ColorPen(c: Color): GPen;
 /// Процедура ускорения вывода. Обновляет экран после всех изменений
 procedure Redraw(d: ()->());
+/// Функция генерации случайной точки в границах экрана. Необязательный параметр w задаёт минимальный отступ от границы
+function RandomPoint(w: real := 0): Point;
+/// Функция генерации массива случайных точек в границах экрана. Необязательный параметр w задаёт минимальный отступ от границы
+function RandomPoints(n: integer; w: real := 0): array of Point;
+/// Создаёт вектор с координатами vx,vy
+function Vect(vx,vy: real): Vector;
 
 
 // -----------------------------------------------------
@@ -548,6 +578,17 @@ function Pnt(x,y: real) := new Point(x,y);
 function Rect(x,y,w,h: real) := new System.Windows.Rect(x,y,w,h);
 function ColorBrush(c: Color) := GetBrush(c);
 function ColorPen(c: Color) := new GPen(GetBrush(c),Pen.Width);
+
+function RandomPoint(w: real): Point := Pnt(Random(w,Window.Width-w),Random(w,Window.Height-w));
+
+function RandomPoints(n: integer; w: real): array of Point;
+begin
+  Result := new Point[n];
+  foreach var i in 0..n-1 do
+    Result[i] := RandomPoint(w);
+end;
+
+function Vect(vx,vy: real): Vector := new Vector(vx,vy);
 
 procedure InvokeVisual(d: System.Delegate; params args: array of object);
 begin
@@ -1049,6 +1090,12 @@ procedure FillSector(x, y, r, angle1, angle2: real; c: GColor) := InvokeVisual(F
 
 procedure Line(x,y,x1,y1: real) := InvokeVisual(LineP,x,y,x1,y1);
 procedure Line(x,y,x1,y1: real; c: GColor) := InvokeVisual(LinePC,x,y,x1,y1,c);
+procedure Line(p,p1: Point) := Line(p.x,p.y,p1.x,p1.y);
+procedure Line(p,p1: Point; c: Color) := Line(p.x,p.y,p1.x,p1.y,c);
+procedure Lines(a: array of (Point,Point)) := foreach var i in a.Indices do Line(a[i].Item1,a[i].Item2);
+procedure Lines(a: array of (Point,Point); c: Color) := foreach var i in a.Indices do Line(a[i].Item1,a[i].Item2,c);
+
+
 procedure MoveTo(x,y: real) := (Pen.fx,Pen.fy) := (x,y);
 procedure LineTo(x,y: real);
 begin 
@@ -1303,6 +1350,7 @@ type
       var n := Round(w / 1);
       var pp := PartitionPoints(a, b, n);
       var fff: real -> Point := xx -> Pnt(x + mx * (xx - a), y + my * (max - f(xx).Clamp(min,max)));
+      //pp.Select(x->(x,f(x))).PrintLines;
       Polyline(pp.Select(fff).ToArray);
     end;
   end;

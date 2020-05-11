@@ -212,6 +212,8 @@ type
     static function operator*(r: real; v: Vector): Vector := new Vector(r*v.x,r*v.y);
     static function operator+(v: Vector; p: Point): Point := new Point(p.x+v.x,p.y+v.y);
     static function operator+(p: Point; v: Vector): Point := new Point(p.x+v.x,p.y+v.y);
+    //static function operator implicit(t: (real,real)): Vector := new Vector(t[0],t[1]);
+    //static function operator implicit(t: (integer,integer)): Vector := new Vector(t[0],t[1]);
   end;
   
 //{{{--doc: Конец секции 2 }}} 
@@ -230,6 +232,7 @@ procedure SetPixels(x,y: real; w,h: integer; f: (integer,integer)->Color);
 procedure DrawPixels(x,y: real; pixels: array [,] of Color);
 /// Рисует прямоугольную область (px,py,pw,ph) двумерного массива пикселей pixels начиная с левого верхнего угла с координатами (x,y)
 procedure DrawPixels(x,y: real; pixels: array [,] of Color; px,py,pw,ph: integer);
+
 /// Рисует эллипс с центром в точке (x,y) и радиусами rx и ry
 procedure Ellipse(x,y,rx,ry: real);
 /// Рисует контур эллипса с центром в точке (x,y) и радиусами rx и ry
@@ -243,6 +246,19 @@ procedure DrawEllipse(x,y,rx,ry: real; c: Color);
 /// Рисует внутренность эллипса с центром в точке (x,y), радиусами rx и ry и цветом c
 procedure FillEllipse(x,y,rx,ry: real; c: Color);
 
+/// Рисует эллипс с центром в точке p и радиусами rx и ry
+procedure Ellipse(p: Point; rx,ry: real);
+/// Рисует контур эллипса с центром в точке p и радиусами rx и ry
+procedure DrawEllipse(p: Point; rx,ry: real);
+/// Рисует внутренность эллипса с центром в точке p и радиусами rx и ry
+procedure FillEllipse(p: Point; rx,ry: real);
+/// Рисует эллипс с центром в точке p, радиусами rx и ry и цветом внутренности c
+procedure Ellipse(p: Point; rx,ry: real; c: Color);
+/// Рисует контур эллипса с центром в точке p, радиусами rx и ry и цветом c
+procedure DrawEllipse(p: Point; rx,ry: real; c: Color);
+/// Рисует внутренность эллипса с центром в точке p, радиусами rx и ry и цветом c
+procedure FillEllipse(p: Point; rx,ry: real; c: Color);
+
 /// Рисует окружность с центром в точке (x,y) и радиусом r
 procedure Circle(x,y,r: real);
 /// Рисует контур окружности с центром в точке (x,y) и радиусом r
@@ -255,6 +271,20 @@ procedure Circle(x,y,r: real; c: Color);
 procedure DrawCircle(x,y,r: real; c: Color);
 /// Рисует внутренность окружности с центром в точке (x,y), радиусом r и цветом c
 procedure FillCircle(x,y,r: real; c: Color);
+
+/// Рисует окружность с центром в точке p и радиусом r
+procedure Circle(p: Point; r: real);
+/// Рисует контур окружности с центром в точке p и радиусом r
+procedure DrawCircle(p: Point; r: real);
+/// Рисует внутренность окружности с центром в точке p и радиусом r
+procedure FillCircle(p: Point; r: real);
+/// Рисует окружность с центром в точке p, радиусом r и цветом c
+procedure Circle(p: Point; r: real; c: Color);
+/// Рисует контур окружности с центром в точке p, радиусом r и цветом c
+procedure DrawCircle(p: Point; r: real; c: Color);
+/// Рисует внутренность окружности с центром в точке p, радиусом r и цветом c
+procedure FillCircle(p: Point; r: real; c: Color);
+
 
 /// Рисует прямоугольник с координатами вершин (x,y) и (x+w,y+h)
 procedure Rectangle(x,y,w,h: real);
@@ -958,6 +988,8 @@ procedure DrawPolygon(Self: DrawingContext; b: GBrush; p: GPen; points: array of
 procedure DrawPolyline(Self: DrawingContext; p: GPen; points: array of Point); extensionmethod
   := Self.DrawPolygonOrPolyline(nil,p,points,false);
   
+procedure operator+=(var p: Point; v: Vector); extensionmethod := p := new Point(p.x+v.x,p.y+v.y);
+  
 procedure PolyLinePFull(points: array of Point; p: GPen);
 begin
   var dc := GetDC();
@@ -1054,6 +1086,7 @@ procedure DrawTextPC(x,y: real; text: string; angle,x0,y0: real; c: GColor) := T
 procedure EllipseNew(x,y,r1,r2: real) 
   := InvokeVisual(DrawGeometryP,VE.Create(()->EllipseGeometry.Create(Pnt(x,y),r1,r2)));
 
+// Реализация примитивов
 procedure Ellipse(x,y,rx,ry: real) := InvokeVisual(EllipseP,x,y,rx,ry);
 procedure DrawEllipse(x,y,rx,ry: real) := InvokeVisual(DrawEllipseP,x,y,rx,ry);
 procedure FillEllipse(x,y,rx,ry: real) := InvokeVisual(FillEllipseP,x,y,rx,ry);
@@ -1061,12 +1094,27 @@ procedure Ellipse(x,y,rx,ry: real; c: GColor) := InvokeVisual(EllipsePC,x,y,rx,r
 procedure DrawEllipse(x,y,rx,ry: real; c: GColor) := InvokeVisual(DrawEllipsePC,x,y,rx,ry,c);
 procedure FillEllipse(x,y,rx,ry: real; c: GColor) := InvokeVisual(FillEllipsePC,x,y,rx,ry,c);
 
+procedure Ellipse(p: Point; rx,ry: real) := Ellipse(p.X,p.Y,rx,ry);
+procedure DrawEllipse(p: Point; rx,ry: real) := DrawEllipse(p.X,p.Y,rx,ry);
+procedure FillEllipse(p: Point; rx,ry: real) := FillEllipse(p.X,p.Y,rx,ry);
+procedure Ellipse(p: Point; rx,ry: real; c: Color) := Ellipse(p.X,p.Y,rx,ry,c);
+procedure DrawEllipse(p: Point; rx,ry: real; c: Color) := DrawEllipse(p.X,p.Y,rx,ry,c);
+procedure FillEllipse(p: Point; rx,ry: real; c: Color) := FillEllipse(p.X,p.Y,rx,ry,c);
+
 procedure Circle(x,y,r: real) := InvokeVisual(EllipseP,x,y,r,r);
 procedure DrawCircle(x,y,r: real) := InvokeVisual(DrawEllipseP,x,y,r,r);
 procedure FillCircle(x,y,r: real) := InvokeVisual(FillEllipseP,x,y,r,r);
 procedure Circle(x,y,r: real; c: GColor) := InvokeVisual(EllipsePC,x,y,r,r,c);
 procedure DrawCircle(x,y,r: real; c: GColor) := InvokeVisual(DrawEllipsePC,x,y,r,r,c);
 procedure FillCircle(x,y,r: real; c: GColor) := InvokeVisual(FillEllipsePC,x,y,r,r,c);
+
+procedure Circle(p: Point; r: real) := Circle(p.X,p.Y,r);
+procedure DrawCircle(p: Point; r: real) := DrawCircle(p.X,p.Y,r);
+procedure FillCircle(p: Point; r: real) := FillCircle(p.X,p.Y,r);
+procedure Circle(p: Point; r: real; c: Color) := Circle(p.X,p.Y,r,c);
+procedure DrawCircle(p: Point; r: real; c: Color) := DrawCircle(p.X,p.Y,r,c);
+procedure FillCircle(p: Point; r: real; c: Color) := FillCircle(p.X,p.Y,r,c);
+
 
 procedure Rectangle(x,y,w,h: real) := InvokeVisual(RectangleP,x,y,w,h);
 procedure DrawRectangle(x,y,w,h: real) := InvokeVisual(DrawRectangleP,x,y,w,h);
@@ -1350,6 +1398,7 @@ type
       var n := Round(w / 1);
       var pp := PartitionPoints(a, b, n);
       var fff: real -> Point := xx -> Pnt(x + mx * (xx - a), y + my * (max - f(xx).Clamp(min,max)));
+      //pp.Select(x->(x,f(x))).PrintLines;
       Polyline(pp.Select(fff).ToArray);
     end;
   end;

@@ -56,6 +56,18 @@ function SinDegrees(x: real): real;
 /// Возвращает Cos угла, заданного в градусах
 function CosDegrees(x: real): real;
 
+/// Возвращает вещественный массив, заполненный случайными значениями
+/// на интервале [a; b) с t знаками в дробной части
+function ArrRandomReal(n: integer; a, b: real; t: integer): array of real;
+
+/// Возвращает вещественную последовательность, заполненную случайными значениями
+/// на интервале [a; b) с t знаками в дробной части
+function SeqRandomReal(n: integer; a, b: real; t: integer): sequence of real;
+
+/// Возвращает вещественную матрицу, заполненную случайными значениями
+/// на интервале [a; b) с t знаками в дробной части
+function MatrRandomReal(m: integer; n: integer; a, b: real; t: integer): array [,] of real;
+
 implementation
 
 type
@@ -348,6 +360,46 @@ begin
     end
 end;
 
+/// возвращает True, если число простое и False в противном случае
+function IsPrime(Self: integer): boolean; extensionmethod;
+begin
+  if Self < 2 then
+  begin
+    Result := False;
+    exit
+  end;
+  var i := 2;
+  while i * i <= Self do  
+    if Self mod i = 0 then
+    begin
+      Result := False;
+      exit
+    end
+    else
+      i += if i = 2 then 1 else 2;
+  Result := True
+end;
+
+/// возвращает True, если число простое и False в противном случае
+function IsPrime(Self: int64): boolean; extensionmethod;
+begin
+  if Self < 2 then
+  begin
+    Result := False;
+    exit
+  end;
+  var i := int64(2);
+  while i * i <= Self do  
+    if Self mod i = 0 then
+    begin
+      Result := False;
+      exit
+    end
+    else
+      i += if i = 2 then 1 else 2;
+  Result := True
+end;
+
 {$region}
 
 {$region Digits}
@@ -378,10 +430,44 @@ function Digits(Self: integer): array of integer;
 function Digits(Self: int64): array of integer;
     extensionmethod := Digits(Self);
     
+{$region}
+
+{$region Trig}
+
 function SinDegrees(x: real): real := Sin(DegToRad(x));
 
 function CosDegrees(x: real): real := Cos(DegToRad(x));
     
+{$region}
+
+{$refion Random}
+
+/// Возвращает вещественный массив, заполненный случайными значениями
+/// на интервале [a; b) с t знаками в дробной части
+function ArrRandomReal(n: integer; a, b: real; t: integer): array of real;
+begin
+  Result := new real[n];
+  for var i := 0 to Result.Length - 1 do
+    Result[i] := Round(Random * (b - a) + a, t);
+end;
+
+/// Возвращает вещественную последовательность, заполненную случайными значениями
+/// на интервале [a; b) с t знаками в дробной части
+function SeqRandomReal(n: integer; a, b: real; t: integer): sequence of real;
+begin
+  loop n do
+    yield Round(Random * (b - a) + a, t)
+end;
+
+/// Возвращает вещественную матрицу, заполненную случайными значениями
+/// на интервале [a; b) с t знаками в дробной части
+function MatrRandomReal(m: integer; n: integer; a, b: real; t: integer): array [,] of real;
+begin
+  Result := new real[m, n];
+  for var i := 0 to Result.RowCount - 1 do
+    for var j := 0 to Result.ColCount - 1 do
+      Result[i, j] := Round(Random * (b - a) + a, t);
+end;
 
 {$region}
 

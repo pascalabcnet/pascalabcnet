@@ -639,7 +639,9 @@ namespace PascalABCCompiler.TreeConverter
 
             if (en.type is compiled_type_node comptn1 && to is compiled_type_node comptn2) // SSM 5/05/20 - Rubantsev csfml - две dll - во второй функция с параметром из первой. Типы разные
             {
-                if (comptn1.compiled_type == comptn2.compiled_type || comptn1.compiled_type.AssemblyQualifiedName == comptn2.compiled_type.AssemblyQualifiedName) // увы - тут типы Type разные и хеш-коды у них разные
+                if (comptn1.compiled_type == comptn2.compiled_type 
+                    || comptn1.compiled_type.AssemblyQualifiedName == comptn2.compiled_type.AssemblyQualifiedName
+                    ) // увы - тут типы Type разные и хеш-коды у них разные
                     return en;
             }
 
