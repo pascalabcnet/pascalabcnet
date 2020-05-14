@@ -252,30 +252,45 @@ namespace PascalABCCompiler.TreeConverter
             var semv = convert_strong(v);
             var a = convertion_data_and_alghoritms.can_convert_type(semv, SystemLibrary.SystemLibrary.integer_type);
             var a1 = false;
+            var ar = false;
             if (!a)
                 a1 = convertion_data_and_alghoritms.can_convert_type(semv, SystemLibrary.SystemLibrary.char_type);
-            if (!a && !a1)
-                AddError(get_location(v), "INTEGER_OR_CHAR_VALUE_EXPECTED");
+            if (!a1)
+                ar = convertion_data_and_alghoritms.can_convert_type(semv, SystemLibrary.SystemLibrary.double_type);
+            if (!a && !a1 && !ar)
+                AddError(get_location(v), "INTEGER_OR_REAL_OR_CHAR_VALUE_EXPECTED");
 
             var semfrom = convert_strong(from);
             var b = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type);
             var b1 = false;
+            var br = false;
             if (!b)
                 b1 = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.char_type);
-            if (!b && !b1)
-                AddError(get_location(from), "INTEGER_OR_CHAR_VALUE_EXPECTED");
+            if (!b1)
+                br = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.double_type);
+            if (!b && !b1 && !br)
+                AddError(get_location(from), "INTEGER_OR_REAL_OR_CHAR_VALUE_EXPECTED");
 
             var semto = convert_strong(to);
             var c = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.integer_type);
             var c1 = false;
+            var cr = false;
             if (!c)
                 c1 = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.char_type);
-            if (!c && !c1)
-                AddError(get_location(to), "INTEGER_OR_CHAR_VALUE_EXPECTED");
+            if (!c1)
+                cr = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.double_type);
+            if (!c && !c1 && !cr)
+                AddError(get_location(to), "INTEGER_OR_REAL_OR_CHAR_VALUE_EXPECTED");
 
-            if (b != c || c1 != b1)
+            var incompbound = true; 
+            if (b && c || c1 && b1 || cr && br)
+                incompbound = false;
+            if (b && cr || c && br)
+                incompbound = false;
+
+            if (incompbound)
                 AddError(get_location(to), "INCOMPATIBLE_DIAPASON_BOUNDS_TYPES");
-            if (a != b || a1 != b1)
+            if (a && b1 || ar && b1 || a1 && b || a1 && c)
                 AddError(get_location(v), "INCOMPATIBLE_TYPES_OF_ELEMENT_AND_DIAPASON");
         }
 

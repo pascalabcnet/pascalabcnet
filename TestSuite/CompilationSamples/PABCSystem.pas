@@ -611,6 +611,7 @@ type
     property Count: integer read GetCount;
 
     static function operator in(x: integer; r: IntRange): boolean := (x >= r.l) and (x <= r.h); 
+    static function operator in(x: real; r: IntRange): boolean := (x >= r.l) and (x <= r.h); 
     static function operator=(r1,r2: IntRange): boolean := (r1.l = r2.l) and (r1.h = r2.h);
     
     function IsEmpty: boolean := l<=h;
@@ -621,7 +622,7 @@ type
     function GetEnumerator(): IEnumerator<integer>;
     function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := Self.GetEnumerator;
 
-    function ToString: string; override := $'({l},{h})';
+    function ToString: string; override := $'{l}..{h}';
     function Equals(o: Object): boolean; override;
     begin
       var r2 := IntRange(o);
@@ -693,7 +694,7 @@ type
     function GetEnumerator(): IEnumerator<char>;
     function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := GetEnumerator;
 
-    function ToString: string; override := $'({l},{h})';
+    function ToString: string; override := $'{l}..{h}';
     function Equals(o: Object): boolean; override;
     begin
       var r2 := CharRange(o);
@@ -733,6 +734,33 @@ type
     begin
       Result := new SortedSet<char>(System.Linq.Enumerable.Range(integer(l),Count).Select(i -> char(i)));
     end;
+  end;
+  
+  /// Тип диапазона вещественных
+  RealRange = class
+    private
+      l,h: real;
+    public
+    constructor(l,h: real);
+    begin
+      Self.l := l;
+      Self.h := h;
+    end;
+    property Low: real read l;
+    property High: real read h;
+
+    static function operator in(x: real; r: RealRange): boolean := (x >= r.l) and (x <= r.h); 
+    static function operator=(r1,r2: RealRange): boolean := (r1.l = r2.l) and (r1.h = r2.h);
+    
+    function IsEmpty: boolean := l<=h;
+
+    function ToString: string; override := $'{l}..{h}';
+    function Equals(o: Object): boolean; override;
+    begin
+      var r2 := RealRange(o);
+      Result := (l = r2.l) and (h = r2.h);
+    end;
+    function GetHashCode: integer; override := l.GetHashCode xor h.GetHashCode;
   end;
 
   ///Тип для представления индекса
@@ -2666,6 +2694,8 @@ type
 function InternalRange(l,r: integer): IntRange;
 ///--
 function InternalRange(l,r: char): CharRange;
+///--
+function InternalRange(l,r: real): RealRange;
   
   
 // -----------------------------------------------------
@@ -3829,6 +3859,10 @@ begin
   begin
     var a := o as System.Array;  
     Result := ArrNToString(a, new integer[a.Rank], 0); 
+  end
+  else if ((o.GetType = typeof(IntRange)) or (o.GetType = typeof(CharRange)) or (o.GetType = typeof(RealRange))) then 
+  begin
+    Result := o.ToString
   end
   else if o is System.Collections.IEnumerable then
   begin
@@ -12972,6 +13006,8 @@ end;
 function InternalRange(l,r: integer): IntRange := new IntRange(l,r);
 
 function InternalRange(l,r: char): CharRange := new CharRange(l,r);
+
+function InternalRange(l,r: real): RealRange := new RealRange(l,r);
 
 
 //------------------------------------------------------------------------------
