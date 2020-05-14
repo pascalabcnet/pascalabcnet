@@ -120,7 +120,7 @@ type
 // -----------------------------------------------------
   ///!#
   /// Тип шрифта
-  FontType = class
+  FontOptions = class
   private
     tf := new Typeface('Arial');
     sz: real := 14;
@@ -152,33 +152,33 @@ type
     /// Стиль шрифта
     property Style: FontStyle write SetFS;
     /// Декоратор стиля шрифта
-    function WithStyle(fs: FontStyle): FontType;
+    function WithStyle(fs: FontStyle): FontOptions;
     begin
-      Result := new FontType;
+      Result := new FontOptions;
       Result.sz := sz;
       Result.Color := c;
       Result.Style := fs;
     end;
     /// Декоратор цвета шрифта
-    function WithColor(c: GColor): FontType;
+    function WithColor(c: GColor): FontOptions;
     begin
-      Result := new FontType;
+      Result := new FontOptions;
       Result.tf := tf;
       Result.sz := sz;
       Result.Color := c;
     end;
     /// Декоратор размера шрифта
-    function WithSize(sz: real): FontType;
+    function WithSize(sz: real): FontOptions;
     begin
-      Result := new FontType;
+      Result := new FontOptions;
       Result.tf := tf;
       Result.sz := sz;
       Result.Color := c;
     end;
     /// Декоратор стиля шрифта
-    function WithName(name: string): FontType;
+    function WithName(name: string): FontOptions;
     begin
-      Result := new FontType;
+      Result := new FontOptions;
       Result.sz := sz;
       Result.Color := c;
       Result.tf := new Typeface(GetFontFamily(name),tf.Style,tf.Weight,FontStretches.Normal);
@@ -488,7 +488,7 @@ procedure DrawText(r: GRect; number: integer; c: GColor; align: Alignment := Ali
 /// Выводит вещественное в прямоугольник
 procedure DrawText(r: GRect; number: real; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
 /// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y) указанным шрифтом
-procedure DrawText(x, y, w, h: real; text: string; f: FontType; align: Alignment; angle: real);
+procedure DrawText(x, y, w, h: real; text: string; f: FontOptions; align: Alignment; angle: real);
 
 
 /// Выводит строку в позицию (x,y)
@@ -504,7 +504,7 @@ procedure TextOut(x, y: real; text: real; align: Alignment := Alignment.LeftTop;
 /// Выводит вещественное в позицию (x,y) цветом c
 procedure TextOut(x, y: real; text: real; c: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
 /// Выводит строку в позицию (x,y) указанным шрифтом
-procedure TextOut(x, y: real; text: string; f: FontType; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+procedure TextOut(x, y: real; text: string; f: FontOptions; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
 
 /// Ширина текста при выводе
 function TextWidth(text: string): real;
@@ -516,7 +516,7 @@ function TextSize(text: string): Size;
 // -----------------------------------------------------
 //>>     Функции для вывода графиков # GraphWPF graph functions
 // -----------------------------------------------------
-/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом параметрами x,y,w,h 
 procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h: real; title: string := '');
 /// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом параметрами x,y,w,h. Два последних параметра задают шаг сетки по OX и OY
 procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h: real; XTicks: real; YTicks: real; title: string := '');
@@ -526,7 +526,7 @@ procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect; title: stri
 procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect; XTicks, YTicks: real; title: string := '');
 /// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, на полное графическое окно
 procedure DrawGraph(f: real -> real; a, b, min, max: real; title: string := '');
-/// Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
+/// Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике, задаваемом параметрами x,y,w,h 
 procedure DrawGraph(f: real -> real; a, b: real; x, y, w, h: real; title: string := '');
 /// Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике r 
 procedure DrawGraph(f: real -> real; a, b: real; r: GRect; title: string := '');
@@ -568,7 +568,7 @@ var Brush: BrushType;
 /// Текущее перо
 var Pen: PenType;
 /// Текущий шрифт
-var Font: FontType;
+var Font: FontOptions;
 /// Главное окно
 var Window: WindowTypeWPF;
 /// Графическое окно
@@ -834,7 +834,7 @@ function FormText(text: string) :=
   new FormattedText(text, RusCultureInfo, FlowDirection.LeftToRight, 
                     Font.tf, Font.Size, Font.BrushClone);
   
-function FormTextFont(text: string; f: FontType): FormattedText;
+function FormTextFont(text: string; f: FontOptions): FormattedText;
 begin
   var tf := new Typeface(GetFontFamily(f.Name),f.tf.Style,f.tf.Weight,f.tf.Stretch);
   Result := new FormattedText(text,RusCultureInfo, FlowDirection.LeftToRight, tf, f.Size, f.BrushClone);
@@ -859,7 +859,7 @@ type TextV = auto class
   end;
 end;
 
-procedure TextPFull(x,y: real; text: string; angle,x0,y0: real; f: FontType);
+procedure TextPFull(x,y: real; text: string; angle,x0,y0: real; f: FontOptions);
 begin
   var ft := FormTextFont(text,f);
   var dc := GetDC();
@@ -1123,7 +1123,7 @@ procedure FillPolygonPC(points: array of Point; c: GColor) := PolygonPFull(point
 
 procedure DrawTextP(x,y: real; text: string; angle,x0,y0: real) := TextPFull(x,y,text,angle,x0,y0);
 procedure DrawTextPC(x,y: real; text: string; angle,x0,y0: real; c: GColor) := TextPFull(x,y,text,angle,x0,y0,c);
-procedure DrawTextPFont(x,y: real; text: string; angle,x0,y0: real; f: FontType) := TextPFull(x,y,text,angle,x0,y0,f);
+procedure DrawTextPFont(x,y: real; text: string; angle,x0,y0: real; f: FontOptions) := TextPFull(x,y,text,angle,x0,y0,f);
 
 procedure EllipseNew(x,y,r1,r2: real) 
   := InvokeVisual(DrawGeometryP,VE.Create(()->EllipseGeometry.Create(Pnt(x,y),r1,r2)));
@@ -1226,7 +1226,7 @@ procedure TextOutHelper(x,y: real; text: string; angle: real; x0,y0: real) := In
 procedure TextOutHelper(x,y: real; text: string; angle: real; c: GColor; x0,y0: real) := InvokeVisual(DrawTextPC,x,y,text,angle,x0,y0,c);
 //procedure TextOut(x,y: real; number: integer; c: GColor) := TextOut(x,y,'' + number,c);
 //procedure TextOut(x,y: real; number: real; c: GColor) := TextOut(x,y,'' + number,c);
-procedure TextOutHelper(x,y: real; text: string; angle: real; x0,y0: real; f: FontType) := InvokeVisual(DrawTextPFont,x,y,text,angle,x0,y0,f);
+procedure TextOutHelper(x,y: real; text: string; angle: real; x0,y0: real; f: FontOptions) := InvokeVisual(DrawTextPFont,x,y,text,angle,x0,y0,f);
 
 procedure DrawTextHelper(var x, y, x0, y0: real; w, h: real; text: string; align: Alignment := Alignment.Center);
 begin
@@ -1306,7 +1306,7 @@ procedure DrawText(r: GRect; number: integer; c: GColor; align: Alignment; angle
 procedure DrawText(r: GRect; number: real; c: GColor; align: Alignment; angle: real) := DrawText(r.x,r.y,r.Width,r.Height,number,c,align,angle);
 
 /// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y) данным шрифтом
-procedure DrawText(x, y, w, h: real; text: string; f: FontType; align: Alignment; angle: real);
+procedure DrawText(x, y, w, h: real; text: string; f: FontOptions; align: Alignment; angle: real);
 begin
   var (x0,y0) := (x,y);
   DrawTextHelper(x, y, x0, y0, w, h, text, align);
@@ -1335,7 +1335,7 @@ procedure TextOut(x, y: real; text: integer; c: GColor; align: Alignment; angle:
 procedure TextOut(x, y: real; text: real; align: Alignment; angle: real) := TextOut(x, y, ''+text,align,angle);
 procedure TextOut(x, y: real; text: real; c: GColor; align: Alignment; angle: real) := TextOut(x, y, ''+text, c,align,angle);
 
-procedure TextOut(x, y: real; text: string; f: FontType; align: Alignment; angle: real) := DrawText(x, y, 0, 0, text, f, align, angle);
+procedure TextOut(x, y: real; text: string; f: FontOptions; align: Alignment; angle: real) := DrawText(x, y, 0, 0, text, f, align, angle);
 
 
 type
@@ -1935,7 +1935,7 @@ public
   begin
     Brush := new BrushType;
     Pen := new PenType;
-    Font := new FontType;
+    Font := new FontOptions;
     Window := new WindowTypeWPF;
     GraphWindow := new GraphWindowType;
   end;
