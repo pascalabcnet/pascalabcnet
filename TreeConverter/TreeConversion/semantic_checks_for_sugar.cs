@@ -217,20 +217,30 @@ namespace PascalABCCompiler.TreeConverter
             var semfrom = convert_strong(from);
             var b = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type);
             var b1 = false;
+            var br = false;
             if (!b)
                 b1 = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.char_type);
-            if (!b && !b1)
-                AddError(get_location(from), "INTEGER_OR_CHAR_VALUE_EXPECTED");
+            if (!b1)
+                br = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.double_type);
+            if (!b && !b1 && !br)
+                AddError(get_location(from), "INTEGER_OR_REAL_OR_CHAR_VALUE_EXPECTED");
 
             var semto = convert_strong(to);
             var c = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.integer_type);
             var c1 = false;
+            var cr = false;
             if (!c)
                 c1 = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.char_type);
-            if (!c && !c1)
-                AddError(get_location(to), "INTEGER_OR_CHAR_VALUE_EXPECTED");
-            if (b != c || c1 != b1)
-                AddError(get_location(to), "INCOMPATIBLE_DIAPASON_BOUNDS_TYPES");
+            if (!c1)
+                cr = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.double_type);
+            if (!c && !c1 && !cr)
+                AddError(get_location(to), "INTEGER_OR_REAL_OR_CHAR_VALUE_EXPECTED");
+            //if (b != c || c1 != b1 || cr != br)
+            if (b && c || c1 && b1 || cr && br)
+                return;
+            if (b && cr || c && br)
+                return;
+            AddError(get_location(to), "INCOMPATIBLE_DIAPASON_BOUNDS_TYPES");
         }
 
         void semantic_check_method_call_as_inrange_expr(SyntaxTree.method_call mc)
