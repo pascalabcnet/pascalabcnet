@@ -2382,6 +2382,9 @@ function __WildCardsTupleEqual<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12
 function InRangeInternal(x: integer; a,b: integer): boolean; 
 
 ///--
+function InRangeInternal(x: real; a,b: real): boolean; 
+
+///--
 function InRangeInternal(x: char; a,b: char): boolean; 
 
 // -----------------------------------------------------
@@ -11562,6 +11565,12 @@ end;
 
 ///--
 function InRangeInternal(x: integer; a,b: integer): boolean; 
+begin
+  Result := (a <= x) and (x <= b)
+end;
+
+///--
+function InRangeInternal(x: real; a,b: real): boolean; 
 begin
   Result := (a <= x) and (x <= b)
 end;

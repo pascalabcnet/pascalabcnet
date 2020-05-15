@@ -17703,9 +17703,9 @@ namespace PascalABCCompiler.TreeConverter
 
                 foreach (SemanticTree.ITypeNode itn in tn.ImplementingInterfaces) // если не нашли - ищем интерфейс IEnumerable и возвращаем object в качестве elem_type
                 {
-                    if (itn is compiled_type_node)
+                    if (itn is compiled_type_node) // Именно этот кусок отвечает за IEnumerable<integer> и мы его закомментировали
                     {
-                        /*var itnc = (itn as compiled_type_node).compiled_type;
+                        var itnc = (itn as compiled_type_node).compiled_type; /* SSM раскомментировал 15.05 - пришла пора*/
                         if (itnc.IsGenericType)
                         {
                             var my = itnc.GetGenericTypeDefinition();// = typeof(System.Collections.Generic.IEnumerable<>)
@@ -17716,7 +17716,7 @@ namespace PascalABCCompiler.TreeConverter
                                 return true;
                             }
                         }
-                        else */
+                        else /* end SSM раскомментировал 15.05 - пришла пора*/ 
                         if (itn == ctn)
                         {
                             elem_type = SystemLibrary.SystemLibrary.object_type;
