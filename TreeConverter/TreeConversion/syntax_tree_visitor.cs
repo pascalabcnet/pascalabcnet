@@ -1434,6 +1434,7 @@ namespace PascalABCCompiler.TreeConverter
                                 {
                                     if (obj == null)
                                         obj = GetCurrentObjectReference(cmn.cont_type.Scope, cmn, loc);//new this_node(context.converted_type, loc);
+                                    
                                     common_method_call cmc = new common_method_call(cmn, obj, loc);
                                     cmc.virtual_call = !inherited_ident_processing;
                                     bfc = cmc;
@@ -9372,6 +9373,15 @@ namespace PascalABCCompiler.TreeConverter
                     bfc = create_static_method_call_with_params(fn, bfc.location, fn.return_value_type, true, bfc.parameters);
                 }
             }
+            if (bfc is common_method_call)
+            {
+                common_method_node cmn = (bfc as common_method_call).function_node;
+                if (cmn != null && cmn.is_generic_function && !cmn.is_generic_function_instance && cmn.parameters.Count == 0)
+                {
+                    cmn = (common_method_node)generic_convertions.DeduceFunction(cmn, new expressions_list(), true, context, bfc.location);
+                    bfc = new common_method_call(cmn, (bfc as common_method_call).obj, bfc.location);
+                }
+            }
             return bfc;
         }
 
@@ -9756,7 +9766,6 @@ namespace PascalABCCompiler.TreeConverter
             }
 
             try_convert_typed_expression_to_function_call(ref en);
-            
             switch (mot)
             {
                 case motivation.address_receiving:
