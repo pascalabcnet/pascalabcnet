@@ -2767,6 +2767,20 @@ namespace PascalABCCompiler.TreeConverter
             }
             return null; // это вхолостую
         }
+
+        public bool ContainsForward(type_node tn)
+        {
+            if (tn.ForwardDeclarationOnly || tn.original_generic != null && tn.original_generic.ForwardDeclarationOnly)
+                return true;
+            if (tn is generic_instance_type_node tni)
+                foreach (var t in tn.instance_params)
+                {
+                    var r = ContainsForward(t);
+                    if (r)
+                        return r;
+                }
+            return false;
+        }
     }
 
 }

@@ -138,6 +138,10 @@ Section $(DESC_PT4) PT4
   ${AddFile} "PT4ZMinmax.dll"
   File "PT4\Lib\PT4ZSeries.dll"
   ${AddFile} "PT4ZSeries.dll"
+
+  File "PT4\Lib\PT4AExam.dll"
+  ${AddFile} "PT4AExam.dll"
+
  
 
   SetOutPath "$INSTDIR\PT4\Lib\Graph"

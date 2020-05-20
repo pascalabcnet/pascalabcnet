@@ -3698,7 +3698,7 @@ namespace PascalABCCompiler.TreeConverter
                         }
                         else
                         {
-                            if (tn.ForwardDeclarationOnly || tn.original_generic != null && tn.original_generic.ForwardDeclarationOnly)
+                            if (convertion_data_and_alghoritms.ContainsForward(tn)) // SSM 20/05/2020 #2140
                             {
                                 AddError(get_location(_class_definition.class_parents.types[0]), "FORWARD_DECLARATION_{0}_AS_BASE_TYPE", tn.name);
                             }

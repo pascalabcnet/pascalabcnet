@@ -7,9 +7,12 @@
 <param name="Keyword" value="GrayColor">
 <param name="Keyword" value="Pnt">
 <param name="Keyword" value="RandomColor">
+<param name="Keyword" value="RandomPoint">
+<param name="Keyword" value="RandomPoints">
 <param name="Keyword" value="Rect">
 <param name="Keyword" value="Redraw">
-<param name="Keyword" value="RGB"></object>
+<param name="Keyword" value="RGB">
+<param name="Keyword" value="Vect"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Вспомогательные функции GraphWPF</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> ARGB(a,r,g,b: byte): Color;</code>
@@ -28,11 +31,17 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает точку с координатами (x,y)</td></tr>
 <tr><td><code><b>function</b> RandomColor: Color;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайный цвет</td></tr>
+<tr><td><code><b>function</b> RandomPoint(w: real := 0): Point;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Функция генерации случайной точки в границах экрана. Необязательный параметр w задаёт минимальный отступ от границы</td></tr>
+<tr><td><code><b>function</b> RandomPoints(n: integer; w: real := 0): <b>array</b>  <b>of</b> Point;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Функция генерации массива случайных точек в границах экрана. Необязательный параметр w задаёт минимальный отступ от границы</td></tr>
 <tr><td><code><b>function</b> Rect(x,y,w,h: real): GRect;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает прямоугольник с координатами угла (x,y), шириной w и высотой h</td></tr>
 <tr><td><code><b>procedure</b> Redraw(d: ()-&gt;());</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Процедура ускорения вывода. Обновляет экран после всех изменений</td></tr>
 <tr><td><code><b>function</b> RGB(r,g,b: byte): Color;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает цвет по красной, зеленой и синей составляющей (в диапазоне 0..255)</td></tr>
+<tr><td><code><b>function</b> Vect(vx,vy: real): Vector;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Создаёт вектор с координатами vx,vy</td></tr>
 </table>
 </body></HTML>

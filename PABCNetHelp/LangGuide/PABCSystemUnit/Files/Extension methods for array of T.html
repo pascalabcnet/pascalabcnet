@@ -1,6 +1,7 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="AdjacentFind">
 <param name="Keyword" value="BinarySearch">
+<param name="Keyword" value="Combinations">
 <param name="Keyword" value="ConvertAll">
 <param name="Keyword" value="Fill">
 <param name="Keyword" value="FillRandom">
@@ -20,6 +21,7 @@
 <param name="Keyword" value="Low">
 <param name="Keyword" value="Max">
 <param name="Keyword" value="Min">
+<param name="Keyword" value="Permutations">
 <param name="Keyword" value="RandomElement">
 <param name="Keyword" value="Shuffle">
 <param name="Keyword" value="Slice">
@@ -31,6 +33,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит первую пару подряд идущих одинаковых элементов, используя функцию сравнения eq, и возвращает индекс первого элемента пары. Если не найден, возвращается -1</td></tr>
 <tr><td><code><b>function</b> BinarySearch&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; x: T): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет бинарный поиск в отсортированном массиве</td></tr>
+<tr><td><code><b>function</b> Combinations&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; m: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все сочетания по m элементов</td></tr>
 <tr><td><code><b>function</b> ConvertAll&lt;T, T1&gt;(Self: <b>array</b>  <b>of</b> T; converter: T-&gt;T1): <b>array</b>  <b>of</b> T1;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы массива и возвращает преобразованный массив</td></tr>
 <tr><td><code><b>function</b> ConvertAll&lt;T, T1&gt;(Self: <b>array</b>  <b>of</b> T; converter: (T,integer)-&gt;T1): <b>array</b>  <b>of</b> T1;</code>
@@ -99,6 +103,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает минимальный элемент</td></tr>
 <tr><td><code><b>function</b> Min(Self: <b>array</b>  <b>of</b> real): real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает минимальный элемент</td></tr>
+<tr><td><code><b>function</b> Permutations&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все перестановки</td></tr>
 <tr><td><code><b>function</b> RandomElement&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайный элемент массива</td></tr>
 <tr><td><code><b>function</b> Shuffle&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): <b>array</b>  <b>of</b> T;</code>

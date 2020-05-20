@@ -895,9 +895,9 @@ begin
 end;
 
 
-var dpic := new Dictionary<string, BitmapImage>;
+var dpic := new Dictionary<string, BitmapSource>;
 
-function GetBitmapImage(fname: string): BitmapImage;
+function GetBitmapImage(fname: string): BitmapSource;
 begin
   if not dpic.ContainsKey(fname) then 
   begin
@@ -1607,6 +1607,8 @@ begin
   (canvas as MyVisualHost).children.Insert(0,myvis);
   
   bmp.Render(canvas);
+  
+  dpic[filename] := bmp;
 
   (canvas as MyVisualHost).children.RemoveAt(0);
   
