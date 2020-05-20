@@ -513,6 +513,13 @@ function TextHeight(text: string): real;
 /// Размер текста при выводе
 function TextSize(text: string): Size;
 
+/// Ширина текста при выводе заданным шрифтом
+function TextWidth(text: string; f: FontOptions): real;
+/// Высота текста при выводе заданным шрифтом
+function TextHeight(text: string; f: FontOptions): real;
+/// Размер текста при выводе заданным шрифтом
+function TextSize(text: string; f: FontOptions): Size;
+
 // -----------------------------------------------------
 //>>     Функции для вывода графиков # GraphWPF graph functions
 // -----------------------------------------------------
@@ -848,6 +855,9 @@ end;
 function TextWidthP(text: string) := FormText(text).Width;
 function TextHeightP(text: string) := FormText(text).Height;
 
+function TextWidthPFont(text: string; f: FontOptions) := FormTextFont(text,f).Width;
+function TextHeightPFont(text: string; f: FontOptions) := FormTextFont(text,f).Height;
+
 type TextV = auto class
   text: string;
   function TextWidth := TextWidthP(text);
@@ -855,6 +865,13 @@ type TextV = auto class
   function TextSize: Size;
   begin
     var ft := FormText(text);
+    Result := new Size(ft.Width,ft.Height);
+  end;
+  function TextWidthFont(f: FontOptions) := TextWidthP(text);
+  function TextHeightFont(f: FontOptions) := TextHeightP(text);
+  function TextSizeFont(f: FontOptions): Size;
+  begin
+    var ft := FormTextFont(text,f);
     Result := new Size(ft.Width,ft.Height);
   end;
 end;
@@ -1220,6 +1237,13 @@ function TextHeight(text: string) := InvokeReal(TextV.Create(text).TextHeight);
 /// Размер текста при выводе
 function TextSize(text: string): Size := Invoke&<Size>(TextV.Create(text).TextSize);
 
+function TextWidth(text: string; f: FontOptions): real := InvokeReal(()->TextV.Create(text).TextWidthFont(f));
+
+function TextHeight(text: string; f: FontOptions): real := InvokeReal(()->TextV.Create(text).TextHeightFont(f)); 
+
+function TextSize(text: string; f: FontOptions): Size := Invoke&<Size>(()->TextV.Create(text).TextSizeFont(f));
+
+
 procedure TextOutHelper(x,y: real; text: string; angle: real; x0,y0: real) := InvokeVisual(DrawTextP,x,y,text,angle,x0,y0);
 //procedure TextOut(x,y: real; number: integer) := TextOut(x,y,'' + number);
 //procedure TextOut(x,y: real; number: real) := TextOut(x,y,'' + number);
@@ -1228,7 +1252,7 @@ procedure TextOutHelper(x,y: real; text: string; angle: real; c: GColor; x0,y0: 
 //procedure TextOut(x,y: real; number: real; c: GColor) := TextOut(x,y,'' + number,c);
 procedure TextOutHelper(x,y: real; text: string; angle: real; x0,y0: real; f: FontOptions) := InvokeVisual(DrawTextPFont,x,y,text,angle,x0,y0,f);
 
-procedure DrawTextHelper(var x, y, x0, y0: real; w, h: real; text: string; align: Alignment := Alignment.Center);
+procedure DrawTextHelper(var x, y, x0, y0: real; w, h: real; text: string; align: Alignment := Alignment.Center; f: FontOptions := nil);
 begin
   if h<0 then
   begin
@@ -1240,7 +1264,7 @@ begin
     w := -w;
     x -= w;
   end;
-  var sz := TextSize(text);
+  var sz := if f=nil then TextSize(text) else TextSize(text,f);
   var dw,dh: real;
   if CurrentCoordType = StandardCoords then
     (dw,dh) := ((w-sz.Width)/2,(h-sz.Height)/2)
@@ -1273,8 +1297,6 @@ procedure DrawText(x, y, w, h: real; text: string; align: Alignment; angle: real
 begin
   var (x0,y0) := (x,y);
   DrawTextHelper(x, y, x0, y0, w, h, text, align);
-  //FillCircle(x0,y0,0.1,Colors.Blue);
-  //FillCircle(x,y,0.1,Colors.Red);
   TextOutHelper(x,y,text,angle,x0,y0)
 end;
 /// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
@@ -1309,7 +1331,7 @@ procedure DrawText(r: GRect; number: real; c: GColor; align: Alignment; angle: r
 procedure DrawText(x, y, w, h: real; text: string; f: FontOptions; align: Alignment; angle: real);
 begin
   var (x0,y0) := (x,y);
-  DrawTextHelper(x, y, x0, y0, w, h, text, align);
+  DrawTextHelper(x, y, x0, y0, w, h, text, align, f);
   TextOutHelper(x,y,text,angle,x0,y0,f)
 end;
 

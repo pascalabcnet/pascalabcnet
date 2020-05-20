@@ -3771,6 +3771,9 @@ namespace PascalABCCompiler.TreeConverter
                             }
 
                             SyntaxTreeBuilder.AddMembersForAutoClass(_class_definition,ref names,ref types);
+
+                            //if (names.Select(s => s.name.ToLower()).Distinct().Count() != names.Count)
+
                             // Отдельный цикл по синт поддереву для вылавливания events
                             foreach (var l in _class_definition.body.class_def_blocks)
                             {
