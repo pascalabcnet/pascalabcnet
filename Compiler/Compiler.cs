@@ -218,6 +218,15 @@ namespace PascalABCCompiler
         }
     }
 
+    public class AppTypeDllIsAllowedOnlyForLibraries : CompilerCompilationError
+    {
+        public AppTypeDllIsAllowedOnlyForLibraries(string FileName, SyntaxTree.SourceContext sc)
+            : base(StringResources.Get("COMPILATIONERROR_APPTYPE_DLL_IS_ALLOWED_ONLY_FOR_LIBRARIES"), FileName)
+        {
+            this.source_context = sc;
+        }
+    }
+
     public class UnitModuleExpectedLibraryFound : CompilerCompilationError
     {
         public UnitModuleExpectedLibraryFound(string FileName, SyntaxTree.SourceContext sc)
@@ -3131,10 +3140,10 @@ namespace PascalABCCompiler
         
         public static bool is_dll(SyntaxTree.compilation_unit cu)
         {
-        	foreach (SyntaxTree.compiler_directive cd in cu.compiler_directives)
-        		if (string.Compare(cd.Name.text, "apptype",true)==0 && string.Compare(cd.Directive.text,"dll",true)==0)
-        		return true;
-        	return false;
+            foreach (SyntaxTree.compiler_directive cd in cu.compiler_directives)
+                if (string.Compare(cd.Name.text, "apptype", true) == 0 && string.Compare(cd.Directive.text, "dll", true) == 0)
+                    return true;
+            return false;
         }
 
         public CompilationUnit CompileUnit(PascalABCCompiler.TreeRealization.unit_node_list Units, SyntaxTree.unit_or_namespace SyntaxUsesUnit)
@@ -3259,7 +3268,22 @@ namespace PascalABCCompiler
                         throw new NamespacesCanBeCompiledOnlyInProjects(CurrentUnit.SyntaxTree.source_context);
                     compilerOptions.UseDllForSystemUnits = false;
                 }
-                    
+
+                // SSM 21/05/20 Проверка, что мы не записали apptype dll в небиблиотеку
+
+                var ccu = CurrentUnit.SyntaxTree;
+                foreach (SyntaxTree.compiler_directive cd in ccu.compiler_directives)
+                    if (string.Compare(cd.Name.text, "apptype", true) == 0 && string.Compare(cd.Directive.text, "dll", true) == 0)
+                    {
+                        if (!(ccu is SyntaxTree.unit_module) ||
+                            (ccu is SyntaxTree.unit_module um && um.unit_name.HeaderKeyword != SyntaxTree.UnitHeaderKeyword.Library))
+                        {
+                            ErrorsList.Add(new AppTypeDllIsAllowedOnlyForLibraries(ccu.file_name, cd.source_context));
+                            break;
+                        }
+                    }
+                //
+
                 if (is_dll(CurrentUnit.SyntaxTree))
                     compilerOptions.OutputFileType = PascalABCCompiler.CompilerOptions.OutputType.ClassLibrary;
                 CurrentUnit.CaseSensitive = ParsersController.LastParser.CaseSensitive;
