@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -85,12 +100,14 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 		SideTabItemCollection items = new SideTabItemCollection();
 		SideTabStatus sideTabStatus;
 		SideTabItem   selectedItem = null;
-		SideTabItem   choosedItem  = null;
+		SideTabItem   chosenItem  = null;
 		
 		ImageList largeImageList = null;
 		ImageList smallImageList = null;
 		int       scrollIndex    = 0;
-		
+
+		float     dpiY           = 96.0F;
+
 		public bool Hidden = false;
 		
 		public int ScrollIndex {
@@ -194,37 +211,37 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 				return selectedItem;
 			}
 			set {
-				if (selectedItem != null && selectedItem != choosedItem) {
+				if (selectedItem != null && selectedItem != chosenItem) {
 					selectedItem.SideTabItemStatus = SideTabItemStatus.Normal;
 				}
 				selectedItem = value;
-				if (selectedItem != null && selectedItem != choosedItem) {
+				if (selectedItem != null && selectedItem != chosenItem) {
 					selectedItem.SideTabItemStatus = SideTabItemStatus.Selected;
 				}
 			}
 		}
 		
-		protected  void OnChoosedItemChanged(EventArgs e)
+		protected  void OnChosenItemChanged(EventArgs e)
 		{
-			if (ChoosedItemChanged != null) {
-				ChoosedItemChanged(this, e);
+			if (ChosenItemChanged != null) {
+				ChosenItemChanged(this, e);
 			}
 		}
-		public event EventHandler ChoosedItemChanged;
+		public event EventHandler ChosenItemChanged;
 		
-		public SideTabItem ChoosedItem {
+		public SideTabItem ChosenItem {
 			get {
-				return choosedItem;
+				return chosenItem;
 			}
 			set {
-				if (choosedItem != null) {
-					choosedItem.SideTabItemStatus = SideTabItemStatus.Normal;
+				if (chosenItem != null) {
+					chosenItem.SideTabItemStatus = SideTabItemStatus.Normal;
 				}
-				choosedItem = value;
-				if (choosedItem != null) {
-					choosedItem.SideTabItemStatus = SideTabItemStatus.Choosed;
+				chosenItem = value;
+				if (chosenItem != null) {
+					chosenItem.SideTabItemStatus = SideTabItemStatus.Chosen;
 				}
-				OnChoosedItemChanged(null);
+				OnChosenItemChanged(null);
 			}
 		}
 		
@@ -251,13 +268,17 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 		{
 		}
 		
-		public SideTab(ISideTabItemFactory sideTabItemFactory)
+		private SideTab(ISideTabItemFactory sideTabItemFactory)
 		{
 			SideTabItemFactory = sideTabItemFactory;
 		}
 		
 		public SideTab(SideBarControl sideBar, string name) : this(sideBar.SideTabItemFactory)
 		{
+			var g = sideBar.CreateGraphics();
+			dpiY = g.DpiY;
+			g.Dispose();
+
 			this.Name = name;
 			SetCanRename();
 			items.ItemRemoved += OnSideTabItemRemoved;
@@ -284,15 +305,17 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 		
 		public void DrawTabHeader(Graphics g, Font font, Point pos, int width)
 		{
-			switch (sideTabStatus) {
+            var sz = ScreenScale.Calc();
+            var xleft = Convert.ToInt32(3 * sz);
+            switch (sideTabStatus) {
 				case SideTabStatus.Normal:
 					ControlPaint.DrawBorder3D(g, new Rectangle(0, pos.Y, width - 4, font.Height + 4), Border3DStyle.RaisedInner);
-					g.DrawString(displayName, font, SystemBrushes.ControlText, new RectangleF(1, pos.Y + 1, width - 5, font.Height + 1));
+					g.DrawString(displayName, font, SystemBrushes.ControlText, new RectangleF(1 + xleft, pos.Y + 1, width - 5, font.Height + 1));
 					
 					break;
 				case SideTabStatus.Selected:
 					ControlPaint.DrawBorder3D(g, new Rectangle(0, pos.Y, width - 4, font.Height + 4), Border3DStyle.Sunken);
-					g.DrawString(displayName, font, SystemBrushes.ControlText, new RectangleF(1 + 1, pos.Y + 2, width - 5, font.Height + 2));
+					g.DrawString(displayName, font, SystemBrushes.ControlText, new RectangleF(1 + 1 + xleft, pos.Y + 2, width - 5, font.Height + 2));
 					break;
 				case SideTabStatus.Dragged:
 					Rectangle r = new Rectangle(0, pos.Y, width - 4, font.Height + 4);
@@ -304,14 +327,14 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 					
 					g.FillRectangle(SystemBrushes.ControlDarkDark, r);
 					
-					g.DrawString(displayName, font, SystemBrushes.HighlightText, new RectangleF(1 + 1, pos.Y + 2, width - 5, font.Height + 2));
+					g.DrawString(displayName, font, SystemBrushes.HighlightText, new RectangleF(1 + 1 + xleft, pos.Y + 2, width - 5, font.Height + 2));
 					break;
 			}
 		}
 		
 		public int Height {
 			get {
-				return Items.Count * 20;
+				return Items.Count * ItemHeight;
 			}
 		}
 		
@@ -320,7 +343,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 			for (int i = 0; i < Items.Count; ++i) {
 				SideTabItem item = (SideTabItem)Items[i];
 				if (item == whichItem) {
-					return new Point(0, i * 20);
+					return new Point(0, i * ItemHeight);
 				}
 			}
 			return new Point(-1, -1);
@@ -328,7 +351,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 		
 		public SideTabItem GetItemAt(int x, int y)
 		{
-			int index = ScrollIndex + y / 20;
+			int index = ScrollIndex + y / ItemHeight;
 			return (index >= 0 && index < Items.Count) ? (SideTabItem)Items[index] : null;
 		}
 		
@@ -339,7 +362,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 		
 		public int ItemHeight {
 			get {
-				return 20;
+				return (int)(20 * (dpiY / 96)); ;
 			}
 		}
 		
@@ -451,7 +474,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 			{
 				list.Add(item);
 			}
-						
+			
 			public virtual SideTabItem Add(string name, object content)
 			{
 				return Add(name, content, -1);
@@ -545,7 +568,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 			
 			public void CopyTo(SideTabItem[] array, int arrayIndex)
 			{
-				throw new NotImplementedException();
+				list.CopyTo(array, arrayIndex);
 			}
 		}
 	}

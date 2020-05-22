@@ -2041,12 +2041,18 @@ namespace PascalABCCompiler.TreeRealization
                 //sil = (base_type as compiled_generic_instance_type_node).original_generic.find_in_type(name, CurrentScope);
                 return sil;
             }
-                
 
-            if (sil == null && base_type is compiled_type_node && string.Compare(name, "create", true) != 0)
+            type_node base_tn = base_type;
+            if (sil == null && string.Compare(name, "create", true) != 0)
             {
-                sil = (base_type as compiled_type_node).find_in_type(name, CurrentScope);
+                while (sil == null && base_tn != null)
+                {
+                    if (base_tn is compiled_type_node)
+                        sil = (base_tn as compiled_type_node).find_in_type(name, CurrentScope);
+                    base_tn = base_tn.base_type;
+                }
             }
+            
             if (this.is_generic_parameter && sil != null)
             {
                 sil = sil?.Select(x => x.copy()).ToList();
@@ -4534,11 +4540,21 @@ namespace PascalABCCompiler.TreeRealization
                 int i=0;
                 while ((find_eq == true) && (i<bfn.simple_function_node.parameters.Count))
                 {
-                    /*var a1 = bfn.simple_function_node.parameters[i].type != dii.parameters[i].type;
-                    var a2 = bfn.simple_function_node.parameters[i].parameter_type != dii.parameters[i].parameter_type;
+                    var t1 = bfn.simple_function_node.parameters[i].type;
+                    var t2 = dii.parameters[i].type;
+                    var typesEqual = t1 == t2;
+                    // SSM 5/05/20 - Rubantsev csfml - две dll - во второй функция с параметром из первой. Типы разные 
+                    // В трёх местах по всему проекту!! 
+                    if (!typesEqual && t1 is compiled_type_node comptn1 && t2 is compiled_type_node comptn2) 
+                    {
+                        if (comptn1.compiled_type == comptn2.compiled_type || comptn1.compiled_type.AssemblyQualifiedName == comptn2.compiled_type.AssemblyQualifiedName)
+                            typesEqual = true;
+                    }
+
+                    /*var a2 = bfn.simple_function_node.parameters[i].parameter_type != dii.parameters[i].parameter_type;
                     var a3 = bfn.simple_function_node.parameters[i].is_params != dii.parameters[i].is_params;*/
                     //lroman// Добавил все, что связано с lambda_any_type_node. Считаем, что этот тип равен всем типам. Это используется при выводе параметров лямбды
-                    if ((bfn.simple_function_node.parameters[i].type != dii.parameters[i].type && !(bfn.simple_function_node.parameters[i].type is lambda_any_type_node)) ||
+                    if ((!typesEqual && !(bfn.simple_function_node.parameters[i].type is lambda_any_type_node)) ||
                         (bfn.simple_function_node.parameters[i].parameter_type != dii.parameters[i].parameter_type && !(bfn.simple_function_node.parameters[i].parameter_type is lambda_any_type_node)) 
                 	    || bfn.simple_function_node.parameters[i].is_params != dii.parameters[i].is_params)
                     {

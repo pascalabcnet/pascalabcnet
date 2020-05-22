@@ -347,7 +347,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 						ToolboxBitmapAttribute toolboxBitmapAttribute = (ToolboxBitmapAttribute)attr;
 						b = new Bitmap(toolboxBitmapAttribute.GetImage(type));
 						b.MakeTransparent();
-						break;
+                        break;
 					}
 				}
 			}
@@ -357,7 +357,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 					if (imageStream != null) {
 						b = new Bitmap(Image.FromStream(imageStream));
 						b.MakeTransparent();
-					}
+                    }
 				} catch (Exception e) {
 					ICSharpCode.Core.LoggingService.Warn("ComponentLibraryLoader.GetIcon: " + e.Message);
 				}

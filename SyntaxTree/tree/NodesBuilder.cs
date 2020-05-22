@@ -214,10 +214,12 @@ namespace PascalABCCompiler.SyntaxTree
                     }
                 }
             }
-            
+
             if (!HasConstructor)
             {
-                var fnames = names.Select(x => new ident("f" + x.name)).ToList();    
+                var fnames = names.Select(x => new ident("f" + x.name.ToLower())).ToList();
+                if (fnames.Select(x=>x.name).Distinct().Count() != names.Count) // SSM 20/05/2020 #2126
+                    return; // хак - мы не генерируем конструктор, потому что ошибка одинаковых имен выведется позже
                 var cm = BuildSimpleConstructorSection(names, fnames, types);
                 cb.Insert(0,cm);
                 //cb.class_def_blocks.Insert(0, cm);

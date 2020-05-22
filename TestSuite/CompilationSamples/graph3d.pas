@@ -2684,6 +2684,8 @@ var
   /// Событие перерисовки графического 3D-окна. 
   ///Инициализируется процедурой с вещественным параметром dt - временем, прошедшим с момента последнего обновления экрана
   OnDrawFrame: procedure(dt: real);
+  /// Событие, происходящее при закрытии основного окна
+  var OnClose: procedure;
 
 var
 // -----------------------------------------------------
@@ -3761,6 +3763,8 @@ begin
   if OnDrawFrame<>nil then
   begin
     var e1 := RenderingEventArgs(e).RenderingTime;
+    if LastUpdatedTime.Ticks = integer.MinValue then // первый раз
+      LastUpdatedTime := e1;
     var dt := e1 - LastUpdatedTime;
     if LastUpdatedTime.TotalMilliseconds<>0 then 
       if OnDrawFrame<>nil then
@@ -3899,7 +3903,11 @@ type
       hvp.PreviewTextInput += SystemOnKeyPress; // не работает
       
       hvp.Focus();
-      Closed += procedure(sender, e) -> begin Halt; end;
+      Closed += procedure(sender, e) -> begin 
+        if OnClose<>nil then 
+          OnClose;
+        Halt; 
+      end;
       
       CompositionTarget.Rendering += RenderFrame;
     end;

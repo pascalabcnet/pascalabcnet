@@ -7,6 +7,7 @@ using System.Text;
 using PascalABCCompiler.SyntaxTree;
 using SyntaxVisitors;
 using SyntaxVisitors.SugarVisitors;
+using SyntaxVisitors.CheckingVisitors;
 
 namespace PascalABCCompiler.SyntaxTreeConverters
 {
@@ -22,6 +23,9 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // new range - до всего! До выноса выражения с лямбдой из foreach
             NewRangeDesugarVisitor.New.ProcessNode(root);
 
+            // Unnamed Records перенёс сюда
+            UnnamedRecordsCheckVisitor.New.ProcessNode(root);
+
             // Выносим выражения с лямбдами из заголовка foreach
             StandOutExprWithLambdaInForeachSequenceVisitor.New.ProcessNode(root);
             VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer.New.ProcessNode(root); // SSM bug fix #1147
@@ -35,6 +39,9 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
             // tuple_node
             TupleVisitor.New.ProcessNode(root);
+
+            // index
+            IndexVisitor.New.ProcessNode(root);
 
             // assign_tuple и assign_var_tuple
             AssignTuplesDesugarVisitor.New.ProcessNode(root);

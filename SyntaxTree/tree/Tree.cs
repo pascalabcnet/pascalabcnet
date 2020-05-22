@@ -53681,6 +53681,358 @@ namespace PascalABCCompiler.SyntaxTree
 	}
 
 
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class simple_expr_with_deref : expression
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public simple_expr_with_deref()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public simple_expr_with_deref(expression _simple_expr,bool _has_deref)
+		{
+			this._simple_expr=_simple_expr;
+			this._has_deref=_has_deref;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public simple_expr_with_deref(expression _simple_expr,bool _has_deref,SourceContext sc)
+		{
+			this._simple_expr=_simple_expr;
+			this._has_deref=_has_deref;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected expression _simple_expr;
+		protected bool _has_deref;
+
+		///<summary>
+		///
+		///</summary>
+		public expression simple_expr
+		{
+			get
+			{
+				return _simple_expr;
+			}
+			set
+			{
+				_simple_expr=value;
+				if (_simple_expr != null)
+					_simple_expr.Parent = this;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public bool has_deref
+		{
+			get
+			{
+				return _has_deref;
+			}
+			set
+			{
+				_has_deref=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			simple_expr_with_deref copy = new simple_expr_with_deref();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (simple_expr != null)
+			{
+				copy.simple_expr = (expression)simple_expr.Clone();
+				copy.simple_expr.Parent = copy;
+			}
+			copy.has_deref = has_deref;
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new simple_expr_with_deref TypedClone()
+		{
+			return Clone() as simple_expr_with_deref;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (simple_expr != null)
+				simple_expr.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			simple_expr?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return simple_expr;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						simple_expr = (expression)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class index : expression
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public index()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public index(expression _index_expr,bool _inverted)
+		{
+			this._index_expr=_index_expr;
+			this._inverted=_inverted;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public index(expression _index_expr,bool _inverted,SourceContext sc)
+		{
+			this._index_expr=_index_expr;
+			this._inverted=_inverted;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected expression _index_expr;
+		protected bool _inverted;
+
+		///<summary>
+		///
+		///</summary>
+		public expression index_expr
+		{
+			get
+			{
+				return _index_expr;
+			}
+			set
+			{
+				_index_expr=value;
+				if (_index_expr != null)
+					_index_expr.Parent = this;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public bool inverted
+		{
+			get
+			{
+				return _inverted;
+			}
+			set
+			{
+				_inverted=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			index copy = new index();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (index_expr != null)
+			{
+				copy.index_expr = (expression)index_expr.Clone();
+				copy.index_expr.Parent = copy;
+			}
+			copy.inverted = inverted;
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new index TypedClone()
+		{
+			return Clone() as index;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (index_expr != null)
+				index_expr.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			index_expr?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return index_expr;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						index_expr = (expression)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
 
 }
 

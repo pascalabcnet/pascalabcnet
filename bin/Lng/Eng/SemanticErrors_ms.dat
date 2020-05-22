@@ -5,6 +5,7 @@ TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT=Too many elements on the left
 ONLY_BASE_ASSIGNMENT_FOR_TUPLE=Tuple allows only base assignment :=
 TUPLE_TYPE_ERROR=Bad element in Tuple type 
 INTEGER_VALUE_EXPECTED=Integer value expected
+INTEGER_OR_REAL_OR_CHAR_VALUE_EXPECTED=Integer, real or char value expected
 INTEGER_OR_CHAR_VALUE_EXPECTED=Integer or char value expected
 INCOMPATIBLE_DIAPASON_BOUNDS_TYPES=Incompatible diapason bounds types
 INCOMPATIBLE_TYPES_OF_ELEMENT_AND_DIAPASON=Incompatible types of element and diapason

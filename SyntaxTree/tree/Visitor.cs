@@ -1510,6 +1510,18 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_if_expr_new">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(if_expr_new _if_expr_new);
+		///<summary>
+		///Method to visit simple_expr_with_deref.
+		///</summary>
+		///<param name="_simple_expr_with_deref">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(simple_expr_with_deref _simple_expr_with_deref);
+		///<summary>
+		///Method to visit index.
+		///</summary>
+		///<param name="_index">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(index _index);
 	}
 
 

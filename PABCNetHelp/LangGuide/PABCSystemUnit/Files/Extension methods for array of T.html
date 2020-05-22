@@ -1,8 +1,10 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="AdjacentFind">
 <param name="Keyword" value="BinarySearch">
+<param name="Keyword" value="Combinations">
 <param name="Keyword" value="ConvertAll">
 <param name="Keyword" value="Fill">
+<param name="Keyword" value="FillRandom">
 <param name="Keyword" value="Find">
 <param name="Keyword" value="FindAll">
 <param name="Keyword" value="FindIndex">
@@ -10,6 +12,7 @@
 <param name="Keyword" value="FindLastIndex">
 <param name="Keyword" value="High">
 <param name="Keyword" value="IndexMax">
+<param name="Keyword" value="IndexMin">
 <param name="Keyword" value="IndexOf">
 <param name="Keyword" value="Indices">
 <param name="Keyword" value="LastIndexMax">
@@ -18,7 +21,8 @@
 <param name="Keyword" value="Low">
 <param name="Keyword" value="Max">
 <param name="Keyword" value="Min">
-<param name="Keyword" value="Replace">
+<param name="Keyword" value="Permutations">
+<param name="Keyword" value="RandomElement">
 <param name="Keyword" value="Shuffle">
 <param name="Keyword" value="Slice">
 <param name="Keyword" value="Sort">
@@ -29,12 +33,20 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит первую пару подряд идущих одинаковых элементов, используя функцию сравнения eq, и возвращает индекс первого элемента пары. Если не найден, возвращается -1</td></tr>
 <tr><td><code><b>function</b> BinarySearch&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; x: T): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет бинарный поиск в отсортированном массиве</td></tr>
+<tr><td><code><b>function</b> Combinations&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; m: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все сочетания по m элементов</td></tr>
 <tr><td><code><b>function</b> ConvertAll&lt;T, T1&gt;(Self: <b>array</b>  <b>of</b> T; converter: T-&gt;T1): <b>array</b>  <b>of</b> T1;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы массива и возвращает преобразованный массив</td></tr>
 <tr><td><code><b>function</b> ConvertAll&lt;T, T1&gt;(Self: <b>array</b>  <b>of</b> T; converter: (T,integer)-&gt;T1): <b>array</b>  <b>of</b> T1;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы массива и возвращает преобразованный массив</td></tr>
-<tr><td><code><b>procedure</b> Fill&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; f: integer -&gt; T);</code>
+<tr><td><code><b>procedure</b> Fill&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; x: T);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет элементы массива указанным значением</td></tr>
+<tr><td><code><b>procedure</b> Fill&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; f: integer-&gt;T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет элементы массива значениями, вычисляемыми по некоторому правилу</td></tr>
+<tr><td><code><b>procedure</b> FillRandom(Self: <b>array</b>  <b>of</b> integer; a,b: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет массив случайными значениями в диапазоне от a до b</td></tr>
+<tr><td><code><b>procedure</b> FillRandom(Self: <b>array</b>  <b>of</b> real; a,b: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заполняет массив случайными значениями в диапазоне от a до b</td></tr>
 <tr><td><code><b>function</b> Find&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; p: T-&gt;boolean): T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет поиск первого элемента в массиве, удовлетворяющего предикату. Если не найден, возвращается нулевое значение соответствующего типа</td></tr>
 <tr><td><code><b>function</b> FindAll&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; p: T-&gt;boolean): <b>array</b>  <b>of</b> T;</code>
@@ -51,8 +63,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет поиск индекса последнего элемента в массиве, удовлетворяющего предикату, в диапазоне индексов от 0 до start. Если не найден, возвращается -1</td></tr>
 <tr><td><code><b>function</b> High(Self: System.Array);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего элемента массива</td></tr>
-<tr><td><code><b>function</b> IndexMax&lt;T&gt;(self: <b>array</b>  <b>of</b> T; index: integer := 0): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
+<tr><td><code><b>function</b> IndexMax&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; index: integer := 0): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого максимального элемента начиная с позиции index</td></tr>
+<tr><td><code><b>function</b> IndexMin&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; index: integer := 0): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого минимального элемента начиная с позиции index</td></tr>
 <tr><td><code><b>function</b> IndexOf&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; x: T): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс первого вхождения элемента или -1 если элемент не найден</td></tr>
 <tr><td><code><b>function</b> IndexOf&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; x: T; start: integer): integer;</code>
@@ -63,14 +77,14 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов элементов одномерного массива, удовлетворяющих условию</td></tr>
 <tr><td><code><b>function</b> Indices&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; cond: (T,integer) -&gt;boolean): <b>sequence </b>  <b>of</b> integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает последовательность индексов элементов одномерного массива, удовлетворяющих условию</td></tr>
-<tr><td><code><b>function</b> LastIndexMax&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего минимального элемента</td></tr>
 <tr><td><code><b>function</b> LastIndexMax&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; index: integer): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего минимального элемента в диапазоне [0,index]</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего минимального элемента в диапазоне [0,index-1]</td></tr>
+<tr><td><code><b>function</b> LastIndexMax&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего максимального элемента</td></tr>
+<tr><td><code><b>function</b> LastIndexMin&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; index: integer): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего минимального элемента в диапазоне [0,index-1]</td></tr>
 <tr><td><code><b>function</b> LastIndexMin&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего минимального элемента</td></tr>
-<tr><td><code><b>function</b> LastIndexMin&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; index: integer): integer;  <b>where</b> T: IComparable&lt;T&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего минимального элемента в диапазоне [0,index]</td></tr>
 <tr><td><code><b>function</b> LastIndexOf&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; x: T): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает индекс последнего вхождения элемента или -1 если элемент не найден</td></tr>
 <tr><td><code><b>function</b> LastIndexOf&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; x: T; start: integer): integer;</code>
@@ -89,8 +103,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает минимальный элемент</td></tr>
 <tr><td><code><b>function</b> Min(Self: <b>array</b>  <b>of</b> real): real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает минимальный элемент</td></tr>
-<tr><td><code><b>procedure</b> Replace&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; oldValue,newValue: T);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Заменяет в массиве все вхождения одного значения на другое</td></tr>
+<tr><td><code><b>function</b> Permutations&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает все перестановки</td></tr>
+<tr><td><code><b>function</b> RandomElement&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайный элемент массива</td></tr>
 <tr><td><code><b>function</b> Shuffle&lt;T&gt;(Self: <b>array</b>  <b>of</b> T): <b>array</b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемешивает элементы массива случайным образом</td></tr>
 <tr><td><code><b>function</b> Slice&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; from, step: integer): <b>array</b>  <b>of</b> T;</code>
@@ -101,7 +117,9 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по возрастанию</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; cmp: (T,T) -&gt;integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует массив по возрастанию, используя cmp в качестве функции сравнения элементов</td></tr>
-<tr><td><code><b>procedure</b> Transform&lt;T&gt;(self: <b>array</b>  <b>of</b> T; f: T -&gt; T);</code>
+<tr><td><code><b>procedure</b> Transform&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; f: T-&gt;T);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы массива по заданному правилу</td></tr>
+<tr><td><code><b>procedure</b> Transform&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; f: (T,integer)-&gt;T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Преобразует элементы массива по заданному правилу</td></tr>
 </table>
 </body></HTML>

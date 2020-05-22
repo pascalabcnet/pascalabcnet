@@ -1434,6 +1434,7 @@ namespace PascalABCCompiler.TreeConverter
                                 {
                                     if (obj == null)
                                         obj = GetCurrentObjectReference(cmn.cont_type.Scope, cmn, loc);//new this_node(context.converted_type, loc);
+                                    
                                     common_method_call cmc = new common_method_call(cmn, obj, loc);
                                     cmc.virtual_call = !inherited_ident_processing;
                                     bfc = cmc;
@@ -3085,7 +3086,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
-                if (tp.is_generic_parameter && !tp.is_class && !(tp.base_type != null && tp.base_type.is_class))
+                if (tp.is_generic_parameter && !tp.is_class && !(tp.base_type != null && tp.base_type.is_class) && !(tp.base_type != null && tp.base_type.original_generic != null && tp.base_type.original_generic.is_class))
                     AddError(get_location(node.type_def), "OPERATOR_AS_CAN_NOT_BE_USED_WITH_GENERIC_PARAMETER_{0}_WITHOUT_CLASS_CONSTRAINT", tp.name);
                 if (tp.is_value_type)
                     AddError(get_location(node.type_def), "OPERATOR_AS_MUST_BE_USED_WITCH_A_REFERENCE_TYPE_VALUETYPE{0}", tp.PrintableName);
@@ -3579,7 +3580,8 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (_class_definition.keyword == class_keyword.Record && _class_definition.Parent is var_def_statement) // безымянная запись
             {
-                if (_class_definition.class_parents != null && _class_definition.class_parents.Count>0)
+                // SSM 27.02.12 - всё это перенес в синтаксический визитор UnnamedRecordsCheckVisitor
+                /*if (_class_definition.class_parents != null && _class_definition.class_parents.Count>0)
                     AddError(new SimpleSemanticError(get_location(_class_definition), "UNNAMED_RECORD_CANNOT_IMPLEMENT_INTERFACE"));
                 var pds = _class_definition.DescendantNodes().OfType<procedure_definition>();
                 if (pds.Count() > 0)
@@ -3589,9 +3591,9 @@ namespace PascalABCCompiler.TreeConverter
                 if (sps.Count() > 0)
                     AddError(new SimpleSemanticError(get_location(sps.First()), "UNNAMED_RECORD_CANNOT_CONTAIN_PROPERTIES"));
 
-                /*var cds = _class_definition.DescendantNodes().OfType<constructor>();
+                var cds = _class_definition.DescendantNodes().OfType<constructor>();
                 if (cds.Count() > 0)
-                    AddError(new SimpleSemanticError(get_location(cds.First()), "UNNAMED_RECORD_CANNOT_CONTAIN_CONSTRUCTORS"));*/
+                    AddError(new SimpleSemanticError(get_location(cds.First()), "UNNAMED_RECORD_CANNOT_CONTAIN_CONSTRUCTORS"));
                 if (_class_definition.body.class_def_blocks.First().access_mod.access_level != access_modifer.public_modifer)
                 {
                     var f = _class_definition.body.class_def_blocks.First();
@@ -3608,9 +3610,9 @@ namespace PascalABCCompiler.TreeConverter
                     if (loc == null)
                         loc = get_location(_class_definition);
                     AddError(new SimpleSemanticError(loc, "UNNAMED_RECORD_CANNOT_CONTAIN_SEVERAL_VISIBILITY_SECTIONS"));
-                }
-                    
-            }                                                                                                                                                                          
+                }*/
+
+            }
 
             if (_class_definition.attribute != class_attribute.None && _class_definition.body == null)
                 AddError(new SimpleSemanticError(get_location(_class_definition), "CLASS_ATTRIBUTE_NOT_ALLOWED_IN_CLASS_PREDEFINTIONS"));
@@ -3696,7 +3698,7 @@ namespace PascalABCCompiler.TreeConverter
                         }
                         else
                         {
-                            if (tn.ForwardDeclarationOnly || tn.original_generic != null && tn.original_generic.ForwardDeclarationOnly)
+                            if (convertion_data_and_alghoritms.ContainsForward(tn)) // SSM 20/05/2020 #2140
                             {
                                 AddError(get_location(_class_definition.class_parents.types[0]), "FORWARD_DECLARATION_{0}_AS_BASE_TYPE", tn.name);
                             }
@@ -3769,6 +3771,9 @@ namespace PascalABCCompiler.TreeConverter
                             }
 
                             SyntaxTreeBuilder.AddMembersForAutoClass(_class_definition,ref names,ref types);
+
+                            //if (names.Select(s => s.name.ToLower()).Distinct().Count() != names.Count)
+
                             // Отдельный цикл по синт поддереву для вылавливания events
                             foreach (var l in _class_definition.body.class_def_blocks)
                             {
@@ -9371,6 +9376,15 @@ namespace PascalABCCompiler.TreeConverter
                     bfc = create_static_method_call_with_params(fn, bfc.location, fn.return_value_type, true, bfc.parameters);
                 }
             }
+            if (bfc is common_method_call)
+            {
+                common_method_node cmn = (bfc as common_method_call).function_node;
+                if (cmn != null && cmn.is_generic_function && !cmn.is_generic_function_instance && cmn.parameters.Count == 0)
+                {
+                    cmn = (common_method_node)generic_convertions.DeduceFunction(cmn, new expressions_list(), true, context, bfc.location);
+                    bfc = new common_method_call(cmn, (bfc as common_method_call).obj, bfc.location);
+                }
+            }
             return bfc;
         }
 
@@ -9755,7 +9769,6 @@ namespace PascalABCCompiler.TreeConverter
             }
 
             try_convert_typed_expression_to_function_call(ref en);
-            
             switch (mot)
             {
                 case motivation.address_receiving:
@@ -12704,7 +12717,7 @@ namespace PascalABCCompiler.TreeConverter
                                 : null;
             if (_procedure_definition.proc_header.attributes != null && context.converted_func_stack.size >= 1)
                 AddError(get_location(_procedure_definition.proc_header), "ATTRIBUTES_FOR_NESTED_FUNCTIONS_NOT_ALLOWED");
-            if (context.top_function != null && context.top_function.generic_params != null && !LambdaHelper.IsLambdaName(proc_name))
+            if (context.top_function != null && context.top_function.generic_params != null && !LambdaHelper.IsLambdaName(proc_name) && !(_procedure_definition.proc_header is SyntaxTree.constructor))
                 AddError(get_location(_procedure_definition.proc_header), "NESTED_FUNCTIONS_IN_GENERIC_FUNCTIONS_NOT_ALLOWED");
             if (context.top_function != null && _procedure_definition.proc_header.template_args != null && !LambdaHelper.IsLambdaName(proc_name))
                 AddError(get_location(_procedure_definition.proc_header), "GENERIC_NESTED_FUNCTIONS_NOT_ALLOWED");
@@ -14309,7 +14322,13 @@ namespace PascalABCCompiler.TreeConverter
         private expression_node convert_strong_to_constant_or_function_call_for_varinit(expression_node exp, type_node tn)
         {
             if (exp is constant_node)
-                return convert_strong_to_constant_node(exp, tn);
+            {
+                possible_type_convertions pct = type_table.get_convertions(exp.type, tn);
+                if (pct.first != null && pct.first.convertion_method.IsOperator)
+                //if (convertion_data_and_alghoritms.can_convert_type(exp, tn))
+                    return convertion_data_and_alghoritms.convert_type(exp, tn);
+                else return convert_strong_to_constant_node(exp, tn);
+            }
             if (exp is array_initializer)
             {
             	//if (tn.type_special_kind != SemanticTree.type_special_kind.array_wrapper)
@@ -17696,9 +17715,9 @@ namespace PascalABCCompiler.TreeConverter
 
                 foreach (SemanticTree.ITypeNode itn in tn.ImplementingInterfaces) // если не нашли - ищем интерфейс IEnumerable и возвращаем object в качестве elem_type
                 {
-                    if (itn is compiled_type_node)
+                    if (itn is compiled_type_node) // Именно этот кусок отвечает за IEnumerable<integer> и мы его закомментировали
                     {
-                        /*var itnc = (itn as compiled_type_node).compiled_type;
+                        var itnc = (itn as compiled_type_node).compiled_type; /* SSM раскомментировал 15.05.2020 - пришла пора*/
                         if (itnc.IsGenericType)
                         {
                             var my = itnc.GetGenericTypeDefinition();// = typeof(System.Collections.Generic.IEnumerable<>)
@@ -17709,7 +17728,7 @@ namespace PascalABCCompiler.TreeConverter
                                 return true;
                             }
                         }
-                        else */
+                        else /* end SSM раскомментировал 15.05.2020 - пришла пора*/
                         if (itn == ctn)
                         {
                             elem_type = SystemLibrary.SystemLibrary.object_type;
@@ -20214,6 +20233,7 @@ namespace PascalABCCompiler.TreeConverter
                     isStaticIdent = CheckIsStaticName(found_unit.sym_info);
 
                     if (found_unit.sym_info is class_field
+                        || found_unit.sym_info is class_constant_definition // SSM #2152
                         || found_unit.sym_info is common_method_node
                         || found_unit.sym_info is common_property_node
                         || found_unit.sym_info is compiled_function_node
@@ -20367,6 +20387,15 @@ namespace PascalABCCompiler.TreeConverter
                 CheckIfCanBeMatched(tuple, length);
             }
             // !Patterns
+            // Slices
+            else if (st.typ is SemanticCheckType.SliceAssignmentTypeCompatibility)
+            {
+                var to = st.lst[0] as expression;
+                var from = st.lst[1] as expression;
+                var mc = st.lst[2] as method_call;
+                semantic_check_slice_assignment_types(to, from, mc);
+            }
+            // !Slices
             else
             {
                 AddError(get_location(st), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", (st.typ as System.Type)?.Name ?? "Unknown");

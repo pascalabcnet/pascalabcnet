@@ -876,6 +876,7 @@ window.onload = ()=>{
 </a>
 .</p>
 <hr />
+<h3>Отношение к высоко-уровневым модулям</h3>
 <p>Н.у. модули созданы как промежуточная точка между исходными библиотеками и модулями
 <a href="%D0%A1%D0%BF%D1%80%D0%B0%D0%B2%D0%BA%D0%B0%20OpenGLABC.html"><code>OpenGLABC</code></a>
 и
@@ -883,9 +884,10 @@ window.onload = ()=>{
 на случай если вы хотите использовать OpenGL и/или OpenCL, но хотите написать свою высоко-уровневую оболочку.
 Возможно, ради опыта. Возможно, ради особых оптимизаций. И т.п.</p>
 <p>Если вы будете использовать только модули <code>OpenGLABC</code> и <code>OpenCLABC</code> - данная справка вам не нужна,
-потому что <code>OpenGLABC</code> и <code>OpenCLABC</code> специально созданы так, чтоб отстранить программиста от всех сложностей
+потому что они специально созданы так, чтоб отстранить программиста от всех сложностей
 работы с неуправляемыми .dll и предоставить привычный ООП интерфейс со всевозможными удобствами.</p>
 <hr />
+<h3>Багтрагер</h3>
 <p>Если:</p>
 <ul>
 <li><p>В н.у. модулях или данной справке найдена ошибка или чего-либо не хватает;</p>
@@ -894,27 +896,6 @@ window.onload = ()=>{
 </li>
 </ul>
 <p>Пишите в <a href="https://github.com/SunSerega/POCGL/issues">issue</a>.</p>
-<hr />
-<p>Так же, в н.у. модулях (особенно в <code>OpenGL</code> и особенно в расширениях) содержится огромное количество подпрограмм.<br />
-И большинство из них требует какой-либо чистки (в основном потому что при переводе с C++
-<code>int *</code> может оказаться и указателем, и <code>var</code>-параметром, и массивом).</p>
-<p>Все разом их не проверить. Но сделать это, всё же, надо. И в записи-перечисления тоже нуждаются в проверке.<br />
-Если хотите помочь - можно писать и в issue, но лучше (и проще для вас, когда разберётесь) создать fork репозитория,
-сделать там нужные изменения и послать pull-request. Могу объяснить подробнее в <a href="https://vk.com/sun_serega">vk</a> или по <code>sunserega2@gmail.com</code>.</p>
-<p>Если будете изменять сами - вот файлы о которых вам надо знать:</p>
-<ul>
-<li><p>OpenGL | <a href="https://github.com/SunSerega/POCGL/tree/master/Packing/Template/GL/Fixers/Funcs">Контроль</a> перегрузок функций
-и их <a href="https://github.com/SunSerega/POCGL/blob/master/Packing/Template/GL/Pack%20Funcs.pas">упаковщик</a>.<br />
-+ после успешной упаковки <a href="https://github.com/SunSerega/POCGL/blob/master/Packing/Template/GL/Log/FinalFuncOverloads.log">этот</a>
-файл показывает готовые списки перегрузок каждой подпрограммы в том же синтаксисе.</p>
-</li>
-<li><p>OpenGL | <a href="https://github.com/SunSerega/POCGL/tree/master/Packing/Template/GL/Fixers/Enums">Контроль</a> значений перечислений
-и их <a href="https://github.com/SunSerega/POCGL/blob/master/Packing/Template/GL/Pack%20Enums.pas">упаковщик</a>.</p>
-</li>
-<li><p>Для создания .pas и .pcu файлов модулей в корне репозитория есть PackAll.pas и .bat файлы.</p>
-</li>
-</ul>
-<p>(<code>OpenCL.pas</code> в ближайшее время получит такие же отдельные контроллеры и упаковщики, но пока что всё вручную, в .pas файле)</p>
 </div>
 <script>on_page_added(document.getElementById("page-1"))</script>
 <div id="page-2" page_name="О неуправляемых .dll" hidden=true>
@@ -927,8 +908,49 @@ window.onload = ()=>{
 <p>OpenCL.dll и OpenGL.dll созданы на- и для языков C/C++, поэтому являются неуправляемыми.</p>
 </div>
 <script>on_page_added(document.getElementById("page-2"))</script>
+<div id="page-3" page_name="Участие в разработке н.у. модулей" hidden=true>
+<p>Большинство функций из н.у. модулей требует какой-либо чистки. В основном потому что
+при переводе с C++ тип <code>int*</code> может оказаться и указателем, и <code>var</code>-параметром, и массивом.</p>
+<p>При автоматическом переводе кода с C++ на паскаль - создаются все возможные перегркзки.
+А те перегрузки, которые не подходят конкретным подпрограммам - надо убирать вручную.
+В этом и состоит чистка подпрограмм.</p>
+<p>Все разом функции не почистишь, в одном только <code>OpenGL</code> их &gt;3000. Но сделать это, всё же, надо.
+Если хотите помочь - можно писать и в issue, но лучше (и проще для вас, когда разберётесь) создать fork репозитория,
+сделать там нужные изменения и послать pull-request. Могу объяснить подробнее в <a href="https://vk.com/sun_serega">vk</a> или по <code>sunserega2@gmail.com</code>.</p>
+<hr />
+<p>Чтоб чистить подпрограммы было проще - я написал несколько инструментов.
+Вся упаковка н.у. модулей находится <a href="https://github.com/SunSerega/POCGL/tree/master/Packing/Template">тут</a>.
+Откройте папку <code>CL</code> или <code>GL</code>. Они устроены одинаково, поэтому объяснять можно на любой из них.</p>
+<p>Все файлы (кроме .exe и .pdb, которые создаёт паскаль) в этих папках
+открываются любым текстовым редактором (но я рекомендую Notepad++).</p>
+<hr />
+<h3>Fixers</h3>
+<p>Контроль содержимого модуля находится в папке <code>Fixers</code>. В этой папке есть следующие подпапки:</p>
+<ul>
+<li><code>Funcs</code> - контроль подпрограмм;</li>
+<li><code>Enums</code> - контроль записей-перечислений;</li>
+<li><code>Structs</code> - контроль просто записей (записей-контейнеров, если хотите).</li>
+</ul>
+<p>Во всех папках находится файл <code>ReadMe.md</code>, объясняющий синтаксис.</p>
+<hr />
+<h3>MiscInput</h3>
+<p><code>MiscInput</code> содержит другие данные, используемые при создании модулей, которые имеют разные значения для OpenCL и OpenGL.</p>
+<p>Синтаксис у всех предельно прост. Не вижу смысла объяснять подробнее.</p>
+<hr />
+<h3>Log</h3>
+<p><code>Log</code> содержит логи последней сборки соответствующего модуля.</p>
+<p>Они в основном используются чтоб было проще увидеть на что именно
+повлияли ваши изменения и как (используя проверку изменений git'а).</p>
+<p>Но файл <code>FinalFuncOverloads.log</code> так же особо полезен перед
+началом чистки, чтоб увидеть какие перегрузки уже есть.</p>
+<hr />
+<p>Чтоб применить фиксеры и посмотреть на что они влияют - вызывайте <code>Pack Most.pas</code>.</p>
+<p>Ну а чтоб полностью собрать модули - вызывайте <code>PackAll.exe</code> в корне репозитория.<br />
+(или <code>.bat</code> файлы там же, для сборки отдельно 1 модуля)</p>
+</div>
+<script>on_page_added(document.getElementById("page-3"))</script>
 <script>on_end_folder()</script>
-<div id="page-3" page_name="" hidden=true>
+<div id="page-4" page_name="" hidden=true>
 <h1>В кратце:</h1>
 <ul>
 <li>Н.у. модули представляют весь возможный функционал из своих соответствующих .dll;</li>
@@ -952,19 +974,20 @@ window.onload = ()=>{
 <li><a path="Особые типы модуля OpenGL"> Особые типы модуля <code>OpenGL</code>	</a></li>
 </ul>
 </div>
-<script>on_start_folder("Основные принципы", document.getElementById("page-3"))</script>
-<div id="page-4" page_name="Записи-имена" hidden=true>
+<script>on_start_folder("Основные принципы", document.getElementById("page-4"))</script>
+<div id="page-5" page_name="Записи-имена" hidden=true>
 <p>В исходных библиотеках обращение ко всем объектам идёт по &quot;именам&quot; (их так же можно назвать дескрипторами или id этих объектов).</p>
 <p>Имена объектов - это числа (в OpenGL обычно на 32 бита, в OpenCL - зависит от битности системы).</p>
-<p>Чтоб имя одного типа объектов нельзя было передать в подпрограмму, принимающую имена
-объектов другого типа - в н.у. модулях для каждого типа объектов описана подобная запись:</p>
+<p>Чтоб в подпрограмму, принимающую имена объектов определённого типа нельзя было передать имя
+объекта неправильного типа - в н.у. модулях для каждого типа объектов описана подобная запись:</p>
 <pre><code>  BufferName = record
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     public static property Zero: BufferName read default(BufferName);
+    public static property Size: integer read Marshal.SizeOf&amp;&lt;UInt32&gt;;
   end;
 </code></pre>
-<p>Такой подход не замедляет готовую программу, но позволяет отловить на этапе компиляции некоторые ошибки.</p>
+<p>Такой подход не замедляет готовую программу, но позволяет отловить некоторые ошибки на этапе компиляции.</p>
 <p>Поле <code>.val</code> и конструктор публичны только на случай ошибки в перегрузках,
 то есть если подпрограмма принемает неправильный тип имени.</p>
 <p>В обычной ситуации - вы будете взаимодействовать с именами только 3 способами:</p>
@@ -992,12 +1015,11 @@ MyProc(default(BufferName));
 <p>У настоящих объектов имя никогда не будет нулевым.</p>
 <p>Но бывает не мало случаев когда исходные библиотеки могут принимать нулевое имя.<br />
 К примеру, привязка шейдера с нулевым именем в OpenGL отменяет предыдущую привязку шейдера.</p>
-<p>И в своих подпрограммах вы так же можете определить особое поведение при передачи нулевого имени.</p>
 </li>
 </ol>
 </div>
-<script>on_page_added(document.getElementById("page-4"))</script>
-<div id="page-5" page_name="Записи-перечисления" hidden=true>
+<script>on_page_added(document.getElementById("page-5"))</script>
+<div id="page-6" page_name="Записи-перечисления" hidden=true>
 <p>Многие параметры подпрограмм в исходных библиотеках принимают перечисления (enum's).</p>
 <p>Перечисления, как и имена, это числа. Но в отличии от имён - перечисления принимают заданные заранее константные значения.</p>
 <p>В качестве примера:</p>
@@ -1050,14 +1072,14 @@ gl.BeginQuery(QueryTarget.VERTICES_SUBMITTED, name);
 	ClearBufferMask.DEPTH_BUFFER_BIT    // очистка буфера глубины - обязательна при рисовании 3D
 );
 </code></pre>
-<p><code>or</code>, в данном случае, побитовое а не логическое. Поэтому его нельзя читать как &quot;или&quot;:</p>
+<p><code>or</code>, в данном случае, побитовое, а не логическое.</p>
 <p>Выражение<br />
 <code>ClearBufferMask.COLOR_BUFFER_BIT or ClearBufferMask.DEPTH_BUFFER_BIT</code><br />
 можно читать как &quot;все биты <code>COLOR_BUFFER_BIT</code> + все биты <code>DEPTH_BUFFER_BIT</code>&quot;.</p>
 <p>А в случае <code>gl.Clear</code> эта комбинация значит &quot;очистить буфер цвета <strong>и</strong> буфер глубины&quot;</p>
 </div>
-<script>on_page_added(document.getElementById("page-5"))</script>
-<div id="page-6" page_name="Классы-контейнеры подпрограмм" hidden=true>
+<script>on_page_added(document.getElementById("page-6"))</script>
+<div id="page-7" page_name="Классы-контейнеры подпрограмм" hidden=true>
 <p>Все подпрограммы исходных библиотек можно разделить на подпрограммы ядра + множество мелких расширений.</p>
 <hr />
 <p>Все подпрограммы ядра находятся в классе <code>gl</code>/<code>cl</code> для OpenGL/OpenCL соответственно.</p>
@@ -1105,28 +1127,17 @@ glDebugOutputAMD.DebugMessageEnableAMD(...);
 </ul>
 <p>Оба этих класса работают как класс <code>cl</code>, то есть им <strong>не</strong> надо создавать экземпляр.</p>
 <hr />
-<p>И последнее что вам надо знать об этих классах: если адрес определённой подпрограммы не удалось получить
-(к примеру, при попытке получить адрес подпрограммы из более новой версии OpenGL, чем установлена в драйверах),
-то возвращается нулевой адрес.</p>
-<p>Адрес можно проверить через специальное поле класса:</p>
-<pre><code>if gl.z_BindTextures_adr=IntPtr.Zero then ... ;
-// Так же можно проверить адрес одной из перегрузок:
-if gl.z_BindTextures_ovr_0=nil then ... ;
-</code></pre>
-<p>Для подпрограмм, подключаемых с помощью <code>external</code> (всё из OpenCL + <code>wgl</code>+<code>gdi</code> + функции из <code>gl</code> версий OpenGL1.1 и ниже)
-адрес хранится в статичном поле. То есть их адрес можно читать только через имя класса:</p>
-<pre><code>// У &quot;external&quot; подпрограмм нет &quot;z_*_adr&quot; поля
-if OpenGL.gl.z_BindTexture_ovr0=nil then ... ;
-// Если экземпляра класса нет - обращаться к имени класса можно и без &quot;OpenGL.&quot;
-if wgl.z_CreateContext_ovr0=nil then ... ;
-</code></pre>
-<p>Однако проверять адрес это, в целом, плохая практика.</p>
-<p>К примеру, узнать поддерживаемую версию <code>OpenGL</code> и список поддерживаемых расширений можно функцией <code>gl.GetString(...)</code>.
-И такой подход на много правильнее чем создавать экземпляр расширения и смотреть, что с адресами его подпрограмм.</p>
-<p>Адреса подпрограмм доступны публично только чтоб упростить вам жизнь при поиске ошибок.</p>
+<p>И последнее что вам надо знать об этих классах: Если вы получаете <code>NullReferenceException</code>:</p>
+<ol>
+<li><p>Скорее всего вы попытались вызвать подпрограмму, которой нет в реализации библиотеки на вашем компьютере.<br />
+Проверьте версию библиотеки, или, если это подпрограмма из расширения - проверьте существование у вас этого расширения.</p>
+</li>
+<li><p>Так же, возможно, проблема в н.у. модуле. Если вы уверены что п.1. вас не касается - напишите в issue.</p>
+</li>
+</ol>
 </div>
-<script>on_page_added(document.getElementById("page-6"))</script>
-<div id="page-7" page_name="Особые типы модуля OpenGL" hidden=true>
+<script>on_page_added(document.getElementById("page-7"))</script>
+<div id="page-8" page_name="Особые типы модуля OpenGL" hidden=true>
 <p>Библиотека <code>OpenGL.dll</code> имеет несколько функций, принимающих
 вектора и матрицы (в основном для передачи значений в шейдеры).</p>
 <p>В модуле <code>OpenGL</code> для каждого типа вектора и матрицы описана отдельная запись.
@@ -1423,9 +1434,9 @@ var s := m.ToString;
 <p>Но если выводить на форму, то придётся специально поставить моноширный шрифт.<br />
 А если выводить в файл, надо выбрать кодировку файла - юникод (UTF).</p>
 </div>
-<script>on_page_added(document.getElementById("page-7"))</script>
+<script>on_page_added(document.getElementById("page-8"))</script>
 <script>on_end_folder()</script>
-<div id="page-8" page_name="" hidden=true>
+<div id="page-9" page_name="" hidden=true>
 <p>Большинство проблем при использовании неуправляемых .dll вытекают из следующих 2 различий:</p>
 <ol>
 <li><p>В .Net строки и массивы это стандартные типы, доступные для всех .Net языков.</p>
@@ -1461,8 +1472,8 @@ var s := m.ToString;
 <li><a path="Делегаты"						>	Делегаты						</a></li>
 </ul>
 </div>
-<script>on_start_folder("Маршлинг управляемых типов", document.getElementById("page-8"))</script>
-<div id="page-9" page_name="Тесты эффектов сборщика мусора" hidden=true>
+<script>on_start_folder("Маршлинг управляемых типов", document.getElementById("page-9"))</script>
+<div id="page-10" page_name="Тесты эффектов сборщика мусора" hidden=true>
 <p>Кроме удаления неиспользуемых экземпляров классов, сборщик мусора так же может произвольно
 перемещать используемые объекты, более плотно упаковая их в памяти.</p>
 <p>И он прекрасно справляется с тем, чтоб сделать эти перемещения незаметными, в обычных ситуациях.
@@ -1618,7 +1629,7 @@ end.
 <p>Вся безопастность зависит только от объявления подпрограммы. Если подпрограмма принимает:</p>
 <ul>
 <li><p>Массив или <code>var</code>-параметр:<br />
-Пока вызов не завершится - сборщик мусора НЕ будет передвигать объект в памяти.</p>
+Пока вызов неуправляемой подпрограммы не завершится - сборщик мусора НЕ будет передвигать объект в памяти.</p>
 </li>
 <li><p>Указатель в любом виде (типизированный, безтиповый или даже обёрнутый в запись вроде <code>IntPtr</code>):<br />
 Передавать адрес содержимого класса НЕ безопастно.</p>
@@ -1629,8 +1640,8 @@ end.
 </li>
 </ul>
 </div>
-<script>on_page_added(document.getElementById("page-9"))</script>
-<div id="page-10" page_name="var-параметры" hidden=true>
+<script>on_page_added(document.getElementById("page-10"))</script>
+<div id="page-11" page_name="var-параметры" hidden=true>
 <p>В .Net <code>var</code>-параметры реализованы через указатели. То есть эти 2 кода:</p>
 <pre><code>procedure p1(var i: integer);
 begin
@@ -1667,8 +1678,8 @@ end.
 <p>А захваченные лямбдой локальные переменные превращаются в поля специального анонимного
 класса, поэтому, опять же, могут быть перемещены даже если у них размерный тип.</p>
 </div>
-<script>on_page_added(document.getElementById("page-10"))</script>
-<div id="page-11" page_name="Массивы" hidden=true>
+<script>on_page_added(document.getElementById("page-11"))</script>
+<div id="page-12" page_name="Массивы" hidden=true>
 <p>В .Net массивы хранят не только содержимое, но и данные о своём размере.</p>
 <p>А в C++ вместо обычных массивов используется безформенная область памяти.<br />
 При её выделении - в переменную записывается указатель <code>[0]</code> элемента.
@@ -1745,8 +1756,8 @@ end;
 Когда происходит вызов с массивом определённой размерности - создавать новый делегат
 в виде динамичного метода, с помощью <code>System.Reflection.Emit</code>, если его ещё нет в словаре.</p>
 </div>
-<script>on_page_added(document.getElementById("page-11"))</script>
-<div id="page-12" page_name="Строки" hidden=true>
+<script>on_page_added(document.getElementById("page-12"))</script>
+<div id="page-13" page_name="Строки" hidden=true>
 <p>Как и массивы - неуправляемые строки это указатель на первый символ строки.<br />
 Но со строками ещё сложнее - исходные библиотеки хранят строки в кодировке ANSI (1 байт на символ).<br />
 А управляемые строки - хранят символы в кодировке Unicode (2 байта на символ).</p>
@@ -1770,9 +1781,9 @@ end;
 <li>Полученные бинарные файлы подключать в виде <code>$resource</code>, читать как массив байт и его уже передавать неуправляемому коду вместо строки.</li>
 </ol>
 </div>
-<script>on_page_added(document.getElementById("page-12"))</script>
-<div id="page-13" page_name="Делегаты" hidden=true>
-<p>Делегат - это адрес подпрограмм:</p>
+<script>on_page_added(document.getElementById("page-13"))</script>
+<div id="page-14" page_name="Делегаты" hidden=true>
+<p>Делегат - это адрес подпрограммы:</p>
 <pre><code>procedure p1(i: integer);
 begin
   Writeln(i);
@@ -1795,28 +1806,26 @@ end.
 <p>Так же как обычные подпрограммы - подпрограммы из неуправляемых .dll могут принимать делегаты параметром.<br />
 Далее всё будет рассматриваться на примере <code>cl.SetEventCallback</code> из модуля <code>OpenCL</code>, потому что с ним есть особые проблемы.</p>
 <div class="spoiler" summary="Объявления" hidden="true"><p>Объявление <code>cl.SetEventCallback</code>:</p>
-<pre><code>    static function SetEventCallback(&amp;event: cl_event; command_exec_callback_type: CommandExecutionStatus; pfn_notify: Event_Callback; user_data: pointer): ErrorCode;
-    external 'opencl.dll' name 'clSetEventCallback';
-    static function SetEventCallback(&amp;event: cl_event; command_exec_callback_type: CommandExecutionStatus; pfn_notify: IntPtr; user_data: pointer): ErrorCode;
-    external 'opencl.dll' name 'clSetEventCallback';
+<pre><code>    static function SetEventCallback(&amp;event: cl_event; command_exec_callback_type: CommandExecutionStatus; pfn_notify: EventCallback; user_data: IntPtr): ErrorCode;
 </code></pre>
-<p>Объявление <code>Event_Callback</code>:</p>
-<pre><code>  Event_Callback = procedure(&amp;event: cl_event; event_command_exec_status: CommandExecutionStatus; user_data: pointer);
+<p>Объявление <code>EventCallback</code>:</p>
+<pre><code>  EventCallback = procedure(&amp;event: cl_event; event_command_status: CommandExecutionStatus; user_data: IntPtr);
 </code></pre>
 </div>
 <p>Рассмотрим следующий пример:</p>
-<pre><code>uses OpenCL;
+<pre><code>uses System;
+uses OpenCL;
 
 begin
   
-  var cb: Event_Callback := (ev,st,data)-&gt;
+  var cb: EventCallback := (ev,st,data)-&gt;
   begin
     Writeln($'{ev} перешёл в состояние {st}');
   end;
   
   var ev: cl_event; //ToDo := ...
   
-  cl.SetEventCallback(ev, CommandExecutionStatus.COMPLETE, cb, nil).RaiseIfError;
+  cl.SetEventCallback(ev, CommandExecutionStatus.COMPLETE, cb,IntPtr.Zero).RaiseIfError;
 end.
 </code></pre>
 <p>Этот код будет может время от времени вылетать, потому что:</p>
@@ -1831,19 +1840,20 @@ end.
 <p>Раз после вызова <code>cl.SetEventCallback</code> делегат <code>cb</code> больше нигде не используется - сборщик мусора может в любой момент
 решить удалить его. Но, опять же, это редко случается сразу после вызова <code>cl.SetEventCallback</code>,
 поэтому ошибки связанные с этим удалением могут быть плавающие.</p>
-<p>Если сборщик мусора удалит делегат, а затем OpenCL.dll попытается его вызвать -
+<p>Если сборщик мусора удалит делегат, а затем .dll попытается его вызвать -
 это приведёт или к ошибке доступа, или к моментальному беззвучному вылету.</p>
 <p>Чтоб запретить сборщику мусора удалять делегать - нужно создать <code>GCHandle</code>, привязанный к нему.<br />
 Но в отличии от массивов - <code>GCHandleType.Pinned</code> не нужно, потому что сборщик мусора может перемещать
-в памяти данные о параметрах делегата, но не сам адрес (а он единственное что передаётся в OpenCL.dll).
-Это потому что адрес хранится в виде неуправляемого делегата, а им сборщик мусора уже не распоряжается.</p>
+в памяти данные о параметрах делегата, но не сам адрес (а он единственное что передаётся в .dll).
+Это потому что адрес хранится в виде указателя на неуправляемый код.</p>
 <pre><code>uses System.Runtime.InteropServices;
+uses System;
 uses OpenCL;
 
 begin
   
   var gc_hnd: GCHandle;
-  var cb: Event_Callback := (ev,st,data)-&gt;
+  var cb: EventCallback := (ev,st,data)-&gt;
   begin
     
     Writeln($'{ev} перешёл в состояние {st}');
@@ -1856,11 +1866,11 @@ begin
   
   var ev: cl_event; //ToDo := ...
   
-  cl.SetEventCallback(ev, CommandExecutionStatus.COMPLETE, cb, nil).RaiseIfError;
+  cl.SetEventCallback(ev, CommandExecutionStatus.COMPLETE, cb,IntPtr.Zero).RaiseIfError;
 end.
 </code></pre>
 </div>
-<script>on_page_added(document.getElementById("page-13"))</script>
+<script>on_page_added(document.getElementById("page-14"))</script>
 <script>on_end_folder()</script>
 <script>on_end_folder()</script>
 </body>
