@@ -4698,7 +4698,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             common_method_node cmn = new common_method_node(
-                AcessorName, loc, cf.cont_type,
+                AcessorName, loc, /*cf.cont_type,*/  cpn.comprehensive_type as common_type_node,
                 cf.polymorphic_state, context.get_field_access_level(), null);
             cpn.common_comprehensive_type.methods.AddElement(cmn);
             cmn.return_value_type = cf.type;
