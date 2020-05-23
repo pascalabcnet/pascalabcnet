@@ -4293,6 +4293,11 @@ namespace PascalABCCompiler.TreeConverter
                             AddError(loc1, "NAME_IN_PROPERTY_READ_SECTION_MUST_BE_FIELD_OR_METHOD_NAME");
                         }
 
+                        /*if (sil.FirstOrDefault().scope != context.CurrentScope) // SSM 22/05/20
+                        {
+                            AddError(loc1, "NAME_IN_PROPERTY_READ_SECTION_MUST_BE_FIELD_OR_METHOD_NAME");
+                        }*/
+
                         //dn = check_name_node_type(_simple_property.accessors.read_accessor.accessor_name.name,
                         //    si, loc1, general_node_type.function_node, general_node_type.variable_node);
 
@@ -4427,6 +4432,11 @@ namespace PascalABCCompiler.TreeConverter
                             AddError(loc2, "NAME_IN_PROPERTY_WRITE_SECTION_MUST_BE_FIELD_OR_METHOD_NAME");
                         }
 
+                        /*if (sil.FirstOrDefault().scope != context.CurrentScope) // SSM 22/05/20
+                        {
+                            AddError(loc2, "NAME_IN_PROPERTY_WRITE_SECTION_MUST_BE_FIELD_OR_METHOD_NAME");
+                        }*/
+
                         //dn = check_name_node_type(_simple_property.accessors.write_accessor.accessor_name.name,
                         //    si, loc2, general_node_type.function_node, general_node_type.variable_node);
 
@@ -4504,30 +4514,31 @@ namespace PascalABCCompiler.TreeConverter
                             }
                             write_accessor = GenerateSetMethod(pn, write_accessor as common_method_node, pn.loc);
                         }
-                            else
+                        else
+                        {
+                            class_field cfield = sil.FirstOrDefault().sym_info as class_field;
+                            if (cfield == null)
                             {
-                                class_field cfield = sil.FirstOrDefault().sym_info as class_field;
-                                if (cfield == null)
-                                {
-                                    AddError(loc2, "ACCESSOR_CAN_BE_FIELD_OR_METHOD_ONLY");
-                                }
-                                if (_simple_property.parameter_list != null)
-                                {
-                                    AddError(loc2, "INDEX_PROPERTY_ACCESSOR_CAN_NOT_BE_VARIABLE");
-                                }
-                                if (cfield.type != pn.internal_property_type)
-                                {
-                                    AddError(loc2, "PROPERTY_TYPE_MISMATCH_ACCESSOR_FIELD_TYPE");
-                                }
-                                if (pn.polymorphic_state == SemanticTree.polymorphic_state.ps_static && cfield.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
-                        			AddError(get_location(_simple_property.accessors.write_accessor.accessor_name), "ACCESSOR_{0}_MUST_BE_STATIC", cfield.name);
-                    			if (pn.polymorphic_state != SemanticTree.polymorphic_state.ps_static && cfield.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
-                        			AddError(get_location(_simple_property.accessors.write_accessor.accessor_name), "ACCESSOR_{0}_CANNOT_BE_STATIC", cfield.name);
-                                write_accessor = GenerateSetMethodForField(pn, compiler_string_consts.GetSetAccessorName(pn.name), cfield, loc2);
+                                AddError(loc2, "ACCESSOR_CAN_BE_FIELD_OR_METHOD_ONLY");
                             }
-                            //Вот здесь уже можем добавить акцессор для чтения.
-                            pn.internal_set_function = write_accessor;
+
+                            if (_simple_property.parameter_list != null)
+                            {
+                                AddError(loc2, "INDEX_PROPERTY_ACCESSOR_CAN_NOT_BE_VARIABLE");
+                            }
+                            if (cfield.type != pn.internal_property_type)
+                            {
+                                AddError(loc2, "PROPERTY_TYPE_MISMATCH_ACCESSOR_FIELD_TYPE");
+                            }
+                            if (pn.polymorphic_state == SemanticTree.polymorphic_state.ps_static && cfield.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
+                        		AddError(get_location(_simple_property.accessors.write_accessor.accessor_name), "ACCESSOR_{0}_MUST_BE_STATIC", cfield.name);
+                    		if (pn.polymorphic_state != SemanticTree.polymorphic_state.ps_static && cfield.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
+                        		AddError(get_location(_simple_property.accessors.write_accessor.accessor_name), "ACCESSOR_{0}_CANNOT_BE_STATIC", cfield.name);
+                            write_accessor = GenerateSetMethodForField(pn, compiler_string_consts.GetSetAccessorName(pn.name), cfield, loc2);
                         }
+                        //Вот здесь уже можем добавить акцессор для чтения.
+                        pn.internal_set_function = write_accessor;
+                    }
                     if (pn.internal_set_function != null && pn.polymorphic_state == SemanticTree.polymorphic_state.ps_static && pn.internal_set_function.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
                         AddError(get_location(_simple_property.accessors.write_accessor.accessor_name), "ACCESSOR_{0}_MUST_BE_STATIC", pn.internal_set_function.name);
                     if (pn.internal_set_function != null && pn.polymorphic_state != SemanticTree.polymorphic_state.ps_static && pn.internal_set_function.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
@@ -4702,7 +4713,7 @@ namespace PascalABCCompiler.TreeConverter
                 var_ref = new static_class_field_reference(cf, loc);
             }
             cmn.function_code = new return_node(var_ref, loc);
-            cf.cont_type.scope.AddSymbol(AcessorName, new SymbolInfo(cmn));
+            cf.cont_type.Scope.AddSymbol(AcessorName, new SymbolInfo(cmn)); // scope -> Scope SSM 23/05/20 - 
             return cmn;
         }
 
