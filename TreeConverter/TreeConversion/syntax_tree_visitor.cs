@@ -4652,7 +4652,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             common_method_node cmn = new common_method_node(
-                AcessorName, loc, cf.cont_type,
+                AcessorName, loc, /*cf.cont_type,*/ cpn.comprehensive_type as common_type_node,
                 cf.polymorphic_state, context.get_field_access_level(), null);
             cpn.common_comprehensive_type.methods.AddElement(cmn);
             common_parameter cp = new common_parameter(
@@ -4671,7 +4671,7 @@ namespace PascalABCCompiler.TreeConverter
                 var_ref = new static_class_field_reference(cf, loc);
             }
             cmn.function_code = find_operator(compiler_string_consts.assign_name, var_ref, cpr, loc);
-            cf.cont_type.scope.AddSymbol(AcessorName, new SymbolInfo(cmn));
+            cf.cont_type.Scope.AddSymbol(AcessorName, new SymbolInfo(cmn));
             return cmn;
         }
 
