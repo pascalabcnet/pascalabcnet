@@ -541,6 +541,11 @@ namespace PascalABCCompiler.TreeRealization
 			}
 		}
 
+        public void SetName(string name)
+        {
+            _name = name;
+        }
+
         //TODO: Нужно ли is_overload для basic_function_node?
 		public bool is_overload
 		{

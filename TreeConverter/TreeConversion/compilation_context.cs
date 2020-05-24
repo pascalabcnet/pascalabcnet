@@ -1019,10 +1019,12 @@ namespace PascalABCCompiler.TreeConverter
         
         private void add_notequal_operator_if_need()
         {
-        	SymbolInfo si = _ctn.find_first_in_type(compiler_string_consts.noteq_name);
-        	if (si.sym_info is common_method_node)
-        		return;
-        	SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.scope, _cmn.scope, null, si.ToString());
+            List<SymbolInfo> si_list = _ctn.find_in_type(compiler_string_consts.noteq_name);
+            foreach (SymbolInfo si2 in si_list)
+                if (si2.sym_info is common_method_node)
+                    return;
+            SymbolInfo si = si_list[0];
+            SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.scope, _cmn.scope, null, si.ToString());
         	common_method_node cmn = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.noteq_name),SystemLibrary.SystemLibrary.bool_type,null,_ctn,
         	                                                SemanticTree.polymorphic_state.ps_static,SemanticTree.field_access_level.fal_public,scope);
         	cmn.IsOperator = true;
@@ -1053,10 +1055,12 @@ namespace PascalABCCompiler.TreeConverter
         
         private void add_equal_operator_if_need()
         {
-        	SymbolInfo si = _ctn.find_first_in_type(compiler_string_consts.eq_name);
-        	if (si.sym_info is common_method_node)
-        		return;
-        	SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope( _ctn.scope, _cmn.scope, null,  si.ToString());
+        	List<SymbolInfo> si_list = _ctn.find_in_type(compiler_string_consts.eq_name);
+            foreach (SymbolInfo si2 in si_list)
+        	    if (si2.sym_info is common_method_node)
+        		    return;
+            SymbolInfo si = si_list[0];
+            SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope( _ctn.scope, _cmn.scope, null,  si.ToString());
         	common_method_node cmn = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.eq_name),SystemLibrary.SystemLibrary.bool_type,null,_ctn,
         	                                                SemanticTree.polymorphic_state.ps_static,SemanticTree.field_access_level.fal_public,scope);
         	cmn.IsOperator = true;
