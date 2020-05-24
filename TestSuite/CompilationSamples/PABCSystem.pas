@@ -2700,6 +2700,8 @@ function InternalRange(l,r: char): CharRange;
 ///--
 function InternalRange(l,r: real): RealRange;
   
+///--
+function IsInputPipedOrRedirectedFromFile: boolean;
   
 // -----------------------------------------------------
 //                  Internal procedures for PABCRTL.dll
