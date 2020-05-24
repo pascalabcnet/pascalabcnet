@@ -1878,6 +1878,14 @@ namespace PascalABCCompiler.TreeRealization
             {
                 foreach (SymbolInfo si in start)
                 {
+                    if (si.sym_info == null)
+                    {
+                        if (rez_start == null)
+                            rez_start = new List<SymbolInfo>();
+                        rez_start.Add(si);
+                        continue;
+                    }
+                        
                     // Бурмистров Артем 13.06.19 begin
                     // Поправил странное поведение для локальных переменных, у которых не generic тип
                     // Исправление для #1993
