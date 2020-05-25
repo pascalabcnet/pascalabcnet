@@ -42,8 +42,9 @@ type
   GPen = System.Windows.Media.Pen;
   /// Тип точки
   Point = System.Windows.Point;
-  /// Тип точки
+  /// Тип вектора
   GPoint = System.Windows.Point;
+  Vector = System.Windows.Vector;
   GBrush = System.Windows.Media.Brush;
   /// Тип стиля шрифта
   FontStyle = (Normal,Bold,Italic,BoldItalic);
@@ -236,7 +237,7 @@ type
 //>>     Класс Vector # Vector class
 // -----------------------------------------------------
   /// Класс Vector
-  Vector =  class
+  {Vector =  class
   public
     x,y: real;
     /// Создаёт вектор с указанными координатами
@@ -246,9 +247,7 @@ type
     static function operator*(r: real; v: Vector): Vector := new Vector(r*v.x,r*v.y);
     static function operator+(v: Vector; p: Point): Point := new Point(p.x+v.x,p.y+v.y);
     static function operator+(p: Point; v: Vector): Point := new Point(p.x+v.x,p.y+v.y);
-    //static function operator implicit(t: (real,real)): Vector := new Vector(t[0],t[1]);
-    //static function operator implicit(t: (integer,integer)): Vector := new Vector(t[0],t[1]);
-  end;
+  end;}
   
 //{{{--doc: Конец секции 2 }}} 
   
