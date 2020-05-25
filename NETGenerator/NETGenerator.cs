@@ -3483,8 +3483,9 @@ namespace PascalABCCompiler.NETGenerator
                 PushIntConst(il, i - 2 - rank);
                 ILGenerator ilb = this.il;
 
-                if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && !ti.tp.IsEnum)
-                    il.Emit(OpCodes.Ldelema, ti.tp);
+                if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && (helper.IsConstructedGenericType(ti.tp) || ti.tp.IsGenericType || !ti.tp.IsEnum))
+                    if (!(ti.tp is EnumBuilder))
+                        il.Emit(OpCodes.Ldelema, ti.tp);
 
                 this.il = il;
                 exprs[i].visit(this);
