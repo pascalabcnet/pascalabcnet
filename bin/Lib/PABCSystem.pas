@@ -2249,6 +2249,18 @@ function ReadArrString(prompt: string; n: integer): array of string;
 function Matr<T>(m,n: integer; params data: array of T): array [,] of T;
 /// Возвращает двумерный массив, заполненный значениями из одномерных массивов 
 function Matr<T>(params aa: array of array of T): array [,] of T;
+/// Генерирует двумерный массив по массиву массивов строк
+function MatrByRow<T>(a: array of array of T): array [,] of T;
+/// Генерирует двумерный массив по последовательности массивов строк
+function MatrByRow<T>(a: sequence of array of T): array [,] of T;
+/// Генерирует двумерный массив по последовательности последовательностей строк
+function MatrByRow<T>(a: sequence of sequence of T): array [,] of T;
+/// Генерирует двумерный массив по массиву массивов столбцов
+function MatrByCol<T>(a: array of array of T): array [,] of T;
+/// Генерирует двумерный массив по последовательности массивов столбцов
+function MatrByCol<T>(a: sequence of array of T): array [,] of T;
+/// Генерирует двумерный массив по последовательности последовательностей столбцов
+function MatrByCol<T>(a: sequence of sequence of T): array [,] of T;
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
@@ -10672,15 +10684,45 @@ begin
     yield Self[i, k];
 end;
 
+/// Возвращает массив строк двумерного массива 
+function Rows<T>(Self: array [,] of T): array of array of T; extensionmethod;
+type ArrT = array of T;
+begin
+  var m := Self.RowCount;
+  var n := Self.ColCount;
+  var a := new ArrT[m];
+  for var i := 0 to m - 1 do
+    a[i] := new T[n];
+  for var i := 0 to m - 1 do
+  for var j := 0 to n - 1 do
+    a[i][j] := Self[i,j];
+  Result := a;
+end;
+
+/// Возвращает массив строк двумерного массива 
+function Cols<T>(Self: array [,] of T): array of array of T; extensionmethod;
+type ArrT = array of T;
+begin
+  var m := Self.RowCount;
+  var n := Self.ColCount;
+  var a := new ArrT[n];
+  for var j := 0 to n - 1 do
+    a[j] := new T[m];
+  for var j := 0 to n - 1 do
+  for var i := 0 to m - 1 do
+    a[j][i] := Self[i,j];
+  Result := a;
+end;
+
 /// Возвращает последовательность строк двумерного массива 
-function Rows<T>(Self: array [,] of T): sequence of sequence of T; extensionmethod;
+function RowsSeq<T>(Self: array [,] of T): sequence of sequence of T; extensionmethod;
 begin
   for var i := 0 to Self.RowCount - 1 do
     yield Self.RowSeq(i);
 end;
 
 /// Возвращает последовательность столбцов двумерного массива 
-function Cols<T>(Self: array [,] of T): sequence of sequence of T; extensionmethod;
+function ColsSeq<T>(Self: array [,] of T): sequence of sequence of T; extensionmethod;
 begin
   for var j := 0 to Self.ColCount - 1 do
     yield Self.ColSeq(j);
@@ -10920,10 +10962,106 @@ begin
   var r := new T[aa.Length,cols];
   
   for var i:=0 to aa.Length-1 do
-    for var j:=0 to aa[i].Length-1 do
-      r[i,j] := aa[i][j];
+  for var j:=0 to aa[i].Length-1 do
+    r[i,j] := aa[i][j];
   
   Result := r;
+end;
+
+/// Генерирует двумерный массив по массиву массивов строк
+function MatrByRow<T>(a: array of array of T): array [,] of T;
+begin
+  var m := a.Length;
+  var n := if m = 0 then 0 else a.Max(aa -> aa.Length);
+  var res := new T[m,n];
+  for var i := 0 to m - 1 do
+  for var j := 0 to a[i].Length-1 do
+    res[i,j] := a[i][j];
+  Result := res;
+end;
+
+/// Генерирует двумерный массив по последовательности массивов строк
+function MatrByRow<T>(a: sequence of array of T): array [,] of T;
+begin
+  var m := a.Count;
+  var n := if m = 0 then 0 else a.Max(aa -> aa.Length);
+  var res := new T[m,n];
+  var i := 0;
+  foreach var aa in a do
+  begin  
+    for var j := 0 to aa.Length-1 do
+      res[i,j] := aa[j];
+    i += 1;    
+  end;
+  Result := res;
+end;
+
+/// Генерирует двумерный массив по последовательности последовательностей строк
+function MatrByRow<T>(a: sequence of sequence of T): array [,] of T;
+begin
+  var m := a.Count;
+  var n := if m = 0 then 0 else a.First.Count;
+  var res := new T[m,n];
+  var i := 0;
+  foreach var aa in a do
+  begin
+    var j := 0;  
+    foreach var x in aa do
+    begin  
+      res[i,j] := x;
+      j += 1;
+    end;  
+    i += 1;    
+  end;
+  Result := res;
+end;
+
+/// Генерирует двумерный массив по массиву массивов столбцов
+function MatrByCol<T>(a: array of array of T): array [,] of T;
+begin
+  var n := a.Length;
+  var m := if n = 0 then 0 else a.Select(aa -> aa.Length).Max;
+  var res := new T[m,n];
+  for var j := 0 to n - 1 do
+  for var i := 0 to a[j].Length-1 do
+    res[i,j] := a[j][i];
+  Result := res;
+end;
+
+/// Генерирует двумерный массив по последовательности массивов столбцов
+function MatrByCol<T>(a: sequence of array of T): array [,] of T;
+begin
+  var n := a.Count;
+  var m := if n = 0 then 0 else a.Select(aa -> aa.Length).Max;
+  var res := new T[m,n];
+  var j := 0;
+  foreach var aa in a do
+  begin  
+    for var i := 0 to aa.Length-1 do
+      res[i,j] := aa[i];
+    j += 1;
+  end;
+  Result := res;
+end;
+
+/// Генерирует двумерный массив по последовательности последовательностей столбцов
+function MatrByCol<T>(a: sequence of sequence of T): array [,] of T;
+begin
+  var n := a.Count;
+  var m := if n = 0 then 0 else a.First.Count;
+  var res := new T[m,n];
+  var j := 0;
+  foreach var aa in a do
+  begin
+    var i := 0;
+    foreach var x in aa do
+    begin  
+      res[i,j] := x;
+      i += 1;
+    end;  
+    j += 1;
+  end;
+  Result := res;
 end;
 
 // Реализация операций с матрицами - только после введения RowCount и ColCount

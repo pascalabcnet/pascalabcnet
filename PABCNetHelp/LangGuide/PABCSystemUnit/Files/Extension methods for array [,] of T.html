@@ -3,6 +3,7 @@
 <param name="Keyword" value="ColCount">
 <param name="Keyword" value="Cols">
 <param name="Keyword" value="ColSeq">
+<param name="Keyword" value="ColsSeq">
 <param name="Keyword" value="ConvertAll">
 <param name="Keyword" value="ElementsByCol">
 <param name="Keyword" value="ElementsByRow">
@@ -18,6 +19,7 @@
 <param name="Keyword" value="RowCount">
 <param name="Keyword" value="Rows">
 <param name="Keyword" value="RowSeq">
+<param name="Keyword" value="RowsSeq">
 <param name="Keyword" value="SetCol">
 <param name="Keyword" value="SetRow">
 <param name="Keyword" value="SwapCols">
@@ -29,10 +31,12 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k-тый столбец двумерного массива</td></tr>
 <tr><td><code><b>function</b> ColCount&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; оличество столбцов в двумерном массиве</td></tr>
-<tr><td><code><b>function</b> Cols&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>sequence </b>  <b>of</b> <b>sequence </b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает последовательность столбцов двумерного массива</td></tr>
+<tr><td><code><b>function</b> Cols&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>array</b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает массив строк двумерного массива</td></tr>
 <tr><td><code><b>function</b> ColSeq&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k: integer): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k-тый столбец двумерного массива как последовательность</td></tr>
+<tr><td><code><b>function</b> ColsSeq&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>sequence </b>  <b>of</b> <b>sequence </b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает последовательность столбцов двумерного массива</td></tr>
 <tr><td><code><b>function</b> ConvertAll&lt;T, T1&gt;(Self: <b>array</b> [,]  <b>of</b> T; converter: T-&gt;T1): <b>array</b> [,]  <b>of</b> T1;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует элементы двумерного массива и возвращает преобразованный массив</td></tr>
 <tr><td><code><b>function</b> ConvertAll&lt;T, T1&gt;(Self: <b>array</b> [,]  <b>of</b> T; converter: (T,integer,integer)-&gt;T1): <b>array</b> [,]  <b>of</b> T1;</code>
@@ -55,6 +59,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕримен€ет действие к каждому элементу двумерного массива</td></tr>
 <tr><td><code><b>function</b> Indices&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; cond: T -&gt; boolean): <b>sequence </b>  <b>of</b> (integer, integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает по заданному двумерному массиву последовательность индексов элементов, удовлетвор€ющих заданному условию</td></tr>
+<tr><td><code><b>function</b> Indices&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; cond: (T,integer,integer) -&gt; boolean): <b>sequence </b>  <b>of</b> (integer, integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает по заданному двумерному массиву последовательность индексов элементов, удовлетвор€ющих заданному условию</td></tr>
 <tr><td><code><b>function</b> MatrSlice&lt;T&gt;(Self: array[,]  <b>of</b> T; RowIndex: <b>array</b>  <b>of</b> integer; ColIndex: <b>array</b>  <b>of</b> integer): array[,]  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает срез двумерного массива. RowIndex и ColIndex задают срезаемые строки и столбцы</td></tr>
 <tr><td><code><b>function</b> MatrSlice&lt;T&gt;(Self: array[,]  <b>of</b> T; FromRow, ToRow, FromCol, ToCol: integer): array[,]  <b>of</b> T;</code>
@@ -71,10 +77,12 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k-та€ строка двумерного массива</td></tr>
 <tr><td><code><b>function</b> RowCount&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; оличество строк в двумерном массиве</td></tr>
-<tr><td><code><b>function</b> Rows&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>sequence </b>  <b>of</b> <b>sequence </b>  <b>of</b> T;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает последовательность строк двумерного массива</td></tr>
+<tr><td><code><b>function</b> Rows&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>array</b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает массив строк двумерного массива</td></tr>
 <tr><td><code><b>function</b> RowSeq&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k: integer): <b>sequence </b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k-та€ строка двумерного массива как последовательность</td></tr>
+<tr><td><code><b>function</b> RowsSeq&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T): <b>sequence </b>  <b>of</b> <b>sequence </b>  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает последовательность строк двумерного массива</td></tr>
 <tr><td><code><b>procedure</b> SetCol&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k: integer; a: <b>array</b>  <b>of</b> T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ћен€ет столбец k двумерного массива на другой столбец</td></tr>
 <tr><td><code><b>procedure</b> SetCol&lt;T&gt;(Self: <b>array</b> [,]  <b>of</b> T; k: integer; a: <b>sequence </b>  <b>of</b> T);</code>
