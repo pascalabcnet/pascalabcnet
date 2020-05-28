@@ -42,9 +42,11 @@ type
   GPen = System.Windows.Media.Pen;
   /// Тип точки
   Point = System.Windows.Point;
-  /// Тип вектора
+  /// Тип точки
   GPoint = System.Windows.Point;
+  /// Тип вектора
   Vector = System.Windows.Vector;
+  /// Тип кисти
   GBrush = System.Windows.Media.Brush;
   /// Тип стиля шрифта
   FontStyle = (Normal,Bold,Italic,BoldItalic);

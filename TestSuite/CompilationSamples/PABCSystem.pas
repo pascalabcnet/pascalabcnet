@@ -10699,7 +10699,7 @@ begin
   Result := a;
 end;
 
-/// Возвращает массив строк двумерного массива 
+/// Возвращает массив столбцов двумерного массива 
 function Cols<T>(Self: array [,] of T): array of array of T; extensionmethod;
 type ArrT = array of T;
 begin

@@ -13841,7 +13841,7 @@ namespace PascalABCCompiler.TreeConverter
                             SymbolInfo si = new SymbolInfo(context.top_function);
                             si.symbol_kind = symbol_kind.sk_overload_function;
                             top_function.ConnectedToType.Scope.AddSymbol(top_function.name, si);
-                            if (top_function.ConnectedToType.type_special_kind == SemanticTree.type_special_kind.array_kind && top_function.ConnectedToType.element_type.is_generic_parameter)
+                            if (top_function.ConnectedToType.type_special_kind == SemanticTree.type_special_kind.array_kind /*&& top_function.ConnectedToType.element_type.is_generic_parameter*/)
                                 top_function.ConnectedToType.base_type.Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
                             else if (top_function.ConnectedToType.is_generic_parameter)
                                 top_function.ConnectedToType.base_type.Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
