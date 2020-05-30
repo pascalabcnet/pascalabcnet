@@ -1,5 +1,6 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="AdjacentFind">
+<param name="Keyword" value="ArrEqual">
 <param name="Keyword" value="BinarySearch">
 <param name="Keyword" value="Combinations">
 <param name="Keyword" value="ConvertAll">
@@ -31,6 +32,8 @@
 </HEAD><body><H1>Методы расширения одномерных динамических массивов</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> AdjacentFind&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; eq: (T,T)-&gt;boolean; start: integer := 0): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Находит первую пару подряд идущих одинаковых элементов, используя функцию сравнения eq, и возвращает индекс первого элемента пары. Если не найден, возвращается -1</td></tr>
+<tr><td><code><b>function</b> ArrEqual&lt;T&gt;(Self,b: <b>array</b>  <b>of</b> T): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает, совпадают ли массивы</td></tr>
 <tr><td><code><b>function</b> BinarySearch&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; x: T): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выполняет бинарный поиск в отсортированном массиве</td></tr>
 <tr><td><code><b>function</b> Combinations&lt;T&gt;(Self: <b>array</b>  <b>of</b> T; m: integer): <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T;</code>

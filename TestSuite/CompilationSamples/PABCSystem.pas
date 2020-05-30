@@ -2120,8 +2120,11 @@ procedure Reverse(var s: string);
 procedure Reverse(var s: string; index, count: integer);
 /// Перемешивает динамический массив случайным образом
 procedure Shuffle<T>(a: array of T);
+/// Сравнивает матрицы на равенство
+function MatrEqual<T>(a, b: array [,] of T): boolean;
 /// Перемешивает список случайным образом
 procedure Shuffle<T>(l: List<T>);
+
 
 // -----------------------------------------------------
 //>>     Подпрограммы для генерации последовательностей # Subroutines for sequence generation
@@ -2242,6 +2245,9 @@ function ReadArrReal(prompt: string; n: integer): array of real;
 /// Выводит приглашение к вводу и возвращает массив из n строк, введенных с клавиатуры
 function ReadArrString(prompt: string; n: integer): array of string;
 
+/// Возвращает, совпадают ли массивы
+function ArrEqual<T>(a, b: array of T): boolean;
+
 // -----------------------------------------------------
 //>>     Подпрограммы для создания двумерных динамических массивов # Subroutines for matrixes 
 // -----------------------------------------------------
@@ -2249,18 +2255,25 @@ function ReadArrString(prompt: string; n: integer): array of string;
 function Matr<T>(m,n: integer; params data: array of T): array [,] of T;
 /// Возвращает двумерный массив, заполненный значениями из одномерных массивов 
 function Matr<T>(params aa: array of array of T): array [,] of T;
+
 /// Генерирует двумерный массив по массиву массивов строк
 function MatrByRow<T>(a: array of array of T): array [,] of T;
 /// Генерирует двумерный массив по последовательности массивов строк
 function MatrByRow<T>(a: sequence of array of T): array [,] of T;
 /// Генерирует двумерный массив по последовательности последовательностей строк
 function MatrByRow<T>(a: sequence of sequence of T): array [,] of T;
+/// Генерирует двумерный массив по строкам из последовательности
+function MatrByRow<T>(m,n: integer; a: sequence of T): array [,] of T;
+
 /// Генерирует двумерный массив по массиву массивов столбцов
 function MatrByCol<T>(a: array of array of T): array [,] of T;
 /// Генерирует двумерный массив по последовательности массивов столбцов
 function MatrByCol<T>(a: sequence of array of T): array [,] of T;
 /// Генерирует двумерный массив по последовательности последовательностей столбцов
 function MatrByCol<T>(a: sequence of sequence of T): array [,] of T;
+/// Генерирует двумерный массив по столбцам из последовательности
+function MatrByCol<T>(m,n: integer; a: sequence of T): array [,] of T;
+
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
@@ -2770,6 +2783,7 @@ const
   BAD_COL_INDEX_FROM = 'FromCol выходит за пределы индексов строк двумерного массива!!FromCol is out of range of 2-dim array column indexes';
   BAD_COL_INDEX_TO = 'ToCol выходит за пределы индексов строк двумерного массива!!ToCol is out of range of 2-dim array column indexes';
   SLICE_SIZE_AND_RIGHT_VALUE_SIZE_MUST_BE_EQUAL = 'Размеры среза и присваиваемого выражения должны быть равны!!Slice size and assigned expression size must be equal';
+  MATR_DIMENSIONS_MUST_BE_EQUAL = 'Размеры матриц должны совпадать!!Matrix dimensions must be equal';
 
 // -----------------------------------------------------
 //                  WINAPI
@@ -4830,6 +4844,21 @@ begin
   Result := nil;
   raise new System.ArgumentException('Функцию ReadArrString запрещено вызывать без параметров')
 end;
+
+function ArrEqual<T>(a, b: array of T): boolean;
+begin
+  Result := True;
+  if a.Length<>b.Length then
+    Result := False
+  else
+    for var i:=0 to a.Length-1 do
+      if a[i]<>b[i] then
+      begin
+        Result := False;
+        exit;
+      end;
+end;
+
 
 
 function ReadSeqInteger(n: integer): sequence of integer;
@@ -10604,6 +10633,29 @@ begin
   Result := Self.GetLength(1);
 end;
 
+/// Количество столбцов в двумерном массиве
+function Size<T>(Self: array [,] of T): (integer,integer); extensionmethod;
+begin
+  Result := (Self.GetLength(0),Self.GetLength(1));
+end;
+
+/// Есть ли элемент в матрице
+function operator in<T>(x: T; a: array[,] of T): boolean; extensionmethod;
+begin
+  var (m,n) := a.Size;
+  Result := False;
+  for var i:=0 to m-1 do
+  for var j:=0 to n-1 do
+    if a[i,j]=x then
+    begin
+      Result := True;
+      exit;
+    end;
+end;
+
+/// Есть ли элемент в матрице
+function MatrEqual<T>(Self,b: array[,] of T): boolean; extensionmethod := MatrEqual(Self,b);
+
 /// Вывод двумерного массива, w - ширина поля вывода
 function Print<T>(Self: array [,] of T; w: integer := 4): array [,] of T; extensionmethod;
 begin
@@ -11016,6 +11068,28 @@ begin
   Result := res;
 end;
 
+/// Генерирует двумерный массив по строкам из последовательности
+function MatrByRow<T>(m,n: integer; a: sequence of T): array [,] of T;
+begin
+  var res := new T[m,n];
+  var (i,j,num) := (0,0,0);
+  foreach var x in a do
+  begin
+    if num >= m*n then
+      break;
+    res[i,j] := x;
+    num += 1;
+    j += 1;
+    if j >= n then
+    begin
+      j := 0;
+      i += 1;
+    end;
+  end;
+  Result := res;
+end;
+
+
 /// Генерирует двумерный массив по массиву массивов столбцов
 function MatrByCol<T>(a: array of array of T): array [,] of T;
 begin
@@ -11060,6 +11134,27 @@ begin
       i += 1;
     end;  
     j += 1;
+  end;
+  Result := res;
+end;
+
+/// Генерирует двумерный массив по столбцам из последовательности
+function MatrByCol<T>(m,n: integer; a: sequence of T): array [,] of T;
+begin
+  var res := new T[m,n];
+  var (i,j,num) := (0,0,0);
+  foreach var x in a do
+  begin
+    if num >= m*n then
+      break;
+    res[i,j] := x;
+    num += 1;
+    i += 1;
+    if i >= m then
+    begin
+      i := 0;
+      j += 1;
+    end;
   end;
   Result := res;
 end;
@@ -11131,6 +11226,24 @@ begin
       Result[i, j] := ReadReal;
 end;
 
+function MatrEqual<T>(a, b: array [,] of T): boolean;
+begin
+  var (m1,n1) := a.Size;
+  var (m2,n2) := b.Size;
+  Result := True;
+  if (m1<>m2) or (n1<>n2) then
+    Result := False
+  else
+    for var i:=0 to m1-1 do
+    for var j:=0 to n1-1 do
+      if a[i,j]<>b[i,j] then
+      begin
+        Result := False;
+        exit;
+      end;
+end;
+
+
 // -----------------------------------------------------
 //>>     Методы расширения одномерных динамических массивов # Extension methods for array of T
 // -----------------------------------------------------
@@ -11142,6 +11255,9 @@ end;
 // Дополнения март 2020: RandomElement, FillRandom
 
 // Дополнения май 2020: Combinations, Permutations
+
+/// Возвращает, совпадают ли массивы
+function ArrEqual<T>(Self,b: array of T): boolean; extensionmethod := ArrEqual(Self,b);
 
 /// Заполняет массив случайными значениями в диапазоне от a до b
 procedure FillRandom(Self: array of integer; a,b: integer); extensionmethod;
