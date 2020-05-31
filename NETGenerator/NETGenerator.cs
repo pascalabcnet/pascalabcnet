@@ -1204,7 +1204,8 @@ namespace PascalABCCompiler.NETGenerator
                             throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
                         }
                         else
-                            throw ex;
+                            throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
+                            //throw ex;
                     }
                     else
                         throw ex;
