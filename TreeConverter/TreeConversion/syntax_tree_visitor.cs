@@ -13696,7 +13696,7 @@ namespace PascalABCCompiler.TreeConverter
                                 is_virtual = true;
                                 virtual_proc_attr = _procedure_attributes_list.proc_attributes[i].name;
                                 if (!is_abstract)
-                                context.set_virtual(cmn);
+                                    context.set_virtual(cmn);
                             }
                             break;
                         }
@@ -13728,6 +13728,8 @@ namespace PascalABCCompiler.TreeConverter
                             if (_procedure_attributes_list.proc_attributes[i].attribute_type == SyntaxTree.proc_attribute.attr_reintroduce)
                             {
                                 cmn.IsReintroduce = true;
+                                if (is_abstract)
+                                    cmn.newslot_awaited = true;
                                 break;
                             }
                             if (_procedure_attributes_list.proc_attributes[i].attribute_type == SyntaxTree.proc_attribute.attr_override && is_virtual)
@@ -13742,7 +13744,11 @@ namespace PascalABCCompiler.TreeConverter
                             
                             context.set_override(cmn);
                             if (is_abstract)
+                            {
                                 cmn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual_abstract;
+                                
+                            }
+                                
                             if (cmn.field_access_level < cmn.overrided_method.field_access_level)
                                 AddError(cmn.loc, "CAN_NOT_BE_DOWN_ACCESS_LEVEL_FOR_METH");
                             break;
@@ -13810,6 +13816,8 @@ namespace PascalABCCompiler.TreeConverter
                             if (context.converted_type.IsSealed)
                                 AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "ABSTRACT_METHOD_IN_SEALED_CLASS");
                             context.converted_type.SetIsAbstract(true);
+                            if (cmn.IsReintroduce)
+                                cmn.newslot_awaited = true;
                             break;
                 		}
                     case proc_attribute.attr_extension:
