@@ -18052,13 +18052,13 @@ namespace PascalABCCompiler.TreeConverter
             //Формируем список параметров инстанцирования
             tparams = visit_type_list(_template_type_reference.params_list.params_list);
 
-            type_node t = instance_any(tclass, tparams, get_location(_template_type_reference));
+            type_node t = instance_any(tclass, tparams, get_location(_template_type_reference), _template_type_reference);
             return_value(t);
         }
 
-        public type_node instance_any(template_class tc, List<type_node> template_params, location loc)
+        public type_node instance_any(template_class tc, List<type_node> template_params, location loc, template_type_reference ttr=null)
         {
-            common_type_node t = instance(tc, template_params, loc);
+            common_type_node t = instance(tc, template_params, loc, ttr);
             if (tc.is_synonym)
             {
                 return t.fields[0].type;
@@ -18066,7 +18066,7 @@ namespace PascalABCCompiler.TreeConverter
             return t;
         }
 
-        public common_type_node instance(template_class tc, List<type_node> template_params, location loc)
+        public common_type_node instance(template_class tc, List<type_node> template_params, location loc, template_type_reference used_ttr = null)
         {
             //Проверяем, что попытка инстанцирования корректна
             SyntaxTree.class_definition cl_def = tc.type_dec.type_def as SyntaxTree.class_definition;
@@ -18208,7 +18208,26 @@ namespace PascalABCCompiler.TreeConverter
             //Разбор тела класса
             if (tc.is_synonym)
             {
+                Dictionary<type_definition, SourceContext> saved_sc_dict = new Dictionary<type_definition, SourceContext>();
+                saved_sc_dict.Add(tc.type_dec.type_def, tc.type_dec.type_def.source_context);
+                tc.type_dec.type_def.source_context = loc;
+                
+                if (tc.type_dec.type_def is template_type_reference)
+                {
+                    template_type_reference ttr = tc.type_dec.type_def as template_type_reference;
+                    for (int i = 0; i < ttr.params_list.params_list.Count; i++)
+                    {
+                        var prm = ttr.params_list.params_list[i];
+                        saved_sc_dict.Add(prm, prm.source_context);
+                        if (used_ttr != null && i < used_ttr.params_list.params_list.Count)
+                            prm.source_context = used_ttr.params_list.params_list[i].source_context;
+                        else
+                            prm.source_context = loc;
+                    }
+                }
                 type_node synonym_value = convert_strong(tc.type_dec.type_def);
+                foreach (type_definition td in saved_sc_dict.Keys)
+                    td.source_context = saved_sc_dict[td];
                 ctn.fields.AddElement(new class_field(compiler_string_consts.synonym_value_name,
                     synonym_value, ctn, PascalABCCompiler.SemanticTree.polymorphic_state.ps_static,
                     PascalABCCompiler.SemanticTree.field_access_level.fal_public, null));
