@@ -869,6 +869,50 @@ namespace PascalABCCompiler.PCU
         }
         //\ssyy
 		
+        
+        private void AddIndirectUsedUnitsForType(type_node tn, Dictionary<common_namespace_node, bool> ns_dict, bool interf)
+        {
+            if (tn is common_type_node)
+            {
+                common_namespace_node comp_cnn = (tn as common_type_node).comprehensive_namespace;
+                if (comp_cnn != null && !ns_dict.ContainsKey(comp_cnn))
+                {
+                    if (interf)
+                        unit.InterfaceUsedUnits.AddElement(comp_cnn.cont_unit);
+                    else
+                        unit.ImplementationUsedUnits.AddElement(comp_cnn.cont_unit);
+                    ns_dict[comp_cnn] = true;
+                }
+            }
+        }
+
+        private void AddIndirectUsedUnitsInStatement(statement_node stmt, Dictionary<common_namespace_node, bool> ns_dict, bool interf)
+        {
+            if (stmt == null)
+                return;
+            if (stmt is statements_list)
+            {
+                statements_list stmt_list = stmt as statements_list;
+                foreach (local_block_variable lv in stmt_list.local_variables)
+                {
+                    AddIndirectUsedUnitsForType(lv.type, ns_dict, interf);
+                }
+                foreach (statement_node st in stmt_list.statements)
+                    AddIndirectUsedUnitsInStatement(st, ns_dict, interf);
+            }
+            
+        }
+
+        private void AddIndirectUsedUnitsInVariables<T>(IEnumerable<T> variables, Dictionary<common_namespace_node, bool> ns_dict, bool interf) where T: var_definition_node
+        {
+            if (variables == null)
+                return;
+            foreach (var lv in variables)
+            {
+                AddIndirectUsedUnitsForType(lv.type, ns_dict, interf);
+            }
+        }
+
         private void AddIndirectInteraceUsedUnits()
         {
             if (cun.namespaces.Count == 0)
@@ -893,19 +937,28 @@ namespace PascalABCCompiler.PCU
                     {
                         foreach (common_parameter cp in cmn.parameters)
                         {
-                            if (cp.type is common_type_node)
-                            {
-                                common_namespace_node comp_cnn = (cp.type as common_type_node).comprehensive_namespace;
-                                if (comp_cnn != null && !interf_ns_dict.ContainsKey(comp_cnn))
-                                {
-                                    unit.InterfaceUsedUnits.AddElement(comp_cnn.cont_unit);
-                                    interf_ns_dict[comp_cnn] = true;
-                                }
-                            }
+                            AddIndirectUsedUnitsForType(cp.type, interf_ns_dict, true);
                         }
                     }
+                    AddIndirectUsedUnitsInVariables(cmn.var_definition_nodes_list, interf_ns_dict, true);
+                    AddIndirectUsedUnitsInStatement(cmn.function_code, interf_ns_dict, true);
+                    if (cmn.return_value_type != null)
+                        AddIndirectUsedUnitsForType(cmn.return_value_type, interf_ns_dict, true);
                 }
+                AddIndirectUsedUnitsInVariables(ctn.fields, interf_ns_dict, true);
             }
+            foreach (common_namespace_function_node cnfn in cnn.functions)
+            {
+                AddIndirectUsedUnitsInVariables(cnfn.var_definition_nodes_list, interf_ns_dict, true);
+                AddIndirectUsedUnitsInStatement(cnfn.function_code, interf_ns_dict, true);
+                if (cnfn.return_value_type != null)
+                    AddIndirectUsedUnitsForType(cnfn.return_value_type, interf_ns_dict, true);
+            }
+            AddIndirectUsedUnitsInVariables(cnn.variables, interf_ns_dict, true);
+            if (cun.main_function != null)
+                AddIndirectUsedUnitsInStatement(cun.main_function.function_code, interf_ns_dict, true);
+            if (cun.finalization_method != null)
+                AddIndirectUsedUnitsInStatement(cun.finalization_method.function_code, interf_ns_dict, true);
         }
         
         private void AddIndirectImplementationUsedUnits()
@@ -932,19 +985,24 @@ namespace PascalABCCompiler.PCU
                     {
                         foreach (common_parameter cp in cmn.parameters)
                         {
-                            if (cp.type is common_type_node)
-                            {
-                                common_namespace_node comp_cnn = (cp.type as common_type_node).comprehensive_namespace;
-                                if (comp_cnn != null && !impl_ns_dict.ContainsKey(comp_cnn))
-                                {
-                                    unit.ImplementationUsedUnits.AddElement(comp_cnn.cont_unit);
-                                    impl_ns_dict[comp_cnn] = true;
-                                }
-                            }
+                            AddIndirectUsedUnitsForType(cp.type, impl_ns_dict, false);
                         }
                     }
+                    AddIndirectUsedUnitsInVariables(cmn.var_definition_nodes_list, impl_ns_dict, false);
+                    AddIndirectUsedUnitsInStatement(cmn.function_code, impl_ns_dict, false);
+                    if (cmn.return_value_type != null)
+                        AddIndirectUsedUnitsForType(cmn.return_value_type, impl_ns_dict, false);
                 }
+                AddIndirectUsedUnitsInVariables(ctn.fields, impl_ns_dict, false);
             }
+            foreach (common_namespace_function_node cnfn in cnn.functions)
+            {
+                AddIndirectUsedUnitsInVariables(cnfn.var_definition_nodes_list, impl_ns_dict, false);
+                AddIndirectUsedUnitsInStatement(cnfn.function_code, impl_ns_dict, true);
+                if (cnfn.return_value_type != null)
+                    AddIndirectUsedUnitsForType(cnfn.return_value_type, impl_ns_dict, true);
+            }
+            AddIndirectUsedUnitsInVariables(cnn.variables, impl_ns_dict, true);
         }
         
         //заполнение списка подключаемых модулей
