@@ -1981,9 +1981,6 @@ namespace PascalABCCompiler
                     List<TreeRealization.compiler_directive> ResourceDirectives = compilerDirectives[TreeConverter.compiler_string_consts.compiler_directive_resource];
                     foreach (TreeRealization.compiler_directive cd in ResourceDirectives)
                     {
-                        //ToDo раньше тут была проверка "d.location.doc==null", но я не вижу от чего оно может быть null
-                        // если это что то типа ресурса в ".pabcproj" файле - надо использовать "compilerOptions.SourceFileDirectory" в качестве базового пути
-                        // но только когда "d.location.doc==null", иначе сломаются ресурсы в модулях uses-in
                         var resource_fname = Path.Combine(Path.GetDirectoryName(cd.source_file), cd.directive);
                         
                         if (File.Exists(resource_fname))
