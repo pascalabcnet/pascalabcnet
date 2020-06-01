@@ -1818,14 +1818,14 @@ namespace PascalABCCompiler
                 Units = new PascalABCCompiler.TreeRealization.unit_node_list();
                 CurrentSyntaxUnit = new SyntaxTree.uses_unit_in(null, new SyntaxTree.string_const(CompilerOptions.SourceFileName));
                 
-                CompileUnit(Units, CurrentSyntaxUnit);
+                CompileUnit(Units, CurrentSyntaxUnit, null);
                 
                 //Console.WriteLine(timer.ElapsedMilliseconds / 1000.0);  //////
                 foreach (CompilationUnit CurrentUnit in UnitsToCompile)
                     if (CurrentUnit.State != UnitState.Compiled)
                     {
                         CurrentCompilationUnit = CurrentUnit;
-                        string UnitName = GetUnitFileName(CurrentUnit.SyntaxUnitName);
+                        string UnitName = GetUnitFileName(CurrentUnit.SyntaxUnitName, Path.GetDirectoryName(CurrentCompilationUnit.SyntaxTree.file_name));
                         //if(CurrentUnit.State!=UnitState.InterfaceCompiled)													//DEBUG
                         //Console.WriteLine("ERROR! interface not compiled "+GetUnitFileName(CurrentUnit.SyntaxUnitName));//DEBUG
                         System.Collections.Generic.List<SyntaxTree.unit_or_namespace> SyntaxUsesList = GetSyntaxImplementationUsesList(CurrentUnit.SyntaxTree);
@@ -1843,7 +1843,7 @@ namespace PascalABCCompiler
                             for (int i = SyntaxUsesList.Count - 1; i >= 0; i--)
                                 if (!IsPossibleNamespace(SyntaxUsesList[i], true))
                                 {
-                                    CompileUnit(CurrentUnit.ImplementationUsedUnits, SyntaxUsesList[i]);
+                                    CompileUnit(CurrentUnit.ImplementationUsedUnits, SyntaxUsesList[i], Path.GetDirectoryName(CurrentCompilationUnit.SyntaxTree.file_name));
                                 }
                                 else
                                 {
@@ -2566,12 +2566,10 @@ namespace PascalABCCompiler
             }
         }
         
-        public string GetUnitFileName(SyntaxTree.unit_or_namespace SyntaxUsesUnit)
+        public string GetUnitFileName(SyntaxTree.unit_or_namespace SyntaxUsesUnit, string curr_path)
 		{
             //ToDo В корневом Compile() создаётся uses_unit_in без name. Выглядит как костыль
             if (SyntaxUsesUnit is SyntaxTree.uses_unit_in && (SyntaxUsesUnit as SyntaxTree.uses_unit_in).name == null) return (SyntaxUsesUnit as SyntaxTree.uses_unit_in).in_file.Value;
-
-            var curr_path = Path.GetDirectoryName(CurrentCompilationUnit.SyntaxTree.file_name);
 
             string UnitName;
             string SourceFileName;
@@ -3049,28 +3047,6 @@ namespace PascalABCCompiler
             return cu;            
         }
 
-        private bool IsAssemblyReference(SyntaxTree.unit_or_namespace SyntaxUsesUnit)
-        {
-            string UnitName = GetUnitFileName(SyntaxUsesUnit);
-            if (UnitName.ToLower().LastIndexOf(".dll") >= 0 || UnitName.ToLower().LastIndexOf(".exe") >= 0)
-                if (File.Exists(UnitName))
-                    return true;
-            return false;
-        }
-
-        private CompilationUnit GetAssemblyReference(SyntaxTree.unit_or_namespace SyntaxUsesUnit)
-        {
-            string UnitName = GetUnitFileName(SyntaxUsesUnit);
-            if (UnitTable.Count == 0) 
-                throw new ProgramModuleExpected(UnitName, null);
-            CompilationUnit res = ReadDLL(UnitName);
-            if (res != null)
-                return res;
-            else
-                //throw new DLLReadingError(UnitName);
-            	throw new AssemblyReadingError(CurrentCompilationUnit.SyntaxTree.file_name,UnitName,SyntaxUsesUnit.source_context);
-        }
-
         /*private bool check_for_library(List<compiler_directive> directives)
         {
         	foreach (compiler_directive cd in directives)
@@ -3089,9 +3065,11 @@ namespace PascalABCCompiler
             return false;
         }
 
-        public CompilationUnit CompileUnit(PascalABCCompiler.TreeRealization.unit_node_list Units, SyntaxTree.unit_or_namespace SyntaxUsesUnit)
+        public CompilationUnit CompileUnit(PascalABCCompiler.TreeRealization.unit_node_list Units, SyntaxTree.unit_or_namespace SyntaxUsesUnit, string prev_path)
         {
-            string UnitName = GetUnitFileName(SyntaxUsesUnit);
+            string UnitName = GetUnitFileName(SyntaxUsesUnit, prev_path);
+            var curr_path = Path.GetDirectoryName(UnitName);
+
             CompilationUnit CurrentUnit = UnitTable[UnitName];
             if (CurrentUnit != null && CurrentUnit.SemanticTree is PascalABCCompiler.TreeRealization.dot_net_unit_node 
                 && SyntaxUsesUnit is PascalABCCompiler.SyntaxTree.uses_unit_in ui && ui.in_file != null) // значит, это пространство имен и секция in у него должна отсутствовать
@@ -3297,7 +3275,7 @@ namespace PascalABCCompiler
                     }
                     else
                     {
-                        string CurrentSyntaxUnitName = GetUnitFileName(SyntaxUsesList[i]);
+                        string CurrentSyntaxUnitName = GetUnitFileName(SyntaxUsesList[i], curr_path);
                         CurrentUnit.CurrentUsesUnit = CurrentSyntaxUnitName;
                         if (UnitTable[CurrentSyntaxUnitName] != null)
                             if (UnitTable[CurrentSyntaxUnitName].State == UnitState.BeginCompilation)
@@ -3313,7 +3291,7 @@ namespace PascalABCCompiler
                                         throw new CycleUnitReference(UnitName, SyntaxUsesList[i]);
                                 }
                             }
-                        CompileUnit(CurrentUnit.InterfaceUsedUnits, SyntaxUsesList[i]);
+                        CompileUnit(CurrentUnit.InterfaceUsedUnits, SyntaxUsesList[i], curr_path);
                         if (CurrentUnit.State == UnitState.Compiled)
                         {
                             Units.AddElement(CurrentUnit.SemanticTree);
@@ -3376,7 +3354,7 @@ namespace PascalABCCompiler
                 for (int i = SyntaxUsesList.Count - 1; i >= 0; i--)
                     if (!IsPossibleNamespace(SyntaxUsesList[i], true))
                     {
-                        cu = UnitTable[GetUnitFileName(SyntaxUsesList[i])];
+                        cu = UnitTable[GetUnitFileName(SyntaxUsesList[i], curr_path)];
                         if (cu != null && cu.State == UnitState.BeginCompilation)
                         {
                             UnitsToCompile.Add(cu);
@@ -3387,7 +3365,7 @@ namespace PascalABCCompiler
                         }
                         else
                         {
-                            CompileUnit(CurrentUnit.ImplementationUsedUnits, SyntaxUsesList[i]);
+                            CompileUnit(CurrentUnit.ImplementationUsedUnits, SyntaxUsesList[i], curr_path);
                         }
                     }
                     else
