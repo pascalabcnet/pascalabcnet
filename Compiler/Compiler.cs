@@ -627,7 +627,7 @@ namespace PascalABCCompiler
         internal string outputDirectory = null;
         internal bool useOutputDirectory = false;
         //для поиска pcu во вторую очередь
-        //для сохранения сюда pcu и pdb файлов
+        //для сохранения сюда .exe, .dll и .pdb файлов
         public string OutputDirectory
         {
             get
@@ -1835,15 +1835,15 @@ namespace PascalABCCompiler
                         if (SyntaxUsesList != null)
                         {
                             for (int i = SyntaxUsesList.Count - 1; i >= 0; i--)
-                                if (!IsPossibleNamespace(SyntaxUsesList[i], false))
+                                if (!IsPossibleNamespace(SyntaxUsesList[i], false, Path.GetDirectoryName(UnitName)))
                                 {
                                     compilerOptions.UseDllForSystemUnits = false;
                                     break;
                                 }
                             for (int i = SyntaxUsesList.Count - 1; i >= 0; i--)
-                                if (!IsPossibleNamespace(SyntaxUsesList[i], true))
+                                if (!IsPossibleNamespace(SyntaxUsesList[i], true, Path.GetDirectoryName(UnitName)))
                                 {
-                                    CompileUnit(CurrentUnit.ImplementationUsedUnits, SyntaxUsesList[i], Path.GetDirectoryName(CurrentCompilationUnit.SyntaxTree.file_name));
+                                    CompileUnit(CurrentUnit.ImplementationUsedUnits, SyntaxUsesList[i], Path.GetDirectoryName(UnitName));
                                 }
                                 else
                                 {
@@ -2814,7 +2814,7 @@ namespace PascalABCCompiler
                         checkDuplicateUsesUnit(unit.interface_part.uses_modules.units);
                         foreach (SyntaxTree.unit_or_namespace name_space in unit.interface_part.uses_modules.units)
                         {
-                            if (IsPossibleNamespace(name_space, false))
+                            if (IsPossibleNamespace(name_space, false, Path.GetDirectoryName(file)))
                             {
                                 ns.referenced_units.AddElement(new TreeRealization.namespace_unit_node(GetNamespace(name_space), get_location_from_treenode(name_space, tree.file_name)));
                             }
@@ -2926,14 +2926,14 @@ namespace PascalABCCompiler
             return res;
         }
 
-        private bool IsPossibleNamespace(SyntaxTree.unit_or_namespace name_space, bool add_to_standard_modules)
+        private bool IsPossibleNamespace(SyntaxTree.unit_or_namespace name_space, bool add_to_standard_modules, string curr_path)
         {
             if (name_space is SyntaxTree.uses_unit_in)
                 return false;
             if (name_space.name.idents.Count > 1)
                 return true;
-            string src = FindSourceFileName(name_space.name.idents[0].name, Path.GetDirectoryName(CurrentCompilationUnit.SyntaxTree.file_name));
-            string pcu = FindPCUFileName(name_space.name.idents[0].name, Path.GetDirectoryName(CurrentCompilationUnit.SyntaxTree.file_name));
+            string src = FindSourceFileName(name_space.name.idents[0].name, curr_path);
+            string pcu = FindPCUFileName(name_space.name.idents[0].name, curr_path);
             if (src == null && pcu == null)
                 return true;
             if (CompilerOptions.UseDllForSystemUnits && src != null && string.Compare(Path.GetDirectoryName(src), Path.Combine(CompilerOptions.SystemDirectory, "Lib"), true) == 0
@@ -3065,6 +3065,8 @@ namespace PascalABCCompiler
         public CompilationUnit CompileUnit(PascalABCCompiler.TreeRealization.unit_node_list Units, SyntaxTree.unit_or_namespace SyntaxUsesUnit, string prev_path)
         {
             string UnitName = GetUnitFileName(SyntaxUsesUnit, prev_path);
+            // имя папки, в которой лежит текущий модуль
+            // используется для подключения модулей, $include и т.п. из модуля, подключённого с uses-in
             var curr_path = Path.GetDirectoryName(UnitName);
 
             CompilationUnit CurrentUnit = UnitTable[UnitName];
@@ -3251,7 +3253,7 @@ namespace PascalABCCompiler
             {
                 for (int i = SyntaxUsesList.Count - 1 - CurrentUnit.InterfaceUsedUnits.Count; i >= 0; i--)
                 {
-                    if (!IsPossibleNamespace(SyntaxUsesList[i], false))
+                    if (!IsPossibleNamespace(SyntaxUsesList[i], false, curr_path))
                     {
                         compilerOptions.UseDllForSystemUnits = false;
                         break;
@@ -3265,7 +3267,7 @@ namespace PascalABCCompiler
                 
                 for (int i = SyntaxUsesList.Count - 1 - CurrentUnit.InterfaceUsedUnits.Count; i >= 0; i--)
                 {
-                    if (IsPossibleNamespace(SyntaxUsesList[i], true) || namespaces.ContainsKey(SyntaxUsesList[i].name.idents[0].name))
+                    if (IsPossibleNamespace(SyntaxUsesList[i], true, curr_path) || namespaces.ContainsKey(SyntaxUsesList[i].name.idents[0].name))
                     {
                         CurrentUnit.InterfaceUsedUnits.AddElement(new TreeRealization.namespace_unit_node(GetNamespace(SyntaxUsesList[i])));
                         CurrentUnit.PossibleNamespaces.Add(SyntaxUsesList[i]);
@@ -3349,7 +3351,7 @@ namespace PascalABCCompiler
             if (SyntaxUsesList != null)
             {
                 for (int i = SyntaxUsesList.Count - 1; i >= 0; i--)
-                    if (!IsPossibleNamespace(SyntaxUsesList[i], true))
+                    if (!IsPossibleNamespace(SyntaxUsesList[i], true, curr_path))
                     {
                         cu = UnitTable[GetUnitFileName(SyntaxUsesList[i], curr_path)];
                         if (cu != null && cu.State == UnitState.BeginCompilation)
@@ -3514,15 +3516,12 @@ namespace PascalABCCompiler
                     Unit.State == UnitState.Compiled)
                 {
                     writer = new PCUWriter(this, pr_ChangeState);
+                    
                     if (FileInSearchDirectory(TagertFileName))
                         TagertFileName = Path.ChangeExtension(TagertFileName, CompilerOptions.CompiledUnitExtension);
                     else
-                    {
-                        if(CompilerOptions.useOutputDirectory)
-                            TagertFileName = Path.Combine(CompilerOptions.OutputDirectory, Path.GetFileName(Path.ChangeExtension(TagertFileName, CompilerOptions.CompiledUnitExtension)));
-                        else
-                            TagertFileName = Path.Combine(Path.GetDirectoryName(Unit.SyntaxTree.file_name), Path.GetFileName(Path.ChangeExtension(TagertFileName, CompilerOptions.CompiledUnitExtension)));
-                    }
+                        TagertFileName = Path.Combine(Path.GetDirectoryName(Unit.SyntaxTree.file_name), Path.GetFileNameWithoutExtension(TagertFileName) + CompilerOptions.CompiledUnitExtension);
+
                     bool dbginfo = true;/*CompilerOptions.Debug*/
 #if DEBUG
                     dbginfo = InternalDebug.IncludeDebugInfoInPCU;
