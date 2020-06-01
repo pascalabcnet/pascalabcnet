@@ -3485,7 +3485,7 @@ namespace PascalABCCompiler
             return unl;
         }
 
-		public void SavePCU(CompilationUnit Unit,string TagertFileName)
+        public void SavePCU(CompilationUnit Unit, string TargetFileName)
 		{
 //#if DEBUG
             try
@@ -3517,23 +3517,23 @@ namespace PascalABCCompiler
                 {
                     writer = new PCUWriter(this, pr_ChangeState);
                     
-                    if (FileInSearchDirectory(TagertFileName))
-                        TagertFileName = Path.ChangeExtension(TagertFileName, CompilerOptions.CompiledUnitExtension);
+                    if (FileInSearchDirectory(TargetFileName))
+                        TargetFileName = Path.ChangeExtension(TargetFileName, CompilerOptions.CompiledUnitExtension);
                     else
-                        TagertFileName = Path.Combine(Path.GetDirectoryName(Unit.SyntaxTree.file_name), Path.GetFileNameWithoutExtension(TagertFileName) + CompilerOptions.CompiledUnitExtension);
+                        TargetFileName = Path.Combine(Path.GetDirectoryName(Unit.SyntaxTree.file_name), Path.GetFileNameWithoutExtension(TargetFileName) + CompilerOptions.CompiledUnitExtension);
 
                     bool dbginfo = true;/*CompilerOptions.Debug*/
 #if DEBUG
                     dbginfo = InternalDebug.IncludeDebugInfoInPCU;
 #endif
-                    writer.SaveSemanticTree(Unit, TagertFileName, dbginfo);
+                    writer.SaveSemanticTree(Unit, TargetFileName, dbginfo);
                     
                 }
             }
             catch (Exception err)
             {
                 //ErrorsList.Add(new Errors.CompilerInternalError(string.Format("Compiler.Compile[{0}]", Path.GetFileName(this.CurrentCompilationUnit.SyntaxTree.file_name)), err));
-                OnChangeCompilerState(this, CompilerState.PCUWritingError, TagertFileName);
+                OnChangeCompilerState(this, CompilerState.PCUWritingError, TargetFileName);
 #if DEBUG
                 if (!InternalDebug.SkipPCUErrors)
                     throw new Errors.CompilerInternalError(string.Format("Compiler.Compile[{0}]", Path.GetFileName(this.CurrentCompilationUnit.SyntaxTree.file_name)), err);
