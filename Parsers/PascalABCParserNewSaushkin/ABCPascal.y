@@ -4445,6 +4445,32 @@ keyword
         { $$ = $1; }
     | tkWhen
         { $$ = $1; }
+    | tkPartial
+        { $$ = $1; }
+    | tkAbstract
+        { $$ = new token_info($1.name, @$);  }
+    | tkLock
+        { $$ = $1; }
+    | tkImplicit
+        { $$ = $1; }
+    | tkExplicit
+        { $$ = $1; }
+    | tkOn
+        { $$ = new token_info($1.name, @$);  }
+    | tkVirtual
+        { $$ = new token_info($1.name, @$);  }
+    | tkOverride
+        { $$ = new token_info($1.name, @$);  }
+    | tkLoop
+        { $$ = $1; }
+    | tkExtensionMethod
+        { $$ = new token_info($1.name, @$);  }
+    | tkOverload
+        { $$ = new token_info($1.name, @$);  }
+    | tkReintroduce
+        { $$ = new token_info($1.name, @$);  }
+    | tkForward
+        { $$ = new token_info($1.name, @$);  }
     ;
 
 reserved_keyword
