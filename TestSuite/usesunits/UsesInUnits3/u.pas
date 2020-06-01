@@ -1,5 +1,7 @@
 ﻿unit u;
 
+{$savepcu false}
+
 {$resource '1.txt'}
 {$reference 'uui3_lib.dll'}
 
