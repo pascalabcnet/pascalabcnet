@@ -582,7 +582,7 @@ namespace PascalABCCompiler.PCU
             pcu_file.compiler_directives = new List<compiler_directive>();
             for (int i = 0; i < num_directives; i++)
             {
-                pcu_file.compiler_directives.Add(new compiler_directive(br.ReadString(),br.ReadString(),ReadDebugInfo()));    
+                pcu_file.compiler_directives.Add(new compiler_directive(br.ReadString(),br.ReadString(),ReadDebugInfo(), pcu_file.SourceFileName));    
             }
 
 			int num_imp_entity = br.ReadInt32();

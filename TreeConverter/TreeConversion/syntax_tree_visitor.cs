@@ -10721,7 +10721,7 @@ namespace PascalABCCompiler.TreeConverter
             System.Collections.Generic.List<compiler_directive> list = new System.Collections.Generic.List<compiler_directive>();
             foreach (SyntaxTree.compiler_directive sncd in cu.compiler_directives)
             {
-            	list.Add(new compiler_directive(sncd.Name.text, sncd.Directive!=null?sncd.Directive.text:"", get_location(sncd)));
+            	list.Add(new compiler_directive(sncd.Name.text, sncd.Directive!=null?sncd.Directive.text:"", get_location(sncd), cu.file_name));
             }
             return list;
         }
