@@ -11,6 +11,7 @@ namespace PascalABCCompiler.TreeRealization
         public string name;
         public string directive;
         public location location;
+
         public compiler_directive(string name,string directive,location loc)
         {
             this.name = name;
