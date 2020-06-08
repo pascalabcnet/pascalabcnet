@@ -278,10 +278,10 @@ function operator implicit(Self: (integer, real)): Size; extensionmethod := new 
 function operator implicit(Self: (real, integer)): Size; extensionmethod := new Size(Self[0], Self[1]);
 function operator implicit(Self: (real, real)): Size; extensionmethod := new Size(Self[0], Self[1]);
 
-//function operator implicit(Self: array of (real, real)): array of Point; extensionmethod := 
-//  Self.Select(t->new Point(t[0],t[1])).ToArray;
-//function operator implicit(Self: array of (integer, integer)): array of Point; extensionmethod := 
-//  Self.Select(t->new Point(t[0],t[1])).ToArray;
+function operator implicit(Self: array of (real, real)): array of Point; extensionmethod := 
+  Self.Select(t->new Point(t[0],t[1])).ToArray;
+function operator implicit(Self: array of (integer, integer)): array of Point; extensionmethod := 
+  Self.Select(t->new Point(t[0],t[1])).ToArray;
  
 procedure SetLeft(Self: UIElement; l: real); extensionmethod := Canvas.SetLeft(Self,l);
 

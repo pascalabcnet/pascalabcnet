@@ -647,7 +647,7 @@ namespace PascalABCCompiler.TreeConverter
 
 
             //TODO: А если наследование?
-            possible_type_convertions pct =type_table.get_convertions(en.type,to);
+            possible_type_convertions pct = type_table.get_convertions(en.type,to);
 
 			if (pct.second!=null)
 			{

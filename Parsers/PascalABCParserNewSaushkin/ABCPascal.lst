@@ -1,11 +1,11 @@
 
 // ==========================================================================
-//  GPPG error listing for yacc source file <ABCPascal.y>
+//  GPPG error listing for yacc source file <D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
 // ==========================================================================
 //  Version:  1.3.6
-//  Machine:  DESKTOP-P4NLNB1
-//  DateTime: 4/20/2020 4:00:49 PM
-//  UserName: fatco
+//  Machine:  DESKTOP-G8V08V4
+//  DateTime: 08.06.2020 21:09:20
+//  UserName: Станислав
 // ==========================================================================
 
 
@@ -90,13 +90,13 @@
 %type <stn> exception_handler  
 %type <stn> exception_handler_list  
 %type <stn> exception_identifier  
-%type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 /*const_func_expr_list*/ case_label_list const_elem_list optional_const_func_expr_list elem_list1  
+%type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 const_expr_list case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
 %type <ex> const_simple_expr term term1 simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda expr_l1_for_lambda simple_expr range_term range_factor 
 %type <ex> external_directive_ident init_const_expr case_label variable var_reference /*optional_write_expr*/ optional_read_expr simple_expr_or_nothing var_question_point expr_l1_for_question_expr expr_l1_for_new_question_expr
 %type <ob> for_cycle_type  
-%type <ex> format_expr format_const_expr const_expr_or_nothing simple_expr_with_deref_or_nothing simple_expr_with_deref /*expr_l1_for_indexer*/
+%type <ex> format_expr format_const_expr const_expr_or_nothing /* simple_expr_with_deref_or_nothing simple_expr_with_deref expr_l1_for_indexer*/
 %type <stn> foreach_stmt  
 %type <stn> for_stmt loop_stmt yield_stmt yield_sequence_stmt
 %type <stn> fp_list fp_sect_list  
@@ -191,17 +191,8 @@
 %type <ob> pattern_out_param_list pattern_out_param_list_optional_var collection_pattern_expr_list tuple_pattern_item_list const_pattern_expr_list
 
 %%
-// Error: NonTerminal symbol "simple_expr_with_deref_or_nothing" has no productions
-// Warning: NonTerminal symbol "simple_expr_with_deref" is unreachable
-// Error: NonTerminal symbol "simple_expr_with_deref" has no productions
-// Warning: NonTerminal symbol "simple_expr_with_deref_or_nothing" is unreachable
-// Error: There are 2 non-terminating NonTerminal Symbols
-   //  {simple_expr_with_deref_or_nothing, simple_expr_with_deref}
-// Warning: Terminating simple_expr_with_deref_or_nothing fixes the following size-1 NonTerminal set
-   // {simple_expr_with_deref_or_nothing}
-// Warning: Terminating simple_expr_with_deref fixes the following size-1 NonTerminal set
-   // {simple_expr_with_deref}
-// -------------------------------------------------------------------------------------------------
+// Warning: NonTerminal symbol "const_expr_list" is unreachable
+// ------------------------------------------------------------
 
 parse_goal                
     : program_file 
@@ -961,9 +952,7 @@ const_variable
                 if (fe.format1 == null)
                     fe.format1 = new int32_const(int.MaxValue,@3);
             }
-            var from = fe.expr is index ? fe.expr : new index(fe.expr, false, fe.expr.source_context);
-            var to = fe.format1 is index ? fe.format1 : new index(fe.format1, false, fe.format1.source_context);
-    		$$ = new slice_expr($1 as addressed_value,from,to,fe.format2,@$);
+    		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
 		}
     ;
 
@@ -994,16 +983,16 @@ optional_const_func_expr_list
 		{ $$ = null; }
     ;
         
-/*const_func_expr_list
+const_expr_list
     : const_expr                               
         { 	
 			$$ = new expression_list($1, @$);
 		}
-    | const_func_expr_list tkComma const_expr 
+    | const_expr_list tkComma const_expr 
         { 
 			$$ = ($1 as expression_list).Add($3, @$);
 		}
-    ;*/
+    ;
 
 const_elem_list
     : const_elem_list1
@@ -2734,9 +2723,7 @@ assignment
                 if (fe.format1 == null)
                     fe.format1 = new int32_const(int.MaxValue,@3);
             }
-            var from = fe.expr is index ? fe.expr : new index(fe.expr, false, fe.expr.source_context);
-            var to = fe.format1 is index ? fe.format1 : new index(fe.format1, false, fe.format1.source_context);
-      		var left = new slice_expr_question($1 as addressed_value,from.to,fe.format2,@$);
+      		var left = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
             $$ = new assign(left, $6, $5.type, @$);
 		}
     ;
@@ -3145,16 +3132,12 @@ expr_with_func_decl_lambda
 expr
     : expr_l1
 		{ $$ = $1; }
-    | tkDeref expr_l1
-        { $$ = new simple_expr_with_deref($2, true); }
     | format_expr
 		{ $$ = $1; }
     ;
     /*
 expr_l1_for_indexer
-    : tkDeref expr_l1
-        { $$ = new simple_expr_with_deref($2, true); }
-    | expr_l1 
+    : expr_l1 
         { $$ = $1; }
     | format_expr
 		{ $$ = $1; }
@@ -3382,6 +3365,10 @@ relop_expr
     : simple_expr
 		{ $$ = $1; }
     | relop_expr relop simple_expr
+        { 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
+    | relop_expr relop new_question_expr
         { 
 			$$ = new bin_expr($1, $3, $2.type, @$); 
 		}
@@ -3803,6 +3790,10 @@ term1
         { 
 			$$ = new bin_expr($1, $3, $2.type, @$); 
 		}
+    | term1 addop new_question_expr                        
+        { 
+			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
     ;
 
 addop
@@ -3870,6 +3861,8 @@ term
     | term mulop factor                             
         { $$ = new bin_expr($1,$3,($2).type, @$); }
     | term mulop power_expr                             
+        { $$ = new bin_expr($1,$3,($2).type, @$); }
+    | term mulop new_question_expr                             
         { $$ = new bin_expr($1,$3,($2).type, @$); }
     | as_is_expr
 		{ $$ = $1; }
@@ -4080,9 +4073,7 @@ variable
                     if (fe.format1 == null)
                         fe.format1 = new int32_const(int.MaxValue,@3);
                 }
-                var from = fe.expr is index ? fe.expr : new index(fe.expr, false, fe.expr.source_context);
-                var to = fe.format1 is index ? fe.format1 : new index(fe.format1, false, fe.format1.source_context); 
-        		$$ = new slice_expr($1 as addressed_value,from,to,fe.format2,@$);
+        		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
 			}   
 			else $$ = new indexer($1 as addressed_value, el, @$);
         }
@@ -4096,9 +4087,7 @@ variable
                 if (fe.format1 == null)
                     fe.format1 = new int32_const(int.MaxValue,@3);
             }
-            var from = fe.expr is index ? fe.expr : new index(fe.expr, false, fe.expr.source_context);
-            var to = fe.format1 is index ? fe.format1 : new index(fe.format1, false, fe.format1.source_context); 
-      		$$ = new slice_expr_question($1 as addressed_value,from,to,fe.format2,@$);
+      		$$ = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
         }
     | variable tkRoundOpen optional_expr_list tkRoundClose                
         {

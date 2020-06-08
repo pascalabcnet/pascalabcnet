@@ -722,15 +722,18 @@ begin
   Result := visual.RenderOpen();
 end;
 
+procedure HostToRenderBitmap;
+begin
+  rtBmap.Render(host);
+  rtbmapIsCleared := False;
+  host.Children.Clear;
+end;
+
 procedure ReleaseDC(dc: DrawingContext);
 begin
   dc.Close;
   if host.Children.Count > 1000 then
-  begin
-    rtBmap.Render(host);
-    rtbmapIsCleared := False;
-    host.Children.Clear;
-  end;
+    HostToRenderBitmap
 end;
 
 procedure FastDraw(d: DrawingContext->());
@@ -1612,6 +1615,7 @@ function GraphWindowType.GetHeight := InvokeReal(GraphWindowTypeGetHeightP);
 
 procedure SaveWindowP(canvas: FrameworkElement; filename: string);
 begin
+  HostToRenderBitmap;
   var (scalex,scaley) := ScaleToDevice;
   var (dpiX,dpiY) := (scalex * 96, scaley * 96);
   
@@ -1625,7 +1629,9 @@ begin
   var mm := (canvas as MyVisualHost).RenderTransform.Value;
   mm.Invert;
   r.Transform(mm);
-  dc.DrawRectangle(Brush.BrushConstruct,nil,r);
+  dc.DrawRectangle(Brushes.White,nil,r);
+  var rr := Rect(0,0,rtbmap.Width,rtbmap.Height);
+  dc.DrawImage(rtbmap,rr);
   dc.Close;
   (canvas as MyVisualHost).children.Insert(0,myvis);
   
