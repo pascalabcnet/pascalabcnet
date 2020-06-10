@@ -1888,8 +1888,6 @@ namespace PascalABCCompiler
                 
                 compilerDirectives = GetCompilerDirectives(UnitsSortedList);
 
-
-                TreeRealization.compiler_directive compilerDirective;
                 if (compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.compiler_directive_apptype))
                 {
                     string directive = compilerDirectives[TreeConverter.compiler_string_consts.compiler_directive_apptype][0].directive;
@@ -1986,7 +1984,7 @@ namespace PascalABCCompiler
                         if (File.Exists(resource_fname))
                             ResourceFiles.Add(resource_fname);
                         else
-                            ErrorsList.Add(new ResourceFileNotFound(resource_fname));
+                            ErrorsList.Add(new ResourceFileNotFound(cd.directive, cd.location));
 
                     }    
                 }
