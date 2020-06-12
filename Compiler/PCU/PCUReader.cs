@@ -330,7 +330,7 @@ namespace PascalABCCompiler.PCU
             {
                 //if (pcu_file.incl_modules[i].Contains("$"))
                 //	continue;
-                string source_file_name = comp.FindSourceFileName(Path.Combine(dir, pcu_file.incl_modules[i]));
+                string source_file_name = comp.FindSourceFileName(pcu_file.incl_modules[i], dir);
                 if (source_file_name != null && comp.UnitTable[source_file_name] != null)
                     return true;
                 PCUReader pr = (PCUReader)units[pcu_file.incl_modules[i]];
@@ -341,7 +341,7 @@ namespace PascalABCCompiler.PCU
                 {
                     used_units[pcu_file.incl_modules[i]] = used_units;
                     if (already_compiled[pcu_file.incl_modules[i]] == null)
-                        pr.GetCompilationUnit(comp.FindPCUFileName(pcu_file.incl_modules[i], source_file_name), this.readDebugInfo);
+                        pr.GetCompilationUnit(comp.FindPCUFileName(pcu_file.incl_modules[i], dir), this.readDebugInfo);
                 }
                 if (need == false) need = pr.need;
             }
@@ -582,7 +582,7 @@ namespace PascalABCCompiler.PCU
             pcu_file.compiler_directives = new List<compiler_directive>();
             for (int i = 0; i < num_directives; i++)
             {
-                pcu_file.compiler_directives.Add(new compiler_directive(br.ReadString(),br.ReadString(),ReadDebugInfo()));    
+                pcu_file.compiler_directives.Add(new compiler_directive(br.ReadString(),br.ReadString(),ReadDebugInfo(), pcu_file.SourceFileName));    
             }
 
 			int num_imp_entity = br.ReadInt32();

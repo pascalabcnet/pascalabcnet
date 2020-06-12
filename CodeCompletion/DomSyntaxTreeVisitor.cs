@@ -2414,7 +2414,7 @@ namespace CodeCompletion
 
         public string FindPCUFileName(string UnitName)
         {
-        	return CodeCompletionController.comp.FindPCUFileNameWithoutSources(UnitName,System.IO.Path.GetDirectoryName(doc.file_name));
+        	return CodeCompletionController.comp.FindPCUFileName(UnitName,System.IO.Path.GetDirectoryName(doc.file_name));
         }
         
 		private void add_system_unit()
@@ -5145,7 +5145,7 @@ namespace CodeCompletion
                                 }
                                 else
                                 {
-                                    string unit_name = CodeCompletionController.comp.FindSourceFileName(str);
+                                    string unit_name = CodeCompletionController.comp.FindSourceFileName(str, System.IO.Path.GetDirectoryName(_c_module.file_name));
                                     if (unit_name == null)
                                     {
                                         unit_name = Path.Combine(System.IO.Path.GetDirectoryName(_c_module.file_name), str) + System.IO.Path.GetExtension(_c_module.file_name);
