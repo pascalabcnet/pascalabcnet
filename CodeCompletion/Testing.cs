@@ -59,9 +59,121 @@ namespace CodeCompletion
                     ind = tmp.IndexOf("{@");
                 }
 
+                ind = tmp.IndexOf("{[");
+                while (ind != -1)
+                {
+                    var lines = tmp.Split(new string[] { System.Environment.NewLine }, System.StringSplitOptions.None);
+                    var pos = ind - 1;
+                    var line = GetLineByPos(lines, pos);
+                    var col = GetColByPos(lines, pos);
+                    var desc = CodeCompletion.CodeCompletionTester.GetIndexDescription(pos, tmp, line, col, FileName, dc, comp.ParsersController);
+                    var should_desc = tmp.Substring(ind + 2, tmp.IndexOf("]}") - ind - 2);
+                    if (desc == null)
+                        desc = "";
+                    desc = desc.Split(new string[] { "\n" }, StringSplitOptions.None)[0].Trim();
+                    assert(desc.Replace(", ", ",") == should_desc.Replace(", ", ","), FileName + ", should: " + should_desc + ", is: " + desc);
+                    tmp = tmp.Remove(ind, tmp.IndexOf("]}") + 2 - ind);
+                    ind = tmp.IndexOf("{[");
+                }
+
+                ind = tmp.IndexOf("{(");
+                while (ind != -1)
+                {
+                    var lines = tmp.Split(new string[] { System.Environment.NewLine }, System.StringSplitOptions.None);
+                    var pos = ind - 1;
+                    var line = GetLineByPos(lines, pos);
+                    var col = GetColByPos(lines, pos);
+                    var desc = CodeCompletion.CodeCompletionTester.GetMethodDescription(pos, tmp, line, col, FileName, dc, comp.ParsersController, 1, 1);
+                    var should_desc = tmp.Substring(ind + 2, tmp.IndexOf(")}") - ind - 2);
+                    if (desc == null)
+                        desc = "";
+                    desc = desc.Split(new string[] { "\n" }, StringSplitOptions.None)[0].Trim();
+                    assert(desc.Replace(", ", ",") == should_desc.Replace(", ", ","), FileName + ", should: " + should_desc + ", is: " + desc);
+                    tmp = tmp.Remove(ind, tmp.IndexOf(")}") + 2 - ind);
+                    ind = tmp.IndexOf("{(");
+                }
             }
         }
-        
+
+        public static void TestRename(string dir)
+        {
+            //string dir = Path.Combine(@"c:\Work\Miks\_PABCNETGitHub\TestSuite", "intellisense_tests");
+            var comp = new PascalABCCompiler.Compiler();
+            var controller = new CodeCompletion.CodeCompletionController();
+            CodeCompletion.CodeCompletionController.comp = comp;
+            CodeCompletion.CodeCompletionController.SetParser(".pas");
+            CodeCompletion.CodeCompletionController.ParsersController = comp.ParsersController;
+            var files = Directory.GetFiles(dir, "*.pas");
+            var parser = comp.ParsersController;
+            for (int i = 0; i < files.Length; i++)
+            {
+                var FileName = files[i];
+                var content = File.ReadAllText(FileName);
+                var dc = controller.Compile(FileName, content);
+
+                var tmp = content;
+                var ind = -1;
+                ind = content.IndexOf("{!}");
+                var shouldPositions = new List<Position>();
+                var lines = content.Split(new string[] { System.Environment.NewLine }, System.StringSplitOptions.None);
+                var cu = controller.ParseOnlySyntaxTree(FileName, content);
+
+                while (ind != -1)
+                {
+                    var pos = ind + 3;
+                    var line = GetLineByPos(lines, pos);
+                    var col = GetColByPos(lines, pos);
+                    shouldPositions.Add(new Position(line+1, col+1, 0, 0, null));
+                    ind = content.IndexOf("{!}", pos);
+                }
+                ind = content.IndexOf("{@}");
+                if (ind != -1)
+                {
+                    var pos = ind + 3;
+                    var line = GetLineByPos(lines, pos);
+                    var col = GetColByPos(lines, pos);
+                    shouldPositions.Add(new Position(line + 1, col + 1, 0, 0, null));
+                    string expr_without_brackets = null;
+                    PascalABCCompiler.Parsers.KeywordKind keyw = PascalABCCompiler.Parsers.KeywordKind.None;
+                    string full_expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
+                    List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
+                    var errors = new List<PascalABCCompiler.Errors.Error>();
+                    expression expr = comp.ParsersController.GetExpression("test" + System.IO.Path.GetExtension(FileName), full_expr, errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+                    //expression expr = new ident(expr_without_brackets.Replace("{@}","").Replace("new ","").Trim());
+                    var fnd_scope = dc.GetSymDefinition(expr, line, col, keyw);
+                    var rf = new CodeCompletion.ReferenceFinder(fnd_scope, dc.visitor.entry_scope, cu, FileName, true);
+                    var positions = rf.FindPositions();
+                    compare_positions(FileName, shouldPositions.ToArray(), positions);
+                }
+            }
+        }
+
+        private static int position_comparer(Position x, Position y)
+        {
+            if (x.line > y.line)
+                return 1;
+            if (x.line < y.line)
+                return -1;
+            if (x.column > y.column)
+                return 1;
+            if (x.column < y.column)
+                return -1;
+            return 0;
+        }
+
+        private static void compare_positions(string FileName, Position[] shouldPositions, Position[] isPositions)
+        {
+            Array.Sort(shouldPositions, position_comparer);
+            Array.Sort(isPositions, position_comparer);
+            assert(isPositions.Length == shouldPositions.Length, FileName + ", should: " + shouldPositions.Length + ", is: " + isPositions.Length);
+            if (isPositions.Length == shouldPositions.Length)
+                for (int i = 0; i < shouldPositions.Length; i++)
+                {
+                    assert(isPositions[i].line == shouldPositions[i].line && isPositions[i].column == shouldPositions[i].column,
+                        FileName + ", should: " + "(" + shouldPositions[i].line + "," + shouldPositions[i].column + ")" + ", is: " + "(" + isPositions[i].line + "," + isPositions[i].column + ")" + isPositions.Length);
+                }
+        }
+
         private static int GetLineByPos(string[] lines, int pos)
         {
             var cum_pos = 0;
@@ -112,7 +224,42 @@ namespace CodeCompletion
             return desc;
         }
 
-    	private static void assert(bool cond, string message=null)
+        public static string GetIndexDescription(int pos, string content, int line, int col, string FileName, DomConverter dc, PascalABCCompiler.Parsers.Controller controller)
+        {
+            string expr_without_brackets = null;
+            PascalABCCompiler.Parsers.KeywordKind keyw;
+            var expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
+            if (expr == null)
+                expr = expr_without_brackets;
+            var errors = new List<PascalABCCompiler.Errors.Error>();
+            var warnings = new List<CompilerWarning>();
+            var tree = controller.GetExpression("test" + Path.GetExtension(FileName), expr, errors, warnings);
+            var desc = dc.GetIndex(tree, line, col);
+            if (desc != null && desc.Length > 0)
+                return desc[0];
+            return "";
+        }
+
+        public static string GetMethodDescription(int pos, string content, int line, int col, string FileName, DomConverter dc, PascalABCCompiler.Parsers.Controller controller,
+                                                int num_param, int cur_param_num)
+        {
+            string expr_without_brackets = null;
+            PascalABCCompiler.Parsers.KeywordKind keyw;
+            var expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
+            if (expr == null)
+                expr = expr_without_brackets;
+            var errors = new List<PascalABCCompiler.Errors.Error>();
+            var warnings = new List<CompilerWarning>();
+            var tree = controller.GetExpression("test" + Path.GetExtension(FileName), expr, errors, warnings);
+            int defaultIndex = 0;
+            int param_count = 0;
+            var desc = dc.GetNameOfMethod(tree, expr, line, col, num_param, ref defaultIndex, cur_param_num, out param_count);
+            if (desc != null && desc.Length > 0)
+                return desc[0];
+            return "";
+        }
+
+        private static void assert(bool cond, string message=null)
     	{
             if (message != null)
     		    System.Diagnostics.Debug.Assert(cond, message);
@@ -405,6 +552,28 @@ namespace CodeCompletion
             s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
             assert(s.Trim('\n', ' ', '\t') == test_str);
 
+            test_str = "' '' '";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            assert(s.Trim('\n', ' ', '\t') == test_str);
+
+            test_str = "' '' '' '";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            assert(s.Trim('\n', ' ', '\t') == test_str);
+
+            test_str = "' ' '";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            assert(s.Trim('\n', ' ', '\t') == "");
+
+            test_str = "(2..4)";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpression(off, test_str, line, col, out keyw);
+            assert(s.Trim('\n', ' ', '\t') == test_str);
+
+
+
             int num_param = 0;
     		//testirovanie nazhatija skobki
     		test_str = "writeln";
@@ -578,6 +747,11 @@ namespace CodeCompletion
             s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
             assert(s.Trim('\n', ' ', '\t') == "seq1.Where(i ->(i = 1) or (i = 2)).JoinIntoString");
 
+            test_str = "seq1.Where(i ->(i = '1') or (i = '2')).JoinIntoString";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            assert(s.Trim('\n', ' ', '\t') == "seq1.Where(i ->(i = '1') or (i = '2')).JoinIntoString");
+
             test_str = "f1&<array of byte>";
             off = test_str.Length;
             s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
@@ -602,6 +776,33 @@ namespace CodeCompletion
             off = test_str.Length;
             s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
             assert(s.Trim('\n', ' ', '\t') == "f1&<byte>\n.ToString");
+
+            test_str = "begin ''.PadLeft";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            assert(s.Trim('\n', ' ', '\t') == "''.PadLeft");
+
+            test_str = "begin var s := ''.PadLeft";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            assert(s.Trim('\n', ' ', '\t') == "''.PadLeft");
+
+            test_str = "begin \n var s := ''.PadLeft";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            assert(s.Trim('\n', ' ', '\t') == "''.PadLeft");
+
+            test_str = "writeln(23);\n ''.PadLeft";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            assert(s.Trim('\n', ' ', '\t') == "''.PadLeft");
+
+            test_str = "writeln(23);\n ''.PadLeft(2).ToString";
+            off = test_str.Length;
+            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, '(', ref num_param);
+            assert(s.Trim('\n', ' ', '\t') == "''.PadLeft(2).ToString");
+
+
 
             //testirovanie nazhatija zapjatoj
             test_str = ";test(3,aa.bb";
@@ -806,6 +1007,11 @@ namespace CodeCompletion
             off = test_str.Length;
             s = parser.LanguageInformation.FindExpressionFromAnyPosition(off, test_str, line, col, out keyw, out str);
             assert(s.Trim('\n', ' ', '\t') == "t1&<byte>.x");
+
+            test_str = "Arr(0).Select&<integer,ft>";
+            off = 8;
+            s = parser.LanguageInformation.FindExpressionFromAnyPosition(off, test_str, line, col, out keyw, out str);
+            assert(s.Trim('\n', ' ', '\t') == "Arr(0).Select&<integer,ft>");
 
             //----
             Type[] types = typeof(int).Assembly.GetExportedTypes();

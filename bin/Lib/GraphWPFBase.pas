@@ -128,13 +128,29 @@ type
     function Center: Point;
     /// Возвращает прямоугольник клиентской области окна
     function ClientRect: GRect;
+    /// Возвращает случайную точку в границах экрана. Необязательный параметр w задаёт минимальный отступ от границы 
+    function RandomPoint(w: real := 0): Point;
     private procedure CenterOnScreenP;
   end;
 //{{{--doc: Конец секции 1 }}} 
   
 
-function wplus := SystemParameters.WindowResizeBorderThickness.Left + SystemParameters.WindowResizeBorderThickness.Right;
-function hplus := SystemParameters.WindowCaptionHeight + SystemParameters.WindowResizeBorderThickness.Top + SystemParameters.WindowResizeBorderThickness.Bottom;
+var wp: real := -1;
+var hp: real := -1;
+
+function wplus: real;
+begin
+  if wp = -1 then
+    wp := (SystemParameters.BorderWidth + SystemParameters.FixedFrameVerticalBorderWidth) * 2;
+  Result := wp;
+end; 
+
+function hplus: real;
+begin
+  if hp = -1 then
+    hp := SystemParameters.WindowCaptionHeight + (SystemParameters.BorderWidth + SystemParameters.FixedFrameHorizontalBorderHeight) * 2;
+  Result := hp;
+end;
 
 ///---- Window -----
 
@@ -250,10 +266,13 @@ function WindowType.Center := Pnt(Width/2,Height/2);
 
 function WindowType.ClientRect := Rect(0,0,Width,Height);
 
+function WindowType.RandomPoint(w: real): Point := Pnt(Random(w,Width-w),Random(w,Height-w));
+
 function operator implicit(Self: (integer, integer)): Point; extensionmethod := new Point(Self[0], Self[1]);
 function operator implicit(Self: (integer, real)): Point; extensionmethod := new Point(Self[0], Self[1]);
 function operator implicit(Self: (real, integer)): Point; extensionmethod := new Point(Self[0], Self[1]);
 function operator implicit(Self: (real, real)): Point; extensionmethod := new Point(Self[0], Self[1]);
+
 
 function operator implicit(Self: (integer, integer)): Size; extensionmethod := new Size(Self[0], Self[1]);
 function operator implicit(Self: (integer, real)): Size; extensionmethod := new Size(Self[0], Self[1]);

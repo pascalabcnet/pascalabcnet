@@ -209,6 +209,7 @@ begin
   var files := Directory.GetFiles(TestSuiteDir + PathSeparator + 'exe', '*.exe');
   for var i := 0 to files.Length - 1 do
   begin
+    //Println(files[i]);
     var psi := new System.Diagnostics.ProcessStartInfo(files[i]);
     psi.CreateNoWindow := true;
     psi.UseShellExecute := false;

@@ -46,6 +46,11 @@
 				<Begin>'</Begin>
 				<End>'</End>
 			</Span>
+		  	
+			<Span name = "InterpolatedString" rule = "StringInterpolation" bold = "false" italic = "false" color = "Blue" stopateol = "true">
+				<Begin>$'</Begin>
+				<End>'</End>
+			</Span>
 			
 	<KeyWords name = "KeyWords" bold = "true" italic = "false" color = "Black">
 		<Key word = "external" />
@@ -302,7 +307,17 @@
 			<Key word = "true" />
 	  	</KeyWords>
 	</RuleSet>
-		
+	
+	<RuleSet name = "StringInterpolation" ignorecase = "true">
+		<Span name = "String" rule="Default" bold = "false" italic = "false" color = "Black" stopateol = "true">
+			<Begin>{</Begin>
+			<End>}</End>
+		</Span>
+	</RuleSet>
+	
+	<RuleSet name = "Default" ignorecase = "true" reference="PascalABC.NET">
+			<Delimiters>&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
+	</RuleSet>
 
 		
 	</RuleSets>

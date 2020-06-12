@@ -11,11 +11,14 @@ namespace PascalABCCompiler.TreeRealization
         public string name;
         public string directive;
         public location location;
-        public compiler_directive(string name,string directive,location loc)
+        public string source_file; // файл из которого загрузили директиву. в отличии от location - может указывать на .pcu
+
+        public compiler_directive(string name, string directive, location loc, string source_file)
         {
             this.name = name;
             this.directive = directive;
             this.location = loc;
+            this.source_file = source_file;
         }
     }
 }

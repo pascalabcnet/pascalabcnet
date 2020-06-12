@@ -130,7 +130,12 @@ namespace WeifenLuo.WinFormsUI.Docking
             get
             {
                 if (_imageButtonClose == null)
-                    _imageButtonClose = Resources.DockPane_Close;
+                {
+                    var sc = ScreenScale.Calc();
+                    if (sc >= 1.99)
+                        _imageButtonClose = Resources.DockPane_Close32;
+                    else _imageButtonClose = Resources.DockPane_Close;
+                }
 
                 return _imageButtonClose;
             }
@@ -159,7 +164,12 @@ namespace WeifenLuo.WinFormsUI.Docking
             get
             {
                 if (_imageButtonWindowList == null)
-                    _imageButtonWindowList = Resources.DockPane_Option;
+                {
+                    var sc = ScreenScale.Calc();
+                    if (sc >= 1.99)
+                        _imageButtonWindowList = Resources.DockPane_Option32;
+                    else _imageButtonWindowList = Resources.DockPane_Option;
+                }
 
                 return _imageButtonWindowList;
             }
@@ -171,7 +181,9 @@ namespace WeifenLuo.WinFormsUI.Docking
             get
             {
                 if (_imageButtonWindowListOverflow == null)
+                {
                     _imageButtonWindowListOverflow = Resources.DockPane_OptionOverflow;
+                }                
 
                 return _imageButtonWindowListOverflow;
             }
@@ -229,12 +241,12 @@ namespace WeifenLuo.WinFormsUI.Docking
 
 		private static int ToolWindowImageHeight
 		{
-			get	{	return _ToolWindowImageHeight;	}
+			get	{	return Convert.ToInt32(_ToolWindowImageHeight * ScreenScale.Calc());	}
 		}
 
 		private static int ToolWindowImageWidth
 		{
-			get	{	return _ToolWindowImageWidth;	}
+			get	{	return Convert.ToInt32(_ToolWindowImageWidth * ScreenScale.Calc());	}
 		}
 
 		private static int ToolWindowImageGapTop
@@ -1257,7 +1269,7 @@ namespace WeifenLuo.WinFormsUI.Docking
 
 			base.OnLayout (levent);
 		}
-
+         
 		private void Close_Click(object sender, EventArgs e)
 		{
 			DockPane.CloseActiveContent();

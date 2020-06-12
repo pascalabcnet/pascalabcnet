@@ -3225,6 +3225,51 @@
         </TagIndices>
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="diapason_expr_new" BaseName="addressed_value">
+      <Fields>
+        <SyntaxField Name="left" SyntaxType="expression" />
+        <SyntaxField Name="right" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="if_expr_new" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="condition" SyntaxType="expression" />
+        <SyntaxField Name="if_true" SyntaxType="expression" />
+        <SyntaxField Name="if_false" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="simple_expr_with_deref" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="simple_expr" SyntaxType="expression" />
+        <ExtendedField Name="has_deref" Type="bool" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="index" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="index_expr" SyntaxType="expression" />
+        <ExtendedField Name="inverted" Type="bool" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3274,6 +3319,7 @@
       <HelpData Key=".body" Value="" />
       <HelpData Key=".cconst" Value="Значение константы." />
       <HelpData Key=".char_num" Value="Номер символа." />
+      <HelpData Key=".condition" Value="" />
       <HelpData Key=".count" Value="" />
       <HelpData Key=".def" Value="" />
       <HelpData Key=".definitions" Value="" />
@@ -3287,7 +3333,12 @@
       <HelpData Key=".from" Value="" />
       <HelpData Key=".guardstats" Value="" />
       <HelpData Key=".handlers" Value="" />
+      <HelpData Key=".has_deref" Value="" />
       <HelpData Key=".i" Value="" />
+      <HelpData Key=".if_false" Value="" />
+      <HelpData Key=".if_true" Value="" />
+      <HelpData Key=".index_expr" Value="" />
+      <HelpData Key=".inverted" Value="" />
       <HelpData Key=".item_expression" Value="" />
       <HelpData Key=".left" Value="" />
       <HelpData Key=".lists" Value="" />
@@ -3310,6 +3361,7 @@
       <HelpData Key=".restriction_args" Value="" />
       <HelpData Key=".right" Value="" />
       <HelpData Key=".sharp_consts" Value="Список символьных констант в строке вида #123#124#125" />
+      <HelpData Key=".simple_expr" Value="" />
       <HelpData Key=".specificator" Value="" />
       <HelpData Key=".stat" Value="" />
       <HelpData Key=".statements" Value="" />
@@ -3618,6 +3670,9 @@
       <HelpData Key="diapason_expr." Value="" />
       <HelpData Key="diapason_expr.left" Value="" />
       <HelpData Key="diapason_expr.right" Value="" />
+      <HelpData Key="diapason_expr_new" Value="" />
+      <HelpData Key="diapason_expr_new.left" Value="" />
+      <HelpData Key="diapason_expr_new.right" Value="" />
       <HelpData Key="documentation_comment_list" Value="" />
       <HelpData Key="documentation_comment_list." Value="" />
       <HelpData Key="documentation_comment_list.documentation_comment_list Add(documentation_comment_section _documentation_comment_section)" Value="" />
@@ -3765,6 +3820,8 @@
       <HelpData Key="format_expr.expr" Value="" />
       <HelpData Key="format_expr.format1" Value="" />
       <HelpData Key="format_expr.format2" Value="" />
+      <HelpData Key="format_expr.index_inversion_from" Value="" />
+      <HelpData Key="format_expr.index_inversion_to" Value="" />
       <HelpData Key="forward_directive" Value="" />
       <HelpData Key="forward_directr" Value="" />
       <HelpData Key="fptype_and_expr" Value="" />
@@ -3842,6 +3899,10 @@
       <HelpData Key="ident_with_templateparams." Value="" />
       <HelpData Key="ident_with_templateparams.name" Value="" />
       <HelpData Key="ident_with_templateparams.template_params" Value="" />
+      <HelpData Key="if_expr_new" Value="Новое условное выражение в стиле Паскаля. Доступно только при форматировании" />
+      <HelpData Key="if_expr_new.condition" Value="" />
+      <HelpData Key="if_expr_new.if_false" Value="" />
+      <HelpData Key="if_expr_new.if_true" Value="" />
       <HelpData Key="if_node" Value="Условный оператор" />
       <HelpData Key="if_node.condition" Value="Условие" />
       <HelpData Key="if_node.else_body" Value="Оператор по ветви else" />
@@ -3852,6 +3913,9 @@
       <HelpData Key="implementation_node.implementation_definitions" Value="" />
       <HelpData Key="implementation_node.uses_modules" Value="" />
       <HelpData Key="implementation_node.using_namespaces" Value="" />
+      <HelpData Key="index" Value="" />
+      <HelpData Key="index.index_expr" Value="" />
+      <HelpData Key="index.inverted" Value="" />
       <HelpData Key="index_property" Value="" />
       <HelpData Key="index_property.is_default" Value="" />
       <HelpData Key="index_property.property_parametres" Value="" />
@@ -4353,6 +4417,9 @@
       <HelpData Key="simple_const_definition" Value="" />
       <HelpData Key="simple_const_definition." Value="" />
       <HelpData Key="simple_const_definition.simple_const_definition(ident name, expression value, SourceContext sc)" Value="" />
+      <HelpData Key="simple_expr_with_deref" Value="" />
+      <HelpData Key="simple_expr_with_deref.has_deref" Value="" />
+      <HelpData Key="simple_expr_with_deref.simple_expr" Value="" />
       <HelpData Key="simple_property" Value="property property_name[parameter_list]:property_type index index_expression accessors; [virtual;] array_default;" />
       <HelpData Key="simple_property." Value="" />
       <HelpData Key="simple_property.accessors" Value="" />
@@ -4375,6 +4442,8 @@
       <HelpData Key="sizeof_operator.type_name" Value="" />
       <HelpData Key="slice_expr" Value="" />
       <HelpData Key="slice_expr.from" Value="" />
+      <HelpData Key="slice_expr.index_inversion_from" Value="" />
+      <HelpData Key="slice_expr.index_inversion_to" Value="" />
       <HelpData Key="slice_expr.step" Value="" />
       <HelpData Key="slice_expr.to" Value="" />
       <HelpData Key="slice_expr.v" Value="" />

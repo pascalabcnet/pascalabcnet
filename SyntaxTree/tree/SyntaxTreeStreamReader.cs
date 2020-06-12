@@ -518,6 +518,14 @@ namespace PascalABCCompiler.SyntaxTree
 					return new tuple_pattern_var_parameter();
 				case 248:
 					return new recursive_tuple_parameter();
+				case 249:
+					return new diapason_expr_new();
+				case 250:
+					return new if_expr_new();
+				case 251:
+					return new simple_expr_with_deref();
+				case 252:
+					return new index();
 			}
 			return null;
 		}
@@ -4353,6 +4361,59 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_recursive_tuple_parameter(recursive_tuple_parameter _recursive_tuple_parameter)
 		{
 			read_recursive_pattern_parameter(_recursive_tuple_parameter);
+		}
+
+
+		public void visit(diapason_expr_new _diapason_expr_new)
+		{
+			read_diapason_expr_new(_diapason_expr_new);
+		}
+
+		public void read_diapason_expr_new(diapason_expr_new _diapason_expr_new)
+		{
+			read_addressed_value(_diapason_expr_new);
+			_diapason_expr_new.left = _read_node() as expression;
+			_diapason_expr_new.right = _read_node() as expression;
+		}
+
+
+		public void visit(if_expr_new _if_expr_new)
+		{
+			read_if_expr_new(_if_expr_new);
+		}
+
+		public void read_if_expr_new(if_expr_new _if_expr_new)
+		{
+			read_expression(_if_expr_new);
+			_if_expr_new.condition = _read_node() as expression;
+			_if_expr_new.if_true = _read_node() as expression;
+			_if_expr_new.if_false = _read_node() as expression;
+		}
+
+
+		public void visit(simple_expr_with_deref _simple_expr_with_deref)
+		{
+			read_simple_expr_with_deref(_simple_expr_with_deref);
+		}
+
+		public void read_simple_expr_with_deref(simple_expr_with_deref _simple_expr_with_deref)
+		{
+			read_expression(_simple_expr_with_deref);
+			_simple_expr_with_deref.simple_expr = _read_node() as expression;
+			_simple_expr_with_deref.has_deref = br.ReadBoolean();
+		}
+
+
+		public void visit(index _index)
+		{
+			read_index(_index);
+		}
+
+		public void read_index(index _index)
+		{
+			read_expression(_index);
+			_index.index_expr = _read_node() as expression;
+			_index.inverted = br.ReadBoolean();
 		}
 
 	}

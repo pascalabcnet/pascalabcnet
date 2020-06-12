@@ -16,6 +16,7 @@
 <param name="Keyword" value="Line">
 <param name="Keyword" value="LineOn">
 <param name="Keyword" value="LineRel">
+<param name="Keyword" value="Lines">
 <param name="Keyword" value="LineTo">
 <param name="Keyword" value="MoveOn">
 <param name="Keyword" value="MoveRel">
@@ -37,14 +38,26 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует окружность с центром в точке (x,y) и радиусом r</td></tr>
 <tr><td><code><b>procedure</b> Circle(x,y,r: real; c: Color);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует окружность с центром в точке (x,y), радиусом r и цветом c</td></tr>
+<tr><td><code><b>procedure</b> Circle(p: Point; r: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует окружность с центром в точке p и радиусом r</td></tr>
+<tr><td><code><b>procedure</b> Circle(p: Point; r: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует окружность с центром в точке p, радиусом r и цветом c</td></tr>
 <tr><td><code><b>procedure</b> DrawCircle(x,y,r: real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур окружности с центром в точке (x,y) и радиусом r</td></tr>
 <tr><td><code><b>procedure</b> DrawCircle(x,y,r: real; c: Color);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур окружности с центром в точке (x,y), радиусом r и цветом c</td></tr>
+<tr><td><code><b>procedure</b> DrawCircle(p: Point; r: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур окружности с центром в точке p и радиусом r</td></tr>
+<tr><td><code><b>procedure</b> DrawCircle(p: Point; r: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур окружности с центром в точке p, радиусом r и цветом c</td></tr>
 <tr><td><code><b>procedure</b> DrawEllipse(x,y,rx,ry: real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур эллипса с центром в точке (x,y) и радиусами rx и ry</td></tr>
 <tr><td><code><b>procedure</b> DrawEllipse(x,y,rx,ry: real; c: Color);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур эллипса с центром в точке (x,y), радиусами rx и ry и цветом c</td></tr>
+<tr><td><code><b>procedure</b> DrawEllipse(p: Point; rx,ry: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур эллипса с центром в точке p и радиусами rx и ry</td></tr>
+<tr><td><code><b>procedure</b> DrawEllipse(p: Point; rx,ry: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует контур эллипса с центром в точке p, радиусами rx и ry и цветом c</td></tr>
 <tr><td><code><b>procedure</b> DrawPixels(x,y: real; pixels: <b>array</b> [,]  <b>of</b> Color);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует двумерный массив пикселей pixels начиная с левого верхнего угла с координатами (x,y)</td></tr>
 <tr><td><code><b>procedure</b> DrawPixels(x,y: real; pixels: <b>array</b> [,]  <b>of</b> Color; px,py,pw,ph: integer);</code>
@@ -65,14 +78,26 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует эллипс с центром в точке (x,y) и радиусами rx и ry</td></tr>
 <tr><td><code><b>procedure</b> Ellipse(x,y,rx,ry: real; c: Color);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует эллипс с центром в точке (x,y), радиусами rx и ry и цветом внутренности c</td></tr>
+<tr><td><code><b>procedure</b> Ellipse(p: Point; rx,ry: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует эллипс с центром в точке p и радиусами rx и ry</td></tr>
+<tr><td><code><b>procedure</b> Ellipse(p: Point; rx,ry: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует эллипс с центром в точке p, радиусами rx и ry и цветом внутренности c</td></tr>
 <tr><td><code><b>procedure</b> FillCircle(x,y,r: real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует внутренность окружности с центром в точке (x,y) и радиусом r</td></tr>
 <tr><td><code><b>procedure</b> FillCircle(x,y,r: real; c: Color);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует внутренность окружности с центром в точке (x,y), радиусом r и цветом c</td></tr>
+<tr><td><code><b>procedure</b> FillCircle(p: Point; r: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует внутренность окружности с центром в точке p и радиусом r</td></tr>
+<tr><td><code><b>procedure</b> FillCircle(p: Point; r: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует внутренность окружности с центром в точке p, радиусом r и цветом c</td></tr>
 <tr><td><code><b>procedure</b> FillEllipse(x,y,rx,ry: real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует внутренность эллипса с центром в точке (x,y) и радиусами rx и ry</td></tr>
 <tr><td><code><b>procedure</b> FillEllipse(x,y,rx,ry: real; c: Color);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует внутренность эллипса с центром в точке (x,y), радиусами rx и ry и цветом c</td></tr>
+<tr><td><code><b>procedure</b> FillEllipse(p: Point; rx,ry: real);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует внутренность эллипса с центром в точке p и радиусами rx и ry</td></tr>
+<tr><td><code><b>procedure</b> FillEllipse(p: Point; rx,ry: real; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует внутренность эллипса с центром в точке p, радиусами rx и ry и цветом c</td></tr>
 <tr><td><code><b>procedure</b> FillPolygon(points: <b>array</b>  <b>of</b> Point);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует внутренность многоугольника, заданного массивом точек</td></tr>
 <tr><td><code><b>procedure</b> FillPolygon(points: <b>array</b>  <b>of</b> Point; c: GColor);</code>
@@ -89,10 +114,18 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок прямой от точки (x,y) до точки (x1,y1)</td></tr>
 <tr><td><code><b>procedure</b> Line(x,y,x1,y1: real; c: Color);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок прямой от точки (x,y) до точки (x1,y1) цветом c</td></tr>
+<tr><td><code><b>procedure</b> Line(p,p1: Point);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок прямой от точки p до точки p1</td></tr>
+<tr><td><code><b>procedure</b> Line(p,p1: Point; c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок прямой от точки p до точки p1 цветом c</td></tr>
 <tr><td><code><b>procedure</b> LineOn(dx,dy: real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок от текущей позиции до точки, смещённой на вектор (dx,dy). Текущая позиция переносится в новую точку</td></tr>
 <tr><td><code><b>procedure</b> LineRel(dx,dy: real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок от текущей позиции до точки, смещённой на вектор (dx,dy). Текущая позиция переносится в новую точку</td></tr>
+<tr><td><code><b>procedure</b> Lines(a: <b>array</b>  <b>of</b> (Point,Point));</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезки, заданные массивом пар точек</td></tr>
+<tr><td><code><b>procedure</b> Lines(a: <b>array</b>  <b>of</b> (Point,Point); c: Color);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезки, заданные массивом пар точек, цветом c</td></tr>
 <tr><td><code><b>procedure</b> LineTo(x,y: real);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует отрезок от текущей позиции до точки (x,y). Текущая позиция переносится в точку (x,y)</td></tr>
 <tr><td><code><b>procedure</b> MoveOn(dx,dy: real);</code>

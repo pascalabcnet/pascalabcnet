@@ -43,32 +43,36 @@ namespace SyntaxVisitors
 
             if (cd.body == null)
                 return;
-            var fields = cd.body.class_def_blocks.SelectMany(cm => cm.members.Where(decl => decl is var_def_statement)
+            /*var fields = cd.body.class_def_blocks.SelectMany(cm => cm.members.Where(decl => decl is var_def_statement)
                                                                 .Select(decl1 => (decl1 as var_def_statement).vars.idents)
                                                                 .SelectMany(ids => ids.Select(id => id)));
             
 
-            CollectedFields.UnionWith(fields);
+            CollectedFields.UnionWith(fields);*/
 
-            /*foreach (var defs in cd.body.class_def_blocks)
+            foreach (var defs in cd.body.class_def_blocks)
             {
                 // Class members
                 foreach (var decl in defs.members)
                 {
                     // Declaration: fields + procedure defs + headers + etc
                     // Need vars
-                    if (decl is var_def_statement)
+                    if (decl is var_def_statement vds)
                     {
-                        var vars = (decl as var_def_statement).vars;
+                        CollectedFields.UnionWith(vds.vars.idents);
                         // Fields
-                        foreach (var field in vars.idents)
+                        /*foreach (var field in vds.vars.idents)
                         {
                             CollectedFields.Add(field);
-                        }
+                        }*/
+                    }
+                    else if (decl is simple_const_definition scd)
+                    {
+                        CollectedFields.Add(scd.const_name);
                     }
                 }
-            }*/
-        }
+            }
 
+        }
     }
 }

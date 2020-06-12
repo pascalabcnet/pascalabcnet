@@ -29,6 +29,8 @@ namespace CodeCompletion
 
         public ReferenceFinder(IBaseScope founded_scope, IBaseScope entry_scope, compilation_unit cu, string FileName, bool for_refactoring)
         {
+            if (founded_scope is IProcScope && (founded_scope as IProcScope).IsConstructor())
+                founded_scope = (founded_scope as IProcScope).DeclaringType;
             this.founded_scope = founded_scope;
             this.entry_scope = entry_scope;
             this.cur_scope = entry_scope;
@@ -744,6 +746,8 @@ namespace CodeCompletion
 
         public override void visit(write_accessor_name _write_accessor_name)
         {
+            if (_write_accessor_name.accessor_name == null)
+                return;
             IBaseScope sc = cur_scope.FindNameOnlyInType(_write_accessor_name.accessor_name.name);
             if (sc != null && sc.IsEqual(founded_scope))
                 pos_list.Add(get_position(_write_accessor_name.accessor_name));
@@ -751,6 +755,8 @@ namespace CodeCompletion
 
         public override void visit(read_accessor_name _read_accessor_name)
         {
+            if (_read_accessor_name.accessor_name == null)
+                return;
             IBaseScope sc = cur_scope.FindNameOnlyInType(_read_accessor_name.accessor_name.name);
             if (sc != null && sc.IsEqual(founded_scope))
                 pos_list.Add(get_position(_read_accessor_name.accessor_name));

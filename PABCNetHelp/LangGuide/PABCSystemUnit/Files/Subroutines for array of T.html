@@ -3,10 +3,12 @@
 <param name="Keyword" value="High">
 <param name="Keyword" value="Length">
 <param name="Keyword" value="Low">
+<param name="Keyword" value="MatrEqual">
 <param name="Keyword" value="Reverse">
 <param name="Keyword" value="SetLength">
 <param name="Keyword" value="Shuffle">
-<param name="Keyword" value="Sort"></object>
+<param name="Keyword" value="Sort">
+<param name="Keyword" value="SortDescending"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Подпрограммы для работы с динамическими массивами</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Copy(a: <b>array</b>  <b>of</b> T): <b>array</b>  <b>of</b> T;</code>
@@ -19,6 +21,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает длину динамического массива по размерности dim</td></tr>
 <tr><td><code><b>function</b> Low(a: <b>array</b>  <b>of</b> T): integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает 0</td></tr>
+<tr><td><code><b>function</b> MatrEqual&lt;T&gt;(a, b: <b>array</b> [,]  <b>of</b> T): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сравнивает матрицы на равенство</td></tr>
 <tr><td><code><b>procedure</b> Reverse&lt;T&gt;(a: <b>array</b>  <b>of</b> T);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет порядок элементов в динамическом массиве на противоположный</td></tr>
 <tr><td><code><b>procedure</b> Reverse&lt;T&gt;(a: <b>array</b>  <b>of</b> T; index, count: integer);</code>
@@ -27,6 +31,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет порядок элементов в списке на противоположный</td></tr>
 <tr><td><code><b>procedure</b> Reverse&lt;T&gt;(a: List&lt;T&gt;; index, count: integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет порядок элементов на противоположный в диапазоне списка длины count, начиная с индекса index</td></tr>
+<tr><td><code><b>procedure</b> Reverse(<b>var</b> s: string);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет порядок символов в строке на противоположный</td></tr>
+<tr><td><code><b>procedure</b> Reverse(<b>var</b> s: string; index, count: integer);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изменяет порядок символов в части строки длины count на противоположный, начиная с индекса index</td></tr>
 <tr><td><code><b>procedure</b> SetLength(<b>var</b> a: <b>array</b>  <b>of</b> T; n: integer);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Устанавливает длину одномерного динамического массива. Старое содержимое сохраняется</td></tr>
 <tr><td><code><b>procedure</b> SetLength(<b>var</b> a: <b>array</b> [,...,]  <b>of</b> T; n1,n2,...: integer);</code>
@@ -47,5 +55,9 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по критерию сортировки, задаваемому функцией сравнения cmp</td></tr>
 <tr><td><code><b>procedure</b> Sort&lt;T&gt;(l: List&lt;T&gt;; less: (T,T)-&gt;boolean);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по критерию сортировки, задаваемому функцией сравнения less</td></tr>
+<tr><td><code><b>procedure</b> SortDescending&lt;T&gt;(a: <b>array</b>  <b>of</b> T);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует динамический массив по убыванию</td></tr>
+<tr><td><code><b>procedure</b> SortDescending&lt;T&gt;(l: List&lt;T&gt;);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Сортирует список по убыванию</td></tr>
 </table>
 </body></HTML>

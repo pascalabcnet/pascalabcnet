@@ -1,15 +1,17 @@
 <html><head>
 <object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="in">
 </object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title>
 <link rel="StyleSheet" href="../../default.css"></head>
 <body><H1>Операции с множествами</H1>
 <p>К множествам с базовыми элементами одного типа применимы 
-операции <code>+</code> (объединение), <code>-</code> 
+операции <code><b>in</b></code>
+(принадлежность) <code>+</code> (объединение), <code>-</code> 
 (разность) и <code>*</code> (пересечение)<span lang="ru">, а также операторы </span><code>
 +=</code><span lang="ru">, </span><code>-=</code><span lang="ru"> и </span>
-<code>*=</code>:</p>
+<code>*=</code>: </p>
 <blockquote>
 	<p><code><b>var</b> s1,s2,s: <b>set</b> <b>of</b> byte;<br>
 	<b>begin<br>
@@ -25,7 +27,7 @@
 	<span lang="ru">&nbsp; </span>s -=<span lang="ru"> </span>[3];&nbsp;&nbsp;&nbsp;&nbsp; 
 	// s = [2,4..6] <br>
 	<span lang="ru">&nbsp; </span>s *=<span lang="ru"> </span>[1..5];&nbsp; // s = [2,4..5]
-	<br>
+	<br>&nbsp; Print(3 <strong>in</strong> s1); // True<br>
 	<b>end</b>.</code></p>
 </blockquote>
 <p>К множествам&nbsp;с базовыми элементами одного типа применимы также операции 
@@ -44,7 +46,19 @@
 <p>Наконец, операция <code><b>in</b></code>
 определяет, принадлежит ли элемент множеству: <code>3 <b>in</b> [2..5]</code> 
 вернет <code>True</code>, <code>1 <b>in</b> [2..5]</code> вернет <code>False</code>.</p>
-<p><br>
-&nbsp;</p>
+<p>К множествам относятся также типы HashSet&lt;T&gt; и SortedSet&lt;T&gt;. К переменным 
+этого типа применимы те же операции, что и к встроенным множествам:</p>
+<blockquote>
+	<p><code><b>begin<br>
+	&nbsp; var
+	</b>s1 := new HashSet&lt;integer&gt;;<br>&nbsp; s1 := HSet(Range(1,4));<br>
+	<b>&nbsp; var
+	</b>s2 := HSet(Range(2,5));<br>
+&nbsp; <strong>var </strong>s := s1 + s2; // s = [1..5]<br>
+&nbsp; <strong>var </strong>s := s1 - s2; // s = [1]<br>
+&nbsp; <strong>var </strong>s := s1 * s2; // s = [2..4]<br>&nbsp; Print(3
+	<strong>in</strong> s1); // True<br><b>end</b>.</code></p>
+</blockquote>
+<p>&nbsp;</p>
 
 </body></html>

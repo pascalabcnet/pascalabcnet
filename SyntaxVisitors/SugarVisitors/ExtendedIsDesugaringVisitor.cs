@@ -24,9 +24,10 @@ namespace SyntaxVisitors.SugarVisitors
                 }
                 else if (binEpxr.operation_type == Operators.LogicalOR)
                 {
+                    var rightExprThenBody = _if_node.else_body == null ? new empty_statement() : (statement)_if_node.else_body.Clone();
                     rightExprIfNode = new if_node(
                         new un_expr(binEpxr.right, Operators.LogicalNOT, binEpxr.source_context),
-                        (statement)_if_node.else_body?.Clone(),
+                        rightExprThenBody,
                          (statement)_if_node.then_body?.Clone(),
                         _if_node.source_context);
 

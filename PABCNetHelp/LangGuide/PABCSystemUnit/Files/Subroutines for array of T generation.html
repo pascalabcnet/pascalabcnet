@@ -1,10 +1,12 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="Arr">
+<param name="Keyword" value="ArrEqual">
 <param name="Keyword" value="ArrFill">
 <param name="Keyword" value="ArrGen">
 <param name="Keyword" value="ArrRandom">
 <param name="Keyword" value="ArrRandomInteger">
 <param name="Keyword" value="ArrRandomReal">
+<param name="Keyword" value="ReadArrInt64">
 <param name="Keyword" value="ReadArrInteger">
 <param name="Keyword" value="ReadArrReal">
 <param name="Keyword" value="ReadArrString"></object>
@@ -14,6 +16,12 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает массив, заполненный указанными значени€ми</td></tr>
 <tr><td><code><b>function</b> Arr&lt;T&gt;(a: <b>sequence </b>  <b>of</b> T): <b>array</b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает массив, заполненный значени€ми из последовательнсти</td></tr>
+<tr><td><code><b>function</b> Arr(a: IntRange): <b>array</b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает массив, заполненный диапазоном значений</td></tr>
+<tr><td><code><b>function</b> Arr(a: CharRange): <b>array</b>  <b>of</b> char;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает массив, заполненный диапазоном значений</td></tr>
+<tr><td><code><b>function</b> ArrEqual&lt;T&gt;(a, b: <b>array</b>  <b>of</b> T): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает, совпадают ли массивы</td></tr>
 <tr><td><code><b>function</b> ArrFill&lt;T&gt;(count: integer; x: T): <b>array</b>  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает массив из count элементов x</td></tr>
 <tr><td><code><b>function</b> ArrGen&lt;T&gt;(count: integer; gen: integer-&gt;T): <b>array</b>  <b>of</b> T;</code>
@@ -30,6 +38,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает массив размера n, заполненный случайными целыми значени€ми</td></tr>
 <tr><td><code><b>function</b> ArrRandomReal(n: integer := 10; a: real := 0; b: real := 10): <b>array</b>  <b>of</b> real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает массив размера n, заполненный случайными вещественными значени€ми</td></tr>
+<tr><td><code><b>function</b> ReadArrInt64(n: integer): <b>array</b>  <b>of</b> int64;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает массив из n целых int64, введенных с клавиатуры</td></tr>
 <tr><td><code><b>function</b> ReadArrInteger(n: integer): <b>array</b>  <b>of</b> integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает массив из n целых, введенных с клавиатуры</td></tr>
 <tr><td><code><b>function</b> ReadArrInteger(prompt: string; n: integer): <b>array</b>  <b>of</b> integer;</code>

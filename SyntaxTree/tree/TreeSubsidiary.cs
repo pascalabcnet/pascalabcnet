@@ -380,7 +380,12 @@ namespace PascalABCCompiler.SyntaxTree
                 (begin_position.line_num > sc1.begin_position.line_num || (begin_position.line_num == sc1.begin_position.line_num && begin_position.column_num > sc1.begin_position.column_num)) &&
                 (end_position.line_num < sc2.begin_position.line_num || (end_position.line_num == sc2.begin_position.line_num && end_position.column_num < sc2.begin_position.column_num));
         }
-	}
+        public bool Less(SourceContext sc)
+        {
+            return begin_position.line_num < sc.begin_position.line_num || (begin_position.line_num == sc.begin_position.line_num && begin_position.column_num < sc.begin_position.column_num);
+        }
+
+    }
 
     public class Utils
     {

@@ -904,21 +904,22 @@ namespace PascalABCCompiler.TreeRealization
             wrapped_type ctn_to = to as wrapped_type;
             wrapped_type ctn_from = from as wrapped_type;
 
+            function_node fnode1 = null; // SSM вынес чтобы посмотреть значения 02.06.20
+            function_node fnode1_1 = null;
             if (ctn_to != null)
             {
-                function_node fnode1 = null;
                 fnode1 = ctn_to.get_implicit_conversion_from(from);
                 add_conversion(ret, fnode1, from, to);
                 if (ret.second != null)
                 {
                     return ret;
                 }
-                fnode1 = null;
+                fnode1_1 = null;
                 if (!is_implicit)
                 {
-                    fnode1 = ctn_to.get_explicit_conversion_from(from);
+                    fnode1_1 = ctn_to.get_explicit_conversion_from(from);
                 }
-                add_conversion(ret, fnode1, from, to);
+                add_conversion(ret, fnode1_1, from, to);
                 if (ret.second != null)
                 {
                     return ret;
@@ -931,14 +932,15 @@ namespace PascalABCCompiler.TreeRealization
                 add_conversion(ret, fnode2, from, to);
                 if (ret.second != null)
                 {
+                    var a = ret.first == ret.second;
                     return ret;
                 }
-                fnode2 = null;
+                function_node fnode2_1 = null;
                 if (!is_implicit)
                 {
-                    fnode2 = ctn_from.get_explicit_conversion_to(to);
+                    fnode2_1 = ctn_from.get_explicit_conversion_to(to);
                 }
-                add_conversion(ret, fnode2, from, to);
+                add_conversion(ret, fnode2_1, from, to);
                 if (ret.second != null)
                 {
                     return ret;

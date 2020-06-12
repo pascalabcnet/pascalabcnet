@@ -312,6 +312,7 @@ namespace VisualPascalABC
             res.ForeColor = orig.ForeColor;
             res.BackColor = orig.BackColor;
             res.Parent = orig.Parent;
+            res.ContextMenuStrip = orig.ContextMenuStrip;
             return res;
         }
 

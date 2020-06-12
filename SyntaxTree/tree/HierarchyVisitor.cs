@@ -1997,6 +1997,38 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(diapason_expr_new _diapason_expr_new)
+		{
+		}
+
+		public virtual void post_do_visit(diapason_expr_new _diapason_expr_new)
+		{
+		}
+
+		public virtual void pre_do_visit(if_expr_new _if_expr_new)
+		{
+		}
+
+		public virtual void post_do_visit(if_expr_new _if_expr_new)
+		{
+		}
+
+		public virtual void pre_do_visit(simple_expr_with_deref _simple_expr_with_deref)
+		{
+		}
+
+		public virtual void post_do_visit(simple_expr_with_deref _simple_expr_with_deref)
+		{
+		}
+
+		public virtual void pre_do_visit(index _index)
+		{
+		}
+
+		public virtual void post_do_visit(index _index)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -4122,6 +4154,41 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_recursive_tuple_parameter);
 			pre_do_visit(_recursive_tuple_parameter);
 			post_do_visit(_recursive_tuple_parameter);
+		}
+
+		public override void visit(diapason_expr_new _diapason_expr_new)
+		{
+			DefaultVisit(_diapason_expr_new);
+			pre_do_visit(_diapason_expr_new);
+			visit(diapason_expr_new.left);
+			visit(diapason_expr_new.right);
+			post_do_visit(_diapason_expr_new);
+		}
+
+		public override void visit(if_expr_new _if_expr_new)
+		{
+			DefaultVisit(_if_expr_new);
+			pre_do_visit(_if_expr_new);
+			visit(if_expr_new.condition);
+			visit(if_expr_new.if_true);
+			visit(if_expr_new.if_false);
+			post_do_visit(_if_expr_new);
+		}
+
+		public override void visit(simple_expr_with_deref _simple_expr_with_deref)
+		{
+			DefaultVisit(_simple_expr_with_deref);
+			pre_do_visit(_simple_expr_with_deref);
+			visit(simple_expr_with_deref.simple_expr);
+			post_do_visit(_simple_expr_with_deref);
+		}
+
+		public override void visit(index _index)
+		{
+			DefaultVisit(_index);
+			pre_do_visit(_index);
+			visit(index.index_expr);
+			post_do_visit(_index);
 		}
 	}
 
