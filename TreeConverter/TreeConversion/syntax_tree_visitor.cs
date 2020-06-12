@@ -20395,11 +20395,11 @@ namespace PascalABCCompiler.TreeConverter
                 var id = st.lst[2] as SyntaxTree.ident;
                 semantic_check_for_new_range(expr, td, id);
             }
-            else if (st.typ as System.Type == typeof(SyntaxTree.foreach_stmt) && st.lst.Count == 1) // для a.Indices. Пока непонятно, где описывать тип-маркер
+            /*else if (st.typ as System.Type == typeof(SyntaxTree.foreach_stmt) && st.lst.Count == 1) // для a.Indices. Пока непонятно, где описывать тип-маркер
             {
                 var expr = st.lst[0] as SyntaxTree.expression;
                 semantic_check_for_indices(expr);
-            }
+            }*/
             // Patterns
             else if (st.typ is SemanticCheckType.MatchedExpression)  // Это безобразие - SemanticCheckType в TreeHelper.cs помещать!!!
             {
