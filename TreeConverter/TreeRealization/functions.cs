@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace PascalABCCompiler.TreeRealization
@@ -66,7 +67,14 @@ namespace PascalABCCompiler.TreeRealization
         public override string ToString()
         {
             System.Text.StringBuilder str = new System.Text.StringBuilder();
-            str.Append((return_value_type != null ? "function " : "procedure ") + name + "(");
+            str.Append((return_value_type != null ? "function " : "procedure ") + name);
+            if (this is common_function_node cfn && cfn.generic_parameters_count > 0)
+            {
+                str.Append("<");
+                str.Append(string.Join(",", cfn.generic_params.Select(tn => tn.name)));
+                str.Append(">");
+            }
+            str.Append("(");
             foreach (var par in parameters)
                 str.Append(par.ToString() + ";");
             str.Append(")");

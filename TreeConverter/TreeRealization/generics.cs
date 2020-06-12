@@ -459,7 +459,7 @@ namespace PascalABCCompiler.TreeRealization
             {
                 if (comm_type.is_generic_parameter)
                 {
-                    if (method_param_types && comm_type.generic_function_container != null)
+                    if (method_param_types && comm_type.generic_function_container != null) 
                     {
                         return param_types[comm_type.generic_param_index];
                     }
@@ -1573,11 +1573,16 @@ namespace PascalABCCompiler.TreeRealization
                 }
             }
             cmn.parameters.AddRange(make_parameters(orig_fn.parameters, cmn));
-            if (orig_fn.is_generic_function)
+            if (orig_fn.is_generic_function) // orig_fn м.б. generic-методом, но и класс м.б.generic!!! Смешение параметров! А у нас либо класс, либо функция
             {
                 foreach (common_parameter cp in cmn.parameters)
                 {
-                    cp.type = generic_convertions.determine_type(cp.type, meth_inst_pars, true);
+                    //if (cp.type.PrintableName == "Action<TSource>" || cp.type.PrintableName == "TSource") { }  // ничего не надо делать, поскольку 
+                    //cp.type = generic_convertions.determine_type(cp.type, _instance_params, false);
+                    //else
+                        // Action<T,T2> - T м.б. от класса, а T2 - от метода! И надо передавать оба: meth_inst_pars и _instance_params
+                        // И индексом м.б. не обойдёшься
+                        cp.type = generic_convertions.determine_type(cp.type, meth_inst_pars, true);
                 }
             }
             common_method_node common_orig = orig_fn as common_method_node;

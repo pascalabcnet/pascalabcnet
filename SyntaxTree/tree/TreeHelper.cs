@@ -1965,6 +1965,16 @@ namespace PascalABCCompiler.SyntaxTree
     {
         public override string ToString() => "<proc_type>";
     }
+
+    public partial class ident_with_templateparams
+    {
+        public override string ToString() => $"{this.name}{this.template_params}";
+    }
+    public partial class template_param_list
+    {
+        public override string ToString() => "<"+string.Join(",",this.params_list.Select(td=>td.ToString()))+">";
+    }
+
     /*
     public partial class slice_expr : dereference
     {
