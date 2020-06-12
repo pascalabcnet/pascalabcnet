@@ -4293,6 +4293,11 @@ namespace PascalABCCompiler.TreeConverter
                             AddError(loc1, "NAME_IN_PROPERTY_READ_SECTION_MUST_BE_FIELD_OR_METHOD_NAME");
                         }
 
+                        /*if (sil.FirstOrDefault().scope != context.CurrentScope) // SSM 22/05/20
+                        {
+                            AddError(loc1, "NAME_IN_PROPERTY_READ_SECTION_MUST_BE_FIELD_OR_METHOD_NAME");
+                        }*/
+
                         //dn = check_name_node_type(_simple_property.accessors.read_accessor.accessor_name.name,
                         //    si, loc1, general_node_type.function_node, general_node_type.variable_node);
 
@@ -4427,6 +4432,11 @@ namespace PascalABCCompiler.TreeConverter
                             AddError(loc2, "NAME_IN_PROPERTY_WRITE_SECTION_MUST_BE_FIELD_OR_METHOD_NAME");
                         }
 
+                        /*if (sil.FirstOrDefault().scope != context.CurrentScope) // SSM 22/05/20
+                        {
+                            AddError(loc2, "NAME_IN_PROPERTY_WRITE_SECTION_MUST_BE_FIELD_OR_METHOD_NAME");
+                        }*/
+
                         //dn = check_name_node_type(_simple_property.accessors.write_accessor.accessor_name.name,
                         //    si, loc2, general_node_type.function_node, general_node_type.variable_node);
 
@@ -4504,30 +4514,31 @@ namespace PascalABCCompiler.TreeConverter
                             }
                             write_accessor = GenerateSetMethod(pn, write_accessor as common_method_node, pn.loc);
                         }
-                            else
+                        else
+                        {
+                            class_field cfield = sil.FirstOrDefault().sym_info as class_field;
+                            if (cfield == null)
                             {
-                                class_field cfield = sil.FirstOrDefault().sym_info as class_field;
-                                if (cfield == null)
-                                {
-                                    AddError(loc2, "ACCESSOR_CAN_BE_FIELD_OR_METHOD_ONLY");
-                                }
-                                if (_simple_property.parameter_list != null)
-                                {
-                                    AddError(loc2, "INDEX_PROPERTY_ACCESSOR_CAN_NOT_BE_VARIABLE");
-                                }
-                                if (cfield.type != pn.internal_property_type)
-                                {
-                                    AddError(loc2, "PROPERTY_TYPE_MISMATCH_ACCESSOR_FIELD_TYPE");
-                                }
-                                if (pn.polymorphic_state == SemanticTree.polymorphic_state.ps_static && cfield.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
-                        			AddError(get_location(_simple_property.accessors.write_accessor.accessor_name), "ACCESSOR_{0}_MUST_BE_STATIC", cfield.name);
-                    			if (pn.polymorphic_state != SemanticTree.polymorphic_state.ps_static && cfield.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
-                        			AddError(get_location(_simple_property.accessors.write_accessor.accessor_name), "ACCESSOR_{0}_CANNOT_BE_STATIC", cfield.name);
-                                write_accessor = GenerateSetMethodForField(pn, compiler_string_consts.GetSetAccessorName(pn.name), cfield, loc2);
+                                AddError(loc2, "ACCESSOR_CAN_BE_FIELD_OR_METHOD_ONLY");
                             }
-                            //Вот здесь уже можем добавить акцессор для чтения.
-                            pn.internal_set_function = write_accessor;
+
+                            if (_simple_property.parameter_list != null)
+                            {
+                                AddError(loc2, "INDEX_PROPERTY_ACCESSOR_CAN_NOT_BE_VARIABLE");
+                            }
+                            if (cfield.type != pn.internal_property_type)
+                            {
+                                AddError(loc2, "PROPERTY_TYPE_MISMATCH_ACCESSOR_FIELD_TYPE");
+                            }
+                            if (pn.polymorphic_state == SemanticTree.polymorphic_state.ps_static && cfield.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
+                        		AddError(get_location(_simple_property.accessors.write_accessor.accessor_name), "ACCESSOR_{0}_MUST_BE_STATIC", cfield.name);
+                    		if (pn.polymorphic_state != SemanticTree.polymorphic_state.ps_static && cfield.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
+                        		AddError(get_location(_simple_property.accessors.write_accessor.accessor_name), "ACCESSOR_{0}_CANNOT_BE_STATIC", cfield.name);
+                            write_accessor = GenerateSetMethodForField(pn, compiler_string_consts.GetSetAccessorName(pn.name), cfield, loc2);
                         }
+                        //Вот здесь уже можем добавить акцессор для чтения.
+                        pn.internal_set_function = write_accessor;
+                    }
                     if (pn.internal_set_function != null && pn.polymorphic_state == SemanticTree.polymorphic_state.ps_static && pn.internal_set_function.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
                         AddError(get_location(_simple_property.accessors.write_accessor.accessor_name), "ACCESSOR_{0}_MUST_BE_STATIC", pn.internal_set_function.name);
                     if (pn.internal_set_function != null && pn.polymorphic_state != SemanticTree.polymorphic_state.ps_static && pn.internal_set_function.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
@@ -4641,7 +4652,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             common_method_node cmn = new common_method_node(
-                AcessorName, loc, cf.cont_type,
+                AcessorName, loc, /*cf.cont_type,*/ cpn.comprehensive_type as common_type_node,
                 cf.polymorphic_state, context.get_field_access_level(), null);
             cpn.common_comprehensive_type.methods.AddElement(cmn);
             common_parameter cp = new common_parameter(
@@ -4660,7 +4671,7 @@ namespace PascalABCCompiler.TreeConverter
                 var_ref = new static_class_field_reference(cf, loc);
             }
             cmn.function_code = find_operator(compiler_string_consts.assign_name, var_ref, cpr, loc);
-            cf.cont_type.scope.AddSymbol(AcessorName, new SymbolInfo(cmn));
+            cf.cont_type.Scope.AddSymbol(AcessorName, new SymbolInfo(cmn));
             return cmn;
         }
 
@@ -4687,7 +4698,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             common_method_node cmn = new common_method_node(
-                AcessorName, loc, cf.cont_type,
+                AcessorName, loc, /*cf.cont_type,*/  cpn.comprehensive_type as common_type_node,
                 cf.polymorphic_state, context.get_field_access_level(), null);
             cpn.common_comprehensive_type.methods.AddElement(cmn);
             cmn.return_value_type = cf.type;
@@ -4702,7 +4713,7 @@ namespace PascalABCCompiler.TreeConverter
                 var_ref = new static_class_field_reference(cf, loc);
             }
             cmn.function_code = new return_node(var_ref, loc);
-            cf.cont_type.scope.AddSymbol(AcessorName, new SymbolInfo(cmn));
+            cf.cont_type.Scope.AddSymbol(AcessorName, new SymbolInfo(cmn)); // scope -> Scope SSM 23/05/20 - 
             return cmn;
         }
 
@@ -13685,7 +13696,7 @@ namespace PascalABCCompiler.TreeConverter
                                 is_virtual = true;
                                 virtual_proc_attr = _procedure_attributes_list.proc_attributes[i].name;
                                 if (!is_abstract)
-                                context.set_virtual(cmn);
+                                    context.set_virtual(cmn);
                             }
                             break;
                         }
@@ -13717,6 +13728,8 @@ namespace PascalABCCompiler.TreeConverter
                             if (_procedure_attributes_list.proc_attributes[i].attribute_type == SyntaxTree.proc_attribute.attr_reintroduce)
                             {
                                 cmn.IsReintroduce = true;
+                                if (is_abstract)
+                                    cmn.newslot_awaited = true;
                                 break;
                             }
                             if (_procedure_attributes_list.proc_attributes[i].attribute_type == SyntaxTree.proc_attribute.attr_override && is_virtual)
@@ -13731,7 +13744,11 @@ namespace PascalABCCompiler.TreeConverter
                             
                             context.set_override(cmn);
                             if (is_abstract)
+                            {
                                 cmn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual_abstract;
+                                
+                            }
+                                
                             if (cmn.field_access_level < cmn.overrided_method.field_access_level)
                                 AddError(cmn.loc, "CAN_NOT_BE_DOWN_ACCESS_LEVEL_FOR_METH");
                             break;
@@ -13799,6 +13816,8 @@ namespace PascalABCCompiler.TreeConverter
                             if (context.converted_type.IsSealed)
                                 AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "ABSTRACT_METHOD_IN_SEALED_CLASS");
                             context.converted_type.SetIsAbstract(true);
+                            if (cmn.IsReintroduce)
+                                cmn.newslot_awaited = true;
                             break;
                 		}
                     case proc_attribute.attr_extension:
@@ -13830,7 +13849,7 @@ namespace PascalABCCompiler.TreeConverter
                             SymbolInfo si = new SymbolInfo(context.top_function);
                             si.symbol_kind = symbol_kind.sk_overload_function;
                             top_function.ConnectedToType.Scope.AddSymbol(top_function.name, si);
-                            if (top_function.ConnectedToType.type_special_kind == SemanticTree.type_special_kind.array_kind && top_function.ConnectedToType.element_type.is_generic_parameter)
+                            if (top_function.ConnectedToType.type_special_kind == SemanticTree.type_special_kind.array_kind /*&& top_function.ConnectedToType.element_type.is_generic_parameter*/)
                                 top_function.ConnectedToType.base_type.Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
                             else if (top_function.ConnectedToType.is_generic_parameter)
                                 top_function.ConnectedToType.base_type.Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
@@ -18033,13 +18052,13 @@ namespace PascalABCCompiler.TreeConverter
             //Формируем список параметров инстанцирования
             tparams = visit_type_list(_template_type_reference.params_list.params_list);
 
-            type_node t = instance_any(tclass, tparams, get_location(_template_type_reference));
+            type_node t = instance_any(tclass, tparams, get_location(_template_type_reference), _template_type_reference);
             return_value(t);
         }
 
-        public type_node instance_any(template_class tc, List<type_node> template_params, location loc)
+        public type_node instance_any(template_class tc, List<type_node> template_params, location loc, template_type_reference ttr=null)
         {
-            common_type_node t = instance(tc, template_params, loc);
+            common_type_node t = instance(tc, template_params, loc, ttr);
             if (tc.is_synonym)
             {
                 return t.fields[0].type;
@@ -18047,7 +18066,7 @@ namespace PascalABCCompiler.TreeConverter
             return t;
         }
 
-        public common_type_node instance(template_class tc, List<type_node> template_params, location loc)
+        public common_type_node instance(template_class tc, List<type_node> template_params, location loc, template_type_reference used_ttr = null)
         {
             //Проверяем, что попытка инстанцирования корректна
             SyntaxTree.class_definition cl_def = tc.type_dec.type_def as SyntaxTree.class_definition;
@@ -18189,7 +18208,26 @@ namespace PascalABCCompiler.TreeConverter
             //Разбор тела класса
             if (tc.is_synonym)
             {
+                Dictionary<type_definition, SourceContext> saved_sc_dict = new Dictionary<type_definition, SourceContext>();
+                saved_sc_dict.Add(tc.type_dec.type_def, tc.type_dec.type_def.source_context);
+                tc.type_dec.type_def.source_context = loc;
+                
+                if (tc.type_dec.type_def is template_type_reference)
+                {
+                    template_type_reference ttr = tc.type_dec.type_def as template_type_reference;
+                    for (int i = 0; i < ttr.params_list.params_list.Count; i++)
+                    {
+                        var prm = ttr.params_list.params_list[i];
+                        saved_sc_dict.Add(prm, prm.source_context);
+                        if (used_ttr != null && i < used_ttr.params_list.params_list.Count)
+                            prm.source_context = used_ttr.params_list.params_list[i].source_context;
+                        else
+                            prm.source_context = loc;
+                    }
+                }
                 type_node synonym_value = convert_strong(tc.type_dec.type_def);
+                foreach (type_definition td in saved_sc_dict.Keys)
+                    td.source_context = saved_sc_dict[td];
                 ctn.fields.AddElement(new class_field(compiler_string_consts.synonym_value_name,
                     synonym_value, ctn, PascalABCCompiler.SemanticTree.polymorphic_state.ps_static,
                     PascalABCCompiler.SemanticTree.field_access_level.fal_public, null));

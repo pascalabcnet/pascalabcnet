@@ -647,7 +647,7 @@ namespace PascalABCCompiler.TreeConverter
 
 
             //TODO: А если наследование?
-            possible_type_convertions pct =type_table.get_convertions(en.type,to);
+            possible_type_convertions pct = type_table.get_convertions(en.type,to);
 
 			if (pct.second!=null)
 			{
@@ -917,7 +917,10 @@ namespace PascalABCCompiler.TreeConverter
                 parameter pr=formalparams[formalparams.Count - 1];
                 if (pr.is_params && 
                     //это для возможности вызова сразу с массивом[], типа просто не обращаем внимаение на params
-                    !(factparams.Count == formalparams.Count && factparams[factparams.Count - 1].type == formalparams[formalparams.Count - 1].type))
+                    !(factparams.Count == formalparams.Count && (factparams[factparams.Count - 1].type == formalparams[formalparams.Count - 1].type ||
+                      (factparams[factparams.Count - 1].type is delegated_methods dm) && (dm.proper_methods[0].ret_type == formalparams[formalparams.Count - 1].type))
+                     )
+                   )
                 {
                     //TODO: Добавить проверку на правильность.
                     aii = (array_internal_interface)

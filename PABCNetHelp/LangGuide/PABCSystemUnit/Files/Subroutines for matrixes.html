@@ -1,5 +1,7 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="Matr">
+<param name="Keyword" value="MatrByCol">
+<param name="Keyword" value="MatrByRow">
 <param name="Keyword" value="MatrFill">
 <param name="Keyword" value="MatrGen">
 <param name="Keyword" value="MatrRandom">
@@ -14,6 +16,22 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n, заполненный указанными значениями по строкам</td></tr>
 <tr><td><code><b>function</b> Matr&lt;T&gt;(<b>params</b> aa: <b>array</b>  <b>of</b> <b>array</b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив, заполненный значениями из одномерных массивов</td></tr>
+<tr><td><code><b>function</b> MatrByCol&lt;T&gt;(a: <b>array</b>  <b>of</b> <b>array</b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Генерирует двумерный массив по массиву массивов столбцов</td></tr>
+<tr><td><code><b>function</b> MatrByCol&lt;T&gt;(a: <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Генерирует двумерный массив по последовательности массивов столбцов</td></tr>
+<tr><td><code><b>function</b> MatrByCol&lt;T&gt;(a: <b>sequence </b>  <b>of</b> <b>sequence </b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Генерирует двумерный массив по последовательности последовательностей столбцов</td></tr>
+<tr><td><code><b>function</b> MatrByCol&lt;T&gt;(m,n: integer; a: <b>sequence </b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Генерирует двумерный массив по столбцам из последовательности</td></tr>
+<tr><td><code><b>function</b> MatrByRow&lt;T&gt;(a: <b>array</b>  <b>of</b> <b>array</b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Генерирует двумерный массив по массиву массивов строк</td></tr>
+<tr><td><code><b>function</b> MatrByRow&lt;T&gt;(a: <b>sequence </b>  <b>of</b> <b>array</b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Генерирует двумерный массив по последовательности массивов строк</td></tr>
+<tr><td><code><b>function</b> MatrByRow&lt;T&gt;(a: <b>sequence </b>  <b>of</b> <b>sequence </b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Генерирует двумерный массив по последовательности последовательностей строк</td></tr>
+<tr><td><code><b>function</b> MatrByRow&lt;T&gt;(m,n: integer; a: <b>sequence </b>  <b>of</b> T): <b>array</b> [,]  <b>of</b> T;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Генерирует двумерный массив по строкам из последовательности</td></tr>
 <tr><td><code><b>function</b> MatrFill&lt;T&gt;(m, n: integer; x: T): <b>array</b> [,]  <b>of</b> T;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает двумерный массив размера m x n, заполненный элементами x</td></tr>
 <tr><td><code><b>function</b> MatrGen&lt;T&gt;(m, n: integer; gen: (integer,integer)-&gt;T): <b>array</b> [,]  <b>of</b> T;</code>

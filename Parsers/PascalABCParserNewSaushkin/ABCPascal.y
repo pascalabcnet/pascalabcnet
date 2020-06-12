@@ -79,7 +79,7 @@
 %type <stn> exception_handler  
 %type <stn> exception_handler_list  
 %type <stn> exception_identifier  
-%type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 /*const_func_expr_list*/ case_label_list const_elem_list optional_const_func_expr_list elem_list1  
+%type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 /*const_expr_list*/ case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
 %type <ex> const_simple_expr term term1 simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda expr_l1_for_lambda simple_expr range_term range_factor 
@@ -970,12 +970,12 @@ optional_const_func_expr_list
 		{ $$ = null; }
     ;
         
-/*const_func_expr_list
+/*const_expr_list
     : const_expr                               
         { 	
 			$$ = new expression_list($1, @$);
 		}
-    | const_func_expr_list tkComma const_expr 
+    | const_expr_list tkComma const_expr 
         { 
 			$$ = ($1 as expression_list).Add($3, @$);
 		}
@@ -3512,6 +3512,10 @@ tuple_pattern_item
 		{ 
 			$$ = new const_pattern_parameter($1, @$);
 		}
+	| sign literal_or_number
+		{
+			$$ = new const_pattern_parameter(new un_expr($2, $1.type, @$), @$);
+		}
     | tkVar identifier
         {
             $$ = new tuple_pattern_var_parameter($2, null, @$);
@@ -3623,6 +3627,10 @@ pattern_out_param_optional_var
 	| literal_or_number
 		{
 			$$ = new const_pattern_parameter($1, @$);
+		}
+	| sign literal_or_number
+		{
+			$$ = new const_pattern_parameter(new un_expr($2, $1.type, @$), @$);
 		}
     | identifier tkColon type_ref
         {
@@ -3953,7 +3961,11 @@ literal_or_number
 		{ $$ = $1; }
     | unsigned_number
 		{ $$ = $1; }
-    ;
+/*	| sign unsigned_number           
+        { 
+			$$ = new un_expr($2, $1.type, @$); 
+		}*/
+	;
 
 
 var_question_point
@@ -4445,6 +4457,32 @@ keyword
         { $$ = $1; }
     | tkWhen
         { $$ = $1; }
+    | tkPartial
+        { $$ = $1; }
+    | tkAbstract
+        { $$ = new token_info($1.name, @$);  }
+    | tkLock
+        { $$ = $1; }
+    | tkImplicit
+        { $$ = $1; }
+    | tkExplicit
+        { $$ = $1; }
+    | tkOn
+        { $$ = new token_info($1.name, @$);  }
+    | tkVirtual
+        { $$ = new token_info($1.name, @$);  }
+    | tkOverride
+        { $$ = new token_info($1.name, @$);  }
+    | tkLoop
+        { $$ = $1; }
+    | tkExtensionMethod
+        { $$ = new token_info($1.name, @$);  }
+    | tkOverload
+        { $$ = new token_info($1.name, @$);  }
+    | tkReintroduce
+        { $$ = new token_info($1.name, @$);  }
+    | tkForward
+        { $$ = new token_info($1.name, @$);  }
     ;
 
 reserved_keyword
