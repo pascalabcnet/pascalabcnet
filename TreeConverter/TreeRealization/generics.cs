@@ -386,7 +386,7 @@ namespace PascalABCCompiler.TreeRealization
 
         //Определяет, как должен выглядеть тип в семантическом дереве.
         //Возвращает этот тип.
-        public static type_node determine_type(Type t, List<type_node> param_types, bool method_param_types)
+        public static type_node determine_type(Type t, List<type_node> param_types, bool method_param_types, List<type_node> generic_param_types = null)
         {
             if (t == null) return null;
             if (t.IsGenericParameter)
@@ -432,13 +432,13 @@ namespace PascalABCCompiler.TreeRealization
             return compiled_type_node.get_type_node(t);
         }
 
-        public static type_node determine_type(type_node tn, List<type_node> param_types, bool method_param_types)
+        public static type_node determine_type(type_node tn, List<type_node> param_types, bool method_param_types, List<type_node> generic_param_types = null)
         {
             if (tn == null) return null;
             ref_type_node rtn = tn as ref_type_node;
             if (rtn != null)
             {
-                type_node ptype = generic_convertions.determine_type(rtn.pointed_type, param_types, method_param_types);
+                type_node ptype = generic_convertions.determine_type(rtn.pointed_type, param_types, method_param_types, generic_param_types);
                 if (ptype == rtn.pointed_type) return tn;
                 ref_type_node rez_ref = ptype.ref_type;
                 rez_ref.loc = rtn.loc;
@@ -447,7 +447,7 @@ namespace PascalABCCompiler.TreeRealization
             array_internal_interface ii = tn.get_internal_interface(internal_interface_kind.unsized_array_interface) as array_internal_interface;
             if (ii != null)
             {
-                type_node elem_tp = determine_type(ii.element_type, param_types, method_param_types);
+                type_node elem_tp = determine_type(ii.element_type, param_types, method_param_types, generic_param_types);
                 if (elem_tp != ii.element_type)
                 {
                     return SystemLibrary.SystemLibrary.syn_visitor.convertion_data_and_alghoritms.type_constructor.create_unsized_array(elem_tp, null, ii.rank, null);
@@ -461,7 +461,15 @@ namespace PascalABCCompiler.TreeRealization
                 {
                     if (method_param_types && comm_type.generic_function_container != null) 
                     {
-                        return param_types[comm_type.generic_param_index];
+                        if (generic_param_types == null)
+                            return param_types[comm_type.generic_param_index];
+                        else
+                        {
+                            // Мы устанавливаем, содержится ли comm_type среди generic_param_types, и если да, то меняем его по этому же алгоритму, а если нет, то ничего не делаем 
+                            var found = generic_param_types.Contains(comm_type);
+                            if (found)
+                                return param_types[comm_type.generic_param_index];
+                        }
                     }
                     else if (!method_param_types && comm_type.generic_type_container != null)
                     {
@@ -476,7 +484,7 @@ namespace PascalABCCompiler.TreeRealization
                     List<type_node> gitn_inst_parameters = gitn.instance_params;
                     foreach (type_node arg in gitn_inst_parameters)
                     {
-                        semantic_args.Add(determine_type(arg, param_types, method_param_types));
+                        semantic_args.Add(determine_type(arg, param_types, method_param_types, generic_param_types));
                     }
                     return gitn.original_generic.get_instance(semantic_args);
                 }
@@ -486,7 +494,7 @@ namespace PascalABCCompiler.TreeRealization
                 }
                 if (comm_type.type_special_kind == SemanticTree.type_special_kind.array_kind)
                 {
-                    type_node elem_tp = determine_type(comm_type.element_type, param_types, method_param_types);
+                    type_node elem_tp = determine_type(comm_type.element_type, param_types, method_param_types, generic_param_types);
                     if (elem_tp != comm_type.element_type)
                     {
                         return SystemLibrary.SystemLibrary.syn_visitor.convertion_data_and_alghoritms.type_constructor.create_unsized_array(elem_tp, null, 1, comm_type.loc);
@@ -495,7 +503,7 @@ namespace PascalABCCompiler.TreeRealization
                 }
                 if (comm_type.type_special_kind == SemanticTree.type_special_kind.set_type)
                 {
-                    type_node elem_tp = determine_type(comm_type.element_type, param_types, method_param_types);
+                    type_node elem_tp = determine_type(comm_type.element_type, param_types, method_param_types, generic_param_types);
                     if (elem_tp != comm_type.element_type)
                     {
                         return SystemLibrary.SystemLibrary.syn_visitor.context.create_set_type(elem_tp, comm_type.loc);
@@ -504,7 +512,7 @@ namespace PascalABCCompiler.TreeRealization
                 }
                 if (comm_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.typed_file)
                 {
-                    type_node elem_tp = determine_type(comm_type.element_type, param_types, method_param_types);
+                    type_node elem_tp = determine_type(comm_type.element_type, param_types, method_param_types, generic_param_types);
                     if (elem_tp != comm_type.element_type)
                     {
                         return SystemLibrary.SystemLibrary.syn_visitor.context.create_typed_file_type(elem_tp, comm_type.loc);
@@ -1528,6 +1536,9 @@ namespace PascalABCCompiler.TreeRealization
                 return null;
             }
             List<type_node> meth_inst_pars = null;
+
+            List<type_node> orig_tpars = null;
+
             SemanticTree.IClassMemberNode orig_member = orig_fn as SemanticTree.IClassMemberNode;
             common_method_node cmn = new common_method_node(
                 orig_fn.name,
@@ -1537,7 +1548,7 @@ namespace PascalABCCompiler.TreeRealization
                 null);
             if (orig_fn.is_generic_function)
             {
-                List<type_node> orig_tpars = orig_fn.get_generic_params_list();
+                orig_tpars = orig_fn.get_generic_params_list();
                 int type_count = orig_tpars.Count;
                 cmn.generic_params = new List<PascalABCCompiler.SemanticTree.ICommonTypeNode>(orig_tpars.Count);
                 foreach (type_node t in orig_tpars)
@@ -1582,7 +1593,7 @@ namespace PascalABCCompiler.TreeRealization
                     //else
                         // Action<T,T2> - T м.б. от класса, а T2 - от метода! И надо передавать оба: meth_inst_pars и _instance_params
                         // И индексом м.б. не обойдёшься
-                        cp.type = generic_convertions.determine_type(cp.type, meth_inst_pars, true);
+                        cp.type = generic_convertions.determine_type(cp.type, meth_inst_pars, true, orig_tpars);
                 }
             }
             common_method_node common_orig = orig_fn as common_method_node;
@@ -2276,16 +2287,19 @@ namespace PascalABCCompiler.TreeRealization
             _original_function = original_generic_function;
             _instance_params = instance_parameters;
 
+            List<type_node> orig_gen_params =
+                original_generic_function.get_generic_params_list(); // #2068 попытка
+
             this.field_access_level = original_generic_function.field_access_level;
             this.is_final = original_generic_function.is_final;
             this.is_overload = true;
             this.polymorphic_state = original_generic_function.polymorphic_state;
-            this.return_value_type = generic_convertions.determine_type(original_generic_function.return_value_type, instance_parameters, true);
+            this.return_value_type = generic_convertions.determine_type(original_generic_function.return_value_type, instance_parameters, true, orig_gen_params);
 
             foreach (parameter par in original_generic_function.parameters)
             {
                 common_parameter cpar = new common_parameter(par.name,
-                    generic_convertions.determine_type(par.type, _instance_params, true),
+                    generic_convertions.determine_type(par.type, _instance_params, true, orig_gen_params),
                     par.parameter_type, this,
                     (par.parameter_type == SemanticTree.parameter_type.var) ? concrete_parameter_type.cpt_var : concrete_parameter_type.cpt_none,
                     par.default_value, null);
@@ -2368,17 +2382,20 @@ namespace PascalABCCompiler.TreeRealization
             _original_function = original_generic_function;
             _instance_params = instance_parameters;
 
+            List<type_node> orig_gen_params = 
+                original_generic_function.generic_params.Select(p => p as type_node).ToList(); // #2068 попытка
+
             this.field_access_level = original_generic_function.field_access_level;
             this.is_final = original_generic_function.is_final;
             this.is_overload = true;
             this.polymorphic_state = original_generic_function.polymorphic_state;
 
-            this.return_value_type = generic_convertions.determine_type(original_generic_function.return_value_type, instance_parameters, true);
+            this.return_value_type = generic_convertions.determine_type(original_generic_function.return_value_type, instance_parameters, true, orig_gen_params);
 
             foreach (parameter par in original_generic_function.parameters)
             {
                 common_parameter cpar = new common_parameter(par.name,
-                    generic_convertions.determine_type(par.type, _instance_params, true),
+                    generic_convertions.determine_type(par.type, _instance_params, true, orig_gen_params),
                     par.parameter_type, this,
                     (par.parameter_type == SemanticTree.parameter_type.var) ? concrete_parameter_type.cpt_var : concrete_parameter_type.cpt_none,
                     par.default_value, null);
