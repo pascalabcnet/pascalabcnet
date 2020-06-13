@@ -675,6 +675,7 @@ namespace PascalABCCompiler.TreeRealization
 
             }
         }
+        public override string ToString() => "λ_anytype";
     }
 	
     [Serializable]
@@ -4663,15 +4664,15 @@ namespace PascalABCCompiler.TreeRealization
         				case SemanticTree.parameter_type.var : sb.Append("var "); break;
         			}
         			if (prm.is_params) sb.Append("params ");
-        			sb.Append(prm.name+": ");
-        			sb.Append(prm.type.name);
+        			sb.Append((prm.name ?? "_") +": ");
+        			sb.Append(prm.type.ToString());
         			if (i<bfc.function.parameters.Length-1)
         			sb.Append(';');
         		}
         		sb.Append(')');
         	}
         	if (bfc.function.return_value_type != null)
-        		sb.Append(": "+bfc.function.return_value_type.name);
+        		sb.Append(": "+bfc.function.return_value_type.ToString());
         	return sb.ToString();
         }
         
@@ -4684,6 +4685,8 @@ namespace PascalABCCompiler.TreeRealization
             	//return compiler_string_consts.method_group_type_name;
             }
         }
+
+        public override string ToString() => name;
 
         public override List<SymbolInfo> find(string name, bool no_search_in_extension_methods = false)
         {
