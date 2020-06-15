@@ -2673,6 +2673,8 @@ namespace PascalABCCompiler.TreeRealization
 	[Serializable]
 	public class compiled_type_node : wrapped_type, SemanticTree.ICompiledTypeNode , SemanticTree.ILocated
 	{
+        public override string ToString() => PrintableName;
+
         internal System.Type _compiled_type;
 		protected compiled_type_node _base_type;
 
@@ -3829,7 +3831,11 @@ namespace PascalABCCompiler.TreeRealization
                     return generic_convertions.MakePseudoInstanceName(name, ctypes, true);
                 }
                 if (!_compiled_type.IsPrimitive && base.PrintableName == _compiled_type.Name)
-                    return _compiled_type.FullName;
+                {
+                    if (_compiled_type.FullName != null && _compiled_type.FullName != "")
+                        return _compiled_type.FullName;
+                    else return _compiled_type.Name;
+                }
                 return base.PrintableName;
             }
         }

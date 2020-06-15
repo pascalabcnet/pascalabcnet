@@ -1011,11 +1011,6 @@ namespace PascalABCCompiler.TreeRealization
         }
 
         //Выведение типов
-        //Странно, что для вывода ОДНОГО параметра передаётся весь массив deduced!!!
-        //Непонятно, что делать, если мы сюда заходим, а он уже в том месте заполнен. Это ошибка или нет?
-        //Может ли быть такое, что deduced[par_num] заполнен, а возвращается false?
-        //Не может ли быть, что при рекурсивном вызове deduced начинает перезаполняться вовсе для других параметров?
-        //Где потом используется deduced?
         public static bool DeduceInstanceTypes(type_node formal_type, type_node fact_type, type_node[] deduced, List<int> nils, List<type_node> generic_params)
         {
             if (fact_type == null)//issue #347
@@ -1819,39 +1814,55 @@ namespace PascalABCCompiler.TreeRealization
                         var tn1 = tn as compiled_type_node;
                         var ff = tn1.find_in_type("IndexOf");*/
 
-                        generic_instance_type_node compr_type = find_instance_type_from(tn);
+                        generic_instance_type_node compr_type = find_instance_type_from(tn); // #1647 tn = IEnumerable<T>
                         if (compr_type == null)
                         {
-                            compiled_function_node cfn = orig_node as compiled_function_node;
+                            compiled_type_node bbt = null; // SSM 14/06/20 - это для #1647 IGrouping<t1, byte>: IEnumerable<byte>
+                            foreach (type_node tn1 in ImplementingInterfaces)
+                            {
+                                var bt = tn1 as compiled_type_node;
+                                if (bt != null && bt.original_generic == tn)
+                                {
+                                    bbt = bt; // #1647 bbt = IEnumerable<byte>
+                                    break;
+                                }
+                            }
+                            compiled_function_node cfn = orig_node as compiled_function_node; // #1647 orig_node = cfn = IEnumerator<TElement> GetEnumerator()
                             if (cfn == null)
                             {
                                 return orig_node;
                             }
-                            compiled_type_node cct = tn as compiled_type_node;
+                            compiled_type_node cct = tn as compiled_type_node; // cct = IEnumerable<T>
+                            if (bbt != null) // #1647
+                                cct = orig_member.comperehensive_type as compiled_type_node;
+
                             type_node inst_type = this;
-                            do
-                            {
-                                inst_type = inst_type.base_type;
-                            }
-                            while (inst_type.semantic_node_type != semantic_node_type.compiled_type_node ||
-                                (inst_type != cct && inst_type.original_generic != cct));
 
+                            // До этого цикла проверить bbt - если оно не null, то в роли inst_type как раз и надо брать bbt!!!
+                            if (bbt == null)
+                                do
+                                {
+                                    inst_type = inst_type.base_type;
+                                }
+                                while (inst_type.semantic_node_type != semantic_node_type.compiled_type_node ||
+                                    (inst_type != cct && inst_type.original_generic != cct));
+                            else inst_type = bbt; // #1647
 
-                            MethodInfo[] meths = cct._compiled_type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
+                            MethodInfo[] meths = cct._compiled_type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | 
                                 BindingFlags.Static | BindingFlags.Instance);
-                            int num = System.Array.IndexOf(meths, cfn.method_info);
+                            int num = System.Array.IndexOf(meths, cfn.method_info); 
 
                             MethodInfo mi = ((compiled_type_node)inst_type)._compiled_type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
-                                BindingFlags.Static | BindingFlags.Instance)[num];
+                                    BindingFlags.Static | BindingFlags.Instance)[num];
                             return compiled_function_node.get_compiled_method(mi);
                         }
                         else
                             return compr_type.ConvertMember(orig_node);
-                        //
                     }
                     else
                         return orig_node;
                 }
+                
                 SemanticTree.ILocated orig_loc = orig_node as SemanticTree.ILocated;
                 location loc = (orig_loc == null) ? null : (orig_loc.Location as location);
                 switch (orig_node.general_node_type)
