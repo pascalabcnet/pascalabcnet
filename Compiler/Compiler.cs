@@ -2602,7 +2602,7 @@ namespace PascalABCCompiler
             var PCUFileExists = !CompilerOptions.Rebuild && PCUFileName !=null && File.Exists(PCUFileName);
 
             if (!PCUFileExists && !SourceFileExists)
-                throw new UnitNotFound(SourceFileName, UnitName, SyntaxUsesUnit.source_context);
+                throw new UnitNotFound(CurrentCompilationUnit.SyntaxTree.file_name, UnitName, SyntaxUsesUnit.source_context);
 
             if (PCUFileExists && SourceFileExists)
             {
