@@ -661,7 +661,9 @@ namespace PascalABCCompiler.TreeConverter
                     return convert_type(en, (to as delegated_methods).empty_param_method.ret_type, loc);
                 }
                 en.location = loc;
-                AddError(new CanNotConvertTypes(en, en.type, to, loc));
+                if (en.type is delegated_methods dm && dm.proper_methods[0].parameters.Count == 0 && dm.proper_methods[0].ret_type != null)
+                    AddError(new CanNotConvertTypes(en, dm.proper_methods[0].ret_type, to, loc)); // SSM 18/06/20 #2261
+                else AddError(new CanNotConvertTypes(en, en.type, to, loc));
 			}
 
 #if (DEBUG)
