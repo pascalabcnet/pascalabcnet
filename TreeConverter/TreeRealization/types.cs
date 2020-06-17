@@ -3384,7 +3384,7 @@ namespace PascalABCCompiler.TreeRealization
             return to;
         }
 
-        //(ssyy) 24.10.2007. Эта функция работает неверно, возвращая дважды найденную функцию.
+        //(ssyy) 24.10.2007. Эта функция работает неверно, возвращая дважды найденную функцию (!!! SSM 16/06/2020)
         //Попытался написать правильно.
         public override List<SymbolInfo> find(string name, bool no_search_in_extension_methods = false)
         {
@@ -3400,7 +3400,10 @@ namespace PascalABCCompiler.TreeRealization
             {
                 List<SymbolInfo> sil = compiled_find(name);
                 List<SymbolInfo> sil2 = find_in_additional_names(name);
-                if (/*sil == null &&*/ sil2 == null && string.Compare(name,"Create",true) != 0)
+                // Для исправления #2058 было закомментировано sil == null. Это неправильно, поскольку в sil были только неявно реализуемые 
+                // методы интерфейса, а при входе в if к ним стали добавляться явно реализуемые, что неправильно
+                // Поэтому будет правильно эту строку откомментировать и исправлять ошибку в #2058 по другому 
+                if (/*sil == null && */sil2 == null && string.Compare(name,"Create",true) != 0) // закомментированное - работает #2058 и не работает в #2256
                 {
                     compiled_type_node bas_type = base_type as compiled_type_node;
                     while (sil == null && bas_type != null && bas_type.scope != null)
@@ -3420,6 +3423,8 @@ namespace PascalABCCompiler.TreeRealization
                                 List<SymbolInfo> sil3 = ctn.scope.SymbolTable.Find(ctn.scope, name);
                                 if (sil3 != null)
                                 {
+                                    // SSM 17/05/20 - отфильтровал только методы расширения - явно реализованные методы интерфейса сюда не должны попасть
+                                    sil3 = sil3.Where(sl => (sl.sym_info as compiled_function_node)?.is_extension_method ?? (sl.sym_info as common_namespace_function_node)?.is_extension_method ?? false).ToList();
                                     if (sil != null)
                                         sil.AddRange(sil3);
                                     else
@@ -3587,7 +3592,7 @@ namespace PascalABCCompiler.TreeRealization
                         //si_lst.Add(current);
                     }
 
-                    foreach (var current_unit in result)
+                    foreach (var current_unit in result) // SSM 15/06/20 ?????? Этот код не работает!!!
                     {
                         if (!lst.Contains(current_unit.sym_info))
                         {

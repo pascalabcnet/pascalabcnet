@@ -5104,6 +5104,18 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
         
+        class SymInfoComparer: EqualityComparer<SymbolInfo>
+        {
+            public override bool Equals(SymbolInfo x, SymbolInfo y)
+            {
+                return x.sym_info == y.sym_info;
+            }
+            public override int GetHashCode(SymbolInfo codeh)
+            {
+                return 0;
+            }
+        }
+
         internal void visit_method_call(SyntaxTree.method_call _method_call)
         {
             // frninja 01/03/16 - for iterator capturing (yield)
@@ -5262,6 +5274,7 @@ namespace PascalABCCompiler.TreeConverter
                                     else
                                     {
                                         sil = exp.type.find_in_type(id_right.name, context.CurrentScope);
+                                        sil = sil.Distinct(new SymInfoComparer()).ToList(); // SSM 16/06/20 - удалил дубли для порядка
                                         if (sil != null && sil.FirstOrDefault().sym_info != null && sil.FirstOrDefault().sym_info.semantic_node_type == semantic_node_type.wrap_def)
                                         {
                                             BasePCUReader.RestoreSymbols(sil, id_right.name);
