@@ -19505,7 +19505,7 @@ namespace PascalABCCompiler.TreeConverter
                     return;
                 }
             }
-            if (!(adr is compiled_static_method_call) && !(adr is common_static_method_call))
+            if (!(adr is compiled_static_method_call) && !(adr is common_static_method_call) && !(adr is common_namespace_function_call))
                 AddError(get_location(_ident_with_templateparams.name), "TRIANGLE_BRACKETS_NOT_AWAITED");
          }
 
