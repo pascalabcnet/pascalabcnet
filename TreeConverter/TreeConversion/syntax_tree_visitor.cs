@@ -3456,6 +3456,10 @@ namespace PascalABCCompiler.TreeConverter
                     lt.Add(name);
                 }
 
+                if (lt.Count > 7)
+                    AddError(get_location(_enum_type_definition), "TUPLE_TYPE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7");
+
+
                 var l = new List<ident>();
                 l.Add(new ident("?System")); // System не должно быть найдено в пользовательском коде
                 l.Add(new ident("Tuple"));
