@@ -1825,7 +1825,7 @@ namespace PascalABCCompiler
                     if (CurrentUnit.State != UnitState.Compiled)
                     {
                         CurrentCompilationUnit = CurrentUnit;
-                        string UnitName = GetUnitFileName(CurrentUnit.SyntaxUnitName, Path.GetDirectoryName(CurrentCompilationUnit.SyntaxTree.file_name));
+                        string UnitName = CurrentCompilationUnit.SyntaxTree.file_name;
                         //if(CurrentUnit.State!=UnitState.InterfaceCompiled)													//DEBUG
                         //Console.WriteLine("ERROR! interface not compiled "+GetUnitFileName(CurrentUnit.SyntaxUnitName));//DEBUG
                         System.Collections.Generic.List<SyntaxTree.unit_or_namespace> SyntaxUsesList = GetSyntaxImplementationUsesList(CurrentUnit.SyntaxTree);
@@ -2488,7 +2488,7 @@ namespace PascalABCCompiler
                 foreach (string ext in sf.Extensions)
                     if (need_ext || fname_ext==ext)
                     {
-                        var res = FindFileInDirs(need_ext ? fname + ext : fname, Dirs);
+                        var res = FindFileInDirs(need_ext ? fname+ext : fname, Dirs);
                         //if (!(CompilerOptions.UseDllForSystemUnits && Path.GetDirectoryName(res) == CompilerOptions.SearchDirectory))
                         if (res != null)
                             return res;
@@ -2497,11 +2497,26 @@ namespace PascalABCCompiler
             return null;
         }
 
+        private static string CombinePath(string dir, string path)
+        {
+            int i = 0;
+
+            for (; i < path.Length && path[i] == '.' && path[i + 1] == '.'; )
+            {
+                dir = Path.GetDirectoryName(dir);
+                if (string.IsNullOrEmpty(dir)) return null;
+                i += 2;
+                if (path[i] == Path.DirectorySeparatorChar || path[i] == Path.AltDirectorySeparatorChar) i += 1;
+            }
+
+            return Path.Combine(dir, path.Substring(i));
+        }
+
         private string FindFileInDirs(string FileName, params string[] Dirs)
         {
             foreach (string Dir in Dirs)
             {
-                var res = Path.Combine(Dir, FileName);
+                var res = CombinePath(Dir, FileName);
                 if (File.Exists(res))
                     return res;
             }
