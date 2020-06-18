@@ -53,6 +53,7 @@ PARENT_SPECIFICATOR_MUST_BE_FIRST=Спецификатор предка долж
 CLASS_OR_RECORD_SPECIFICATOR_MUST_BE_FIRST=Спецификатор class/record должен быть первым в списке
 CONSTRUCTOR_SPECIFICATOR_MUST_BE_LAST=Спецификатор constructor должен быть последним в списке
 OBJECT_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR=Тип object не может быть использован для указания предка шаблонного параметра
+RECORD_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR=Тип записи не может быть использован для указания предка шаблонного параметра
 TYPE_{0}_DERIVED_FROM_ITSELF=Тип {0} наследуется циклически от самого себя
 AMBIGUITY_BETWEEN_NAMES_{0}_AND_{1}=Двусмысленность между именами {0} и {1}
 POINTERS_OF_GENERIC_PARAMETERS_NOT_ALLOWED=Указатели на параметр generic-типа недопустимы

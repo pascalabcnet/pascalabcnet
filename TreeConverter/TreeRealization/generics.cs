@@ -151,14 +151,17 @@ namespace PascalABCCompiler.TreeRealization
                 {
                     return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_REFERENCE_TYPE", tn.PrintableName);
                 }
-                if (gpe.is_value && (!tn.is_value || tn.BaseFullName != null && tn.BaseFullName.StartsWith("System.Nullable")) && !tn.is_generic_parameter)
+                if (gpe.is_value && (!tn.is_value || tn.BaseFullName != null && tn.BaseFullName.StartsWith("System.Nullable")) /*&& !tn.is_generic_parameter*/)
                 {
                     return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_VALUE_TYPE", tn.PrintableName);
                 }
-                if (gpe.base_class != null && gpe.base_class != SystemLibrary.SystemLibrary.object_type)
+                if (gpe.base_class != null && gpe.base_class != SystemLibrary.SystemLibrary.object_type && !tn.is_value)
                 {
                     type_node base_type = generic_convertions.determine_type(gpe.base_class, tparams, method_param_types);
-                    if (base_type != tn && !type_table.is_derived(base_type, tn) && !tn.is_generic_parameter)
+                    // Если tn не соврадает со своим базовым типом и
+                    // tn не наследуется от base_type и
+                    // tn - не generic параметр - закомментировал
+                    if (base_type != tn && !type_table.is_derived(base_type, tn) /*&& !tn.is_generic_parameter*/)
                     {
                         return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_BE_DERIVED_FROM_{1}", tn.PrintableName, base_type.name);
                     }

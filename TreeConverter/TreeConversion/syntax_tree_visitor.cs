@@ -12541,6 +12541,8 @@ namespace PascalABCCompiler.TreeConverter
                             }
                             else
                             {
+                                if (spec_type.is_value)
+                                    AddError(get_location(specificators[i]), "RECORD_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR");
                                 //Тип-предок
                                 if (spec_type == SystemLibrary.SystemLibrary.object_type)
                                 {
