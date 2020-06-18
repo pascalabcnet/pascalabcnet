@@ -5278,7 +5278,7 @@ namespace PascalABCCompiler.TreeConverter
                                     else
                                     {
                                         sil = exp.type.find_in_type(id_right.name, context.CurrentScope);
-                                        sil = sil.Distinct(new SymInfoComparer()).ToList(); // SSM 16/06/20 - удалил дубли для порядка
+                                        sil = sil?.Distinct(new SymInfoComparer()).ToList(); // SSM 16/06/20 - удалил дубли для порядка
                                         if (sil != null && sil.FirstOrDefault().sym_info != null && sil.FirstOrDefault().sym_info.semantic_node_type == semantic_node_type.wrap_def)
                                         {
                                             BasePCUReader.RestoreSymbols(sil, id_right.name);
