@@ -36,19 +36,25 @@ function MinMax(s: sequence of integer): (integer, integer);
 function НОДНОК(a, b: int64): (int64, int64);
 
 /// Разложение числа на простые множители
-function Factorize(n: int64): array of int64;
+function Factorize(n: int64): List<int64>;
 
 /// Рразложение числа на простые множители
-function Factorize(n: integer): array of integer;
+function Factorize(n: integer): List<integer>;
 
 /// Простые числа на интервале [2;n] 
-function Primes(n: integer): array of integer;
+function Primes(n: integer): List<integer>;
 
 /// Первые n простых чисел 
-function FirstPrimes(n: integer): array of integer;
+function FirstPrimes(n: integer): List<integer>;
 
 /// Возвращает массив, содержащий цифры числа
-function Digits(n: int64): array of integer;
+function Digits(n: int64): List<integer>;
+
+/// возвращает список делителей натурального числа
+function Divizors(n: int64): List<int64>;
+
+/// возвращает список делителей натурального числа
+function Divizors(n: integer): List<integer>;
 
 /// Возвращает Sin угла, заданного в градусах
 function SinDegrees(x: real): real;
@@ -97,7 +103,7 @@ begin
   Result := byte(x) + r
 end;
 
-{$region}
+{$endregion}
 
 {$region Oct}
 
@@ -119,8 +125,7 @@ begin
   Result := byte(x) + r
 end;
 
-{$region}
-
+{$endregion}
 
 {$region Hex}
 function Hex(x: int64): string;
@@ -143,7 +148,7 @@ begin
   Result := s[byte(x) + 1] + r
 end;
 
-{$region}
+{$endregion}
 
 {$region Dec}
 
@@ -189,7 +194,7 @@ begin
   end
 end;
 
-{$region}
+{$endregion}
 
 {$region MinMax}
 
@@ -225,7 +230,7 @@ function MinMax(Self: sequence of int64): (int64, int64); extensionmethod :=
 function MinMax(Self: sequence of integer): (integer, integer);
     extensionmethod := MinMax(Self);  
 
-{$region}
+{$endregion}
 
 {$region НОДНОК}
 
@@ -239,12 +244,12 @@ begin
   Result := (a, a1 div a * b1)
 end;
 
-{$region}
+{$endregion}
 
 {$region Factorize}
 
 /// Разложение числа на простые множители
-function Factorize(n: int64): array of int64;
+function Factorize(n: int64): List<int64>;
 begin
   n := Abs(n);
   var i: int64 := 2;
@@ -261,11 +266,11 @@ begin
       i += i = 2 ? 1 : 2;
   if n > 1 then
     L.Add(n);
-  Result := L.ToArray
+  Result := L
 end;
 
 /// Разложение числа на простые множители
-function Factorize(n: integer): array of integer;
+function Factorize(n: integer): List<integer>;
 begin
   n := Abs(n);
   var i := 2;
@@ -282,23 +287,23 @@ begin
       i += i = 2 ? 1 : 2;
   if n > 1 then
     L.Add(n);
-  Result := L.ToArray
+  Result := L
 end;
 
 /// разложение числа на простые множители
-function Factorize(Self: int64): array of int64; extensionmethod :=
+function Factorize(Self: int64): List<int64>; extensionmethod :=
     Factorize(Self);
     
 /// Разложение числа на простые множители
-function Factorize(Self: integer): array of integer; extensionmethod :=
+function Factorize(Self: integer): List<integer>; extensionmethod :=
     Factorize(Self);    
 
-{$region}
+{$endregion}
 
 {$region Primes}
 
 /// Простые числа на интервале [2;n] 
-function Primes(n: integer): array of integer;
+function Primes(n: integer): List<integer>;
 // Модифицированное решето Эратосфена на [2;n] 
 begin 
   var Mas := ArrFill(n, True);
@@ -317,20 +322,15 @@ begin
     Inc(i) 
   end;
   n := Mas.Count(t -> t);
-  Result := new integer[n-1];
-  i := 0;
+  Result := new List<integer>;
   for var j := 1 to Mas.High do
-    if Mas[j] then
-    begin
-      Result[i] := j+1;
-      Inc(i)
-    end
+    if Mas[j] then Result.Add(j + 1)
 end;
 
 /// Первые n простых чисел 
-function FirstPrimes(n: integer): array of integer;
+function FirstPrimes(n: integer): List<integer>;
 // Модифицированное решето Эратосфена 
-begin 
+begin
   var n1 := Trunc(Exp((Ln(n)+1.088)/0.8832));
   var Mas := ArrFill(n1, True);
   var i := 2;
@@ -348,15 +348,14 @@ begin
     Inc(i) 
   end;
   //n := Mas.Count(t -> t);
-  Result := new integer[n];
+  Result := new List<integer>;
   i := 0;
   for var j := 1 to Mas.High do
     if Mas[j] then
     begin
-      Result[i] := j+1;
+      Result.Add(j + 1);
       Inc(i);
-      if i = n then
-        break
+      if i = n then break
     end
 end;
 
@@ -400,17 +399,16 @@ begin
   Result := True
 end;
 
-{$region}
+{$endregion}
 
 {$region Digits}
 
 /// Возвращает массив, содержащий цифры числа
-function Digits(n: int64): array of integer;
+function Digits(n: int64): List<integer>;
 begin
   var St := new Stack<integer>;
   n := Abs(n);
-  if n = 0 then
-    Result := Arr(0)
+  if n = 0 then Result.Add(0)
   else
   begin
     while n > 0 do
@@ -418,29 +416,95 @@ begin
       St.Push(n mod 10);
       n := n div 10
     end;
-    Result := St.ToArray
+    Result := St.ToList
   end
 end;
 
 /// Возвращает массив, содержащий цифры числа
-function Digits(Self: integer): array of integer;
+function Digits(Self: integer): List<integer>;
     extensionmethod := Digits(Self);
 
 /// возвращает массив, содержащий цифры числа
-function Digits(Self: int64): array of integer;
+function Digits(Self: int64): List<integer>;
     extensionmethod := Digits(Self);
     
-{$region}
+{$endregion}
+
+{$region Divisors}
+
+/// возвращает список всех делителей натурального числа
+function Divizors(n: integer): List<integer>;
+begin
+  n := Abs(n); // foolproof
+  var L := new List<integer>;
+  L.Add(1);
+  L.Add(n);
+  if n > 3 then
+    begin
+    var k := 2;
+    while (k * k <= n) and (k < 46341) do
+    begin
+      if n mod k = 0 then
+      begin
+        var t := n div k;
+        L.Add(k);
+        if k < t then L.Add(t)
+        else break
+      end;  
+      Inc(k)
+    end;
+    L.Sort;
+  end;
+  Result := L
+end;
+
+/// возвращает список всех делителей натурального числа
+function Divizors(n: int64): List<int64>;
+begin
+  n := Abs(n); // foolproof
+  var L := new List<int64>;
+  L.Add(1);
+  L.Add(n);
+  if n > 3 then
+    begin
+    var k := int64(2);
+    while (k * k <= n) and (k < 3037000500) do
+    begin
+      if n mod k = 0 then
+      begin
+        var t := n div k;
+        L.Add(k);
+        if k < t then L.Add(t)
+        else break
+      end;  
+      Inc(k)
+    end;
+    L.Sort;
+  end;
+  Result := L
+end;
+
+/// возвращает список делителей натурального числа
+function Divizors(Self: integer): List<integer>; extensionmethod :=
+    Divizors(Self);
+    
+/// возвращает список делителей натурального числа
+function Divizors(Self: int64): List<int64>; extensionmethod :=
+    Divizors(Self);
+
+{$endregion}
 
 {$region Trig}
 
 function SinDegrees(x: real): real := Sin(DegToRad(x));
 
 function CosDegrees(x: real): real := Cos(DegToRad(x));
-    
-{$region}
 
-{$refion Random}
+function TanDegrees(x: real): real := Tan(DegToRad(x));
+    
+{$endregion}
+
+{$region Random}
 
 /// Возвращает вещественный массив, заполненный случайными значениями
 /// на интервале [a; b) с t знаками в дробной части
@@ -469,6 +533,6 @@ begin
       Result[i, j] := Round(Random * (b - a) + a, t);
 end;
 
-{$region}
+{$endregion}
 
 end.

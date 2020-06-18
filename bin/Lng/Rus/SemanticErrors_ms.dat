@@ -36,3 +36,4 @@ OPENMP_CONTROLLED_CONSTRUCTIONS_CANNOT_CONTAIN_LAMBDAS=Лямбда-выраже
 LAMBDAS_IN_CONSTRUCTOR_PARAMETERS_ARE_FORBIDDEN_IN_THIS_CONTEXT=Лямбда-выражения как параметры конструктора запрещены в этом контексте
 PROCEDURE_TYPE_SHOULD_BE_REPLACED_BY_TYPE_NAME_IN_THIS_CONTEXT=Процедурный тип следует заменить именем типа в данном контексте
 ACCESS_TO_ENUM_CONST_THROUGH_OBJECT=Нельзя обратиться к элементу перечисления через объект
+ONE_DIM_ARRAY_OR_LIST_EXPECTED=Ожидался одномерный массив или список
