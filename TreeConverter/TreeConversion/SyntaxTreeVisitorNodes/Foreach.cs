@@ -140,6 +140,7 @@ namespace PascalABCCompiler.TreeConverter
         private bool IsIList(expression_node en)
         {
             var ii = en.type.ImplementingInterfaces;
+            if (ii != null)
             foreach (var itn in ii)
             {
                 System.Type tt = null;

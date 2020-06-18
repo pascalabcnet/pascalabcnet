@@ -12,6 +12,7 @@ namespace PascalABCCompiler.TreeRealization
     [Serializable]
     public class expressions_list : extended_collection<expression_node>
     {
+        public override string ToString() => string.Join(", ", this._elements);
     }
 	
     [Serializable]

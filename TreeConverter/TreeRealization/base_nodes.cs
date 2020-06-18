@@ -350,6 +350,7 @@ namespace PascalABCCompiler.TreeRealization
                 return semantic_node_type.typed_expression;
             }
         }
+        public override string ToString() => type.ToString();
     }
 
     /// <summary>

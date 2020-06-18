@@ -113,7 +113,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 // Выводим дженерики по self
                 var nils = new List<int>();
-                var deduceSucceded = generic_convertions.DeduceInstanceTypes(selfParameter.type, patternInstance.type, deducedGenerics, nils);
+                var deduceSucceded = generic_convertions.DeduceInstanceTypes(selfParameter.type, patternInstance.type, deducedGenerics, nils, candidate.get_generic_params_list());
                 if (!deduceSucceded || deducedGenerics.Contains(null))
                     return false;
             }
