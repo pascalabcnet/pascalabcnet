@@ -352,6 +352,7 @@ namespace PascalABCCompiler.TreeConverter
             var semexpr = convert_strong(expr);
             var Is1DArr = Is1DArray(semexpr);
             var il = IsIList(semexpr);
+            // Тут может быть другая ситуация - Indices может быть членом semexpr - и тогда нельзя преобразовывать
             if (!Is1DArr && !il)
                 AddError(get_location(expr), "ONE_DIM_ARRAY_OR_LIST_EXPECTED");
         }
