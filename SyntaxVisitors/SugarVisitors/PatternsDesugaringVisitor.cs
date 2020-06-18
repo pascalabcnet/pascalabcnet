@@ -444,11 +444,11 @@ namespace SyntaxVisitors.SugarVisitors
             return indexerCall;
         }
 
-        private ident NewGeneralName() => new ident(GeneratedPatternNamePrefix + "GenVar" + generalVariableCounter++);
+        private ident NewGeneralName(SourceContext sc) => new ident(GeneratedPatternNamePrefix + "GenVar" + generalVariableCounter++, sc);
 
-        private ident NewSuccessName() => new ident(GeneratedPatternNamePrefix + "Success" + successVariableCounter++);
+        private ident NewSuccessName(SourceContext sc) => new ident(GeneratedPatternNamePrefix + "Success" + successVariableCounter++, sc);
 
-        private ident NewEndIfName() => new ident(GeneratedPatternNamePrefix + "EndIf" + labelVariableCounter++);
+        private ident NewEndIfName(SourceContext sc) => new ident(GeneratedPatternNamePrefix + "EndIf" + labelVariableCounter++, sc);
 
         private bool IsGenerated(string name) => name.StartsWith(GeneratedPatternNamePrefix);
 
@@ -477,11 +477,11 @@ namespace SyntaxVisitors.SugarVisitors
             Debug.Assert(!pattern.IsRecursive, "All recursive patterns should be desugared into simple patterns at this point");
 
             var desugarResult = new DeconstructionDesugaringResult();
-            var castVariableName = NewGeneralName();
-            desugarResult.CastVariableDefinition = new var_statement(castVariableName, pattern.type);
+            var castVariableName = NewGeneralName(pattern.source_context);
+            desugarResult.CastVariableDefinition = new var_statement(castVariableName, pattern.type, pattern.type.source_context);
 
-            var successVariableName = NewSuccessName();
-            desugarResult.SuccessVariableDefinition = new var_statement(successVariableName, new ident("false"));
+            var successVariableName = NewSuccessName(matchingExpression.source_context);
+            desugarResult.SuccessVariableDefinition = new var_statement(successVariableName, new ident("false"), successVariableName.source_context);
 
             // делегирование проверки паттерна функции IsTest
             desugarResult.TypeCastCheck = SubtreeCreator.CreateSystemFunctionCall(IsTestMethodName, matchingExpression, castVariableName);
@@ -490,7 +490,7 @@ namespace SyntaxVisitors.SugarVisitors
             foreach (var deconstructedVariable in parameters)
             {
                 desugarResult.DeconstructionVariables.Add(
-                    new var_def_statement(deconstructedVariable.identifier, deconstructedVariable.type));
+                    new var_def_statement(deconstructedVariable.identifier, deconstructedVariable.type, deconstructedVariable.identifier.source_context));
             }
 
             var deconstructCall = new procedure_call();
@@ -662,7 +662,7 @@ namespace SyntaxVisitors.SugarVisitors
                 if (parameters[i] is recursive_pattern_parameter parameter)
                 {
                     //var parameterType = (parameter.pattern as deconstructor_pattern).type;
-                    var newName = NewGeneralName();
+                    var newName = NewGeneralName(parameter.source_context);
                     pattern_parameter varParameter = null;
                     if (pattern is deconstructor_pattern)
                     {
@@ -908,7 +908,7 @@ namespace SyntaxVisitors.SugarVisitors
             {
                 var result = new statement_list();
                 result.Add(statementsBeforeAndIf);
-                var endIfLabel = NewEndIfName();
+                //var endIfLabel = NewEndIfName();
 
                 if (!(ifNode.then_body is statement_list))
                 {

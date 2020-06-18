@@ -1351,6 +1351,9 @@ namespace PascalABCCompiler.SyntaxTree
         public var_statement(ident id, type_definition type) : this(new var_def_statement(new ident_list(id), type))
         {
         }
+        public var_statement(ident id, type_definition type, SourceContext sc) : this(new var_def_statement(new ident_list(id), type, sc))
+        {
+        }
 
         public var_statement(ident id, string type) : this(new var_def_statement(new ident_list(id), new named_type_reference(type)))
         {
