@@ -12381,9 +12381,17 @@ namespace PascalABCCompiler.TreeConverter
                             continue;
                         if (t.is_class || t.is_value_type || t.methods.Length > 0 || t.base_type != SystemLibrary.SystemLibrary.object_type)
                         {
-                            if (thist.is_class != t.is_class || thist.is_value_type != t.is_value_type && !(t.is_value_type && thist.base_type.is_value_type) 
-                                || thist.methods.Length != t.methods.Length || 
-                                t.base_type != thist.base_type && !type_table.is_derived(t.base_type as type_node, thist.base_type as type_node))
+
+                            //if (thist.is_class != t.is_class || thist.is_value_type != t.is_value_type /*&& !(t.is_value_type && thist.base_type.is_value_type)*/ // последнее непонятно
+                            //    || thist.methods.Length != t.methods.Length || // это наличие конструктора
+                            //    t.base_type != thist.base_type && !type_table.is_derived(t.base_type as type_node, thist.base_type as type_node))
+                            if (t.is_class && !thist.is_class)
+                                AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
+                            if (t.is_value_type && !thist.is_value_type)
+                                AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
+                            if (t.methods.Length > thist.methods.Length)
+                                AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
+                            if (t.base_type != SystemLibrary.SystemLibrary.object_type && t.base_type != thist.base_type)
                                 AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
                         }
                     }
