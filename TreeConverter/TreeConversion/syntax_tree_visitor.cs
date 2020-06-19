@@ -13775,7 +13775,9 @@ namespace PascalABCCompiler.TreeConverter
                                 cmn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual_abstract;
                                 
                             }
-                                
+                            if (is_override && _procedure_attributes_list.Parent is procedure_header ph && ph.where_defs != null)
+                                AddError(cmn.loc, "OVERRIDE_METHODS_CANNOT_CONTAIN_WHERE_SECTION");
+
                             if (cmn.field_access_level < cmn.overrided_method.field_access_level)
                                 AddError(cmn.loc, "CAN_NOT_BE_DOWN_ACCESS_LEVEL_FOR_METH");
                             break;

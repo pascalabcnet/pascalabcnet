@@ -37,3 +37,5 @@ PROCEDURE_TYPE_SHOULD_BE_REPLACED_BY_TYPE_NAME_IN_THIS_CONTEXT=Procedure type sh
 ACCESS_TO_ENUM_CONST_THROUGH_OBJECT=Enum constant can not be accessed through an object
 ONE_DIM_ARRAY_OR_LIST_EXPECTED=One-dimensional array or list expected
 TUPLE_TYPE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7=Number of elements in tuple type must be less than 8
+OVERRIDE_METHODS_CANNOT_CONTAIN_WHERE_SECTION=Methods with override modifier can't contain where section
+Методы с модификатором override не могут содержать собственную секцию where
