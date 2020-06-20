@@ -689,7 +689,11 @@ namespace PascalABCCompiler.TreeConverter
 
         public expression_node explicit_convert_type(expression_node from, type_node to)
         {
-            
+            if (from is base_function_call bfc && bfc.function.name.StartsWith(LambdaHelper.lambdaPrefix))
+            {
+                AddError(from.location, "EXPLICIT_CASTS_FOR_LAMBDA_EXPRESSIONS_ARE_FORBIDDEN");
+            }
+
             if (from.type == to)
             {
                 return from;
