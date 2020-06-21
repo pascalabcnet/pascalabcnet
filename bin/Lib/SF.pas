@@ -6,12 +6,14 @@ procedure Pr(s: string) := Print(s);
 procedure Prln(params a: array of object) := Println(a);
 
 function RI := ReadInteger;
+function RBI := ReadBigInteger;
 function RI64 := ReadInt64;
 function RR := ReadReal;
 function RC := ReadChar;
 function RS := ReadString;
 
 function RlnI := ReadlnInteger;
+function RlnBI := ReadlnBigInteger;
 function RlnI64 := ReadlnInt64;
 function RlnR := ReadlnReal;
 function RlnC := ReadlnChar;
@@ -36,6 +38,23 @@ function RlnI3 := ReadInteger3;
 function RlnR3 := ReadlnReal3;
 function RlnC3 := ReadlnChar3;
 function RlnS3 := ReadlnString3;
+
+function RAI(n: integer) := ReadArrInteger(n);
+function RAR(n: integer) := ReadArrReal(n);
+
+function Pr(Self: integer): integer; extensionmethod := Self.Print;
+function Pr(Self: real): real; extensionmethod := Self.Print;
+function Pr(Self: Biginteger): Biginteger; extensionmethod := Self.Print;
+function Pr(Self: char): char; extensionmethod := Self.Print;
+function Pr(Self: boolean): boolean; extensionmethod := Self.Print;
+function Pr(Self: string): string; extensionmethod := Self.Print;
+
+function Prln(Self: integer): integer; extensionmethod := Self.Println;
+function Prln(Self: real): real; extensionmethod := Self.Println;
+function Prln(Self: Biginteger): Biginteger; extensionmethod := Self.Println;
+function Prln(Self: char): char; extensionmethod := Self.Println;
+function Prln(Self: boolean): boolean; extensionmethod := Self.Println;
+function Prln(Self: string): string; extensionmethod := Self.Println;
 
 procedure ReMin(var min: integer; x: integer);
 begin
