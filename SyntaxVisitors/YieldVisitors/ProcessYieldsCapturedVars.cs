@@ -971,6 +971,11 @@ namespace SyntaxVisitors
             pd.visit(checkVarRedefVisitor);
             */
 
+            // Если есть в pd узлы is_pattern_expr, то запустить визитор, добавляющий присваивание временной переменной и заменяющий 
+            // везде далее имя исходной переменной на имя временной
+            // SSM 20/06 - не очень так получается. Сложно
+            //IsVarRenameVisitor.Accept(pd);
+
             // Выносим выражение из yield в отдельную переменную
             ReplaceYieldExprByVarVisitor.Accept(pd);
 

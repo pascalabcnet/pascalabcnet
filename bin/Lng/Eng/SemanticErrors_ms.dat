@@ -39,3 +39,4 @@ ONE_DIM_ARRAY_OR_LIST_EXPECTED=One-dimensional array or list expected
 TUPLE_TYPE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7=Number of elements in tuple type must be less than 8
 OVERRIDE_METHODS_CANNOT_CONTAIN_WHERE_SECTION=Methods with override modifier can't contain where section
 Методы с модификатором override не могут содержать собственную секцию where
+EXPLICIT_CASTS_FOR_LAMBDA_EXPRESSIONS_ARE_FORBIDDEN=Explicit type casts for lambda expressions are forbidden

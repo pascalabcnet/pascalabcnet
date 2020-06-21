@@ -207,12 +207,60 @@ namespace SyntaxVisitors.SugarVisitors
             visit(desugaredMatchWith);
         }
 
+        private int num = 0;
+
+        public string GenerateNewName(string name)
+        {
+            num += 1;
+            return "$RenIsVarYield" + num + "$" + name;
+        }
+
         public override void visit(is_pattern_expr isPatternExpr)
         {
             if (GetLocation(isPatternExpr) == PatternLocation.Unknown)
                 throw new SyntaxVisitorError("PATTERN_MATHING_IS_NOT_SUPPORTED_IN_THIS_CONTEXT", isPatternExpr.source_context);
 
             Debug.Assert(GetAscendant<statement_list>(isPatternExpr) != null, "Couldn't find statement list in upper nodes");
+
+            var l = new List<statement>();
+            //l.Add(stat);
+            var pp = isPatternExpr.right?.parameters;
+            if (pp != null)
+            {
+                foreach (var p in pp)
+                {
+                    if (p is var_deconstructor_parameter vdp)
+                    {
+                        var idClone = vdp.identifier.TypedClone();
+                        var idNew = vdp.identifier.TypedClone();
+                        idNew.name = GenerateNewName(idNew.name);
+                        var vs = new var_statement(idClone, idNew, idClone.source_context);
+                        vdp.identifier.name = idNew.name;
+                        l.Add(vs);
+                    }
+                }
+            }
+
+            var stat = GetAscendant<statement>(isPatternExpr);
+            if (stat is if_node ifn)
+            {
+                //l.Add(ifn.then_body);
+                if (!(ifn.then_body is statement_list))
+                {
+                    ifn.then_body = new statement_list(ifn.then_body);
+                }
+                (ifn.then_body as statement_list).list.InsertRange(0, l);
+            }
+            else
+            {
+                l.Insert(0, stat);
+                foreach (var x in l)
+                    x.Parent = stat.Parent;
+                var stl = stat.Parent as statement_list;
+                stl.ReplaceInList(stat, l);
+            }
+
+            //ReplaceStatement(stat, l); // тут нельзя. 
 
             DesugarIsExpression(isPatternExpr);
         }
