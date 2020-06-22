@@ -5274,18 +5274,10 @@ namespace PascalABCCompiler.TreeConverter
                                     else
                                     {
                                         sil = exp.type.find_in_type(id_right.name, context.CurrentScope);
-
-                                        if (sil != null)
+                                        sil = sil.Distinct(new SymInfoComparer()).ToList(); // SSM 16/06/20 - удалил дубли для порядка
+                                        if (sil != null && sil.FirstOrDefault().sym_info != null && sil.FirstOrDefault().sym_info.semantic_node_type == semantic_node_type.wrap_def)
                                         {
-                                            // SSM 16/06/20 - удалил дубли для порядка
-                                            var sil_hs = new HashSet<SymbolInfo>(new SymInfoComparer());
-                                            sil.RemoveAll(si => !sil_hs.Add(si));
-
-                                            if (sil.FirstOrDefault().sym_info != null && sil.FirstOrDefault().sym_info.semantic_node_type == semantic_node_type.wrap_def)
-                                            {
-                                                BasePCUReader.RestoreSymbols(sil, id_right.name);
-                                            }
-
+                                            BasePCUReader.RestoreSymbols(sil, id_right.name);
                                         }
                                     }
 
