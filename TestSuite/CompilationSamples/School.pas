@@ -32,6 +32,12 @@ function MinMax(s: sequence of int64): (int64, int64);
 /// Возвращает кортеж из минимума и максимума последовательности s
 function MinMax(s: sequence of integer): (integer, integer);
 
+/// Ввозвращает НОД
+function НОД(a, b: int64): int64;
+
+/// Ввозвращает НОК пары чисел
+function НОК(a, b: int64): int64;
+
 /// Ввозвращает НОД и НОК пары чисел
 function НОДНОК(a, b: int64): (int64, int64);
 
@@ -232,7 +238,26 @@ function MinMax(Self: sequence of integer): (integer, integer);
 
 {$endregion}
 
-{$region НОДНОК}
+{$region GCDLCM}
+
+/// Возвращает НОД пары чисел
+function НОД(a, b: int64): int64;
+begin
+  (a, b) := (Abs(a), Abs(b));
+  while b <> 0 do
+    (a, b) := (b, a mod b);
+  Result := a
+end;
+
+/// Возвращает НОК пары чисел
+function НОК(a, b: int64): int64;
+begin
+  (a, b) := (Abs(a), Abs(b));
+  var (a1, b1) := (a, b);
+  while b <> 0 do
+    (a, b) := (b, a mod b);
+  Result := a1 div a * b1
+end;
 
 /// Возвращает НОД и НОК пары чисел
 function НОДНОК(a, b: int64): (int64, int64);
