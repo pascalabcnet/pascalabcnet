@@ -3456,6 +3456,10 @@ namespace PascalABCCompiler.TreeConverter
                     lt.Add(name);
                 }
 
+                if (lt.Count > 7)
+                    AddError(get_location(_enum_type_definition), "TUPLE_TYPE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7");
+
+
                 var l = new List<ident>();
                 l.Add(new ident("?System")); // System не должно быть найдено в пользовательском коде
                 l.Add(new ident("Tuple"));
@@ -5274,7 +5278,7 @@ namespace PascalABCCompiler.TreeConverter
                                     else
                                     {
                                         sil = exp.type.find_in_type(id_right.name, context.CurrentScope);
-                                        sil = sil.Distinct(new SymInfoComparer()).ToList(); // SSM 16/06/20 - удалил дубли для порядка
+                                        sil = sil?.Distinct(new SymInfoComparer()).ToList(); // SSM 16/06/20 - удалил дубли для порядка
                                         if (sil != null && sil.FirstOrDefault().sym_info != null && sil.FirstOrDefault().sym_info.semantic_node_type == semantic_node_type.wrap_def)
                                         {
                                             BasePCUReader.RestoreSymbols(sil, id_right.name);
@@ -12377,9 +12381,17 @@ namespace PascalABCCompiler.TreeConverter
                             continue;
                         if (t.is_class || t.is_value_type || t.methods.Length > 0 || t.base_type != SystemLibrary.SystemLibrary.object_type)
                         {
-                            if (thist.is_class != t.is_class || thist.is_value_type != t.is_value_type && !(t.is_value_type && thist.base_type.is_value_type) 
-                                || thist.methods.Length != t.methods.Length || 
-                                t.base_type != thist.base_type && !type_table.is_derived(t.base_type as type_node, thist.base_type as type_node))
+
+                            //if (thist.is_class != t.is_class || thist.is_value_type != t.is_value_type /*&& !(t.is_value_type && thist.base_type.is_value_type)*/ // последнее непонятно
+                            //    || thist.methods.Length != t.methods.Length || // это наличие конструктора
+                            //    t.base_type != thist.base_type && !type_table.is_derived(t.base_type as type_node, thist.base_type as type_node))
+                            if (t.is_class && !thist.is_class)
+                                AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
+                            if (t.is_value_type && !thist.is_value_type)
+                                AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
+                            if (t.methods.Length > thist.methods.Length)
+                                AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
+                            if (t.base_type != SystemLibrary.SystemLibrary.object_type && t.base_type != thist.base_type)
                                 AddError(ctn.loc, "WHERE_SPECIFIER_MISMATCH");
                         }
                     }
@@ -12537,6 +12549,8 @@ namespace PascalABCCompiler.TreeConverter
                             }
                             else
                             {
+                                if (spec_type.is_value)
+                                    AddError(get_location(specificators[i]), "RECORD_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR");
                                 //Тип-предок
                                 if (spec_type == SystemLibrary.SystemLibrary.object_type)
                                 {
@@ -13761,7 +13775,9 @@ namespace PascalABCCompiler.TreeConverter
                                 cmn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual_abstract;
                                 
                             }
-                                
+                            if (is_override && _procedure_attributes_list.Parent is procedure_header ph && ph.where_defs != null)
+                                AddError(cmn.loc, "OVERRIDE_METHODS_CANNOT_CONTAIN_WHERE_SECTION");
+
                             if (cmn.field_access_level < cmn.overrided_method.field_access_level)
                                 AddError(cmn.loc, "CAN_NOT_BE_DOWN_ACCESS_LEVEL_FOR_METH");
                             break;
@@ -19505,7 +19521,7 @@ namespace PascalABCCompiler.TreeConverter
                     return;
                 }
             }
-            if (!(adr is compiled_static_method_call) && !(adr is common_static_method_call))
+            if (!(adr is compiled_static_method_call) && !(adr is common_static_method_call) && !(adr is common_namespace_function_call))
                 AddError(get_location(_ident_with_templateparams.name), "TRIANGLE_BRACKETS_NOT_AWAITED");
          }
 

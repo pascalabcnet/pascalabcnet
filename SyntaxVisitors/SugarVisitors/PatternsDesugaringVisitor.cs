@@ -207,12 +207,60 @@ namespace SyntaxVisitors.SugarVisitors
             visit(desugaredMatchWith);
         }
 
+        private int num = 0;
+
+        public string GenerateNewName(string name)
+        {
+            num += 1;
+            return "$RenIsVarYield" + num + "$" + name;
+        }
+
         public override void visit(is_pattern_expr isPatternExpr)
         {
             if (GetLocation(isPatternExpr) == PatternLocation.Unknown)
                 throw new SyntaxVisitorError("PATTERN_MATHING_IS_NOT_SUPPORTED_IN_THIS_CONTEXT", isPatternExpr.source_context);
 
             Debug.Assert(GetAscendant<statement_list>(isPatternExpr) != null, "Couldn't find statement list in upper nodes");
+
+            var l = new List<statement>();
+            //l.Add(stat);
+            var pp = isPatternExpr.right?.parameters;
+            if (pp != null)
+            {
+                foreach (var p in pp)
+                {
+                    if (p is var_deconstructor_parameter vdp)
+                    {
+                        var idClone = vdp.identifier.TypedClone();
+                        var idNew = vdp.identifier.TypedClone();
+                        idNew.name = GenerateNewName(idNew.name);
+                        var vs = new var_statement(idClone, idNew, idClone.source_context);
+                        vdp.identifier.name = idNew.name;
+                        l.Add(vs);
+                    }
+                }
+            }
+
+            var stat = GetAscendant<statement>(isPatternExpr);
+            if (stat is if_node ifn)
+            {
+                //l.Add(ifn.then_body);
+                if (!(ifn.then_body is statement_list))
+                {
+                    ifn.then_body = new statement_list(ifn.then_body);
+                }
+                (ifn.then_body as statement_list).list.InsertRange(0, l);
+            }
+            else
+            {
+                l.Insert(0, stat);
+                foreach (var x in l)
+                    x.Parent = stat.Parent;
+                var stl = stat.Parent as statement_list;
+                stl.ReplaceInList(stat, l);
+            }
+
+            //ReplaceStatement(stat, l); // тут нельзя. 
 
             DesugarIsExpression(isPatternExpr);
         }
@@ -444,11 +492,11 @@ namespace SyntaxVisitors.SugarVisitors
             return indexerCall;
         }
 
-        private ident NewGeneralName() => new ident(GeneratedPatternNamePrefix + "GenVar" + generalVariableCounter++);
+        private ident NewGeneralName(SourceContext sc) => new ident(GeneratedPatternNamePrefix + "GenVar" + generalVariableCounter++, sc);
 
-        private ident NewSuccessName() => new ident(GeneratedPatternNamePrefix + "Success" + successVariableCounter++);
+        private ident NewSuccessName(SourceContext sc) => new ident(GeneratedPatternNamePrefix + "Success" + successVariableCounter++, sc);
 
-        private ident NewEndIfName() => new ident(GeneratedPatternNamePrefix + "EndIf" + labelVariableCounter++);
+        private ident NewEndIfName(SourceContext sc) => new ident(GeneratedPatternNamePrefix + "EndIf" + labelVariableCounter++, sc);
 
         private bool IsGenerated(string name) => name.StartsWith(GeneratedPatternNamePrefix);
 
@@ -477,11 +525,11 @@ namespace SyntaxVisitors.SugarVisitors
             Debug.Assert(!pattern.IsRecursive, "All recursive patterns should be desugared into simple patterns at this point");
 
             var desugarResult = new DeconstructionDesugaringResult();
-            var castVariableName = NewGeneralName();
-            desugarResult.CastVariableDefinition = new var_statement(castVariableName, pattern.type);
+            var castVariableName = NewGeneralName(pattern.source_context);
+            desugarResult.CastVariableDefinition = new var_statement(castVariableName, pattern.type, pattern.type.source_context);
 
-            var successVariableName = NewSuccessName();
-            desugarResult.SuccessVariableDefinition = new var_statement(successVariableName, new ident("false"));
+            var successVariableName = NewSuccessName(matchingExpression.source_context);
+            desugarResult.SuccessVariableDefinition = new var_statement(successVariableName, new ident("false"), successVariableName.source_context);
 
             // делегирование проверки паттерна функции IsTest
             desugarResult.TypeCastCheck = SubtreeCreator.CreateSystemFunctionCall(IsTestMethodName, matchingExpression, castVariableName);
@@ -490,7 +538,7 @@ namespace SyntaxVisitors.SugarVisitors
             foreach (var deconstructedVariable in parameters)
             {
                 desugarResult.DeconstructionVariables.Add(
-                    new var_def_statement(deconstructedVariable.identifier, deconstructedVariable.type));
+                    new var_def_statement(deconstructedVariable.identifier, deconstructedVariable.type, deconstructedVariable.identifier.source_context));
             }
 
             var deconstructCall = new procedure_call();
@@ -662,7 +710,7 @@ namespace SyntaxVisitors.SugarVisitors
                 if (parameters[i] is recursive_pattern_parameter parameter)
                 {
                     //var parameterType = (parameter.pattern as deconstructor_pattern).type;
-                    var newName = NewGeneralName();
+                    var newName = NewGeneralName(parameter.source_context);
                     pattern_parameter varParameter = null;
                     if (pattern is deconstructor_pattern)
                     {
@@ -908,7 +956,7 @@ namespace SyntaxVisitors.SugarVisitors
             {
                 var result = new statement_list();
                 result.Add(statementsBeforeAndIf);
-                var endIfLabel = NewEndIfName();
+                //var endIfLabel = NewEndIfName();
 
                 if (!(ifNode.then_body is statement_list))
                 {

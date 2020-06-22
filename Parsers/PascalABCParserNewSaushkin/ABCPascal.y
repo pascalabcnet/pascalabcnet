@@ -2655,14 +2655,14 @@ loop_stmt
 	;
 	
 yield_stmt
-	: tkYield expr_l1
+	: tkYield expr_l1_func_decl_lambda
 		{
 			$$ = new yield_node($2,@$);
 		}
 	;
 	
 yield_sequence_stmt
-	: tkYield tkSequence expr_l1
+	: tkYield tkSequence expr_l1_func_decl_lambda
 		{
 			$$ = new yield_sequence_node($3,@$);
 		}
