@@ -11536,6 +11536,15 @@ namespace PascalABCCompiler.TreeConverter
             //bool is_template_synonym = false;
             //SyntaxTree.array_type at=_type_declaration.type_def as SyntaxTree.array_type;
             
+            if (_type_declaration.type_def is class_definition cd && cd.keyword == class_keyword.Class && 
+                (cd.attribute & SyntaxTree.class_attribute.Static) == SyntaxTree.class_attribute.Static)
+            {
+                var name = _type_declaration.type_name.name.ToLower();
+                if(context.types_predefined.Select(tn => tn.name.ToLower()).Contains(name))
+                    AddError(get_location(_type_declaration), "STATIC_CLASS_CANNOT_HAVE_PREDEFINITION"); // #2266
+            }
+
+
             template_class tc = null;
             SyntaxTree.template_type_name ttn = _type_declaration.type_name as SyntaxTree.template_type_name;
             SyntaxTree.class_definition cl_def = _type_declaration.type_def as SyntaxTree.class_definition;
