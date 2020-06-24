@@ -633,7 +633,7 @@ namespace SyntaxVisitors.SugarVisitors
             {
                 var tupleItemCall = new dot_node(
                                 matchingExpression as addressed_value,
-                                new ident("Item" + (i + 1).ToString()),
+                                new ident("Item" + (i + 1).ToString(), matchingExpression.source_context), // SSM 24/06/20
                                 matchingExpression.source_context);
                 if (tupleItems[i] is tuple_pattern_var_parameter varParam)
                 {
