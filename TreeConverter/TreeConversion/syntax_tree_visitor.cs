@@ -2767,6 +2767,22 @@ namespace PascalABCCompiler.TreeConverter
                     lambdaProcessingState = LambdaProcessingState.TypeInferencePhase;
                     visit_program_code(_block.program_code);
 
+                    // Очистили списки goto для меток перед следующим этапом - пока ничего не дало - закомментируем
+                    foreach (var l in context._cmn.labels)
+                    {
+                        l.goto_statements.Clear();
+                        l.comprehensive_code_block = null;
+                    }
+                    if (context.func_stack.size > 0)
+                    {
+                        var fun = context.func_stack.top();
+                        foreach (var l in fun.label_nodes_list)
+                        {
+                            l.goto_statements.Clear();
+                            l.comprehensive_code_block = null;
+                        }
+                    }
+
                     // Грубо - удаление мусора при разборе лямбд. Происходит исключение - заголовок разбирается, тело остается пустым - и из-за этого была ошибка #1270.
                     while (context._cmn.functions.Count > 0 && context._cmn.functions[context._cmn.functions.Count-1].function_code == null && context._cmn.functions[context._cmn.functions.Count - 1].name.StartsWith("<>lambda") && !context._cmn.functions[context._cmn.functions.Count - 1].name.StartsWith("<>lambda_initializer"))
                     {
@@ -8918,7 +8934,8 @@ namespace PascalABCCompiler.TreeConverter
             lab.goto_statements.Add(gs);
             if (lab.comprehensive_code_block != null)
             {
-                if (!context.check_can_goto(lab.comprehensive_code_block, gs.comprehensive_code_block) && _goto_statement.source_context != null)
+                // последнее условие - для goto, которые генерируются в автомате yield, не рассматривать эту ошибку 
+                if (!context.check_can_goto(lab.comprehensive_code_block, gs.comprehensive_code_block) && _goto_statement.source_context != null) 
                 {
                     AddError(gs.location, "BLOCKED_LABEL_{0}_GOTO", lab.name);
                 }
