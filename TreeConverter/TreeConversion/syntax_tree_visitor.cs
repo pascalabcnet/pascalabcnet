@@ -2768,7 +2768,7 @@ namespace PascalABCCompiler.TreeConverter
                     visit_program_code(_block.program_code);
 
                     // Очистили списки goto для меток перед следующим этапом - пока ничего не дало - закомментируем
-                    foreach (var l in context._cmn.labels)
+                    foreach (var l in context._cmn.labels) 
                     {
                         l.goto_statements.Clear();
                         l.comprehensive_code_block = null;
