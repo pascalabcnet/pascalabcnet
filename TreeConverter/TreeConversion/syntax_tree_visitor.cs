@@ -7305,16 +7305,37 @@ namespace PascalABCCompiler.TreeConverter
 
                     // #2180 - в уникальной ситуации, когда из метода потомка вызывается метод расширения класса-предка добавлять Self (!)
                     // Это значит, что dereferencing_value - это идентификатор и sil состоит только (?) из методов расширения
+                    // Надо разделить на две части - для методов расширения добавлять Self. а для не методов - не добавлять
+                    // В первом случае окаймить всё try catch и погашать исключение
                     if (_method_call.dereferencing_value is ident)
                     {
-                        if (sil.Select(s=>s.sym_info).Where(s=>s is function_node).All(s => (s as function_node).is_extension_method))
+                        var silNoExt = sil.Select(s => s.sym_info).Where(s => s is function_node fn && !fn.is_extension_method).ToList();
+                        var silExt = sil.Select(s => s.sym_info).Where(s => s is function_node fn && fn.is_extension_method).ToList();
+
+                        if (silNoExt.Count > 0)
+                        {
+                            try
+                            {
+                                expr_node = convertion_data_and_alghoritms.create_full_function_call(exprs, sil, mcloc,
+                                    context.converted_type, context.top_function, proc_wait, _method_call.parameters?.expressions);
+                            }
+                            catch (Exception e)
+                            {
+                                if (silExt.Count == 0)
+                                    throw; // не проверять в методах расширения, поскольку их нет
+                            }
+
+                        }
+                        // Сюда мы пришли либо с expr_node != null и тогда в методах расширения искать не надо даже если они есть
+                        // либо с expr_node == null и тогда это значит, что основных методов и не было - и мы ищем в расширениях
+                        if (silExt.Count > 0 && expr_node == null) 
                         {
                             var en0 = convert_strong(new ident("Self"));
                             exprs.AddElementFirst(en0);
+                            expr_node = convertion_data_and_alghoritms.create_full_function_call(exprs, sil, mcloc,
+                                context.converted_type, context.top_function, proc_wait, _method_call.parameters?.expressions);
                         }
                     }
-                    expr_node = convertion_data_and_alghoritms.create_full_function_call(exprs, sil, mcloc,
-                        context.converted_type, context.top_function, proc_wait, _method_call.parameters?.expressions);
                 }
                 else
                 {
