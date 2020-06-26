@@ -1,4 +1,4 @@
-//Перегрузка операторов
+﻿//Перегрузка операторов
 type 
   Student = class
     Name: string;
@@ -35,5 +35,5 @@ begin
   Writeln;
   Writeln('s1<s2: ',s1<s2);
   //
-  Writeln('Student.operator>(s1,s2): ',Student.operator>(s1,s2));
+  Writeln('Student.operator>(s1,s2): ',{Student.operator>(s1,s2)}s1>s2);
 end.

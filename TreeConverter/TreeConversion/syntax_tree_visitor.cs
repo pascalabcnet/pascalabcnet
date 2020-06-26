@@ -5157,6 +5157,11 @@ namespace PascalABCCompiler.TreeConverter
                 return;
             }
 
+           if (_method_call.dereferencing_value is dot_node dn && dn.right is operator_name_ident)
+            {
+                AddError(get_location(dn.right), "OPERATIONS_CANNOT_BE_CALLED_USING_THIS_SYNTAX");
+            }
+
             bool proc_wait = procedure_wait;
             bool lambdas_are_in_parameters = false; //lroman//
 
@@ -7327,15 +7332,18 @@ namespace PascalABCCompiler.TreeConverter
 
                         }
                         // Сюда мы пришли либо с expr_node != null и тогда в методах расширения искать не надо даже если они есть
-                        // либо с expr_node == null и тогда это значит, что основных методов и не было - и мы ищем в расширениях
+                        // либо с expr_node == null и тогда всё будет определяться методами расширения
                         if (silExt.Count > 0 && expr_node == null) 
                         {
-                            var en0 = convert_strong(new ident("Self"));
+                            var en0 = convert_strong(new ident("Self",_method_call.dereferencing_value.source_context));
                             exprs.AddElementFirst(en0);
                             expr_node = convertion_data_and_alghoritms.create_full_function_call(exprs, sil, mcloc,
                                 context.converted_type, context.top_function, proc_wait, _method_call.parameters?.expressions);
                         }
                     }
+                    else
+                        expr_node = convertion_data_and_alghoritms.create_full_function_call(exprs, sil, mcloc,
+                            context.converted_type, context.top_function, proc_wait, _method_call.parameters?.expressions);
                 }
                 else
                 {
