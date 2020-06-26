@@ -7303,6 +7303,16 @@ namespace PascalABCCompiler.TreeConverter
                     //lroman//
                     #endregion
 
+                    // #2180 - в уникальной ситуации, когда из метода потомка вызывается метод расширения класса-предка добавлять Self (!)
+                    // Это значит, что dereferencing_value - это идентификатор и sil состоит только (?) из методов расширения
+                    if (_method_call.dereferencing_value is ident)
+                    {
+                        if (sil.Select(s=>s.sym_info).Where(s=>s is function_node).All(s => (s as function_node).is_extension_method))
+                        {
+                            var en0 = convert_strong(new ident("Self"));
+                            exprs.AddElementFirst(en0);
+                        }
+                    }
                     expr_node = convertion_data_and_alghoritms.create_full_function_call(exprs, sil, mcloc,
                         context.converted_type, context.top_function, proc_wait, _method_call.parameters?.expressions);
                 }

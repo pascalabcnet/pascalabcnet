@@ -39,6 +39,16 @@ function RlnR3 := ReadlnReal3;
 function RlnC3 := ReadlnChar3;
 function RlnS3 := ReadlnString3;
 
+function RI4 := ReadInteger4;
+function RR4 := ReadReal4;
+function RC4 := ReadChar4;
+function RS4 := ReadString4;
+
+function RlnI4 := ReadInteger4;
+function RlnR4 := ReadlnReal4;
+function RlnC4 := ReadlnChar4;
+function RlnS4 := ReadlnString4;
+
 function RAI(n: integer) := ReadArrInteger(n);
 function RAR(n: integer) := ReadArrReal(n);
 
