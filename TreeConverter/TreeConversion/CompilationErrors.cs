@@ -765,6 +765,10 @@ namespace PascalABCCompiler.TreeConverter
 
         public override string ToString()
         {
+            if (_name.ToLower().StartsWith("$rv_"))
+            {
+                return string.Format(StringResources.Get("UNDEFINED_NAME_RESULT_IN_{0}"), _name.Remove(0,4));
+            }
             return string.Format(StringResources.Get("UNDEFINED_NAME_REFERENCE_{0}"), _name);
         }        
     }

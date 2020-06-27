@@ -695,10 +695,14 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class typed_parameters
     {
-        public typed_parameters(ident_list idents, type_definition type) : this(idents, type, parametr_kind.none, null)
-        { }
-        public typed_parameters(ident id, type_definition type) : this(new ident_list(id), type)
-        { }
+        public typed_parameters(ident_list idents, type_definition type, SourceContext sc = null) : this(idents, type, parametr_kind.none, null)
+        {
+            this.source_context = sc;
+        }
+        public typed_parameters(ident id, type_definition type, SourceContext sc = null) : this(new ident_list(id), type)
+        {
+            this.source_context = sc;
+        }
         public override string ToString()
         {
             var s = this.idents.ToString() + ": " + this.vars_type.ToString();
