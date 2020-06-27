@@ -16706,6 +16706,9 @@ namespace PascalABCCompiler.TreeConverter
                             sil, lloc, context.converted_type, context.top_function, false);
                         if (!(sil.FirstOrDefault().sym_info is common_in_function_function_node))
                         {
+                            var ex = sil.FirstOrDefault().sym_info as basic_function_node;
+                            if (ex != null && ex.name.ToLower() == "exit")  
+                                return new basic_function_call(ex, ex.location);
                             return make_delegate_wrapper(null, sil, lloc, ((sil.FirstOrDefault().sym_info is common_method_node) && ((common_method_node)sil.FirstOrDefault().sym_info).IsStatic));
                         }
                         return convertion_data_and_alghoritms.create_full_function_call(new expressions_list(),
@@ -19657,8 +19660,15 @@ namespace PascalABCCompiler.TreeConverter
                         try
                         {
                             qq = convert_strong(ff.dereferencing_value);
+                            if (qq is exit_procedure && stl.list.Count == 1)
+                            {
+                                // SSM #2172 27/06/20 - тело - это вызов exit 
+                                stl.list[0] = new procedure_call(ff, ff.source_context);
+                                _function_lambda_definition.return_type = null;
+                                return;
+                            }
                             dm = qq.type as delegated_methods;
-                            if (dm == null && qq.type.IsDelegate)
+                            if (dm == null && qq.type != null && qq.type.IsDelegate)
                                 delegate_type = qq.type as common_type_node;
 
                         }
@@ -20109,7 +20119,15 @@ namespace PascalABCCompiler.TreeConverter
             /*var tt1 = l.name_expr[0].expr;
             var tse = convert_strong(tt1);*/
 
-            var semantic_types = l.name_expr.Select(x => convert_strong(x.expr).type).ToList();
+            var semantic_exprs = l.name_expr.Select(x => convert_strong(x.expr)).ToList();
+            for (var i = 0; i < semantic_exprs.Count; i++)
+            {
+                var ex = semantic_exprs[i];
+                try_convert_typed_expression_to_function_call(ref ex);
+                semantic_exprs[i] = ex;
+            }
+
+            var semantic_types = semantic_exprs.Select(x => x.type).ToList();
             var types = semantic_types.Select(x => SyntaxTreeBuilder.BuildSemanticType(x)).ToList();
 
             contextChanger.SaveContextAndUpToGlobalLevel();

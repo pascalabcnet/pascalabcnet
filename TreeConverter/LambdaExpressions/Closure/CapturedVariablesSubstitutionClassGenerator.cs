@@ -706,7 +706,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                         .ToList();
 
                     var fieldNames = vars
-                        .Select(var => new ident(var.name,(var as local_variable).loc))
+                        .Select(var => new ident(var.name,(var as local_variable)?.loc ?? null))
                         .ToList();
 
                     var fieldTypes = vars
