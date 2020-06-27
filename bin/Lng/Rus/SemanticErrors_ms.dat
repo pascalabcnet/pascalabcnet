@@ -42,3 +42,4 @@ OVERRIDE_METHODS_CANNOT_CONTAIN_WHERE_SECTION=Методы с модификат
 EXPLICIT_CASTS_FOR_LAMBDA_EXPRESSIONS_ARE_FORBIDDEN=Явные приведения типов для лямбда-выражений запрещены
 STATIC_CLASS_CANNOT_HAVE_PREDEFINITION=Статический класс не может иметь предописание
 OPERATIONS_CANNOT_BE_CALLED_USING_THIS_SYNTAX=Операции нельзя вызывать, используя данный синтаксис
+MEMBER_{0}_OF_TYPE_{1}_CANNOT_BE_FOUND_IN_THE_CONTEEXT_OF_FUNCTION_WITH_YIELD=Имя {0} не удаётся найти в типе {1} в контексте функции с оператором yield
