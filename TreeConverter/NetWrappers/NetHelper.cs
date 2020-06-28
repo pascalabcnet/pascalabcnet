@@ -1388,7 +1388,7 @@ namespace PascalABCCompiler.NetHelper
             }
             common_type_node curr_type = SystemLibrary.SystemLibrary.syn_visitor.context.converted_type;
             compiled_type_node comp_node = compiled_type_node.get_type_node(mi.DeclaringType);
-            return curr_type != null && type_table.is_derived(comp_node, curr_type);
+            return curr_type != null && type_table.is_derived(comp_node, curr_type, true);
         }
 		
         public static List<SymbolInfo> GetConstructor(Type t)
