@@ -404,7 +404,7 @@ namespace PascalABCCompiler.TreeConverter
             common_type_node converted_type, common_function_node top_function, bool allow_procedure, List<SyntaxTree.expression> syntax_nodes_parameters = null)
         {
             function_node fn = select_function(exprs, si, loc, syntax_nodes_parameters);
-
+            
             //allow_procedure = true;
             if ((!allow_procedure) && (fn.return_value_type == null))
             {
@@ -1658,7 +1658,28 @@ namespace PascalABCCompiler.TreeConverter
 		private void convert_function_call_expressions(function_node fn,expressions_list exprs,
 			possible_type_convertions_list ptcal)
 		{
-			for(int i=0;i<exprs.Count;i++)
+            var needToConvertParamsToFunctionCall = true;
+            var lastIsParams = fn.parameters.Count > 0 && fn.parameters[fn.parameters.Count - 1].is_params;
+            if (lastIsParams && fn.parameters[fn.parameters.Count - 1].type.element_type.IsDelegate)
+                needToConvertParamsToFunctionCall = false; // параметры params - преобразовывать ли в вызовы
+
+
+            for (int i = 0; i < exprs.Count; i++)
+            {
+                // надо отдельно расшифровывать params и в них тоже не преобразовывать если там делегаты
+                // Если функция возвращает функцию, то это к сожалению не будет работать
+                if (i <= fn.parameters.Count - 1 && fn.parameters[i].type.IsDelegate || lastIsParams && i >= fn.parameters.Count - 1 && !needToConvertParamsToFunctionCall)
+                {
+                    // ничего не делать
+                }
+                else
+                {
+                    var ex = exprs[i];
+                    syntax_tree_visitor.try_convert_typed_expression_to_function_call(ref ex);
+                    exprs[i] = ex;
+                }
+            }
+            for (int i=0;i<exprs.Count;i++)
 			{
                 if ((ptcal.snl != null) && (i >= fn.parameters.Count - 1))
                 {
