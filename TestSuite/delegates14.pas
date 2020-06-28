@@ -14,6 +14,6 @@ begin
   Action(d);
   assert(i = 1);
   var d2: Delegate := ()->Test();
-  TProc(d2);
+  Action(d2);
   assert(i = 2);
 end.
