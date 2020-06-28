@@ -5823,6 +5823,7 @@ namespace PascalABCCompiler.TreeConverter
                             case general_node_type.type_node:
                                 {
                                     type_node tn = (type_node)sn;
+                                    
                                     check_for_type_allowed(tn, get_location(id_right));
                                     SyntaxTree.operator_name_ident oni_right = id_right as SyntaxTree.operator_name_ident;
                                     if (oni_right != null)
@@ -5896,6 +5897,7 @@ namespace PascalABCCompiler.TreeConverter
 
                                     if (to_type != null)
                                     {
+                                        
                                         subexpr2 = convertion_data_and_alghoritms.explicit_convert_type(exprs[0], to_type);
                                     }
                                     else
@@ -7060,6 +7062,14 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     AddError(get_location(_method_call), "ONLY_ONE_PARAMETER_OF_TYPE_CONVERSION_ALLOWED");
                 }
+                if (proc_wait && to_type.IsDelegate)
+                {
+                    var mc = new SyntaxTree.method_call(new SyntaxTree.expression_list());
+                    mc.dereferencing_value = _method_call;
+                    procedure_wait = true;
+                    visit(mc);
+                    return;
+                }
             }
 
             if (_method_call.parameters != null)
@@ -7099,11 +7109,14 @@ namespace PascalABCCompiler.TreeConverter
                 //(ssyy) К вызову функции здесь явно не приводим, т.к. это излишне.
                 expression_node ee = exprs[0];
                 bool del = to_type is common_type_node && (to_type as common_type_node).IsDelegate;
+                
                 if (!del)
                     try_convert_typed_expression_to_function_call(ref ee);
                 else
                     ee = convert_strong(_method_call.parameters.expressions[0]);
+                
                 expr_node = convertion_data_and_alghoritms.explicit_convert_type(ee, to_type);
+                
                 //expression_node expr = convert_if_typed_expression_to_function_call(exprs[0]);
                 //expr_node = convertion_data_and_alghoritms.explicit_convert_type(expr, to_type);
             }
