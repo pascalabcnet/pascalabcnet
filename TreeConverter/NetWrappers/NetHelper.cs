@@ -57,11 +57,13 @@ namespace PascalABCCompiler.NetHelper
             {
                 foreach (using_namespace un in unl)
                 {
-                    if (string.Compare(un.namespace_name, tni.us_ns.namespace_name, true) == 0)
+                    if (tni.us_ns != null && string.Compare(un.namespace_name, tni.us_ns.namespace_name, true) == 0)
                     {
                         return tni.type_info;
                     }
                 }
+                if (tni.us_ns == null)
+                    return tni.type_info;
             }
             return null;
         }
@@ -73,11 +75,13 @@ namespace PascalABCCompiler.NetHelper
             {
                 foreach (using_namespace un in unl)
                 {
-                    if (string.Compare(un.namespace_name, tni.us_ns.namespace_name, true) == 0)
+                    if (tni.us_ns != null && string.Compare(un.namespace_name, tni.us_ns.namespace_name, true) == 0)
                     {
                         types.Add(tni.type_info);
                     }
                 }
+                if (tni.us_ns == null)
+                    types.Add(tni.type_info);
             }
             return types;
         }
@@ -1964,6 +1968,22 @@ namespace PascalABCCompiler.NetHelper
             if (o is TypeInfo)
             {
                 TypeInfo t = o as TypeInfo;
+                if (t.type.FullName != null && t.type.FullName.IndexOf('.') == -1 && t.type.FullName.IndexOf('+') == -1)
+                {
+                    if (!type_search_cache.TryGetValue(name, out fi))
+                    {
+                        fi = new FoundInfo(true, t);
+                        type_search_cache[name] = fi;
+                    }
+                    else
+                    {
+                        fi.type_infos.Add(new TypeNamespaceInfo(t, null));
+                    }
+                    if (cur_used_assemblies.ContainsKey(t.type.Assembly))
+                        return t.type;
+                    else
+                        return null;
+                }
                 for (int i = 0; i < _unar.Count; i++)
                 {
                     if (string.Compare(_unar[i].namespace_name + "." + name, t.FullName, true) == 0)
@@ -1990,6 +2010,20 @@ namespace PascalABCCompiler.NetHelper
             {
                 foreach (TypeInfo t in o as List<TypeInfo>)
                 {
+                    if (t.type.FullName != null && t.type.FullName.IndexOf('.') == -1 && t.type.FullName.IndexOf('+') == -1)
+                    {
+                        if (!type_search_cache.TryGetValue(name, out fi))
+                        {
+                            fi = new FoundInfo(true, t, null);
+                            type_search_cache[name] = fi;
+                        }
+                        else
+                        {
+                            fi.type_infos.Add(new TypeNamespaceInfo(t, null));
+                        }
+                        if (cur_used_assemblies.ContainsKey(t.type.Assembly))
+                            return t.type;
+                    }
                     for (int i = 0; i < _unar.Count; i++)
                     {
                         if (string.Compare(_unar[i].namespace_name + "." + name, t.FullName, true) == 0)
