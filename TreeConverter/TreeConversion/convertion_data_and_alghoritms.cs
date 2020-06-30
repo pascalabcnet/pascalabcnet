@@ -1443,6 +1443,8 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (strong && tn1.generic_function_container != tn2.generic_function_container)
                 {
+                    if (tn1.is_generic_parameter && tn2.is_generic_parameter)
+                        return tn1.generic_param_index == tn2.generic_param_index;
                     return false;
                 }
                 return (tn1.generic_param_index == tn2.generic_param_index);
