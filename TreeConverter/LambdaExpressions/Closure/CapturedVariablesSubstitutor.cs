@@ -222,7 +222,12 @@ namespace TreeConverter.LambdaExpressions.Closure
                         {
                             closure_substituting_node csn = new closure_substituting_node(subst);
                             if (subst.right is ident)
+                            {
                                 csn.name = (subst.right as ident).name;
+                                //if (id.name.ToLower() == "result")
+                                //    (subst.right as ident).source_context = id.source_context;
+                                csn.source_context = id.source_context;
+                            }                                
                             nodeWhereSubstitute[identSubnodesIndexes[i]] = csn;
                         }
                     }
@@ -739,7 +744,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             CapturedVariablesSubstitutionClassGenerator.ScopeClassDefinition generatedClass;
             if (_generatedScopeClassesInfo.TryGetValue(classDefsTreeNode.TreeNode.ScopeIndex, out generatedClass))
             {
-                var exprList = variables.Select(v => (expression)new ident(((IVAriableDefinitionNode) v.SymbolInfo.sym_info).name)).ToList();
+                var exprList = variables.Select(v => (expression)new ident(((IVAriableDefinitionNode) v.SymbolInfo.sym_info).name, v.SymbolInfo.sym_info.location)).ToList();
 
                 if (IsInGenerics)
                 {

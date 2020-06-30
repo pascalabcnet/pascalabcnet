@@ -4987,7 +4987,8 @@ namespace VisualPascalABC
                     else if (nv.Name.Contains("$class_var")) global_nv = nv;
                     else if (nv.Name.Contains("$unit_var")) unit_vars.Add(nv);
                     else if (nv.Name == "$disp$") disp_nv = nv;
-                    else if (nv.Name.StartsWith("$rv_")) ret_nv = nv;
+                    else if (nv.Name.StartsWith("$rv_"))
+                        ret_nv = nv;
                 }
                 nvc = debuggedProcess.SelectedFunction.Arguments;
                 NamedValue self_nv = null;

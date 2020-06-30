@@ -695,10 +695,14 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class typed_parameters
     {
-        public typed_parameters(ident_list idents, type_definition type) : this(idents, type, parametr_kind.none, null)
-        { }
-        public typed_parameters(ident id, type_definition type) : this(new ident_list(id), type)
-        { }
+        public typed_parameters(ident_list idents, type_definition type, SourceContext sc = null) : this(idents, type, parametr_kind.none, null)
+        {
+            this.source_context = sc;
+        }
+        public typed_parameters(ident id, type_definition type, SourceContext sc = null) : this(new ident_list(id), type)
+        {
+            this.source_context = sc;
+        }
         public override string ToString()
         {
             var s = this.idents.ToString() + ": " + this.vars_type.ToString();
@@ -1287,6 +1291,11 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class template_param_list
     {
+        public template_param_list(IEnumerable<string> names)
+        {
+            foreach (var s in names)
+                Add(new named_type_reference(s));
+        }
         public template_param_list(string names)
         {
             foreach (var ntr in names.Split(',').Select(s => new named_type_reference(s)))
@@ -1349,6 +1358,9 @@ namespace PascalABCCompiler.SyntaxTree
         }
 
         public var_statement(ident id, type_definition type) : this(new var_def_statement(new ident_list(id), type))
+        {
+        }
+        public var_statement(ident id, type_definition type, SourceContext sc) : this(new var_def_statement(new ident_list(id), type, sc))
         {
         }
 

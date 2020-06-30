@@ -105,3 +105,4 @@ NEGATIVE_ARRAY_LENGTH_({0})_NOT_ALLOWED=Отрицательная длина м
 INCOMPATIBLE_ARRAY_BOUNDS_TYPES=Несовместимые типы границ диапазона массива
 CAN_NOT_APPLY_SETLENGTH_TO_THIS_OPERAND_TYPE=Не могу вызвать SetLength для операнда данного типа
 FUNCTION_NEED_RETURN_TYPE=Необходимо указать возвращаемое значение для функции
+UNDEFINED_NAME_RESULT_IN_{0}=Неизвестное имя Result в {0} (вероятно, в одном из вложенных лямбда-выражений тип Result не может быт вычислен)

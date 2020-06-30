@@ -36,3 +36,10 @@ LAMBDAS_IN_CONSTRUCTOR_PARAMETERS_ARE_FORBIDDEN_IN_THIS_CONTEXT=Lambda-expressio
 PROCEDURE_TYPE_SHOULD_BE_REPLACED_BY_TYPE_NAME_IN_THIS_CONTEXT=Procedure type should be replaced by type name in this context
 ACCESS_TO_ENUM_CONST_THROUGH_OBJECT=Enum constant can not be accessed through an object
 ONE_DIM_ARRAY_OR_LIST_EXPECTED=One-dimensional array or list expected
+TUPLE_TYPE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7=Number of elements in tuple type must be less than 8
+OVERRIDE_METHODS_CANNOT_CONTAIN_WHERE_SECTION=Methods with override modifier can't contain where section
+Методы с модификатором override не могут содержать собственную секцию where
+EXPLICIT_CASTS_FOR_LAMBDA_EXPRESSIONS_ARE_FORBIDDEN=Explicit type casts for lambda expressions are forbidden
+STATIC_CLASS_CANNOT_HAVE_PREDEFINITION=Static class cannot be predefined
+OPERATIONS_CANNOT_BE_CALLED_USING_THIS_SYNTAX=Operations cannot be called using this syntax
+MEMBER_{0}_OF_TYPE_{1}_CANNOT_BE_FOUND_IN_THE_CONTEEXT_OF_FUNCTION_WITH_YIELD=Name {0} cannot be found in type {1} in the context of function with yield statement
