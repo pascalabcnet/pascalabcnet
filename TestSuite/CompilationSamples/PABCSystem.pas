@@ -11614,7 +11614,7 @@ begin
   repeat
     for var i:=0 to m-1 do
       res[i] := a[ind[i]];
-    yield res;
+    yield Arr(res);
   until not NextCombHelper(ind,m,n);  
 end;
 
