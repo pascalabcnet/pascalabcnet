@@ -1291,6 +1291,11 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class template_param_list
     {
+        public template_param_list(IEnumerable<string> names)
+        {
+            foreach (var s in names)
+                Add(new named_type_reference(s));
+        }
         public template_param_list(string names)
         {
             foreach (var ntr in names.Split(',').Select(s => new named_type_reference(s)))

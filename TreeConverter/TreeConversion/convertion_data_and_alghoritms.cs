@@ -1660,13 +1660,13 @@ namespace PascalABCCompiler.TreeConverter
 		private void convert_function_call_expressions(function_node fn,expressions_list exprs,
 			possible_type_convertions_list ptcal)
 		{
-            var needToConvertParamsToFunctionCall = true;
+            var needToConvertParamsToFunctionCall = true; // SSM #2079 29/06/20
             var lastIsParams = fn.parameters.Count > 0 && fn.parameters[fn.parameters.Count - 1].is_params;
             if (lastIsParams && fn.parameters[fn.parameters.Count - 1].type.element_type.IsDelegate)
                 needToConvertParamsToFunctionCall = false; // параметры params - преобразовывать ли в вызовы
 
 
-            for (int i = 0; i < exprs.Count; i++)
+            for (int i = 0; i < exprs.Count; i++) 
             {
                 // надо отдельно расшифровывать params и в них тоже не преобразовывать если там делегаты
                 // Если функция возвращает функцию, то это к сожалению не будет работать
@@ -1680,7 +1680,8 @@ namespace PascalABCCompiler.TreeConverter
                     syntax_tree_visitor.try_convert_typed_expression_to_function_call(ref ex);
                     exprs[i] = ex;
                 }
-            }
+            } // SSM end 29/06/20
+
             for (int i=0;i<exprs.Count;i++)
 			{
                 if ((ptcal.snl != null) && (i >= fn.parameters.Count - 1))
