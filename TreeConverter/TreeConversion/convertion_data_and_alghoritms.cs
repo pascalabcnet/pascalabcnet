@@ -1050,7 +1050,8 @@ namespace PascalABCCompiler.TreeConverter
 					{
                         bool is_pascal_array_ref = false;
                         bool is_ok = false;
-						if (factparams[i].is_addressed==false)
+						if (factparams[i].is_addressed==false || factparams[i] is static_compiled_variable_reference scvr && scvr.var.compiled_field.IsInitOnly 
+                            || factparams[i] is compiled_variable_reference cvr && cvr.var.compiled_field.IsInitOnly)
 						{
                             if (factparams[i].semantic_node_type == semantic_node_type.common_method_call)
                             {
