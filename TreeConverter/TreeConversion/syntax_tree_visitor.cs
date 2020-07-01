@@ -12851,8 +12851,8 @@ namespace PascalABCCompiler.TreeConverter
             {
             	if (_procedure_definition.proc_header.name != null)
             	{
-            		if (_procedure_definition.proc_header.name.class_name == null)
-            		{
+            		if (_procedure_definition.proc_header.name.class_name == null || _procedure_definition.Parent is class_members) // SSM #2173 01/07/20 - добавка после || - озн, что это явное расширение интерфейса
+                    {
             			must_visit_body = false;
             			context.is_order_independed_method_description = true;
             		}
