@@ -198,6 +198,8 @@ namespace SyntaxVisitors
 
         public override void visit(ident id)
         {
+            // Это очень частный алгоритм переименования в мини-ПИ, но затрагивает он и лямбды. И механизм для этого - неадекватный
+            // Надо исключать формальные параметры лямбд и одноимённые переменнные, определяемые у них внутри
             var newName = this.GetNewVariableName(id.name.ToLower());
             if (newName != null)
             {
@@ -210,6 +212,18 @@ namespace SyntaxVisitors
             ProcessNode(dn.left);
             if (dn.right.GetType() != typeof(ident))
                 ProcessNode(dn.right);
+        }
+
+        public override void visit(function_lambda_definition fld)
+        {
+            BlockNamesStack.Add(new Dictionary<string, string>());
+            var last = BlockNamesStack.Count - 1;
+            for (var i=0; i< fld.parameters.expressions.Count; i++)
+            {
+                var qname = (fld.parameters.expressions[i] as ident).name.ToLower();
+                BlockNamesStack[last][qname] = "-fl"; // -fl - формальный параметр лямбды - это стоп в поиске в GetNewVariableName
+            }
+            base.visit(fld);
         }
 
         private string CreateNewVariableName(string name)
@@ -233,6 +247,8 @@ namespace SyntaxVisitors
             {
                 if (BlockNamesStack[i].ContainsKey(name))
                 {
+                    if (BlockNamesStack[i][name] == "-fl") // формальный параметр лямбды - это стоп в поиске (переименовывать не надо!)
+                        return null;
                     return BlockNamesStack[i][name];
                 }
             }

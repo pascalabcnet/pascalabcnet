@@ -404,7 +404,7 @@ namespace PascalABCCompiler.TreeConverter
             common_type_node converted_type, common_function_node top_function, bool allow_procedure, List<SyntaxTree.expression> syntax_nodes_parameters = null)
         {
             function_node fn = select_function(exprs, si, loc, syntax_nodes_parameters);
-
+            
             //allow_procedure = true;
             if ((!allow_procedure) && (fn.return_value_type == null))
             {
@@ -1050,7 +1050,8 @@ namespace PascalABCCompiler.TreeConverter
 					{
                         bool is_pascal_array_ref = false;
                         bool is_ok = false;
-						if (factparams[i].is_addressed==false)
+						if (factparams[i].is_addressed==false || factparams[i] is static_compiled_variable_reference scvr && scvr.var.compiled_field.IsInitOnly 
+                            || factparams[i] is compiled_variable_reference cvr && cvr.var.compiled_field.IsInitOnly)
 						{
                             if (factparams[i].semantic_node_type == semantic_node_type.common_method_call)
                             {
@@ -1443,6 +1444,8 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (strong && tn1.generic_function_container != tn2.generic_function_container)
                 {
+                    if (tn1.is_generic_parameter && tn2.is_generic_parameter)
+                        return tn1.generic_param_index == tn2.generic_param_index;
                     return false;
                 }
                 return (tn1.generic_param_index == tn2.generic_param_index);
@@ -1658,7 +1661,29 @@ namespace PascalABCCompiler.TreeConverter
 		private void convert_function_call_expressions(function_node fn,expressions_list exprs,
 			possible_type_convertions_list ptcal)
 		{
-			for(int i=0;i<exprs.Count;i++)
+            var needToConvertParamsToFunctionCall = true; // SSM #2079 29/06/20
+            var lastIsParams = fn.parameters.Count > 0 && fn.parameters[fn.parameters.Count - 1].is_params;
+            if (lastIsParams && fn.parameters[fn.parameters.Count - 1].type.element_type.IsDelegate)
+                needToConvertParamsToFunctionCall = false; // параметры params - преобразовывать ли в вызовы
+
+
+            for (int i = 0; i < exprs.Count; i++) 
+            {
+                // надо отдельно расшифровывать params и в них тоже не преобразовывать если там делегаты
+                // Если функция возвращает функцию, то это к сожалению не будет работать
+                if (i <= fn.parameters.Count - 1 && fn.parameters[i].type.IsDelegate || lastIsParams && i >= fn.parameters.Count - 1 && !needToConvertParamsToFunctionCall)
+                {
+                    // ничего не делать
+                }
+                else
+                {
+                    var ex = exprs[i];
+                    syntax_tree_visitor.try_convert_typed_expression_to_function_call(ref ex);
+                    exprs[i] = ex;
+                }
+            } // SSM end 29/06/20
+
+            for (int i=0;i<exprs.Count;i++)
 			{
                 if ((ptcal.snl != null) && (i >= fn.parameters.Count - 1))
                 {

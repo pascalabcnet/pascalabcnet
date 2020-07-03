@@ -706,7 +706,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                         .ToList();
 
                     var fieldNames = vars
-                        .Select(var => new ident(var.name))
+                        .Select(var => new ident(var.name,(var as local_variable)?.loc ?? null))
                         .ToList();
 
                     var fieldTypes = vars
@@ -725,7 +725,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                                                                                                  fieldNames.Select(
                                                                                                      id =>
                                                                                                      new ident("_" +
-                                                                                                               id.name))
+                                                                                                               id.name,id.source_context))
                                                                                                            .ToList(),
                                                                                                  fieldTypes);
                         ((class_definition) _capturedVarsClassDefs[currentNode.ScopeIndex].ClassDeclaration.type_def)

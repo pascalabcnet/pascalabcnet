@@ -827,9 +827,18 @@ namespace SymbolTable
             { 
                 while (cl.BaseClassScope != null)
                 {
-                    tn = cl.BaseClassScope.Symbols.Find(name);
+                    tn = cl.BaseClassScope.Symbols.Find(name); // SSM 30/06/20 - надо исключать generis-параметры из поиска - их не существует в производном классе!!!
                     if (tn != null)
-                        AddToSymbolInfo(tn.InfoList, Result);
+                    {
+                        if (tn.InfoList[0].sym_info is PascalABCCompiler.TreeRealization.common_type_node cctt && cctt.is_generic_parameter)
+                        {
+                            // пропустить!!!
+                        }
+                        else
+                        {
+                            AddToSymbolInfo(tn.InfoList, Result);
+                        }
+                    }
 
                     ar = cl.BaseClassScope;
                     if (ar is DotNETScope)

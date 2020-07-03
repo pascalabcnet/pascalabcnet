@@ -345,13 +345,15 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
-        public static bool is_derived(type_node base_class, type_node derived_class)
+        public static bool is_derived(type_node base_class, type_node derived_class, bool ignore_generic_instances=false)
         {
             if (derived_class == null)  //void?
                 return false;
             if (base_class == null)
                 return false;
             type_node tn = derived_class.base_type;
+            if (tn is compiled_generic_instance_type_node && ignore_generic_instances)
+                tn = tn.original_generic;
             //TODO: Проверить на ссылочный и размерный тип.
             if (derived_class.semantic_node_type == semantic_node_type.null_type_node)
                 if (is_with_nil_allowed(base_class) || base_class.IsPointer)
