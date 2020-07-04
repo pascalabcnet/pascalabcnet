@@ -3369,7 +3369,7 @@ relop_expr
             var deconstructorPattern = new deconstructor_pattern($3 as List<pattern_parameter>, isTypeCheck.type_def, null, @$); 
             $$ = new is_pattern_expr(isTypeCheck.expr, deconstructorPattern, @$);
         }
-	
+	/*
 	| term tkIs collection_pattern
         {
             $$ = new is_pattern_expr($1, $3 as pattern_node, @$);
@@ -3378,6 +3378,7 @@ relop_expr
         {
             $$ = new is_pattern_expr($1, $3 as pattern_node, @$);
         }
+    */
     ;
     
 pattern

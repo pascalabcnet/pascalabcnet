@@ -100,6 +100,7 @@ namespace SyntaxVisitors.SugarVisitors
         private int successVariableCounter = 0;
         private int labelVariableCounter = 0;
         private int deconstructParamVariableCounter = 0;
+        private int matchExprVariableCounter = 0;
 
         private if_node _previousIf;
         private statement desugaredMatchWith;
@@ -116,11 +117,12 @@ namespace SyntaxVisitors.SugarVisitors
             desugaredMatchWith = null;
             _previousIf = null;
 
+            var matchExprVariableName = NewMatchExprVariableId();
             matchedExprVarDeclaration = new var_statement(
-                new ident(GeneratedMatchExprVariableName, matchWith.expr.source_context),
+                new ident(matchExprVariableName, matchWith.expr.source_context),
                 matchWith.expr.Clone() as expression,
                 matchWith.expr.source_context);
-            ReplaceUsingParent(matchWith.expr, new ident(GeneratedMatchExprVariableName, matchWith.expr.source_context));
+            ReplaceUsingParent(matchWith.expr, new ident(matchExprVariableName, matchWith.expr.source_context));
 
             /*if (matchWith.Parent is statement_list stl)
             {
@@ -1058,6 +1060,11 @@ namespace SyntaxVisitors.SugarVisitors
         private string NewDeconstructParamId()
         {
             return GeneratedPatternNamePrefix + "DeconstructParam" + deconstructParamVariableCounter++.ToString();
+        }
+
+        private string NewMatchExprVariableId()
+        {
+            return GeneratedMatchExprVariableName + "matchExprVariableCounter" + deconstructParamVariableCounter++.ToString();
         }
     }
 }
