@@ -39,7 +39,7 @@
 %token <ti> tkLoop 
 %token <ti> tkSequence tkYield
 %token <id> tkNew
-%token <id> tkOn 
+%token <id> tkOn tkShortProgram tkVertParen
 %token <id> tkName tkPrivate tkProtected tkPublic tkInternal tkRead tkWrite  
 %token <ti> tkParseModeExpression tkParseModeStatement tkParseModeType tkBegin tkEnd 
 %token <ti> tkAsmBody tkILCode tkError INVISIBLE
@@ -51,7 +51,7 @@
 %token <stn> tkStringLiteral tkFormatStringLiteral tkAsciiChar
 %token <id> tkAbstract tkForward tkOverload tkReintroduce tkOverride tkVirtual tkExtensionMethod 
 %token <ex> tkInteger tkFloat tkHex
-%token <id> tkUnknown
+%token <id> tkUnknown 
 
 %type <ti> unit_key_word class_or_static
 %type <stn> assignment 
@@ -188,8 +188,8 @@ parse_goal
 		{ root = $1; }
     | parts 
 		{ root = $1; }
-//	| stmt_list	
-//		{ root = $$ = NewProgramModule(null, null, null, null, new block(null, $1 as statement_list, @$), @$); }
+	| tkShortProgram stmt_list	
+		{ root = $$ = NewProgramModule(null, null, null, new block(null, $2 as statement_list, @$), new token_info("end"), @$); }
     ;
 
 parts
@@ -887,6 +887,10 @@ const_set
     : tkSquareOpen const_elem_list tkSquareClose 
         { 
 			$$ = new pascal_set_constant($2 as expression_list, @$); 
+		}
+    | tkVertParen elem_list tkVertParen     
+        { 
+			$$ = new array_const_new($2 as expression_list, @$);  
 		}
     ;
 
@@ -3915,6 +3919,10 @@ factor
     | tkSquareOpen elem_list tkSquareClose     
         { 
 			$$ = new pascal_set_constant($2 as expression_list, @$);  
+		}
+    | tkVertParen elem_list tkVertParen     
+        { 
+			$$ = new array_const_new($2 as expression_list, @$);  
 		}
     | tkNot factor              
         { 

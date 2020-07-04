@@ -1522,6 +1522,12 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_index">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(index _index);
+		///<summary>
+		///Method to visit array_const_new.
+		///</summary>
+		///<param name="_array_const_new">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(array_const_new _array_const_new);
 	}
 
 
