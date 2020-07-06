@@ -3411,6 +3411,14 @@ namespace CodeFormatters
                 visit_node(_if_expr_new.if_false);
             }
         }
+
+        public override void visit(array_const_new acn)
+        {
+            sb.Append("|");
+            visit_node(acn.elements);
+            //sb.Append("|");
+        }
+
         #endregion
     }
 }

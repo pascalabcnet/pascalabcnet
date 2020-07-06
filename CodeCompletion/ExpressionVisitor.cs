@@ -180,7 +180,7 @@ namespace CodeCompletion
                     {
                         TypeSynonim ts = (returned_scopes[i] as ElementScope).sc as TypeSynonim;
                         TypeScope act_ts = ts.GetLeafActType();
-                        ProcType procType =act_ts as ProcType;
+                        ProcType procType = act_ts as ProcType;
                         if (procType != null)
                         {
                             ProcScope tmp = procType.target;
@@ -346,7 +346,7 @@ namespace CodeCompletion
                 {
                     returned_scope = entry_scope;
                     return;
-                }  
+                }
                 if (returned_scope is ProcScope && (returned_scope as ProcScope).parameters.Count != 0)
                 {
                     returned_scopes = entry_scope.FindOverloadNames(_ident.name);
@@ -827,7 +827,7 @@ namespace CodeCompletion
             _dot_node.left.visit(this);
             search_all = tmp2;
             by_dot = tmp;
-            
+
             if (returned_scope != null && returned_scope is ElementScope && (returned_scope as ElementScope).sc is ProcScope)
             {
                 if (((returned_scope as ElementScope).sc as ProcScope).return_type != null)
@@ -837,7 +837,7 @@ namespace CodeCompletion
             }
             else if (returned_scope != null && returned_scope is ProcScope)
             {
-                
+
                 ProcScope ps = returned_scope as ProcScope;
                 if (ps.return_type == null)
                 {
@@ -854,7 +854,7 @@ namespace CodeCompletion
                 TypeScope ts = ((returned_scope as ElementScope).sc as ProcType).target.return_type;
                 if (ts != null)
                     returned_scope = new ElementScope(ts);
-                
+
             }
             else if ((returned_scope != null && returned_scope is ElementScope && (returned_scope as ElementScope).sc is CompiledScope && ((returned_scope as ElementScope).sc as CompiledScope).IsDelegate) && _dot_node.left is method_call)
             {
@@ -1659,14 +1659,14 @@ namespace CodeCompletion
                     returned_scope = returned_scope.FindNameOnlyInType(_template_type_reference.name.names[i].name + suffix);
                     if (returned_scope == null)
                         returned_scope = entry_scope.FindNameOnlyInType(_template_type_reference.name.names[i].name + suffix);
-                }  
+                }
                 else
                 {
                     returned_scope = returned_scope.FindName(_template_type_reference.name.names[i].name + suffix);
                     if (returned_scope == null)
                         returned_scope = entry_scope.FindName(_template_type_reference.name.names[i].name);
                 }
-                    
+
                 if (returned_scope == null)
                     return;
             }
@@ -1766,7 +1766,7 @@ namespace CodeCompletion
 
         public override void visit(var_statement _var_statement)
         {
-           
+
         }
 
         public override void visit(question_colon_expression _question_colon_expression)
@@ -1952,7 +1952,7 @@ namespace CodeCompletion
             _function_lambda_definition.proc_body.visit(this);
             if (returned_scope is ElementScope)
                 returned_scope = (returned_scope as ElementScope).sc;
-            ps.return_type = new UnknownScope(new SymInfo("",SymbolKind.Class,""));// returned_scope as TypeScope;
+            ps.return_type = new UnknownScope(new SymInfo("", SymbolKind.Class, ""));// returned_scope as TypeScope;
             returned_scope = new ProcType(ps);
         }
         public override void visit(function_lambda_call _function_lambda_call)
@@ -1980,11 +1980,11 @@ namespace CodeCompletion
         public override void visit(semantic_type_node stn) // SSM 
         {
         }
-        
+
         public override void visit(slice_expr _slice_expr)
-		{
-			_slice_expr.v.visit(this);
-		}
+        {
+            _slice_expr.v.visit(this);
+        }
 
         public override void visit(slice_expr_question _slice_expr_question)
         {
@@ -2010,9 +2010,14 @@ namespace CodeCompletion
             returned_scope = new ElementScope(ts);*/
 
             method_call mc = new method_call();
-            mc.parameters = new expression_list(new List<expression> { _diapason_expr_new.left, _diapason_expr_new.right});
+            mc.parameters = new expression_list(new List<expression> { _diapason_expr_new.left, _diapason_expr_new.right });
             mc.dereferencing_value = new dot_node(new ident("PABCSystem"), new ident("InternalRange"));
             mc.visit(this);
+        }
+
+        public override void visit(array_const_new acn)
+        {
+
         }
     }
 }
