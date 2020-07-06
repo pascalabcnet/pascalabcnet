@@ -37,9 +37,9 @@
 %token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
 %token <ti> tkLoop 
-%token <ti> tkSequence tkYield
+%token <ti> tkSequence tkYield tkShortProgram tkVertParen tkShortSFProgram
 %token <id> tkNew
-%token <id> tkOn tkShortProgram tkVertParen
+%token <id> tkOn 
 %token <id> tkName tkPrivate tkProtected tkPublic tkInternal tkRead tkWrite  
 %token <ti> tkParseModeExpression tkParseModeStatement tkParseModeType tkBegin tkEnd 
 %token <ti> tkAsmBody tkILCode tkError INVISIBLE
@@ -189,7 +189,19 @@ parse_goal
     | parts 
 		{ root = $1; }
 	| tkShortProgram stmt_list	
-		{ root = $$ = NewProgramModule(null, null, null, new block(null, $2 as statement_list, @$), new token_info("end"), @$); }
+		{ 
+			var stl = $2 as statement_list;
+			stl.left_logical_bracket = $1;
+			root = $$ = NewProgramModule(null, null, null, new block(null, stl, @$), new token_info("end"), @$); 
+		}
+	| tkShortSFProgram stmt_list	
+		{
+			var stl = $2 as statement_list;
+			stl.left_logical_bracket = $1;
+			var un = new unit_or_namespace(new ident_list("SF", @$),@$);
+			var ul = new uses_list(un,@$);		
+			root = $$ = NewProgramModule(null, null, ul, new block(null, stl, @$), new token_info("end"), @$); 
+		}
     ;
 
 parts

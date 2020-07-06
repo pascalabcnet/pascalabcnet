@@ -181,7 +181,9 @@ UNICODEARROW \x890
 }
 
 "|"              { return (int)Tokens.tkVertParen; }
-"##"              { return (int)Tokens.tkShortProgram; }
+[#][#][ \t\r\n]  { yylval = new Union(); yylval.ti = new token_info(yytext,CurrentLexLocation);	return (int)Tokens.tkShortProgram; }
+[#][#][#][ \t\r\n] { yylval = new Union(); yylval.ti = new token_info(yytext,CurrentLexLocation); return (int)Tokens.tkShortSFProgram; 
+	}
 "&"              { return (int)Tokens.tkAmpersend; }
 ","              { yylval = new Union(); yylval.ti = new token_info(yytext); return (int)Tokens.tkComma; }
 ":"              { return (int)Tokens.tkColon; }

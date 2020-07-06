@@ -4129,9 +4129,14 @@ function operator in<T>(x: T; a: array of T): boolean; extensionmethod := a.Cont
 
 function operator*<T>(a: array of T; n: integer): array of T; extensionmethod;
 begin
-  Result := new T[a.Length * n];
-  for var i := 0 to n - 1 do
-    a.CopyTo(Result, a.Length * i);
+  if a.Length=1 then
+    Result := ArrFill(n,a[0])
+  else  
+  begin  
+    Result := new T[a.Length * n];
+    for var i := 0 to n - 1 do
+      a.CopyTo(Result, a.Length * i);
+  end;  
 end;
 
 function operator*<T>(n: integer; a: array of T): array of T; extensionmethod := a * n;

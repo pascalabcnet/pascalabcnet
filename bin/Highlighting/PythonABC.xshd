@@ -59,8 +59,13 @@ based on Python 3.0, most of syntax - for future :) -->
 		<Key word = "#end" />
 	</KeyWords> 
 
-     <KeyWords name = "Punctuation" bold = "false" italic = "false" color = "Black">
-        <Key word = "," />
+     	<KeyWords name = "Punctuation123" bold = "true" italic = "false" color = "Orange">
+		<Key word = "((" />
+		<Key word = ".Where" />
+	</KeyWords> 
+
+     <KeyWords name = "Punctuation2" bold = "true" italic = "false" color = "Black">
+        	<Key word = "," />
 		<Key word = "." />
 		<Key word = ";" />
 		<Key word = "(" />

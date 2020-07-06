@@ -5000,7 +5000,7 @@ namespace PascalABCCompiler.TreeConverter
             type_node_list types = new type_node_list();
             foreach (var tn in lst.Select(ex => ex.type))
                 types.AddElement(tn);
-            var el_type = convertion_data_and_alghoritms.select_base_type(types, true);
+            var el_type = convertion_data_and_alghoritms.select_base_type_for_arr_const_new(types, lst, true);
             var syntax_type = new SyntaxTree.semantic_type_node(el_type);
             var plist = new SyntaxTree.expression_list(new int32_const(acn.elements.Count));
             var nn = new SyntaxTree.new_expr(syntax_type, plist, true, new SyntaxTree.array_const(acn.elements, acn.elements.source_context), acn.source_context);
