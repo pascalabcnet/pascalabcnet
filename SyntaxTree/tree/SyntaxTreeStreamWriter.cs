@@ -6908,6 +6908,27 @@ namespace PascalABCCompiler.SyntaxTree
 			bw.Write(_index.inverted);
 		}
 
+
+		public void visit(array_const_new _array_const_new)
+		{
+			bw.Write((Int16)253);
+			write_array_const_new(_array_const_new);
+		}
+
+		public void write_array_const_new(array_const_new _array_const_new)
+		{
+			write_expression(_array_const_new);
+			if (_array_const_new.elements == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_array_const_new.elements.visit(this);
+			}
+		}
+
 	}
 
 

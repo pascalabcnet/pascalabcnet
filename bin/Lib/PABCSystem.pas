@@ -2063,6 +2063,10 @@ procedure Swap<T>(var a, b: T);
 function Eoln: boolean;
 /// Возвращает True, если достигнут конец потока ввода
 function Eof: boolean;
+/// Пропускает пробельные символы, после чего возвращает True, если достигнут конец потока ввода
+function SeekEof: boolean;
+/// Пропускает пробельные символы, после чего возвращает True, если достигнут конец строки
+function SeekEoln: boolean;
 /// Возвращает аргумены командой строки, с которыми была запущена программа
 function CommandLineArgs: array of string;
 
@@ -4125,9 +4129,14 @@ function operator in<T>(x: T; a: array of T): boolean; extensionmethod := a.Cont
 
 function operator*<T>(a: array of T; n: integer): array of T; extensionmethod;
 begin
-  Result := new T[a.Length * n];
-  for var i := 0 to n - 1 do
-    a.CopyTo(Result, a.Length * i);
+  if a.Length=1 then
+    Result := ArrFill(n,a[0])
+  else  
+  begin  
+    Result := new T[a.Length * n];
+    for var i := 0 to n - 1 do
+      a.CopyTo(Result, a.Length * i);
+  end;  
 end;
 
 function operator*<T>(n: integer; a: array of T): array of T; extensionmethod := a * n;
@@ -6624,7 +6633,9 @@ function Eoln: boolean;
 begin
   if not console_alloc then
     AllocConsole;
-  Result := CurrentIOSystem.peek = 13
+  var next := CurrentIOSystem.peek;
+  Result := (next = -1) or (next = 13) or (next = 10);
+  //Result := CurrentIOSystem.peek = 13
 end;
 
 function Eof: boolean;
@@ -6633,6 +6644,34 @@ begin
     AllocConsole;
   Result := CurrentIOSystem.peek = -1
 end;
+
+function SeekEof: boolean;
+begin
+  repeat
+    if Eof then
+      break;
+    var i := CurrentIOSystem.peek;
+    if not char.IsWhiteSpace(char(i)) then
+      break;
+    CurrentIOSystem.read_symbol
+  until False;  
+  Result := Eof;
+end;
+
+function SeekEoln: boolean;
+begin
+  repeat
+    if Eoln then
+      break;
+    var i := CurrentIOSystem.peek;
+    if (i <> 32) and (i <> 9) then // Если это не пробел и не табуляция
+      break;
+    CurrentIOSystem.read_symbol;
+  until False;
+  var next := CurrentIOSystem.peek;
+  Result := (next = -1) or (next = 13) or (next = 10);
+end;
+
 
 // -----------------------------------------------------
 //                  CommandLineArgs # CommandLineArgs subroutine

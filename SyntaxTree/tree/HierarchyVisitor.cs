@@ -2029,6 +2029,14 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(array_const_new _array_const_new)
+		{
+		}
+
+		public virtual void post_do_visit(array_const_new _array_const_new)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -4189,6 +4197,14 @@ namespace PascalABCCompiler.SyntaxTree
 			pre_do_visit(_index);
 			visit(index.index_expr);
 			post_do_visit(_index);
+		}
+
+		public override void visit(array_const_new _array_const_new)
+		{
+			DefaultVisit(_array_const_new);
+			pre_do_visit(_array_const_new);
+			visit(array_const_new.elements);
+			post_do_visit(_array_const_new);
 		}
 	}
 
