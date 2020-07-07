@@ -1272,6 +1272,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_index);
 		}
+
+		public virtual void visit(array_const_new _array_const_new)
+		{
+			DefaultVisit(_array_const_new);
+		}
 	}
 
 

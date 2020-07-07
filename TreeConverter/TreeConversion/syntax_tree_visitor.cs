@@ -4994,6 +4994,20 @@ namespace PascalABCCompiler.TreeConverter
             //return_value(new common_namespace_function_call_as_constant(cnfc,cnfc.location));
         }
 
+        public override void visit(SyntaxTree.array_const_new acn)
+        {
+            var lst = acn.elements.expressions.Select(ex => convert_strong(ex)).ToList();
+            type_node_list types = new type_node_list();
+            foreach (var tn in lst.Select(ex => ex.type))
+                types.AddElement(tn);
+            var el_type = convertion_data_and_alghoritms.select_base_type_for_arr_const_new(types, lst, true);
+            var syntax_type = new SyntaxTree.semantic_type_node(el_type);
+            var plist = new SyntaxTree.expression_list(new int32_const(acn.elements.Count));
+            var nn = new SyntaxTree.new_expr(syntax_type, plist, true, new SyntaxTree.array_const(acn.elements, acn.elements.source_context), acn.source_context);
+            visit(nn);
+        }
+
+
         internal List<SymbolInfo> get_function_instances(List<SymbolInfo> sil, List<SyntaxTree.type_definition> type_pars, string name, location loc, bool stop_on_error)
         {
             List<type_node> tparams = visit_type_list(type_pars);
@@ -12851,8 +12865,8 @@ namespace PascalABCCompiler.TreeConverter
             {
             	if (_procedure_definition.proc_header.name != null)
             	{
-            		if (_procedure_definition.proc_header.name.class_name == null)
-            		{
+            		if (_procedure_definition.proc_header.name.class_name == null || _procedure_definition.Parent is class_members) // SSM #2173 01/07/20 - добавка после || - озн, что это явное расширение интерфейса
+                    {
             			must_visit_body = false;
             			context.is_order_independed_method_description = true;
             		}

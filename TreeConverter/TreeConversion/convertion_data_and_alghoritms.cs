@@ -2694,7 +2694,8 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (types[i] == ret_type) continue;
                 type_compare tc = type_table.compare_types_in_specific_order(types[i], ret_type, only_implicit);
-                if (tc == type_compare.greater_type && ret_type != SystemLibrary.SystemLibrary.object_type) ret_type = types[i];
+                if (tc == type_compare.greater_type && ret_type != SystemLibrary.SystemLibrary.object_type)
+                    ret_type = types[i];
                 else if (tc == type_compare.non_comparable_type)
                 {
                     ret_type = SystemLibrary.SystemLibrary.object_type;
@@ -2705,6 +2706,24 @@ namespace PascalABCCompiler.TreeConverter
             return ret_type;
         }
 
+        public type_node select_base_type_for_arr_const_new(type_node_list types, List<expression_node> lst, bool only_implicit = false)
+        {
+            type_node ret_type = null;
+            if (types.Count > 0) ret_type = types[0];
+            for (int i = 1; i < types.Count; i++)
+            {
+                if (types[i] == ret_type) continue;
+                type_compare tc = type_table.compare_types_in_specific_order(types[i], ret_type, only_implicit);
+                if (tc == type_compare.greater_type && ret_type != SystemLibrary.SystemLibrary.object_type)
+                    ret_type = types[i];
+                else if (tc == type_compare.non_comparable_type)
+                {
+                    AddError(lst[i].location, "UNCOMPARABLE_TYPES_IN_ARRAY_CONST");
+                }
+
+            }
+            return ret_type;
+        }
 
         public enum int_types { sbyte_type = 0, byte_type = 1, short_type = 2, ushort_type = 3, integer_type = 4, uint_type = 5, int64_type = 6, uint64_type = 7};
         public bool is_value_int_type(type_node tn)

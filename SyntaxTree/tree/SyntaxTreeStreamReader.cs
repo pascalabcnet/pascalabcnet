@@ -526,6 +526,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new simple_expr_with_deref();
 				case 252:
 					return new index();
+				case 253:
+					return new array_const_new();
 			}
 			return null;
 		}
@@ -4414,6 +4416,18 @@ namespace PascalABCCompiler.SyntaxTree
 			read_expression(_index);
 			_index.index_expr = _read_node() as expression;
 			_index.inverted = br.ReadBoolean();
+		}
+
+
+		public void visit(array_const_new _array_const_new)
+		{
+			read_array_const_new(_array_const_new);
+		}
+
+		public void read_array_const_new(array_const_new _array_const_new)
+		{
+			read_expression(_array_const_new);
+			_array_const_new.elements = _read_node() as expression_list;
 		}
 
 	}

@@ -37,7 +37,7 @@
 %token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
 %token <ti> tkLoop 
-%token <ti> tkSequence tkYield
+%token <ti> tkSequence tkYield tkShortProgram tkVertParen tkShortSFProgram
 %token <id> tkNew
 %token <id> tkOn 
 %token <id> tkName tkPrivate tkProtected tkPublic tkInternal tkRead tkWrite  
@@ -51,7 +51,7 @@
 %token <stn> tkStringLiteral tkFormatStringLiteral tkAsciiChar
 %token <id> tkAbstract tkForward tkOverload tkReintroduce tkOverride tkVirtual tkExtensionMethod 
 %token <ex> tkInteger tkFloat tkHex
-%token <id> tkUnknown
+%token <id> tkUnknown 
 
 %type <ti> unit_key_word class_or_static
 %type <stn> assignment 
@@ -188,8 +188,20 @@ parse_goal
 		{ root = $1; }
     | parts 
 		{ root = $1; }
-//	| stmt_list	
-//		{ root = $$ = NewProgramModule(null, null, null, null, new block(null, $1 as statement_list, @$), @$); }
+	| tkShortProgram stmt_list	
+		{ 
+			var stl = $2 as statement_list;
+			stl.left_logical_bracket = $1;
+			root = $$ = NewProgramModule(null, null, null, new block(null, stl, @$), new token_info("end"), @$); 
+		}
+	| tkShortSFProgram stmt_list	
+		{
+			var stl = $2 as statement_list;
+			stl.left_logical_bracket = $1;
+			var un = new unit_or_namespace(new ident_list("SF", @$),@$);
+			var ul = new uses_list(un,@$);		
+			root = $$ = NewProgramModule(null, null, ul, new block(null, stl, @$), new token_info("end"), @$); 
+		}
     ;
 
 parts
@@ -887,6 +899,10 @@ const_set
     : tkSquareOpen const_elem_list tkSquareClose 
         { 
 			$$ = new pascal_set_constant($2 as expression_list, @$); 
+		}
+    | tkVertParen elem_list tkVertParen     
+        { 
+			$$ = new array_const_new($2 as expression_list, @$);  
 		}
     ;
 
@@ -3365,7 +3381,7 @@ relop_expr
             var deconstructorPattern = new deconstructor_pattern($3 as List<pattern_parameter>, isTypeCheck.type_def, null, @$); 
             $$ = new is_pattern_expr(isTypeCheck.expr, deconstructorPattern, @$);
         }
-	
+	/*
 	| term tkIs collection_pattern
         {
             $$ = new is_pattern_expr($1, $3 as pattern_node, @$);
@@ -3374,6 +3390,7 @@ relop_expr
         {
             $$ = new is_pattern_expr($1, $3 as pattern_node, @$);
         }
+    */
     ;
     
 pattern
@@ -3915,6 +3932,10 @@ factor
     | tkSquareOpen elem_list tkSquareClose     
         { 
 			$$ = new pascal_set_constant($2 as expression_list, @$);  
+		}
+    | tkVertParen elem_list tkVertParen     
+        { 
+			$$ = new array_const_new($2 as expression_list, @$);  
 		}
     | tkNot factor              
         { 

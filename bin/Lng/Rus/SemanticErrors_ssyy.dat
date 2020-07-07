@@ -31,7 +31,7 @@ DESTRUCTOR_NOT_IN_CLASS=Деструктор может быть описан т
 ASSIGN_TO_EVENT=Оператор := не применим к событиям; используйте += и -=
 DESTRUCTOR_IN_INTERFACE=Деструкторы не могут присутствовать в интерфейсе
 CAN_NOT_CALL_CONSTRUCTOR_AS_PROCEDURE=Нельзя вызвать конструктор через объект
-CANNOT_USE_POINTER_AS_GENERIC_ARGUMENT=Тип-указатель не может выступать в качестве параметра управляемого шаблона
+CANNOT_USE_POINTER_AS_GENERIC_ARGUMENT=Тип-указатель не может выступать в качестве параметра обобщения
 PARAMETER_{0}_MUST_HAVE_DEFAULT_CONSTRUCTOR=Невозможно инстанцировать, так как у типа {0} нет конструктора без параметров с уровнем доступа public
 PARAMETER_{0}_MUST_BE_REFERENCE_TYPE=Невозможно инстанцировать, так как тип {0} не является ссылочным (классом)
 PARAMETER_{0}_MUST_BE_VALUE_TYPE=Невозможно инстанцировать, так как тип {0} не является размерным
