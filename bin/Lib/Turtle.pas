@@ -4,7 +4,7 @@ unit Turtle;
 uses GraphWPF;
 
 var 
-  tp := Window.Center;
+  tp: Point;
   a: real := 0;
   dr := False;
 
@@ -41,9 +41,10 @@ begin
   tp := Pnt(x,y);
   MoveTo(tp.X,tp.Y);
 end;
-  
 
 begin
-  pen.RoundCap := True;
-  MoveTo(tp.X,tp.Y) 
+  //tp := Pnt(Window.Width / 2, Window.Height / 2);
+  tp := Pnt(400,300);
+  Pen.RoundCap := True;
+  MoveTo(tp.X,tp.Y); 
 end.

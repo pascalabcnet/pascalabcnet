@@ -59,6 +59,8 @@ function Pr(Self: char): char; extensionmethod := Self.Print;
 function Pr(Self: boolean): boolean; extensionmethod := Self.Print;
 function Pr(Self: string): string; extensionmethod := Self.Print;
 
+function Pr<T>(Self: array [,] of T; w: integer := 4): array [,] of T; extensionmethod := Self.Print(w);
+
 function Prln(Self: integer): integer; extensionmethod := Self.Println;
 function Prln(Self: real): real; extensionmethod := Self.Println;
 function Prln(Self: Biginteger): Biginteger; extensionmethod := Self.Println;
