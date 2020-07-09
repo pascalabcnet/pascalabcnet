@@ -6,7 +6,7 @@
    GraphABCHelper,  
    GraphWPFBase,
    Graph3D,
-   GraphWPF,
+   GraphWPF, Turtle,
    WPFObjects,
    NumLibABC,
    IniFile, PointerTools, PointRect, PT4, PT4MakerNetX, Robot, RobotField,
