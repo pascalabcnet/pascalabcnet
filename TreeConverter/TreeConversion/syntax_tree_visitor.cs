@@ -20666,7 +20666,8 @@ namespace PascalABCCompiler.TreeConverter
 
             //var tt = new var_statement(new ident(tname), new semantic_addr_value(expr)); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
             var tt = new var_statement(new ident(tname), asstup.expr); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
-            var st = new statement_list(tt);
+            var st = new statement_list(new SyntaxTree.empty_statement());
+            st.Add(tt);
 
             var n = asstup.vars.variables.Count();
             for (var i = 0; i < n; i++)
@@ -20676,7 +20677,7 @@ namespace PascalABCCompiler.TreeConverter
                     asstup.vars.variables[i].source_context);
                 st.Add(a);
             }
-            visit(st);
+            //visit(st);
             // Замена 1 оператор на 1 оператор - всё OK
             ReplaceUsingParent(asstup, st);*/
         }
@@ -20691,18 +20692,19 @@ namespace PascalABCCompiler.TreeConverter
 
             var tt = new var_statement(new ident(tname), assvartup.expr); // тут для assvartup.expr внутри повторно вызывается convert_strong, это плохо, но если там лямбда, то иначе - с semantic_addr_value - не работает!!!
             //var tt = new var_statement(new ident(tname), new semantic_addr_value(expr)); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
-            visit(tt); // обходится первый элемент - вместо asstup
+            //visit(tt); // обходится первый элемент - вместо asstup
 
             var sl = new List<statement>();
+            sl.Add(new SyntaxTree.empty_statement());
             sl.Add(tt); // он же помещается в новое синтаксическое дерево
 
-            var n = assvartup.vars.variables.Count();
+            var n = assvartup.idents.idents.Count();
             for (var i = 0; i < n; i++)
             {
-                var rr = assvartup.vars.variables[i] as ident;
+                var rr = assvartup.idents.idents[i] as ident;
                 var a = new var_statement(rr, 
                     new dot_node(new ident(tname),new ident("Item" + (i + 1).ToString())),
-                    assvartup.vars.variables[i].source_context
+                    assvartup.idents.idents[i].source_context
                     );
                 // Остальные элементы обходить не надо (!!!уже надо!) - они обходятся на следующих итерациях при обходе внешнего statement_list
                 //visit(a); 
@@ -20710,6 +20712,45 @@ namespace PascalABCCompiler.TreeConverter
             }
             ReplaceStatementUsingParent(assvartup, sl);*/
         }
+
+        public override void visit(var_tuple_def_statement vtd)
+        {
+            AddError(get_location(vtd), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", vtd.GetType().Name);
+
+            // Состоит из var_def_statements. Некоторые являются var_tuple_def_statement
+            // Их надо найти и сделать несколько секций variable_definitions - без семантических проверок.
+            // Каждую var_tuple_def_statement надо заменить на assign_var_tuple - одну на секцию variable_definitions
+            // А потом оставшаяся часть визитора сделает семантические проверки 
+
+            /*var tname = "#temp_var" + UniqueNumStr();
+            var vd = new List<var_def_statement>();
+            vd.Add(new semantic_check_sugared_var_def_statement_node(typeof(assign_var_tuple), new List<syntax_tree_node> { vtd.vars, vtd.inital_value }, vtd.source_context)); // Это нужно для проверок на этапе преобразования в семантику
+            visit(vd[0]);
+            var tt1 = new var_def_statement(new ident(tname), vtd.inital_value);
+            vd.Add(tt1);
+            var nn = vtd.vars.idents.Count();
+            for (var i = 0; i < nn; i++)
+            {
+                var a = new var_def_statement(vtd.vars.idents[i],
+                    new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString())),
+                    vtd.vars.idents[i].source_context);
+                vd.Add(a);
+            }
+
+            ReplaceVarTupleDefStatementUsingParent(vtd, vd);*/
+        }
+        public void ReplaceVarTupleDefStatementUsingParent(var_tuple_def_statement from, IEnumerable<var_def_statement> to)
+        {
+            foreach (var x in to)
+                x.Parent = from.Parent;
+            var sl = from.Parent as variable_definitions;
+            if (sl != null)
+            {
+                sl.ReplaceInList(from, to);
+            }
+        }
+
+
 
         public override void visit(SyntaxTree.slice_expr sl) // сахарный узел
         {
