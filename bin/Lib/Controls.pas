@@ -108,7 +108,7 @@ type
     begin
       var tb := new GTextBlock;
       element := tb;
-      element.Margin := new Thickness(0, 0, 0, GlobalHMargin);
+      //element.Margin := new Thickness(0, 0, 0, GlobalHMargin);
       //element.Margin := new Thickness(5,5,5,0);
       tb.FontSize := fontsize;
       Text := Txt;
@@ -346,12 +346,13 @@ protected
     sl.Minimum := min;
     sl.Maximum := max;
     sl.Value := val;
+    sl.Foreground := Brushes.Black;
     ActivePanel.Children.Add(sl);
   end;
   
   procedure ValueChangedP := if ValueChanged <> nil then ValueChanged;
 public 
-  event ValueChanged: procedure;
+  ValueChanged: procedure;
   constructor Create(min, max, val: real);
   begin
     Invoke(CreateP, min, max, val);
