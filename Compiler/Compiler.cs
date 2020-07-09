@@ -1816,7 +1816,7 @@ namespace PascalABCCompiler
                 	PrepareCompileOptionsForProject();
                 }
                 Units = new PascalABCCompiler.TreeRealization.unit_node_list();
-                CurrentSyntaxUnit = new SyntaxTree.uses_unit_in(null, new SyntaxTree.string_const(CompilerOptions.SourceFileName));
+                CurrentSyntaxUnit = new SyntaxTree.uses_unit_in(null, new SyntaxTree.string_const(Path.GetFullPath(CompilerOptions.SourceFileName)));
                 
                 CompileUnit(Units, CurrentSyntaxUnit, null);
                 
@@ -2499,6 +2499,7 @@ namespace PascalABCCompiler
 
         private static string CombinePath(string dir, string path)
         {
+            if (Path.IsPathRooted(path)) return path;
             int i = 0;
 
             for (; i < path.Length && path[i] == '.' && path[i + 1] == '.'; )
