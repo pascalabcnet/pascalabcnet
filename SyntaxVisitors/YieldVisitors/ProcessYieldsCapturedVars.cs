@@ -971,6 +971,10 @@ namespace SyntaxVisitors
             pd.visit(checkVarRedefVisitor);
             */
 
+            
+            // SSM 21/06 - Выносим yield x -> x
+            CapturedLambdaInYieldVisitor.Accept(pd);
+
             // Выносим выражение из yield в отдельную переменную
             ReplaceYieldExprByVarVisitor.Accept(pd);
 

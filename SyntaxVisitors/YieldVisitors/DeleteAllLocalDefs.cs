@@ -85,5 +85,11 @@ namespace SyntaxVisitors
 
             // еще - не заходить в лямбды
         }
+
+        public override void visit(desugared_deconstruction dd)
+        {
+            DefaultVisit(dd);
+        }
+
     }
 }

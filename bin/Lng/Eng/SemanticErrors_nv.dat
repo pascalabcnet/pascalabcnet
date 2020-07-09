@@ -103,3 +103,4 @@ NEGATIVE_ARRAY_LENGTH_({0})_NOT_ALLOWED=Upper bound of range is less than lower 
 INCOMPATIBLE_ARRAY_BOUNDS_TYPES=Incompatible types of array bounds
 CAN_NOT_APPLY_SETLENGTH_TO_THIS_OPERAND_TYPE=Cannot call SetLength for this type
 FUNCTION_NEED_RETURN_TYPE=Function must have a return type
+UNDEFINED_NAME_RESULT_IN_{0}=Undefined name Result in {0} (probably in one of the internal lambda-expressions)

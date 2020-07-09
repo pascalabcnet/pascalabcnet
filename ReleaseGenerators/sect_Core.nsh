@@ -134,6 +134,7 @@
     File ..\bin\Lib\OpenGLABC.pcu
     File ..\bin\Lib\School.pcu
     File ..\bin\Lib\SF.pcu
+    File ..\bin\Lib\Turtle.pcu
 
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
@@ -202,6 +203,7 @@
     ${AddFile} "OpenGLABC.pcu"
     ${AddFile} "School.pcu"
     ${AddFile} "SF.pcu"
+    ${AddFile} "Turtle.pcu"
 
     ${AddFile} "PABCRtl.dll"
     ${AddFile} "HelixToolkit.Wpf.dll"
@@ -281,6 +283,7 @@
     File ..\bin\Lib\OpenGLABC.pas
     File ..\bin\Lib\School.pas
     File ..\bin\Lib\SF.pas
+    File ..\bin\Lib\Turtle.pas
 
 	File ..\bin\Lib\__RedirectIOMode.vb
 	File ..\bin\Lib\VBSystem.vb
@@ -346,6 +349,7 @@
     ${AddFile} "OpenGLABC.pas"
     ${AddFile} "School.pas"
     ${AddFile} "SF.pas"
+    ${AddFile} "Turtle.pas"
 
 	${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"

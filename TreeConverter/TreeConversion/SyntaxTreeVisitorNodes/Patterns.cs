@@ -80,7 +80,7 @@ namespace PascalABCCompiler.TreeConverter
         }
 
         /// <summary>
-        /// Проверяет, подходит ли фаункция для вызова с указанными параметрами
+        /// Проверяет, подходит ли функция для вызова с указанными параметрами
         /// </summary>
         /// <param name="candidate"></param>
         /// <param name="givenParameterTypes">Типы параметров, указанные пользователем</param>
@@ -93,7 +93,8 @@ namespace PascalABCCompiler.TreeConverter
             out type_node[] parameterTypes)
         {
             parameterTypes = new type_node[givenParameterTypes.Length];
-            var selfParameter = candidate.is_extension_method ? candidate.parameters.First(IsSelfParameter) : null;
+            candidate.parameters[0].name = "Self"; // SSM 23.06.20 #2268 - это если в NET где-то такое нашли
+            var selfParameter = candidate.is_extension_method ? candidate.parameters.FirstOrDefault(IsSelfParameter) : null;
             Debug.Assert(!candidate.is_extension_method || selfParameter != null, "Couldn't find self parameter in extension method");
             var candidateParameterTypes =
                 candidate.is_extension_method ?
@@ -113,7 +114,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 // Выводим дженерики по self
                 var nils = new List<int>();
-                var deduceSucceded = generic_convertions.DeduceInstanceTypes(selfParameter.type, patternInstance.type, deducedGenerics, nils);
+                var deduceSucceded = generic_convertions.DeduceInstanceTypes(selfParameter.type, patternInstance.type, deducedGenerics, nils, candidate.get_generic_params_list());
                 if (!deduceSucceded || deducedGenerics.Contains(null))
                     return false;
             }

@@ -37,7 +37,7 @@
 %token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
 %token <ti> tkLoop 
-%token <ti> tkSequence tkYield
+%token <ti> tkSequence tkYield tkShortProgram tkVertParen tkShortSFProgram
 %token <id> tkNew
 %token <id> tkOn 
 %token <id> tkName tkPrivate tkProtected tkPublic tkInternal tkRead tkWrite  
@@ -51,7 +51,7 @@
 %token <stn> tkStringLiteral tkFormatStringLiteral tkAsciiChar
 %token <id> tkAbstract tkForward tkOverload tkReintroduce tkOverride tkVirtual tkExtensionMethod 
 %token <ex> tkInteger tkFloat tkHex
-%token <id> tkUnknown
+%token <id> tkUnknown 
 
 %type <ti> unit_key_word class_or_static
 %type <stn> assignment 
@@ -79,7 +79,7 @@
 %type <stn> exception_handler  
 %type <stn> exception_handler_list  
 %type <stn> exception_identifier  
-%type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 /*const_func_expr_list*/ case_label_list const_elem_list optional_const_func_expr_list elem_list1  
+%type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 /*const_expr_list*/ case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
 %type <ex> const_simple_expr term term1 simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda expr_l1_for_lambda simple_expr range_term range_factor 
@@ -188,8 +188,20 @@ parse_goal
 		{ root = $1; }
     | parts 
 		{ root = $1; }
-//	| stmt_list	
-//		{ root = $$ = NewProgramModule(null, null, null, null, new block(null, $1 as statement_list, @$), @$); }
+	| tkShortProgram stmt_list	
+		{ 
+			var stl = $2 as statement_list;
+			stl.left_logical_bracket = $1;
+			root = $$ = NewProgramModule(null, null, null, new block(null, stl, @$), new token_info("end"), @$); 
+		}
+	| tkShortSFProgram stmt_list	
+		{
+			var stl = $2 as statement_list;
+			stl.left_logical_bracket = $1;
+			var un = new unit_or_namespace(new ident_list("SF", @$),@$);
+			var ul = new uses_list(un,@$);		
+			root = $$ = NewProgramModule(null, null, ul, new block(null, stl, @$), new token_info("end"), @$); 
+		}
     ;
 
 parts
@@ -888,6 +900,10 @@ const_set
         { 
 			$$ = new pascal_set_constant($2 as expression_list, @$); 
 		}
+    | tkVertParen elem_list tkVertParen     
+        { 
+			$$ = new array_const_new($2 as expression_list, @$);  
+		}
     ;
 
 sign
@@ -970,12 +986,12 @@ optional_const_func_expr_list
 		{ $$ = null; }
     ;
         
-/*const_func_expr_list
+/*const_expr_list
     : const_expr                               
         { 	
 			$$ = new expression_list($1, @$);
 		}
-    | const_func_expr_list tkComma const_expr 
+    | const_expr_list tkComma const_expr 
         { 
 			$$ = ($1 as expression_list).Add($3, @$);
 		}
@@ -2655,14 +2671,14 @@ loop_stmt
 	;
 	
 yield_stmt
-	: tkYield expr_l1
+	: tkYield expr_l1_func_decl_lambda
 		{
 			$$ = new yield_node($2,@$);
 		}
 	;
 	
 yield_sequence_stmt
-	: tkYield tkSequence expr_l1
+	: tkYield tkSequence expr_l1_func_decl_lambda
 		{
 			$$ = new yield_sequence_node($3,@$);
 		}
@@ -3365,7 +3381,7 @@ relop_expr
             var deconstructorPattern = new deconstructor_pattern($3 as List<pattern_parameter>, isTypeCheck.type_def, null, @$); 
             $$ = new is_pattern_expr(isTypeCheck.expr, deconstructorPattern, @$);
         }
-	
+	/*
 	| term tkIs collection_pattern
         {
             $$ = new is_pattern_expr($1, $3 as pattern_node, @$);
@@ -3374,6 +3390,7 @@ relop_expr
         {
             $$ = new is_pattern_expr($1, $3 as pattern_node, @$);
         }
+    */
     ;
     
 pattern
@@ -3512,6 +3529,10 @@ tuple_pattern_item
 		{ 
 			$$ = new const_pattern_parameter($1, @$);
 		}
+	| sign literal_or_number
+		{
+			$$ = new const_pattern_parameter(new un_expr($2, $1.type, @$), @$);
+		}
     | tkVar identifier
         {
             $$ = new tuple_pattern_var_parameter($2, null, @$);
@@ -3623,6 +3644,10 @@ pattern_out_param_optional_var
 	| literal_or_number
 		{
 			$$ = new const_pattern_parameter($1, @$);
+		}
+	| sign literal_or_number
+		{
+			$$ = new const_pattern_parameter(new un_expr($2, $1.type, @$), @$);
 		}
     | identifier tkColon type_ref
         {
@@ -3908,6 +3933,10 @@ factor
         { 
 			$$ = new pascal_set_constant($2 as expression_list, @$);  
 		}
+    | tkVertParen elem_list tkVertParen     
+        { 
+			$$ = new array_const_new($2 as expression_list, @$);  
+		}
     | tkNot factor              
         { 
 			$$ = new un_expr($2, $1.type, @$); 
@@ -3953,7 +3982,11 @@ literal_or_number
 		{ $$ = $1; }
     | unsigned_number
 		{ $$ = $1; }
-    ;
+/*	| sign unsigned_number           
+        { 
+			$$ = new un_expr($2, $1.type, @$); 
+		}*/
+	;
 
 
 var_question_point
@@ -4445,6 +4478,32 @@ keyword
         { $$ = $1; }
     | tkWhen
         { $$ = $1; }
+    | tkPartial
+        { $$ = $1; }
+    | tkAbstract
+        { $$ = new token_info($1.name, @$);  }
+    | tkLock
+        { $$ = $1; }
+    | tkImplicit
+        { $$ = $1; }
+    | tkExplicit
+        { $$ = $1; }
+    | tkOn
+        { $$ = new token_info($1.name, @$);  }
+    | tkVirtual
+        { $$ = new token_info($1.name, @$);  }
+    | tkOverride
+        { $$ = new token_info($1.name, @$);  }
+    | tkLoop
+        { $$ = $1; }
+    | tkExtensionMethod
+        { $$ = new token_info($1.name, @$);  }
+    | tkOverload
+        { $$ = new token_info($1.name, @$);  }
+    | tkReintroduce
+        { $$ = new token_info($1.name, @$);  }
+    | tkForward
+        { $$ = new token_info($1.name, @$);  }
     ;
 
 reserved_keyword

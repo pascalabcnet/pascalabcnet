@@ -273,6 +273,7 @@ function operator implicit(Self: (integer, real)): Point; extensionmethod := new
 function operator implicit(Self: (real, integer)): Point; extensionmethod := new Point(Self[0], Self[1]);
 function operator implicit(Self: (real, real)): Point; extensionmethod := new Point(Self[0], Self[1]);
 
+
 function operator implicit(Self: (integer, integer)): Size; extensionmethod := new Size(Self[0], Self[1]);
 function operator implicit(Self: (integer, real)): Size; extensionmethod := new Size(Self[0], Self[1]);
 function operator implicit(Self: (real, integer)): Size; extensionmethod := new Size(Self[0], Self[1]);

@@ -65,6 +65,7 @@
     <Compile Include="VisitorsForLambdas\RenameOnExceptVarsVisitor.cs" />
     <Compile Include="VisitorsForLambdas\RenameSameVarNamesVisitor.cs" />
     <Compile Include="VisitorsForLambdas\StandOutExprWithLambdaInForeachSequenceVisitor.cs" />
+    <Compile Include="YieldVisitors\CapturedLambdaInYieldVisitor.cs" />
     <Compile Include="YieldVisitors\ObjectCopier\ObjectCopier.cs" />
     <Compile Include="Optimization\CalcConstExprs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

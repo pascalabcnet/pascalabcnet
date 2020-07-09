@@ -3270,6 +3270,16 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="array_const_new" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="elements" SyntaxType="expression_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3326,6 +3336,7 @@
       <HelpData Key=".defs" Value="" />
       <HelpData Key=".directives" Value="" />
       <HelpData Key=".el" Value="" />
+      <HelpData Key=".elements" Value="" />
       <HelpData Key=".elements_type" Value="Тип элементов" />
       <HelpData Key=".ex" Value="" />
       <HelpData Key=".expr" Value="" />
@@ -3401,6 +3412,8 @@
       <HelpData Key="addressed_value_list.void Add(addressed_value av)" Value="" />
       <HelpData Key="array_const" Value="" />
       <HelpData Key="array_const.elements" Value="" />
+      <HelpData Key="array_const_new" Value="" />
+      <HelpData Key="array_const_new.elements" Value="" />
       <HelpData Key="array_of_const_type" Value="array of const" />
       <HelpData Key="array_of_const_type_defenition" Value="array of const" />
       <HelpData Key="array_of_const_type_definition" Value="array of const" />

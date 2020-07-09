@@ -44,6 +44,9 @@ type
   Point = System.Windows.Point;
   /// Тип точки
   GPoint = System.Windows.Point;
+  /// Тип вектора
+  Vector = System.Windows.Vector;
+  /// Тип кисти
   GBrush = System.Windows.Media.Brush;
   /// Тип стиля шрифта
   FontStyle = (Normal,Bold,Italic,BoldItalic);
@@ -205,6 +208,8 @@ type
     property Width: real read GetWidth;
     /// Высота графического окна
     property Height: real read GetHeight;
+    /// Клиентский прямоугольник графического окна
+    function ClientRect: GRect;
     /// Центр графического окна
     function Center: Point;
     /// Сохраняет содержимое графического окна в файл с именем fname
@@ -236,7 +241,7 @@ type
 //>>     Класс Vector # Vector class
 // -----------------------------------------------------
   /// Класс Vector
-  Vector =  class
+  {Vector =  class
   public
     x,y: real;
     /// Создаёт вектор с указанными координатами
@@ -246,9 +251,7 @@ type
     static function operator*(r: real; v: Vector): Vector := new Vector(r*v.x,r*v.y);
     static function operator+(v: Vector; p: Point): Point := new Point(p.x+v.x,p.y+v.y);
     static function operator+(p: Point; v: Vector): Point := new Point(p.x+v.x,p.y+v.y);
-    //static function operator implicit(t: (real,real)): Vector := new Vector(t[0],t[1]);
-    //static function operator implicit(t: (integer,integer)): Vector := new Vector(t[0],t[1]);
-  end;
+  end;}
   
 //{{{--doc: Конец секции 2 }}} 
   
@@ -721,15 +724,18 @@ begin
   Result := visual.RenderOpen();
 end;
 
+procedure HostToRenderBitmap;
+begin
+  rtBmap.Render(host);
+  rtbmapIsCleared := False;
+  host.Children.Clear;
+end;
+
 procedure ReleaseDC(dc: DrawingContext);
 begin
   dc.Close;
   if host.Children.Count > 1000 then
-  begin
-    rtBmap.Render(host);
-    rtbmapIsCleared := False;
-    host.Children.Clear;
-  end;
+    HostToRenderBitmap
 end;
 
 procedure FastDraw(d: DrawingContext->());
@@ -1611,6 +1617,7 @@ function GraphWindowType.GetHeight := InvokeReal(GraphWindowTypeGetHeightP);
 
 procedure SaveWindowP(canvas: FrameworkElement; filename: string);
 begin
+  HostToRenderBitmap;
   var (scalex,scaley) := ScaleToDevice;
   var (dpiX,dpiY) := (scalex * 96, scaley * 96);
   
@@ -1624,7 +1631,9 @@ begin
   var mm := (canvas as MyVisualHost).RenderTransform.Value;
   mm.Invert;
   r.Transform(mm);
-  dc.DrawRectangle(Brush.BrushConstruct,nil,r);
+  dc.DrawRectangle(Brushes.White,nil,r);
+  var rr := Rect(0,0,rtbmap.Width,rtbmap.Height);
+  dc.DrawImage(rtbmap,rr);
   dc.Close;
   (canvas as MyVisualHost).children.Insert(0,myvis);
   
@@ -1662,6 +1671,8 @@ begin
 end;
 
 function GraphWindowType.Center: Point := Pnt(Width/2,Height/2);
+
+function GraphWindowType.ClientRect: GRect := Rect(0,0,Width,Height);
 
 
 procedure WindowTypeWPF.Save(fname: string) := GraphWindow.Save(fname);

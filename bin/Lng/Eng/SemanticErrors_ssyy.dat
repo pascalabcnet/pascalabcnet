@@ -53,6 +53,7 @@ PARENT_SPECIFICATOR_MUST_BE_FIRST=The parent constraint must be the first constr
 CLASS_OR_RECORD_SPECIFICATOR_MUST_BE_FIRST=The class/record constraint must be the first constrained specified
 CONSTRUCTOR_SPECIFICATOR_MUST_BE_LAST=The constructor constraint must be the last constrained specified
 OBJECT_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR=Constraint cannot be special class 'object'
+RECORD_CAN_NOT_BE_USED_AS_PARENT_SPECIFICATOR=Constraint cannot be record
 TYPE_{0}_DERIVED_FROM_ITSELF=Circular base class dependency
 AMBIGUITY_BETWEEN_NAMES_{0}_AND_{1}=Двусмысленность между именами {0} и {1}
 POINTERS_OF_GENERIC_PARAMETERS_NOT_ALLOWED=Cannot declare a pointer to generic parameter

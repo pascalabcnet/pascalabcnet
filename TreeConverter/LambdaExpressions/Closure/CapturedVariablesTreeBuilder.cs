@@ -223,7 +223,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                     if (classNode.name.Contains("<"))
                     {
                         var classIdent = new ident(classNode.name.Remove(classNode.name.IndexOf("<")));
-                        var templateParams = new template_param_list(classNode.instance_params.Select(x => x.name).Aggregate("", (acc, elem) => acc += elem));
+                        var templateParams = new template_param_list(classNode.instance_params.Select(x => x.name)/*.Aggregate("", (acc, elem) => acc += elem)*/);
                         return new ident_with_templateparams(classIdent,  templateParams);
                     }
                     else

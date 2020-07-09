@@ -77,7 +77,7 @@ namespace SyntaxVisitors.SugarVisitors
                 ReplaceStatementUsingParent(fe, sl);
                 visit(fn);
             }
-            else if (fe.in_what is dot_node dn && dn.right is ident id && id.name.ToLower() == "indices")
+            /*else if (fe.in_what is dot_node dn && dn.right is ident id && id.name.ToLower() == "indices")
             {
                 var typ = fe.type_name;
                 if (typ != null && typ is no_type_foreach)
@@ -94,7 +94,7 @@ namespace SyntaxVisitors.SugarVisitors
 
                 ReplaceStatementUsingParent(fe, sl);
                 visit(fn);
-            }
+            }*/
             else base.visit(fe);
         }
     }
