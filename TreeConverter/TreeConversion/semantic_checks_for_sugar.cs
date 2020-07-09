@@ -123,7 +123,7 @@ namespace PascalABCCompiler.TreeConverter
             else if (av.type is compiled_type_node ctn1)
                 t = ctn1.compiled_type;
 
-            if (!av.type.is_class && !(t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>)))
+            if (!av.type.is_class && !av.type.IsInterface && !(t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>)))
                 AddError(av.location, "OPERATOR_DQ_MUST_BE_USED_WITH_A_REFERENCE_TYPE_VALUETYPE");
         }
 
