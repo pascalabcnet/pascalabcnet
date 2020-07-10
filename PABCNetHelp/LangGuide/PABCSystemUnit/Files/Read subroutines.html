@@ -1,5 +1,6 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="Read">
+<param name="Keyword" value="ReadBigInteger">
 <param name="Keyword" value="ReadBoolean">
 <param name="Keyword" value="ReadChar">
 <param name="Keyword" value="ReadChar2">
@@ -12,6 +13,7 @@
 <param name="Keyword" value="ReadInteger4">
 <param name="Keyword" value="ReadLexem">
 <param name="Keyword" value="Readln">
+<param name="Keyword" value="ReadlnBigInteger">
 <param name="Keyword" value="ReadlnBoolean">
 <param name="Keyword" value="ReadlnChar">
 <param name="Keyword" value="ReadlnChar2">
@@ -45,6 +47,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вводит значения a,b,... с клавиатуры</td></tr>
 <tr><td><code><b>procedure</b> Read(f: файл; a,b,...);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вводит значения a,b,... из файла f</td></tr>
+<tr><td><code><b>function</b> ReadBigInteger: BigInteger;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа BigInteger, введенное с клавиатуры</td></tr>
 <tr><td><code><b>function</b> ReadBoolean: boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа boolean, введенное с клавиатуры</td></tr>
 <tr><td><code><b>function</b> ReadBoolean(prompt: string): boolean;</code>
@@ -101,6 +105,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вводит значения a,b,... с клавиатуры и осуществляет переход на следующую строку</td></tr>
 <tr><td><code><b>procedure</b> Readln(f: Text; a,b,...);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вводит значения a,b,... из текстового файла f и осуществляет переход на следующую строку</td></tr>
+<tr><td><code><b>function</b> ReadlnBigInteger: BigInteger;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа BigInteger, введенное с клавиатуры, и переходит на следующую строку ввода</td></tr>
 <tr><td><code><b>function</b> ReadlnBoolean: boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает значение типа boolean, введенное с клавиатуры, и переходит на следующую строку ввода</td></tr>
 <tr><td><code><b>function</b> ReadlnBoolean(prompt: string): boolean;</code>
@@ -221,7 +227,11 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа string, введенных с клавиатуры</td></tr>
 <tr><td><code><b>function</b> ReadString4(prompt: string): (string, string, string, string);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает кортеж из четырёх значений типа string, введенных с клавиатуры</td></tr>
-<tr><td><code><b>function</b> TryRead(<b>var</b> x: integer): boolean;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вводит числовое значение x клавиатуры. Возвращает False если при вводе произошла ошибка</td></tr>
+<tr><td><code><b>function</b> TryRead(<b>var</b> x: число): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вводит числовое значение x с клавиатуры. Возвращает False если при вводе произошла ошибка</td></tr>
+<tr><td><code><b>function</b> TryRead(<b>var</b> x: число; message: string): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Выводит приглашение к вводу и вводит числовое значение x с клавиатуры. Возвращает False если при вводе произошла ошибка</td></tr>
+<tr><td><code><b>function</b> TryRead(<b>var</b> x: boolean; message: string := ''): boolean;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Вводит логическое значение x с клавиатуры. Возвращает False если при вводе произошла ошибка</td></tr>
 </table>
 </body></HTML>

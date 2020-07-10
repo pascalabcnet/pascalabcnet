@@ -50,8 +50,8 @@ namespace PascalABCCompiler.TreeConverter
         // нельзя проверять сахарный узел, т.к.могут быть вложенные сахарные expression!!
         {
             var v = (mc.dereferencing_value as dot_node).left;
-            var from = mc.parameters.expressions[1];
-            var to = mc.parameters.expressions[2];
+            var from = mc.parameters.expressions[1] as expression;
+            var to = mc.parameters.expressions[2] as expression;
             expression step = mc.parameters.expressions.Count > 3 ? mc.parameters.expressions[3] : null;
 
             var semvar = convert_strong(v);
@@ -82,12 +82,21 @@ namespace PascalABCCompiler.TreeConverter
 
             var semfrom = convert_strong(from);
             var b = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type);
-            if (!b)
+            var fromIsIndex = (semfrom is common_constructor_call fromCall) &&
+                fromCall.common_type.comprehensive_namespace.namespace_full_name.Equals("PABCSystem") &&
+                fromCall.common_type.PrintableName.Equals("SystemIndex");
+            if (!b && !fromIsIndex)
                 AddError(get_location(from), "INTEGER_VALUE_EXPECTED");
 
+            // semantic tree - type special kind
+            // staticSystemLib посмотреть.
+            // SystemIndex - переименовать.
             var semto = convert_strong(to);
             b = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.integer_type);
-            if (!b)
+            var toIsIndex = (semto is common_constructor_call toCall) &&
+                toCall.common_type.comprehensive_namespace.namespace_full_name.Equals("PABCSystem") &&
+                toCall.common_type.PrintableName.Equals("SystemIndex");
+            if (!b && !toIsIndex)
                 AddError(get_location(to), "INTEGER_VALUE_EXPECTED");
 
             if (step != null)
@@ -113,8 +122,9 @@ namespace PascalABCCompiler.TreeConverter
                 t = ctn2.compiled_original_generic.compiled_type;
             else if (av.type is compiled_type_node ctn1)
                 t = ctn1.compiled_type;
-
-            if (!av.type.is_class && !(t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>)))
+            if (av.type.type_special_kind == SemanticTree.type_special_kind.array_kind)
+                return;
+            if (!av.type.is_class && !av.type.IsInterface && !(t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>)))
                 AddError(av.location, "OPERATOR_DQ_MUST_BE_USED_WITH_A_REFERENCE_TYPE_VALUETYPE");
         }
 
@@ -126,6 +136,74 @@ namespace PascalABCCompiler.TreeConverter
                 AddError(sem_ex.location, "INTEGER_VALUE_EXPECTED");
         }
 
+        public void semantic_check_slice_assignment_types(SyntaxTree.expression expr1, SyntaxTree.expression expr2, method_call mc)
+        {
+            var slice = expr1 as slice_expr;
+            var leftValue = convert_strong(slice.v);
+            var leftType = leftValue.type;
+            var rightValue = convert_strong(expr2);
+            var rightType = rightValue.type;
+
+            var v = slice.v;
+            var from = mc.parameters.expressions[2] as expression;
+            var to = mc.parameters.expressions[3] as expression;
+            expression step = mc.parameters.expressions.Count > 4 ? mc.parameters.expressions[4] : null;
+
+            var semvar = convert_strong(v);
+            if (semvar is typed_expression)
+                semvar = convert_typed_expression_to_function_call(semvar as typed_expression);
+
+            var IsSlicedType = 0; // проверим, является ли semvar.type динамическим массивом, списком List или строкой
+            if (semvar.type.type_special_kind == SemanticTree.type_special_kind.array_kind)
+                IsSlicedType = 1;
+
+            if (IsSlicedType == 0)
+            {
+                var t = ConvertSemanticTypeNodeToNETType(semvar.type); // не работает для array of T
+
+                // semvar.type должен быть array of T, List<T> или string
+                if (t == null)
+                    IsSlicedType = 0; // можно ничего не присваивать :)
+                                      //                else if (t.IsArray)
+                                      //                  IsSlicedType = 1;
+                else if (t == typeof(System.String))
+                    IsSlicedType = 2;
+                else if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(System.Collections.Generic.List<>))
+                    IsSlicedType = 3;
+            }
+
+            if (IsSlicedType == 0)
+                AddError(get_location(v), "BAD_SLICE_OBJECT");
+
+            var semfrom = convert_strong(from);
+            var fromIsIndex = (semfrom is common_constructor_call fromCall) &&
+                fromCall.common_type.comprehensive_namespace.namespace_full_name.Equals("PABCSystem") &&
+                fromCall.common_type.PrintableName.Equals("SystemIndex");
+            var b = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type);
+            if (!b && !fromIsIndex)
+                AddError(get_location(from), "INTEGER_VALUE_EXPECTED");
+
+            var semto = convert_strong(to);
+            var toIsIndex = (semto is common_constructor_call toCall) &&
+                toCall.common_type.comprehensive_namespace.namespace_full_name.Equals("PABCSystem") &&
+                toCall.common_type.PrintableName.Equals("SystemIndex");
+            b = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.integer_type);
+            if (!b && !toIsIndex)
+                AddError(get_location(to), "INTEGER_VALUE_EXPECTED");
+
+            if (step != null)
+            {
+                var semstep = convert_strong(step);
+                b = convertion_data_and_alghoritms.can_convert_type(semstep, SystemLibrary.SystemLibrary.integer_type);
+                if (!b)
+                    AddError(get_location(step), "INTEGER_VALUE_EXPECTED");
+            }
+
+            if (!AreTheSameType(leftType, rightType))
+            {
+                AddError(get_location(expr2), "EXPRESSION_OF_TYPE_{0}_CANNOT_BE_ASSIGNED_TO_SLICE_OF_TYPE_{1}", rightType.PrintableName, leftType.PrintableName);
+            }
+        }
 
         /*void common_diap_check(expression from, expression to)
         {
@@ -140,20 +218,30 @@ namespace PascalABCCompiler.TreeConverter
             var semfrom = convert_strong(from);
             var b = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type);
             var b1 = false;
+            var br = false;
             if (!b)
                 b1 = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.char_type);
-            if (!b && !b1)
-                AddError(get_location(from), "INTEGER_OR_CHAR_VALUE_EXPECTED");
+            if (!b1)
+                br = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.double_type);
+            if (!b && !b1 && !br)
+                AddError(get_location(from), "INTEGER_OR_REAL_OR_CHAR_VALUE_EXPECTED");
 
             var semto = convert_strong(to);
             var c = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.integer_type);
             var c1 = false;
+            var cr = false;
             if (!c)
                 c1 = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.char_type);
-            if (!c && !c1)
-                AddError(get_location(to), "INTEGER_OR_CHAR_VALUE_EXPECTED");
-            if (b != c || c1 != b1)
-                AddError(get_location(to), "INCOMPATIBLE_DIAPASON_BOUNDS_TYPES");
+            if (!c1)
+                cr = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.double_type);
+            if (!c && !c1 && !cr)
+                AddError(get_location(to), "INTEGER_OR_REAL_OR_CHAR_VALUE_EXPECTED");
+            //if (b != c || c1 != b1 || cr != br)
+            if (b && c || c1 && b1 || cr && br)
+                return;
+            if (b && cr || c && br)
+                return;
+            AddError(get_location(to), "INCOMPATIBLE_DIAPASON_BOUNDS_TYPES");
         }
 
         void semantic_check_method_call_as_inrange_expr(SyntaxTree.method_call mc)
@@ -165,30 +253,45 @@ namespace PascalABCCompiler.TreeConverter
             var semv = convert_strong(v);
             var a = convertion_data_and_alghoritms.can_convert_type(semv, SystemLibrary.SystemLibrary.integer_type);
             var a1 = false;
+            var ar = false;
             if (!a)
                 a1 = convertion_data_and_alghoritms.can_convert_type(semv, SystemLibrary.SystemLibrary.char_type);
-            if (!a && !a1)
-                AddError(get_location(v), "INTEGER_OR_CHAR_VALUE_EXPECTED");
+            if (!a1)
+                ar = convertion_data_and_alghoritms.can_convert_type(semv, SystemLibrary.SystemLibrary.double_type);
+            if (!a && !a1 && !ar)
+                AddError(get_location(v), "INTEGER_OR_REAL_OR_CHAR_VALUE_EXPECTED");
 
             var semfrom = convert_strong(from);
             var b = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type);
             var b1 = false;
+            var br = false;
             if (!b)
                 b1 = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.char_type);
-            if (!b && !b1)
-                AddError(get_location(from), "INTEGER_OR_CHAR_VALUE_EXPECTED");
+            if (!b1)
+                br = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.double_type);
+            if (!b && !b1 && !br)
+                AddError(get_location(from), "INTEGER_OR_REAL_OR_CHAR_VALUE_EXPECTED");
 
             var semto = convert_strong(to);
             var c = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.integer_type);
             var c1 = false;
+            var cr = false;
             if (!c)
                 c1 = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.char_type);
-            if (!c && !c1)
-                AddError(get_location(to), "INTEGER_OR_CHAR_VALUE_EXPECTED");
+            if (!c1)
+                cr = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.double_type);
+            if (!c && !c1 && !cr)
+                AddError(get_location(to), "INTEGER_OR_REAL_OR_CHAR_VALUE_EXPECTED");
 
-            if (b != c || c1 != b1)
+            var incompbound = true; 
+            if (b && c || c1 && b1 || cr && br)
+                incompbound = false;
+            if (b && cr || c && br)
+                incompbound = false;
+
+            if (incompbound)
                 AddError(get_location(to), "INCOMPATIBLE_DIAPASON_BOUNDS_TYPES");
-            if (a != b || a1 != b1)
+            if (a && b1 || ar && b1 || a1 && b || a1 && c)
                 AddError(get_location(v), "INCOMPATIBLE_TYPES_OF_ELEMENT_AND_DIAPASON");
         }
 
@@ -250,6 +353,7 @@ namespace PascalABCCompiler.TreeConverter
             var semexpr = convert_strong(expr);
             var Is1DArr = Is1DArray(semexpr);
             var il = IsIList(semexpr);
+            // Тут может быть другая ситуация - Indices может быть членом semexpr - и тогда нельзя преобразовывать
             if (!Is1DArr && !il)
                 AddError(get_location(expr), "ONE_DIM_ARRAY_OR_LIST_EXPECTED");
         }

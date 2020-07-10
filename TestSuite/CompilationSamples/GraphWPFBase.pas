@@ -128,6 +128,8 @@ type
     function Center: Point;
     /// Возвращает прямоугольник клиентской области окна
     function ClientRect: GRect;
+    /// Возвращает случайную точку в границах экрана. Необязательный параметр w задаёт минимальный отступ от границы 
+    function RandomPoint(w: real := 0): Point;
     private procedure CenterOnScreenP;
   end;
 //{{{--doc: Конец секции 1 }}} 
@@ -264,10 +266,13 @@ function WindowType.Center := Pnt(Width/2,Height/2);
 
 function WindowType.ClientRect := Rect(0,0,Width,Height);
 
+function WindowType.RandomPoint(w: real): Point := Pnt(Random(w,Width-w),Random(w,Height-w));
+
 function operator implicit(Self: (integer, integer)): Point; extensionmethod := new Point(Self[0], Self[1]);
 function operator implicit(Self: (integer, real)): Point; extensionmethod := new Point(Self[0], Self[1]);
 function operator implicit(Self: (real, integer)): Point; extensionmethod := new Point(Self[0], Self[1]);
 function operator implicit(Self: (real, real)): Point; extensionmethod := new Point(Self[0], Self[1]);
+
 
 function operator implicit(Self: (integer, integer)): Size; extensionmethod := new Size(Self[0], Self[1]);
 function operator implicit(Self: (integer, real)): Size; extensionmethod := new Size(Self[0], Self[1]);

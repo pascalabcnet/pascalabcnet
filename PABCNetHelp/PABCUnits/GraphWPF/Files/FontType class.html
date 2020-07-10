@@ -1,12 +1,16 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="Color">
-<param name="Keyword" value="FontType">
+<param name="Keyword" value="FontOptions">
 <param name="Keyword" value="Name">
 <param name="Keyword" value="Size">
-<param name="Keyword" value="Style"></object>
+<param name="Keyword" value="Style">
+<param name="Keyword" value="WithColor">
+<param name="Keyword" value="WithName">
+<param name="Keyword" value="WithSize">
+<param name="Keyword" value="WithStyle"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Класс FontType</H1>Тип шрифта.
-<table border=0 cellpadding=5><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства класса FontType</font></td></tr>
+<table border=0 cellpadding=5><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Свойства класса FontOptions</font></td></tr>
 
 <tr><tr><td><code><b>property</b> Color: GColor;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цвет шрифта</td></tr>
@@ -16,5 +20,15 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Размер шрифта в единицах по 1/96 дюйма</td></tr>
 <tr><td><code><b>property</b> Style: FontStyle;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Стиль шрифта</td></tr>
+</tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы класса FontOptions</font></td></tr>
+
+<tr><tr><td><code><b>function</b> WithColor(c: GColor): FontOptions;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор цвета шрифта</td></tr>
+<tr><td><code><b>function</b> WithName(name: string): FontOptions;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор стиля шрифта</td></tr>
+<tr><td><code><b>function</b> WithSize(sz: real): FontOptions;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор размера шрифта</td></tr>
+<tr><td><code><b>function</b> WithStyle(fs: FontStyle): FontOptions;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Декоратор стиля шрифта</td></tr>
 </tr></table>
 </body></HTML>

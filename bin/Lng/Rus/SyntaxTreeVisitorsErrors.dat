@@ -1,7 +1,7 @@
 ﻿// Syntax tree conversion errors
 %PREFIX%=SYNTAXTREEVISITORSERROR_
 
-YIELD_FUNC_MUST_RETURN_SEQUENCE=Функции с yield должны непосредственно возвращать тип sequence of T или IEnumerable<T>
+YIELD_FUNC_MUST_RETURN_SEQUENCE=Функции с yield должны иметь тип возвращаемого значения sequence of T или IEnumerable<T>
 YIELD_FUNC_CANNOT_RETURN_SEQUENCE_OF_ANONYMOUS_DELEGATES=Функции с yield не могут возвращать последовательность анонимных делегатов
 ONLY_FUNCTIONS_CAN_CONTAIN_YIELDS=Только функции могут содержать yield
 FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_VAR_CONST_PARAMS_MODIFIERS=В параметрах функции с yield не должно быть модификаторов 'var' или 'const'
@@ -23,6 +23,7 @@ ONLY_ONE_DECONSTRUCT_ALLOWED=Можно определить только оди
 REPEATED_DECONSTRUCTION_TYPE=Повторение типов при сопоставлении с образцом
 REPEATED_DOTDOT_COLLECTION_PATTERN_EXPR=Конструкция '..' встречена более одного раза в выражении для сопоставления
 MATCHING_ASSIGN_NOT_SUPPORTED=Этот вид сопоставления с образцом не поддерживается в данном контексте
+CAN_NOT_ASSIGN_TO_LEFT_PART=Невозможно присвоить выражению в левой части оператора присваивания
 
 Var_{0}_is_already_defined=Переменная {0} уже определена
 

@@ -1204,7 +1204,8 @@ namespace PascalABCCompiler.NETGenerator
                             throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
                         }
                         else
-                            throw ex;
+                            throw new PascalABCCompiler.Errors.CommonCompilerError(ex.Message, ctn.Location.document.file_name, ctn.Location.begin_line_num, ctn.Location.begin_column_num);
+                            //throw ex;
                     }
                     else
                         throw ex;
@@ -3483,8 +3484,9 @@ namespace PascalABCCompiler.NETGenerator
                 PushIntConst(il, i - 2 - rank);
                 ILGenerator ilb = this.il;
 
-                if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && !ti.tp.IsEnum)
-                    il.Emit(OpCodes.Ldelema, ti.tp);
+                if (ti != null && ti.tp.IsValueType && !TypeFactory.IsStandType(ti.tp) && (helper.IsConstructedGenericType(ti.tp) || ti.tp.IsGenericType || !ti.tp.IsEnum))
+                    if (!(ti.tp is EnumBuilder))
+                        il.Emit(OpCodes.Ldelema, ti.tp);
 
                 this.il = il;
                 exprs[i].visit(this);

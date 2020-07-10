@@ -37,7 +37,7 @@
 %token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
 %token <ti> tkLoop 
-%token <ti> tkSequence tkYield
+%token <ti> tkSequence tkYield tkShortProgram tkVertParen tkShortSFProgram
 %token <id> tkNew
 %token <id> tkOn 
 %token <id> tkName tkPrivate tkProtected tkPublic tkInternal tkRead tkWrite  
@@ -51,7 +51,7 @@
 %token <stn> tkStringLiteral tkFormatStringLiteral tkAsciiChar
 %token <id> tkAbstract tkForward tkOverload tkReintroduce tkOverride tkVirtual tkExtensionMethod 
 %token <ex> tkInteger tkFloat tkHex
-%token <id> tkUnknown
+%token <id> tkUnknown 
 
 %type <ti> unit_key_word class_or_static
 %type <stn> assignment 
@@ -79,13 +79,13 @@
 %type <stn> exception_handler  
 %type <stn> exception_handler_list  
 %type <stn> exception_identifier  
-%type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 /*const_func_expr_list*/ case_label_list const_elem_list optional_const_func_expr_list elem_list1  
+%type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 /*const_expr_list*/ case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
 %type <ex> const_simple_expr term term1 simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda expr_l1_for_lambda simple_expr range_term range_factor 
 %type <ex> external_directive_ident init_const_expr case_label variable var_reference /*optional_write_expr*/ optional_read_expr simple_expr_or_nothing var_question_point expr_l1_for_question_expr expr_l1_for_new_question_expr
 %type <ob> for_cycle_type  
-%type <ex> format_expr format_const_expr const_expr_or_nothing  
+%type <ex> format_expr format_const_expr const_expr_or_nothing /* simple_expr_with_deref_or_nothing simple_expr_with_deref expr_l1_for_indexer*/
 %type <stn> foreach_stmt  
 %type <stn> for_stmt loop_stmt yield_stmt yield_sequence_stmt
 %type <stn> fp_list fp_sect_list  
@@ -188,8 +188,20 @@ parse_goal
 		{ root = $1; }
     | parts 
 		{ root = $1; }
-//	| stmt_list	
-//		{ root = $$ = NewProgramModule(null, null, null, null, new block(null, $1 as statement_list, @$), @$); }
+	| tkShortProgram stmt_list	
+		{ 
+			var stl = $2 as statement_list;
+			stl.left_logical_bracket = $1;
+			root = $$ = NewProgramModule(null, null, null, new block(null, stl, @$), new token_info("end"), @$); 
+		}
+	| tkShortSFProgram stmt_list	
+		{
+			var stl = $2 as statement_list;
+			stl.left_logical_bracket = $1;
+			var un = new unit_or_namespace(new ident_list("SF", @$),@$);
+			var ul = new uses_list(un,@$);		
+			root = $$ = NewProgramModule(null, null, ul, new block(null, stl, @$), new token_info("end"), @$); 
+		}
     ;
 
 parts
@@ -888,6 +900,10 @@ const_set
         { 
 			$$ = new pascal_set_constant($2 as expression_list, @$); 
 		}
+    | tkVertParen elem_list tkVertParen     
+        { 
+			$$ = new array_const_new($2 as expression_list, @$);  
+		}
     ;
 
 sign
@@ -970,12 +986,12 @@ optional_const_func_expr_list
 		{ $$ = null; }
     ;
         
-/*const_func_expr_list
+/*const_expr_list
     : const_expr                               
         { 	
 			$$ = new expression_list($1, @$);
 		}
-    | const_func_expr_list tkComma const_expr 
+    | const_expr_list tkComma const_expr 
         { 
 			$$ = ($1 as expression_list).Add($3, @$);
 		}
@@ -2655,14 +2671,14 @@ loop_stmt
 	;
 	
 yield_stmt
-	: tkYield expr_l1
+	: tkYield expr_l1_func_decl_lambda
 		{
 			$$ = new yield_node($2,@$);
 		}
 	;
 	
 yield_sequence_stmt
-	: tkYield tkSequence expr_l1
+	: tkYield tkSequence expr_l1_func_decl_lambda
 		{
 			$$ = new yield_sequence_node($3,@$);
 		}
@@ -2699,7 +2715,20 @@ assignment
 			($4 as addressed_value_list).Insert(0,$2 as addressed_value);
 			($4 as syntax_tree_node).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5);
 			$$ = new assign_tuple($4 as addressed_value_list, $7, @$);
-		}		
+		}	
+    | variable tkQuestionSquareOpen format_expr tkSquareClose assign_operator expr
+		{
+			var fe = $3 as format_expr;
+            if (!parsertools.build_tree_for_formatter)
+            {
+                if (fe.expr == null)
+                    fe.expr = new int32_const(int.MaxValue,@3);
+                if (fe.format1 == null)
+                    fe.format1 = new int32_const(int.MaxValue,@3);
+            }
+      		var left = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
+            $$ = new assign(left, $6, $5.type, @$);
+		}
     ;
     
 variable_list
@@ -3109,6 +3138,13 @@ expr
     | format_expr
 		{ $$ = $1; }
     ;
+    /*
+expr_l1_for_indexer
+    : expr_l1 
+        { $$ = $1; }
+    | format_expr
+		{ $$ = $1; }
+    ;*/
 
 expr_l1
     : expr_dq
@@ -3345,7 +3381,7 @@ relop_expr
             var deconstructorPattern = new deconstructor_pattern($3 as List<pattern_parameter>, isTypeCheck.type_def, null, @$); 
             $$ = new is_pattern_expr(isTypeCheck.expr, deconstructorPattern, @$);
         }
-	
+	/*
 	| term tkIs collection_pattern
         {
             $$ = new is_pattern_expr($1, $3 as pattern_node, @$);
@@ -3354,6 +3390,7 @@ relop_expr
         {
             $$ = new is_pattern_expr($1, $3 as pattern_node, @$);
         }
+    */
     ;
     
 pattern
@@ -3492,6 +3529,10 @@ tuple_pattern_item
 		{ 
 			$$ = new const_pattern_parameter($1, @$);
 		}
+	| sign literal_or_number
+		{
+			$$ = new const_pattern_parameter(new un_expr($2, $1.type, @$), @$);
+		}
     | tkVar identifier
         {
             $$ = new tuple_pattern_var_parameter($2, null, @$);
@@ -3604,6 +3645,10 @@ pattern_out_param_optional_var
 		{
 			$$ = new const_pattern_parameter($1, @$);
 		}
+	| sign literal_or_number
+		{
+			$$ = new const_pattern_parameter(new un_expr($2, $1.type, @$), @$);
+		}
     | identifier tkColon type_ref
         {
             $$ = new var_deconstructor_parameter($1, $3, false, @$);
@@ -3655,21 +3700,47 @@ const_expr_or_nothing
 		$$ = null;
 	}
 	;
-	
+/*
+simple_expr_with_deref_or_nothing
+    : tkDeref simple_expr
+    {
+        $$ = new simple_expr_with_deref($2, true);
+    }
+	| simple_expr 
+	{
+		$$ = new simple_expr_with_deref($1, false);
+	}
+	|
+	{
+		$$ = null;
+	}
+	;
+
+simple_expr_with_deref
+    : simple_expr 
+    { 
+        $$ = new simple_expr_with_deref($1, false); 
+    }
+    | tkDeref simple_expr
+    {
+        $$ = new simple_expr_with_deref($2, true);
+    }
+    ;
+*/
 format_expr 
     : simple_expr tkColon simple_expr_or_nothing                        
-        { 
+        {
 			$$ = new format_expr($1, $3, null, @$); 
 		}
     | tkColon simple_expr_or_nothing                        
         { 
 			$$ = new format_expr(null, $2, null, @$); 
 		}
-    | simple_expr tkColon simple_expr_or_nothing tkColon simple_expr   
+    | simple_expr tkColon simple_expr_or_nothing tkColon simple_expr  
         { 
 			$$ = new format_expr($1, $3, $5, @$); 
 		}
-    | tkColon simple_expr_or_nothing tkColon simple_expr   
+    | tkColon simple_expr_or_nothing tkColon simple_expr
         { 
 			$$ = new format_expr(null, $2, $4, @$); 
 		}
@@ -3862,6 +3933,10 @@ factor
         { 
 			$$ = new pascal_set_constant($2 as expression_list, @$);  
 		}
+    | tkVertParen elem_list tkVertParen     
+        { 
+			$$ = new array_const_new($2 as expression_list, @$);  
+		}
     | tkNot factor              
         { 
 			$$ = new un_expr($2, $1.type, @$); 
@@ -3892,6 +3967,10 @@ factor
 		
 			$$ = new un_expr($2, $1.type, @$); 
 		}
+    | tkDeref factor
+        {
+            $$ = new index($2, true, @$);
+        }
     | var_reference
 		{ $$ = $1; }
 	| tuple 
@@ -3903,7 +3982,11 @@ literal_or_number
 		{ $$ = $1; }
     | unsigned_number
 		{ $$ = $1; }
-    ;
+/*	| sign unsigned_number           
+        { 
+			$$ = new un_expr($2, $1.type, @$); 
+		}*/
+	;
 
 
 var_question_point
@@ -4012,7 +4095,7 @@ variable
                 }
         		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
 			}   
-			else $$ = new indexer($1 as addressed_value,el, @$);
+			else $$ = new indexer($1 as addressed_value, el, @$);
         }
     | variable tkQuestionSquareOpen format_expr tkSquareClose                
         {
@@ -4395,6 +4478,32 @@ keyword
         { $$ = $1; }
     | tkWhen
         { $$ = $1; }
+    | tkPartial
+        { $$ = $1; }
+    | tkAbstract
+        { $$ = new token_info($1.name, @$);  }
+    | tkLock
+        { $$ = $1; }
+    | tkImplicit
+        { $$ = $1; }
+    | tkExplicit
+        { $$ = $1; }
+    | tkOn
+        { $$ = new token_info($1.name, @$);  }
+    | tkVirtual
+        { $$ = new token_info($1.name, @$);  }
+    | tkOverride
+        { $$ = new token_info($1.name, @$);  }
+    | tkLoop
+        { $$ = $1; }
+    | tkExtensionMethod
+        { $$ = new token_info($1.name, @$);  }
+    | tkOverload
+        { $$ = new token_info($1.name, @$);  }
+    | tkReintroduce
+        { $$ = new token_info($1.name, @$);  }
+    | tkForward
+        { $$ = new token_info($1.name, @$);  }
     ;
 
 reserved_keyword

@@ -54,6 +54,7 @@
     <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\DoubleQuestionDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\ExtendedIsDesugaringVisitor.cs" />
+    <Compile Include="SugarVisitors\IndexVisitor.cs" />
     <Compile Include="SugarVisitors\LoopDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\PropertyDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\QuestionPointDesugarVisitor.cs" />
@@ -64,6 +65,7 @@
     <Compile Include="VisitorsForLambdas\RenameOnExceptVarsVisitor.cs" />
     <Compile Include="VisitorsForLambdas\RenameSameVarNamesVisitor.cs" />
     <Compile Include="VisitorsForLambdas\StandOutExprWithLambdaInForeachSequenceVisitor.cs" />
+    <Compile Include="YieldVisitors\CapturedLambdaInYieldVisitor.cs" />
     <Compile Include="YieldVisitors\ObjectCopier\ObjectCopier.cs" />
     <Compile Include="Optimization\CalcConstExprs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

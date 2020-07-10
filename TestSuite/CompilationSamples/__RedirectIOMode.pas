@@ -57,7 +57,8 @@ end;
 procedure SendReadlnRequest;
 begin
   ReadlnSignalSended := true;
-  WriteToProcessErrorStream(ReadlnSignalCommand);
+  if not IsInputPipedOrRedirectedFromFile then
+    WriteToProcessErrorStream(ReadlnSignalCommand);
 end;
 
 function __ReadSignalOISystem.peek: integer;

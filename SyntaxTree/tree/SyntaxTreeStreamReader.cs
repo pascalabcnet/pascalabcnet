@@ -522,6 +522,12 @@ namespace PascalABCCompiler.SyntaxTree
 					return new diapason_expr_new();
 				case 250:
 					return new if_expr_new();
+				case 251:
+					return new simple_expr_with_deref();
+				case 252:
+					return new index();
+				case 253:
+					return new array_const_new();
 			}
 			return null;
 		}
@@ -4384,6 +4390,44 @@ namespace PascalABCCompiler.SyntaxTree
 			_if_expr_new.condition = _read_node() as expression;
 			_if_expr_new.if_true = _read_node() as expression;
 			_if_expr_new.if_false = _read_node() as expression;
+		}
+
+
+		public void visit(simple_expr_with_deref _simple_expr_with_deref)
+		{
+			read_simple_expr_with_deref(_simple_expr_with_deref);
+		}
+
+		public void read_simple_expr_with_deref(simple_expr_with_deref _simple_expr_with_deref)
+		{
+			read_expression(_simple_expr_with_deref);
+			_simple_expr_with_deref.simple_expr = _read_node() as expression;
+			_simple_expr_with_deref.has_deref = br.ReadBoolean();
+		}
+
+
+		public void visit(index _index)
+		{
+			read_index(_index);
+		}
+
+		public void read_index(index _index)
+		{
+			read_expression(_index);
+			_index.index_expr = _read_node() as expression;
+			_index.inverted = br.ReadBoolean();
+		}
+
+
+		public void visit(array_const_new _array_const_new)
+		{
+			read_array_const_new(_array_const_new);
+		}
+
+		public void read_array_const_new(array_const_new _array_const_new)
+		{
+			read_expression(_array_const_new);
+			_array_const_new.elements = _read_node() as expression_list;
 		}
 
 	}

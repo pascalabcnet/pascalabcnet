@@ -5575,16 +5575,38 @@ namespace CodeCompletion
 
         public override void visit(diapason_expr_new _diapason_expr_new)
         {
-            /*_diapason_expr_new.left.visit(this);
-            TypeScope ts = TypeTable.get_compiled_type(new SymInfo("IEnumerable`1", SymbolKind.Type, "System.Collections.Generic.IEnumerable`1"), typeof(IEnumerable<>));
-            TypeScope elem_ts = returned_scope as TypeScope;
-            if (elem_ts != null)
-                ts = ts.GetInstance(new List<TypeScope>() { elem_ts });
-            returned_scope = ts;*/
             method_call mc = new method_call();
             mc.parameters = new expression_list(new List<expression> { _diapason_expr_new.left, _diapason_expr_new.right });
             mc.dereferencing_value = new dot_node(new ident("PABCSystem"), new ident("InternalRange"));
             mc.visit(this);
+        }
+
+        public override void visit(array_const_new acn)
+        {
+            TypeScope element_type = null;
+            List<TypeScope> element_types = new List<TypeScope>();
+            foreach (expression ex in acn.elements.expressions)
+            {
+                ex.visit(this);
+                if (returned_scope != null && returned_scope is TypeScope)
+                    element_types.Add(returned_scope as TypeScope);
+            }
+
+            element_type = element_types[0];
+            for (int i = 1; i < element_types.Count; i++)
+            {
+                if (element_type.IsConvertable(element_types[i], true))
+                    element_type = element_types[i];
+                else if (!element_types[i].IsConvertable(element_type, true))
+                {
+                    element_type = TypeTable.obj_type;
+                    break;
+                }
+            }
+
+            returned_scope = new ArrayScope(element_type,null);
+
+            cnst_val.prim_val = null;
         }
     }
 }

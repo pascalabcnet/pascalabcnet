@@ -58,6 +58,8 @@ namespace PascalABCCompiler.TreeConverter
                 initialValue = tmp;
             statements_list head_stmts = new statements_list(loopVariableLocation);
             convertion_data_and_alghoritms.statement_list_stack_push(head_stmts);
+
+            var early_init_loop_variable = false; // SSM 25/05/16
             if (_for_node.type_name == null && !_for_node.create_loop_variable)
             {
                 definition_node dn = context.check_name_node_type(_for_node.loop_variable.name, loopVariableLocation,
@@ -83,6 +85,7 @@ namespace PascalABCCompiler.TreeConverter
                     check_for_type_allowed(tn, get_location(_for_node.type_name));
                 vdn = context.add_var_definition(_for_node.loop_variable.name, get_location(_for_node.loop_variable), tn, initialValue/*, polymorphic_state.ps_common*/);
                 vdn.polymorphic_state = polymorphic_state.ps_common;
+                early_init_loop_variable = true; // SSM 25/05/16
             }
             internal_interface ii = vdn.type.get_internal_interface(internal_interface_kind.ordinal_interface);
             if (ii == null)
@@ -103,11 +106,14 @@ namespace PascalABCCompiler.TreeConverter
             res = find_operator(compiler_string_consts.assign_name, left, right, finishValueLocation);
             head_stmts.statements.AddElement(res);
 
-            left = create_variable_reference(vdn, loopVariableLocation);
-            right = initialValue;
-            res = find_operator(compiler_string_consts.assign_name, left, right, loopVariableLocation);
-            head_stmts.statements.AddElement(res);
-            
+            if (!early_init_loop_variable) // SSM 25/05/16 - for var i := f1() to f2() do без этой правки дважды вызывал f1()
+            {
+                left = create_variable_reference(vdn, loopVariableLocation);
+                right = initialValue;
+                res = find_operator(compiler_string_consts.assign_name, left, right, loopVariableLocation);
+                head_stmts.statements.AddElement(res);
+            }
+
 
             location initialValueLocation = get_location(_for_node.initial_value);
 

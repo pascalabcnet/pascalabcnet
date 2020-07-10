@@ -3188,6 +3188,13 @@ namespace CodeFormatters
                 visit_node(_slice_expr_question.step);
         }
 
+        public override void visit(index _index)
+        {
+            if (_index.inverted)
+                sb.Append("^");
+            visit_node(_index.index_expr);
+        }
+
         public override void visit(is_pattern_expr _is_pattern_expr)
         {
             if (_is_pattern_expr.left != null)
@@ -3404,6 +3411,14 @@ namespace CodeFormatters
                 visit_node(_if_expr_new.if_false);
             }
         }
+
+        public override void visit(array_const_new acn)
+        {
+            sb.Append("|");
+            visit_node(acn.elements);
+            //sb.Append("|");
+        }
+
         #endregion
     }
 }

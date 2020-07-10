@@ -6864,6 +6864,71 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(simple_expr_with_deref _simple_expr_with_deref)
+		{
+			bw.Write((Int16)251);
+			write_simple_expr_with_deref(_simple_expr_with_deref);
+		}
+
+		public void write_simple_expr_with_deref(simple_expr_with_deref _simple_expr_with_deref)
+		{
+			write_expression(_simple_expr_with_deref);
+			if (_simple_expr_with_deref.simple_expr == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_simple_expr_with_deref.simple_expr.visit(this);
+			}
+			bw.Write(_simple_expr_with_deref.has_deref);
+		}
+
+
+		public void visit(index _index)
+		{
+			bw.Write((Int16)252);
+			write_index(_index);
+		}
+
+		public void write_index(index _index)
+		{
+			write_expression(_index);
+			if (_index.index_expr == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_index.index_expr.visit(this);
+			}
+			bw.Write(_index.inverted);
+		}
+
+
+		public void visit(array_const_new _array_const_new)
+		{
+			bw.Write((Int16)253);
+			write_array_const_new(_array_const_new);
+		}
+
+		public void write_array_const_new(array_const_new _array_const_new)
+		{
+			write_expression(_array_const_new);
+			if (_array_const_new.elements == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_array_const_new.elements.visit(this);
+			}
+		}
+
 	}
 
 

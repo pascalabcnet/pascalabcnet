@@ -40,6 +40,9 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // tuple_node
             TupleVisitor.New.ProcessNode(root);
 
+            // index
+            IndexVisitor.New.ProcessNode(root);
+
             // assign_tuple и assign_var_tuple
             AssignTuplesDesugarVisitor.New.ProcessNode(root);
 

@@ -345,13 +345,15 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
-        public static bool is_derived(type_node base_class, type_node derived_class)
+        public static bool is_derived(type_node base_class, type_node derived_class, bool ignore_generic_instances=false)
         {
             if (derived_class == null)  //void?
                 return false;
             if (base_class == null)
                 return false;
             type_node tn = derived_class.base_type;
+            if (tn is compiled_generic_instance_type_node && ignore_generic_instances)
+                tn = tn.original_generic;
             //TODO: Проверить на ссылочный и размерный тип.
             if (derived_class.semantic_node_type == semantic_node_type.null_type_node)
                 if (is_with_nil_allowed(base_class) || base_class.IsPointer)
@@ -904,21 +906,22 @@ namespace PascalABCCompiler.TreeRealization
             wrapped_type ctn_to = to as wrapped_type;
             wrapped_type ctn_from = from as wrapped_type;
 
+            function_node fnode1 = null; // SSM вынес чтобы посмотреть значения 02.06.20
+            function_node fnode1_1 = null;
             if (ctn_to != null)
             {
-                function_node fnode1 = null;
                 fnode1 = ctn_to.get_implicit_conversion_from(from);
                 add_conversion(ret, fnode1, from, to);
                 if (ret.second != null)
                 {
                     return ret;
                 }
-                fnode1 = null;
+                fnode1_1 = null;
                 if (!is_implicit)
                 {
-                    fnode1 = ctn_to.get_explicit_conversion_from(from);
+                    fnode1_1 = ctn_to.get_explicit_conversion_from(from);
                 }
-                add_conversion(ret, fnode1, from, to);
+                add_conversion(ret, fnode1_1, from, to);
                 if (ret.second != null)
                 {
                     return ret;
@@ -931,14 +934,15 @@ namespace PascalABCCompiler.TreeRealization
                 add_conversion(ret, fnode2, from, to);
                 if (ret.second != null)
                 {
+                    var a = ret.first == ret.second;
                     return ret;
                 }
-                fnode2 = null;
+                function_node fnode2_1 = null;
                 if (!is_implicit)
                 {
-                    fnode2 = ctn_from.get_explicit_conversion_to(to);
+                    fnode2_1 = ctn_from.get_explicit_conversion_to(to);
                 }
-                add_conversion(ret, fnode2, from, to);
+                add_conversion(ret, fnode2_1, from, to);
                 if (ret.second != null)
                 {
                     return ret;

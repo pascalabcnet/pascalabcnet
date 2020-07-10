@@ -978,6 +978,183 @@ type
   {$endregion GPUCommand}
   
   {$region Buffer}
+
+  BufferCommandQueue = class;
+  Buffer = sealed class(IDisposable)
+    private memobj: cl_mem;
+    private sz: UIntPtr;
+    private _parent: Buffer;
+    
+    {$region constructor's}
+    
+    private constructor := raise new System.NotSupportedException;
+    
+    public constructor(size: UIntPtr) := self.sz := size;
+    public constructor(size: integer) := Create(new UIntPtr(size));
+    public constructor(size: int64)   := Create(new UIntPtr(size));
+    
+    public constructor(size: UIntPtr; c: Context);
+    begin
+      Create(size);
+      Init(c);
+    end;
+    public constructor(size: integer; c: Context) := Create(new UIntPtr(size), c);
+    public constructor(size: int64; c: Context)   := Create(new UIntPtr(size), c);
+    
+    public function SubBuff(offset, size: integer): Buffer; 
+    
+    public procedure Init(c: Context);
+    
+    public procedure Dispose :=
+    if self.memobj<>cl_mem.Zero then
+    begin
+      GC.RemoveMemoryPressure(Size64);
+      cl.ReleaseMemObject(memobj).RaiseIfError;
+      memobj := cl_mem.Zero;
+    end;
+    
+    protected procedure Finalize; override :=
+    self.Dispose;
+    
+    {$endregion constructor's}
+    
+    {$region property's}
+    
+    public property Size: UIntPtr read sz;
+    public property Size32: UInt32 read sz.ToUInt32;
+    public property Size64: UInt64 read sz.ToUInt64;
+    
+    public property Parent: Buffer read _parent;
+    
+    {$endregion property's}
+    
+    {$region Queue's}
+    
+    public function NewQueue: BufferCommandQueue;
+    
+    {$endregion Queue's}
+    
+    {$region Write}
+    
+    public function WriteData(ptr: CommandQueue<IntPtr>): Buffer;
+    public function WriteData(ptr: CommandQueue<IntPtr>; offset, len: CommandQueue<integer>): Buffer;
+    
+    public function WriteData(ptr: pointer) := WriteData(IntPtr(ptr));
+    public function WriteData(ptr: pointer; offset, len: CommandQueue<integer>) := WriteData(IntPtr(ptr), offset, len);
+    
+    
+    public function WriteArray(a: CommandQueue<&Array>): Buffer;
+    public function WriteArray(a: CommandQueue<&Array>; offset, len: CommandQueue<integer>): Buffer;
+    
+    public function WriteArray(a: &Array) := WriteArray(CommandQueue&<&Array>(a));
+    public function WriteArray(a: &Array; offset, len: CommandQueue<integer>) := WriteArray(CommandQueue&<&Array>(a), offset, len);
+    
+    
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] function WriteValue<TRecord>(val: TRecord; offset: CommandQueue<integer> := 0): Buffer; where TRecord: record;
+    begin Result := WriteData(@val, offset, Marshal.SizeOf&<TRecord>); end;
+    
+    public function WriteValue<TRecord>(val: CommandQueue<TRecord>; offset: CommandQueue<integer> := 0): Buffer; where TRecord: record;
+    
+    {$endregion Write}
+    
+    {$region Read}
+    
+    public function ReadData(ptr: CommandQueue<IntPtr>): Buffer;
+    public function ReadData(ptr: CommandQueue<IntPtr>; offset, len: CommandQueue<integer>): Buffer;
+    
+    public function ReadData(ptr: pointer) := ReadData(IntPtr(ptr));
+    public function ReadData(ptr: pointer; offset, len: CommandQueue<integer>) := ReadData(IntPtr(ptr), offset, len);
+    
+    public function ReadArray(a: CommandQueue<&Array>): Buffer;
+    public function ReadArray(a: CommandQueue<&Array>; offset, len: CommandQueue<integer>): Buffer;
+    
+    public function ReadArray(a: &Array) := ReadArray(CommandQueue&<&Array>(a));
+    public function ReadArray(a: &Array; offset, len: CommandQueue<integer>) := ReadArray(CommandQueue&<&Array>(a), offset, len);
+    
+    public function ReadValue<TRecord>(var val: TRecord; offset: CommandQueue<integer> := 0): Buffer; where TRecord: record;
+    begin
+      Result := ReadData(@val, offset, Marshal.SizeOf&<TRecord>);
+    end;
+    
+    {$endregion Read}
+    
+    {$region Fill}
+    
+    public function FillData(ptr: CommandQueue<IntPtr>; pattern_len: CommandQueue<integer>): Buffer;
+    public function FillData(ptr: CommandQueue<IntPtr>; pattern_len, offset, len: CommandQueue<integer>): Buffer;
+    
+    public function FillData(ptr: pointer; pattern_len: CommandQueue<integer>) := FillData(IntPtr(ptr), pattern_len);
+    public function FillData(ptr: pointer; pattern_len, offset, len: CommandQueue<integer>) := FillData(IntPtr(ptr), pattern_len, offset, len);
+    
+    public function FillArray(a: CommandQueue<&Array>): Buffer;
+    public function FillArray(a: CommandQueue<&Array>; offset, len: CommandQueue<integer>): Buffer;
+    
+    public function FillArray(a: &Array) := FillArray(CommandQueue&<&Array>(a));
+    public function FillArray(a: &Array; offset, len: CommandQueue<integer>) := FillArray(CommandQueue&<&Array>(a), offset, len);
+    
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] function FillValue<TRecord>(val: TRecord): Buffer; where TRecord: record;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] function FillValue<TRecord>(val: TRecord; offset, len: CommandQueue<integer>): Buffer; where TRecord: record;
+    
+    public function FillValue<TRecord>(val: CommandQueue<TRecord>): Buffer; where TRecord: record;
+    public function FillValue<TRecord>(val: CommandQueue<TRecord>; offset, len: CommandQueue<integer>): Buffer; where TRecord: record;
+    
+    {$endregion Fill}
+    
+    {$region Copy}
+    
+    public function CopyFrom(b: CommandQueue<Buffer>; from, &to, len: CommandQueue<integer>): Buffer;
+    public function CopyTo  (b: CommandQueue<Buffer>; from, &to, len: CommandQueue<integer>): Buffer;
+    
+    public function CopyFrom(b: CommandQueue<Buffer>): Buffer;
+    public function CopyTo  (b: CommandQueue<Buffer>): Buffer;
+    
+    {$endregion Copy}
+    
+    {$region Get}
+    
+    public function GetData(offset, len: CommandQueue<integer>): IntPtr;
+    public function GetData := GetData(0,integer(self.Size32));
+    
+    
+    
+    public function GetArrayAt<TArray>(offset: CommandQueue<integer>; szs: CommandQueue<array of integer>): TArray; where TArray: &Array;
+    public function GetArray<TArray>(szs: CommandQueue<array of integer>): TArray; where TArray: &Array;
+    begin Result := GetArrayAt&<TArray>(0, szs); end;
+    
+    public function GetArrayAt<TArray>(offset: CommandQueue<integer>; params szs: array of CommandQueue<integer>): TArray; where TArray: &Array;
+    public function GetArray<TArray>(params szs: array of integer): TArray; where TArray: &Array;
+    begin Result := GetArrayAt&<TArray>(0, CommandQueue&<array of integer>(szs)); end;
+    
+    
+    public function GetArray1At<TRecord>(offset, length: CommandQueue<integer>): array of TRecord; where TRecord: record;
+    begin Result := GetArrayAt&<array of TRecord>(offset, length); end;
+    public function GetArray1<TRecord>(length: CommandQueue<integer>): array of TRecord; where TRecord: record;
+    begin Result := GetArrayAt&<array of TRecord>(0,length); end;
+    
+    public function GetArray1<TRecord>: array of TRecord; where TRecord: record;
+    begin Result := GetArrayAt&<array of TRecord>(0, integer(sz.ToUInt32) div Marshal.SizeOf&<TRecord>); end;
+    
+    
+    public function GetArray2At<TRecord>(offset, length1, length2: CommandQueue<integer>): array[,] of TRecord; where TRecord: record;
+    begin Result := GetArrayAt&<array[,] of TRecord>(offset, length1, length2); end;
+    public function GetArray2<TRecord>(length1, length2: CommandQueue<integer>): array[,] of TRecord; where TRecord: record;
+    begin Result := GetArrayAt&<array[,] of TRecord>(0, length1, length2); end;
+    
+    
+    public function GetArray3At<TRecord>(offset, length1, length2, length3: CommandQueue<integer>): array[,,] of TRecord; where TRecord: record;
+    begin Result := GetArrayAt&<array[,,] of TRecord>(offset, length1, length2, length3); end;
+    public function GetArray3<TRecord>(length1, length2, length3: CommandQueue<integer>): array[,,] of TRecord; where TRecord: record;
+    begin Result := GetArrayAt&<array[,,] of TRecord>(0, length1, length2, length3); end;
+    
+    
+    
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] function GetValueAt<TRecord>(offset: CommandQueue<integer>): TRecord; where TRecord: record;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] function GetValue<TRecord>: TRecord; where TRecord: record;
+    begin Result := GetValueAt&<TRecord>(0); end;
+    
+    {$endregion Get}
+    
+  end;
   
   BufferCommandQueue = sealed class(__GPUCommandContainer<Buffer>)
     
@@ -1113,188 +1290,68 @@ type
     {$endregion Non-command add's}
     
   end;
+ 
+  {$endregion Buffer}
   
-  Buffer = sealed class(IDisposable)
-    private memobj: cl_mem;
-    private sz: UIntPtr;
-    private _parent: Buffer;
+  {$region Kernel}
+  KernelCommandQueue = class;
+  Kernel = sealed class
+    private _kernel: cl_kernel;
     
     {$region constructor's}
     
     private constructor := raise new System.NotSupportedException;
     
-    public constructor(size: UIntPtr) := self.sz := size;
-    public constructor(size: integer) := Create(new UIntPtr(size));
-    public constructor(size: int64)   := Create(new UIntPtr(size));
-    
-    public constructor(size: UIntPtr; c: Context);
-    begin
-      Create(size);
-      Init(c);
-    end;
-    public constructor(size: integer; c: Context) := Create(new UIntPtr(size), c);
-    public constructor(size: int64; c: Context)   := Create(new UIntPtr(size), c);
-    
-    public function SubBuff(offset, size: integer): Buffer; 
-    
-    public procedure Init(c: Context);
-    
-    public procedure Dispose :=
-    if self.memobj<>cl_mem.Zero then
-    begin
-      GC.RemoveMemoryPressure(Size64);
-      cl.ReleaseMemObject(memobj).RaiseIfError;
-      memobj := cl_mem.Zero;
-    end;
-    
-    protected procedure Finalize; override :=
-    self.Dispose;
+    public constructor(prog: ProgramCode; name: string);
     
     {$endregion constructor's}
     
-    {$region property's}
-    
-    public property Size: UIntPtr read sz;
-    public property Size32: UInt32 read sz.ToUInt32;
-    public property Size64: UInt64 read sz.ToUInt64;
-    
-    public property Parent: Buffer read _parent;
-    
-    {$endregion property's}
-    
     {$region Queue's}
     
-    public function NewQueue :=
-    new BufferCommandQueue(self);
+    public function NewQueue: KernelCommandQueue;
     
     {$endregion Queue's}
     
-    {$region Write}
+    {$region Exec}
     
-    public function WriteData(ptr: CommandQueue<IntPtr>): Buffer;
-    public function WriteData(ptr: CommandQueue<IntPtr>; offset, len: CommandQueue<integer>): Buffer;
+    public function Exec(work_szs: array of UIntPtr; params args: array of CommandQueue<Buffer>): Kernel;
+    public function Exec(work_szs: array of integer; params args: array of CommandQueue<Buffer>) :=
+    Exec(work_szs.ConvertAll(sz->new UIntPtr(sz)), args);
     
-    public function WriteData(ptr: pointer) := WriteData(IntPtr(ptr));
-    public function WriteData(ptr: pointer; offset, len: CommandQueue<integer>) := WriteData(IntPtr(ptr), offset, len);
+    public function Exec1(work_sz1: UIntPtr; params args: array of CommandQueue<Buffer>) := Exec(new UIntPtr[](work_sz1), args);
+    public function Exec1(work_sz1: integer; params args: array of CommandQueue<Buffer>) := Exec1(new UIntPtr(work_sz1), args);
     
+    public function Exec2(work_sz1, work_sz2: UIntPtr; params args: array of CommandQueue<Buffer>) := Exec(new UIntPtr[](work_sz1, work_sz2), args);
+    public function Exec2(work_sz1, work_sz2: integer; params args: array of CommandQueue<Buffer>) := Exec2(new UIntPtr(work_sz1), new UIntPtr(work_sz2), args);
     
-    public function WriteArray(a: CommandQueue<&Array>): Buffer;
-    public function WriteArray(a: CommandQueue<&Array>; offset, len: CommandQueue<integer>): Buffer;
-    
-    public function WriteArray(a: &Array) := WriteArray(CommandQueue&<&Array>(a));
-    public function WriteArray(a: &Array; offset, len: CommandQueue<integer>) := WriteArray(CommandQueue&<&Array>(a), offset, len);
-    
-    
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] function WriteValue<TRecord>(val: TRecord; offset: CommandQueue<integer> := 0): Buffer; where TRecord: record;
-    begin Result := WriteData(@val, offset, Marshal.SizeOf&<TRecord>); end;
-    
-    public function WriteValue<TRecord>(val: CommandQueue<TRecord>; offset: CommandQueue<integer> := 0): Buffer; where TRecord: record;
-    
-    {$endregion Write}
-    
-    {$region Read}
-    
-    public function ReadData(ptr: CommandQueue<IntPtr>): Buffer;
-    public function ReadData(ptr: CommandQueue<IntPtr>; offset, len: CommandQueue<integer>): Buffer;
-    
-    public function ReadData(ptr: pointer) := ReadData(IntPtr(ptr));
-    public function ReadData(ptr: pointer; offset, len: CommandQueue<integer>) := ReadData(IntPtr(ptr), offset, len);
-    
-    public function ReadArray(a: CommandQueue<&Array>): Buffer;
-    public function ReadArray(a: CommandQueue<&Array>; offset, len: CommandQueue<integer>): Buffer;
-    
-    public function ReadArray(a: &Array) := ReadArray(CommandQueue&<&Array>(a));
-    public function ReadArray(a: &Array; offset, len: CommandQueue<integer>) := ReadArray(CommandQueue&<&Array>(a), offset, len);
-    
-    public function ReadValue<TRecord>(var val: TRecord; offset: CommandQueue<integer> := 0): Buffer; where TRecord: record;
-    begin
-      Result := ReadData(@val, offset, Marshal.SizeOf&<TRecord>);
-    end;
-    
-    {$endregion Read}
-    
-    {$region Fill}
-    
-    public function FillData(ptr: CommandQueue<IntPtr>; pattern_len: CommandQueue<integer>): Buffer;
-    public function FillData(ptr: CommandQueue<IntPtr>; pattern_len, offset, len: CommandQueue<integer>): Buffer;
-    
-    public function FillData(ptr: pointer; pattern_len: CommandQueue<integer>) := FillData(IntPtr(ptr), pattern_len);
-    public function FillData(ptr: pointer; pattern_len, offset, len: CommandQueue<integer>) := FillData(IntPtr(ptr), pattern_len, offset, len);
-    
-    public function FillArray(a: CommandQueue<&Array>): Buffer;
-    public function FillArray(a: CommandQueue<&Array>; offset, len: CommandQueue<integer>): Buffer;
-    
-    public function FillArray(a: &Array) := FillArray(CommandQueue&<&Array>(a));
-    public function FillArray(a: &Array; offset, len: CommandQueue<integer>) := FillArray(CommandQueue&<&Array>(a), offset, len);
-    
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] function FillValue<TRecord>(val: TRecord): Buffer; where TRecord: record;
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] function FillValue<TRecord>(val: TRecord; offset, len: CommandQueue<integer>): Buffer; where TRecord: record;
-    
-    public function FillValue<TRecord>(val: CommandQueue<TRecord>): Buffer; where TRecord: record;
-    public function FillValue<TRecord>(val: CommandQueue<TRecord>; offset, len: CommandQueue<integer>): Buffer; where TRecord: record;
-    
-    {$endregion Fill}
-    
-    {$region Copy}
-    
-    public function CopyFrom(b: CommandQueue<Buffer>; from, &to, len: CommandQueue<integer>): Buffer;
-    public function CopyTo  (b: CommandQueue<Buffer>; from, &to, len: CommandQueue<integer>): Buffer;
-    
-    public function CopyFrom(b: CommandQueue<Buffer>): Buffer;
-    public function CopyTo  (b: CommandQueue<Buffer>): Buffer;
-    
-    {$endregion Copy}
-    
-    {$region Get}
-    
-    public function GetData(offset, len: CommandQueue<integer>): IntPtr;
-    public function GetData := GetData(0,integer(self.Size32));
+    public function Exec3(work_sz1, work_sz2, work_sz3: UIntPtr; params args: array of CommandQueue<Buffer>) := Exec(new UIntPtr[](work_sz1, work_sz2, work_sz3), args);
+    public function Exec3(work_sz1, work_sz2, work_sz3: integer; params args: array of CommandQueue<Buffer>) := Exec3(new UIntPtr(work_sz1), new UIntPtr(work_sz2), new UIntPtr(work_sz3), args);
     
     
+    public function Exec(work_szs: array of CommandQueue<UIntPtr>; params args: array of CommandQueue<Buffer>): Kernel;
+    public function Exec(work_szs: array of CommandQueue<integer>; params args: array of CommandQueue<Buffer>) :=
+    Exec(work_szs.ConvertAll(sz_q->sz_q.ThenConvert(sz->new UIntPtr(sz))), args);
     
-    public function GetArrayAt<TArray>(offset: CommandQueue<integer>; szs: CommandQueue<array of integer>): TArray; where TArray: &Array;
-    public function GetArray<TArray>(szs: CommandQueue<array of integer>): TArray; where TArray: &Array;
-    begin Result := GetArrayAt&<TArray>(0, szs); end;
+    public function Exec1(work_sz1: CommandQueue<UIntPtr>; params args: array of CommandQueue<Buffer>) := Exec(new CommandQueue<UIntPtr>[](work_sz1), args);
+    public function Exec1(work_sz1: CommandQueue<integer>; params args: array of CommandQueue<Buffer>) := Exec1(work_sz1.ThenConvert(sz->new UIntPtr(sz)), args);
     
-    public function GetArrayAt<TArray>(offset: CommandQueue<integer>; params szs: array of CommandQueue<integer>): TArray; where TArray: &Array;
-    public function GetArray<TArray>(params szs: array of integer): TArray; where TArray: &Array;
-    begin Result := GetArrayAt&<TArray>(0, CommandQueue&<array of integer>(szs)); end;
+    public function Exec2(work_sz1, work_sz2: CommandQueue<UIntPtr>; params args: array of CommandQueue<Buffer>) := Exec(new CommandQueue<UIntPtr>[](work_sz1, work_sz2), args);
+    public function Exec2(work_sz1, work_sz2: CommandQueue<integer>; params args: array of CommandQueue<Buffer>) := Exec2(work_sz1.ThenConvert(sz->new UIntPtr(sz)), work_sz2.ThenConvert(sz->new UIntPtr(sz)), args);
     
-    
-    public function GetArray1At<TRecord>(offset, length: CommandQueue<integer>): array of TRecord; where TRecord: record;
-    begin Result := GetArrayAt&<array of TRecord>(offset, length); end;
-    public function GetArray1<TRecord>(length: CommandQueue<integer>): array of TRecord; where TRecord: record;
-    begin Result := GetArrayAt&<array of TRecord>(0,length); end;
-    
-    public function GetArray1<TRecord>: array of TRecord; where TRecord: record;
-    begin Result := GetArrayAt&<array of TRecord>(0, integer(sz.ToUInt32) div Marshal.SizeOf&<TRecord>); end;
+    public function Exec3(work_sz1, work_sz2, work_sz3: CommandQueue<UIntPtr>; params args: array of CommandQueue<Buffer>) := Exec(new CommandQueue<UIntPtr>[](work_sz1, work_sz2, work_sz3), args);
+    public function Exec3(work_sz1, work_sz2, work_sz3: CommandQueue<integer>; params args: array of CommandQueue<Buffer>) := Exec3(work_sz1.ThenConvert(sz->new UIntPtr(sz)), work_sz2.ThenConvert(sz->new UIntPtr(sz)), work_sz3.ThenConvert(sz->new UIntPtr(sz)), args);
     
     
-    public function GetArray2At<TRecord>(offset, length1, length2: CommandQueue<integer>): array[,] of TRecord; where TRecord: record;
-    begin Result := GetArrayAt&<array[,] of TRecord>(offset, length1, length2); end;
-    public function GetArray2<TRecord>(length1, length2: CommandQueue<integer>): array[,] of TRecord; where TRecord: record;
-    begin Result := GetArrayAt&<array[,] of TRecord>(0, length1, length2); end;
+    public function Exec(work_szs: CommandQueue<array of UIntPtr>; params args: array of CommandQueue<Buffer>): Kernel;
+    public function Exec(work_szs: CommandQueue<array of integer>; params args: array of CommandQueue<Buffer>): Kernel;
     
+    {$endregion Exec}
     
-    public function GetArray3At<TRecord>(offset, length1, length2, length3: CommandQueue<integer>): array[,,] of TRecord; where TRecord: record;
-    begin Result := GetArrayAt&<array[,,] of TRecord>(offset, length1, length2, length3); end;
-    public function GetArray3<TRecord>(length1, length2, length3: CommandQueue<integer>): array[,,] of TRecord; where TRecord: record;
-    begin Result := GetArrayAt&<array[,,] of TRecord>(0, length1, length2, length3); end;
-    
-    
-    
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] function GetValueAt<TRecord>(offset: CommandQueue<integer>): TRecord; where TRecord: record;
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] function GetValue<TRecord>: TRecord; where TRecord: record;
-    begin Result := GetValueAt&<TRecord>(0); end;
-    
-    {$endregion Get}
+    protected procedure Finalize; override :=
+    cl.ReleaseKernel(self._kernel).RaiseIfError;
     
   end;
-  
-  {$endregion Buffer}
-  
-  {$region Kernel}
-  
+   
   KernelCommandQueue = sealed class(__GPUCommandContainer<Kernel>)
     
     {$region constructor's}
@@ -1386,64 +1443,7 @@ type
     
   end;
   
-  Kernel = sealed class
-    private _kernel: cl_kernel;
-    
-    {$region constructor's}
-    
-    private constructor := raise new System.NotSupportedException;
-    
-    public constructor(prog: ProgramCode; name: string);
-    
-    {$endregion constructor's}
-    
-    {$region Queue's}
-    
-    public function NewQueue :=
-    new KernelCommandQueue(self);
-    
-    {$endregion Queue's}
-    
-    {$region Exec}
-    
-    public function Exec(work_szs: array of UIntPtr; params args: array of CommandQueue<Buffer>): Kernel;
-    public function Exec(work_szs: array of integer; params args: array of CommandQueue<Buffer>) :=
-    Exec(work_szs.ConvertAll(sz->new UIntPtr(sz)), args);
-    
-    public function Exec1(work_sz1: UIntPtr; params args: array of CommandQueue<Buffer>) := Exec(new UIntPtr[](work_sz1), args);
-    public function Exec1(work_sz1: integer; params args: array of CommandQueue<Buffer>) := Exec1(new UIntPtr(work_sz1), args);
-    
-    public function Exec2(work_sz1, work_sz2: UIntPtr; params args: array of CommandQueue<Buffer>) := Exec(new UIntPtr[](work_sz1, work_sz2), args);
-    public function Exec2(work_sz1, work_sz2: integer; params args: array of CommandQueue<Buffer>) := Exec2(new UIntPtr(work_sz1), new UIntPtr(work_sz2), args);
-    
-    public function Exec3(work_sz1, work_sz2, work_sz3: UIntPtr; params args: array of CommandQueue<Buffer>) := Exec(new UIntPtr[](work_sz1, work_sz2, work_sz3), args);
-    public function Exec3(work_sz1, work_sz2, work_sz3: integer; params args: array of CommandQueue<Buffer>) := Exec3(new UIntPtr(work_sz1), new UIntPtr(work_sz2), new UIntPtr(work_sz3), args);
-    
-    
-    public function Exec(work_szs: array of CommandQueue<UIntPtr>; params args: array of CommandQueue<Buffer>): Kernel;
-    public function Exec(work_szs: array of CommandQueue<integer>; params args: array of CommandQueue<Buffer>) :=
-    Exec(work_szs.ConvertAll(sz_q->sz_q.ThenConvert(sz->new UIntPtr(sz))), args);
-    
-    public function Exec1(work_sz1: CommandQueue<UIntPtr>; params args: array of CommandQueue<Buffer>) := Exec(new CommandQueue<UIntPtr>[](work_sz1), args);
-    public function Exec1(work_sz1: CommandQueue<integer>; params args: array of CommandQueue<Buffer>) := Exec1(work_sz1.ThenConvert(sz->new UIntPtr(sz)), args);
-    
-    public function Exec2(work_sz1, work_sz2: CommandQueue<UIntPtr>; params args: array of CommandQueue<Buffer>) := Exec(new CommandQueue<UIntPtr>[](work_sz1, work_sz2), args);
-    public function Exec2(work_sz1, work_sz2: CommandQueue<integer>; params args: array of CommandQueue<Buffer>) := Exec2(work_sz1.ThenConvert(sz->new UIntPtr(sz)), work_sz2.ThenConvert(sz->new UIntPtr(sz)), args);
-    
-    public function Exec3(work_sz1, work_sz2, work_sz3: CommandQueue<UIntPtr>; params args: array of CommandQueue<Buffer>) := Exec(new CommandQueue<UIntPtr>[](work_sz1, work_sz2, work_sz3), args);
-    public function Exec3(work_sz1, work_sz2, work_sz3: CommandQueue<integer>; params args: array of CommandQueue<Buffer>) := Exec3(work_sz1.ThenConvert(sz->new UIntPtr(sz)), work_sz2.ThenConvert(sz->new UIntPtr(sz)), work_sz3.ThenConvert(sz->new UIntPtr(sz)), args);
-    
-    
-    public function Exec(work_szs: CommandQueue<array of UIntPtr>; params args: array of CommandQueue<Buffer>): Kernel;
-    public function Exec(work_szs: CommandQueue<array of integer>; params args: array of CommandQueue<Buffer>): Kernel;
-    
-    {$endregion Exec}
-    
-    protected procedure Finalize; override :=
-    cl.ReleaseKernel(self._kernel).RaiseIfError;
-    
-  end;
-  
+ 
   {$endregion Kernel}
   
   {$region Context}
@@ -1751,6 +1751,14 @@ function WaitForAny(params qs: array of CommandQueueBase): CommandQueueBase;
 {$endregion Сахарные подпрограммы}
 
 implementation
+
+
+function Buffer.NewQueue: BufferCommandQueue;
+begin
+  Result := new BufferCommandQueue(self);
+end; 
+
+function Kernel.NewQueue := new KernelCommandQueue(self);
 
 {$region Misc}
 
