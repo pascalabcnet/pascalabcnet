@@ -20,8 +20,8 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // FillParentNodeVisitor расположен в SyntaxTree/tree как базовый визитор, отвечающий за построение дерева
             //FillParentNodeVisitor.New.ProcessNode(root); // почему-то перепрошивает не всё. А следующий вызов - всё
             root.FillParentsInAllChilds();
-            // new range - до всего! До выноса выражения с лямбдой из foreach
-            NewRangeDesugarVisitor.New.ProcessNode(root);
+            // new range - до всего! До выноса выражения с лямбдой из foreach. 11.07 добавил поиск yields и присваивание pd.HasYield
+            NewRangeDesugarAndFindHasYieldVisitor.New.ProcessNode(root);
 
             // Unnamed Records перенёс сюда
             UnnamedRecordsCheckVisitor.New.ProcessNode(root);

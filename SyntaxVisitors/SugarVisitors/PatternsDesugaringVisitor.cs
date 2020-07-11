@@ -224,43 +224,49 @@ namespace SyntaxVisitors.SugarVisitors
 
             Debug.Assert(GetAscendant<statement_list>(isPatternExpr) != null, "Couldn't find statement list in upper nodes");
 
-            var l = new List<statement>();
-            //l.Add(stat);
-            var pp = isPatternExpr.right?.parameters;
-            if (pp != null)
+            syntax_tree_node stn = isPatternExpr;
+            while (stn != null && !(stn is procedure_definition) && !(stn is function_lambda_definition))
+                stn = stn.Parent;
+            if (stn is procedure_definition pd && pd.has_yield)
             {
-                foreach (var p in pp)
+                var l = new List<statement>();
+                var pp = isPatternExpr.right?.parameters;
+                if (pp != null)
                 {
-                    if (p is var_deconstructor_parameter vdp)
+                    foreach (var p in pp)
                     {
-                        var idClone = vdp.identifier.TypedClone();
-                        var idNew = vdp.identifier.TypedClone();
-                        idNew.name = GenerateNewName(idNew.name);
-                        var vs = new var_statement(idClone, idNew, idClone.source_context);
-                        vdp.identifier.name = idNew.name;
-                        l.Add(vs);
+                        if (p is var_deconstructor_parameter vdp)
+                        {
+                            var idClone = vdp.identifier.TypedClone();
+                            var idNew = vdp.identifier.TypedClone();
+                            idNew.name = GenerateNewName(idNew.name);
+                            var vs = new var_statement(idClone, idNew, idClone.source_context);
+                            vdp.identifier.name = idNew.name;
+                            l.Add(vs);
+                        }
                     }
+                }
+
+                var stat = GetAscendant<statement>(isPatternExpr);
+                if (stat is if_node ifn)
+                {
+                    //l.Add(ifn.then_body);
+                    if (!(ifn.then_body is statement_list))
+                    {
+                        ifn.then_body = new statement_list(ifn.then_body);
+                    }
+                    (ifn.then_body as statement_list).list.InsertRange(0, l);
+                }
+                else
+                {
+                    l.Insert(0, stat);
+                    foreach (var x in l)
+                        x.Parent = stat.Parent;
+                    var stl = stat.Parent as statement_list;
+                    stl.ReplaceInList(stat, l);
                 }
             }
 
-            var stat = GetAscendant<statement>(isPatternExpr);
-            if (stat is if_node ifn)
-            {
-                //l.Add(ifn.then_body);
-                if (!(ifn.then_body is statement_list))
-                {
-                    ifn.then_body = new statement_list(ifn.then_body);
-                }
-                (ifn.then_body as statement_list).list.InsertRange(0, l);
-            }
-            else
-            {
-                l.Insert(0, stat);
-                foreach (var x in l)
-                    x.Parent = stat.Parent;
-                var stl = stat.Parent as statement_list;
-                stl.ReplaceInList(stat, l);
-            }
 
             //ReplaceStatement(stat, l); // тут нельзя. 
 

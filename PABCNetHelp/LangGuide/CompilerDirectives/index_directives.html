@@ -26,6 +26,7 @@
 <param name="Keyword" value="region">
 <param name="Keyword" value="endregion">
 <param name="Keyword" value="string_nullbased">
+<param name="Keyword" value="platformtarget">
 </object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title>
@@ -77,6 +78,11 @@
 ссылочной семантикой. </p>
 <p><b>{$string_nullbased+}</b> - включение строк, индексируемых с 0.</p>
 <p><b>{$string_nullbased-}</b> - выключение строк, индексируемых с 0.</p>
+<p><strong>{$</strong><span class="highlight-strong"><strong>platformtarget</strong></span><strong> 
+x86}</strong> - компиляция для 32-битной платформы (требуется для подключения 
+32-битных dll)</p>
+<p><strong>{$</strong><span class="highlight-strong"><strong>platformtarget</strong></span><strong> 
+x64}</strong> - компиляция для 64-битной платформы</p>
 <p>Директивы <b>$ifdef</b>, <b>$ifndef</b> совместно с директивами <b>$else</b> 
 и <b>$endif</b> управлют условной компиляцией частей исходного файла. Каждой 
 директиве <b>$ifdef</b>, <b>$ifndef</b> должна соответствовать завершающая ее 
