@@ -5,8 +5,6 @@
 /// !! System unit
 unit PABCSystem;
 
-{$define PascalABC}
-
 {$gendoc true}
 
 // Default Application type
