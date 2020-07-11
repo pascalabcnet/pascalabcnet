@@ -227,7 +227,7 @@ namespace SyntaxVisitors.SugarVisitors
             syntax_tree_node stn = isPatternExpr;
             while (stn != null && !(stn is procedure_definition) && !(stn is function_lambda_definition))
                 stn = stn.Parent;
-            if (stn is procedure_definition pd && pd.has_yield)
+            if (stn is procedure_definition pd && pd.has_yield) // SSM 11/07/20 Надо сделать обход с переименованием!!! Сейчас and не работает в yield + ... is A(var a1)
             {
                 var l = new List<statement>();
                 var pp = isPatternExpr.right?.parameters;
