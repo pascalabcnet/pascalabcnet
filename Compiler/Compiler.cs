@@ -163,7 +163,7 @@ using Microsoft.Scripting;
 using System.Reflection;
 //using SyntaxTreeChanger;
 using PascalABCCompiler.SyntaxTreeConverters;
-
+using System.Text;
 
 namespace PascalABCCompiler
 {
@@ -407,19 +407,11 @@ namespace PascalABCCompiler
 
 		//private SemanticTree.compilation_unitArrayList _interfaceUsedUnits=new SemanticTree.compilation_unitArrayList();
 
-        private PascalABCCompiler.TreeRealization.unit_node_list _interfaceUsedUnits = new PascalABCCompiler.TreeRealization.unit_node_list();
-        public PascalABCCompiler.TreeRealization.unit_node_list InterfaceUsedUnits
-		{
-			get {return _interfaceUsedUnits;}
-		}
+        public PascalABCCompiler.TreeRealization.unit_node_list InterfaceUsedUnits { get; } = new PascalABCCompiler.TreeRealization.unit_node_list();
 
-        private PascalABCCompiler.TreeRealization.unit_node_list _implementationUsedUnits = new PascalABCCompiler.TreeRealization.unit_node_list();
-        public PascalABCCompiler.TreeRealization.unit_node_list ImplementationUsedUnits
-		{
-			get {return _implementationUsedUnits;}
-		}
+        public PascalABCCompiler.TreeRealization.unit_node_list ImplementationUsedUnits { get; } = new PascalABCCompiler.TreeRealization.unit_node_list();
 
-		private SyntaxTree.compilation_unit _syntaxTree=null;
+        private SyntaxTree.compilation_unit _syntaxTree=null;
 		public SyntaxTree.compilation_unit SyntaxTree
 		{
 			get {return _syntaxTree;}
@@ -2497,7 +2489,7 @@ namespace PascalABCCompiler
             return null;
         }
 
-        private static string CombinePath(string dir, string path)
+        public static string CombinePath(string dir, string path)
         {
             if (Path.IsPathRooted(path)) return path;
             int i = 0;
@@ -3100,7 +3092,7 @@ namespace PascalABCCompiler
             if (CurrentUnit != null)
                 if (CurrentUnit.State != UnitState.BeginCompilation || CurrentUnit.SemanticTree != null)  //ИЗБАВИТЬСЯ ОТ ВТОРОГО УСЛОВИЯ
                 {
-                    Units.AddElement(CurrentUnit.SemanticTree);
+                    Units.AddElement(CurrentUnit.SemanticTree, SyntaxUsesUnit.UsesPath());
                     Units.AddRange(GetReferences(CurrentUnit));
                     return CurrentUnit;
                 }
@@ -3111,7 +3103,7 @@ namespace PascalABCCompiler
                     if (UnitTable.Count == 0) throw new ProgramModuleExpected(UnitName, null);
                     if ((CurrentUnit = ReadDLL(UnitName)) != null)
                     {
-                        Units.AddElement(CurrentUnit.SemanticTree);
+                        Units.AddElement(CurrentUnit.SemanticTree, SyntaxUsesUnit.UsesPath());
                         UnitTable[UnitName] = CurrentUnit;
                         return CurrentUnit;
                     }
@@ -3128,7 +3120,7 @@ namespace PascalABCCompiler
                     {
                         if ((CurrentUnit = ReadPCU(UnitName)) != null)
                         {
-                            Units.AddElement(CurrentUnit.SemanticTree);
+                            Units.AddElement(CurrentUnit.SemanticTree, SyntaxUsesUnit.UsesPath());
                             Units.AddRange(GetReferences(CurrentUnit));
                             UnitTable[UnitName] = CurrentUnit;
                             return CurrentUnit;
@@ -3307,7 +3299,7 @@ namespace PascalABCCompiler
                         CompileUnit(CurrentUnit.InterfaceUsedUnits, SyntaxUsesList[i], curr_path);
                         if (CurrentUnit.State == UnitState.Compiled)
                         {
-                            Units.AddElement(CurrentUnit.SemanticTree);
+                            Units.AddElement(CurrentUnit.SemanticTree, SyntaxUsesUnit.UsesPath());
                             Units.AddRange(References);
                             return CurrentUnit;
                         }
@@ -3355,7 +3347,7 @@ namespace PascalABCCompiler
             CurrentUnit.State = UnitState.InterfaceCompiled;
             if (Units != null)
             {
-                Units.AddElement(CurrentUnit.SemanticTree);
+                Units.AddElement(CurrentUnit.SemanticTree, SyntaxUsesUnit.UsesPath());
                 Units.AddRange(References);
             }
             SyntaxUsesList = GetSyntaxImplementationUsesList(CurrentUnit.SyntaxTree);

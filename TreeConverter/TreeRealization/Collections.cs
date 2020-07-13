@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
-
+using System.Collections.Generic;
 using PascalABCCompiler.Collections;
 
 namespace PascalABCCompiler.TreeRealization
@@ -105,6 +105,14 @@ namespace PascalABCCompiler.TreeRealization
     [Serializable]
     public class unit_node_list : extended_collection<unit_node>
     {
+        public Dictionary<unit_node, string> unit_uses_paths = new Dictionary<unit_node, string>();
+
+        public void AddElement(unit_node unit, string unit_uses_path)
+        {
+            base.AddElement(unit);
+            unit_uses_paths.Add(unit, unit_uses_path);
+        }
+
     }
 
     /// <summary>
