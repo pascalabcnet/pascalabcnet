@@ -2446,14 +2446,11 @@ namespace PascalABCCompiler
 
             if (string.IsNullOrEmpty(ext))
                 fname += CompilerOptions.CompiledUnitExtension;
-            else if (ext != CompilerOptions.CompiledUnitExtension)
-                // Чтоб "uses u in 'u.pas';" видело и "u.pcu" тоже
-                fname = Path.ChangeExtension(fname, CompilerOptions.CompiledUnitExtension);
 
             if (PCUFileNamesDictionary.ContainsKey(Tuple.Create(fname,curr_path)))
                 return PCUFileNamesDictionary[Tuple.Create(fname, curr_path)];
 
-            string res = FindFileInDirs(fname, CompilerOptions.OutputDirectory, curr_path, CompilerOptions.SearchDirectory);
+            string res = FindFileInDirs(fname, curr_path, CompilerOptions.SearchDirectory) ?? FindFileInDirs(Path.GetFileName(fname), CompilerOptions.OutputDirectory);
 
             PCUFileNamesDictionary[Tuple.Create(fname, curr_path)] = res;
             return res;
@@ -3115,7 +3112,6 @@ namespace PascalABCCompiler
                 if (File.Exists(UnitName))
                 {
                     if (UnitTable.Count == 0) throw new ProgramModuleExpected(UnitName, null);
-                    string SourceFileName = FindSourceFileName(Path.GetFileNameWithoutExtension(UnitName), Path.GetDirectoryName(UnitName));
                     try
                     {
                         if ((CurrentUnit = ReadPCU(UnitName)) != null)
@@ -3142,6 +3138,7 @@ namespace PascalABCCompiler
                             throw new Errors.CompilerInternalError("PCUReader", e);
 #endif
                     }
+                    string SourceFileName = FindSourceFileName(Path.ChangeExtension(UnitName, null), null);
                     if (SourceFileName == null)
                         throw new ReadPCUError(UnitName);
                     else
@@ -3755,12 +3752,15 @@ namespace PascalABCCompiler
                 return null;
             return cu;
         }*/
-        public bool NeedRecompiled(string name, string dir, string[] included, PCUReader pr)
+        public bool NeedRecompiled(string pcu_name, string[] included, PCUReader pr)
         {
-            string pas_name = FindSourceFileName(name, dir);
-            string pcu_name = FindPCUFileName(name, dir);
+            if (!Path.IsPathRooted(pcu_name)) throw new InvalidOperationException();
+            string pas_name = FindSourceFileName(Path.ChangeExtension(pcu_name, null), null);
+            var dir = Path.GetDirectoryName(pcu_name);
+
             if (UnitTable[pas_name] != null)
                 return true;
+
             bool need = false;
             for (int i = 0; i < included.Length; i++)
             {
@@ -3772,19 +3772,25 @@ namespace PascalABCCompiler
                     return true;
                 if (!File.Exists(pcu_name2))
                 {
-                    need = true; RecompileList[name] = name;
-                    RecompileList[included[i]] = included[i];
+                    need = true;
+                    RecompileList[pcu_name] = pcu_name;
+                    RecompileList[pcu_name2] = pcu_name2;
                 }
-                else
-                    if (SourceFileExists(pas_name2) && File.GetLastWriteTime(pcu_name2) <= SourceFileGetLastWriteTime(pas_name2))
-                    {
-                        need = true; CycleUnits[name] = name; RecompileList[name] = name;
-                        RecompileList[included[i]] = included[i];
-                    }
+                else if (SourceFileExists(pas_name2) && File.GetLastWriteTime(pcu_name2) < SourceFileGetLastWriteTime(pas_name2))
+                {
+                    need = true;
+                    CycleUnits[pcu_name] = pcu_name;
+                    RecompileList[pcu_name] = pcu_name;
+                    RecompileList[pcu_name2] = pcu_name2;
+                }
             }
             if (need) return true;
+
             if (!SourceFileExists(pas_name)) return false;
-            if (!File.Exists(pcu_name)) return true;
+
+            // NeedRecompiled вызывается уже после успешного прочтения заголовка модуля (иначе откуда included)
+            //if (!File.Exists(pcu_name)) return true;
+
             if (File.GetLastWriteTime(pcu_name) < SourceFileGetLastWriteTime(pas_name)) return true;
             //Console.WriteLine("{0} {1}",name,RecompileList.Count);
             for (int i = 0; i < included.Length; i++)
@@ -3794,10 +3800,10 @@ namespace PascalABCCompiler
                 
                 if ((File.Exists(pcu_name2) && File.GetLastWriteTime(pcu_name) < File.GetLastWriteTime(pcu_name2) && !pr.AlreadyCompiled(pcu_name2)))
                 {
-                    pr.AddAlreadyCompiledUnit(included[i]);
+                    pr.AddAlreadyCompiledUnit(pcu_name2);
                     return true;
                 }
-                if (RecompileList.ContainsKey(included[i]))
+                if (RecompileList.ContainsKey(pcu_name2))
                 {
                     return true;
                 }

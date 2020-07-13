@@ -225,8 +225,6 @@ namespace PascalABCCompiler.PCU
 
         public string GetFullUnitName(string UnitName)
         {
-            if (Path.GetExtension(UnitName) != comp.CompilerOptions.CompiledUnitExtension)
-                UnitName = Path.ChangeExtension(UnitName, comp.CompilerOptions.CompiledUnitExtension);
 
             var FullUnitName = comp.FindPCUFileName(UnitName, dir);
             if (FullUnitName == null) throw new FileNotFound(UnitName, null);
@@ -334,10 +332,10 @@ namespace PascalABCCompiler.PCU
                 need = true;
                 return need;
             }*/
-            if (comp.NeedRecompiled(unit_name, Path.GetDirectoryName(FileName), pcu_file.incl_modules,this))
+            if (comp.NeedRecompiled(FileName, pcu_file.incl_modules, this))
             {
                 //comp.RecompileList.Add(unit_name,unit_name);
-                comp.RecompileList[unit_name] = unit_name;
+                comp.RecompileList[FileName] = FileName;
                 need = true; 
                 return need;
             }
