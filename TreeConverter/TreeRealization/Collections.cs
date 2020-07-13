@@ -109,6 +109,7 @@ namespace PascalABCCompiler.TreeRealization
 
         public void AddElement(unit_node unit, string unit_uses_path)
         {
+            if (unit_uses_paths.ContainsKey(unit)) return;
             base.AddElement(unit);
             unit_uses_paths.Add(unit, unit_uses_path);
         }

@@ -225,10 +225,17 @@ namespace PascalABCCompiler.PCU
 
         public string GetFullUnitName(string UnitName)
         {
-            UnitName = Compiler.CombinePath(dir, UnitName);
             if (Path.GetExtension(UnitName) != comp.CompilerOptions.CompiledUnitExtension)
                 UnitName = Path.ChangeExtension(UnitName, comp.CompilerOptions.CompiledUnitExtension);
-            return UnitName;
+
+            var FullUnitName = Compiler.CombinePath(dir, UnitName);
+            if (!File.Exists(FullUnitName))
+            {
+                FullUnitName = Compiler.CombinePath(comp.CompilerOptions.SearchDirectory, UnitName);
+                if (!File.Exists(FullUnitName)) throw new FileNotFound(UnitName, null);
+            }
+
+            return FullUnitName;
         }
 
         //десериализация модуля

@@ -1016,9 +1016,7 @@ namespace PascalABCCompiler.PCU
             var c2 = unit.ImplementationUsedUnits.unit_uses_paths.Count;
             pcu_file.interface_uses_count = c1;
 
-            pcu_file.incl_modules = new string[c1 + c2];
-            var i = 0;
-
+            var incl_modules = new List<string>(c1 + c2);
             foreach (var used_unit in unit.InterfaceUsedUnits.OfType<common_unit_node>())
             {
                 // каждый модуль, зачем то, подключён сам к себе
@@ -1029,22 +1027,21 @@ namespace PascalABCCompiler.PCU
                 // и сразу стояла эта проверка. Если будет тут вылетать - наверное надо заменить throw на continue
                 if (used_unit.namespaces.Count == 0) throw new InvalidOperationException();
 
-                this.used_units.Add(used_unit, this.used_units.Count);
-                pcu_file.incl_modules[i] = unit.InterfaceUsedUnits.unit_uses_paths[used_unit];
+                this.used_units.Add(used_unit, used_units.Count);
+                incl_modules.Add(unit.InterfaceUsedUnits.unit_uses_paths[used_unit]);
 
-                i++;
             }
             foreach (var used_unit in unit.ImplementationUsedUnits.OfType<common_unit_node>())
             {
-                // раньше вместо пути модуля - брало имя его первого пространства имён
-                // и сразу стояла эта проверка. Если будет тут вылетать - наверное надо заменить throw на continue
+                if (unit.SemanticTree == used_unit) continue;
+                if (used_units.ContainsKey(used_unit)) continue; //AddIndirectImplementationUsedUnits может добавить модуль из uses из interface
                 if (used_unit.namespaces.Count == 0) throw new InvalidOperationException();
 
-                this.used_units.Add(used_unit, this.used_units.Count);
-                pcu_file.incl_modules[i] = unit.ImplementationUsedUnits.unit_uses_paths[used_unit];
+                this.used_units.Add(used_unit, used_units.Count);
+                incl_modules.Add(unit.ImplementationUsedUnits.unit_uses_paths[used_unit]);
 
-                i++;
             }
+            pcu_file.incl_modules = incl_modules.ToArray();
 
             pcu_file.used_namespaces = cun.used_namespaces.ToArray();
 		}
