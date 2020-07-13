@@ -228,12 +228,8 @@ namespace PascalABCCompiler.PCU
             if (Path.GetExtension(UnitName) != comp.CompilerOptions.CompiledUnitExtension)
                 UnitName = Path.ChangeExtension(UnitName, comp.CompilerOptions.CompiledUnitExtension);
 
-            var FullUnitName = Compiler.CombinePath(dir, UnitName);
-            if (!File.Exists(FullUnitName))
-            {
-                FullUnitName = Compiler.CombinePath(comp.CompilerOptions.SearchDirectory, UnitName);
-                if (!File.Exists(FullUnitName)) throw new FileNotFound(UnitName, null);
-            }
+            var FullUnitName = comp.FindPCUFileName(UnitName, dir);
+            if (FullUnitName == null) throw new FileNotFound(UnitName, null);
 
             return FullUnitName;
         }
