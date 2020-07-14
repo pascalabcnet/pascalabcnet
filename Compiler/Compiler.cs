@@ -2442,15 +2442,17 @@ namespace PascalABCCompiler
         
         public string FindPCUFileName(string fname, string curr_path)
         {
-            var ext = Path.GetExtension(fname);
 
-            if (string.IsNullOrEmpty(ext))
+            if (string.IsNullOrEmpty(Path.GetExtension(fname)))
                 fname += CompilerOptions.CompiledUnitExtension;
 
             if (PCUFileNamesDictionary.ContainsKey(Tuple.Create(fname,curr_path)))
                 return PCUFileNamesDictionary[Tuple.Create(fname, curr_path)];
 
-            string res = FindFileInDirs(fname, curr_path, CompilerOptions.SearchDirectory) ?? FindFileInDirs(Path.GetFileName(fname), CompilerOptions.OutputDirectory);
+            string res =
+                FindFileInDirs(fname, curr_path) ??
+                FindFileInDirs(Path.GetFileName(fname), CompilerOptions.OutputDirectory) ??
+                FindFileInDirs(fname, CompilerOptions.SearchDirectory);
 
             PCUFileNamesDictionary[Tuple.Create(fname, curr_path)] = res;
             return res;
@@ -2603,8 +2605,8 @@ namespace PascalABCCompiler
 
             }
 
-            var SourceFileExists = SourceFileName!=null && File.Exists(SourceFileName);
-            var PCUFileExists = !CompilerOptions.Rebuild && PCUFileName !=null && File.Exists(PCUFileName);
+            var SourceFileExists = SourceFileName != null;
+            var PCUFileExists = !CompilerOptions.Rebuild && PCUFileName != null;
 
             if (!PCUFileExists && !SourceFileExists)
                 throw new UnitNotFound(CurrentCompilationUnit.SyntaxTree.file_name, UnitName, SyntaxUsesUnit.source_context);
@@ -2612,7 +2614,7 @@ namespace PascalABCCompiler
             if (PCUFileExists && SourceFileExists)
             {
 
-                if (CompilerOptions.Rebuild && !RecompileList.ContainsKey(UnitName))
+                if (CompilerOptions.Rebuild && !RecompileList.ContainsKey(PCUFileName))
                     PCUFileExists = false;
 
                 else if (File.GetLastWriteTime(PCUFileName) < File.GetLastWriteTime(SourceFileName))
