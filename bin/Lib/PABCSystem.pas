@@ -4625,7 +4625,8 @@ end;
 function Arr<T>(params a: array of T): array of T;
 begin
   Result := new T[a.Length];
-  System.Array.Copy(a, Result, a.Length);
+  if a.Length > 0 then
+    System.Array.Copy(a, Result, a.Length);
 end;
 
 function Arr<T>(a: sequence of T): array of T;
