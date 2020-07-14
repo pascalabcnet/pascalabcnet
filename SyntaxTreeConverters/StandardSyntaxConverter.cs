@@ -78,7 +78,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             cv.ProcessNode(root);
             cv.Output(@"Light1.txt");*/
 
-            /*try
+            try
             {
                 root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz1.txt"));
             }
@@ -86,7 +86,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             {
 
                 System.IO.File.AppendAllText(@"d:\\zzz1.txt",e.Message);
-            }*/
+            }
 
 
 #endif

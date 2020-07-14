@@ -1871,6 +1871,7 @@ namespace PascalABCCompiler.SyntaxTree
     public partial class semantic_check_sugared_statement_node
     {
         public bool visited = false;
+        public override string ToString() => "semantic_check_sugared(" + string.Join(", ",lst) + ")";
     }
 
     public partial class var_deconstructor_parameter

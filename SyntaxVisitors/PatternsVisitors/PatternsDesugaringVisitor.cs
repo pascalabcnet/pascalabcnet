@@ -99,7 +99,7 @@ namespace SyntaxVisitors.PatternsVisitors
         private int generalVariableCounter = 0;
         private int successVariableCounter = 0;
         private int labelVariableCounter = 0;
-        private int deconstructParamVariableCounter = 0;
+        private static int deconstructParamVariableCounter = 0;
         private int matchExprVariableCounter = 0;
 
         private if_node _previousIf;
@@ -207,6 +207,7 @@ namespace SyntaxVisitors.PatternsVisitors
             // Замена выражения match with на новое несахарное поддерево и его обход
             ReplaceUsingParent(matchWith, desugaredMatchWith);
             visit(desugaredMatchWith);
+            typeChecks.Clear(); // SSM исправление ошибки #2276
         }
 
         private int num = 0;
@@ -246,29 +247,32 @@ namespace SyntaxVisitors.PatternsVisitors
             //    stn = stn.Parent;
             //if (stn is procedure_definition pd && pd.has_yield) // SSM 11/07/20 Надо сделать обход с переименованием!!! Сейчас and не работает в yield + ... is A(var a1)
             //{
+            // SSM 14/07/20
             var dict = new Dictionary<string, StrBool>(StringComparer.InvariantCultureIgnoreCase); // bool - надо ли начинать renaming
-                var l = new List<statement>();
-                var pp = isPatternExpr.right?.parameters;
-                if (pp != null)
+
+            var l = new List<statement>();
+            var pp = isPatternExpr.right?.parameters;
+            if (pp != null)
+            {
+                foreach (var p in pp)
                 {
-                    foreach (var p in pp)
+                    if (p is var_deconstructor_parameter vdp)
                     {
-                        if (p is var_deconstructor_parameter vdp)
-                        {
-                            var idClone = vdp.identifier.TypedClone();
-                            var idNew = vdp.identifier.TypedClone();
-                            idNew.name = GenerateNewName(idNew.name);
-                            var vs = new var_statement(idClone, idNew, idClone.source_context);
-                            // проверять, что имя не начинается с $ и если начинается, то ошибка - уже переименовывали такое же!
-                            if (vdp.identifier.name.StartsWith("$"))
-                                throw new SyntaxVisitorError("Повторное объявление", vdp.identifier.source_context);
-                            dict.Add(vdp.identifier.name, new StrBool(idNew.name,false));
-                            //vdp.identifier.name = idNew.name; // в следующем цикле переименую
-                            l.Add(vs);
-                        }
+                        var idClone = vdp.identifier.TypedClone();
+                        var idNew = vdp.identifier.TypedClone();
+                        idNew.name = GenerateNewName(idNew.name);
+                        var vs = new var_statement(idClone, idNew, idClone.source_context);
+                        // проверять, что имя не начинается с $ и если начинается, то ошибка - уже переименовывали такое же!
+                        if (vdp.identifier.name.StartsWith("$")) // SSM 14/07/20
+                            throw new SyntaxVisitorError("Повторное объявление", vdp.identifier.source_context);
+                        dict.Add(vdp.identifier.name, new StrBool(idNew.name,false));
+                        //vdp.identifier.name = idNew.name; // в следующем цикле переименую
+                        l.Add(vs);
                     }
                 }
+            }
 
+            // SSM 14/07/20
             // подниматься пока выражение
             syntax_tree_node ex = isPatternExpr;
             syntax_tree_node ex1 = ex;
@@ -307,24 +311,24 @@ namespace SyntaxVisitors.PatternsVisitors
             }
 
 
-                var stat = GetAscendant<statement>(isPatternExpr);
-                if (stat is if_node ifn)
+            var stat = GetAscendant<statement>(isPatternExpr);
+            if (stat is if_node ifn)
+            {
+                //l.Add(ifn.then_body);
+                if (!(ifn.then_body is statement_list))
                 {
-                    //l.Add(ifn.then_body);
-                    if (!(ifn.then_body is statement_list))
-                    {
-                        ifn.then_body = new statement_list(ifn.then_body);
-                    }
-                    (ifn.then_body as statement_list).list.InsertRange(0, l);
+                    ifn.then_body = new statement_list(ifn.then_body);
                 }
-                else
-                {
-                    l.Insert(0, stat);
-                    foreach (var x in l)
-                        x.Parent = stat.Parent;
-                    var stl = stat.Parent as statement_list;
-                    stl.ReplaceInList(stat, l);
-                }
+                (ifn.then_body as statement_list).list.InsertRange(0, l);
+            }
+            else
+            {
+                l.Insert(0, stat);
+                foreach (var x in l)
+                    x.Parent = stat.Parent;
+                var stl = stat.Parent as statement_list;
+                stl.ReplaceInList(stat, l);
+            }
             //}
 
 
@@ -920,17 +924,24 @@ namespace SyntaxVisitors.PatternsVisitors
         }
 
         private semantic_check_sugared_statement_node GetMatchedExpressionCheck(expression matchedExpression)
-        => new semantic_check_sugared_statement_node(SemanticCheckType.MatchedExpression, new List<syntax_tree_node>() { matchedExpression });
+        {
+            return new semantic_check_sugared_statement_node(SemanticCheckType.MatchedExpression, new List<syntax_tree_node>() { matchedExpression });
+        }
 
-        private semantic_check_sugared_statement_node GetTypeCompatibilityCheck(is_pattern_expr expression) =>
-            new semantic_check_sugared_statement_node(SemanticCheckType.MatchedExpressionAndType, new List<syntax_tree_node>() { expression.left, (expression.right as deconstructor_pattern).type });
+        private semantic_check_sugared_statement_node GetTypeCompatibilityCheck(is_pattern_expr expression)
+        {
+            return new semantic_check_sugared_statement_node(SemanticCheckType.MatchedExpressionAndType, new List<syntax_tree_node>() { expression.left, (expression.right as deconstructor_pattern).type });
+        }
 
-        private semantic_check_sugared_statement_node GetTypeCompatibilityCheck(expression expression1, expression expression2) =>
-            new semantic_check_sugared_statement_node(SemanticCheckType.MatchedExpressionAndExpression, new List<syntax_tree_node>() { expression1, expression2 });
+        private semantic_check_sugared_statement_node GetTypeCompatibilityCheck(expression expression1, expression expression2)
+        {
+            return new semantic_check_sugared_statement_node(SemanticCheckType.MatchedExpressionAndExpression, new List<syntax_tree_node>() { expression1, expression2 });
+        }
 
-        private semantic_check_sugared_statement_node GetTypeCompatibilityCheck(expression tuple, int32_const length) =>
-            new semantic_check_sugared_statement_node(SemanticCheckType.MatchedTuple, new List<syntax_tree_node>() { tuple, length });
-
+        private semantic_check_sugared_statement_node GetTypeCompatibilityCheck(expression tuple, int32_const length)
+        {
+            return new semantic_check_sugared_statement_node(SemanticCheckType.MatchedTuple, new List<syntax_tree_node>() { tuple, length });
+        }
         private bool IsNestedIfWithExtendedIs(if_node ifNode)
         {
             var parent = ifNode.Parent;
