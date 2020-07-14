@@ -8,6 +8,7 @@ using PascalABCCompiler.SyntaxTree;
 using SyntaxVisitors;
 using SyntaxVisitors.SugarVisitors;
 using SyntaxVisitors.CheckingVisitors;
+using SyntaxVisitors.PatternsVisitors;
 
 namespace PascalABCCompiler.SyntaxTreeConverters
 {

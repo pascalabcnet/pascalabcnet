@@ -52,6 +52,7 @@
     <Compile Include="LightSymInfoVisitors\SymInfoCollect1Helper.cs" />
     <Compile Include="PatternsVisitors\ExtendedIsDesugaringVisitor.cs" />
     <Compile Include="PatternsVisitors\PatternsDesugaringVisitor.cs" />
+    <Compile Include="PatternsVisitors\ReplaceNamesInIsVarVisitor.cs" />
     <Compile Include="PatternsVisitors\SingleDeconstructChecker.cs" />
     <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\DoubleQuestionDesugarVisitor.cs" />

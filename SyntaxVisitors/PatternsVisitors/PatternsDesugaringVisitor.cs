@@ -7,7 +7,7 @@ using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.TreeConversion;
 using PascalABCCompiler.TreeConverter;
 
-namespace SyntaxVisitors.SugarVisitors
+namespace SyntaxVisitors.PatternsVisitors
 {
     // Patterns
 
@@ -217,6 +217,23 @@ namespace SyntaxVisitors.SugarVisitors
             return "$RenIsVarYield" + num + "$" + name;
         }
 
+        public override void visit(procedure_definition pd)
+        {
+            //ReplaceNamesInIsVarVisitor.New.ProcessNode(pd);
+            base.visit(pd);
+        }
+
+        public class StrBool
+        {
+            public string name;
+            public bool needtorename;
+            public StrBool(string name, bool b = false)
+            {
+                this.name = name;
+                this.needtorename = b;
+            }
+        }
+
         public override void visit(is_pattern_expr isPatternExpr)
         {
             if (GetLocation(isPatternExpr) == PatternLocation.Unknown)
@@ -224,11 +241,12 @@ namespace SyntaxVisitors.SugarVisitors
 
             Debug.Assert(GetAscendant<statement_list>(isPatternExpr) != null, "Couldn't find statement list in upper nodes");
 
-            syntax_tree_node stn = isPatternExpr;
-            while (stn != null && !(stn is procedure_definition) && !(stn is function_lambda_definition))
-                stn = stn.Parent;
-            if (stn is procedure_definition pd && pd.has_yield) // SSM 11/07/20 Надо сделать обход с переименованием!!! Сейчас and не работает в yield + ... is A(var a1)
-            {
+            //syntax_tree_node stn = isPatternExpr;
+            //while (stn != null && !(stn is procedure_definition) && !(stn is function_lambda_definition))
+            //    stn = stn.Parent;
+            //if (stn is procedure_definition pd && pd.has_yield) // SSM 11/07/20 Надо сделать обход с переименованием!!! Сейчас and не работает в yield + ... is A(var a1)
+            //{
+            var dict = new Dictionary<string, StrBool>(StringComparer.InvariantCultureIgnoreCase); // bool - надо ли начинать renaming
                 var l = new List<statement>();
                 var pp = isPatternExpr.right?.parameters;
                 if (pp != null)
@@ -241,11 +259,53 @@ namespace SyntaxVisitors.SugarVisitors
                             var idNew = vdp.identifier.TypedClone();
                             idNew.name = GenerateNewName(idNew.name);
                             var vs = new var_statement(idClone, idNew, idClone.source_context);
-                            vdp.identifier.name = idNew.name;
+                            // проверять, что имя не начинается с $ и если начинается, то ошибка - уже переименовывали такое же!
+                            if (vdp.identifier.name.StartsWith("$"))
+                                throw new SyntaxVisitorError("Повторное объявление", vdp.identifier.source_context);
+                            dict.Add(vdp.identifier.name, new StrBool(idNew.name,false));
+                            //vdp.identifier.name = idNew.name; // в следующем цикле переименую
                             l.Add(vs);
                         }
                     }
                 }
+
+            // подниматься пока выражение
+            syntax_tree_node ex = isPatternExpr;
+            syntax_tree_node ex1 = ex;
+            while (ex is expression)
+            {
+                ex1 = ex;
+                ex = ex.Parent;
+            }
+            ex = ex1; // саммое внешнее выражение. В нём и переименовать!
+            var nams = ex.DescendantNodes().Where(stn => stn is ident).Cast<ident>();
+            foreach (var n in nams)
+            {
+                // надо как-то пробросить до первой is_var
+                if (dict.ContainsKey(n.name))
+                {
+                    var isvar = GetAscendant<is_pattern_expr>(n);
+                    if (isvar != null)
+                    {
+                        dict[n.name].needtorename = true; // всё - можно переименовывать далее
+                        n.name = dict[n.name].name; // переименовываем в is_var
+                        continue;
+                    }
+                    if (!dict[n.name].needtorename) // если еще не дошли до is_var, то это какая-то внешняя и не переименовываем
+                        continue;
+                    if (n.Parent is dot_node dn && dn.left == n) // т.е. не переименовываем только если ident - в правой части dot_node
+                    {
+                        // переименовываем
+                        n.name = dict[n.name].name;
+                    }
+                    else
+                    {
+                        // переименовываем
+                        n.name = dict[n.name].name;
+                    }
+                }
+            }
+
 
                 var stat = GetAscendant<statement>(isPatternExpr);
                 if (stat is if_node ifn)
@@ -265,7 +325,7 @@ namespace SyntaxVisitors.SugarVisitors
                     var stl = stat.Parent as statement_list;
                     stl.ReplaceInList(stat, l);
                 }
-            }
+            //}
 
 
             //ReplaceStatement(stat, l); // тут нельзя. 
