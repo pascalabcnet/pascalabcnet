@@ -11288,6 +11288,8 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+		// имя модуля в случае обычного uses
+		// или путь к модулю в случае uses-in
 		public virtual string UsesPath() => name.idents[0].name;
 
 		/// <summary> Создает копию узла </summary>

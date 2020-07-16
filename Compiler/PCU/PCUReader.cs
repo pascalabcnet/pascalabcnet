@@ -226,7 +226,7 @@ namespace PascalABCCompiler.PCU
         public string GetFullUnitName(string UnitName)
         {
 
-            var FullUnitName = comp.FindPCUFileName(UnitName, dir);
+            var FullUnitName = comp.FindPCUFileName(UnitName, dir, out _);
             if (FullUnitName == null) throw new FileNotFound(UnitName, null);
 
             return FullUnitName;
@@ -344,19 +344,18 @@ namespace PascalABCCompiler.PCU
             {
                 //if (pcu_file.incl_modules[i].Contains("$"))
                 //	continue;
-                string source_file_name = comp.FindSourceFileName(pcu_file.incl_modules[i], dir);
-                if (source_file_name != null && comp.UnitTable[source_file_name] != null)
-                    return true;
-                var incl_unit_name = GetFullUnitName(pcu_file.incl_modules[i]);
-                PCUReader pr = (PCUReader)units[incl_unit_name];
+                var used_unit_fname = comp.GetUnitFileName(Path.GetFileNameWithoutExtension(pcu_file.incl_modules[i]), pcu_file.incl_modules[i], dir, new SyntaxTree.SourceContext(0,0,0,0, FileName));
+                if (Path.GetExtension(used_unit_fname) != comp.CompilerOptions.CompiledUnitExtension) return true;
+
+                PCUReader pr = (PCUReader)units[used_unit_fname];
                 if (pr == null) 
                     pr = new PCUReader(this);
                 pr.AddAlreadyCompiledUnit(FileName);
-                if (used_units[incl_unit_name] == null)
+                if (used_units[used_unit_fname] == null)
                 {
-                    used_units[incl_unit_name] = used_units;
-                    if (already_compiled[incl_unit_name] == null)
-                        pr.GetCompilationUnit(comp.FindPCUFileName(pcu_file.incl_modules[i], dir), this.readDebugInfo);
+                    used_units[used_unit_fname] = used_units;
+                    if (already_compiled[used_unit_fname] == null)
+                        pr.GetCompilationUnit(used_unit_fname, this.readDebugInfo);
                 }
                 if (need == false) need = pr.need;
             }
