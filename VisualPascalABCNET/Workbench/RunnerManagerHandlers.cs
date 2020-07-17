@@ -120,8 +120,7 @@ namespace VisualPascalABC
                     if (ToSend == null && File.Exists(StackTraceItem.SourceFileName))
                         ToSend = StackTraceItem;
                     if (Workbench.UserOptions.SkipStakTraceItemIfSourceFileInSystemDirectory && 
-                        (Path.GetDirectoryName(StackTraceItem.SourceFileName) == WorkbenchServiceFactory.BuildService.CompilerOptions.SearchDirectory ||
-                        Path.GetDirectoryName(StackTraceItem.SourceFileName) == WorkbenchServiceFactory.BuildService.CompilerOptions.SearchDirectory+"Source"))
+                        StackTraceItem.SourceFileName.StartsWith(WorkbenchServiceFactory.BuildService.CompilerOptions.SystemDirectory))
                         continue;
                     if (!(bool)Workbench.VisualEnvironmentCompiler.SourceFilesProvider(StackTraceItem.SourceFileName, PascalABCCompiler.SourceFileOperation.Exists))
                     {

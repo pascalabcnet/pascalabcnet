@@ -74,13 +74,19 @@ namespace PascalABCCompiler
                             Console.WriteLine("Bad value in 'Debug' directive '{0}'. Acceptable values are 0 or 1", value);
                             return false;
                     }
-                    case "output":
-                        co.OutputFileName = Path.GetFileName(value);
-                        if (Path.IsPathRooted(value))
-                        {
-                            co.OutputDirectory = Path.GetDirectoryName(value);
-                        }
-                        return true;
+
+                case "output":
+                    co.OutputFileName = Path.GetFileName(value);
+                    if (Path.IsPathRooted(value))
+                    {
+                        co.OutputDirectory = Path.GetDirectoryName(value);
+                    }
+                    return true;
+
+                case "searchdir":
+                    co.SearchDirectory.Insert(0, value); // .Insert, чтобы определённые пользователем папки имели бОльший приоритет, чем стандартная
+                    return true;
+
                 default:
                     Console.WriteLine("No such directive name: '{0}'", name);
                     return false;
@@ -105,6 +111,7 @@ namespace PascalABCCompiler
             Console.WriteLine("Available directives:\n  /Help  /H  /?\n  /Debug:0(1)\n  /output:[<path>\\name]\n");
             Console.WriteLine("/output:[ <path>\\name ] compile into an executable called \"name\" and save it in \"path\" directory");
             Console.WriteLine("/Debug:0 generates code with all .NET optimizations!");
+            Console.WriteLine("/SearchDir:<path> add \"path\" to list of standart unit search directories. Last added paths would be searched first");
         }
 
         public static int Main(string[] args)

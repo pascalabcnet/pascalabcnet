@@ -164,6 +164,7 @@ using System.Reflection;
 //using SyntaxTreeChanger;
 using PascalABCCompiler.SyntaxTreeConverters;
 using System.Text;
+using System.Linq;
 
 namespace PascalABCCompiler
 {
@@ -546,7 +547,7 @@ namespace PascalABCCompiler
         //
         public string SystemDirectory;
 
-        public string SearchDirectory;
+        public List<string> SearchDirectory;
 
         private bool useDllForSystemUnits = false;
 
@@ -645,12 +646,13 @@ namespace PascalABCCompiler
 
         private void SetDirectories()
         {
-            SystemDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
-            SearchDirectory = Path.Combine(SystemDirectory,"Lib");
+            SystemDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
+
             StandartDirectories = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
             StandartDirectories.Add("%PABCSYSTEM%", SystemDirectory);
-            ParserSearchPatchs = new string[1];
-            ParserSearchPatchs[0] = SearchDirectory;
+
+            ParserSearchPatchs = new string[] { Path.Combine(SystemDirectory, "Lib") };
+            SearchDirectory = ParserSearchPatchs.ToList();
         }
 
 
@@ -2456,7 +2458,7 @@ namespace PascalABCCompiler
                     res = Tuple.Create(res_s1, 1);
                 else if (FindFileInDirs(Path.GetFileName(fname), CompilerOptions.OutputDirectory) is string res_s2)
                     res = Tuple.Create(res_s2, 2);
-                else if (FindFileInDirs(fname, CompilerOptions.SearchDirectory) is string res_s3)
+                else if (FindFileInDirs(fname, CompilerOptions.SearchDirectory.ToArray()) is string res_s3)
                     res = Tuple.Create(res_s3, 3);
                 else
                     res = null;
@@ -2477,7 +2479,7 @@ namespace PascalABCCompiler
 
                 if (FindSourceFileNameInDirs(fname, curr_path) is string res_s1)
                     res = Tuple.Create(res_s1, 1);
-                else if (FindSourceFileNameInDirs(fname, CompilerOptions.SearchDirectory) is string res_s3)
+                else if (FindSourceFileNameInDirs(fname, CompilerOptions.SearchDirectory.ToArray()) is string res_s3)
                     res = Tuple.Create(res_s3, 3);
                 else
                     res = null;
@@ -2671,11 +2673,6 @@ namespace PascalABCCompiler
             return res;
         }
 
-        private bool FileInSearchDirectory(string FileName)
-        {
-            return Path.GetDirectoryName(FileName).ToLower() == CompilerOptions.SearchDirectory.ToLower();
-        }
-        
         public void AddStandartUnitsToUsesSection(SyntaxTree.compilation_unit cu)
         {
             //if (FileInSearchDirectory(cu.file_name)) return;
