@@ -1175,7 +1175,8 @@ namespace PascalABCCompiler
         {
             SourceFileNamesDictionary.Clear();
             PCUFileNamesDictionary.Clear();
-            Warnings.Clear();            
+            GetUnitFileNameCache.Clear();
+            Warnings.Clear();
             errorsList.Clear();
             //if (!File.Exists(CompilerOptions.SourceFileName)) throw new SourceFileNotFound(CompilerOptions.SourceFileName);
             CurrentCompilationUnit = null;
@@ -2446,7 +2447,7 @@ namespace PascalABCCompiler
         {
             if (string.IsNullOrEmpty(Path.GetExtension(fname)))
                 fname += CompilerOptions.CompiledUnitExtension;
-            var cache_key = Tuple.Create(fname.ToLower(), curr_path.ToLower());
+            var cache_key = Tuple.Create(fname.ToLower(), curr_path?.ToLower());
 
             if (!PCUFileNamesDictionary.TryGetValue(cache_key, out var res))
             {
@@ -2469,7 +2470,7 @@ namespace PascalABCCompiler
 
         public string FindSourceFileName(string fname, string curr_path, out int folder_priority)
         {
-            var cache_key = Tuple.Create(fname.ToLower(), curr_path.ToLower());
+            var cache_key = Tuple.Create(fname.ToLower(), curr_path?.ToLower());
 
             if (!SourceFileNamesDictionary.TryGetValue(cache_key, out var res))
             {
@@ -2613,7 +2614,7 @@ namespace PascalABCCompiler
         
         public string GetUnitFileName(string UnitName, string path, string curr_path, SyntaxTree.SourceContext source_context)
         {
-            var cache_key = Tuple.Create(path.ToLower(), curr_path.ToLower());
+            var cache_key = Tuple.Create(path.ToLower(), curr_path?.ToLower());
             string res;
             if (GetUnitFileNameCache.TryGetValue(cache_key, out res))
                 return res;
@@ -2666,7 +2667,6 @@ namespace PascalABCCompiler
             else
                 throw new InvalidOperationException(nameof(SourceFileExists)); // тело "if (PCUFileExists && SourceFileExists)" не должно присваивать false обоим переменным
 
-            Console.WriteLine(Tuple.Create(cache_key, res));
             GetUnitFileNameCache[cache_key] = res;
             return res;
         }
