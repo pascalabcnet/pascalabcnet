@@ -180,7 +180,11 @@ namespace PascalABCCompiler.TreeRealization
                     return new SimpleSemanticError(null, "USING_STATIC_CLASS_NOT_VALID");
                 if (gpe.has_default_ctor)
                 {
-                    if (tn.IsAbstract || tn.IsStatic || !tn.is_value && !generic_convertions.type_has_default_ctor(tn, false))
+                    if (tn.IsAbstract)
+                    {
+                        return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_NOT_BE_ABSTRACT", tn.PrintableName);
+                    }
+                    if (tn.IsStatic || !tn.is_value && !generic_convertions.type_has_default_ctor(tn, false))
                     {
                         return new SimpleSemanticError(null, "PARAMETER_{0}_MUST_HAVE_DEFAULT_CONSTRUCTOR", tn.PrintableName);
                     }
