@@ -3802,7 +3802,7 @@ namespace PascalABCCompiler
             {
                 //if (included[i].Contains("$"))
                 //	continue;
-                var used_unit_fname = GetUnitFileName(null, included[i], dir, null);
+                var used_unit_fname = GetUnitFileName(Path.GetFileNameWithoutExtension(included[i]), included[i], dir, null);
                 var used_unit_is_pcu = Path.GetExtension(used_unit_fname) == CompilerOptions.CompiledUnitExtension;
 
                 if (!used_unit_is_pcu)
