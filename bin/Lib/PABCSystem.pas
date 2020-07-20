@@ -2359,6 +2359,11 @@ function Dict<TKey, TVal>(params pairs: array of KeyValuePair<TKey, TVal>): Dict
 function Dict<TKey, TVal>(params pairs: array of (TKey, TVal)): Dictionary<TKey, TVal>;
 /// Возвращает пару элементов (ключ, значение)
 function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
+/// Возвращает словарь пар элементов (строка, строка)
+function DictStr(params pairs: array of (string, string)): Dictionary<string, string>;
+/// Возвращает словарь пар элементов (строка, строка)
+function DictStrInt(params pairs: array of (string, integer)): Dictionary<string, integer>;
+
 
 //{{{--doc: Конец секции интерфейса для документации }}} 
 
@@ -5025,6 +5030,13 @@ function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 begin
   Result := new KeyValuePair<TKey, TVal>(key, value);
 end;
+
+function DictStr(params pairs: array of (string, string)): Dictionary<string, string>
+  := Dict&<string, string>(pairs);
+
+function DictStrInt(params pairs: array of (string, integer)): Dictionary<string, integer>
+  := Dict&<string, integer>(pairs);
+
 
 function __TypeCheckAndAssignForIsMatch<T>(obj: object; var res: T): boolean;
 begin

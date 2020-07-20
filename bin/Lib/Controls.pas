@@ -8,6 +8,7 @@ interface
 uses GraphWPFBase,GraphWPF;
 uses System.Windows; 
 uses System.Windows.Media; 
+uses System.Windows.Media.Imaging;
 uses System.Windows.Controls; 
 uses System.Windows.Controls.Primitives; 
 uses System.ComponentModel;
@@ -143,6 +144,21 @@ type
     end;
   public  
     Click: procedure;
+  end;
+
+  ///!#
+  ImageWPF = class(CommonControlWPF)
+  protected
+    property im: Image read element as Image;  
+    procedure CreateP(name: string);
+    begin
+      element := new Image();
+      im.Source := new BitmapImage(new System.Uri(name));
+      MainDockPanel.children.RemoveAt(MainDockPanel.children.Count-1);
+      MainDockPanel.children.Add(im);
+    end;
+  public 
+    constructor (name: string) := Invoke(CreateP,name);
   end;
 
   ///!#
