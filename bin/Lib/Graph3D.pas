@@ -3385,7 +3385,7 @@ function Pyramid(p: Point3D; Sides: integer; Height, Radius: real; m: Material):
 
 function PyramidWireFrame(x, y, z: real; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PyramidTWireFrame := Inv(()->PyramidTWireFrame.Create(x, y, z, Sides, Radius, Height, thickness, c));
 
-function PyramidWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PyramidTWireFrame := PyramidWireFrame(p.x, p.y, p.z, Sides, Radius, Height, thickness, c);
+function PyramidWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PyramidTWireFrame := PyramidWireFrame(p.x, p.y, p.z, Sides, Height, Radius, thickness, c);
 
 function Lego(x, y, z: real; Rows, Columns, Height: integer; m: Material): LegoT := Inv(()->LegoT.Create(x, y, z, Rows, Columns, Height, m));
 
