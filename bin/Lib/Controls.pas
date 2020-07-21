@@ -152,13 +152,30 @@ type
     property im: Image read element as Image;  
     procedure CreateP(name: string);
     begin
-      element := new Image();
+      Init0(new Image());
+      im.Source := new BitmapImage();
       im.Source := new BitmapImage(new System.Uri(name));
+    end;
+    procedure CreatePP;
+    begin
+      element := new Image();
+      element.Focusable := False;
       MainDockPanel.children.RemoveAt(MainDockPanel.children.Count-1);
       MainDockPanel.children.Add(im);
     end;
+  private
+    function GetNameP: string;
+    begin
+      Result := (im.Source as BitmapImage).UriSource.AbsolutePath
+    end;
+    procedure SetNameP(value: string);
+    begin
+      im.Source := new BitmapImage(new System.Uri(value));
+    end;
+    constructor (i: integer) := Invoke(CreatePP); // фиктивный первый параметр
   public 
     constructor (name: string) := Invoke(CreateP,name);
+    property Name: string read InvokeString(GetNameP) write Invoke(SetNameP,value);
   end;
 
   ///!#
@@ -524,6 +541,12 @@ type
     property ItemText[i: integer]: string read InvokeString(()->(sb.Items[0] as StatusBarItem).Content as string)
       write Invoke(SetTextPI,i,value);
   end;
+  
+  SetMainControl = static class
+  public  
+    static function AsImage: ImageWPF := new ImageWPF(0);
+  end;
+  
   
   {WebBrowserWPF = class(CommonControlWPF)
   private

@@ -2361,7 +2361,7 @@ function Dict<TKey, TVal>(params pairs: array of (TKey, TVal)): Dictionary<TKey,
 function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 /// Возвращает словарь пар элементов (строка, строка)
 function DictStr(params pairs: array of (string, string)): Dictionary<string, string>;
-/// Возвращает словарь пар элементов (строка, строка)
+/// Возвращает словарь пар элементов (строка, целое)
 function DictStrInt(params pairs: array of (string, integer)): Dictionary<string, integer>;
 
 
