@@ -15,7 +15,7 @@
    ABCDatabases,BlockFileOfT,Controls,
    OpenCL, OpenCLABC,
    OpenGL, OpenGLABC,
-   BBCMicroBit, School, SF
+   BBCMicroBit, School, SF, TwoPanelsWindow
    ;
    
 begin

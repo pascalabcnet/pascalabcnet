@@ -1931,6 +1931,7 @@ public
   begin
     host1 := new Canvas;
     host := new MyVisualHost();
+    host1.ClipToBounds := True;
     host1.SizeChanged += (s,e) ->
     begin
       var sz := e.NewSize;
