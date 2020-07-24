@@ -31,6 +31,9 @@ var
   ActivePanel: GPanel;
   GlobalHMargin := 12;
 
+procedure Invoke(d: System.Delegate; params args: array of object);
+procedure InvokeP(p: procedure(r: real); r: real); 
+
 type
   ///!#
   PanelWPF = class
@@ -121,7 +124,7 @@ type
     procedure SetEP(enabled: boolean) := element.IsEnabled := enabled;
   public 
     property Width: real read InvokeReal(()->element.Width) write Invoke(SetWP, value);
-    property Height: real read InvokeReal(()->element.Height) write Invoke(SetHP, value);
+    property Height: real read InvokeReal(()->element.Height) write Invoke(SetHP, value); virtual;
     property Margin: real read InvokeReal(()->element.Margin.Bottom) write Invoke(SetMP, value);
     property Enabled: boolean read InvokeBoolean(()->element.IsEnabled) write Invoke(SetEP, value);
   end;
@@ -129,9 +132,9 @@ type
   CommonControlWPF = class(CommonElementWPF)
   private
     procedure SetFSzP(size: real) := control.FontSize := size;
-  public  
     property Control: GControl read element as GControl;
-    property FontSize: real read InvokeReal(()->control.FontSize) write Invoke(SetFSzP, value);
+  public  
+    property FontSize: real read InvokeReal(()->control.FontSize) write Invoke(SetFSzP, value); virtual;
   end;
 
   ///!#
@@ -150,12 +153,13 @@ type
   ImageWPF = class(CommonControlWPF)
   protected
     property im: Image read element as Image;  
-    procedure CreateP(name: string);
+    procedure CreatePXY(x,y: real; name: string; width: real := 0);
     begin
-      Init0(new Image());
+      Init0(new Image(),width,x,y);
       im.Source := new BitmapImage();
       im.Source := new BitmapImage(new System.Uri(name));
     end;
+    procedure CreateP(name: string) := CreatePXY(-1,-1,name,0);
     procedure CreatePP;
     begin
       element := new Image();
@@ -175,8 +179,10 @@ type
     constructor (i: integer) := Invoke(CreatePP); // фиктивный первый параметр
   public 
     constructor (name: string) := Invoke(CreateP,name);
+    constructor (x,y: real; name: string; width: real := 0) := Invoke(CreatePXY,x,y,name,width);
     property Name: string read InvokeString(GetNameP) write Invoke(SetNameP,value);
   end;
+  
 
   ///!#
   ButtonWPF = class(CommonControlWPF)
@@ -263,8 +269,8 @@ type
   end;
 
   ///!#
-  TextBoxWPF = class(CommonControlWPF)
-  protected
+  TextBoxNoTitleWPF = class(CommonControlWPF)
+  private
     property tb: GTextBox read element as GTextBox;
     
     procedure SetTextP(t: string) := tb.Text := t;
@@ -273,20 +279,114 @@ type
     begin
       Init0(new GTextBox,width,x,y);
       Text := txt;
-      tb.TextChanged += (o,e) -> if Click <> nil then Click;
+      tb.TextChanged += (o,e) -> if TextChanged <> nil then TextChanged;
       element.Focusable := True;
       //element.HorizontalAlignment := HorizontalAlignment.Stretch;
     end;
     procedure CreateP(text: string) := CreatePXY(-1,-1,text,0);
+    
+    procedure CreatePP;
+    begin
+      element := new TextBox();
+      element.Focusable := False;
+      tb.TextWrapping := TextWrapping.Wrap;
+      MainDockPanel.children.RemoveAt(MainDockPanel.children.Count-1);
+      MainDockPanel.children.Add(element);
+    end;
+    constructor Create(i: integer) := Invoke(CreatePP);
   public 
-    Click: procedure;
+    TextChanged: procedure;
     constructor Create(text: string := '') := Invoke(CreateP, text);
     constructor Create(x,y: real; text: string := ''; width: real := 0) := Invoke(CreatePXY, x, y, text, width);
     
     property Text: string read InvokeString(()->tb.Text) write Invoke(SetTextP, value);
+    procedure Print(s: string);
+    begin
+      Text += s + ' ';
+    end;
+    procedure Println(s: string);
+    begin
+      Text += s + NewLine;
+    end;
+  end;
+
+  ///!#
+  ControlWithTitleWPF = class(CommonControlWPF)
+  private
+    property tb: GTextBlock read (element as StackPanel).Children[0] as TextBlock;
+    property MainElement: GControl read (element as StackPanel).Children[1] as GControl;
+    procedure SetTitleP(t: string);
+    begin
+      if t = '' then
+        tb.Visibility := System.Windows.Visibility.Collapsed
+      else tb.Visibility := System.Windows.Visibility.Visible;
+      tb.Text := t;
+    end;
+    procedure SetHP(h: real) := MainElement.Height := h;
+    
+    function CreateStackPanel(el: FrameworkElement; title: string): StackPanel;
+    begin
+      var sp := new StackPanel;
+      var tb := new TextBlock;
+      tb.Text := title;
+      tb.Margin := new Thickness(0,0,0,3);
+      sp.Children.Add(tb);
+      if title = '' then
+        tb.Visibility := System.Windows.Visibility.Collapsed;
+      sp.Children.Add(el);
+      Result := sp;      
+    end;
+    
+    procedure Init1(el: FrameworkElement; title: string; width: real := 0; x: real := -1; y: real := -1);
+    begin
+      var sp := CreateStackPanel(el,title);
+      Init0(sp,width,x,y);
+    end;
+    procedure SetFSzP(size: real) := MainElement.FontSize := size;
+  public 
+
+    property Title: string read InvokeString(()->tb.Text) write Invoke(SetTitleP, value);
+    property Height: real read InvokeReal(()->MainElement.ActualHeight) write Invoke(SetHP, value); override;
+    property FontSize: real read InvokeReal(()->MainElement.FontSize) write Invoke(SetFSzP, value); virtual;
+  end;
+
+  ///!#
+  TextBoxWPF = class(ControlWithTitleWPF)
+  private
+    property tbx: GTextBox read MainElement as TextBox;
+    
+    procedure SetTextP(t: string) := tbx.Text := t;
+    procedure SetMultiLineP(b: boolean) := if b then tbx.TextWrapping := TextWrapping.Wrap else tbx.TextWrapping := TextWrapping.NoWrap;
+
+    procedure CreatePXY(x,y: real; title,txt: string; width: real);
+    begin
+      Init1(new TextBox, title, width, x, y);
+      //tbx.TextWrapping := TextWrapping.Wrap;
+      tbx.Text := txt;
+      tbx.TextChanged += (o,e) -> if TextChanged <> nil then TextChanged;
+    end;
+    procedure CreateAsMainControlP;
+    begin
+      element := CreateStackPanel(new TextBox,'');
+      Multiline := True;
+      tbx.TextChanged += (o,e) -> if TextChanged <> nil then TextChanged;
+      MainDockPanel.children.RemoveAt(MainDockPanel.children.Count-1);
+      MainDockPanel.children.Add(element);
+    end;
+    procedure CreateP(title,text: string) := CreatePXY(-1,-1,title,text,0);
+    constructor Create(i: integer) := Invoke(CreateAsMainControlP);
+  public 
+    TextChanged: procedure;
+    constructor Create(title: string := '') := Invoke(CreateP, title, '');
+    constructor Create(x,y: real; title: string := ''; width: real := 120) := Invoke(CreatePXY, x, y, title,'', width);
+    
+    procedure Clear := Text := '';
+    property Text: string read InvokeString(()->tbx.Text) write Invoke(SetTextP, value);
+    property MultiLine: boolean read InvokeBoolean(()->tbx.TextWrapping = TextWrapping.Wrap) write Invoke(SetMultiLineP, value);
   end;
 
   IntegerBoxWPF = class(TextBoxWPF)
+  private
     function GetValue: integer;
     begin
       if Trim(Text) = '' then
@@ -298,29 +398,31 @@ type
     procedure SetValue(x: integer) := Text := x.Clamp(Min,Max).ToString;
     procedure Rest(min,max:integer);
     begin
-      Self.Min := min;
-      Self.Max := max;
-      Value := Min;
-      tb.MouseWheel += (o, e) -> begin
-        if e.Delta > 0 then
-          Value := Value + 1
-        else if e.Delta < 0 then
-          Value := Value - 1
-      end;
-      tb.KeyDown += (o, e) -> begin
-        if not ((e.Key >= Key.D0) and (e.Key <= Key.D9)) then
-          e.Handled := True;
-      end;
+      Invoke(()-> begin
+        Self.Min := min;
+        Self.Max := max;
+        Value := Min;
+        tbx.MouseWheel += (o, e) -> begin
+          if e.Delta > 0 then
+            Value := Value + 1
+          else if e.Delta < 0 then
+            Value := Value - 1
+        end;
+        tbx.KeyDown += (o, e) -> begin
+          if not ((e.Key >= Key.D0) and (e.Key <= Key.D9)) then
+            e.Handled := True;
+        end;
+      end);
     end;
   public 
-    constructor Create(min: integer := 0; max: integer := 10);
+    constructor Create(title: string := ''; min: integer := 0; max: integer := 10);
     begin
-      inherited Create('');
+      inherited Create(title);
       Rest(min,max);
     end;
-    constructor Create(x,y: real; min,max: integer; width: real := 0);
+    constructor Create(x,y: real; title: string; min,max: integer; width: real := 0);
     begin
-      inherited Create(x,y,'',width);
+      inherited Create(x,y,title,width);
       Rest(min,max);
     end;
     
@@ -330,65 +432,18 @@ type
     property Value: integer read GetValue write SetValue;
   end;
 
-  {TextBoxWithBlockWPF = class(CommonControlWPF)
-  private 
-    l: TextBlock;
-  protected
-    function tb: GTextBox := (element as StackPanel).Children[1] as GTextBox;
-    procedure BTextChanged(sender: Object; e: TextChangedEventArgs);
-    begin
-      if Click <> nil then
-        Click;
-    end;
-    
-    function GetText: string := InvokeString(()->tb.Text);
-    procedure SetTextP(t: string) := tb.Text := t;
-    procedure SetText(t: string) := Invoke(SetTextP, t);
-    procedure CreateP(BlockTxt, Txt: string; w: real);
-    begin
-      var sp := new StackPanel;
-      element := sp;
-      
-      sp.Orientation := Orientation.Horizontal;
-      sp.HorizontalAlignment := HorizontalAlignment.Stretch;
-      l := new TextBlock();
-      l.Text := BlockTxt;
-      sp.Children.Add(l);
-      var tb := new GTextBox;
-      tb.Width := 100;
-      tb.VerticalAlignment := VerticalAlignment.Stretch;
-      tb.Margin := new Thickness(0, 0, 0, GlobalHMargin);
-      sp.Children.Add(tb);
-      Text := Txt;
-      if w > 0 then
-        Width := w;
-      tb.TextChanged += BTextChanged;
-      ActivePanel.Children.Add(sp);
-    end;
-  
-  public 
-    Click: procedure;
-    constructor Create(blockTxt: string; Txt: string := ''; w: real := 0);
-    begin
-      Invoke(CreateP, blockTxt, Txt, w);
-    end;
-    
-    property Text: string read GetText write SetText;
-    property FontSize: real read InvokeReal(()->tb.FontSize) write Invoke(procedure(t: real) -> begin tb.FontSize := t; l.FontSize := t; end, value);
-  end;}
-
   ///!#
-  ListBoxWPF = class(CommonControlWPF)
+  ListBoxWPF = class(ControlWithTitleWPF)
   protected
-    function lb: GListBox := element as GListBox;
-    procedure CreatePXY(x,y,w,h: real);
+    function lb: GListBox := MainElement as GListBox;
+    procedure CreatePXY(x,y: real; title: string; width,height: real);
     begin
-      Init0(new GListBox,w,x,y);
+      Init1(new GListBox,title,width,x,y);
       //element.HorizontalAlignment := HorizontalAlignment.Stretch;
-      Height := h;
+      Self.Height := height;
       lb.SelectionChanged += (o,e) -> if SelectionChanged<>nil then SelectionChanged;
     end;
-    procedure CreateP(h: real) := CreatePXY(-1,-1,0,h);
+    procedure CreateP(title: string; height: real) := CreatePXY(-1,-1,title,0,height);
     
     procedure AddP(s: string);
     begin
@@ -407,8 +462,8 @@ type
     procedure SortPDescending := lb.Items.SortDescriptions.Add(new SortDescription('Content', ListSortDirection.Descending));
   public 
     SelectionChanged: procedure;
-    constructor Create(height: real := 150):= Invoke(CreateP, height);
-    constructor Create(x,y: real; width: real; height: real := 150):= Invoke(CreatePXY, x, y, width, height);
+    constructor Create(title: string := ''; height: real := 150):= Invoke(CreateP, title, height);
+    constructor Create(x,y: real; title: string := ''; width: real := 150; height: real := 150):= Invoke(CreatePXY, x, y, title, width, height);
     procedure Sort := Invoke(SortP);
     procedure SortDescending := Invoke(SortPDescending);
     procedure Add(s: string) := Invoke(AddP, s);
@@ -417,6 +472,38 @@ type
     property SelectedIndex: integer read InvokeInteger(()->lb.SelectedIndex) write Invoke(procedure(t: integer) -> lb.SelectedIndex := t, value);
     property SelectedText: string read InvokeString(()->(lb.SelectedItem as ListBoxItem).Content.ToString) 
       write Invoke(procedure(t: string) -> (lb.SelectedItem as ListBoxItem).Content := t, value);
+  end;
+  
+  ///!#
+  ComboBoxWPF = class(ControlWithTitleWPF)
+  private
+    property cb: ComboBox read MainElement as ComboBox;
+    
+    procedure CreatePXY(x,y: real; title: string; width: real);
+    begin
+      Init1(new ComboBox, title, width, x, y);
+      cb.SelectionChanged += (o,e) -> if SelectionChanged <> nil then SelectionChanged;
+    end;
+    procedure CreateP(title: string) := CreatePXY(-1,-1,title,0);
+    procedure AddP(s: string);
+    begin
+      cb.Items.Add(s);
+      if cb.Items.Count = 1 then
+        cb.SelectedIndex := 0;
+    end;
+    procedure AddRangeP(params ss: array of string);
+    begin
+      foreach var s in ss do
+        AddP(s);
+    end;
+  public 
+    SelectionChanged: procedure;
+    constructor Create(title: string := '') := Invoke(CreateP, title);
+    constructor Create(x,y: real; title: string := ''; width: real := 120) := Invoke(CreatePXY, x, y, title,'', width);
+
+    procedure Add(s: string) := Invoke(AddP, s);
+    procedure AddRange(params ss: array of string) := Invoke(AddRangeP, ss);
+    function SelectedString := InvokeString(()->cb.SelectedItem as string);
   end;
 
   SliderWPF = class(CommonControlWPF)
@@ -442,7 +529,7 @@ type
       sl.TickPlacement := System.Windows.Controls.Primitives.TickPlacement.BottomRight;
       sl.Minimum := min;
       sl.Maximum := max;
-      sl.Value := val;
+      sl.Value := val.Clamp(min,max);
       if freq<=0 then
         sl.TickFrequency := (max-min)/10
       else sl.TickFrequency := freq;
@@ -453,8 +540,8 @@ type
     procedure ValueChangedP := if ValueChanged <> nil then ValueChanged;
   public 
     ValueChanged: procedure;
-    constructor Create(min, max, val: real; freq: real := 0) := Invoke(CreateP, min, max, val, freq);
-    constructor Create(x,y: real; min, max, val: real; freq: real := 0; width: real := 0) := Invoke(CreatePXY, x,y,min, max, val, freq, width);
+    constructor Create(min, max: real; val: real := real.MinValue; freq: real := 0) := Invoke(CreateP, min, max, val, freq);
+    constructor Create(x,y: real; min, max: real; width: real; val: real := real.MinValue; freq: real := 0) := Invoke(CreatePXY, x,y,min, max, val, freq, width);
     property Minimum: real read GetMinimum write SetMinimum;
     property Maximum: real read GetMaximum write SetMaximum;
     property Value: real read GetValue write SetValue;
@@ -542,30 +629,147 @@ type
       write Invoke(SetTextPI,i,value);
   end;
   
+  ///!#
+  CanvasWPF = class(CommonControlWPF)
+  protected
+    property can: Canvas read element as Canvas;
+    procedure CreatePP;
+    begin
+      element := new Canvas();
+      element.Focusable := False;
+      MainDockPanel.children.RemoveAt(MainDockPanel.children.Count-1);
+      MainDockPanel.children.Add(can);
+      ActivePanel := can;
+    end;
+    constructor (i: integer) := Invoke(CreatePP); // фиктивный первый параметр
+    procedure SetColorP(c: GColor);
+    begin
+      can.Background := GetBrush(c); 
+    end;
+    function GetColorP := (can.Background as SolidColorBrush).Color;
+  public 
+    property Color: GColor read Invoke&<GColor>(GetColorP) write Invoke(SetColorP, value);
+  end;
+
+function GetProperties<T>(t1: T): sequence of string;
+function GetFields<T>(t1: T): sequence of string;
+
+type  
+  ///!#
+  ListViewWPF = class(CommonControlWPF)
+  private
+    gv: GridView;
+    property lv: ListView read element as ListView;
+    procedure CreatePP;
+    begin
+      element := new ListView();
+      element.Focusable := False;
+      MainDockPanel.children.RemoveAt(MainDockPanel.children.Count-1);
+      MainDockPanel.children.Add(lv);
+      gv := new GridView;
+      lv.View := gv;
+    end;
+    function ColumnCountP: integer := gv.Columns.Count;
+    function RowCountP: integer := lv.Items.Count;
+  public
+    constructor (i: integer);
+    begin
+      Invoke(CreatePP);
+    end;
+    procedure Fill<T>(data: sequence of T); 
+    begin
+      Invoke(()-> begin
+      var properties := GetProperties(data.First);
+      gv.Columns.Clear;
+      foreach var fld in properties do
+      begin
+        var col := new GridViewColumn; 
+        col.Header := fld; 
+        col.Width := 150; 
+        col.DisplayMemberBinding := new System.Windows.Data.Binding(fld); 
+        gv.Columns.Add(col); 
+      end;
+      lv.ItemsSource := data;
+      end);
+    end;
+    procedure Clear;
+    begin
+      Invoke(()-> begin
+        gv.Columns.Clear;
+      end);
+    end;
+    procedure SetHeaders(params a: array of string);
+    begin
+      Invoke(()-> begin
+        for var i:=0 to a.Length - 1 do
+          gv.Columns[i].Header := a[i];
+      end);
+    end;
+    function ColumnCount: integer := InvokeInteger(ColumnCountP);
+    function RowCount: integer := InvokeInteger(RowCountP);
+  end;
+  
+  MenuItemWPF = class
+  private
+    mi: MenuItem;
+    procedure CreateP(mii: MenuItem; text: string);
+    begin
+      mi := mii;
+      mi.Header := text;
+      mi.Click += (o,e) -> begin
+        if Click<>nil then Click;
+      end;  
+    end;
+    constructor Create(mi: MenuItem; text: string) := Invoke(CreateP,mi,text);
+    procedure SetTextP(text: string);
+    begin
+      mi.Header := text;
+    end;
+    function AddMenuItemP(text: string): MenuItemWPF;
+    begin
+      var mii := new MenuItem;
+      mii.Header := text;
+      mi.Items.Add(mii);
+      Result := new MenuItemWPF(mii,text)
+    end;
+  public
+    Click: procedure;
+    property Text: string read InvokeString(()-> mi.Header as string) write Invoke(SetTextP,text);
+    function Add(text: string): MenuItemWPF := Invoke&<MenuItemWPF>(()->AddMenuItemP(text));
+  end;
+  
+  MenuWPF = class(CommonControlWPF)
+  private
+    property m: Menu read element as Menu;
+    procedure CreatePP;
+    begin
+      element := new Menu();
+      element.Height := 20;
+      DockPanel.SetDock(m, Dock.Top);
+      MainDockPanel.children.Insert(0,element);
+    end;
+    function AddMenuItemP(text: string): MenuItemWPF;
+    begin
+      var mi := new MenuItem;
+      mi.Header := text;
+      m.Items.Add(mi);
+      Result := new MenuItemWPF(mi,text)
+    end;
+  public
+    constructor Create := Invoke(CreatePP);
+    function Add(text: string): MenuItemWPF := Invoke&<MenuItemWPF>(()->AddMenuItemP(text));
+  end;
+  
+  ///!#
+  /// Статический класс для создания главных контролов
   SetMainControl = static class
   public  
     static function AsImage: ImageWPF := new ImageWPF(0);
+    static function AsCanvas: CanvasWPF := new CanvasWPF(0);
+    static function AsListView: ListViewWPF := new ListViewWPF(0);
+    static function AsTextBox: TextBoxNoTitleWPF := new TextBoxNoTitleWPF(0);
   end;
   
-  
-  {WebBrowserWPF = class(CommonControlWPF)
-  private
-    property wb: WebBrowser read element as WebBrowser;
-    procedure CreatePXY(x,y,w,h: real);
-    begin
-      element := new WebBrowser;
-      //element.Focusable := False;
-      //DockPanel.SetDock(wb, Dock.Bottom);
-      MainDockPanel.children.Insert(0, wb);
-
-      //wb.Height := h;
-      wb.Navigate('http://yandex.ru');
-      //wb.Source := new System.Uri('http://yandex.ru',System.UriKind.Absolute);
-    end;
-  public
-    constructor Create(x,y,w,h: real) := Invoke(CreatePXY,x,y,w,h);
-  end;}
-
 {-----------------------------------------------------}
 // Для каждого контрола - пара функций. 
 // Функция без координат и ширины рассчитана на создание внутри вертикальной StackPanel (LeftPanel, RightPanel)
@@ -586,16 +790,20 @@ function RealBlock(x, y: real; message: string; width: real := 0; initValue: rea
 function TextBox(text: string := ''): TextBoxWPF;
 function TextBox(x, y: real; text: string := ''; width: real := 0): TextBoxWPF;
 
-function IntegerBox(max: integer := 10): IntegerBoxWPF;
-function IntegerBox(min,max: integer): IntegerBoxWPF;
-function IntegerBox(x, y: real; min,max: integer; width: real := 0): IntegerBoxWPF;
+function IntegerBox(title: string; max: integer := 10): IntegerBoxWPF;
+function IntegerBox(title: string; min,max: integer): IntegerBoxWPF;
+function IntegerBox(x, y: real; title: string; min,max: integer; width: real := 0): IntegerBoxWPF;
 
-function ListBox(height: real := 150): ListBoxWPF;
-function ListBox(x,y: real; width: real; height: real := 150): ListBoxWPF;
+function ListBox(title: string := ''; height: real := 150): ListBoxWPF;
+function ListBox(x,y: real; title: string := ''; width: real := 150; height: real := 150): ListBoxWPF;
 
 function Slider(): SliderWPF;
 function Slider(min,max: real; val: real := real.MinValue; freq: real := 0): SliderWPF;
-function Slider(x,y: real; min,max: real; width: real := 0; val: real := real.MinValue; freq: real := 0): SliderWPF;
+function Slider(x,y: real; min,max: real; width: real; val: real := real.MinValue; freq: real := 0): SliderWPF;
+
+function Image(name: string): ImageWPF;
+function Image(x,y: real; name: string; width: real := 0): ImageWPF;
+
 
 function LeftPanel(width: real := 150; c: Color := PanelsColor; InternalMargin: real := 10): PanelWPF;
 function RightPanel(width: real := 150; c: Color := PanelsColor; InternalMargin: real := 10): PanelWPF;
@@ -617,22 +825,6 @@ uses System.Windows.Media.Imaging;
 
 function Window: WindowTypeWPF := GraphWPF.Window;
 
-procedure AddStatusBarP(Height: real);
-begin
-  {var sb := new StatusBar;
-  sb.Height := Height;
-  DockPanel.SetDock(sb, Dock.Bottom);
-  // Всегда первая
-  MainDockPanel.children.Insert(0, sb);}
-  //StatusBarPanel := sb;
-  {var sbi := new StatusBarItem();
-  sbi.Content := 'sdghj';
-  sb.Items.Add(sbi);
-  sbi := new StatusBarItem();
-  sbi.Content := '222';
-  sb.Items.Add(sbi);}
-end;
-
 function Button(Txt: string; fontSize: real): ButtonWPF := ButtonWPF.Create(Txt,fontSize);
 function Button(x, y: real; Txt: string; width: real; fontSize: real): ButtonWPF := ButtonWPF.Create(x, y, Txt, width, fontSize);
 
@@ -648,12 +840,12 @@ function RealBlock(x, y: real; message: string; width: real; initValue: real; fo
 function TextBox(text: string): TextBoxWPF := TextBoxWPF.Create(text);
 function TextBox(x, y: real; text: string; width: real): TextBoxWPF := TextBoxWPF.Create(x,y,text,width);
 
-function IntegerBox(max: integer): IntegerBoxWPF := IntegerBoxWPF.Create(0,max);
-function IntegerBox(min,max: integer): IntegerBoxWPF := IntegerBoxWPF.Create(min,max);
-function IntegerBox(x, y: real; min,max: integer; width: real) := IntegerBoxWPF.Create(x,y,min,max,width);
+function IntegerBox(title: string; max: integer): IntegerBoxWPF := IntegerBoxWPF.Create(title,0,max);
+function IntegerBox(title: string; min,max: integer): IntegerBoxWPF := IntegerBoxWPF.Create(title,min,max);
+function IntegerBox(x, y: real; title: string; min,max: integer; width: real) := IntegerBoxWPF.Create(x,y,title,min,max,width);
 
-function ListBox(height: real): ListBoxWPF := ListBoxWPF.Create(height);
-function ListBox(x,y: real; width: real; height: real): ListBoxWPF := ListBoxWPF.Create(x,y,width,height);
+function ListBox(title: string; height: real): ListBoxWPF := ListBoxWPF.Create(title,height);
+function ListBox(x,y: real; title: string; width: real; height: real): ListBoxWPF := ListBoxWPF.Create(x,y,title,width,height);
 
 function Slider: SliderWPF := SliderWPF.Create(0, 10, 0, 0);
 function Slider(min, max, val, freq: real): SliderWPF;
@@ -666,13 +858,18 @@ function Slider(x,y,min,max,width,val,freq: real): SliderWPF;
 begin
   if val = real.MinValue then
     val := min;
-  Result := SliderWPF.Create(x, y, min, max, val, freq, width);
+  Result := SliderWPF.Create(x, y, min, max, width, val, freq);
 end;  
+
+function Image(name: string): ImageWPF := new ImageWPF(name);
+function Image(x,y: real; name: string; width: real): ImageWPF 
+  := new ImageWPF(x,y,name,width);
+
 
 function LeftPanel(width: real; c: Color; internalMargin: real) := new LeftPanelWPF(width,c,internalMargin);
 function RightPanel(width: real; c: Color; internalMargin: real) := new RightPanelWPF(width,c,internalMargin);
 
-function StatusBar(height: real; itemWidth: real): StatusBarWPF := new StatusBarWPF(height);
+function StatusBar(height: real; itemWidth: real): StatusBarWPF := new StatusBarWPF(height,itemWidth);
 
 
 procedure EmptyBlock(sz: integer);
@@ -681,6 +878,23 @@ begin
   e.Height := sz;
   e.Width := sz;
 end;
+
+function GetProperties<T>(t1: T): sequence of string;
+begin
+  var props := t1.GetType.GetProperties();
+  Result := props.OrderBy(f->f.CustomAttributes.FirstOrDefault?.ToString ?? 'NoAttr').Select(f->f.Name);
+end;
+
+function GetFields<T>(t1: T): sequence of string;
+begin
+  var flds := t1.GetType.GetFields();
+  //var flds := t1.GetType.GetFields(System.Reflection.BindingFlags.Instance or System.Reflection.BindingFlags.Public or System.Reflection.BindingFlags.NonPublic);
+  Result := flds.OrderBy(f->f.CustomAttributes.FirstOrDefault?.ToString ?? 'NoAttr').Select(f->f.Name);
+end;
+
+procedure Invoke(d: System.Delegate; params args: array of object) := GraphWPFBase.Invoke(d, args);
+procedure InvokeP(p: procedure(r: real); r: real) := GraphWPFBase.Invoke(p,r); 
+function Invoke<T>(d: Func0<T>): T := T(app.Dispatcher.Invoke(d));
 
 procedure SetActivePanelInit;
 begin

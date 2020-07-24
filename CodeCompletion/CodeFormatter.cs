@@ -1673,7 +1673,7 @@ namespace CodeFormatters
         {
             if (_program_module.program_name != null)
                 visit_node(_program_module.program_name);
-            if (_program_module.used_units != null)
+            if (_program_module.used_units != null && _program_module.used_units.source_context != null)
                 visit_node(_program_module.used_units);
             if (_program_module.program_block != null)
                 visit_node(_program_module.program_block); 
@@ -2384,6 +2384,14 @@ namespace CodeFormatters
             {
                 WriteKeyword("begin");
                 IncOffset();
+            }
+            else if (string.Compare(_token_info.text, "##", true) == 0)
+            {
+                WriteKeyword("##\n");
+            }
+            else if (string.Compare(_token_info.text, "###", true) == 0)
+            {
+                WriteKeyword("###\n");
             }
             else if (string.Compare(_token_info.text, "initialization", true) == 0)
             {

@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-G8V08V4
-// DateTime: 06.07.2020 21:39:40
+// DateTime: 22.07.2020 10:51:58
 // UserName: ?????????
 // Input file <D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
 
@@ -2779,16 +2779,17 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 { 
 			var stl = ValueStack[ValueStack.Depth-1].stn as statement_list;
 			stl.left_logical_bracket = ValueStack[ValueStack.Depth-2].ti;
-			root = CurrentSemanticValue.stn = NewProgramModule(null, null, null, new block(null, stl, CurrentLocationSpan), new token_info("end"), CurrentLocationSpan); 
+			stl.right_logical_bracket = new token_info("");
+			root = CurrentSemanticValue.stn = NewProgramModule(null, null, null, new block(null, stl, CurrentLocationSpan), new token_info(""), CurrentLocationSpan); 
 		}
         break;
       case 6: // parse_goal -> tkShortSFProgram, stmt_list
 {
 			var stl = ValueStack[ValueStack.Depth-1].stn as statement_list;
 			stl.left_logical_bracket = ValueStack[ValueStack.Depth-2].ti;
-			var un = new unit_or_namespace(new ident_list("SF", CurrentLocationSpan),CurrentLocationSpan);
-			var ul = new uses_list(un,CurrentLocationSpan);		
-			root = CurrentSemanticValue.stn = NewProgramModule(null, null, ul, new block(null, stl, CurrentLocationSpan), new token_info("end"), CurrentLocationSpan); 
+			var un = new unit_or_namespace(new ident_list("SF"),null);
+			var ul = new uses_list(un,null);		
+			root = CurrentSemanticValue.stn = NewProgramModule(null, null, ul, new block(null, stl, CurrentLocationSpan), new token_info(""), CurrentLocationSpan); 
 		}
         break;
       case 7: // parts -> tkParseModeExpression, expr

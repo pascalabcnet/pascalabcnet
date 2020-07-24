@@ -192,15 +192,16 @@ parse_goal
 		{ 
 			var stl = $2 as statement_list;
 			stl.left_logical_bracket = $1;
-			root = $$ = NewProgramModule(null, null, null, new block(null, stl, @$), new token_info("end"), @$); 
+			stl.right_logical_bracket = new token_info("");
+			root = $$ = NewProgramModule(null, null, null, new block(null, stl, @$), new token_info(""), @$); 
 		}
 	| tkShortSFProgram stmt_list	
 		{
 			var stl = $2 as statement_list;
 			stl.left_logical_bracket = $1;
-			var un = new unit_or_namespace(new ident_list("SF", @$),@$);
-			var ul = new uses_list(un,@$);		
-			root = $$ = NewProgramModule(null, null, ul, new block(null, stl, @$), new token_info("end"), @$); 
+			var un = new unit_or_namespace(new ident_list("SF"),null);
+			var ul = new uses_list(un,null);		
+			root = $$ = NewProgramModule(null, null, ul, new block(null, stl, @$), new token_info(""), @$); 
 		}
     ;
 
