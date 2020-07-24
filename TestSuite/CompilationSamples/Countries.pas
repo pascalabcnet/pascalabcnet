@@ -6,7 +6,9 @@ type
     constructor (n: integer) := Num := n;
   end;
   
+  ///!#
   Country = auto class
+  private  
     nm,cap: string;
     inh: integer;
     cont: string;
