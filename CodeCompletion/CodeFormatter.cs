@@ -3427,6 +3427,11 @@ namespace CodeFormatters
             //sb.Append("|");
         }
 
+        public override void visit(double_question_node dn)
+        {
+            visit_node(dn.left);
+            visit_node(dn.right);
+        }
         #endregion
     }
 }

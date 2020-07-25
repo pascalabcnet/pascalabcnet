@@ -1531,7 +1531,7 @@ procedure DrawGraph(f: real -> real; a, b: real; r: GRect; title: string) := Dra
 
 procedure DrawGraph(f: real -> real; r: GRect; title: string) := DrawGraph(f, -5, 5, r, title);
 
-procedure DrawGraph(f: real -> real; a, b: real; title: string) := DrawGraph(f, a, b, 0, 0, Window.Width - 1, Window.Height - 1, title);
+procedure DrawGraph(f: real -> real; a, b: real; title: string) := DrawGraph(f, a, b, 0, 0, GraphWindow.Width - 1, GraphWindow.Height - 1, title);
 
 procedure DrawGraph(f: real -> real; title: string) := DrawGraph(f, -5, 5, title);
 
