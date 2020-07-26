@@ -1,13 +1,10 @@
 ﻿// Быстрая сортировка Ч. Хоара
-// Неэффективный алгоритм, иллюстрирующмй суть
-function QS(a: array of integer): array of integer;
-begin
+// Неэффективный код, иллюстрирующий суть алгоритма
+function QS(a: array of integer): array of integer := 
   if a.Length < 2 then 
-    Result := a
-  else Result := QS(a[1:].Where(y->y<=a[0]).ToArray) + |a[0]| + QS(a[1:].Where(y->y>a[0]).ToArray)
-                 //QS(ArrGen(a[1:],y->y<=a[0]))
-                 //QS(|y:y in a[1:] where y<=a[0]|)
-end;
+    a
+  else 
+    QS(ArrFilter(a[1:],y->y<=a[0])) + |a[0]| + QS(ArrFilter(a[1:],y->y>a[0]));
 
 begin
   var a := ArrRandom(20);

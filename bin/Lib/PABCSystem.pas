@@ -2224,6 +2224,11 @@ function ArrGen<T>(count: integer; first, second: T; next: (T,T) ->T): array of 
 /// Возвращает массив из count элементов x 
 function ArrFill<T>(count: integer; x: T): array of T;
 
+/// Возвращает массив из элементов массива a, удовлетворяющих условию condition
+function ArrFilter<T>(a: array of T; condition: T->boolean): array of T;
+/// Возвращает по массиву a массив, преобразованный по правилу convert
+function ArrTransform<T,T1>(a: array of T; convert: T->T1): array of T1;
+
 /// Возвращает массив из n целых, введенных с клавиатуры
 function ReadArrInteger(n: integer): array of integer;
 /// Возвращает массив из n целых int64, введенных с клавиатуры
@@ -4732,32 +4737,29 @@ begin
   Result := a;
 end;
 
-{function ListWhile<T>(first: T; next: Func<T,T>; pred: Predicate<T>): List<T>;
+function ArrTransform<T,T1>(a: array of T; convert: T->T1): array of T1;
 begin
-  var a := new List<T>;
-  var x := first;
-  while pred(x) do
-  begin
-    a.Add(x);
-    x := next(x);
-  end;
-  Result := a;
+  var n := a.Length;
+  var a1 := new T1[n];
+  for var i:=0 to n-1 do
+    a1[i] := convert(a[i]);
+  Result := a1;
 end;
 
-function ListWhile<T>(first,second: T; next: Func2<T,T,T>; pred: Predicate<T>): List<T>;
+function ArrFilter<T>(a: array of T; condition: T->boolean): array of T;
 begin
-  var a := new List<T>;
-  var x := first;
-  var y := second;
-  while pred(x) do
-  begin
-    a.Add(x);
-    var z := next(x,y);
-    x := y;
-    y := z;
-  end;
-  Result := a;
-end;}
+  var n := a.Length;
+  var a1 := new T[n];
+  var j := 0;
+  for var i:=0 to n-1 do
+    if condition(a[i]) then
+    begin
+      a1[j] := a[i];
+      j += 1;
+    end;
+  SetLength(a1,j);  
+  Result := a1;
+end;
 
 function ArrFill<T>(count: integer; x: T): array of T;
 begin
