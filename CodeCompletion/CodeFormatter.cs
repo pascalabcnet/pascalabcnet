@@ -416,7 +416,13 @@ namespace CodeFormatters
                                         lines[i] = new string(' ', addit_pos_for_multiline) + lines[i];
                                 }
                                 else
+                                {
+                                    
                                     lines[i] = new string(' ', off) + lines[i].Trim();
+                                    if (lines[i].EndsWith(" else"))
+                                        lines[i] += " ";
+                                }
+                                    
                             }
                                 
                         }
@@ -3063,8 +3069,8 @@ namespace CodeFormatters
             add_space_after = true;
             
             visit_node(_short_func_definition.procdef.proc_body);
-            if (!(_short_func_definition.procdef.proc_header is constructor))
-                IncOffset();
+            //if (!(_short_func_definition.procdef.proc_header is constructor))
+               IncOffset();
             in_procedure = tmp_in_procedure;
             multiline_stack_pop(_short_func_definition);
         }
