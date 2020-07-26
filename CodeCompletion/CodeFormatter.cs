@@ -416,7 +416,13 @@ namespace CodeFormatters
                                         lines[i] = new string(' ', addit_pos_for_multiline) + lines[i];
                                 }
                                 else
+                                {
+                                    
                                     lines[i] = new string(' ', off) + lines[i].Trim();
+                                    if (lines[i].EndsWith(" else"))
+                                        lines[i] += " ";
+                                }
+                                    
                             }
                                 
                         }
