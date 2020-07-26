@@ -904,7 +904,8 @@ namespace CodeFormatters
                 visit_node(_statement_list.left_logical_bracket);
             }
             
-            if (!in_one_row(_statement_list) && _statement_list.left_logical_bracket != null && _statement_list.subnodes.Count > 0 && _statement_list.subnodes[0].source_context != null && _statement_list.left_logical_bracket.source_context.end_position.line_num == _statement_list.subnodes[0].source_context.begin_position.line_num)
+            if (!in_one_row(_statement_list) && _statement_list.left_logical_bracket != null && _statement_list.subnodes.Count > 0 && _statement_list.subnodes[0].source_context != null && _statement_list.left_logical_bracket.source_context.end_position.line_num == _statement_list.subnodes[0].source_context.begin_position.line_num 
+                && !_statement_list.left_logical_bracket.text.StartsWith("##"))
                 add_newline_after = true;
             else
                 add_space_after = true;
