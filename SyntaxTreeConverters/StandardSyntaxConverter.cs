@@ -45,7 +45,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             IndexVisitor.New.ProcessNode(root);
 
             // assign_tuple и assign_var_tuple
-            AssignTuplesDesugarVisitor.New.ProcessNode(root);
+            //AssignTuplesDesugarVisitor.New.ProcessNode(root);
 
             // slice_expr и slice_expr_question
             SliceDesugarVisitor.New.ProcessNode(root);

@@ -2224,10 +2224,12 @@ function ArrGen<T>(count: integer; first, second: T; next: (T,T) ->T): array of 
 /// Возвращает массив из count элементов x 
 function ArrFill<T>(count: integer; x: T): array of T;
 
-/// Возвращает массив из элементов массива a, удовлетворяющих условию condition
-function ArrFilter<T>(a: array of T; condition: T->boolean): array of T;
-/// Возвращает по массиву a массив, преобразованный по правилу convert
-function ArrTransform<T,T1>(a: array of T; convert: T->T1): array of T1;
+// Возвращает массив из элементов массива a, удовлетворяющих условию condition
+// a.FindAll
+//function ArrFilter<T>(a: array of T; condition: T->boolean): array of T;
+// Возвращает по массиву a массив, преобразованный по правилу convert
+// a.ConvertAll
+//function ArrTransform<T,T1>(a: array of T; convert: T->T1): array of T1;
 
 /// Возвращает массив из n целых, введенных с клавиатуры
 function ReadArrInteger(n: integer): array of integer;
@@ -4737,7 +4739,7 @@ begin
   Result := a;
 end;
 
-function ArrTransform<T,T1>(a: array of T; convert: T->T1): array of T1;
+{function ArrTransform<T,T1>(a: array of T; convert: T->T1): array of T1;
 begin
   var n := a.Length;
   var a1 := new T1[n];
@@ -4759,7 +4761,7 @@ begin
     end;
   SetLength(a1,j);  
   Result := a1;
-end;
+end;}
 
 function ArrFill<T>(count: integer; x: T): array of T;
 begin
