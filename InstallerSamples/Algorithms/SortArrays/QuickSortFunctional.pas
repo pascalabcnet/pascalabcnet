@@ -4,7 +4,7 @@ function QS(a: array of integer): array of integer :=
   if a.Length < 2 then 
     a
   else 
-    QS(ArrFilter(a[1:],y->y<=a[0])) + |a[0]| + QS(ArrFilter(a[1:],y->y>a[0]));
+    QS(a[1:].FindAll(y->y<=a[0])) + a[:1] + QS(a[1:].FindAll(y->y>a[0]));
 
 begin
   var a := ArrRandom(20);
