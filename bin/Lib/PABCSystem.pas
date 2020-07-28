@@ -2122,6 +2122,9 @@ procedure Reverse(var s: string);
 procedure Reverse(var s: string; index, count: integer);
 /// Перемешивает динамический массив случайным образом
 procedure Shuffle<T>(a: array of T);
+/// Возвращает, совпадают ли массивы
+function ArrEqual<T>(a, b: array of T): boolean;
+
 /// Сравнивает матрицы на равенство
 function MatrEqual<T>(a, b: array [,] of T): boolean;
 /// Перемешивает список случайным образом
@@ -2254,8 +2257,6 @@ function ReadArrReal(prompt: string; n: integer): array of real;
 /// Выводит приглашение к вводу и возвращает массив из n строк, введенных с клавиатуры
 function ReadArrString(prompt: string; n: integer): array of string;
 
-/// Возвращает, совпадают ли массивы
-function ArrEqual<T>(a, b: array of T): boolean;
 
 // -----------------------------------------------------
 //>>     Подпрограммы для создания двумерных динамических массивов # Subroutines for matrixes 
