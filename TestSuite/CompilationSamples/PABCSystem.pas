@@ -1941,7 +1941,7 @@ function TryReadIntegerFromString(s: string; var from: integer; var res: integer
 function TryReadRealFromString(s: string; var from: integer; var res: real): boolean;
 
 ///-procedure Val(s: string; var value: число; var err: integer);
-/// Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. 
+/// Преобразует строковое представление s целого или вещественного числа к числовому значению и записывает его в переменную value. 
 ///Если преобразование успешно, то err=0, иначе err>0
 procedure Val(s: string; var value: integer; var err: integer);
 ///--
@@ -2122,6 +2122,9 @@ procedure Reverse(var s: string);
 procedure Reverse(var s: string; index, count: integer);
 /// Перемешивает динамический массив случайным образом
 procedure Shuffle<T>(a: array of T);
+/// Возвращает, совпадают ли массивы
+function ArrEqual<T>(a, b: array of T): boolean;
+
 /// Сравнивает матрицы на равенство
 function MatrEqual<T>(a, b: array [,] of T): boolean;
 /// Перемешивает список случайным образом
@@ -2254,8 +2257,6 @@ function ReadArrReal(prompt: string; n: integer): array of real;
 /// Выводит приглашение к вводу и возвращает массив из n строк, введенных с клавиатуры
 function ReadArrString(prompt: string; n: integer): array of string;
 
-/// Возвращает, совпадают ли массивы
-function ArrEqual<T>(a, b: array of T): boolean;
 
 // -----------------------------------------------------
 //>>     Подпрограммы для создания двумерных динамических массивов # Subroutines for matrixes 

@@ -4426,7 +4426,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_array_const_new(array_const_new _array_const_new)
 		{
-			read_expression(_array_const_new);
+			read_addressed_value(_array_const_new);
 			_array_const_new.elements = _read_node() as expression_list;
 		}
 

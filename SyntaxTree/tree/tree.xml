@@ -3270,7 +3270,7 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
-    <SyntaxNode Name="array_const_new" BaseName="expression">
+    <SyntaxNode Name="array_const_new" BaseName="addressed_value">
       <Fields>
         <SyntaxField Name="elements" SyntaxType="expression_list" />
       </Fields>

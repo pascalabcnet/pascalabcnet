@@ -1941,7 +1941,7 @@ function TryReadIntegerFromString(s: string; var from: integer; var res: integer
 function TryReadRealFromString(s: string; var from: integer; var res: real): boolean;
 
 ///-procedure Val(s: string; var value: число; var err: integer);
-/// Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. 
+/// Преобразует строковое представление s целого или вещественного числа к числовому значению и записывает его в переменную value. 
 ///Если преобразование успешно, то err=0, иначе err>0
 procedure Val(s: string; var value: integer; var err: integer);
 ///--

@@ -187,5 +187,8 @@ function Tr<T>(Self: array of T; transform: T->T): array of T; extensionmethod :
 /// Преобразует массив по правилу transform
 procedure Tr<T>(a: array of T; transform: T->T) := a.Transform(transform);
 
+/// Возвращает индекс последнего элемента массива
+function H<T>(Self: array of T): integer; extensionmethod := Self.High;
+
 
 end.
