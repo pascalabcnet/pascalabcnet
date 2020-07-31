@@ -4545,9 +4545,9 @@ end;
 function Range(a, b: real; n: integer): sequence of real;
 begin
   if n = 0 then
-    raise new System.ArgumentException('n=0');
+    raise new System.ArgumentException('Range: n=0');
   if n < 0 then
-    raise new System.ArgumentException('n<0');
+    raise new System.ArgumentException('Range: n<0');
   var r := a;
   var h := (b - a) / n;
   for var i := 0 to n do

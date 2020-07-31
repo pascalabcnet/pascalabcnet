@@ -112,6 +112,9 @@ end;
 [ar]
 array of |;
 
+[a]
+→|
+
 [try]
 try
   |
