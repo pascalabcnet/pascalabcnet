@@ -8,23 +8,37 @@ begin
   tb.FontSize := 30;
   var x := IntegerBox('X:');
   var y := IntegerBox('Y:');
+  x.Value := Random(0,10);
+  y.Value := Random(0,10);
   
   var cb := new ComboBoxWPF('Операция');
   cb.AddRange('+','-','*','/');
   
+  var count := 0;
+  var sb := StatusBar;
+  sb.Text := 'Количество вычислений: ' + count;
+  
   var b := Button('+');
   b.Click := procedure -> begin
-    case cb.SelectedString of
-      string('+'): tb.Println($'{x.Value} + {y.Value} = {x.Value + y.Value}');
-      string('-'): tb.Println($'{x.Value} - {y.Value} = {x.Value - y.Value}');
-      string('*'): tb.Println($'{x.Value} * {y.Value} = {x.Value * y.Value}');
-      string('/'): tb.Println($'{x.Value} / {y.Value} = {x.Value / y.Value}');
+    case cb.SelectedText of
+      '+': tb.Println($'{x.Value} + {y.Value} = {x.Value + y.Value}');
+      '-': tb.Println($'{x.Value} - {y.Value} = {x.Value - y.Value}');
+      '*': tb.Println($'{x.Value} * {y.Value} = {x.Value * y.Value}');
+      '/': tb.Println($'{x.Value} / {y.Value} = {x.Value / y.Value}');
     end;
     x.Value := Random(0,10);
     y.Value := Random(0,10);
+    count += 1;
+    sb.Text := 'Количество вычислений: ' + count;
+  end;
+  
+  Button('Очистить').Click := () -> begin
+    count := 0;
+    sb.Text := 'Количество вычислений: ' + count;
+    tb.Clear;
   end;
   
   cb.SelectionChanged := procedure -> begin
-    b.Text := cb.SelectedString
+    b.Text := cb.SelectedText
   end;
 end.

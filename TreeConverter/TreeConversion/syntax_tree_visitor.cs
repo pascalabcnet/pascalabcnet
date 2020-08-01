@@ -10583,6 +10583,8 @@ namespace PascalABCCompiler.TreeConverter
                     foreach (SyntaxTree.expression expr in cv.conditions.expressions)
                     {
                         expression_node cn = convert_strong(expr);
+                        if (cn.type == SystemLibrary.SystemLibrary.char_type)
+                            cn = convertion_data_and_alghoritms.convert_type(cn, SystemLibrary.SystemLibrary.string_type);
                         if (cn.type != SystemLibrary.SystemLibrary.string_type)
                             AddError(new CanNotConvertTypes(cn, cn.type, SystemLibrary.SystemLibrary.string_type, cn.location));
                         string_const_node scn = convert_string_const_to_switch(cn, cn.location);
