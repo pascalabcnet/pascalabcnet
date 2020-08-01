@@ -16386,6 +16386,13 @@ namespace PascalABCCompiler.TreeConverter
             if (_var_def_statement.vars_type != null)
             {
                 tn = convert_strong(_var_def_statement.vars_type);
+
+                if (tn.type_special_kind != SemanticTree.type_special_kind.array_kind && 
+                    _var_def_statement.inital_value is SyntaxTree.array_const ac)
+                {
+                    AddError(get_location(_var_def_statement), "IMPOSSIBLE_TO_CONVERT_ARRAY_CONST_TO_{0}", tn);
+                }
+
                 //LambdaHelper.InferTypesFromVarStmt(tn, _var_def_statement.inital_value as SyntaxTree.function_lambda_definition, this);  //lroman//
                 if (tn.IsStatic && _var_def_statement.vars.idents[0].name != YieldHelpers.YieldConsts.Self) // SSM 10/07/19 fix #1639 в статическом классе можно только фиктивное поле с именем YieldHelpers.YieldConsts.Self описать - для того чтобы посмотреть на семантике его тип!!! 
                     AddError(get_location(_var_def_statement), "VARIABLES_OF_STATIC_CLASS_NOT_ALLOWED");
