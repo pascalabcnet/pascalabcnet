@@ -1629,6 +1629,7 @@ namespace PascalABCCompiler.TreeRealization
             {
                 cmn.return_variable = (orig_fn as common_function_node)?.return_variable;
             }
+            cmn.IsOperator = orig_fn.IsOperator;
             return cmn;
         }
 
