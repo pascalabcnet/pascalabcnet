@@ -19,9 +19,9 @@ begin
     // Вообще лучше прекомпилировать .cl файл (загружать в переменную ProgramCode)
     // И сохранять с помощью метода ProgramCode.SerializeTo
     // А полученный бинарник уже подключать через $resource
-    var code := new ProgramCode(
+    var code := new ProgramCode(Context.Default,
       System.IO.StreamReader.Create(
-        GetResourceStream('MatrMlt.cl')
+        System.Reflection.Assembly.GetExecutingAssembly.GetManifestResourceStream('MatrMlt.cl')
       ).ReadToEnd
     );
     
@@ -47,7 +47,7 @@ begin
     
     var V2 := new Buffer(VecByteSize);
     
-    var N := new Buffer(4);
+    var W := KernelArg.FromRecord(MatrW);
     
     // (запись значений в параметры - позже, в очередях)
     
@@ -55,14 +55,14 @@ begin
     
     var Calc_C_Q :=
       code['MatrMltMatr'].NewQueue.AddExec2(MatrW, MatrW, // Выделяем ядра в форме квадрата, всего MatrW*MatrW ядер
-        A.NewQueue.AddWriteArray(A_Matr) as CommandQueue<Buffer>,
-        B.NewQueue.AddWriteArray(B_Mart) as CommandQueue<Buffer>,
+        A.NewQueue.AddWriteArray2&<real>(A_Matr),
+        B.NewQueue.AddWriteArray2&<real>(B_Mart),
         C,
-        N.NewQueue.AddWriteValue(MatrW) as CommandQueue<Buffer>
+        W
       ) as CommandQueue<Kernel>;
     
     var Otp_C_Q :=
-      C.NewQueue.AddReadArray(A_Matr) as CommandQueue<Buffer> +
+      C.NewQueue.AddReadArray2&<real>(A_Matr) +
       HPQ(()->
       lock output do
       begin
@@ -74,13 +74,13 @@ begin
     var Calc_V2_Q :=
       code['MatrMltVec'].NewQueue.AddExec1(MatrW,
         C,
-        V1.NewQueue.AddWriteArray(V1_Arr) as CommandQueue<Buffer>,
+        V1.NewQueue.AddWriteArray1&<real>(V1_Arr),
         V2,
-        N // значение записывается в Calc_C_Q, тут можно использовать уже готовое
+        W
       ) as CommandQueue<Kernel>;
     
     var Otp_V2_Q :=
-      V2.NewQueue.AddReadArray(V1_Arr) as CommandQueue<Buffer> +
+      V2.NewQueue.AddReadArray1&<real>(V1_Arr) +
       HPQ(()->
       lock output do
       begin

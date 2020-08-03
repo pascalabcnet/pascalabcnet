@@ -71,12 +71,26 @@ body {
 }
 .ps-page-name {
 	cursor: pointer;
-    padding: 1;
+	padding: 1;
 }
 
 /* ============================== *\
 	       page display
 \* ============================== */
+
+blockquote > *:first-child {
+	margin-top: 0;
+}
+blockquote > *:last-child {
+	margin-bottom: 0;
+}
+blockquote {
+	margin-left: 0;
+	margin-right: 0;
+	padding: 12px;
+	border-left: 5px solid #d0d0d0;
+	background-color: #f7f7f7;
+}
 
 .smart-link {
 	color: blue;
@@ -99,7 +113,6 @@ body {
 .code-block {
 	display: inline-block;
 	cursor: text;
-	background: #F0F0F0;
 	border-radius: 3px;
 	
 	padding: 4px;
@@ -121,8 +134,12 @@ body {
 	box-shadow: -2px 2px 3px #0000004a;
 	background: linear-gradient(0deg, #f0f0f0, white);
 }
-.inline-code {
+.inline-code, .code-block {
 	background: #F0F0F0;
+}
+blockquote .inline-code,
+blockquote .code-block {
+	background: #DEDEDE;
 }
 
 .code-keyword {
@@ -859,9 +876,9 @@ window.onload = ()=>{
 }
 </script>
 <div id="page-1" page_name="" hidden=true>
-<p><code>ToDo</code> модуля <code>OpenGLABC</code> пока что не существует. Когда то он появится, но пока что есть только это сообщение.</p>
+<p><code>ToDo</code> модуль <code>OpenGLABC</code> пока что не существует. Когда то он появится, но пока что есть только это сообщение.</p>
 <p>Если хотите понять, было ли это сообщение оставлено тут 10 лет назад и забыто - вот дата, когда автор сообщения последний раз прочитал его:<br />
-24.02.2020</p>
+03.08.2020</p>
 </div>
 <script>on_start_folder("GL ABC", document.getElementById("page-1"))</script>
 <script>on_end_folder()</script>

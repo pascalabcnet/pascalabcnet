@@ -1,5 +1,4 @@
-﻿
-///
+﻿///
 ///Модуль, зарезервированный для высокоуровневой оболочки модуля OpenGL
 ///
 unit OpenGLABC;
@@ -7,6 +6,7 @@ unit OpenGLABC;
 interface
 
 uses OpenGL;
+uses OpenGLABCBase in 'Internal\OpenGLABCBase';
 
 implementation
 

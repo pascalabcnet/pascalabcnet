@@ -29,92 +29,84 @@ uses System;
 uses System.Runtime.InteropServices;
 uses System.Runtime.CompilerServices;
 
-{$region Debug}
-
-{ $define DebugMode}
-{$ifdef DebugMode}
-//
-{$endif DebugMode}
-
-{$endregion Debug}
-
-{$region Основные типы} type
+type
   
-  OpenCLException = sealed class(Exception)
-    
-    public constructor(text: string) :=
-    inherited Create($'Ошибка OpenCL: "{text}"');
-    
-  end;
-  
-{$endregion Основные типы}
-
-{$region Записи-имена} type
+  {$region Записи-имена}
   
   cl_mem = record
     public val: IntPtr;
     public constructor(val: IntPtr) := self.val := val;
     public static property Zero: cl_mem read default(cl_mem);
     public static property Size: integer read Marshal.SizeOf&<IntPtr>;
+    public function ToString: string; override := $'cl_mem[{val}]';
   end;
   cl_platform_id = record
     public val: IntPtr;
     public constructor(val: IntPtr) := self.val := val;
     public static property Zero: cl_platform_id read default(cl_platform_id);
     public static property Size: integer read Marshal.SizeOf&<IntPtr>;
+    public function ToString: string; override := $'cl_platform_id[{val}]';
   end;
   cl_device_id = record
     public val: IntPtr;
     public constructor(val: IntPtr) := self.val := val;
     public static property Zero: cl_device_id read default(cl_device_id);
     public static property Size: integer read Marshal.SizeOf&<IntPtr>;
+    public function ToString: string; override := $'cl_device_id[{val}]';
   end;
   cl_context = record
     public val: IntPtr;
     public constructor(val: IntPtr) := self.val := val;
     public static property Zero: cl_context read default(cl_context);
     public static property Size: integer read Marshal.SizeOf&<IntPtr>;
+    public function ToString: string; override := $'cl_context[{val}]';
   end;
   cl_command_queue = record
     public val: IntPtr;
     public constructor(val: IntPtr) := self.val := val;
     public static property Zero: cl_command_queue read default(cl_command_queue);
     public static property Size: integer read Marshal.SizeOf&<IntPtr>;
+    public function ToString: string; override := $'cl_command_queue[{val}]';
   end;
   cl_sampler = record
     public val: IntPtr;
     public constructor(val: IntPtr) := self.val := val;
     public static property Zero: cl_sampler read default(cl_sampler);
     public static property Size: integer read Marshal.SizeOf&<IntPtr>;
+    public function ToString: string; override := $'cl_sampler[{val}]';
   end;
   cl_program = record
     public val: IntPtr;
     public constructor(val: IntPtr) := self.val := val;
     public static property Zero: cl_program read default(cl_program);
     public static property Size: integer read Marshal.SizeOf&<IntPtr>;
+    public function ToString: string; override := $'cl_program[{val}]';
   end;
   cl_kernel = record
     public val: IntPtr;
     public constructor(val: IntPtr) := self.val := val;
     public static property Zero: cl_kernel read default(cl_kernel);
     public static property Size: integer read Marshal.SizeOf&<IntPtr>;
+    public function ToString: string; override := $'cl_kernel[{val}]';
   end;
   cl_event = record
     public val: IntPtr;
     public constructor(val: IntPtr) := self.val := val;
     public static property Zero: cl_event read default(cl_event);
     public static property Size: integer read Marshal.SizeOf&<IntPtr>;
+    public function ToString: string; override := $'cl_event[{val}]';
   end;
   cl_accelerator_intel = record
     public val: IntPtr;
     public constructor(val: IntPtr) := self.val := val;
     public static property Zero: cl_accelerator_intel read default(cl_accelerator_intel);
     public static property Size: integer read Marshal.SizeOf&<IntPtr>;
+    public function ToString: string; override := $'cl_accelerator_intel[{val}]';
   end;
   
-{$endregion Записи-имена}
-
-{$region Перечисления} type
+  {$endregion Записи-имена}
+  
+  {$region Перечисления}
   
   {$region Core}
   
@@ -138,7 +130,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($4091) then Result := 'ACCELERATOR_REFERENCE_COUNT_INTEL' else
       if self.val = UInt32($4092) then Result := 'ACCELERATOR_CONTEXT_INTEL' else
       if self.val = UInt32($4093) then Result := 'ACCELERATOR_TYPE_INTEL' else
-        Result := self.val.ToString;
+        Result := $'AcceleratorInfoIntel[{self.val}]';
     end;
     
   end;
@@ -154,7 +146,7 @@ uses System.Runtime.CompilerServices;
     public function ToString: string; override;
     begin
       if self.val = UInt32($0000) then Result := 'ACCELERATOR_TYPE_MOTION_ESTIMATION_INTEL' else
-        Result := self.val.ToString;
+        Result := $'AcceleratorTypeIntel[{self.val}]';
     end;
     
   end;
@@ -182,7 +174,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($1132) then Result := 'ADDRESS_CLAMP' else
       if self.val = UInt32($1133) then Result := 'ADDRESS_REPEAT' else
       if self.val = UInt32($1134) then Result := 'ADDRESS_MIRRORED_REPEAT' else
-        Result := self.val.ToString;
+        Result := $'AddressingMode[{self.val}]';
     end;
     
   end;
@@ -207,7 +199,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($0000) then Result := 'NON_BLOCKING' else
       if self.val = UInt32($0001) then Result := 'BLOCKING' else
       if self.val = UInt32($0001) then Result := 'TRUE' else
-        Result := self.val.ToString;
+        Result := $'Bool[{self.val}]';
     end;
     
   end;
@@ -223,7 +215,7 @@ uses System.Runtime.CompilerServices;
     public function ToString: string; override;
     begin
       if self.val = UInt32($1220) then Result := 'BUFFER_CREATE_TYPE_REGION' else
-        Result := self.val.ToString;
+        Result := $'BufferCreateType[{self.val}]';
     end;
     
   end;
@@ -248,7 +240,7 @@ uses System.Runtime.CompilerServices;
       if self.val = Int32(-1) then Result := 'BUILD_NONE' else
       if self.val = Int32(-2) then Result := 'BUILD_ERROR' else
       if self.val = Int32(-3) then Result := 'BUILD_IN_PROGRESS' else
-        Result := self.val.ToString;
+        Result := $'BuildStatus[{self.val}]';
     end;
     
   end;
@@ -342,7 +334,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($40D0) then Result := 'NV21_IMG' else
       if self.val = UInt32($40D1) then Result := 'YV12_IMG' else
       if self.val = UInt32($410E) then Result := 'NV12_INTEL' else
-        Result := self.val.ToString;
+        Result := $'ChannelOrder[{self.val}]';
     end;
     
   end;
@@ -406,7 +398,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($10DE) then Result := 'FLOAT' else
       if self.val = UInt32($10DF) then Result := 'UNORM_INT24' else
       if self.val = UInt32($10E0) then Result := 'UNORM_INT_101010_2' else
-        Result := self.val.ToString;
+        Result := $'ChannelType[{self.val}]';
     end;
     
   end;
@@ -431,7 +423,7 @@ uses System.Runtime.CompilerServices;
       if self.val = Int32($0001) then Result := 'RUNNING' else
       if self.val = Int32($0002) then Result := 'SUBMITTED' else
       if self.val = Int32($0003) then Result := 'QUEUED' else
-        Result := self.val.ToString;
+        Result := $'CommandExecutionStatus[{self.val}]';
     end;
     
     public function IS_ERROR := val < 0;
@@ -442,19 +434,21 @@ uses System.Runtime.CompilerServices;
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _QUEUE_CONTEXT         := new CommandQueueInfo($1090);
-    private static _QUEUE_DEVICE          := new CommandQueueInfo($1091);
-    private static _QUEUE_REFERENCE_COUNT := new CommandQueueInfo($1092);
-    private static _QUEUE_PROPERTIES      := new CommandQueueInfo($1093);
-    private static _QUEUE_SIZE            := new CommandQueueInfo($1094);
-    private static _QUEUE_DEVICE_DEFAULT  := new CommandQueueInfo($1095);
+    private static _QUEUE_CONTEXT          := new CommandQueueInfo($1090);
+    private static _QUEUE_DEVICE           := new CommandQueueInfo($1091);
+    private static _QUEUE_REFERENCE_COUNT  := new CommandQueueInfo($1092);
+    private static _QUEUE_PROPERTIES       := new CommandQueueInfo($1093);
+    private static _QUEUE_SIZE             := new CommandQueueInfo($1094);
+    private static _QUEUE_DEVICE_DEFAULT   := new CommandQueueInfo($1095);
+    private static _QUEUE_PROPERTIES_ARRAY := new CommandQueueInfo($1098);
     
-    public static property QUEUE_CONTEXT:         CommandQueueInfo read _QUEUE_CONTEXT;
-    public static property QUEUE_DEVICE:          CommandQueueInfo read _QUEUE_DEVICE;
-    public static property QUEUE_REFERENCE_COUNT: CommandQueueInfo read _QUEUE_REFERENCE_COUNT;
-    public static property QUEUE_PROPERTIES:      CommandQueueInfo read _QUEUE_PROPERTIES;
-    public static property QUEUE_SIZE:            CommandQueueInfo read _QUEUE_SIZE;
-    public static property QUEUE_DEVICE_DEFAULT:  CommandQueueInfo read _QUEUE_DEVICE_DEFAULT;
+    public static property QUEUE_CONTEXT:          CommandQueueInfo read _QUEUE_CONTEXT;
+    public static property QUEUE_DEVICE:           CommandQueueInfo read _QUEUE_DEVICE;
+    public static property QUEUE_REFERENCE_COUNT:  CommandQueueInfo read _QUEUE_REFERENCE_COUNT;
+    public static property QUEUE_PROPERTIES:       CommandQueueInfo read _QUEUE_PROPERTIES;
+    public static property QUEUE_SIZE:             CommandQueueInfo read _QUEUE_SIZE;
+    public static property QUEUE_DEVICE_DEFAULT:   CommandQueueInfo read _QUEUE_DEVICE_DEFAULT;
+    public static property QUEUE_PROPERTIES_ARRAY: CommandQueueInfo read _QUEUE_PROPERTIES_ARRAY;
     
     public function ToString: string; override;
     begin
@@ -464,7 +458,8 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($1093) then Result := 'QUEUE_PROPERTIES' else
       if self.val = UInt32($1094) then Result := 'QUEUE_SIZE' else
       if self.val = UInt32($1095) then Result := 'QUEUE_DEVICE_DEFAULT' else
-        Result := self.val.ToString;
+      if self.val = UInt32($1098) then Result := 'QUEUE_PROPERTIES_ARRAY' else
+        Result := $'CommandQueueInfo[{self.val}]';
     end;
     
   end;
@@ -473,6 +468,7 @@ uses System.Runtime.CompilerServices;
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
+    private static _NONE                                 := new CommandQueueProperties($0000);
     private static _QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE  := new CommandQueueProperties($0001);
     private static _QUEUE_PROFILING_ENABLE               := new CommandQueueProperties($0002);
     private static _QUEUE_ON_DEVICE                      := new CommandQueueProperties($0004);
@@ -480,6 +476,7 @@ uses System.Runtime.CompilerServices;
     private static _QUEUE_RESERVED_QCOM                  := new CommandQueueProperties($40000000);
     private static _QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL := new CommandQueueProperties($FFFFFFFF80000000);
     
+    public static property NONE:                                 CommandQueueProperties read _NONE;
     public static property QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE:  CommandQueueProperties read _QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE;
     public static property QUEUE_PROFILING_ENABLE:               CommandQueueProperties read _QUEUE_PROFILING_ENABLE;
     public static property QUEUE_ON_DEVICE:                      CommandQueueProperties read _QUEUE_ON_DEVICE;
@@ -489,6 +486,7 @@ uses System.Runtime.CompilerServices;
     
     public static function operator or(f1,f2: CommandQueueProperties) := new CommandQueueProperties(f1.val or f2.val);
     
+    public property ANY_FLAGS: boolean read self.val<>0;
     public property HAS_FLAG_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE:  boolean read self.val and $0001 <> 0;
     public property HAS_FLAG_QUEUE_PROFILING_ENABLE:               boolean read self.val and $0002 <> 0;
     public property HAS_FLAG_QUEUE_ON_DEVICE:                      boolean read self.val and $0004 <> 0;
@@ -499,6 +497,7 @@ uses System.Runtime.CompilerServices;
     public function ToString: string; override;
     begin
       var res := new StringBuilder;
+      if self.val and UInt64($0000) = UInt64($0000) then res += 'NONE+';
       if self.val and UInt64($0001) = UInt64($0001) then res += 'QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE+';
       if self.val and UInt64($0002) = UInt64($0002) then res += 'QUEUE_PROFILING_ENABLE+';
       if self.val and UInt64($0004) = UInt64($0004) then res += 'QUEUE_ON_DEVICE+';
@@ -510,7 +509,7 @@ uses System.Runtime.CompilerServices;
         res.Length -= 1;
         Result := res.ToString;
       end else
-        Result := self.val.ToString;
+        Result := $'CommandQueueProperties[{self.val}]';
     end;
     
   end;
@@ -664,7 +663,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($4205) then Result := 'COMMAND_MEMCPY_INTEL' else
       if self.val = UInt32($4206) then Result := 'COMMAND_MIGRATEMEM_INTEL' else
       if self.val = UInt32($4207) then Result := 'COMMAND_MEMADVISE_INTEL' else
-        Result := self.val.ToString;
+        Result := $'CommandType[{self.val}]';
     end;
     
   end;
@@ -722,7 +721,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($4072) then Result := 'CONTEXT_D3D9EX_DEVICE_INTEL' else
       if self.val = UInt32($4073) then Result := 'CONTEXT_DXVA_DEVICE_INTEL' else
       if self.val = UInt32($4097) then Result := 'CONTEXT_VA_API_DISPLAY_INTEL' else
-        Result := self.val.ToString;
+        Result := $'ContextInfo[{self.val}]';
     end;
     
   end;
@@ -766,7 +765,7 @@ uses System.Runtime.CompilerServices;
       if self.val = IntPtr($2032) then Result := 'CONTEXT_TERMINATE_KHR' else
       if self.val = IntPtr($40B0) then Result := 'PRINTF_CALLBACK_ARM' else
       if self.val = IntPtr($40B1) then Result := 'PRINTF_BUFFERSIZE_ARM' else
-        Result := self.val.ToString;
+        Result := $'ContextProperties[{self.val}]';
     end;
     
   end;
@@ -812,7 +811,7 @@ uses System.Runtime.CompilerServices;
         res.Length -= 1;
         Result := res.ToString;
       end else
-        Result := self.val.ToString;
+        Result := $'DeviceAffinityDomain[{self.val}]';
     end;
     
   end;
@@ -842,7 +841,7 @@ uses System.Runtime.CompilerServices;
         res.Length -= 1;
         Result := res.ToString;
       end else
-        Result := self.val.ToString;
+        Result := $'DeviceExecCapabilities[{self.val}]';
     end;
     
   end;
@@ -896,7 +895,7 @@ uses System.Runtime.CompilerServices;
         res.Length -= 1;
         Result := res.ToString;
       end else
-        Result := self.val.ToString;
+        Result := $'DeviceFPConfig[{self.val}]';
     end;
     
   end;
@@ -1001,16 +1000,26 @@ uses System.Runtime.CompilerServices;
     private static _DEVICE_IL_VERSION_KHR                              := new DeviceInfo($105B);
     private static _DEVICE_MAX_NUM_SUB_GROUPS                          := new DeviceInfo($105C);
     private static _DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS      := new DeviceInfo($105D);
+    private static _DEVICE_NUMERIC_VERSION                             := new DeviceInfo($105E);
+    private static _DEVICE_EXTENSIONS_WITH_VERSION                     := new DeviceInfo($1060);
+    private static _DEVICE_ILS_WITH_VERSION                            := new DeviceInfo($1061);
+    private static _DEVICE_BUILT_IN_KERNELS_WITH_VERSION               := new DeviceInfo($1062);
     private static _DEVICE_ATOMIC_MEMORY_CAPABILITIES                  := new DeviceInfo($1063);
     private static _DEVICE_ATOMIC_FENCE_CAPABILITIES                   := new DeviceInfo($1064);
     private static _DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT              := new DeviceInfo($1065);
-    private static _DEVICE_OPENCL_C_VERSIONS                           := new DeviceInfo($1066);
-    private static _DEVICE_MAX_WRITE_IMAGE3D_ARGS                      := new DeviceInfo($1067);
+    private static _DEVICE_OPENCL_C_ALL_VERSIONS                       := new DeviceInfo($1066);
+    private static _DEVICE_PREFERRED_WORK_GROUP_SIZE_MULTIPLE          := new DeviceInfo($1067);
     private static _DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT     := new DeviceInfo($1068);
     private static _DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT               := new DeviceInfo($1069);
+    private static _DEVICE_UUID_KHR                                    := new DeviceInfo($106A);
+    private static _DRIVER_UUID_KHR                                    := new DeviceInfo($106B);
+    private static _DEVICE_LUID_VALID_KHR                              := new DeviceInfo($106C);
+    private static _DEVICE_LUID_KHR                                    := new DeviceInfo($106D);
+    private static _DEVICE_NODE_MASK_KHR                               := new DeviceInfo($106E);
     private static _DEVICE_OPENCL_C_FEATURES                           := new DeviceInfo($106F);
-    private static _DEVICE_DEVICE_ENQUEUE_SUPPORT                      := new DeviceInfo($1070);
+    private static _DEVICE_DEVICE_ENQUEUE_CAPABILITIES                 := new DeviceInfo($1070);
     private static _DEVICE_PIPE_SUPPORT                                := new DeviceInfo($1071);
+    private static _DEVICE_LATEST_CONFORMANCE_VERSION_PASSED           := new DeviceInfo($1072);
     private static _PROGRAM_IL_KHR                                     := new DeviceInfo($1169);
     private static _DEVICE_TERMINATE_CAPABILITY_KHR                    := new DeviceInfo($2031);
     private static _DEVICE_MAX_NAMED_BARRIER_COUNT_KHR                 := new DeviceInfo($2035);
@@ -1021,7 +1030,27 @@ uses System.Runtime.CompilerServices;
     private static _DEVICE_GPU_OVERLAP_NV                              := new DeviceInfo($4004);
     private static _DEVICE_KERNEL_EXEC_TIMEOUT_NV                      := new DeviceInfo($4005);
     private static _DEVICE_INTEGRATED_MEMORY_NV                        := new DeviceInfo($4006);
+    private static _DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD               := new DeviceInfo($4030);
+    private static _DEVICE_MAX_WORK_GROUP_SIZE_AMD                     := new DeviceInfo($4031);
+    private static _DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD          := new DeviceInfo($4033);
+    private static _DEVICE_PCIE_ID_AMD                                 := new DeviceInfo($4034);
     private static _DEVICE_PROFILING_TIMER_OFFSET_AMD                  := new DeviceInfo($4036);
+    private static _DEVICE_TOPOLOGY_AMD                                := new DeviceInfo($4037);
+    private static _DEVICE_BOARD_NAME_AMD                              := new DeviceInfo($4038);
+    private static _DEVICE_GLOBAL_FREE_MEMORY_AMD                      := new DeviceInfo($4039);
+    private static _DEVICE_SIMD_PER_COMPUTE_UNIT_AMD                   := new DeviceInfo($4040);
+    private static _DEVICE_SIMD_WIDTH_AMD                              := new DeviceInfo($4041);
+    private static _DEVICE_SIMD_INSTRUCTION_WIDTH_AMD                  := new DeviceInfo($4042);
+    private static _DEVICE_WAVEFRONT_WIDTH_AMD                         := new DeviceInfo($4043);
+    private static _DEVICE_GLOBAL_MEM_CHANNELS_AMD                     := new DeviceInfo($4044);
+    private static _DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD                := new DeviceInfo($4045);
+    private static _DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD           := new DeviceInfo($4046);
+    private static _DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD         := new DeviceInfo($4047);
+    private static _DEVICE_LOCAL_MEM_BANKS_AMD                         := new DeviceInfo($4048);
+    private static _DEVICE_THREAD_TRACE_SUPPORTED_AMD                  := new DeviceInfo($4049);
+    private static _DEVICE_GFXIP_MAJOR_AMD                             := new DeviceInfo($404A);
+    private static _DEVICE_GFXIP_MINOR_AMD                             := new DeviceInfo($404B);
+    private static _DEVICE_AVAILABLE_ASYNC_QUEUES_AMD                  := new DeviceInfo($404C);
     private static _DEVICE_PARENT_DEVICE_EXT                           := new DeviceInfo($4054);
     private static _DEVICE_PARTITION_TYPES_EXT                         := new DeviceInfo($4055);
     private static _DEVICE_AFFINITY_DOMAINS_EXT                        := new DeviceInfo($4056);
@@ -1140,16 +1169,26 @@ uses System.Runtime.CompilerServices;
     public static property DEVICE_IL_VERSION_KHR:                              DeviceInfo read _DEVICE_IL_VERSION_KHR;
     public static property DEVICE_MAX_NUM_SUB_GROUPS:                          DeviceInfo read _DEVICE_MAX_NUM_SUB_GROUPS;
     public static property DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS:      DeviceInfo read _DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS;
+    public static property DEVICE_NUMERIC_VERSION:                             DeviceInfo read _DEVICE_NUMERIC_VERSION;
+    public static property DEVICE_EXTENSIONS_WITH_VERSION:                     DeviceInfo read _DEVICE_EXTENSIONS_WITH_VERSION;
+    public static property DEVICE_ILS_WITH_VERSION:                            DeviceInfo read _DEVICE_ILS_WITH_VERSION;
+    public static property DEVICE_BUILT_IN_KERNELS_WITH_VERSION:               DeviceInfo read _DEVICE_BUILT_IN_KERNELS_WITH_VERSION;
     public static property DEVICE_ATOMIC_MEMORY_CAPABILITIES:                  DeviceInfo read _DEVICE_ATOMIC_MEMORY_CAPABILITIES;
     public static property DEVICE_ATOMIC_FENCE_CAPABILITIES:                   DeviceInfo read _DEVICE_ATOMIC_FENCE_CAPABILITIES;
     public static property DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT:              DeviceInfo read _DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT;
-    public static property DEVICE_OPENCL_C_VERSIONS:                           DeviceInfo read _DEVICE_OPENCL_C_VERSIONS;
-    public static property DEVICE_MAX_WRITE_IMAGE3D_ARGS:                      DeviceInfo read _DEVICE_MAX_WRITE_IMAGE3D_ARGS;
+    public static property DEVICE_OPENCL_C_ALL_VERSIONS:                       DeviceInfo read _DEVICE_OPENCL_C_ALL_VERSIONS;
+    public static property DEVICE_PREFERRED_WORK_GROUP_SIZE_MULTIPLE:          DeviceInfo read _DEVICE_PREFERRED_WORK_GROUP_SIZE_MULTIPLE;
     public static property DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT:     DeviceInfo read _DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT;
     public static property DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT:               DeviceInfo read _DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT;
+    public static property DEVICE_UUID_KHR:                                    DeviceInfo read _DEVICE_UUID_KHR;
+    public static property DRIVER_UUID_KHR:                                    DeviceInfo read _DRIVER_UUID_KHR;
+    public static property DEVICE_LUID_VALID_KHR:                              DeviceInfo read _DEVICE_LUID_VALID_KHR;
+    public static property DEVICE_LUID_KHR:                                    DeviceInfo read _DEVICE_LUID_KHR;
+    public static property DEVICE_NODE_MASK_KHR:                               DeviceInfo read _DEVICE_NODE_MASK_KHR;
     public static property DEVICE_OPENCL_C_FEATURES:                           DeviceInfo read _DEVICE_OPENCL_C_FEATURES;
-    public static property DEVICE_DEVICE_ENQUEUE_SUPPORT:                      DeviceInfo read _DEVICE_DEVICE_ENQUEUE_SUPPORT;
+    public static property DEVICE_DEVICE_ENQUEUE_CAPABILITIES:                 DeviceInfo read _DEVICE_DEVICE_ENQUEUE_CAPABILITIES;
     public static property DEVICE_PIPE_SUPPORT:                                DeviceInfo read _DEVICE_PIPE_SUPPORT;
+    public static property DEVICE_LATEST_CONFORMANCE_VERSION_PASSED:           DeviceInfo read _DEVICE_LATEST_CONFORMANCE_VERSION_PASSED;
     public static property PROGRAM_IL_KHR:                                     DeviceInfo read _PROGRAM_IL_KHR;
     public static property DEVICE_TERMINATE_CAPABILITY_KHR:                    DeviceInfo read _DEVICE_TERMINATE_CAPABILITY_KHR;
     public static property DEVICE_MAX_NAMED_BARRIER_COUNT_KHR:                 DeviceInfo read _DEVICE_MAX_NAMED_BARRIER_COUNT_KHR;
@@ -1160,7 +1199,27 @@ uses System.Runtime.CompilerServices;
     public static property DEVICE_GPU_OVERLAP_NV:                              DeviceInfo read _DEVICE_GPU_OVERLAP_NV;
     public static property DEVICE_KERNEL_EXEC_TIMEOUT_NV:                      DeviceInfo read _DEVICE_KERNEL_EXEC_TIMEOUT_NV;
     public static property DEVICE_INTEGRATED_MEMORY_NV:                        DeviceInfo read _DEVICE_INTEGRATED_MEMORY_NV;
+    public static property DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD:               DeviceInfo read _DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD;
+    public static property DEVICE_MAX_WORK_GROUP_SIZE_AMD:                     DeviceInfo read _DEVICE_MAX_WORK_GROUP_SIZE_AMD;
+    public static property DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD:          DeviceInfo read _DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD;
+    public static property DEVICE_PCIE_ID_AMD:                                 DeviceInfo read _DEVICE_PCIE_ID_AMD;
     public static property DEVICE_PROFILING_TIMER_OFFSET_AMD:                  DeviceInfo read _DEVICE_PROFILING_TIMER_OFFSET_AMD;
+    public static property DEVICE_TOPOLOGY_AMD:                                DeviceInfo read _DEVICE_TOPOLOGY_AMD;
+    public static property DEVICE_BOARD_NAME_AMD:                              DeviceInfo read _DEVICE_BOARD_NAME_AMD;
+    public static property DEVICE_GLOBAL_FREE_MEMORY_AMD:                      DeviceInfo read _DEVICE_GLOBAL_FREE_MEMORY_AMD;
+    public static property DEVICE_SIMD_PER_COMPUTE_UNIT_AMD:                   DeviceInfo read _DEVICE_SIMD_PER_COMPUTE_UNIT_AMD;
+    public static property DEVICE_SIMD_WIDTH_AMD:                              DeviceInfo read _DEVICE_SIMD_WIDTH_AMD;
+    public static property DEVICE_SIMD_INSTRUCTION_WIDTH_AMD:                  DeviceInfo read _DEVICE_SIMD_INSTRUCTION_WIDTH_AMD;
+    public static property DEVICE_WAVEFRONT_WIDTH_AMD:                         DeviceInfo read _DEVICE_WAVEFRONT_WIDTH_AMD;
+    public static property DEVICE_GLOBAL_MEM_CHANNELS_AMD:                     DeviceInfo read _DEVICE_GLOBAL_MEM_CHANNELS_AMD;
+    public static property DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD:                DeviceInfo read _DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD;
+    public static property DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD:           DeviceInfo read _DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD;
+    public static property DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD:         DeviceInfo read _DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD;
+    public static property DEVICE_LOCAL_MEM_BANKS_AMD:                         DeviceInfo read _DEVICE_LOCAL_MEM_BANKS_AMD;
+    public static property DEVICE_THREAD_TRACE_SUPPORTED_AMD:                  DeviceInfo read _DEVICE_THREAD_TRACE_SUPPORTED_AMD;
+    public static property DEVICE_GFXIP_MAJOR_AMD:                             DeviceInfo read _DEVICE_GFXIP_MAJOR_AMD;
+    public static property DEVICE_GFXIP_MINOR_AMD:                             DeviceInfo read _DEVICE_GFXIP_MINOR_AMD;
+    public static property DEVICE_AVAILABLE_ASYNC_QUEUES_AMD:                  DeviceInfo read _DEVICE_AVAILABLE_ASYNC_QUEUES_AMD;
     public static property DEVICE_PARENT_DEVICE_EXT:                           DeviceInfo read _DEVICE_PARENT_DEVICE_EXT;
     public static property DEVICE_PARTITION_TYPES_EXT:                         DeviceInfo read _DEVICE_PARTITION_TYPES_EXT;
     public static property DEVICE_AFFINITY_DOMAINS_EXT:                        DeviceInfo read _DEVICE_AFFINITY_DOMAINS_EXT;
@@ -1281,16 +1340,26 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($105B) then Result := 'DEVICE_IL_VERSION_KHR' else
       if self.val = UInt32($105C) then Result := 'DEVICE_MAX_NUM_SUB_GROUPS' else
       if self.val = UInt32($105D) then Result := 'DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS' else
+      if self.val = UInt32($105E) then Result := 'DEVICE_NUMERIC_VERSION' else
+      if self.val = UInt32($1060) then Result := 'DEVICE_EXTENSIONS_WITH_VERSION' else
+      if self.val = UInt32($1061) then Result := 'DEVICE_ILS_WITH_VERSION' else
+      if self.val = UInt32($1062) then Result := 'DEVICE_BUILT_IN_KERNELS_WITH_VERSION' else
       if self.val = UInt32($1063) then Result := 'DEVICE_ATOMIC_MEMORY_CAPABILITIES' else
       if self.val = UInt32($1064) then Result := 'DEVICE_ATOMIC_FENCE_CAPABILITIES' else
       if self.val = UInt32($1065) then Result := 'DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT' else
-      if self.val = UInt32($1066) then Result := 'DEVICE_OPENCL_C_VERSIONS' else
-      if self.val = UInt32($1067) then Result := 'DEVICE_MAX_WRITE_IMAGE3D_ARGS' else
+      if self.val = UInt32($1066) then Result := 'DEVICE_OPENCL_C_ALL_VERSIONS' else
+      if self.val = UInt32($1067) then Result := 'DEVICE_PREFERRED_WORK_GROUP_SIZE_MULTIPLE' else
       if self.val = UInt32($1068) then Result := 'DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT' else
       if self.val = UInt32($1069) then Result := 'DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT' else
+      if self.val = UInt32($106A) then Result := 'DEVICE_UUID_KHR' else
+      if self.val = UInt32($106B) then Result := 'DRIVER_UUID_KHR' else
+      if self.val = UInt32($106C) then Result := 'DEVICE_LUID_VALID_KHR' else
+      if self.val = UInt32($106D) then Result := 'DEVICE_LUID_KHR' else
+      if self.val = UInt32($106E) then Result := 'DEVICE_NODE_MASK_KHR' else
       if self.val = UInt32($106F) then Result := 'DEVICE_OPENCL_C_FEATURES' else
-      if self.val = UInt32($1070) then Result := 'DEVICE_DEVICE_ENQUEUE_SUPPORT' else
+      if self.val = UInt32($1070) then Result := 'DEVICE_DEVICE_ENQUEUE_CAPABILITIES' else
       if self.val = UInt32($1071) then Result := 'DEVICE_PIPE_SUPPORT' else
+      if self.val = UInt32($1072) then Result := 'DEVICE_LATEST_CONFORMANCE_VERSION_PASSED' else
       if self.val = UInt32($1169) then Result := 'PROGRAM_IL_KHR' else
       if self.val = UInt32($2031) then Result := 'DEVICE_TERMINATE_CAPABILITY_KHR' else
       if self.val = UInt32($2035) then Result := 'DEVICE_MAX_NAMED_BARRIER_COUNT_KHR' else
@@ -1301,7 +1370,27 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($4004) then Result := 'DEVICE_GPU_OVERLAP_NV' else
       if self.val = UInt32($4005) then Result := 'DEVICE_KERNEL_EXEC_TIMEOUT_NV' else
       if self.val = UInt32($4006) then Result := 'DEVICE_INTEGRATED_MEMORY_NV' else
+      if self.val = UInt32($4030) then Result := 'DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD' else
+      if self.val = UInt32($4031) then Result := 'DEVICE_MAX_WORK_GROUP_SIZE_AMD' else
+      if self.val = UInt32($4033) then Result := 'DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD' else
+      if self.val = UInt32($4034) then Result := 'DEVICE_PCIE_ID_AMD' else
       if self.val = UInt32($4036) then Result := 'DEVICE_PROFILING_TIMER_OFFSET_AMD' else
+      if self.val = UInt32($4037) then Result := 'DEVICE_TOPOLOGY_AMD' else
+      if self.val = UInt32($4038) then Result := 'DEVICE_BOARD_NAME_AMD' else
+      if self.val = UInt32($4039) then Result := 'DEVICE_GLOBAL_FREE_MEMORY_AMD' else
+      if self.val = UInt32($4040) then Result := 'DEVICE_SIMD_PER_COMPUTE_UNIT_AMD' else
+      if self.val = UInt32($4041) then Result := 'DEVICE_SIMD_WIDTH_AMD' else
+      if self.val = UInt32($4042) then Result := 'DEVICE_SIMD_INSTRUCTION_WIDTH_AMD' else
+      if self.val = UInt32($4043) then Result := 'DEVICE_WAVEFRONT_WIDTH_AMD' else
+      if self.val = UInt32($4044) then Result := 'DEVICE_GLOBAL_MEM_CHANNELS_AMD' else
+      if self.val = UInt32($4045) then Result := 'DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD' else
+      if self.val = UInt32($4046) then Result := 'DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD' else
+      if self.val = UInt32($4047) then Result := 'DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD' else
+      if self.val = UInt32($4048) then Result := 'DEVICE_LOCAL_MEM_BANKS_AMD' else
+      if self.val = UInt32($4049) then Result := 'DEVICE_THREAD_TRACE_SUPPORTED_AMD' else
+      if self.val = UInt32($404A) then Result := 'DEVICE_GFXIP_MAJOR_AMD' else
+      if self.val = UInt32($404B) then Result := 'DEVICE_GFXIP_MINOR_AMD' else
+      if self.val = UInt32($404C) then Result := 'DEVICE_AVAILABLE_ASYNC_QUEUES_AMD' else
       if self.val = UInt32($4054) then Result := 'DEVICE_PARENT_DEVICE_EXT' else
       if self.val = UInt32($4055) then Result := 'DEVICE_PARTITION_TYPES_EXT' else
       if self.val = UInt32($4056) then Result := 'DEVICE_AFFINITY_DOMAINS_EXT' else
@@ -1323,7 +1412,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($4192) then Result := 'DEVICE_SINGLE_DEVICE_SHARED_MEM_CAPABILITIES_INTEL' else
       if self.val = UInt32($4193) then Result := 'DEVICE_CROSS_DEVICE_SHARED_MEM_CAPABILITIES_INTEL' else
       if self.val = UInt32($4194) then Result := 'DEVICE_SHARED_SYSTEM_MEM_CAPABILITIES_INTEL' else
-        Result := self.val.ToString;
+        Result := $'DeviceInfo[{self.val}]';
     end;
     
   end;
@@ -1342,7 +1431,7 @@ uses System.Runtime.CompilerServices;
     begin
       if self.val = UInt32($0001) then Result := 'LOCAL' else
       if self.val = UInt32($0002) then Result := 'GLOBAL' else
-        Result := self.val.ToString;
+        Result := $'DeviceLocalMemType[{self.val}]';
     end;
     
   end;
@@ -1364,7 +1453,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($0000) then Result := 'NONE' else
       if self.val = UInt32($0001) then Result := 'READ_ONLY_CACHE' else
       if self.val = UInt32($0002) then Result := 'READ_WRITE_CACHE' else
-        Result := self.val.ToString;
+        Result := $'DeviceMemCacheType[{self.val}]';
     end;
     
   end;
@@ -1390,7 +1479,7 @@ uses System.Runtime.CompilerServices;
       if self.val = IntPtr($1086) then Result := 'DEVICE_PARTITION_EQUALLY' else
       if self.val = IntPtr($1087) then Result := 'DEVICE_PARTITION_BY_COUNTS' else
       if self.val = IntPtr($1088) then Result := 'DEVICE_PARTITION_BY_AFFINITY_DOMAIN' else
-        Result := self.val.ToString;
+        Result := $'DevicePartitionProperty[{self.val}]';
     end;
     
   end;
@@ -1424,7 +1513,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt64($4051) then Result := 'DEVICE_PARTITION_BY_COUNTS_EXT' else
       if self.val = UInt64($4052) then Result := 'DEVICE_PARTITION_BY_NAMES_EXT' else
       if self.val = UInt64($4053) then Result := 'DEVICE_PARTITION_BY_AFFINITY_DOMAIN_EXT' else
-        Result := self.val.ToString;
+        Result := $'DevicePartitionPropertyExt[{self.val}]';
     end;
     
   end;
@@ -1462,7 +1551,7 @@ uses System.Runtime.CompilerServices;
         res.Length -= 1;
         Result := res.ToString;
       end else
-        Result := self.val.ToString;
+        Result := $'DeviceSVMCapabilities[{self.val}]';
     end;
     
   end;
@@ -1508,7 +1597,7 @@ uses System.Runtime.CompilerServices;
         res.Length -= 1;
         Result := res.ToString;
       end else
-        Result := self.val.ToString;
+        Result := $'DeviceType[{self.val}]';
     end;
     
   end;
@@ -1527,7 +1616,7 @@ uses System.Runtime.CompilerServices;
     begin
       if self.val = UInt32($4024) then Result := 'PREFERRED_DEVICES_FOR_DX9_INTEL' else
       if self.val = UInt32($4025) then Result := 'ALL_DEVICES_FOR_DX9_INTEL' else
-        Result := self.val.ToString;
+        Result := $'Dx9DeviceSetIntel[{self.val}]';
     end;
     
   end;
@@ -1549,7 +1638,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($4022) then Result := 'D3D9_DEVICE_INTEL' else
       if self.val = UInt32($4070) then Result := 'D3D9EX_DEVICE_INTEL' else
       if self.val = UInt32($4071) then Result := 'DXVA_DEVICE_INTEL' else
-        Result := self.val.ToString;
+        Result := $'Dx9DeviceSourceIntel[{self.val}]';
     end;
     
   end;
@@ -1566,7 +1655,7 @@ uses System.Runtime.CompilerServices;
     public function ToString: string; override;
     begin
       if self.val = IntPtr($4107) then Result := 'EGL_YUV_PLANE_INTEL' else
-        Result := self.val.ToString;
+        Result := $'EglImagePropertiesKhr[{self.val}]';
     end;
     
   end;
@@ -1671,6 +1760,7 @@ uses System.Runtime.CompilerServices;
     private static _VA_API_MEDIA_SURFACE_NOT_ACQUIRED_INTEL     := new ErrorCode(-1101);
     private static _PIPE_FULL_INTEL                             := new ErrorCode(-1106);
     private static _PIPE_EMPTY_INTEL                            := new ErrorCode(-1107);
+    private static _CONTEXT_TERMINATED_KHR                      := new ErrorCode(-1121);
     
     public static property SUCCESS:                                     ErrorCode read _SUCCESS;
     public static property DEVICE_NOT_FOUND:                            ErrorCode read _DEVICE_NOT_FOUND;
@@ -1768,6 +1858,7 @@ uses System.Runtime.CompilerServices;
     public static property VA_API_MEDIA_SURFACE_NOT_ACQUIRED_INTEL:     ErrorCode read _VA_API_MEDIA_SURFACE_NOT_ACQUIRED_INTEL;
     public static property PIPE_FULL_INTEL:                             ErrorCode read _PIPE_FULL_INTEL;
     public static property PIPE_EMPTY_INTEL:                            ErrorCode read _PIPE_EMPTY_INTEL;
+    public static property CONTEXT_TERMINATED_KHR:                      ErrorCode read _CONTEXT_TERMINATED_KHR;
     
     public function ToString: string; override;
     begin
@@ -1867,15 +1958,16 @@ uses System.Runtime.CompilerServices;
       if self.val = Int32(-1101) then Result := 'VA_API_MEDIA_SURFACE_NOT_ACQUIRED_INTEL' else
       if self.val = Int32(-1106) then Result := 'PIPE_FULL_INTEL' else
       if self.val = Int32(-1107) then Result := 'PIPE_EMPTY_INTEL' else
-        Result := self.val.ToString;
+      if self.val = Int32(-1121) then Result := 'CONTEXT_TERMINATED_KHR' else
+        Result := $'ErrorCode[{self.val}]';
     end;
     
     public function IS_ERROR := val<>0;
     
-    public procedure RaiseIfError :=
-    if IS_ERROR then raise new OpenCLException(self.ToString);
+    public procedure RaiseIfError;
     
-    public constructor(st: CommandExecutionStatus) := self.val := st.val;
+    public static function operator explicit(st: CommandExecutionStatus): ErrorCode := new ErrorCode(st.val);
+    public static function operator explicit(ec: ErrorCode): CommandExecutionStatus := new CommandExecutionStatus(ec.val);
     
   end;
   
@@ -1902,7 +1994,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($11D2) then Result := 'EVENT_REFERENCE_COUNT' else
       if self.val = UInt32($11D3) then Result := 'EVENT_COMMAND_EXECUTION_STATUS' else
       if self.val = UInt32($11D4) then Result := 'EVENT_CONTEXT' else
-        Result := self.val.ToString;
+        Result := $'EventInfo[{self.val}]';
     end;
     
   end;
@@ -1921,7 +2013,7 @@ uses System.Runtime.CompilerServices;
     begin
       if self.val = UInt32($1140) then Result := 'FILTER_NEAREST' else
       if self.val = UInt32($1141) then Result := 'FILTER_LINEAR' else
-        Result := self.val.ToString;
+        Result := $'FilterMode[{self.val}]';
     end;
     
   end;
@@ -1940,7 +2032,7 @@ uses System.Runtime.CompilerServices;
     begin
       if self.val = UInt32($2006) then Result := 'CURRENT_DEVICE_FOR_GL_CONTEXT_KHR' else
       if self.val = UInt32($2007) then Result := 'DEVICES_FOR_GL_CONTEXT_KHR' else
-        Result := self.val.ToString;
+        Result := $'GlContextInfo[{self.val}]';
     end;
     
   end;
@@ -1977,7 +2069,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($200F) then Result := 'GL_OBJECT_TEXTURE1D' else
       if self.val = UInt32($2010) then Result := 'GL_OBJECT_TEXTURE1D_ARRAY' else
       if self.val = UInt32($2011) then Result := 'GL_OBJECT_TEXTURE_BUFFER' else
-        Result := self.val.ToString;
+        Result := $'GlObjectType[{self.val}]';
     end;
     
   end;
@@ -1999,7 +2091,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($2004) then Result := 'GL_TEXTURE_TARGET' else
       if self.val = UInt32($2005) then Result := 'GL_MIPMAP_LEVEL' else
       if self.val = UInt32($2012) then Result := 'GL_NUM_SAMPLES' else
-        Result := self.val.ToString;
+        Result := $'GlTextureInfo[{self.val}]';
     end;
     
   end;
@@ -2060,7 +2152,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($401F) then Result := 'IMAGE_D3D11_SUBRESOURCE_KHR' else
       if self.val = UInt32($4075) then Result := 'IMAGE_DX9_PLANE_INTEL' else
       if self.val = UInt32($4099) then Result := 'IMAGE_VA_API_PLANE_INTEL' else
-        Result := self.val.ToString;
+        Result := $'ImageInfo[{self.val}]';
     end;
     
   end;
@@ -2085,7 +2177,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($11A1) then Result := 'KERNEL_ARG_ACCESS_WRITE_ONLY' else
       if self.val = UInt32($11A2) then Result := 'KERNEL_ARG_ACCESS_READ_WRITE' else
       if self.val = UInt32($11A3) then Result := 'KERNEL_ARG_ACCESS_NONE' else
-        Result := self.val.ToString;
+        Result := $'KernelArgAccessQualifier[{self.val}]';
     end;
     
   end;
@@ -2110,7 +2202,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($119C) then Result := 'KERNEL_ARG_ADDRESS_LOCAL' else
       if self.val = UInt32($119D) then Result := 'KERNEL_ARG_ADDRESS_CONSTANT' else
       if self.val = UInt32($119E) then Result := 'KERNEL_ARG_ADDRESS_PRIVATE' else
-        Result := self.val.ToString;
+        Result := $'KernelArgAddressQualifier[{self.val}]';
     end;
     
   end;
@@ -2138,7 +2230,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($1198) then Result := 'KERNEL_ARG_TYPE_NAME' else
       if self.val = UInt32($1199) then Result := 'KERNEL_ARG_TYPE_QUALIFIER' else
       if self.val = UInt32($119A) then Result := 'KERNEL_ARG_NAME' else
-        Result := self.val.ToString;
+        Result := $'KernelArgInfo[{self.val}]';
     end;
     
   end;
@@ -2166,7 +2258,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt64($0002) then Result := 'KERNEL_ARG_TYPE_RESTRICT' else
       if self.val = UInt64($0004) then Result := 'KERNEL_ARG_TYPE_VOLATILE' else
       if self.val = UInt64($0008) then Result := 'KERNEL_ARG_TYPE_PIPE' else
-        Result := self.val.ToString;
+        Result := $'KernelArgTypeQualifier[{self.val}]';
     end;
     
   end;
@@ -2197,7 +2289,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($4201) then Result := 'KERNEL_EXEC_INFO_INDIRECT_DEVICE_ACCESS_INTEL' else
       if self.val = UInt32($4202) then Result := 'KERNEL_EXEC_INFO_INDIRECT_SHARED_ACCESS_INTEL' else
       if self.val = UInt32($4203) then Result := 'KERNEL_EXEC_INFO_USM_PTRS_INTEL' else
-        Result := self.val.ToString;
+        Result := $'KernelExecInfo[{self.val}]';
     end;
     
   end;
@@ -2228,7 +2320,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($1193) then Result := 'KERNEL_CONTEXT' else
       if self.val = UInt32($1194) then Result := 'KERNEL_PROGRAM' else
       if self.val = UInt32($1195) then Result := 'KERNEL_ATTRIBUTES' else
-        Result := self.val.ToString;
+        Result := $'KernelInfo[{self.val}]';
     end;
     
   end;
@@ -2265,7 +2357,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($2034) then Result := 'KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE' else
       if self.val = UInt32($2034) then Result := 'KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE_KHR' else
       if self.val = UInt32($410A) then Result := 'KERNEL_COMPILE_SUB_GROUP_SIZE_INTEL' else
-        Result := self.val.ToString;
+        Result := $'KernelSubGroupInfo[{self.val}]';
     end;
     
   end;
@@ -2299,7 +2391,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($11B4) then Result := 'KERNEL_PRIVATE_MEM_SIZE' else
       if self.val = UInt32($11B5) then Result := 'KERNEL_GLOBAL_WORK_SIZE' else
       if self.val = UInt32($4109) then Result := 'KERNEL_SPILL_MEM_SIZE_INTEL' else
-        Result := self.val.ToString;
+        Result := $'KernelWorkGroupInfo[{self.val}]';
     end;
     
   end;
@@ -2333,7 +2425,7 @@ uses System.Runtime.CompilerServices;
         res.Length -= 1;
         Result := res.ToString;
       end else
-        Result := self.val.ToString;
+        Result := $'MapFlags[{self.val}]';
     end;
     
   end;
@@ -2439,7 +2531,7 @@ uses System.Runtime.CompilerServices;
         res.Length -= 1;
         Result := res.ToString;
       end else
-        Result := self.val.ToString;
+        Result := $'MemFlags[{self.val}]';
     end;
     
   end;
@@ -2458,6 +2550,7 @@ uses System.Runtime.CompilerServices;
     private static _MEM_ASSOCIATED_MEMOBJECT       := new MemInfo($1107);
     private static _MEM_OFFSET                     := new MemInfo($1108);
     private static _MEM_USES_SVM_POINTER           := new MemInfo($1109);
+    private static _MEM_PROPERTIES                 := new MemInfo($110A);
     private static _MEM_DX9_MEDIA_ADAPTER_TYPE_KHR := new MemInfo($2028);
     private static _MEM_DX9_MEDIA_SURFACE_INFO_KHR := new MemInfo($2029);
     private static _MEM_D3D10_RESOURCE_KHR         := new MemInfo($4015);
@@ -2476,6 +2569,7 @@ uses System.Runtime.CompilerServices;
     public static property MEM_ASSOCIATED_MEMOBJECT:       MemInfo read _MEM_ASSOCIATED_MEMOBJECT;
     public static property MEM_OFFSET:                     MemInfo read _MEM_OFFSET;
     public static property MEM_USES_SVM_POINTER:           MemInfo read _MEM_USES_SVM_POINTER;
+    public static property MEM_PROPERTIES:                 MemInfo read _MEM_PROPERTIES;
     public static property MEM_DX9_MEDIA_ADAPTER_TYPE_KHR: MemInfo read _MEM_DX9_MEDIA_ADAPTER_TYPE_KHR;
     public static property MEM_DX9_MEDIA_SURFACE_INFO_KHR: MemInfo read _MEM_DX9_MEDIA_SURFACE_INFO_KHR;
     public static property MEM_D3D10_RESOURCE_KHR:         MemInfo read _MEM_D3D10_RESOURCE_KHR;
@@ -2496,6 +2590,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($1107) then Result := 'MEM_ASSOCIATED_MEMOBJECT' else
       if self.val = UInt32($1108) then Result := 'MEM_OFFSET' else
       if self.val = UInt32($1109) then Result := 'MEM_USES_SVM_POINTER' else
+      if self.val = UInt32($110A) then Result := 'MEM_PROPERTIES' else
       if self.val = UInt32($2028) then Result := 'MEM_DX9_MEDIA_ADAPTER_TYPE_KHR' else
       if self.val = UInt32($2029) then Result := 'MEM_DX9_MEDIA_SURFACE_INFO_KHR' else
       if self.val = UInt32($4015) then Result := 'MEM_D3D10_RESOURCE_KHR' else
@@ -2503,7 +2598,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($4027) then Result := 'MEM_DX9_RESOURCE_INTEL' else
       if self.val = UInt32($4074) then Result := 'MEM_DX9_SHARED_HANDLE_INTEL' else
       if self.val = UInt32($4098) then Result := 'MEM_VA_API_MEDIA_SURFACE_INTEL' else
-        Result := self.val.ToString;
+        Result := $'MemInfo[{self.val}]';
     end;
     
   end;
@@ -2533,7 +2628,7 @@ uses System.Runtime.CompilerServices;
         res.Length -= 1;
         Result := res.ToString;
       end else
-        Result := self.val.ToString;
+        Result := $'MemMigrationFlags[{self.val}]';
     end;
     
   end;
@@ -2549,26 +2644,7 @@ uses System.Runtime.CompilerServices;
     public function ToString: string; override;
     begin
       if self.val = UInt64($0001) then Result := 'MIGRATE_MEM_OBJECT_HOST_EXT' else
-        Result := self.val.ToString;
-    end;
-    
-  end;
-  
-  MemMigrationFlagsIntel = record
-    public val: UInt64;
-    public constructor(val: UInt64) := self.val := val;
-    
-    private static _MIGRATE_MEM_OBJECT_HOST_INTEL              := new MemMigrationFlagsIntel($0001);
-    private static _MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED_INTEL := new MemMigrationFlagsIntel($0002);
-    
-    public static property MIGRATE_MEM_OBJECT_HOST_INTEL:              MemMigrationFlagsIntel read _MIGRATE_MEM_OBJECT_HOST_INTEL;
-    public static property MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED_INTEL: MemMigrationFlagsIntel read _MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED_INTEL;
-    
-    public function ToString: string; override;
-    begin
-      if self.val = UInt64($0001) then Result := 'MIGRATE_MEM_OBJECT_HOST_INTEL' else
-      if self.val = UInt64($0002) then Result := 'MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED_INTEL' else
-        Result := self.val.ToString;
+        Result := $'MemMigrationFlagsExt[{self.val}]';
     end;
     
   end;
@@ -2605,7 +2681,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($10F5) then Result := 'MEM_OBJECT_IMAGE1D_ARRAY' else
       if self.val = UInt32($10F6) then Result := 'MEM_OBJECT_IMAGE1D_BUFFER' else
       if self.val = UInt32($10F7) then Result := 'MEM_OBJECT_PIPE' else
-        Result := self.val.ToString;
+        Result := $'MemObjectType[{self.val}]';
     end;
     
   end;
@@ -2621,7 +2697,7 @@ uses System.Runtime.CompilerServices;
     public function ToString: string; override;
     begin
       if self.val = UInt64($4195) then Result := 'MEM_ALLOC_FLAGS_INTEL' else
-        Result := self.val.ToString;
+        Result := $'MemPropertiesIntel[{self.val}]';
     end;
     
   end;
@@ -2632,15 +2708,18 @@ uses System.Runtime.CompilerServices;
     
     private static _PIPE_PACKET_SIZE := new PipeInfo($1120);
     private static _PIPE_MAX_PACKETS := new PipeInfo($1121);
+    private static _PIPE_PROPERTIES  := new PipeInfo($1122);
     
     public static property PIPE_PACKET_SIZE: PipeInfo read _PIPE_PACKET_SIZE;
     public static property PIPE_MAX_PACKETS: PipeInfo read _PIPE_MAX_PACKETS;
+    public static property PIPE_PROPERTIES:  PipeInfo read _PIPE_PROPERTIES;
     
     public function ToString: string; override;
     begin
       if self.val = UInt32($1120) then Result := 'PIPE_PACKET_SIZE' else
       if self.val = UInt32($1121) then Result := 'PIPE_MAX_PACKETS' else
-        Result := self.val.ToString;
+      if self.val = UInt32($1122) then Result := 'PIPE_PROPERTIES' else
+        Result := $'PipeInfo[{self.val}]';
     end;
     
   end;
@@ -2649,21 +2728,25 @@ uses System.Runtime.CompilerServices;
     public val: UInt32;
     public constructor(val: UInt32) := self.val := val;
     
-    private static _PLATFORM_PROFILE               := new PlatformInfo($0900);
-    private static _PLATFORM_VERSION               := new PlatformInfo($0901);
-    private static _PLATFORM_NAME                  := new PlatformInfo($0902);
-    private static _PLATFORM_VENDOR                := new PlatformInfo($0903);
-    private static _PLATFORM_EXTENSIONS            := new PlatformInfo($0904);
-    private static _PLATFORM_HOST_TIMER_RESOLUTION := new PlatformInfo($0905);
-    private static _PLATFORM_ICD_SUFFIX_KHR        := new PlatformInfo($0920);
+    private static _PLATFORM_PROFILE                 := new PlatformInfo($0900);
+    private static _PLATFORM_VERSION                 := new PlatformInfo($0901);
+    private static _PLATFORM_NAME                    := new PlatformInfo($0902);
+    private static _PLATFORM_VENDOR                  := new PlatformInfo($0903);
+    private static _PLATFORM_EXTENSIONS              := new PlatformInfo($0904);
+    private static _PLATFORM_HOST_TIMER_RESOLUTION   := new PlatformInfo($0905);
+    private static _PLATFORM_NUMERIC_VERSION         := new PlatformInfo($0906);
+    private static _PLATFORM_EXTENSIONS_WITH_VERSION := new PlatformInfo($0907);
+    private static _PLATFORM_ICD_SUFFIX_KHR          := new PlatformInfo($0920);
     
-    public static property PLATFORM_PROFILE:               PlatformInfo read _PLATFORM_PROFILE;
-    public static property PLATFORM_VERSION:               PlatformInfo read _PLATFORM_VERSION;
-    public static property PLATFORM_NAME:                  PlatformInfo read _PLATFORM_NAME;
-    public static property PLATFORM_VENDOR:                PlatformInfo read _PLATFORM_VENDOR;
-    public static property PLATFORM_EXTENSIONS:            PlatformInfo read _PLATFORM_EXTENSIONS;
-    public static property PLATFORM_HOST_TIMER_RESOLUTION: PlatformInfo read _PLATFORM_HOST_TIMER_RESOLUTION;
-    public static property PLATFORM_ICD_SUFFIX_KHR:        PlatformInfo read _PLATFORM_ICD_SUFFIX_KHR;
+    public static property PLATFORM_PROFILE:                 PlatformInfo read _PLATFORM_PROFILE;
+    public static property PLATFORM_VERSION:                 PlatformInfo read _PLATFORM_VERSION;
+    public static property PLATFORM_NAME:                    PlatformInfo read _PLATFORM_NAME;
+    public static property PLATFORM_VENDOR:                  PlatformInfo read _PLATFORM_VENDOR;
+    public static property PLATFORM_EXTENSIONS:              PlatformInfo read _PLATFORM_EXTENSIONS;
+    public static property PLATFORM_HOST_TIMER_RESOLUTION:   PlatformInfo read _PLATFORM_HOST_TIMER_RESOLUTION;
+    public static property PLATFORM_NUMERIC_VERSION:         PlatformInfo read _PLATFORM_NUMERIC_VERSION;
+    public static property PLATFORM_EXTENSIONS_WITH_VERSION: PlatformInfo read _PLATFORM_EXTENSIONS_WITH_VERSION;
+    public static property PLATFORM_ICD_SUFFIX_KHR:          PlatformInfo read _PLATFORM_ICD_SUFFIX_KHR;
     
     public function ToString: string; override;
     begin
@@ -2673,8 +2756,10 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($0903) then Result := 'PLATFORM_VENDOR' else
       if self.val = UInt32($0904) then Result := 'PLATFORM_EXTENSIONS' else
       if self.val = UInt32($0905) then Result := 'PLATFORM_HOST_TIMER_RESOLUTION' else
+      if self.val = UInt32($0906) then Result := 'PLATFORM_NUMERIC_VERSION' else
+      if self.val = UInt32($0907) then Result := 'PLATFORM_EXTENSIONS_WITH_VERSION' else
       if self.val = UInt32($0920) then Result := 'PLATFORM_ICD_SUFFIX_KHR' else
-        Result := self.val.ToString;
+        Result := $'PlatformInfo[{self.val}]';
     end;
     
   end;
@@ -2702,7 +2787,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($1282) then Result := 'PROFILING_COMMAND_START' else
       if self.val = UInt32($1283) then Result := 'PROFILING_COMMAND_END' else
       if self.val = UInt32($1284) then Result := 'PROFILING_COMMAND_COMPLETE' else
-        Result := self.val.ToString;
+        Result := $'ProfilingInfo[{self.val}]';
     end;
     
   end;
@@ -2730,7 +2815,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($0002) then Result := 'PROGRAM_BINARY_TYPE_LIBRARY' else
       if self.val = UInt32($0004) then Result := 'PROGRAM_BINARY_TYPE_EXECUTABLE' else
       if self.val = UInt32($40E1) then Result := 'PROGRAM_BINARY_TYPE_INTERMEDIATE' else
-        Result := self.val.ToString;
+        Result := $'ProgramBinaryType[{self.val}]';
     end;
     
   end;
@@ -2758,7 +2843,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($1183) then Result := 'PROGRAM_BUILD_LOG' else
       if self.val = UInt32($1184) then Result := 'PROGRAM_BINARY_TYPE' else
       if self.val = UInt32($1185) then Result := 'PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE' else
-        Result := self.val.ToString;
+        Result := $'ProgramBuildInfo[{self.val}]';
     end;
     
   end;
@@ -2807,7 +2892,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($1169) then Result := 'PROGRAM_IL' else
       if self.val = UInt32($116A) then Result := 'PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT' else
       if self.val = UInt32($116B) then Result := 'PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT' else
-        Result := self.val.ToString;
+        Result := $'ProgramInfo[{self.val}]';
     end;
     
   end;
@@ -2826,7 +2911,7 @@ uses System.Runtime.CompilerServices;
     begin
       if self.val = UInt64($1096) then Result := 'QUEUE_PRIORITY_KHR' else
       if self.val = UInt64($1097) then Result := 'QUEUE_THROTTLE_KHR' else
-        Result := self.val.ToString;
+        Result := $'QueueProperties[{self.val}]';
     end;
     
   end;
@@ -2843,6 +2928,7 @@ uses System.Runtime.CompilerServices;
     private static _SAMPLER_MIP_FILTER_MODE   := new SamplerInfo($1155);
     private static _SAMPLER_LOD_MIN           := new SamplerInfo($1156);
     private static _SAMPLER_LOD_MAX           := new SamplerInfo($1157);
+    private static _SAMPLER_PROPERTIES        := new SamplerInfo($1158);
     
     public static property SAMPLER_REFERENCE_COUNT:   SamplerInfo read _SAMPLER_REFERENCE_COUNT;
     public static property SAMPLER_CONTEXT:           SamplerInfo read _SAMPLER_CONTEXT;
@@ -2852,6 +2938,7 @@ uses System.Runtime.CompilerServices;
     public static property SAMPLER_MIP_FILTER_MODE:   SamplerInfo read _SAMPLER_MIP_FILTER_MODE;
     public static property SAMPLER_LOD_MIN:           SamplerInfo read _SAMPLER_LOD_MIN;
     public static property SAMPLER_LOD_MAX:           SamplerInfo read _SAMPLER_LOD_MAX;
+    public static property SAMPLER_PROPERTIES:        SamplerInfo read _SAMPLER_PROPERTIES;
     
     public function ToString: string; override;
     begin
@@ -2863,7 +2950,8 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt32($1155) then Result := 'SAMPLER_MIP_FILTER_MODE' else
       if self.val = UInt32($1156) then Result := 'SAMPLER_LOD_MIN' else
       if self.val = UInt32($1157) then Result := 'SAMPLER_LOD_MAX' else
-        Result := self.val.ToString;
+      if self.val = UInt32($1158) then Result := 'SAMPLER_PROPERTIES' else
+        Result := $'SamplerInfo[{self.val}]';
     end;
     
   end;
@@ -2872,20 +2960,20 @@ uses System.Runtime.CompilerServices;
     public val: UInt64;
     public constructor(val: UInt64) := self.val := val;
     
-    private static _SAMPLER_MIP_FILTER_MODE := new SamplerProperties($1155);
-    private static _SAMPLER_LOD_MIN         := new SamplerProperties($1156);
-    private static _SAMPLER_LOD_MAX         := new SamplerProperties($1157);
+    private static _SAMPLER_MIP_FILTER_MODE_KHR := new SamplerProperties($1155);
+    private static _SAMPLER_LOD_MIN_KHR         := new SamplerProperties($1156);
+    private static _SAMPLER_LOD_MAX_KHR         := new SamplerProperties($1157);
     
-    public static property SAMPLER_MIP_FILTER_MODE: SamplerProperties read _SAMPLER_MIP_FILTER_MODE;
-    public static property SAMPLER_LOD_MIN:         SamplerProperties read _SAMPLER_LOD_MIN;
-    public static property SAMPLER_LOD_MAX:         SamplerProperties read _SAMPLER_LOD_MAX;
+    public static property SAMPLER_MIP_FILTER_MODE_KHR: SamplerProperties read _SAMPLER_MIP_FILTER_MODE_KHR;
+    public static property SAMPLER_LOD_MIN_KHR:         SamplerProperties read _SAMPLER_LOD_MIN_KHR;
+    public static property SAMPLER_LOD_MAX_KHR:         SamplerProperties read _SAMPLER_LOD_MAX_KHR;
     
     public function ToString: string; override;
     begin
-      if self.val = UInt64($1155) then Result := 'SAMPLER_MIP_FILTER_MODE' else
-      if self.val = UInt64($1156) then Result := 'SAMPLER_LOD_MIN' else
-      if self.val = UInt64($1157) then Result := 'SAMPLER_LOD_MAX' else
-        Result := self.val.ToString;
+      if self.val = UInt64($1155) then Result := 'SAMPLER_MIP_FILTER_MODE_KHR' else
+      if self.val = UInt64($1156) then Result := 'SAMPLER_LOD_MIN_KHR' else
+      if self.val = UInt64($1157) then Result := 'SAMPLER_LOD_MAX_KHR' else
+        Result := $'SamplerProperties[{self.val}]';
     end;
     
   end;
@@ -2934,7 +3022,7 @@ uses System.Runtime.CompilerServices;
       if self.val = UInt64($0400) then Result := 'MEM_SVM_FINE_GRAIN_BUFFER' else
       if self.val = UInt64($0800) then Result := 'MEM_SVM_ATOMICS' else
       if self.val = UInt64($1000) then Result := 'MEM_KERNEL_READ_AND_WRITE' else
-        Result := self.val.ToString;
+        Result := $'SvmMemFlags[{self.val}]';
     end;
     
   end;
@@ -2953,7 +3041,7 @@ uses System.Runtime.CompilerServices;
     begin
       if self.val = UInt32($4095) then Result := 'PREFERRED_DEVICES_FOR_VA_API_INTEL' else
       if self.val = UInt32($4096) then Result := 'ALL_DEVICES_FOR_VA_API_INTEL' else
-        Result := self.val.ToString;
+        Result := $'VaApiDeviceSetIntel[{self.val}]';
     end;
     
   end;
@@ -2969,22 +3057,25 @@ uses System.Runtime.CompilerServices;
     public function ToString: string; override;
     begin
       if self.val = UInt32($4094) then Result := 'VA_API_DISPLAY_INTEL' else
-        Result := self.val.ToString;
+        Result := $'VaApiDeviceSourceIntel[{self.val}]';
     end;
     
   end;
   
   {$endregion Core}
   
-{$endregion Перечисления}
-
-{$region Делегаты} type
+  {$endregion Перечисления}
+  
+  {$region Делегаты}
   
   [UnmanagedFunctionPointer(CallingConvention.StdCall)]
   ProgramCallback = procedure(&program: cl_program; user_data: IntPtr);
   
   [UnmanagedFunctionPointer(CallingConvention.StdCall)]
   CreateContextCallback = procedure(errinfo: IntPtr; private_info: IntPtr; cb: UInt32; user_data: IntPtr);
+  
+  [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+  ContextDestructorCallback = procedure(context: cl_context; user_data: IntPtr);
   
   [UnmanagedFunctionPointer(CallingConvention.StdCall)]
   EnqueueNativeKernelCallback = procedure(args: IntPtr);
@@ -2998,9 +3089,9 @@ uses System.Runtime.CompilerServices;
   [UnmanagedFunctionPointer(CallingConvention.StdCall)]
   MemObjectDestructorCallback = procedure(memobj: cl_mem; user_data: IntPtr);
   
-{$endregion Делегаты}
-
-{$region Записи} type
+  {$endregion Делегаты}
+  
+  {$region Записи}
   
   cl_buffer_region = record
     public origin: UIntPtr;
@@ -3054,9 +3145,28 @@ uses System.Runtime.CompilerServices;
     
   end;
   
-{$endregion Записи}
-
-type
+  {$endregion Записи}
+  
+  {$region Другие типы}
+  
+  OpenCLException = sealed class(Exception)
+    private ec: ErrorCode;
+    public property Code: ErrorCode read ec;
+    
+    public constructor(Code: ErrorCode; Message: string);
+    begin
+      inherited Create(Message);
+      self.ec := Code;
+    end;
+    
+    public constructor(Code: ErrorCode) :=
+    Create(Code, $'Ошибка OpenCL: {Code}');
+    
+  end;
+  
+  {$endregion Другие типы}
+  
+  {$region Функции}
   
   [PCUNotRestore]
   cl = static class
@@ -3068,11 +3178,15 @@ type
     external 'opencl.dll' name 'clBuildProgram';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function BuildProgram(&program: cl_program; num_devices: UInt32; device_list: array of cl_device_id; options: string; pfn_notify: ProgramCallback; user_data: IntPtr): ErrorCode;
     begin
-      var par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
-      if (device_list<>nil) and (device_list.Length<>0) then
-        Result := z_BuildProgram_ovr_0(&program, num_devices, device_list[0], par_4_str_ptr, pfn_notify, user_data) else
-        Result := z_BuildProgram_ovr_0_anh0001000(&program, num_devices, IntPtr.Zero, par_4_str_ptr, pfn_notify, user_data);
-      Marshal.FreeHGlobal(par_4_str_ptr);
+      var par_4_str_ptr: IntPtr;
+      try
+        par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
+        if (device_list<>nil) and (device_list.Length<>0) then
+          Result := z_BuildProgram_ovr_0(&program, num_devices, device_list[0], par_4_str_ptr, pfn_notify, user_data) else
+          Result := z_BuildProgram_ovr_0_anh0001000(&program, num_devices, IntPtr.Zero, par_4_str_ptr, pfn_notify, user_data);
+      finally
+        Marshal.FreeHGlobal(par_4_str_ptr);
+      end;
     end;
     private static function z_BuildProgram_ovr_1_anh0001000(&program: cl_program; num_devices: UInt32; device_list: IntPtr; options: IntPtr; pfn_notify: ProgramCallback; user_data: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clBuildProgram';
@@ -3082,9 +3196,13 @@ type
       z_BuildProgram_ovr_0_anh0001000(&program, num_devices, IntPtr.Zero, options, pfn_notify, user_data);
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function BuildProgram(&program: cl_program; num_devices: UInt32; var device_list: cl_device_id; options: string; pfn_notify: ProgramCallback; user_data: IntPtr): ErrorCode;
     begin
-      var par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
-      Result := z_BuildProgram_ovr_0(&program, num_devices, device_list, par_4_str_ptr, pfn_notify, user_data);
-      Marshal.FreeHGlobal(par_4_str_ptr);
+      var par_4_str_ptr: IntPtr;
+      try
+        par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
+        Result := z_BuildProgram_ovr_0(&program, num_devices, device_list, par_4_str_ptr, pfn_notify, user_data);
+      finally
+        Marshal.FreeHGlobal(par_4_str_ptr);
+      end;
     end;
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function BuildProgram(&program: cl_program; num_devices: UInt32; var device_list: cl_device_id; options: IntPtr; pfn_notify: ProgramCallback; user_data: IntPtr): ErrorCode :=
     z_BuildProgram_ovr_0(&program, num_devices, device_list, options, pfn_notify, user_data);
@@ -3092,9 +3210,13 @@ type
     external 'opencl.dll' name 'clBuildProgram';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function BuildProgram(&program: cl_program; num_devices: UInt32; device_list: IntPtr; options: string; pfn_notify: ProgramCallback; user_data: IntPtr): ErrorCode;
     begin
-      var par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
-      Result := z_BuildProgram_ovr_4(&program, num_devices, device_list, par_4_str_ptr, pfn_notify, user_data);
-      Marshal.FreeHGlobal(par_4_str_ptr);
+      var par_4_str_ptr: IntPtr;
+      try
+        par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
+        Result := z_BuildProgram_ovr_4(&program, num_devices, device_list, par_4_str_ptr, pfn_notify, user_data);
+      finally
+        Marshal.FreeHGlobal(par_4_str_ptr);
+      end;
     end;
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function BuildProgram(&program: cl_program; num_devices: UInt32; device_list: IntPtr; options: IntPtr; pfn_notify: ProgramCallback; user_data: IntPtr): ErrorCode :=
     z_BuildProgram_ovr_4(&program, num_devices, device_list, options, pfn_notify, user_data);
@@ -3112,47 +3234,68 @@ type
     external 'opencl.dll' name 'clCompileProgram';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CompileProgram(&program: cl_program; num_devices: UInt32; var device_list: cl_device_id; options: string; num_input_headers: UInt32; var input_headers: cl_program; header_include_names: array of string; pfn_notify: ProgramCallback; user_data: IntPtr): ErrorCode;
     begin
-      var par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
-      var par_7_str_ptr := header_include_names?.ConvertAll(arr_el1->Marshal.StringToHGlobalAnsi(arr_el1));
-      if (par_7_str_ptr<>nil) and (par_7_str_ptr.Length<>0) then
-        Result := z_CompileProgram_ovr_0(&program, num_devices, device_list, par_4_str_ptr, num_input_headers, input_headers, par_7_str_ptr[0], pfn_notify, user_data) else
-        Result := z_CompileProgram_ovr_0_anh0000000100(&program, num_devices, device_list, par_4_str_ptr, num_input_headers, input_headers, IntPtr.Zero, pfn_notify, user_data);
-      Marshal.FreeHGlobal(par_4_str_ptr);
-      foreach var arr_el1 in par_7_str_ptr do Marshal.FreeHGlobal(arr_el1);
+      var par_7_str_ptr: array of IntPtr;
+      var par_4_str_ptr: IntPtr;
+      try
+        par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
+        par_7_str_ptr := header_include_names?.ConvertAll(arr_el1->Marshal.StringToHGlobalAnsi(arr_el1));
+        if (par_7_str_ptr<>nil) and (par_7_str_ptr.Length<>0) then
+          Result := z_CompileProgram_ovr_0(&program, num_devices, device_list, par_4_str_ptr, num_input_headers, input_headers, par_7_str_ptr[0], pfn_notify, user_data) else
+          Result := z_CompileProgram_ovr_0_anh0000000100(&program, num_devices, device_list, par_4_str_ptr, num_input_headers, input_headers, IntPtr.Zero, pfn_notify, user_data);
+      finally
+        Marshal.FreeHGlobal(par_4_str_ptr);
+        foreach var arr_el1 in par_7_str_ptr do Marshal.FreeHGlobal(arr_el1);
+      end;
     end;
     private static function z_CompileProgram_ovr_1_anh0000000100(&program: cl_program; num_devices: UInt32; var device_list: cl_device_id; options: IntPtr; num_input_headers: UInt32; var input_headers: cl_program; header_include_names: IntPtr; pfn_notify: ProgramCallback; user_data: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clCompileProgram';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CompileProgram(&program: cl_program; num_devices: UInt32; var device_list: cl_device_id; options: string; num_input_headers: UInt32; var input_headers: cl_program; header_include_names: array of IntPtr; pfn_notify: ProgramCallback; user_data: IntPtr): ErrorCode;
     begin
-      var par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
-      if (header_include_names<>nil) and (header_include_names.Length<>0) then
-        Result := z_CompileProgram_ovr_0(&program, num_devices, device_list, par_4_str_ptr, num_input_headers, input_headers, header_include_names[0], pfn_notify, user_data) else
-        Result := z_CompileProgram_ovr_0_anh0000000100(&program, num_devices, device_list, par_4_str_ptr, num_input_headers, input_headers, IntPtr.Zero, pfn_notify, user_data);
-      Marshal.FreeHGlobal(par_4_str_ptr);
+      var par_4_str_ptr: IntPtr;
+      try
+        par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
+        if (header_include_names<>nil) and (header_include_names.Length<>0) then
+          Result := z_CompileProgram_ovr_0(&program, num_devices, device_list, par_4_str_ptr, num_input_headers, input_headers, header_include_names[0], pfn_notify, user_data) else
+          Result := z_CompileProgram_ovr_0_anh0000000100(&program, num_devices, device_list, par_4_str_ptr, num_input_headers, input_headers, IntPtr.Zero, pfn_notify, user_data);
+      finally
+        Marshal.FreeHGlobal(par_4_str_ptr);
+      end;
     end;
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CompileProgram(&program: cl_program; num_devices: UInt32; var device_list: cl_device_id; options: string; num_input_headers: UInt32; var input_headers: cl_program; var header_include_names: IntPtr; pfn_notify: ProgramCallback; user_data: IntPtr): ErrorCode;
     begin
-      var par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
-      Result := z_CompileProgram_ovr_0(&program, num_devices, device_list, par_4_str_ptr, num_input_headers, input_headers, header_include_names, pfn_notify, user_data);
-      Marshal.FreeHGlobal(par_4_str_ptr);
+      var par_4_str_ptr: IntPtr;
+      try
+        par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
+        Result := z_CompileProgram_ovr_0(&program, num_devices, device_list, par_4_str_ptr, num_input_headers, input_headers, header_include_names, pfn_notify, user_data);
+      finally
+        Marshal.FreeHGlobal(par_4_str_ptr);
+      end;
     end;
     private static function z_CompileProgram_ovr_3(&program: cl_program; num_devices: UInt32; var device_list: cl_device_id; options: IntPtr; num_input_headers: UInt32; input_headers: IntPtr; header_include_names: pointer; pfn_notify: ProgramCallback; user_data: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clCompileProgram';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CompileProgram(&program: cl_program; num_devices: UInt32; var device_list: cl_device_id; options: string; num_input_headers: UInt32; input_headers: IntPtr; header_include_names: pointer; pfn_notify: ProgramCallback; user_data: IntPtr): ErrorCode;
     begin
-      var par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
-      Result := z_CompileProgram_ovr_3(&program, num_devices, device_list, par_4_str_ptr, num_input_headers, input_headers, header_include_names, pfn_notify, user_data);
-      Marshal.FreeHGlobal(par_4_str_ptr);
+      var par_4_str_ptr: IntPtr;
+      try
+        par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
+        Result := z_CompileProgram_ovr_3(&program, num_devices, device_list, par_4_str_ptr, num_input_headers, input_headers, header_include_names, pfn_notify, user_data);
+      finally
+        Marshal.FreeHGlobal(par_4_str_ptr);
+      end;
     end;
     private static function z_CompileProgram_ovr_4_anh0000000100(&program: cl_program; num_devices: UInt32; var device_list: cl_device_id; options: IntPtr; num_input_headers: UInt32; var input_headers: cl_program; header_include_names: IntPtr; pfn_notify: ProgramCallback; user_data: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clCompileProgram';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CompileProgram(&program: cl_program; num_devices: UInt32; var device_list: cl_device_id; options: IntPtr; num_input_headers: UInt32; var input_headers: cl_program; header_include_names: array of string; pfn_notify: ProgramCallback; user_data: IntPtr): ErrorCode;
     begin
-      var par_7_str_ptr := header_include_names?.ConvertAll(arr_el1->Marshal.StringToHGlobalAnsi(arr_el1));
-      if (par_7_str_ptr<>nil) and (par_7_str_ptr.Length<>0) then
-        Result := z_CompileProgram_ovr_0(&program, num_devices, device_list, options, num_input_headers, input_headers, par_7_str_ptr[0], pfn_notify, user_data) else
-        Result := z_CompileProgram_ovr_0_anh0000000100(&program, num_devices, device_list, options, num_input_headers, input_headers, IntPtr.Zero, pfn_notify, user_data);
-      foreach var arr_el1 in par_7_str_ptr do Marshal.FreeHGlobal(arr_el1);
+      var par_7_str_ptr: array of IntPtr;
+      try
+        par_7_str_ptr := header_include_names?.ConvertAll(arr_el1->Marshal.StringToHGlobalAnsi(arr_el1));
+        if (par_7_str_ptr<>nil) and (par_7_str_ptr.Length<>0) then
+          Result := z_CompileProgram_ovr_0(&program, num_devices, device_list, options, num_input_headers, input_headers, par_7_str_ptr[0], pfn_notify, user_data) else
+          Result := z_CompileProgram_ovr_0_anh0000000100(&program, num_devices, device_list, options, num_input_headers, input_headers, IntPtr.Zero, pfn_notify, user_data);
+      finally
+        foreach var arr_el1 in par_7_str_ptr do Marshal.FreeHGlobal(arr_el1);
+      end;
     end;
     private static function z_CompileProgram_ovr_5_anh0000000100(&program: cl_program; num_devices: UInt32; var device_list: cl_device_id; options: IntPtr; num_input_headers: UInt32; var input_headers: cl_program; header_include_names: IntPtr; pfn_notify: ProgramCallback; user_data: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clCompileProgram';
@@ -3188,6 +3331,22 @@ type
     external 'opencl.dll' name 'clCreateBuffer';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateBuffer(context: cl_context; flags: MemFlags; size: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
     z_CreateBuffer_ovr_2(context, flags, size, host_ptr, errcode_ret);
+    
+    // added in cl3.0
+    private static function z_CreateBufferWithProperties_ovr_0(context: cl_context; var properties: UInt64; flags: MemFlags; size: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateBufferWithProperties';
+    private static function z_CreateBufferWithProperties_ovr_0_anh0010000(context: cl_context; properties: IntPtr; flags: MemFlags; size: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateBufferWithProperties';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateBufferWithProperties(context: cl_context; properties: array of UInt64; flags: MemFlags; size: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    if (properties<>nil) and (properties.Length<>0) then
+      z_CreateBufferWithProperties_ovr_0(context, properties[0], flags, size, host_ptr, errcode_ret) else
+      z_CreateBufferWithProperties_ovr_0_anh0010000(context, IntPtr.Zero, flags, size, host_ptr, errcode_ret);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateBufferWithProperties(context: cl_context; var properties: UInt64; flags: MemFlags; size: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    z_CreateBufferWithProperties_ovr_0(context, properties, flags, size, host_ptr, errcode_ret);
+    private static function z_CreateBufferWithProperties_ovr_2(context: cl_context; properties: IntPtr; flags: MemFlags; size: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateBufferWithProperties';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateBufferWithProperties(context: cl_context; properties: IntPtr; flags: MemFlags; size: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    z_CreateBufferWithProperties_ovr_2(context, properties, flags, size, host_ptr, errcode_ret);
     
     // added in cl1.0
     private static function z_CreateCommandQueue_ovr_0(context: cl_context; device: cl_device_id; properties: CommandQueueProperties; var errcode_ret: ErrorCode): cl_command_queue;
@@ -3337,14 +3496,220 @@ type
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImage3D(context: cl_context; flags: MemFlags; image_format: IntPtr; image_width: UIntPtr; image_height: UIntPtr; image_depth: UIntPtr; image_row_pitch: UIntPtr; image_slice_pitch: UIntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
     z_CreateImage3D_ovr_2(context, flags, image_format, image_width, image_height, image_depth, image_row_pitch, image_slice_pitch, host_ptr, errcode_ret);
     
+    // added in cl3.0
+    private static function z_CreateImageWithProperties_ovr_0(context: cl_context; var properties: UInt64; flags: MemFlags; var image_format: cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    private static function z_CreateImageWithProperties_ovr_0_anh00100000(context: cl_context; properties: IntPtr; flags: MemFlags; var image_format: cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    private static function z_CreateImageWithProperties_ovr_0_anh00001000(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    private static function z_CreateImageWithProperties_ovr_0_anh00101000(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    private static function z_CreateImageWithProperties_ovr_0_anh00000100(context: cl_context; var properties: UInt64; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    private static function z_CreateImageWithProperties_ovr_0_anh00100100(context: cl_context; properties: IntPtr; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    private static function z_CreateImageWithProperties_ovr_0_anh00001100(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    private static function z_CreateImageWithProperties_ovr_0_anh00101100(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of UInt64; flags: MemFlags; image_format: array of cl_image_format; image_desc: array of cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    if (properties<>nil) and (properties.Length<>0) then
+      if (image_format<>nil) and (image_format.Length<>0) then
+        if (image_desc<>nil) and (image_desc.Length<>0) then
+          z_CreateImageWithProperties_ovr_0(context, properties[0], flags, image_format[0], image_desc[0], host_ptr, errcode_ret) else
+          z_CreateImageWithProperties_ovr_0_anh00000100(context, properties[0], flags, image_format[0], IntPtr.Zero, host_ptr, errcode_ret) else
+        if (image_desc<>nil) and (image_desc.Length<>0) then
+          z_CreateImageWithProperties_ovr_0_anh00001000(context, properties[0], flags, IntPtr.Zero, image_desc[0], host_ptr, errcode_ret) else
+          z_CreateImageWithProperties_ovr_0_anh00001100(context, properties[0], flags, IntPtr.Zero, IntPtr.Zero, host_ptr, errcode_ret) else
+      if (image_format<>nil) and (image_format.Length<>0) then
+        if (image_desc<>nil) and (image_desc.Length<>0) then
+          z_CreateImageWithProperties_ovr_0_anh00100000(context, IntPtr.Zero, flags, image_format[0], image_desc[0], host_ptr, errcode_ret) else
+          z_CreateImageWithProperties_ovr_0_anh00100100(context, IntPtr.Zero, flags, image_format[0], IntPtr.Zero, host_ptr, errcode_ret) else
+        if (image_desc<>nil) and (image_desc.Length<>0) then
+          z_CreateImageWithProperties_ovr_0_anh00101000(context, IntPtr.Zero, flags, IntPtr.Zero, image_desc[0], host_ptr, errcode_ret) else
+          z_CreateImageWithProperties_ovr_0_anh00101100(context, IntPtr.Zero, flags, IntPtr.Zero, IntPtr.Zero, host_ptr, errcode_ret);
+    private static function z_CreateImageWithProperties_ovr_1_anh00100000(context: cl_context; properties: IntPtr; flags: MemFlags; var image_format: cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    private static function z_CreateImageWithProperties_ovr_1_anh00001000(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    private static function z_CreateImageWithProperties_ovr_1_anh00101000(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of UInt64; flags: MemFlags; image_format: array of cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    if (properties<>nil) and (properties.Length<>0) then
+      if (image_format<>nil) and (image_format.Length<>0) then
+        z_CreateImageWithProperties_ovr_0(context, properties[0], flags, image_format[0], image_desc, host_ptr, errcode_ret) else
+        z_CreateImageWithProperties_ovr_0_anh00001000(context, properties[0], flags, IntPtr.Zero, image_desc, host_ptr, errcode_ret) else
+      if (image_format<>nil) and (image_format.Length<>0) then
+        z_CreateImageWithProperties_ovr_0_anh00100000(context, IntPtr.Zero, flags, image_format[0], image_desc, host_ptr, errcode_ret) else
+        z_CreateImageWithProperties_ovr_0_anh00101000(context, IntPtr.Zero, flags, IntPtr.Zero, image_desc, host_ptr, errcode_ret);
+    private static function z_CreateImageWithProperties_ovr_2(context: cl_context; var properties: UInt64; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    private static function z_CreateImageWithProperties_ovr_2_anh00100000(context: cl_context; properties: IntPtr; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    private static function z_CreateImageWithProperties_ovr_2_anh00001000(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    private static function z_CreateImageWithProperties_ovr_2_anh00101000(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of UInt64; flags: MemFlags; image_format: array of cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    if (properties<>nil) and (properties.Length<>0) then
+      if (image_format<>nil) and (image_format.Length<>0) then
+        z_CreateImageWithProperties_ovr_2(context, properties[0], flags, image_format[0], image_desc, host_ptr, errcode_ret) else
+        z_CreateImageWithProperties_ovr_2_anh00001000(context, properties[0], flags, IntPtr.Zero, image_desc, host_ptr, errcode_ret) else
+      if (image_format<>nil) and (image_format.Length<>0) then
+        z_CreateImageWithProperties_ovr_2_anh00100000(context, IntPtr.Zero, flags, image_format[0], image_desc, host_ptr, errcode_ret) else
+        z_CreateImageWithProperties_ovr_2_anh00101000(context, IntPtr.Zero, flags, IntPtr.Zero, image_desc, host_ptr, errcode_ret);
+    private static function z_CreateImageWithProperties_ovr_3_anh00100000(context: cl_context; properties: IntPtr; flags: MemFlags; var image_format: cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    private static function z_CreateImageWithProperties_ovr_3_anh00100100(context: cl_context; properties: IntPtr; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of UInt64; flags: MemFlags; var image_format: cl_image_format; image_desc: array of cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    if (properties<>nil) and (properties.Length<>0) then
+      if (image_desc<>nil) and (image_desc.Length<>0) then
+        z_CreateImageWithProperties_ovr_0(context, properties[0], flags, image_format, image_desc[0], host_ptr, errcode_ret) else
+        z_CreateImageWithProperties_ovr_0_anh00000100(context, properties[0], flags, image_format, IntPtr.Zero, host_ptr, errcode_ret) else
+      if (image_desc<>nil) and (image_desc.Length<>0) then
+        z_CreateImageWithProperties_ovr_0_anh00100000(context, IntPtr.Zero, flags, image_format, image_desc[0], host_ptr, errcode_ret) else
+        z_CreateImageWithProperties_ovr_0_anh00100100(context, IntPtr.Zero, flags, image_format, IntPtr.Zero, host_ptr, errcode_ret);
+    private static function z_CreateImageWithProperties_ovr_4_anh00100000(context: cl_context; properties: IntPtr; flags: MemFlags; var image_format: cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of UInt64; flags: MemFlags; var image_format: cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    if (properties<>nil) and (properties.Length<>0) then
+      z_CreateImageWithProperties_ovr_0(context, properties[0], flags, image_format, image_desc, host_ptr, errcode_ret) else
+      z_CreateImageWithProperties_ovr_0_anh00100000(context, IntPtr.Zero, flags, image_format, image_desc, host_ptr, errcode_ret);
+    private static function z_CreateImageWithProperties_ovr_5_anh00100000(context: cl_context; properties: IntPtr; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of UInt64; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    if (properties<>nil) and (properties.Length<>0) then
+      z_CreateImageWithProperties_ovr_2(context, properties[0], flags, image_format, image_desc, host_ptr, errcode_ret) else
+      z_CreateImageWithProperties_ovr_2_anh00100000(context, IntPtr.Zero, flags, image_format, image_desc, host_ptr, errcode_ret);
+    private static function z_CreateImageWithProperties_ovr_6(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    private static function z_CreateImageWithProperties_ovr_6_anh00100000(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    private static function z_CreateImageWithProperties_ovr_6_anh00000100(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    private static function z_CreateImageWithProperties_ovr_6_anh00100100(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of UInt64; flags: MemFlags; image_format: IntPtr; image_desc: array of cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    if (properties<>nil) and (properties.Length<>0) then
+      if (image_desc<>nil) and (image_desc.Length<>0) then
+        z_CreateImageWithProperties_ovr_6(context, properties[0], flags, image_format, image_desc[0], host_ptr, errcode_ret) else
+        z_CreateImageWithProperties_ovr_6_anh00000100(context, properties[0], flags, image_format, IntPtr.Zero, host_ptr, errcode_ret) else
+      if (image_desc<>nil) and (image_desc.Length<>0) then
+        z_CreateImageWithProperties_ovr_6_anh00100000(context, IntPtr.Zero, flags, image_format, image_desc[0], host_ptr, errcode_ret) else
+        z_CreateImageWithProperties_ovr_6_anh00100100(context, IntPtr.Zero, flags, image_format, IntPtr.Zero, host_ptr, errcode_ret);
+    private static function z_CreateImageWithProperties_ovr_7_anh00100000(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of UInt64; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    if (properties<>nil) and (properties.Length<>0) then
+      z_CreateImageWithProperties_ovr_6(context, properties[0], flags, image_format, image_desc, host_ptr, errcode_ret) else
+      z_CreateImageWithProperties_ovr_6_anh00100000(context, IntPtr.Zero, flags, image_format, image_desc, host_ptr, errcode_ret);
+    private static function z_CreateImageWithProperties_ovr_8(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    private static function z_CreateImageWithProperties_ovr_8_anh00100000(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: array of UInt64; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    if (properties<>nil) and (properties.Length<>0) then
+      z_CreateImageWithProperties_ovr_8(context, properties[0], flags, image_format, image_desc, host_ptr, errcode_ret) else
+      z_CreateImageWithProperties_ovr_8_anh00100000(context, IntPtr.Zero, flags, image_format, image_desc, host_ptr, errcode_ret);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: array of cl_image_format; image_desc: array of cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    if (image_format<>nil) and (image_format.Length<>0) then
+      if (image_desc<>nil) and (image_desc.Length<>0) then
+        z_CreateImageWithProperties_ovr_0(context, properties, flags, image_format[0], image_desc[0], host_ptr, errcode_ret) else
+        z_CreateImageWithProperties_ovr_0_anh00000100(context, properties, flags, image_format[0], IntPtr.Zero, host_ptr, errcode_ret) else
+      if (image_desc<>nil) and (image_desc.Length<>0) then
+        z_CreateImageWithProperties_ovr_0_anh00001000(context, properties, flags, IntPtr.Zero, image_desc[0], host_ptr, errcode_ret) else
+        z_CreateImageWithProperties_ovr_0_anh00001100(context, properties, flags, IntPtr.Zero, IntPtr.Zero, host_ptr, errcode_ret);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: array of cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    if (image_format<>nil) and (image_format.Length<>0) then
+      z_CreateImageWithProperties_ovr_0(context, properties, flags, image_format[0], image_desc, host_ptr, errcode_ret) else
+      z_CreateImageWithProperties_ovr_0_anh00001000(context, properties, flags, IntPtr.Zero, image_desc, host_ptr, errcode_ret);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: array of cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    if (image_format<>nil) and (image_format.Length<>0) then
+      z_CreateImageWithProperties_ovr_2(context, properties, flags, image_format[0], image_desc, host_ptr, errcode_ret) else
+      z_CreateImageWithProperties_ovr_2_anh00001000(context, properties, flags, IntPtr.Zero, image_desc, host_ptr, errcode_ret);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: UInt64; flags: MemFlags; var image_format: cl_image_format; image_desc: array of cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    if (image_desc<>nil) and (image_desc.Length<>0) then
+      z_CreateImageWithProperties_ovr_0(context, properties, flags, image_format, image_desc[0], host_ptr, errcode_ret) else
+      z_CreateImageWithProperties_ovr_0_anh00000100(context, properties, flags, image_format, IntPtr.Zero, host_ptr, errcode_ret);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: UInt64; flags: MemFlags; var image_format: cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    z_CreateImageWithProperties_ovr_0(context, properties, flags, image_format, image_desc, host_ptr, errcode_ret);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: UInt64; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    z_CreateImageWithProperties_ovr_2(context, properties, flags, image_format, image_desc, host_ptr, errcode_ret);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: IntPtr; image_desc: array of cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    if (image_desc<>nil) and (image_desc.Length<>0) then
+      z_CreateImageWithProperties_ovr_6(context, properties, flags, image_format, image_desc[0], host_ptr, errcode_ret) else
+      z_CreateImageWithProperties_ovr_6_anh00000100(context, properties, flags, image_format, IntPtr.Zero, host_ptr, errcode_ret);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    z_CreateImageWithProperties_ovr_6(context, properties, flags, image_format, image_desc, host_ptr, errcode_ret);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; var properties: UInt64; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    z_CreateImageWithProperties_ovr_8(context, properties, flags, image_format, image_desc, host_ptr, errcode_ret);
+    private static function z_CreateImageWithProperties_ovr_18(context: cl_context; properties: IntPtr; flags: MemFlags; var image_format: cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    private static function z_CreateImageWithProperties_ovr_18_anh00001000(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    private static function z_CreateImageWithProperties_ovr_18_anh00000100(context: cl_context; properties: IntPtr; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    private static function z_CreateImageWithProperties_ovr_18_anh00001100(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: array of cl_image_format; image_desc: array of cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    if (image_format<>nil) and (image_format.Length<>0) then
+      if (image_desc<>nil) and (image_desc.Length<>0) then
+        z_CreateImageWithProperties_ovr_18(context, properties, flags, image_format[0], image_desc[0], host_ptr, errcode_ret) else
+        z_CreateImageWithProperties_ovr_18_anh00000100(context, properties, flags, image_format[0], IntPtr.Zero, host_ptr, errcode_ret) else
+      if (image_desc<>nil) and (image_desc.Length<>0) then
+        z_CreateImageWithProperties_ovr_18_anh00001000(context, properties, flags, IntPtr.Zero, image_desc[0], host_ptr, errcode_ret) else
+        z_CreateImageWithProperties_ovr_18_anh00001100(context, properties, flags, IntPtr.Zero, IntPtr.Zero, host_ptr, errcode_ret);
+    private static function z_CreateImageWithProperties_ovr_19_anh00001000(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: array of cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    if (image_format<>nil) and (image_format.Length<>0) then
+      z_CreateImageWithProperties_ovr_18(context, properties, flags, image_format[0], image_desc, host_ptr, errcode_ret) else
+      z_CreateImageWithProperties_ovr_18_anh00001000(context, properties, flags, IntPtr.Zero, image_desc, host_ptr, errcode_ret);
+    private static function z_CreateImageWithProperties_ovr_20(context: cl_context; properties: IntPtr; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    private static function z_CreateImageWithProperties_ovr_20_anh00001000(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: array of cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    if (image_format<>nil) and (image_format.Length<>0) then
+      z_CreateImageWithProperties_ovr_20(context, properties, flags, image_format[0], image_desc, host_ptr, errcode_ret) else
+      z_CreateImageWithProperties_ovr_20_anh00001000(context, properties, flags, IntPtr.Zero, image_desc, host_ptr, errcode_ret);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: IntPtr; flags: MemFlags; var image_format: cl_image_format; image_desc: array of cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    if (image_desc<>nil) and (image_desc.Length<>0) then
+      z_CreateImageWithProperties_ovr_18(context, properties, flags, image_format, image_desc[0], host_ptr, errcode_ret) else
+      z_CreateImageWithProperties_ovr_18_anh00000100(context, properties, flags, image_format, IntPtr.Zero, host_ptr, errcode_ret);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: IntPtr; flags: MemFlags; var image_format: cl_image_format; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    z_CreateImageWithProperties_ovr_18(context, properties, flags, image_format, image_desc, host_ptr, errcode_ret);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: IntPtr; flags: MemFlags; var image_format: cl_image_format; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    z_CreateImageWithProperties_ovr_20(context, properties, flags, image_format, image_desc, host_ptr, errcode_ret);
+    private static function z_CreateImageWithProperties_ovr_24(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    private static function z_CreateImageWithProperties_ovr_24_anh00000100(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; image_desc: array of cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    if (image_desc<>nil) and (image_desc.Length<>0) then
+      z_CreateImageWithProperties_ovr_24(context, properties, flags, image_format, image_desc[0], host_ptr, errcode_ret) else
+      z_CreateImageWithProperties_ovr_24_anh00000100(context, properties, flags, image_format, IntPtr.Zero, host_ptr, errcode_ret);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; var image_desc: cl_image_desc; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    z_CreateImageWithProperties_ovr_24(context, properties, flags, image_format, image_desc, host_ptr, errcode_ret);
+    private static function z_CreateImageWithProperties_ovr_26(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem;
+    external 'opencl.dll' name 'clCreateImageWithProperties';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateImageWithProperties(context: cl_context; properties: IntPtr; flags: MemFlags; image_format: IntPtr; image_desc: IntPtr; host_ptr: IntPtr; var errcode_ret: ErrorCode): cl_mem :=
+    z_CreateImageWithProperties_ovr_26(context, properties, flags, image_format, image_desc, host_ptr, errcode_ret);
+    
     // added in cl1.0
     private static function z_CreateKernel_ovr_0(&program: cl_program; kernel_name: IntPtr; var errcode_ret: ErrorCode): cl_kernel;
     external 'opencl.dll' name 'clCreateKernel';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateKernel(&program: cl_program; kernel_name: string; var errcode_ret: ErrorCode): cl_kernel;
     begin
-      var par_2_str_ptr := Marshal.StringToHGlobalAnsi(kernel_name);
-      Result := z_CreateKernel_ovr_0(&program, par_2_str_ptr, errcode_ret);
-      Marshal.FreeHGlobal(par_2_str_ptr);
+      var par_2_str_ptr: IntPtr;
+      try
+        par_2_str_ptr := Marshal.StringToHGlobalAnsi(kernel_name);
+        Result := z_CreateKernel_ovr_0(&program, par_2_str_ptr, errcode_ret);
+      finally
+        Marshal.FreeHGlobal(par_2_str_ptr);
+      end;
     end;
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateKernel(&program: cl_program; kernel_name: IntPtr; var errcode_ret: ErrorCode): cl_kernel :=
     z_CreateKernel_ovr_0(&program, kernel_name, errcode_ret);
@@ -3380,19 +3745,23 @@ type
     external 'opencl.dll' name 'clCreateProgramWithBinary';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateProgramWithBinary(context: cl_context; num_devices: UInt32; var device_list: cl_device_id; var lengths: UIntPtr; binaries: array of array of Byte; var binary_status: ErrorCode; var errcode_ret: ErrorCode): cl_program;
     begin
-      var par_5_temp_arr1 := binaries?.ConvertAll(arr_el1->begin
-        if (arr_el1=nil) or (arr_el1.Length=0) then
-          Result := IntPtr.Zero else
-        begin
-          var l := Marshal.SizeOf&<Byte>*arr_el1.Length;
-          Result := Marshal.AllocHGlobal(l);
-          Marshal.Copy(arr_el1,0,Result,l);
-        end;
-      end);
-      if (par_5_temp_arr1<>nil) and (par_5_temp_arr1.Length<>0) then
-        Result := z_CreateProgramWithBinary_ovr_0(context, num_devices, device_list, lengths, par_5_temp_arr1[0], binary_status, errcode_ret) else
-        Result := z_CreateProgramWithBinary_ovr_0_anh00000100(context, num_devices, device_list, lengths, IntPtr.Zero, binary_status, errcode_ret);
-      foreach var arr_el1 in par_5_temp_arr1 do Marshal.FreeHGlobal(arr_el1);
+      var par_5_temp_arr1: array of IntPtr;
+      try
+        par_5_temp_arr1 := binaries?.ConvertAll(arr_el1->begin
+          if (arr_el1=nil) or (arr_el1.Length=0) then
+            Result := IntPtr.Zero else
+          begin
+            var l := Marshal.SizeOf&<Byte>*arr_el1.Length;
+            Result := Marshal.AllocHGlobal(l);
+            Marshal.Copy(arr_el1,0,Result,l);
+          end;
+        end);
+        if (par_5_temp_arr1<>nil) and (par_5_temp_arr1.Length<>0) then
+          Result := z_CreateProgramWithBinary_ovr_0(context, num_devices, device_list, lengths, par_5_temp_arr1[0], binary_status, errcode_ret) else
+          Result := z_CreateProgramWithBinary_ovr_0_anh00000100(context, num_devices, device_list, lengths, IntPtr.Zero, binary_status, errcode_ret);
+      finally
+        if par_5_temp_arr1<>nil then foreach var arr_el1 in par_5_temp_arr1 do Marshal.FreeHGlobal(arr_el1);
+      end;
     end;
     private static function z_CreateProgramWithBinary_ovr_1(context: cl_context; num_devices: UInt32; var device_list: cl_device_id; var lengths: UIntPtr; var binaries: IntPtr; var binary_status: ErrorCode; errcode_ret: IntPtr): cl_program;
     external 'opencl.dll' name 'clCreateProgramWithBinary';
@@ -3400,19 +3769,23 @@ type
     external 'opencl.dll' name 'clCreateProgramWithBinary';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateProgramWithBinary(context: cl_context; num_devices: UInt32; var device_list: cl_device_id; var lengths: UIntPtr; binaries: array of array of Byte; var binary_status: ErrorCode; errcode_ret: IntPtr): cl_program;
     begin
-      var par_5_temp_arr1 := binaries?.ConvertAll(arr_el1->begin
-        if (arr_el1=nil) or (arr_el1.Length=0) then
-          Result := IntPtr.Zero else
-        begin
-          var l := Marshal.SizeOf&<Byte>*arr_el1.Length;
-          Result := Marshal.AllocHGlobal(l);
-          Marshal.Copy(arr_el1,0,Result,l);
-        end;
-      end);
-      if (par_5_temp_arr1<>nil) and (par_5_temp_arr1.Length<>0) then
-        Result := z_CreateProgramWithBinary_ovr_1(context, num_devices, device_list, lengths, par_5_temp_arr1[0], binary_status, errcode_ret) else
-        Result := z_CreateProgramWithBinary_ovr_1_anh00000100(context, num_devices, device_list, lengths, IntPtr.Zero, binary_status, errcode_ret);
-      foreach var arr_el1 in par_5_temp_arr1 do Marshal.FreeHGlobal(arr_el1);
+      var par_5_temp_arr1: array of IntPtr;
+      try
+        par_5_temp_arr1 := binaries?.ConvertAll(arr_el1->begin
+          if (arr_el1=nil) or (arr_el1.Length=0) then
+            Result := IntPtr.Zero else
+          begin
+            var l := Marshal.SizeOf&<Byte>*arr_el1.Length;
+            Result := Marshal.AllocHGlobal(l);
+            Marshal.Copy(arr_el1,0,Result,l);
+          end;
+        end);
+        if (par_5_temp_arr1<>nil) and (par_5_temp_arr1.Length<>0) then
+          Result := z_CreateProgramWithBinary_ovr_1(context, num_devices, device_list, lengths, par_5_temp_arr1[0], binary_status, errcode_ret) else
+          Result := z_CreateProgramWithBinary_ovr_1_anh00000100(context, num_devices, device_list, lengths, IntPtr.Zero, binary_status, errcode_ret);
+      finally
+        if par_5_temp_arr1<>nil then foreach var arr_el1 in par_5_temp_arr1 do Marshal.FreeHGlobal(arr_el1);
+      end;
     end;
     private static function z_CreateProgramWithBinary_ovr_2(context: cl_context; num_devices: UInt32; var device_list: cl_device_id; var lengths: UIntPtr; var binaries: IntPtr; binary_status: IntPtr; var errcode_ret: ErrorCode): cl_program;
     external 'opencl.dll' name 'clCreateProgramWithBinary';
@@ -3420,19 +3793,23 @@ type
     external 'opencl.dll' name 'clCreateProgramWithBinary';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateProgramWithBinary(context: cl_context; num_devices: UInt32; var device_list: cl_device_id; var lengths: UIntPtr; binaries: array of array of Byte; binary_status: IntPtr; var errcode_ret: ErrorCode): cl_program;
     begin
-      var par_5_temp_arr1 := binaries?.ConvertAll(arr_el1->begin
-        if (arr_el1=nil) or (arr_el1.Length=0) then
-          Result := IntPtr.Zero else
-        begin
-          var l := Marshal.SizeOf&<Byte>*arr_el1.Length;
-          Result := Marshal.AllocHGlobal(l);
-          Marshal.Copy(arr_el1,0,Result,l);
-        end;
-      end);
-      if (par_5_temp_arr1<>nil) and (par_5_temp_arr1.Length<>0) then
-        Result := z_CreateProgramWithBinary_ovr_2(context, num_devices, device_list, lengths, par_5_temp_arr1[0], binary_status, errcode_ret) else
-        Result := z_CreateProgramWithBinary_ovr_2_anh00000100(context, num_devices, device_list, lengths, IntPtr.Zero, binary_status, errcode_ret);
-      foreach var arr_el1 in par_5_temp_arr1 do Marshal.FreeHGlobal(arr_el1);
+      var par_5_temp_arr1: array of IntPtr;
+      try
+        par_5_temp_arr1 := binaries?.ConvertAll(arr_el1->begin
+          if (arr_el1=nil) or (arr_el1.Length=0) then
+            Result := IntPtr.Zero else
+          begin
+            var l := Marshal.SizeOf&<Byte>*arr_el1.Length;
+            Result := Marshal.AllocHGlobal(l);
+            Marshal.Copy(arr_el1,0,Result,l);
+          end;
+        end);
+        if (par_5_temp_arr1<>nil) and (par_5_temp_arr1.Length<>0) then
+          Result := z_CreateProgramWithBinary_ovr_2(context, num_devices, device_list, lengths, par_5_temp_arr1[0], binary_status, errcode_ret) else
+          Result := z_CreateProgramWithBinary_ovr_2_anh00000100(context, num_devices, device_list, lengths, IntPtr.Zero, binary_status, errcode_ret);
+      finally
+        if par_5_temp_arr1<>nil then foreach var arr_el1 in par_5_temp_arr1 do Marshal.FreeHGlobal(arr_el1);
+      end;
     end;
     private static function z_CreateProgramWithBinary_ovr_3_anh00000100(context: cl_context; num_devices: UInt32; var device_list: cl_device_id; var lengths: UIntPtr; binaries: IntPtr; var binary_status: ErrorCode; var errcode_ret: ErrorCode): cl_program;
     external 'opencl.dll' name 'clCreateProgramWithBinary';
@@ -3472,11 +3849,15 @@ type
     external 'opencl.dll' name 'clCreateProgramWithBuiltInKernels';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateProgramWithBuiltInKernels(context: cl_context; num_devices: UInt32; device_list: array of cl_device_id; kernel_names: string; var errcode_ret: ErrorCode): cl_program;
     begin
-      var par_4_str_ptr := Marshal.StringToHGlobalAnsi(kernel_names);
-      if (device_list<>nil) and (device_list.Length<>0) then
-        Result := z_CreateProgramWithBuiltInKernels_ovr_0(context, num_devices, device_list[0], par_4_str_ptr, errcode_ret) else
-        Result := z_CreateProgramWithBuiltInKernels_ovr_0_anh000100(context, num_devices, IntPtr.Zero, par_4_str_ptr, errcode_ret);
-      Marshal.FreeHGlobal(par_4_str_ptr);
+      var par_4_str_ptr: IntPtr;
+      try
+        par_4_str_ptr := Marshal.StringToHGlobalAnsi(kernel_names);
+        if (device_list<>nil) and (device_list.Length<>0) then
+          Result := z_CreateProgramWithBuiltInKernels_ovr_0(context, num_devices, device_list[0], par_4_str_ptr, errcode_ret) else
+          Result := z_CreateProgramWithBuiltInKernels_ovr_0_anh000100(context, num_devices, IntPtr.Zero, par_4_str_ptr, errcode_ret);
+      finally
+        Marshal.FreeHGlobal(par_4_str_ptr);
+      end;
     end;
     private static function z_CreateProgramWithBuiltInKernels_ovr_1_anh000100(context: cl_context; num_devices: UInt32; device_list: IntPtr; kernel_names: IntPtr; var errcode_ret: ErrorCode): cl_program;
     external 'opencl.dll' name 'clCreateProgramWithBuiltInKernels';
@@ -3486,9 +3867,13 @@ type
       z_CreateProgramWithBuiltInKernels_ovr_0_anh000100(context, num_devices, IntPtr.Zero, kernel_names, errcode_ret);
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateProgramWithBuiltInKernels(context: cl_context; num_devices: UInt32; var device_list: cl_device_id; kernel_names: string; var errcode_ret: ErrorCode): cl_program;
     begin
-      var par_4_str_ptr := Marshal.StringToHGlobalAnsi(kernel_names);
-      Result := z_CreateProgramWithBuiltInKernels_ovr_0(context, num_devices, device_list, par_4_str_ptr, errcode_ret);
-      Marshal.FreeHGlobal(par_4_str_ptr);
+      var par_4_str_ptr: IntPtr;
+      try
+        par_4_str_ptr := Marshal.StringToHGlobalAnsi(kernel_names);
+        Result := z_CreateProgramWithBuiltInKernels_ovr_0(context, num_devices, device_list, par_4_str_ptr, errcode_ret);
+      finally
+        Marshal.FreeHGlobal(par_4_str_ptr);
+      end;
     end;
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateProgramWithBuiltInKernels(context: cl_context; num_devices: UInt32; var device_list: cl_device_id; kernel_names: IntPtr; var errcode_ret: ErrorCode): cl_program :=
     z_CreateProgramWithBuiltInKernels_ovr_0(context, num_devices, device_list, kernel_names, errcode_ret);
@@ -3496,9 +3881,13 @@ type
     external 'opencl.dll' name 'clCreateProgramWithBuiltInKernels';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateProgramWithBuiltInKernels(context: cl_context; num_devices: UInt32; device_list: IntPtr; kernel_names: string; var errcode_ret: ErrorCode): cl_program;
     begin
-      var par_4_str_ptr := Marshal.StringToHGlobalAnsi(kernel_names);
-      Result := z_CreateProgramWithBuiltInKernels_ovr_4(context, num_devices, device_list, par_4_str_ptr, errcode_ret);
-      Marshal.FreeHGlobal(par_4_str_ptr);
+      var par_4_str_ptr: IntPtr;
+      try
+        par_4_str_ptr := Marshal.StringToHGlobalAnsi(kernel_names);
+        Result := z_CreateProgramWithBuiltInKernels_ovr_4(context, num_devices, device_list, par_4_str_ptr, errcode_ret);
+      finally
+        Marshal.FreeHGlobal(par_4_str_ptr);
+      end;
     end;
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateProgramWithBuiltInKernels(context: cl_context; num_devices: UInt32; device_list: IntPtr; kernel_names: IntPtr; var errcode_ret: ErrorCode): cl_program :=
     z_CreateProgramWithBuiltInKernels_ovr_4(context, num_devices, device_list, kernel_names, errcode_ret);
@@ -3520,15 +3909,19 @@ type
     external 'opencl.dll' name 'clCreateProgramWithSource';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function CreateProgramWithSource(context: cl_context; count: UInt32; strings: array of string; lengths: array of UIntPtr; var errcode_ret: ErrorCode): cl_program;
     begin
-      var par_3_str_ptr := strings?.ConvertAll(arr_el1->Marshal.StringToHGlobalAnsi(arr_el1));
-      if (par_3_str_ptr<>nil) and (par_3_str_ptr.Length<>0) then
-        if (lengths<>nil) and (lengths.Length<>0) then
-          Result := z_CreateProgramWithSource_ovr_0(context, count, par_3_str_ptr[0], lengths[0], errcode_ret) else
-          Result := z_CreateProgramWithSource_ovr_0_anh000010(context, count, par_3_str_ptr[0], IntPtr.Zero, errcode_ret) else
-        if (lengths<>nil) and (lengths.Length<>0) then
-          Result := z_CreateProgramWithSource_ovr_0_anh000100(context, count, IntPtr.Zero, lengths[0], errcode_ret) else
-          Result := z_CreateProgramWithSource_ovr_0_anh000110(context, count, IntPtr.Zero, IntPtr.Zero, errcode_ret);
-      foreach var arr_el1 in par_3_str_ptr do Marshal.FreeHGlobal(arr_el1);
+      var par_3_str_ptr: array of IntPtr;
+      try
+        par_3_str_ptr := strings?.ConvertAll(arr_el1->Marshal.StringToHGlobalAnsi(arr_el1));
+        if (par_3_str_ptr<>nil) and (par_3_str_ptr.Length<>0) then
+          if (lengths<>nil) and (lengths.Length<>0) then
+            Result := z_CreateProgramWithSource_ovr_0(context, count, par_3_str_ptr[0], lengths[0], errcode_ret) else
+            Result := z_CreateProgramWithSource_ovr_0_anh000010(context, count, par_3_str_ptr[0], IntPtr.Zero, errcode_ret) else
+          if (lengths<>nil) and (lengths.Length<>0) then
+            Result := z_CreateProgramWithSource_ovr_0_anh000100(context, count, IntPtr.Zero, lengths[0], errcode_ret) else
+            Result := z_CreateProgramWithSource_ovr_0_anh000110(context, count, IntPtr.Zero, IntPtr.Zero, errcode_ret);
+      finally
+        foreach var arr_el1 in par_3_str_ptr do Marshal.FreeHGlobal(arr_el1);
+      end;
     end;
     private static function z_CreateProgramWithSource_ovr_1_anh000100(context: cl_context; count: UInt32; strings: IntPtr; var lengths: UIntPtr; var errcode_ret: ErrorCode): cl_program;
     external 'opencl.dll' name 'clCreateProgramWithSource';
@@ -6632,86 +7025,94 @@ type
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: Bool; param_value_size_ret: IntPtr): ErrorCode :=
     z_GetDeviceInfo_ovr_9(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_10(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceFPConfig; var param_value_size_ret: UIntPtr): ErrorCode;
+    private static function z_GetDeviceInfo_ovr_10(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetDeviceInfo';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode :=
+    z_GetDeviceInfo_ovr_10(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_11(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetDeviceInfo';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode :=
+    z_GetDeviceInfo_ovr_11(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_12(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceFPConfig; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceFPConfig; var param_value_size_ret: UIntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_10(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_11(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceFPConfig; param_value_size_ret: IntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_12(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_13(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceFPConfig; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceFPConfig; param_value_size_ret: IntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_11(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_12(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceMemCacheType; var param_value_size_ret: UIntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_13(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_14(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceMemCacheType; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceMemCacheType; var param_value_size_ret: UIntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_12(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_13(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceMemCacheType; param_value_size_ret: IntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_14(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_15(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceMemCacheType; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceMemCacheType; param_value_size_ret: IntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_13(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_14(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceLocalMemType; var param_value_size_ret: UIntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_15(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_16(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceLocalMemType; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceLocalMemType; var param_value_size_ret: UIntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_14(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_15(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceLocalMemType; param_value_size_ret: IntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_16(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_17(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceLocalMemType; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceLocalMemType; param_value_size_ret: IntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_15(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_16(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceExecCapabilities; var param_value_size_ret: UIntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_17(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_18(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceExecCapabilities; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceExecCapabilities; var param_value_size_ret: UIntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_16(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_17(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceExecCapabilities; param_value_size_ret: IntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_18(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_19(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceExecCapabilities; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceExecCapabilities; param_value_size_ret: IntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_17(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_18(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: CommandQueueProperties; var param_value_size_ret: UIntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_19(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_20(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: CommandQueueProperties; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: CommandQueueProperties; var param_value_size_ret: UIntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_18(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_19(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: CommandQueueProperties; param_value_size_ret: IntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_20(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_21(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: CommandQueueProperties; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: CommandQueueProperties; param_value_size_ret: IntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_19(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_20(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: cl_platform_id; var param_value_size_ret: UIntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_21(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_22(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: cl_platform_id; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: cl_platform_id; var param_value_size_ret: UIntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_20(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_21(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: cl_platform_id; param_value_size_ret: IntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_22(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_23(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: cl_platform_id; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: cl_platform_id; param_value_size_ret: IntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_21(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_22(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DevicePartitionProperty; var param_value_size_ret: UIntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_23(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_24(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DevicePartitionProperty; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DevicePartitionProperty; var param_value_size_ret: UIntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_22(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_23(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DevicePartitionProperty; param_value_size_ret: IntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_24(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_25(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DevicePartitionProperty; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DevicePartitionProperty; param_value_size_ret: IntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_23(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_24(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceAffinityDomain; var param_value_size_ret: UIntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_25(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_26(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceAffinityDomain; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceAffinityDomain; var param_value_size_ret: UIntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_24(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_25(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceAffinityDomain; param_value_size_ret: IntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_26(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_27(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceAffinityDomain; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceAffinityDomain; param_value_size_ret: IntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_25(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_26(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceSVMCapabilities; var param_value_size_ret: UIntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_27(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_28(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceSVMCapabilities; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceSVMCapabilities; var param_value_size_ret: UIntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_26(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_27(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceSVMCapabilities; param_value_size_ret: IntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_28(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_29(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceSVMCapabilities; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; var param_value: DeviceSVMCapabilities; param_value_size_ret: IntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_27(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_28(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; param_value: pointer; var param_value_size_ret: UIntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_29(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_30(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; param_value: pointer; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; param_value: pointer; var param_value_size_ret: UIntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_28(device, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetDeviceInfo_ovr_29(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; param_value: pointer; param_value_size_ret: IntPtr): ErrorCode;
+    z_GetDeviceInfo_ovr_30(device, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetDeviceInfo_ovr_31(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; param_value: pointer; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetDeviceInfo(device: cl_device_id; param_name: DeviceInfo; param_value_size: UIntPtr; param_value: pointer; param_value_size_ret: IntPtr): ErrorCode :=
-    z_GetDeviceInfo_ovr_29(device, param_name, param_value_size, param_value, param_value_size_ret);
+    z_GetDeviceInfo_ovr_31(device, param_name, param_value_size, param_value, param_value_size_ret);
     
     // added in cl1.0
     private static function z_GetEventInfo_ovr_0(&event: cl_event; param_name: EventInfo; param_value_size: UIntPtr; var param_value: cl_command_queue; var param_value_size_ret: UIntPtr): ErrorCode;
@@ -6786,9 +7187,13 @@ type
     external 'opencl.dll' name 'clGetExtensionFunctionAddress';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetExtensionFunctionAddress(func_name: string): IntPtr;
     begin
-      var par_1_str_ptr := Marshal.StringToHGlobalAnsi(func_name);
-      Result := z_GetExtensionFunctionAddress_ovr_0(par_1_str_ptr);
-      Marshal.FreeHGlobal(par_1_str_ptr);
+      var par_1_str_ptr: IntPtr;
+      try
+        par_1_str_ptr := Marshal.StringToHGlobalAnsi(func_name);
+        Result := z_GetExtensionFunctionAddress_ovr_0(par_1_str_ptr);
+      finally
+        Marshal.FreeHGlobal(par_1_str_ptr);
+      end;
     end;
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetExtensionFunctionAddress(func_name: IntPtr): IntPtr :=
     z_GetExtensionFunctionAddress_ovr_0(func_name);
@@ -6798,9 +7203,13 @@ type
     external 'opencl.dll' name 'clGetExtensionFunctionAddressForPlatform';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetExtensionFunctionAddressForPlatform(platform: cl_platform_id; func_name: string): IntPtr;
     begin
-      var par_2_str_ptr := Marshal.StringToHGlobalAnsi(func_name);
-      Result := z_GetExtensionFunctionAddressForPlatform_ovr_0(platform, par_2_str_ptr);
-      Marshal.FreeHGlobal(par_2_str_ptr);
+      var par_2_str_ptr: IntPtr;
+      try
+        par_2_str_ptr := Marshal.StringToHGlobalAnsi(func_name);
+        Result := z_GetExtensionFunctionAddressForPlatform_ovr_0(platform, par_2_str_ptr);
+      finally
+        Marshal.FreeHGlobal(par_2_str_ptr);
+      end;
     end;
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetExtensionFunctionAddressForPlatform(platform: cl_platform_id; func_name: IntPtr): IntPtr :=
     z_GetExtensionFunctionAddressForPlatform_ovr_0(platform, func_name);
@@ -6850,46 +7259,46 @@ type
     z_GetImageInfo_ovr_7(image, param_name, param_value_size, param_value, param_value_size_ret);
     
     // added in cl1.2
-    private static function z_GetKernelArgInfo_ovr_0(kernel: cl_kernel; arg_indx: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgAddressQualifier; var param_value_size_ret: UIntPtr): ErrorCode;
+    private static function z_GetKernelArgInfo_ovr_0(kernel: cl_kernel; arg_index: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgAddressQualifier; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetKernelArgInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelArgInfo(kernel: cl_kernel; arg_indx: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgAddressQualifier; var param_value_size_ret: UIntPtr): ErrorCode :=
-    z_GetKernelArgInfo_ovr_0(kernel, arg_indx, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetKernelArgInfo_ovr_1(kernel: cl_kernel; arg_indx: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgAddressQualifier; param_value_size_ret: IntPtr): ErrorCode;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelArgInfo(kernel: cl_kernel; arg_index: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgAddressQualifier; var param_value_size_ret: UIntPtr): ErrorCode :=
+    z_GetKernelArgInfo_ovr_0(kernel, arg_index, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetKernelArgInfo_ovr_1(kernel: cl_kernel; arg_index: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgAddressQualifier; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetKernelArgInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelArgInfo(kernel: cl_kernel; arg_indx: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgAddressQualifier; param_value_size_ret: IntPtr): ErrorCode :=
-    z_GetKernelArgInfo_ovr_1(kernel, arg_indx, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetKernelArgInfo_ovr_2(kernel: cl_kernel; arg_indx: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgAccessQualifier; var param_value_size_ret: UIntPtr): ErrorCode;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelArgInfo(kernel: cl_kernel; arg_index: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgAddressQualifier; param_value_size_ret: IntPtr): ErrorCode :=
+    z_GetKernelArgInfo_ovr_1(kernel, arg_index, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetKernelArgInfo_ovr_2(kernel: cl_kernel; arg_index: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgAccessQualifier; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetKernelArgInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelArgInfo(kernel: cl_kernel; arg_indx: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgAccessQualifier; var param_value_size_ret: UIntPtr): ErrorCode :=
-    z_GetKernelArgInfo_ovr_2(kernel, arg_indx, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetKernelArgInfo_ovr_3(kernel: cl_kernel; arg_indx: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgAccessQualifier; param_value_size_ret: IntPtr): ErrorCode;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelArgInfo(kernel: cl_kernel; arg_index: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgAccessQualifier; var param_value_size_ret: UIntPtr): ErrorCode :=
+    z_GetKernelArgInfo_ovr_2(kernel, arg_index, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetKernelArgInfo_ovr_3(kernel: cl_kernel; arg_index: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgAccessQualifier; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetKernelArgInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelArgInfo(kernel: cl_kernel; arg_indx: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgAccessQualifier; param_value_size_ret: IntPtr): ErrorCode :=
-    z_GetKernelArgInfo_ovr_3(kernel, arg_indx, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetKernelArgInfo_ovr_4(kernel: cl_kernel; arg_indx: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelArgInfo(kernel: cl_kernel; arg_index: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgAccessQualifier; param_value_size_ret: IntPtr): ErrorCode :=
+    z_GetKernelArgInfo_ovr_3(kernel, arg_index, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetKernelArgInfo_ovr_4(kernel: cl_kernel; arg_index: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetKernelArgInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelArgInfo(kernel: cl_kernel; arg_indx: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode :=
-    z_GetKernelArgInfo_ovr_4(kernel, arg_indx, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetKernelArgInfo_ovr_5(kernel: cl_kernel; arg_indx: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelArgInfo(kernel: cl_kernel; arg_index: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode :=
+    z_GetKernelArgInfo_ovr_4(kernel, arg_index, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetKernelArgInfo_ovr_5(kernel: cl_kernel; arg_index: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetKernelArgInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelArgInfo(kernel: cl_kernel; arg_indx: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode :=
-    z_GetKernelArgInfo_ovr_5(kernel, arg_indx, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetKernelArgInfo_ovr_6(kernel: cl_kernel; arg_indx: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgTypeQualifier; var param_value_size_ret: UIntPtr): ErrorCode;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelArgInfo(kernel: cl_kernel; arg_index: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode :=
+    z_GetKernelArgInfo_ovr_5(kernel, arg_index, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetKernelArgInfo_ovr_6(kernel: cl_kernel; arg_index: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgTypeQualifier; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetKernelArgInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelArgInfo(kernel: cl_kernel; arg_indx: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgTypeQualifier; var param_value_size_ret: UIntPtr): ErrorCode :=
-    z_GetKernelArgInfo_ovr_6(kernel, arg_indx, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetKernelArgInfo_ovr_7(kernel: cl_kernel; arg_indx: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgTypeQualifier; param_value_size_ret: IntPtr): ErrorCode;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelArgInfo(kernel: cl_kernel; arg_index: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgTypeQualifier; var param_value_size_ret: UIntPtr): ErrorCode :=
+    z_GetKernelArgInfo_ovr_6(kernel, arg_index, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetKernelArgInfo_ovr_7(kernel: cl_kernel; arg_index: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgTypeQualifier; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetKernelArgInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelArgInfo(kernel: cl_kernel; arg_indx: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgTypeQualifier; param_value_size_ret: IntPtr): ErrorCode :=
-    z_GetKernelArgInfo_ovr_7(kernel, arg_indx, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetKernelArgInfo_ovr_8(kernel: cl_kernel; arg_indx: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; param_value: pointer; var param_value_size_ret: UIntPtr): ErrorCode;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelArgInfo(kernel: cl_kernel; arg_index: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; var param_value: KernelArgTypeQualifier; param_value_size_ret: IntPtr): ErrorCode :=
+    z_GetKernelArgInfo_ovr_7(kernel, arg_index, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetKernelArgInfo_ovr_8(kernel: cl_kernel; arg_index: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; param_value: pointer; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetKernelArgInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelArgInfo(kernel: cl_kernel; arg_indx: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; param_value: pointer; var param_value_size_ret: UIntPtr): ErrorCode :=
-    z_GetKernelArgInfo_ovr_8(kernel, arg_indx, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetKernelArgInfo_ovr_9(kernel: cl_kernel; arg_indx: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; param_value: pointer; param_value_size_ret: IntPtr): ErrorCode;
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelArgInfo(kernel: cl_kernel; arg_index: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; param_value: pointer; var param_value_size_ret: UIntPtr): ErrorCode :=
+    z_GetKernelArgInfo_ovr_8(kernel, arg_index, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetKernelArgInfo_ovr_9(kernel: cl_kernel; arg_index: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; param_value: pointer; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetKernelArgInfo';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelArgInfo(kernel: cl_kernel; arg_indx: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; param_value: pointer; param_value_size_ret: IntPtr): ErrorCode :=
-    z_GetKernelArgInfo_ovr_9(kernel, arg_indx, param_name, param_value_size, param_value, param_value_size_ret);
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetKernelArgInfo(kernel: cl_kernel; arg_index: UInt32; param_name: KernelArgInfo; param_value_size: UIntPtr; param_value: pointer; param_value_size_ret: IntPtr): ErrorCode :=
+    z_GetKernelArgInfo_ovr_9(kernel, arg_index, param_name, param_value_size, param_value, param_value_size_ret);
     
     // added in cl1.0
     private static function z_GetKernelInfo_ovr_0(kernel: cl_kernel; param_name: KernelInfo; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
@@ -7096,22 +7505,30 @@ type
     z_GetPlatformIDs_ovr_3(num_entries, platforms, num_platforms);
     
     // added in cl1.0
-    private static function z_GetPlatformInfo_ovr_0(platform: cl_platform_id; param_name: PlatformInfo; param_value_size: UIntPtr; var param_value: UInt64; var param_value_size_ret: UIntPtr): ErrorCode;
+    private static function z_GetPlatformInfo_ovr_0(platform: cl_platform_id; param_name: PlatformInfo; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetPlatformInfo';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetPlatformInfo(platform: cl_platform_id; param_name: PlatformInfo; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode :=
+    z_GetPlatformInfo_ovr_0(platform, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetPlatformInfo_ovr_1(platform: cl_platform_id; param_name: PlatformInfo; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clGetPlatformInfo';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetPlatformInfo(platform: cl_platform_id; param_name: PlatformInfo; param_value_size: UIntPtr; param_value: IntPtr; param_value_size_ret: IntPtr): ErrorCode :=
+    z_GetPlatformInfo_ovr_1(platform, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetPlatformInfo_ovr_2(platform: cl_platform_id; param_name: PlatformInfo; param_value_size: UIntPtr; var param_value: UInt64; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetPlatformInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetPlatformInfo(platform: cl_platform_id; param_name: PlatformInfo; param_value_size: UIntPtr; var param_value: UInt64; var param_value_size_ret: UIntPtr): ErrorCode :=
-    z_GetPlatformInfo_ovr_0(platform, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetPlatformInfo_ovr_1(platform: cl_platform_id; param_name: PlatformInfo; param_value_size: UIntPtr; var param_value: UInt64; param_value_size_ret: IntPtr): ErrorCode;
+    z_GetPlatformInfo_ovr_2(platform, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetPlatformInfo_ovr_3(platform: cl_platform_id; param_name: PlatformInfo; param_value_size: UIntPtr; var param_value: UInt64; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetPlatformInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetPlatformInfo(platform: cl_platform_id; param_name: PlatformInfo; param_value_size: UIntPtr; var param_value: UInt64; param_value_size_ret: IntPtr): ErrorCode :=
-    z_GetPlatformInfo_ovr_1(platform, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetPlatformInfo_ovr_2(platform: cl_platform_id; param_name: PlatformInfo; param_value_size: UIntPtr; param_value: pointer; var param_value_size_ret: UIntPtr): ErrorCode;
+    z_GetPlatformInfo_ovr_3(platform, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetPlatformInfo_ovr_4(platform: cl_platform_id; param_name: PlatformInfo; param_value_size: UIntPtr; param_value: pointer; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetPlatformInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetPlatformInfo(platform: cl_platform_id; param_name: PlatformInfo; param_value_size: UIntPtr; param_value: pointer; var param_value_size_ret: UIntPtr): ErrorCode :=
-    z_GetPlatformInfo_ovr_2(platform, param_name, param_value_size, param_value, param_value_size_ret);
-    private static function z_GetPlatformInfo_ovr_3(platform: cl_platform_id; param_name: PlatformInfo; param_value_size: UIntPtr; param_value: pointer; param_value_size_ret: IntPtr): ErrorCode;
+    z_GetPlatformInfo_ovr_4(platform, param_name, param_value_size, param_value, param_value_size_ret);
+    private static function z_GetPlatformInfo_ovr_5(platform: cl_platform_id; param_name: PlatformInfo; param_value_size: UIntPtr; param_value: pointer; param_value_size_ret: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetPlatformInfo';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function GetPlatformInfo(platform: cl_platform_id; param_name: PlatformInfo; param_value_size: UIntPtr; param_value: pointer; param_value_size_ret: IntPtr): ErrorCode :=
-    z_GetPlatformInfo_ovr_3(platform, param_name, param_value_size, param_value, param_value_size_ret);
+    z_GetPlatformInfo_ovr_5(platform, param_name, param_value_size, param_value, param_value_size_ret);
     
     // added in cl1.0
     private static function z_GetProgramBuildInfo_ovr_0(&program: cl_program; device: cl_device_id; param_name: ProgramBuildInfo; param_value_size: UIntPtr; var param_value: BuildStatus; var param_value_size_ret: UIntPtr): ErrorCode;
@@ -7336,25 +7753,33 @@ type
     external 'opencl.dll' name 'clLinkProgram';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function LinkProgram(context: cl_context; num_devices: UInt32; device_list: array of cl_device_id; options: string; num_input_programs: UInt32; input_programs: array of cl_program; pfn_notify: ProgramCallback; user_data: IntPtr; var errcode_ret: ErrorCode): cl_program;
     begin
-      var par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
-      if (device_list<>nil) and (device_list.Length<>0) then
-        if (input_programs<>nil) and (input_programs.Length<>0) then
-          Result := z_LinkProgram_ovr_0(context, num_devices, device_list[0], par_4_str_ptr, num_input_programs, input_programs[0], pfn_notify, user_data, errcode_ret) else
-          Result := z_LinkProgram_ovr_0_anh0000001000(context, num_devices, device_list[0], par_4_str_ptr, num_input_programs, IntPtr.Zero, pfn_notify, user_data, errcode_ret) else
-        if (input_programs<>nil) and (input_programs.Length<>0) then
-          Result := z_LinkProgram_ovr_0_anh0001000000(context, num_devices, IntPtr.Zero, par_4_str_ptr, num_input_programs, input_programs[0], pfn_notify, user_data, errcode_ret) else
-          Result := z_LinkProgram_ovr_0_anh0001001000(context, num_devices, IntPtr.Zero, par_4_str_ptr, num_input_programs, IntPtr.Zero, pfn_notify, user_data, errcode_ret);
-      Marshal.FreeHGlobal(par_4_str_ptr);
+      var par_4_str_ptr: IntPtr;
+      try
+        par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
+        if (device_list<>nil) and (device_list.Length<>0) then
+          if (input_programs<>nil) and (input_programs.Length<>0) then
+            Result := z_LinkProgram_ovr_0(context, num_devices, device_list[0], par_4_str_ptr, num_input_programs, input_programs[0], pfn_notify, user_data, errcode_ret) else
+            Result := z_LinkProgram_ovr_0_anh0000001000(context, num_devices, device_list[0], par_4_str_ptr, num_input_programs, IntPtr.Zero, pfn_notify, user_data, errcode_ret) else
+          if (input_programs<>nil) and (input_programs.Length<>0) then
+            Result := z_LinkProgram_ovr_0_anh0001000000(context, num_devices, IntPtr.Zero, par_4_str_ptr, num_input_programs, input_programs[0], pfn_notify, user_data, errcode_ret) else
+            Result := z_LinkProgram_ovr_0_anh0001001000(context, num_devices, IntPtr.Zero, par_4_str_ptr, num_input_programs, IntPtr.Zero, pfn_notify, user_data, errcode_ret);
+      finally
+        Marshal.FreeHGlobal(par_4_str_ptr);
+      end;
     end;
     private static function z_LinkProgram_ovr_1_anh0001000000(context: cl_context; num_devices: UInt32; device_list: IntPtr; options: IntPtr; num_input_programs: UInt32; var input_programs: cl_program; pfn_notify: ProgramCallback; user_data: IntPtr; var errcode_ret: ErrorCode): cl_program;
     external 'opencl.dll' name 'clLinkProgram';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function LinkProgram(context: cl_context; num_devices: UInt32; device_list: array of cl_device_id; options: string; num_input_programs: UInt32; var input_programs: cl_program; pfn_notify: ProgramCallback; user_data: IntPtr; var errcode_ret: ErrorCode): cl_program;
     begin
-      var par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
-      if (device_list<>nil) and (device_list.Length<>0) then
-        Result := z_LinkProgram_ovr_0(context, num_devices, device_list[0], par_4_str_ptr, num_input_programs, input_programs, pfn_notify, user_data, errcode_ret) else
-        Result := z_LinkProgram_ovr_0_anh0001000000(context, num_devices, IntPtr.Zero, par_4_str_ptr, num_input_programs, input_programs, pfn_notify, user_data, errcode_ret);
-      Marshal.FreeHGlobal(par_4_str_ptr);
+      var par_4_str_ptr: IntPtr;
+      try
+        par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
+        if (device_list<>nil) and (device_list.Length<>0) then
+          Result := z_LinkProgram_ovr_0(context, num_devices, device_list[0], par_4_str_ptr, num_input_programs, input_programs, pfn_notify, user_data, errcode_ret) else
+          Result := z_LinkProgram_ovr_0_anh0001000000(context, num_devices, IntPtr.Zero, par_4_str_ptr, num_input_programs, input_programs, pfn_notify, user_data, errcode_ret);
+      finally
+        Marshal.FreeHGlobal(par_4_str_ptr);
+      end;
     end;
     private static function z_LinkProgram_ovr_2(context: cl_context; num_devices: UInt32; var device_list: cl_device_id; options: IntPtr; num_input_programs: UInt32; input_programs: IntPtr; pfn_notify: ProgramCallback; user_data: IntPtr; var errcode_ret: ErrorCode): cl_program;
     external 'opencl.dll' name 'clLinkProgram';
@@ -7362,11 +7787,15 @@ type
     external 'opencl.dll' name 'clLinkProgram';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function LinkProgram(context: cl_context; num_devices: UInt32; device_list: array of cl_device_id; options: string; num_input_programs: UInt32; input_programs: IntPtr; pfn_notify: ProgramCallback; user_data: IntPtr; var errcode_ret: ErrorCode): cl_program;
     begin
-      var par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
-      if (device_list<>nil) and (device_list.Length<>0) then
-        Result := z_LinkProgram_ovr_2(context, num_devices, device_list[0], par_4_str_ptr, num_input_programs, input_programs, pfn_notify, user_data, errcode_ret) else
-        Result := z_LinkProgram_ovr_2_anh0001000000(context, num_devices, IntPtr.Zero, par_4_str_ptr, num_input_programs, input_programs, pfn_notify, user_data, errcode_ret);
-      Marshal.FreeHGlobal(par_4_str_ptr);
+      var par_4_str_ptr: IntPtr;
+      try
+        par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
+        if (device_list<>nil) and (device_list.Length<>0) then
+          Result := z_LinkProgram_ovr_2(context, num_devices, device_list[0], par_4_str_ptr, num_input_programs, input_programs, pfn_notify, user_data, errcode_ret) else
+          Result := z_LinkProgram_ovr_2_anh0001000000(context, num_devices, IntPtr.Zero, par_4_str_ptr, num_input_programs, input_programs, pfn_notify, user_data, errcode_ret);
+      finally
+        Marshal.FreeHGlobal(par_4_str_ptr);
+      end;
     end;
     private static function z_LinkProgram_ovr_3_anh0001000000(context: cl_context; num_devices: UInt32; device_list: IntPtr; options: IntPtr; num_input_programs: UInt32; var input_programs: cl_program; pfn_notify: ProgramCallback; user_data: IntPtr; var errcode_ret: ErrorCode): cl_program;
     external 'opencl.dll' name 'clLinkProgram';
@@ -7394,23 +7823,35 @@ type
       z_LinkProgram_ovr_2_anh0001000000(context, num_devices, IntPtr.Zero, options, num_input_programs, input_programs, pfn_notify, user_data, errcode_ret);
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function LinkProgram(context: cl_context; num_devices: UInt32; var device_list: cl_device_id; options: string; num_input_programs: UInt32; input_programs: array of cl_program; pfn_notify: ProgramCallback; user_data: IntPtr; var errcode_ret: ErrorCode): cl_program;
     begin
-      var par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
-      if (input_programs<>nil) and (input_programs.Length<>0) then
-        Result := z_LinkProgram_ovr_0(context, num_devices, device_list, par_4_str_ptr, num_input_programs, input_programs[0], pfn_notify, user_data, errcode_ret) else
-        Result := z_LinkProgram_ovr_0_anh0000001000(context, num_devices, device_list, par_4_str_ptr, num_input_programs, IntPtr.Zero, pfn_notify, user_data, errcode_ret);
-      Marshal.FreeHGlobal(par_4_str_ptr);
+      var par_4_str_ptr: IntPtr;
+      try
+        par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
+        if (input_programs<>nil) and (input_programs.Length<>0) then
+          Result := z_LinkProgram_ovr_0(context, num_devices, device_list, par_4_str_ptr, num_input_programs, input_programs[0], pfn_notify, user_data, errcode_ret) else
+          Result := z_LinkProgram_ovr_0_anh0000001000(context, num_devices, device_list, par_4_str_ptr, num_input_programs, IntPtr.Zero, pfn_notify, user_data, errcode_ret);
+      finally
+        Marshal.FreeHGlobal(par_4_str_ptr);
+      end;
     end;
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function LinkProgram(context: cl_context; num_devices: UInt32; var device_list: cl_device_id; options: string; num_input_programs: UInt32; var input_programs: cl_program; pfn_notify: ProgramCallback; user_data: IntPtr; var errcode_ret: ErrorCode): cl_program;
     begin
-      var par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
-      Result := z_LinkProgram_ovr_0(context, num_devices, device_list, par_4_str_ptr, num_input_programs, input_programs, pfn_notify, user_data, errcode_ret);
-      Marshal.FreeHGlobal(par_4_str_ptr);
+      var par_4_str_ptr: IntPtr;
+      try
+        par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
+        Result := z_LinkProgram_ovr_0(context, num_devices, device_list, par_4_str_ptr, num_input_programs, input_programs, pfn_notify, user_data, errcode_ret);
+      finally
+        Marshal.FreeHGlobal(par_4_str_ptr);
+      end;
     end;
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function LinkProgram(context: cl_context; num_devices: UInt32; var device_list: cl_device_id; options: string; num_input_programs: UInt32; input_programs: IntPtr; pfn_notify: ProgramCallback; user_data: IntPtr; var errcode_ret: ErrorCode): cl_program;
     begin
-      var par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
-      Result := z_LinkProgram_ovr_2(context, num_devices, device_list, par_4_str_ptr, num_input_programs, input_programs, pfn_notify, user_data, errcode_ret);
-      Marshal.FreeHGlobal(par_4_str_ptr);
+      var par_4_str_ptr: IntPtr;
+      try
+        par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
+        Result := z_LinkProgram_ovr_2(context, num_devices, device_list, par_4_str_ptr, num_input_programs, input_programs, pfn_notify, user_data, errcode_ret);
+      finally
+        Marshal.FreeHGlobal(par_4_str_ptr);
+      end;
     end;
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function LinkProgram(context: cl_context; num_devices: UInt32; var device_list: cl_device_id; options: IntPtr; num_input_programs: UInt32; input_programs: array of cl_program; pfn_notify: ProgramCallback; user_data: IntPtr; var errcode_ret: ErrorCode): cl_program :=
     if (input_programs<>nil) and (input_programs.Length<>0) then
@@ -7426,25 +7867,37 @@ type
     external 'opencl.dll' name 'clLinkProgram';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function LinkProgram(context: cl_context; num_devices: UInt32; device_list: IntPtr; options: string; num_input_programs: UInt32; input_programs: array of cl_program; pfn_notify: ProgramCallback; user_data: IntPtr; var errcode_ret: ErrorCode): cl_program;
     begin
-      var par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
-      if (input_programs<>nil) and (input_programs.Length<>0) then
-        Result := z_LinkProgram_ovr_12(context, num_devices, device_list, par_4_str_ptr, num_input_programs, input_programs[0], pfn_notify, user_data, errcode_ret) else
-        Result := z_LinkProgram_ovr_12_anh0000001000(context, num_devices, device_list, par_4_str_ptr, num_input_programs, IntPtr.Zero, pfn_notify, user_data, errcode_ret);
-      Marshal.FreeHGlobal(par_4_str_ptr);
+      var par_4_str_ptr: IntPtr;
+      try
+        par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
+        if (input_programs<>nil) and (input_programs.Length<>0) then
+          Result := z_LinkProgram_ovr_12(context, num_devices, device_list, par_4_str_ptr, num_input_programs, input_programs[0], pfn_notify, user_data, errcode_ret) else
+          Result := z_LinkProgram_ovr_12_anh0000001000(context, num_devices, device_list, par_4_str_ptr, num_input_programs, IntPtr.Zero, pfn_notify, user_data, errcode_ret);
+      finally
+        Marshal.FreeHGlobal(par_4_str_ptr);
+      end;
     end;
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function LinkProgram(context: cl_context; num_devices: UInt32; device_list: IntPtr; options: string; num_input_programs: UInt32; var input_programs: cl_program; pfn_notify: ProgramCallback; user_data: IntPtr; var errcode_ret: ErrorCode): cl_program;
     begin
-      var par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
-      Result := z_LinkProgram_ovr_12(context, num_devices, device_list, par_4_str_ptr, num_input_programs, input_programs, pfn_notify, user_data, errcode_ret);
-      Marshal.FreeHGlobal(par_4_str_ptr);
+      var par_4_str_ptr: IntPtr;
+      try
+        par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
+        Result := z_LinkProgram_ovr_12(context, num_devices, device_list, par_4_str_ptr, num_input_programs, input_programs, pfn_notify, user_data, errcode_ret);
+      finally
+        Marshal.FreeHGlobal(par_4_str_ptr);
+      end;
     end;
     private static function z_LinkProgram_ovr_14(context: cl_context; num_devices: UInt32; device_list: IntPtr; options: IntPtr; num_input_programs: UInt32; input_programs: IntPtr; pfn_notify: ProgramCallback; user_data: IntPtr; var errcode_ret: ErrorCode): cl_program;
     external 'opencl.dll' name 'clLinkProgram';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function LinkProgram(context: cl_context; num_devices: UInt32; device_list: IntPtr; options: string; num_input_programs: UInt32; input_programs: IntPtr; pfn_notify: ProgramCallback; user_data: IntPtr; var errcode_ret: ErrorCode): cl_program;
     begin
-      var par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
-      Result := z_LinkProgram_ovr_14(context, num_devices, device_list, par_4_str_ptr, num_input_programs, input_programs, pfn_notify, user_data, errcode_ret);
-      Marshal.FreeHGlobal(par_4_str_ptr);
+      var par_4_str_ptr: IntPtr;
+      try
+        par_4_str_ptr := Marshal.StringToHGlobalAnsi(options);
+        Result := z_LinkProgram_ovr_14(context, num_devices, device_list, par_4_str_ptr, num_input_programs, input_programs, pfn_notify, user_data, errcode_ret);
+      finally
+        Marshal.FreeHGlobal(par_4_str_ptr);
+      end;
     end;
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function LinkProgram(context: cl_context; num_devices: UInt32; device_list: IntPtr; options: IntPtr; num_input_programs: UInt32; input_programs: array of cl_program; pfn_notify: ProgramCallback; user_data: IntPtr; var errcode_ret: ErrorCode): cl_program :=
     if (input_programs<>nil) and (input_programs.Length<>0) then
@@ -7566,6 +8019,12 @@ type
     external 'opencl.dll' name 'clSetCommandQueueProperty';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function SetCommandQueueProperty(command_queue: cl_command_queue; properties: CommandQueueProperties; enable: Bool; old_properties: IntPtr): ErrorCode :=
     z_SetCommandQueueProperty_ovr_2(command_queue, properties, enable, old_properties);
+    
+    // added in cl3.0
+    private static function z_SetContextDestructorCallback_ovr_0(context: cl_context; pfn_notify: ContextDestructorCallback; user_data: IntPtr): ErrorCode;
+    external 'opencl.dll' name 'clSetContextDestructorCallback';
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function SetContextDestructorCallback(context: cl_context; pfn_notify: ContextDestructorCallback; user_data: IntPtr): ErrorCode :=
+    z_SetContextDestructorCallback_ovr_0(context, pfn_notify, user_data);
     
     // added in cl2.1
     private static function z_SetDefaultDeviceCommandQueue_ovr_0(context: cl_context; device: cl_device_id; command_queue: cl_command_queue): ErrorCode;
@@ -7699,6 +8158,7 @@ type
   
   [PCUNotRestore]
   clD3d10SharingKHR = static class
+    public const _ExtStr = 'khr_d3d10_sharing';
     
     private static function z_GetDeviceIDsFromD3D10KHR_ovr_0(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; var devices: cl_device_id; var num_devices: UInt32): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromD3D10KHR';
@@ -8204,6 +8664,7 @@ type
   
   [PCUNotRestore]
   clD3d11SharingKHR = static class
+    public const _ExtStr = 'khr_d3d11_sharing';
     
     private static function z_GetDeviceIDsFromD3D11KHR_ovr_0(platform: cl_platform_id; d3d_device_source: UInt32; d3d_object: IntPtr; d3d_device_set: UInt32; num_entries: UInt32; var devices: cl_device_id; var num_devices: UInt32): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromD3D11KHR';
@@ -8709,6 +9170,7 @@ type
   
   [PCUNotRestore]
   clDx9MediaSharingKHR = static class
+    public const _ExtStr = 'khr_dx9_media_sharing';
     
     private static function z_GetDeviceIDsFromDX9MediaAdapterKHR_ovr_0(platform: cl_platform_id; num_media_adapters: UInt32; var media_adapter_type: UInt32; media_adapters: IntPtr; media_adapter_set: UInt32; num_entries: UInt32; var devices: cl_device_id; var num_devices: UInt32): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromDX9MediaAdapterKHR';
@@ -9322,6 +9784,7 @@ type
   
   [PCUNotRestore]
   clEglImageKHR = static class
+    public const _ExtStr = 'khr_egl_image';
     
     private static function z_CreateFromEGLImageKHR_ovr_0(context: cl_context; egldisplay: IntPtr; eglimage: IntPtr; flags: MemFlags; var properties: EglImagePropertiesKhr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clCreateFromEGLImageKHR';
@@ -9744,6 +10207,7 @@ type
   
   [PCUNotRestore]
   clEglEventKHR = static class
+    public const _ExtStr = 'khr_egl_event';
     
     private static function z_CreateEventFromEGLSyncKHR_ovr_0(context: cl_context; sync: IntPtr; display: IntPtr; var errcode_ret: ErrorCode): cl_event;
     external 'opencl.dll' name 'clCreateEventFromEGLSyncKHR';
@@ -9754,6 +10218,7 @@ type
   
   [PCUNotRestore]
   clSetMemObjectDestructorAPPLE = static class
+    public const _ExtStr = 'APPLE_SetMemObjectDestructor';
     
     private static function z_SetMemObjectDestructorAPPLE_ovr_0(memobj: cl_mem; pfn_notify: MemObjectDestructorCallback; user_data: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clSetMemObjectDestructorAPPLE';
@@ -9764,14 +10229,19 @@ type
   
   [PCUNotRestore]
   clContextLoggingFunctionsAPPLE = static class
+    public const _ExtStr = 'APPLE_ContextLoggingFunctions';
     
     private static procedure z_LogMessagesToSystemLogAPPLE_ovr_0(errstr: IntPtr; private_info: IntPtr; cb: UIntPtr; user_data: IntPtr);
     external 'opencl.dll' name 'clLogMessagesToSystemLogAPPLE';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static procedure LogMessagesToSystemLogAPPLE(errstr: string; private_info: IntPtr; cb: UIntPtr; user_data: IntPtr);
     begin
-      var par_1_str_ptr := Marshal.StringToHGlobalAnsi(errstr);
-      z_LogMessagesToSystemLogAPPLE_ovr_0(par_1_str_ptr, private_info, cb, user_data);
-      Marshal.FreeHGlobal(par_1_str_ptr);
+      var par_1_str_ptr: IntPtr;
+      try
+        par_1_str_ptr := Marshal.StringToHGlobalAnsi(errstr);
+        z_LogMessagesToSystemLogAPPLE_ovr_0(par_1_str_ptr, private_info, cb, user_data);
+      finally
+        Marshal.FreeHGlobal(par_1_str_ptr);
+      end;
     end;
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static procedure LogMessagesToSystemLogAPPLE(errstr: IntPtr; private_info: IntPtr; cb: UIntPtr; user_data: IntPtr) :=
     z_LogMessagesToSystemLogAPPLE_ovr_0(errstr, private_info, cb, user_data);
@@ -9780,9 +10250,13 @@ type
     external 'opencl.dll' name 'clLogMessagesToStdoutAPPLE';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static procedure LogMessagesToStdoutAPPLE(errstr: string; private_info: IntPtr; cb: UIntPtr; user_data: IntPtr);
     begin
-      var par_1_str_ptr := Marshal.StringToHGlobalAnsi(errstr);
-      z_LogMessagesToStdoutAPPLE_ovr_0(par_1_str_ptr, private_info, cb, user_data);
-      Marshal.FreeHGlobal(par_1_str_ptr);
+      var par_1_str_ptr: IntPtr;
+      try
+        par_1_str_ptr := Marshal.StringToHGlobalAnsi(errstr);
+        z_LogMessagesToStdoutAPPLE_ovr_0(par_1_str_ptr, private_info, cb, user_data);
+      finally
+        Marshal.FreeHGlobal(par_1_str_ptr);
+      end;
     end;
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static procedure LogMessagesToStdoutAPPLE(errstr: IntPtr; private_info: IntPtr; cb: UIntPtr; user_data: IntPtr) :=
     z_LogMessagesToStdoutAPPLE_ovr_0(errstr, private_info, cb, user_data);
@@ -9791,9 +10265,13 @@ type
     external 'opencl.dll' name 'clLogMessagesToStderrAPPLE';
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static procedure LogMessagesToStderrAPPLE(errstr: string; private_info: IntPtr; cb: UIntPtr; user_data: IntPtr);
     begin
-      var par_1_str_ptr := Marshal.StringToHGlobalAnsi(errstr);
-      z_LogMessagesToStderrAPPLE_ovr_0(par_1_str_ptr, private_info, cb, user_data);
-      Marshal.FreeHGlobal(par_1_str_ptr);
+      var par_1_str_ptr: IntPtr;
+      try
+        par_1_str_ptr := Marshal.StringToHGlobalAnsi(errstr);
+        z_LogMessagesToStderrAPPLE_ovr_0(par_1_str_ptr, private_info, cb, user_data);
+      finally
+        Marshal.FreeHGlobal(par_1_str_ptr);
+      end;
     end;
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static procedure LogMessagesToStderrAPPLE(errstr: IntPtr; private_info: IntPtr; cb: UIntPtr; user_data: IntPtr) :=
     z_LogMessagesToStderrAPPLE_ovr_0(errstr, private_info, cb, user_data);
@@ -9802,6 +10280,7 @@ type
   
   [PCUNotRestore]
   clIcdKHR = static class
+    public const _ExtStr = 'khr_icd';
     
     private static function z_IcdGetPlatformIDsKHR_ovr_0(num_entries: UInt32; var platforms: cl_platform_id; var num_platforms: UInt32): ErrorCode;
     external 'opencl.dll' name 'clIcdGetPlatformIDsKHR';
@@ -9860,6 +10339,7 @@ type
   
   [PCUNotRestore]
   clIlProgramKHR = static class
+    public const _ExtStr = 'khr_il_program';
     
     private static function z_CreateProgramWithILKHR_ovr_0(context: cl_context; var il: byte; length: UIntPtr; var errcode_ret: ErrorCode): cl_program;
     external 'opencl.dll' name 'clCreateProgramWithILKHR';
@@ -9880,6 +10360,7 @@ type
   
   [PCUNotRestore]
   clTerminateContextKHR = static class
+    public const _ExtStr = 'khr_terminate_context';
     
     private static function z_TerminateContextKHR_ovr_0(context: cl_context): ErrorCode;
     external 'opencl.dll' name 'clTerminateContextKHR';
@@ -9890,6 +10371,7 @@ type
   
   [PCUNotRestore]
   clCreateCommandQueueKHR = static class
+    public const _ExtStr = 'khr_create_command_queue';
     
     private static function z_CreateCommandQueueWithPropertiesKHR_ovr_0(context: cl_context; device: cl_device_id; var properties: UInt64; var errcode_ret: ErrorCode): cl_command_queue;
     external 'opencl.dll' name 'clCreateCommandQueueWithPropertiesKHR';
@@ -9910,6 +10392,7 @@ type
   
   [PCUNotRestore]
   clDeviceFissionEXT = static class
+    public const _ExtStr = 'ext_device_fission';
     
     private static function z_ReleaseDeviceEXT_ovr_0(device: cl_device_id): ErrorCode;
     external 'opencl.dll' name 'clReleaseDeviceEXT';
@@ -10126,6 +10609,7 @@ type
   
   [PCUNotRestore]
   clMigrateMemobjectEXT = static class
+    public const _ExtStr = 'ext_migrate_memobject';
     
     private static function z_EnqueueMigrateMemObjectEXT_ovr_0(command_queue: cl_command_queue; num_mem_objects: UInt32; var mem_objects: cl_mem; flags: MemMigrationFlagsExt; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueMigrateMemObjectEXT';
@@ -10332,6 +10816,7 @@ type
   
   [PCUNotRestore]
   clExtHostPtrQCOM = static class
+    public const _ExtStr = 'qcom_ext_host_ptr';
     
     private static function z_GetDeviceImageInfoQCOM_ovr_0(device: cl_device_id; image_width: UIntPtr; image_height: UIntPtr; var image_format: cl_image_format; param_name: UInt32; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceImageInfoQCOM';
@@ -10390,6 +10875,7 @@ type
   
   [PCUNotRestore]
   clUseGrallocPtrIMG = static class
+    public const _ExtStr = 'img_use_gralloc_ptr';
     
     private static function z_EnqueueAcquireGrallocObjectsIMG_ovr_0(command_queue: cl_command_queue; num_objects: UInt32; var mem_objects: cl_mem; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueAcquireGrallocObjectsIMG';
@@ -10797,6 +11283,7 @@ type
   
   [PCUNotRestore]
   clSubgroupsKHR = static class
+    public const _ExtStr = 'khr_subgroups';
     
     private static function z_GetKernelSubGroupInfoKHR_ovr_0(in_kernel: cl_kernel; in_device: cl_device_id; param_name: KernelSubGroupInfo; input_value_size: UIntPtr; input_value: IntPtr; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetKernelSubGroupInfoKHR';
@@ -10817,6 +11304,7 @@ type
   
   [PCUNotRestore]
   clImportMemoryARM = static class
+    public const _ExtStr = 'arm_import_memory';
     
     private static function z_ImportMemoryARM_ovr_0(context: cl_context; flags: MemFlags; var properties: IntPtr; memory: IntPtr; size: UIntPtr; var errcode_ret: ErrorCode): cl_mem;
     external 'opencl.dll' name 'clImportMemoryARM';
@@ -10837,6 +11325,7 @@ type
   
   [PCUNotRestore]
   clSharedVirtualMemoryARM = static class
+    public const _ExtStr = 'arm_shared_virtual_memory';
     
     private static function z_SVMAllocARM_ovr_0(context: cl_context; flags: UInt64; size: UIntPtr; alignment: UInt32): IntPtr;
     external 'opencl.dll' name 'clSVMAllocARM';
@@ -11127,6 +11616,7 @@ type
   
   [PCUNotRestore]
   clAcceleratorINTEL = static class
+    public const _ExtStr = 'intel_accelerator';
     
     private static function z_CreateAcceleratorINTEL_ovr_0(context: cl_context; accelerator_type: AcceleratorTypeIntel; descriptor_size: UIntPtr; descriptor: IntPtr; var errcode_ret: ErrorCode): cl_accelerator_intel;
     external 'opencl.dll' name 'clCreateAcceleratorINTEL';
@@ -11162,6 +11652,7 @@ type
   
   [PCUNotRestore]
   clGlEventKHR = static class
+    public const _ExtStr = 'khr_gl_event';
     
     private static function z_CreateEventFromGLsyncKHR_ovr_0(context: cl_context; sync: IntPtr; var errcode_ret: ErrorCode): cl_event;
     external 'opencl.dll' name 'clCreateEventFromGLsyncKHR';
@@ -11172,6 +11663,7 @@ type
   
   [PCUNotRestore]
   clVaApiMediaSharingINTEL = static class
+    public const _ExtStr = 'intel_va_api_media_sharing';
     
     private static function z_GetDeviceIDsFromVA_APIMediaAdapterINTEL_ovr_0(platform: cl_platform_id; media_adapter_type: VaApiDeviceSourceIntel; media_adapter: IntPtr; media_adapter_set: VaApiDeviceSetIntel; num_entries: UInt32; var devices: cl_device_id; var num_devices: UInt32): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromVA_APIMediaAdapterINTEL';
@@ -11647,6 +12139,7 @@ type
   
   [PCUNotRestore]
   clDx9MediaSharingINTEL = static class
+    public const _ExtStr = 'intel_dx9_media_sharing';
     
     private static function z_GetDeviceIDsFromDX9INTEL_ovr_0(platform: cl_platform_id; dx9_device_source: Dx9DeviceSourceIntel; dx9_object: IntPtr; dx9_device_set: Dx9DeviceSetIntel; num_entries: UInt32; var devices: cl_device_id; var num_devices: UInt32): ErrorCode;
     external 'opencl.dll' name 'clGetDeviceIDsFromDX9INTEL';
@@ -12122,6 +12615,7 @@ type
   
   [PCUNotRestore]
   clGlSharingKHR = static class
+    public const _ExtStr = 'khr_gl_sharing';
     
     private static function z_GetGLContextInfoKHR_ovr_0(var properties: ContextProperties; param_name: GlContextInfo; param_value_size: UIntPtr; param_value: IntPtr; var param_value_size_ret: UIntPtr): ErrorCode;
     external 'opencl.dll' name 'clGetGLContextInfoKHR';
@@ -12675,6 +13169,7 @@ type
   
   [PCUNotRestore]
   clUnifiedSharedMemoryINTEL = static class
+    public const _ExtStr = 'intel_unified_shared_memory';
     
     private static function z_HostMemAllocINTEL_ovr_0(context: cl_context; var properties: MemPropertiesIntel; size: UIntPtr; alignment: UInt32; var errcode_ret: ErrorCode): IntPtr;
     external 'opencl.dll' name 'clHostMemAllocINTEL';
@@ -12905,15 +13400,15 @@ type
     public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMemcpyINTEL(command_queue: cl_command_queue; blocking: Bool; dst_ptr: IntPtr; src_ptr: IntPtr; size: UIntPtr; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
     z_EnqueueMemcpyINTEL_ovr_8(command_queue, blocking, dst_ptr, src_ptr, size, num_events_in_wait_list, event_wait_list, &event);
     
-    private static function z_EnqueueMigrateMemINTEL_ovr_0(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlagsIntel; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
+    private static function z_EnqueueMigrateMemINTEL_ovr_0(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueMigrateMemINTEL';
-    private static function z_EnqueueMigrateMemINTEL_ovr_0_anh00000010(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlagsIntel; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    private static function z_EnqueueMigrateMemINTEL_ovr_0_anh00000010(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueMigrateMemINTEL';
-    private static function z_EnqueueMigrateMemINTEL_ovr_0_anh00000001(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlagsIntel; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    private static function z_EnqueueMigrateMemINTEL_ovr_0_anh00000001(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clEnqueueMigrateMemINTEL';
-    private static function z_EnqueueMigrateMemINTEL_ovr_0_anh00000011(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlagsIntel; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    private static function z_EnqueueMigrateMemINTEL_ovr_0_anh00000011(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clEnqueueMigrateMemINTEL';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMigrateMemINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlagsIntel; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMigrateMemINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: array of cl_event): ErrorCode :=
     if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
       if (&event<>nil) and (&event.Length<>0) then
         z_EnqueueMigrateMemINTEL_ovr_0(command_queue, ptr, size, flags, num_events_in_wait_list, event_wait_list[0], &event[0]) else
@@ -12921,41 +13416,41 @@ type
       if (&event<>nil) and (&event.Length<>0) then
         z_EnqueueMigrateMemINTEL_ovr_0_anh00000010(command_queue, ptr, size, flags, num_events_in_wait_list, IntPtr.Zero, &event[0]) else
         z_EnqueueMigrateMemINTEL_ovr_0_anh00000011(command_queue, ptr, size, flags, num_events_in_wait_list, IntPtr.Zero, IntPtr.Zero);
-    private static function z_EnqueueMigrateMemINTEL_ovr_1_anh00000010(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlagsIntel; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    private static function z_EnqueueMigrateMemINTEL_ovr_1_anh00000010(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueMigrateMemINTEL';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMigrateMemINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlagsIntel; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMigrateMemINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; var &event: cl_event): ErrorCode :=
     if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
       z_EnqueueMigrateMemINTEL_ovr_0(command_queue, ptr, size, flags, num_events_in_wait_list, event_wait_list[0], &event) else
       z_EnqueueMigrateMemINTEL_ovr_0_anh00000010(command_queue, ptr, size, flags, num_events_in_wait_list, IntPtr.Zero, &event);
-    private static function z_EnqueueMigrateMemINTEL_ovr_2(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlagsIntel; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
+    private static function z_EnqueueMigrateMemINTEL_ovr_2(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clEnqueueMigrateMemINTEL';
-    private static function z_EnqueueMigrateMemINTEL_ovr_2_anh00000010(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlagsIntel; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    private static function z_EnqueueMigrateMemINTEL_ovr_2_anh00000010(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clEnqueueMigrateMemINTEL';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMigrateMemINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlagsIntel; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMigrateMemINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; event_wait_list: array of cl_event; &event: IntPtr): ErrorCode :=
     if (event_wait_list<>nil) and (event_wait_list.Length<>0) then
       z_EnqueueMigrateMemINTEL_ovr_2(command_queue, ptr, size, flags, num_events_in_wait_list, event_wait_list[0], &event) else
       z_EnqueueMigrateMemINTEL_ovr_2_anh00000010(command_queue, ptr, size, flags, num_events_in_wait_list, IntPtr.Zero, &event);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMigrateMemINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlagsIntel; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMigrateMemINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: array of cl_event): ErrorCode :=
     if (&event<>nil) and (&event.Length<>0) then
       z_EnqueueMigrateMemINTEL_ovr_0(command_queue, ptr, size, flags, num_events_in_wait_list, event_wait_list, &event[0]) else
       z_EnqueueMigrateMemINTEL_ovr_0_anh00000001(command_queue, ptr, size, flags, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMigrateMemINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlagsIntel; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMigrateMemINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode :=
     z_EnqueueMigrateMemINTEL_ovr_0(command_queue, ptr, size, flags, num_events_in_wait_list, event_wait_list, &event);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMigrateMemINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlagsIntel; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMigrateMemINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; &event: IntPtr): ErrorCode :=
     z_EnqueueMigrateMemINTEL_ovr_2(command_queue, ptr, size, flags, num_events_in_wait_list, event_wait_list, &event);
-    private static function z_EnqueueMigrateMemINTEL_ovr_6(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlagsIntel; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
+    private static function z_EnqueueMigrateMemINTEL_ovr_6(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode;
     external 'opencl.dll' name 'clEnqueueMigrateMemINTEL';
-    private static function z_EnqueueMigrateMemINTEL_ovr_6_anh00000001(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlagsIntel; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    private static function z_EnqueueMigrateMemINTEL_ovr_6_anh00000001(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clEnqueueMigrateMemINTEL';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMigrateMemINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlagsIntel; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMigrateMemINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: array of cl_event): ErrorCode :=
     if (&event<>nil) and (&event.Length<>0) then
       z_EnqueueMigrateMemINTEL_ovr_6(command_queue, ptr, size, flags, num_events_in_wait_list, event_wait_list, &event[0]) else
       z_EnqueueMigrateMemINTEL_ovr_6_anh00000001(command_queue, ptr, size, flags, num_events_in_wait_list, event_wait_list, IntPtr.Zero);
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMigrateMemINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlagsIntel; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMigrateMemINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; var &event: cl_event): ErrorCode :=
     z_EnqueueMigrateMemINTEL_ovr_6(command_queue, ptr, size, flags, num_events_in_wait_list, event_wait_list, &event);
-    private static function z_EnqueueMigrateMemINTEL_ovr_8(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlagsIntel; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
+    private static function z_EnqueueMigrateMemINTEL_ovr_8(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode;
     external 'opencl.dll' name 'clEnqueueMigrateMemINTEL';
-    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMigrateMemINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlagsIntel; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
+    public [MethodImpl(MethodImplOptions.AggressiveInlining)] static function EnqueueMigrateMemINTEL(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; flags: MemMigrationFlags; num_events_in_wait_list: UInt32; event_wait_list: IntPtr; &event: IntPtr): ErrorCode :=
     z_EnqueueMigrateMemINTEL_ovr_8(command_queue, ptr, size, flags, num_events_in_wait_list, event_wait_list, &event);
     
     private static function z_EnqueueMemAdviseINTEL_ovr_0(command_queue: cl_command_queue; ptr: IntPtr; size: UIntPtr; advice: UInt32; num_events_in_wait_list: UInt32; var event_wait_list: cl_event; var &event: cl_event): ErrorCode;
@@ -13015,22 +13510,15 @@ type
   
   {$endregion Extensions}
   
+  {$endregion Функции}
+  
 implementation
 
-{$region Debug}
-{$ifdef DebugMode}
+{$region Misc}
 
-function GetRefCount(self: cl_event): IntPtr; extensionmethod;
-begin
-  cl.GetEventInfo(self, EventInfoType.REFERENCE_COUNT, new UIntPtr(IntPtr.Size), Result, nil).RaiseIfError;
-end;
+procedure ErrorCode.RaiseIfError :=
+if IS_ERROR then raise new OpenCLException(self);
 
-function GetState(self: cl_event): CommandExecutionStatus; extensionmethod;
-begin
-  cl.GetEventInfo(self, EventInfoType.COMMAND_EXECUTION_STATUS, new UIntPtr(4), Result, nil).RaiseIfError;
-end;
-
-{$endif DebugMode}
-{$endregion Debug}
+{$endregion Misc}
 
 end.
