@@ -6,24 +6,16 @@ begin
   Font.Size := 40;
   LeftPanel(150);
 
-  var rb := IntegerBlock('Красный:');
-  rb.Margin := 3;
-  var r := Slider(0,255,255,16);
-  var gb := IntegerBlock('Зеленый:');
-  gb.Margin := 3;
-  var g := Slider(0,255,255,16);
-  var bb := IntegerBlock('Синий:');
-  bb.Margin := 3;
-  var b := Slider(0,255,255,16);
+  var r := Slider('Красный: ',0,255,255,16);
+  var g := Slider('Зеленый: ',0,255,255,16);
+  var b := Slider('Синий: ',0,255,255,16);
   
-  Button('Выход').Click := procedure -> Window.Close;
+  Button('Выход').Click := procedure → Window.Close;
 
-  var p: procedure := ()-> begin
-    Window.Clear(RGB(r.Value.Round,g.Value.Round,b.Value.Round));
-    rb.Value := r.Value.Round;
-    gb.Value := g.Value.Round;
-    bb.Value := b.Value.Round;
-    DrawText(GraphWindow.ClientRect,$'R={rb.Value}, G={gb.Value}, B={bb.Value}');
+  var p: procedure := () → begin
+    var c := RGB(r.Value,g.Value,b.Value);
+    Window.Clear(c);
+    DrawText(GraphWindow.ClientRect,$'R={c.R}, G={c.G}, B={c.B}');
   end;
   r.ValueChanged := p;
   g.ValueChanged := p;

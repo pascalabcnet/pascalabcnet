@@ -24,6 +24,7 @@ type
   GPanel = System.Windows.Controls.Panel;
   GControl = System.Windows.Controls.Control;
   GStatusBar = System.Windows.Controls.Primitives.StatusBar;
+  Orientation = System.Windows.Controls.Orientation;
   MessageBox = System.Windows.MessageBox;
   MessageBoxButton = System.Windows.MessageBoxButton;
   MessageBoxResult = System.Windows.MessageBoxResult;
@@ -181,6 +182,35 @@ type
     /// Событие нажатия на элемент управления
     Click: procedure;
   end;
+  
+  StackPanelWPF = class(CommonControlWPF)
+  private
+    property sp: StackPanel read element as StackPanel;
+    procedure CreateP(Orient: Orientation; width,height: real);
+    begin
+      element := new StackPanel;
+      element.Focusable := False;
+      if width>0 then
+        element.Width := width;
+      if height>0 then
+        element.Height := height;
+      sp.Orientation := Orient;
+      __ActivePanelInternal.Children.Add(sp);
+      _ActivePanel := sp;
+    end;
+    procedure SetColorP(c: GColor);
+    begin
+      sp.Background := GetBrush(c); 
+    end;
+    function GetColorP := (sp.Background as SolidColorBrush).Color;
+    procedure SetTTP(s: string);
+    begin
+      sp.ToolTip := s;  
+    end;
+  public 
+    constructor (Orient: Orientation; width: real := 0; height: real := 0) := Invoke(CreateP,Orient,width,height);
+    property Color: GColor read Invoke&<GColor>(GetColorP) write Invoke(SetColorP, value);
+  end;
 
   /// Элемент управления "Изображение"
   ImageWPF = class(CommonControlWPF)
@@ -200,7 +230,6 @@ type
       MainDockPanel.children.RemoveAt(MainDockPanel.children.Count-1);
       MainDockPanel.children.Add(im);
     end;
-  private
     function GetNameP: string;
     begin
       Result := (im.Source as BitmapImage).UriSource.AbsolutePath
@@ -386,6 +415,12 @@ type
       else tb.Visibility := System.Windows.Visibility.Visible;
       tb.Text := t;
     end;
+    procedure SetTitleVisibilityP(v: boolean);
+    begin
+      if v then
+        tb.Visibility := System.Windows.Visibility.Visible
+      else tb.Visibility := System.Windows.Visibility.Collapsed;
+    end;
     procedure SetHP(h: real) := MainElement.Height := h;
     
     function CreateStackPanel(el: FrameworkElement; title: string): StackPanel;
@@ -418,7 +453,10 @@ type
     end;
   public 
     /// Заголовок
-    property Title: string read InvokeString(()->tb.Text) write Invoke(SetTitleP, value);
+    property Title: string read InvokeString(()->tb.Text) write Invoke(SetTitleP, value); virtual;
+    /// Видим ли заголовок
+    property TitleVisible: boolean read InvokeBoolean(()->tb.Visibility <> System.Windows.Visibility.Collapsed) 
+      write Invoke(SetTitleVisibilityP, value); virtual;
     /// Высота элемента управления
     property Height: real read InvokeReal(()->MainElement.ActualHeight) write Invoke(SetHP, value); override;
     /// Размер шрифта
@@ -605,10 +643,10 @@ type
     property Items[i: integer]: string read InvokeString(()->cb.Items[i] as string); default;
   end;
 
-  /// Элемент управления "Слайдер"
-  SliderWPF = class(CommonControlWPF)
+  SliderBase = class(ControlWithTitleWPF)
   private
-    function sl: Slider := element as Slider;
+    titl: string; // часть заголовка без числа
+    function sl: Slider := MainElement as Slider;
     function GetMinimum: real := InvokeReal(()->sl.Minimum);
     procedure SetMinimumP(r: real) := sl.Minimum := r;
     procedure SetMinimum(r: real) := Invoke(SetMinimumP, r);
@@ -621,11 +659,18 @@ type
     function GetFrequency: real := InvokeReal(()->sl.TickFrequency);
     procedure SetFrequencyP(r: real) := sl.TickFrequency := r;
     procedure SetFrequency(r: real) := Invoke(SetFrequencyP, r);
-  protected 
-    procedure CreatePXY(x,y: real; min, max, val, freq: real; width: real);
+  private 
+    procedure CreatePXY(x,y: real; title: string; min, max, val, freq: real; width: real);
     begin
-      Init0(new Slider,width,x,y);
-      sl.ValueChanged += procedure(o, e) -> ValueChangedP;
+      Init1(new Slider,title,width,x,y);
+      Remainder(title,min, max, val, freq);
+    end;
+    procedure Remainder(tit: string; min, max, val, freq: real);
+    begin
+      titl := tit;
+      sl.ValueChanged += procedure(o, e) -> if ValueChanged <> nil then ValueChanged;
+      sl.ValueChanged += procedure(o, e) -> if title <> '' then tb.Text := Title + ' ' + sl.Value;
+      if titl <> '' then tb.Text := Title + ' ' + sl.Value;
       sl.TickPlacement := System.Windows.Controls.Primitives.TickPlacement.BottomRight;
       sl.Minimum := min;
       sl.Maximum := max;
@@ -634,15 +679,62 @@ type
         sl.TickFrequency := (max-min)/10
       else sl.TickFrequency := freq;
       sl.Foreground := Brushes.Black;
+      sl.IsSnapToTickEnabled := True;
     end;
-    procedure CreateP(min, max, val, freq: real) := CreatePXY(-1,-1,min, max, val, freq, 0);
-    
-    procedure ValueChangedP := if ValueChanged <> nil then ValueChanged;
+    procedure CreateP(title: string; min, max, val, freq: real) := CreatePXY(-1, -1, title, min, max, val, freq, 0);
+    procedure SetTitleP1(tit: string);
+    begin
+      titl := tit;
+      SetTitleP(tit +' ' + sl.Value);
+    end;
   public 
     /// Событие, возникающее при изменении значения
     ValueChanged: procedure;
-    constructor Create(min, max: real; val: real := real.MinValue; freq: real := 0) := Invoke(CreateP, min, max, val, freq);
-    constructor Create(x,y: real; min, max: real; width: real; val: real := real.MinValue; freq: real := 0) := Invoke(CreatePXY, x,y,min, max, val, freq, width);
+    /// Заголовок
+    property Title: string read InvokeString(()->titl) write Invoke(SetTitleP1, value); override;
+  end;
+  
+  /// Элемент управления "Слайдер" с целыми значениями
+  SliderWPF = class(SliderBase)
+  private
+    procedure CreatePXYI(x,y: real; title: string; min, max, val, freq: integer; width: integer);
+    begin
+      Init1(new Slider,title,width,x,y);
+      if freq<=0 then
+        freq := (max-min) div 10;
+      if freq = 0 then
+        freq := 1;
+      Remainder(title,min, max, val, freq);
+    end;
+    procedure CreatePI(title: string; min, max, val, freq: integer) := CreatePXYI(-1, -1, title, min, max, val, freq, 0);
+  public 
+    constructor Create(min, max: integer; val: integer := integer.MinValue; freq: integer := 0) 
+      := Invoke(CreatePI, '', min, max, val, freq);
+    constructor Create(title: string := '');
+    begin
+      Create(title, 0, 10, 0);
+    end;
+    constructor Create(title: string; min, max: integer; val: integer := integer.MinValue; freq: integer := 0) 
+      := Invoke(CreatePI, title, min, max, val, freq);
+    constructor Create(x,y: real; title: string; min, max: integer; width: integer; val: integer := integer.MinValue; freq: integer := 0) 
+      := Invoke(CreatePXYI, x,y,title,min, max, val, freq, width);
+    /// Минимальное значение 
+    property Minimum: integer read GetMinimum.Round write SetMinimum(value);
+    /// Максимальное значение 
+    property Maximum: integer read GetMaximum.Round write SetMaximum(value);
+    /// Текущее значение 
+    property Value: integer read GetValue.Round write SetValue(value);
+    /// Интервал между делениями
+    property Frequency: integer read GetFrequency.Round write SetFrequency(value);
+  end;
+
+  /// Элемент управления "Слайдер" с вещественными значениями
+  SliderRealWPF = class(SliderBase)
+  public 
+    constructor Create(min, max: real; val: real := real.MinValue; freq: real := 0) := Invoke(CreateP, '', min, max, val, freq);
+    constructor Create(title: string := '') := Create(title, 0, 10, 0);
+    constructor Create(title: string; min, max: real; val: real := real.MinValue; freq: real := 0) := Invoke(CreateP, title, min, max, val, freq);
+    constructor Create(x,y: real; title: string; min, max: real; width: real; val: real := real.MinValue; freq: real := 0) := Invoke(CreatePXY, x,y,title,min, max, val, freq, width);
     /// Минимальное значение 
     property Minimum: real read GetMinimum write SetMinimum;
     /// Максимальное значение 
@@ -1029,12 +1121,23 @@ function ListBox(title: string := ''; height: real := 150): ListBoxWPF;
 /// Элемент управления "Список" с заданными координатами
 function ListBox(x,y: real; title: string := ''; width: real := 150; height: real := 150): ListBoxWPF;
 
+/// Элемент управления "Слайдер с вещественными значениями"
+function SliderReal(title: string := ''): SliderRealWPF;
+/// Элемент управления "Слайдер с вещественными значениями" с заданным диапазоном значений и заголовком
+function SliderReal(title: string; min,max: real; val: real := real.MinValue; freq: real := 0): SliderRealWPF;
+/// Элемент управления "Слайдер с вещественными значениями" с заданным диапазоном значений
+function SliderReal(min, max: real; val: real := real.MaxValue; freq: real := 0): SliderRealWPF;
+/// Элемент управления "Слайдер с вещественными значениями" с заданными координатами
+function SliderReal(x,y: real; title: string; min,max: real; width: real; val: real := real.MinValue; freq: real := 0): SliderRealWPF;
+
 /// Элемент управления "Слайдер"
-function Slider(): SliderWPF;
+function Slider(title: string := ''): SliderWPF;
+/// Элемент управления "Слайдер" с заданным диапазоном значений и заголовком
+function Slider(title: string; min,max: integer; val: integer := integer.MinValue; freq: integer := 0): SliderWPF;
 /// Элемент управления "Слайдер" с заданным диапазоном значений
-function Slider(min,max: real; val: real := real.MinValue; freq: real := 0): SliderWPF;
+function Slider(min, max: integer; val: integer := integer.MinValue; freq: integer := 0): SliderWPF;
 /// Элемент управления "Слайдер" с заданными координатами
-function Slider(x,y: real; min,max: real; width: real; val: real := real.MinValue; freq: real := 0): SliderWPF;
+function Slider(x,y: real; title: string; min,max: integer; width: integer; val: integer := integer.MinValue; freq: integer := 0): SliderWPF;
 
 /// Элемент управления "Изображение"
 function Image(name: string): ImageWPF;
@@ -1111,18 +1214,34 @@ function IntegerBox(x, y: real; title: string; min,max: integer; width: real) :=
 function ListBox(title: string; height: real): ListBoxWPF := ListBoxWPF.Create(title,height);
 function ListBox(x,y: real; title: string; width: real; height: real): ListBoxWPF := ListBoxWPF.Create(x,y,title,width,height);
 
-function Slider: SliderWPF := SliderWPF.Create(0, 10, 0, 0);
-function Slider(min, max, val, freq: real): SliderWPF;
+function SliderReal(title: string): SliderRealWPF := SliderRealWPF.Create(title,0, 10, 0, 0);
+function SliderReal(title: string; min, max, val, freq: real): SliderRealWPF;
 begin
   if val = real.MinValue then
     val := min;
-  Result := SliderWPF.Create(min, max, val, freq);
+  Result := SliderRealWPF.Create(title, min, max, val, freq);
+end;
+function SliderReal(min, max, val, freq: real): SliderRealWPF := SliderReal('',min, max, val, freq);
+function SliderReal(x,y: real; title: string; min,max,width,val,freq: real): SliderRealWPF;
+begin
+  if val = real.MinValue then
+    val := min;
+  Result := SliderRealWPF.Create(x, y, title, min, max, width, val, freq);
 end;  
-function Slider(x,y,min,max,width,val,freq: real): SliderWPF;
+
+function Slider(title: string): SliderWPF := SliderWPF.Create(title);
+function Slider(title: string; min, max, val, freq: integer): SliderWPF;
 begin
   if val = real.MinValue then
     val := min;
-  Result := SliderWPF.Create(x, y, min, max, width, val, freq);
+  Result := SliderWPF.Create(title, min, max, val, freq);
+end;
+function Slider(min, max, val, freq: integer): SliderWPF := Slider('',min, max, val, freq);
+function Slider(x,y: real; title: string; min,max,width,val,freq: integer): SliderWPF;
+begin
+  if val = real.MinValue then
+    val := min;
+  Result := SliderWPF.Create(x, y, title, min, max, width, val, freq);
 end;  
 
 function Image(name: string): ImageWPF := new ImageWPF(name);

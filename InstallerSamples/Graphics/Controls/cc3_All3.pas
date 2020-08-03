@@ -23,8 +23,7 @@ begin
   var cb := new ComboBoxWPF('Выпадающий список');
   cb.AddRange('Россия','США','Китай','Германия','Франция');
   
-  new TextBlockWPF('Слайдер');
-  new SliderWPF(0,10);
+  new SliderWPF('Слайдер:',0,10);
   new TextBlockWPF('Блок текста');
   new IntegerBlockWPF('Блок целого:',64);
   new RealBlockWPF('Блок вещественного:',3.5);

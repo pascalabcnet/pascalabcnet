@@ -23,11 +23,10 @@ begin
   var cb0 := ComboBox(x,362,'Выпадающий список',w);
   cb0.AddRange('Россия','США','Китай','Германия','Франция');
   
-  TextBlock(x,414,'Слайдер');
-  Slider(x,434,0,10,w);
+  Slider(x,414,'Слайдер:',0,10,w);
   TextBlock(x,469,'Блок текста',w);
-  IntegerBlock(x,488,'Блок целого:',w,64);
-  RealBlock(x,507,'Блок вещественного:',w,3.5);
+  IntegerBlock(x,497,'Блок целого:',w,64);
+  RealBlock(x,526,'Блок вещественного:',w,3.5);
 
   LeftPanel(160,Colors.Orange);
  
@@ -48,8 +47,7 @@ begin
   var cb := ComboBox('Выпадающий список');
   cb.AddRange('Россия','США','Китай','Германия','Франция');
   
-  TextBlock('Слайдер');
-  Slider(0,10);
+  Slider('Слайдер:',0,10);
   TextBlock('Блок текста');
   IntegerBlock('Блок целого:',64);
   RealBlock('Блок вещественного:',3.5);

@@ -17,22 +17,16 @@ begin
   lb.AddRange('1 2 3 4 5'.ToWords);
   var cb := new ComboBoxWPF('ComboBox');
   cb.AddRange('1 2 3 4 5'.ToWords);
+  var sl := new SliderWPF('Slider:');
   
   b.Click := procedure -> begin
     if b.Text = 'Заголовки включены' then
       b.Text := 'Заголовки выключены'
     else b.Text := 'Заголовки включены';
-    if tb.Title = '' then
-      tb.Title := 'Заголовок'
-    else tb.Title := '';
-    if ib.Title = '' then
-      ib.Title := 'Заголовок'
-    else ib.Title := '';
-    if lb.Title = '' then
-      lb.Title := 'Заголовок'
-    else lb.Title := '';
-    if cb.Title = '' then
-      cb.Title := 'Заголовок'
-    else cb.Title := '';
+    tb.TitleVisible := not tb.TitleVisible;
+    ib.TitleVisible := not ib.TitleVisible;
+    lb.TitleVisible := not lb.TitleVisible;
+    cb.TitleVisible := not cb.TitleVisible;
+    sl.TitleVisible := not sl.TitleVisible;
   end;
 end.

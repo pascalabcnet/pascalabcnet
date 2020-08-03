@@ -16387,7 +16387,9 @@ namespace PascalABCCompiler.TreeConverter
             {
                 tn = convert_strong(_var_def_statement.vars_type);
 
-                if (tn.type_special_kind != SemanticTree.type_special_kind.array_kind && 
+                if (tn.type_special_kind != SemanticTree.type_special_kind.array_kind &&
+                    tn.type_special_kind != SemanticTree.type_special_kind.array_wrapper && 
+                    !tn.BaseFullName.StartsWith("System.Tuple") &&
                     _var_def_statement.inital_value is SyntaxTree.array_const ac)
                 {
                     AddError(get_location(_var_def_statement), "IMPOSSIBLE_TO_CONVERT_ARRAY_CONST_TO_{0}", tn);

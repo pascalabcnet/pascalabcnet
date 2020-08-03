@@ -2,10 +2,7 @@
 uses Controls,GraphWPF;
 
 type My = auto class
-  i,j: integer;
-public  
-  property Поле1: integer read i;
-  property Поле2: integer read j;
+  Поле1,Поле2: integer;
 end;
 
 begin
