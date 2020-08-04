@@ -145,7 +145,7 @@ uses System.Threading;
 uses System.Runtime.InteropServices;
 uses System.Collections.ObjectModel;
 
-uses OpenCL in '..\OpenCL';
+uses OpenCL;
 
 type
   

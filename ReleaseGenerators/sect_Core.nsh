@@ -129,10 +129,10 @@
     File ..\bin\Lib\Sounds.pcu
     File ..\bin\Lib\BlockFileOfT.pcu
     File ..\bin\Lib\OpenCL.pcu
-    File ..\bin\Lib\Internal\OpenCLABCBase.pcu
+    File ..\bin\Lib\OpenCLABCBase.pcu
     File ..\bin\Lib\OpenCLABC.pcu
     File ..\bin\Lib\OpenGL.pcu
-    File ..\bin\Lib\Internal\OpenGLABCBase.pcu
+    File ..\bin\Lib\OpenGLABCBase.pcu
     File ..\bin\Lib\OpenGLABC.pcu
     File ..\bin\Lib\School.pcu
     File ..\bin\Lib\SF.pcu
@@ -200,10 +200,10 @@
     ${AddFile} "Sounds.pcu"
     ${AddFile} "BlockFileOfT.pcu"
     ${AddFile} "OpenCL.pcu"
-    ${AddFile} "Internal\OpenCLABCBase.pas"
+    ${AddFile} "OpenCLABCBase.pas"
     ${AddFile} "OpenCLABC.pcu"
     ${AddFile} "OpenGL.pcu"
-    ${AddFile} "Internal\OpenGLABCBase.pas"
+    ${AddFile} "OpenGLABCBase.pas"
     ${AddFile} "OpenGLABC.pcu"
     ${AddFile} "School.pcu"
     ${AddFile} "SF.pcu"

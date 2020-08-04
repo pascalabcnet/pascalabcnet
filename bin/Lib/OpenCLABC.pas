@@ -29,7 +29,7 @@ interface
 uses System;
 
 uses OpenCL;
-uses OpenCLABCBase in 'Internal\OpenCLABCBase';
+uses OpenCLABCBase;
 
 {$region Re:definition's}
 
