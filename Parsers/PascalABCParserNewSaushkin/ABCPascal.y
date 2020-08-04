@@ -192,15 +192,16 @@ parse_goal
 		{ 
 			var stl = $2 as statement_list;
 			stl.left_logical_bracket = $1;
-			root = $$ = NewProgramModule(null, null, null, new block(null, stl, @$), new token_info("end"), @$); 
+			stl.right_logical_bracket = new token_info("");
+			root = $$ = NewProgramModule(null, null, null, new block(null, stl, @$), new token_info(""), @$); 
 		}
 	| tkShortSFProgram stmt_list	
 		{
 			var stl = $2 as statement_list;
 			stl.left_logical_bracket = $1;
-			var un = new unit_or_namespace(new ident_list("SF", @$),@$);
-			var ul = new uses_list(un,@$);		
-			root = $$ = NewProgramModule(null, null, ul, new block(null, stl, @$), new token_info("end"), @$); 
+			var un = new unit_or_namespace(new ident_list("SF"),null);
+			var ul = new uses_list(un,null);		
+			root = $$ = NewProgramModule(null, null, ul, new block(null, stl, @$), new token_info(""), @$); 
 		}
     ;
 
@@ -2277,8 +2278,8 @@ inclass_constr_destr_decl
         { 
    			if ($5 is empty_statement)
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@6);
-            var tmp = new constructor(null,$3 as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),@$),$2 as method_name,false,false,null,null,LexLocation.MergeAll(@1,@2,@3,@4));
-            $$ = new procedure_definition(tmp as procedure_header, new block(null,new statement_list($5 as statement,@5),@5), @$);
+            var tmp = new constructor(null,$3 as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),@$),$2 as method_name,false,false,null,null,LexLocation.MergeAll(@1,@2,@3));
+            $$ = new procedure_definition(tmp as procedure_header, new block(null,new statement_list($5 as statement,@5),@5), @1.Merge(@5));
             if (parsertools.build_tree_for_formatter)
 				$$ = new short_func_definition($$ as procedure_definition);
         }
@@ -2287,7 +2288,7 @@ inclass_constr_destr_decl
    			if ($6 is empty_statement)
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@7);
             var tmp = new constructor(null,$4 as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),@$),$3 as method_name,false,true,null,null,LexLocation.MergeAll(@1,@2,@3,@4));
-            $$ = new procedure_definition(tmp as procedure_header, new block(null,new statement_list($6 as statement,@6),@6), @$);
+            $$ = new procedure_definition(tmp as procedure_header, new block(null,new statement_list($6 as statement,@6),@6), @1.Merge(@6));
             if (parsertools.build_tree_for_formatter)
 				$$ = new short_func_definition($$ as procedure_definition);
         }
@@ -3933,10 +3934,6 @@ factor
         { 
 			$$ = new pascal_set_constant($2 as expression_list, @$);  
 		}
-    | tkVertParen elem_list tkVertParen     
-        { 
-			$$ = new array_const_new($2 as expression_list, @$);  
-		}
     | tkNot factor              
         { 
 			$$ = new un_expr($2, $1.type, @$); 
@@ -4109,6 +4106,10 @@ variable
             }
       		$$ = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
         }
+    | tkVertParen elem_list tkVertParen     
+        { 
+			$$ = new array_const_new($2 as expression_list, @$);  
+		}
     | variable tkRoundOpen optional_expr_list tkRoundClose                
         {
 			$$ = new method_call($1 as addressed_value,$3 as expression_list, @$);

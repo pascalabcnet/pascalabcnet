@@ -69,6 +69,11 @@ namespace TreeConverter.LambdaExpressions.Closure
             // Не обходить проверочные узлы в визиторе строительства дерева - SSM 1.05.17
         }
 
+        public override void visit(assign_var_tuple assvartup)
+        {
+            _visitor.ProcessNode(assvartup);
+        }
+
         public override void visit(var_def_statement varDefStmt)
         {
             if (varDefStmt.inital_value != null)

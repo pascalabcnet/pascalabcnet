@@ -6,26 +6,35 @@ function PrintAttributeString(a: object; fProvider: System.IFormatProvider): str
 
 type 
   Country = auto class
+  private  
+    _name, _capital: string;
+    _population: integer;
+    _continent: string;
+  public
+    [PrintAttribute(0, -32)]
+    property Name: string read _name;
+    [PrintAttribute(' ', 1, -19)]
+    property Capital: string read _capital;
+    [PrintAttribute(3, 13, 'd')]
+    property Population: integer read _population;
+    [PrintAttribute(' ', 2, -9)]
+    property Continent: string read _continent;
+  end;
+
+  Страна = auto class
+  private  
     _name, _capital: string;
     _population: integer;
     _continent: string;
   public
     [PrintAttribute(0, -32)]
     property Название: string read _name;
-    [PrintAttribute(0, -32)]
-    property Name: string read _name;
     [PrintAttribute(' ', 1, -19)]
     property Столица: string read _capital;
-    [PrintAttribute(' ', 1, -19)]
-    property Capital: string read _capital;
     [PrintAttribute(3, 13, 'd')]
     property Население: integer read _population;
-    [PrintAttribute(3, 13, 'd')]
-    property Population: integer read _population;
     [PrintAttribute(' ', 2, -9)]
     property Континент: string read _continent;
-    [PrintAttribute(' ', 2, -9)]
-    property Continent: string read _continent;
   end;
 
   ТипПола = (Муж, Жен);
@@ -237,7 +246,17 @@ PupilMark = auto class
     end;
   end;
 
-function ЗаполнитьМассивСтран: array of Country;
+function ЗаполнитьМассивСтран: array of Страна;
+begin
+  var fname := 'c:\Program files (x86)\PascalABC.NET\Files\Databases\Страны.csv';
+  if fname = '' then
+    raise new System.ApplicationException('Не найден массив стран Databases\Страны.csv');
+  Result := ReadLines(fname)
+    .Select(s->s.ToWords(';'))
+    .Select(w->new Страна(w[0],w[1],w[2].ToInteger,w[3])).ToArray;
+end; 
+
+function GetCountries: array of Country;
 begin
   var fname := 'c:\Program files (x86)\PascalABC.NET\Files\Databases\Страны.csv';
   if fname = '' then
@@ -246,8 +265,6 @@ begin
     .Select(s->s.ToWords(';'))
     .Select(w->new Country(w[0],w[1],w[2].ToInteger,w[3])).ToArray;
 end; 
-
-function GetCountries: array of Country := ЗаполнитьМассивСтран;
 
 function ЗаполнитьМассивУчеников: array of Pupil;
 begin

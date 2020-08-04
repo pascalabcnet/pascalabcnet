@@ -33,6 +33,7 @@ DESTRUCTOR_IN_INTERFACE=Interfaces cannot contain destructors
 CAN_NOT_CALL_CONSTRUCTOR_AS_PROCEDURE=Cannot call constructor as a procedure
 CANNOT_USE_POINTER_AS_GENERIC_ARGUMENT=Cannot use pointer type as generic argument
 PARAMETER_{0}_MUST_HAVE_DEFAULT_CONSTRUCTOR='{0}' must have public default constructor
+PARAMETER_{0}_MUST_NOT_BE_ABSTRACT=Type {0} cannot be abstract
 PARAMETER_{0}_MUST_BE_REFERENCE_TYPE='{0}' must be reference type
 PARAMETER_{0}_MUST_BE_VALUE_TYPE='{0}' must be value type
 PARAMETER_{0}_MUST_BE_DERIVED_FROM_{1}=The type '{0}' cannot be used as type parameter, because there is no implicit reference conversion from '{0}' to '{1}'

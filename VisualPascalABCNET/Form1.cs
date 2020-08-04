@@ -32,6 +32,13 @@ namespace VisualPascalABC
     
     public partial class Form1 : Form, VisualPascalABCPlugins.IWorkbench, VisualPascalABCPlugins.IWorkbenchDocumentService
     {
+        static string VersionInTitle(string s)
+        {
+            // VersionInTitle(RevisionClass.FullVersion)
+            var i = s.LastIndexOf('.');
+            return s.Substring(0, i);
+        }
+
         private const string MainFormTitle = "PascalABC.NET";
         private static bool DesignerUseable = true;
 		private static bool ProjectsUseable = true;
@@ -667,8 +674,8 @@ namespace VisualPascalABC
                     this.Text = String.Format(FTSFormat,MainFormText,Form1StringResources.Get("FTS_LOADING"));
                     break;
                 case VisualEnvironmentState.FinishCompilerLoading:
-                    //this.Text = String.Format("{0} v{1}",MainFormText,PascalABCCompiler.Compiler.ShortVersion);
-                    this.Text = MainFormText;
+                    this.Text = String.Format("{0} {1}",MainFormText,PascalABCCompiler.Compiler.ShortVersion);
+                    //this.Text = MainFormText;
                     openFileDialog1.Filter = saveFileDialog1.Filter = VisualEnvironmentCompiler.GetFilterForDialogs();
                     openProjectDialog.Filter = VisualEnvironmentCompiler.GetProjectFilterForDialogs();
                     VisualEnvironmentCompiler.Compiler.CompilerOptions = WorkbenchServiceFactory.BuildService.CompilerOptions;

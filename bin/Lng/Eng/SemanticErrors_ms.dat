@@ -1,6 +1,7 @@
 %PREFIX%=SEMANTICERROR_
 CAN_NOT_READ=Can not read data of this type
 TUPLE_EXPECTED=Tuple expected
+TUPLE_OR_SEQUENCE_EXPECTED=Tuple or sequence expected
 TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT=Too many elements on the left side of tuple assignment
 ONLY_BASE_ASSIGNMENT_FOR_TUPLE=Tuple allows only base assignment :=
 TUPLE_TYPE_ERROR=Bad element in Tuple type 
@@ -44,3 +45,4 @@ STATIC_CLASS_CANNOT_HAVE_PREDEFINITION=Static class cannot be predefined
 OPERATIONS_CANNOT_BE_CALLED_USING_THIS_SYNTAX=Operations cannot be called using this syntax
 MEMBER_{0}_OF_TYPE_{1}_CANNOT_BE_FOUND_IN_THE_CONTEEXT_OF_FUNCTION_WITH_YIELD=Name {0} cannot be found in type {1} in the context of function with yield statement
 UNCOMPARABLE_TYPES_IN_ARRAY_CONST=Uncomparable types in array initializers
+IMPOSSIBLE_TO_CONVERT_ARRAY_CONST_TO_{0}=It is impossible to convert array initializer to type {0}

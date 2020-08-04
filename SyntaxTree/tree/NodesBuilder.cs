@@ -215,6 +215,20 @@ namespace PascalABCCompiler.SyntaxTree
                 }
             }
 
+            // добавление свойств - временно убрал т.к. свойства нельзя передавать как var-параметры
+            // По идее если это делать, то поля переименовывать везде в классе!!!
+            /*for (var i=0; i<names.Count; i++)
+            {
+                if (names[i].name.StartsWith("#"))
+                    continue;
+                var propName = names[i].TypedClone();
+                names[i].name = "!" + names[i].name;
+                var simpleProp = BuildSimpleReadWriteProperty(propName, names[i].name, types[i]);
+                var cm = BuildOneMemberSection(simpleProp);
+                cb.Add(cm);
+            }*/
+
+
             if (!HasConstructor)
             {
                 var fnames = names.Select(x => new ident("f" + x.name.ToLower(), x.source_context)).ToList();

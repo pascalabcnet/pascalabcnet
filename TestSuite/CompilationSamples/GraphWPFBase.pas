@@ -11,12 +11,14 @@ unit GraphWPFBase;
 
 uses System.Windows; 
 uses System.Windows.Controls;
+uses System.Windows.Media;
 
 type 
   /// Тип цвета
   GColor = System.Windows.Media.Color;
   /// Тип прямоугольника
   GRect = System.Windows.Rect;
+  GBrush = System.Windows.Media.Brush;
 
   GWindow = System.Windows.Window;
   GMainWindow = class(GWindow)
@@ -55,6 +57,19 @@ type
 var 
   app: Application;
   MainWindow: GMainWindow;
+
+var BrushesDict := new Dictionary<GColor,GBrush>;
+
+function GetBrush(c: GColor): GBrush;
+begin
+  if not (c in BrushesDict) then
+  begin
+    var b := new SolidColorBrush(c);
+    BrushesDict[c] := b;
+    Result := b
+  end
+  else Result := BrushesDict[c];
+end;
 
 procedure Invoke(d: System.Delegate; params args: array of object) := app.Dispatcher.Invoke(d, args);
 procedure InvokeP(p: procedure(r: real); r: real) := Invoke(p,r); 
@@ -303,6 +318,8 @@ begin
   end;
 end;
 
-begin
+initialization
   __InitModule;
+
+finalization  
 end.

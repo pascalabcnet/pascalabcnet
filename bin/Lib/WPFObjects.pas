@@ -404,6 +404,8 @@ type
     begin
       Result := (Left < 0) or (Top < 0) or (Right > GraphWindow.Width) or (Bottom > GraphWindow.Height);
     end;
+    /// Tag хранит любые присоединённые характеристики объекта
+    auto property Tag: object;
   end;
   
 // -----------------------------------------------------
