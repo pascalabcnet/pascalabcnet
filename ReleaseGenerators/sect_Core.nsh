@@ -285,10 +285,10 @@
     File ..\bin\Lib\Sounds.pas
     File ..\bin\Lib\BlockFileOfT.pas
     File ..\bin\Lib\OpenCL.pas
-    File ..\bin\Lib\Internal\OpenCLABCBase.pas
+    File ..\bin\Lib\OpenCLABCBase.pas
     File ..\bin\Lib\OpenCLABC.pas
     File ..\bin\Lib\OpenGL.pas
-    File ..\bin\Lib\Internal\OpenGLABCBase.pas
+    File ..\bin\Lib\OpenGLABCBase.pas
     File ..\bin\Lib\OpenGLABC.pas
     File ..\bin\Lib\School.pas
     File ..\bin\Lib\SF.pas
@@ -353,10 +353,10 @@
     ${AddFile} "Sounds.pas"
     ${AddFile} "BlockFileOfT.pas"
     ${AddFile} "OpenCL.pas"
-    ${AddFile} "Internal\OpenCLABCBase.pas"
+    ${AddFile} "OpenCLABCBase.pas"
     ${AddFile} "OpenCLABC.pas"
     ${AddFile} "OpenGL.pas"
-    ${AddFile} "Internal\OpenGLABCBase.pas"
+    ${AddFile} "OpenGLABCBase.pas"
     ${AddFile} "OpenGLABC.pas"
     ${AddFile} "School.pas"
     ${AddFile} "SF.pas"
