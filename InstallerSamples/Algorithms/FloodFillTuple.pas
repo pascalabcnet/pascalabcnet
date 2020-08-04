@@ -47,7 +47,7 @@ begin
     for var x := 0 to dimx-1 do
     begin
       var c := f.ReadChar;
-      a[y,x]:= c='*' ? 1 : 0;
+      a[y,x]:= if c='*' then 1 else 0;
     end;
     f.Readln  
   end;
