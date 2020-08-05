@@ -22,6 +22,8 @@ unit OpenCLABCBase;
 //===================================
 // Запланированное:
 
+//ToDo В методах вроде .AddWriteArray1 приходится добавлять &<>
+
 //ToDo Подумать как об этом можно написать в справке (или не в справке):
 // - ReadValue отсутствует
 // --- В объяснении KernelArg из указателя всё уже сказано
@@ -124,7 +126,11 @@ unit OpenCLABCBase;
 
 //ToDo Issue компилятора:
 //ToDo https://github.com/pascalabcnet/pascalabcnet/issues/{id}
-// - ?
+// - #1981
+// - #2145
+// - #2221
+// - #2289
+// - #2290
 
 //ToDo Баги NVidia
 //ToDo https://developer.nvidia.com/nvidia_bug/{id}
@@ -3511,7 +3517,7 @@ type
         var next := enmr.MoveNext;
         
         if not (curr is IConstQueue) or not next then
-          if curr as object is T(var sqa) then //ToDo #2146
+          if curr as object is T(var sqa) then //ToDo #2290
             res.AddRange(sqa.GetQS) else
             res += curr;
         
@@ -4153,6 +4159,8 @@ type
         Result.abortable := true; // ev_l2 тут всегда напрямую передаётся в cl.Enqueue*... и ev_l2.abortable всегда true
         //ToDo С другой стороны, если ev_l2 абортится - получаем CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST в качестве статуса
         // - Надо бы проверить как это всё работает
+        // - Наверное надо возвращать в Result не только результат enq_f, но и ev_l2, чтоб SmartStatusErr видел другие ивенты
+        // - Ну и не забыть в .Get* так же поменять. Или лучше объединить этот дубль кода, сколько можно...
       end else
       begin
         var res_ev: UserEvent;
@@ -4410,9 +4418,9 @@ begin
     var uev := tsk.MakeUserEvent(c
       {$ifdef EventDebug}, $'abortability of EventList.Combine of: {Result.evs.Take(Result.count).JoinToString}'{$endif}
     );
-    Result.AttachCallback(()->begin uev.SetStatus(CommandExecutionStatus.COMPLETE) end, tsk, c, main_dvc, cq
+    Result.AttachCallback(()->uev.SetStatus(CommandExecutionStatus.COMPLETE), tsk, c, main_dvc, cq
       {$ifdef EventDebug}, $'setting abort ev: {uev.uev}'{$endif}
-    ); //ToDo лишний begin-end
+    );
     Result += cl_event(uev);
     Result.abortable := true;
   end;
@@ -4829,7 +4837,7 @@ type
     
   end;
   
-static function KernelArg.FromBuffer(b: Buffer) := new KernelArgBuffer(b) as KernelArg; //ToDo лишний as
+static function KernelArg.FromBuffer(b: Buffer) := new KernelArgBuffer(b) as KernelArg; //ToDo #1981
 
 {$endregion Buffer}
 
@@ -4851,7 +4859,7 @@ type
     
   end;
   
-static function KernelArg.FromRecord<TRecord>(val: TRecord) := new KernelArgRecord<TRecord>(val) as KernelArg; //ToDo лишний as
+static function KernelArg.FromRecord<TRecord>(val: TRecord) := new KernelArgRecord<TRecord>(val) as KernelArg; //ToDo #1981
 
 {$endregion Record}
 
@@ -4874,7 +4882,7 @@ type
     
   end;
   
-static function KernelArg.FromPtr(ptr: IntPtr; sz: UIntPtr) := new KernelArgPtr(ptr, sz) as KernelArg; //ToDo лишний as
+static function KernelArg.FromPtr(ptr: IntPtr; sz: UIntPtr) := new KernelArgPtr(ptr, sz) as KernelArg; //ToDo #1981
 
 {$endregion Ptr}
 
@@ -4898,7 +4906,7 @@ type
     private constructor := raise new InvalidOperationException($'Был вызван не_применимый конструктор без параметров... Обратитесь к разработчику OpenCLABC');
     
     protected function Invoke(tsk: CLTaskBase; c: Context; main_dvc: cl_device_id): QueueRes<ISetableKernelArg>; override :=
-    q.InvokeNewQ(tsk, c, main_dvc, false, nil).LazyQuickTransform(b->new KernelArgBuffer(b) as ConstKernelArg as ISetableKernelArg); //ToDo #?
+    q.InvokeNewQ(tsk, c, main_dvc, false, nil).LazyQuickTransform(b->new KernelArgBuffer(b) as ConstKernelArg as ISetableKernelArg); //ToDo #2289
     
     protected procedure RegisterWaitables(tsk: CLTaskBase; prev_hubs: HashSet<MultiusableCommandQueueHubBase>); override :=
     q.RegisterWaitables(tsk, prev_hubs);
