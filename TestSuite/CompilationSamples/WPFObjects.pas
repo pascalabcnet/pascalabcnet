@@ -140,6 +140,12 @@ type
     begin
       Result := l.GetEnumerator;
     end;
+    /// Очистить список игровых объектов 
+    procedure Clear;
+    begin
+      for var i:=Count-1 downto 0 do
+        Destroy(Items[i]);
+    end;
   end;
 
 
@@ -1597,12 +1603,14 @@ begin
     GraphWindow := GraphWPF.GraphWindow;
 
     host := new Canvas();
+    host.ClipToBounds := True;
     {host.SizeChanged += (s,e) ->
     begin
       var sz := e.NewSize;
       host.DataContext := sz;
     end;}
     var g := MainWindow.Content as DockPanel;
+    (g.children[0] as Canvas).ClipToBounds := False; // SSM 04/08/20 - возвращаем в False иначе графику GraphWPF становится не видно
     g.children.Add(host); // Слой графики WPF - последний
   end;
   app.Dispatcher.Invoke(AdditionalInit);

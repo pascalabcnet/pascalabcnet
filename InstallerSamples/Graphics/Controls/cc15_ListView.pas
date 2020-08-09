@@ -1,8 +1,11 @@
 ﻿// Модуль Controls - замена графического окна элементом "ListView"
 uses Controls,GraphWPF;
 
-type My = auto class
-  Поле1,Поле2: integer;
+type My = class
+public
+  auto property Поле1: integer;
+  auto property Поле2: integer;
+  constructor (п1,п2: integer) := (Поле1,Поле2) := (п1,п2);
 end;
 
 begin

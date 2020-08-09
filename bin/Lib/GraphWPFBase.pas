@@ -123,7 +123,7 @@ type
     property IsFixedSize: boolean read GetFixedSize write SetFixedSize;
     /// Очищает графическое окно белым цветом
     procedure Clear; virtual;
-    /// Очищает графическое окно цветом c
+    /// Очищает графическое окно указанным цветом
     procedure Clear(c: GColor); virtual;
     /// Устанавливает размеры клиентской части главного окна 
     procedure SetSize(w, h: real);
