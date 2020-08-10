@@ -3066,6 +3066,7 @@ namespace PascalABCCompiler.TreeConverter
             weak_node_test_and_visit(_interface_node.interface_definitions);
         }
 
+
         public override void visit(SyntaxTree.typecast_node node)
         {
 
@@ -3093,7 +3094,9 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     AddError(loc, "EXPECTED_DERIVED_CLASSES");
                 }
-            if (en.type.IsSealed && tp.IsInterface && !en.type.ImplementingInterfaces.Contains(tp))
+            if (en.type.IsSealed && tp.IsInterface && /*!en.type.ImplementingInterfaces.Contains(tp)*/
+                !convertion_data_and_alghoritms.type_or_base_type_implements_interface(en.type,tp)
+                )
             {
                 AddError(loc, "CAN_NOT_CONVERT_TYPE_{0}_TO_INTERFACE_{1}", en.type.PrintableName, tp.PrintableName);
             }

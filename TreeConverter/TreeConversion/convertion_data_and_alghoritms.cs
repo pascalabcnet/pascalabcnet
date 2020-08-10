@@ -1561,6 +1561,16 @@ namespace PascalABCCompiler.TreeConverter
             return eq_type_nodes(tn1, tn2, false);
         }
 
+        public static bool type_or_base_type_implements_interface(type_node tn, type_node interf)
+        {
+            do {
+                if (tn.ImplementingInterfaces.Contains(interf))
+                    return true;
+                tn = tn.base_type;
+            } while (tn != null);
+            return false;
+        }
+
         //Этот метод сверяет не только параметры, но и возвращаемое значение
         public static bool function_eq_params_and_result(function_node left, function_node right, bool weak = false)
         {
