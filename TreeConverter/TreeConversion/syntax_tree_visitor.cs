@@ -3086,8 +3086,10 @@ namespace PascalABCCompiler.TreeConverter
                     AddError(loc, "OPERATOR_{0}_CAN_NOT_BE_APPLIED_TO_POINTER_TYPE", compiler_string_consts.as_name);
             }
             else
-            	if (!(type_table.is_derived(en.type, tp) || type_table.is_derived(tp, en.type) || en.type == tp || en.type == SystemLibrary.SystemLibrary.object_type
-            	      || en.type.IsInterface || tp.IsInterface))
+            	if (!(type_table.is_derived(en.type, tp) || type_table.is_derived(tp, en.type) 
+                    || en.type == tp || en.type == SystemLibrary.SystemLibrary.object_type
+            	    || en.type.IsInterface || tp.IsInterface || tp.is_generic_parameter)
+                   )
                 {
                     AddError(loc, "EXPECTED_DERIVED_CLASSES");
                 }

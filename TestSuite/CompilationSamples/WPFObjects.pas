@@ -146,6 +146,13 @@ type
       for var i:=Count-1 downto 0 do
         Destroy(Items[i]);
     end;
+    /// Удалить все игровые объекты, удовлетворяющие условию
+    procedure DestroyAll(condition: ObjectWPF -> boolean);
+    begin
+      for var i := Count - 1 downto 0 do
+        if condition(Items[i]) then
+          Destroy(Items[i]);
+    end;
   end;
 
 
