@@ -129,8 +129,10 @@
     File ..\bin\Lib\Sounds.pcu
     File ..\bin\Lib\BlockFileOfT.pcu
     File ..\bin\Lib\OpenCL.pcu
+    File ..\bin\Lib\OpenCLABCBase.pcu
     File ..\bin\Lib\OpenCLABC.pcu
     File ..\bin\Lib\OpenGL.pcu
+    File ..\bin\Lib\OpenGLABCBase.pcu
     File ..\bin\Lib\OpenGLABC.pcu
     File ..\bin\Lib\School.pcu
     File ..\bin\Lib\SF.pcu
@@ -199,8 +201,10 @@
     ${AddFile} "Sounds.pcu"
     ${AddFile} "BlockFileOfT.pcu"
     ${AddFile} "OpenCL.pcu"
+    ${AddFile} "OpenCLABCBase.pas"
     ${AddFile} "OpenCLABC.pcu"
     ${AddFile} "OpenGL.pcu"
+    ${AddFile} "OpenGLABCBase.pas"
     ${AddFile} "OpenGLABC.pcu"
     ${AddFile} "School.pcu"
     ${AddFile} "SF.pcu"
@@ -281,8 +285,10 @@
     File ..\bin\Lib\Sounds.pas
     File ..\bin\Lib\BlockFileOfT.pas
     File ..\bin\Lib\OpenCL.pas
+    File ..\bin\Lib\OpenCLABCBase.pas
     File ..\bin\Lib\OpenCLABC.pas
     File ..\bin\Lib\OpenGL.pas
+    File ..\bin\Lib\OpenGLABCBase.pas
     File ..\bin\Lib\OpenGLABC.pas
     File ..\bin\Lib\School.pas
     File ..\bin\Lib\SF.pas
@@ -342,14 +348,15 @@
     ${AddFile} "Core.pas"
     ${AddFile} "MPI.pas"
     ${AddFile} "ClientServer.pas"
-    ${AddFile} "OpenGL.pas"
     ${AddFile} "PT4MakerNetX.pas"
     ${AddFile} "Speech.pas"
     ${AddFile} "Sounds.pas"
     ${AddFile} "BlockFileOfT.pas"
     ${AddFile} "OpenCL.pas"
+    ${AddFile} "OpenCLABCBase.pas"
     ${AddFile} "OpenCLABC.pas"
     ${AddFile} "OpenGL.pas"
+    ${AddFile} "OpenGLABCBase.pas"
     ${AddFile} "OpenGLABC.pas"
     ${AddFile} "School.pas"
     ${AddFile} "SF.pas"

@@ -3934,10 +3934,6 @@ factor
         { 
 			$$ = new pascal_set_constant($2 as expression_list, @$);  
 		}
-    | tkVertParen elem_list tkVertParen     
-        { 
-			$$ = new array_const_new($2 as expression_list, @$);  
-		}
     | tkNot factor              
         { 
 			$$ = new un_expr($2, $1.type, @$); 
@@ -4110,6 +4106,10 @@ variable
             }
       		$$ = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
         }
+    | tkVertParen elem_list tkVertParen     
+        { 
+			$$ = new array_const_new($2 as expression_list, @$);  
+		}
     | variable tkRoundOpen optional_expr_list tkRoundClose                
         {
 			$$ = new method_call($1 as addressed_value,$3 as expression_list, @$);

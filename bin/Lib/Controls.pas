@@ -1,11 +1,11 @@
 ﻿// Copyright (©) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-///Модуль элементов управления для GraphWPF и WPFObjects
+///Модуль элементов управления для GraphWPF, WPFObjects и Graph3D
 unit Controls;
 
 interface
 
-uses GraphWPFBase,GraphWPF;
+uses GraphWPFBase;
 uses System.Windows; 
 uses System.Windows.Media; 
 uses System.Windows.Media.Imaging;
@@ -24,6 +24,7 @@ type
   GPanel = System.Windows.Controls.Panel;
   GControl = System.Windows.Controls.Control;
   GStatusBar = System.Windows.Controls.Primitives.StatusBar;
+  Orientation = System.Windows.Controls.Orientation;
   MessageBox = System.Windows.MessageBox;
   MessageBoxButton = System.Windows.MessageBoxButton;
   MessageBoxResult = System.Windows.MessageBoxResult;
@@ -33,8 +34,11 @@ type
   Key = System.Windows.Input.Key;
 
 var
-  ActivePanel: GPanel;
+  _ActivePanel: GPanel;
   GlobalHMargin := 12;
+  
+function __ActivePanelInternal: GPanel;
+procedure __SetActivePanelInternal(p: GPanel);
 
 procedure Invoke(d: System.Delegate; params args: array of object);
 procedure InvokeP(p: procedure(r: real); r: real); 
@@ -67,7 +71,8 @@ type
       end;
       DockPanel.SetDock(bb, d);
       MainDockPanel.children.Insert(0, bb);
-      ActivePanel := p;
+      //ActivePanel := p;
+      __SetActivePanelInternal(p);
     end;
     procedure SetColorP(c: GColor);
     begin
@@ -75,15 +80,23 @@ type
       bb.Background := p.Background
     end;
     function GetColorP := (p.Background as SolidColorBrush).Color;
+    procedure SetTTP(s: string);
+    begin
+      p.ToolTip := s;  
+    end;
   public 
     constructor Create(wh: real := 150; d: Dock := Dock.Left; c: Color := PanelsColor; internalMargin: real := 10);
     begin
       Invoke(CreateP,wh,d,c,internalMargin);
     end;
+    /// Цвет
     property Color: GColor read Invoke&<GColor>(GetColorP) write Invoke(SetColorP, value);
+    /// Ширина внутренней границы
     property InternalMargin: real 
       read InvokeReal(()->p.Margin.Left)
       write Invoke(procedure -> p.Margin := new System.Windows.Thickness(internalMargin), value);
+    /// Всплывающая подсказка
+    property Tooltip: string read Invokestring(()->p.ToolTip as string) write Invoke(SetTTP, value);
   end;
   
   /// Класс левой панели
@@ -113,7 +126,7 @@ type
     begin
       element := el;
       element.Focusable := False;
-      if ActivePanel is StackPanel(var sp) then
+      if __ActivePanelInternal is StackPanel(var sp) then
         if sp.Orientation = Orientation.Vertical then
           element.Margin := new Thickness(0,0,0,GlobalHMargin);
         //else element.Margin := new Thickness(0,0,GlobalHMargin,0);
@@ -124,12 +137,13 @@ type
       end;
       if width>0 then
         element.Width := width;
-      ActivePanel.Children.Add(element);
+      __ActivePanelInternal.Children.Add(element);
     end;
 
     procedure SetWP(w: real) := element.Width := w;
     procedure SetHP(h: real) := element.Height := h;
     procedure SetMP(m: real) := element.Margin := new Thickness(0,0,0,m);
+    procedure SetTTP(s: string) := element.Tooltip := s;
     procedure SetEP(enabled: boolean) := element.IsEnabled := enabled;
   public
     /// Ширина элемента управления
@@ -140,6 +154,8 @@ type
     property Margin: real read InvokeReal(()->element.Margin.Bottom) write Invoke(SetMP, value);
     /// Активирован ли элемент управления
     property Enabled: boolean read InvokeBoolean(()->element.IsEnabled) write Invoke(SetEP, value);
+    /// Всплывающая подсказка
+    property Tooltip: string read Invokestring(()->element.ToolTip as string) write Invoke(SetTTP, value);
   end;
   
   CommonControlWPF = class(CommonElementWPF)
@@ -166,6 +182,35 @@ type
     /// Событие нажатия на элемент управления
     Click: procedure;
   end;
+  
+  StackPanelWPF = class(CommonControlWPF)
+  private
+    property sp: StackPanel read element as StackPanel;
+    procedure CreateP(Orient: Orientation; width,height: real);
+    begin
+      element := new StackPanel;
+      element.Focusable := False;
+      if width>0 then
+        element.Width := width;
+      if height>0 then
+        element.Height := height;
+      sp.Orientation := Orient;
+      __ActivePanelInternal.Children.Add(sp);
+      _ActivePanel := sp;
+    end;
+    procedure SetColorP(c: GColor);
+    begin
+      sp.Background := GetBrush(c); 
+    end;
+    function GetColorP := (sp.Background as SolidColorBrush).Color;
+    procedure SetTTP(s: string);
+    begin
+      sp.ToolTip := s;  
+    end;
+  public 
+    constructor (Orient: Orientation; width: real := 0; height: real := 0) := Invoke(CreateP,Orient,width,height);
+    property Color: GColor read Invoke&<GColor>(GetColorP) write Invoke(SetColorP, value);
+  end;
 
   /// Элемент управления "Изображение"
   ImageWPF = class(CommonControlWPF)
@@ -185,7 +230,6 @@ type
       MainDockPanel.children.RemoveAt(MainDockPanel.children.Count-1);
       MainDockPanel.children.Add(im);
     end;
-  private
     function GetNameP: string;
     begin
       Result := (im.Source as BitmapImage).UriSource.AbsolutePath
@@ -234,7 +278,7 @@ type
     procedure CreatePXY(x, y: real; Txt: string; width: real; fontsize: real);
     begin
       Init0(new GTextBlock, width, x, y);
-      Margin := 3;
+      //Margin := 3;
       Text := Txt;
       Self.FontSize := fontSize;
     end;
@@ -243,6 +287,8 @@ type
     procedure SetTextP(t: string) := tb.Text := t;
     procedure SetFontSizeP(sz: real) := tb.FontSize := sz;
     procedure SetFontNameP(name: string) := tb.FontFamily := new FontFamily(name);
+    procedure SetTextWrappingP(value: boolean) := if value then tb.TextWrapping := TextWrapping.Wrap else 
+      tb.TextWrapping := TextWrapping.NoWrap; 
   public 
     constructor Create(Txt: string; fontsize: real := 12):= Invoke(CreateP, Txt, fontsize);
     constructor Create(x, y: real; Txt: string; width: real := 0; fontSize: real := 12):= Invoke(CreatePXY, x, y, Txt, width, fontSize);
@@ -253,6 +299,9 @@ type
     property FontSize: real read InvokeReal(()->tb.FontSize) write Invoke(SetFontSizeP, value); virtual;
     /// Имя шрифта
     property FontName: string write Invoke(SetFontNameP, value); virtual;
+    /// Включён ли режим переноса слов
+    property Wrapping: boolean read InvokeBoolean(()->tb.TextWrapping = TextWrapping.Wrap) 
+      write Invoke(SetTextWrappingP, value); virtual;
   end;
 
   /// Элемент управления "Целое число"
@@ -282,7 +331,7 @@ type
     message: string;
     procedure CreatePXY(x, y: real; message: string; width: real; initValue: real := 0; fontSize: real := 12);
     begin
-      inherited CreatePXY(x,y,message + ' ' + initValue, width, fontSize);
+      inherited CreatePXY(x,y,message + ' ' + initValue.ToString(FracDigits), width, fontSize);
       Self.message := message;
       val := initValue;
     end;
@@ -351,7 +400,7 @@ type
     /// Очистка текста в текстовом поле
     procedure Clear := Text := '';
     /// Разрешено ли ручное редактирование текста
-    property Focusable: boolean read InvokeBoolean(()->not element.Focusable) write Invoke(SetReadOnlyP,value);
+    property ReadOnly: boolean read InvokeBoolean(()->not element.Focusable) write Invoke(SetReadOnlyP,value);
   end;
 
   ///!#
@@ -365,6 +414,12 @@ type
         tb.Visibility := System.Windows.Visibility.Collapsed
       else tb.Visibility := System.Windows.Visibility.Visible;
       tb.Text := t;
+    end;
+    procedure SetTitleVisibilityP(v: boolean);
+    begin
+      if v then
+        tb.Visibility := System.Windows.Visibility.Visible
+      else tb.Visibility := System.Windows.Visibility.Collapsed;
     end;
     procedure SetHP(h: real) := MainElement.Height := h;
     
@@ -398,7 +453,10 @@ type
     end;
   public 
     /// Заголовок
-    property Title: string read InvokeString(()->tb.Text) write Invoke(SetTitleP, value);
+    property Title: string read InvokeString(()->tb.Text) write Invoke(SetTitleP, value); virtual;
+    /// Видим ли заголовок
+    property TitleVisible: boolean read InvokeBoolean(()->tb.Visibility <> System.Windows.Visibility.Collapsed) 
+      write Invoke(SetTitleVisibilityP, value); virtual;
     /// Высота элемента управления
     property Height: real read InvokeReal(()->MainElement.ActualHeight) write Invoke(SetHP, value); override;
     /// Размер шрифта
@@ -420,21 +478,21 @@ type
       Init1(new TextBox, title, width, x, y);
       //tbx.TextWrapping := TextWrapping.Wrap;
       tbx.Text := txt;
-      tbx.TextChanged += (o,e) -> if TextChanged <> nil then TextChanged;
+      tbx.TextChanged += (o,e) -> if ValueChanged <> nil then ValueChanged;
     end;
     procedure CreateAsMainControlP;
     begin
       element := CreateStackPanel(new TextBox,'');
-      Multiline := True;
-      tbx.TextChanged += (o,e) -> if TextChanged <> nil then TextChanged;
+      Wrapping := True;
+      tbx.TextChanged += (o,e) -> if ValueChanged <> nil then ValueChanged;
       MainDockPanel.children.RemoveAt(MainDockPanel.children.Count-1);
       MainDockPanel.children.Add(element);
     end;
     procedure CreateP(title,text: string) := CreatePXY(-1,-1,title,text,0);
     constructor Create(i: integer) := Invoke(CreateAsMainControlP);
   public 
-    /// Событие "текст изменился"
-    TextChanged: procedure;
+    /// Событие "значение изменилось"
+    ValueChanged: procedure;
     constructor Create(title: string := '') := Invoke(CreateP, title, '');
     constructor Create(x,y: real; title: string := ''; width: real := 120) := Invoke(CreatePXY, x, y, title,'', width);
     
@@ -442,8 +500,8 @@ type
     procedure Clear := Text := '';
     /// Текст в текстовом поле
     property Text: string read InvokeString(()->tbx.Text) write Invoke(SetTextP, value);
-    /// Разрешено ли несколько строк в текстовом поле
-    property MultiLine: boolean read InvokeBoolean(()->tbx.TextWrapping = TextWrapping.Wrap) write Invoke(SetMultiLineP, value);
+    /// Включён ли режим переноса слов
+    property Wrapping: boolean read InvokeBoolean(()->tbx.TextWrapping = TextWrapping.Wrap) write Invoke(SetMultiLineP, value);
   end;
 
   /// Элемент управления "Целое поле"
@@ -572,20 +630,23 @@ type
     /// Событие, возникающее при изменении текущего выделения
     SelectionChanged: procedure;
     constructor Create(title: string := '') := Invoke(CreateP, title);
-    constructor Create(x,y: real; title: string := ''; width: real := 120) := Invoke(CreatePXY, x, y, title,'', width);
+    constructor Create(x,y: real; title: string := ''; width: real := 120) := Invoke(CreatePXY, x, y, title, width);
 
     /// Добавляет элемент в список
     procedure Add(s: string) := Invoke(AddP, s);
     /// Добавляет набор элементов в список
     procedure AddRange(params ss: array of string) := Invoke(AddRangeP, ss);
     /// Выбранная строка
-    function SelectedString := InvokeString(()->cb.SelectedItem as string);
+    function SelectedText := InvokeString(()->cb.SelectedItem as string);
+    /// Индекс выбранной строки
+    function SelectedIndex := InvokeInteger(()->cb.SelectedIndex);
+    property Items[i: integer]: string read InvokeString(()->cb.Items[i] as string); default;
   end;
 
-  /// Элемент управления "Слайдер"
-  SliderWPF = class(CommonControlWPF)
+  SliderBase = class(ControlWithTitleWPF)
   private
-    function sl: Slider := element as Slider;
+    titl: string; // часть заголовка без числа
+    function sl: Slider := MainElement as Slider;
     function GetMinimum: real := InvokeReal(()->sl.Minimum);
     procedure SetMinimumP(r: real) := sl.Minimum := r;
     procedure SetMinimum(r: real) := Invoke(SetMinimumP, r);
@@ -598,11 +659,18 @@ type
     function GetFrequency: real := InvokeReal(()->sl.TickFrequency);
     procedure SetFrequencyP(r: real) := sl.TickFrequency := r;
     procedure SetFrequency(r: real) := Invoke(SetFrequencyP, r);
-  protected 
-    procedure CreatePXY(x,y: real; min, max, val, freq: real; width: real);
+  private 
+    procedure CreatePXY(x,y: real; title: string; min, max, val, freq: real; width: real);
     begin
-      Init0(new Slider,width,x,y);
-      sl.ValueChanged += procedure(o, e) -> ValueChangedP;
+      Init1(new Slider,title,width,x,y);
+      Remainder(title,min, max, val, freq);
+    end;
+    procedure Remainder(tit: string; min, max, val, freq: real);
+    begin
+      titl := tit;
+      sl.ValueChanged += procedure(o, e) -> if ValueChanged <> nil then ValueChanged;
+      sl.ValueChanged += procedure(o, e) -> if title <> '' then tb.Text := Title + ' ' + sl.Value;
+      if titl <> '' then tb.Text := Title + ' ' + sl.Value;
       sl.TickPlacement := System.Windows.Controls.Primitives.TickPlacement.BottomRight;
       sl.Minimum := min;
       sl.Maximum := max;
@@ -611,15 +679,62 @@ type
         sl.TickFrequency := (max-min)/10
       else sl.TickFrequency := freq;
       sl.Foreground := Brushes.Black;
+      sl.IsSnapToTickEnabled := True;
     end;
-    procedure CreateP(min, max, val, freq: real) := CreatePXY(-1,-1,min, max, val, freq, 0);
-    
-    procedure ValueChangedP := if ValueChanged <> nil then ValueChanged;
+    procedure CreateP(title: string; min, max, val, freq: real) := CreatePXY(-1, -1, title, min, max, val, freq, 0);
+    procedure SetTitleP1(tit: string);
+    begin
+      titl := tit;
+      SetTitleP(tit +' ' + sl.Value);
+    end;
   public 
     /// Событие, возникающее при изменении значения
     ValueChanged: procedure;
-    constructor Create(min, max: real; val: real := real.MinValue; freq: real := 0) := Invoke(CreateP, min, max, val, freq);
-    constructor Create(x,y: real; min, max: real; width: real; val: real := real.MinValue; freq: real := 0) := Invoke(CreatePXY, x,y,min, max, val, freq, width);
+    /// Заголовок
+    property Title: string read InvokeString(()->titl) write Invoke(SetTitleP1, value); override;
+  end;
+  
+  /// Элемент управления "Слайдер" с целыми значениями
+  SliderWPF = class(SliderBase)
+  private
+    procedure CreatePXYI(x,y: real; title: string; min, max, val, freq: integer; width: integer);
+    begin
+      Init1(new Slider,title,width,x,y);
+      if freq<=0 then
+        freq := (max-min) div 10;
+      if freq = 0 then
+        freq := 1;
+      Remainder(title,min, max, val, freq);
+    end;
+    procedure CreatePI(title: string; min, max, val, freq: integer) := CreatePXYI(-1, -1, title, min, max, val, freq, 0);
+  public 
+    constructor Create(min, max: integer; val: integer := integer.MinValue; freq: integer := 0) 
+      := Invoke(CreatePI, '', min, max, val, freq);
+    constructor Create(title: string := '');
+    begin
+      Create(title, 0, 10, 0);
+    end;
+    constructor Create(title: string; min, max: integer; val: integer := integer.MinValue; freq: integer := 0) 
+      := Invoke(CreatePI, title, min, max, val, freq);
+    constructor Create(x,y: real; title: string; min, max: integer; width: integer; val: integer := integer.MinValue; freq: integer := 0) 
+      := Invoke(CreatePXYI, x,y,title,min, max, val, freq, width);
+    /// Минимальное значение 
+    property Minimum: integer read GetMinimum.Round write SetMinimum(value);
+    /// Максимальное значение 
+    property Maximum: integer read GetMaximum.Round write SetMaximum(value);
+    /// Текущее значение 
+    property Value: integer read GetValue.Round write SetValue(value);
+    /// Интервал между делениями
+    property Frequency: integer read GetFrequency.Round write SetFrequency(value);
+  end;
+
+  /// Элемент управления "Слайдер" с вещественными значениями
+  SliderRealWPF = class(SliderBase)
+  public 
+    constructor Create(min, max: real; val: real := real.MinValue; freq: real := 0) := Invoke(CreateP, '', min, max, val, freq);
+    constructor Create(title: string := '') := Create(title, 0, 10, 0);
+    constructor Create(title: string; min, max: real; val: real := real.MinValue; freq: real := 0) := Invoke(CreateP, title, min, max, val, freq);
+    constructor Create(x,y: real; title: string; min, max: real; width: real; val: real := real.MinValue; freq: real := 0) := Invoke(CreatePXY, x,y,title,min, max, val, freq, width);
     /// Минимальное значение 
     property Minimum: real read GetMinimum write SetMinimum;
     /// Максимальное значение 
@@ -652,7 +767,7 @@ type
     property Checked: boolean read InvokeBoolean(()->cb.IsChecked.Value) write Invoke(procedure(t: boolean) -> cb.IsChecked := t, value);
   end;
 
-  /// Элемент управления "Радиокнопка"
+  /// Элемент управления "Переключатель"
   RadioButtonWPF = class(ClickableControlWPF)
   private
     property rb: RadioButton read element as RadioButton;
@@ -731,7 +846,8 @@ type
       element.Focusable := False;
       MainDockPanel.children.RemoveAt(MainDockPanel.children.Count-1);
       MainDockPanel.children.Add(can);
-      ActivePanel := can;
+      __SetActivePanelInternal(can);
+      //ActivePanel := can;
     end;
     constructor (i: integer) := Invoke(CreatePP); // фиктивный первый параметр
     procedure SetColorP(c: GColor);
@@ -977,6 +1093,17 @@ function RealBlock(message: string; initValue: real := 0; fontSize: real := 12):
 /// Элемент управления "Вещественное число" с заданными координатами
 function RealBlock(x, y: real; message: string; width: real := 0; initValue: real := 0; fontSize: real := 12): RealBlockWPF;
 
+/// Элемент управления "Флажок" 
+function CheckBox(text: string): CheckBoxWPF;
+/// Элемент управления "Флажок" с заданными координатами
+function CheckBox(x, y: real; text: string; width: real := 0): CheckBoxWPF;
+
+/// Элемент управления "Переключатель" 
+function RadioButton(text: string): RadioButtonWPF;
+/// Элемент управления "Переключатель" с заданными координатами
+function RadioButton(x, y: real; text: string; width: real := 0): RadioButtonWPF;
+
+
 /// Элемент управления "Текстовое поле с заголовком"
 function TextBox(text: string := ''): TextBoxWPF;
 /// Элемент управления "Текстовое поле с заголовком" с заданными координатами
@@ -994,12 +1121,23 @@ function ListBox(title: string := ''; height: real := 150): ListBoxWPF;
 /// Элемент управления "Список" с заданными координатами
 function ListBox(x,y: real; title: string := ''; width: real := 150; height: real := 150): ListBoxWPF;
 
+/// Элемент управления "Слайдер с вещественными значениями"
+function SliderReal(title: string := ''): SliderRealWPF;
+/// Элемент управления "Слайдер с вещественными значениями" с заданным диапазоном значений и заголовком
+function SliderReal(title: string; min,max: real; val: real := real.MinValue; freq: real := 0): SliderRealWPF;
+/// Элемент управления "Слайдер с вещественными значениями" с заданным диапазоном значений
+function SliderReal(min, max: real; val: real := real.MaxValue; freq: real := 0): SliderRealWPF;
+/// Элемент управления "Слайдер с вещественными значениями" с заданными координатами
+function SliderReal(x,y: real; title: string; min,max: real; width: real; val: real := real.MinValue; freq: real := 0): SliderRealWPF;
+
 /// Элемент управления "Слайдер"
-function Slider(): SliderWPF;
+function Slider(title: string := ''): SliderWPF;
+/// Элемент управления "Слайдер" с заданным диапазоном значений и заголовком
+function Slider(title: string; min,max: integer; val: integer := integer.MinValue; freq: integer := 0): SliderWPF;
 /// Элемент управления "Слайдер" с заданным диапазоном значений
-function Slider(min,max: real; val: real := real.MinValue; freq: real := 0): SliderWPF;
+function Slider(min, max: integer; val: integer := integer.MinValue; freq: integer := 0): SliderWPF;
 /// Элемент управления "Слайдер" с заданными координатами
-function Slider(x,y: real; min,max: real; width: real; val: real := real.MinValue; freq: real := 0): SliderWPF;
+function Slider(x,y: real; title: string; min,max: integer; width: integer; val: integer := integer.MinValue; freq: integer := 0): SliderWPF;
 
 /// Элемент управления "Изображение"
 function Image(name: string): ImageWPF;
@@ -1030,18 +1168,23 @@ function StatusBar(height: real := 24; itemWidth: real := 0): StatusBarWPF;
 /// Пустой блок для задания промежутков между компонентами
 procedure EmptyBlock(sz: integer := 16);
 
+/// Установка активной панели, на которую размещаются элементы управления
+procedure SetActivePanel(p: PanelWPF);
+
+
+
 /// Графическое окно
-function Window: WindowTypeWPF;
+//function Window: WindowType;
 
 implementation
 
-uses GraphWPF;
+//uses GraphWPF;
 uses System.Windows; 
 uses System.Windows.Controls;
 uses System.Windows.Controls.Primitives;
 uses System.Windows.Media.Imaging;
 
-function Window: WindowTypeWPF := GraphWPF.Window;
+//function Window: WindowType := GraphWPF.Window;
 
 function Button(Txt: string; fontSize: real): ButtonWPF := ButtonWPF.Create(Txt,fontSize);
 function Button(x, y: real; Txt: string; width: real; fontSize: real): ButtonWPF := ButtonWPF.Create(x, y, Txt, width, fontSize);
@@ -1055,6 +1198,12 @@ function IntegerBlock(x, y: real; message: string; width: real; initValue: integ
 function RealBlock(message: string; initValue: real; fontSize: real): RealBlockWPF := RealBlockWPF.Create(message, initValue, fontSize);
 function RealBlock(x, y: real; message: string; width: real; initValue: real; fontSize: real): RealBlockWPF := RealBlockWPF.Create(x,y,message,width,initValue,fontSize);
 
+function CheckBox(text: string): CheckBoxWPF := CheckBoxWPF.Create(text);
+function CheckBox(x, y: real; text: string; width: real): CheckBoxWPF := CheckBoxWPF.Create(x,y,text,width);
+
+function RadioButton(text: string): RadioButtonWPF := RadioButtonWPF.Create(text);
+function RadioButton(x, y: real; text: string; width: real): RadioButtonWPF := RadioButtonWPF.Create(x,y,text,width);
+
 function TextBox(text: string): TextBoxWPF := TextBoxWPF.Create(text);
 function TextBox(x, y: real; text: string; width: real): TextBoxWPF := TextBoxWPF.Create(x,y,text,width);
 
@@ -1065,18 +1214,34 @@ function IntegerBox(x, y: real; title: string; min,max: integer; width: real) :=
 function ListBox(title: string; height: real): ListBoxWPF := ListBoxWPF.Create(title,height);
 function ListBox(x,y: real; title: string; width: real; height: real): ListBoxWPF := ListBoxWPF.Create(x,y,title,width,height);
 
-function Slider: SliderWPF := SliderWPF.Create(0, 10, 0, 0);
-function Slider(min, max, val, freq: real): SliderWPF;
+function SliderReal(title: string): SliderRealWPF := SliderRealWPF.Create(title,0, 10, 0, 0);
+function SliderReal(title: string; min, max, val, freq: real): SliderRealWPF;
 begin
   if val = real.MinValue then
     val := min;
-  Result := SliderWPF.Create(min, max, val, freq);
+  Result := SliderRealWPF.Create(title, min, max, val, freq);
+end;
+function SliderReal(min, max, val, freq: real): SliderRealWPF := SliderReal('',min, max, val, freq);
+function SliderReal(x,y: real; title: string; min,max,width,val,freq: real): SliderRealWPF;
+begin
+  if val = real.MinValue then
+    val := min;
+  Result := SliderRealWPF.Create(x, y, title, min, max, width, val, freq);
 end;  
-function Slider(x,y,min,max,width,val,freq: real): SliderWPF;
+
+function Slider(title: string): SliderWPF := SliderWPF.Create(title);
+function Slider(title: string; min, max, val, freq: integer): SliderWPF;
 begin
   if val = real.MinValue then
     val := min;
-  Result := SliderWPF.Create(x, y, min, max, width, val, freq);
+  Result := SliderWPF.Create(title, min, max, val, freq);
+end;
+function Slider(min, max, val, freq: integer): SliderWPF := Slider('',min, max, val, freq);
+function Slider(x,y: real; title: string; min,max,width,val,freq: integer): SliderWPF;
+begin
+  if val = real.MinValue then
+    val := min;
+  Result := SliderWPF.Create(x, y, title, min, max, width, val, freq);
 end;  
 
 function Image(name: string): ImageWPF := new ImageWPF(name);
@@ -1116,15 +1281,54 @@ begin
   Result := flds.OrderBy(f->f.CustomAttributes.FirstOrDefault?.ToString ?? 'NoAttr').Select(f->f.Name);
 end;
 
-procedure Invoke(d: System.Delegate; params args: array of object) := GraphWPFBase.Invoke(d, args);
-procedure InvokeP(p: procedure(r: real); r: real) := GraphWPFBase.Invoke(p,r); 
-function Invoke<T>(d: Func0<T>): T := T(app.Dispatcher.Invoke(d));
+type ControlsCannotBeRunWithoutGraphModules = class(System.ApplicationException) end;
+
+procedure Invoke(d: System.Delegate; params args: array of object);
+begin
+  if app = nil then
+    raise new ControlsCannotBeRunWithoutGraphModules('Модуль Controls должен испольоваться только совместно с модулями GraphWPF и WPFObjects либо Graph3D');
+  GraphWPFBase.Invoke(d, args);
+end;
+ 
+procedure InvokeP(p: procedure(r: real); r: real);
+begin
+  if app = nil then
+    raise new ControlsCannotBeRunWithoutGraphModules('Модуль Controls должен испольоваться только совместно с модулями GraphWPF и WPFObjects либо Graph3D');
+  GraphWPFBase.Invoke(p,r); 
+end;  
+  
+function Invoke<T>(d: Func0<T>): T;
+begin
+  if app = nil then
+    raise new ControlsCannotBeRunWithoutGraphModules('Модуль Controls должен испольоваться только совместно с модулями GraphWPF и WPFObjects либо Graph3D');
+  Result := T(app.Dispatcher.Invoke(d));
+end;  
+ 
+procedure __SetActivePanelInternal(p: GPanel);
+begin
+  Invoke(()->begin
+    _ActivePanel := p;
+  end);
+end;
+
+procedure SetActivePanel(p: PanelWPF);
+begin
+  __SetActivePanelInternal(p.p)
+end;
 
 procedure SetActivePanelInit;
 begin
-  ActivePanel := MainWindow.MainPanel.Children[0] as GPanel
+  __SetActivePanelInternal(MainWindow.MainPanel.Children[0] as GPanel);
+  //ActivePanel := MainWindow.MainPanel.Children[0] as GPanel
 end;
 
+function __ActivePanelInternal: GPanel;
 begin
-  Invoke(SetActivePanelInit);
+  if _ActivePanel = nil then 
+    Invoke(SetActivePanelInit);
+  Result := _ActivePanel;
+end;
+
+initialization
+finalization  
 end.

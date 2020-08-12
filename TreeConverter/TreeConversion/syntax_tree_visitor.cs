@@ -3066,6 +3066,7 @@ namespace PascalABCCompiler.TreeConverter
             weak_node_test_and_visit(_interface_node.interface_definitions);
         }
 
+
         public override void visit(SyntaxTree.typecast_node node)
         {
 
@@ -3086,12 +3087,16 @@ namespace PascalABCCompiler.TreeConverter
                     AddError(loc, "OPERATOR_{0}_CAN_NOT_BE_APPLIED_TO_POINTER_TYPE", compiler_string_consts.as_name);
             }
             else
-            	if (!(type_table.is_derived(en.type, tp) || type_table.is_derived(tp, en.type) || en.type == tp || en.type == SystemLibrary.SystemLibrary.object_type
-            	      || en.type.IsInterface || tp.IsInterface))
+            	if (!(type_table.is_derived(en.type, tp) || type_table.is_derived(tp, en.type) 
+                    || en.type == tp || en.type == SystemLibrary.SystemLibrary.object_type
+            	    || en.type.IsInterface || tp.IsInterface || tp.is_generic_parameter)
+                   )
                 {
                     AddError(loc, "EXPECTED_DERIVED_CLASSES");
                 }
-            if (en.type.IsSealed && tp.IsInterface && !en.type.ImplementingInterfaces.Contains(tp))
+            if (en.type.IsSealed && tp.IsInterface && /*!en.type.ImplementingInterfaces.Contains(tp)*/
+                !convertion_data_and_alghoritms.type_or_base_type_implements_interface(en.type,tp)
+                )
             {
                 AddError(loc, "CAN_NOT_CONVERT_TYPE_{0}_TO_INTERFACE_{1}", en.type.PrintableName, tp.PrintableName);
             }
@@ -10583,6 +10588,8 @@ namespace PascalABCCompiler.TreeConverter
                     foreach (SyntaxTree.expression expr in cv.conditions.expressions)
                     {
                         expression_node cn = convert_strong(expr);
+                        if (cn.type == SystemLibrary.SystemLibrary.char_type)
+                            cn = convertion_data_and_alghoritms.convert_type(cn, SystemLibrary.SystemLibrary.string_type);
                         if (cn.type != SystemLibrary.SystemLibrary.string_type)
                             AddError(new CanNotConvertTypes(cn, cn.type, SystemLibrary.SystemLibrary.string_type, cn.location));
                         string_const_node scn = convert_string_const_to_switch(cn, cn.location);
@@ -16384,6 +16391,15 @@ namespace PascalABCCompiler.TreeConverter
             if (_var_def_statement.vars_type != null)
             {
                 tn = convert_strong(_var_def_statement.vars_type);
+
+                if (tn.type_special_kind != SemanticTree.type_special_kind.array_kind &&
+                    tn.type_special_kind != SemanticTree.type_special_kind.array_wrapper && 
+                    !tn.BaseFullName.StartsWith("System.Tuple") &&
+                    _var_def_statement.inital_value is SyntaxTree.array_const ac)
+                {
+                    AddError(get_location(_var_def_statement), "IMPOSSIBLE_TO_CONVERT_ARRAY_CONST_TO_{0}", tn);
+                }
+
                 //LambdaHelper.InferTypesFromVarStmt(tn, _var_def_statement.inital_value as SyntaxTree.function_lambda_definition, this);  //lroman//
                 if (tn.IsStatic && _var_def_statement.vars.idents[0].name != YieldHelpers.YieldConsts.Self) // SSM 10/07/19 fix #1639 в статическом классе можно только фиктивное поле с именем YieldHelpers.YieldConsts.Self описать - для того чтобы посмотреть на семантике его тип!!! 
                     AddError(get_location(_var_def_statement), "VARIABLES_OF_STATIC_CLASS_NOT_ALLOWED");
@@ -17437,6 +17453,44 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.expression _expression)
         {
             throw new NotSupportedError(get_location(_expression));
+        }
+
+        public void visit_statement_list_internal(SyntaxTree.statement_list _statement_list)
+        {
+            statements_list stl = new statements_list(get_location(_statement_list), get_location_with_check(_statement_list.left_logical_bracket), get_location_with_check(_statement_list.right_logical_bracket));
+
+            for (var i = 0; i < _statement_list.subnodes.Count; i++) // SSM 13.10.16 - поменял т.к. собираюсь менять узлы в процессе обхода
+            {
+                statement syntax_statement = _statement_list.subnodes[i];
+                try
+                {
+                    statement_node semantic_statement = convert_strong(syntax_statement);
+                    if (semantic_statement != null)
+                    {
+                        if (stl.statements.Count > 0 && stl.statements[0] is basic_function_call && i == 2)
+                        {
+                            base_function_call bfc = stl.statements[0] as basic_function_call;
+                            if (bfc.type != null && bfc.type.name.Contains("<>local_variables_class") && (semantic_statement is compiled_constructor_call || semantic_statement is common_constructor_call)
+                                && !context.converted_func_stack.Empty && context.converted_func_stack.top() is common_method_node && (context.converted_func_stack.top() as common_method_node).is_constructor)
+                                stl.statements.AddElementFirst(semantic_statement);
+                            else
+                                stl.statements.AddElement(semantic_statement);
+                        }
+                        else
+                            stl.statements.AddElement(semantic_statement);
+                    }
+                    context.allow_inherited_ctor_call = false;
+                }
+                catch (Errors.Error ex)
+                {
+                    if (ThrowCompilationError || ex is MemberIsNotDeclaredInType || ex is UndefinedNameReference)//TODO: add interface
+                        throw ex;
+                    else
+                        ErrorsList.Add(ex);
+                }
+            }
+
+            return_value(stl);
         }
 
         public override void visit(SyntaxTree.statement_list _statement_list)
@@ -20658,89 +20712,186 @@ namespace PascalABCCompiler.TreeConverter
             ProcessNode(av.new_addr_value); // обойти десахарное 
         }
 
+        private void CheckUnpacking(expression ex, out expression_node sem_ex, out bool IsTuple, out bool IsSequence, int countvars, syntax_tree_node stn)
+        {
+            sem_ex = convert_strong(ex);
+            sem_ex = convert_if_typed_expression_to_function_call(sem_ex);
+            var t = ConvertSemanticTypeNodeToNETType(sem_ex.type);
+            if (t == null)
+                AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
+            IsTuple = false;
+            IsSequence = false;
+            if (t.FullName.StartsWith("System.Tuple"))
+                IsTuple = true;
+            if (!IsTuple)
+            {
+                if (t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null)
+                    IsSequence = true;
+            }
+            if (!IsTuple && !IsSequence)
+            {
+                AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
+            }
+            if (IsTuple)
+            {
+                if (countvars > t.GetGenericArguments().Count())
+                    AddError(get_location(stn), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+            }
+        }
+
+        private addressed_value UnpackingExpr(int i, bool IsTuple, bool IsSequence, string tname)
+        {
+            addressed_value dn = null;
+            if (IsTuple)
+                dn = new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString()));
+            else if (IsSequence)
+            {
+                dn = new dot_node(new ident(tname), new ident("ElementAt"));
+                var pars = new SyntaxTree.expression_list(new int32_const(i));
+
+                dn = new method_call(dn, pars);
+            }
+            return dn;
+        }
+
         public override void visit(SyntaxTree.assign_tuple asstup) // сахарный узел
         {
-            AddError(get_location(asstup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", asstup.GetType().Name);
+            //AddError(get_location(asstup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", asstup.GetType().Name);
 
-            /*semantic_check_assign_tuple(asstup);
+
+            CheckUnpacking(asstup.expr, out var sem_ex, out var IsTuple, out var IsSequence, asstup.vars.variables.Count(), asstup.vars);
+            var sem_node = new SyntaxTree.semantic_addr_value(sem_ex); // чтобы два раза не делать convert_strong
+
+            //semantic_check_assign_tuple(asstup.vars, asstup.expr);
 
             var tname = "#temp_var" + UniqueNumStr();
 
-            //var tt = new var_statement(new ident(tname), new semantic_addr_value(expr)); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
-            var tt = new var_statement(new ident(tname), asstup.expr); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
-            var st = new statement_list(new SyntaxTree.empty_statement());
+            var tt = new var_statement(new ident(tname), sem_node /*asstup.expr*/); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
+            var st = new statement_list();
             st.Add(tt);
 
             var n = asstup.vars.variables.Count();
             for (var i = 0; i < n; i++)
             {
-                var a = new assign(asstup.vars.variables[i], new dot_node(new ident(tname),
-                    new ident("Item" + (i + 1).ToString())), Operators.Assignment,
+                var a = new assign(asstup.vars.variables[i],
+                    //new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString())),
+                    UnpackingExpr(i, IsTuple, IsSequence, tname),
+                    Operators.Assignment,
                     asstup.vars.variables[i].source_context);
                 st.Add(a);
             }
-            //visit(st);
-            // Замена 1 оператор на 1 оператор - всё OK
-            ReplaceUsingParent(asstup, st);*/
+            visit(st);
         }
 
         public override void visit(SyntaxTree.assign_var_tuple assvartup) // сахарный узел
         {
-            AddError(get_location(assvartup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", assvartup.GetType().Name);
+            //AddError(get_location(assvartup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", assvartup.GetType().Name);
 
-            /*check_sugared(assvartup);
+            CheckUnpacking(assvartup.expr, out var sem_ex, out var IsTuple, out var IsSequence, assvartup.idents.idents.Count(), assvartup.idents);
+
+            /*var sem_ex = convert_strong(assvartup.expr);
+            sem_ex = convert_if_typed_expression_to_function_call(sem_ex);
+            var t = ConvertSemanticTypeNodeToNETType(sem_ex.type);
+            if (t == null)
+                AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
+
+            var IsTuple = false;
+            var IsSequence = false;
+            if (t.FullName.StartsWith("System.Tuple"))
+                IsTuple = true;
+            if (!IsTuple)
+            {
+                if (t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null)
+                    IsSequence = true;
+            }
+            if (!IsTuple && !IsSequence)
+            {
+                AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
+            }           
+            
+            if (IsTuple)
+            {
+                var nn = assvartup.idents.idents.Count();
+                if (nn > t.GetGenericArguments().Count())
+                    AddError(get_location(assvartup.idents), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+            }*/
+
+
+            // В зависимости от типа выражения по-разному распаковывать
+            // Распаковывать можно только для кортежей или последовательностей
+            // if IsTuple ...
+            // if IsSequence ...
+            // else AddError(либо кортеж либо последовательность)
+
+            var sem_node = new SyntaxTree.semantic_addr_value(sem_ex); // чтобы два раза не делать convert_strong
+
+            //semantic_check_assign_var_tuple(assvartup.idents, sem_node /*assvartup.expr*/);
 
             var tname = "#temp_var" + UniqueNumStr();
 
-            var tt = new var_statement(new ident(tname), assvartup.expr); // тут для assvartup.expr внутри повторно вызывается convert_strong, это плохо, но если там лямбда, то иначе - с semantic_addr_value - не работает!!!
-            //var tt = new var_statement(new ident(tname), new semantic_addr_value(expr)); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
-            //visit(tt); // обходится первый элемент - вместо asstup
+            var tt = new var_statement(new ident(tname), sem_node /*assvartup.expr*/); 
 
-            var sl = new List<statement>();
-            sl.Add(new SyntaxTree.empty_statement());
-            sl.Add(tt); // он же помещается в новое синтаксическое дерево
+            var sl = new statement_list();
+            sl.Add(tt); 
 
             var n = assvartup.idents.idents.Count();
             for (var i = 0; i < n; i++)
             {
+                /*addressed_value dn = null;
+                if (IsTuple)
+                    dn = new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString()));
+                else if (IsSequence)
+                {
+                    dn = new dot_node(new ident(tname), new ident("ElementAt"));
+                    var pars = new SyntaxTree.expression_list(new int32_const(i));
+
+                    dn = new method_call(dn,pars);
+                }*/
+
                 var rr = assvartup.idents.idents[i] as ident;
-                var a = new var_statement(rr, 
-                    new dot_node(new ident(tname),new ident("Item" + (i + 1).ToString())),
+                var a = new var_statement(rr,
+                    //new dot_node(new ident(tname),new ident("Item" + (i + 1).ToString())),
+                    //dn,
+                    UnpackingExpr(i, IsTuple, IsSequence, tname),
                     assvartup.idents.idents[i].source_context
                     );
-                // Остальные элементы обходить не надо (!!!уже надо!) - они обходятся на следующих итерациях при обходе внешнего statement_list
-                //visit(a); 
                 sl.Add(a);
             }
-            ReplaceStatementUsingParent(assvartup, sl);*/
+            visit_statement_list_internal(sl);
         }
 
         public override void visit(var_tuple_def_statement vtd)
         {
-            AddError(get_location(vtd), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", vtd.GetType().Name);
+            //AddError(get_location(vtd), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", vtd.GetType().Name);
 
             // Состоит из var_def_statements. Некоторые являются var_tuple_def_statement
             // Их надо найти и сделать несколько секций variable_definitions - без семантических проверок.
             // Каждую var_tuple_def_statement надо заменить на assign_var_tuple - одну на секцию variable_definitions
             // А потом оставшаяся часть визитора сделает семантические проверки 
 
-            /*var tname = "#temp_var" + UniqueNumStr();
-            var vd = new List<var_def_statement>();
-            vd.Add(new semantic_check_sugared_var_def_statement_node(typeof(assign_var_tuple), new List<syntax_tree_node> { vtd.vars, vtd.inital_value }, vtd.source_context)); // Это нужно для проверок на этапе преобразования в семантику
-            visit(vd[0]);
+            CheckUnpacking(vtd.inital_value, out var sem_ex, out var IsTuple, out var IsSequence, vtd.vars.idents.Count(), vtd.vars);
+            var sem_node = new SyntaxTree.semantic_addr_value(sem_ex); // чтобы два раза не делать convert_strong
+
+            //semantic_check_assign_var_tuple(vtd.vars, vtd.inital_value);
+
+            var tname = "#temp_var" + UniqueNumStr();
+            //var vd = new List<var_def_statement>();
+            //vd.Add(new semantic_check_sugared_var_def_statement_node(typeof(assign_var_tuple), new List<syntax_tree_node> { vtd.vars, vtd.inital_value }, vtd.source_context)); // Это нужно для проверок на этапе преобразования в семантику
+            //visit(vd[0]);
+
             var tt1 = new var_def_statement(new ident(tname), vtd.inital_value);
-            vd.Add(tt1);
+            ProcessNode(tt1);
             var nn = vtd.vars.idents.Count();
             for (var i = 0; i < nn; i++)
             {
                 var a = new var_def_statement(vtd.vars.idents[i],
-                    new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString())),
+                    UnpackingExpr(i, IsTuple, IsSequence, tname),
+                    //new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString())),
                     vtd.vars.idents[i].source_context);
-                vd.Add(a);
+                ProcessNode(a);
             }
-
-            ReplaceVarTupleDefStatementUsingParent(vtd, vd);*/
         }
+
         public void ReplaceVarTupleDefStatementUsingParent(var_tuple_def_statement from, IEnumerable<var_def_statement> to)
         {
             foreach (var x in to)

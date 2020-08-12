@@ -58,7 +58,6 @@ type
   
 //{{{--doc: Конец секции 1 }}} 
 
-function GetBrush(c: Color): GBrush;
 function GetFontFamily(name: string): FontFamily;
 
   
@@ -630,19 +629,7 @@ procedure __FinalizeModule__;
 
 implementation
 
-var BrushesDict := new Dictionary<Color,GBrush>;
 var FontFamiliesDict := new Dictionary<string,FontFamily>;
-
-function GetBrush(c: Color): GBrush;
-begin
-  if not (c in BrushesDict) then
-  begin
-    var b := new SolidColorBrush(c);
-    BrushesDict[c] := b;
-    Result := b
-  end
-  else Result := BrushesDict[c];
-end;
 
 function GetFontFamily(name: string): FontFamily;
 begin
@@ -1494,6 +1481,7 @@ type
     
       Pen.Color := Colors.Black;
       var n := Round(w / 1);
+      if n<=0 then exit;
       var pp := PartitionPoints(a, b, n);
       var fff: real -> Point := xx -> Pnt(x + mx * (xx - a), y + my * (max - f(xx).Clamp(min,max)));
       //pp.Select(x->(x,f(x))).PrintLines;
@@ -1523,8 +1511,11 @@ procedure DrawGraph(f: real -> real; a, b, min, max: real; title: string) := Dra
 procedure DrawGraph(f: real -> real; a, b: real; x, y, w, h: real; title: string);
 begin
   var n := Round(w / 1);
-  var q := PartitionPoints(a, b, n);
-  DrawGraph(f, a, b, q.Min(f), q.Max(f), x, y, w, h, title)
+  if n<=0 then exit;
+  var q := PartitionPoints(a, b, n).ToArray;
+  var mi := q.Min(f);
+  var ma := q.Max(f);
+  DrawGraph(f, a, b, mi, ma, x, y, w, h, title);
 end;
 
 procedure DrawGraph(f: real -> real; a, b: real; r: GRect; title: string) := DrawGraph(f, a, b, r.X, r.Y, r.Width, r.Height, title);
@@ -1929,8 +1920,13 @@ GraphWPFWindow = class(GMainWindow)
 public
   procedure InitMainGraphControl; override;
   begin
+    var g := Content as DockPanel;
+
     host1 := new Canvas;
     host := new MyVisualHost();
+    // Попытка отсекать рисование частей объектов за пределами host. Актуально при наличии панелей.
+    // К сожалению, почему-то при использовании WPFObjects объекты GraphWPF становятся не видны
+    // Выход - в WPFObjects host1.ClipToBounds := False
     host1.ClipToBounds := True;
     host1.SizeChanged += (s,e) ->
     begin
@@ -1938,7 +1934,6 @@ public
       host.DataContext := sz;
     end;
     // Всегда последнее
-    var g := MainPanel;
     
     var dpiXProperty := typeof(SystemParameters).GetProperty('DpiX', BindingFlags.NonPublic or BindingFlags.Static);
     var dpiYProperty := typeof(SystemParameters).GetProperty('Dpi', BindingFlags.NonPublic or BindingFlags.Static);
@@ -1952,6 +1947,8 @@ public
     RTbmap := new RenderTargetBitmap(Round(SystemParameters.PrimaryScreenWidth * scalex), Round(SystemParameters.PrimaryScreenHeight * scaley), dpiX, dpiY, PixelFormats.Pbgra32);
     im.Source := RTbmap;
     
+    // Рисуем на host
+    // Когда накопится много объектов, переносим их на im
     host1.Children.Add(im); 
     host1.Children.Add(host);
     
@@ -2004,7 +2001,7 @@ begin
   
   app.Dispatcher.UnhandledException += (o, e) -> begin
     Println(e.Exception.Message); 
-    if e.Exception.InnerException<>nil then
+    if e.Exception.InnerException <> nil then
       Println(e.Exception.InnerException.Message); 
     halt; 
   end;
