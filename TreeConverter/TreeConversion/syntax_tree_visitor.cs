@@ -10513,6 +10513,16 @@ namespace PascalABCCompiler.TreeConverter
             type_node case_expr_type = en.type;
 
             internal_interface ii = en.type.get_internal_interface(internal_interface_kind.ordinal_interface);
+            if (ii == null)
+            {
+                // Попытка воспользоваться неявным преобразованием
+                if (convertion_data_and_alghoritms.can_convert_type(en, SystemLibrary.SystemLibrary.integer_type))
+                    en = convertion_data_and_alghoritms.convert_type(en, SystemLibrary.SystemLibrary.integer_type);
+                ii = en.type.get_internal_interface(internal_interface_kind.ordinal_interface);
+                if (ii == null)
+                    if (convertion_data_and_alghoritms.can_convert_type(en, SystemLibrary.SystemLibrary.string_type))
+                        en = convertion_data_and_alghoritms.convert_type(en, SystemLibrary.SystemLibrary.string_type);
+            }
             if (ii == null && en.type != SystemLibrary.SystemLibrary.string_type)
             {
                 AddError(new OrdinalOrStringTypeExpected(en.location));
@@ -16365,8 +16375,20 @@ namespace PascalABCCompiler.TreeConverter
 
             }
 
-            if (_var_def_statement.vars_type == null && _var_def_statement.inital_value is SyntaxTree.function_lambda_definition)
-                AddError(get_location(_var_def_statement.inital_value), "IMPOSSIBLE_TO_INFER_TYPES_IN_LAMBDA");  //lroman//
+            if (_var_def_statement.vars_type == null && _var_def_statement.inital_value is SyntaxTree.function_lambda_definition fld)
+            {
+                if (fld.formal_parameters != null && fld.formal_parameters.params_list.Select(x => x.vars_type).Any(x=>x is lambda_inferred_type))
+                    AddError(get_location(_var_def_statement.inital_value), "IMPOSSIBLE_TO_INFER_TYPES_IN_LAMBDA");
+                if (fld.return_type is lambda_inferred_type)
+                    AddError(get_location(_var_def_statement.inital_value), "IMPOSSIBLE_TO_INFER_TYPES_IN_LAMBDA");
+                if (fld.return_type == null)
+                    _var_def_statement.vars_type = new procedure_header(fld.formal_parameters, null, null, false, false, null, null, _var_def_statement.source_context);
+                else
+                    _var_def_statement.vars_type = new function_header(fld.formal_parameters, null, null, null, fld.return_type, _var_def_statement.source_context);
+                //else
+                //    AddError(get_location(_var_def_statement.inital_value), "IMPOSSIBLE_TO_INFER_TYPES_IN_LAMBDA");  //lroman//
+            }
+                
 
             if (_var_def_statement.vars_type == null && _var_def_statement.inital_value is SyntaxTree.pascal_set_constant pc)
             {

@@ -2188,10 +2188,14 @@ var_decl_part
         { 
 			$$ = new var_def_statement($1 as ident_list, $3, null, definition_attribute.None, false, @$);
 		}
-    | ident_list tkAssign expr
+    | ident_list tkAssign expr_with_func_decl_lambda
         { 
 			$$ = new var_def_statement($1 as ident_list, null, $3, definition_attribute.None, false, @$);		
 		}
+    /*| ident_list tkAssign expl_func_decl_lambda
+        { 
+			$$ = new var_def_statement($1 as ident_list, null, $3, definition_attribute.None, false, @$);		
+		}*/
     | ident_list tkColon type_ref tkAssignOrEqual typed_var_init_expression // typed_const_plus уже давно не константа :) Но сюда не попали Tuples, поскольку они конкурируют с дурацкими старыми инициализаторами массивов 
         { 
 			$$ = new var_def_statement($1 as ident_list, $3, $5, definition_attribute.None, false, @$); 
@@ -4579,18 +4583,29 @@ func_decl_lambda
 		{
 			var idList = new ident_list($1, @1); 
 			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), parametr_kind.none, null, @1), @1);
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), $3 as statement_list, @$);
+			//var sl = $3 as statement_list;
+			//if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName($3, "Result") != null) // если это было выражение или есть переменная Result, то автовывод типа 
+			    $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), $3 as statement_list, @$);
+			//else 
+			//$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, null, $3 as statement_list, @$);  
 		}
     | tkRoundOpen tkRoundClose lambda_type_ref_noproctype tkArrow lambda_function_body
 		{
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, $3, $5 as statement_list, @$);
+		    // Здесь надо анализировать по телу и либо оставлять lambda_inferred_type, либо делать его null!
+		    var sl = $5 as statement_list;
+		    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // то надо выводить
+				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, $3, sl, @$);
+			else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, null, sl, @$);	
 		}
 	| tkRoundOpen identifier tkColon fptype tkRoundClose lambda_type_ref_noproctype tkArrow lambda_function_body
 		{
 			var idList = new ident_list($2, @2); 
             var loc = LexLocation.MergeAll(@2,@3,@4);
 			var formalPars = new formal_parameters(new typed_parameters(idList, $4, parametr_kind.none, null, loc), loc);
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $6, $8 as statement_list, @$);
+		    var sl = $8 as statement_list;
+		    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // то надо выводить
+				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $6, sl, @$);
+			else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, null, sl, @$);	
 		}
 	| tkRoundOpen identifier tkSemiColon full_lambda_fp_list tkRoundClose lambda_type_ref_noproctype tkArrow lambda_function_body
 		{
@@ -4598,7 +4613,10 @@ func_decl_lambda
 			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null), parametr_kind.none, null, @2), LexLocation.MergeAll(@2,@3,@4));
 			for (int i = 0; i < ($4 as formal_parameters).Count; i++)
 				formalPars.Add(($4 as formal_parameters).params_list[i]);
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $6, $8 as statement_list, @$);
+		    var sl = $8 as statement_list;
+		    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // то надо выводить
+				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $6, sl, @$);
+			else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, null, sl, @$);	
 		}
 	| tkRoundOpen identifier tkColon fptype tkSemiColon full_lambda_fp_list tkRoundClose lambda_type_ref_noproctype tkArrow lambda_function_body
 		{
@@ -4607,7 +4625,10 @@ func_decl_lambda
 			var formalPars = new formal_parameters(new typed_parameters(idList, $4, parametr_kind.none, null, loc), LexLocation.MergeAll(@2,@3,@4,@5,@6));
 			for (int i = 0; i < ($6 as formal_parameters).Count; i++)
 				formalPars.Add(($6 as formal_parameters).params_list[i]);
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $8, $10 as statement_list, @$);
+		    var sl = $10 as statement_list;
+		    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // то надо выводить
+				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $8, sl, @$);
+			else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, null, sl, @$);
 		}
     | tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose rem_lambda
 		{ 
@@ -4638,7 +4659,11 @@ func_decl_lambda
 						formal_pars.Add(($6 as formal_parameters).params_list[i]);		
 					
 				formal_pars.source_context = LexLocation.MergeAll(@2,@3,@4,@5);
-				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formal_pars, pair.tn, pair.exprs, @$);
+			    
+			    var sl = pair.exprs;
+			    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // то надо выводить
+					$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formal_pars, pair.tn, pair.exprs, @$);
+				else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formal_pars, null, pair.exprs, @$);	
 			}
 			else
 			{			
@@ -4664,13 +4689,16 @@ func_decl_lambda
 				if ($6 != null)
 					for (int i = 0; i < ($6 as formal_parameters).Count; i++)
 						formalPars.Add(($6 as formal_parameters).params_list[i]);
-					
-				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, pair.tn, pair.exprs, @$);
+
+				var sl = pair.exprs;
+			    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // то надо выводить
+					$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, pair.tn, pair.exprs, @$);
+				else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, null, pair.exprs, @$);
 			}
 		}
 	| expl_func_decl_lambda
 		{
-			$$ = $1;
+			$$ = $1; 
 		}
 	;
 	
@@ -4690,15 +4718,15 @@ rem_lambda
 	;
 	
 expl_func_decl_lambda
-	: tkFunction lambda_type_ref tkArrow lambda_function_body
+	: tkFunction lambda_type_ref_noproctype tkArrow lambda_function_body // SSM 11.08.20 добавил _noproctype в 3 подправилах 
 		{
 			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, $2, $4 as statement_list, 1, @$);
 		}
-	| tkFunction tkRoundOpen tkRoundClose lambda_type_ref tkArrow lambda_function_body
+	| tkFunction tkRoundOpen tkRoundClose lambda_type_ref_noproctype tkArrow lambda_function_body
 		{
 			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, $4, $6 as statement_list, 1, @$);
 		}
-	| tkFunction tkRoundOpen full_lambda_fp_list tkRoundClose lambda_type_ref tkArrow lambda_function_body
+	| tkFunction tkRoundOpen full_lambda_fp_list tkRoundClose lambda_type_ref_noproctype tkArrow lambda_function_body
 		{
 			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), $3 as formal_parameters, $5, $7 as statement_list, 1, @$);
 		}
@@ -4826,7 +4854,7 @@ common_lambda_body
 lambda_function_body
 	: expr_l1_for_lambda 
 		{
-		    var id = SyntaxVisitors.ExprHasNameVisitor.HasName($1, "Result"); 
+		    var id = SyntaxVisitors.HasNameVisitor.HasName($1, "Result"); 
             if (id != null)
             {
                  parsertools.AddErrorFromResource("RESULT_IDENT_NOT_EXPECTED_IN_THIS_CONTEXT", id.source_context);

@@ -6,6 +6,10 @@ begin
   var a := new t1;
   var b := a as T;
   Assert(b <> nil);
+  
+  var a1: T;
+  var b1 := a as t1;
+  Assert(b1 <> nil);
 end;
 
 begin 

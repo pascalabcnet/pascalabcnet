@@ -47,6 +47,8 @@ type
   ///!#
   /// Базовый класс для панелей
   PanelWPF = class
+  public  
+    fsize: real := 12;
   private
     p: StackPanel;
     bb: Border;
@@ -73,6 +75,7 @@ type
       MainDockPanel.children.Insert(0, bb);
       //ActivePanel := p;
       __SetActivePanelInternal(p);
+      p.Tag := Self;
     end;
     procedure SetColorP(c: GColor);
     begin
@@ -80,9 +83,28 @@ type
       bb.Background := p.Background
     end;
     function GetColorP := (p.Background as SolidColorBrush).Color;
-    procedure SetTTP(s: string);
+    procedure SetTTP(s: string) := p.ToolTip := s;  
+    static procedure SetFSzPP(p: GPanel; value: real);
     begin
-      p.ToolTip := s;  
+      if value<=0 then exit;
+      foreach var c: FrameworkElement in p.Children do
+        SetFSzElement(c,value);
+    end;
+    static procedure SetFSzElement(c: FrameworkElement; value: real);
+    begin
+      if value<=0 then exit;
+      if c is GControl then
+        (c as GControl).FontSize := value
+      else if c is GTextBlock then
+        (c as GTextBlock).FontSize := value
+      else if c is GPanel then
+        SetFSzPP(c as GPanel,value);
+    end;
+    procedure SetFSzP(value: real);
+    begin
+      if value<=0 then exit;
+      fsize := value;
+      SetFSzPP(Self.p,value);
     end;
   public 
     constructor Create(wh: real := 150; d: Dock := Dock.Left; c: Color := PanelsColor; internalMargin: real := 10);
@@ -97,6 +119,10 @@ type
       write Invoke(procedure -> p.Margin := new System.Windows.Thickness(internalMargin), value);
     /// Всплывающая подсказка
     property Tooltip: string read Invokestring(()->p.ToolTip as string) write Invoke(SetTTP, value);
+    /// Размер шрифта
+    property FontSize: real read fsize write Invoke(SetFSzP, value); virtual;
+    /// Имя шрифта
+    //property FontName: string write Invoke(SetFontNameP, value); virtual;
   end;
   
   /// Класс левой панели
@@ -138,6 +164,8 @@ type
       if width>0 then
         element.Width := width;
       __ActivePanelInternal.Children.Add(element);
+      if __ActivePanelInternal.Tag is PanelWPF(var pwpf) then
+        PanelWPF.SetFSzElement(element,pwpf.fsize);
     end;
 
     procedure SetWP(w: real) := element.Width := w;
@@ -161,7 +189,7 @@ type
   CommonControlWPF = class(CommonElementWPF)
   private
     property Control: GControl read element as GControl;
-    procedure SetFSzP(size: real) := control.FontSize := size;
+    procedure SetFSzP(size: real) := if size > 0 then control.FontSize := size;
     procedure SetFontNameP(name: string) := control.FontFamily := new FontFamily(name);
   public  
     /// Размер шрифта
@@ -249,7 +277,7 @@ type
 
   /// Элемент управления "Кнопка"
   ButtonWPF = class(ClickableControlWPF)
-  private
+  public
     property b: GButton read element as GButton;
     
     procedure CreatePXY(x,y: real; Txt: string; width: real; fontSize: real);
@@ -263,8 +291,8 @@ type
 
     procedure SetTextP(t: string) := b.Content := t;
   public 
-    constructor Create(Txt: string; fontSize: real := 12) := Invoke(CreateP, Txt, fontSize);
-    constructor Create(x, y: real; Txt: string; width: real := 0; fontSize: real := 12) := Invoke(CreatePXY, x, y, Txt, width, fontSize);
+    constructor Create(Txt: string; fontSize: real := 0) := Invoke(CreateP, Txt, fontSize);
+    constructor Create(x, y: real; Txt: string; width: real := 0; fontSize: real := 0) := Invoke(CreatePXY, x, y, Txt, width, fontSize);
     
     /// Текст на кнопке
     property Text: string read InvokeString(()->b.Content as string) write Invoke(SetTextP, value);
@@ -285,13 +313,13 @@ type
     procedure CreateP(text: string; fontSize: real) := CreatePXY(-1,-1,text,0,fontSize);
   
     procedure SetTextP(t: string) := tb.Text := t;
-    procedure SetFontSizeP(sz: real) := tb.FontSize := sz;
+    procedure SetFontSizeP(sz: real) := if sz>0 then tb.FontSize := sz;
     procedure SetFontNameP(name: string) := tb.FontFamily := new FontFamily(name);
     procedure SetTextWrappingP(value: boolean) := if value then tb.TextWrapping := TextWrapping.Wrap else 
       tb.TextWrapping := TextWrapping.NoWrap; 
   public 
-    constructor Create(Txt: string; fontsize: real := 12):= Invoke(CreateP, Txt, fontsize);
-    constructor Create(x, y: real; Txt: string; width: real := 0; fontSize: real := 12):= Invoke(CreatePXY, x, y, Txt, width, fontSize);
+    constructor Create(Txt: string; fontsize: real := 0):= Invoke(CreateP, Txt, fontsize);
+    constructor Create(x, y: real; Txt: string; width: real := 0; fontSize: real := 0):= Invoke(CreatePXY, x, y, Txt, width, fontSize);
 
     /// Текст блока текста
     property Text: string read InvokeString(()->tb.Text) write Invoke(SetTextP, value);
@@ -309,19 +337,33 @@ type
   private 
     val := 0;
     message: string;
-    procedure CreatePXY(x, y: real; message: string; width: real; initValue: integer := 0; fontSize: real := 12);
+    procedure CreatePXY(x, y: real; message: string; width: real; initValue: integer := 0; fontSize: real := 0);
     begin
       inherited CreatePXY(x,y,message + ' ' + initValue, width, fontSize);
       Self.message := message;
       val := initValue;
     end;
-    procedure CreateP(message: string; initValue: integer := 0; fontSize: real := 12) := CreatePXY(-1,-1,message,0,initValue,fontSize);
+    procedure CreateP(message: string; initValue: integer := 0; fontSize: real := 0) := CreatePXY(-1,-1,message,0,initValue,fontSize);
   public 
-    constructor Create(message: string; initValue: integer := 0; fontSize: real := 12) := Invoke(CreateP, message, initValue, fontSize);
-    constructor Create(x, y: real; message: string; width: real := 0; initValue: integer := 0; fontSize: real := 12) := Invoke(CreatePXY, x, y, message, width, initValue, fontSize);
+    constructor Create(message: string; initValue: integer := 0; fontSize: real := 0) := Invoke(CreateP, message, initValue, fontSize);
+    constructor Create(x, y: real; message: string; width: real := 0; initValue: integer := 0; fontSize: real := 0) := Invoke(CreatePXY, x, y, message, width, initValue, fontSize);
 
     /// Значение целого
     property Value: integer read val write begin val := value; Text := message + ' ' + val; end;
+    static function operator implicit(ib: IntegerBlockWPF) := ib.Value;
+    static function operator=(ib: IntegerBlockWPF; v: integer) := ib.Value = v;
+    static function operator=(v: integer; ib: IntegerBlockWPF) := ib.Value = v;
+    static function operator<>(ib: IntegerBlockWPF; v: integer) := ib.Value <> v;
+    static function operator<>(v: integer; ib: IntegerBlockWPF) := ib.Value <> v;
+    static procedure operator+=(ib: IntegerBlockWPF; v: integer);
+    begin
+      ib.Value += v;
+    end;
+    static procedure operator-=(ib: IntegerBlockWPF; v: integer);
+    begin
+      ib.Value -= v;
+    end;
+    static procedure operator:=(ib: IntegerBlockWPF; v: integer) := ib.Value := v;
   end;
 
   /// Элемент управления "Вещественное число"
@@ -329,21 +371,35 @@ type
   private 
     val := 0.0;
     message: string;
-    procedure CreatePXY(x, y: real; message: string; width: real; initValue: real := 0; fontSize: real := 12);
+    procedure CreatePXY(x, y: real; message: string; width: real; initValue: real := 0; fontSize: real := 0);
     begin
       inherited CreatePXY(x,y,message + ' ' + initValue.ToString(FracDigits), width, fontSize);
       Self.message := message;
       val := initValue;
     end;
-    procedure CreateP(message: string; initValue: real := 0; fontSize: real := 12) := CreatePXY(-1,-1,message,0,initValue,fontSize);
+    procedure CreateP(message: string; initValue: real := 0; fontSize: real := 0) := CreatePXY(-1,-1,message,0,initValue,fontSize);
   public 
-    constructor Create(message: string; initValue: real := 0; fontSize: real := 12) := Invoke(CreateP, message, initValue, fontSize);
-    constructor Create(x, y: real; message: string; width: real := 0; initValue: real := 0; fontSize: real := 12) := Invoke(CreatePXY, x, y, message, width, initValue, fontSize);
+    constructor Create(message: string; initValue: real := 0; fontSize: real := 0) := Invoke(CreateP, message, initValue, fontSize);
+    constructor Create(x, y: real; message: string; width: real := 0; initValue: real := 0; fontSize: real := 0) := Invoke(CreatePXY, x, y, message, width, initValue, fontSize);
 
     /// Значение вещественного
     property Value: real read val write begin val := value; Text := message + ' ' + val.ToString(FracDigits); end;
     /// Количество цифр после десятичной точки
     auto property FracDigits: integer := 1;
+    static function operator implicit(ib: RealBlockWPF) := ib.Value;
+    static function operator=(ib: RealBlockWPF; v: real) := ib.Value = v;
+    static function operator=(v: real; ib: RealBlockWPF) := ib.Value = v;
+    static function operator<>(ib: RealBlockWPF; v: real) := ib.Value <> v;
+    static function operator<>(v: real; ib: RealBlockWPF) := ib.Value <> v;
+    static procedure operator+=(rb: RealBlockWPF; v: real);
+    begin
+      rb.Value += v;
+    end;
+    static procedure operator-=(rb: RealBlockWPF; v: real);
+    begin
+      rb.Value -= v;
+    end;
+    static procedure operator:=(rb: RealBlockWPF; v: real) := rb.Value := v;
   end;
 
   /// Элемент управления "Текстовое поле"
@@ -443,6 +499,8 @@ type
     end;
     procedure SetFSzP(size: real);
     begin
+      if size<=0 then
+        exit;
       tb.FontSize := size;
       MainElement.FontSize := size;
     end;
@@ -552,6 +610,13 @@ type
     auto property Maximum: integer := 100;
     /// Текущее значение текстового поля
     property Value: integer read GetValue write SetValue;
+    
+    static function operator implicit(ib: IntegerBoxWPF) := ib.Value;
+    static function operator=(ib: IntegerBoxWPF; v: integer) := ib.Value = v;
+    static function operator=(v: integer; ib: IntegerBoxWPF) := ib.Value = v;
+    static function operator<>(ib: IntegerBoxWPF; v: integer) := ib.Value <> v;
+    static function operator<>(v: integer; ib: IntegerBoxWPF) := ib.Value <> v;
+    static procedure operator:=(ib: IntegerBoxWPF; v: integer) := ib.Value := v;
   end;
 
   /// Элемент управления "Список"
@@ -1074,24 +1139,24 @@ type
 // Panel - вспомогательная, нужна только для создания LeftPanel, RightPanel
 
 /// Элемент управления "Кнопка" 
-function Button(Txt: string; fontSize: real := 12): ButtonWPF;
+function Button(Txt: string; fontSize: real := 0): ButtonWPF;
 /// Элемент управления "Кнопка" с заданными координатами
-function Button(x, y: real; Txt: string; width: real := 0; fontSize: real := 12): ButtonWPF;
+function Button(x, y: real; Txt: string; width: real := 0; fontSize: real := 0): ButtonWPF;
 
 /// Элемент управления "Текст" 
-function TextBlock(Txt: string; fontSize: real := 12): TextBlockWPF;
+function TextBlock(Txt: string; fontSize: real := 0): TextBlockWPF;
 /// Элемент управления "Текст" с заданными координатами
-function TextBlock(x, y: real; Txt: string; width: real := 0; fontSize: real := 12): TextBlockWPF;
+function TextBlock(x, y: real; Txt: string; width: real := 0; fontSize: real := 0): TextBlockWPF;
 
 /// Элемент управления "Целое число"
-function IntegerBlock(message: string; initValue: integer := 0; fontSize: real := 12): IntegerBlockWPF;
+function IntegerBlock(message: string; initValue: integer := 0; fontSize: real := 0): IntegerBlockWPF;
 /// Элемент управления "Целое число" с заданными координатами
-function IntegerBlock(x, y: real; message: string; width: real := 0; initValue: integer := 0; fontSize: real := 12): IntegerBlockWPF;
+function IntegerBlock(x, y: real; message: string; width: real := 0; initValue: integer := 0; fontSize: real := 0): IntegerBlockWPF;
 
 /// Элемент управления "Вещественное число"
-function RealBlock(message: string; initValue: real := 0; fontSize: real := 12): RealBlockWPF;
+function RealBlock(message: string; initValue: real := 0; fontSize: real := 0): RealBlockWPF;
 /// Элемент управления "Вещественное число" с заданными координатами
-function RealBlock(x, y: real; message: string; width: real := 0; initValue: real := 0; fontSize: real := 12): RealBlockWPF;
+function RealBlock(x, y: real; message: string; width: real := 0; initValue: real := 0; fontSize: real := 0): RealBlockWPF;
 
 /// Элемент управления "Флажок" 
 function CheckBox(text: string): CheckBoxWPF;
@@ -1109,8 +1174,6 @@ function TextBox(text: string := ''): TextBoxWPF;
 /// Элемент управления "Текстовое поле с заголовком" с заданными координатами
 function TextBox(x, y: real; text: string := ''; width: real := 0): TextBoxWPF;
 
-/// Элемент управления "Целое поле"
-function IntegerBox(title: string; max: integer := 10): IntegerBoxWPF;
 /// Элемент управления "Целое поле" с заданным диапазоном значений
 function IntegerBox(title: string; min,max: integer): IntegerBoxWPF;
 /// Элемент управления "Целое поле" с заданными координатами
@@ -1207,7 +1270,6 @@ function RadioButton(x, y: real; text: string; width: real): RadioButtonWPF := R
 function TextBox(text: string): TextBoxWPF := TextBoxWPF.Create(text);
 function TextBox(x, y: real; text: string; width: real): TextBoxWPF := TextBoxWPF.Create(x,y,text,width);
 
-function IntegerBox(title: string; max: integer): IntegerBoxWPF := IntegerBoxWPF.Create(title,0,max);
 function IntegerBox(title: string; min,max: integer): IntegerBoxWPF := IntegerBoxWPF.Create(title,min,max);
 function IntegerBox(x, y: real; title: string; min,max: integer; width: real) := IntegerBoxWPF.Create(x,y,title,min,max,width);
 
