@@ -577,14 +577,14 @@ namespace PascalABCCompiler.PCU
 				pcu_file.ref_assemblies[i] = br.ReadString();
 				
 			}
-			ReadAllAssemblies();
+			
             int num_directives = br.ReadInt32();
             pcu_file.compiler_directives = new List<compiler_directive>();
             for (int i = 0; i < num_directives; i++)
             {
                 pcu_file.compiler_directives.Add(new compiler_directive(br.ReadString(),br.ReadString(),ReadDebugInfo()));    
             }
-
+            ReadAllAssemblies();
 			int num_imp_entity = br.ReadInt32();
 			ext_pos = (int)br.BaseStream.Position;
 			pcu_file.imp_entitles = new ImportedEntity[num_imp_entity];
@@ -639,6 +639,16 @@ namespace PascalABCCompiler.PCU
                 //{
                 string name_with_path = Compiler.GetReferenceFileName(tmp + ".dll");
                 //Assembly a = Assembly.LoadFrom(name_with_path);
+                /*if (pcu_file.compiler_directives != null)
+                foreach (compiler_directive cd in pcu_file.compiler_directives)
+                {
+                    if (cd.name == "reference" && cd.directive != null && cd.directive.IndexOf("\\") != -1 && cd.directive.IndexOf(tmp + ".dll") != -1)
+                    {
+                        name_with_path = Compiler.GetReferenceFileName(cd.directive);
+                        if (name_with_path == null)
+                            throw new AssemblyNotFound(unit_name, cd.directive, null);
+                    }
+                }*/
                 Assembly a = NetHelper.NetHelper.LoadAssembly(name_with_path);
                 NetHelper.NetHelper.init_namespaces(a);
                 //}
@@ -786,6 +796,8 @@ namespace PascalABCCompiler.PCU
                 }
             }
             if (t1.IsGenericParameter && t2.IsGenericParameter)
+                return true;
+            if (t1.FullName == t2.FullName && t1.AssemblyQualifiedName == t2.AssemblyQualifiedName)
                 return true;
             return false;
         }
