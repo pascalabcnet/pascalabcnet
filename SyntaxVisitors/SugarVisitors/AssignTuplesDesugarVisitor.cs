@@ -42,8 +42,10 @@ namespace SyntaxVisitors.SugarVisitors
             var n = asstup.vars.variables.Count();
             for (var i = 0; i < n; i++)
             {
-                var a = new assign(asstup.vars.variables[i], new dot_node(new ident(tname),
-                    new ident("Item" + (i + 1).ToString())), Operators.Assignment,
+                var a = new assign(asstup.vars.variables[i],
+                    //new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString())), 
+                    new semantic_ith_element_of(new ident(tname), new int32_const(i)),
+                    Operators.Assignment,
                     asstup.vars.variables[i].source_context);
                 sl.Add(a);
             }
@@ -82,14 +84,15 @@ namespace SyntaxVisitors.SugarVisitors
             // А потом оставшаяся часть визитора сделает семантические проверки 
             var tname = "#temp_var" + UniqueNumStr();
             var vd = new List<var_def_statement>();
-            vd.Add(new semantic_check_sugared_var_def_statement_node(typeof(assign_var_tuple), new List<syntax_tree_node> { vtd.vars, vtd.inital_value }, vtd.source_context)); // Это нужно для проверок на этапе преобразования в семантику
+            //vd.Add(new semantic_check_sugared_var_def_statement_node(typeof(assign_var_tuple), new List<syntax_tree_node> { vtd.vars, vtd.inital_value }, vtd.source_context)); // Это нужно для проверок на этапе преобразования в семантику
             var tt1 = new var_def_statement(new ident(tname), vtd.inital_value);
             vd.Add(tt1);
             var nn = vtd.vars.idents.Count();
             for (var i = 0; i < nn; i++)
             {
                 var a = new var_def_statement(vtd.vars.idents[i],
-                    new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString())),
+                    new semantic_ith_element_of(new ident(tname), new int32_const(i)),
+                    //new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString())),
                     vtd.vars.idents[i].source_context);
                 vd.Add(a);
             }
@@ -115,7 +118,8 @@ namespace SyntaxVisitors.SugarVisitors
                 for (var i = 0; i < nn; i++)
                 {
                     var a = new var_def_statement(assvartup.idents.idents[i],
-                        new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString())),
+                        //new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString())),
+                        new semantic_ith_element_of(new ident(tname), new int32_const(i)),
                         assvartup.idents.idents[i].source_context);
                     vd.Add(a);
                 }
@@ -135,7 +139,8 @@ namespace SyntaxVisitors.SugarVisitors
             for (var i = 0; i < n; i++)
             {
                 var a = new var_statement(assvartup.idents.idents[i],
-                    new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString())),
+                    //new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString())),
+                    new semantic_ith_element_of(new ident(tname), new int32_const(i)),
                     assvartup.idents.idents[i].source_context);
                 sl.Add(a);
             }

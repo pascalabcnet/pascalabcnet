@@ -486,6 +486,25 @@ namespace TreeConverter.LambdaExpressions.Closure
             }
         }
 
+        private void TreeStatementListToStatementList(statement_list sl, statement_list newsl)
+        {
+            newsl.left_logical_bracket = sl.left_logical_bracket;
+            newsl.right_logical_bracket = sl.right_logical_bracket;
+            newsl.expr_lambda_body = sl.expr_lambda_body;
+            foreach (var st in sl.list)
+            {
+                if (st is statement_list stl)
+                {
+                    TreeStatementListToStatementList(stl, newsl);
+                }
+                else
+                {
+                    newsl.Add(st);
+                    st.Parent = newsl;
+                }
+            }
+        }
+
         private void SubstituteVariablesDeclarations()
         {
             var classDefsTreeNodes = _generatedScopeClassesInfo.Join(_capturedVarsTreeNodesDictionary,
