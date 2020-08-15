@@ -44,6 +44,7 @@
     <Compile Include="AllVarsInProcYieldsProba.cs" />
     <Compile Include="BaseVisitors\CollectNamespaces.cs" />
     <Compile Include="BaseVisitors\HasStatementVisitor.cs" />
+    <Compile Include="UniversalVisitors\ABCStatisticsVisitors.cs" />
     <Compile Include="BaseVisitors\SmallHelperVisitors.cs" />
     <Compile Include="ChangeWhileVisitor.cs" />
     <Compile Include="CheckingVisitors\UnnamedRecordsCheckErrorsVisitor.cs" />

@@ -17517,6 +17517,12 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.statement_list _statement_list)
         {
+            if (_statement_list.IsInternal) // можно два if поставить перед push и pop здесь!!!
+            {
+                visit_statement_list_internal(_statement_list);
+                return;
+            }
+                
             #region MikhailoMMX, обработка omp parallel section
             bool isGenerateParallel = false;
             bool isGenerateSequential = true;
@@ -20807,6 +20813,11 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.assign_var_tuple assvartup) // сахарный узел
         {
+            /*if (assvartup.sl != null)
+            {
+                visit_statement_list_internal(assvartup.sl as SyntaxTree.statement_list);
+                return;
+            }*/
             //AddError(get_location(assvartup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", assvartup.GetType().Name);
 
             CheckUnpacking(assvartup.expr, out var sem_ex, out var IsTuple, out var IsSequence, assvartup.idents.idents.Count(), assvartup.idents);
@@ -20854,7 +20865,8 @@ namespace PascalABCCompiler.TreeConverter
             var tt = new var_statement(new ident(tname), sem_node /*assvartup.expr*/); 
 
             var sl = new statement_list();
-            sl.Add(tt); 
+            //sl.Add(new SyntaxTree.empty_statement());
+            sl.Add(tt);
 
             var n = assvartup.idents.idents.Count();
             for (var i = 0; i < n; i++)
@@ -20879,7 +20891,12 @@ namespace PascalABCCompiler.TreeConverter
                     );
                 sl.Add(a);
             }
+            //assvartup.sl = sl;
+            //ReplaceUsingParent(assvartup, sl);
+            //ReplaceStatementUsingParent(assvartup, sl.list); // добавляем пустой оператор чтобы здесь его пропустить, а обходить следующие
+            sl.IsInternal = true;
             visit_statement_list_internal(sl);
+            ReplaceUsingParent(assvartup, sl); // меняем один оператор на один. На 2 и 3 проходе лямбды обходится именно он
         }
 
         public override void visit(var_tuple_def_statement vtd)

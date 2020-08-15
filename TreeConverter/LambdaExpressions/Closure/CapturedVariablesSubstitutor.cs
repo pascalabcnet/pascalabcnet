@@ -107,9 +107,12 @@ namespace TreeConverter.LambdaExpressions.Closure
             var s = stmtList.subnodes.Count + " " + stmtList.subnodes[0].ToString() + "\n";
             System.IO.File.AppendAllText("d:\\bb3.txt", s);
 #endif*/
-            _syntaxTreeNodeStack.Push(stmtList);
+
+            if (!stmtList.IsInternal)
+                _syntaxTreeNodeStack.Push(stmtList);
             base.visit(stmtList);
-            _syntaxTreeNodeStack.Pop();
+            if (!stmtList.IsInternal)
+                _syntaxTreeNodeStack.Pop();
         }
 
         public override void visit(for_node fn)
@@ -473,6 +476,16 @@ namespace TreeConverter.LambdaExpressions.Closure
             }
         }
 
+        private void TreeStatementListToQueue(statement_list sl, Queue<statement> q)
+        {
+            foreach (var st in sl.list)
+            {
+                if (st is statement_list stl && stl.IsInternal)
+                    TreeStatementListToQueue(stl, q);
+                else q.Enqueue(st);
+            }
+        }
+
         private void SubstituteVariablesDeclarations()
         {
             var classDefsTreeNodes = _generatedScopeClassesInfo.Join(_capturedVarsTreeNodesDictionary,
@@ -513,13 +526,17 @@ namespace TreeConverter.LambdaExpressions.Closure
                     }
 
                     var newStmtList = new statement_list();
+                    //newStmtList.IsInternal = statementListNode.IsInternal;
+                    // Попробуем вытянуть в линию тех, у кого IsInternal=true
                     newStmtList.Add(classDefTreeNode.ClassDeclaration.GeneratedVarStatementForScope);
                     if (classDefTreeNode.ClassDeclaration.AssignNodeForUpperClassFieldInitialization != null)
                     {
                         newStmtList.Add(classDefTreeNode.ClassDeclaration.AssignNodeForUpperClassFieldInitialization);
                     }
 
-                    var stmtListQueue = new Queue<statement>(statementListNode.subnodes);
+                    //var stmtListQueue = new Queue<statement>(statementListNode.subnodes);
+                    var stmtListQueue = new Queue<statement>();
+                    TreeStatementListToQueue(statementListNode, stmtListQueue); // сделали плоскую последовательность
                     while (stmtListQueue.Count > 0)
                     {
                         var currentStatement = stmtListQueue.Dequeue();
