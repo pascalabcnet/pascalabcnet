@@ -39,3 +39,4 @@ NESTED_RECORD_CANNOT_CONTAIN_CONSTRUCTORS=Вложенные записи не �
 NESTED_RECORD_CAN_CONTAIN_ONLY_ONE_PUBLIC_VISIBILITY_SECTION=Вложенные записи могут содержать лишь одну секцию с public-видимостью
 NESTED_RECORD_CANNOT_CONTAIN_SEVERAL_VISIBILITY_SECTIONS=Вложенные записи не могут содержать несколько секций видимости
 NESTED_RECORD_CANNOT_CATCH_NAMES_FROM_NONGLOBAL_CONTEXT=Вложенные записи не могут захватывать имена из неглобального контекста
+TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT=Слишком много элементов в левой части при присваивании кортежа

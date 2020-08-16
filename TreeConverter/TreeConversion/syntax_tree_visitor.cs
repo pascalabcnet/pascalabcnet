@@ -20785,7 +20785,8 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.assign_tuple asstup) // сахарный узел
         {
             AddError(get_location(asstup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", asstup.GetType().Name);
-
+            // На семантике тяжело делать сахар с определениями переменных, которые потом захватываются лямбдами: var (m,n) := t; ArrGen(x->x+m);
+            // Перенесено на синтаксис с генерацией узла semantic_ith_element_of, разворачивающегося на семантике
 
             /*CheckUnpacking(asstup.expr, out var sem_ex, out var IsTuple, out var IsSequence, asstup.vars.variables.Count(), asstup.vars);
             var sem_node = new SyntaxTree.semantic_addr_value(sem_ex); // чтобы два раза не делать convert_strong
@@ -20814,6 +20815,7 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.assign_var_tuple assvartup) // сахарный узел
         {
             AddError(get_location(assvartup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", assvartup.GetType().Name);
+            // На семантике тяжело делать сахар с определениями переменных, которые потом захватываются лямбдами: var (m,n) := t; ArrGen(x->x+m);
 
             //CheckUnpacking(assvartup.expr, out var sem_ex, out var IsTuple, out var IsSequence, assvartup.idents.idents.Count(), assvartup.idents);
 
@@ -20925,6 +20927,7 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(var_tuple_def_statement vtd)
         {
             AddError(get_location(vtd), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", vtd.GetType().Name);
+            // На семантике тяжело делать сахар с определениями переменных, которые потом захватываются лямбдами: var (m,n) := t; ArrGen(x->x+m);
 
             // Состоит из var_def_statements. Некоторые являются var_tuple_def_statement
             // Их надо найти и сделать несколько секций variable_definitions - без семантических проверок.
