@@ -2088,7 +2088,18 @@ namespace PascalABCCompiler.TreeConverter
                                                                                 is_alone_method_defined, syntax_tree_visitor.context, loc, syntax_nodes_parameters);
                         if (inst == null)
                         {
-                            set_of_possible_functions.RemoveAt(i);
+                            try
+                            {
+                                inst = generic_convertions.DeduceFunction(func, parameters, true, syntax_tree_visitor.context, loc, syntax_nodes_parameters);
+                            }
+                            catch
+                            {
+
+                            }
+                            if (inst == null)
+                                set_of_possible_functions.RemoveAt(i);
+                            else
+                                set_of_possible_functions[i] = inst;
                         }
                         else
                         {
