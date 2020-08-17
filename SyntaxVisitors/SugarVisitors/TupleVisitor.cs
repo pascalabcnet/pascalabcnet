@@ -91,6 +91,42 @@ namespace SyntaxVisitors.SugarVisitors
             }
         }
 
+        public void ReplaceVarTupleDefStatementUsingParent(var_tuple_def_statement from, IEnumerable<var_def_statement> to)
+        {
+            foreach (var x in to)
+                x.Parent = from.Parent;
+            var sl = from.Parent as variable_definitions;
+            if (sl != null)
+            {
+                sl.ReplaceInList(from, to);
+            }
+        }
+
+        public override void visit(var_tuple_def_statement vtd)
+        {
+            if (vtd.inital_value is tuple_node tn && tn.el.expressions.All(ex => ex is const_node) && !tn.el.expressions.Any(ex => ex is nil_const))
+            {
+                var n = vtd.vars.idents.Count();
+                if (n > tn.el.Count)
+                    throw new SyntaxVisitorError("TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMENT", vtd.vars.idents[0]);
+
+                var vd = new List<var_def_statement>();
+                for (var i = 0; i < n; i++)
+                {
+                    var a = new var_def_statement(vtd.vars.idents[i],
+                        tn.el.expressions[i],
+                        vtd.vars.idents[i].source_context);
+                    vd.Add(a);
+                }
+                ReplaceVarTupleDefStatementUsingParent(vtd, vd);
+                visit(vtd.inital_value);
+            }
+            else
+            {
+                DefaultVisit(vtd);
+            }
+        }
+
         public override void visit(tuple_node tup)
         {
             var dn = new dot_node(new dot_node(new ident("?System", tup.source_context), new ident("Tuple", tup.source_context), tup.source_context), new ident("Create", tup.source_context));
