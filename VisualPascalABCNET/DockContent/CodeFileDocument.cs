@@ -704,7 +704,7 @@ namespace VisualPascalABC
             string s1 = string.Join(string_consts.nr, lines, 0, s_num + 1);
             string s2 = string.Join(string_consts.nr, lines, e_num, lines.Length - e_num);
             return s1 + string_consts.nr + string_consts.tab +
-                "private" + string_consts.nr + 
+                "internal" + string_consts.nr + 
                 string_consts.tab2 + generated_text + s2;
         }
 
