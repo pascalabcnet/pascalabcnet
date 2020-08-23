@@ -383,7 +383,7 @@ namespace PascalABCCompiler.PCU
             if (this.base_generic_instance != null && sil != null)
             {
                 var bsil = base_generic_instance.ConvertSymbolInfo(sil);
-                if (orig_generic_or_null == null)  
+                if (orig_generic_or_null == null && name != "op_Implicit")  
                     return bsil;
             }
             foreach (SymbolInfo si in sil)

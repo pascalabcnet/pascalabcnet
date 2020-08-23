@@ -3066,6 +3066,7 @@ namespace PascalABCCompiler.TreeConverter
             weak_node_test_and_visit(_interface_node.interface_definitions);
         }
 
+
         public override void visit(SyntaxTree.typecast_node node)
         {
 
@@ -3086,12 +3087,16 @@ namespace PascalABCCompiler.TreeConverter
                     AddError(loc, "OPERATOR_{0}_CAN_NOT_BE_APPLIED_TO_POINTER_TYPE", compiler_string_consts.as_name);
             }
             else
-            	if (!(type_table.is_derived(en.type, tp) || type_table.is_derived(tp, en.type) || en.type == tp || en.type == SystemLibrary.SystemLibrary.object_type
-            	      || en.type.IsInterface || tp.IsInterface))
+            	if (!(type_table.is_derived(en.type, tp) || type_table.is_derived(tp, en.type) 
+                    || en.type == tp || en.type == SystemLibrary.SystemLibrary.object_type
+            	    || en.type.IsInterface || tp.IsInterface || tp.is_generic_parameter)
+                   )
                 {
                     AddError(loc, "EXPECTED_DERIVED_CLASSES");
                 }
-            if (en.type.IsSealed && tp.IsInterface && !en.type.ImplementingInterfaces.Contains(tp))
+            if (en.type.IsSealed && tp.IsInterface && /*!en.type.ImplementingInterfaces.Contains(tp)*/
+                !convertion_data_and_alghoritms.type_or_base_type_implements_interface(en.type,tp)
+                )
             {
                 AddError(loc, "CAN_NOT_CONVERT_TYPE_{0}_TO_INTERFACE_{1}", en.type.PrintableName, tp.PrintableName);
             }
@@ -10508,6 +10513,16 @@ namespace PascalABCCompiler.TreeConverter
             type_node case_expr_type = en.type;
 
             internal_interface ii = en.type.get_internal_interface(internal_interface_kind.ordinal_interface);
+            if (ii == null)
+            {
+                // Попытка воспользоваться неявным преобразованием
+                if (convertion_data_and_alghoritms.can_convert_type(en, SystemLibrary.SystemLibrary.integer_type))
+                    en = convertion_data_and_alghoritms.convert_type(en, SystemLibrary.SystemLibrary.integer_type);
+                ii = en.type.get_internal_interface(internal_interface_kind.ordinal_interface);
+                if (ii == null)
+                    if (convertion_data_and_alghoritms.can_convert_type(en, SystemLibrary.SystemLibrary.string_type))
+                        en = convertion_data_and_alghoritms.convert_type(en, SystemLibrary.SystemLibrary.string_type);
+            }
             if (ii == null && en.type != SystemLibrary.SystemLibrary.string_type)
             {
                 AddError(new OrdinalOrStringTypeExpected(en.location));
@@ -16360,8 +16375,20 @@ namespace PascalABCCompiler.TreeConverter
 
             }
 
-            if (_var_def_statement.vars_type == null && _var_def_statement.inital_value is SyntaxTree.function_lambda_definition)
-                AddError(get_location(_var_def_statement.inital_value), "IMPOSSIBLE_TO_INFER_TYPES_IN_LAMBDA");  //lroman//
+            if (_var_def_statement.vars_type == null && _var_def_statement.inital_value is SyntaxTree.function_lambda_definition fld)
+            {
+                if (fld.formal_parameters != null && fld.formal_parameters.params_list.Select(x => x.vars_type).Any(x=>x is lambda_inferred_type))
+                    AddError(get_location(_var_def_statement.inital_value), "IMPOSSIBLE_TO_INFER_TYPES_IN_LAMBDA");
+                if (fld.return_type is lambda_inferred_type)
+                    AddError(get_location(_var_def_statement.inital_value), "IMPOSSIBLE_TO_INFER_TYPES_IN_LAMBDA");
+                if (fld.return_type == null)
+                    _var_def_statement.vars_type = new procedure_header(fld.formal_parameters, null, null, false, false, null, null, _var_def_statement.source_context);
+                else
+                    _var_def_statement.vars_type = new function_header(fld.formal_parameters, null, null, null, fld.return_type, _var_def_statement.source_context);
+                //else
+                //    AddError(get_location(_var_def_statement.inital_value), "IMPOSSIBLE_TO_INFER_TYPES_IN_LAMBDA");  //lroman//
+            }
+                
 
             if (_var_def_statement.vars_type == null && _var_def_statement.inital_value is SyntaxTree.pascal_set_constant pc)
             {
@@ -17490,6 +17517,12 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.statement_list _statement_list)
         {
+            if (_statement_list.IsInternal) // можно два if поставить перед push и pop здесь!!!
+            {
+                visit_statement_list_internal(_statement_list);
+                return;
+            }
+                
             #region MikhailoMMX, обработка omp parallel section
             bool isGenerateParallel = false;
             bool isGenerateSequential = true;
@@ -20751,17 +20784,18 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.assign_tuple asstup) // сахарный узел
         {
-            //AddError(get_location(asstup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", asstup.GetType().Name);
+            AddError(get_location(asstup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", asstup.GetType().Name);
+            // На семантике тяжело делать сахар с определениями переменных, которые потом захватываются лямбдами: var (m,n) := t; ArrGen(x->x+m);
+            // Перенесено на синтаксис с генерацией узла semantic_ith_element_of, разворачивающегося на семантике
 
-
-            CheckUnpacking(asstup.expr, out var sem_ex, out var IsTuple, out var IsSequence, asstup.vars.variables.Count(), asstup.vars);
+            /*CheckUnpacking(asstup.expr, out var sem_ex, out var IsTuple, out var IsSequence, asstup.vars.variables.Count(), asstup.vars);
             var sem_node = new SyntaxTree.semantic_addr_value(sem_ex); // чтобы два раза не делать convert_strong
 
             //semantic_check_assign_tuple(asstup.vars, asstup.expr);
 
             var tname = "#temp_var" + UniqueNumStr();
 
-            var tt = new var_statement(new ident(tname), sem_node /*asstup.expr*/); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
+            var tt = new var_statement(new ident(tname), sem_node; // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
             var st = new statement_list();
             st.Add(tt);
 
@@ -20775,14 +20809,15 @@ namespace PascalABCCompiler.TreeConverter
                     asstup.vars.variables[i].source_context);
                 st.Add(a);
             }
-            visit(st);
+            visit(st);*/
         }
 
         public override void visit(SyntaxTree.assign_var_tuple assvartup) // сахарный узел
         {
-            //AddError(get_location(assvartup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", assvartup.GetType().Name);
+            AddError(get_location(assvartup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", assvartup.GetType().Name);
+            // На семантике тяжело делать сахар с определениями переменных, которые потом захватываются лямбдами: var (m,n) := t; ArrGen(x->x+m);
 
-            CheckUnpacking(assvartup.expr, out var sem_ex, out var IsTuple, out var IsSequence, assvartup.idents.idents.Count(), assvartup.idents);
+            //CheckUnpacking(assvartup.expr, out var sem_ex, out var IsTuple, out var IsSequence, assvartup.idents.idents.Count(), assvartup.idents);
 
             /*var sem_ex = convert_strong(assvartup.expr);
             sem_ex = convert_if_typed_expression_to_function_call(sem_ex);
@@ -20818,31 +20853,21 @@ namespace PascalABCCompiler.TreeConverter
             // if IsSequence ...
             // else AddError(либо кортеж либо последовательность)
 
-            var sem_node = new SyntaxTree.semantic_addr_value(sem_ex); // чтобы два раза не делать convert_strong
+            /*var sem_node = new SyntaxTree.semantic_addr_value(sem_ex); // чтобы два раза не делать convert_strong
 
-            //semantic_check_assign_var_tuple(assvartup.idents, sem_node /*assvartup.expr*/);
+            //semantic_check_assign_var_tuple(assvartup.idents, sem_node);
 
             var tname = "#temp_var" + UniqueNumStr();
 
-            var tt = new var_statement(new ident(tname), sem_node /*assvartup.expr*/); 
+            var tt = new var_statement(new ident(tname), sem_node); 
 
             var sl = new statement_list();
-            sl.Add(tt); 
+            sl.Add(new SyntaxTree.empty_statement());
+            sl.Add(tt);
 
             var n = assvartup.idents.idents.Count();
             for (var i = 0; i < n; i++)
             {
-                /*addressed_value dn = null;
-                if (IsTuple)
-                    dn = new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString()));
-                else if (IsSequence)
-                {
-                    dn = new dot_node(new ident(tname), new ident("ElementAt"));
-                    var pars = new SyntaxTree.expression_list(new int32_const(i));
-
-                    dn = new method_call(dn,pars);
-                }*/
-
                 var rr = assvartup.idents.idents[i] as ident;
                 var a = new var_statement(rr,
                     //new dot_node(new ident(tname),new ident("Item" + (i + 1).ToString())),
@@ -20852,19 +20877,64 @@ namespace PascalABCCompiler.TreeConverter
                     );
                 sl.Add(a);
             }
-            visit_statement_list_internal(sl);
+            //assvartup.sl = sl;
+            ReplaceStatementUsingParent(assvartup, sl.list); // добавляем пустой оператор чтобы здесь его пропустить, а обходить следующие
+            //sl.IsInternal = true;
+            //ReplaceUsingParent(assvartup, sl); // меняем один оператор на один. На 2 и 3 проходе лямбды обходится именно он
+            //visit_statement_list_internal(sl);*/
         }
+
+        public override void visit(semantic_ith_element_of ith)
+        {
+            var sem_ex = convert_strong(ith.id);
+            sem_ex = convert_if_typed_expression_to_function_call(sem_ex);
+            var t = ConvertSemanticTypeNodeToNETType(sem_ex.type);
+            if (t == null)
+                AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
+            var IsTuple = false;
+            var IsSequence = false;
+            if (t.FullName.StartsWith("System.Tuple"))
+                IsTuple = true;
+            if (!IsTuple)
+            {
+                if (t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null)
+                    IsSequence = true;
+            }
+            if (!IsTuple && !IsSequence)
+            {
+                AddError(sem_ex.location, "TUPLE_OR_SEQUENCE_EXPECTED");
+            }
+
+            //addressed_value dn = null;
+            var i = (ith.index as int32_const).val;
+            if (IsTuple)
+            {
+                var dn = new dot_node(ith.id.TypedClone(), new ident("Item" + (i + 1).ToString()));
+                ReplaceUsingParent(ith, dn);
+                visit(dn);
+            }
+            else if (IsSequence)
+            {
+                var dn = new dot_node(ith.id.TypedClone(), new ident("ElementAt"));
+                var pars = new SyntaxTree.expression_list(new int32_const(i));
+                var mc = new method_call(dn, pars);
+                ReplaceUsingParent(ith, mc);
+                visit(mc);
+            }
+        }
+
 
         public override void visit(var_tuple_def_statement vtd)
         {
-            //AddError(get_location(vtd), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", vtd.GetType().Name);
+            AddError(get_location(vtd), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", vtd.GetType().Name);
+            // На семантике тяжело делать сахар с определениями переменных, которые потом захватываются лямбдами: var (m,n) := t; ArrGen(x->x+m);
 
             // Состоит из var_def_statements. Некоторые являются var_tuple_def_statement
             // Их надо найти и сделать несколько секций variable_definitions - без семантических проверок.
             // Каждую var_tuple_def_statement надо заменить на assign_var_tuple - одну на секцию variable_definitions
             // А потом оставшаяся часть визитора сделает семантические проверки 
 
-            CheckUnpacking(vtd.inital_value, out var sem_ex, out var IsTuple, out var IsSequence, vtd.vars.idents.Count(), vtd.vars);
+            /*CheckUnpacking(vtd.inital_value, out var sem_ex, out var IsTuple, out var IsSequence, vtd.vars.idents.Count(), vtd.vars);
             var sem_node = new SyntaxTree.semantic_addr_value(sem_ex); // чтобы два раза не делать convert_strong
 
             //semantic_check_assign_var_tuple(vtd.vars, vtd.inital_value);
@@ -20884,7 +20954,7 @@ namespace PascalABCCompiler.TreeConverter
                     //new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString())),
                     vtd.vars.idents[i].source_context);
                 ProcessNode(a);
-            }
+            }*/
         }
 
         public void ReplaceVarTupleDefStatementUsingParent(var_tuple_def_statement from, IEnumerable<var_def_statement> to)

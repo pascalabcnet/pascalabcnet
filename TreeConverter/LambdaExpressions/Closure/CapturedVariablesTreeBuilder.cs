@@ -72,6 +72,11 @@ namespace TreeConverter.LambdaExpressions.Closure
         public override void visit(assign_var_tuple assvartup)
         {
             _visitor.ProcessNode(assvartup);
+            /*foreach (var id in assvartup.idents.idents)
+            {
+                SymbolInfo si = _visitor.context.find_first(id.name);
+                _currentTreeNode.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(assvartup, si));
+            }*/
         }
 
         public override void visit(var_def_statement varDefStmt)
@@ -92,6 +97,15 @@ namespace TreeConverter.LambdaExpressions.Closure
 
         public override void visit(statement_list stmtList)
         {
+            if (stmtList.IsInternal) // просто обойти как продолжение объемлющего statement_list
+            {
+                foreach (var stmt in stmtList.subnodes)
+                {
+                    ProcessNode(stmt);
+                }
+                return;
+            }
+
             var stl = new statements_list(_visitor.get_location(stmtList),
                                           _visitor.get_location_with_check(stmtList.left_logical_bracket),
                                           _visitor.get_location_with_check(stmtList.right_logical_bracket));

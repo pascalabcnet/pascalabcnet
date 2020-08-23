@@ -1760,7 +1760,7 @@ function CplxFromPolar(magnitude, phase: real): Complex;
 /// Возвращает квадратный корень из комплексного числа
 function Sqrt(c: Complex): Complex;
 /// Возвращает модуль комплексного числа
-function Abs(c: Complex): Complex;
+function Abs(c: Complex): real;
 /// Возвращает комплексно сопряженное число
 function Conjugate(c: Complex): Complex;
 /// Возвращает косинус комплексного числа

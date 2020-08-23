@@ -2702,7 +2702,7 @@ namespace PascalABCCompiler.TreeConverter
                 else
                 {
                     sil = tmp_si;
-                    sil.RemoveRange(1, sil.Count() - 1);
+                    //sil.RemoveRange(1, sil.Count() - 1);
                 }
             }
 

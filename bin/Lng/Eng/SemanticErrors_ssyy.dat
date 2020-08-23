@@ -12,6 +12,7 @@ CONSTRUCTOR_IN_INTERFACE=Interfaces cannot contain constructors
 INTERFACE_{0}_CONSTRUCTOR_CALL=Cannot create an instance of the interface '{0}'
 CLASS_{0}_DOES_NOT_IMPLEMENT_MEMBER_{2}_OF_INTERFACE_{1}=Class '{0}' doesn't implement member '{2}' of interface '{1}'
 MEMBER_{2}_OF_CLASS_{0}_FROM_INTERFACE_{1}_MUST_BE_PUBLIC_AND_NON_STATIC='{0}' does not implement interface member '{2}'. The method is static, not public, or has the wrong return type 
+PROPERTY_{2}_OF_CLASS_{0}_FROM_INTERFACE_{1}_MUST_BE_PUBLIC_AND_NON_STATIC='{0}' does not implement interface member '{2}'. The method is static, not public, or has the wrong return type
 ATTRIBUTES_IN_INTERFACE_MEMBER=This attribute is not valid for interface members
 MODIFER_BLOCK_{0}_CALL='{0}' is inaccessible due to its protection level
 LEFT_RANGE_GREATER_THEN_RIGHT=Left range is greater than right

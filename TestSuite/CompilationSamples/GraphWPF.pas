@@ -1924,6 +1924,9 @@ public
 
     host1 := new Canvas;
     host := new MyVisualHost();
+    // Попытка отсекать рисование частей объектов за пределами host. Актуально при наличии панелей.
+    // К сожалению, почему-то при использовании WPFObjects объекты GraphWPF становятся не видны
+    // Выход - в WPFObjects host1.ClipToBounds := False
     host1.ClipToBounds := True;
     host1.SizeChanged += (s,e) ->
     begin
@@ -1944,6 +1947,8 @@ public
     RTbmap := new RenderTargetBitmap(Round(SystemParameters.PrimaryScreenWidth * scalex), Round(SystemParameters.PrimaryScreenHeight * scaley), dpiX, dpiY, PixelFormats.Pbgra32);
     im.Source := RTbmap;
     
+    // Рисуем на host
+    // Когда накопится много объектов, переносим их на im
     host1.Children.Add(im); 
     host1.Children.Add(host);
     
