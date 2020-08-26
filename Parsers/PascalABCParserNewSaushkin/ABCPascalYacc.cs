@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-G8V08V4
-// DateTime: 12.08.2020 15:06:57
+// DateTime: 26.08.2020 0:44:47
 // UserName: ?????????
 // Input file <ABCPascal.y>
 

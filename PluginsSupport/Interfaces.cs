@@ -299,6 +299,7 @@ namespace VisualPascalABCPlugins
         void Stop(string FileName);
         bool Run(bool forDebugging, bool startWithGoto, bool need_first_brpt);
         bool Run(ICodeFileDocument tabPage, bool forDebugging, bool startWithGoto, bool needFirstBreakpoint);
+        void Run(string fileName, bool redirectIO, string ModeName, bool RunWithPause, string WorkingDirectory, string CommandLineArguments, bool attachDebugger, bool fictive_attach);
         bool HasRunArgument(string FileName);
         string GetRunArgument(string FileName);
         void AddRunArgument(string FileName, string argument);

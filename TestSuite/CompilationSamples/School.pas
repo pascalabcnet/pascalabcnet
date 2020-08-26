@@ -53,7 +53,7 @@ function Primes(n: integer): List<integer>;
 /// Первые n простых чисел 
 function FirstPrimes(n: integer): List<integer>;
 
-/// Возвращает массив, содержащий цифры числа
+/// Возвращает список, содержащий цифры числа
 function Digits(n: int64): List<integer>;
 
 /// возвращает список делителей натурального числа
@@ -79,6 +79,25 @@ function SeqRandomReal(n: integer; a, b: real; t: integer): sequence of real;
 /// Возвращает вещественную матрицу, заполненную случайными значениями
 /// на интервале [a; b) с t знаками в дробной части
 function MatrRandomReal(m: integer; n: integer; a, b: real; t: integer): array [,] of real;
+
+/// Возвращает логическое значение операции импликации a -> b
+function Imp(a, b: boolean) : boolean;
+
+/// Выводит на монитор таблицу истинности для двух переменных
+procedure TrueTable(f: function(a, b: boolean): boolean;
+    vars: string := 'x1.x2');
+    
+/// Выводит на монитор таблицу истинности для трех переменных
+procedure TrueTable(f: function(a, b, c: boolean): boolean;
+    vars: string := 'x1.x2.x3');
+
+/// Выводит на монитор таблицу истинности для четырех переменных
+procedure TrueTable(f: function(a, b, c, d: boolean): boolean;
+    vars: string := 'x1.x2.x3.x4');
+
+/// Выводит на монитор таблицу истинности для пяти переменных
+procedure TrueTable(f: function(a, b, c, d, e: boolean): boolean;
+    vars: string := 'x1.x2.x3.x4.x5');
 
 implementation
 
@@ -428,7 +447,7 @@ end;
 
 {$region Digits}
 
-/// Возвращает массив, содержащий цифры числа
+/// Возвращает список, содержащий цифры числа
 function Digits(n: int64): List<integer>;
 begin
   var St := new Stack<integer>;
@@ -445,11 +464,11 @@ begin
   end
 end;
 
-/// Возвращает массив, содержащий цифры числа
+/// Возвращает список, содержащий цифры числа
 function Digits(Self: integer): List<integer>;
     extensionmethod := Digits(Self);
 
-/// возвращает массив, содержащий цифры числа
+/// возвращает список, содержащий цифры числа
 function Digits(Self: int64): List<integer>;
     extensionmethod := Digits(Self);
     
@@ -557,6 +576,84 @@ begin
     for var j := 0 to Result.ColCount - 1 do
       Result[i, j] := Round(Random * (b - a) + a, t);
 end;
+
+{$endregion}
+
+{$region BooleanLogic}
+
+function BoolToStr(Self: boolean): string; extensionmethod :=
+    if Self then '1' else '0';
+
+/// Возвращает логическое значение операции импликации a -> b
+function Imp(a, b: boolean) : boolean := not a or b;
+
+/// Выводит на монитор таблицу истинности для двух переменных
+procedure TrueTable(f: function(a, b: boolean): boolean;
+    vars: string);
+begin
+  var names := vars.ToWords('.');
+  var lengths := names.Select(Имя -> Имя.Length + 1).ToArray;
+  Write(' ');
+  names.Print;
+  Writeln(' F');
+  for var a := False to True do
+    for var b := False to True do
+      Writeln(a.BoolToStr:lengths[0], b.BoolToStr:lengths[1],
+          f(a, b).BoolToStr:2)
+end;
+    
+/// Выводит на монитор таблицу истинности для трех переменных
+procedure TrueTable(f: function(a, b, c: boolean): boolean;
+    vars: string);
+begin
+  var names := vars.ToWords('.');
+  var lengths := names.Select(Имя -> Имя.Length + 1).ToArray;
+  Write(' ');
+  names.Print;
+  Writeln(' F');
+  for var a := False to True do
+    for var b := False to True do
+      for var c := False to True do
+        Writeln(a.BoolToStr:lengths[0], b.BoolToStr:lengths[1],
+            c.BoolToStr:lengths[2], f(a, b, c).BoolToStr:2)
+end;
+
+/// Выводит на монитор таблицу истинности для четырех переменных
+procedure TrueTable(f: function(a, b, c, d: boolean): boolean;
+    vars: string);
+begin
+  var names := vars.ToWords('.');
+  var lengths := names.Select(Имя -> Имя.Length + 1).ToArray;
+  Write(' ');
+  names.Print;
+  Writeln(' F');
+  for var a := False to True do
+    for var b := False to True do
+      for var c := False to True do
+        for var d := False to True do
+          Writeln(a.BoolToStr:lengths[0], b.BoolToStr:lengths[1],
+              c.BoolToStr:lengths[2], d.BoolToStr:lengths[3],
+              f(a, b, c, d).BoolToStr:2)
+end;
+
+/// Выводит на монитор таблицу истинности для пяти переменных
+procedure TrueTable(f: function(a, b, c, d, e: boolean): boolean;
+    vars: string);
+begin
+  var names := vars.ToWords('.');
+  var lengths := names.Select(Имя -> Имя.Length + 1).ToArray;
+  Write(' ');
+  names.Print;
+  Writeln(' F');
+  for var a := False to True do
+    for var b := False to True do
+      for var c := False to True do
+        for var d := False to True do
+          for var e := False to True do
+          Writeln(a.BoolToStr:lengths[0], b.BoolToStr:lengths[1],
+              c.BoolToStr:lengths[2], d.BoolToStr:lengths[3],
+              e.BoolToStr:lengths[4], f(a, b, c, d, e).BoolToStr:2)
+end;    
 
 {$endregion}
 

@@ -177,6 +177,7 @@ namespace VisualPascalABC
             this.tsFindAllReferences = new System.Windows.Forms.ToolStripMenuItem();
             this.miGenerateRealization = new System.Windows.Forms.ToolStripMenuItem();
             this.mFORMATToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mUNITTESTSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miPlugins = new System.Windows.Forms.ToolStripMenuItem();
             this.mrHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.tsHelp = new System.Windows.Forms.ToolStripMenuItem();
@@ -1390,7 +1391,7 @@ namespace VisualPascalABC
             // miShowGrid
             // 
             this.miShowGrid.Name = "miShowGrid";
-            this.miShowGrid.Size = new System.Drawing.Size(165, 22);
+            this.miShowGrid.Size = new System.Drawing.Size(180, 22);
             this.miShowGrid.Text = "M_SHOW_GRID";
             this.miShowGrid.Visible = false;
             this.miShowGrid.Click += new System.EventHandler(this.miShowGrid_Click);
@@ -1398,7 +1399,7 @@ namespace VisualPascalABC
             // miSnapToGrid
             // 
             this.miSnapToGrid.Name = "miSnapToGrid";
-            this.miSnapToGrid.Size = new System.Drawing.Size(165, 22);
+            this.miSnapToGrid.Size = new System.Drawing.Size(180, 22);
             this.miSnapToGrid.Text = "M_SNAP_TO_GRID";
             this.miSnapToGrid.Visible = false;
             this.miSnapToGrid.Click += new System.EventHandler(this.miSnapToGrid_Click);
@@ -1414,7 +1415,7 @@ namespace VisualPascalABC
             this.miAlignCenters,
             this.miAlignToGrid});
             this.miAlign.Name = "miAlign";
-            this.miAlign.Size = new System.Drawing.Size(165, 22);
+            this.miAlign.Size = new System.Drawing.Size(180, 22);
             this.miAlign.Text = "M_ALIGN";
             // 
             // miAlignLefts
@@ -1472,7 +1473,7 @@ namespace VisualPascalABC
             this.miCenterHorizontally,
             this.miCenterVertically});
             this.miCenter.Name = "miCenter";
-            this.miCenter.Size = new System.Drawing.Size(165, 22);
+            this.miCenter.Size = new System.Drawing.Size(180, 22);
             this.miCenter.Text = "M_CENTER";
             // 
             // miCenterHorizontally
@@ -1497,7 +1498,7 @@ namespace VisualPascalABC
             this.miSizeToControlHeight,
             this.miSizeToGrid});
             this.miSizeTo.Name = "miSizeTo";
-            this.miSizeTo.Size = new System.Drawing.Size(165, 22);
+            this.miSizeTo.Size = new System.Drawing.Size(180, 22);
             this.miSizeTo.Text = "M_SIZE_TO";
             // 
             // miSizeToControl
@@ -1534,7 +1535,7 @@ namespace VisualPascalABC
             this.miBringToFront,
             this.miSendToBack});
             this.miZOrder.Name = "miZOrder";
-            this.miZOrder.Size = new System.Drawing.Size(165, 22);
+            this.miZOrder.Size = new System.Drawing.Size(180, 22);
             this.miZOrder.Text = "M_Z_ORDER";
             // 
             // miBringToFront
@@ -1554,7 +1555,7 @@ namespace VisualPascalABC
             // miTabOrder
             // 
             this.miTabOrder.Name = "miTabOrder";
-            this.miTabOrder.Size = new System.Drawing.Size(165, 22);
+            this.miTabOrder.Size = new System.Drawing.Size(180, 22);
             this.miTabOrder.Text = "M_TAB_ORDER";
             this.miTabOrder.Click += new System.EventHandler(this.miTabOrder_Click);
             // 
@@ -1568,7 +1569,8 @@ namespace VisualPascalABC
             this.tsGotoRealization,
             this.tsFindAllReferences,
             this.miGenerateRealization,
-            this.mFORMATToolStripMenuItem});
+            this.mFORMATToolStripMenuItem,
+            this.mUNITTESTSToolStripMenuItem});
             this.mrService.Name = "mrService";
             this.mrService.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.D)));
@@ -1624,7 +1626,9 @@ namespace VisualPascalABC
             // 
             this.miGenerateRealization.Image = ((System.Drawing.Image)(resources.GetObject("miGenerateRealization.Image")));
             this.miGenerateRealization.Name = "miGenerateRealization";
-            this.miGenerateRealization.ShortcutKeyDisplayString = "Shift+Ctrl+C";
+            this.miGenerateRealization.ShortcutKeyDisplayString = "";
+            this.miGenerateRealization.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.C)));
             this.miGenerateRealization.Size = new System.Drawing.Size(282, 22);
             this.miGenerateRealization.Text = "M_GENERATE_REALIZATION";
             // 
@@ -1637,6 +1641,15 @@ namespace VisualPascalABC
             this.mFORMATToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
             this.mFORMATToolStripMenuItem.Text = "M_FORMAT";
             this.mFORMATToolStripMenuItem.Click += new System.EventHandler(this.mFORMATToolStripMenuItem_Click);
+            // 
+            // mUNITTESTSToolStripMenuItem
+            // 
+            this.mUNITTESTSToolStripMenuItem.Name = "mUNITTESTSToolStripMenuItem";
+            this.mUNITTESTSToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.T)));
+            this.mUNITTESTSToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
+            this.mUNITTESTSToolStripMenuItem.Text = "M_UNIT_TESTS";
+            this.mUNITTESTSToolStripMenuItem.Click += new System.EventHandler(this.mUNITTESTSToolStripMenuItem_Click);
             // 
             // miPlugins
             // 
@@ -2601,6 +2614,7 @@ namespace VisualPascalABC
         private System.Windows.Forms.ToolStripMenuItem tsDisassembly;
         private System.Windows.Forms.ToolStripButton tsAutoInsertCode;
         private System.Windows.Forms.ToolStripMenuItem mAUTOINSERTToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mUNITTESTSToolStripMenuItem;
     }
 }
 
