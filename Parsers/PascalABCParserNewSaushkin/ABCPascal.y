@@ -897,7 +897,7 @@ const_factor
     ;
 
 const_set
-    : tkSquareOpen const_elem_list tkSquareClose 
+    : tkSquareOpen elem_list tkSquareClose 
         { 
 			$$ = new pascal_set_constant($2 as expression_list, @$); 
 		}

@@ -25,7 +25,7 @@ end;
 var Trim_Chars := Arr(#13,#10);
 
 var RusTestStatus := Dict&<TestStatus,string>(
-  (TestStatus.Failed,'Тесты провалены'),
+  (TestStatus.Failed,'Тесты не прошли'),
   (TestStatus.Inconclusive,'Тесты не завершены'),
   (TestStatus.Passed,'Тесты прошли'),
   (TestStatus.Skipped,'Тесты пропущены'),
@@ -198,7 +198,8 @@ begin
 	Println;
 	if summary.FailedCount > 0 then
 	begin
-		Print('    Проваленные тесты - Провалено:', summary.FailureCount);		Print(', Ошибки:', summary.ErrorCount);
+		Print('    Неудачные тесты - Не прошло:', summary.FailureCount);		
+		Print(', Ошибки:', summary.ErrorCount);
 		Print(', Неверные:', summary.InvalidCount);
 		Println;
 	end;

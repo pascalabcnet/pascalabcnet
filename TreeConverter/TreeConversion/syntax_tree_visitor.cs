@@ -1352,7 +1352,10 @@ namespace PascalABCCompiler.TreeConverter
             		                                                                                                               convertion_data_and_alghoritms.explicit_convert_type(oti.lower_value,SystemLibrary.SystemLibrary.int64_type),convertion_data_and_alghoritms.explicit_convert_type(oti.upper_value,SystemLibrary.SystemLibrary.int64_type)),right.type);
             	}
             	else if (oti.lower_value is char_const_node)
-            	right = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.CheckCharRangeFunction.sym_info as common_namespace_function_node, null, right, oti.lower_value,oti.upper_value);	
+            	right = convertion_data_and_alghoritms.create_simple_function_call(
+                    SystemLibrary.SystemLibInitializer.CheckCharRangeFunction.sym_info as common_namespace_function_node, 
+                    null, right, oti.lower_value,oti.upper_value
+                );	
             }
             expression_node exp_node = convertion_data_and_alghoritms.create_simple_function_call(fnsel, loc, left, right);
             return exp_node;
@@ -14006,7 +14009,7 @@ namespace PascalABCCompiler.TreeConverter
                             if (context.top_function.IsOperator && (context.top_function.name == compiler_string_consts.implicit_operator_name || context.top_function.name == compiler_string_consts.explicit_operator_name) && context.top_function.parameters.Count == 1 && context.top_function.return_value_type != null)
                             {
                                 if (!(context.top_function.return_value_type is compiled_type_node) && !(context.top_function.return_value_type is compiled_generic_instance_type_node) || !(context.top_function.parameters[0].type is compiled_type_node) && !(context.top_function.parameters[0].type is compiled_generic_instance_type_node))
-                                    AddError(get_location(_procedure_attributes_list), "IMPLICIT_EXPLICIT_OPERATOR_EXTENSION_ONLY_FOR_COMPILED_CLASSES_ALLOWED");
+                                    ;//AddError(get_location(_procedure_attributes_list), "IMPLICIT_EXPLICIT_OPERATOR_EXTENSION_ONLY_FOR_COMPILED_CLASSES_ALLOWED");
                             }
                             break;
                         }
