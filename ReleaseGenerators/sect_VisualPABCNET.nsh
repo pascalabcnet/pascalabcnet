@@ -20,6 +20,7 @@
     File "..\bin\nuget.exe"
     File "..\bin\FormatterOptions.ini"
     File "..\bin\ProgrammRunner.exe"
+    File "..\bin\RunUnitTests.exe"
     File "..\bin\pabcworknet.ini"
 	
 	;dobavljaem fajly v uninst.log
@@ -42,6 +43,7 @@
     ${AddFile} "nuget.exe"
     ${AddFile} "FormatterOptions.ini"
     ${AddFile} "ProgrammRunner.exe"
+    ${AddFile} "RunUnitTests.exe"
 	
     SetOutPath "$INSTDIR\Temp"
     SetOutPath "$INSTDIR"

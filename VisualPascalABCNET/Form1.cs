@@ -1541,6 +1541,35 @@ namespace VisualPascalABC
             mAUTOINSERTToolStripMenuItem.Checked = !mAUTOINSERTToolStripMenuItem.Checked;
         }
 
+        private void mUNITTESTSToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                WorkbenchServiceFactory.Workbench.ErrorsListWindow.ClearErrorList();
+                var OutputFileName = WorkbenchServiceFactory.BuildService.Compile(CurrentSourceFileName, false, "__RunMode", true, true);
+                if (OutputFileName != null)
+                {
+                    var process = new System.Diagnostics.Process();
+                    process.StartInfo.FileName = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "RunUnitTests.exe");
+                    process.StartInfo.Arguments = "\""+OutputFileName+"\"";
+                    process.Start();
+                }
+                /*WorkbenchServiceFactory.RunService.Run(@"D:\PABC_Git\bin\RunUnitTests.exe",
+                     WorkbenchServiceFactory.Workbench.UserOptions.RedirectConsoleIO, "", false,
+                     WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SourceFileDirectory,
+                     WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SourceFileName, false, false);*/
+            }
+            catch (System.Exception ee)
+            {
+                ee = ee;
+                // SSM 22/04/19 - исправляю вылет оболочки при отсутствии exe файла
+                // this.RunnerManager_Exited(OutputFileName); // - это всё равно не срабатывает. Кнопки оказываются в заблокированном состоянии
+                //var OutputFileName = @"D:\PABC_Git\bin\RunUnitTests.exe";
+                //WorkbenchServiceFactory.OperationsService.AddTextToOutputWindowSync(OutputFileName, "Произошла непредвиденная ошибка" + ee.StackTrace);
+                //throw;
+            }
+        }
+
         private void tsHelp_Click(object sender, EventArgs e)
         {
             __showhelpinqueue();

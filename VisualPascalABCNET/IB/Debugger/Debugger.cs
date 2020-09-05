@@ -1037,7 +1037,8 @@ namespace VisualPascalABC
             Dictionary<uint, uint> il2asm = new Dictionary<uint, uint>();
             for (int i = 0; i < mapSize; i++)
             {
-                il2asm.Add(mapBuffer[i].nativeStartOffset, mapBuffer[i].ilOffset);
+                if (i < mapBuffer.Length)
+                    il2asm.Add(mapBuffer[i].nativeStartOffset, mapBuffer[i].ilOffset);
             }
             SharpDisasm.Disassembler disasm = new SharpDisasm.Disassembler(buffer, AssemblyHelper.Is32BitAssembly()?SharpDisasm.ArchitectureMode.x86_32: SharpDisasm.ArchitectureMode.x86_64);
             IEnumerable<SharpDisasm.Instruction> instructions = disasm.Disassemble();
