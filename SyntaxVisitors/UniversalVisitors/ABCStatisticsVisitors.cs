@@ -167,11 +167,11 @@ namespace SyntaxVisitors
                     ReadFuncCount++;
             }*/
 
-            if (mc.dereferencing_value is ident id1 && (id1.name.ToLower() == "write" || id1.name.ToLower() == "writeln") &&
+            /*if (mc.dereferencing_value is ident id1 && (id1.name.ToLower() == "write" || id1.name.ToLower() == "writeln") &&
                 mc.parameters != null && mc.parameters.expressions.Any(ex => ex is char_const cc && cc.cconst == ' '))
             {
                 WriteProcWithSpace += 1;
-            }
+            }*/
             base.visit(mc);
         }
         public override void visit(procedure_call pc)

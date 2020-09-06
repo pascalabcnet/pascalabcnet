@@ -1817,7 +1817,7 @@ namespace VisualPascalABC
                     }
                     if (stat.WriteProcWithSpace > 0)
                     {
-                        NegativePercent += Math.Min(2 + (stat.StaticArrays - 1) * 1, 5);
+                        NegativePercent += Math.Min(2 + (stat.WriteProcWithSpace - 1) * 1, 5);
                     }
                     if (stat.OldStrings > 0)
                     {
@@ -1945,6 +1945,11 @@ namespace VisualPascalABC
             catch (System.Exception ee)
             {
             }
+        }
+
+        private void HealthLabel_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://pascalabcnet.github.io/program_health.html");
         }
 
         private void tsHelp_Click(object sender, EventArgs e)

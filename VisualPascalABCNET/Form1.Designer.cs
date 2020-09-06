@@ -195,6 +195,7 @@ namespace VisualPascalABC
             this.slLine = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.slCol = new System.Windows.Forms.ToolStripStatusLabel();
+            this.HealthLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.printDialog1 = new System.Windows.Forms.PrintDialog();
@@ -1747,7 +1748,8 @@ namespace VisualPascalABC
             this.toolStripStatusLabel1,
             this.slLine,
             this.toolStripStatusLabel2,
-            this.slCol});
+            this.slCol,
+            this.HealthLabel});
             this.statusStrip1.Location = new System.Drawing.Point(0, 801);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 21, 0);
@@ -1758,7 +1760,7 @@ namespace VisualPascalABC
             // toolStripStatusLabel5
             // 
             this.toolStripStatusLabel5.Name = "toolStripStatusLabel5";
-            this.toolStripStatusLabel5.Size = new System.Drawing.Size(964, 19);
+            this.toolStripStatusLabel5.Size = new System.Drawing.Size(912, 19);
             this.toolStripStatusLabel5.Spring = true;
             this.toolStripStatusLabel5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -1786,9 +1788,20 @@ namespace VisualPascalABC
             this.slCol.AutoSize = false;
             this.slCol.AutoToolTip = true;
             this.slCol.Name = "slCol";
-            this.slCol.Size = new System.Drawing.Size(40, 19);
+            this.slCol.Size = new System.Drawing.Size(46, 19);
             this.slCol.Text = " numb";
             this.slCol.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // HealthLabel
+            // 
+            this.HealthLabel.BackColor = System.Drawing.SystemColors.Control;
+            this.HealthLabel.IsLink = true;
+            this.HealthLabel.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
+            this.HealthLabel.LinkColor = System.Drawing.Color.Black;
+            this.HealthLabel.Name = "HealthLabel";
+            this.HealthLabel.Size = new System.Drawing.Size(19, 19);
+            this.HealthLabel.Text = "    ";
+            this.HealthLabel.Click += new System.EventHandler(this.HealthLabel_Click);
             // 
             // openFileDialog1
             // 
@@ -2628,6 +2641,7 @@ namespace VisualPascalABC
         private System.Windows.Forms.ToolStripMenuItem mAUTOINSERTToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mUNITTESTSToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private System.Windows.Forms.ToolStripStatusLabel HealthLabel;
     }
 }
 
