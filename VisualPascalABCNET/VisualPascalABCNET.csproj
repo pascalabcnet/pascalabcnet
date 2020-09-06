@@ -119,6 +119,12 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ABCHealth.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ABCHealth.Designer.cs">
+      <DependentUpon>ABCHealth.cs</DependentUpon>
+    </Compile>
     <Compile Include="AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -417,6 +423,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Workbench\WorkbenchServiceFactory.cs" />
+    <EmbeddedResource Include="ABCHealth.resx">
+      <DependentUpon>ABCHealth.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="AboutBox.resx">
       <SubType>Designer</SubType>
       <DependentUpon>AboutBox.cs</DependentUpon>
@@ -672,6 +681,8 @@
   <ItemGroup>
     <Content Include="ABCNET32.ico" />
     <None Include="Resources\format1.png" />
+    <None Include="Resources\format2.png" />
+    <None Include="Resources\Image1.bmp" />
     <Content Include="_ABC13.ico" />
     <None Include="Resources\AlignObjectsBottomHS.png" />
     <None Include="Resources\AlignObjectsCenteredHorizontalHS.png" />

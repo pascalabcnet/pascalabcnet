@@ -53,6 +53,7 @@ namespace VisualPascalABC
             this.tssRunStopSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.tsOutputWindow = new System.Windows.Forms.ToolStripButton();
             this.tsAutoInsertCode = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
             this.tsFormat = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
@@ -194,6 +195,7 @@ namespace VisualPascalABC
             this.slLine = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.slCol = new System.Windows.Forms.ToolStripStatusLabel();
+            this.HealthLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.printDialog1 = new System.Windows.Forms.PrintDialog();
@@ -298,6 +300,7 @@ namespace VisualPascalABC
             this.tssRunStopSeparator,
             this.tsOutputWindow,
             this.tsAutoInsertCode,
+            this.toolStripButton1,
             this.toolStripSeparator13,
             this.tsFormat,
             this.toolStripSeparator4,
@@ -534,6 +537,16 @@ namespace VisualPascalABC
             this.tsAutoInsertCode.Text = "M_AUTOINSERT_CODE";
             this.tsAutoInsertCode.ToolTipText = "M_AUTOINSERT_CODE";
             this.tsAutoInsertCode.Click += new System.EventHandler(this.tsAutoInsertCode_Click);
+            // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton1.Image = global::VisualPascalABC.Properties.Resources.ABCHealth;
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton1.Text = "Здоровье PascalABC.NET программы";
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // toolStripSeparator13
             // 
@@ -1391,7 +1404,7 @@ namespace VisualPascalABC
             // miShowGrid
             // 
             this.miShowGrid.Name = "miShowGrid";
-            this.miShowGrid.Size = new System.Drawing.Size(180, 22);
+            this.miShowGrid.Size = new System.Drawing.Size(165, 22);
             this.miShowGrid.Text = "M_SHOW_GRID";
             this.miShowGrid.Visible = false;
             this.miShowGrid.Click += new System.EventHandler(this.miShowGrid_Click);
@@ -1399,7 +1412,7 @@ namespace VisualPascalABC
             // miSnapToGrid
             // 
             this.miSnapToGrid.Name = "miSnapToGrid";
-            this.miSnapToGrid.Size = new System.Drawing.Size(180, 22);
+            this.miSnapToGrid.Size = new System.Drawing.Size(165, 22);
             this.miSnapToGrid.Text = "M_SNAP_TO_GRID";
             this.miSnapToGrid.Visible = false;
             this.miSnapToGrid.Click += new System.EventHandler(this.miSnapToGrid_Click);
@@ -1415,7 +1428,7 @@ namespace VisualPascalABC
             this.miAlignCenters,
             this.miAlignToGrid});
             this.miAlign.Name = "miAlign";
-            this.miAlign.Size = new System.Drawing.Size(180, 22);
+            this.miAlign.Size = new System.Drawing.Size(165, 22);
             this.miAlign.Text = "M_ALIGN";
             // 
             // miAlignLefts
@@ -1473,7 +1486,7 @@ namespace VisualPascalABC
             this.miCenterHorizontally,
             this.miCenterVertically});
             this.miCenter.Name = "miCenter";
-            this.miCenter.Size = new System.Drawing.Size(180, 22);
+            this.miCenter.Size = new System.Drawing.Size(165, 22);
             this.miCenter.Text = "M_CENTER";
             // 
             // miCenterHorizontally
@@ -1498,7 +1511,7 @@ namespace VisualPascalABC
             this.miSizeToControlHeight,
             this.miSizeToGrid});
             this.miSizeTo.Name = "miSizeTo";
-            this.miSizeTo.Size = new System.Drawing.Size(180, 22);
+            this.miSizeTo.Size = new System.Drawing.Size(165, 22);
             this.miSizeTo.Text = "M_SIZE_TO";
             // 
             // miSizeToControl
@@ -1535,7 +1548,7 @@ namespace VisualPascalABC
             this.miBringToFront,
             this.miSendToBack});
             this.miZOrder.Name = "miZOrder";
-            this.miZOrder.Size = new System.Drawing.Size(180, 22);
+            this.miZOrder.Size = new System.Drawing.Size(165, 22);
             this.miZOrder.Text = "M_Z_ORDER";
             // 
             // miBringToFront
@@ -1555,7 +1568,7 @@ namespace VisualPascalABC
             // miTabOrder
             // 
             this.miTabOrder.Name = "miTabOrder";
-            this.miTabOrder.Size = new System.Drawing.Size(180, 22);
+            this.miTabOrder.Size = new System.Drawing.Size(165, 22);
             this.miTabOrder.Text = "M_TAB_ORDER";
             this.miTabOrder.Click += new System.EventHandler(this.miTabOrder_Click);
             // 
@@ -1735,7 +1748,8 @@ namespace VisualPascalABC
             this.toolStripStatusLabel1,
             this.slLine,
             this.toolStripStatusLabel2,
-            this.slCol});
+            this.slCol,
+            this.HealthLabel});
             this.statusStrip1.Location = new System.Drawing.Point(0, 801);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 21, 0);
@@ -1746,7 +1760,7 @@ namespace VisualPascalABC
             // toolStripStatusLabel5
             // 
             this.toolStripStatusLabel5.Name = "toolStripStatusLabel5";
-            this.toolStripStatusLabel5.Size = new System.Drawing.Size(964, 19);
+            this.toolStripStatusLabel5.Size = new System.Drawing.Size(912, 19);
             this.toolStripStatusLabel5.Spring = true;
             this.toolStripStatusLabel5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -1774,9 +1788,20 @@ namespace VisualPascalABC
             this.slCol.AutoSize = false;
             this.slCol.AutoToolTip = true;
             this.slCol.Name = "slCol";
-            this.slCol.Size = new System.Drawing.Size(40, 19);
+            this.slCol.Size = new System.Drawing.Size(46, 19);
             this.slCol.Text = " numb";
             this.slCol.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // HealthLabel
+            // 
+            this.HealthLabel.BackColor = System.Drawing.SystemColors.Control;
+            this.HealthLabel.IsLink = true;
+            this.HealthLabel.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
+            this.HealthLabel.LinkColor = System.Drawing.Color.Black;
+            this.HealthLabel.Name = "HealthLabel";
+            this.HealthLabel.Size = new System.Drawing.Size(19, 19);
+            this.HealthLabel.Text = "    ";
+            this.HealthLabel.Click += new System.EventHandler(this.HealthLabel_Click);
             // 
             // openFileDialog1
             // 
@@ -2615,6 +2640,8 @@ namespace VisualPascalABC
         private System.Windows.Forms.ToolStripButton tsAutoInsertCode;
         private System.Windows.Forms.ToolStripMenuItem mAUTOINSERTToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mUNITTESTSToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private System.Windows.Forms.ToolStripStatusLabel HealthLabel;
     }
 }
 

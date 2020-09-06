@@ -1570,6 +1570,388 @@ namespace VisualPascalABC
             }
         }
 
+        public ABCHealth ABCHealthForm = null;
+
+        private Label AddString(double x, double y, string s, bool link = false, bool goodfeatures = false)
+        {
+            Label l;
+            if (link)
+                l = new LinkLabel();
+            else l = new Label();
+            l.Text = s;
+            l.Left = (int)Math.Round(x);
+            l.Top = (int)Math.Round(y);
+            //if (link)
+                if (!goodfeatures)
+                    l.ForeColor = System.Drawing.Color.Red;
+                else l.ForeColor = System.Drawing.Color.Green;
+            l.AutoSize = true;
+            ABCHealthForm.Controls.Add(l);
+            return l;
+        }
+
+        private string Raz(int n)
+        {
+            if ((n % 10 == 2 || n % 10 == 3 || n % 10 == 4) && (n / 10 % 10 != 1))
+                return n + " раза";
+            else return n + " раз";
+        }
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            if (ABCHealthForm == null)
+            {
+                ABCHealthForm = new ABCHealth();
+                ABCHealthForm.FormBorderStyle = FormBorderStyle.Fixed3D;
+            }
+            try
+            {
+                var gr = Graphics.FromHwnd(Handle);
+                var scale = gr.DpiX / 96;
+
+                var aw = ABCHealthForm.Width;
+                var ah = ABCHealthForm.Height;
+                var c = new PascalABCCompiler.Compiler();
+                c.Reload();
+                var errors = new List<PascalABCCompiler.Errors.Error>();
+                var warnings = new List<PascalABCCompiler.Errors. CompilerWarning>();
+
+                var text = CurrentSyntaxEditor.TextEditor.ActiveTextAreaControl.TextArea.Document.TextContent;
+
+                WorkbenchServiceFactory.Workbench.ErrorsListWindow.ClearErrorList();
+                var res = c.ParseText(CurrentSourceFileName, text, errors, warnings);
+                WorkbenchServiceFactory.Workbench.ErrorsListWindow.ShowErrorsSync(c.ErrorsList, c.ErrorsList.Count != 0);
+                if (res != null)
+                {
+                    var y = 30/2*scale;
+                    var stat = new SyntaxVisitors.ABCStatisticsVisitor();
+                    stat.ProcessNode(res);
+                    //stat.
+                    var h = 40 / 2 * scale;
+                    var x = 50 / 2 * scale;
+                    ABCHealthForm.Controls.Clear();
+
+                    var pp = new Panel();
+
+                    ToolTip ToolTip1 = new ToolTip();
+                    ToolTip1.SetToolTip(pp, "Здоровье PascalABC.NET программы");
+
+                    pp.Width = (int)Math.Round(220 / 2 * scale);
+                    pp.Height = (int)Math.Round(100 / 2 * scale);
+                    pp.Left = ABCHealthForm.ClientSize.Width - pp.Width - (int)Math.Round(24 / 2 * scale);
+                    pp.Top = (int)Math.Round(24 / 2 * scale);
+                    pp.BackColor = Color.Gray;
+                    
+                    ABCHealthForm.Controls.Add(pp);
+
+
+                    var l0 = AddString(x, y, "О здоровье кода",true) as LinkLabel;
+                    l0.LinkClicked += (o, e1) =>
+                    {
+                        System.Diagnostics.Process.Start("https://pascalabcnet.github.io/program_health.html");
+                    };
+                    y += 48 / 2 * scale;
+
+                    var l1 = AddString(x, y, "В программе найдены следующие конструкции базового Паскаля,");
+                    y += 36 / 2 * scale;
+                    var l2 = AddString(x, y, "считающиеся устаревшими в PascalABC.NET:");
+                    l1.ForeColor = Color.Black;
+                    l2.ForeColor = Color.Black;
+                    y += h;
+                    y += 8 / 2 * scale;
+                    x += 24 / 2 * scale;
+
+                    // Проценты в минус
+                    // 1. Количество var вне - количество var внутри. За первую - -10%, за остальные - -2% пока не достигнет 25%
+                    // 2. Количество  for i - за первую - -15%, за каждую следующую - -3% пока не достигнет 25%
+                    // 3. Read(i,j) - за первую -15%, за последующие - -2% пока не достигнет -20%
+                    // 4. program - -10%
+                    // 5. Статические массивы - -10%, за каждый последующий - -2% пока не достигнет -15%
+                    // 6. Write(a,' ',b) - за каждую - -1% пока не достгнет -5%  
+                    // 7. string[10] - за каждую - -1% . Если минусуется > 100%, то здоровье делать 0% 
+
+                    var Percent = 100;
+                    var NegativePercent = 0;
+
+                    var ShowNegativeInfo = false;
+                    if (stat.OutBlockVarDefs > 0 && stat.OutBlockVarDefs > stat.InBlockVarDefs)
+                    {
+                        AddString(x, y, "Переменные описаны вне блоков begin-end: " + Raz(stat.OutBlockVarDefs), false);
+                        y += h;
+                        ShowNegativeInfo = true;
+                    }
+                    if (stat.ForsWithoutVar != 0)
+                    {
+                        AddString(x, y, "Переменная цикла for не описана в заголовке цикла: " + Raz(stat.ForsWithoutVar), false);
+                        y += h;
+                        ShowNegativeInfo = true;
+                    }
+                    if (stat.ReadProc > 0)
+                    {
+                        AddString(x, y, "Для ввода использована процедура Read: " + Raz(stat.ReadProc), false);
+                        y += h;
+                        ShowNegativeInfo = true;
+                    }
+                    if (stat.ProgramKeyword)
+                    {
+                        AddString(x, y, "Использовано ключевое слово program", false);
+                        y += h;
+                        ShowNegativeInfo = true;
+                    }
+                    if (stat.WriteProcWithSpace > 0)
+                    {
+                        AddString(x, y, "Использована процедура Write с пробелом в качестве разделителя: " + Raz(stat.WriteProcWithSpace), false);
+                        y += h;
+                        ShowNegativeInfo = true;
+                    }
+                    if (stat.StaticArrays > 0)
+                    {
+                        AddString(x, y, "Используются статические массивы вместо динамических: " + Raz(stat.StaticArrays), false);
+                        y += h;
+                        ShowNegativeInfo = true;
+                    }
+                    if (stat.OldStrings > 0)
+                    {
+                        AddString(x, y, "Используются устаревшие строки вида string[10]: " + Raz(stat.OldStrings), false);
+                        y += h;
+                        ShowNegativeInfo = true;
+                    }
+
+                    ///----------------------------------------------------
+                    y += 12 / 2 * scale;
+                    x -= 24 / 2 * scale;
+                    var l3 = AddString(x, y, "В программе используются следующие рекомендованные конструкции");
+                    y += 36 / 2 * scale;
+                    var l4 = AddString(x, y, "PascalABC.NET:");
+                    l3.ForeColor = Color.Black;
+                    l4.ForeColor = Color.Black;
+                    x += 24 / 2 * scale;
+                    y += h;
+                    y += 8 / 2 * scale;
+                    if (stat.InBlockVarDefs > 0)
+                    {
+                        AddString(x, y, "Используются внутриблочные описания переменных: " + Raz(stat.InBlockVarDefs), false, true);
+                        y += h;
+                    }
+                    if (stat.ForsWithVar != 0)
+                    {
+                        AddString(x, y, "Переменная цикла for описана в заголовке цикла: " + Raz(stat.ForsWithVar), false, true);
+                        y += h;
+                    }
+                    if (stat.InitVarInDef > 0)
+                    {
+                        AddString(x, y, "Используется инициализация при описании: " + Raz(stat.InitVarInDef), false, true);
+                        y += h;
+                    }
+                    if (stat.ReadFuncCount > 0)
+                    {
+                        AddString(x, y, "Для ввода используется функция вида ReadInteger, ReadReal: " + Raz(stat.ReadFuncCount), false, true);
+                        y += h;
+                    }
+                    if (stat.ExtAssignCount > 0)
+                    {
+                        AddString(x, y, "Используется расширенное присваивание: " + Raz(stat.ExtAssignCount), false, true);
+                        y += h;
+                    }
+                    if (stat.PrintCount > 0)
+                    {
+                        AddString(x, y, "Для вывода использована Print: " + Raz(stat.PrintCount), false, true);
+                        y += h;
+                    }
+                    if (stat.TuplesCount > 0)
+                    {
+                        AddString(x, y, "Используются кортежи: " + Raz(stat.TuplesCount), false, true);
+                        y += h;
+                    }
+                    if (stat.DynamicArrays > 0)
+                    {
+                        AddString(x, y, "Используются динамические массивы: " + Raz(stat.DynamicArrays), false, true);
+                        y += h;
+                    }
+                    if (stat.UnpackingAssign > 0)
+                    {
+                        AddString(x, y, "Используется распаковка значения в переменные: " + Raz(stat.UnpackingAssign), false, true);
+                        y += h;
+                    }
+                    if (stat.LoopsCount > 0)
+                    {
+                        AddString(x, y, "Используется цикл loop: " + Raz(stat.LoopsCount), false, true);
+                        y += h;
+                    }
+                    if (stat.ForeachCount > 0)
+                    {
+                        AddString(x, y, "Используется цикл foreach: " + Raz(stat.ForeachCount), false, true);
+                        y += h;
+                    }
+                    if (stat.LambdasCount > 0)
+                    {
+                        AddString(x, y, "Используются лямбда-выражения: " + Raz(stat.LambdasCount), false, true);
+                        y += h;
+                    }
+
+                    // Процент здоровья
+                    // VarDefs
+                    var diffBlockVarDefs = stat.OutBlockVarDefs; // - stat.InBlockVarDefs;
+                    if (diffBlockVarDefs > 0)
+                    {
+                        NegativePercent += 10; // за первую
+                        NegativePercent += (diffBlockVarDefs - 1) * 2; // за оставшиеся
+                        if (NegativePercent > 25)
+                            NegativePercent = 25;
+                    }
+                    // For i
+                    if (stat.ForsWithoutVar > 0)
+                    {
+                        NegativePercent += Math.Min(15 + (stat.ForsWithoutVar - 1) * 3, 25);
+                    }
+                    if (stat.ReadProc > 0)
+                    {
+                        NegativePercent += Math.Min(15 + (stat.ReadProc - 1) * 2, 20);
+                    }
+                    if (stat.ProgramKeyword)
+                    {
+                        NegativePercent += 10;
+                    }
+                    if (stat.StaticArrays > 0)
+                    {
+                        NegativePercent += Math.Min(10 + (stat.StaticArrays - 1) * 2, 15);
+                    }
+                    if (stat.WriteProcWithSpace > 0)
+                    {
+                        NegativePercent += Math.Min(2 + (stat.WriteProcWithSpace - 1) * 1, 5);
+                    }
+                    if (stat.OldStrings > 0)
+                    {
+                        NegativePercent += stat.OldStrings;
+                    }
+                    if (NegativePercent < 0)
+                        NegativePercent = 0;
+
+                    Percent -= NegativePercent;
+
+                    var PositivePercent = 0;
+
+                    // Проценты за положительное
+                    if (stat.InBlockVarDefs > 0)
+                    {
+                        PositivePercent += 10; // за первую
+                        PositivePercent += (stat.InBlockVarDefs - 1) * 2; // за оставшиеся 
+                        // этот алгоритм уравновешивает описания внутри и вне. За одинаковое количество дается 0 баллов
+                    }
+                    if (stat.ForsWithVar != 0)
+                    {
+                        PositivePercent += stat.ForsWithVar * 3;
+                    }
+                    if (stat.InitVarInDef > 0)
+                    {
+                        PositivePercent += stat.InitVarInDef * 4;
+                    }
+                    if (stat.ReadFuncCount > 0)
+                    {
+                        PositivePercent += stat.ReadFuncCount * 3;
+                    }
+                    if (stat.ExtAssignCount > 0)
+                    {
+                        PositivePercent += stat.ExtAssignCount * 3;
+                    }
+                    if (stat.PrintCount > 0)
+                    {
+                        PositivePercent += stat.PrintCount * 4;
+                    }
+                    if (stat.TuplesCount > 0)
+                    {
+                        PositivePercent += stat.PrintCount * 5;
+                    }
+                    if (stat.DynamicArrays > 0)
+                    {
+                        PositivePercent += stat.PrintCount * 5;
+                    }
+                    if (stat.UnpackingAssign > 0)
+                    {
+                        PositivePercent += stat.UnpackingAssign * 5;
+                    }
+                    if (stat.LoopsCount > 0)
+                    {
+                        PositivePercent += stat.LoopsCount * 4;
+                    }
+                    if (stat.ForeachCount > 0)
+                    {
+                        PositivePercent += stat.ForeachCount * 4;
+                    }
+                    if (stat.LambdasCount > 0)
+                    {
+                        PositivePercent += stat.LambdasCount * 8;
+                    }
+
+                    Percent += PositivePercent;
+                    if (Percent > 200)
+                        Percent = 200;
+
+                    if (!ShowNegativeInfo)
+                    {
+                        l1.Text = "В программе отсутствуют устаревшие в PascalABC.NET конструкции";
+                        l2.Text = "";
+                    }
+                    if (PositivePercent == 0)
+                    {
+                        l3.Text = "В программе отсутствуют рекомендованные в PascalABC.NET конструкции";
+                        l4.Text = "";
+                    }
+
+                    // Цвет панели
+                    if (Percent < 25)
+                        pp.BackColor = Color.FromArgb(255, 0, 0);
+                    else if (Percent < 50)
+                        pp.BackColor = Color.FromArgb(255, 64, 64);
+                    else if (Percent < 75)
+                        pp.BackColor = Color.FromArgb(128, 128, 128);
+                    else if (Percent < 100)
+                        pp.BackColor = Color.FromArgb(64+16, 128, 64 + 16);
+                    else pp.BackColor = Color.FromArgb(0, 128, 0);
+
+                    pp.Paint += (o, ea) =>
+                    {
+                        Font drawFont = new Font("Arial", 20);
+                        SolidBrush drawBrush = new SolidBrush(Color.White);
+                        StringFormat format = new StringFormat(StringFormatFlags.NoClip);
+                        format.LineAlignment = StringAlignment.Center;
+                        format.Alignment = StringAlignment.Center;
+                        ea.Graphics.DrawString(Percent + "%", drawFont, drawBrush, new RectangleF(0, 0, pp.Width, pp.Height),format);
+                    };
+
+                    Button b = new Button();
+                    b.Text = "OK";
+                    b.Width = (int)Math.Round(156 / 2 * scale);
+                    b.Height = (int)Math.Round(48 / 2 * scale);
+                    y += h;
+                    b.Top = (int)Math.Round(y);
+                    b.Left = (int)Math.Round((double)(ABCHealthForm.Width - b.Width) / 2);
+                    b.Click += (o, ee) => { ABCHealthForm.Close(); };
+                    ABCHealthForm.Controls.Add(b);
+                    y += b.Height + h;
+                    var hh = ABCHealthForm.Height - ABCHealthForm.ClientSize.Height;
+                    ABCHealthForm.Height = (int)Math.Round(y+hh);
+
+                    ABCHealthForm.StartPosition = FormStartPosition.Manual;
+                    ABCHealthForm.Left = this.Left + Width - aw;
+                    ABCHealthForm.Top = this.Top;
+                    b.PreviewKeyDown += (o, eee) =>
+                    {
+                        if (eee.KeyCode == Keys.Escape)
+                            ABCHealthForm.Close();
+                    };
+                    ABCHealthForm.ShowDialog();
+                }
+            }
+            catch (System.Exception ee)
+            {
+            }
+        }
+
+        private void HealthLabel_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://pascalabcnet.github.io/program_health.html");
+        }
+
         private void tsHelp_Click(object sender, EventArgs e)
         {
             __showhelpinqueue();
