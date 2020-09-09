@@ -69,6 +69,10 @@ function Prln(Self: char): char; extensionmethod := Self.Println;
 function Prln(Self: boolean): boolean; extensionmethod := Self.Println;
 function Prln(Self: string): string; extensionmethod := Self.Println;
 
+
+function D(Self,b: integer): boolean; extensionmethod := Self mod b = 0;
+function ND(Self,b: integer): boolean; extensionmethod := Self mod b <> 0;
+
 /// Записывает в min значение x если x<min
 procedure ReMin(var min: integer; x: integer);
 begin

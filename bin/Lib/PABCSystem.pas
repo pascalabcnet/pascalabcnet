@@ -11833,6 +11833,36 @@ end;
 // -----------------------------------------------------
 //>>     Методы расширения типа integer # Extension methods for integer
 // -----------------------------------------------------
+/// Возвращает True если целое делится на указанное значение
+function Divs(Self,d: integer): boolean; extensionmethod := Self mod d = 0;
+
+/// Возвращает True если целое не делится на указанное значение
+function NotDivs(Self,d: integer): boolean; extensionmethod := Self mod d <> 0;
+
+/// Возвращает True если целое делится на одно из значений 
+function DivsAny(Self: integer; params a: array of integer): boolean; extensionmethod;
+begin
+  Result := False;
+  for var i:=0 to a.High do
+    if Self mod a[i] = 0 then
+    begin
+      Result := True;
+      exit
+    end;
+end;
+
+/// Возвращает True если целое делится на все значения 
+function DivsAll(Self: integer; params a: array of integer): boolean; extensionmethod;
+begin
+  Result := True;
+  for var i:=0 to a.High do
+    if Self mod a[i] <> 0 then
+    begin
+      Result := False;
+      exit
+    end;
+end;
+
 /// Возвращает квадратный корень числа
 function Sqrt(Self: integer): real; extensionmethod;
 begin
