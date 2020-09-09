@@ -26,6 +26,9 @@ function Dec(s: string; base: integer): int64;
 /// Перевод из системы по основанию base [2..36] в десятичную
 function DecBig(s: string; base: integer): BigInteger;
 
+/// Перевод десятичного числа в систему счисления по основанию base (2..36)
+function ToBase(sDec: string; base: integer): string;
+
 /// Возвращает кортеж из минимума и максимума последовательности s
 function MinMax(s: sequence of int64): (int64, int64);
 
@@ -224,7 +227,22 @@ begin
   end
 end;
 
-/// Перевод десятичного числа в систему счисления по основанию base (2..32)
+/// Перевод десятичного числа в систему счисления по основанию base (2..36)
+function ToBase(sDec: string; base: integer): string;
+begin
+  var n: BigInteger;
+  if not BigInteger.TryParse(sDec, n) then exit;
+  var s := '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  Result := '';
+  while n > 0 do 
+  begin
+    Result := s[integer(n mod base) + 1] + Result;
+    n := n div base
+  end;
+  if Result = '' then Result := '0'
+end;
+
+/// Перевод десятичного числа в систему счисления по основанию base (2..36)
 function ToBase(Self: string; base: integer): string; extensionmethod;
 begin
   var n: BigInteger;
@@ -283,30 +301,45 @@ MinMax(Self);
 /// Возвращает НОД пары чисел
 function НОД(a, b: int64): int64;
 begin
-  (a, b) := (Abs(a), Abs(b));
   while b <> 0 do
     (a, b) := (b, a mod b);
-  Result := a
+  Result := Abs(a)
 end;
 
 /// Возвращает НОК пары чисел
 function НОК(a, b: int64): int64;
 begin
-  (a, b) := (Abs(a), Abs(b));
   var (a1, b1) := (a, b);
   while b <> 0 do
     (a, b) := (b, a mod b);
-  Result := a1 div a * b1
+  Result := Abs(a1 div a * b1)
 end;
 
 /// Возвращает НОД и НОК пары чисел
 function НОДНОК(a, b: int64): (int64, int64);
 begin
-  (a, b) := (Abs(a), Abs(b));
   var (a1, b1) := (a, b);
   while b <> 0 do
     (a, b) := (b, a mod b);
-  Result := (a, a1 div a * b1)
+  Result := (a, Abs(a1 div a * b1))
+end;
+
+/// Возвращает НОД кортежа двух чисел типа int64
+function НОД(Self: (int64, int64)): integer; extensionmethod;
+begin
+  var (a, b) := Self;
+  while b <> 0 do
+    (a, b) := (b, a mod b);
+  Result := Abs(a)
+end;
+
+/// Возвращает НОД кортежа двух чисел типа integer
+function НОД(Self: (integer, integer)): integer; extensionmethod;
+begin
+  var (a, b) := Self;
+  while b <> 0 do
+    (a, b) := (b, a mod b);
+  Result := Abs(a)
 end;
 
 {$endregion}

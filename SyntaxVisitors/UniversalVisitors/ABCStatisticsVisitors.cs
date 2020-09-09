@@ -108,7 +108,7 @@ namespace SyntaxVisitors
             {
                 InBlockVarDefs += vds.vars.Count;
             }
-            else
+            else if (!(vds.Parent is class_members))
             {
                 OutBlockVarDefs += vds.vars.Count;
             }

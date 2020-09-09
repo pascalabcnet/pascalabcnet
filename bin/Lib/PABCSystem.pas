@@ -8814,7 +8814,7 @@ end;
 function ReverseString(s: string; index,length: integer): string;
 begin
   var ca := s.ToCharArray;
-  &Array.Reverse(ca,index,length);
+  &Array.Reverse(ca,index+1,length);
   Result := new string(ca);
 end;
 
@@ -12112,6 +12112,14 @@ end;
 //------------------------------------------------------------------------------
 //>>     Методы расширения типа string # Extension methods for string
 //------------------------------------------------------------------------------
+/// Заменяет count вхождений подстроки oldStr на подстроку newStr в исходной строке
+function Replace(Self: string; oldStr,newStr: string; count: integer): string; extensionmethod;
+begin
+  var reg := new Regex(oldStr);
+  Result := reg.Replace(Self,newStr,count);
+end;
+
+
 /// Возвращает True если значение находится между двумя другими
 function Between(Self: string; a, b: string): boolean; extensionmethod;
 begin

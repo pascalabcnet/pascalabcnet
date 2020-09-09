@@ -1839,47 +1839,47 @@ namespace VisualPascalABC
                     }
                     if (stat.ForsWithVar != 0)
                     {
-                        PositivePercent += stat.ForsWithVar * 3;
+                        PositivePercent += Math.Min(stat.ForsWithVar, 4) * 3;
                     }
                     if (stat.InitVarInDef > 0)
                     {
-                        PositivePercent += stat.InitVarInDef * 4;
+                        PositivePercent += Math.Min(stat.InitVarInDef, 4) * 4;
                     }
                     if (stat.ReadFuncCount > 0)
                     {
-                        PositivePercent += stat.ReadFuncCount * 3;
+                        PositivePercent += Math.Min(stat.ReadFuncCount, 4) * 3;
                     }
                     if (stat.ExtAssignCount > 0)
                     {
-                        PositivePercent += stat.ExtAssignCount * 3;
+                        PositivePercent += Math.Min(stat.ExtAssignCount, 4) * 3;
                     }
                     if (stat.PrintCount > 0)
                     {
-                        PositivePercent += stat.PrintCount * 4;
+                        PositivePercent += Math.Min(stat.PrintCount, 4) * 4;
                     }
                     if (stat.TuplesCount > 0)
                     {
-                        PositivePercent += stat.PrintCount * 5;
+                        PositivePercent += Math.Min(stat.PrintCount, 4) * 5;
                     }
                     if (stat.DynamicArrays > 0)
                     {
-                        PositivePercent += stat.PrintCount * 5;
+                        PositivePercent += Math.Min(stat.PrintCount, 4) * 5;
                     }
                     if (stat.UnpackingAssign > 0)
                     {
-                        PositivePercent += stat.UnpackingAssign * 5;
+                        PositivePercent += Math.Min(stat.UnpackingAssign, 4) * 5;
                     }
                     if (stat.LoopsCount > 0)
                     {
-                        PositivePercent += stat.LoopsCount * 4;
+                        PositivePercent += Math.Min(stat.LoopsCount, 4) * 4;
                     }
                     if (stat.ForeachCount > 0)
                     {
-                        PositivePercent += stat.ForeachCount * 4;
+                        PositivePercent += Math.Min(stat.ForeachCount, 4) * 4;
                     }
                     if (stat.LambdasCount > 0)
                     {
-                        PositivePercent += stat.LambdasCount * 8;
+                        PositivePercent += Math.Min(stat.LambdasCount, 4) * 8;
                     }
 
                     Percent += PositivePercent;

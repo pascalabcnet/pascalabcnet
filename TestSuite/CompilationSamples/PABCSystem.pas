@@ -8814,7 +8814,7 @@ end;
 function ReverseString(s: string; index,length: integer): string;
 begin
   var ca := s.ToCharArray;
-  &Array.Reverse(ca,index,length);
+  &Array.Reverse(ca,index+1,length);
   Result := new string(ca);
 end;
 
