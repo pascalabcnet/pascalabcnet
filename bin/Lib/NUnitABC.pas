@@ -63,6 +63,7 @@ type
   SubStringConstraint = NUnit.Framework.Constraints.SubStringConstraint;
   TrueConstraint = NUnit.Framework.Constraints.TrueConstraint;
    
+  AssertionException = NUnit.Framework.AssertionException;
 
 begin
   

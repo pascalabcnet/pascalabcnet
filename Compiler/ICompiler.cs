@@ -32,7 +32,12 @@ namespace PascalABCCompiler
         {
             get;
         }
-        
+
+        /*SyntaxTree.syntax_tree_node SyntaxTree
+        {
+            get;
+        }*/
+
         uint LinesCompiled
         {
             get;

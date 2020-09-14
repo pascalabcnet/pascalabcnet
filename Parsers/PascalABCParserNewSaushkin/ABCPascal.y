@@ -59,7 +59,7 @@
 %type <stn> attribute_declarations  
 %type <stn> ot_visibility_specifier  
 %type <stn> one_attribute attribute_variable 
-%type <ex> const_factor const_variable_2 const_term const_variable literal_or_number unsigned_number variable_or_literal_or_number 
+%type <ex> const_factor const_factor_without_unary_op const_variable_2 const_term const_variable literal_or_number unsigned_number variable_or_literal_or_number 
 %type <stn> program_block  
 %type <ob> optional_var class_attribute class_attributes class_attributes1 
 %type <stn> member_list_section optional_component_list_seq_end  
@@ -82,7 +82,7 @@
 %type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 /*const_expr_list*/ case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
-%type <ex> const_simple_expr term term1 simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda expr_l1_for_lambda simple_expr range_term range_factor 
+%type <ex> const_simple_expr term term1 typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor factor_without_unary_op relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda expr_l1_for_lambda simple_expr range_term range_factor 
 %type <ex> external_directive_ident init_const_expr case_label variable var_reference /*optional_write_expr*/ optional_read_expr simple_expr_or_nothing var_question_point expr_l1_for_question_expr expr_l1_for_new_question_expr
 %type <ob> for_cycle_type  
 %type <ex> format_expr format_const_expr const_expr_or_nothing /* simple_expr_with_deref_or_nothing simple_expr_with_deref expr_l1_for_indexer*/
@@ -807,7 +807,12 @@ as_is_constexpr
     ;
 
 power_constexpr
-    : const_factor tkStarStar const_factor { $$ = new bin_expr($1, $3, $2.type, @$); }
+    : const_factor_without_unary_op tkStarStar const_factor 
+    	{ $$ = new bin_expr($1, $3, $2.type, @$); }
+    | const_factor_without_unary_op tkStarStar power_constexpr
+        { $$ = new bin_expr($1,$3,($2).type, @$); }
+    | sign power_constexpr
+    	{ $$ = new un_expr($2, $1.type, @$); }
     ;
     
 const_term
@@ -839,6 +844,13 @@ const_mulop
     | tkAnd
 		{ $$ = $1; }
     ;
+
+const_factor_without_unary_op
+	: const_variable
+		{ $$ = $1; }
+	| tkRoundOpen const_expr tkRoundClose
+		{ $$ = $2; }
+	;
 
 const_factor
     : const_variable
@@ -3858,14 +3870,13 @@ is_type_expr
         }
     ;
     
-simple_term
-    : factor
-		{ $$ = $1; }
-    ;
-    
 power_expr
-    : simple_term tkStarStar factor
+    : factor_without_unary_op tkStarStar factor
         { $$ = new bin_expr($1,$3,($2).type, @$); }
+    | factor_without_unary_op tkStarStar power_expr
+        { $$ = new bin_expr($1,$3,($2).type, @$); }
+    | sign power_expr
+    	{ $$ = new un_expr($2, $1.type, @$); }
     ;
     
 term
@@ -3924,6 +3935,13 @@ tuple
 		}	
     ; 
 
+factor_without_unary_op
+	: literal_or_number
+		{ $$ = $1; }
+	| var_reference
+		{ $$ = $1; }
+	;
+
 factor        
     : tkNil                     
         { 
@@ -3965,8 +3983,7 @@ factor
 				}
 			    // можно сделать вычисление константы с вмонтированным минусом
 			}
-		
-			$$ = new un_expr($2, $1.type, @$); 
+			$$ = new un_expr($2, $1.type, @$);
 		}
     | tkDeref factor
         {

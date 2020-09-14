@@ -23,8 +23,8 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             root.FillParentsInAllChilds();
 
 #if DEBUG
-            var stat = new ABCStatisticsVisitor();
-            stat.ProcessNode(root);
+//            var stat = new ABCStatisticsVisitor();
+//            stat.ProcessNode(root);
 #endif
 
             // new range - до всего! До выноса выражения с лямбдой из foreach. 11.07 добавил поиск yields и присваивание pd.HasYield
