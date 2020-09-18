@@ -1002,7 +1002,6 @@ namespace VisualPascalABC
         private void miRunNoDebug_Click(object sender, EventArgs e)
         {
             WorkbenchServiceFactory.RunService.Run(false);
-            var root = VisualEnvironmentCompiler.StandartCompiler.CurrentCompilationUnit.SyntaxTree;
         }
         
         Dictionary<CodeFileDocumentControl, string> lastInputTexts = new Dictionary<CodeFileDocumentControl, string>();
