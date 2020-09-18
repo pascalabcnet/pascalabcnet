@@ -1760,7 +1760,7 @@ namespace VisualPascalABC
             // toolStripStatusLabel5
             // 
             this.toolStripStatusLabel5.Name = "toolStripStatusLabel5";
-            this.toolStripStatusLabel5.Size = new System.Drawing.Size(912, 19);
+            this.toolStripStatusLabel5.Size = new System.Drawing.Size(908, 19);
             this.toolStripStatusLabel5.Spring = true;
             this.toolStripStatusLabel5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -1794,6 +1794,7 @@ namespace VisualPascalABC
             // 
             // HealthLabel
             // 
+            this.HealthLabel.AutoToolTip = true;
             this.HealthLabel.BackColor = System.Drawing.SystemColors.Control;
             this.HealthLabel.IsLink = true;
             this.HealthLabel.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
@@ -1801,6 +1802,7 @@ namespace VisualPascalABC
             this.HealthLabel.Name = "HealthLabel";
             this.HealthLabel.Size = new System.Drawing.Size(19, 19);
             this.HealthLabel.Text = "    ";
+            this.HealthLabel.ToolTipText = "Здоровье PascalABC.NET программы";
             this.HealthLabel.Click += new System.EventHandler(this.HealthLabel_Click);
             // 
             // openFileDialog1

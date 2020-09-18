@@ -108,7 +108,7 @@ namespace SyntaxVisitors
             {
                 InBlockVarDefs += vds.vars.Count;
             }
-            else
+            else if (!(vds.Parent is class_members))
             {
                 OutBlockVarDefs += vds.vars.Count;
             }
@@ -195,6 +195,113 @@ namespace SyntaxVisitors
                 WriteProcWithSpace += 1;
             }
             base.visit(pc);
+        }
+
+        public int CalcHealth(out int NegativePercent, out int PositivePercent)
+        {
+            var stat = this;
+            var Percent = 100;
+            NegativePercent = 0;
+            PositivePercent = 0;
+
+            var diffBlockVarDefs = stat.OutBlockVarDefs; // - stat.InBlockVarDefs;
+            if (diffBlockVarDefs > 0)
+            {
+                NegativePercent += 10; // за первую
+                NegativePercent += (diffBlockVarDefs - 1) * 2; // за оставшиеся
+                if (NegativePercent > 25)
+                    NegativePercent = 25;
+            }
+            // For i
+            if (stat.ForsWithoutVar > 0)
+            {
+                NegativePercent += Math.Min(15 + (stat.ForsWithoutVar - 1) * 3, 25);
+            }
+            if (stat.ReadProc > 0)
+            {
+                NegativePercent += Math.Min(15 + (stat.ReadProc - 1) * 2, 20);
+            }
+            if (stat.ProgramKeyword)
+            {
+                NegativePercent += 10;
+            }
+            if (stat.StaticArrays > 0)
+            {
+                NegativePercent += Math.Min(10 + (stat.StaticArrays - 1) * 2, 15);
+            }
+            if (stat.WriteProcWithSpace > 0)
+            {
+                NegativePercent += Math.Min(2 + (stat.WriteProcWithSpace - 1) * 1, 5);
+            }
+            if (stat.OldStrings > 0)
+            {
+                NegativePercent += stat.OldStrings;
+            }
+            if (NegativePercent < 0)
+                NegativePercent = 0;
+
+            Percent -= NegativePercent;
+
+            // Проценты за положительное
+            if (stat.InBlockVarDefs > 0)
+            {
+                PositivePercent += 10; // за первую
+                PositivePercent += (stat.InBlockVarDefs - 1) * 2; // за оставшиеся 
+                                                                  // этот алгоритм уравновешивает описания внутри и вне. За одинаковое количество дается 0 баллов
+            }
+            if (stat.ForsWithVar != 0)
+            {
+                PositivePercent += Math.Min(stat.ForsWithVar, 4) * 3;
+            }
+            if (stat.InitVarInDef > 0)
+            {
+                PositivePercent += Math.Min(stat.InitVarInDef, 4) * 4;
+            }
+            if (stat.ReadFuncCount > 0)
+            {
+                PositivePercent += Math.Min(stat.ReadFuncCount, 4) * 3;
+            }
+            if (stat.ExtAssignCount > 0)
+            {
+                PositivePercent += Math.Min(stat.ExtAssignCount, 4) * 3;
+            }
+            if (stat.PrintCount > 0)
+            {
+                PositivePercent += Math.Min(stat.PrintCount, 4) * 4;
+            }
+            if (stat.TuplesCount > 0)
+            {
+                PositivePercent += Math.Min(stat.PrintCount, 4) * 5;
+            }
+            if (stat.DynamicArrays > 0)
+            {
+                PositivePercent += Math.Min(stat.PrintCount, 4) * 5;
+            }
+            if (stat.UnpackingAssign > 0)
+            {
+                PositivePercent += Math.Min(stat.UnpackingAssign, 4) * 5;
+            }
+            if (stat.LoopsCount > 0)
+            {
+                PositivePercent += Math.Min(stat.LoopsCount, 4) * 4;
+            }
+            if (stat.ForeachCount > 0)
+            {
+                PositivePercent += Math.Min(stat.ForeachCount, 4) * 4;
+            }
+            if (stat.LambdasCount > 0)
+            {
+                PositivePercent += Math.Min(stat.LambdasCount, 4) * 8;
+            }
+
+            Percent += PositivePercent;
+            if (Percent > 200)
+                Percent = 200;
+
+            if (Percent < 0)
+                Percent = 0;
+
+            return Percent;
         }
 
         /*public override void visit(dot_node dn)

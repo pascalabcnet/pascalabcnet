@@ -234,7 +234,7 @@ namespace VisualPascalABC
             //    PascalABCCompiler.StringResourcesLanguage.CurrentLanguageName = PascalABCCompiler.StringResourcesLanguage.AccessibleLanguages[0];
            
             InitializeComponent();
-           
+
             VisualPABCSingleton.MainForm = this;
             WorkbenchStorage.MainProgramThread = System.Threading.Thread.CurrentThread;
             //images init
@@ -840,8 +840,32 @@ namespace VisualPascalABC
         private void StartMenuItem_Click(object sender, EventArgs e)
         {
             WorkbenchServiceFactory.RunService.Run(true);
+            /*if (VisualEnvironmentCompiler.StandartCompiler != null &&
+                VisualEnvironmentCompiler.StandartCompiler.LinesCompiled > 1000)
+                return;
+            var root = VisualEnvironmentCompiler?.StandartCompiler?.CurrentCompilationUnit?.SyntaxTree;
+
+            if (root == null)
+                return;
+            if (VisualEnvironmentCompiler.StandartCompiler.CurrentCompilationUnit.SemanticTree == null)
+                return;
+            var stat = new SyntaxVisitors.ABCStatisticsVisitor();
+            stat.ProcessNode(root);
+            var Percent = stat.CalcHealth(out int n, out int p);
+
+            if (Percent >= 100)
+            {
+                HealthLabel.Text = "";
+                return;
+            }
+            HealthLabel.Text = $"{Percent}%";
+
+            var c = SystemColors.Control;
+            var PM100 = 100 - Percent;
+            HealthLabel.BackColor = Color.FromArgb(c.R - PM100 - 20, c.G - PM100 - 20, c.B - PM100 - 20);
+            */
         }
-        
+
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyData == Keys.F1)
@@ -978,6 +1002,7 @@ namespace VisualPascalABC
         private void miRunNoDebug_Click(object sender, EventArgs e)
         {
             WorkbenchServiceFactory.RunService.Run(false);
+            var root = VisualEnvironmentCompiler.StandartCompiler.CurrentCompilationUnit.SyntaxTree;
         }
         
         Dictionary<CodeFileDocumentControl, string> lastInputTexts = new Dictionary<CodeFileDocumentControl, string>();
@@ -1596,6 +1621,7 @@ namespace VisualPascalABC
                 return n + " раза";
             else return n + " раз";
         }
+
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
             if (ABCHealthForm == null)
@@ -1669,8 +1695,6 @@ namespace VisualPascalABC
                     // 6. Write(a,' ',b) - за каждую - -1% пока не достгнет -5%  
                     // 7. string[10] - за каждую - -1% . Если минусуется > 100%, то здоровье делать 0% 
 
-                    var Percent = 100;
-                    var NegativePercent = 0;
 
                     var ShowNegativeInfo = false;
                     if (stat.OutBlockVarDefs > 0 && stat.OutBlockVarDefs > stat.InBlockVarDefs)
@@ -1788,103 +1812,9 @@ namespace VisualPascalABC
                         y += h;
                     }
 
+                    var Percent = stat.CalcHealth(out int NegativePercent, out int PositivePercent);
                     // Процент здоровья
                     // VarDefs
-                    var diffBlockVarDefs = stat.OutBlockVarDefs; // - stat.InBlockVarDefs;
-                    if (diffBlockVarDefs > 0)
-                    {
-                        NegativePercent += 10; // за первую
-                        NegativePercent += (diffBlockVarDefs - 1) * 2; // за оставшиеся
-                        if (NegativePercent > 25)
-                            NegativePercent = 25;
-                    }
-                    // For i
-                    if (stat.ForsWithoutVar > 0)
-                    {
-                        NegativePercent += Math.Min(15 + (stat.ForsWithoutVar - 1) * 3, 25);
-                    }
-                    if (stat.ReadProc > 0)
-                    {
-                        NegativePercent += Math.Min(15 + (stat.ReadProc - 1) * 2, 20);
-                    }
-                    if (stat.ProgramKeyword)
-                    {
-                        NegativePercent += 10;
-                    }
-                    if (stat.StaticArrays > 0)
-                    {
-                        NegativePercent += Math.Min(10 + (stat.StaticArrays - 1) * 2, 15);
-                    }
-                    if (stat.WriteProcWithSpace > 0)
-                    {
-                        NegativePercent += Math.Min(2 + (stat.WriteProcWithSpace - 1) * 1, 5);
-                    }
-                    if (stat.OldStrings > 0)
-                    {
-                        NegativePercent += stat.OldStrings;
-                    }
-                    if (NegativePercent < 0)
-                        NegativePercent = 0;
-
-                    Percent -= NegativePercent;
-
-                    var PositivePercent = 0;
-
-                    // Проценты за положительное
-                    if (stat.InBlockVarDefs > 0)
-                    {
-                        PositivePercent += 10; // за первую
-                        PositivePercent += (stat.InBlockVarDefs - 1) * 2; // за оставшиеся 
-                        // этот алгоритм уравновешивает описания внутри и вне. За одинаковое количество дается 0 баллов
-                    }
-                    if (stat.ForsWithVar != 0)
-                    {
-                        PositivePercent += stat.ForsWithVar * 3;
-                    }
-                    if (stat.InitVarInDef > 0)
-                    {
-                        PositivePercent += stat.InitVarInDef * 4;
-                    }
-                    if (stat.ReadFuncCount > 0)
-                    {
-                        PositivePercent += stat.ReadFuncCount * 3;
-                    }
-                    if (stat.ExtAssignCount > 0)
-                    {
-                        PositivePercent += stat.ExtAssignCount * 3;
-                    }
-                    if (stat.PrintCount > 0)
-                    {
-                        PositivePercent += stat.PrintCount * 4;
-                    }
-                    if (stat.TuplesCount > 0)
-                    {
-                        PositivePercent += stat.PrintCount * 5;
-                    }
-                    if (stat.DynamicArrays > 0)
-                    {
-                        PositivePercent += stat.PrintCount * 5;
-                    }
-                    if (stat.UnpackingAssign > 0)
-                    {
-                        PositivePercent += stat.UnpackingAssign * 5;
-                    }
-                    if (stat.LoopsCount > 0)
-                    {
-                        PositivePercent += stat.LoopsCount * 4;
-                    }
-                    if (stat.ForeachCount > 0)
-                    {
-                        PositivePercent += stat.ForeachCount * 4;
-                    }
-                    if (stat.LambdasCount > 0)
-                    {
-                        PositivePercent += stat.LambdasCount * 8;
-                    }
-
-                    Percent += PositivePercent;
-                    if (Percent > 200)
-                        Percent = 200;
 
                     if (!ShowNegativeInfo)
                     {
@@ -1905,7 +1835,7 @@ namespace VisualPascalABC
                     else if (Percent < 75)
                         pp.BackColor = Color.FromArgb(128, 128, 128);
                     else if (Percent < 100)
-                        pp.BackColor = Color.FromArgb(64+16, 128, 64 + 16);
+                        pp.BackColor = Color.FromArgb(64 + 16 + 16, 128, 64 + 16 + 16);
                     else pp.BackColor = Color.FromArgb(0, 128, 0);
 
                     pp.Paint += (o, ea) =>
@@ -1947,9 +1877,16 @@ namespace VisualPascalABC
             }
         }
 
+        private void HealthLabelClear()
+        {
+            HealthLabel.Text = "";
+            HealthLabel.BackColor = System.Drawing.SystemColors.Control;
+        }
+
         private void HealthLabel_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://pascalabcnet.github.io/program_health.html");
+            toolStripButton1_Click(this, null);
+            //System.Diagnostics.Process.Start("https://pascalabcnet.github.io/program_health.html");
         }
 
         private void tsHelp_Click(object sender, EventArgs e)

@@ -911,12 +911,12 @@ namespace PascalABCCompiler
         public CodeGenerators.Controller CodeGeneratorsController = null;
         //public LLVMConverter.Controller LLVMCodeGeneratorsController = null;
         //public PascalToCppConverter.Controller PABCToCppCodeGeneratorsController = null;
-        private SyntaxTree.unit_or_namespace CurrentSyntaxUnit;
+        public SyntaxTree.unit_or_namespace CurrentSyntaxUnit;
 		private List<CompilationUnit> UnitsToCompile = new List<CompilationUnit>();
         public Hashtable RecompileList = new Hashtable(StringComparer.OrdinalIgnoreCase);
         private PascalABCCompiler.TreeRealization.unit_node_list Units;
         private Hashtable CycleUnits = new Hashtable();
-        private CompilationUnit CurrentCompilationUnit = null;
+        public CompilationUnit CurrentCompilationUnit = null;
         private CompilationUnit FirstCompilationUnit = null;
         private bool PCUReadersAndWritersClosed;
         public int beginOffset;
