@@ -13,6 +13,7 @@
 <param name="Keyword" value="ReadWord">
 <param name="Keyword" value="RegexReplace">
 <param name="Keyword" value="Remove">
+<param name="Keyword" value="Replace">
 <param name="Keyword" value="Right">
 <param name="Keyword" value="Slice">
 <param name="Keyword" value="ToBigInteger">
@@ -55,6 +56,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;«амен€ет в указанной строке все вхождени€ регул€рного выражени€ указанным преобразованием замены и возвращает преобразованную строку</td></tr>
 <tr><td><code><b>function</b> Remove(Self: string; <b>params</b> targets: <b>array</b>  <b>of</b> string): string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;”дал€ет в строке все вхождени€ указанных строк</td></tr>
+<tr><td><code><b>function</b> Replace(Self: string; oldStr,newStr: string; count: integer): string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;«амен€ет count вхождений подстроки oldStr на подстроку newStr в исходной строке</td></tr>
 <tr><td><code><b>function</b> Right(Self: string; length: integer): string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает подстроку, полученную вырезанием из строки length самых правых символов</td></tr>
 <tr><td><code><b>function</b> Slice(Self: string; from, step: integer): string;</code>
