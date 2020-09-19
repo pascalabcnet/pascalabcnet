@@ -14,6 +14,13 @@ namespace PascalABCCompiler
     public enum CompilerType { Standart, Remote }
     public interface ICompiler
     {
+        /// Здоровье кода на всякий случай выносим в интерфейс компилятора
+        /// Реально оно будет использоваться только при запуске из под оболочки (Remote Compiler)
+        int PABCCodeHealth  
+        {
+            get;
+        }
+
         SyntaxTreeConvertersController SyntaxTreeConvertersController
         {
             get; 
