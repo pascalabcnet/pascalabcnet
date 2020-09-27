@@ -14882,6 +14882,7 @@ namespace PascalABCCompiler.TreeConverter
                         	if (expr is common_constructor_call_as_constant)
                         		return expr as common_constructor_call_as_constant;
                         	convertion_data_and_alghoritms.check_convert_type(expr,tn,expr.location);
+                            return constant;
                         	//AddError(new CanNotConvertTypes(expr,expr.type,tn,expr.location));
                         	//throw new NotSupportedError(loc);
                         }
