@@ -30,6 +30,7 @@ namespace PascalABCCompiler
                     if (compiler.Warnings.Count > 0)
                         foreach (Errors.Error er in compiler.Warnings)
                             SendErrorOrWarning(er);
+                    SendCommand(ConsoleCompilerConstants.PABCHealth, compiler.PABCCodeHealth.ToString());
                     SendCommand(ConsoleCompilerConstants.LinesCompiled, compiler.LinesCompiled.ToString());
                     SendCommand(ConsoleCompilerConstants.BeginOffest, compiler.BeginOffset.ToString());
                     SendCommand(ConsoleCompilerConstants.VarBeginOffest, compiler.VarBeginOffset.ToString());

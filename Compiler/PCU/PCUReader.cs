@@ -82,7 +82,10 @@ namespace PascalABCCompiler.PCU
         
         internal void AddVarToOrderList(var_definition_node vdn, int ind)
         {
-        	interf_var_list.Add(ind,vdn);
+            if (!interf_var_list.ContainsKey(ind))
+                interf_var_list.Add(ind, vdn);
+            else
+                interf_var_list[ind] = vdn;
         }
 
         internal void AddTypeToOrderList(common_type_node ctn, int ind)

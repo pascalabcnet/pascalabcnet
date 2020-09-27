@@ -1,3 +1,5 @@
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 unit FormsABC;
 
 {$apptype windows} 
@@ -68,20 +70,35 @@ type
   
   /// Кнопка
   Button = class
-  private 
+  protected 
     b := new System.Windows.Forms.Button;
     procedure BClick(sender: Object; e: EventArgs);
+    function GetW := b.Width;
+    procedure SetW(w: integer) := b.Width := w;
+    function GetText := b.Text;
+    procedure SetText(t: string) := b.Text := t;
   public 
     event Click: procedure;
-    constructor Create(text: string);
+    constructor Create(text: string := '');
+    property Width: integer read GetW write SetW;
+    property Text: string read GetText write SetText;
   end;
   
   /// Текстовая метка
   TextLabel = class
-  private 
+  protected 
     l := new System.Windows.Forms.Label;
+    function GetT(): string;
+    begin
+      Result := l.Text
+    end;
+    procedure SetT(w: string);
+    begin
+      l.Text := w;
+    end;
   public 
     constructor(text: string);
+    property Text: string read GetT write SetT;
   end;
   
   /// Флажок
@@ -108,7 +125,7 @@ type
   
   /// Список
   ListBox = class
-  private 
+  protected 
     lb := new System.Windows.Forms.ListBox;
     function GetItems: System.Windows.Forms.ListBox.ObjectCollection;
     function GetSelectedIndex: integer;
@@ -121,7 +138,7 @@ type
   public 
     event Click: procedure;
     event SelectedIndexChanged: procedure;
-    constructor;
+    constructor Create;
     property Items: System.Windows.Forms.ListBox.ObjectCollection read GetItems;
     property SelectedIndex: integer read GetSelectedIndex write SetSelectedIndex;
     property SelectedItem: object read GetSelectedItem write SetSelectedItem;
@@ -238,6 +255,11 @@ type
   private 
     function GetText: string;
     procedure SetText(s: string);
+    function GetDocumentStream: System.IO.Stream := (f as System.Windows.Forms.WebBrowser).DocumentStream;
+    procedure SetDocumentStream(s: System.IO.Stream);
+    begin
+      (f as System.Windows.Forms.WebBrowser).DocumentStream := s;
+    end;
     function GetAddress: string;
     procedure WBDocumentCompleted(sender: Object;	e: WebBrowserDocumentCompletedEventArgs);
   public 
@@ -249,6 +271,7 @@ type
     procedure GoForward;
     procedure GoHome;
     property Address: string read GetAddress;
+    property DocumentStream: System.IO.Stream read GetDocumentStream write SetDocumentStream;
   end;
   
   /// Окно для рисования
@@ -464,6 +487,11 @@ var
   MainPanel: FlowPanel;
   // Эксперимент: 20.11.10
   ParentControl: ContainerControl;
+
+///--
+procedure __InitModule__;
+///--
+procedure __FinalizeModule__;
 
 implementation
 
@@ -709,7 +737,7 @@ end;
 
 constructor ListBox.Create;
 begin
-  lb.AutoSize := True;
+  //lb.AutoSize := True;
   ParentControl.Add(lb);
   CurrentControl := lb;
   lb.Click += LBClick;
@@ -991,6 +1019,7 @@ end;
 constructor WebBrowser.Create();
 begin
   f := new System.Windows.Forms.WebBrowser;
+  (f as System.Windows.Forms.WebBrowser).ScriptErrorsSuppressed := True;
   ParentControl.Add(f);
   CurrentControl := f;
   (f as System.Windows.Forms.WebBrowser).DocumentCompleted += WBDocumentCompleted;

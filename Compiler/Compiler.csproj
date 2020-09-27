@@ -148,6 +148,10 @@
       <Project>{C2CAC65A-B2AE-4CCC-B067-E6B8E75DF73A}</Project>
       <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
     </ProjectReference>
+    <ProjectReference Include="..\SyntaxVisitors\SyntaxVisitors.csproj">
+      <Project>{a9ab4282-83b4-41a7-86c3-e5bf6a45e7e2}</Project>
+      <Name>SyntaxVisitors</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TreeConverter\TreeConverter.csproj">
       <Name>TreeConverter</Name>
       <Project>{1C9C945A-586D-42A2-A06B-65D84FA7FF78}</Project>

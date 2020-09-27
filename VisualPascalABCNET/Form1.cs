@@ -840,6 +840,25 @@ namespace VisualPascalABC
         private void StartMenuItem_Click(object sender, EventArgs e)
         {
             WorkbenchServiceFactory.RunService.Run(true);
+            if (VisualEnvironmentCompiler.Compiler != null && VisualEnvironmentCompiler.Compiler.ErrorsList.Count == 0)
+            {
+                var Percent = VisualEnvironmentCompiler.Compiler.PABCCodeHealth;
+                if (Percent > 0)
+                {
+                    if (Percent >= 100)
+                    {
+                        HealthLabel.Text = "";
+                        return;
+                    }
+                    HealthLabel.Text = $"{Percent}%";
+
+                    var c = SystemColors.Control;
+                    var PM100 = 100 - Percent;
+                    HealthLabel.BackColor = Color.FromArgb(c.R - PM100 - 20, c.G - PM100 - 20, c.B - PM100 - 20);
+                }
+            }
+                
+
             /*if (VisualEnvironmentCompiler.StandartCompiler != null &&
                 VisualEnvironmentCompiler.StandartCompiler.LinesCompiled > 1000)
                 return;
