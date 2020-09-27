@@ -10,11 +10,11 @@ using PascalABCCompiler.SyntaxTree;
 namespace SyntaxVisitors.SugarVisitors
 {
 
-    public class NewRangeDesugarVisitor : BaseChangeVisitor
+    public class NewRangeDesugarAndFindHasYieldVisitor : BaseChangeVisitor
     {
-        public static NewRangeDesugarVisitor New
+        public static NewRangeDesugarAndFindHasYieldVisitor New
         {
-            get { return new NewRangeDesugarVisitor(); }
+            get { return new NewRangeDesugarAndFindHasYieldVisitor(); }
         }
 
         public override void visit(diapason_expr_new diap)
@@ -97,5 +97,28 @@ namespace SyntaxVisitors.SugarVisitors
             }*/
             else base.visit(fe);
         }
+
+        List<procedure_definition> lpd = new List<procedure_definition>();
+
+        public override void visit (procedure_definition pd)
+        {
+            lpd.Add(pd);
+            base.visit(pd);
+            lpd.RemoveAt(lpd.Count - 1);
+        }
+        public override void visit(yield_node yn)
+        {
+            if (lpd.Count > 0)
+                lpd[lpd.Count - 1].has_yield = true;
+            base.visit(yn);
+        }
+
+        public override void visit(yield_sequence_node yn)
+        {
+            if (lpd.Count > 0)
+                lpd[lpd.Count - 1].has_yield = true;
+            base.visit(yn);
+        }
+
     }
 }

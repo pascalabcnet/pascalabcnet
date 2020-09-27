@@ -29,7 +29,7 @@ namespace ICSharpCode.FormsDesigner
             "type" + nr +
             tab + "{1} = class(Form)" + nr +
             tab + '{' + begin_designer_region + '}' + nr +
-            tab + "private" + nr + tab2;
+            tab + "internal" + nr + tab2;
 
         public static readonly string end_unit =
             tab + end_designer_region + nr +

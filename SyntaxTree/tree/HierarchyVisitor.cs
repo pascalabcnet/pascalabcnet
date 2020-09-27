@@ -2037,6 +2037,14 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(semantic_ith_element_of _semantic_ith_element_of)
+		{
+		}
+
+		public virtual void post_do_visit(semantic_ith_element_of _semantic_ith_element_of)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -4205,6 +4213,15 @@ namespace PascalABCCompiler.SyntaxTree
 			pre_do_visit(_array_const_new);
 			visit(array_const_new.elements);
 			post_do_visit(_array_const_new);
+		}
+
+		public override void visit(semantic_ith_element_of _semantic_ith_element_of)
+		{
+			DefaultVisit(_semantic_ith_element_of);
+			pre_do_visit(_semantic_ith_element_of);
+			visit(semantic_ith_element_of.id);
+			visit(semantic_ith_element_of.index);
+			post_do_visit(_semantic_ith_element_of);
 		}
 	}
 

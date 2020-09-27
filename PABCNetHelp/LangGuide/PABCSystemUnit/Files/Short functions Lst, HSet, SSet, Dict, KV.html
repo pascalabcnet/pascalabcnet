@@ -1,5 +1,7 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="Dict">
+<param name="Keyword" value="DictStr">
+<param name="Keyword" value="DictStrInt">
 <param name="Keyword" value="HSet">
 <param name="Keyword" value="KV">
 <param name="Keyword" value="LLst">
@@ -11,6 +13,10 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает словарь пар элементов (ключ, значение)</td></tr>
 <tr><td><code><b>function</b> Dict&lt;TKey, TVal&gt;(<b>params</b> pairs: <b>array</b>  <b>of</b> (TKey, TVal)): Dictionary&lt;TKey, TVal&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает словарь пар элементов (ключ, значение)</td></tr>
+<tr><td><code><b>function</b> DictStr(<b>params</b> pairs: <b>array</b>  <b>of</b> (string, string)): Dictionary&lt;string, string&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает словарь пар элементов (строка, строка)</td></tr>
+<tr><td><code><b>function</b> DictStrInt(<b>params</b> pairs: <b>array</b>  <b>of</b> (string, integer)): Dictionary&lt;string, integer&gt;;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает словарь пар элементов (строка, целое)</td></tr>
 <tr><td><code><b>function</b> HSet&lt;T&gt;(<b>params</b> a: <b>array</b>  <b>of</b> T): HashSet&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает множество на базе хеш таблицы, заполненное указанными значени€ми</td></tr>
 <tr><td><code><b>function</b> HSet&lt;T&gt;(a: <b>sequence </b>  <b>of</b> T): HashSet&lt;T&gt;;</code>
@@ -42,8 +48,8 @@
 <tr><td><code><b>function</b> SSet&lt;T&gt;(a: <b>sequence </b>  <b>of</b> T): SortedSet&lt;T&gt;;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает множество на базе бинарного дерева поиска, заполненное значени€ми из последовательности</td></tr>
 <tr><td><code><b>function</b> SSet(a: IntRange): SortedSet&lt;integer&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает множество на базе на базе бинарного дерева поиска, заполненное диапазоном значений</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает множество на базе бинарного дерева поиска, заполненное диапазоном значений</td></tr>
 <tr><td><code><b>function</b> SSet(a: CharRange): SortedSet&lt;char&gt;;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает множество на базе на базе бинарного дерева поиска, заполненное заполненный диапазоном значений</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает множество на базе бинарного дерева поиска, заполненное диапазоном значений</td></tr>
 </table>
 </body></HTML>

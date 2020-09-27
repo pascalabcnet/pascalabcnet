@@ -1,4 +1,4 @@
-﻿// Copyright (©) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (©) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 ///Модуль графики
 unit GraphWPF;
@@ -21,15 +21,6 @@ uses System.Threading;
 uses System.Windows.Shapes;
 uses System.Windows.Threading;
 
-var 
-  CountVisuals := 0;
-
-{procedure Invoke(d: System.Delegate; params args: array of object);
-procedure Invoke(d: ()->());
-function Invoke<T>(d: Func0<T>): T;
-function InvokeReal(f: ()->real): real;
-function InvokeString(f: ()->string): string;}
-
 //{{{doc: Начало секции 1 }}} 
 
 type 
@@ -50,7 +41,12 @@ type
   GWindow = System.Windows.Window;
   GPen = System.Windows.Media.Pen;
   /// Тип точки
+  Point = System.Windows.Point;
+  /// Тип точки
   GPoint = System.Windows.Point;
+  /// Тип вектора
+  Vector = System.Windows.Vector;
+  /// Тип кисти
   GBrush = System.Windows.Media.Brush;
   /// Тип стиля шрифта
   FontStyle = (Normal,Bold,Italic,BoldItalic);
@@ -61,18 +57,22 @@ type
   Alignment = (LeftTop,CenterTop,RightTop,LeftCenter,Center,RightCenter,LeftBottom,CenterBottom,RightBottom);
   
 //{{{--doc: Конец секции 1 }}} 
+
+function GetFontFamily(name: string): FontFamily;
+
   
 //{{{doc: Начало секции 2 }}} 
 
 // -----------------------------------------------------
 //>>     Класс BrushType # BrushType class
 // -----------------------------------------------------
+type
   ///!#
   /// Тип кисти
   BrushType = class
   private
     c := Colors.White;
-    function BrushConstruct := new SolidColorBrush(c);
+    function BrushConstruct := GetBrush(c);
   public  
     /// Цвет кисти
     property Color: GColor read c write c;
@@ -88,10 +88,21 @@ type
     c: Color := Colors.Black;
     th: real := 1;
     fx,fy: real;
+    rc: boolean := false;
     function PenConstruct: GPen;
     begin
-      Result := new GPen(new SolidColorBrush(c),th);
+      Result := new GPen(GetBrush(c),th);
       Result.LineJoin := PenLineJoin.Round;
+      if rc then 
+      begin
+        Result.StartLineCap := PenLineCap.Round;
+        Result.EndLineCap := PenLineCap.Round;
+      end
+      else
+      begin
+        Result.StartLineCap := PenLineCap.Flat;
+        Result.EndLineCap := PenLineCap.Flat;
+      end;
     end;
   public  
     /// Цвет пера
@@ -102,6 +113,8 @@ type
     property X: real read fx;
     /// Текущая координата Y пера
     property Y: real read fy;
+    /// Скругление пера на концах линий
+    property RoundCap: boolean read rc write rc;
   end;
 
 // -----------------------------------------------------
@@ -109,12 +122,12 @@ type
 // -----------------------------------------------------
   ///!#
   /// Тип шрифта
-  FontType = class
+  FontOptions = class
   private
     tf := new Typeface('Arial');
-    sz: real := 12;
+    sz: real := 14;
     c: GColor := Colors.Black;
-    procedure SetNameP(s: string) := tf := new Typeface(new FontFamily(s),FontStyles.Normal,FontWeights.Normal,FontStretches.Normal); 
+    procedure SetNameP(s: string) := tf := new Typeface(GetFontFamily(s),FontStyles.Normal,FontWeights.Normal,FontStretches.Normal); 
     function GetName := tf.FontFamily.ToString;
     procedure SetName(s: string) := Invoke(SetNameP,s);
     procedure SetFSP(fs: FontStyle);
@@ -126,11 +139,11 @@ type
     FontStyle.Italic: s := FontStyles.Italic;
     FontStyle.BoldItalic: begin s := FontStyles.Italic; w := FontWeights.Bold; end;
       end;
-      tf := new Typeface(new FontFamily(Name),s,w,FontStretches.Normal); 
+      tf := new Typeface(GetFontFamily(Name),s,w,FontStretches.Normal); 
     end;
     procedure SetFS(fs: FontStyle) := Invoke(SetFSP,fs);
-    function TypefaceClone := tf;
-    function BrushConstruct := new SolidColorBrush(c);
+    property BrushClone: GBrush read GetBrush(c);
+    property TypefaceClone: Typeface read tf;
   public
     /// Цвет шрифта
     property Color: GColor read c write c;
@@ -140,6 +153,38 @@ type
     property Size: real read sz write sz;
     /// Стиль шрифта
     property Style: FontStyle write SetFS;
+    /// Декоратор стиля шрифта
+    function WithStyle(fs: FontStyle): FontOptions;
+    begin
+      Result := new FontOptions;
+      Result.sz := sz;
+      Result.Color := c;
+      Result.Style := fs;
+    end;
+    /// Декоратор цвета шрифта
+    function WithColor(c: GColor): FontOptions;
+    begin
+      Result := new FontOptions;
+      Result.tf := tf;
+      Result.sz := sz;
+      Result.Color := c;
+    end;
+    /// Декоратор размера шрифта
+    function WithSize(sz: real): FontOptions;
+    begin
+      Result := new FontOptions;
+      Result.tf := tf;
+      Result.sz := sz;
+      Result.Color := c;
+    end;
+    /// Декоратор стиля шрифта
+    function WithName(name: string): FontOptions;
+    begin
+      Result := new FontOptions;
+      Result.sz := sz;
+      Result.Color := c;
+      Result.tf := new Typeface(GetFontFamily(name),tf.Style,tf.Weight,FontStretches.Normal);
+    end;
   end;
   
 // -----------------------------------------------------
@@ -162,6 +207,10 @@ type
     property Width: real read GetWidth;
     /// Высота графического окна
     property Height: real read GetHeight;
+    /// Клиентский прямоугольник графического окна
+    function ClientRect: GRect;
+    /// Центр графического окна
+    function Center: Point;
     /// Сохраняет содержимое графического окна в файл с именем fname
     procedure Save(fname: string);
     /// Восстанавливает содержимое графического окна из файла с именем fname
@@ -183,8 +232,26 @@ type
     procedure Load(fname: string);
     /// Очищает графическое окно белым цветом
     procedure Clear; override;
+    /// Очищает графическое окно цветом c
+    procedure Clear(c: Color); override;
   end;
 
+// -----------------------------------------------------
+//>>     Класс Vector # Vector class
+// -----------------------------------------------------
+  /// Класс Vector
+  {Vector =  class
+  public
+    x,y: real;
+    /// Создаёт вектор с указанными координатами
+    constructor(vx,vy: real) := (x,y) := (vx,vy);
+    
+    static function operator*(v: Vector; r: real): Vector := new Vector(r*v.x,r*v.y);
+    static function operator*(r: real; v: Vector): Vector := new Vector(r*v.x,r*v.y);
+    static function operator+(v: Vector; p: Point): Point := new Point(p.x+v.x,p.y+v.y);
+    static function operator+(p: Point; v: Vector): Point := new Point(p.x+v.x,p.y+v.y);
+  end;}
+  
 //{{{--doc: Конец секции 2 }}} 
   
  
@@ -193,6 +260,15 @@ type
 // -----------------------------------------------------
 //>>     Графические примитивы # GraphWPF primitives
 // -----------------------------------------------------
+/// Рисует пиксел в точке (x,y) цветом c
+procedure SetPixel(x,y: real; c: Color);
+/// Рисует прямоугольник пикселей размера (w,h), задаваемых отображением f, начиная с левого верхнего угла с координатами (x,y)
+procedure SetPixels(x,y: real; w,h: integer; f: (integer,integer)->Color);
+/// Рисует двумерный массив пикселей pixels начиная с левого верхнего угла с координатами (x,y)
+procedure DrawPixels(x,y: real; pixels: array [,] of Color);
+/// Рисует прямоугольную область (px,py,pw,ph) двумерного массива пикселей pixels начиная с левого верхнего угла с координатами (x,y)
+procedure DrawPixels(x,y: real; pixels: array [,] of Color; px,py,pw,ph: integer);
+
 /// Рисует эллипс с центром в точке (x,y) и радиусами rx и ry
 procedure Ellipse(x,y,rx,ry: real);
 /// Рисует контур эллипса с центром в точке (x,y) и радиусами rx и ry
@@ -206,6 +282,19 @@ procedure DrawEllipse(x,y,rx,ry: real; c: Color);
 /// Рисует внутренность эллипса с центром в точке (x,y), радиусами rx и ry и цветом c
 procedure FillEllipse(x,y,rx,ry: real; c: Color);
 
+/// Рисует эллипс с центром в точке p и радиусами rx и ry
+procedure Ellipse(p: Point; rx,ry: real);
+/// Рисует контур эллипса с центром в точке p и радиусами rx и ry
+procedure DrawEllipse(p: Point; rx,ry: real);
+/// Рисует внутренность эллипса с центром в точке p и радиусами rx и ry
+procedure FillEllipse(p: Point; rx,ry: real);
+/// Рисует эллипс с центром в точке p, радиусами rx и ry и цветом внутренности c
+procedure Ellipse(p: Point; rx,ry: real; c: Color);
+/// Рисует контур эллипса с центром в точке p, радиусами rx и ry и цветом c
+procedure DrawEllipse(p: Point; rx,ry: real; c: Color);
+/// Рисует внутренность эллипса с центром в точке p, радиусами rx и ry и цветом c
+procedure FillEllipse(p: Point; rx,ry: real; c: Color);
+
 /// Рисует окружность с центром в точке (x,y) и радиусом r
 procedure Circle(x,y,r: real);
 /// Рисует контур окружности с центром в точке (x,y) и радиусом r
@@ -218,6 +307,20 @@ procedure Circle(x,y,r: real; c: Color);
 procedure DrawCircle(x,y,r: real; c: Color);
 /// Рисует внутренность окружности с центром в точке (x,y), радиусом r и цветом c
 procedure FillCircle(x,y,r: real; c: Color);
+
+/// Рисует окружность с центром в точке p и радиусом r
+procedure Circle(p: Point; r: real);
+/// Рисует контур окружности с центром в точке p и радиусом r
+procedure DrawCircle(p: Point; r: real);
+/// Рисует внутренность окружности с центром в точке p и радиусом r
+procedure FillCircle(p: Point; r: real);
+/// Рисует окружность с центром в точке p, радиусом r и цветом c
+procedure Circle(p: Point; r: real; c: Color);
+/// Рисует контур окружности с центром в точке p, радиусом r и цветом c
+procedure DrawCircle(p: Point; r: real; c: Color);
+/// Рисует внутренность окружности с центром в точке p, радиусом r и цветом c
+procedure FillCircle(p: Point; r: real; c: Color);
+
 
 /// Рисует прямоугольник с координатами вершин (x,y) и (x+w,y+h)
 procedure Rectangle(x,y,w,h: real);
@@ -256,6 +359,14 @@ procedure FillSector(x, y, r, angle1, angle2: real; c: Color);
 procedure Line(x,y,x1,y1: real);
 /// Рисует отрезок прямой от точки (x,y) до точки (x1,y1) цветом c
 procedure Line(x,y,x1,y1: real; c: Color);
+/// Рисует отрезок прямой от точки p до точки p1
+procedure Line(p,p1: Point);
+/// Рисует отрезок прямой от точки p до точки p1 цветом c
+procedure Line(p,p1: Point; c: Color);
+/// Рисует отрезки, заданные массивом пар точек 
+procedure Lines(a: array of (Point,Point));
+/// Рисует отрезки, заданные массивом пар точек, цветом c 
+procedure Lines(a: array of (Point,Point); c: Color);
 /// Устанавливает текущую позицию рисования в точку (x,y)
 procedure MoveTo(x,y: real);
 /// Рисует отрезок от текущей позиции до точки (x,y). Текущая позиция переносится в точку (x,y)
@@ -329,14 +440,25 @@ function Rect(x,y,w,h: real): GRect;
 function ColorBrush(c: Color): GBrush;
 /// Возвращает однотонное цветное перо, заданное цветом
 function ColorPen(c: Color): GPen;
+/// Процедура ускорения вывода. Обновляет экран после всех изменений
+procedure Redraw(d: ()->());
+/// Функция генерации случайной точки в границах экрана. Необязательный параметр w задаёт минимальный отступ от границы
+function RandomPoint(w: real := 0): Point;
+/// Функция генерации массива случайных точек в границах экрана. Необязательный параметр w задаёт минимальный отступ от границы
+function RandomPoints(n: integer; w: real := 0): array of Point;
+/// Создаёт вектор с координатами vx,vy
+function Vect(vx,vy: real): Vector;
+
 
 // -----------------------------------------------------
 //>>     Процедуры покадровой анимации # GraphWPF FrameBasedAnimation functions
 // -----------------------------------------------------
 /// Начинает анимацию, основанную на кадре. Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw
-procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer := 60);
-/// Начинает анимацию, основанную на кадре Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw с параметром, равным номеру кадра
-procedure BeginFrameBasedAnimation(Draw: procedure(frame: integer); frate: integer := 60);
+procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer := 61);
+/// Начинает анимацию, основанную на кадре. Перед рисованием каждого кадра содержимое окна стирается, затем вызывается процедура Draw с параметром, равным номеру кадра
+procedure BeginFrameBasedAnimation(Draw: procedure(frame: integer); frate: integer := 61);
+/// Начинает анимацию, основанную на кадре, и передаёт в каждый обработчик кадра время dt, прошедшее с момента последней перерисовки
+procedure BeginFrameBasedAnimationTime(Draw: procedure(dt: real));
 /// Завершает анимацию, основанную на кадре
 procedure EndFrameBasedAnimation;
 
@@ -367,6 +489,9 @@ procedure DrawText(r: GRect; text: string; c: GColor; align: Alignment := Alignm
 procedure DrawText(r: GRect; number: integer; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
 /// Выводит вещественное в прямоугольник
 procedure DrawText(r: GRect; number: real; c: GColor; align: Alignment := Alignment.Center; angle: real := 0.0);
+/// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y) указанным шрифтом
+procedure DrawText(x, y, w, h: real; text: string; f: FontOptions; align: Alignment; angle: real);
+
 
 /// Выводит строку в позицию (x,y)
 procedure TextOut(x, y: real; text: string; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
@@ -380,6 +505,8 @@ procedure TextOut(x, y: real; text: integer; c: GColor; align: Alignment := Alig
 procedure TextOut(x, y: real; text: real; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
 /// Выводит вещественное в позицию (x,y) цветом c
 procedure TextOut(x, y: real; text: real; c: GColor; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
+/// Выводит строку в позицию (x,y) указанным шрифтом
+procedure TextOut(x, y: real; text: string; f: FontOptions; align: Alignment := Alignment.LeftTop; angle: real := 0.0);
 
 /// Ширина текста при выводе
 function TextWidth(text: string): real;
@@ -388,25 +515,36 @@ function TextHeight(text: string): real;
 /// Размер текста при выводе
 function TextSize(text: string): Size;
 
+/// Ширина текста при выводе заданным шрифтом
+function TextWidth(text: string; f: FontOptions): real;
+/// Высота текста при выводе заданным шрифтом
+function TextHeight(text: string; f: FontOptions): real;
+/// Размер текста при выводе заданным шрифтом
+function TextSize(text: string; f: FontOptions): Size;
+
 // -----------------------------------------------------
 //>>     Функции для вывода графиков # GraphWPF graph functions
 // -----------------------------------------------------
-/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
-procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h: real);
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом параметрами x,y,w,h 
+procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h: real; title: string := '');
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом параметрами x,y,w,h. Два последних параметра задают шаг сетки по OX и OY
+procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h: real; XTicks: real; YTicks: real; title: string := '');
 /// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике r
-procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect);  
+procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect; title: string := '');
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике r. Два последних параметра задают шаг сетки по OX и OY
+procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect; XTicks, YTicks: real; title: string := '');
 /// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, на полное графическое окно
-procedure DrawGraph(f: real -> real; a, b, min, max: real);
-/// Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
-procedure DrawGraph(f: real -> real; a, b: real; x, y, w, h: real);
+procedure DrawGraph(f: real -> real; a, b, min, max: real; title: string := '');
+/// Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике, задаваемом параметрами x,y,w,h 
+procedure DrawGraph(f: real -> real; a, b: real; x, y, w, h: real; title: string := '');
 /// Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике r 
-procedure DrawGraph(f: real -> real; a, b: real; r: GRect);
+procedure DrawGraph(f: real -> real; a, b: real; r: GRect; title: string := '');
 /// Рисует график функции f, заданной на отрезке [-5,5], в прямоугольнике r 
-procedure DrawGraph(f: real -> real; r: GRect);
+procedure DrawGraph(f: real -> real; r: GRect; title: string := '');
 /// Рисует график функции f, заданной на отрезке [a,b], на полное графическое окно 
-procedure DrawGraph(f: real -> real; a, b: real);
+procedure DrawGraph(f: real -> real; a, b: real; title: string := '');
 /// Рисует график функции f, заданной на отрезке [-5,5], на полное графическое окно  
-procedure DrawGraph(f: real -> real);
+procedure DrawGraph(f: real -> real; title: string := '');
 
 // -----------------------------------------------------
 //>>     Функции для настройки системы координат # GraphWPF coordinate system functions
@@ -439,7 +577,7 @@ var Brush: BrushType;
 /// Текущее перо
 var Pen: PenType;
 /// Текущий шрифт
-var Font: FontType;
+var Font: FontOptions;
 /// Главное окно
 var Window: WindowTypeWPF;
 /// Графическое окно
@@ -448,24 +586,31 @@ var GraphWindow: GraphWindowType;
 // -----------------------------------------------------
 //>>     События модуля GraphWPF # GraphWPF events
 // -----------------------------------------------------
-var
-  /// Событие нажатия на кнопку мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
-  OnMouseDown: procedure(x, y: real; mousebutton: integer);
-  /// Событие отжатия кнопки мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если отжата левая кнопка мыши, и 2, если отжата правая кнопка мыши
-  OnMouseUp: procedure(x, y: real; mousebutton: integer);
-  /// Событие перемещения мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 0, если кнопка мыши не нажата, 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
-  OnMouseMove: procedure(x, y: real; mousebutton: integer);
-  /// Событие нажатия клавиши
-  OnKeyDown: procedure(k: Key);
-  /// Событие отжатия клавиши
-  OnKeyUp: procedure(k: Key);
-  /// Событие нажатия символьной клавиши
-  OnKeyPress: procedure(ch: char);
-  /// Событие изменения размера графического окна
-  OnResize: procedure;
+/// Событие нажатия на кнопку мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
+var OnMouseDown: procedure(x, y: real; mousebutton: integer);
+/// Событие отжатия кнопки мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если отжата левая кнопка мыши, и 2, если отжата правая кнопка мыши
+var OnMouseUp: procedure(x, y: real; mousebutton: integer);
+/// Событие перемещения мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 0, если кнопка мыши не нажата, 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
+var OnMouseMove: procedure(x, y: real; mousebutton: integer);
+/// Событие нажатия клавиши
+var OnKeyDown: procedure(k: Key);
+/// Событие отжатия клавиши
+var OnKeyUp: procedure(k: Key);
+/// Событие нажатия символьной клавиши
+var OnKeyPress: procedure(ch: char);
+/// Событие изменения размера графического окна
+var OnResize: procedure;
+/// Событие, происходящее при закрытии основного окна
+var OnClose: procedure;
+/// Событие перерисовки графического окна. Параметр dt обозначает количество миллисекунд с момента последнего вызова OnDrawFrame
+var OnDrawFrame: procedure(dt: real);
 
 
 //{{{--doc: Конец секции 3 }}} 
+
+// Для WPFObjects
+var AdditionalInit: procedure;
+function GetMouseArgs(e: MouseEventArgs): (Point,integer);
 
 {procedure AddRightPanel(Width: real := 200; c: Color := Colors.LightGray);
 procedure AddLeftPanel(Width: real := 200; c: Color := Colors.LightGray);
@@ -473,10 +618,32 @@ procedure AddTopPanel(Height: real := 100; c: Color := Colors.LightGray);
 procedure AddBottomPanel(Height: real := 100; c: Color := Colors.LightGray);
 
 procedure AddStatusBar(Height: real := 24);}
+
+{function GetDC: DrawingContext;
+procedure ReleaseDC(dc: DrawingContext);
+procedure FastDraw(d: DrawingContext->());
+procedure FastClear(var dc: DrawingContext);}
+
 procedure __InitModule__;
 procedure __FinalizeModule__;
 
 implementation
+
+var FontFamiliesDict := new Dictionary<string,FontFamily>;
+
+function GetFontFamily(name: string): FontFamily;
+begin
+  if not (name in FontFamiliesDict) then
+  begin
+    var b := new FontFamily(name);
+    FontFamiliesDict[name] := b;
+    Result := b
+  end
+  else Result := FontFamiliesDict[name];
+end;
+
+procedure Redraw(d: ()->()) := app.Dispatcher.Invoke(d);
+function getApp: Application := app;
 
 function RGB(r,g,b: byte) := Color.Fromrgb(r, g, b);
 function ARGB(a,r,g,b: byte) := Color.FromArgb(a, r, g, b);
@@ -486,26 +653,25 @@ function EmptyColor: Color := ARGB(0,0,0,0);
 function clRandom := RandomColor();
 function Pnt(x,y: real) := new Point(x,y);
 function Rect(x,y,w,h: real) := new System.Windows.Rect(x,y,w,h);
-function ColorBrush(c: Color) := new SolidColorBrush(c);
-function ColorPen(c: Color) := new GPen(ColorBrush(c),Pen.Width);
+function ColorBrush(c: Color) := GetBrush(c);
+function ColorPen(c: Color) := new GPen(GetBrush(c),Pen.Width);
+
+function RandomPoint(w: real): Point := Pnt(Random(w,Window.Width-w),Random(w,Window.Height-w));
+
+function RandomPoints(n: integer; w: real): array of Point;
+begin
+  Result := new Point[n];
+  foreach var i in 0..n-1 do
+    Result[i] := RandomPoint(w);
+end;
+
+function Vect(vx,vy: real): Vector := new Vector(vx,vy);
 
 procedure InvokeVisual(d: System.Delegate; params args: array of object);
 begin
-  if CountVisuals <= 1000000 then
-    app.Dispatcher.Invoke(d,args)
-  else
-  begin
-    //Print(CountVisuals);
-    app.Dispatcher.Invoke(d,DispatcherPriority.Background,args);
-    Sleep(10);    
-  end;
+  app.Dispatcher.Invoke(d,args)
 end;
 
-{procedure MoveTo(Self: UIElement; l,t: integer); extensionmethod;
-begin
-  Canvas.SetLeft(Self,l);
-  Canvas.SetTop(Self,t);
-end;}
 type 
   MyVisualHost = class(Canvas) // мб Canvas - тогда можно размещать другие элементы!
   public  
@@ -526,7 +692,11 @@ type
     property VisualChildrenCount: integer read get_VisualChildrenCount; override;
   end;
 
-var Host: MyVisualHost;
+var 
+  Host: MyVisualHost;
+  Host1: Canvas;
+  RTbmap: RenderTargetBitmap;
+  rtbmapIsCleared := True;
 
 var 
   XOrigin := 0.0;
@@ -534,33 +704,42 @@ var
   GlobalScale := 1.0;
   CurrentCoordType: CoordType := StandardCoords;
 
-{procedure ProbaAnimP;
-begin
-  var dv := Host.children[0] as DrawingVisual;
-  
-  var animation := new VectorAnimation();
-  animation.From := new Vector(20,20);
-  animation.To := new Vector(100,200);
-  animation.Duration := System.TimeSpan.FromSeconds(5);
-  dv.BeginAnimation(OffsetProperty, animation);
-  
-  var geo := dv.Drawing.Children[0] as GeometryDrawing;
-  geo.Pen := ColorPen(Colors.Green);
-  var rg := geo.Geometry as RectangleGeometry;
-  
-  //Print(geo.Geometry.);
-  //geo.Brush := Brushes.Blue;
-  dv.Offset := new Vector(200,40);
-end;
-
-procedure ProbaAnim := Invoke(ProbaAnimP);}
-
 function GetDC: DrawingContext;
 begin
   var visual := new DrawingVisual();
   Host.children.Add(visual);
-  CountVisuals += 1;
   Result := visual.RenderOpen();
+end;
+
+procedure HostToRenderBitmap;
+begin
+  rtBmap.Render(host);
+  rtbmapIsCleared := False;
+  host.Children.Clear;
+end;
+
+procedure ReleaseDC(dc: DrawingContext);
+begin
+  dc.Close;
+  if host.Children.Count > 1000 then
+    HostToRenderBitmap
+end;
+
+procedure FastDraw(d: DrawingContext->());
+begin
+  Invoke(()->
+  begin
+    var dc := GetDC;
+    d(dc);  
+    ReleaseDC(dc);
+  end);
+end;
+
+procedure FastClear(var dc: DrawingContext);
+begin
+  ReleaseDC(dc);
+  Window.Clear;
+  dc := GetDC;
 end;
 
 function GetDC(t: Transform): DrawingContext;
@@ -568,7 +747,6 @@ begin
   var visual := new DrawingVisual();
   visual.Transform := t;
   Host.children.Add(visual);
-  CountVisuals += 1;
   Result := visual.RenderOpen();
 end;
 
@@ -593,7 +771,7 @@ procedure EllipsePFull(x,y,r1,r2: real; b: GBrush; p: GPen);
 begin
   var dc := GetDC();
   dc.DrawEllipse(b, p, Pnt(x, y), r1, r2);
-  dc.Close();
+  ReleaseDC(dc);
 end;
 
 type VE = auto class
@@ -604,7 +782,7 @@ procedure DrawGeometryP(g: VE);
 begin
   var dc := GetDC();
   dc.DrawGeometry(Brush.BrushConstruct,Pen.PenConstruct,g.g());
-  dc.Close();
+  ReleaseDC(dc);
 end;
 
 procedure RectanglePFull(x,y,w,h: real; b: GBrush; p: GPen);
@@ -621,29 +799,57 @@ begin
   end;
   var dc := GetDC();
   dc.DrawRectangle(b, p, Rect(x,y,w,h));
-  dc.Close();
-  //var f := Host.children[0] as DrawingVisual;
-  {var geo := f.Drawing.Children[0] as GeometryDrawing;
-  geo.Brush := Brushes.Blue;}
+  ReleaseDC(dc);
 end;
 
+procedure SetPixelP(x,y: real; c: Color);
+begin
+  var dc := GetDC();
+  dc.DrawRectangle(GetBrush(c), nil, Rect(x,y,1,1));
+  ReleaseDC(dc);
+end;
+
+
+procedure SetPixelsP(x,y: real; w,h: integer; f: (integer,integer)->Color);
+begin
+  var dc := GetDC();
+  for var ix:=0 to w-1 do
+  for var iy:=0 to h-1 do
+  begin
+    dc.DrawRectangle(GetBrush(f(ix,iy)), nil, Rect(x+ix,y+iy,1,1));
+  end;  
+  ReleaseDC(dc);
+end;
+  
 procedure LinePFull(x,y,x1,y1: real; p: GPen);
 begin
   var dc := GetDC();
   dc.DrawLine(p, Pnt(x,y), Pnt(x1,y1));
-  dc.Close();
+  ReleaseDC(dc);
 end;
 
+var RusCultureInfo := new System.Globalization.CultureInfo('ru-ru');
+
 function FormText(text: string) := 
-  new FormattedText(text,new System.Globalization.CultureInfo('ru-ru'), FlowDirection.LeftToRight, 
-                    Font.TypefaceClone, Font.Size, Font.BrushConstruct);
+  new FormattedText(text, RusCultureInfo, FlowDirection.LeftToRight, 
+                    Font.tf, Font.Size, Font.BrushClone);
   
-function FormTextC(text: string; c: GColor): FormattedText := 
-  new FormattedText(text,new System.Globalization.CultureInfo('ru-ru'), FlowDirection.LeftToRight, 
-                    Font.TypefaceClone, Font.Size, ColorBrush(c));
+function FormTextFont(text: string; f: FontOptions): FormattedText;
+begin
+  var tf := new Typeface(GetFontFamily(f.Name),f.tf.Style,f.tf.Weight,f.tf.Stretch);
+  Result := new FormattedText(text,RusCultureInfo, FlowDirection.LeftToRight, tf, f.Size, f.BrushClone);
+end; 
     
+function FormTextC(text: string; c: GColor): FormattedText;
+begin 
+  Result := new FormattedText(text,RusCultureInfo, FlowDirection.LeftToRight, Font.TypefaceClone, Font.Size, GetBrush(c));
+end;                    
+                    
 function TextWidthP(text: string) := FormText(text).Width;
 function TextHeightP(text: string) := FormText(text).Height;
+
+function TextWidthPFont(text: string; f: FontOptions) := FormTextFont(text,f).Width;
+function TextHeightPFont(text: string; f: FontOptions) := FormTextFont(text,f).Height;
 
 type TextV = auto class
   text: string;
@@ -654,69 +860,110 @@ type TextV = auto class
     var ft := FormText(text);
     Result := new Size(ft.Width,ft.Height);
   end;
+  function TextWidthFont(f: FontOptions) := TextWidthP(text);
+  function TextHeightFont(f: FontOptions) := TextHeightP(text);
+  function TextSizeFont(f: FontOptions): Size;
+  begin
+    var ft := FormTextFont(text,f);
+    Result := new Size(ft.Width,ft.Height);
+  end;
 end;
 
-procedure TextPFull(x,y: real; text: string; angle,x0,y0: real);
+procedure TextPFull(x,y: real; text: string; angle,x0,y0: real; f: FontOptions);
 begin
-  var dc: DrawingContext;
+  var ft := FormTextFont(text,f);
+  var dc := GetDC();
+  var RT := new RotateTransform(angle,x0,y0);
+  dc.PushTransform(RT);
   if CurrentCoordType = StandardCoords then
   begin
-    dc := GetDC();
-    var RT := new RotateTransform(angle,x0,y0);
-    dc.PushTransform(RT);
-    dc.DrawText(FormText(text),new Point(x,y));
-    dc.Pop();
+    dc.DrawText(ft,new Point(x,y));
   end  
   else   
   begin
     var m := Host.RenderTransform.Value;
     var mt := new MatrixTransform(1/m.M11,0,0,1/m.M22,x,y);
-    dc := GetDC();
-    var RT := new RotateTransform(angle,x0,y0);
-    dc.PushTransform(RT);
     dc.PushTransform(mt);
-    dc.DrawText(FormText(text),new Point(0,0));
+
+    dc.DrawText(ft,new Point(0,0));
+
     dc.Pop();
-    dc.Pop();
-  end;
+  end;  
+  dc.Pop();
   //dc.DrawRectangle(Brushes.White,nil,new GRect(new Point(x,y),TextV.Create(text).TextSize));
-  dc.Close();
+  ReleaseDC(dc);
 end;
 
 procedure TextPFull(x,y: real; text: string; angle,x0,y0: real; c: Color);
 begin
-  var dc: DrawingContext;
-  if CurrentCoordType = StandardCoords then
-  begin
-    dc := GetDC();
-    var RT := new RotateTransform(angle,x0,y0);
-    dc.PushTransform(RT);
-    dc.DrawText(FormTextC(text,c),new Point(x,y));
-    dc.Pop();
-  end  
-  else   
-  begin
-    var m := Host.RenderTransform.Value;
-    var mt := new MatrixTransform(1/m.M11,0,0,1/m.M22,x,y);
-    dc := GetDC();
-    var RT := new RotateTransform(angle,x0,y0);
-    dc.PushTransform(RT);
-    dc.PushTransform(mt);
-    dc.DrawText(FormTextC(text,c),new Point(0,0));
-    dc.Pop();
-    dc.Pop();
-  end;  
-  //dc.DrawRectangle(Brushes.White,nil,new GRect(new Point(x,y),TextV.Create(text).TextSize));
-  dc.Close();
+  TextPFull(x,y,text,angle,x0,y0,Font.WithColor(c));
 end;
 
-var dpic := new Dictionary<string, BitmapImage>;
+procedure TextPFull(x,y: real; text: string; angle,x0,y0: real);
+begin
+  TextPFull(x,y,text,angle,x0,y0,Font);
+end;
 
-function GetBitmapImage(fname: string): BitmapImage;
+
+var dpic := new Dictionary<string, BitmapSource>;
+
+function GetBitmapImage(fname: string): BitmapSource;
 begin
   if not dpic.ContainsKey(fname) then 
-    dpic[fname] := new BitmapImage(new System.Uri(fname,System.UriKind.Relative));
+  begin
+    var b := new BitmapImage();
+    var s := System.IO.File.OpenRead(fname);
+    b.BeginInit();
+    b.CacheOption := BitmapCacheOption.OnLoad;
+    b.StreamSource := s;
+    b.EndInit();
+    s.Close();    
+    //dpic[fname] := new BitmapImage(new System.Uri(fname,System.UriKind.Relative));
+    dpic[fname] := b;
+  end;  
   Result := dpic[fname];
+end;
+
+procedure DrawPixelsP(x,y:real; px,py,pw,ph: integer; a: array [,] of Color);
+begin
+  var (scalex,scaley) := ScaleToDevice;
+  var bitmap := new WriteableBitmap(pw, ph, 96*scalex, 96*scaley, PixelFormats.Bgra32, nil);
+  
+  var stride := pw*4; // stride - это размер одной строки в байтах
+  var size := stride*ph;
+  
+  
+//  var pixels := new byte[w*h*4];
+//  var p := 0;
+//  for var dy := ay to ay+h-1 do
+//    for var dx := ax to ax+w-1 do
+//    begin
+//      pixels[p] := a[dx,dy].B; p += 1;
+//      pixels[p] := a[dx,dy].G; p += 1;
+//      pixels[p] := a[dx,dy].R; p += 1;
+//      pixels[p] := a[dx,dy].A; p += 1;
+//    end;
+//  bitmap.WritePixels(new Int32Rect(0, 0, w, h), pixels, stride, 0);
+  
+  
+  //так на 10-20% быстрее
+  var pixels := System.Runtime.InteropServices.Marshal.AllocHGlobal(size);
+  var curr_ptr := pixels;
+  for var dy := py to py+ph-1 do
+    for var dx := px to px+pw-1 do
+    begin
+      var c := a[dx,dy];
+      PByte(curr_ptr.ToPointer)^ := c.B; curr_ptr := curr_ptr + 1;
+      PByte(curr_ptr.ToPointer)^ := c.G; curr_ptr := curr_ptr + 1;
+      PByte(curr_ptr.ToPointer)^ := c.R; curr_ptr := curr_ptr + 1;
+      PByte(curr_ptr.ToPointer)^ := c.A; curr_ptr := curr_ptr + 1;
+    end;
+  bitmap.WritePixels(new Int32Rect(0, 0, pw, ph), pixels, size, stride);
+  System.Runtime.InteropServices.Marshal.FreeHGlobal(pixels);
+  
+  var dc := GetDC();
+  dc.DrawImage(bitmap, Rect(x, y, pw, ph));
+  ReleaseDC(dc);
 end;
 
 procedure DrawImageP(x,y: real; fname: string);
@@ -724,7 +971,7 @@ begin
   var dc := GetDC();
   var img := GetBitmapImage(fname);
   dc.DrawImage(img, Rect(x, y, img.PixelWidth, img.PixelHeight));
-  dc.Close();
+  ReleaseDC(dc);
 end;
 
 procedure DrawImageWHP(x,y,w,h: real; fname: string);
@@ -732,7 +979,7 @@ begin
   var dc := GetDC();
   var img := GetBitmapImage(fname);
   dc.DrawImage(img, Rect(x, y, w, h));
-  dc.Close();
+  ReleaseDC(dc);
 end;
 
 procedure DrawImageUnscaledP(x,y: real; fname: string);
@@ -741,7 +988,7 @@ begin
   var (scalex,scaley) := ScaleToDevice;
   var img := GetBitmapImage(fname);
   dc.DrawImage(img, Rect(x, y, img.PixelWidth/scalex, img.PixelHeight/scaley));
-  dc.Close();
+  ReleaseDC(dc);
 end;
 
 function ImageWidthP(fname: string) := GetBitmapImage(fname).PixelWidth;
@@ -768,7 +1015,7 @@ begin
   pl.Open(new System.Uri(fname, System.UriKind.Relative));
   pl.Play();
   dc.DrawVideo(pl, Rect(x, y, w, h));
-  dc.Close();
+  ReleaseDC(dc);
 end;
 
 // А теперь займёмся полигонами...
@@ -792,18 +1039,20 @@ procedure DrawPolygon(Self: DrawingContext; b: GBrush; p: GPen; points: array of
 procedure DrawPolyline(Self: DrawingContext; p: GPen; points: array of Point); extensionmethod
   := Self.DrawPolygonOrPolyline(nil,p,points,false);
   
+procedure operator+=(var p: Point; v: Vector); extensionmethod := p := new Point(p.x+v.x,p.y+v.y);
+  
 procedure PolyLinePFull(points: array of Point; p: GPen);
 begin
   var dc := GetDC();
   dc.DrawPolyline(p, points);
-  dc.Close();
+  ReleaseDC(dc);
 end;
 
 procedure PolygonPFull(points: array of Point; b: GBrush; p: GPen);
 begin
   var dc := GetDC();
   dc.DrawPolygon(b, p, points);
-  dc.Close();
+  ReleaseDC(dc);
 end;
 
 procedure ArcSectorPFull(x, y, r, angle1, angle2: real; b: GBrush; p: GPen; issector: boolean);
@@ -830,8 +1079,17 @@ begin
   end;
   
   dc.DrawGeometry(b,p,geo);
-  dc.Close;
+  ReleaseDC(dc);
 end;
+
+procedure SetPixel(x,y: real; c: Color) := InvokeVisual(SetPixelP, x, y, c);
+
+procedure SetPixels(x,y: real; w,h: integer; f: (integer,integer)->Color)
+  := InvokeVisual(SetPixelsP, x, y, w, h, f);
+  
+procedure DrawPixels(x,y: real; pixels: array [,] of Color) := InvokeVisual(DrawPixelsP,x,y,0,0,pixels.GetLength(0),pixels.GetLength(1),pixels);
+
+procedure DrawPixels(x,y: real; pixels: array [,] of Color; px,py,pw,ph: integer) := InvokeVisual(DrawPixelsP,x,y,px,py,pw,ph,pixels);
 
 procedure ArcPFull(x, y, r, angle1, angle2: real; p: GPen) := ArcSectorPFull(x, y, r, angle1, angle2, nil, p, false);
 
@@ -840,16 +1098,16 @@ procedure SectorPFull(x, y, r, angle1, angle2: real; b: GBrush; p: GPen) := ArcS
 procedure EllipseP(x,y,r1,r2: real) := EllipsePFull(x,y,r1,r2,Brush.BrushConstruct,Pen.PenConstruct);
 procedure DrawEllipseP(x,y,r1,r2: real) := EllipsePFull(x,y,r1,r2,nil,Pen.PenConstruct);
 procedure FillEllipseP(x,y,r1,r2: real) := EllipsePFull(x,y,r1,r2,Brush.BrushConstruct,nil);
-procedure EllipsePC(x,y,r1,r2: real; c: GColor) := EllipsePFull(x,y,r1,r2,ColorBrush(c),Pen.PenConstruct);
+procedure EllipsePC(x,y,r1,r2: real; c: GColor) := EllipsePFull(x,y,r1,r2,GetBrush(c),Pen.PenConstruct);
 procedure DrawEllipsePC(x,y,r1,r2: real; c: GColor) := EllipsePFull(x,y,r1,r2,nil,ColorPen(c));
-procedure FillEllipsePC(x,y,r1,r2: real; c: GColor) := EllipsePFull(x,y,r1,r2,ColorBrush(c),nil);
+procedure FillEllipsePC(x,y,r1,r2: real; c: GColor) := EllipsePFull(x,y,r1,r2,GetBrush(c),nil);
 
 procedure RectangleP(x,y,w,h: real) := RectanglePFull(x,y,w,h,Brush.BrushConstruct,Pen.PenConstruct);
 procedure DrawRectangleP(x,y,w,h: real) := RectanglePFull(x,y,w,h,nil,Pen.PenConstruct);
 procedure FillRectangleP(x,y,w,h: real) := RectanglePFull(x,y,w,h,Brush.BrushConstruct,nil);
-procedure RectanglePC(x,y,r1,r2: real; c: GColor) := RectanglePFull(x,y,r1,r2,ColorBrush(c),Pen.PenConstruct);
+procedure RectanglePC(x,y,r1,r2: real; c: GColor) := RectanglePFull(x,y,r1,r2,GetBrush(c),Pen.PenConstruct);
 procedure DrawRectanglePC(x,y,r1,r2: real; c: GColor) := RectanglePFull(x,y,r1,r2,nil,ColorPen(c));
-procedure FillRectanglePC(x,y,r1,r2: real; c: GColor) := RectanglePFull(x,y,r1,r2,ColorBrush(c),nil);
+procedure FillRectanglePC(x,y,r1,r2: real; c: GColor) := RectanglePFull(x,y,r1,r2,GetBrush(c),nil);
 
 procedure ArcP(x, y, r, angle1, angle2: real) := ArcPFull(x, y, r, angle1, angle2, Pen.PenConstruct);
 procedure ArcPC(x, y, r, angle1, angle2: real; c: GColor) := ArcPFull(x, y, r, angle1, angle2, ColorPen(c));
@@ -857,9 +1115,9 @@ procedure ArcPC(x, y, r, angle1, angle2: real; c: GColor) := ArcPFull(x, y, r, a
 procedure SectorP(x, y, r, angle1, angle2: real) := SectorPFull(x, y, r, angle1, angle2, Brush.BrushConstruct, Pen.PenConstruct);
 procedure DrawSectorP(x, y, r, angle1, angle2: real) := SectorPFull(x, y, r, angle1, angle2, nil, Pen.PenConstruct);
 procedure FillSectorP(x, y, r, angle1, angle2: real) := SectorPFull(x, y, r, angle1, angle2, Brush.BrushConstruct, nil);
-procedure SectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, ColorBrush(c), Pen.PenConstruct);
+procedure SectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, GetBrush(c), Pen.PenConstruct);
 procedure DrawSectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, nil, ColorPen(c));
-procedure FillSectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, ColorBrush(c), nil);
+procedure FillSectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, GetBrush(c), nil);
 
 procedure LineP(x,y,x1,y1: real) := LinePFull(x,y,x1,y1,Pen.PenConstruct);
 procedure LinePC(x,y,x1,y1: real; c: GColor) := LinePFull(x,y,x1,y1,ColorPen(c));
@@ -875,10 +1133,12 @@ procedure FillPolygonPC(points: array of Point; c: GColor) := PolygonPFull(point
 
 procedure DrawTextP(x,y: real; text: string; angle,x0,y0: real) := TextPFull(x,y,text,angle,x0,y0);
 procedure DrawTextPC(x,y: real; text: string; angle,x0,y0: real; c: GColor) := TextPFull(x,y,text,angle,x0,y0,c);
+procedure DrawTextPFont(x,y: real; text: string; angle,x0,y0: real; f: FontOptions) := TextPFull(x,y,text,angle,x0,y0,f);
 
 procedure EllipseNew(x,y,r1,r2: real) 
   := InvokeVisual(DrawGeometryP,VE.Create(()->EllipseGeometry.Create(Pnt(x,y),r1,r2)));
 
+// Реализация примитивов
 procedure Ellipse(x,y,rx,ry: real) := InvokeVisual(EllipseP,x,y,rx,ry);
 procedure DrawEllipse(x,y,rx,ry: real) := InvokeVisual(DrawEllipseP,x,y,rx,ry);
 procedure FillEllipse(x,y,rx,ry: real) := InvokeVisual(FillEllipseP,x,y,rx,ry);
@@ -886,12 +1146,27 @@ procedure Ellipse(x,y,rx,ry: real; c: GColor) := InvokeVisual(EllipsePC,x,y,rx,r
 procedure DrawEllipse(x,y,rx,ry: real; c: GColor) := InvokeVisual(DrawEllipsePC,x,y,rx,ry,c);
 procedure FillEllipse(x,y,rx,ry: real; c: GColor) := InvokeVisual(FillEllipsePC,x,y,rx,ry,c);
 
+procedure Ellipse(p: Point; rx,ry: real) := Ellipse(p.X,p.Y,rx,ry);
+procedure DrawEllipse(p: Point; rx,ry: real) := DrawEllipse(p.X,p.Y,rx,ry);
+procedure FillEllipse(p: Point; rx,ry: real) := FillEllipse(p.X,p.Y,rx,ry);
+procedure Ellipse(p: Point; rx,ry: real; c: Color) := Ellipse(p.X,p.Y,rx,ry,c);
+procedure DrawEllipse(p: Point; rx,ry: real; c: Color) := DrawEllipse(p.X,p.Y,rx,ry,c);
+procedure FillEllipse(p: Point; rx,ry: real; c: Color) := FillEllipse(p.X,p.Y,rx,ry,c);
+
 procedure Circle(x,y,r: real) := InvokeVisual(EllipseP,x,y,r,r);
 procedure DrawCircle(x,y,r: real) := InvokeVisual(DrawEllipseP,x,y,r,r);
 procedure FillCircle(x,y,r: real) := InvokeVisual(FillEllipseP,x,y,r,r);
 procedure Circle(x,y,r: real; c: GColor) := InvokeVisual(EllipsePC,x,y,r,r,c);
 procedure DrawCircle(x,y,r: real; c: GColor) := InvokeVisual(DrawEllipsePC,x,y,r,r,c);
 procedure FillCircle(x,y,r: real; c: GColor) := InvokeVisual(FillEllipsePC,x,y,r,r,c);
+
+procedure Circle(p: Point; r: real) := Circle(p.X,p.Y,r);
+procedure DrawCircle(p: Point; r: real) := DrawCircle(p.X,p.Y,r);
+procedure FillCircle(p: Point; r: real) := FillCircle(p.X,p.Y,r);
+procedure Circle(p: Point; r: real; c: Color) := Circle(p.X,p.Y,r,c);
+procedure DrawCircle(p: Point; r: real; c: Color) := DrawCircle(p.X,p.Y,r,c);
+procedure FillCircle(p: Point; r: real; c: Color) := FillCircle(p.X,p.Y,r,c);
+
 
 procedure Rectangle(x,y,w,h: real) := InvokeVisual(RectangleP,x,y,w,h);
 procedure DrawRectangle(x,y,w,h: real) := InvokeVisual(DrawRectangleP,x,y,w,h);
@@ -915,6 +1190,12 @@ procedure FillSector(x, y, r, angle1, angle2: real; c: GColor) := InvokeVisual(F
 
 procedure Line(x,y,x1,y1: real) := InvokeVisual(LineP,x,y,x1,y1);
 procedure Line(x,y,x1,y1: real; c: GColor) := InvokeVisual(LinePC,x,y,x1,y1,c);
+procedure Line(p,p1: Point) := Line(p.x,p.y,p1.x,p1.y);
+procedure Line(p,p1: Point; c: Color) := Line(p.x,p.y,p1.x,p1.y,c);
+procedure Lines(a: array of (Point,Point)) := foreach var i in a.Indices do Line(a[i].Item1,a[i].Item2);
+procedure Lines(a: array of (Point,Point); c: Color) := foreach var i in a.Indices do Line(a[i].Item1,a[i].Item2,c);
+
+
 procedure MoveTo(x,y: real) := (Pen.fx,Pen.fy) := (x,y);
 procedure LineTo(x,y: real);
 begin 
@@ -949,14 +1230,22 @@ function TextHeight(text: string) := InvokeReal(TextV.Create(text).TextHeight);
 /// Размер текста при выводе
 function TextSize(text: string): Size := Invoke&<Size>(TextV.Create(text).TextSize);
 
+function TextWidth(text: string; f: FontOptions): real := InvokeReal(()->TextV.Create(text).TextWidthFont(f));
+
+function TextHeight(text: string; f: FontOptions): real := InvokeReal(()->TextV.Create(text).TextHeightFont(f)); 
+
+function TextSize(text: string; f: FontOptions): Size := Invoke&<Size>(()->TextV.Create(text).TextSizeFont(f));
+
+
 procedure TextOutHelper(x,y: real; text: string; angle: real; x0,y0: real) := InvokeVisual(DrawTextP,x,y,text,angle,x0,y0);
 //procedure TextOut(x,y: real; number: integer) := TextOut(x,y,'' + number);
 //procedure TextOut(x,y: real; number: real) := TextOut(x,y,'' + number);
 procedure TextOutHelper(x,y: real; text: string; angle: real; c: GColor; x0,y0: real) := InvokeVisual(DrawTextPC,x,y,text,angle,x0,y0,c);
 //procedure TextOut(x,y: real; number: integer; c: GColor) := TextOut(x,y,'' + number,c);
 //procedure TextOut(x,y: real; number: real; c: GColor) := TextOut(x,y,'' + number,c);
+procedure TextOutHelper(x,y: real; text: string; angle: real; x0,y0: real; f: FontOptions) := InvokeVisual(DrawTextPFont,x,y,text,angle,x0,y0,f);
 
-procedure DrawTextHelper(var x, y, x0, y0: real; w, h: real; text: string; align: Alignment := Alignment.Center);
+procedure DrawTextHelper(var x, y, x0, y0: real; w, h: real; text: string; align: Alignment := Alignment.Center; f: FontOptions := nil);
 begin
   if h<0 then
   begin
@@ -968,7 +1257,7 @@ begin
     w := -w;
     x -= w;
   end;
-  var sz := TextSize(text);
+  var sz := if f=nil then TextSize(text) else TextSize(text,f);
   var dw,dh: real;
   if CurrentCoordType = StandardCoords then
     (dw,dh) := ((w-sz.Width)/2,(h-sz.Height)/2)
@@ -1001,8 +1290,6 @@ procedure DrawText(x, y, w, h: real; text: string; align: Alignment; angle: real
 begin
   var (x0,y0) := (x,y);
   DrawTextHelper(x, y, x0, y0, w, h, text, align);
-  //FillCircle(x0,y0,0.1,Colors.Blue);
-  //FillCircle(x,y,0.1,Colors.Red);
   TextOutHelper(x,y,text,angle,x0,y0)
 end;
 /// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
@@ -1010,8 +1297,6 @@ procedure DrawText(x, y, w, h: real; text: string; c: GColor; align: Alignment; 
 begin
   var (x0,y0) := (x,y);
   DrawTextHelper(x, y, x0, y0, w, h, text, align);
-  //FillCircle(x0,y0,0.1,Colors.Blue);
-  //FillCircle(x,y,0.1,Colors.Red);
   TextOutHelper(x,y,text,angle,c,x0,y0)
 end;
 /// Выводит целое в прямоугольник к координатами левого верхнего угла (x,y)
@@ -1035,6 +1320,14 @@ procedure DrawText(r: GRect; number: integer; c: GColor; align: Alignment; angle
 /// Выводит вещественное в прямоугольник
 procedure DrawText(r: GRect; number: real; c: GColor; align: Alignment; angle: real) := DrawText(r.x,r.y,r.Width,r.Height,number,c,align,angle);
 
+/// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y) данным шрифтом
+procedure DrawText(x, y, w, h: real; text: string; f: FontOptions; align: Alignment; angle: real);
+begin
+  var (x0,y0) := (x,y);
+  DrawTextHelper(x, y, x0, y0, w, h, text, align, f);
+  TextOutHelper(x,y,text,angle,x0,y0,f)
+end;
+
 {function ConvertAlign(align: Alignment): Alignment;
 begin
   Result := align;
@@ -1057,110 +1350,196 @@ procedure TextOut(x, y: real; text: integer; c: GColor; align: Alignment; angle:
 procedure TextOut(x, y: real; text: real; align: Alignment; angle: real) := TextOut(x, y, ''+text,align,angle);
 procedure TextOut(x, y: real; text: real; c: GColor; align: Alignment; angle: real) := TextOut(x, y, ''+text, c,align,angle);
 
+procedure TextOut(x, y: real; text: string; f: FontOptions; align: Alignment; angle: real) := DrawText(x, y, 0, 0, text, f, align, angle);
+
 
 type
   FS = auto class
-    mx, my, a, min, max: real;
-    x1, y1: real;
-    f: real-> real;
+    mx, my, a, b, min, max: real;
+    x, y, w, h, XTicks, YTicks: real;
+    f: real -> real;
+    title: string;
+    marginY := 6;
+    marginX := 6;
+    XTicksPrecision := 3;
+    YTicksPrecision := 5;
+    spaceBetweenTextAndGraph := 6;
     
-    function Apply(x: real) := Pnt(x1 + mx * (x - a), y1 + my * (max - f(x)));
-    function RealToScreenX(x: real) := x1 + mx * (x - a);
-    function RealToScreenY(y: real) := y1 - my * (y + min);
+    constructor (a, b, min, max, x, y, w, h: real; f: real -> real; XTicks: real := 1; YTicks: real := 1; title: string := '');
+    begin
+      Self.a := a.Round(5); Self.b := b.Round(5); 
+      Self.min := min.Round(5); Self.max := max.Round(5);
+      Self.x := x; Self.y := y; Self.w := w; Self.h := h; 
+      Self.f := f; Self.XTicks := XTicks; Self.YTicks := YTicks;
+      Self.title := title;
+    end;
+    
+    function Ticks(d: real): real;
+    begin
+      var n := floor(log10(d));
+      var p := Power(10,n);
+      var r := d / p;
+      // r = 1 .. 10
+      if r >= 5 then
+        Result := p
+      else if r >= 2 then  
+        Result := p/2
+      else Result := p/5
+    end;
+    
+    procedure CorrectBounds;
+    begin
+      //var digits := 5;
+      if real.IsNaN(XTicks) then
+        XTicks := Ticks(b-a);
+      if real.IsNaN(YTicks) then
+        YTicks := Ticks(max-min);
+      var th := TextHeight('0');
+      var tw := GetRY0.Step(YTicks).TakeWhile(ry -> ry <= max).Select(y -> TextWidth(y.Round(YTicksPrecision).ToString)).Max;
+      var dd := TextWidth(b.Round(xTicksPrecision).ToString)/2;
+
+      //var tw := TextWidth('-99.9');
+      w -= marginX * 2 + spaceBetweenTextAndGraph + tw + dd;
+      h -= marginY * 2 + spaceBetweenTextAndGraph + th;
+      x += marginX + spaceBetweenTextAndGraph + tw; 
+      y += marginY;
+      if title<>'' then
+      begin
+        y += spaceBetweenTextAndGraph + th;
+        h -= spaceBetweenTextAndGraph + th;
+      end;
+      mx := w / (b - a);
+      my := h / (max - min);
+    end;
+    
+    function Apply(xx: real) := Pnt(x + mx * (xx - a), y + my * (max - f(xx)));
+    function RealToScreenX(xx: real) := x + mx * (xx - a);
+    function RealToScreenY(yy: real) := y + h - my * (yy - min); // ?
+    function ScreenToRealX(xx: real) := (xx - x) / mx + a;
+    function ScreenToRealY(yy: real) := (y + h - yy) / my + min;
+    
+    function GetRX0: real;
+    begin
+      var xt := XTicks * Trunc(Abs(a)/XTicks);
+      var rx0: real; 
+      if a <= 0 then 
+        rx0 := -xt 
+      else rx0 := xt + XTicks;
+      Result := rx0;
+    end;
+    
+    function GetRY0: real;
+    begin
+      var yt := YTicks * Trunc(Abs(min)/YTicks);
+      var ry0: real;
+      if min <= 0 then 
+        ry0 := -yt 
+      else ry0 := yt + YTicks;
+      Result := ry0;
+    end;
+
+    procedure Draw;
+    var AxisColor := GrayColor(112);
+    begin
+      FillRectangle(x, y, w, h, Colors.White);
+      CorrectBounds;
+      Pen.Color := Colors.LightGray;
+      var sx := mx * XTicks;
+
+      var rx0 := GetRX0;
+
+      var x0 := RealToScreenX(rx0);
+      while x0<=x+w+0.000001 do
+      begin
+        if Abs(rx0)<0.000001 then
+          Line(x0,y,x0,y+h,AxisColor)
+        else Line(x0,y,x0,y+h);
+        TextOut(x0,y+h+4,rx0.Round(XTicksPrecision),Alignment.CenterTop);
+        x0 += sx;
+        rx0 += XTicks;
+      end;
+      
+      var sy := my * YTicks;
+      
+      var ry0 := GetRY0;
+      
+      if title<>'' then
+        TextOut(x+w/2,y-spaceBetweenTextAndGraph,Title,Font.WithSize(Font.Size*1.15){.WithStyle(FontStyle.Bold)},Alignment.CenterBottom);
+      var y0 := RealToScreenY(ry0);
+      
+      while y0>=y-0.000001 do
+      begin
+        if Abs(ry0)<0.000001 then
+          Line(x,y0,x+w,y0,AxisColor)
+        else Line(x,y0,x+w,y0);  
+        TextOut(x-4,y0,ry0.Round(YTicksPrecision),Alignment.RightCenter);
+        y0 -= sy;
+        ry0 += YTicks;
+      end;
+      
+      DrawRectangle(x, y, w, h,Colors.Black);
+    
+      Pen.Color := Colors.Black;
+      var n := Round(w / 1);
+      if n<=0 then exit;
+      var pp := PartitionPoints(a, b, n);
+      var fff: real -> Point := xx -> Pnt(x + mx * (xx - a), y + my * (max - f(xx).Clamp(min,max)));
+      //pp.Select(x->(x,f(x))).PrintLines;
+      Polyline(pp.Select(fff).ToArray);
+    end;
   end;
 
-/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом параметрами x,y,w,h, 
-procedure DrawGraph(f: real-> real; a, b, min, max, x, y, w, h: real);
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом параметрами x,y,w,h 
+procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h: real; title: string);
 begin
-  var coefx := w / (b - a);
-  var coefy := h / (max - min);
-  
-  var fso := new FS(coefx, coefy, a, min, max, x, y, f);
-  
-  // Линии 
-  {Pen.Color := Color.LightGray;
-  
-  var hx := 1.0;
-  var xx := hx;
-  while xx<b do
-  begin
-    var x0 := fso.RealToScreenX(xx);
-    Line(x0,y1,x0,y2);
-    xx += hx
-  end;
-  
-  xx := -hx;
-  while xx>a do
-  begin
-    var x0 := fso.RealToScreenX(xx);
-    Line(x0,y1,x0,y2);
-    xx -= hx
-  end;
-  
-  var hy := 1.0;
-  var yy := hy;
-  while yy<max do
-  begin
-    var y0 := fso.RealToScreenY(yy);
-    Line(x1,y0,x2,y0);
-    yy += hy
-  end;
-  
-  yy := -hy;
-  while yy>min do
-  begin
-    var y0 := fso.RealToScreenY(yy);
-    Line(x1,y0,x2,y0);
-    yy -= hy
-  end;
-  
-  // Оси 
-  Pen.Color := Color.Blue;
-  
-  var x0 := fso.RealToScreenX(0);
-  var y0 := fso.RealToScreenY(0);
-  
-  Line(x0,y1,x0,y2);
-  Line(x1,y0,x2,y0);}
-  
-  // График
-  
-  Pen.Color := Colors.Black;
-  Rectangle(x, y, w, h);
-  
-  Pen.Color := Colors.Black;
-  var n := Round(w / 3);
-  Polyline(Partition(a, b, n).Select(fso.Apply).ToArray);
+  DrawGraph(f,a,b,min,max,x,y,w,h,real.NaN,real.NaN,title); 
 end;
 
-procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect) := DrawGraph(f, a, b, min, max, r.X, r.Y, r.Width, r.Height);  
-
-procedure DrawGraph(f: real -> real; a, b, min, max: real) := DrawGraph(f, a, b, min, max, Window.ClientRect);
-
-procedure DrawGraph(f: real -> real; a, b: real; x, y, w, h: real);
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом параметрами x,y,w,h. Два последних параметра задают шаг сетки по OX и OY
+procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h, XTicks, YTicks: real; title: string);
 begin
-  var n := Round(w / 3);
-  var q := Partition(a, b, n);
-  DrawGraph(f, a, b, q.Min(f), q.Max(f), x, y, w, h)
+  var fso := new FS(a,b,min,max,x,y,w,h,f,XTicks,YTicks,title);
+  fso.Draw;
 end;
 
-procedure DrawGraph(f: real -> real; a, b: real; r: GRect) := DrawGraph(f, a, b, r.X, r.Y, r.Width, r.Height);
+procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect; title: string) := DrawGraph(f, a, b, min, max, r.X, r.Y, r.Width, r.Height, title);
 
-procedure DrawGraph(f: real -> real; r: GRect) := DrawGraph(f, -5, 5, r);
+procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect; XTicks, YTicks: real; title: string) := DrawGraph(f, a, b, min, max, r.X, r.Y, r.Width, r.Height, XTicks, YTicks, title);  
 
-procedure DrawGraph(f: real -> real; a, b: real) := DrawGraph(f, a, b, 0, 0, Window.Width - 1, Window.Height - 1);
+procedure DrawGraph(f: real -> real; a, b, min, max: real; title: string) := DrawGraph(f, a, b, min, max, Window.ClientRect, title);
 
-procedure DrawGraph(f: real -> real) := DrawGraph(f, -5, 5);
+procedure DrawGraph(f: real -> real; a, b: real; x, y, w, h: real; title: string);
+begin
+  var n := Round(w / 1);
+  if n<=0 then exit;
+  var q := PartitionPoints(a, b, n).ToArray;
+  var mi := q.Min(f);
+  var ma := q.Max(f);
+  DrawGraph(f, a, b, mi, ma, x, y, w, h, title);
+end;
+
+procedure DrawGraph(f: real -> real; a, b: real; r: GRect; title: string) := DrawGraph(f, a, b, r.X, r.Y, r.Width, r.Height, title);
+
+procedure DrawGraph(f: real -> real; r: GRect; title: string) := DrawGraph(f, -5, 5, r, title);
+
+procedure DrawGraph(f: real -> real; a, b: real; title: string) := DrawGraph(f, a, b, 0, 0, GraphWindow.Width - 1, GraphWindow.Height - 1, title);
+
+procedure DrawGraph(f: real -> real; title: string) := DrawGraph(f, -5, 5, title);
 
 function GraphWindowTypeGetLeftP: real;
 begin
   Result := 0;
   foreach var p in MainDockPanel.Children do
-    if (p is FrameworkElement) and (p<>host) then
+    if (p is FrameworkElement) and (p<>host1) then
     begin
       var d := DockPanel.GetDock(FrameworkElement(p));
       if d=Dock.Left then
-        Result += FrameworkElement(p).Width;
+      begin
+        var f := FrameworkElement(p).Width;
+        if real.IsNaN(f) then
+          continue;
+        Result += f;
+      end;    
     end;
 end;
 
@@ -1168,11 +1547,16 @@ function GraphWindowTypeGetTopP: real;
 begin
   Result := 0;
   foreach var p in MainDockPanel.Children do
-    if (p is FrameworkElement) and (p<>host) then
+    if (p is FrameworkElement) and (p<>host1) then
     begin
       var d := DockPanel.GetDock(FrameworkElement(p));
       if d=Dock.Top then
-        Result += FrameworkElement(p).Height;
+      begin
+        var f := FrameworkElement(p).Height;
+        if real.IsNaN(f) then
+          continue;
+        Result += f;
+      end;    
     end;
 end;
 
@@ -1186,11 +1570,17 @@ begin
   else Result := Size(host.DataContext).Width;}
   Result := Window.Width;
   foreach var p in MainDockPanel.Children do
-    if (p is FrameworkElement) and (p<>host) then
+    if (p is FrameworkElement) and (p<>host1) then
     begin
       var d := DockPanel.GetDock(FrameworkElement(p));
       if (d=Dock.Left) or (d=Dock.Right) then
-        Result -= FrameworkElement(p).Width;
+      begin
+        var f := FrameworkElement(p).Width;
+        //Print(f);
+        if real.IsNaN(f) then
+          continue;
+        Result -= f;
+      end;  
     end;
 end;
 function GraphWindowType.GetWidth := InvokeReal(GraphWindowTypeGetWidthP);
@@ -1202,25 +1592,47 @@ begin
   else Result := Size(host.DataContext).Height;}
   Result := Window.Height;
   foreach var p in MainDockPanel.Children do
-    if (p is FrameworkElement) and (p<>host) then
+    if (p is FrameworkElement) and (p<>host1) then
     begin
       var d := DockPanel.GetDock(FrameworkElement(p));
       if (d=Dock.Top) or (d=Dock.Bottom) then
-        Result -= FrameworkElement(p).Height;
+      begin  
+        var f := FrameworkElement(p).Height;
+        if real.IsNaN(f) then
+          continue;
+        Result -= f;
+      end;  
     end;
 end;
 function GraphWindowType.GetHeight := InvokeReal(GraphWindowTypeGetHeightP);
 
 procedure SaveWindowP(canvas: FrameworkElement; filename: string);
 begin
+  HostToRenderBitmap;
   var (scalex,scaley) := ScaleToDevice;
   var (dpiX,dpiY) := (scalex * 96, scaley * 96);
   
   var sz := Size(host.DataContext);
   
   var bmp := new RenderTargetBitmap(Round(sz.Width*scalex), Round(sz.Height*scaley), dpiX, dpiY, PixelFormats.Pbgra32);
+
+  var myvis := new DrawingVisual();
+  var dc := myvis.RenderOpen;
+  var r := Rect(0,0,Window.Width,Window.Height);
+  var mm := (canvas as MyVisualHost).RenderTransform.Value;
+  mm.Invert;
+  r.Transform(mm);
+  dc.DrawRectangle(Brushes.White,nil,r);
+  var rr := Rect(0,0,rtbmap.Width,rtbmap.Height);
+  dc.DrawImage(rtbmap,rr);
+  dc.Close;
+  (canvas as MyVisualHost).children.Insert(0,myvis);
   
   bmp.Render(canvas);
+  
+  dpic[filename] := bmp;
+
+  (canvas as MyVisualHost).children.RemoveAt(0);
   
   var ext := ExtractFileExt(filename).ToLower;
   
@@ -1249,12 +1661,40 @@ begin
   //FillWindow(fname);
 end;
 
+function GraphWindowType.Center: Point := Pnt(Width/2,Height/2);
+
+function GraphWindowType.ClientRect: GRect := Rect(0,0,Width,Height);
+
+
 procedure WindowTypeWPF.Save(fname: string) := GraphWindow.Save(fname);
 
 procedure WindowTypeWPF.Load(fname: string) := GraphWindow.Load(fname);
 
-procedure WindowTypeClearP := begin Host.children.Clear; CountVisuals := 0; end;
+procedure WindowTypeClearP;
+begin 
+  Host.children.Clear; 
+  if not rtbmapIsCleared then
+  begin
+    rtbmap.Clear; 
+    rtbmapIsCleared := True;
+  end;  
+end;
+
+procedure WindowTypeClearPC(c: Color);
+begin 
+  Host.children.Clear; 
+  if not rtbmapIsCleared then
+  begin
+    rtbmap.Clear; 
+    rtbmapIsCleared := True;
+  end;  
+  FillRectangle(0,0,Window.Width,Window.Height,c)
+end;
+
 procedure WindowTypeWPF.Clear := Invoke(WindowTypeClearP);
+
+procedure WindowTypeWPF.Clear(c: Color) := Invoke(WindowTypeClearPC,c);
+
 
 function XMin := -XOrigin/GlobalScale;
 function XMax := (Window.Width-XOrigin)/GlobalScale;
@@ -1312,6 +1752,7 @@ begin
   if drawgrid then
     DrawGridP
 end;
+
 procedure SetMathematicCoordsP1(x1,x2,ymin: real; drawgrid: boolean);
 begin
   if CurrentCoordType = StandardCoords then
@@ -1329,6 +1770,7 @@ begin
   if drawgrid then
     DrawGridP
 end;
+
 procedure SetMathematicCoords(x1: real; x2: real; drawgrid: boolean) := Invoke(SetMathematicCoordsP,x1,x2,drawgrid);
 procedure SetMathematicCoords(x1,x2,ymin: real; drawgrid: boolean) := Invoke(SetMathematicCoordsP1,x1,x2,ymin,drawgrid);
 
@@ -1345,7 +1787,9 @@ begin
   Host.RenderTransform := m;
   //Pen.Width := Pen.Width * scale; // нет!
 end;
+
 procedure SetStandardCoords(scale,x0,y0: real) := Invoke(SetStandardCoordsP,scale,x0,y0);
+
 procedure SetStandardCoordsSharpLinesP(x0,y0: real);
 begin
   var (sx,sy) := ScaleToDevice;
@@ -1355,8 +1799,7 @@ begin
 end; 
 procedure SetStandardCoordsSharpLines(x0,y0: real) := Invoke(SetStandardCoordsSharpLinesP,x0,y0);
 
-/// --- SystemMouseEvents
-procedure SystemOnMouseDown(sender: Object; e: MouseButtonEventArgs);
+function GetMouseArgs(e: MouseEventArgs): (Point,integer);
 begin
   var mb := 0;
   var p := e.GetPosition(host);
@@ -1364,30 +1807,27 @@ begin
     mb := 1
   else if e.RightButton = MouseButtonState.Pressed then
     mb := 2;
+  Result := (p,mb);  
+end;
+
+/// --- SystemMouseEvents
+procedure SystemOnMouseDown(sender: Object; e: MouseButtonEventArgs);
+begin
+  var (p,mb) := GetMouseArgs(e);
   if OnMouseDown <> nil then  
     OnMouseDown(p.x, p.y, mb);
 end;
 
 procedure SystemOnMouseUp(sender: Object; e: MouseButtonEventArgs);
 begin
-  var mb := 0;
-  var p := e.GetPosition(host);
-  if e.LeftButton = MouseButtonState.Pressed then
-    mb := 1
-  else if e.RightButton = MouseButtonState.Pressed then
-    mb := 2;
+  var (p,mb) := GetMouseArgs(e);
   if OnMouseUp <> nil then  
     OnMouseUp(p.x, p.y, mb);
 end;
 
 procedure SystemOnMouseMove(sender: Object; e: MouseEventArgs);
 begin
-  var mb := 0;
-  var p := e.GetPosition(host);
-  if e.LeftButton = MouseButtonState.Pressed then
-    mb := 1
-  else if e.RightButton = MouseButtonState.Pressed then
-    mb := 2;
+  var (p,mb) := GetMouseArgs(e);
   if OnMouseMove <> nil then  
     OnMouseMove(p.x, p.y, mb);
 end;
@@ -1401,42 +1841,47 @@ procedure SystemOnKeyUp(sender: Object; e: KeyEventArgs) :=
   if OnKeyUp<>nil then
     OnKeyUp(e.Key);
     
+procedure SystemOnKeyPress(sender: Object; e: TextCompositionEventArgs) := 
+  if (OnKeyPress<>nil) and (e.Text<>nil) and (e.Text.Length>0) then
+    OnKeyPress(e.Text[1]);
+    
 procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) := 
   if OnResize<>nil then
     OnResize();
 
 ///----------------------------------------------------------------------
 
-{procedure RenderFrame(s: Object; e: System.EventArgs);
-begin
-end;}
+var OnDraw: procedure;
+var OnDraw1: procedure(frame: integer);
 
-var OnDraw: procedure := nil;
-var OnDraw1: procedure(frame: integer) := nil;
-
-var FrameRate := 60; // кадров в секунду. Можно меньше!
+var FrameRate := 61; // кадров в секунду. Можно меньше!
 var LastUpdatedTime := new System.TimeSpan(integer.MinValue); 
 
 var FrameNum := 0;
 
 procedure RenderFrame(o: Object; e: System.EventArgs);
 begin
-  if (OnDraw<>nil) or (OnDraw1<>nil) then
+  if (OnDraw<>nil) or (OnDraw1<>nil) or (OnDrawFrame<>nil) then
   begin
     var e1 := RenderingEventArgs(e).RenderingTime;
+    if LastUpdatedTime.Ticks = integer.MinValue then // первый раз
+      LastUpdatedTime := e1;
     var dt := e1 - LastUpdatedTime;
     var delta := 1000/Framerate; // через какое время обновлять
+    if OnDrawFrame<>nil then 
+      delta := 0; // перерисовывать когда придёт время
     if dt.TotalMilliseconds < delta then
       exit
     else LastUpdatedTime := e1;  
     FrameNum += 1;
     Window.Clear;
-    CountVisuals := integer.MinValue; // чтобы не было паузы после 1000 объектов
+    if OnDraw<>nil then
+      OnDraw() 
+    else if OnDraw1<>nil then
+      OnDraw1(FrameNum)
+    else if OnDrawFrame<>nil then
+      OnDrawFrame(dt.Milliseconds/1000);
   end;  
-  if OnDraw<>nil then
-    OnDraw() 
-  else if OnDraw1<>nil then
-    OnDraw1(FrameNum);
 end;
 
 procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer);
@@ -1455,26 +1900,18 @@ begin
   FrameRate := frate;
 end;
 
+procedure BeginFrameBasedAnimationTime(Draw: procedure(dt: real));
+begin
+  OnDrawFrame := Draw;
+end;
+
 procedure EndFrameBasedAnimation;
 begin
-  CountVisuals := 0;
+  //CountVisuals := 0;
   OnDraw := nil;
   OnDraw1 := nil;
-  FrameRate := 60;
+  FrameRate := 61;
 end;  
-
-{procedure AddGraphWindow;
-begin
-  host := new MyVisualHost();
-  host.ClipToBounds := True;
-  host.SizeChanged += (s,e) ->
-  begin
-    var sz := e.NewSize;
-    host.DataContext := sz;
-  end;
-  // Всегда последнее
-  MainDockPanel.children.Add(host);
-end;}
 
 var mre := new ManualResetEvent(false);
 
@@ -1483,16 +1920,39 @@ GraphWPFWindow = class(GMainWindow)
 public
   procedure InitMainGraphControl; override;
   begin
+    var g := Content as DockPanel;
+
+    host1 := new Canvas;
     host := new MyVisualHost();
-    //host.ClipToBounds := True;
-    host.SizeChanged += (s,e) ->
+    // Попытка отсекать рисование частей объектов за пределами host. Актуально при наличии панелей.
+    // К сожалению, почему-то при использовании WPFObjects объекты GraphWPF становятся не видны
+    // Выход - в WPFObjects host1.ClipToBounds := False
+    host1.ClipToBounds := True;
+    host1.SizeChanged += (s,e) ->
     begin
       var sz := e.NewSize;
       host.DataContext := sz;
     end;
     // Всегда последнее
-    var g := Content as DockPanel;
-    g.children.Add(host);
+    
+    var dpiXProperty := typeof(SystemParameters).GetProperty('DpiX', BindingFlags.NonPublic or BindingFlags.Static);
+    var dpiYProperty := typeof(SystemParameters).GetProperty('Dpi', BindingFlags.NonPublic or BindingFlags.Static);
+    
+    var dpiX := integer(dpiXProperty.GetValue(nil, nil));
+    var dpiY := integer(dpiYProperty.GetValue(nil, nil));
+  
+    var im := new Image();
+    
+    var (scalex, scaley) := (dpiX/96,dpiY/96);
+    RTbmap := new RenderTargetBitmap(Round(SystemParameters.PrimaryScreenWidth * scalex), Round(SystemParameters.PrimaryScreenHeight * scaley), dpiX, dpiY, PixelFormats.Pbgra32);
+    im.Source := RTbmap;
+    
+    // Рисуем на host
+    // Когда накопится много объектов, переносим их на im
+    host1.Children.Add(im); 
+    host1.Children.Add(host);
+    
+    g.children.Add(host1);
   end;
 
   procedure InitWindowProperties; override;
@@ -1508,137 +1968,32 @@ public
   begin
     Brush := new BrushType;
     Pen := new PenType;
-    Font := new FontType;
+    Font := new FontOptions;
     Window := new WindowTypeWPF;
     GraphWindow := new GraphWindowType;
   end;
   
   procedure InitHandlers; override;
   begin
-    Closed += procedure(sender,e) -> begin Halt; end;
+    Closed += (sender,e) -> begin 
+      if OnClose<>nil then
+        OnClose;
+      Halt; 
+    end;
     MouseDown += SystemOnMouseDown;
     MouseUp += SystemOnMouseUp;
     MouseMove += SystemOnMouseMove;
     KeyDown += SystemOnKeyDown;
     KeyUp += SystemOnKeyUp;
+    TextInput += SystemOnKeyPress;
     SizeChanged += SystemOnResize;
     
     CompositionTarget.Rendering += RenderFrame;
     
     Loaded += (o,e) -> mre.Set();
-
-    {PreviewMouseDown += (o,e) -> SystemOnMouseDown(o,e);  
-    PreviewMouseUp += (o,e) -> SystemOnMouseUp(o,e);  
-    PreviewMouseMove += (o,e) -> SystemOnMouseMove(o,e);  
-  
-    PreviewKeyDown += (o,e)-> SystemOnKeyDown(o,e);
-    PreviewKeyUp += (o,e)-> SystemOnKeyUp(o,e);
-
-    Closed += procedure(sender, e) -> begin Halt; end;}
   end;
 
-
-  /// --- SystemKeyEvents
-  (*procedure SystemOnKeyDown(sender: Object; e: System.Windows.Input.KeyEventArgs);
-  begin
-    if GraphWPF.OnKeyDown <> nil then
-      GraphWPF.OnKeyDown(e.Key);
-    e.Handled := True;
-  end;
-  
-  procedure SystemOnKeyUp(sender: Object; e: System.Windows.Input.KeyEventArgs);
-  begin
-    if GraphWPF.OnKeyUp <> nil then
-      GraphWPF.OnKeyUp(e.Key);
-    e.Handled := True;
-  end;    
-  
-  /// --- SystemMouseEvents
-  procedure SystemOnMouseDown(sender: Object; e: System.Windows.Input.MouseButtonEventArgs);
-  begin
-    var mb := 0;
-    var p := e.GetPosition(nil{hvp});
-    if e.LeftButton = MouseButtonState.Pressed then
-      mb := 1
-    else if e.RightButton = MouseButtonState.Pressed then
-      mb := 2;
-    if GraphWPF.OnMouseDown <> nil then  
-     GraphWPF.OnMouseDown(p.x, p.y, mb);
-  end;
-  
-  procedure SystemOnMouseUp(sender: Object; e: MouseButtonEventArgs);
-  begin
-    var mb := 0;
-    var p := e.GetPosition(nil{hvp});
-    if e.LeftButton = MouseButtonState.Pressed then
-      mb := 1
-    else if e.RightButton = MouseButtonState.Pressed then
-      mb := 2;
-    if GraphWPF.OnMouseUp <> nil then  
-      GraphWPF.OnMouseUp(p.x, p.y, mb);
-  end;
-  
-  procedure SystemOnMouseMove(sender: Object; e: MouseEventArgs);
-  begin
-    var mb := 0;
-    var p := e.GetPosition(nil{hvp});
-    if e.LeftButton = MouseButtonState.Pressed then
-      mb := 1
-    else if e.RightButton = MouseButtonState.Pressed then
-      mb := 2;
-    if GraphWPF.OnMouseMove <> nil then  
-      GraphWPF.OnMouseMove(p.x, p.y, mb);
-  end;*)
-  
 end;
-
-
-{procedure InitApp1;
-begin
-  app := new Application();
-  
-  app.Dispatcher.UnhandledException += (o,e) -> begin 
-    Println(e.Exception.InnerException); 
-    halt; 
-  end;
-  MainWindow := new GWindow;
-  
-  MainDockPanelF := new DockPanel;
-  MainDockPanelF.LastChildFill := True;
-  MainWindow.Content := MainDockPanelF; 
-
-  AddGraphWindow;
-  
-  host := new MyVisualHost();
-  MainWindow.Content := host;
-
-  Brush := new BrushType;
-  Pen := new PenType;
-  Font := new FontType;
-  Window := new WindowType;
-  GraphWindow := new GraphWindowType;
-
-  MainWindow.Title := 'Графика WPF';
-  var (w,h) := (800,600);
-  
-  (MainWindow.Width, MainWindow.Height) := (w + wplus, h + hplus);
-  MainWindow.WindowStartupLocation := WindowStartupLocation.CenterScreen;
-  
-  //MainWindow.Show;
-  MainWindow.Closed += procedure(sender,e) -> begin Halt; end;
-  MainWindow.MouseDown += SystemOnMouseDown;
-  MainWindow.MouseUp += SystemOnMouseUp;
-  MainWindow.MouseMove += SystemOnMouseMove;
-  MainWindow.KeyDown += SystemOnKeyDown;
-  MainWindow.KeyUp += SystemOnKeyUp;
-  MainWindow.SizeChanged += SystemOnResize;
-  
-  CompositionTarget.Rendering += RenderFrame;
-  
-  MainWindow.Loaded += (o,e) -> mre.Set();
-
-  app.Run(MainWindow);
-end;}
 
 procedure InitApp;
 begin
@@ -1646,7 +2001,7 @@ begin
   
   app.Dispatcher.UnhandledException += (o, e) -> begin
     Println(e.Exception.Message); 
-    if e.Exception.InnerException<>nil then
+    if e.Exception.InnerException <> nil then
       Println(e.Exception.InnerException.Message); 
     halt; 
   end;

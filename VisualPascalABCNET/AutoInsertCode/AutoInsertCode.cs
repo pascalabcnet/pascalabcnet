@@ -202,6 +202,24 @@ namespace VisualPascalABC
                     return true;
                 }
 
+                else if (TextToLower == "with")
+                {
+                    string cur, next, prev;
+                    GetCurNextLines(out cur, out next, out prev);
+                    if (!string.IsNullOrWhiteSpace(cur.Substring(caret.Column)))
+                        return false;
+                    var icur = Indent(cur);
+                    ta.InsertString("\n" + Spaces(icur + 2));
+                    if (cur.TrimStart().ToLower().StartsWith("match") && next == null || Indent(next) < icur || Indent(next) == icur && !next.TrimStart().ToLower().StartsWith("end"))
+                    {
+                        var tl_beg = new TextLocation(ta.Caret.Column, ta.Caret.Line);
+                        int offset = doc.PositionToOffset(tl_beg);
+                        var send = "\n" + Spaces(icur) + "end;";
+                        doc.Insert(offset, send);
+                    }
+                    return true;
+                }
+
                 else if (Regex.IsMatch(TextToLower, "then|else|do|try|except|finally|var"))
                 {
                     if (ta.Caret.Line > 0 && TextToLower == "else")

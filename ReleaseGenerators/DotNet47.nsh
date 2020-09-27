@@ -29,7 +29,7 @@ Section "Framework Class Library Help" FrameworkHelp
     Goto dotnet40helpinstalled
   SetOutPath "$WINDIR\Microsoft.NET\Framework\v4.0.30319\ru"
   copyfiles:
-  File DotNet40\Tooltips\*.xml
+  File DotNet471\Tooltips\*.xml
   Goto exithelp
   dotnet40helpinstalled:
   exithelp:      

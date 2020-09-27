@@ -3270,9 +3270,20 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
-    <SyntaxNode Name="array_const_new" BaseName="expression">
+    <SyntaxNode Name="array_const_new" BaseName="addressed_value">
       <Fields>
         <SyntaxField Name="elements" SyntaxType="expression_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="semantic_ith_element_of" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="id" SyntaxType="ident" />
+        <SyntaxField Name="index" SyntaxType="expression" />
       </Fields>
       <Methods />
       <Tags>
@@ -3330,6 +3341,7 @@
       <HelpData Key=".cconst" Value="Значение константы." />
       <HelpData Key=".char_num" Value="Номер символа." />
       <HelpData Key=".condition" Value="" />
+      <HelpData Key=".container" Value="" />
       <HelpData Key=".count" Value="" />
       <HelpData Key=".def" Value="" />
       <HelpData Key=".definitions" Value="" />
@@ -3348,6 +3360,7 @@
       <HelpData Key=".i" Value="" />
       <HelpData Key=".if_false" Value="" />
       <HelpData Key=".if_true" Value="" />
+      <HelpData Key=".index" Value="" />
       <HelpData Key=".index_expr" Value="" />
       <HelpData Key=".inverted" Value="" />
       <HelpData Key=".item_expression" Value="" />
@@ -3981,6 +3994,9 @@
       <HelpData Key="is_pattern_expr.constDeconstructorParamCheck" Value="" />
       <HelpData Key="is_pattern_expr.left" Value="" />
       <HelpData Key="is_pattern_expr.right" Value="" />
+      <HelpData Key="ith_element_of" Value="" />
+      <HelpData Key="ith_element_of.container" Value="" />
+      <HelpData Key="ith_element_of.index" Value="" />
       <HelpData Key="jump_stmt" Value="" />
       <HelpData Key="jump_stmt.JumpType" Value="" />
       <HelpData Key="jump_stmt.expr" Value="" />
@@ -4398,6 +4414,10 @@
       <HelpData Key="semantic_check_sugared_var_def_statement_node.typ" Value="" />
       <HelpData Key="semantic_expr_node" Value="" />
       <HelpData Key="semantic_expr_node.expr" Value="" />
+      <HelpData Key="semantic_ith_element_of" Value="" />
+      <HelpData Key="semantic_ith_element_of.container" Value="" />
+      <HelpData Key="semantic_ith_element_of.id" Value="" />
+      <HelpData Key="semantic_ith_element_of.index" Value="" />
       <HelpData Key="semantic_type_node" Value="" />
       <HelpData Key="semantic_type_node.type" Value="" />
       <HelpData Key="sequence_type" Value="" />

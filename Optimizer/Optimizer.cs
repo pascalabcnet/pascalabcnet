@@ -1213,6 +1213,20 @@ namespace PascalABCCompiler
                 case semantic_node_type.deref_node: VisitDerefNode(((dereference_node)p)); break;
                 case semantic_node_type.simple_array_indexing: VisitSimpleArrayIndexing((simple_array_indexing)p); break;
             }
+            if (en.parameters[1] is local_block_variable_reference && (en.parameters[1] as local_block_variable_reference).var.name.StartsWith("$Ren"))
+            {
+                switch (p.semantic_node_type)
+                {
+                    case semantic_node_type.local_variable_reference: IncreaseNumUseVar((local_variable_reference)p); break;
+                    case semantic_node_type.local_block_variable_reference: IncreaseNumUseVar((local_block_variable_reference)p); break;
+                    case semantic_node_type.namespace_variable_reference: IncreaseNumUseVar((namespace_variable_reference)p); break;
+                    case semantic_node_type.class_field_reference: VisitExpression((p as class_field_reference).obj); IncreaseNumUseField((class_field_reference)p); break;
+                    case semantic_node_type.static_class_field_reference: IncreaseNumUseField((static_class_field_reference)p); break;
+                    case semantic_node_type.common_parameter_reference: IncreaseNumUseParam((common_parameter_reference)p); break;
+                    case semantic_node_type.deref_node: VisitDerefNode(((dereference_node)p)); break;
+                    case semantic_node_type.simple_array_indexing: VisitSimpleArrayIndexing((simple_array_indexing)p); break;
+                }
+            }
         }
 
         private void CheckAssign(expression_node p)

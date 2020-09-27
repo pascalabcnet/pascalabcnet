@@ -884,6 +884,8 @@ namespace PascalABCCompiler.PCU
                         unit.ImplementationUsedUnits.AddElement(comp_cnn.cont_unit);
                     ns_dict[comp_cnn] = true;
                 }
+                if (tn.base_type is common_type_node)
+                    AddIndirectUsedUnitsForType(tn.base_type, ns_dict, interf);
             }
         }
 
@@ -932,6 +934,8 @@ namespace PascalABCCompiler.PCU
             common_namespace_node cnn = cun.namespaces[0];
             foreach (common_type_node ctn in cnn.types)
             {
+                if (ctn.base_type != null)
+                    AddIndirectUsedUnitsForType(ctn.base_type, interf_ns_dict, true);
                 foreach (common_method_node cmn in ctn.methods)
                 {
                     if (cmn.is_constructor && cmn.function_code != null && cmn.function_code.location == null)
@@ -980,6 +984,8 @@ namespace PascalABCCompiler.PCU
             common_namespace_node cnn = cun.namespaces[1];
             foreach (common_type_node ctn in cnn.types)
             {
+                if (ctn.base_type != null)
+                    AddIndirectUsedUnitsForType(ctn.base_type, impl_ns_dict, true);
                 foreach (common_method_node cmn in ctn.methods)
                 {
                     if (cmn.is_constructor && cmn.function_code != null && cmn.function_code.location == null)

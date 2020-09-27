@@ -59,7 +59,7 @@
 %type <stn> attribute_declarations  
 %type <stn> ot_visibility_specifier  
 %type <stn> one_attribute attribute_variable 
-%type <ex> const_factor const_variable_2 const_term const_variable literal_or_number unsigned_number variable_or_literal_or_number 
+%type <ex> const_factor const_factor_without_unary_op const_variable_2 const_term const_variable literal_or_number unsigned_number variable_or_literal_or_number 
 %type <stn> program_block  
 %type <ob> optional_var class_attribute class_attributes class_attributes1 
 %type <stn> member_list_section optional_component_list_seq_end  
@@ -82,7 +82,7 @@
 %type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 /*const_expr_list*/ case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
-%type <ex> const_simple_expr term term1 simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda expr_l1_for_lambda simple_expr range_term range_factor 
+%type <ex> const_simple_expr term term1 typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor factor_without_unary_op relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda expr_l1_for_lambda simple_expr range_term range_factor 
 %type <ex> external_directive_ident init_const_expr case_label variable var_reference /*optional_write_expr*/ optional_read_expr simple_expr_or_nothing var_question_point expr_l1_for_question_expr expr_l1_for_new_question_expr
 %type <ob> for_cycle_type  
 %type <ex> format_expr format_const_expr const_expr_or_nothing /* simple_expr_with_deref_or_nothing simple_expr_with_deref expr_l1_for_indexer*/
@@ -192,15 +192,16 @@ parse_goal
 		{ 
 			var stl = $2 as statement_list;
 			stl.left_logical_bracket = $1;
-			root = $$ = NewProgramModule(null, null, null, new block(null, stl, @$), new token_info("end"), @$); 
+			stl.right_logical_bracket = new token_info("");
+			root = $$ = NewProgramModule(null, null, null, new block(null, stl, @$), new token_info(""), @$); 
 		}
 	| tkShortSFProgram stmt_list	
 		{
 			var stl = $2 as statement_list;
 			stl.left_logical_bracket = $1;
-			var un = new unit_or_namespace(new ident_list("SF", @$),@$);
-			var ul = new uses_list(un,@$);		
-			root = $$ = NewProgramModule(null, null, ul, new block(null, stl, @$), new token_info("end"), @$); 
+			var un = new unit_or_namespace(new ident_list("SF"),null);
+			var ul = new uses_list(un,null);		
+			root = $$ = NewProgramModule(null, null, ul, new block(null, stl, @$), new token_info(""), @$); 
 		}
     ;
 
@@ -806,7 +807,12 @@ as_is_constexpr
     ;
 
 power_constexpr
-    : const_factor tkStarStar const_factor { $$ = new bin_expr($1, $3, $2.type, @$); }
+    : const_factor_without_unary_op tkStarStar const_factor 
+    	{ $$ = new bin_expr($1, $3, $2.type, @$); }
+    | const_factor_without_unary_op tkStarStar power_constexpr
+        { $$ = new bin_expr($1,$3,($2).type, @$); }
+    | sign power_constexpr
+    	{ $$ = new un_expr($2, $1.type, @$); }
     ;
     
 const_term
@@ -838,6 +844,13 @@ const_mulop
     | tkAnd
 		{ $$ = $1; }
     ;
+
+const_factor_without_unary_op
+	: const_variable
+		{ $$ = $1; }
+	| tkRoundOpen const_expr tkRoundClose
+		{ $$ = $2; }
+	;
 
 const_factor
     : const_variable
@@ -896,7 +909,7 @@ const_factor
     ;
 
 const_set
-    : tkSquareOpen const_elem_list tkSquareClose 
+    : tkSquareOpen elem_list tkSquareClose 
         { 
 			$$ = new pascal_set_constant($2 as expression_list, @$); 
 		}
@@ -2187,10 +2200,14 @@ var_decl_part
         { 
 			$$ = new var_def_statement($1 as ident_list, $3, null, definition_attribute.None, false, @$);
 		}
-    | ident_list tkAssign expr
+    | ident_list tkAssign expr_with_func_decl_lambda
         { 
 			$$ = new var_def_statement($1 as ident_list, null, $3, definition_attribute.None, false, @$);		
 		}
+    /*| ident_list tkAssign expl_func_decl_lambda
+        { 
+			$$ = new var_def_statement($1 as ident_list, null, $3, definition_attribute.None, false, @$);		
+		}*/
     | ident_list tkColon type_ref tkAssignOrEqual typed_var_init_expression // typed_const_plus уже давно не константа :) Но сюда не попали Tuples, поскольку они конкурируют с дурацкими старыми инициализаторами массивов 
         { 
 			$$ = new var_def_statement($1 as ident_list, $3, $5, definition_attribute.None, false, @$); 
@@ -2277,8 +2294,8 @@ inclass_constr_destr_decl
         { 
    			if ($5 is empty_statement)
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@6);
-            var tmp = new constructor(null,$3 as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),@$),$2 as method_name,false,false,null,null,LexLocation.MergeAll(@1,@2,@3,@4));
-            $$ = new procedure_definition(tmp as procedure_header, new block(null,new statement_list($5 as statement,@5),@5), @$);
+            var tmp = new constructor(null,$3 as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),@$),$2 as method_name,false,false,null,null,LexLocation.MergeAll(@1,@2,@3));
+            $$ = new procedure_definition(tmp as procedure_header, new block(null,new statement_list($5 as statement,@5),@5), @1.Merge(@5));
             if (parsertools.build_tree_for_formatter)
 				$$ = new short_func_definition($$ as procedure_definition);
         }
@@ -2287,7 +2304,7 @@ inclass_constr_destr_decl
    			if ($6 is empty_statement)
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@7);
             var tmp = new constructor(null,$4 as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),@$),$3 as method_name,false,true,null,null,LexLocation.MergeAll(@1,@2,@3,@4));
-            $$ = new procedure_definition(tmp as procedure_header, new block(null,new statement_list($6 as statement,@6),@6), @$);
+            $$ = new procedure_definition(tmp as procedure_header, new block(null,new statement_list($6 as statement,@6),@6), @1.Merge(@6));
             if (parsertools.build_tree_for_formatter)
 				$$ = new short_func_definition($$ as procedure_definition);
         }
@@ -3853,14 +3870,13 @@ is_type_expr
         }
     ;
     
-simple_term
-    : factor
-		{ $$ = $1; }
-    ;
-    
 power_expr
-    : simple_term tkStarStar factor
+    : factor_without_unary_op tkStarStar factor
         { $$ = new bin_expr($1,$3,($2).type, @$); }
+    | factor_without_unary_op tkStarStar power_expr
+        { $$ = new bin_expr($1,$3,($2).type, @$); }
+    | sign power_expr
+    	{ $$ = new un_expr($2, $1.type, @$); }
     ;
     
 term
@@ -3919,6 +3935,13 @@ tuple
 		}	
     ; 
 
+factor_without_unary_op
+	: literal_or_number
+		{ $$ = $1; }
+	| var_reference
+		{ $$ = $1; }
+	;
+
 factor        
     : tkNil                     
         { 
@@ -3932,10 +3955,6 @@ factor
     | tkSquareOpen elem_list tkSquareClose     
         { 
 			$$ = new pascal_set_constant($2 as expression_list, @$);  
-		}
-    | tkVertParen elem_list tkVertParen     
-        { 
-			$$ = new array_const_new($2 as expression_list, @$);  
 		}
     | tkNot factor              
         { 
@@ -3964,8 +3983,7 @@ factor
 				}
 			    // можно сделать вычисление константы с вмонтированным минусом
 			}
-		
-			$$ = new un_expr($2, $1.type, @$); 
+			$$ = new un_expr($2, $1.type, @$);
 		}
     | tkDeref factor
         {
@@ -4109,6 +4127,10 @@ variable
             }
       		$$ = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
         }
+    | tkVertParen elem_list tkVertParen     
+        { 
+			$$ = new array_const_new($2 as expression_list, @$);  
+		}
     | variable tkRoundOpen optional_expr_list tkRoundClose                
         {
 			$$ = new method_call($1 as addressed_value,$3 as expression_list, @$);
@@ -4578,18 +4600,29 @@ func_decl_lambda
 		{
 			var idList = new ident_list($1, @1); 
 			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), parametr_kind.none, null, @1), @1);
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), $3 as statement_list, @$);
+			//var sl = $3 as statement_list;
+			//if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName($3, "Result") != null) // если это было выражение или есть переменная Result, то автовывод типа 
+			    $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), $3 as statement_list, @$);
+			//else 
+			//$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, null, $3 as statement_list, @$);  
 		}
     | tkRoundOpen tkRoundClose lambda_type_ref_noproctype tkArrow lambda_function_body
 		{
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, $3, $5 as statement_list, @$);
+		    // Здесь надо анализировать по телу и либо оставлять lambda_inferred_type, либо делать его null!
+		    var sl = $5 as statement_list;
+		    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // то надо выводить
+				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, $3, sl, @$);
+			else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, null, sl, @$);	
 		}
 	| tkRoundOpen identifier tkColon fptype tkRoundClose lambda_type_ref_noproctype tkArrow lambda_function_body
 		{
 			var idList = new ident_list($2, @2); 
             var loc = LexLocation.MergeAll(@2,@3,@4);
 			var formalPars = new formal_parameters(new typed_parameters(idList, $4, parametr_kind.none, null, loc), loc);
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $6, $8 as statement_list, @$);
+		    var sl = $8 as statement_list;
+		    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // то надо выводить
+				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $6, sl, @$);
+			else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, null, sl, @$);	
 		}
 	| tkRoundOpen identifier tkSemiColon full_lambda_fp_list tkRoundClose lambda_type_ref_noproctype tkArrow lambda_function_body
 		{
@@ -4597,7 +4630,10 @@ func_decl_lambda
 			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null), parametr_kind.none, null, @2), LexLocation.MergeAll(@2,@3,@4));
 			for (int i = 0; i < ($4 as formal_parameters).Count; i++)
 				formalPars.Add(($4 as formal_parameters).params_list[i]);
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $6, $8 as statement_list, @$);
+		    var sl = $8 as statement_list;
+		    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // то надо выводить
+				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $6, sl, @$);
+			else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, null, sl, @$);	
 		}
 	| tkRoundOpen identifier tkColon fptype tkSemiColon full_lambda_fp_list tkRoundClose lambda_type_ref_noproctype tkArrow lambda_function_body
 		{
@@ -4606,7 +4642,10 @@ func_decl_lambda
 			var formalPars = new formal_parameters(new typed_parameters(idList, $4, parametr_kind.none, null, loc), LexLocation.MergeAll(@2,@3,@4,@5,@6));
 			for (int i = 0; i < ($6 as formal_parameters).Count; i++)
 				formalPars.Add(($6 as formal_parameters).params_list[i]);
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $8, $10 as statement_list, @$);
+		    var sl = $10 as statement_list;
+		    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // то надо выводить
+				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $8, sl, @$);
+			else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, null, sl, @$);
 		}
     | tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose rem_lambda
 		{ 
@@ -4637,7 +4676,11 @@ func_decl_lambda
 						formal_pars.Add(($6 as formal_parameters).params_list[i]);		
 					
 				formal_pars.source_context = LexLocation.MergeAll(@2,@3,@4,@5);
-				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formal_pars, pair.tn, pair.exprs, @$);
+			    
+			    var sl = pair.exprs;
+			    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // то надо выводить
+					$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formal_pars, pair.tn, pair.exprs, @$);
+				else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formal_pars, null, pair.exprs, @$);	
 			}
 			else
 			{			
@@ -4663,13 +4706,16 @@ func_decl_lambda
 				if ($6 != null)
 					for (int i = 0; i < ($6 as formal_parameters).Count; i++)
 						formalPars.Add(($6 as formal_parameters).params_list[i]);
-					
-				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, pair.tn, pair.exprs, @$);
+
+				var sl = pair.exprs;
+			    if (sl.expr_lambda_body || SyntaxVisitors.HasNameVisitor.HasName(sl, "result") != null) // то надо выводить
+					$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, pair.tn, pair.exprs, @$);
+				else $$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, null, pair.exprs, @$);
 			}
 		}
 	| expl_func_decl_lambda
 		{
-			$$ = $1;
+			$$ = $1; 
 		}
 	;
 	
@@ -4689,15 +4735,15 @@ rem_lambda
 	;
 	
 expl_func_decl_lambda
-	: tkFunction lambda_type_ref tkArrow lambda_function_body
+	: tkFunction lambda_type_ref_noproctype tkArrow lambda_function_body // SSM 11.08.20 добавил _noproctype в 3 подправилах 
 		{
 			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, $2, $4 as statement_list, 1, @$);
 		}
-	| tkFunction tkRoundOpen tkRoundClose lambda_type_ref tkArrow lambda_function_body
+	| tkFunction tkRoundOpen tkRoundClose lambda_type_ref_noproctype tkArrow lambda_function_body
 		{
 			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, $4, $6 as statement_list, 1, @$);
 		}
-	| tkFunction tkRoundOpen full_lambda_fp_list tkRoundClose lambda_type_ref tkArrow lambda_function_body
+	| tkFunction tkRoundOpen full_lambda_fp_list tkRoundClose lambda_type_ref_noproctype tkArrow lambda_function_body
 		{
 			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), $3 as formal_parameters, $5, $7 as statement_list, 1, @$);
 		}
@@ -4825,7 +4871,7 @@ common_lambda_body
 lambda_function_body
 	: expr_l1_for_lambda 
 		{
-		    var id = SyntaxVisitors.ExprHasNameVisitor.HasName($1, "Result"); 
+		    var id = SyntaxVisitors.HasNameVisitor.HasName($1, "Result"); 
             if (id != null)
             {
                  parsertools.AddErrorFromResource("RESULT_IDENT_NOT_EXPECTED_IN_THIS_CONTEXT", id.source_context);

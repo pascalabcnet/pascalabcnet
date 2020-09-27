@@ -12,38 +12,66 @@ namespace PascalABCCompiler.TreeConverter
     {
         public void semantic_check_assign_tuple(addressed_value_list vars, expression ex) 
         {
-            // Проверить, что справа - Tuple
+            // Почти полностью идентичный код в двух проверках
             var expr = convert_strong(ex);
             expr = convert_if_typed_expression_to_function_call(expr);
 
             var t = ConvertSemanticTypeNodeToNETType(expr.type);
             if (t == null)
-                AddError(expr.location, "TUPLE_EXPECTED");
+                AddError(expr.location, "TUPLE_OR_SEQUENCE_EXPECTED");
 
-            if (!t.FullName.StartsWith("System.Tuple"))
-                AddError(expr.location, "TUPLE_EXPECTED");
+            var IsTuple = false;
+            var IsSequence = false;
+            if (t.FullName.StartsWith("System.Tuple"))
+                IsTuple = true;
+            if (!IsTuple)
+            {
+                if (t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null)
+                    IsSequence = true;
+            }
+            if (!IsTuple && !IsSequence)
+            {
+                AddError(expr.location, "TUPLE_OR_SEQUENCE_EXPECTED");
+            }
 
-            var n = vars.variables.Count();
-            if (n > t.GetGenericArguments().Count())
-                AddError(get_location(vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+            if (IsTuple)
+            {
+                var n = vars.variables.Count();
+                if (n > t.GetGenericArguments().Count())
+                    AddError(get_location(vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+            }
         }
 
         public void semantic_check_assign_var_tuple(ident_list vars, expression ex) 
         {
-            // Проверить, что справа - Tuple
+            // Почти полностью идентичный код в двух проверках
             var expr = convert_strong(ex);
             expr = convert_if_typed_expression_to_function_call(expr);
 
             var t = ConvertSemanticTypeNodeToNETType(expr.type);
             if (t == null)
-                AddError(expr.location, "TUPLE_EXPECTED");
+                AddError(expr.location, "TUPLE_OR_SEQUENCE_EXPECTED");
 
-            if (!t.FullName.StartsWith("System.Tuple"))
-                AddError(expr.location, "TUPLE_EXPECTED");
+            var IsTuple = false;
+            var IsSequence = false;
+            if (t.FullName.StartsWith("System.Tuple"))
+                IsTuple = true;
+            if (!IsTuple)
+            {
+                if (t.Name.Equals("IEnumerable`1") || t.GetInterface("IEnumerable`1") != null)
+                    IsSequence = true;
+            }
+            if (!IsTuple && !IsSequence)
+            {
+                AddError(expr.location, "TUPLE_OR_SEQUENCE_EXPECTED");
+            }
 
-            var n = vars.idents.Count();
-            if (n > t.GetGenericArguments().Count())
-                AddError(get_location(vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+            if (IsTuple)
+            {
+                var n = vars.idents.Count();
+                if (n > t.GetGenericArguments().Count())
+                    AddError(get_location(vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+            }
         }
 
         void semantic_check_method_call_as_slice_expr(SyntaxTree.method_call mc)
@@ -122,8 +150,9 @@ namespace PascalABCCompiler.TreeConverter
                 t = ctn2.compiled_original_generic.compiled_type;
             else if (av.type is compiled_type_node ctn1)
                 t = ctn1.compiled_type;
-
-            if (!av.type.is_class && !(t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>)))
+            if (av.type.type_special_kind == SemanticTree.type_special_kind.array_kind)
+                return;
+            if (!av.type.is_class && !av.type.IsInterface && !(t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>)))
                 AddError(av.location, "OPERATOR_DQ_MUST_BE_USED_WITH_A_REFERENCE_TYPE_VALUETYPE");
         }
 

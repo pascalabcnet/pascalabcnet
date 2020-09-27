@@ -224,7 +224,7 @@ namespace PascalABCCompiler.Errors
         }
         public override string ToString()
         {
-            return String.Format(StringResources.Get("COMPILER_INTERNAL_ERROR_IN_UNIT_{0}_:{1}"), Module, Message);
+            return String.Format(StringResources.Get("COMPILER_INTERNAL_ERROR_IN_UNIT_{0}_:{1}"), Module, Message+' '+ exception.ToString());
         }
     }
 

@@ -662,7 +662,12 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 en.location = loc;
                 if (en.type is delegated_methods dm && dm.proper_methods[0].parameters.Count == 0 && dm.proper_methods[0].ret_type != null)
-                    AddError(new CanNotConvertTypes(en, dm.proper_methods[0].ret_type, to, loc)); // SSM 18/06/20 #2261
+                {
+                    if (to != SystemLibrary.SystemLibrary.object_type)
+                        AddError(new CanNotConvertTypes(en, dm.proper_methods[0].ret_type, to, loc)); // SSM 18/06/20 #2261
+                    else
+                        return en;
+                } 
                 else if (en.type is undefined_type && en is base_function_call bfc)
                     throw new SimpleSemanticError(loc, "RETURN_TYPE_UNDEFINED_{0}", bfc.function.name);
                 else AddError(new CanNotConvertTypes(en, en.type, to, loc));
@@ -1561,6 +1566,16 @@ namespace PascalABCCompiler.TreeConverter
             return eq_type_nodes(tn1, tn2, false);
         }
 
+        public static bool type_or_base_type_implements_interface(type_node tn, type_node interf)
+        {
+            do {
+                if (tn.ImplementingInterfaces.Contains(interf))
+                    return true;
+                tn = tn.base_type;
+            } while (tn != null);
+            return false;
+        }
+
         //Этот метод сверяет не только параметры, но и возвращаемое значение
         public static bool function_eq_params_and_result(function_node left, function_node right, bool weak = false)
         {
@@ -2078,7 +2093,18 @@ namespace PascalABCCompiler.TreeConverter
                                                                                 is_alone_method_defined, syntax_tree_visitor.context, loc, syntax_nodes_parameters);
                         if (inst == null)
                         {
-                            set_of_possible_functions.RemoveAt(i);
+                            try
+                            {
+                                inst = generic_convertions.DeduceFunction(func, parameters, true, syntax_tree_visitor.context, loc, syntax_nodes_parameters);
+                            }
+                            catch
+                            {
+
+                            }
+                            if (inst == null)
+                                set_of_possible_functions.RemoveAt(i);
+                            else
+                                set_of_possible_functions[i] = inst;
                         }
                         else
                         {

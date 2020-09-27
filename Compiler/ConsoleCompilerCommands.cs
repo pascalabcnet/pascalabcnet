@@ -26,6 +26,7 @@ namespace PascalABCCompiler
         public const int GetLastWriteTime = 186;
         public const int VarBeginOffest = 187;
         public const int InternalError = 188;
+        public const int PABCHealth = 189;
 
 
         //2xx to pabcnetc.exe

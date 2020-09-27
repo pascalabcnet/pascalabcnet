@@ -1,5 +1,7 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Clear">
 <param name="Keyword" value="Count">
+<param name="Keyword" value="DestroyAll">
 <param name="Keyword" value="Items">
 <param name="Keyword" value="ObjectsType">
 <param name="Keyword" value="ToBack">
@@ -14,7 +16,11 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает или устанавливает i-тый объект ObjectWPF</td></tr>
 </tr><tr><td></td></tr><tr><td class="secttitle"><font style="font-size: 11pt">Методы класса ObjectsType</font></td></tr>
 
-<tr><tr><td><code><b>procedure</b> ToBack(ob: ObjectWPF);</code>
+<tr><tr><td><code><b>procedure</b> Clear;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Очистить список игровых объектов</td></tr>
+<tr><td><code><b>procedure</b> DestroyAll(condition: ObjectWPF -&gt; boolean);</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Удалить все игровые объекты, удовлетворяющие условию</td></tr>
+<tr><td><code><b>procedure</b> ToBack(ob: ObjectWPF);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает объект на задний план</td></tr>
 <tr><td><code><b>procedure</b> ToFront(ob: ObjectWPF);</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Перемещает объект на передний план</td></tr>

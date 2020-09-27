@@ -6917,7 +6917,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_array_const_new(array_const_new _array_const_new)
 		{
-			write_expression(_array_const_new);
+			write_addressed_value(_array_const_new);
 			if (_array_const_new.elements == null)
 			{
 				bw.Write((byte)0);
@@ -6926,6 +6926,36 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				bw.Write((byte)1);
 				_array_const_new.elements.visit(this);
+			}
+		}
+
+
+		public void visit(semantic_ith_element_of _semantic_ith_element_of)
+		{
+			bw.Write((Int16)254);
+			write_semantic_ith_element_of(_semantic_ith_element_of);
+		}
+
+		public void write_semantic_ith_element_of(semantic_ith_element_of _semantic_ith_element_of)
+		{
+			write_expression(_semantic_ith_element_of);
+			if (_semantic_ith_element_of.id == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_semantic_ith_element_of.id.visit(this);
+			}
+			if (_semantic_ith_element_of.index == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_semantic_ith_element_of.index.visit(this);
 			}
 		}
 

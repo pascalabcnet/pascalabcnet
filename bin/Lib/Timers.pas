@@ -38,6 +38,7 @@ type
     property TimerProc: ()->() read _procedure write _procedure;
   end;
   
+/// Создать и запустить таймер, вызывающий процедуру TimerProc каждые ms миллисекунд
 function CreateTimerAndStart(ms: integer; TimerProc: procedure): Timer;
 
 implementation

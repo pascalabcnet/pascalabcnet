@@ -528,6 +528,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new index();
 				case 253:
 					return new array_const_new();
+				case 254:
+					return new semantic_ith_element_of();
 			}
 			return null;
 		}
@@ -4426,8 +4428,21 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_array_const_new(array_const_new _array_const_new)
 		{
-			read_expression(_array_const_new);
+			read_addressed_value(_array_const_new);
 			_array_const_new.elements = _read_node() as expression_list;
+		}
+
+
+		public void visit(semantic_ith_element_of _semantic_ith_element_of)
+		{
+			read_semantic_ith_element_of(_semantic_ith_element_of);
+		}
+
+		public void read_semantic_ith_element_of(semantic_ith_element_of _semantic_ith_element_of)
+		{
+			read_expression(_semantic_ith_element_of);
+			_semantic_ith_element_of.id = _read_node() as ident;
+			_semantic_ith_element_of.index = _read_node() as expression;
 		}
 
 	}

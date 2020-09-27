@@ -32,6 +32,13 @@ namespace VisualPascalABC
     
     public partial class Form1 : Form, VisualPascalABCPlugins.IWorkbench, VisualPascalABCPlugins.IWorkbenchDocumentService
     {
+        static string VersionInTitle(string s)
+        {
+            // VersionInTitle(RevisionClass.FullVersion)
+            var i = s.LastIndexOf('.');
+            return s.Substring(0, i);
+        }
+
         private const string MainFormTitle = "PascalABC.NET";
         private static bool DesignerUseable = true;
 		private static bool ProjectsUseable = true;
@@ -227,7 +234,7 @@ namespace VisualPascalABC
             //    PascalABCCompiler.StringResourcesLanguage.CurrentLanguageName = PascalABCCompiler.StringResourcesLanguage.AccessibleLanguages[0];
            
             InitializeComponent();
-           
+
             VisualPABCSingleton.MainForm = this;
             WorkbenchStorage.MainProgramThread = System.Threading.Thread.CurrentThread;
             //images init
@@ -667,8 +674,8 @@ namespace VisualPascalABC
                     this.Text = String.Format(FTSFormat,MainFormText,Form1StringResources.Get("FTS_LOADING"));
                     break;
                 case VisualEnvironmentState.FinishCompilerLoading:
-                    //this.Text = String.Format("{0} v{1}",MainFormText,PascalABCCompiler.Compiler.ShortVersion);
-                    this.Text = MainFormText;
+                    this.Text = String.Format("{0} {1}",MainFormText,PascalABCCompiler.Compiler.ShortVersion);
+                    //this.Text = MainFormText;
                     openFileDialog1.Filter = saveFileDialog1.Filter = VisualEnvironmentCompiler.GetFilterForDialogs();
                     openProjectDialog.Filter = VisualEnvironmentCompiler.GetProjectFilterForDialogs();
                     VisualEnvironmentCompiler.Compiler.CompilerOptions = WorkbenchServiceFactory.BuildService.CompilerOptions;
@@ -833,8 +840,51 @@ namespace VisualPascalABC
         private void StartMenuItem_Click(object sender, EventArgs e)
         {
             WorkbenchServiceFactory.RunService.Run(true);
+            if (VisualEnvironmentCompiler.Compiler != null && VisualEnvironmentCompiler.Compiler.ErrorsList.Count == 0)
+            {
+                var Percent = VisualEnvironmentCompiler.Compiler.PABCCodeHealth;
+                if (Percent > 0)
+                {
+                    if (Percent >= 100)
+                    {
+                        HealthLabel.Text = "";
+                        return;
+                    }
+                    HealthLabel.Text = $"{Percent}%";
+
+                    var c = SystemColors.Control;
+                    var PM100 = 100 - Percent;
+                    HealthLabel.BackColor = Color.FromArgb(c.R - PM100 - 20, c.G - PM100 - 20, c.B - PM100 - 20);
+                }
+            }
+                
+
+            /*if (VisualEnvironmentCompiler.StandartCompiler != null &&
+                VisualEnvironmentCompiler.StandartCompiler.LinesCompiled > 1000)
+                return;
+            var root = VisualEnvironmentCompiler?.StandartCompiler?.CurrentCompilationUnit?.SyntaxTree;
+
+            if (root == null)
+                return;
+            if (VisualEnvironmentCompiler.StandartCompiler.CurrentCompilationUnit.SemanticTree == null)
+                return;
+            var stat = new SyntaxVisitors.ABCStatisticsVisitor();
+            stat.ProcessNode(root);
+            var Percent = stat.CalcHealth(out int n, out int p);
+
+            if (Percent >= 100)
+            {
+                HealthLabel.Text = "";
+                return;
+            }
+            HealthLabel.Text = $"{Percent}%";
+
+            var c = SystemColors.Control;
+            var PM100 = 100 - Percent;
+            HealthLabel.BackColor = Color.FromArgb(c.R - PM100 - 20, c.G - PM100 - 20, c.B - PM100 - 20);
+            */
         }
-        
+
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyData == Keys.F1)
@@ -1532,6 +1582,329 @@ namespace VisualPascalABC
         {
             tsAutoInsertCode.Checked = !tsAutoInsertCode.Checked;
             mAUTOINSERTToolStripMenuItem.Checked = !mAUTOINSERTToolStripMenuItem.Checked;
+        }
+
+        private void mUNITTESTSToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                WorkbenchServiceFactory.Workbench.ErrorsListWindow.ClearErrorList();
+                var OutputFileName = WorkbenchServiceFactory.BuildService.Compile(CurrentSourceFileName, false, "__RunMode", true, true);
+                if (OutputFileName != null)
+                {
+                    var process = new System.Diagnostics.Process();
+                    process.StartInfo.FileName = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "RunUnitTests.exe");
+                    process.StartInfo.Arguments = "\""+OutputFileName+"\"";
+                    process.Start();
+                }
+                /*WorkbenchServiceFactory.RunService.Run(@"D:\PABC_Git\bin\RunUnitTests.exe",
+                     WorkbenchServiceFactory.Workbench.UserOptions.RedirectConsoleIO, "", false,
+                     WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SourceFileDirectory,
+                     WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SourceFileName, false, false);*/
+            }
+            catch (System.Exception ee)
+            {
+                ee = ee;
+                // SSM 22/04/19 - исправляю вылет оболочки при отсутствии exe файла
+                // this.RunnerManager_Exited(OutputFileName); // - это всё равно не срабатывает. Кнопки оказываются в заблокированном состоянии
+                //var OutputFileName = @"D:\PABC_Git\bin\RunUnitTests.exe";
+                //WorkbenchServiceFactory.OperationsService.AddTextToOutputWindowSync(OutputFileName, "Произошла непредвиденная ошибка" + ee.StackTrace);
+                //throw;
+            }
+        }
+
+        public ABCHealth ABCHealthForm = null;
+
+        private Label AddString(double x, double y, string s, bool link = false, bool goodfeatures = false)
+        {
+            Label l;
+            if (link)
+                l = new LinkLabel();
+            else l = new Label();
+            l.Text = s;
+            l.Left = (int)Math.Round(x);
+            l.Top = (int)Math.Round(y);
+            //if (link)
+                if (!goodfeatures)
+                    l.ForeColor = System.Drawing.Color.Red;
+                else l.ForeColor = System.Drawing.Color.Green;
+            l.AutoSize = true;
+            ABCHealthForm.Controls.Add(l);
+            return l;
+        }
+
+        private string Raz(int n)
+        {
+            if ((n % 10 == 2 || n % 10 == 3 || n % 10 == 4) && (n / 10 % 10 != 1))
+                return n + " раза";
+            else return n + " раз";
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            if (ABCHealthForm == null)
+            {
+                ABCHealthForm = new ABCHealth();
+                ABCHealthForm.FormBorderStyle = FormBorderStyle.Fixed3D;
+            }
+            try
+            {
+                var gr = Graphics.FromHwnd(Handle);
+                var scale = gr.DpiX / 96;
+
+                var aw = ABCHealthForm.Width;
+                var ah = ABCHealthForm.Height;
+                var c = new PascalABCCompiler.Compiler();
+                c.Reload();
+                var errors = new List<PascalABCCompiler.Errors.Error>();
+                var warnings = new List<PascalABCCompiler.Errors. CompilerWarning>();
+
+                var text = CurrentSyntaxEditor.TextEditor.ActiveTextAreaControl.TextArea.Document.TextContent;
+
+                WorkbenchServiceFactory.Workbench.ErrorsListWindow.ClearErrorList();
+                var res = c.ParseText(CurrentSourceFileName, text, errors, warnings);
+                WorkbenchServiceFactory.Workbench.ErrorsListWindow.ShowErrorsSync(c.ErrorsList, c.ErrorsList.Count != 0);
+                if (res != null)
+                {
+                    var y = 30/2*scale;
+                    var stat = new SyntaxVisitors.ABCStatisticsVisitor();
+                    stat.ProcessNode(res);
+                    //stat.
+                    var h = 40 / 2 * scale;
+                    var x = 50 / 2 * scale;
+                    ABCHealthForm.Controls.Clear();
+
+                    var pp = new Panel();
+
+                    ToolTip ToolTip1 = new ToolTip();
+                    ToolTip1.SetToolTip(pp, "Здоровье PascalABC.NET программы");
+
+                    pp.Width = (int)Math.Round(220 / 2 * scale);
+                    pp.Height = (int)Math.Round(100 / 2 * scale);
+                    pp.Left = ABCHealthForm.ClientSize.Width - pp.Width - (int)Math.Round(24 / 2 * scale);
+                    pp.Top = (int)Math.Round(24 / 2 * scale);
+                    pp.BackColor = Color.Gray;
+                    
+                    ABCHealthForm.Controls.Add(pp);
+
+
+                    var l0 = AddString(x, y, "О здоровье кода",true) as LinkLabel;
+                    l0.LinkClicked += (o, e1) =>
+                    {
+                        System.Diagnostics.Process.Start("https://pascalabcnet.github.io/program_health.html");
+                    };
+                    y += 48 / 2 * scale;
+
+                    var l1 = AddString(x, y, "В программе найдены следующие конструкции базового Паскаля,");
+                    y += 36 / 2 * scale;
+                    var l2 = AddString(x, y, "считающиеся устаревшими в PascalABC.NET:");
+                    l1.ForeColor = Color.Black;
+                    l2.ForeColor = Color.Black;
+                    y += h;
+                    y += 8 / 2 * scale;
+                    x += 24 / 2 * scale;
+
+                    // Проценты в минус
+                    // 1. Количество var вне - количество var внутри. За первую - -10%, за остальные - -2% пока не достигнет 25%
+                    // 2. Количество  for i - за первую - -15%, за каждую следующую - -3% пока не достигнет 25%
+                    // 3. Read(i,j) - за первую -15%, за последующие - -2% пока не достигнет -20%
+                    // 4. program - -10%
+                    // 5. Статические массивы - -10%, за каждый последующий - -2% пока не достигнет -15%
+                    // 6. Write(a,' ',b) - за каждую - -1% пока не достгнет -5%  
+                    // 7. string[10] - за каждую - -1% . Если минусуется > 100%, то здоровье делать 0% 
+
+
+                    var ShowNegativeInfo = false;
+                    if (stat.OutBlockVarDefs > 0 && stat.OutBlockVarDefs > stat.InBlockVarDefs)
+                    {
+                        AddString(x, y, "Переменные описаны вне блоков begin-end: " + Raz(stat.OutBlockVarDefs), false);
+                        y += h;
+                        ShowNegativeInfo = true;
+                    }
+                    if (stat.ForsWithoutVar != 0)
+                    {
+                        AddString(x, y, "Переменная цикла for не описана в заголовке цикла: " + Raz(stat.ForsWithoutVar), false);
+                        y += h;
+                        ShowNegativeInfo = true;
+                    }
+                    if (stat.ReadProc > 0)
+                    {
+                        AddString(x, y, "Для ввода использована процедура Read: " + Raz(stat.ReadProc), false);
+                        y += h;
+                        ShowNegativeInfo = true;
+                    }
+                    if (stat.ProgramKeyword)
+                    {
+                        AddString(x, y, "Использовано ключевое слово program", false);
+                        y += h;
+                        ShowNegativeInfo = true;
+                    }
+                    if (stat.WriteProcWithSpace > 0)
+                    {
+                        AddString(x, y, "Использована процедура Write с пробелом в качестве разделителя: " + Raz(stat.WriteProcWithSpace), false);
+                        y += h;
+                        ShowNegativeInfo = true;
+                    }
+                    if (stat.StaticArrays > 0)
+                    {
+                        AddString(x, y, "Используются статические массивы вместо динамических: " + Raz(stat.StaticArrays), false);
+                        y += h;
+                        ShowNegativeInfo = true;
+                    }
+                    if (stat.OldStrings > 0)
+                    {
+                        AddString(x, y, "Используются устаревшие строки вида string[10]: " + Raz(stat.OldStrings), false);
+                        y += h;
+                        ShowNegativeInfo = true;
+                    }
+
+                    ///----------------------------------------------------
+                    y += 12 / 2 * scale;
+                    x -= 24 / 2 * scale;
+                    var l3 = AddString(x, y, "В программе используются следующие рекомендованные конструкции");
+                    y += 36 / 2 * scale;
+                    var l4 = AddString(x, y, "PascalABC.NET:");
+                    l3.ForeColor = Color.Black;
+                    l4.ForeColor = Color.Black;
+                    x += 24 / 2 * scale;
+                    y += h;
+                    y += 8 / 2 * scale;
+                    if (stat.InBlockVarDefs > 0)
+                    {
+                        AddString(x, y, "Используются внутриблочные описания переменных: " + Raz(stat.InBlockVarDefs), false, true);
+                        y += h;
+                    }
+                    if (stat.ForsWithVar != 0)
+                    {
+                        AddString(x, y, "Переменная цикла for описана в заголовке цикла: " + Raz(stat.ForsWithVar), false, true);
+                        y += h;
+                    }
+                    if (stat.InitVarInDef > 0)
+                    {
+                        AddString(x, y, "Используется инициализация при описании: " + Raz(stat.InitVarInDef), false, true);
+                        y += h;
+                    }
+                    if (stat.ReadFuncCount > 0)
+                    {
+                        AddString(x, y, "Для ввода используется функция вида ReadInteger, ReadReal: " + Raz(stat.ReadFuncCount), false, true);
+                        y += h;
+                    }
+                    if (stat.ExtAssignCount > 0)
+                    {
+                        AddString(x, y, "Используется расширенное присваивание: " + Raz(stat.ExtAssignCount), false, true);
+                        y += h;
+                    }
+                    if (stat.PrintCount > 0)
+                    {
+                        AddString(x, y, "Для вывода использована Print: " + Raz(stat.PrintCount), false, true);
+                        y += h;
+                    }
+                    if (stat.TuplesCount > 0)
+                    {
+                        AddString(x, y, "Используются кортежи: " + Raz(stat.TuplesCount), false, true);
+                        y += h;
+                    }
+                    if (stat.DynamicArrays > 0)
+                    {
+                        AddString(x, y, "Используются динамические массивы: " + Raz(stat.DynamicArrays), false, true);
+                        y += h;
+                    }
+                    if (stat.UnpackingAssign > 0)
+                    {
+                        AddString(x, y, "Используется распаковка значения в переменные: " + Raz(stat.UnpackingAssign), false, true);
+                        y += h;
+                    }
+                    if (stat.LoopsCount > 0)
+                    {
+                        AddString(x, y, "Используется цикл loop: " + Raz(stat.LoopsCount), false, true);
+                        y += h;
+                    }
+                    if (stat.ForeachCount > 0)
+                    {
+                        AddString(x, y, "Используется цикл foreach: " + Raz(stat.ForeachCount), false, true);
+                        y += h;
+                    }
+                    if (stat.LambdasCount > 0)
+                    {
+                        AddString(x, y, "Используются лямбда-выражения: " + Raz(stat.LambdasCount), false, true);
+                        y += h;
+                    }
+
+                    var Percent = stat.CalcHealth(out int NegativePercent, out int PositivePercent);
+                    // Процент здоровья
+                    // VarDefs
+
+                    if (!ShowNegativeInfo)
+                    {
+                        l1.Text = "В программе отсутствуют устаревшие в PascalABC.NET конструкции";
+                        l2.Text = "";
+                    }
+                    if (PositivePercent == 0)
+                    {
+                        l3.Text = "В программе отсутствуют рекомендованные в PascalABC.NET конструкции";
+                        l4.Text = "";
+                    }
+
+                    // Цвет панели
+                    if (Percent < 25)
+                        pp.BackColor = Color.FromArgb(255, 0, 0);
+                    else if (Percent < 50)
+                        pp.BackColor = Color.FromArgb(255, 64, 64);
+                    else if (Percent < 75)
+                        pp.BackColor = Color.FromArgb(128, 128, 128);
+                    else if (Percent < 100)
+                        pp.BackColor = Color.FromArgb(64 + 16 + 16, 128, 64 + 16 + 16);
+                    else pp.BackColor = Color.FromArgb(0, 128, 0);
+
+                    pp.Paint += (o, ea) =>
+                    {
+                        Font drawFont = new Font("Arial", 20);
+                        SolidBrush drawBrush = new SolidBrush(Color.White);
+                        StringFormat format = new StringFormat(StringFormatFlags.NoClip);
+                        format.LineAlignment = StringAlignment.Center;
+                        format.Alignment = StringAlignment.Center;
+                        ea.Graphics.DrawString(Percent + "%", drawFont, drawBrush, new RectangleF(0, 0, pp.Width, pp.Height),format);
+                    };
+
+                    Button b = new Button();
+                    b.Text = "OK";
+                    b.Width = (int)Math.Round(156 / 2 * scale);
+                    b.Height = (int)Math.Round(48 / 2 * scale);
+                    y += h;
+                    b.Top = (int)Math.Round(y);
+                    b.Left = (int)Math.Round((double)(ABCHealthForm.Width - b.Width) / 2);
+                    b.Click += (o, ee) => { ABCHealthForm.Close(); };
+                    ABCHealthForm.Controls.Add(b);
+                    y += b.Height + h;
+                    var hh = ABCHealthForm.Height - ABCHealthForm.ClientSize.Height;
+                    ABCHealthForm.Height = (int)Math.Round(y+hh);
+
+                    ABCHealthForm.StartPosition = FormStartPosition.Manual;
+                    ABCHealthForm.Left = this.Left + Width - aw;
+                    ABCHealthForm.Top = this.Top;
+                    b.PreviewKeyDown += (o, eee) =>
+                    {
+                        if (eee.KeyCode == Keys.Escape)
+                            ABCHealthForm.Close();
+                    };
+                    ABCHealthForm.ShowDialog();
+                }
+            }
+            catch (System.Exception ee)
+            {
+            }
+        }
+
+        private void HealthLabelClear()
+        {
+            HealthLabel.Text = "";
+            HealthLabel.BackColor = System.Drawing.SystemColors.Control;
+        }
+
+        private void HealthLabel_Click(object sender, EventArgs e)
+        {
+            toolStripButton1_Click(this, null);
+            //System.Diagnostics.Process.Start("https://pascalabcnet.github.io/program_health.html");
         }
 
         private void tsHelp_Click(object sender, EventArgs e)

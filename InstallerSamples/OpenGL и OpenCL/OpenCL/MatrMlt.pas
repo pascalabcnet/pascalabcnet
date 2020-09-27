@@ -19,8 +19,7 @@ begin
   cl.GetPlatformIDs(1, platform, IntPtr.Zero).RaiseIfError;
   
   var device: cl_device_id;
-  cl.GetDeviceIDs(platform, DeviceType.DEVICE_TYPE_DEFAULT, 1,device,IntPtr.Zero).RaiseIfError;
-//  cl.GetDeviceIDs(platform, DeviceType.DEVICE_TYPE_ALL, 1,device,IntPtr.Zero).RaiseIfError;
+  cl.GetDeviceIDs(platform, DeviceType.DEVICE_TYPE_ALL, 1,device,IntPtr.Zero).RaiseIfError;
   
   var context := cl.CreateContext(nil, 1,device, nil,IntPtr.Zero, ec);
   ec.RaiseIfError;
@@ -31,7 +30,9 @@ begin
   // Чтение и компиляция .cl файла
   
   {$resource MatrMlt.cl}
-  var prog_str := System.IO.StreamReader.Create(GetResourceStream('MatrMlt.cl')).ReadToEnd;
+  var prog_str := System.IO.StreamReader.Create(
+    System.Reflection.Assembly.GetCallingAssembly.GetManifestResourceStream('MatrMlt.cl')
+  ).ReadToEnd;
   var prog := cl.CreateProgramWithSource(
     context,
     1,
@@ -80,15 +81,13 @@ begin
   ec.RaiseIfError;
   
   var MatrWParam := MatrW;
-  var W_buf := cl.CreateBuffer(context, MemFlags.MEM_READ_WRITE or MemFlags.MEM_USE_HOST_PTR, new UIntPtr(sizeof(integer)),new IntPtr(@MatrWParam), ec);
-  ec.RaiseIfError;
   
   // Выполнение C := A*B
   
   cl.SetKernelArg(MatrMltMatrKernel, 0, new UIntPtr(UIntPtr.Size), A_buf).RaiseIfError;
   cl.SetKernelArg(MatrMltMatrKernel, 1, new UIntPtr(UIntPtr.Size), B_buf).RaiseIfError;
   cl.SetKernelArg(MatrMltMatrKernel, 2, new UIntPtr(UIntPtr.Size), C_buf).RaiseIfError;
-  cl.SetKernelArg(MatrMltMatrKernel, 3, new UIntPtr(UIntPtr.Size), W_buf).RaiseIfError;
+  cl.SetKernelArg(MatrMltMatrKernel, 3, new UIntPtr(sizeof(integer)), @MatrWParam).RaiseIfError;
   
   var k1_ev: cl_event;
   cl.EnqueueNDRangeKernel(command_queue, MatrMltMatrKernel, 2, nil,new UIntPtr[](new UIntPtr(MatrW),new UIntPtr(MatrW)),nil, 0,nil,k1_ev).RaiseIfError;
@@ -98,7 +97,7 @@ begin
   cl.SetKernelArg(MatrMltVecKernel, 0, new UIntPtr(UIntPtr.Size),  C_buf).RaiseIfError;
   cl.SetKernelArg(MatrMltVecKernel, 1, new UIntPtr(UIntPtr.Size), V1_buf).RaiseIfError;
   cl.SetKernelArg(MatrMltVecKernel, 2, new UIntPtr(UIntPtr.Size), V2_buf).RaiseIfError;
-  cl.SetKernelArg(MatrMltVecKernel, 3, new UIntPtr(UIntPtr.Size),  W_buf).RaiseIfError;
+  cl.SetKernelArg(MatrMltVecKernel, 3, new UIntPtr(sizeof(integer)), @MatrWParam).RaiseIfError;
   
   var k2_ev: cl_event;
   cl.EnqueueNDRangeKernel(command_queue, MatrMltVecKernel, 1, nil,new UIntPtr[](new UIntPtr(MatrW)),nil, 1,k1_ev,k2_ev).RaiseIfError;
@@ -113,7 +112,7 @@ begin
   A.Println;
   Writeln;
   
-  cl.EnqueueReadBuffer(command_queue, V2_buf, Bool.NON_BLOCKING, new UIntPtr(0), new UIntPtr(VecByteSize), V1[0], 1,k2_ev,IntPtr.Zero).RaiseIfError;
+  cl.EnqueueReadBuffer(command_queue, V2_buf, Bool.BLOCKING, new UIntPtr(0), new UIntPtr(VecByteSize), V1[0], 1,k2_ev,IntPtr.Zero).RaiseIfError;
   Writeln('Вектор V2 = C*V1:');
   V1.Println;
   
