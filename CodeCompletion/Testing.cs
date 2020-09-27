@@ -261,10 +261,18 @@ namespace CodeCompletion
 
         private static void assert(bool cond, string message=null)
     	{
+#if DEBUG
             if (message != null)
     		    System.Diagnostics.Debug.Assert(cond, message);
             else
                 System.Diagnostics.Debug.Assert(cond);
+#else
+            if (message != null)
+                System.Diagnostics.Trace.Assert(cond, message);
+            else
+                System.Diagnostics.Trace.Assert(cond);
+#endif
+            
         }
     	
     	private static void TestVBNETExpressionExtract()
