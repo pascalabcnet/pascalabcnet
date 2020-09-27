@@ -1029,6 +1029,9 @@ namespace PascalABCCompiler.PCU
                 // конечно, записи в unit_uses_paths для такого подключения - нет
                 if (unit.SemanticTree == used_unit) continue;
 
+                // AddIndirectInteraceUsedUnits может добавлять один и тот же модуль несколько раз
+                if (used_units.ContainsKey(used_unit)) continue;
+
                 // раньше вместо пути модуля - брало имя его первого пространства имён
                 // и сразу стояла эта проверка. Если будет тут вылетать - наверное надо заменить throw на continue
                 if (used_unit.namespaces.Count == 0) throw new InvalidOperationException();
@@ -1040,7 +1043,7 @@ namespace PascalABCCompiler.PCU
             foreach (var used_unit in unit.ImplementationUsedUnits.OfType<common_unit_node>())
             {
                 if (unit.SemanticTree == used_unit) continue;
-                if (used_units.ContainsKey(used_unit)) continue; //AddIndirectImplementationUsedUnits может добавить модуль из uses из interface
+                if (used_units.ContainsKey(used_unit)) continue;
                 if (used_unit.namespaces.Count == 0) throw new InvalidOperationException();
 
                 this.used_units.Add(used_unit, used_units.Count);
