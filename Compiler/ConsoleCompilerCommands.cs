@@ -49,5 +49,6 @@ namespace PascalABCCompiler
         public const int CompilerOptionsProjectCompiled = 225;
         public const int UseDllForSystemUnits = 226;
         public const int IDELocale = 227;
+        public const int CompilerLocale = 228;
     }
 }

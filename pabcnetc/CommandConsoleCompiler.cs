@@ -282,6 +282,9 @@ namespace PascalABCCompiler
                 case ConsoleCompilerConstants.CompilerOptions:
                     compiler.CompilerOptions = (CompilerOptions)ReadObject();
                     break;
+                case ConsoleCompilerConstants.CompilerLocale:
+                    compiler.CompilerOptions.Locale = arg;
+                    break;
                 case ConsoleCompilerConstants.IDELocale:
                     /*int n = Convert.ToInt32(arg);
                     if (n < StringResourcesLanguage.AccessibleLanguages.Count && n >= 0)
