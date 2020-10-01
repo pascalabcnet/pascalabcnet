@@ -640,9 +640,11 @@ namespace PascalABCCompiler.TreeConverter
 
         public location get_location(SyntaxTree.syntax_tree_node tn)
         {
+            if (tn == null)
+                return null;
             if (tn.source_context == null)
             {
-                return null;
+                return get_location(tn.Parent);
             }
             document d = current_document;
             if (tn.source_context.FileName != null && (d == null || d.file_name != tn.source_context.FileName))
