@@ -31,7 +31,7 @@ namespace SyntaxVisitors.SugarVisitors
             sl.Add(new semantic_check_sugared_statement_node(typeof(assign_tuple), new List<syntax_tree_node> { asstup.vars, asstup.expr }, asstup.source_context)); // Это нужно для проверок на этапе преобразования в семантику
 
             var tname = "#temp_var" + UniqueNumStr();
-            var tt = new var_statement(new ident(tname), asstup.expr);
+            var tt = new var_statement(new ident(tname, asstup.expr.source_context), asstup.expr, asstup.expr.source_context);
             sl.Add(tt);
 
             var n = asstup.vars.variables.Count();
@@ -39,7 +39,7 @@ namespace SyntaxVisitors.SugarVisitors
             {
                 var a = new assign(asstup.vars.variables[i],
                     //new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString())), 
-                    new semantic_ith_element_of(new ident(tname), new int32_const(i)),
+                    new semantic_ith_element_of(new ident(tname, asstup.expr.source_context), new int32_const(i), asstup.expr.source_context),
                     Operators.Assignment,
                     asstup.vars.variables[i].source_context);
                 sl.Add(a);
@@ -80,7 +80,7 @@ namespace SyntaxVisitors.SugarVisitors
                 ld.Add(new semantic_check_sugared_statement_node(typeof(assign_var_tuple), new List<syntax_tree_node> { assvartup.idents, assvartup.expr }, assvartup.source_context)); // Это нужно для проверок на этапе преобразования в семантику
 
                 var vd = new variable_definitions();
-                var tt1 = new var_def_statement(new ident(tname), assvartup.expr);
+                var tt1 = new var_def_statement(new ident(tname, assvartup.expr.source_context), assvartup.expr, assvartup.expr.source_context);
                 vd.Add(tt1);
 
                 var nn = assvartup.idents.idents.Count();
@@ -88,7 +88,7 @@ namespace SyntaxVisitors.SugarVisitors
                 {
                     var a = new var_def_statement(assvartup.idents.idents[i],
                         //new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString())),
-                        new semantic_ith_element_of(new ident(tname), new int32_const(i)),
+                        new semantic_ith_element_of(new ident(tname, assvartup.expr.source_context), new int32_const(i), assvartup.expr.source_context),
                         assvartup.idents.idents[i].source_context);
                     vd.Add(a);
                 }
@@ -101,7 +101,7 @@ namespace SyntaxVisitors.SugarVisitors
             var sl = new List<statement>();
             sl.Add(new semantic_check_sugared_statement_node(typeof(assign_var_tuple), new List<syntax_tree_node> { assvartup.idents, assvartup.expr }, assvartup.source_context)); // Это нужно для проверок на этапе преобразования в семантику
 
-            var tt = new var_statement(new ident(tname), assvartup.expr); // тут для assvartup.expr внутри повторно вызывается convert_strong, это плохо, но если там лямбда, то иначе - с semantic_addr_value - не работает!!!
+            var tt = new var_statement(new ident(tname, assvartup.expr.source_context), assvartup.expr, assvartup.expr.source_context); // тут для assvartup.expr внутри повторно вызывается convert_strong, это плохо, но если там лямбда, то иначе - с semantic_addr_value - не работает!!!
             sl.Add(tt); // он же помещается в новое синтаксическое дерево
 
             var n = assvartup.idents.idents.Count();
@@ -109,7 +109,7 @@ namespace SyntaxVisitors.SugarVisitors
             {
                 var a = new var_statement(assvartup.idents.idents[i],
                     //new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString())),
-                    new semantic_ith_element_of(new ident(tname), new int32_const(i)),
+                    new semantic_ith_element_of(new ident(tname, assvartup.expr.source_context), new int32_const(i), assvartup.expr.source_context),
                     assvartup.idents.idents[i].source_context);
                 sl.Add(a);
             }
@@ -127,13 +127,13 @@ namespace SyntaxVisitors.SugarVisitors
             var tname = "#temp_var" + UniqueNumStr();
             var vd = new List<var_def_statement>();
             //vd.Add(new semantic_check_sugared_var_def_statement_node(typeof(assign_var_tuple), new List<syntax_tree_node> { vtd.vars, vtd.inital_value }, vtd.source_context)); // Это нужно для проверок на этапе преобразования в семантику
-            var tt1 = new var_def_statement(new ident(tname), vtd.inital_value);
+            var tt1 = new var_def_statement(new ident(tname, vtd.inital_value.source_context), vtd.inital_value, vtd.inital_value.source_context);
             vd.Add(tt1);
             var nn = vtd.vars.idents.Count();
             for (var i = 0; i < nn; i++)
             {
                 var a = new var_def_statement(vtd.vars.idents[i],
-                    new semantic_ith_element_of(new ident(tname), new int32_const(i)),
+                    new semantic_ith_element_of(new ident(tname, vtd.inital_value.source_context), new int32_const(i), vtd.inital_value.source_context),
                     //new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString())),
                     vtd.vars.idents[i].source_context);
                 vd.Add(a);

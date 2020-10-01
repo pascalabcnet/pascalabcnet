@@ -2329,6 +2329,8 @@ namespace PascalABCCompiler.TreeRealization
                             }
                             else if (fn.get_generic_params_list() != null && fn.get_generic_params_list().Count > 0)
                             {
+                                if (ctn.IsPointer)
+                                    continue;
                                 fn = fn.get_instance(new List<type_node>(new type_node[] { ctn }), true, null);
                             }
                         }
@@ -2364,6 +2366,8 @@ namespace PascalABCCompiler.TreeRealization
                             }
                             else if (fn.get_generic_params_list() != null && fn.get_generic_params_list().Count > 0)
                             {
+                                if (ctn.IsPointer)
+                                    continue;
                                 fn = fn.get_instance(new List<type_node>(new type_node[] { ctn }), true, null);
                             }
                         }
