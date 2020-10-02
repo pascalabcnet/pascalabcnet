@@ -640,17 +640,22 @@ namespace PascalABCCompiler.TreeConverter
 
         public location get_location(SyntaxTree.syntax_tree_node tn)
         {
-            if (tn == null)
-                return null;
-            if (tn.source_context == null)
+            var tnn = tn;
+            /*while (tnn.source_context == null && tnn.Parent != null)
             {
-                return get_location(tn.Parent);
+                tnn = tnn.Parent;
+            }*/
+            var tns = tnn.source_context;
+
+            if (tns == null)
+            {
+                return null;
             }
             document d = current_document;
-            if (tn.source_context.FileName != null && (d == null || d.file_name != tn.source_context.FileName))
-                d = new document(tn.source_context.FileName);
-            return new location(tn.source_context.begin_position.line_num, tn.source_context.begin_position.column_num,
-                tn.source_context.end_position.line_num, tn.source_context.end_position.column_num, d);
+            if (tns.FileName != null && (d == null || d.file_name != tns.FileName))
+                d = new document(tns.FileName);
+            return new location(tns.begin_position.line_num, tns.begin_position.column_num,
+                tns.end_position.line_num, tns.end_position.column_num, d);
         }
         public location get_right_location(SyntaxTree.syntax_tree_node tn)
         {
@@ -1699,6 +1704,11 @@ namespace PascalABCCompiler.TreeConverter
                 check_possible_generic_names(names, loc);
             }
             var lastname = names.names[names.names.Count - 1];
+            syntax_tree_node l = lastname;
+            while (l.source_context == null && l.Parent != null)
+                l = l.Parent;
+
+            lastname.source_context = l?.source_context;
             di = context.check_name_node_type(lastname.name, sil?.FirstOrDefault(), get_location(lastname), general_node_type.type_node);
             return (type_node)di;
         }
