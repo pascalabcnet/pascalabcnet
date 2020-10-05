@@ -15955,10 +15955,12 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 else
                 {
+                    var lbvr = nspr.expression as local_block_variable_reference;
+
                     //String 1 based
                     if (parameters.expressions.Count == 1 &&
                        nspr.property.comprehensive_type == SystemLibrary.SystemLibrary.string_type &&
-                       !SemanticRules.NullBasedStrings)
+                       !SemanticRules.NullBasedStrings && (lbvr == null || !lbvr.var.name.StartsWith("<>match")))
                     {
                         nspr.fact_parametres.AddElement(
                             ConstructDecExpr(
