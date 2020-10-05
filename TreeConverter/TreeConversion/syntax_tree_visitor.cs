@@ -3339,6 +3339,8 @@ namespace PascalABCCompiler.TreeConverter
                 && !(sn is foreach_break_node) && !(sn is foreach_continue_node)
               )
                 AddError(get_location(_procedure_call), "STATEMENT_EXPECTED");
+            if (sn is base_function_call bfc && bfc.IsExplicitConversion)
+                AddError(get_location(_procedure_call), "STATEMENT_EXPECTED");
 
             return_value(sn);
             //_procedure_call.func_name.visit(this);
