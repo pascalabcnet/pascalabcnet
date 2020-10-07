@@ -3104,7 +3104,7 @@ namespace PascalABCCompiler.TreeConverter
             else
             	if (!(type_table.is_derived(en.type, tp) || type_table.is_derived(tp, en.type) 
                     || en.type == tp || en.type == SystemLibrary.SystemLibrary.object_type
-            	    || en.type.IsInterface || tp.IsInterface || tp.is_generic_parameter)
+            	    || en.type.IsInterface || tp.IsInterface || tp.is_generic_parameter || en.type.is_generic_parameter)
                    )
                 {
                     AddError(loc, "EXPECTED_DERIVED_CLASSES");
