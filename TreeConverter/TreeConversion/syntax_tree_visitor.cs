@@ -3104,7 +3104,7 @@ namespace PascalABCCompiler.TreeConverter
             else
             	if (!(type_table.is_derived(en.type, tp) || type_table.is_derived(tp, en.type) 
                     || en.type == tp || en.type == SystemLibrary.SystemLibrary.object_type
-            	    || en.type.IsInterface || tp.IsInterface || tp.is_generic_parameter)
+            	    || en.type.IsInterface || tp.IsInterface || tp.is_generic_parameter || en.type.is_generic_parameter)
                    )
                 {
                     AddError(loc, "EXPECTED_DERIVED_CLASSES");
@@ -3338,6 +3338,8 @@ namespace PascalABCCompiler.TreeConverter
                 && !(sn is repeat_break_node) && !(sn is repeat_continue_node) && !(sn is for_break_node) && !(sn is for_continue_node)
                 && !(sn is foreach_break_node) && !(sn is foreach_continue_node)
               )
+                AddError(get_location(_procedure_call), "STATEMENT_EXPECTED");
+            if (sn is base_function_call bfc && bfc.IsExplicitConversion)
                 AddError(get_location(_procedure_call), "STATEMENT_EXPECTED");
 
             return_value(sn);
@@ -15955,10 +15957,12 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 else
                 {
+                    var lbvr = nspr.expression as local_block_variable_reference;
+
                     //String 1 based
                     if (parameters.expressions.Count == 1 &&
                        nspr.property.comprehensive_type == SystemLibrary.SystemLibrary.string_type &&
-                       !SemanticRules.NullBasedStrings)
+                       !SemanticRules.NullBasedStrings && (lbvr == null || !lbvr.var.name.StartsWith("<>match")))
                     {
                         nspr.fact_parametres.AddElement(
                             ConstructDecExpr(

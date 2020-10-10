@@ -260,7 +260,7 @@ namespace PascalABCCompiler.TreeConverter
                 type_table.is_derived(expressionType, type) ||
                 AreTheSameType(type, expressionType) ||
                 type.IsInterface ||
-                expressionType.IsInterface)
+                expressionType.IsInterface || type.is_generic_parameter || expressionType.is_generic_parameter)
                 return;
 
             AddError(get_location(matchedExpression), "EXPRESSION_OF_TYPE_{0}_CANNOT_BE_MATCHED_AGAINST_PATTERN_WITH_TYPE_{1}", expressionType.name, type.name);
