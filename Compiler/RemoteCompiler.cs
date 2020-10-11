@@ -370,6 +370,8 @@ namespace PascalABCCompiler
             //sendCommand(ConsoleCompilerConstants.CompilerOptionsOutputDirectory, dir_name);
             sendObjectAsByteArray(ConsoleCompilerConstants.CompilerOptionsOutputDirectory, compilerOptions.OutputDirectory);
             sendCommand(ConsoleCompilerConstants.CompilerOptionsClearStandartModules);
+            if (compilerOptions.Locale != null)
+                sendCommand(ConsoleCompilerConstants.CompilerLocale, compilerOptions.Locale);
             foreach (PascalABCCompiler.CompilerOptions.StandartModule sm in compilerOptions.StandartModules)
                 sendCommand(
                     ConsoleCompilerConstants.CompilerOptionsStandartModule, 
