@@ -145,15 +145,15 @@ namespace VisualPascalABC
 
         public static Type GetTypeForStatic(string name)
         {
-            Type t = stand_types[name] as Type;
+            Type t = null;
+            foreach (string s in ns_ht.Keys)
+            {
+                t = a.GetType(s + "." + name, false, true);
+                if (t != null)
+                    return t;
+            }
+            t = stand_types[name] as Type;
             if (t != null) return t;
-            if (t == null)
-                foreach (string s in ns_ht.Keys)
-                {
-                    t = a.GetType(s + "." + name, false, true);
-                    if (t != null)
-                        return t;
-                }
             t = PascalABCCompiler.NetHelper.NetHelper.FindType(name);
             if (t == null) t = PascalABCCompiler.NetHelper.NetHelper.FindType("System." + name);
             if (t == null)
@@ -1388,6 +1388,12 @@ namespace VisualPascalABC
                         }
                     }
 
+                    Type t = AssemblyHelper.GetTypeForStatic(var);
+                    if (t != null)
+                    {
+                        DebugType dt = DebugUtils.GetDebugType(t);//DebugType.Create(this.debuggedProcess.GetModule(var),(uint)t.MetadataToken);
+                        return new BaseTypeItem(dt, t);
+                    }
 
                     List<DebugType> types = AssemblyHelper.GetUsesTypes(debuggedProcess, debuggedProcess.SelectedFunction.DeclaringType);
                     foreach (DebugType dt in types)
@@ -1414,12 +1420,7 @@ namespace VisualPascalABC
 
                     if (ret_nv != null && string.Compare(var, "Result", true) == 0)
                         return new ValueItem(ret_nv, null);
-                    Type t = AssemblyHelper.GetTypeForStatic(var);
-                    if (t != null)
-                    {
-                        DebugType dt = DebugUtils.GetDebugType(t);//DebugType.Create(this.debuggedProcess.GetModule(var),(uint)t.MetadataToken);
-                        return new BaseTypeItem(dt, t);
-                    }
+                    
                 }
                 else
                 {
