@@ -876,12 +876,15 @@ namespace PascalABCCompiler.PCU
             if (tn is common_type_node)
             {
                 common_namespace_node comp_cnn = (tn as common_type_node).comprehensive_namespace;
-                if (comp_cnn != null && !ns_dict.ContainsKey(comp_cnn))
+                if (comp_cnn != null && !ns_dict.ContainsKey(comp_cnn) && unit.SemanticTree != comp_cnn.cont_unit)
                 {
+                    var path = Compiler.GetUnitPath(unit, compiler.UnitsSortedList.Find(u => u.SemanticTree == comp_cnn.cont_unit));
+
                     if (interf)
-                        unit.InterfaceUsedUnits.AddElement(comp_cnn.cont_unit);
+                        unit.InterfaceUsedUnits.AddElement(comp_cnn.cont_unit, path);
                     else
-                        unit.ImplementationUsedUnits.AddElement(comp_cnn.cont_unit);
+                        unit.ImplementationUsedUnits.AddElement(comp_cnn.cont_unit, path);
+
                     ns_dict[comp_cnn] = true;
                 }
                 if (tn.base_type is common_type_node)
