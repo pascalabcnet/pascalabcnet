@@ -662,6 +662,7 @@ namespace VisualPascalABC
             RemoveGotoBreakpoints();
             AssemblyHelper.Unload();
             CloseOldToolTip();
+            workbench.ServiceContainer.EditorService.SetEditorDisabled(false);
             //RemoveMarker(frm.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.Document);
             evaluator = null;
             parser= null;
@@ -697,6 +698,7 @@ namespace VisualPascalABC
             workbench.WidgetController.EnableCodeCompletionToolTips(false);
             workbench.WidgetController.SetAddExprMenuVisible(true);
             workbench.WidgetController.SetDisassemblyMenuVisible(true);
+            workbench.ServiceContainer.EditorService.SetEditorDisabled(true);
             TooltipServiceManager.hideToolTip();
             IsRunning = true;
             evaluator = new ExpressionEvaluator(e.Process,workbench.VisualEnvironmentCompiler, FileName);
