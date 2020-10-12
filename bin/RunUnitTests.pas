@@ -45,8 +45,8 @@ begin
   Writeln($'{prefix}) {status}: {fullName}');
 	if not string.IsNullOrEmpty(message) then
 		Writeln(message.TrimEnd(TRIM_CHARS));
-	if not string.IsNullOrEmpty(stackTrace) then
-		Writeln(stackTrace.TrimEnd(TRIM_CHARS));
+	//if not string.IsNullOrEmpty(stackTrace) then
+	//	Writeln(stackTrace.TrimEnd(TRIM_CHARS));
 end;
 
 procedure DisplayTestResult(result: ITestResult);
