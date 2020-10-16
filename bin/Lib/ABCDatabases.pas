@@ -50,25 +50,41 @@ type
   public
     [PrintAttribute(0, -16)]
     property Name: string read _name;
+    [PrintAttribute(' ', 1, -3)]
+    property Gender: ТипПола read getGender;
+    [PrintAttribute(' ', 2, 3, 'd')]
+    property Height: integer read _height;
+    [PrintAttribute(' ',3, 2, 'd')]
+    property Cls: integer read _cls;
+    [PrintAttribute(' ', 4, -5)]
+    property InSunSchool: boolean read _inSunSchool;
+  end;
+
+  {Ученик = auto class
+  private
+    _name: string;
+    _gender: ТипПола; 
+    _height: integer;
+    _cls: integer;
+    _inSunSchool: boolean; 
+    function getGender: ТипПола := _gender;
+  public
     [PrintAttribute(0, -16)]
     property Фамилия: string read _name;
     [PrintAttribute(' ', 1, -3)]
-    property Gender: ТипПола read getGender;
-    [PrintAttribute(' ', 1, -3)]
     property Пол: ТипПола read getGender;
-    [PrintAttribute(' ', 2, 3, 'd')]
-    property Height: integer read _height;
     [PrintAttribute(' ', 2, 3, 'd')]
     property Рост: integer read _height;
     [PrintAttribute(' ',3, 2, 'd')]
-    property Cls: integer read _cls;
-    [PrintAttribute(' ',3, 2, 'd')]
     property Класс: integer read _cls;
     [PrintAttribute(' ', 4, -5)]
-    property InSunSchool: boolean read _inSunSchool;
-    [PrintAttribute(' ', 4, -5)]
     property УчитсяВКШ: boolean read _inSunSchool;
-    
+  end;}
+  Ученик = auto class
+    Фамилия: string;
+    Класс, Рост: integer;
+    Пол: ТипПола;
+    УчитсяВКШ: boolean;
   end;
 
 function GenderToТипПола(a: string): ТипПола := a = 'Муж' ? Муж : Жен;
@@ -266,7 +282,18 @@ begin
     .Select(w->new Country(w[0],w[1],w[2].ToInteger,w[3])).ToArray;
 end; 
 
-function ЗаполнитьМассивУчеников: array of Pupil;
+function ЗаполнитьМассивУчеников: array of Ученик;
+begin
+  var fname := 'c:\Program files (x86)\PascalABC.NET\Files\Databases\Ученики.csv';
+  if fname = '' then
+    raise new System.ApplicationException('Не найден массив учеников Databases\Ученики.csv');
+  Result := ReadLines(fname)
+    .Select(s->s.ToWords(';'))
+    .Select(w->new Ученик(w[0],w[1].ToInteger,w[4].ToInteger,GenderToТипПола(w[2]),
+      InSunschoolToBoolean(w[3]))).ToArray;
+end; 
+
+function GetPupils: array of Pupil;
 begin
   var fname := 'c:\Program files (x86)\PascalABC.NET\Files\Databases\Ученики.csv';
   if fname = '' then
@@ -276,8 +303,6 @@ begin
     .Select(w->new Pupil(w[0],GenderToТипПола(w[2]),w[4].ToInteger,w[1].ToInteger,
       InSunschoolToBoolean(w[3]))).ToArray;
 end; 
-
-function GetPupils: array of Pupil := ЗаполнитьМассивУчеников;
 
 function GetFitness: array of Fitness;
 begin

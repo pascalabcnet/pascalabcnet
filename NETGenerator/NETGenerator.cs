@@ -5926,7 +5926,7 @@ namespace PascalABCCompiler.NETGenerator
         {
             Label lab = helper.GetLabel(value.label, il);
             il.MarkLabel(lab);
-            value.statement.visit(this);
+            ConvertStatement(value.statement);
         }
 
         public override void visit(IGotoStatementNode value)

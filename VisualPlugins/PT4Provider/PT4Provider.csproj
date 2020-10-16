@@ -106,6 +106,10 @@
       <Project>{1E42361A-EDA3-4872-88AF-A3AAF600D36D}</Project>
       <Name>Compiler</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Errors\Errors.csproj">
+      <Project>{44a01f9e-dce7-470c-aae5-c3de0ccbee3b}</Project>
+      <Name>Errors</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Localization\Localization.csproj">
       <Project>{2DE2842F-0912-4251-BC0F-480854C44A13}</Project>
       <Name>Localization</Name>

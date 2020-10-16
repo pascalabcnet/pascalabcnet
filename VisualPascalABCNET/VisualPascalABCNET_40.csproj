@@ -130,7 +130,7 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="AutoInsertCode.cs">
+    <Compile Include="AutoInsertCode\AutoInsertCode.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="DockContent\Avalon\CodeFileDocumentTextEditorControl.cs" />

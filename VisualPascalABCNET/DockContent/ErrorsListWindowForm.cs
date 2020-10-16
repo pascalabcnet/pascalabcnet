@@ -115,10 +115,12 @@ namespace VisualPascalABC
                         lvErrorsList.Items[i].SubItems[ErrorListLineCol].Text = er.SourceLocation.BeginPosition.Line.ToString();
                     }
                 }
-                if (Err is PascalABCCompiler.Errors.CompilerInternalError)
+                else if (Err is PascalABCCompiler.Errors.CompilerInternalError)
                 {
                     lvErrorsList.Items[i].SubItems[ErrorListDescrCol].Text = (Err as PascalABCCompiler.Errors.CompilerInternalError).ToString();
                 }
+                else
+                    lvErrorsList.Items[i].SubItems[ErrorListDescrCol].Text = Err.Message;
                 i++;
             }
             if (ErrorsList.Count > 0 && !(ErrorsList[0] is PascalABCCompiler.Errors.CompilerWarning))

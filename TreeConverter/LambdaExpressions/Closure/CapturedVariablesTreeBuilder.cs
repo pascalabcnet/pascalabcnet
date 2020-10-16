@@ -226,14 +226,16 @@ namespace TreeConverter.LambdaExpressions.Closure
             var acceptableVarType = si.sym_info.semantic_node_type == semantic_node_type.local_variable ||
                                     si.sym_info.semantic_node_type == semantic_node_type.local_block_variable ||
                                     si.sym_info.semantic_node_type == semantic_node_type.common_parameter ||
-                                    si.sym_info.semantic_node_type == semantic_node_type.class_field
+                                    si.sym_info.semantic_node_type == semantic_node_type.class_field ||
+                                    si.sym_info.semantic_node_type == semantic_node_type.basic_property_node
                                     ;
             //trjuk, chtoby ne perelopachivat ves kod. zamenjaem ident na self.ident
             // Использую этот трюк для нестатических полей предков - они не захватываются из-за плохого алгоритма захвата
             // aab 12.06.19 begin
             // Добавил такое же переименование для статичесских полей класса. Теперь захват работает
             if ((si.sym_info.semantic_node_type == semantic_node_type.class_field || si.sym_info.semantic_node_type == semantic_node_type.common_method_node
-                || si.sym_info.semantic_node_type == semantic_node_type.common_event || si.sym_info.semantic_node_type == semantic_node_type.common_property_node) && InLambdaContext)
+                || si.sym_info.semantic_node_type == semantic_node_type.common_event || si.sym_info.semantic_node_type == semantic_node_type.common_property_node
+                || si.sym_info.semantic_node_type == semantic_node_type.basic_property_node) && InLambdaContext)
             {
                 dot_node dn = null;
                 // Поменял принцип добавления имени класса для статических полей и функций
@@ -325,7 +327,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             }
                 
 
-            if (!(acceptableVarType) && InLambdaContext) 
+            if (!acceptableVarType && InLambdaContext) 
             {
                 _visitor.AddError(new ThisTypeOfVariablesCannotBeCaptured(_visitor.get_location(id)));
                 return;

@@ -640,15 +640,22 @@ namespace PascalABCCompiler.TreeConverter
 
         public location get_location(SyntaxTree.syntax_tree_node tn)
         {
-            if (tn.source_context == null)
+            var tnn = tn;
+            /*while (tnn.source_context == null && tnn.Parent != null)
+            {
+                tnn = tnn.Parent;
+            }*/
+            var tns = tnn.source_context;
+
+            if (tns == null)
             {
                 return null;
             }
             document d = current_document;
-            if (tn.source_context.FileName != null && (d == null || d.file_name != tn.source_context.FileName))
-                d = new document(tn.source_context.FileName);
-            return new location(tn.source_context.begin_position.line_num, tn.source_context.begin_position.column_num,
-                tn.source_context.end_position.line_num, tn.source_context.end_position.column_num, d);
+            if (tns.FileName != null && (d == null || d.file_name != tns.FileName))
+                d = new document(tns.FileName);
+            return new location(tns.begin_position.line_num, tns.begin_position.column_num,
+                tns.end_position.line_num, tns.end_position.column_num, d);
         }
         public location get_right_location(SyntaxTree.syntax_tree_node tn)
         {
@@ -1697,6 +1704,11 @@ namespace PascalABCCompiler.TreeConverter
                 check_possible_generic_names(names, loc);
             }
             var lastname = names.names[names.names.Count - 1];
+            syntax_tree_node l = lastname;
+            while (l.source_context == null && l.Parent != null)
+                l = l.Parent;
+
+            lastname.source_context = l?.source_context;
             di = context.check_name_node_type(lastname.name, sil?.FirstOrDefault(), get_location(lastname), general_node_type.type_node);
             return (type_node)di;
         }
@@ -3092,7 +3104,7 @@ namespace PascalABCCompiler.TreeConverter
             else
             	if (!(type_table.is_derived(en.type, tp) || type_table.is_derived(tp, en.type) 
                     || en.type == tp || en.type == SystemLibrary.SystemLibrary.object_type
-            	    || en.type.IsInterface || tp.IsInterface || tp.is_generic_parameter)
+            	    || en.type.IsInterface || tp.IsInterface || tp.is_generic_parameter || en.type.is_generic_parameter)
                    )
                 {
                     AddError(loc, "EXPECTED_DERIVED_CLASSES");
@@ -3326,6 +3338,8 @@ namespace PascalABCCompiler.TreeConverter
                 && !(sn is repeat_break_node) && !(sn is repeat_continue_node) && !(sn is for_break_node) && !(sn is for_continue_node)
                 && !(sn is foreach_break_node) && !(sn is foreach_continue_node)
               )
+                AddError(get_location(_procedure_call), "STATEMENT_EXPECTED");
+            if (sn is base_function_call bfc && bfc.IsExplicitConversion)
                 AddError(get_location(_procedure_call), "STATEMENT_EXPECTED");
 
             return_value(sn);
@@ -14882,6 +14896,7 @@ namespace PascalABCCompiler.TreeConverter
                         	if (expr is common_constructor_call_as_constant)
                         		return expr as common_constructor_call_as_constant;
                         	convertion_data_and_alghoritms.check_convert_type(expr,tn,expr.location);
+                            return constant;
                         	//AddError(new CanNotConvertTypes(expr,expr.type,tn,expr.location));
                         	//throw new NotSupportedError(loc);
                         }
@@ -15942,10 +15957,12 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 else
                 {
+                    var lbvr = nspr.expression as local_block_variable_reference;
+
                     //String 1 based
                     if (parameters.expressions.Count == 1 &&
                        nspr.property.comprehensive_type == SystemLibrary.SystemLibrary.string_type &&
-                       !SemanticRules.NullBasedStrings)
+                       !SemanticRules.NullBasedStrings && (lbvr == null || !lbvr.var.name.StartsWith("<>match")))
                     {
                         nspr.fact_parametres.AddElement(
                             ConstructDecExpr(
