@@ -29,7 +29,7 @@ jobs:
         PABCNET_RUN_TESTS: false
         PABCNET_INC_BUILD: false
         PABCNET_VERBOSE: false
-      run: ./_GenerateAllSetups.bat
+      run: _GenerateAllSetups.bat
 
     - name: Publish artifacts (1/4)...
       uses: actions/upload-artifact@v2
