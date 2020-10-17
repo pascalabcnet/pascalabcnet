@@ -16,7 +16,7 @@ jobs:
 
     name: Prepare and build on Windows Server 2016 VM
     runs-on: windows-2016
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
     - uses: actions/checkout@v2
 

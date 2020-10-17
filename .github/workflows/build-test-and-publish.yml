@@ -32,7 +32,7 @@ jobs:
       run: _RegisterHelixNUnit.bat
 
     - name: Build project in Debug-mode, compile Pas-units, run tests, create install packages...
-      timeout-minutes: 25
+      timeout-minutes: 30
       env:
         PABCNET_BUILD_MODE: Debug
         PABCNET_RUN_TESTS: true
