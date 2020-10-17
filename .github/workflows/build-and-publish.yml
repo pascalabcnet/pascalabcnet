@@ -1,0 +1,62 @@
+name: Build & Publish (release)
+
+on:
+  workflow_dispatch:
+
+  release:
+    types:
+      - created
+
+defaults:
+  run:
+    shell: cmd
+
+jobs:
+  build:
+
+    name: Prepare and build on Windows Server 2016 VM
+    runs-on: windows-2016
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install dependencies into Virtual Environment...
+      run: _RegisterHelixNUnit.bat
+
+    - name: Build project in Release-mode, compile Pas-units, create install packages...
+      env:
+        PABCNET_BUILD_MODE: Release
+        PABCNET_RUN_TESTS: false
+        PABCNET_INC_BUILD: false
+        PABCNET_VERBOSE: false
+      run: ./_GenerateAllSetups.bat
+
+    - name: Publish artifacts (1/4)...
+      uses: actions/upload-artifact@v2
+      with:
+        name: PascalABCNET_Win7_IDE_Full
+        path: Release/PascalABCNETSetup.exe
+
+    - name: Publish artifacts (2/4)...
+      uses: actions/upload-artifact@v2
+      with:
+        name: PascalABCNET_Win7_IDE_Mini
+        path: Release/PascalABCNETMiniSetup.exe
+
+    - name: Publish artifacts (3/4)...
+      uses: actions/upload-artifact@v2
+      with:
+        name: PascalABCNET_WinXP_IDE_Full
+        path: Release/PascalABCNETWithDotNet40Setup.exe
+
+    - name: Publish artifacts (4/4)...
+      uses: actions/upload-artifact@v2
+      with:
+        name: PascalABCNET_Win_Mac_Linux_console
+        path: Release/PABCNETC.zip
+
+    #- name: Publish artifacts (5/5)...
+    #  uses: actions/upload-artifact@v2
+    #  with:
+    #    name: All_distros
+    #    path: Release

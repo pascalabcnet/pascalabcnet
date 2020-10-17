@@ -1,0 +1,74 @@
+name: Build & Test (CI)
+
+on: #[push, pull_request]
+  workflow_dispatch:
+
+  #push:
+  #  branches:
+  #    - master
+
+  #pull_request:
+  #  branches:
+  #    - master
+
+defaults:
+  run:
+    shell: cmd
+
+jobs:
+  build_and_test:
+
+    name: Prepare and build on Windows Server 2016 VM
+    runs-on: windows-2016
+    #timeout-minutes: 30
+    #continue-on-error: true
+    steps:
+
+    - run: git config --global core.autocrlf input
+
+    - uses: actions/checkout@v2
+
+    - name: Install dependencies into Virtual Environment...
+      run: _RegisterHelixNUnit.bat
+
+    - name: Build project in Debug-mode, compile Pas-units, run tests, create install packages...
+      timeout-minutes: 20
+      env:
+        PABCNET_BUILD_MODE: Debug
+        PABCNET_RUN_TESTS: true
+        PABCNET_INC_BUILD: false
+        PABCNET_VERBOSE: true
+      run: _GenerateAllSetups.bat
+
+    #- name: TestRunner_log.txt...
+    #  run: if exist bin\TestRunner_log.txt (type bin\TestRunner_log.txt)
+
+    - name: Publish artifacts (1/4)...
+      uses: actions/upload-artifact@v2.1.0
+      with:
+        name: PascalABCNET_Win7_IDE_Full
+        path: Release/PascalABCNETSetup.exe
+
+    - name: Publish artifacts (2/4)...
+      uses: actions/upload-artifact@v2.1.0
+      with:
+        name: PascalABCNET_Win7_IDE_Mini
+        path: Release/PascalABCNETMiniSetup.exe
+
+    - name: Publish artifacts (3/4)...
+      uses: actions/upload-artifact@v2.1.0
+      with:
+        name: PascalABCNET_WinXP_IDE_Full
+        path: Release/PascalABCNETWithDotNet40Setup.exe
+
+    - name: Publish artifacts (4/4)...
+      uses: actions/upload-artifact@v2.1.0
+      with:
+        name: PascalABCNET_Win_Mac_Linux_console
+        path: Release/PABCNETC.zip
+
+    #- name: Publish artifacts (5/5)...
+    #  uses: actions/upload-artifact@v2.1.0
+    #  with:
+    #    name: All_distros
+    #    path: Release
