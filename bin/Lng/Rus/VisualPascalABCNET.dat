@@ -126,6 +126,8 @@ M_GOTO_REALIZATION=Перейти к реализации
 M_FIND_ALL_REFERENCES=Найти все ссылки
 M_RENAME=Переименовать
 M_FORMAT=Форматировать код
+M_UNIT_TESTS=Запустить модульные тесты
+
 M_SAMPLES=Примеры
 M_COLLAPSE_REGIONS=Свернуть все регионы
 

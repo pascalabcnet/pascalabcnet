@@ -13,7 +13,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("Copyright © 2005-2019 by Ivan Bondarev, Stanislav Mikhalkovich")]
+[assembly: AssemblyCopyright("Copyright © 2005-2020 by Ivan Bondarev, Stanislav Mikhalkovich")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]		
 

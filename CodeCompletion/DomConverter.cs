@@ -573,18 +573,19 @@ namespace CodeCompletion
             if (elems == null) return null;
             for (int i = 0; i < elems.Length; i++)
             {
-                if (!elems[i].name.StartsWith("$") && (elems[i].kind == SymbolKind.Class || elems[i].kind == SymbolKind.Struct || elems[i].kind == SymbolKind.Namespace) && elems[i].kind != SymbolKind.Interface)
+                SymInfo elem_si = elems[i];
+                if (!elem_si.name.StartsWith("$") && !elem_si.is_static && (elem_si.kind == SymbolKind.Class || elem_si.kind == SymbolKind.Struct || elem_si.kind == SymbolKind.Namespace) && elem_si.kind != SymbolKind.Interface)
                 {
                     if (expr != null && si != null && si is ElementScope &&
-                    string.Compare(elems[i].name, (si as ElementScope).sc.si.name, true) == 0)
+                    string.Compare(elem_si.name, (si as ElementScope).sc.si.name, true) == 0)
                     {
-                        out_si = elems[i];
+                        out_si = elem_si;
                         //out_si = new SymInfo(elems[i].name,elems[i].kind,elems[i].describe);
                         string s = CodeCompletionController.CurrentParser.LanguageInformation.GetSimpleDescriptionWithoutNamespace((si as ElementScope).sc as PascalABCCompiler.Parsers.ITypeScope);
                         if (s != out_si.name)
                             out_si.addit_name = s;
                     }
-                    result_names.Add(elems[i]);
+                    result_names.Add(elem_si);
                 }
             }
             if (out_si == null && expr != null && si != null && si is ElementScope)
@@ -963,6 +964,12 @@ namespace CodeCompletion
                 ExpressionVisitor ev = new ExpressionVisitor(expr, ss, visitor);
                 ev.mouse_hover = true;
                 ss = ev.GetScopeOfExpression();
+                if (ss == null && keyword == PascalABCCompiler.Parsers.KeywordKind.SquareBracket && 
+                    expr is ident && !(expr as ident).name.EndsWith("Attribute"))
+                {
+                    (expr as ident).name = (expr as ident).name + "Attribute";
+                    ss = ev.GetScopeOfExpression();
+                }
             }
             if (ss != null && ss.si != null)
             {
@@ -1040,7 +1047,18 @@ namespace CodeCompletion
                 if (ps.is_constructor)
                     si = new ElementScope(ps.declaringType);
             }
-            return CodeCompletionController.CurrentParser.LanguageInformation.GetIndexerString(si);
+            string[] description = CodeCompletionController.CurrentParser.LanguageInformation.GetIndexerString(si);
+            if (description != null)
+                for (int i = 0; i < description.Length; i++)
+                {
+                    var arr = si.si.description.Split(new string[1] { "\r\n" }, StringSplitOptions.None);
+                    if (arr.Length > 1 && !string.IsNullOrEmpty(arr[1]))
+                    {
+                        description[i] += si.si.description.Substring(si.si.description.IndexOf("\r\n"));
+                    }
+
+                }
+            return description;
         }
 
         /// <summary>

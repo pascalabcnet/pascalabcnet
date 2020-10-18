@@ -7,6 +7,8 @@ using System.Text;
 using PascalABCCompiler.SyntaxTree;
 using SyntaxVisitors;
 using SyntaxVisitors.SugarVisitors;
+using SyntaxVisitors.CheckingVisitors;
+using SyntaxVisitors.PatternsVisitors;
 
 namespace PascalABCCompiler.SyntaxTreeConverters
 {
@@ -19,6 +21,18 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // FillParentNodeVisitor расположен в SyntaxTree/tree как базовый визитор, отвечающий за построение дерева
             //FillParentNodeVisitor.New.ProcessNode(root); // почему-то перепрошивает не всё. А следующий вызов - всё
             root.FillParentsInAllChilds();
+
+#if DEBUG
+//            var stat = new ABCStatisticsVisitor();
+//            stat.ProcessNode(root);
+#endif
+
+            // new range - до всего! До выноса выражения с лямбдой из foreach. 11.07 добавил поиск yields и присваивание pd.HasYield
+            NewRangeDesugarAndFindHasYieldVisitor.New.ProcessNode(root);
+
+            // Unnamed Records перенёс сюда
+            UnnamedRecordsCheckVisitor.New.ProcessNode(root);
+
             // Выносим выражения с лямбдами из заголовка foreach
             StandOutExprWithLambdaInForeachSequenceVisitor.New.ProcessNode(root);
             VarNamesInMethodsWithSameNameAsClassGenericParamsReplacer.New.ProcessNode(root); // SSM bug fix #1147
@@ -35,14 +49,18 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 #if DEBUG
             //new SimplePrettyPrinterVisitor("E:/projs/out.txt").ProcessNode(root);
 #endif
+
             // loop
             LoopDesugarVisitor.New.ProcessNode(root);
 
             // tuple_node
             TupleVisitor.New.ProcessNode(root);
 
+            // index
+            IndexVisitor.New.ProcessNode(root);
+
             // assign_tuple и assign_var_tuple
-            AssignTuplesDesugarVisitor.New.ProcessNode(root);
+            AssignTuplesDesugarVisitor.New.ProcessNode(root); // теперь это - на семантике
 
             // slice_expr и slice_expr_question
             SliceDesugarVisitor.New.ProcessNode(root);

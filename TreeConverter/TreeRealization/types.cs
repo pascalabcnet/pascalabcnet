@@ -675,6 +675,7 @@ namespace PascalABCCompiler.TreeRealization
 
             }
         }
+        public override string ToString() => "λ_anytype";
     }
 	
     [Serializable]
@@ -2041,12 +2042,18 @@ namespace PascalABCCompiler.TreeRealization
                 //sil = (base_type as compiled_generic_instance_type_node).original_generic.find_in_type(name, CurrentScope);
                 return sil;
             }
-                
 
-            if (sil == null && base_type is compiled_type_node && string.Compare(name, "create", true) != 0)
+            type_node base_tn = base_type;
+            if (sil == null && string.Compare(name, "create", true) != 0)
             {
-                sil = (base_type as compiled_type_node).find_in_type(name, CurrentScope);
+                while (sil == null && base_tn != null)
+                {
+                    if (base_tn is compiled_type_node)
+                        sil = (base_tn as compiled_type_node).find_in_type(name, CurrentScope);
+                    base_tn = base_tn.base_type;
+                }
             }
+            
             if (this.is_generic_parameter && sil != null)
             {
                 sil = sil?.Select(x => x.copy()).ToList();
@@ -2320,6 +2327,12 @@ namespace PascalABCCompiler.TreeRealization
                             {
                                 fn = fn.get_instance(ctn.instance_params, true, null);
                             }
+                            else if (fn.get_generic_params_list() != null && fn.get_generic_params_list().Count > 0)
+                            {
+                                if (ctn.IsPointer)
+                                    continue;
+                                fn = fn.get_instance(new List<type_node>(new type_node[] { ctn }), true, null);
+                            }
                         }
                         return fn;
                     }
@@ -2350,6 +2363,12 @@ namespace PascalABCCompiler.TreeRealization
                             else if (ctn.instance_params != null && ctn.instance_params.Count > 0)
                             {
                                 fn = fn.get_instance(ctn.instance_params, true, null);
+                            }
+                            else if (fn.get_generic_params_list() != null && fn.get_generic_params_list().Count > 0)
+                            {
+                                if (ctn.IsPointer)
+                                    continue;
+                                fn = fn.get_instance(new List<type_node>(new type_node[] { ctn }), true, null);
                             }
                         }
                         return fn;
@@ -2666,6 +2685,8 @@ namespace PascalABCCompiler.TreeRealization
 	[Serializable]
 	public class compiled_type_node : wrapped_type, SemanticTree.ICompiledTypeNode , SemanticTree.ILocated
 	{
+        public override string ToString() => PrintableName;
+
         internal System.Type _compiled_type;
 		protected compiled_type_node _base_type;
 
@@ -3375,7 +3396,7 @@ namespace PascalABCCompiler.TreeRealization
             return to;
         }
 
-        //(ssyy) 24.10.2007. Эта функция работает неверно, возвращая дважды найденную функцию.
+        //(ssyy) 24.10.2007. Эта функция работает неверно, возвращая дважды найденную функцию (!!! SSM 16/06/2020)
         //Попытался написать правильно.
         public override List<SymbolInfo> find(string name, bool no_search_in_extension_methods = false)
         {
@@ -3391,7 +3412,10 @@ namespace PascalABCCompiler.TreeRealization
             {
                 List<SymbolInfo> sil = compiled_find(name);
                 List<SymbolInfo> sil2 = find_in_additional_names(name);
-                if (/*sil == null &&*/ sil2 == null && string.Compare(name,"Create",true) != 0)
+                // Для исправления #2058 было закомментировано sil == null. Это неправильно, поскольку в sil были только неявно реализуемые 
+                // методы интерфейса, а при входе в if к ним стали добавляться явно реализуемые, что неправильно
+                // Поэтому будет правильно эту строку откомментировать и исправлять ошибку в #2058 по другому 
+                if (/*sil == null && */sil2 == null && string.Compare(name,"Create",true) != 0) // закомментированное - работает #2058 и не работает в #2256
                 {
                     compiled_type_node bas_type = base_type as compiled_type_node;
                     while (sil == null && bas_type != null && bas_type.scope != null)
@@ -3411,6 +3435,8 @@ namespace PascalABCCompiler.TreeRealization
                                 List<SymbolInfo> sil3 = ctn.scope.SymbolTable.Find(ctn.scope, name);
                                 if (sil3 != null)
                                 {
+                                    // SSM 17/05/20 - отфильтровал только методы расширения - явно реализованные методы интерфейса сюда не должны попасть
+                                    sil3 = sil3.Where(sl => (sl.sym_info as compiled_function_node)?.is_extension_method ?? (sl.sym_info as common_namespace_function_node)?.is_extension_method ?? false).ToList();
                                     if (sil != null)
                                         sil.AddRange(sil3);
                                     else
@@ -3578,7 +3604,7 @@ namespace PascalABCCompiler.TreeRealization
                         //si_lst.Add(current);
                     }
 
-                    foreach (var current_unit in result)
+                    foreach (var current_unit in result) // SSM 15/06/20 ?????? Этот код не работает!!!
                     {
                         if (!lst.Contains(current_unit.sym_info))
                         {
@@ -3822,7 +3848,11 @@ namespace PascalABCCompiler.TreeRealization
                     return generic_convertions.MakePseudoInstanceName(name, ctypes, true);
                 }
                 if (!_compiled_type.IsPrimitive && base.PrintableName == _compiled_type.Name)
-                    return _compiled_type.FullName;
+                {
+                    if (_compiled_type.FullName != null && _compiled_type.FullName != "")
+                        return _compiled_type.FullName;
+                    else return _compiled_type.Name;
+                }
                 return base.PrintableName;
             }
         }
@@ -4443,6 +4473,7 @@ namespace PascalABCCompiler.TreeRealization
                     || fn.simple_function_node is compiled_function_node && (fn.simple_function_node as compiled_function_node).ConnectedToType != null)
                     && fn.simple_function_node.parameters.Count == 2 && fn.simple_function_node.parameters[1].default_value != null)
                 {
+                    
                     int param_num = (fn.simple_function_node is common_namespace_function_node && (fn.simple_function_node as common_namespace_function_node).ConnectedToType != null || fn.simple_function_node is compiled_function_node && (fn.simple_function_node as compiled_function_node).ConnectedToType != null) ? 1 : 0;
                     base_function_call copy_fn = null;
                     if (fn.simple_function_node.return_value_type == ctn)
@@ -4457,6 +4488,7 @@ namespace PascalABCCompiler.TreeRealization
                     {
                         continue;
                     }
+                    
                     //TODO: Очень внимательно рассмотреть. Если преобразование типов должно идти через compile_time_executor.
                     possible_type_convertions ptc = type_table.get_convertions(fn.simple_function_node.return_value_type, ctn);
                     if ((ptc.first == null) || (ptc.first.convertion_method == null))
@@ -4504,7 +4536,8 @@ namespace PascalABCCompiler.TreeRealization
             	{
             		common_type_node del =
             			type_constructor.instance.create_delegate(compilation_context.instance.get_delegate_type_name(), this.proper_methods[0].simple_function_node.return_value_type, this.proper_methods[0].simple_function_node.parameters, compilation_context.instance.converted_namespace, null);
-            		compilation_context.instance.converted_namespace.types.AddElement(del);
+            		if (compilation_context.instance.converted_namespace != null)
+                    compilation_context.instance.converted_namespace.types.AddElement(del);
             		ii = del.get_internal_interface(internal_interface_kind.delegate_interface);
             	}
             	else
@@ -4531,11 +4564,21 @@ namespace PascalABCCompiler.TreeRealization
                 int i=0;
                 while ((find_eq == true) && (i<bfn.simple_function_node.parameters.Count))
                 {
-                    /*var a1 = bfn.simple_function_node.parameters[i].type != dii.parameters[i].type;
-                    var a2 = bfn.simple_function_node.parameters[i].parameter_type != dii.parameters[i].parameter_type;
+                    var t1 = bfn.simple_function_node.parameters[i].type;
+                    var t2 = dii.parameters[i].type;
+                    var typesEqual = t1 == t2;
+                    // SSM 5/05/20 - Rubantsev csfml - две dll - во второй функция с параметром из первой. Типы разные 
+                    // В трёх местах по всему проекту!! 
+                    if (!typesEqual && t1 is compiled_type_node comptn1 && t2 is compiled_type_node comptn2) 
+                    {
+                        if (comptn1.compiled_type == comptn2.compiled_type || comptn1.compiled_type.AssemblyQualifiedName == comptn2.compiled_type.AssemblyQualifiedName)
+                            typesEqual = true;
+                    }
+
+                    /*var a2 = bfn.simple_function_node.parameters[i].parameter_type != dii.parameters[i].parameter_type;
                     var a3 = bfn.simple_function_node.parameters[i].is_params != dii.parameters[i].is_params;*/
                     //lroman// Добавил все, что связано с lambda_any_type_node. Считаем, что этот тип равен всем типам. Это используется при выводе параметров лямбды
-                    if ((bfn.simple_function_node.parameters[i].type != dii.parameters[i].type && !(bfn.simple_function_node.parameters[i].type is lambda_any_type_node)) ||
+                    if ((!typesEqual && !(bfn.simple_function_node.parameters[i].type is lambda_any_type_node)) ||
                         (bfn.simple_function_node.parameters[i].parameter_type != dii.parameters[i].parameter_type && !(bfn.simple_function_node.parameters[i].parameter_type is lambda_any_type_node)) 
                 	    || bfn.simple_function_node.parameters[i].is_params != dii.parameters[i].is_params)
                     {
@@ -4644,15 +4687,15 @@ namespace PascalABCCompiler.TreeRealization
         				case SemanticTree.parameter_type.var : sb.Append("var "); break;
         			}
         			if (prm.is_params) sb.Append("params ");
-        			sb.Append(prm.name+": ");
-        			sb.Append(prm.type.name);
+        			sb.Append((prm.name ?? "_") +": ");
+        			sb.Append(prm.type.ToString());
         			if (i<bfc.function.parameters.Length-1)
         			sb.Append(';');
         		}
         		sb.Append(')');
         	}
         	if (bfc.function.return_value_type != null)
-        		sb.Append(": "+bfc.function.return_value_type.name);
+        		sb.Append(": "+bfc.function.return_value_type.ToString());
         	return sb.ToString();
         }
         
@@ -4665,6 +4708,8 @@ namespace PascalABCCompiler.TreeRealization
             	//return compiler_string_consts.method_group_type_name;
             }
         }
+
+        public override string ToString() => name;
 
         public override List<SymbolInfo> find(string name, bool no_search_in_extension_methods = false)
         {

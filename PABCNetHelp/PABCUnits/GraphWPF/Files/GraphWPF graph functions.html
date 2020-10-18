@@ -2,21 +2,25 @@
 <param name="Keyword" value="DrawGraph"></object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"><link rel="StyleSheet" href="../../../default.css">
 </HEAD><body><H1>Функции для вывода графиков</H1>
-<table border=0 cellpadding=5><tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; a, b, min, max, x, y, w, h: real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом координатами x1,y1,x2,y2,</td></tr>
-<tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; a, b, min, max: real; r: GRect);</code>
+<table border=0 cellpadding=5><tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; a, b, min, max, x, y, w, h: real; title: string := '');</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом параметрами x,y,w,h</td></tr>
+<tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; a, b, min, max, x, y, w, h: real; XTicks: real; YTicks: real; title: string := '');</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом параметрами x,y,w,h. Два последних параметра задают шаг сетки по OX и OY</td></tr>
+<tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; a, b, min, max: real; r: GRect; title: string := '');</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике r</td></tr>
-<tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; a, b, min, max: real);</code>
+<tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; a, b, min, max: real; r: GRect; XTicks, YTicks: real; title: string := '');</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике r. Два последних параметра задают шаг сетки по OX и OY</td></tr>
+<tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; a, b, min, max: real; title: string := '');</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, на полное графическое окно</td></tr>
-<tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; a, b: real; x, y, w, h: real);</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике, задаваемом координатами x1,y1,x2,y2,</td></tr>
-<tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; a, b: real; r: GRect);</code>
+<tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; a, b: real; x, y, w, h: real; title: string := '');</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике, задаваемом параметрами x,y,w,h</td></tr>
+<tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; a, b: real; r: GRect; title: string := '');</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике r</td></tr>
-<tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; r: GRect);</code>
+<tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; r: GRect; title: string := '');</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует график функции f, заданной на отрезке [-5,5], в прямоугольнике r</td></tr>
-<tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; a, b: real);</code>
+<tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; a, b: real; title: string := '');</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует график функции f, заданной на отрезке [a,b], на полное графическое окно</td></tr>
-<tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real);</code>
+<tr><td><code><b>procedure</b> DrawGraph(f: real -&gt; real; title: string := '');</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Рисует график функции f, заданной на отрезке [-5,5], на полное графическое окно</td></tr>
 </table>
 </body></HTML>

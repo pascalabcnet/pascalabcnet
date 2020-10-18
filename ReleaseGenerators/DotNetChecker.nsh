@@ -71,7 +71,7 @@
 		StrCpy $dotNetReadableVersion${FrameworkVersion} "1.0"
 	${EndIf}
 
-	DetailPrint "Checking .NET Framework version..."
+	DetailPrint "Проверка версии .NET Framework..."
 
 	Push $0
 	Push $1
@@ -87,48 +87,48 @@
 
 	${If} $0 == "false"
 	${OrIf} $0 == "f"  ; if script is compiled in ANSI mode then we get only an "f"  https://github.com/ReVolly/NsisDotNetChecker/issues/4
-		DetailPrint ".NET Framework $dotNetReadableVersion${FrameworkVersion} not found, download is required for program to run."
+		DetailPrint ".NET Framework $dotNetReadableVersion${FrameworkVersion} не найдена, требуется установить перед инсталляцией PascalABC.NET."
 		Goto NoDotNET${FrameworkVersion}
 	${Else}
-		DetailPrint ".NET Framework $dotNetReadableVersion${FrameworkVersion} found, no need to install."
+		DetailPrint ".NET Framework $dotNetReadableVersion${FrameworkVersion} найдена, нет необходимости инсталлировать."
 		Goto NewDotNET${FrameworkVersion}
 	${EndIf}
 
 NoDotNET${FrameworkVersion}:
 	MessageBox MB_YESNOCANCEL|MB_ICONEXCLAMATION \
-	".NET Framework not installed. Required version: $dotNetReadableVersion${FrameworkVersion}.$\nDownload .NET Framework $dotNetReadableVersion${FrameworkVersion} from microsoft.com?" \
+	".NET Framework не установлена. Требуемая версия: $dotNetReadableVersion${FrameworkVersion}.$\nЗагрузить .NET Framework $dotNetReadableVersion${FrameworkVersion} с microsoft.com?" \
 	/SD IDYES IDYES DownloadDotNET${FrameworkVersion} IDNO NewDotNET${FrameworkVersion}
 	goto GiveUpDotNET${FrameworkVersion} ;IDCANCEL
 
 DownloadDotNET${FrameworkVersion}:
-	DetailPrint "Beginning download of .NET Framework $dotNetReadableVersion${FrameworkVersion}."
+	DetailPrint "Начало скачивания .NET Framework $dotNetReadableVersion${FrameworkVersion}."
 	NSISDL::download $dotNetUrl${FrameworkVersion} "$TEMP\dotnetfx.exe"
-	DetailPrint "Completed download."
+	DetailPrint "Скачивание окончено."
 
 	Pop $0
 	${If} $0 == "cancel"
 		MessageBox MB_YESNO|MB_ICONEXCLAMATION \
-		"Download canceled.  Continue Installation?" \
+		"Скачивание отменено.  Продолжить инсталляцию?" \
 		IDYES NewDotNET${FrameworkVersion} IDNO GiveUpDotNET${FrameworkVersion}
 	${ElseIf} $0 != "success"
 		MessageBox MB_YESNO|MB_ICONEXCLAMATION \
-		"Download failed:$\n$0$\n$\nContinue Installation?" \
+		"Скачивание завершилось неудачей:$\n$0$\n$\nПродолжить инсталляцию?" \
 		IDYES NewDotNET${FrameworkVersion} IDNO GiveUpDotNET${FrameworkVersion}
 	${EndIf}
 
-	DetailPrint "Pausing installation while downloaded .NET Framework installer runs."
+	DetailPrint "Пауза инсталляции PascalABC.NET пока запущен инсталлятор .NET Framework."
 	ExecWait '$TEMP\dotnetfx.exe /q /c:"install /q"'
 
-	DetailPrint "Completed .NET Framework install/update. Removing .NET Framework installer."
+	DetailPrint "Завершена инсталляция .NET Framework. Удаляется .NET Framework инсталлятор."
 	Delete "$TEMP\dotnetfx.exe"
-	DetailPrint ".NET Framework installer removed."
+	DetailPrint ".NET Framework инсталлятор удалён."
 	goto NewDotNet${FrameworkVersion}
 
 GiveUpDotNET${FrameworkVersion}:
-	Abort "Installation canceled by user."
+	Abort "Инсталляция прервана пользователем."
 
 NewDotNET${FrameworkVersion}:
-	DetailPrint "Proceeding with remainder of installation."
+	DetailPrint "Переход к оставшейся части установки."
 	Pop $7
 	Pop $6
 	Pop $5

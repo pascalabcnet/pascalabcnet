@@ -69,6 +69,16 @@ namespace TreeConverter.LambdaExpressions.Closure
             // Не обходить проверочные узлы в визиторе строительства дерева - SSM 1.05.17
         }
 
+        public override void visit(assign_var_tuple assvartup)
+        {
+            _visitor.ProcessNode(assvartup);
+            /*foreach (var id in assvartup.idents.idents)
+            {
+                SymbolInfo si = _visitor.context.find_first(id.name);
+                _currentTreeNode.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(assvartup, si));
+            }*/
+        }
+
         public override void visit(var_def_statement varDefStmt)
         {
             if (varDefStmt.inital_value != null)
@@ -87,6 +97,15 @@ namespace TreeConverter.LambdaExpressions.Closure
 
         public override void visit(statement_list stmtList)
         {
+            if (stmtList.IsInternal) // просто обойти как продолжение объемлющего statement_list
+            {
+                foreach (var stmt in stmtList.subnodes)
+                {
+                    ProcessNode(stmt);
+                }
+                return;
+            }
+
             var stl = new statements_list(_visitor.get_location(stmtList),
                                           _visitor.get_location_with_check(stmtList.left_logical_bracket),
                                           _visitor.get_location_with_check(stmtList.right_logical_bracket));
@@ -207,14 +226,16 @@ namespace TreeConverter.LambdaExpressions.Closure
             var acceptableVarType = si.sym_info.semantic_node_type == semantic_node_type.local_variable ||
                                     si.sym_info.semantic_node_type == semantic_node_type.local_block_variable ||
                                     si.sym_info.semantic_node_type == semantic_node_type.common_parameter ||
-                                    si.sym_info.semantic_node_type == semantic_node_type.class_field
+                                    si.sym_info.semantic_node_type == semantic_node_type.class_field ||
+                                    si.sym_info.semantic_node_type == semantic_node_type.basic_property_node
                                     ;
             //trjuk, chtoby ne perelopachivat ves kod. zamenjaem ident na self.ident
             // Использую этот трюк для нестатических полей предков - они не захватываются из-за плохого алгоритма захвата
             // aab 12.06.19 begin
             // Добавил такое же переименование для статичесских полей класса. Теперь захват работает
             if ((si.sym_info.semantic_node_type == semantic_node_type.class_field || si.sym_info.semantic_node_type == semantic_node_type.common_method_node
-                || si.sym_info.semantic_node_type == semantic_node_type.common_event || si.sym_info.semantic_node_type == semantic_node_type.common_property_node) && InLambdaContext)
+                || si.sym_info.semantic_node_type == semantic_node_type.common_event || si.sym_info.semantic_node_type == semantic_node_type.common_property_node
+                || si.sym_info.semantic_node_type == semantic_node_type.basic_property_node) && InLambdaContext)
             {
                 dot_node dn = null;
                 // Поменял принцип добавления имени класса для статических полей и функций
@@ -223,7 +244,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                     if (classNode.name.Contains("<"))
                     {
                         var classIdent = new ident(classNode.name.Remove(classNode.name.IndexOf("<")));
-                        var templateParams = new template_param_list(classNode.instance_params.Select(x => x.name).Aggregate("", (acc, elem) => acc += elem));
+                        var templateParams = new template_param_list(classNode.instance_params.Select(x => x.name)/*.Aggregate("", (acc, elem) => acc += elem)*/);
                         return new ident_with_templateparams(classIdent,  templateParams);
                     }
                     else
@@ -306,7 +327,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             }
                 
 
-            if (!(acceptableVarType) && InLambdaContext) 
+            if (!acceptableVarType && InLambdaContext) 
             {
                 _visitor.AddError(new ThisTypeOfVariablesCannotBeCaptured(_visitor.get_location(id)));
                 return;
@@ -797,8 +818,10 @@ namespace TreeConverter.LambdaExpressions.Closure
         public override void visit(PascalABCCompiler.SyntaxTree.goto_statement _goto_statement)
         {
         	if (_goto_statement.source_context != null) // видимо, это сделано для того чтобы сахарные конструкции всё же можно было использовать с лямбдами. То есть, это какое-то искусственное ограничение
-            	_visitor.AddError(_visitor.get_location(_goto_statement), "GOTO_AND_LAMBDAS_NOT_ALLOWED");
-        	else
+            { 
+            	//_visitor.AddError(_visitor.get_location(_goto_statement), "GOTO_AND_LAMBDAS_NOT_ALLOWED");
+            }
+            else
         		base.visit(_goto_statement);
         }
         

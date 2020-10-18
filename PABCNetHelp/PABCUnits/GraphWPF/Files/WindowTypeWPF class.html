@@ -37,11 +37,13 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает центр главного окна</td></tr>
 <tr><td><code><b>function</b> ClientRect: GRect;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает прямоугольник клиентской области окна</td></tr>
+<tr><td><code><b>function</b> RandomPoint(w: real := 0): Point;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Возвращает случайную точку в границах экрана. Необязательный параметр w задаёт минимальный отступ от границы</td></tr>
 </tr>
 <tr><tr><td><code><b>procedure</b> CenterOnScreen;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Центрирует главное окно по центру экрана</td></tr>
 <tr><td><code><b>procedure</b> Clear(c: GColor); <b>virtual</b>;</code>
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Очищает графическое окно цветом c</td></tr>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Очищает графическое окно указанным цветом</td></tr>
 <tr><td><code><b>procedure</b> Clear; <b>virtual</b>;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Очищает графическое окно белым цветом</td></tr>
 <tr><td><code><b>procedure</b> Close;</code>

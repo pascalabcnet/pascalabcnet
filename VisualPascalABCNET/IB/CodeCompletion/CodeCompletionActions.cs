@@ -356,6 +356,14 @@ namespace VisualPascalABC
                 StringBuilder sb = new StringBuilder();
                 IDocument doc = textArea.Document;
 
+                if (textArea.SelectionManager.HasSomethingSelected) // удаление выделенного
+                {
+                    var isel = textArea.SelectionManager.SelectionCollection[0];
+                    textArea.Caret.Line = isel.StartPosition.Line;
+                    textArea.Caret.Column = isel.StartPosition.Column;
+                    textArea.SelectionManager.RemoveSelectedText();
+                }
+                
                 int line = textArea.Caret.Line;
                 int col = textArea.Caret.Column;
                 string name = templateManager.GetTemplateHeader(pattern);

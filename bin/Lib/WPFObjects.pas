@@ -43,6 +43,8 @@ type
   /// Тип размера
   GSize = System.Windows.Size;
   /// Тип точки
+  Point = System.Windows.Point;
+  /// Тип точки
   GPoint = System.Windows.Point;
   /// Тип окна
   GWindow = System.Windows.Window;
@@ -79,7 +81,7 @@ function Rect(x,y,w,h: real): GRect;
 /// Возвращает однотонную цветную кисть, заданную цветом
 function ColorBrush(c: Color): SolidColorBrush;
 /// Возвращает случайную точку графического окна. Необязательный параметр z задаёт отступ от края  
-function RandomWindowPoint(z: real := 0): GPoint;
+function RandomPoint(z: real := 0): GPoint;
 /// Процедура ускорения вывода. Обновляет экран после всех изменений
 procedure Redraw(p: ()->());
 //{{{--doc: Конец секции 1 }}} 
@@ -137,6 +139,19 @@ type
     function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator;
     begin
       Result := l.GetEnumerator;
+    end;
+    /// Очистить список игровых объектов 
+    procedure Clear;
+    begin
+      for var i:=Count-1 downto 0 do
+        Destroy(Items[i]);
+    end;
+    /// Удалить все игровые объекты, удовлетворяющие условию
+    procedure DestroyAll(condition: ObjectWPF -> boolean);
+    begin
+      for var i := Count - 1 downto 0 do
+        if condition(Items[i]) then
+          Destroy(Items[i]);
     end;
   end;
 
@@ -228,7 +243,7 @@ type
     /// Видимость графического объекта
     property Visible: boolean 
       read InvokeBoolean(()->ob.Visibility = Visibility.Visible)
-      write Invoke(procedure -> if value then ob.Visibility := Visibility.Visible else ob.Visibility := Visibility.Hidden);
+      write Invoke(procedure -> if value then begin gr.Visibility := Visibility.Visible; ob.Visibility := Visibility.Visible end else begin gr.Visibility := Visibility.Hidden; ob.Visibility := Visibility.Hidden end);
     /// Выравнивание текста внутри графического объекта
     property TextAlignment: Alignment write Invoke(WTA,Value);
     /// Размер шрифта текста внутри графического объекта
@@ -402,6 +417,8 @@ type
     begin
       Result := (Left < 0) or (Top < 0) or (Right > GraphWindow.Width) or (Bottom > GraphWindow.Height);
     end;
+    /// Tag хранит любые присоединённые характеристики объекта
+    auto property Tag: object;
   end;
   
 // -----------------------------------------------------
@@ -1185,7 +1202,9 @@ var
   /// Событие изменения размера графического окна
   OnResize: procedure;
   /// Событие перерисовки графического окна. Параметр dt обозначает количество миллисекунд с момента последнего вызова OnDrawFrame
-  OnDrawFrame: procedure(dt: real) := nil;
+  OnDrawFrame: procedure(dt: real);
+  /// Событие, происходящее при закрытии основного окна
+  OnClose: procedure;
 
 // -----------------------------------------------------
 //>>     Функции пересечения# Intersection functions
@@ -1228,7 +1247,7 @@ function EmptyColor := ARGB(0,0,0,0);
 function clRandom := RandomColor();
 function Pnt(x,y: real) := new Point(x,y);
 function Rect(x,y,w,h: real) := new System.Windows.Rect(x,y,w,h);
-function RandomWindowPoint(z: real): GPoint := Pnt(Random(z,GraphWindow.Width-z),Random(z,GraphWindow.Height-z));
+function RandomPoint(z: real): GPoint := Pnt(Random(z,GraphWindow.Width-z),Random(z,GraphWindow.Height-z));
 
 var ColorsDict := new Dictionary<GColor,SolidColorBrush>;
 
@@ -1527,21 +1546,29 @@ begin
 end;
 
 /// --- SystemKeyEvents
-procedure SystemOnKeyDown(sender: Object; e: KeyEventArgs) := 
+procedure SystemOnKeyDown(sender: Object; e: KeyEventArgs);
+begin
   if OnKeyDown<>nil then
     OnKeyDown(e.Key);
+end;
 
 procedure SystemOnKeyUp(sender: Object; e: KeyEventArgs) := 
+begin
   if OnKeyUp<>nil then
     OnKeyUp(e.Key);
+end;
     
 procedure SystemOnKeyPress(sender: Object; e: TextCompositionEventArgs) := 
+begin
   if (OnKeyPress<>nil) and (e.Text<>nil) and (e.Text.Length>0) then
     OnKeyPress(e.Text[1]);
+end;
     
 procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) := 
+begin
   if OnResize<>nil then
     OnResize();
+end;
 
 var LastUpdatedTimeWPF := new System.TimeSpan(integer.MinValue); 
 
@@ -1550,6 +1577,8 @@ begin
   if OnDrawFrame<>nil then
   begin
     var e1 := RenderingEventArgs(e).RenderingTime;
+    if LastUpdatedTimeWPF.Ticks = integer.MinValue then // первый раз
+      LastUpdatedTimeWPF := e1;
     var dt := e1 - LastUpdatedTimeWPF;
     LastUpdatedTimeWPF := e1;  
     OnDrawFrame(dt.Milliseconds/1000);
@@ -1569,6 +1598,10 @@ begin
     MainWindow.KeyUp += SystemOnKeyUp;
     MainWindow.TextInput += SystemOnKeyPress;
     MainWindow.SizeChanged += SystemOnResize;
+    MainWindow.Closing += (sender,e) -> begin 
+      if OnClose<>nil then
+        OnClose;
+    end;
     
     CompositionTarget.Rendering += RenderFrameWPF;
     
@@ -1577,12 +1610,14 @@ begin
     GraphWindow := GraphWPF.GraphWindow;
 
     host := new Canvas();
+    host.ClipToBounds := True;
     {host.SizeChanged += (s,e) ->
     begin
       var sz := e.NewSize;
       host.DataContext := sz;
     end;}
     var g := MainWindow.Content as DockPanel;
+    (g.children[0] as Canvas).ClipToBounds := False; // SSM 04/08/20 - возвращаем в False иначе графику GraphWPF становится не видно
     g.children.Add(host); // Слой графики WPF - последний
   end;
   app.Dispatcher.Invoke(AdditionalInit);

@@ -404,7 +404,7 @@ namespace PascalABCCompiler.TreeConverter
             common_type_node converted_type, common_function_node top_function, bool allow_procedure, List<SyntaxTree.expression> syntax_nodes_parameters = null)
         {
             function_node fn = select_function(exprs, si, loc, syntax_nodes_parameters);
-
+            
             //allow_procedure = true;
             if ((!allow_procedure) && (fn.return_value_type == null))
             {
@@ -587,12 +587,24 @@ namespace PascalABCCompiler.TreeConverter
             if (pct.first == null)
                 throw new CanNotConvertTypes(en, en.type, to, loc);
         }
-        
+
         public bool can_convert_type(expression_node en, type_node to)
         {
             if (en.type == to)
                 return true;
             possible_type_convertions pct = type_table.get_convertions(en.type, to);
+            if (pct.second != null)
+                return false;
+            if (pct.first == null)
+                return false;
+            return true;
+        }
+
+        public bool can_convert_type(type_node from, type_node to)
+        {
+            if (from == to)
+                return true;
+            possible_type_convertions pct = type_table.get_convertions(from, to);
             if (pct.second != null)
                 return false;
             if (pct.first == null)
@@ -625,8 +637,17 @@ namespace PascalABCCompiler.TreeConverter
 				return en;
 			}
 
+            if (en.type is compiled_type_node comptn1 && to is compiled_type_node comptn2) // SSM 5/05/20 - Rubantsev csfml - две dll - во второй функция с параметром из первой. Типы разные
+            {
+                if (comptn1.compiled_type == comptn2.compiled_type 
+                    || comptn1.compiled_type.AssemblyQualifiedName == comptn2.compiled_type.AssemblyQualifiedName
+                    ) // увы - тут типы Type разные и хеш-коды у них разные
+                    return en;
+            }
+
+
             //TODO: А если наследование?
-			possible_type_convertions pct=type_table.get_convertions(en.type,to);
+            possible_type_convertions pct = type_table.get_convertions(en.type,to);
 
 			if (pct.second!=null)
 			{
@@ -640,7 +661,16 @@ namespace PascalABCCompiler.TreeConverter
                     return convert_type(en, (to as delegated_methods).empty_param_method.ret_type, loc);
                 }
                 en.location = loc;
-                AddError(new CanNotConvertTypes(en, en.type, to, loc));
+                if (en.type is delegated_methods dm && dm.proper_methods[0].parameters.Count == 0 && dm.proper_methods[0].ret_type != null)
+                {
+                    if (to != SystemLibrary.SystemLibrary.object_type)
+                        AddError(new CanNotConvertTypes(en, dm.proper_methods[0].ret_type, to, loc)); // SSM 18/06/20 #2261
+                    else
+                        return en;
+                } 
+                else if (en.type is undefined_type && en is base_function_call bfc)
+                    throw new SimpleSemanticError(loc, "RETURN_TYPE_UNDEFINED_{0}", bfc.function.name);
+                else AddError(new CanNotConvertTypes(en, en.type, to, loc));
 			}
 
 #if (DEBUG)
@@ -664,7 +694,11 @@ namespace PascalABCCompiler.TreeConverter
 
         public expression_node explicit_convert_type(expression_node from, type_node to)
         {
-            
+            if (from is base_function_call bfc && bfc.function.name.StartsWith(LambdaHelper.lambdaPrefix))
+            {
+                AddError(from.location, "EXPLICIT_CASTS_FOR_LAMBDA_EXPRESSIONS_ARE_FORBIDDEN");
+            }
+
             if (from.type == to)
             {
                 return from;
@@ -823,13 +857,15 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return true;
             }
-            /*var comptn1 = t1 as compiled_type_node;
-            var comptn2 = t2 as compiled_type_node;
-            if (comptn1 != null && comptn2 != null)
+            if (t1 is compiled_type_node comptn1 && t2 is compiled_type_node comptn2) // SSM 5/05/20 - Rubantsev csfml - две dll - во второй функция с параметром из первой. Типы разные
             {
-                if (comptn1.compiled_type == comptn2.compiled_type) // увы - тут типы Type разные и хеш-коды у них разные
+                var tt = comptn1.compiled_type.Assembly == comptn2.compiled_type.Assembly;
+                if (comptn1.compiled_type == comptn2.compiled_type 
+                    /*|| (comptn1.compiled_type.Assembly == comptn2.compiled_type.Assembly && comptn1.compiled_type.FullName == comptn2.compiled_type.FullName)*/
+                    || comptn1.compiled_type.AssemblyQualifiedName == comptn2.compiled_type.AssemblyQualifiedName
+                    ) // увы - тут типы Type разные и хеш-коды у них разные
                     return true;
-            } */
+            } 
             if (!t1.depended_from_indefinite && !t2.depended_from_indefinite)
             {
                 return false;
@@ -894,7 +930,10 @@ namespace PascalABCCompiler.TreeConverter
                 parameter pr=formalparams[formalparams.Count - 1];
                 if (pr.is_params && 
                     //это для возможности вызова сразу с массивом[], типа просто не обращаем внимаение на params
-                    !(factparams.Count == formalparams.Count && factparams[factparams.Count - 1].type == formalparams[formalparams.Count - 1].type))
+                    !(factparams.Count == formalparams.Count && (factparams[factparams.Count - 1].type == formalparams[formalparams.Count - 1].type ||
+                      (factparams[factparams.Count - 1].type is delegated_methods dm) && (dm.proper_methods[0].ret_type == formalparams[formalparams.Count - 1].type))
+                     )
+                   )
                 {
                     //TODO: Добавить проверку на правильность.
                     aii = (array_internal_interface)
@@ -1016,7 +1055,8 @@ namespace PascalABCCompiler.TreeConverter
 					{
                         bool is_pascal_array_ref = false;
                         bool is_ok = false;
-						if (factparams[i].is_addressed==false)
+						if (factparams[i].is_addressed==false || factparams[i] is static_compiled_variable_reference scvr && scvr.var.compiled_field.IsInitOnly 
+                            || factparams[i] is compiled_variable_reference cvr && cvr.var.compiled_field.IsInitOnly)
 						{
                             if (factparams[i].semantic_node_type == semantic_node_type.common_method_call)
                             {
@@ -1141,23 +1181,21 @@ namespace PascalABCCompiler.TreeConverter
 						}
 						else
 						{
-                            if (is_alone_method_defined)
+                            //issue #2161 - SSM 12.03.2020
+                            //issue #348
+                            if (formal_param_type == SystemLibrary.SystemLibrary.object_type && factparams[i].type is delegated_methods)
                             {
-                                //issue #348
-                                if (formal_param_type == SystemLibrary.SystemLibrary.object_type && factparams[i].type is delegated_methods)
-                                {
-                                    possible_type_convertions ptci = new possible_type_convertions();
-                                    ptci.first = null;
-                                    ptci.second = null;
-                                    ptci.from = factparams[i].type;
-                                    ptci.to = formal_param_type;
-                                    tc.AddElement(ptci);
-                                    factparams[i] = syntax_tree_visitor.CreateDelegateCall((factparams[i].type as delegated_methods).proper_methods[0]);
-                                    return tc;
-                                }
-                                else
-                                    error = new CanNotConvertTypes(factparams[i], factparams[i].type, formal_param_type, locg);
+                                possible_type_convertions ptci = new possible_type_convertions();
+                                ptci.first = null;
+                                ptci.second = null;
+                                ptci.from = factparams[i].type;
+                                ptci.to = formal_param_type;
+                                tc.AddElement(ptci);
+                                factparams[i] = syntax_tree_visitor.CreateDelegateCall((factparams[i].type as delegated_methods).proper_methods[0]);
+                                return tc;
                             }
+                            if (is_alone_method_defined) // если мы сюда попали, то ошибка более явная
+                                error = new CanNotConvertTypes(factparams[i], factparams[i].type, formal_param_type, locg);
 							return null;
                             
 						}
@@ -1397,9 +1435,6 @@ namespace PascalABCCompiler.TreeConverter
             return method_compare.not_comparable_methods;
 		}
 
-        //DS добавил этот метод
-        //А так ли это надо делать?
-        //Сергей, может ты знаеш?
         internal static bool eq_type_nodes(type_node tn1, type_node tn2, bool strong)
         {
             if (tn1 == tn2)
@@ -1414,6 +1449,8 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (strong && tn1.generic_function_container != tn2.generic_function_container)
                 {
+                    if (tn1.is_generic_parameter && tn2.is_generic_parameter)
+                        return tn1.generic_param_index == tn2.generic_param_index;
                     return false;
                 }
                 return (tn1.generic_param_index == tn2.generic_param_index);
@@ -1529,6 +1566,16 @@ namespace PascalABCCompiler.TreeConverter
             return eq_type_nodes(tn1, tn2, false);
         }
 
+        public static bool type_or_base_type_implements_interface(type_node tn, type_node interf)
+        {
+            do {
+                if (tn.ImplementingInterfaces.Contains(interf))
+                    return true;
+                tn = tn.base_type;
+            } while (tn != null);
+            return false;
+        }
+
         //Этот метод сверяет не только параметры, но и возвращаемое значение
         public static bool function_eq_params_and_result(function_node left, function_node right, bool weak = false)
         {
@@ -1538,6 +1585,13 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
+                if (left.return_value_type != null && right.return_value_type != null && left.return_value_type.is_generic_parameter && right.return_value_type.is_generic_parameter)
+                {
+                    //if (string.Compare(left.return_value_type.name, right.return_value_type.name, true) != 0)
+                    //    return false;
+                    return eq_type_nodes(left.return_value_type, right.return_value_type, false);
+                }
+                    
                 return eq_type_nodes(left.return_value_type, right.return_value_type, weak);
             }
         }
@@ -1559,13 +1613,13 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return false;
             }
-            for (int i = 0; i < left_type_params.Count; i++)
+            /*for (int i = 0; i < left_type_params.Count; i++)
             {
                 if (string.Compare(left_type_params[i].name, right_type_params[i].name, true) != 0)
                 {
                     return false;
                 }
-            }
+            }*/
             return true;
         }
 
@@ -1622,7 +1676,29 @@ namespace PascalABCCompiler.TreeConverter
 		private void convert_function_call_expressions(function_node fn,expressions_list exprs,
 			possible_type_convertions_list ptcal)
 		{
-			for(int i=0;i<exprs.Count;i++)
+            var needToConvertParamsToFunctionCall = true; // SSM #2079 29/06/20
+            var lastIsParams = fn.parameters.Count > 0 && fn.parameters[fn.parameters.Count - 1].is_params;
+            if (lastIsParams && fn.parameters[fn.parameters.Count - 1].type.element_type.IsDelegate)
+                needToConvertParamsToFunctionCall = false; // параметры params - преобразовывать ли в вызовы
+
+
+            for (int i = 0; i < exprs.Count; i++) 
+            {
+                // надо отдельно расшифровывать params и в них тоже не преобразовывать если там делегаты
+                // Если функция возвращает функцию, то это к сожалению не будет работать
+                if (i <= fn.parameters.Count - 1 && fn.parameters[i].type.IsDelegate || lastIsParams && i >= fn.parameters.Count - 1 && !needToConvertParamsToFunctionCall)
+                {
+                    // ничего не делать
+                }
+                else
+                {
+                    var ex = exprs[i];
+                    syntax_tree_visitor.try_convert_typed_expression_to_function_call(ref ex);
+                    exprs[i] = ex;
+                }
+            } // SSM end 29/06/20
+
+            for (int i=0;i<exprs.Count;i++)
 			{
                 if ((ptcal.snl != null) && (i >= fn.parameters.Count - 1))
                 {
@@ -1876,7 +1952,7 @@ namespace PascalABCCompiler.TreeConverter
             bool is_alone_method_defined = (functions.Count() == 1);
             function_node first_function = functions.FirstOrDefault().sym_info as function_node;
             bool _is_assigment = first_function.name == compiler_string_consts.assign_name;
-            bool is_op = compiler_string_consts.GetNETOperName(first_function.name) != null;
+            bool is_op = compiler_string_consts.GetNETOperName(first_function.name) != null || first_function.name.ToLower() == "in";
             basic_function_node _tmp_bfn = functions.FirstOrDefault().sym_info as basic_function_node;
 
             List<function_node> indefinits = new List<function_node>();
@@ -1915,7 +1991,14 @@ namespace PascalABCCompiler.TreeConverter
                     if ((parameters.Count >= cfn.parameters.Count - cfn.num_of_default_variables) &&
                         (parameters.Count <= cfn.parameters.Count) || parameters.Count == 0 && cfn.parameters.Count == 1 && cfn.parameters[0].is_params)
                     {
-                        if (is_exist_eq_method_in_list(fn, set_of_possible_functions) != null)
+                        var fm = find_eq_method_in_list(fn, set_of_possible_functions); // без возвращаемого значения в отличие от is_exist_eq_method_in_list
+
+                        bool bo = fm != null;
+                        if (bo)
+                            bo = eq_type_nodes(fn.return_value_type, fm.return_value_type);
+
+                        //var bo = is_exist_eq_method_in_list(fn, set_of_possible_functions) != null;
+                        if (bo)
                         {
                             if (set_of_possible_functions.Count > 0)
                                 if (set_of_possible_functions[0] is basic_function_node)
@@ -1926,7 +2009,12 @@ namespace PascalABCCompiler.TreeConverter
 
                             continue;
                         }
-                        set_of_possible_functions.Add(fn);
+                        if (fm != null && fn is common_method_node cmnfn && fm is common_method_node cmnfm && cmnfn.comperehensive_type != cmnfm.comperehensive_type)
+                        {
+                            //fn = fn;
+                        }
+                        // Если fm и fn принадлежат к разным классам, то не добавлять fn - она принадлежит предку поскольку встречалась позже
+                        else set_of_possible_functions.Add(fn);
                     }
                 }
                 else
@@ -2005,7 +2093,18 @@ namespace PascalABCCompiler.TreeConverter
                                                                                 is_alone_method_defined, syntax_tree_visitor.context, loc, syntax_nodes_parameters);
                         if (inst == null)
                         {
-                            set_of_possible_functions.RemoveAt(i);
+                            try
+                            {
+                                inst = generic_convertions.DeduceFunction(func, parameters, true, syntax_tree_visitor.context, loc, syntax_nodes_parameters);
+                            }
+                            catch
+                            {
+
+                            }
+                            if (inst == null)
+                                set_of_possible_functions.RemoveAt(i);
+                            else
+                                set_of_possible_functions[i] = inst;
                         }
                         else
                         {
@@ -2033,6 +2132,8 @@ namespace PascalABCCompiler.TreeConverter
 
             if (set_of_possible_functions.Count == 0 && indefinits.Count == 0)
             {
+                if (is_op)
+                    return AddError<function_node>(new OperatorCanNotBeAppliedToThisTypes(first_function.name, parameters[0], parameters.Count > 1 ? parameters[1] : null, loc));
                 return AddError<function_node>(loc, "CAN_NOT_CALL_ANY_GENERIC_FUNCTION_{0}_WITH_THESE_PARAMETERS", first_function.name);
             }
 
@@ -2154,6 +2255,12 @@ namespace PascalABCCompiler.TreeConverter
             // Потому что не учитывается вызов - в вызове может быть функция!!
             delete_greater_functions(set_of_possible_functions,tcll); // SSM 06/06/19 refactoring
 
+            if (set_of_possible_functions.Count == 1)
+            {
+                check_single_possible_convertion(loc, tcll[0]);
+                convert_function_call_expressions(set_of_possible_functions[0], parameters, tcll[0]);
+                return set_of_possible_functions[0];
+            }
             //Тупая заглушка для примитивных типов. иначе не работает +=, у нас лишком много неявных приведений
             //в дальнейшем может вызвать странное поведение, это надо проверить
             if (set_of_possible_functions.Count == 2 && indefinits.Count == 0)
@@ -2613,7 +2720,8 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (types[i] == ret_type) continue;
                 type_compare tc = type_table.compare_types_in_specific_order(types[i], ret_type, only_implicit);
-                if (tc == type_compare.greater_type && ret_type != SystemLibrary.SystemLibrary.object_type) ret_type = types[i];
+                if (tc == type_compare.greater_type && ret_type != SystemLibrary.SystemLibrary.object_type)
+                    ret_type = types[i];
                 else if (tc == type_compare.non_comparable_type)
                 {
                     ret_type = SystemLibrary.SystemLibrary.object_type;
@@ -2624,6 +2732,24 @@ namespace PascalABCCompiler.TreeConverter
             return ret_type;
         }
 
+        public type_node select_base_type_for_arr_const_new(type_node_list types, List<expression_node> lst, bool only_implicit = false)
+        {
+            type_node ret_type = null;
+            if (types.Count > 0) ret_type = types[0];
+            for (int i = 1; i < types.Count; i++)
+            {
+                if (types[i] == ret_type) continue;
+                type_compare tc = type_table.compare_types_in_specific_order(types[i], ret_type, only_implicit);
+                if (tc == type_compare.greater_type && ret_type != SystemLibrary.SystemLibrary.object_type)
+                    ret_type = types[i];
+                else if (tc == type_compare.non_comparable_type)
+                {
+                    AddError(lst[i].location, "UNCOMPARABLE_TYPES_IN_ARRAY_CONST");
+                }
+
+            }
+            return ret_type;
+        }
 
         public enum int_types { sbyte_type = 0, byte_type = 1, short_type = 2, ushort_type = 3, integer_type = 4, uint_type = 5, int64_type = 6, uint64_type = 7};
         public bool is_value_int_type(type_node tn)
@@ -2721,6 +2847,20 @@ namespace PascalABCCompiler.TreeConverter
                 return SystemLibrary.SystemLibrary.uint64_type;
             }
             return null; // это вхолостую
+        }
+
+        public bool ContainsForward(type_node tn)
+        {
+            if (tn.ForwardDeclarationOnly || tn.original_generic != null && tn.original_generic.ForwardDeclarationOnly)
+                return true;
+            if (tn is generic_instance_type_node tni)
+                foreach (var t in tn.instance_params)
+                {
+                    var r = ContainsForward(t);
+                    if (r)
+                        return r;
+                }
+            return false;
         }
     }
 

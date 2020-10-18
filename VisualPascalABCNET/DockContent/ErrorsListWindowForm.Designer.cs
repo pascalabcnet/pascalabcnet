@@ -40,6 +40,7 @@ namespace VisualPascalABC
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tPCOPYToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ilvlErrorList = new System.Windows.Forms.ImageList(this.components);
+            this.ilvlErrorList32 = new System.Windows.Forms.ImageList(this.components);
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -126,6 +127,14 @@ namespace VisualPascalABC
             this.ilvlErrorList.Images.SetKeyName(1, "Icons.16x16.Error.png");
             this.ilvlErrorList.Images.SetKeyName(2, "Icons.16x16.RuntimeError.png");
             // 
+            // ilvlErrorList32
+            // 
+            this.ilvlErrorList32.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("ilvlErrorList32.ImageStream")));
+            this.ilvlErrorList32.TransparentColor = System.Drawing.Color.Transparent;
+            this.ilvlErrorList32.Images.SetKeyName(0, "Icons.16x16.Warning.png");
+            this.ilvlErrorList32.Images.SetKeyName(1, "Icons.32x32.Error.png");
+            this.ilvlErrorList32.Images.SetKeyName(2, "Icons.16x16.RuntimeError.png");
+            // 
             // ErrorsListWindowForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -157,5 +166,6 @@ namespace VisualPascalABC
         private System.Windows.Forms.ImageList ilvlErrorList;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem tPCOPYToolStripMenuItem;
+        private System.Windows.Forms.ImageList ilvlErrorList32;
     }
 }

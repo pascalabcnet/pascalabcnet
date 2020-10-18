@@ -26,7 +26,7 @@ begin
   
   var kl,kr,ku,kd: boolean;
 
-  BeginFrameBasedAnimationTime(dt->begin
+  OnDrawFrame := dt -> begin
     Window.Title := 'Количество объектов: '+Objects.Count;
     // Перемещение игрока
     if kr then 
@@ -53,7 +53,7 @@ begin
       // Конец игры
       
     end;
-  end);
+  end;
   
   CreateTimerAndStart(100,procedure -> // Таймер убивания монстров и умирания объектов за пределами экрана
   begin

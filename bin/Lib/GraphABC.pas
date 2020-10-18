@@ -3967,6 +3967,7 @@ begin
     readbuffer := ed.Text + Environment.NewLine;
     IOPanel.Invoke(SetIOPanelInVisible);
     MainThread.Resume;
+    e.SuppressKeyPress := true;
   end;
 end;
 

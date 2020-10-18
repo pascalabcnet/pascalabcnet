@@ -85,6 +85,17 @@ namespace VisualPascalABC
             edit.Document.HighlightingStrategy = ICSharpCode.TextEditor.Document.HighlightingManager.Manager.FindHighlighterForFile(FileName);
         }
 
+        internal bool editorDisabled;
+
+        public void SetEditorDisabled(bool val)
+        {
+            this.editorDisabled = val;
+            if (!val)
+                foreach (var tab in OpenDocuments.Values)
+                    tab.TextEditor.Document.ReadOnly = val;
+            CurrentCodeFileDocument.TextEditor.Document.ReadOnly = val;
+        }
+
         public void SynEdit_ChangeText(object sender, CodeFileDocumentControl cfdc)
         {
             CodeFileDocumentControl d = cfdc;
@@ -98,7 +109,7 @@ namespace VisualPascalABC
             }
             
             NavigationLocationChanged();
-            UpdateUndoRedoEnabled();
+            UpdateUndoRedoEnabled();   
             WorkbenchServiceFactory.CodeCompletionParserController.SetAsChanged(cfdc.FileName);
         }
 

@@ -11,12 +11,14 @@ unit GraphWPFBase;
 
 uses System.Windows; 
 uses System.Windows.Controls;
+uses System.Windows.Media;
 
 type 
   /// Тип цвета
   GColor = System.Windows.Media.Color;
   /// Тип прямоугольника
   GRect = System.Windows.Rect;
+  GBrush = System.Windows.Media.Brush;
 
   GWindow = System.Windows.Window;
   GMainWindow = class(GWindow)
@@ -55,6 +57,19 @@ type
 var 
   app: Application;
   MainWindow: GMainWindow;
+
+var BrushesDict := new Dictionary<GColor,GBrush>;
+
+function GetBrush(c: GColor): GBrush;
+begin
+  if not (c in BrushesDict) then
+  begin
+    var b := new SolidColorBrush(c);
+    BrushesDict[c] := b;
+    Result := b
+  end
+  else Result := BrushesDict[c];
+end;
 
 procedure Invoke(d: System.Delegate; params args: array of object) := app.Dispatcher.Invoke(d, args);
 procedure InvokeP(p: procedure(r: real); r: real) := Invoke(p,r); 
@@ -108,7 +123,7 @@ type
     property IsFixedSize: boolean read GetFixedSize write SetFixedSize;
     /// Очищает графическое окно белым цветом
     procedure Clear; virtual;
-    /// Очищает графическое окно цветом c
+    /// Очищает графическое окно указанным цветом
     procedure Clear(c: GColor); virtual;
     /// Устанавливает размеры клиентской части главного окна 
     procedure SetSize(w, h: real);
@@ -128,13 +143,29 @@ type
     function Center: Point;
     /// Возвращает прямоугольник клиентской области окна
     function ClientRect: GRect;
+    /// Возвращает случайную точку в границах экрана. Необязательный параметр w задаёт минимальный отступ от границы 
+    function RandomPoint(w: real := 0): Point;
     private procedure CenterOnScreenP;
   end;
 //{{{--doc: Конец секции 1 }}} 
   
 
-function wplus := SystemParameters.WindowResizeBorderThickness.Left + SystemParameters.WindowResizeBorderThickness.Right;
-function hplus := SystemParameters.WindowCaptionHeight + SystemParameters.WindowResizeBorderThickness.Top + SystemParameters.WindowResizeBorderThickness.Bottom;
+var wp: real := -1;
+var hp: real := -1;
+
+function wplus: real;
+begin
+  if wp = -1 then
+    wp := (SystemParameters.BorderWidth + SystemParameters.FixedFrameVerticalBorderWidth) * 2;
+  Result := wp;
+end; 
+
+function hplus: real;
+begin
+  if hp = -1 then
+    hp := SystemParameters.WindowCaptionHeight + (SystemParameters.BorderWidth + SystemParameters.FixedFrameHorizontalBorderHeight) * 2;
+  Result := hp;
+end;
 
 ///---- Window -----
 
@@ -180,7 +211,6 @@ begin
   if MainWindow.ResizeMode = ResizeMode.NoResize then
     Result := MainWindow.ActualHeight - SystemParameters.WindowCaptionHeight - 2.5
   else Result := MainWindow.ActualHeight - hplus;
-  Print(SystemParameters.FixedFrameHorizontalBorderHeight);
   //Print(SystemParameters.WindowCaptionHeight, SystemParameters.WindowResizeBorderThickness.Top, SystemParameters.WindowResizeBorderThickness.Bottom);
 end; 
 function WindowType.GetHeight := InvokeReal(WindowTypeGetHeightP);
@@ -251,10 +281,13 @@ function WindowType.Center := Pnt(Width/2,Height/2);
 
 function WindowType.ClientRect := Rect(0,0,Width,Height);
 
+function WindowType.RandomPoint(w: real): Point := Pnt(Random(w,Width-w),Random(w,Height-w));
+
 function operator implicit(Self: (integer, integer)): Point; extensionmethod := new Point(Self[0], Self[1]);
 function operator implicit(Self: (integer, real)): Point; extensionmethod := new Point(Self[0], Self[1]);
 function operator implicit(Self: (real, integer)): Point; extensionmethod := new Point(Self[0], Self[1]);
 function operator implicit(Self: (real, real)): Point; extensionmethod := new Point(Self[0], Self[1]);
+
 
 function operator implicit(Self: (integer, integer)): Size; extensionmethod := new Size(Self[0], Self[1]);
 function operator implicit(Self: (integer, real)): Size; extensionmethod := new Size(Self[0], Self[1]);
@@ -285,6 +318,8 @@ begin
   end;
 end;
 
-begin
+initialization
   __InitModule;
+
+finalization  
 end.

@@ -1,5 +1,6 @@
 <HTML><HEAD><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="Between">
+<param name="Keyword" value="IndicesOf">
 <param name="Keyword" value="InRange">
 <param name="Keyword" value="Inverse">
 <param name="Keyword" value="IsMatch">
@@ -12,6 +13,7 @@
 <param name="Keyword" value="ReadWord">
 <param name="Keyword" value="RegexReplace">
 <param name="Keyword" value="Remove">
+<param name="Keyword" value="Replace">
 <param name="Keyword" value="Right">
 <param name="Keyword" value="Slice">
 <param name="Keyword" value="ToBigInteger">
@@ -26,7 +28,9 @@
 </HEAD><body><H1>ћетоды расширени€ типа string</H1>
 <table border=0 cellpadding=5><tr><td><code><b>function</b> Between(Self: string; a, b: string): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает True если значение находитс€ между двум€ другими</td></tr>
-<tr><td><code><b>function</b> InRange(Self: string; a,b: string): boolean;</code>
+<tr><td><code><b>function</b> IndicesOf(Self, SubS: string; overlay: boolean := False): <b>sequence </b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает последовательность индексов вхождений подстроки в основную строкуѕараметр overlay определ€ет, разрешены ли перекрыти€ вхождений подстрок</td></tr>
+<tr><td><code><b>function</b> InRange(Self: string; a, b: string): boolean;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает True если значение находитс€ между двум€ другими</td></tr>
 <tr><td><code><b>function</b> Inverse(Self: string): string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает инверсию строки</td></tr>
@@ -52,6 +56,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;«амен€ет в указанной строке все вхождени€ регул€рного выражени€ указанным преобразованием замены и возвращает преобразованную строку</td></tr>
 <tr><td><code><b>function</b> Remove(Self: string; <b>params</b> targets: <b>array</b>  <b>of</b> string): string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;”дал€ет в строке все вхождени€ указанных строк</td></tr>
+<tr><td><code><b>function</b> Replace(Self: string; oldStr,newStr: string; count: integer): string;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;«амен€ет count вхождений подстроки oldStr на подстроку newStr в исходной строке</td></tr>
 <tr><td><code><b>function</b> Right(Self: string; length: integer): string;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;¬озвращает подстроку, полученную вырезанием из строки length самых правых символов</td></tr>
 <tr><td><code><b>function</b> Slice(Self: string; from, step: integer): string;</code>
@@ -66,6 +72,8 @@
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует строку в целоеѕри невозможности преобразовани€ возвращаетс€ defaultvalue</td></tr>
 <tr><td><code><b>function</b> ToIntegers(Self: string): <b>array</b>  <b>of</b> integer;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует строку в массив целых</td></tr>
+<tr><td><code><b>function</b> ToIntegers(Self: string; N: integer): <b>array</b>  <b>of</b> integer;</code>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;—читывает из строки массив из N целых</td></tr>
 <tr><td><code><b>function</b> ToReal(Self: string): real;</code>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ѕреобразует строку в вещественное</td></tr>
 <tr><td><code><b>function</b> ToReal(Self: string; defaultvalue: real): real;</code>

@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -44,19 +45,24 @@
     <Compile Include="AllVarsInProcYieldsProba.cs" />
     <Compile Include="BaseVisitors\CollectNamespaces.cs" />
     <Compile Include="BaseVisitors\HasStatementVisitor.cs" />
+    <Compile Include="UniversalVisitors\ABCStatisticsVisitors.cs" />
     <Compile Include="BaseVisitors\SmallHelperVisitors.cs" />
     <Compile Include="ChangeWhileVisitor.cs" />
+    <Compile Include="CheckingVisitors\UnnamedRecordsCheckErrorsVisitor.cs" />
     <Compile Include="LightSymInfoVisitors\LightScopeHelperClasses.cs" />
     <Compile Include="LightSymInfoVisitors\SymInfoCollect1.cs" />
     <Compile Include="LightSymInfoVisitors\SymInfoCollect1Helper.cs" />
+    <Compile Include="PatternsVisitors\ExtendedIsDesugaringVisitor.cs" />
+    <Compile Include="PatternsVisitors\PatternsDesugaringVisitor.cs" />
+    <Compile Include="PatternsVisitors\ReplaceNamesInIsVarVisitor.cs" />
     <Compile Include="PatternsVisitors\SingleDeconstructChecker.cs" />
     <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\DoubleQuestionDesugarVisitor.cs" />
-    <Compile Include="SugarVisitors\ExtendedIsDesugaringVisitor.cs" />
+    <Compile Include="SugarVisitors\IndexVisitor.cs" />
     <Compile Include="SugarVisitors\LoopDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\PropertyDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\QuestionPointDesugarVisitor.cs" />
-    <Compile Include="SugarVisitors\PatternsDesugaringVisitor.cs" />
+    <Compile Include="SugarVisitors\NewRangeDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\SliceDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\TupleVisitor.cs" />
     <Compile Include="TypeclassVisitors\FindInstancesAndRestrictedFunctionsVisitor.cs" />
@@ -65,6 +71,7 @@
     <Compile Include="VisitorsForLambdas\RenameOnExceptVarsVisitor.cs" />
     <Compile Include="VisitorsForLambdas\RenameSameVarNamesVisitor.cs" />
     <Compile Include="VisitorsForLambdas\StandOutExprWithLambdaInForeachSequenceVisitor.cs" />
+    <Compile Include="YieldVisitors\CapturedLambdaInYieldVisitor.cs" />
     <Compile Include="YieldVisitors\ObjectCopier\ObjectCopier.cs" />
     <Compile Include="Optimization\CalcConstExprs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

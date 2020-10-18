@@ -11,7 +11,8 @@ namespace PascalABCCompiler
         public const int MaxProcessMemoryMB = 150;
         
         public const string DataSeparator = "]\r\n[";
-        public const string MessageSeparator = "***";
+        //public const string MessageSeparator = "***";
+        public const string MessageSeparator = "\002\002\002";
 
         //1xx to remoteCompiler
         public const int CommandStartNumber = 100;
@@ -25,6 +26,7 @@ namespace PascalABCCompiler
         public const int GetLastWriteTime = 186;
         public const int VarBeginOffest = 187;
         public const int InternalError = 188;
+        public const int PABCHealth = 189;
 
 
         //2xx to pabcnetc.exe
@@ -47,5 +49,6 @@ namespace PascalABCCompiler
         public const int CompilerOptionsProjectCompiled = 225;
         public const int UseDllForSystemUnits = 226;
         public const int IDELocale = 227;
+        public const int CompilerLocale = 228;
     }
 }

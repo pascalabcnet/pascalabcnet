@@ -218,6 +218,15 @@ namespace PascalABCCompiler
         }
     }
 
+    public class AppTypeDllIsAllowedOnlyForLibraries : CompilerCompilationError
+    {
+        public AppTypeDllIsAllowedOnlyForLibraries(string FileName, SyntaxTree.SourceContext sc)
+            : base(StringResources.Get("COMPILATIONERROR_APPTYPE_DLL_IS_ALLOWED_ONLY_FOR_LIBRARIES"), FileName)
+        {
+            this.source_context = sc;
+        }
+    }
+
     public class UnitModuleExpectedLibraryFound : CompilerCompilationError
     {
         public UnitModuleExpectedLibraryFound(string FileName, SyntaxTree.SourceContext sc)
@@ -729,6 +738,8 @@ namespace PascalABCCompiler
     public class Compiler : MarshalByRefObject, ICompiler
 	{
         //public ISyntaxTreeChanger SyntaxTreeChanger = null; // SSM 17/08/15 - для операций над синтаксическим деревом после его построения
+        int pABCCodeHealth = 0;
+        public int PABCCodeHealth { get { return pABCCodeHealth; } }
 
         public static string Version
         {
@@ -902,12 +913,12 @@ namespace PascalABCCompiler
         public CodeGenerators.Controller CodeGeneratorsController = null;
         //public LLVMConverter.Controller LLVMCodeGeneratorsController = null;
         //public PascalToCppConverter.Controller PABCToCppCodeGeneratorsController = null;
-        private SyntaxTree.unit_or_namespace CurrentSyntaxUnit;
+        public SyntaxTree.unit_or_namespace CurrentSyntaxUnit;
 		private List<CompilationUnit> UnitsToCompile = new List<CompilationUnit>();
         public Hashtable RecompileList = new Hashtable(StringComparer.OrdinalIgnoreCase);
         private PascalABCCompiler.TreeRealization.unit_node_list Units;
         private Hashtable CycleUnits = new Hashtable();
-        private CompilationUnit CurrentCompilationUnit = null;
+        public CompilationUnit CurrentCompilationUnit = null;
         private CompilationUnit FirstCompilationUnit = null;
         private bool PCUReadersAndWritersClosed;
         public int beginOffset;
@@ -1043,6 +1054,8 @@ namespace PascalABCCompiler
         public void Reload()
         {
             OnChangeCompilerState(this, CompilerState.Reloading, null);
+
+            pABCCodeHealth = 0;
 
             //А это что?
             TreeRealization.type_node tn = SystemLibrary.SystemLibrary.void_type;
@@ -1182,6 +1195,7 @@ namespace PascalABCCompiler
             CurrentCompilationUnit = null;
             FirstCompilationUnit = null;
             linesCompiled = 0;
+            pABCCodeHealth = 0;
             PCUReadersAndWritersClosed = false;
             ParsersController.Reset();
             SyntaxTreeToSemanticTreeConverter.Reset();
@@ -1813,7 +1827,10 @@ namespace PascalABCCompiler
                 Environment.CurrentDirectory = CompilerOptions.SourceFileDirectory; // нужно для подключения *.inc и *.resources
                 Units = new PascalABCCompiler.TreeRealization.unit_node_list();
                 CurrentSyntaxUnit = new SyntaxTree.uses_unit_in(new SyntaxTree.string_const(CompilerOptions.SourceFileName));
+                
                 CompileUnit(Units, CurrentSyntaxUnit);
+                //Environment.CurrentDirectory = CompilerOptions.SourceFileDirectory; // 02.10.19 SunSerega: CompileUnit меняет CurrentDirectory чтоб работало относительное uses-in
+                
                 //Console.WriteLine(timer.ElapsedMilliseconds / 1000.0);  //////
                 foreach (CompilationUnit CurrentUnit in UnitsToCompile)
                     if (CurrentUnit.State != UnitState.Compiled)
@@ -1836,7 +1853,10 @@ namespace PascalABCCompiler
                                 }
                             for (int i = SyntaxUsesList.Count - 1; i >= 0; i--)
                                 if (!IsPossibleNamespace(SyntaxUsesList[i], true))
+                                {
                                     CompileUnit(CurrentUnit.ImplementationUsedUnits, SyntaxUsesList[i]);
+                                    //Environment.CurrentDirectory = CompilerOptions.SourceFileDirectory; // 02.10.19 SunSerega: CompileUnit меняет CurrentDirectory чтоб работало относительное uses-in
+                                }
                                 else
                                 {
                                     CurrentUnit.ImplementationUsedUnits.AddElement(new TreeRealization.namespace_unit_node(GetNamespace(SyntaxUsesList[i])));
@@ -2186,6 +2206,8 @@ namespace PascalABCCompiler
                                 PABCToCppCodeGeneratorsController.Compile(pn, CompilerOptions.OutputFileName, CompilerOptions.SourceFileName, ResourceFilesArray);
                             }
                             else*/
+                            if (compilerOptions.UseDllForSystemUnits)
+                                cdo.RtlPABCSystemType = NetHelper.NetHelper.FindRtlType("PABCSystem.PABCSystem");
                             CodeGeneratorsController.Compile(pn, CompilerOptions.OutputFileName, CompilerOptions.SourceFileName, cdo, CompilerOptions.StandartDirectories, ResourceFilesArray);
                             if (res_file != null)
                                 File.Delete(res_file);
@@ -2251,6 +2273,8 @@ namespace PascalABCCompiler
 #endif
                 }
             }
+            //Environment.CurrentDirectory = CompilerOptions.SourceFileDirectory; // 03.10.19 SunSerega: CompileUnit меняет CurrentDirectory чтоб работало относительное uses-in
+            
             //удаляем лишние ошибки
             /*foreach(Error er in errorsList)
             {
@@ -2517,11 +2541,14 @@ namespace PascalABCCompiler
             if (SourceFileNamesDictionary.ContainsKey(UnitName))
                 return SourceFileNamesDictionary[UnitName];
 
+            
             string d = CompilerOptions.SourceFileDirectory;
             if (CurrentCompilationUnit != null && CurrentCompilationUnit.SyntaxTree != null)
                 d = Path.GetDirectoryName(CurrentCompilationUnit.SyntaxTree.file_name);
             if (Path.GetDirectoryName(UnitName) != string.Empty)
                 d = Path.GetDirectoryName(UnitName);
+            
+            //string d = Environment.CurrentDirectory; // 03.10.19 SunSerega: вообще использовать Environment.CurrentDirectory всюду - говнокод, но если без него - надо очень много переписывать, проще уже всюду его использовать
 
             string fsfn = null;
             if (d.Equals(CompilerOptions.SourceFileDirectory))
@@ -2904,6 +2931,7 @@ namespace PascalABCCompiler
         {
             string SourceText = GetSourceFileText(FileName);
             List<string> DefinesList = new List<string>();
+            DefinesList.Add("PASCALABC"); // SSM 11/07/20
             if (!compilerOptions.Debug && !compilerOptions.ForDebugging)
                 DefinesList.Add("RELEASE");
             else
@@ -3080,7 +3108,17 @@ namespace PascalABCCompiler
             OnChangeCompilerState(this, CompilerState.EndParsingFile, FileName);
             //Вычисляем сколько строк скомпилировали
             if (ErrorList.Count == 0 && cu != null && cu.source_context!=null)
+            {
                 linesCompiled += (uint)(cu.source_context.end_position.line_num - cu.source_context.begin_position.line_num + 1);
+                // 500 - это наибольшая программа для начинающих. БОльшая программа - здоровье кода только по кнопке (чтобы не замедлять)
+                if (linesCompiled <= 500)
+                {
+                    // Это только для локального компилятора?
+                    var stat = new SyntaxVisitors.ABCStatisticsVisitor();
+                    stat.ProcessNode(cu);
+                    pABCCodeHealth = stat.CalcHealth(out int neg, out int pos);
+                }
+            }
             return cu;            
         }
 
@@ -3118,15 +3156,17 @@ namespace PascalABCCompiler
         
         public static bool is_dll(SyntaxTree.compilation_unit cu)
         {
-        	foreach (SyntaxTree.compiler_directive cd in cu.compiler_directives)
-        		if (string.Compare(cd.Name.text, "apptype",true)==0 && string.Compare(cd.Directive.text,"dll",true)==0)
-        		return true;
-        	return false;
+            foreach (SyntaxTree.compiler_directive cd in cu.compiler_directives)
+                if (string.Compare(cd.Name.text, "apptype", true) == 0 && string.Compare(cd.Directive.text, "dll", true) == 0)
+                    return true;
+            return false;
         }
 
         public CompilationUnit CompileUnit(PascalABCCompiler.TreeRealization.unit_node_list Units, SyntaxTree.unit_or_namespace SyntaxUsesUnit)
         {
             string UnitName = GetUnitFileName(SyntaxUsesUnit);
+            if (!UnitName.Contains("\\")) UnitName = Path.GetFullPath(UnitName);
+            //Environment.CurrentDirectory = Path.GetDirectoryName(UnitName); // 02.10.19 SunSerega: Эта строчка нужна чтоб работало рекурсивное uses-in
             //if (UnitName == null) throw new UnitNotFound(SyntaxUsesUnit.name,
             CompilationUnit CurrentUnit = UnitTable[UnitName];
             if (CurrentUnit != null && CurrentUnit.SemanticTree is PascalABCCompiler.TreeRealization.dot_net_unit_node 
@@ -3217,6 +3257,7 @@ namespace PascalABCCompiler
                     else
                         throw new UnitNotFound(CurrentCompilationUnit.SyntaxTree.file_name, UnitName, SyntaxUsesUnit.source_context);
                 List<string> DefinesList = new List<string>();
+                DefinesList.Add("PASCALABC");
                 if (!compilerOptions.Debug && !compilerOptions.ForDebugging)
                     DefinesList.Add("RELEASE");
                 else
@@ -3244,7 +3285,22 @@ namespace PascalABCCompiler
                         throw new NamespacesCanBeCompiledOnlyInProjects(CurrentUnit.SyntaxTree.source_context);
                     compilerOptions.UseDllForSystemUnits = false;
                 }
-                    
+
+                // SSM 21/05/20 Проверка, что мы не записали apptype dll в небиблиотеку
+
+                var ccu = CurrentUnit.SyntaxTree;
+                foreach (SyntaxTree.compiler_directive cd in ccu.compiler_directives)
+                    if (string.Compare(cd.Name.text, "apptype", true) == 0 && string.Compare(cd.Directive.text, "dll", true) == 0)
+                    {
+                        if (!(ccu is SyntaxTree.unit_module) ||
+                            (ccu is SyntaxTree.unit_module um && um.unit_name.HeaderKeyword != SyntaxTree.UnitHeaderKeyword.Library))
+                        {
+                            ErrorsList.Add(new AppTypeDllIsAllowedOnlyForLibraries(ccu.file_name, cd.source_context));
+                            break;
+                        }
+                    }
+                //
+
                 if (is_dll(CurrentUnit.SyntaxTree))
                     compilerOptions.OutputFileType = PascalABCCompiler.CompilerOptions.OutputType.ClassLibrary;
                 CurrentUnit.CaseSensitive = ParsersController.LastParser.CaseSensitive;
@@ -3336,6 +3392,7 @@ namespace PascalABCCompiler
                                 }
                             }
                         CompileUnit(CurrentUnit.InterfaceUsedUnits, SyntaxUsesList[i]);
+                        //Environment.CurrentDirectory = Path.GetDirectoryName(UnitName); // 02.10.19 SunSerega: CompileUnit меняет CurrentDirectory чтоб работало относительное uses-in
                         if (CurrentUnit.State == UnitState.Compiled)
                         {
                             Units.AddElement(CurrentUnit.SemanticTree);
@@ -3408,7 +3465,10 @@ namespace PascalABCCompiler
 #endif
                         }
                         else
+                        {
                             CompileUnit(CurrentUnit.ImplementationUsedUnits, SyntaxUsesList[i]);
+                            //Environment.CurrentDirectory = Path.GetDirectoryName(UnitName); // 02.10.19 SunSerega: CompileUnit меняет CurrentDirectory чтоб работало относительное uses-in
+                        }
                     }
                     else
                     {

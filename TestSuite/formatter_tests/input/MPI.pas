@@ -1,3 +1,5 @@
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mikhalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 unit MPI;
 
 interface
@@ -75,7 +77,7 @@ const
   MPI_GROUP_NULL = 0;
   MPI_DATATYPE_NULL = 0;
   MPI_REQUEST_NULL = 0;
-  MPI_BOTTOM = pointer(0);
+  MPI_BOTTOM: pointer = nil;
 
   MPI_ERRORS_ARE_FATAL = 119;
   MPI_ERRORS_RETURN = 120;

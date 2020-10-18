@@ -2206,15 +2206,15 @@ type
     procedure SetN(n: integer);
     function  GetN: integer;
   protected
-    function CreateObject: Object3D; override := new PrismT(X, Y, Z, N, Radius, Height, Material.Clone);
+    function CreateObject: Object3D; override := new PrismT(X, Y, Z, Sides, Radius, Height, Material.Clone);
   public 
     constructor(x, y, z: real; N: integer; r, h: real; m: Gmaterial);
 /// Радиус правильной призмы
     property Radius: real read GetR write SetR;
 /// Высота правильной призмы
     property Height: real read GetH write SetH;
-/// Количество углов правильной призмы
-    property N: integer read GetN write SetN;
+/// Количество боковых граней правильной призмы
+    property Sides: integer read GetN write SetN;
 /// Возвращает клон правильной призмы
     function Clone := (inherited Clone) as PrismT;
   end;
@@ -2226,15 +2226,15 @@ type
   PyramidT = class(PrismT)
   private
   protected
-    function CreateObject: Object3D; override := new PyramidT(X, Y, Z, N, Radius, Height, Material.Clone);
+    function CreateObject: Object3D; override := new PyramidT(X, Y, Z, Sides, Radius, Height, Material.Clone);
   public 
     constructor(x, y, z: real; N: integer; r, h: real; m: GMaterial);
 /// Радиус правильной пирамиды
     property Radius: real read GetR write SetR;
 /// Высота правильной пирамиды
     property Height: real read GetH write SetH;
-/// Количество углов правильной пирамиды
-    property N: integer read GetN write SetN;
+/// Количество боковых граней правильной пирамиды
+    property Sides: integer read GetN write SetN;
 /// Возвращает клон правильной пирамиды
     function Clone := (inherited Clone) as PyramidT;
   end;
@@ -2288,8 +2288,8 @@ type
     begin
       var pc := new Point3DCollection;
       
-      var a := PartitionPoints(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
-      var b := PartitionPoints(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), fh)).ToArray;
+      var a := PartitionPoints(0, 2 * Pi, Sides).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
+      var b := PartitionPoints(0, 2 * Pi, Sides).Select(x -> P3D(fr * cos(x), fr * sin(x), fh)).ToArray;
       for var i := 0 to a.High - 1 do
       begin
         pc.Add(a[i]);
@@ -2320,12 +2320,12 @@ type
     end;
   
   protected
-    function CreateObject: Object3D; override := new PrismTWireframe(X, Y, Z, N, Radius, Height, (model as LinesVisual3D).Thickness, (model as LinesVisual3D).Color);
+    function CreateObject: Object3D; override := new PrismTWireframe(X, Y, Z, Sides, Radius, Height, (model as LinesVisual3D).Thickness, (model as LinesVisual3D).Color);
   public 
     function Points: Point3DCollection; virtual;
     begin
-      var a := PartitionPoints(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).SkipLast;
-      var b := PartitionPoints(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), fh)).SkipLast;
+      var a := PartitionPoints(0, 2 * Pi, Sides).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).SkipLast;
+      var b := PartitionPoints(0, 2 * Pi, Sides).Select(x -> P3D(fr * cos(x), fr * sin(x), fh)).SkipLast;
       var pc := new Point3DCollection(a + b);
       
       Result := pc;
@@ -2338,8 +2338,8 @@ type
     property Radius: real read fr write SetR;
 /// Высота проволочной правильной призмы
     property Height: real read fh write SetH;
-/// Количество углов проволочной правильной призмы
-    property N: integer read fn write SetN;
+/// Количество боковых граней проволочной правильной призмы
+    property Sides: integer read fn write SetN;
 /// Цвет проволоки правильной призмы
     property Color: GColor read GetC write SetC; override;
 /// Толщина проволоки правильной призмы
@@ -2352,13 +2352,13 @@ type
 /// Класс проволочной правильной пирамиды
   PyramidTWireframe = class(PrismTWireframe)
   protected
-    function CreateObject: Object3D; override := new PyramidTWireframe(X, Y, Z, N, Radius, Height, (model as LinesVisual3D).Thickness, (model as LinesVisual3D).Color);
+    function CreateObject: Object3D; override := new PyramidTWireframe(X, Y, Z, Sides, Radius, Height, (model as LinesVisual3D).Thickness, (model as LinesVisual3D).Color);
   private 
     function CreatePoints: Point3DCollection; override;
     begin
       var pc := new Point3DCollection;
       
-      var a := PartitionPoints(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
+      var a := PartitionPoints(0, 2 * Pi, Sides).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
       var b := P3D(0, 0, fh);
       for var i := 0 to a.High - 1 do
       begin
@@ -2377,8 +2377,8 @@ type
     property Radius: real read fr write SetR;
 /// Высота проволочной правильной пирамиды
     property Height: real read fh write SetH;
-/// Количество углов проволочной правильной пирамиды
-    property N: integer read fn write SetN;
+/// Количество боковых граней проволочной правильной пирамиды
+    property Sides: integer read fn write SetN;
 /// Цвет проволоки правильной пирамиды
     property Color: GColor read GetC write SetC; override;
 /// Толщина проволоки правильной пирамиды
@@ -2684,6 +2684,8 @@ var
   /// Событие перерисовки графического 3D-окна. 
   ///Инициализируется процедурой с вещественным параметром dt - временем, прошедшим с момента последнего обновления экрана
   OnDrawFrame: procedure(dt: real);
+  /// Событие, происходящее при закрытии основного окна
+  var OnClose: procedure;
 
 var
 // -----------------------------------------------------
@@ -3371,19 +3373,19 @@ function FileModel3D(p: Point3D; fname: string; m: Material): FileModelT := File
 
 function Prism(x, y, z: real; Sides: integer; Height, Radius: real; m: Material): PrismT := Inv(()->PrismT.Create(x, y, z, Sides, Radius, Height, m));
 
-function Prism(p: Point3D; Sides: integer; Height, Radius: real; m: Material): PrismT := Prism(p.X, p.Y, p.Z, Sides, Radius, Height, m);
+function Prism(p: Point3D; Sides: integer; Height, Radius: real; m: Material): PrismT := Prism(p.X, p.Y, p.Z, Sides, Height, Radius, m);
 
 function PrismWireFrame(x, y, z: real; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PrismTWireFrame := Inv(()->PrismTWireFrame.Create(x, y, z, Sides, Radius, Height, thickness, c));
 
-function PrismWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PrismTWireFrame := PrismWireFrame(p.x, p.y, p.z, Sides, Radius, Height, thickness, c);
+function PrismWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PrismTWireFrame := PrismWireFrame(p.x, p.y, p.z, Sides, Height, Radius, thickness, c);
 
 function Pyramid(x, y, z: real; Sides: integer; Height, Radius: real; m: Material): PyramidT := Inv(()->PyramidT.Create(x, y, z, Sides, Radius, Height, m));
 
-function Pyramid(p: Point3D; Sides: integer; Height, Radius: real; m: Material): PyramidT := Pyramid(p.X, p.Y, p.Z, Sides, Radius, Height, m);
+function Pyramid(p: Point3D; Sides: integer; Height, Radius: real; m: Material): PyramidT := Pyramid(p.X, p.Y, p.Z, Sides, Height, Radius, m);
 
 function PyramidWireFrame(x, y, z: real; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PyramidTWireFrame := Inv(()->PyramidTWireFrame.Create(x, y, z, Sides, Radius, Height, thickness, c));
 
-function PyramidWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PyramidTWireFrame := PyramidWireFrame(p.x, p.y, p.z, Sides, Radius, Height, thickness, c);
+function PyramidWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real; c: Color): PyramidTWireFrame := PyramidWireFrame(p.x, p.y, p.z, Sides, Height, Radius, thickness, c);
 
 function Lego(x, y, z: real; Rows, Columns, Height: integer; m: Material): LegoT := Inv(()->LegoT.Create(x, y, z, Rows, Columns, Height, m));
 
@@ -3761,6 +3763,8 @@ begin
   if OnDrawFrame<>nil then
   begin
     var e1 := RenderingEventArgs(e).RenderingTime;
+    if LastUpdatedTime.Ticks = integer.MinValue then // первый раз
+      LastUpdatedTime := e1;
     var dt := e1 - LastUpdatedTime;
     if LastUpdatedTime.TotalMilliseconds<>0 then 
       if OnDrawFrame<>nil then
@@ -3899,7 +3903,11 @@ type
       hvp.PreviewTextInput += SystemOnKeyPress; // не работает
       
       hvp.Focus();
-      Closed += procedure(sender, e) -> begin Halt; end;
+      Closed += procedure(sender, e) -> begin 
+        if OnClose<>nil then 
+          OnClose;
+        Halt; 
+      end;
       
       CompositionTarget.Rendering += RenderFrame;
     end;

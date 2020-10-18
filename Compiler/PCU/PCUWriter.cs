@@ -39,7 +39,8 @@ namespace PascalABCCompiler.PCU
         public byte special_scope=0;//говорит о том что этот символ добавляется не в пространсво имен модуля
 		public int index;//не сериализуется
         public semantic_node_type semantic_node_type;
-        public bool virtual_slot = false;
+        public bool virtual_slot;
+        public bool is_static;
 
         public NameRef(string name, int index, TreeConverter.access_level access_level, semantic_node_type semantic_node_type)
 		{
@@ -56,7 +57,7 @@ namespace PascalABCCompiler.PCU
         }
         public int Size
         {
-            get { return (System.Text.UTF8Encoding.UTF8.GetByteCount(name) + 1) + 1 + 4 + 1 + 1 + 1 + 1; }
+            get { return (System.Text.UTF8Encoding.UTF8.GetByteCount(name) + 1) + 1 + 4 + 1 + 1 + 1 + 1 + 1; }
         }
     }
 
@@ -868,6 +869,52 @@ namespace PascalABCCompiler.PCU
         }
         //\ssyy
 		
+        
+        private void AddIndirectUsedUnitsForType(type_node tn, Dictionary<common_namespace_node, bool> ns_dict, bool interf)
+        {
+            if (tn is common_type_node)
+            {
+                common_namespace_node comp_cnn = (tn as common_type_node).comprehensive_namespace;
+                if (comp_cnn != null && !ns_dict.ContainsKey(comp_cnn))
+                {
+                    if (interf)
+                        unit.InterfaceUsedUnits.AddElement(comp_cnn.cont_unit);
+                    else
+                        unit.ImplementationUsedUnits.AddElement(comp_cnn.cont_unit);
+                    ns_dict[comp_cnn] = true;
+                }
+                if (tn.base_type is common_type_node)
+                    AddIndirectUsedUnitsForType(tn.base_type, ns_dict, interf);
+            }
+        }
+
+        private void AddIndirectUsedUnitsInStatement(statement_node stmt, Dictionary<common_namespace_node, bool> ns_dict, bool interf)
+        {
+            if (stmt == null)
+                return;
+            if (stmt is statements_list)
+            {
+                statements_list stmt_list = stmt as statements_list;
+                foreach (local_block_variable lv in stmt_list.local_variables)
+                {
+                    AddIndirectUsedUnitsForType(lv.type, ns_dict, interf);
+                }
+                foreach (statement_node st in stmt_list.statements)
+                    AddIndirectUsedUnitsInStatement(st, ns_dict, interf);
+            }
+            
+        }
+
+        private void AddIndirectUsedUnitsInVariables<T>(IEnumerable<T> variables, Dictionary<common_namespace_node, bool> ns_dict, bool interf) where T: var_definition_node
+        {
+            if (variables == null)
+                return;
+            foreach (var lv in variables)
+            {
+                AddIndirectUsedUnitsForType(lv.type, ns_dict, interf);
+            }
+        }
+
         private void AddIndirectInteraceUsedUnits()
         {
             if (cun.namespaces.Count == 0)
@@ -886,25 +933,36 @@ namespace PascalABCCompiler.PCU
             common_namespace_node cnn = cun.namespaces[0];
             foreach (common_type_node ctn in cnn.types)
             {
+                if (ctn.base_type != null)
+                    AddIndirectUsedUnitsForType(ctn.base_type, interf_ns_dict, true);
                 foreach (common_method_node cmn in ctn.methods)
                 {
                     if (cmn.is_constructor && cmn.function_code != null && cmn.function_code.location == null)
                     {
                         foreach (common_parameter cp in cmn.parameters)
                         {
-                            if (cp.type is common_type_node)
-                            {
-                                common_namespace_node comp_cnn = (cp.type as common_type_node).comprehensive_namespace;
-                                if (comp_cnn != null && !interf_ns_dict.ContainsKey(comp_cnn))
-                                {
-                                    unit.InterfaceUsedUnits.AddElement(comp_cnn.cont_unit);
-                                    interf_ns_dict[comp_cnn] = true;
-                                }
-                            }
+                            AddIndirectUsedUnitsForType(cp.type, interf_ns_dict, true);
                         }
                     }
+                    AddIndirectUsedUnitsInVariables(cmn.var_definition_nodes_list, interf_ns_dict, true);
+                    AddIndirectUsedUnitsInStatement(cmn.function_code, interf_ns_dict, true);
+                    if (cmn.return_value_type != null)
+                        AddIndirectUsedUnitsForType(cmn.return_value_type, interf_ns_dict, true);
                 }
+                AddIndirectUsedUnitsInVariables(ctn.fields, interf_ns_dict, true);
             }
+            foreach (common_namespace_function_node cnfn in cnn.functions)
+            {
+                AddIndirectUsedUnitsInVariables(cnfn.var_definition_nodes_list, interf_ns_dict, true);
+                AddIndirectUsedUnitsInStatement(cnfn.function_code, interf_ns_dict, true);
+                if (cnfn.return_value_type != null)
+                    AddIndirectUsedUnitsForType(cnfn.return_value_type, interf_ns_dict, true);
+            }
+            AddIndirectUsedUnitsInVariables(cnn.variables, interf_ns_dict, true);
+            if (cun.main_function != null)
+                AddIndirectUsedUnitsInStatement(cun.main_function.function_code, interf_ns_dict, true);
+            if (cun.finalization_method != null)
+                AddIndirectUsedUnitsInStatement(cun.finalization_method.function_code, interf_ns_dict, true);
         }
         
         private void AddIndirectImplementationUsedUnits()
@@ -925,25 +983,32 @@ namespace PascalABCCompiler.PCU
             common_namespace_node cnn = cun.namespaces[1];
             foreach (common_type_node ctn in cnn.types)
             {
+                if (ctn.base_type != null)
+                    AddIndirectUsedUnitsForType(ctn.base_type, impl_ns_dict, true);
                 foreach (common_method_node cmn in ctn.methods)
                 {
                     if (cmn.is_constructor && cmn.function_code != null && cmn.function_code.location == null)
                     {
                         foreach (common_parameter cp in cmn.parameters)
                         {
-                            if (cp.type is common_type_node)
-                            {
-                                common_namespace_node comp_cnn = (cp.type as common_type_node).comprehensive_namespace;
-                                if (comp_cnn != null && !impl_ns_dict.ContainsKey(comp_cnn))
-                                {
-                                    unit.ImplementationUsedUnits.AddElement(comp_cnn.cont_unit);
-                                    impl_ns_dict[comp_cnn] = true;
-                                }
-                            }
+                            AddIndirectUsedUnitsForType(cp.type, impl_ns_dict, false);
                         }
                     }
+                    AddIndirectUsedUnitsInVariables(cmn.var_definition_nodes_list, impl_ns_dict, false);
+                    AddIndirectUsedUnitsInStatement(cmn.function_code, impl_ns_dict, false);
+                    if (cmn.return_value_type != null)
+                        AddIndirectUsedUnitsForType(cmn.return_value_type, impl_ns_dict, false);
                 }
+                AddIndirectUsedUnitsInVariables(ctn.fields, impl_ns_dict, false);
             }
+            foreach (common_namespace_function_node cnfn in cnn.functions)
+            {
+                AddIndirectUsedUnitsInVariables(cnfn.var_definition_nodes_list, impl_ns_dict, false);
+                AddIndirectUsedUnitsInStatement(cnfn.function_code, impl_ns_dict, true);
+                if (cnfn.return_value_type != null)
+                    AddIndirectUsedUnitsForType(cnfn.return_value_type, impl_ns_dict, true);
+            }
+            AddIndirectUsedUnitsInVariables(cnn.variables, impl_ns_dict, true);
         }
         
         //заполнение списка подключаемых модулей
@@ -2551,6 +2616,7 @@ namespace PascalABCCompiler.PCU
 			{
                 names[i] = new NameRef(type.fields[i - j].name, i, convert_field_access_level(type.fields[i - j].field_access_level), type.fields[i - j].semantic_node_type);
                 name_pool[type.fields[i - j]] = names[i];
+                names[i].is_static = type.fields[i - j].polymorphic_state == SemanticTree.polymorphic_state.ps_static;
                 size += names[i].Size;
 			}
 			j=i;
@@ -2558,6 +2624,7 @@ namespace PascalABCCompiler.PCU
 			{
                 names[i] = new NameRef(type.properties[i - j].name, i, convert_field_access_level(type.properties[i - j].field_access_level), type.properties[i - j].semantic_node_type);
                 name_pool[type.properties[i - j]] = names[i];
+                names[i].is_static = type.properties[i - j].polymorphic_state == SemanticTree.polymorphic_state.ps_static;
                 size += names[i].Size;
 			}
 			j=i;
@@ -2568,6 +2635,7 @@ namespace PascalABCCompiler.PCU
                 if (type.methods[i - j].is_overload)
                     names[i].symbol_kind = symbol_kind.sk_overload_function;
                 names[i].virtual_slot = type.methods[i - j].newslot_awaited || type.methods[i - j].polymorphic_state == SemanticTree.polymorphic_state.ps_virtual || type.methods[i - j].polymorphic_state == SemanticTree.polymorphic_state.ps_virtual_abstract || type.methods[i - j].is_constructor;
+                names[i].is_static = type.methods[i - j].polymorphic_state == SemanticTree.polymorphic_state.ps_static && !type.methods[i - j].is_constructor;
                 size += names[i].Size;
 			}
 			j=i;
@@ -2750,6 +2818,7 @@ namespace PascalABCCompiler.PCU
                 bw.Write((byte)names[i].symbol_kind);
                 bw.Write((byte)names[i].semantic_node_type);
                 bw.Write(names[i].virtual_slot);
+                bw.Write(names[i].is_static);
             }
             bw.BaseStream.Seek(tmp, SeekOrigin.Begin);
         }
@@ -3787,7 +3856,15 @@ namespace PascalABCCompiler.PCU
 		
         private void VisitNullConstNode(null_const_node expr)
         {
-            
+            if (expr.type != null && !(expr.type is null_type_node) && !(expr.type is delegated_methods))
+            {
+                bw.Write((byte)1);
+                WriteTypeReference(expr.type);
+            }
+            else
+            {
+                bw.Write((byte)0);
+            }
         }
 
         private void VisitEnumConstNode(enum_const_node en)

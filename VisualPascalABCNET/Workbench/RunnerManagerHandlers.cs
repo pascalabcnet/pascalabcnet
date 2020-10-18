@@ -207,7 +207,7 @@ namespace VisualPascalABC
             {
                 if (WorkbenchServiceFactory.DebuggerManager.IsRun(ForId) && WorkbenchServiceFactory.DebuggerManager.CurPage != null)
                     ReadRequests.Add(WorkbenchServiceFactory.DebuggerManager.CurPage, "");
-                else
+                else if (IsRun(ForId))
                     ReadRequests.Add(RunTabs[ForId], "");
             }
             Workbench.BeginInvoke(new ReadStringRequestSyncDel(ReadStringRequestSync));

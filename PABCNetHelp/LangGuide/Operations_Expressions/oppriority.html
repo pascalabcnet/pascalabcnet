@@ -1,5 +1,6 @@
 <html><head>
 <object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="Keyword" value="Приоритет операций">
 </object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title>
@@ -11,18 +12,18 @@
 <p><b>Таблица приоритетов операций</b></p>
 <table border="0" width="444" id="table1">
 	<tr>
-		<td><code>@</code>,
+		<td style="width: 320px"><code>**</code></td>
+		<td width="120">1 (наивысший)</td>
+	</tr>
+	<tr>
+		<td style="width: 320px"><code>@</code>,
 		<b><code>not</code></b>,
 		<code>^</code>, <code>+</code>, <code>-</code> (унарные), <code>new</code>
 		</td>
-		<td width="110">1 (наивысший)</td>
+		<td width="120">2</td>
 	</tr>
 	<tr>
-		<td><code>**</code></td>
-		<td width="110">2</td>
-	</tr>
-	<tr>
-		<td><code>*</code>,
+		<td style="width: 320px"><code>*</code>,
 		<code>/</code>,
 		<code><b>div</b></code>,
 		<code><b>mod</b></code>,
@@ -31,28 +32,32 @@
 		<code><b>shr</b></code>,
 		<code><b>as</b></code>,
 		<code><b>is</b></code></td>
-		<td width="110">3</td>
+		<td width="120">3</td>
 	</tr>
 	<tr>
-		<td><code>+</code>,
+		<td style="width: 320px"><code>+</code>,
 		<code>-</code> (бинарные),
 		<code><b>or</b></code>,
 		<code><b>xor</b></code> </td>
-		<td width="110">4</td>
+		<td width="120">4</td>
 	</tr>
 	<tr>
-		<td><code>=</code>,
+		<td style="width: 320px"><code>..</code></td>
+		<td width="120">5</td>
+	</tr>
+	<tr>
+		<td style="width: 320px"><code>=</code>,
 		<code>&lt;&gt;</code>,
 		<code>&lt;</code>,
 		<code>&gt;</code>,
 		<code>&lt;=</code>,
 		<code>&gt;=</code>,
 		<code><b>in</b></code></td>
-		<td width="110">5</td>
+		<td width="120">6</td>
 	</tr>
 	<tr>
-		<td><code>?: </code>&nbsp;</td>
-		<td width="110">6 (низший)</td>
+		<td style="width: 320px"><code>?: </code>&nbsp;</td>
+		<td width="120">7 (низший)</td>
 	</tr>
 </table>
 

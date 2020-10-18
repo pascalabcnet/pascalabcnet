@@ -55,6 +55,7 @@ namespace VisualPascalABC
             this.pRJPROPERTIESToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ReferenceMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.pRJREMOVEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.imageList2 = new System.Windows.Forms.ImageList(this.components);
             this.AddReferenceMenuStrip.SuspendLayout();
             this.SouceFileMenuStrip.SuspendLayout();
             this.ProjectMenuStrip.SuspendLayout();
@@ -253,6 +254,17 @@ namespace VisualPascalABC
             this.pRJREMOVEToolStripMenuItem.Text = "PRJ_REMOVE";
             this.pRJREMOVEToolStripMenuItem.Click += new System.EventHandler(this.pRJREMOVEToolStripMenuItem_Click);
             // 
+            // imageList2
+            // 
+            this.imageList2.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList2.ImageStream")));
+            this.imageList2.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList2.Images.SetKeyName(0, "ProjectBrowser.ReferenceFolder.Closed.png");
+            this.imageList2.Images.SetKeyName(1, "ProjectBrowser.ReferenceFolder.Open.png");
+            this.imageList2.Images.SetKeyName(2, "Icons.16x16.Project.png");
+            this.imageList2.Images.SetKeyName(3, "Icons.16x16.Reference.png");
+            this.imageList2.Images.SetKeyName(4, "pabcfile.png");
+            this.imageList2.Images.SetKeyName(5, "Icons.16x16.Form.png");
+            // 
             // ProjectExplorerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -294,5 +306,6 @@ namespace VisualPascalABC
         private System.Windows.Forms.ToolStripMenuItem pRJPROPERTIESToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip ReferenceMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem pRJREMOVEToolStripMenuItem;
-	}
+        private System.Windows.Forms.ImageList imageList2;
+    }
 }

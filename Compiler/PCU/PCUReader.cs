@@ -74,9 +74,18 @@ namespace PascalABCCompiler.PCU
             AddReadOrWritedDefinitionNode(dn, offset);
         }
         
+        internal void RemoveMember(int offset, definition_node dn)
+        {
+            members.Remove(offset);
+            AllReadOrWritedDefinitionNodesOffsets.Remove(dn);
+        }
+        
         internal void AddVarToOrderList(var_definition_node vdn, int ind)
         {
-        	interf_var_list.Add(ind,vdn);
+            if (!interf_var_list.ContainsKey(ind))
+                interf_var_list.Add(ind, vdn);
+            else
+                interf_var_list[ind] = vdn;
         }
 
         internal void AddTypeToOrderList(common_type_node ctn, int ind)
@@ -571,14 +580,14 @@ namespace PascalABCCompiler.PCU
 				pcu_file.ref_assemblies[i] = br.ReadString();
 				
 			}
-			ReadAllAssemblies();
+			
             int num_directives = br.ReadInt32();
             pcu_file.compiler_directives = new List<compiler_directive>();
             for (int i = 0; i < num_directives; i++)
             {
                 pcu_file.compiler_directives.Add(new compiler_directive(br.ReadString(),br.ReadString(),ReadDebugInfo()));    
             }
-
+            ReadAllAssemblies();
 			int num_imp_entity = br.ReadInt32();
 			ext_pos = (int)br.BaseStream.Position;
 			pcu_file.imp_entitles = new ImportedEntity[num_imp_entity];
@@ -633,6 +642,16 @@ namespace PascalABCCompiler.PCU
                 //{
                 string name_with_path = Compiler.GetReferenceFileName(tmp + ".dll");
                 //Assembly a = Assembly.LoadFrom(name_with_path);
+                /*if (pcu_file.compiler_directives != null)
+                foreach (compiler_directive cd in pcu_file.compiler_directives)
+                {
+                    if (cd.name == "reference" && cd.directive != null && cd.directive.IndexOf("\\") != -1 && cd.directive.IndexOf(tmp + ".dll") != -1)
+                    {
+                        name_with_path = Compiler.GetReferenceFileName(cd.directive);
+                        if (name_with_path == null)
+                            throw new AssemblyNotFound(unit_name, cd.directive, null);
+                    }
+                }*/
                 Assembly a = NetHelper.NetHelper.LoadAssembly(name_with_path);
                 NetHelper.NetHelper.init_namespaces(a);
                 //}
@@ -780,6 +799,8 @@ namespace PascalABCCompiler.PCU
                 }
             }
             if (t1.IsGenericParameter && t2.IsGenericParameter)
+                return true;
+            if (t1.FullName == t2.FullName && t1.AssemblyQualifiedName == t2.AssemblyQualifiedName)
                 return true;
             return false;
         }
@@ -1428,21 +1449,30 @@ namespace PascalABCCompiler.PCU
         {
             common_namespace_function_node orig = GetNamespaceFunctionByOffset();
             List<type_node> parameters = GetTypesList();
-            return orig.get_instance(parameters, false, null) as generic_namespace_function_instance_node;
+            int tmp_pos = (int)br.BaseStream.Position;
+            var instance = orig.get_instance(parameters, false, null) as generic_namespace_function_instance_node;
+            br.BaseStream.Seek(tmp_pos, SeekOrigin.Begin);
+            return instance;
         }
 
         private function_node GetCompiledGenericMethodInstanceReference()
         {
             compiled_function_node orig = GetCompiledMethod(br.ReadInt32());
             List<type_node> parameters = GetTypesList();
-            return orig.get_instance(parameters, false, null);
+            int tmp_pos = (int)br.BaseStream.Position;
+            var instance = orig.get_instance(parameters, false, null);
+            br.BaseStream.Seek(tmp_pos, SeekOrigin.Begin);
+            return instance;
         }
 
         private generic_method_instance_node GetCommonGenericMethodInstanceReference()
         {
             common_method_node orig = GetMethodByOffset();
             List<type_node> parameters = GetTypesList();
-            return orig.get_instance(parameters, false, null) as generic_method_instance_node;
+            int tmp_pos = (int)br.BaseStream.Position;
+            var instance = orig.get_instance(parameters, false, null) as generic_method_instance_node;
+            br.BaseStream.Seek(tmp_pos, SeekOrigin.Begin);
+            return instance;
         }
 
         private common_type_node GetGenericParameterOfType()
@@ -2123,6 +2153,7 @@ namespace PascalABCCompiler.PCU
                 scope = new WrappedClassScope(this, cun.scope, null);
             }
             ctn = new wrapped_common_type_node(this, null, name, SemanticTree.type_access_level.tal_public, cun.namespaces[0], scope, null, offset);
+            scope.ctn = ctn;
             if (is_interface)
                 AddTypeToOrderList(ctn, ind);
             else
@@ -2135,7 +2166,7 @@ namespace PascalABCCompiler.PCU
             AddMember(ctn, offset);
             
             int_members.Insert(0,ctn);
-
+            common_type_node saved_ctn = ctn;
             type_node base_type = GetTypeReference();
             bool is_value_type = br.ReadBoolean();
 
@@ -2202,10 +2233,22 @@ namespace PascalABCCompiler.PCU
             if (ctn.type_special_kind == SemanticTree.type_special_kind.set_type)
             {
             	ctn = compilation_context.AddTypeToSetTypeList(ctn);
+                if (saved_ctn != ctn)
+                {
+                    RemoveMember(offset, saved_ctn);
+                    int_members.Remove(saved_ctn);
+                    AddMember(ctn, offset);
+                }
             }
             if (ctn.type_special_kind == SemanticTree.type_special_kind.typed_file)
             {
             	ctn = compilation_context.AddTypeToTypedFileList(ctn);
+                if (saved_ctn != ctn)
+                {
+                    RemoveMember(offset, saved_ctn);
+                    int_members.Remove(saved_ctn);
+                    AddMember(ctn, offset);
+                }
             }
             br.ReadInt32();//comprehensive unit;
             ctn.attributes.AddRange(GetAttributes());
@@ -2593,6 +2636,7 @@ namespace PascalABCCompiler.PCU
                 si.symbol_kind = (symbol_kind)br.ReadByte();
                 si.semantic_node_type = (semantic_node_type)br.ReadByte();
                 si.virtual_slot = br.ReadBoolean();
+                si.is_static = br.ReadBoolean();
                 //Вроде это ненужно
                 //SymbolInfo si2 = scope.FindWithoutCreation(name);
                 //si.Next = si2;
@@ -3708,7 +3752,11 @@ namespace PascalABCCompiler.PCU
         //считывание константы nil
         private expression_node CreateNullConstNode()
         {
-            return new null_const_node(null_type_node.get_type_node(), null);
+            bool has_type = br.ReadByte() == 1;
+            type_node tn = null_type_node.get_type_node();
+            if (has_type)
+                tn = GetTypeReference();
+            return new null_const_node(tn, null);
         }
 
         private expression_node CreateNonStaticEventReference()
@@ -4529,6 +4577,16 @@ namespace PascalABCCompiler.PCU
 
             br.BaseStream.Seek(pos, SeekOrigin.Begin);
             return lab;
+        }
+
+        public int GetStreamPosition()
+        {
+            return (int)br.BaseStream.Position;
+        }
+
+        public void SetStreamPosition(int pos)
+        {
+            br.BaseStream.Seek(pos, SeekOrigin.Begin);
         }
 
         /*private List<label_node> CreateLabels()

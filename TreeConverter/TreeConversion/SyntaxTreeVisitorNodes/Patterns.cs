@@ -80,7 +80,7 @@ namespace PascalABCCompiler.TreeConverter
         }
 
         /// <summary>
-        /// Проверяет, подходит ли фаункция для вызова с указанными параметрами
+        /// Проверяет, подходит ли функция для вызова с указанными параметрами
         /// </summary>
         /// <param name="candidate"></param>
         /// <param name="givenParameterTypes">Типы параметров, указанные пользователем</param>
@@ -93,7 +93,8 @@ namespace PascalABCCompiler.TreeConverter
             out type_node[] parameterTypes)
         {
             parameterTypes = new type_node[givenParameterTypes.Length];
-            var selfParameter = candidate.is_extension_method ? candidate.parameters.First(IsSelfParameter) : null;
+            candidate.parameters[0].name = "Self"; // SSM 23.06.20 #2268 - это если в NET где-то такое нашли
+            var selfParameter = candidate.is_extension_method ? candidate.parameters.FirstOrDefault(IsSelfParameter) : null;
             Debug.Assert(!candidate.is_extension_method || selfParameter != null, "Couldn't find self parameter in extension method");
             var candidateParameterTypes =
                 candidate.is_extension_method ?
@@ -113,7 +114,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 // Выводим дженерики по self
                 var nils = new List<int>();
-                var deduceSucceded = generic_convertions.DeduceInstanceTypes(selfParameter.type, patternInstance.type, deducedGenerics, nils);
+                var deduceSucceded = generic_convertions.DeduceInstanceTypes(selfParameter.type, patternInstance.type, deducedGenerics, nils, candidate.get_generic_params_list());
                 if (!deduceSucceded || deducedGenerics.Contains(null))
                     return false;
             }
@@ -250,16 +251,19 @@ namespace PascalABCCompiler.TreeConverter
         private void CheckIfCanBeMatched(expression matchedExpression, type_definition targetType)
         {
             var type = convert_strong(targetType);
-            var expression = convert_strong(matchedExpression).type;
+            var expression = convert_strong(matchedExpression);
+            if (expression is typed_expression)
+                try_convert_typed_expression_to_function_call(ref expression);
 
-            if (type_table.is_derived(type, expression) ||
-                type_table.is_derived(expression, type) ||
-                AreTheSameType(type, expression) ||
+            var expressionType = expression.type;
+            if (type_table.is_derived(type, expressionType) ||
+                type_table.is_derived(expressionType, type) ||
+                AreTheSameType(type, expressionType) ||
                 type.IsInterface ||
-                expression.IsInterface)
+                expressionType.IsInterface || type.is_generic_parameter || expressionType.is_generic_parameter)
                 return;
 
-            AddError(get_location(matchedExpression), "EXPRESSION_OF_TYPE_{0}_CANNOT_BE_MATCHED_AGAINST_PATTERN_WITH_TYPE_{1}", expression.name, type.name);
+            AddError(get_location(matchedExpression), "EXPRESSION_OF_TYPE_{0}_CANNOT_BE_MATCHED_AGAINST_PATTERN_WITH_TYPE_{1}", expressionType.name, type.name);
         }
 
         private void CheckIfCanBeMatched(expression matchedExpression, expression patternExpression)
@@ -267,6 +271,8 @@ namespace PascalABCCompiler.TreeConverter
             var patternNode = convert_strong(patternExpression);
             var patternType = patternNode.type;
             var expressionNode = convert_strong(matchedExpression);
+            if (expressionNode is typed_expression)
+                try_convert_typed_expression_to_function_call(ref expressionNode);
             var expressionType = expressionNode.type;
 
             if (!(patternNode is constant_node))

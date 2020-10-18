@@ -992,7 +992,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         compar = si.sym_info as function_node;
                         if (fn != compar && convertion_data_and_alghoritms.function_eq_params(fn, compar))
-                            //if (fn is common_namespace_function_node && compar is common_namespace_function_node && (fn as common_namespace_function_node).comprehensive_namespace == (compar as common_namespace_function_node).comprehensive_namespace)
+                            if (fn is common_namespace_function_node && compar is common_namespace_function_node && (fn as common_namespace_function_node).comprehensive_namespace == (compar as common_namespace_function_node).comprehensive_namespace)
 
                             AddError(new FunctionDuplicateDefinition(compar, fn));
                     }
@@ -1022,10 +1022,12 @@ namespace PascalABCCompiler.TreeConverter
         
         private void add_notequal_operator_if_need()
         {
-        	SymbolInfo si = _ctn.find_first_in_type(compiler_string_consts.noteq_name);
-        	if (si.sym_info is common_method_node)
-        		return;
-        	SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.scope, _cmn.scope, null, si.ToString());
+            List<SymbolInfo> si_list = _ctn.find_in_type(compiler_string_consts.noteq_name);
+            foreach (SymbolInfo si2 in si_list)
+                if (si2.sym_info is common_method_node)
+                    return;
+            SymbolInfo si = si_list[0];
+            SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_ctn.scope, _cmn.scope, null, si.ToString());
         	common_method_node cmn = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.noteq_name),SystemLibrary.SystemLibrary.bool_type,null,_ctn,
         	                                                SemanticTree.polymorphic_state.ps_static,SemanticTree.field_access_level.fal_public,scope);
         	cmn.IsOperator = true;
@@ -1056,10 +1058,12 @@ namespace PascalABCCompiler.TreeConverter
         
         private void add_equal_operator_if_need()
         {
-        	SymbolInfo si = _ctn.find_first_in_type(compiler_string_consts.eq_name);
-        	if (si.sym_info is common_method_node)
-        		return;
-        	SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope( _ctn.scope, _cmn.scope, null,  si.ToString());
+        	List<SymbolInfo> si_list = _ctn.find_in_type(compiler_string_consts.eq_name);
+            foreach (SymbolInfo si2 in si_list)
+        	    if (si2.sym_info is common_method_node)
+        		    return;
+            SymbolInfo si = si_list[0];
+            SymbolTable.ClassMethodScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope( _ctn.scope, _cmn.scope, null,  si.ToString());
         	common_method_node cmn = new common_method_node(compiler_string_consts.GetNETOperName(compiler_string_consts.eq_name),SystemLibrary.SystemLibrary.bool_type,null,_ctn,
         	                                                SemanticTree.polymorphic_state.ps_static,SemanticTree.field_access_level.fal_public,scope);
         	cmn.IsOperator = true;
@@ -2701,7 +2705,7 @@ namespace PascalABCCompiler.TreeConverter
                 else
                 {
                     sil = tmp_si;
-                    sil.RemoveRange(1, sil.Count() - 1);
+                    //sil.RemoveRange(1, sil.Count() - 1);
                 }
             }
 
@@ -2726,7 +2730,8 @@ namespace PascalABCCompiler.TreeConverter
                                 {
                                     if (fn_common.name != meth.name)
                                     {
-                                        syntax_tree_visitor.AddError(fn_common.loc, "AMBIGUITY_BETWEEN_NAMES_{0}_AND_{1}", fn_common.name, meth.name);
+                                        // SSM 21.12.19 - закомментировал - исправляет баг #2163. Не пойму, зачем эта проверка
+                                        //syntax_tree_visitor.AddError(fn_common.loc, "AMBIGUITY_BETWEEN_NAMES_{0}_AND_{1}", fn_common.name, meth.name);
                                     }
                                 }
                                 else

@@ -214,10 +214,26 @@ namespace PascalABCCompiler.SyntaxTree
                     }
                 }
             }
-            
+
+            // добавление свойств - временно убрал т.к. свойства нельзя передавать как var-параметры
+            // По идее если это делать, то поля переименовывать везде в классе!!!
+            /*for (var i=0; i<names.Count; i++)
+            {
+                if (names[i].name.StartsWith("#"))
+                    continue;
+                var propName = names[i].TypedClone();
+                names[i].name = "!" + names[i].name;
+                var simpleProp = BuildSimpleReadWriteProperty(propName, names[i].name, types[i]);
+                var cm = BuildOneMemberSection(simpleProp);
+                cb.Add(cm);
+            }*/
+
+
             if (!HasConstructor)
             {
-                var fnames = names.Select(x => new ident("f" + x.name)).ToList();    
+                var fnames = names.Select(x => new ident("f" + x.name.ToLower(), x.source_context)).ToList();
+                if (fnames.Select(x=>x.name).Distinct().Count() != names.Count) // SSM 20/05/2020 #2126
+                    return; // хак - мы не генерируем конструктор, потому что ошибка одинаковых имен выведется позже
                 var cm = BuildSimpleConstructorSection(names, fnames, types);
                 cb.Insert(0,cm);
                 //cb.class_def_blocks.Insert(0, cm);
@@ -225,7 +241,7 @@ namespace PascalABCCompiler.SyntaxTree
 
             if (!HasDeconstruct)
             {
-                var fnames = names.Select(x => new ident("f" + x.name)).ToList();
+                var fnames = names.Select(x => new ident("f" + x.name, x.source_context)).ToList();
                 var cm = BuildSimpleDeconstructSection(names, fnames, types);
                 cb.Add(cm);
             }
@@ -241,7 +257,7 @@ namespace PascalABCCompiler.SyntaxTree
 
         public static type_declaration BuildClassWithOneMethod(string class_name, List<ident> names, List<type_definition> types, procedure_definition pd)
         {
-            var formnames = names.Select(x => new ident("form"+x.name)).ToList();
+            var formnames = names.Select(x => new ident("form"+x.name, x.source_context)).ToList();
 
             var cm1 = BuildClassFieldsSection(names, types);
             var cm2 = BuildSimpleConstructorSection(names, formnames, types);
@@ -252,7 +268,7 @@ namespace PascalABCCompiler.SyntaxTree
 
         public static type_declaration BuildAutoClass(string class_name, List<ident> names, List<type_definition> types, bool is_class)
         {
-            var fnames = names.Select(x=>new ident("f"+x.name)).ToList();
+            var fnames = names.Select(x=>new ident("f"+x.name, x.source_context)).ToList();
 
             var cm1 = BuildClassFieldsSection(fnames,types);
             var cm2 = BuildSimpleConstructorSection(fnames,names,types);
@@ -263,7 +279,7 @@ namespace PascalABCCompiler.SyntaxTree
 
         public static type_declaration BuildClassWithFieldsOnly(string class_name, List<ident> names, List<type_definition> types, bool is_class)
         {
-            var fnames = names.Select(x => new ident(x.name)).ToList();
+            var fnames = names.Select(x => new ident(x.name, x.source_context)).ToList();
 
             var cm1 = BuildClassFieldsSection(fnames, types);
 

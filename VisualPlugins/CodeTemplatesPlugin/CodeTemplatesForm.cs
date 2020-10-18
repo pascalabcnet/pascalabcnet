@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using VisualPascalABC;
 using System.Text.RegularExpressions;
 using ICSharpCode.TextEditor.Document;
+using ICSharpCode.TextEditor;
 
 namespace CodeTemplatesPlugin
 {
@@ -58,7 +59,7 @@ namespace CodeTemplatesPlugin
         public CodeTemplatesForm()
         {
             InitializeComponent();
-            var scale = ScreenScale.Calc();
+            var scale = VisualPascalABC.ScreenScale.Calc();
             listBox1.TileSize = new Size(listBox1.TileSize.Width, System.Convert.ToInt32(16 * scale));
             LoadTemplates();
         }
@@ -115,6 +116,8 @@ namespace CodeTemplatesPlugin
 
         private void listBox1_MouseDoubleClick_1(object sender, MouseEventArgs e)
         {
+            if (listBox1.SelectedItems == null)
+                return;
             var s = listBox1.SelectedItems[0].Text;
             ICSharpCode.TextEditor.TextArea ta = MainForm.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.TextArea;
             ta.Focus();
@@ -133,13 +136,20 @@ namespace CodeTemplatesPlugin
                         if (m.Groups[1].Value.Length > 0)
                         {
                             var Curr = GetLine(ta.Caret.Line);
-                            if (Curr.Length < m.Groups[1].Index)
+                            if (Curr.Length > m.Groups[1].Index)
                             {
                                 ta.Caret.Column = Curr.Length;
-                                ta.InsertString(new string(' ', m.Groups[1].Index - Curr.Length));
+                                ta.InsertString(new string(' ', Curr.Length - m.Groups[1].Index));
                             }
                                 
                             ta.Caret.Column = m.Groups[1].Index;
+
+                            var doc = ta.Document;
+                            var tl_beg = new TextLocation(ta.Caret.Column, ta.Caret.Line);
+                            int offset = doc.PositionToOffset(tl_beg);
+
+                            if (Curr.Length > ta.Caret.Column && Curr.Substring(ta.Caret.Column).TrimEnd().Length == 0)
+                                doc.Remove(offset, Curr.Length - ta.Caret.Column);
                         }
                     }
                     var Next = GetNextLine(ta.Caret.Line);
