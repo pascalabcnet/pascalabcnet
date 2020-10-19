@@ -12204,8 +12204,25 @@ namespace PascalABCCompiler.TreeConverter
                         attribute_node attr_node = new attribute_node(bfc.simple_function_node, tn, get_location(attr));
                         foreach (expression_node en in bfc.parameters)
                         {
-                            constant_node cn = convert_strong_to_constant_node(en, en.type);
-                            check_for_strong_constant(cn, en.location);
+                            constant_node cn = null;
+                            if (en is array_initializer)
+                            {
+                                List<constant_node> cnst_list = new List<constant_node>();
+                                foreach (expression_node ex in (en as array_initializer).element_values)
+                                {
+                                    constant_node elem_cn = convert_strong_to_constant_node(ex, ex.type);
+                                    check_for_strong_constant(elem_cn, ex.location);
+                                    cnst_list.Add(elem_cn);
+                                }
+                                    
+                                cn = convert_strong_to_constant_node(new array_const(cnst_list, en.location), en.type);
+                            }
+                            else
+                            {
+                                cn = convert_strong_to_constant_node(en, en.type);
+                                check_for_strong_constant(cn, en.location);
+                            }
+                               
                             attr_node.args.Add(cn);
                         }
                         if (attr.arguments != null)
@@ -14227,10 +14244,6 @@ namespace PascalABCCompiler.TreeConverter
             foreach (SyntaxTree.ident id in _typed_parametres.idents.idents)
             {
                 com_par = context.add_parameter(id.name, par_type, cpt, get_location(id));
-                if (_typed_parametres.attributes != null)
-            	{
-            		make_attributes_for_declaration(_typed_parametres, com_par);
-            	}
                 if (is_params)
                 {
                     com_par.intrenal_is_params = true;
@@ -14258,7 +14271,17 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             com_par.type = tn;
+            foreach (SyntaxTree.ident id in _typed_parametres.idents.idents)
+            {
+                if (_typed_parametres.attributes != null)
+            	{
+            		make_attributes_for_declaration(_typed_parametres, com_par);
+            	}
+                
+            }
+            com_par.type = tn;
             context.in_parameters_block = true;
+            
             //TODO: Доделать параметры со значениями по умолчанию.
             if (_typed_parametres.inital_value != null)
             {

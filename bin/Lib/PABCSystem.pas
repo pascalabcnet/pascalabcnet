@@ -2130,6 +2130,9 @@ function MatrEqual<T>(a, b: array [,] of T): boolean;
 /// Перемешивает список случайным образом
 procedure Shuffle<T>(l: List<T>);
 
+/// Возвращает следующую перестановку в массиве 
+function NextPermutation(a: array of integer): boolean;
+
 
 // -----------------------------------------------------
 //>>     Подпрограммы для генерации последовательностей # Subroutines for sequence generation
@@ -11696,7 +11699,7 @@ begin
   repeat
     for var i:=0 to n-1 do
       res[i] := a[ind[i]];
-    yield res;
+    yield Arr(res);
   until not NextPermutation(ind);  
 end;
 
