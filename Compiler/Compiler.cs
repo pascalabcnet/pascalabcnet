@@ -2555,13 +2555,23 @@ namespace PascalABCCompiler
                 var next = new Dictionary<CompilationUnit, string>();
 
                 foreach (var u in last.Keys)
-                    foreach (var used_u in u.DirectInterfaceCompilationUnits.Values.Concat(u.DirectImplementationCompilationUnits.Values))
+                {
+                    foreach (var used_u in u.DirectInterfaceCompilationUnits.Values)
                     {
                         if (!done.Add(used_u)) continue;
                         var path = CombinePath(Path.GetDirectoryName(last[u]), u.InterfaceUsedUnits.unit_uses_paths[used_u.SemanticTree]);
                         if (used_u == u2) return path;
                         next.Add(used_u, path);
                     }
+
+                    foreach (var used_u in u.DirectImplementationCompilationUnits.Values)
+                    {
+                        if (!done.Add(used_u)) continue;
+                        var path = CombinePath(Path.GetDirectoryName(last[u]), u.ImplementationUsedUnits.unit_uses_paths[used_u.SemanticTree]);
+                        if (used_u == u2) return path;
+                        next.Add(used_u, path);
+                    }
+                }
 
                 last = next;
             }
