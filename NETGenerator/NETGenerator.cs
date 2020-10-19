@@ -1698,7 +1698,16 @@ namespace PascalABCCompiler.NETGenerator
             object[] objs = new object[cnsts.Length];
             for (int i = 0; i < objs.Length; i++)
             {
-                objs[i] = cnsts[i].value;
+                if (cnsts[i] is IArrayConstantNode)
+                {
+                    List<object> lst = new List<object>();
+                    var arr_cnst = cnsts[i] as IArrayConstantNode;
+                    foreach (IConstantNode cn in arr_cnst.ElementValues)
+                        lst.Add(cn.value);
+                    objs[i] = lst.ToArray();
+                }
+                else
+                    objs[i] = cnsts[i].value;
             }
             return objs;
         }
@@ -5926,7 +5935,7 @@ namespace PascalABCCompiler.NETGenerator
         {
             Label lab = helper.GetLabel(value.label, il);
             il.MarkLabel(lab);
-            value.statement.visit(this);
+            ConvertStatement(value.statement);
         }
 
         public override void visit(IGotoStatementNode value)

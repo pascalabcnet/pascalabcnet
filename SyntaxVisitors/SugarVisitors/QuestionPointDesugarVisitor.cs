@@ -177,6 +177,7 @@ namespace SyntaxVisitors.SugarVisitors
             //Replace(dqn, sug); // Этот не подходит!
 
             var dl = (dqn.left.ExprToQCE == null ? dqn.left : dqn.left.ExprToQCE) as addressed_value;
+            dqn.Parent = null;
             var tt = new var_statement(new ident(tname), dl, dqn.source_context);
             tt.var_def.Parent = tt;
             var l = new List<statement>();

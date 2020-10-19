@@ -377,6 +377,7 @@ namespace VisualPascalABCPlugins
         void ExecRedo();
         void CollapseRegions();
         void CodeFormat();
+        void SetEditorDisabled(bool val);
     }
 
     public interface IWorkbenchDebuggerOperationsService
