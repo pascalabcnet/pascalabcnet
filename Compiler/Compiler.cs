@@ -2522,7 +2522,7 @@ namespace PascalABCCompiler
             if (Path.IsPathRooted(path)) return path;
             int i = 0;
 
-            for (; i < path.Length && path[i] == '.' && path[i + 1] == '.'; )
+            for (; dir!="" && i < path.Length && path[i] == '.' && path[i + 1] == '.'; )
             {
                 dir = Path.GetDirectoryName(dir);
                 if (string.IsNullOrEmpty(dir)) return null;

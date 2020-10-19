@@ -189,6 +189,7 @@ namespace PascalABCCompiler.PCU
             return already_compiled[name] != null;
         }
 
+        /*
         public static bool ContainsUnit(string FileName, out PCUReader pr)
         {
             string unit_name = System.IO.Path.GetFileNameWithoutExtension(FileName);
@@ -196,6 +197,7 @@ namespace PascalABCCompiler.PCU
             if (pr != null) return true;
             return false;
         }
+        */
 
         public static void CloseUnits()
         {
@@ -258,16 +260,17 @@ namespace PascalABCCompiler.PCU
                 br = new BinaryReader(ms);
                 ReadPCUHeader();
                 units[FileName] = this;
+                unit = new CompilationUnit();
+                unit.UnitName = unit_name;
+                cun = new common_unit_node();
+                cun.compiler_directives = pcu_file.compiler_directives;
+                unit.SemanticTree = cun;
                 if (NeedRecompiled())
                 {
                     CloseUnit();
                     need = true;
                     return null; // return comp.RecompileUnit(FileName);
                 }
-                unit = new CompilationUnit();
-                cun = new common_unit_node();
-                cun.compiler_directives = pcu_file.compiler_directives;
-                unit.SemanticTree = cun;
                 ChangeState(this, PCUReaderWriterState.BeginReadTree, unit);
                 cun.scope = new WrappedUnitInterfaceScope(this);
                 
@@ -358,7 +361,11 @@ namespace PascalABCCompiler.PCU
                 {
                     used_units[used_unit_fname] = used_units;
                     if (already_compiled[used_unit_fname] == null)
-                        pr.GetCompilationUnit(used_unit_fname, this.readDebugInfo);
+                    {
+                        var sub_u = pr.GetCompilationUnit(used_unit_fname, this.readDebugInfo);
+                        this.unit.DirectInterfaceCompilationUnits.Add(sub_u.SemanticTree, sub_u);
+                        this.unit.InterfaceUsedUnits.AddElement(sub_u.SemanticTree, pcu_file.incl_modules[i]);
+                    }
                 }
                 if (need == false) need = pr.need;
             }
