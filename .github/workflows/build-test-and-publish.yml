@@ -20,7 +20,6 @@ jobs:
 
     name: Prepare and build on Windows Server 2016 VM
     runs-on: windows-2016
-    #timeout-minutes: 30
     #continue-on-error: true
     steps:
 
@@ -32,7 +31,7 @@ jobs:
       run: _RegisterHelixNUnit.bat
 
     - name: Build project in Debug-mode, compile Pas-units, run tests, create install packages...
-      #timeout-minutes: 45
+      timeout-minutes: 35
       env:
         PABCNET_BUILD_MODE: Debug
         PABCNET_RUN_TESTS: true
