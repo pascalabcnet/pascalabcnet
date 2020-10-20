@@ -34,9 +34,9 @@ jobs:
       timeout-minutes: 35
       env:
         PABCNET_BUILD_MODE: Debug
-        PABCNET_RUN_TESTS: true
-        PABCNET_INC_BUILD: false
-        PABCNET_VERBOSE: true
+        PABCNET_RUN_TESTS:  true
+        PABCNET_INC_BUILD:  false
+        PABCNET_VERBOSE:    true
 
     #- name: TestRunner_log.txt...
     #  run: if exist bin\TestRunner_log.txt (type bin\TestRunner_log.txt)
