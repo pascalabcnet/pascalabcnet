@@ -24,12 +24,12 @@ jobs:
       run: _RegisterHelixNUnit.bat
 
     - name: Build project in Release-mode, compile Pas-units, create install packages...
+      run: _GenerateAllSetups.bat
       env:
         PABCNET_BUILD_MODE: Release
-        PABCNET_RUN_TESTS: false
-        PABCNET_INC_BUILD: false
-        PABCNET_VERBOSE: false
-      run: _GenerateAllSetups.bat
+        PABCNET_RUN_TESTS:  false
+        PABCNET_INC_BUILD:  false
+        PABCNET_VERBOSE:    false
 
     - name: Publish artifacts (1/4)...
       uses: actions/upload-artifact@v2
