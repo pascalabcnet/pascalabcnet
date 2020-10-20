@@ -22,7 +22,7 @@ jobs:
     runs-on: windows-2016
     #continue-on-error: true
     steps:
-    - run: git config core.autocrlf true
+    - run: git config --system core.autocrlf true
 
     - uses: actions/checkout@v2
 
