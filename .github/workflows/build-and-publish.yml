@@ -16,7 +16,6 @@ jobs:
 
     name: Prepare and build on Windows Server 2016 VM
     runs-on: windows-2016
-    timeout-minutes: 20
     steps:
     - uses: actions/checkout@v2
 
@@ -25,6 +24,7 @@ jobs:
 
     - name: Build project in Release-mode, compile Pas-units, create install packages...
       run: _GenerateAllSetups.bat
+      timeout-minutes: 20
       env:
         PABCNET_BUILD_MODE: Release
         PABCNET_RUN_TESTS:  false
