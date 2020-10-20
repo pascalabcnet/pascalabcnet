@@ -22,7 +22,6 @@ jobs:
     runs-on: windows-2016
     #continue-on-error: true
     steps:
-
     - run: git config core.autocrlf true
 
     - uses: actions/checkout@v2
@@ -31,13 +30,13 @@ jobs:
       run: _RegisterHelixNUnit.bat
 
     - name: Build project in Debug-mode, compile Pas-units, run tests, create install packages...
+      run: _GenerateAllSetups.bat
       timeout-minutes: 35
       env:
         PABCNET_BUILD_MODE: Debug
         PABCNET_RUN_TESTS: true
         PABCNET_INC_BUILD: false
         PABCNET_VERBOSE: true
-      run: _GenerateAllSetups.bat
 
     #- name: TestRunner_log.txt...
     #  run: if exist bin\TestRunner_log.txt (type bin\TestRunner_log.txt)
