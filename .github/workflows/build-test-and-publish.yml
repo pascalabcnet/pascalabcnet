@@ -24,7 +24,7 @@ jobs:
     #continue-on-error: true
     steps:
 
-    - run: git config --global core.autocrlf input
+    - run: git config --global core.autocrlf true
 
     - uses: actions/checkout@v2
 
