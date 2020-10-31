@@ -2306,8 +2306,8 @@ namespace PascalABCCompiler
             if (ClearAfterCompilation)
             ClearAll();
             
-            
-            OnChangeCompilerState(this, CompilerState.Ready, null);
+            if (!need_recompiled)
+                OnChangeCompilerState(this, CompilerState.Ready, null);
             if (ErrorsList.Count > 0)
             {
                 return null;
