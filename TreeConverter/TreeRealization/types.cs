@@ -3662,7 +3662,8 @@ namespace PascalABCCompiler.TreeRealization
         //TODO: Доопределить.
         public override function_node get_implicit_conversion_to(type_node ctn)
         {
-            compiled_type_node cctn = ctn as compiled_type_node;
+            // То есть получается, что конвертировать откомпилированный тип в неоткомпилированный нельзя несмотря на то что есть extension оператор
+            var cctn = ctn as compiled_type_node;
             if (cctn == null)
             {
                 return null;
@@ -3673,6 +3674,17 @@ namespace PascalABCCompiler.TreeRealization
                 fn = NetHelper.NetHelper.get_implicit_conversion(this, this, cctn, scope);
                 if (fn is compiled_function_node)
                     _implicit_convertions_to.Add(cctn, fn);
+                else if (fn == null && this.type_special_kind == SemanticTree.type_special_kind.array_kind && this.base_type.Scope != null)
+                {
+                    fn = NetHelper.NetHelper.get_implicit_conversion(this.base_type as compiled_type_node, this.base_type as compiled_type_node, cctn, this.base_type.Scope as NetHelper.NetTypeScope);
+                    if (fn != null)
+                    {
+                        List<type_node> instance_params = new List<type_node>();
+                        instance_params.Add(this.element_type);
+                        fn = fn.get_instance(instance_params, false, null);
+                        return fn;
+                    }
+                }
                 else if (fn == null && (this.is_generic_type_instance || cctn.is_generic_type_instance))
                 {
                     List<type_node> instance_params1 = this.instance_params;
