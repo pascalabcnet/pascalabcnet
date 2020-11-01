@@ -223,4 +223,15 @@ procedure Tr<T>(a: array of T; transform: T->T) := a.Transform(transform);
 function H<T>(Self: array of T): integer; extensionmethod := Self.High;
 
 
+///--
+procedure __InitModule__;
+begin
+end;
+
+///--
+procedure __FinalizeModule__;
+begin
+end;
+
+
 end.
