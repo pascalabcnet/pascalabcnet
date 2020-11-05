@@ -530,17 +530,17 @@ namespace PascalABCCompiler.SyntaxTree
 					return new tuple_pattern_var_parameter();
 				case 254:
 					return new recursive_tuple_parameter();
-				case 249:
+				case 255:
 					return new diapason_expr_new();
-				case 250:
+				case 256:
 					return new if_expr_new();
-				case 251:
+				case 257:
 					return new simple_expr_with_deref();
-				case 252:
+				case 258:
 					return new index();
-				case 253:
+				case 259:
 					return new array_const_new();
-				case 254:
+				case 260:
 					return new semantic_ith_element_of();
 			}
 			return null;

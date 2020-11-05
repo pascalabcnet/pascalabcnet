@@ -6924,7 +6924,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(diapason_expr_new _diapason_expr_new)
 		{
-			bw.Write((Int16)249);
+			bw.Write((Int16)255);
 			write_diapason_expr_new(_diapason_expr_new);
 		}
 
@@ -6954,7 +6954,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(if_expr_new _if_expr_new)
 		{
-			bw.Write((Int16)250);
+			bw.Write((Int16)256);
 			write_if_expr_new(_if_expr_new);
 		}
 
@@ -6993,7 +6993,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(simple_expr_with_deref _simple_expr_with_deref)
 		{
-			bw.Write((Int16)251);
+			bw.Write((Int16)257);
 			write_simple_expr_with_deref(_simple_expr_with_deref);
 		}
 
@@ -7015,7 +7015,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(index _index)
 		{
-			bw.Write((Int16)252);
+			bw.Write((Int16)258);
 			write_index(_index);
 		}
 
@@ -7037,7 +7037,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(array_const_new _array_const_new)
 		{
-			bw.Write((Int16)253);
+			bw.Write((Int16)259);
 			write_array_const_new(_array_const_new);
 		}
 
@@ -7058,7 +7058,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(semantic_ith_element_of _semantic_ith_element_of)
 		{
-			bw.Write((Int16)254);
+			bw.Write((Int16)260);
 			write_semantic_ith_element_of(_semantic_ith_element_of);
 		}
 
