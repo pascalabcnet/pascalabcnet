@@ -492,6 +492,7 @@ type
     function ToString: string; override;
     class function operator implicit<T>(s: TypedSet): HashSet<T>;
     class function operator implicit<T>(s: HashSet<T>): TypedSet;
+    //class function operator implicit<T>(a: array of T): TypedSet;
     function Count: integer := ht.Count;
     procedure Print(delim: string := ' ');
     procedure Println(delim: string := ' ');
@@ -3370,6 +3371,17 @@ begin
 end;
 
 ///--
+{class function TypedSet.operator implicit<T>(a: array of T): TypedSet;
+begin
+  var ts := new TypedSet();
+  foreach key: T in a do
+  begin
+    ts.ht[key] := key;  
+  end;
+  Result := ts; 
+end;}
+
+///--
 function TypedSet.ToString: string;
 var
   i: System.Collections.IEnumerator;
@@ -5193,33 +5205,6 @@ begin
   Result := sb.ToString;
 end;}
 
-function ReadLexem(f: Text): string;
-begin
-  if f.fi = nil then
-    raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
-  if f.sr = nil then 
-    raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED_FOR_READING));
-  var i: integer;
-  repeat
-    i := f.sr.Read();
-  until not char.IsWhiteSpace(char(i)); // pass spaces
-  if i=-1 then 
-    raise new System.IO.IOException(GetTranslation(READ_LEXEM_AFTER_END_OF_TEXT_FILE));
-  var c := char(i);
-  var sb := System.Text.StringBuilder.Create;
-  repeat
-    sb.Append(c);
-    i := f.sr.Peek();
-    if i = -1 then
-      break;
-    c := char(i);
-    if char.IsWhiteSpace(c) then
-      break;
-    f.sr.Read();
-  until False; // accumulate nonspaces
-  Result := sb.ToString;
-end;
-
 // -----------------------------------------------------
 //          IOStandardSystem: implementation
 // -----------------------------------------------------
@@ -6447,6 +6432,34 @@ begin
   Result := ReadBoolean(f);
   Readln(f);
 end;
+
+function ReadLexem(f: Text): string;
+begin
+  if f.fi = nil then
+    raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
+  if f.sr = nil then 
+    raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED_FOR_READING));
+  var i: integer;
+  repeat
+    i := f.sr.Read();
+  until not char.IsWhiteSpace(char(i)); // pass spaces
+  if i=-1 then 
+    raise new System.IO.IOException(GetTranslation(READ_LEXEM_AFTER_END_OF_TEXT_FILE));
+  var c := char(i);
+  var sb := System.Text.StringBuilder.Create;
+  repeat
+    sb.Append(c);
+    i := f.sr.Peek();
+    if i = -1 then
+      break;
+    c := char(i);
+    if char.IsWhiteSpace(c) then
+      break;
+    f.sr.Read();
+  until False; // accumulate nonspaces
+  Result := sb.ToString;
+end;
+
 // -----------------------------------------------------
 //                   TextFile methods
 // -----------------------------------------------------
@@ -6982,6 +6995,7 @@ begin
   begin  
     f.sr := new StreamReader(f.fi.FullName, DefaultEncoding);
     (CurrentIOSystem as IOStandardSystem).tr := f.sr;
+    (CurrentIOSystem as IOStandardSystem).realbuflen := -1;
     _IsPipedRedirected := True;
     _IsPipedRedirectedQuery := True;
   end;  
@@ -7032,6 +7046,11 @@ begin
     f.sr.BaseStream.Position := 0;
     f.sr.DiscardBufferedData;
   end;
+  if f = input then
+  begin  
+    (CurrentIOSystem as IOStandardSystem).tr := f.sr;
+    (CurrentIOSystem as IOStandardSystem).realbuflen := -1;
+  end;  
 end;
 
 procedure Reset(f: Text; name: string) := Reset(f, name, DefaultEncoding);

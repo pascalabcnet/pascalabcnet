@@ -1,5 +1,30 @@
 ﻿unit SF;
 
+type
+  int = integer;
+  bool = boolean;
+  bi = BigInteger;
+  FunI = () -> int;
+  FunR = () -> real;
+  FunS = () -> string;
+  FunII = int -> int;
+  FunIR = int -> real;
+  FunIS = int -> string;
+  FunRI = real -> int;
+  FunRR = real -> real;
+  FunRS = real -> string;
+  FunSI = string -> int;
+  FunSR = string -> real;
+  FunSS = string -> string;
+  Pred = () -> bool;
+  PredI = int -> bool;
+  PredR = real -> bool;
+  PredS = string -> bool;
+  Act = () -> ();
+  ProcI = int -> ();
+  ProcR = real -> ();
+  ProcS = string -> ();
+
 procedure Pr(params a: array of object) := Print(a);
 procedure Pr(o: object) := Print(o);
 procedure Pr(s: string) := Print(s);
@@ -126,6 +151,9 @@ function Av(Self: sequence of integer): real; extensionmethod := Self.Average;
 /// Возвращает среднее элементов последовательности
 function Av(Self: sequence of real): real; extensionmethod := Self.Average;
 
+/// Возвращает количество элементов последовательности
+function Cnt<T>(Self: sequence of T): integer; extensionmethod := Self.Count;
+
 function Dst<T>(Self: sequence of T): sequence of T; extensionmethod := Self.Distinct;
 
 function Ord<T>(Self: sequence of T): sequence of T; extensionmethod := Self.Order;
@@ -193,6 +221,17 @@ procedure Tr<T>(a: array of T; transform: T->T) := a.Transform(transform);
 
 /// Возвращает индекс последнего элемента массива
 function H<T>(Self: array of T): integer; extensionmethod := Self.High;
+
+
+///--
+procedure __InitModule__;
+begin
+end;
+
+///--
+procedure __FinalizeModule__;
+begin
+end;
 
 
 end.
