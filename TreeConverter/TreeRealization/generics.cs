@@ -1062,11 +1062,11 @@ namespace PascalABCCompiler.TreeRealization
                 {
                     if (appropriateInstances.Count() == 0)
                     {
-                        throw new SimpleSemanticError(loc, "NO_INSTANCES_FOR_TYPECLASS_{0}", null/*TypeclassHelper.GetTypeclassName(tc)*/);
+                        throw new SimpleSemanticError(loc, "NO_INSTANCES_FOR_TYPECLASS_{0}", TypeclassHelper.GetTypeclassName(tc));
                     }
                     else
                     {
-                        throw new SimpleSemanticError(loc, "TC_SEVERAL_INSTANCES_FOR_TYPECLASS_{0}", null /*TypeclassHelper.GetTypeclassName(tc)*/);
+                        throw new SimpleSemanticError(loc, "TC_SEVERAL_INSTANCES_FOR_TYPECLASS_{0}", TypeclassHelper.GetTypeclassName(tc));
                     }
                 }
             }

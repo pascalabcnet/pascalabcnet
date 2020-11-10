@@ -44,7 +44,16 @@ namespace PascalABCCompiler.TreeConverter
 
         public static string GetTypeclassName(type_node ctn)
         {
-            return ctn?.attributes?.First(x => x.AttributeType.name == "__TypeclassAttribute")?.Arguments[0]?.value?.ToString();
+            var att = ctn?.attributes;
+            string res = null;
+
+            res = att.FirstOrDefault(x => x.AttributeType.name == "__TypeclassAttribute")?.Arguments[0]?.value?.ToString();
+            if (res == null)
+                res = att.FirstOrDefault(x => x.AttributeType.name == "__TypeclassGenericParameterAttribute")?.Arguments[1]?.value?.ToString();
+            if (res == null)
+                res = att.FirstOrDefault(x => x.AttributeType.name == "__TypeclassInstanceAttribute")?.Arguments[1]?.value?.ToString();
+
+            return res;
         }
 
         public static string ResugarMethodName(string name)

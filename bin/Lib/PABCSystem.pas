@@ -2679,7 +2679,7 @@ type
   ///--
   __TypeclassGenericParameterAttribute = class(Attribute)
   public
-    constructor(instanceName: string);
+    constructor(instanceName: string; originalTypeclassName: string);
     begin
     end;
   end;
@@ -2703,7 +2703,7 @@ type
   ///--
   __TypeclassInstanceAttribute = class(Attribute)
   public
-    constructor(instanceName: string);
+    constructor(instanceName: string; originalTypeclassName: string);
     begin
     end;
   end;

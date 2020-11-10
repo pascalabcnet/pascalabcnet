@@ -1,2 +1,3 @@
 ﻿%PREFIX%=SEMANTICERROR_
 INSTANCE_{0}_DOES_NOT_IMPLEMENT_REQUIREMENT_{1}_OF_TYPECLASS_{2}=Инстанс {0} не переопределяет {1}
+NO_INSTANCES_FOR_TYPECLASS_{0}=Невозможно вывести инстанс для класса типа {0}, пожалуйста укажите его явно

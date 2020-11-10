@@ -113,10 +113,9 @@ namespace SyntaxVisitors.TypeclassVisitors
             instanceDeclTranslated.attributes = instanceDeclaration.attributes;
             AddAttribute(
                 instanceDeclTranslated, "__TypeclassInstanceAttribute",
-                new expression_list(new string_const(TypeclassRestrictionToString(instanceName))));
-            AddAttribute(instanceDeclTranslated, "__TypeclassAttribute",
-                new expression_list(new string_const(TypeclassRestrictionToString(
-                    (originalTypeclass.Parent as type_declaration).type_name as typeclass_restriction))));
+                string_consts(
+                    TypeclassRestrictionToString(instanceName),
+                    ((originalTypeclass.Parent as type_declaration).type_name as typeclass_restriction).name));
 
             Replace(instanceDeclaration, instanceDeclTranslated);
             visit(instanceDeclTranslated);
@@ -205,7 +204,7 @@ namespace SyntaxVisitors.TypeclassVisitors
             typeclassInterfaceDecl.attributes = typeclassDeclaration.attributes;
             AddAttribute(
                 typeclassInterfaceDecl, "__TypeclassAttribute",
-                new expression_list(new string_const(TypeclassRestrictionToString(typeclassName))));
+                string_consts(TypeclassRestrictionToString(typeclassName)));
 
 
             // Creating class
@@ -344,7 +343,7 @@ namespace SyntaxVisitors.TypeclassVisitors
             typeclassDeclTranslated.attributes = typeclassDeclaration.attributes;
             AddAttribute(
                 typeclassDeclTranslated, "__TypeclassAttribute",
-                new expression_list(new string_const(TypeclassRestrictionToString(typeclassName))));
+                string_consts(TypeclassRestrictionToString(typeclassName)));
 
             Replace(typeclassDeclaration, typeclassDeclTranslated);
             UpperNodeAs<type_declarations>().InsertBefore(typeclassDeclTranslated, typeclassInterfaceDecl);
@@ -436,7 +435,7 @@ namespace SyntaxVisitors.TypeclassVisitors
                     var newName = TypeclassRestrctionToTemplateName(typeclassWhere.restriction.name, typeclassWhere.restriction.restriction_args);
                     AddAttribute(
                         newName, "__TypeclassGenericParameter",
-                        new expression_list(new string_const(GetInstanceSingletonName(newName.name))));
+                        string_consts(GetInstanceSingletonName(newName.name), typeclassWhere.restriction.name));
                     additionalTemplateArgs.Add(newName);
 
                     // Create name for template that replaces typeclass(for ex. SumTC)
@@ -615,6 +614,13 @@ namespace SyntaxVisitors.TypeclassVisitors
             return RestrictionsToIdentList(restriction_args).idents.Aggregate(
                 new ident(name), (x, y) => x.name + y.name);
         }
+
+        private static expression_list string_consts(params string[] strs)
+        {
+            return new expression_list(
+                strs.Select(x => (new string_const(x)) as expression).ToList());
+        }
+
     }
 
 
