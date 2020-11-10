@@ -2666,7 +2666,7 @@ type
   end;
 
 
-{type
+type
   ///--
   __TypeclassRestrictedFunctionAttribute = class(Attribute)
   public
@@ -2706,7 +2706,7 @@ type
     constructor(instanceName: string);
     begin
     end;
-  end;}
+  end;
   
 type 
 // Смысл полей Num, Width и Fmt соответствует
