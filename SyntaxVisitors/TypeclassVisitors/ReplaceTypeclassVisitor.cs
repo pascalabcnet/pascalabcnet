@@ -90,7 +90,7 @@ namespace SyntaxVisitors.TypeclassVisitors
                     {
                         header = pd.proc_header;
                     }
-                    header.proc_attributes.Add(new procedure_attribute("override", proc_attribute.attr_override));
+                    header.proc_attributes.Add(new procedure_attribute("override", proc_attribute.attr_override, cm[j].source_context));
                     ConvertOperatorNameIdent(header);
                 }
             }

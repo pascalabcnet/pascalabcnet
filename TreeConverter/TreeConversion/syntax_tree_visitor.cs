@@ -13948,7 +13948,17 @@ namespace PascalABCCompiler.TreeConverter
                             common_function_node ccfn = context.top_function;
                             if (ccfn.return_value_type is undefined_type)
                             {
-                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "OVERRIDE_NOT_ALLOWED_FOR_SHORT_FUNCTIONS");
+                                //(voloshin) Typeclasses Пока override не реализован для короких функций, короткие функции не будут поддерживаться в классах типах
+                                var cs = (context.CurrentScope.TopScope as SymbolTable.ClassScope)?.class_type;
+                                if (TypeclassHelper.IsInstance(cs))
+                                {
+                                    AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "SHORT_FUNCTIONS_NOT_ALLOWED_IN_TYPECLASSES");
+                                }
+                                else
+                                {
+                                    AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "OVERRIDE_NOT_ALLOWED_FOR_SHORT_FUNCTIONS");
+                                }
+                                
                             }
                             if (ccfn.semantic_node_type != semantic_node_type.common_method_node)
                             {
