@@ -3757,8 +3757,16 @@ namespace PascalABCCompiler.TreeConverter
         {
             cmn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual;
             cmn.overrided_method = FindMethodToOverride(cmn);
+
             if (cmn.overrided_method == null)
-                AddError(cmn.loc, "NO_METHOD_TO_OVERRIDE");
+            {
+                var instance = TypeclassHelper.GetTopClass(this);
+
+                if (TypeclassHelper.IsInstance(instance))
+                    AddError(cmn.loc, "NO_RESTRICTION_{0}_IN_TYPECLASS_{1}", cmn.name, TypeclassHelper.GetTypeclassName(instance));
+                else
+                    AddError(cmn.loc, "NO_METHOD_TO_OVERRIDE");
+            }
             cmn.SetName(cmn.overrided_method.name);
         }
 

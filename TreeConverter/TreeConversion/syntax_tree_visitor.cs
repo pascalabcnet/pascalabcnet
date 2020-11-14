@@ -13949,8 +13949,7 @@ namespace PascalABCCompiler.TreeConverter
                             if (ccfn.return_value_type is undefined_type)
                             {
                                 //(voloshin) Typeclasses Пока override не реализован для короких функций, короткие функции не будут поддерживаться в классах типах
-                                var cs = (context.CurrentScope.TopScope as SymbolTable.ClassScope)?.class_type;
-                                if (TypeclassHelper.IsInstance(cs))
+                                if (TypeclassHelper.IsInInstanceContext(context))
                                 {
                                     AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "SHORT_FUNCTIONS_NOT_ALLOWED_IN_TYPECLASSES");
                                 }

@@ -2,3 +2,4 @@
 INSTANCE_{0}_DOES_NOT_IMPLEMENT_REQUIREMENT_{1}_OF_TYPECLASS_{2}=Инстанс {0} не переопределяет {1}
 NO_INSTANCES_FOR_TYPECLASS_{0}=Невозможно вывести инстанс для класса типа {0}, пожалуйста укажите его явно
 SHORT_FUNCTIONS_NOT_ALLOWED_IN_TYPECLASSES=Короткие функции нельзя использовать с классами типов
+NO_RESTRICTION_{0}_IN_TYPECLASS_{1}=Нет ограничения {0} в классе типов {1}
