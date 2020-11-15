@@ -9212,8 +9212,13 @@ namespace PascalABCCompiler.TreeConverter
         private expression_node create_static_expression(type_node tn, SyntaxTree.ident id_right,
             List<SymbolInfo> si_right)
         {
-            definition_node dn = context.check_name_node_type(id_right.name, si_right?.FirstOrDefault(), get_location(id_right), general_node_type.variable_node,
-                general_node_type.function_node, general_node_type.property_node, general_node_type.constant_definition);
+            definition_node dn = null;
+            if (si_right?.FirstOrDefault().sym_info is common_event && (si_right?.FirstOrDefault().sym_info as common_event).cont_type == tn)
+                dn = context.check_name_node_type(id_right.name, si_right?.FirstOrDefault(), get_location(id_right), general_node_type.variable_node,
+                    general_node_type.function_node, general_node_type.property_node, general_node_type.constant_definition, general_node_type.event_node);
+            else
+                dn = context.check_name_node_type(id_right.name, si_right?.FirstOrDefault(), get_location(id_right), general_node_type.variable_node,
+                    general_node_type.function_node, general_node_type.property_node, general_node_type.constant_definition);
             switch (dn.general_node_type)
             {
                 case general_node_type.variable_node:
@@ -9278,6 +9283,12 @@ namespace PascalABCCompiler.TreeConverter
                         location lloc = get_location(id_right);
                         check_property_no_params(pn, lloc);
                         return create_static_method_call(fn, lloc, tn, false);
+                    }
+                case general_node_type.event_node:
+                    {
+                        
+                        static_event_reference ser = new static_event_reference((event_node)dn, get_location(id_right));
+                        return ser;
                     }
             }
             throw new CompilerInternalError("Error in creating static expression.");
