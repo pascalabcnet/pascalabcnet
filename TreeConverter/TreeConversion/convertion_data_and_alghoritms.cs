@@ -2437,13 +2437,16 @@ namespace PascalABCCompiler.TreeConverter
 
                     //if (funcs[0].is_extension_method)
                     Type fldiResType = null;
-                    if (funcs[0].is_extension_method)
+                    if (syntax_nodes_parameters != null)
                     {
-                        fldiResType = ((syntax_nodes_parameters[i - 1] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
-                    }
-                    else
-                    {
-                        fldiResType = ((syntax_nodes_parameters[i] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
+                        if (funcs[0].is_extension_method)
+                        {
+                            fldiResType = ((syntax_nodes_parameters[i - 1] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
+                        }
+                        else
+                        {
+                            fldiResType = ((syntax_nodes_parameters[i] as SyntaxTree.function_lambda_definition)?.RealSemTypeOfResult as compiled_type_node)?.compiled_type;
+                        }
                     }
                         // странно, но всегда кво параметров в syntax_nodes_parameters на 1 меньше. Иначе падает
 
