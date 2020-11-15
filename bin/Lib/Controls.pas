@@ -1239,6 +1239,11 @@ procedure SetActivePanel(p: PanelWPF);
 /// Графическое окно
 //function Window: WindowType;
 
+///--
+procedure __InitModule__;
+///--
+procedure __FinalizeModule__;
+
 implementation
 
 //uses GraphWPF;
@@ -1391,6 +1396,33 @@ begin
   Result := _ActivePanel;
 end;
 
+var
+  ///--
+  __initialized := false;
+
+var
+  ///--
+  __finalized := false;
+
+///--
+procedure __InitModule__;
+begin
+  if not __initialized then
+  begin
+    __initialized := true;
+    
+  end;
+end;
+
+///--
+procedure __FinalizeModule__;
+begin
+  if not __finalized then
+  begin
+    __finalized := true;
+  end;
+end;
+  
 initialization
 finalization  
 end.
