@@ -830,4 +830,13 @@ end;
 
 {$endregion Utils}
 
+///--
+procedure __InitModule__;
+begin
+end;
+
+///--
+procedure __FinalizeModule__;
+begin
+end;
 end.

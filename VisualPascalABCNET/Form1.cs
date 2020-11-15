@@ -840,7 +840,7 @@ namespace VisualPascalABC
         private void StartMenuItem_Click(object sender, EventArgs e)
         {
             WorkbenchServiceFactory.RunService.Run(true);
-            if (VisualEnvironmentCompiler.Compiler != null && VisualEnvironmentCompiler.Compiler.ErrorsList.Count == 0)
+            /*if (VisualEnvironmentCompiler.Compiler != null && VisualEnvironmentCompiler.Compiler.ErrorsList.Count == 0)
             {
                 var Percent = VisualEnvironmentCompiler.Compiler.PABCCodeHealth;
                 if (Percent > 0)
@@ -856,33 +856,7 @@ namespace VisualPascalABC
                     var PM100 = 100 - Percent;
                     HealthLabel.BackColor = Color.FromArgb(c.R - PM100 - 20, c.G - PM100 - 20, c.B - PM100 - 20);
                 }
-            }
-                
-
-            /*if (VisualEnvironmentCompiler.StandartCompiler != null &&
-                VisualEnvironmentCompiler.StandartCompiler.LinesCompiled > 1000)
-                return;
-            var root = VisualEnvironmentCompiler?.StandartCompiler?.CurrentCompilationUnit?.SyntaxTree;
-
-            if (root == null)
-                return;
-            if (VisualEnvironmentCompiler.StandartCompiler.CurrentCompilationUnit.SemanticTree == null)
-                return;
-            var stat = new SyntaxVisitors.ABCStatisticsVisitor();
-            stat.ProcessNode(root);
-            var Percent = stat.CalcHealth(out int n, out int p);
-
-            if (Percent >= 100)
-            {
-                HealthLabel.Text = "";
-                return;
-            }
-            HealthLabel.Text = $"{Percent}%";
-
-            var c = SystemColors.Control;
-            var PM100 = 100 - Percent;
-            HealthLabel.BackColor = Color.FromArgb(c.R - PM100 - 20, c.G - PM100 - 20, c.B - PM100 - 20);
-            */
+            }*/
         }
 
         private void Form1_KeyUp(object sender, KeyEventArgs e)
