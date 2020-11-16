@@ -56,6 +56,9 @@ Section $(DESC_PT4) PT4
   ${AddFile} "LinqOloadpabc.dat"
   File "PT4\LinqXloadpabc.dat"
   ${AddFile} "LinqXloadpabc.dat"
+  File "PT4\loaddat.txt"
+  ${AddFile} "loaddat.txt"
+
 
   SetOutPath "$INSTDIR\PT4\Lib"
   File "PT4\Lib\PT4ExamBegin_ru.dll"
@@ -141,7 +144,22 @@ Section $(DESC_PT4) PT4
 
   File "PT4\Lib\PT4AExam.dll"
   ${AddFile} "PT4AExam.dll"
-
+  File "PT4\Lib\PT4ABegin.dll"
+  ${AddFile} "PT4ABegin.dll"
+  File "PT4\Lib\PT4ABoolean.dll"
+  ${AddFile} "PT4ABoolean.dll"
+  File "PT4\Lib\PT4ACase.dll"
+  ${AddFile} "PT4ACase.dll"
+  File "PT4\Lib\PT4AIf.dll"
+  ${AddFile} "PT4AIf.dll"
+  File "PT4\Lib\PT4AInteger.dll"
+  ${AddFile} "PT4AInteger.dll"
+  File "PT4\Lib\PT4ALoopFor.dll"
+  ${AddFile} "PT4ALoopFor.dll"
+  File "PT4\Lib\PT4ASeries.dll"
+  ${AddFile} "PT4ASeries.dll"
+  File "PT4\Lib\PT4AWhile.dll"
+  ${AddFile} "PT4AWhile.dll"
  
 
   SetOutPath "$INSTDIR\PT4\Lib\Graph"

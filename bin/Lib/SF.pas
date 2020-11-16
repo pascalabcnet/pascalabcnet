@@ -126,6 +126,29 @@ begin
     max := x
 end;
 
+/// Возвращает все перестановки
+function Prm<T>(Self: array of T): sequence of array of T; extensionmethod
+  := Self.Permutations;
+
+/// Возвращает все сочетания по m элементов
+function Cmb<T>(Self: array of T; m: integer): sequence of array of T; extensionmethod 
+  := Self.Combinations(m);
+
+/// Преобразует объект в строку
+function ToS(Self: Object): string; extensionmethod := Self.ToString;
+
+/// Преобразует строку в массив слов
+function ToW(Self: string): array of string; extensionmethod := Self.ToWords;
+
+/// Возвращает элементы последовательности без повторяющихся
+function Dst<T>(Self: sequence of T): sequence of T; extensionmethod := Self.Distinct;
+
+/// Преобразует последовательность в строку
+function ToS<T>(Self: sequence of T; delim: string): string; extensionmethod := Self.JoinToString(delim);
+
+/// Сливает последовательнсть строк в одну строку 
+function Concat(Self: sequence of string): string; extensionmethod := Self.JoinToString('');
+
 /// Преобразует строку в целое
 function ToI(Self: string); extensionmethod := Self.ToInteger;
 
@@ -154,8 +177,6 @@ function Av(Self: sequence of real): real; extensionmethod := Self.Average;
 /// Возвращает количество элементов последовательности
 function Cnt<T>(Self: sequence of T): integer; extensionmethod := Self.Count;
 
-function Dst<T>(Self: sequence of T): sequence of T; extensionmethod := Self.Distinct;
-
 function Ord<T>(Self: sequence of T): sequence of T; extensionmethod := Self.Order;
 function OrdD<T>(Self: sequence of T): sequence of T; extensionmethod := Self.OrderDescending;
 
@@ -170,8 +191,23 @@ function Prln<T>(Self: sequence of T): sequence of T; extensionmethod := Self.Pr
 /// Возвращает инвертированную последовательность
 function Rev<T>(Self: sequence of T): sequence of T; extensionmethod := Self.Reverse;
 
+/// Преобразует каждый элемент последовательности в последовательность и сливает полученные последовательности в одну
+function SelM<T,T1>(Self: sequence of T; transform: T->sequence of T1): sequence of T1; extensionmethod := Self.SelectMany(transform);
+
 /// Преобразует последовательность, используя функцию transform
 function Sel<T,T1>(Self: sequence of T; transform: T->T1): sequence of T1; extensionmethod := Self.Select(transform);
+
+/// Создаёт словарь в ссответствии с заданными функциями проекции на ключ и значение
+function ToD<T,TKey,TValue>(Self: sequence of T; keySelector: T->TKey; valueSelector: T->TValue): Dictionary<TKey,TValue>; extensionmethod := 
+  Self.ToDictionary(keySelector,valueSelector);
+
+/// Создаёт словарь в ссответствии с заданной функцией проекции на ключ
+function ToD<T,TKey>(Self: sequence of T; keySelector: T->TKey): Dictionary<TKey,T>; extensionmethod := 
+  Self.ToDictionary(keySelector);
+
+/// Применяет к каждому элементы последовательности агрегатную функцию. Последнее значение агрегатной функции является результатом
+function Agr<T,TAcc>(Self: sequence of T; seed: TAcc; func: (TAcc,T)->TAcc): TAcc; extensionmethod 
+  := Self.Aggregate(seed,func);
 
 /// Фильтрует последовательность по условию cond
 function Wh<T>(Self: sequence of T; cond: T->boolean): sequence of T; extensionmethod := Self.Where(cond);
