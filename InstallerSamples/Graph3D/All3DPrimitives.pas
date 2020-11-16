@@ -3,9 +3,6 @@ uses Graph3D;
 begin
   Window.Title := '3D-примитивы';
   
-  //var a := Any(0,0,0,Colors.Red);
-  //a.MoveOn(-5,2,0);
-  
   var rr := Rectangle3D(-3.5,-2,0,3,2,Colors.MediumPurple);
   rr.Rotate(v3d(0,1,0),30);
   

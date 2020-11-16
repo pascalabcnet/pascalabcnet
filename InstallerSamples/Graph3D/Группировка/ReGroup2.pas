@@ -10,7 +10,7 @@ begin
   var g1 := Group(b1,s1);
   g.AddChild(g1[0]);// он должен отсоединиться от g!
   Sleep(1000);
-  g.MoveOnX(3);
+  g.MoveByX(3);
   Sleep(1000);
-  g1.MoveOnY(4);
+  g1.MoveByY(4);
 end.
