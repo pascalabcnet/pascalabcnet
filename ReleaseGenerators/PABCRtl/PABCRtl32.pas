@@ -6,6 +6,6 @@ uses
   DrawManField, Events, FilesOperations, GraphABC, 
   GraphABCHelper, IniFile, PointerTools, PointRect, Robot, RobotField,
   RobotTaskMaker, RobotZadan, Sockets, Utils, VCL, Timers, PT4, PT4TaskMakerNET, RBDMUtils, SF, School, BlockFileOfT, 
-  FormsABC, Collections, Arrays, ClientServer, Graph3D, GraphWPF, WPFObjects, __RedirectIOMode, __RunMode, __RtlUtils;
+  FormsABC, Collections, Arrays, ClientServer, Graph3D, GraphWPF, WPFObjects, Controls, __RedirectIOMode, __RunMode, __RtlUtils;
 
 end.

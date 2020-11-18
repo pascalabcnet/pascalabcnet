@@ -3647,6 +3647,8 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         return null;
                     }
+                    else if (cfn_sec.IsFinal)
+                        return null;
                 }
                 else
                 {

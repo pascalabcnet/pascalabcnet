@@ -1,5 +1,5 @@
-uses Graph3D;
-// ошибка!
+п»їuses Graph3D;
+// РѕС€РёР±РєР°!
 begin
   var b := Box(0,0,0,3,1,2,Colors.Blue);
   var s := Sphere(0,0,2,1,Colors.Green);
@@ -8,12 +8,7 @@ begin
  
   var g := Group(b,s);
   var g1 := Group(b1,s1);
-  g1.MoveOnY(3);
-  g.Add(g1[0]);// он должен отсоединиться от g!
-  b1.MoveOnY(3);
-  
-  {Print(g.l.Count);  
-  Print(g1.l.Count);  
-  Print(g[2].Position);}
-  //b1.MoveOnZ(3);
+  g1.MoveByY(3);
+  g.AddChild(g1[0]);// РѕРЅ РґРѕР»Р¶РµРЅ РѕС‚СЃРѕРµРґРёРЅРёС‚СЊСЃСЏ РѕС‚ g!
+  b1.MoveByY(3);
 end.

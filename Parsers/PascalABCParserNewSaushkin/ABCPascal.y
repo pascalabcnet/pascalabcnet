@@ -4115,7 +4115,7 @@ variable
 			}   
 			else $$ = new indexer($1 as addressed_value, el, @$);
         }
-    | variable tkQuestionSquareOpen format_expr tkSquareClose                
+    | variable_or_literal_or_number tkQuestionSquareOpen format_expr tkSquareClose                
         {
         	var fe = $3 as format_expr; // SSM 9/01/17
             if (!parsertools.build_tree_for_formatter)

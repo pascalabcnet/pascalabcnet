@@ -262,6 +262,11 @@ namespace TreeConverter.LambdaExpressions.Closure
                     dn = new dot_node(getClassIdent(commonMethodNode.cont_type),
                         new ident(id.name, id.source_context), id.source_context);
                 }
+                else if (si.sym_info is common_event commonEvent && commonEvent.is_static)
+                {
+                    dn = new dot_node(getClassIdent(commonEvent.cont_type),
+                        new ident(id.name, id.source_context), id.source_context);
+                }
                 else
                 {
                     dn = new dot_node(new ident("self", id.source_context), new ident(id.name, id.source_context), id.source_context);

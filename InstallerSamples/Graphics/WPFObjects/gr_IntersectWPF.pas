@@ -17,7 +17,7 @@ begin
 
   loop 900 do
   begin
-    Destroyer.MoveOn(1,0);
+    Destroyer.MoveBy(1,0);
     CheckPulyaIntersects;
     Sleep(1);
   end;
