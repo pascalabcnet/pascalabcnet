@@ -506,7 +506,8 @@ function Digits(n: int64): List<integer>;
 begin
   var St := new Stack<integer>;
   n := Abs(n);
-  if n = 0 then Result.Add(0)
+  if n = 0 then
+    Result := |0|.ToList
   else
   begin
     while n > 0 do

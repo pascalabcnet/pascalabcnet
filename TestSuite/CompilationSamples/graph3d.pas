@@ -230,11 +230,11 @@ type
     
     procedure SetD(d: real) := Invoke(SetDP, d);
     function GetD: real := InvokeReal(()->Cam.Position.DistanceTo(P3D(0, 0, 0)));
-    procedure MoveOnP(x,y,z: real);
+    procedure MoveByP(x,y,z: real);
     begin
       Cam.Position += V3D(x,y,z)//:= P3D(Cam.Position.
     end;
-    procedure MoveOnPV(v: Vector3D);
+    procedure MoveByPV(v: Vector3D);
     begin
       Cam.Position += v;
     end;
@@ -270,9 +270,13 @@ type
     property Distanse: real read GetD write SetD;
 
   /// Перемещает камеру на вектор (dx,dy,dz)
-    procedure MoveOn(dx,dy,dz: real) := Invoke(MoveOnP,dx,dy,dz);
+    procedure MoveBy(dx,dy,dz: real) := Invoke(MoveByP,dx,dy,dz);
   /// Перемещает камеру на вектор v
-    procedure MoveOn(v: Vector3D) := Invoke(MoveOnPV,v);
+    procedure MoveBy(v: Vector3D) := Invoke(MoveByPV,v);
+  ///--
+    procedure MoveOn(dx,dy,dz: real) := Invoke(MoveByP,dx,dy,dz);
+  ///--
+    procedure MoveOn(v: Vector3D) := Invoke(MoveByPV,v);
   /// Обеспечивает плавное движение камеры
     procedure AddMoveForce(ForwardForce,RightForce,UpForce: real) := Invoke(AddMoveForceP,RightForce,UpForce,ForwardForce);
   /// Обеспечивает плавное движение камеры вперед с некоторой силой
@@ -458,15 +462,25 @@ type
   /// Перемещает 3D-объект к точке p
     function MoveTo(p: Point3D): Object3D := MoveTo(p.X, p.y, p.z);
   /// Перемещает 3D-объект на вектор (dx,dy,dz)
-    function MoveOn(dx, dy, dz: real): Object3D := MoveTo(x + dx, y + dy, z + dz);
+    function MoveBy(dx, dy, dz: real): Object3D := MoveTo(x + dx, y + dy, z + dz);
   /// Перемещает 3D-объект на вектор v
-    function MoveOn(v: Vector3D): Object3D := MoveOn(v.X, v.Y, v.Z);
+    function MoveBy(v: Vector3D): Object3D := MoveBy(v.X, v.Y, v.Z);
   /// Перемещает x-координату 3D-объекта на dx
-    function MoveOnX(dx: real): Object3D := MoveOn(dx, 0, 0);
+    function MoveByX(dx: real): Object3D := MoveBy(dx, 0, 0);
   /// Перемещает y-координату 3D-объекта на dy
-    function MoveOnY(dy: real): Object3D := MoveOn(0, dy, 0);
+    function MoveByY(dy: real): Object3D := MoveBy(0, dy, 0);
   /// Перемещает z-координату 3D-объекта на dz
-    function MoveOnZ(dz: real): Object3D := MoveOn(0, 0, dz);
+    function MoveByZ(dz: real): Object3D := MoveBy(0, 0, dz);
+  ///--
+    function MoveOn(dx, dy, dz: real): Object3D := MoveTo(x + dx, y + dy, z + dz);
+  ///--
+    function MoveOn(v: Vector3D): Object3D := MoveBy(v.X, v.Y, v.Z);
+  ///--
+    function MoveOnX(dx: real): Object3D := MoveBy(dx, 0, 0);
+  ///--
+    function MoveOnY(dy: real): Object3D := MoveBy(0, dy, 0);
+  ///--
+    function MoveOnZ(dz: real): Object3D := MoveBy(0, 0, dz);
   /// Перемещает 3D-объект вдоль вектора Direction со скоростью Velocity за время dt
     procedure MoveTime(dt: real); virtual;
     begin
@@ -479,7 +493,7 @@ type
       var dvx := dx/len*Velocity;
       var dvy := dy/len*Velocity;
       var dvz := dz/len*Velocity;
-      MoveOn(dvx*dt,dvy*dt,dvz*dt);
+      MoveBy(dvx*dt,dvy*dt,dvz*dt);
     end;
   /// Цвет 3D-объекта
     property Color: GColor read GetColor write SetColor; virtual;
@@ -578,35 +592,35 @@ type
     function AnimMoveTrajectory(trajectory: sequence of Point3D; seconds: real := 1): AnimationBase := AnimMoveTrajectory(trajectory,seconds,nil);
 
     /// Возвращает анимацию перемещения объекта на вектор (dx, dy, dz) за seconds секунд. В конце анимации выполняется процедура Completed
-    function AnimMoveOn(dx, dy, dz: real; seconds: real; Completed: procedure): AnimationBase;
+    function AnimMoveBy(dx, dy, dz: real; seconds: real; Completed: procedure): AnimationBase;
     /// Возвращает анимацию перемещения объекта на вектор (dx, dy, dz) за seconds секунд
-    function AnimMoveOn(dx, dy, dz: real; seconds: real := 1): AnimationBase := AnimMoveOn(dx,dy,dz,seconds,nil);
+    function AnimMoveBy(dx, dy, dz: real; seconds: real := 1): AnimationBase := AnimMoveBy(dx,dy,dz,seconds,nil);
 
     /// Возвращает анимацию перемещения объекта на вектор v за seconds секунд. В конце анимации выполняется процедура Completed
-    function AnimMoveOn(v: Vector3D; seconds: real; Completed: procedure) := AnimMoveOn(v.x, v.y, v.z, seconds, Completed);
+    function AnimMoveBy(v: Vector3D; seconds: real; Completed: procedure) := AnimMoveBy(v.x, v.y, v.z, seconds, Completed);
     /// Возвращает анимацию перемещения объекта на вектор v за seconds секунд
-    function AnimMoveOn(v: Vector3D; seconds: real := 1) := AnimMoveOn(v.x, v.y, v.z, seconds, nil);
+    function AnimMoveBy(v: Vector3D; seconds: real := 1) := AnimMoveBy(v.x, v.y, v.z, seconds, nil);
 
     /// Возвращает анимацию перемещения объекта по оси OX на величину dx за seconds секунд. В конце анимации выполняется процедура Completed
-    function AnimMoveOnX(dx: real; seconds: real; Completed: procedure) := AnimMoveOn(dx, 0, 0, seconds, Completed);
+    function AnimMoveByX(dx: real; seconds: real; Completed: procedure) := AnimMoveBy(dx, 0, 0, seconds, Completed);
     /// Возвращает анимацию перемещения объекта по оси OX на величину dx за seconds секунд
-    function AnimMoveOnX(dx: real; seconds: real) := AnimMoveOnX(dx, seconds, nil);
+    function AnimMoveByX(dx: real; seconds: real) := AnimMoveByX(dx, seconds, nil);
     /// Возвращает анимацию перемещения объекта по оси OX на величину dx за 1 секунду
-    function AnimMoveOnX(dx: real) := AnimMoveOnX(dx, 1, nil);
+    function AnimMoveByX(dx: real) := AnimMoveByX(dx, 1, nil);
 
     /// Возвращает анимацию перемещения объекта по оси OY на величину dy за seconds секунд. В конце анимации выполняется процедура Completed
-    function AnimMoveOnY(dy: real; seconds: real; Completed: procedure) := AnimMoveOn(0, dy, 0, seconds, Completed);
+    function AnimMoveByY(dy: real; seconds: real; Completed: procedure) := AnimMoveBy(0, dy, 0, seconds, Completed);
     /// Возвращает анимацию перемещения объекта по оси OY на величину dy за seconds секунд
-    function AnimMoveOnY(dy: real; seconds: real) := AnimMoveOnY(dy, seconds, nil);
+    function AnimMoveByY(dy: real; seconds: real) := AnimMoveByY(dy, seconds, nil);
     /// Возвращает анимацию перемещения объекта по оси OZ на величину dz за 1 секунду
-    function AnimMoveOnY(dy: real) := AnimMoveOnY(dy, 1, nil);
+    function AnimMoveByY(dy: real) := AnimMoveByY(dy, 1, nil);
 
     /// Возвращает анимацию перемещения объекта по оси OZ на величину dz за seconds секунд. В конце анимации выполняется процедура Completed
-    function AnimMoveOnZ(dz: real; seconds: real; Completed: procedure) := AnimMoveOn(0, 0, dz, seconds, Completed);
+    function AnimMoveByZ(dz: real; seconds: real; Completed: procedure) := AnimMoveBy(0, 0, dz, seconds, Completed);
     /// Возвращает анимацию перемещения объекта по оси OZ на величину dz за seconds секунд
-    function AnimMoveOnZ(dz: real; seconds: real) := AnimMoveOnZ(dz, seconds, nil);
+    function AnimMoveByZ(dz: real; seconds: real) := AnimMoveByZ(dz, seconds, nil);
     /// Возвращает анимацию перемещения объекта по оси OZ на величину dz за 1 секунду
-    function AnimMoveOnZ(dz: real) := AnimMoveOnZ(dz, 1, nil);
+    function AnimMoveByZ(dz: real) := AnimMoveByZ(dz, 1, nil);
 
     /// Возвращает анимацию масштабирования объекта на величину sc за seconds секунд. В конце анимации выполняется процедура Completed
     function AnimScale(sc: real; seconds: real; Completed: procedure): AnimationBase;
@@ -2795,7 +2809,7 @@ function Object3D.AnimMoveTo(x, y, z, seconds: real; Completed: procedure) := ne
 
 function Object3D.AnimMoveTrajectory(trajectory: sequence of Point3D; seconds: real; Completed: procedure) := new OffsetAnimationUsingKeyframes(Self, seconds, trajectory, Completed);
 
-function Object3D.AnimMoveOn(dx, dy, dz, seconds: real; Completed: procedure) := new OffsetAnimationOn(Self, seconds, dx, dy, dz, Completed);
+function Object3D.AnimMoveBy(dx, dy, dz, seconds: real; Completed: procedure) := new OffsetAnimationOn(Self, seconds, dx, dy, dz, Completed);
 
 function Object3D.AnimScale(sc, seconds: real; Completed: procedure) := new ScaleAnimation(Self, seconds, sc, Completed);
 
