@@ -6959,6 +6959,19 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(bigint_const _bigint_const)
+		{
+			bw.Write((Int16)255);
+			write_bigint_const(_bigint_const);
+		}
+
+		public void write_bigint_const(bigint_const _bigint_const)
+		{
+			write_const_node(_bigint_const);
+			bw.Write(_bigint_const.val);
+		}
+
 	}
 
 

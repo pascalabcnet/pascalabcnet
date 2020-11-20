@@ -530,6 +530,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new array_const_new();
 				case 254:
 					return new semantic_ith_element_of();
+				case 255:
+					return new bigint_const();
 			}
 			return null;
 		}
@@ -4443,6 +4445,18 @@ namespace PascalABCCompiler.SyntaxTree
 			read_expression(_semantic_ith_element_of);
 			_semantic_ith_element_of.id = _read_node() as ident;
 			_semantic_ith_element_of.index = _read_node() as expression;
+		}
+
+
+		public void visit(bigint_const _bigint_const)
+		{
+			read_bigint_const(_bigint_const);
+		}
+
+		public void read_bigint_const(bigint_const _bigint_const)
+		{
+			read_const_node(_bigint_const);
+			_bigint_const.val = br.ReadUInt64();
 		}
 
 	}

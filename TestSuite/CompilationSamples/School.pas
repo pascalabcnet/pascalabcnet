@@ -26,6 +26,9 @@ function Dec(s: string; base: integer): int64;
 /// Перевод из системы по основанию base [2..36] в десятичную
 function DecBig(s: string; base: integer): BigInteger;
 
+/// Перевод BigInteger в систему счисления по основанию base (2..36)
+function ToBase(BI: BigInteger; base: integer): string;
+
 /// Перевод десятичного числа в систему счисления по основанию base (2..36)
 function ToBase(sDec: string; base: integer): string;
 
@@ -183,6 +186,8 @@ end;
 
 {$endregion}
 
+const sb = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
 {$region Dec}
 
 function Dec(s: string; base: integer): int64;
@@ -190,7 +195,6 @@ begin
   if not (base in 2..36) then
     raise new School_InvalidBase
     ($'ToDecimal: Недопустимое основание {base}');
-  var sb := '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   s := s.ToUpper;
   var r := s.Except(sb[:base + 1]).JoinToString;
   if r.Length > 0 then
@@ -211,7 +215,6 @@ begin
   if not (base in 2..36) then
     raise new School_InvalidBase
     ($'ToDecimal: Недопустимое основание {base}');
-  var sb := '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   s := s.ToUpper;
   var r := s.Except(sb[:base + 1]).JoinToString;
   if r.Length > 0 then
@@ -226,36 +229,37 @@ begin
     pa *= base
   end
 end;
+{$endregion}
 
+{$region ToBase}
+
+/// Перевод BigInteger в систему счисления по основанию base (2..36)
+function ToBase(BI: BigInteger; base: integer): string;
+begin
+  var s := new System.Text.StringBuilder('');
+  while BI > 0 do 
+  begin
+    s.Insert(0,sb[integer(BI mod base) + 1]);
+    BI := BI div base
+  end;
+  Result := if s.Length = 0 then '0' else s.ToString
+end;
+  
+/// Перевод BigInteger в систему счисления по основанию base (2..36)
+function ToBase(Self: BigInteger; base: integer): string; extensionmethod :=
+  ToBase(Self, base);
+  
 /// Перевод десятичного числа в систему счисления по основанию base (2..36)
 function ToBase(sDec: string; base: integer): string;
 begin
   var n: BigInteger;
-  if not BigInteger.TryParse(sDec, n) then exit;
-  var s := '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  Result := '';
-  while n > 0 do 
-  begin
-    Result := s[integer(n mod base) + 1] + Result;
-    n := n div base
-  end;
-  if Result = '' then Result := '0'
+  if BigInteger.TryParse(sDec, n) then
+    Result := ToBase(n, base)
 end;
 
 /// Перевод десятичного числа в систему счисления по основанию base (2..36)
-function ToBase(Self: string; base: integer): string; extensionmethod;
-begin
-  var n: BigInteger;
-  if not BigInteger.TryParse(Self, n) then exit;
-  var s := '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  Result := '';
-  while n > 0 do 
-  begin
-    Result := s[integer(n mod base) + 1] + Result;
-    n := n div base
-  end;
-  if Result = '' then Result := '0'
-end;
+function ToBase(Self: string; base: integer): string; extensionmethod :=
+  ToBase(Self, base);
 
 {$endregion}
 

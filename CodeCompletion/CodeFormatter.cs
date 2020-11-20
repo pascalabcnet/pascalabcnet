@@ -3439,6 +3439,11 @@ namespace CodeFormatters
             visit_node(dn.left);
             visit_node(dn.right);
         }
+        public override void visit(bigint_const bi)
+        {
+            visit(new uint64_const(bi.val,bi.source_context));
+            //sb.Append("bi");
+        }
         #endregion
     }
 }
