@@ -3748,6 +3748,17 @@ namespace PascalABCCompiler.TreeConverter
                             AddError(get_location(_class_definition), "STATIC_CLASS_CANNOT_HAVE_PARENT");
                         type_node tn = ret.visit(_class_definition.class_parents.types[0]);
                         //if (tn == context.converted_type)
+                        
+                        //(voloshin) Typeclasses проверка, если параметр инстанса не является интерфейсом
+                        if (TypeclassHelper.IsInstance(_class_definition.Parent as SyntaxTree.type_declaration))
+                        {
+                            var cgtn = tn as common_generic_instance_type_node;
+                            if (cgtn.generic_parameters.Any(x => x.IsInterface))
+                            {
+                                AddError(get_location(_class_definition), "INTERFACE_CANNOT_IMPLEMENT_INSTANCE");
+                            }
+                        }
+
                         if (type_table.original_types_equals(tn, context.converted_type))
                             AddError(new UndefinedNameReference(tn.name, get_location(_class_definition.class_parents.types[0])));
                         if (tn.IsSealed)

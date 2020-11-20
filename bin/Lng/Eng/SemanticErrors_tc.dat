@@ -3,3 +3,4 @@ INSTANCE_{0}_DOES_NOT_IMPLEMENT_REQUIREMENT_{1}_OF_TYPECLASS_{2}=Instance {0} do
 NO_INSTANCES_FOR_TYPECLASS_{0}=Can't infer instance for typeclass {0}, please specify instance explicitly
 SHORT_FUNCTIONS_NOT_ALLOWED_IN_TYPECLASSES=It's not allowed to use short functions with typeclasses
 NO_RESTRICTION_{0}_IN_TYPECLASS_{1}=There is no restriction {0} in typeclass {1}
+INTERFACE_CANNOT_IMPLEMENT_INSTANCE=Interface can not implement typeclass

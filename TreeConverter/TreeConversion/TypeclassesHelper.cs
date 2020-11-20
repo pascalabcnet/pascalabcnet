@@ -26,6 +26,15 @@ namespace PascalABCCompiler.TreeConverter
             return isInstance.HasValue && isInstance.Value;
         }
 
+        public static bool IsInstance(SyntaxTree.type_declaration td)
+        {
+            var attributes = td?.attributes?.attributes;
+            if (attributes == null || attributes.Count == 0)
+                return false;
+            var isInstance = attributes[0]?.attributes?.Any(x => x.type.FirstIdent.name == "__TypeclassInstanceAttribute");
+            return isInstance.HasValue && isInstance.Value;
+        }
+
         public static common_type_node GetTopClass(compilation_context context)
         {
             return (context.CurrentScope.TopScope as SymbolTable.ClassScope)?.class_type;
