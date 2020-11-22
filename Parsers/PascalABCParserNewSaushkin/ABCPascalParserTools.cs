@@ -349,6 +349,22 @@ namespace PascalABCSavParser
             return create_int_const(text, sc, System.Globalization.NumberStyles.Integer);
         }
 
+        public const_node create_bigint_const(string text, SourceContext sc)
+        {
+            var txt = text.Substring(0, text.Length - 2);
+            const_node cn = new bigint_const();
+            try
+            {
+                (cn as bigint_const).val = System.UInt64.Parse(txt);
+            }
+            catch (Exception)
+            {
+                errors.Add(new BadInt(CurrentFileName, sc, null));
+            }
+            cn.source_context = sc;
+            return cn;
+        }
+
         public const_node create_int_const(string text, SourceContext sc, System.Globalization.NumberStyles NumberStyles)
         {
             //таблица целых констант на уровне синтаксиса

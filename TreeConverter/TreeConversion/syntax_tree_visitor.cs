@@ -17272,6 +17272,15 @@ namespace PascalABCCompiler.TreeConverter
             return;
         }
 
+        public override void visit(SyntaxTree.bigint_const bi)
+        {
+            var names = new List<ident> { new ident("System"), new ident("Numerics"), new ident("BigInteger") };
+            var ntr = new named_type_reference(names, bi.source_context);
+            var ne = new new_expr(ntr, new expression_list(new uint64_const(bi.val)),bi.source_context);
+            visit(ne);
+        }
+
+        
         public override void visit(SyntaxTree.int32_const int32)
         {
 

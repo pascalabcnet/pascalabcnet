@@ -1282,6 +1282,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_semantic_ith_element_of);
 		}
+
+		public virtual void visit(bigint_const _bigint_const)
+		{
+			DefaultVisit(_bigint_const);
+		}
 	}
 
 

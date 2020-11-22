@@ -3291,6 +3291,16 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="bigint_const" BaseName="const_node">
+      <Fields>
+        <ExtendedField Name="val" Type="UInt64" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3486,6 +3496,8 @@
       <HelpData Key="attribute_list.attributes" Value="" />
       <HelpData Key="attribute_list.void Add(simple_attribute_list sal, SourceContext sc)" Value="" />
       <HelpData Key="attribute_list.w" Value="" />
+      <HelpData Key="bigint_const" Value="" />
+      <HelpData Key="bigint_const.val" Value="" />
       <HelpData Key="bin_expr" Value="Бинарное выражение" />
       <HelpData Key="bin_expr.left" Value="" />
       <HelpData Key="bin_expr.operation_type" Value="" />
