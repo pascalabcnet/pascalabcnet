@@ -5587,6 +5587,18 @@ namespace CodeCompletion
 
             cnst_val.prim_val = null;
         }
+
+        public override void visit(bigint_const bi)
+        {
+            /*method_call mc = new method_call();
+            mc.parameters = new expression_list(new uint64_const(bi.val, bi.source_context),bi.source_context);
+            mc.dereferencing_value = new dot_node(new ident("System"), new ident("Numerics"), new ident("BigInteger"), new ident("Create"));
+            mc.visit(this);*/
+            var names = new List<ident> { new ident("System"), new ident("Numerics"), new ident("BigInteger") };
+            var ntr = new named_type_reference(names, bi.source_context);
+            var ne = new new_expr(ntr, new expression_list(new uint64_const(bi.val)), bi.source_context);
+            ne.visit(this);
+        }
     }
 }
 
