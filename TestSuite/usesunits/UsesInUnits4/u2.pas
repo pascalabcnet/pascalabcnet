@@ -7,6 +7,6 @@ interface
 
 implementation
 
-uses uses_in3_cycle_uses in '..\uses_in3_cycle_uses';
+uses uses_in4_cycle_uses in '..\uses_in4_cycle_uses';
 
 end.
