@@ -1991,7 +1991,7 @@ namespace PascalABCCompiler
                         else
                             ErrorsList.Add(new ResourceFileNotFound(cd.directive, cd.location));
 
-                    }    
+                    }
                 }
                 string res_file = null;
                 if (project != null)
@@ -2624,7 +2624,7 @@ namespace PascalABCCompiler
             //\MikhailoMMX
 
             var FullFileName = Path.Combine(curr_path, FileName);
-            if (System.IO.File.Exists(FullFileName)) // для отладки с *.inc файлами
+            if (System.IO.File.Exists(FullFileName))
             {
                 var NewFileName = Path.Combine(compilerOptions.OutputDirectory, Path.GetFileName(FullFileName));
                 if (FullFileName != NewFileName) File.Copy(FullFileName, NewFileName, true);
@@ -2801,15 +2801,13 @@ namespace PascalABCCompiler
             string UnitName = null;
             try
             {
-                // "loc == null" для стандартных .dll, как "System.dll"
-                //ToDo а loc.doc было null в тестранере, но я так и не понял почему. не смог воспроизвести в дебаг режиме
-                UnitName = GetReferenceFileName(cd.directive, sc, loc?.doc?.file_name == null ? CompilerOptions.OutputDirectory : Path.GetDirectoryName(loc.doc.file_name));
+                UnitName = GetReferenceFileName(cd.directive, sc, Path.GetDirectoryName(cd.source_file));
             }
             catch (AssemblyNotFound ex)
             {
                 throw;
             }
-            //ToDo плохо, пока дебажил - тут постоянно ловились другие исключения, не связанные с неправильным знаками в путик сборке
+            //ToDo плохо, пока дебажил - тут постоянно ловились другие исключения, не связанные с неправильным знаками в пути к сборке
             catch (Exception ex)
             {
                 throw new InvalidAssemblyPathError(CurrentCompilationUnit.SyntaxTree.file_name, sc);

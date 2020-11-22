@@ -189,16 +189,6 @@ namespace PascalABCCompiler.PCU
             return already_compiled[name] != null;
         }
 
-        /*
-        public static bool ContainsUnit(string FileName, out PCUReader pr)
-        {
-            string unit_name = System.IO.Path.GetFileNameWithoutExtension(FileName);
-            pr = (PCUReader)units[unit_name];
-            if (pr != null) return true;
-            return false;
-        }
-        */
-
         public static void CloseUnits()
         {
             AllReadOrWritedDefinitionNodesOffsets.Clear();

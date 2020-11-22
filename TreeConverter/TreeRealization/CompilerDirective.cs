@@ -11,7 +11,7 @@ namespace PascalABCCompiler.TreeRealization
         public string name;
         public string directive;
         public location location;
-        public string source_file; // файл из которого загрузили директиву. в отличии от location - может указывать на .pcu
+        public string source_file; // Файл из которого загрузили директиву. В отличии от location - может указывать на .pcu
 
         public compiler_directive(string name, string directive, location loc, string source_file)
         {
