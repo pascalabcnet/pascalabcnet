@@ -2984,23 +2984,23 @@ namespace PascalABCCompiler
                 directives = ConvertDirectives(Unit.SyntaxTree);
             if (CompilerOptions.UseDllForSystemUnits)
             {
-                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\PABCRtl.dll", null, null));
-                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\mscorlib.dll", null, null));
-                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.dll", null, null));
-                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.Core.dll", null, null));
-                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.Numerics.dll", null, null));
-                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.Windows.Forms.dll", null, null));
-                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.Drawing.dll", null, null));
+                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\PABCRtl.dll", null, "."));
+                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\mscorlib.dll", null, "."));
+                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.dll", null, "."));
+                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.Core.dll", null, "."));
+                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.Numerics.dll", null, "."));
+                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.Windows.Forms.dll", null, "."));
+                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.Drawing.dll", null, "."));
                 if (Unit.SyntaxTree is SyntaxTree.program_module && (Unit.SyntaxTree as SyntaxTree.program_module).used_units != null)
                 foreach (SyntaxTree.unit_or_namespace uui in (Unit.SyntaxTree as SyntaxTree.program_module).used_units.units)
                 {
                     if (uui.name.ToString() == "Graph3D")
                     {
-                        directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\PresentationFramework.dll", null, null));
-                        directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\WindowsBase.dll", null, null));
-                        directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\PresentationCore.dll", null, null));
-                        directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\HelixToolkit.Wpf.dll", null, null));
-                        directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\HelixToolkit.dll", null, null));
+                        directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\PresentationFramework.dll", null, "."));
+                        directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\WindowsBase.dll", null, "."));
+                        directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\PresentationCore.dll", null, "."));
+                        directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\HelixToolkit.Wpf.dll", null, "."));
+                        directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\HelixToolkit.dll", null, "."));
                     }
                 }
             }
@@ -3018,7 +3018,7 @@ namespace PascalABCCompiler
             {
             	foreach (ReferenceInfo ri in project.references)
             	{
-            		CompileReference(res,new TreeRealization.compiler_directive("reference",ri.full_assembly_name,null,null));
+                    CompileReference(res, new TreeRealization.compiler_directive("reference", ri.full_assembly_name, null, project.MainFile));
             	}
             }
             return res;
