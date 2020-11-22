@@ -9745,6 +9745,37 @@ begin
     Result += f(x);
 end;}
 
+/// Возвращает сумму элементов последовательности
+function Sum(Self: sequence of BigInteger): BigInteger; extensionmethod;
+begin
+  Result := 0bi;
+  foreach var a in Self do
+    Result += a
+end;
+
+/// Возвращает среднее элементов последовательности
+function Average(Self: sequence of BigInteger): real; extensionmethod;
+begin
+  var cnt := 0;
+  var sum := 0bi;
+  foreach var a in Self do
+  begin
+    sum += a;
+    cnt += 1;
+  end;  
+  if cnt <> 0 then 
+    Result := sum/cnt
+  else Result := 0
+end;
+
+/// Возвращает произведение элементов последовательности
+function Product(Self: sequence of BigInteger): BigInteger; extensionmethod;
+begin
+  Result := 0bi;
+  foreach var a in Self do
+    Result += a
+end;
+
 
 /// Возвращает отсортированную по возрастанию последовательность
 function Sorted<T>(Self: sequence of T): sequence of T; extensionmethod;
