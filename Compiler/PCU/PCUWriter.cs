@@ -1028,8 +1028,8 @@ namespace PascalABCCompiler.PCU
             var incl_modules = new List<string>(c1 + c2);
             foreach (var used_unit in unit.InterfaceUsedUnits.OfType<common_unit_node>())
             {
-                // каждый модуль, зачем то, подключён сам к себе
-                // конечно, записи в unit_uses_paths для такого подключения - нет
+                // Каждый модуль, зачем то, подключён сам к себе
+                // Конечно, записи в unit_uses_paths для такого подключения - нет
                 if (unit.SemanticTree == used_unit) continue;
 
                 // AddIndirectInteraceUsedUnits может добавлять один и тот же модуль несколько раз
@@ -1053,8 +1053,10 @@ namespace PascalABCCompiler.PCU
                 incl_modules.Add(unit.ImplementationUsedUnits.unit_uses_paths[used_unit]);
 
             }
-            pcu_file.incl_modules = incl_modules.ToArray();
 
+            used_units.Add(unit.SemanticTree as common_unit_node, -1);
+
+            pcu_file.incl_modules = incl_modules.ToArray();
             pcu_file.used_namespaces = cun.used_namespaces.ToArray();
 		}
 		

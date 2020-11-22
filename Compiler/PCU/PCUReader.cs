@@ -237,9 +237,22 @@ namespace PascalABCCompiler.PCU
             return FullUnitName;
         }
 
+        private PCUReader GetPCUReaderForUnitId(int id)
+        {
+            if (id == -1) return this;
+            string s = GetFullUnitName(pcu_file.incl_modules[id]);
+            var pr = (PCUReader)units[s];
+            if (pr == null)
+            {
+                pr = new PCUReader(this);
+                pr.GetCompilationUnit(s, this.readDebugInfo);
+            }
+            return pr;
+        }
+
         //десериализация модуля
         //читается только шапка PCU и заполняются имена сущностей модуля в таблицу символов
-		public CompilationUnit GetCompilationUnit(string FileName, bool readDebugInfo)
+        public CompilationUnit GetCompilationUnit(string FileName, bool readDebugInfo)
 		{
             try
             {
@@ -1011,46 +1024,16 @@ namespace PascalABCCompiler.PCU
 		
         //получение импорт. типа
 		private type_node ReadCommonExtType()
-		{
-			int pos = br.ReadInt32();
-			string s = GetFullUnitName(pcu_file.incl_modules[pos]);
-
-            PCUReader pr = (PCUReader)units[s];//вдруг этот модуль уже читается
-			if (pr == null)//это по моему чёс, так как все модули уже добавлены 
-			{
-				pr = new PCUReader(this);//если нет, то создаем ридер
-                CompilationUnit cu = pr.GetCompilationUnit(s, this.readDebugInfo);
-                type_node tn = pr.GetTypeReference(br.ReadInt32());
-				units[s] = pr;//добавляем в таблицу ридеров
-				return tn;
-			}
-			else
-			{
-				type_node tn = pr.GetTypeReference(br.ReadInt32());
-				return tn;
-			}
+        {
+            var pr = GetPCUReaderForUnitId(br.ReadInt32());
+            return pr.GetTypeReference(br.ReadInt32());
 		}
 
         //(ssyy) Получение шаблонного класса
         private template_class ReadTemplateExtClass()
         {
-            int pos = br.ReadInt32();
-            string s = GetFullUnitName(pcu_file.incl_modules[pos]);
-
-            PCUReader pr = (PCUReader)units[s];//вдруг этот модуль уже читается
-            if (pr == null)//это по моему чёс, так как все модули уже добавлены 
-            {
-                pr = new PCUReader(this);//если нет, то создаем ридер
-                CompilationUnit cu = pr.GetCompilationUnit(s, this.readDebugInfo);
-                template_class tc = pr.GetTemplateClass(br.ReadInt32());
-                units[s] = pr;//добавляем в таблицу ридеров
-                return tc;
-            }
-            else
-            {
-                template_class tc = pr.GetTemplateClass(br.ReadInt32());
-                return tc;
-            }
+            var pr = GetPCUReaderForUnitId(br.ReadInt32());
+            return pr.GetTemplateClass(br.ReadInt32());
         }
 		
         //получение откомпил. типа
@@ -1119,67 +1102,27 @@ namespace PascalABCCompiler.PCU
 			br.BaseStream.Seek(tmp,SeekOrigin.Begin);
 			return ctn;
 		}
-		
+
         //получение импортируемой функции
-		private common_namespace_function_node ReadCommonExtNamespaceFunc()
+        private common_namespace_function_node ReadCommonExtNamespaceFunc()
 		{
 			br.ReadByte();
-			int pos = br.ReadInt32();
-			string s = GetFullUnitName(pcu_file.incl_modules[pos]);
-			PCUReader pr = (PCUReader)units[s];
-			if (pr == null)
-			{
-				pr = new PCUReader(this);
-                CompilationUnit cu = pr.GetCompilationUnit(s, this.readDebugInfo);
-				int offset = br.ReadInt32();
-				common_namespace_function_node cffn = pr.GetNamespaceFunction(offset);
-				return cffn;
-			}
-			else
-			{
-				common_namespace_function_node cffn = pr.GetNamespaceFunction(br.ReadInt32());
-				return cffn;
-			}
+            var pr = GetPCUReaderForUnitId(br.ReadInt32());
+            return pr.GetNamespaceFunction(br.ReadInt32());
 		}
 		
 		private namespace_variable ReadExtNamespaceVariable()
 		{
 			br.ReadByte();
-			int pos = br.ReadInt32();
-			string s = GetFullUnitName(pcu_file.incl_modules[pos]);
-			PCUReader pr = (PCUReader)units[s];
-			if (pr == null)
-			{
-				pr = new PCUReader(this);
-                CompilationUnit cu = pr.GetCompilationUnit(s, this.readDebugInfo);
-                namespace_variable nv = pr.GetNamespaceVariable(br.ReadInt32());
-				return nv;
-			}
-			else
-			{
-				namespace_variable nv = pr.GetNamespaceVariable(br.ReadInt32());
-				return nv;
-			}
+            var pr = GetPCUReaderForUnitId(br.ReadInt32());
+            return pr.GetNamespaceVariable(br.ReadInt32());
 		}
 		
 		private namespace_constant_definition ReadExtNamespaceConstant()
 		{
 			br.ReadByte();
-			int pos = br.ReadInt32();
-			string s = GetFullUnitName(pcu_file.incl_modules[pos]);
-			PCUReader pr = (PCUReader)units[s];
-			if (pr == null)
-			{
-				pr = new PCUReader(this);
-                CompilationUnit cu = pr.GetCompilationUnit(s, this.readDebugInfo);
-                namespace_constant_definition nv = pr.GetConstantDefinition(br.ReadInt32());
-				return nv;
-			}
-			else
-			{
-				namespace_constant_definition nv = pr.GetConstantDefinition(br.ReadInt32());
-				return nv;
-			}
+            var pr = GetPCUReaderForUnitId(br.ReadInt32());
+            return pr.GetConstantDefinition(br.ReadInt32());
 		}
 
         private common_namespace_event ReadCommonNamespaceExtEvent()
@@ -1189,22 +1132,9 @@ namespace PascalABCCompiler.PCU
             int tmp = (int)br.BaseStream.Position;
             br.BaseStream.Seek(ext_pos + offset, SeekOrigin.Begin);
             br.ReadByte();//DS Changed
-            int pos = br.ReadInt32();
-            string s = GetFullUnitName(pcu_file.incl_modules[pos]);
-            PCUReader pr = (PCUReader)units[s];
+            var pr = GetPCUReaderForUnitId(br.ReadInt32());
             br.BaseStream.Seek(tmp, SeekOrigin.Begin);
-            if (pr == null)
-            {
-                pr = new PCUReader(this);
-                CompilationUnit cu = pr.GetCompilationUnit(s, this.readDebugInfo);
-                common_namespace_event ev = pr.GetNamespaceEventNode(br.ReadInt32());
-                return ev;
-            }
-            else
-            {
-                common_namespace_event ev = pr.GetNamespaceEventNode(br.ReadInt32());
-                return ev;
-            }
+            return pr.GetNamespaceEventNode(br.ReadInt32());
         }
 
         private common_event ReadCommonExtEvent()
@@ -1214,22 +1144,9 @@ namespace PascalABCCompiler.PCU
             int tmp = (int)br.BaseStream.Position;
             br.BaseStream.Seek(ext_pos + offset, SeekOrigin.Begin);
             br.ReadByte();//DS Changed
-            int pos = br.ReadInt32();
-            string s = GetFullUnitName(pcu_file.incl_modules[pos]);
-            PCUReader pr = (PCUReader)units[s];
+            var pr = GetPCUReaderForUnitId(br.ReadInt32());
             br.BaseStream.Seek(tmp, SeekOrigin.Begin);
-            if (pr == null)
-            {
-                pr = new PCUReader(this);
-                CompilationUnit cu = pr.GetCompilationUnit(s, this.readDebugInfo);
-                common_event ev = pr.GetEventNode(br.ReadInt32());
-                return ev;
-            }
-            else
-            {
-                common_event ev = pr.GetEventNode(br.ReadInt32());
-                return ev;
-            }
+            return pr.GetEventNode(br.ReadInt32());
         }
 
         private class_field ReadCommonExtField()
@@ -1239,22 +1156,9 @@ namespace PascalABCCompiler.PCU
             int tmp = (int)br.BaseStream.Position;
             br.BaseStream.Seek(ext_pos + offset, SeekOrigin.Begin);
             br.ReadByte();//DS Changed
-            int pos = br.ReadInt32();
-            string s = GetFullUnitName(pcu_file.incl_modules[pos]);
-            PCUReader pr = (PCUReader)units[s];
+            var pr = GetPCUReaderForUnitId(br.ReadInt32());
             br.BaseStream.Seek(tmp, SeekOrigin.Begin);
-            if (pr == null)
-            {
-                pr = new PCUReader(this);
-                CompilationUnit cu = pr.GetCompilationUnit(s, this.readDebugInfo);
-                class_field field = pr.GetClassField(br.ReadInt32());
-                return field;
-            }
-            else
-            {
-                class_field field = pr.GetClassField(br.ReadInt32());
-                return field;
-            }
+            return pr.GetClassField(br.ReadInt32());
         }
 
         private common_method_node ReadCommonExtMethod()
@@ -1264,22 +1168,9 @@ namespace PascalABCCompiler.PCU
             int tmp = (int)br.BaseStream.Position;
             br.BaseStream.Seek(ext_pos + offset, SeekOrigin.Begin);
             br.ReadByte();//DS Changed
-            int pos = br.ReadInt32();
-            string s = GetFullUnitName(pcu_file.incl_modules[pos]);
-            PCUReader pr = (PCUReader)units[s];
+            var pr = GetPCUReaderForUnitId(br.ReadInt32());
             br.BaseStream.Seek(tmp, SeekOrigin.Begin);
-            if (pr == null)
-            {
-                pr = new PCUReader(this);
-                CompilationUnit cu = pr.GetCompilationUnit(s, this.readDebugInfo);
-                common_method_node meth = pr.GetClassMethod(br.ReadInt32());
-                return meth;
-            }
-            else
-            {
-                common_method_node meth = pr.GetClassMethod(br.ReadInt32());
-                return meth;
-            }
+            return pr.GetClassMethod(br.ReadInt32());
         }
 
         private common_property_node ReadCommonExtProperty()
@@ -1289,22 +1180,9 @@ namespace PascalABCCompiler.PCU
             int tmp = (int)br.BaseStream.Position;
             br.BaseStream.Seek(ext_pos + offset, SeekOrigin.Begin);
             br.ReadByte();//DS Changed
-            int pos = br.ReadInt32();
-            string s = GetFullUnitName(pcu_file.incl_modules[pos]);
-            PCUReader pr = (PCUReader)units[s];
+            var pr = GetPCUReaderForUnitId(br.ReadInt32());
             br.BaseStream.Seek(tmp, SeekOrigin.Begin);
-            if (pr == null)
-            {
-                pr = new PCUReader(this);
-                CompilationUnit cu = pr.GetCompilationUnit(s, this.readDebugInfo);
-                common_property_node prop = pr.GetPropertyNode(br.ReadInt32());
-                return prop;
-            }
-            else
-            {
-                common_property_node prop = pr.GetPropertyNode(br.ReadInt32());
-                return prop;
-            }
+            return pr.GetPropertyNode(br.ReadInt32());
         }
 
         //получение типа, описанного в этом модуле (может вызываться извне)
