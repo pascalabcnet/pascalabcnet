@@ -628,7 +628,7 @@ type
       Result := (l = r2.l) and (h = r2.h);
     end;
     function GetHashCode: integer; override := l.GetHashCode xor h.GetHashCode;
-    function ToArray: array of integer;
+    {function ToArray: array of integer;
     begin
       Result := new integer[Count];
       var x := l;
@@ -640,14 +640,14 @@ type
     end;
     function ToList: List<integer>;
     begin
-      Result := new List<integer>;
+      Result := new List<integer>(Count);
       var x := l;
       loop Count do
       begin
         Result.Add(x);
         x += 1;
       end;  
-    end;
+    end;}
     function ToLinkedList: LinkedList<integer>;
     begin
       Result := new LinkedList<integer>(System.Linq.Enumerable.Range(l,Count));
@@ -701,7 +701,7 @@ type
     end;
     function GetHashCode: integer; override := l.GetHashCode xor h.GetHashCode;
     
-    function ToArray: array of char;
+    {function ToArray: array of char;
     begin
       Result := new char[Count];
       var x := l;
@@ -720,7 +720,7 @@ type
         Result.Add(x);
         x := char(integer(x) + 1);
       end;  
-    end;
+    end;}
     function ToLinkedList: LinkedList<char>;
     begin
       Result := new LinkedList<char>(System.Linq.Enumerable.Range(integer(l),Count).Select(i -> char(i)));
