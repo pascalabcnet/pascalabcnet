@@ -2142,6 +2142,10 @@ function NextPermutation(a: array of integer): boolean;
 function Range(a, b: integer): sequence of integer;
 /// Возвращает последовательность целых от a до b с шагом step
 function Range(a, b, step: integer): sequence of integer;
+/// Возвращает последовательность длинных целых от a до b
+function Range(a, b: BigInteger): sequence of BigInteger;
+/// Возвращает последовательность длинных целых от a до b с шагом step
+function Range(a, b, step: BigInteger): sequence of BigInteger;
 /// Возвращает последовательность символов от c1 до c2
 function Range(c1, c2: char): sequence of char;
 /// Возвращает последовательность символов от c1 до c2 с шагом step
@@ -4557,7 +4561,7 @@ begin
   else Result := System.Linq.Enumerable.Range(a, b - a + 1);
 end;
 
-function Range(a, b: real; n: integer): sequence of real;
+function PartitionPoints(a, b: real; n: integer): sequence of real;
 begin
   if n = 0 then
     raise new System.ArgumentException('Range: n=0');
@@ -4582,10 +4586,25 @@ begin
   Result := Range(integer(c1), integer(c2), step).Select(x -> Chr(x));
 end;
 
-function PartitionPoints(a, b: real; n: integer): sequence of real;
+function Range(a, b, step: BigInteger): sequence of BigInteger;
 begin
-  Result := Range(a, b, n)
+  if step = 0 then
+    raise new System.ArgumentException('step=0');
+  if step > 0 then
+    while a<=b do
+    begin
+      yield a;
+      a += step;
+    end
+  else  
+    while a>=b do
+    begin
+      yield a;
+      a += step;
+    end
 end;
+
+function Range(a, b: BigInteger): sequence of BigInteger := Range(a,b,1);
 
 type
   ArithmSeq = auto class
@@ -9744,6 +9763,40 @@ begin
   foreach var x in Self do
     Result += f(x);
 end;}
+
+// SSM 23/11/2020 - Sum Average Product for sequence of BigInteger
+
+/// Возвращает сумму элементов последовательности
+function Sum(Self: sequence of BigInteger): BigInteger; extensionmethod;
+begin
+  Result := 0bi;
+  foreach var a in Self do
+    Result += a
+end;
+
+/// Возвращает среднее элементов последовательности
+function Average(Self: sequence of BigInteger): real; extensionmethod;
+begin
+  var cnt := 0;
+  var sum := 0bi;
+  foreach var a in Self do
+  begin
+    sum += a;
+    cnt += 1;
+  end;  
+  if cnt <> 0 then 
+    Result := sum/cnt
+  else Result := 0
+end;
+
+/// Возвращает произведение элементов последовательности
+function Product(Self: sequence of BigInteger): BigInteger; extensionmethod;
+begin
+  Result := 1bi;
+  foreach var a in Self do
+    Result *= a
+end;
+
 
 
 /// Возвращает отсортированную по возрастанию последовательность
