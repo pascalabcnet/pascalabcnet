@@ -764,6 +764,8 @@ const_expr
 		{ 
 			$$ = $1; 
 		}
+	| const_expr tkDoubleQuestion const_relop_expr
+		{ $$ = new double_question_node($1 as expression, $3 as expression, @$);}
     ;
 
 question_constexpr
