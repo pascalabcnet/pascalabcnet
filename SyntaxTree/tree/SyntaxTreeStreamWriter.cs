@@ -6972,6 +6972,45 @@ namespace PascalABCCompiler.SyntaxTree
 			bw.Write(_bigint_const.val);
 		}
 
+
+		public void visit(foreach_stmt_formatting _foreach_stmt_formatting)
+		{
+			bw.Write((Int16)256);
+			write_foreach_stmt_formatting(_foreach_stmt_formatting);
+		}
+
+		public void write_foreach_stmt_formatting(foreach_stmt_formatting _foreach_stmt_formatting)
+		{
+			write_statement(_foreach_stmt_formatting);
+			if (_foreach_stmt_formatting.il == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_foreach_stmt_formatting.il.visit(this);
+			}
+			if (_foreach_stmt_formatting.in_what == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_foreach_stmt_formatting.in_what.visit(this);
+			}
+			if (_foreach_stmt_formatting.stmt == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_foreach_stmt_formatting.stmt.visit(this);
+			}
+		}
+
 	}
 
 

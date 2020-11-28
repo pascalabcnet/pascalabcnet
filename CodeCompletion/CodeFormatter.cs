@@ -3441,8 +3441,27 @@ namespace CodeFormatters
         }
         public override void visit(bigint_const bi)
         {
-            visit(new uint64_const(bi.val,bi.source_context));
+            visit(new uint64_const(bi.val, bi.source_context));
             //sb.Append("bi");
+        }
+        public override void visit(foreach_stmt_formatting fe)
+        {
+            WriteKeyword("foreach");
+            SetKeywordOffset("foreach");
+            sb.Append(" var (");
+            visit_node(fe.il);
+            add_space_after = true;
+            add_space_before = true;
+            visit_node(fe.in_what);
+            if (!in_one_row(fe.stmt))
+                add_newline_after = true;
+            add_space_before = true;
+            bool need_off = !(fe.stmt is statement_list);
+            if (need_off)
+                IncOffset();
+            visit_node(fe.stmt);
+            if (need_off)
+                DecOffset();
         }
         #endregion
     }

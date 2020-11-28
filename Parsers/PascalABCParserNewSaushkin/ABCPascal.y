@@ -2980,6 +2980,23 @@ foreach_stmt
         { 
 			$$ = new foreach_stmt($3, new no_type_foreach(), $5, (statement)$7, @$); 
         }
+    | tkForeach tkVar tkRoundOpen ident_list tkRoundClose tkIn expr_l1 tkDo unlabelled_stmt // сахарное правило
+        { 
+        	if (parsertools.build_tree_for_formatter)
+        	{
+        		var il = $4 as ident_list;
+        		il.source_context = LexLocation.MergeAll(@4,@5);
+        		$$ = new foreach_stmt_formatting(il,$7,$9 as statement,@$);
+        	}
+        	else
+        	{
+                var id = NewId("#fe",@4);
+                var tttt = new assign_var_tuple($4 as ident_list, id, @$);
+                statement_list nine = $9 is statement_list ? $9 as statement_list : new statement_list($9 as statement,@9);
+                nine.Insert(0,tttt);
+			    $$ = new foreach_stmt(id, new no_type_foreach(), $7, nine, @$);
+			}
+        }
     ;
 
 foreach_stmt_ident_dype_opt
