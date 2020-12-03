@@ -1,4 +1,4 @@
-begin
+﻿begin
   var Floors := new Dictionary<(cardinal, cardinal), List<integer>>;
   var sz := (1, 2);
   foreach var a{@var a: (cardinal,cardinal);@} in Floors.Keys do

@@ -3858,6 +3858,7 @@
       <HelpData Key="for_node.type_name" Value="" />
       <HelpData Key="foreach_stmt" Value="" />
       <HelpData Key="foreach_stmt." Value="" />
+      <HelpData Key="foreach_stmt.ext" Value="" />
       <HelpData Key="foreach_stmt.identifier" Value="" />
       <HelpData Key="foreach_stmt.in_what" Value="" />
       <HelpData Key="foreach_stmt.stmt" Value="" />

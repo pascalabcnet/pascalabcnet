@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-G8V08V4
-// DateTime: 28.11.2020 12:31:02
+// DateTime: 03.12.2020 22:26:21
 // UserName: ?????????
 // Input file <D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
 
@@ -5457,16 +5457,21 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         	if (parsertools.build_tree_for_formatter)
         	{
         		var il = ValueStack[ValueStack.Depth-6].stn as ident_list;
-        		il.source_context = LexLocation.MergeAll(LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5]);
+        		il.source_context = LexLocation.MergeAll(LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5]); // ����� ��� ��������������
         		CurrentSemanticValue.stn = new foreach_stmt_formatting(il,ValueStack[ValueStack.Depth-3].ex,ValueStack[ValueStack.Depth-1].stn as statement,CurrentLocationSpan);
         	}
         	else
         	{
+        		// ���� �������� - ���������, ��� ����� ������� ������������ ���� ��� ��������
+        		// ��������� ����� � � foreach, �� ���-�� ������ ���� ������, ��� ��� �������� ����
+        		// ��������, ������������� #fe - �� ��� ������ ����
                 var id = NewId("#fe",LocationStack[LocationStack.Depth-6]);
                 var tttt = new assign_var_tuple(ValueStack[ValueStack.Depth-6].stn as ident_list, id, CurrentLocationSpan);
                 statement_list nine = ValueStack[ValueStack.Depth-1].stn is statement_list ? ValueStack[ValueStack.Depth-1].stn as statement_list : new statement_list(ValueStack[ValueStack.Depth-1].stn as statement,LocationStack[LocationStack.Depth-1]);
                 nine.Insert(0,tttt);
-			    CurrentSemanticValue.stn = new foreach_stmt(id, new no_type_foreach(), ValueStack[ValueStack.Depth-3].ex, nine, CurrentLocationSpan);
+			    var fe = new foreach_stmt(id, new no_type_foreach(), ValueStack[ValueStack.Depth-3].ex, nine, CurrentLocationSpan);
+			    fe.ext = ValueStack[ValueStack.Depth-6].stn as ident_list;
+			    CurrentSemanticValue.stn = fe;
 			}
         }
         break;

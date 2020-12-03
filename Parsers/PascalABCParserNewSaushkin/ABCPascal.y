@@ -2985,16 +2985,21 @@ foreach_stmt
         	if (parsertools.build_tree_for_formatter)
         	{
         		var il = $4 as ident_list;
-        		il.source_context = LexLocation.MergeAll(@4,@5);
+        		il.source_context = LexLocation.MergeAll(@4,@5); // нужно дл€ форматировани€
         		$$ = new foreach_stmt_formatting(il,$7,$9 as statement,@$);
         	}
         	else
         	{
+        		// ≈сть проблема - непон€тно, где здесь сделать семантческий узед дл€ проверки
+        		// ѕроверить можно и в foreach, но где-то должен быть маркер, что это сахарный узел
+        		// Ќапример, идентификатор #fe - но это плоха€ иде€
                 var id = NewId("#fe",@4);
                 var tttt = new assign_var_tuple($4 as ident_list, id, @$);
                 statement_list nine = $9 is statement_list ? $9 as statement_list : new statement_list($9 as statement,@9);
                 nine.Insert(0,tttt);
-			    $$ = new foreach_stmt(id, new no_type_foreach(), $7, nine, @$);
+			    var fe = new foreach_stmt(id, new no_type_foreach(), $7, nine, @$);
+			    fe.ext = $4 as ident_list;
+			    $$ = fe;
 			}
         }
     ;
