@@ -264,6 +264,7 @@ PupilMark = auto class
 
 function ЗаполнитьМассивСтран: array of Страна;
 begin
+  
   var fname := 'c:\Program files (x86)\PascalABC.NET\Files\Databases\Страны.csv';
   if fname = '' then
     raise new System.ApplicationException('Не найден массив стран Databases\Страны.csv');

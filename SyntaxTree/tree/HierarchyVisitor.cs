@@ -2053,6 +2053,14 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(foreach_stmt_formatting _foreach_stmt_formatting)
+		{
+		}
+
+		public virtual void post_do_visit(foreach_stmt_formatting _foreach_stmt_formatting)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -4237,6 +4245,16 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_bigint_const);
 			pre_do_visit(_bigint_const);
 			post_do_visit(_bigint_const);
+		}
+
+		public override void visit(foreach_stmt_formatting _foreach_stmt_formatting)
+		{
+			DefaultVisit(_foreach_stmt_formatting);
+			pre_do_visit(_foreach_stmt_formatting);
+			visit(foreach_stmt_formatting.il);
+			visit(foreach_stmt_formatting.in_what);
+			visit(foreach_stmt_formatting.stmt);
+			post_do_visit(_foreach_stmt_formatting);
 		}
 	}
 

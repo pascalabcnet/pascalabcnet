@@ -628,7 +628,7 @@ type
       Result := (l = r2.l) and (h = r2.h);
     end;
     function GetHashCode: integer; override := l.GetHashCode xor h.GetHashCode;
-    function ToArray: array of integer;
+    {function ToArray: array of integer;
     begin
       Result := new integer[Count];
       var x := l;
@@ -640,14 +640,14 @@ type
     end;
     function ToList: List<integer>;
     begin
-      Result := new List<integer>;
+      Result := new List<integer>(Count);
       var x := l;
       loop Count do
       begin
         Result.Add(x);
         x += 1;
       end;  
-    end;
+    end;}
     function ToLinkedList: LinkedList<integer>;
     begin
       Result := new LinkedList<integer>(System.Linq.Enumerable.Range(l,Count));
@@ -701,7 +701,7 @@ type
     end;
     function GetHashCode: integer; override := l.GetHashCode xor h.GetHashCode;
     
-    function ToArray: array of char;
+    {function ToArray: array of char;
     begin
       Result := new char[Count];
       var x := l;
@@ -720,7 +720,7 @@ type
         Result.Add(x);
         x := char(integer(x) + 1);
       end;  
-    end;
+    end;}
     function ToLinkedList: LinkedList<char>;
     begin
       Result := new LinkedList<char>(System.Linq.Enumerable.Range(integer(l),Count).Select(i -> char(i)));
@@ -2142,6 +2142,10 @@ function NextPermutation(a: array of integer): boolean;
 function Range(a, b: integer): sequence of integer;
 /// Возвращает последовательность целых от a до b с шагом step
 function Range(a, b, step: integer): sequence of integer;
+/// Возвращает последовательность длинных целых от a до b
+function Range(a, b: BigInteger): sequence of BigInteger;
+/// Возвращает последовательность длинных целых от a до b с шагом step
+function Range(a, b, step: BigInteger): sequence of BigInteger;
 /// Возвращает последовательность символов от c1 до c2
 function Range(c1, c2: char): sequence of char;
 /// Возвращает последовательность символов от c1 до c2 с шагом step
@@ -4557,7 +4561,7 @@ begin
   else Result := System.Linq.Enumerable.Range(a, b - a + 1);
 end;
 
-function Range(a, b: real; n: integer): sequence of real;
+function PartitionPoints(a, b: real; n: integer): sequence of real;
 begin
   if n = 0 then
     raise new System.ArgumentException('Range: n=0');
@@ -4582,10 +4586,25 @@ begin
   Result := Range(integer(c1), integer(c2), step).Select(x -> Chr(x));
 end;
 
-function PartitionPoints(a, b: real; n: integer): sequence of real;
+function Range(a, b, step: BigInteger): sequence of BigInteger;
 begin
-  Result := Range(a, b, n)
+  if step = 0 then
+    raise new System.ArgumentException('step=0');
+  if step > 0 then
+    while a<=b do
+    begin
+      yield a;
+      a += step;
+    end
+  else  
+    while a>=b do
+    begin
+      yield a;
+      a += step;
+    end
 end;
+
+function Range(a, b: BigInteger): sequence of BigInteger := Range(a,b,1);
 
 type
   ArithmSeq = auto class
@@ -9745,6 +9764,8 @@ begin
     Result += f(x);
 end;}
 
+// SSM 23/11/2020 - Sum Average Product for sequence of BigInteger
+
 /// Возвращает сумму элементов последовательности
 function Sum(Self: sequence of BigInteger): BigInteger; extensionmethod;
 begin
@@ -9771,10 +9792,11 @@ end;
 /// Возвращает произведение элементов последовательности
 function Product(Self: sequence of BigInteger): BigInteger; extensionmethod;
 begin
-  Result := 0bi;
+  Result := 1bi;
   foreach var a in Self do
-    Result += a
+    Result *= a
 end;
+
 
 
 /// Возвращает отсортированную по возрастанию последовательность

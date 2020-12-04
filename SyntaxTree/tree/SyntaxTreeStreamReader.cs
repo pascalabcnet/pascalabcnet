@@ -532,6 +532,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new semantic_ith_element_of();
 				case 255:
 					return new bigint_const();
+				case 256:
+					return new foreach_stmt_formatting();
 			}
 			return null;
 		}
@@ -4457,6 +4459,20 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_const_node(_bigint_const);
 			_bigint_const.val = br.ReadUInt64();
+		}
+
+
+		public void visit(foreach_stmt_formatting _foreach_stmt_formatting)
+		{
+			read_foreach_stmt_formatting(_foreach_stmt_formatting);
+		}
+
+		public void read_foreach_stmt_formatting(foreach_stmt_formatting _foreach_stmt_formatting)
+		{
+			read_statement(_foreach_stmt_formatting);
+			_foreach_stmt_formatting.il = _read_node() as ident_list;
+			_foreach_stmt_formatting.in_what = _read_node() as expression;
+			_foreach_stmt_formatting.stmt = _read_node() as statement;
 		}
 
 	}

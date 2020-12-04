@@ -54517,6 +54517,229 @@ namespace PascalABCCompiler.SyntaxTree
 	}
 
 
+	///<summary>
+	///// для форматирования только
+	///</summary>
+	[Serializable]
+	public partial class foreach_stmt_formatting : statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public foreach_stmt_formatting()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public foreach_stmt_formatting(ident_list _il,expression _in_what,statement _stmt)
+		{
+			this._il=_il;
+			this._in_what=_in_what;
+			this._stmt=_stmt;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public foreach_stmt_formatting(ident_list _il,expression _in_what,statement _stmt,SourceContext sc)
+		{
+			this._il=_il;
+			this._in_what=_in_what;
+			this._stmt=_stmt;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected ident_list _il;
+		protected expression _in_what;
+		protected statement _stmt;
+
+		///<summary>
+		///
+		///</summary>
+		public ident_list il
+		{
+			get
+			{
+				return _il;
+			}
+			set
+			{
+				_il=value;
+				if (_il != null)
+					_il.Parent = this;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public expression in_what
+		{
+			get
+			{
+				return _in_what;
+			}
+			set
+			{
+				_in_what=value;
+				if (_in_what != null)
+					_in_what.Parent = this;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public statement stmt
+		{
+			get
+			{
+				return _stmt;
+			}
+			set
+			{
+				_stmt=value;
+				if (_stmt != null)
+					_stmt.Parent = this;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			foreach_stmt_formatting copy = new foreach_stmt_formatting();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (il != null)
+			{
+				copy.il = (ident_list)il.Clone();
+				copy.il.Parent = copy;
+			}
+			if (in_what != null)
+			{
+				copy.in_what = (expression)in_what.Clone();
+				copy.in_what.Parent = copy;
+			}
+			if (stmt != null)
+			{
+				copy.stmt = (statement)stmt.Clone();
+				copy.stmt.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new foreach_stmt_formatting TypedClone()
+		{
+			return Clone() as foreach_stmt_formatting;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (il != null)
+				il.Parent = this;
+			if (in_what != null)
+				in_what.Parent = this;
+			if (stmt != null)
+				stmt.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			il?.FillParentsInAllChilds();
+			in_what?.FillParentsInAllChilds();
+			stmt?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return il;
+					case 1:
+						return in_what;
+					case 2:
+						return stmt;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						il = (ident_list)value;
+						break;
+					case 1:
+						in_what = (expression)value;
+						break;
+					case 2:
+						stmt = (statement)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
 
 }
 

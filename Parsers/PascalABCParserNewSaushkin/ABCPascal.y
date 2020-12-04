@@ -82,7 +82,7 @@
 %type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 /*const_expr_list*/ case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
-%type <ex> const_simple_expr term term1 typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor factor_without_unary_op relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda expr_l1_for_lambda simple_expr range_term range_factor 
+%type <ex> const_simple_expr term term1 typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr const_relop_expr elem range_expr const_elem array_const factor factor_without_unary_op relop_expr expr_dq expr_l1 expr_l1_func_decl_lambda expr_l1_for_lambda simple_expr range_term range_factor 
 %type <ex> external_directive_ident init_const_expr case_label variable var_reference /*optional_write_expr*/ optional_read_expr simple_expr_or_nothing var_question_point expr_l1_for_question_expr expr_l1_for_new_question_expr
 %type <ob> for_cycle_type  
 %type <ex> format_expr format_const_expr const_expr_or_nothing /* simple_expr_with_deref_or_nothing simple_expr_with_deref expr_l1_for_indexer*/
@@ -744,19 +744,28 @@ expr_l1_list
 		}
     ;
 
-const_expr
+const_relop_expr
     : const_simple_expr
 		{ 
 			$$ = $1; 
 		}
-    | const_simple_expr const_relop const_simple_expr   
+    | const_relop_expr const_relop const_simple_expr   
         { 
 			$$ = new bin_expr($1, $3, $2.type, @$); 
+		}
+	;
+
+const_expr
+    : const_relop_expr
+		{ 
+			$$ = $1; 
 		}
     | question_constexpr
 		{ 
 			$$ = $1; 
 		}
+	| const_expr tkDoubleQuestion const_relop_expr
+		{ $$ = new double_question_node($1 as expression, $3 as expression, @$);}
     ;
 
 question_constexpr
@@ -2970,6 +2979,28 @@ foreach_stmt
     | tkForeach tkVar identifier tkIn expr_l1 tkDo unlabelled_stmt
         { 
 			$$ = new foreach_stmt($3, new no_type_foreach(), $5, (statement)$7, @$); 
+        }
+    | tkForeach tkVar tkRoundOpen ident_list tkRoundClose tkIn expr_l1 tkDo unlabelled_stmt // сахарное правило
+        { 
+        	if (parsertools.build_tree_for_formatter)
+        	{
+        		var il = $4 as ident_list;
+        		il.source_context = LexLocation.MergeAll(@4,@5); // нужно дл€ форматировани€
+        		$$ = new foreach_stmt_formatting(il,$7,$9 as statement,@$);
+        	}
+        	else
+        	{
+        		// ≈сть проблема - непон€тно, где здесь сделать семантческий узед дл€ проверки
+        		// ѕроверить можно и в foreach, но где-то должен быть маркер, что это сахарный узел
+        		// Ќапример, идентификатор #fe - но это плоха€ иде€
+                var id = NewId("#fe",@4);
+                var tttt = new assign_var_tuple($4 as ident_list, id, @$);
+                statement_list nine = $9 is statement_list ? $9 as statement_list : new statement_list($9 as statement,@9);
+                nine.Insert(0,tttt);
+			    var fe = new foreach_stmt(id, new no_type_foreach(), $7, nine, @$);
+			    fe.ext = $4 as ident_list;
+			    $$ = fe;
+			}
         }
     ;
 
