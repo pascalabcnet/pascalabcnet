@@ -9798,7 +9798,6 @@ begin
 end;
 
 
-
 /// Возвращает отсортированную по возрастанию последовательность
 function Sorted<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
@@ -10313,6 +10312,15 @@ begin
 end;
 
 // ToDo Сделать AdjacentGroup с функцией сравнения
+
+/// Возвращает количество элементов, равных указанному значению
+function CountOf<T>(Self: sequence of T; x: T): integer; extensionmethod;
+begin
+  Result := 0;
+  foreach var y in Self do
+    if y = x then
+      Result += 1;
+end;
 
 // -----------------------------------------------------
 //>>     Методы расширения списков # Extension methods for List T
