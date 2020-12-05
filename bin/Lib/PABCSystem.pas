@@ -12296,6 +12296,14 @@ begin
   Result := Self.Split(delim, System.StringSplitOptions.RemoveEmptyEntries);
 end;
 
+const AllWordDelimiters = ' <>=^`|~$№§!"#%&''()*,+-./:;?@[\]_{}«­·»'#9#10#13;
+
+/// Преобразует строку в массив слов, используя в качестве разделителей символы из строки delim
+function ToWords(Self: string; delim: string := AllWordDelimiters): array of string; extensionmethod;
+begin
+  Result := Self.Split(delim.ToCharArray, System.StringSplitOptions.RemoveEmptyEntries);
+end;
+
 procedure PassSpaces(var s: string; var from: integer); 
 begin
   while (from <= s.Length) and (s[from]=' ') do
