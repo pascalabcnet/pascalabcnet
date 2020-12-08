@@ -9798,7 +9798,6 @@ begin
 end;
 
 
-
 /// Возвращает отсортированную по возрастанию последовательность
 function Sorted<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
@@ -10313,6 +10312,15 @@ begin
 end;
 
 // ToDo Сделать AdjacentGroup с функцией сравнения
+
+/// Возвращает количество элементов, равных указанному значению
+function CountOf<T>(Self: sequence of T; x: T): integer; extensionmethod;
+begin
+  Result := 0;
+  foreach var y in Self do
+    if y = x then
+      Result += 1;
+end;
 
 // -----------------------------------------------------
 //>>     Методы расширения списков # Extension methods for List T
@@ -12294,6 +12302,14 @@ end;
 function ToWords(Self: string; params delim: array of char): array of string; extensionmethod;
 begin
   Result := Self.Split(delim, System.StringSplitOptions.RemoveEmptyEntries);
+end;
+
+const AllWordDelimiters = ' <>=^`|~$№§!"#%&''()*,+-./:;?@[\]_{}«­·»'#9#10#13;
+
+/// Преобразует строку в массив слов, используя в качестве разделителей символы из строки delim
+function ToWords(Self: string; delim: string := AllWordDelimiters): array of string; extensionmethod;
+begin
+  Result := Self.Split(delim.ToCharArray, System.StringSplitOptions.RemoveEmptyEntries);
 end;
 
 procedure PassSpaces(var s: string; var from: integer); 
