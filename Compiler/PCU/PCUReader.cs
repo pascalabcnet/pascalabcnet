@@ -1292,6 +1292,8 @@ namespace PascalABCCompiler.PCU
                     return GetGenericParameterOfFunction();
                 case 11:
                     return GetGenericParameterOfMethod();
+                case 12:
+                    return new lambda_any_type_node();
             }
 			return null;
 		}

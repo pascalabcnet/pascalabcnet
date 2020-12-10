@@ -99,7 +99,8 @@ namespace PascalABCCompiler.PCU
         ShortString = 8,
         GenericParameterOfType = 9,
         GenericParameterOfFunction = 10,
-        GenericParameterOfMethod = 11
+        GenericParameterOfMethod = 11,
+        LambdaAnyType = 12
     }
 
     public enum GenericParamKind
@@ -1393,6 +1394,12 @@ namespace PascalABCCompiler.PCU
             if (c_t_n != null && c_t_n.original_template != null)
             {
                 WriteTemplateInstance(c_t_n);
+                return;
+            }
+            
+            if (type is lambda_any_type_node)
+            {
+                bw.Write((byte)TypeKind.LambdaAnyType); 
                 return;
             }
 

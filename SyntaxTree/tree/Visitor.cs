@@ -1540,6 +1540,12 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_bigint_const">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(bigint_const _bigint_const);
+		///<summary>
+		///Method to visit foreach_stmt_formatting.
+		///</summary>
+		///<param name="_foreach_stmt_formatting">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(foreach_stmt_formatting _foreach_stmt_formatting);
 	}
 
 

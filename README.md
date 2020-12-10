@@ -9,7 +9,7 @@ _ReBuildRelease.bat builds the project in Release-mode.
 
 _ReBuildDebug.bat builds the project in Debug-mode. 
 
-PascalABC is being developed in Visual Studio Community 2017.
+PascalABC is being developed in Visual Studio Community 2019.
 
 ## Building PascalABC.NET in Linux (Ubuntu)
 Install Mono (http://www.mono-project.com/docs/getting-started/install/linux/)
@@ -60,7 +60,7 @@ _ReBuildRelease.bat собирает проект в Release-режиме.
 _ReBuildDebug.bat собирает проект в Debug-режиме.
 
 
-Разработка ведется в Visual Studio Community 2017.
+Разработка ведется в Visual Studio Community 2019.
 
 ## Сборка проекта в Linux (Ubuntu)
 Установка Mono (http://www.mono-project.com/docs/getting-started/install/linux/)

@@ -2025,4 +2025,10 @@ namespace PascalABCCompiler.SyntaxTree
     {
         public object sl = null;
     }
+
+    public partial class foreach_stmt
+    {
+        public object ext = null;
     }
+
+}

@@ -3582,7 +3582,7 @@ namespace PascalABCCompiler.TreeRealization
                                 start = ext.GetRange(cur_index, ext.Count() - cur_index);
                                 if (result != null)
                                 {
-                                    result.RemoveRange(1, result.Count() - 1);
+                                    //result.RemoveRange(1, result.Count() - 1);
                                     result.AddRange(start);
                                 }
                             }

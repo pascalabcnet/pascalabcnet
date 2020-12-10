@@ -38,19 +38,25 @@ function MinMax(s: sequence of int64): (int64, int64);
 /// Возвращает кортеж из минимума и максимума последовательности s
 function MinMax(s: sequence of integer): (integer, integer);
 
-/// Ввозвращает НОД
+/// Возвращает кортеж из минимума и максимума последовательности s
+function MinMax(s: sequence of real): (real, real);
+
+/// Возвращает кортеж из минимума и максимума последовательности s
+function MinMax(s: sequence of BigInteger): (BigInteger, BigInteger);
+
+/// Возвращает НОД
 function НОД(a, b: int64): int64;
 
-/// Ввозвращает НОК пары чисел
+/// Возвращает НОК пары чисел
 function НОК(a, b: int64): int64;
 
-/// Ввозвращает НОД и НОК пары чисел
+/// Возвращает НОД и НОК пары чисел
 function НОДНОК(a, b: int64): (int64, int64);
 
 /// Разложение числа на простые множители
 function Factorize(n: int64): List<int64>;
 
-/// Рразложение числа на простые множители
+/// Разложение числа на простые множители
 function Factorize(n: integer): List<integer>;
 
 /// Простые числа на интервале [2;n] 
@@ -62,10 +68,10 @@ function FirstPrimes(n: integer): List<integer>;
 /// Возвращает список, содержащий цифры числа
 function Digits(n: int64): List<integer>;
 
-/// возвращает список делителей натурального числа
+/// Возвращает список делителей натурального числа
 function Divizors(n: int64): List<int64>;
 
-/// возвращает список делителей натурального числа
+/// Возвращает список делителей натурального числа
 function Divizors(n: integer): List<integer>;
 
 /// Возвращает Sin угла, заданного в градусах
@@ -236,6 +242,9 @@ end;
 /// Перевод BigInteger в систему счисления по основанию base (2..36)
 function ToBase(BI: BigInteger; base: integer): string;
 begin
+  if not (base in 2..36) then
+    raise new School_InvalidBase
+    ($'ToDecimal: Недопустимое основание {base}');
   var s := new System.Text.StringBuilder('');
   while BI > 0 do 
   begin
@@ -252,6 +261,9 @@ function ToBase(Self: BigInteger; base: integer): string; extensionmethod :=
 /// Перевод десятичного числа в систему счисления по основанию base (2..36)
 function ToBase(sDec: string; base: integer): string;
 begin
+  if not (base in 2..36) then
+    raise new School_InvalidBase
+    ($'ToDecimal: Недопустимое основание {base}');
   var n: BigInteger;
   if BigInteger.TryParse(sDec, n) then
     Result := ToBase(n, base)
@@ -270,10 +282,12 @@ function MinMax(s: sequence of int64): (int64, int64);
 begin
   var (min, max) := (int64.MaxValue, int64.MinValue);
   foreach var m in s do
+  begin  
     if m < min then
-      min := m
-    else if m > max then
-      max := m;
+      min := m;
+    if m > max then
+      max := m
+  end;  
   Result := (min, max)
 end;
 
@@ -282,10 +296,44 @@ function MinMax(s: sequence of integer): (integer, integer);
 begin
   var (min, max) := (integer.MaxValue, integer.MinValue);
   foreach var m in s do
+  begin  
     if m < min then
-      min := m
-    else if m > max then
-      max := m;
+      min := m;
+    if m > max then
+      max := m
+  end;  
+  Result := (min, max)
+end;
+
+/// Возвращает кортеж из минимума и максимума последовательности s
+function MinMax(s: sequence of real): (real, real);
+begin
+  var (min, max) := (real.MaxValue, -real.MaxValue);
+  foreach var m in s do
+  begin  
+    if m < min then
+      min := m;
+    if m > max then
+      max := m
+  end;  
+  Result := (min, max)
+end;
+
+/// Возвращает кортеж из минимума и максимума последовательности s
+function MinMax(s: sequence of BigInteger): (BigInteger, BigInteger);
+begin
+  var min, max: BigInteger;
+  var FirstValue := True;
+  foreach var m in s do
+    if FirstValue then
+      (min, max, FirstValue) := (m, m, False)
+    else
+    begin  
+      if m < min then
+        min := m;
+      if m > max then
+        max := m
+    end;  
   Result := (min, max)
 end;
 
@@ -296,7 +344,15 @@ MinMax(Self);
 /// Возвращает кортеж из минимума и максимума последовательности
 function MinMax(Self: sequence of integer): (integer, integer);
     extensionmethod :=
-MinMax(Self);  
+MinMax(Self);
+
+/// Возвращает кортеж из минимума и максимума последовательности
+function MinMax(Self: sequence of real): (real, real); extensionmethod :=
+MinMax(Self);
+
+/// Возвращает кортеж из минимума и максимума последовательности
+function MinMax(Self: sequence of BigInteger): (BigInteger, BigInteger);
+extensionmethod := MinMax(Self);
 
 {$endregion}
 

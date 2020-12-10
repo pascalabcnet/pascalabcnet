@@ -1287,6 +1287,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_bigint_const);
 		}
+
+		public virtual void visit(foreach_stmt_formatting _foreach_stmt_formatting)
+		{
+			DefaultVisit(_foreach_stmt_formatting);
+		}
 	}
 
 

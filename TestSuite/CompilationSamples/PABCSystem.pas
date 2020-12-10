@@ -253,6 +253,9 @@ type
   /// Предоставляет методы для точного измерения затраченного времени
   Stopwatch = System.Diagnostics.Stopwatch;
   
+  /// Указывает на возможность сериализации класса
+  Serializable = System.SerializableAttribute;
+  
   /// Представляет тип короткой строки фиксированной длины 255 символов
   ShortString = string[255];
   
@@ -586,6 +589,10 @@ type
     function ReadReal: real;
     /// Считывает строку из бестипового файла
     function ReadString: string;
+    /// Сериализует объект в файл (объект должен иметь атрибут [Serializable])
+    procedure Serialize(obj: object);
+    /// Десериализует объект из файла 
+    function Deserialize: object;
   end;
   
 type 
@@ -628,7 +635,7 @@ type
       Result := (l = r2.l) and (h = r2.h);
     end;
     function GetHashCode: integer; override := l.GetHashCode xor h.GetHashCode;
-    function ToArray: array of integer;
+    {function ToArray: array of integer;
     begin
       Result := new integer[Count];
       var x := l;
@@ -640,14 +647,14 @@ type
     end;
     function ToList: List<integer>;
     begin
-      Result := new List<integer>;
+      Result := new List<integer>(Count);
       var x := l;
       loop Count do
       begin
         Result.Add(x);
         x += 1;
       end;  
-    end;
+    end;}
     function ToLinkedList: LinkedList<integer>;
     begin
       Result := new LinkedList<integer>(System.Linq.Enumerable.Range(l,Count));
@@ -701,7 +708,7 @@ type
     end;
     function GetHashCode: integer; override := l.GetHashCode xor h.GetHashCode;
     
-    function ToArray: array of char;
+    {function ToArray: array of char;
     begin
       Result := new char[Count];
       var x := l;
@@ -720,7 +727,7 @@ type
         Result.Add(x);
         x := char(integer(x) + 1);
       end;  
-    end;
+    end;}
     function ToLinkedList: LinkedList<char>;
     begin
       Result := new LinkedList<char>(System.Linq.Enumerable.Range(integer(l),Count).Select(i -> char(i)));
@@ -1182,6 +1189,12 @@ procedure Println(params args: array of object);
 ///- procedure Println(f: Text; a,b,...);
 /// Выводит значения a,b,... в текстовый файл f, после каждого значения выводит пробел и переходит на новую строку
 procedure Println(f: Text; params args: array of object);
+
+/// Сериализует объект в файл (объект должен иметь атрибут [Serializable])
+procedure Serialize(filename: string; obj: object);
+/// Десериализует объект из файла 
+function Deserialize(filename: string): object;
+
 
 // -----------------------------------------------------
 //>>     Общие подпрограммы для работы с файлами # Common subroutines for files
@@ -2142,6 +2155,10 @@ function NextPermutation(a: array of integer): boolean;
 function Range(a, b: integer): sequence of integer;
 /// Возвращает последовательность целых от a до b с шагом step
 function Range(a, b, step: integer): sequence of integer;
+/// Возвращает последовательность длинных целых от a до b
+function Range(a, b: BigInteger): sequence of BigInteger;
+/// Возвращает последовательность длинных целых от a до b с шагом step
+function Range(a, b, step: BigInteger): sequence of BigInteger;
 /// Возвращает последовательность символов от c1 до c2
 function Range(c1, c2: char): sequence of char;
 /// Возвращает последовательность символов от c1 до c2 с шагом step
@@ -2814,6 +2831,9 @@ function WINAPI_AllocConsole: longword; external 'kernel32.dll' name 'AllocConso
 
 var
   console_alloc: boolean := false;
+  
+type 
+  BinaryFormatter = System.Runtime.Serialization.Formatters.Binary.BinaryFormatter;
 
 // -----------------------------------------------------
 //                  Internal functions
@@ -4557,7 +4577,7 @@ begin
   else Result := System.Linq.Enumerable.Range(a, b - a + 1);
 end;
 
-function Range(a, b: real; n: integer): sequence of real;
+function PartitionPoints(a, b: real; n: integer): sequence of real;
 begin
   if n = 0 then
     raise new System.ArgumentException('Range: n=0');
@@ -4582,10 +4602,25 @@ begin
   Result := Range(integer(c1), integer(c2), step).Select(x -> Chr(x));
 end;
 
-function PartitionPoints(a, b: real; n: integer): sequence of real;
+function Range(a, b, step: BigInteger): sequence of BigInteger;
 begin
-  Result := Range(a, b, n)
+  if step = 0 then
+    raise new System.ArgumentException('step=0');
+  if step > 0 then
+    while a<=b do
+    begin
+      yield a;
+      a += step;
+    end
+  else  
+    while a>=b do
+    begin
+      yield a;
+      a += step;
+    end
 end;
+
+function Range(a, b: BigInteger): sequence of BigInteger := Range(a,b,1);
 
 type
   ArithmSeq = auto class
@@ -6658,6 +6693,18 @@ begin
   Result := Self.br.ReadString;  
 end;
 
+procedure BinaryFile.Serialize(obj: object);
+begin
+  var formatter := new BinaryFormatter;
+  formatter.Serialize(fs,obj);
+end;
+
+function BinaryFile.Deserialize: object;
+begin
+  var formatter := new BinaryFormatter;
+  Result := formatter.Deserialize(fs);
+end;
+
 // -----------------------------------------------------
 //                  Eoln - Eof
 // -----------------------------------------------------
@@ -6978,6 +7025,23 @@ begin
   Print(f, args);
   Writeln(f);
 end;
+
+procedure Serialize(filename: string; obj: object);
+begin
+  var fs := new System.IO.FileStream(filename,System.IO.FileMode.Create);
+  var formatter := new BinaryFormatter;
+  formatter.Serialize(fs,obj);
+  fs.Close;
+end;
+
+function Deserialize(filename: string): object;
+begin
+  var fs := new System.IO.FileStream(filename,System.IO.FileMode.Open);
+  var formatter := new BinaryFormatter;
+  Result := formatter.Deserialize(fs);
+  fs.Close;
+end;
+
 // -----------------------------------------------------
 //                  Text files
 // -----------------------------------------------------
@@ -9745,6 +9809,39 @@ begin
     Result += f(x);
 end;}
 
+// SSM 23/11/2020 - Sum Average Product for sequence of BigInteger
+
+/// Возвращает сумму элементов последовательности
+function Sum(Self: sequence of BigInteger): BigInteger; extensionmethod;
+begin
+  Result := 0bi;
+  foreach var a in Self do
+    Result += a
+end;
+
+/// Возвращает среднее элементов последовательности
+function Average(Self: sequence of BigInteger): real; extensionmethod;
+begin
+  var cnt := 0;
+  var sum := 0bi;
+  foreach var a in Self do
+  begin
+    sum += a;
+    cnt += 1;
+  end;  
+  if cnt <> 0 then 
+    Result := sum/cnt
+  else Result := 0
+end;
+
+/// Возвращает произведение элементов последовательности
+function Product(Self: sequence of BigInteger): BigInteger; extensionmethod;
+begin
+  Result := 1bi;
+  foreach var a in Self do
+    Result *= a
+end;
+
 
 /// Возвращает отсортированную по возрастанию последовательность
 function Sorted<T>(Self: sequence of T): sequence of T; extensionmethod;
@@ -10260,6 +10357,15 @@ begin
 end;
 
 // ToDo Сделать AdjacentGroup с функцией сравнения
+
+/// Возвращает количество элементов, равных указанному значению
+function CountOf<T>(Self: sequence of T; x: T): integer; extensionmethod;
+begin
+  Result := 0;
+  foreach var y in Self do
+    if y = x then
+      Result += 1;
+end;
 
 // -----------------------------------------------------
 //>>     Методы расширения списков # Extension methods for List T
@@ -12241,6 +12347,14 @@ end;
 function ToWords(Self: string; params delim: array of char): array of string; extensionmethod;
 begin
   Result := Self.Split(delim, System.StringSplitOptions.RemoveEmptyEntries);
+end;
+
+const AllWordDelimiters = ' <>=^`|~$№§!"#%&''()*,+-./:;?@[\]_{}«­·»'#9#10#13;
+
+/// Преобразует строку в массив слов, используя в качестве разделителей символы из строки delim
+function ToWords(Self: string; delim: string := AllWordDelimiters): array of string; extensionmethod;
+begin
+  Result := Self.Split(delim.ToCharArray, System.StringSplitOptions.RemoveEmptyEntries);
 end;
 
 procedure PassSpaces(var s: string; var from: integer); 
