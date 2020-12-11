@@ -2652,14 +2652,6 @@ namespace PascalABCCompiler
             if (SyntaxUsesUnit is SyntaxTree.uses_unit_in uui)
             {
                 
-                // Подключение .dll в uses-in. Зачем - не понятно, но было до меня, поэтому просто оставил
-                switch (Path.GetExtension(uui.in_file.Value).ToLower())
-                {
-                    case ".dll":
-                    case ".exe":
-                        return GetReferenceFileName(uui.in_file.Value, uui.in_file.source_context, curr_path);
-                }
-
                 if (UnitName.ToLower() != Path.GetFileNameWithoutExtension(uui.in_file.Value).ToLower())
                     throw new UsesInWrongName(CurrentCompilationUnit.SyntaxTree.file_name, UnitName, Path.GetFileNameWithoutExtension(uui.in_file.Value), uui.in_file.source_context);
 
@@ -3173,8 +3165,8 @@ namespace PascalABCCompiler
         public CompilationUnit CompileUnit(PascalABCCompiler.TreeRealization.unit_node_list Units, Dictionary<unit_node, CompilationUnit> DirectCompilationUnits, SyntaxTree.unit_or_namespace SyntaxUsesUnit, string prev_path)
         {
             string UnitName = GetUnitFileName(SyntaxUsesUnit, prev_path);
-            // имя папки, в которой лежит текущий модуль
-            // используется для подключения модулей, $include и т.п. из модуля, подключённого с uses-in
+            // Имя папки, в которой лежит текущий модуль
+            // Используется для подключения модулей, $include и т.п. из модуля, подключённого с uses-in
             var curr_path = Path.GetDirectoryName(UnitName);
 
             CompilationUnit CurrentUnit = UnitTable[UnitName];
@@ -3200,21 +3192,6 @@ namespace PascalABCCompiler
                     return CurrentUnit;
                 }
 
-            if (UnitName.ToLower().LastIndexOf(".dll") >= 0 || UnitName.ToLower().LastIndexOf(".exe") >= 0)
-                if (File.Exists(UnitName))
-                {
-                    if (UnitTable.Count == 0) throw new ProgramModuleExpected(UnitName, null);
-                    if ((CurrentUnit = ReadDLL(UnitName)) != null)
-                    {
-                        if (Units.AddElement(CurrentUnit.SemanticTree, SyntaxUsesUnit.UsesPath()))
-                            DirectCompilationUnits.Add(CurrentUnit.SemanticTree, CurrentUnit);
-                        UnitTable[UnitName] = CurrentUnit;
-                        return CurrentUnit;
-                    }
-                    else
-                        //throw new DLLReadingError(UnitName);
-                        throw new AssemblyReadingError(CurrentCompilationUnit.SyntaxTree.file_name, UnitName, SyntaxUsesUnit.source_context);
-                }
             if (Path.GetExtension(UnitName).ToLower() == CompilerOptions.CompiledUnitExtension)
                 if (File.Exists(UnitName))
                 {
