@@ -8280,7 +8280,10 @@ namespace PascalABCCompiler.NETGenerator
             }
             if (from is INullConstantNode && to.type.is_nullable_type)
             {
+                if (value.indices != null && addr_meth != null)
+                    il.Emit(OpCodes.Call, addr_meth);
                 il.Emit(OpCodes.Initobj, elem_type);
+                
                 return;
             }
             from.visit(this);
