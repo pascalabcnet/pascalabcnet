@@ -253,6 +253,9 @@ type
   /// Предоставляет методы для точного измерения затраченного времени
   Stopwatch = System.Diagnostics.Stopwatch;
   
+  /// Указывает на возможность сериализации класса
+  Serializable = System.SerializableAttribute;
+  
   /// Представляет тип короткой строки фиксированной длины 255 символов
   ShortString = string[255];
   
@@ -586,6 +589,10 @@ type
     function ReadReal: real;
     /// Считывает строку из бестипового файла
     function ReadString: string;
+    /// Сериализует объект в файл (объект должен иметь атрибут [Serializable])
+    procedure Serialize(obj: object);
+    /// Десериализует объект из файла 
+    function Deserialize: object;
   end;
   
 type 
@@ -1182,6 +1189,12 @@ procedure Println(params args: array of object);
 ///- procedure Println(f: Text; a,b,...);
 /// Выводит значения a,b,... в текстовый файл f, после каждого значения выводит пробел и переходит на новую строку
 procedure Println(f: Text; params args: array of object);
+
+/// Сериализует объект в файл (объект должен иметь атрибут [Serializable])
+procedure Serialize(filename: string; obj: object);
+/// Десериализует объект из файла 
+function Deserialize(filename: string): object;
+
 
 // -----------------------------------------------------
 //>>     Общие подпрограммы для работы с файлами # Common subroutines for files
@@ -2818,6 +2831,9 @@ function WINAPI_AllocConsole: longword; external 'kernel32.dll' name 'AllocConso
 
 var
   console_alloc: boolean := false;
+  
+type 
+  BinaryFormatter = System.Runtime.Serialization.Formatters.Binary.BinaryFormatter;
 
 // -----------------------------------------------------
 //                  Internal functions
@@ -6677,6 +6693,18 @@ begin
   Result := Self.br.ReadString;  
 end;
 
+procedure BinaryFile.Serialize(obj: object);
+begin
+  var formatter := new BinaryFormatter;
+  formatter.Serialize(fs,obj);
+end;
+
+function BinaryFile.Deserialize: object;
+begin
+  var formatter := new BinaryFormatter;
+  Result := formatter.Deserialize(fs);
+end;
+
 // -----------------------------------------------------
 //                  Eoln - Eof
 // -----------------------------------------------------
@@ -6997,6 +7025,23 @@ begin
   Print(f, args);
   Writeln(f);
 end;
+
+procedure Serialize(filename: string; obj: object);
+begin
+  var fs := new System.IO.FileStream(filename,System.IO.FileMode.Create);
+  var formatter := new BinaryFormatter;
+  formatter.Serialize(fs,obj);
+  fs.Close;
+end;
+
+function Deserialize(filename: string): object;
+begin
+  var fs := new System.IO.FileStream(filename,System.IO.FileMode.Open);
+  var formatter := new BinaryFormatter;
+  Result := formatter.Deserialize(fs);
+  fs.Close;
+end;
+
 // -----------------------------------------------------
 //                  Text files
 // -----------------------------------------------------

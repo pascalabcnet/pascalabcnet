@@ -38,6 +38,12 @@ function MinMax(s: sequence of int64): (int64, int64);
 /// Возвращает кортеж из минимума и максимума последовательности s
 function MinMax(s: sequence of integer): (integer, integer);
 
+/// Возвращает кортеж из минимума и максимума последовательности s
+function MinMax(s: sequence of real): (real, real);
+
+/// Возвращает кортеж из минимума и максимума последовательности s
+function MinMax(s: sequence of BigInteger): (BigInteger, BigInteger);
+
 /// Возвращает НОД
 function НОД(a, b: int64): int64;
 
@@ -276,10 +282,12 @@ function MinMax(s: sequence of int64): (int64, int64);
 begin
   var (min, max) := (int64.MaxValue, int64.MinValue);
   foreach var m in s do
+  begin  
     if m < min then
-      min := m
-    else if m > max then
-      max := m;
+      min := m;
+    if m > max then
+      max := m
+  end;  
   Result := (min, max)
 end;
 
@@ -288,10 +296,44 @@ function MinMax(s: sequence of integer): (integer, integer);
 begin
   var (min, max) := (integer.MaxValue, integer.MinValue);
   foreach var m in s do
+  begin  
     if m < min then
-      min := m
-    else if m > max then
-      max := m;
+      min := m;
+    if m > max then
+      max := m
+  end;  
+  Result := (min, max)
+end;
+
+/// Возвращает кортеж из минимума и максимума последовательности s
+function MinMax(s: sequence of real): (real, real);
+begin
+  var (min, max) := (real.MaxValue, -real.MaxValue);
+  foreach var m in s do
+  begin  
+    if m < min then
+      min := m;
+    if m > max then
+      max := m
+  end;  
+  Result := (min, max)
+end;
+
+/// Возвращает кортеж из минимума и максимума последовательности s
+function MinMax(s: sequence of BigInteger): (BigInteger, BigInteger);
+begin
+  var min, max: BigInteger;
+  var FirstValue := True;
+  foreach var m in s do
+    if FirstValue then
+      (min, max, FirstValue) := (m, m, False)
+    else
+    begin  
+      if m < min then
+        min := m;
+      if m > max then
+        max := m
+    end;  
   Result := (min, max)
 end;
 
@@ -302,7 +344,15 @@ MinMax(Self);
 /// Возвращает кортеж из минимума и максимума последовательности
 function MinMax(Self: sequence of integer): (integer, integer);
     extensionmethod :=
-MinMax(Self);  
+MinMax(Self);
+
+/// Возвращает кортеж из минимума и максимума последовательности
+function MinMax(Self: sequence of real): (real, real); extensionmethod :=
+MinMax(Self);
+
+/// Возвращает кортеж из минимума и максимума последовательности
+function MinMax(Self: sequence of BigInteger): (BigInteger, BigInteger);
+extensionmethod := MinMax(Self);
 
 {$endregion}
 
