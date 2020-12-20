@@ -5,6 +5,7 @@ AUTO_CLASS_MUST_NOT_HAVE_POINTERS=Авто класс не может иметь
 AUTO_CLASS_MUST_NOT_HAVE_PARENTS=Авто класс не может иметь предков
 AUTO_CLASS_MUST_NOT_HAVE_UNNAMED_ENUMS=Авто класс не может иметь полей с неименованными перечислимыми типами
 AUTO_CLASS_MUST_NOT_HAVE_EVENTS=Авто класс не может иметь поля, являющиеся событиями
+AUTO_CLASS_MUST_NOT_HAVE_PROPERTIES=Авто класс не может иметь свойства
 UNDEFINED_NAME_REFERENCE_{0}=Неизвестное имя '{0}'
 TWO_TYPE_CONVERTIONS_POSSIBLE_FIRST_TYPE_{0}_SECOND_TYE_{1}=Возможны два преобразования типа: к типу {0} и к типу {1}
 CAN_NOT_CONVERT_TYPES_FROM_{0}_TO_{1}=Нельзя преобразовать тип {0} к {1}

@@ -309,7 +309,12 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class statement_list
     {
-
+        /// <summary>
+        ///  IsInternal - statement_list получен на этапе семантики синтаксическим сахаром из одного оператора. 
+        ///  На первом проходе с лямбдами один оператор заменяется на такой Internal statement list
+        ///  На втором и третьем проходе с лямбдами он обходится как один оператор
+        /// </summary>
+        public bool IsInternal = false;
         public statement_list(IEnumerable<statement> sts)
         {
             AddMany(sts);
@@ -1871,6 +1876,7 @@ namespace PascalABCCompiler.SyntaxTree
     public partial class semantic_check_sugared_statement_node
     {
         public bool visited = false;
+        public override string ToString() => "semantic_check_sugared(" + string.Join(", ",lst) + ")";
     }
 
     public partial class var_deconstructor_parameter
@@ -2014,4 +2020,15 @@ namespace PascalABCCompiler.SyntaxTree
         public slice_expr(addressed_value _dereferencing_value, addressed_value _v, expression _from, expression _to, expression _step, SourceContext sc)
             : this(_dereferencing_value, _v, _from, _to, _step, false, false, sc) { }
     }*/
+
+    public partial class assign_var_tuple
+    {
+        public object sl = null;
+    }
+
+    public partial class foreach_stmt
+    {
+        public object ext = null;
+    }
+
 }

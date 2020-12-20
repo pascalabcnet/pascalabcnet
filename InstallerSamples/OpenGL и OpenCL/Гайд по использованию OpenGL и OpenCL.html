@@ -71,12 +71,26 @@ body {
 }
 .ps-page-name {
 	cursor: pointer;
-    padding: 1;
+	padding: 1;
 }
 
 /* ============================== *\
 	       page display
 \* ============================== */
+
+blockquote > *:first-child {
+	margin-top: 0;
+}
+blockquote > *:last-child {
+	margin-bottom: 0;
+}
+blockquote {
+	margin-left: 0;
+	margin-right: 0;
+	padding: 12px;
+	border-left: 5px solid #d0d0d0;
+	background-color: #f7f7f7;
+}
 
 .smart-link {
 	color: blue;
@@ -99,7 +113,6 @@ body {
 .code-block {
 	display: inline-block;
 	cursor: text;
-	background: #F0F0F0;
 	border-radius: 3px;
 	
 	padding: 4px;
@@ -121,8 +134,12 @@ body {
 	box-shadow: -2px 2px 3px #0000004a;
 	background: linear-gradient(0deg, #f0f0f0, white);
 }
-.inline-code {
+.inline-code, .code-block {
 	background: #F0F0F0;
+}
+blockquote .inline-code,
+blockquote .code-block {
+	background: #DEDEDE;
 }
 
 .code-keyword {
@@ -903,7 +920,8 @@ window.onload = ()=>{
 <p>Если в кратце:</p>
 <p>Есть платформа .Net, объединяющая много языков программирования. В том числе C# и PascalABC.NET.</p>
 <p>.exe и .dll созданные такими языками содержат код в особом виде, позволяющем легко подключать
-.dll (и теоретически .exe, но это плохо) созданные на 1 .Net языке к программе на любом другом .Net языке.</p>
+.dll (и теоретически .exe, но это плохо) созданные на 1 .Net языке к программе на любом другом .Net языке.<br />
+(в паскале это делается с помощью <code>$reference</code>)</p>
 <p>Такие .exe и .dll называются управляемыми. .exe и .dll созданные на любом другом (то есть не .Net) языке называются неуправляемыми.</p>
 <p>OpenCL.dll и OpenGL.dll созданы на- и для языков C/C++, поэтому являются неуправляемыми.</p>
 </div>
@@ -911,7 +929,7 @@ window.onload = ()=>{
 <div id="page-3" page_name="Участие в разработке н.у. модулей" hidden=true>
 <p>Большинство функций из н.у. модулей требует какой-либо чистки. В основном потому что
 при переводе с C++ тип <code>int*</code> может оказаться и указателем, и <code>var</code>-параметром, и массивом.</p>
-<p>При автоматическом переводе кода с C++ на паскаль - создаются все возможные перегркзки.
+<p>При автоматическом переводе кода с C++ на паскаль - создаются все возможные перегрузки.
 А те перегрузки, которые не подходят конкретным подпрограммам - надо убирать вручную.
 В этом и состоит чистка подпрограмм.</p>
 <p>Все разом функции не почистишь, в одном только <code>OpenGL</code> их &gt;3000. Но сделать это, всё же, надо.
@@ -920,9 +938,9 @@ window.onload = ()=>{
 <hr />
 <p>Чтоб чистить подпрограммы было проще - я написал несколько инструментов.
 Вся упаковка н.у. модулей находится <a href="https://github.com/SunSerega/POCGL/tree/master/Packing/Template">тут</a>.
-Откройте папку <code>CL</code> или <code>GL</code>. Они устроены одинаково, поэтому объяснять можно на любой из них.</p>
-<p>Все файлы (кроме .exe и .pdb, которые создаёт паскаль) в этих папках
-открываются любым текстовым редактором (но я рекомендую Notepad++).</p>
+Откройте папку <code>OpenCL</code> или <code>OpenGL</code>. Они устроены одинаково, поэтому объяснять можно на любой из них.</p>
+<p>Все файлы (кроме .exe и .pdb, которые создаёт паскаль) в
+этих папках открываются любым текстовым редактором.</p>
 <hr />
 <h3>Fixers</h3>
 <p>Контроль содержимого модуля находится в папке <code>Fixers</code>. В этой папке есть следующие подпапки:</p>
@@ -985,6 +1003,7 @@ window.onload = ()=>{
     public constructor(val: UInt32) := self.val := val;
     public static property Zero: BufferName read default(BufferName);
     public static property Size: integer read Marshal.SizeOf&amp;&lt;UInt32&gt;;
+    public function ToString: string; override := $'BufferName[{val}]';
   end;
 </code></pre>
 <p>Такой подход не замедляет готовую программу, но позволяет отловить некоторые ошибки на этапе компиляции.</p>
@@ -1020,7 +1039,7 @@ MyProc(default(BufferName));
 </div>
 <script>on_page_added(document.getElementById("page-5"))</script>
 <div id="page-6" page_name="Записи-перечисления" hidden=true>
-<p>Многие параметры подпрограмм в исходных библиотеках принимают перечисления (enum's).</p>
+<p>Многие параметры подпрограмм в исходных библиотеках принимают перечисления (enum'ы).</p>
 <p>Перечисления, как и имена, это числа. Но в отличии от имён - перечисления принимают заданные заранее константные значения.</p>
 <p>В качестве примера:</p>
 <pre><code>procedure gl.BeginQuery(target: QueryTarget; id: QueryName);
@@ -1068,8 +1087,8 @@ gl.BeginQuery(QueryTarget.VERTICES_SUBMITTED, name);
 <pre><code>procedure gl.Clear(mask: ClearBufferMask);
 </code></pre>
 <pre><code>gl.Clear(
-	ClearBufferMask.COLOR_BUFFER_BIT or // очистка поверхности рисования одним цветом
-	ClearBufferMask.DEPTH_BUFFER_BIT    // очистка буфера глубины - обязательна при рисовании 3D
+  ClearBufferMask.COLOR_BUFFER_BIT or // очистка поверхности рисования одним цветом
+  ClearBufferMask.DEPTH_BUFFER_BIT    // очистка буфера глубины - обязательна при рисовании 3D
 );
 </code></pre>
 <p><code>or</code>, в данном случае, побитовое, а не логическое.</p>
@@ -1155,7 +1174,7 @@ glDebugOutputAMD.DebugMessageEnableAMD(...);
 <div class="spoiler" summary="Как это читать?" hidden="true"><p>Каждый тип вектора берёт по 1 из значений, перечисленных в <code>[]</code>, через запятую.</p>
 <p>К примеру, есть типы <code>Vec2d</code> и <code>Vec4ui64</code>.</p>
 <p>Число в первых скобках - значит кол-во измерений вектора.</p>
-<p>Буква (буквы) в следующих скобках - значит тип координат вектора:</p>
+<p>Буква (буквы) в следующих скобках - значат тип координат вектора:</p>
 <ul>
 <li><p><code>b=shortint</code>, <code>s=smallint</code>, <code>i=integer</code>, <code>i64=int64</code>: Все 4 типа - целые числа, имеющие бит знака (±) и занимающие 1, 2, 4 и 8 байт соответственно;</p>
 </li>
@@ -1171,9 +1190,9 @@ glDebugOutputAMD.DebugMessageEnableAMD(...);
 и возвращает или задаёт значение вектора для соответствующего измерения.</p>
 <p>К примеру:</p>
 <pre><code>var v: Vec4d;
-v[0] := 123.456; // записываем 123.456 по индексу 0
-v[1].Println; // читаем и выводим значение по индексу 1
-v.val[2] := 1; // можно так же писать и имя свойства
+v[0] := 123.456; // Записываем 123.456 по индексу 0
+v[1].Println; // Читаем и выводим значение по индексу 1
+v.val[2] := 1; // Можно так же писать и имя свойства
 </code></pre>
 <p>Но использование этого свойства не рекомендуется. Прямое обращение
 к полю всегда будет быстрее. То есть аналогично предыдущему коду:</p>
@@ -1189,7 +1208,7 @@ v.val2 := 1;
 // v1 будет иметь ту же длину, но
 // противоположное v0 направление
 var v1 := -v0;
-// а унарный + не делает ничего, он только
+// А унарный + не делает ничего, он только
 // для красоты. То есть v2 будет =v0
 var v2 := +v0;
 </code></pre>
@@ -1197,29 +1216,29 @@ var v2 := +v0;
 <pre><code>var v1: Vec3d;
 var v2: Vec3i;
 ...
-// выведет вектор, имеющий то же
+// Выведет вектор, имеющий то же
 // направление что v1, но в 2 раза длиннее
 (v1*2).Println;
 
-// выведет вектор, имеющий то же
+// Выведет вектор, имеющий то же
 // направление что v1, но в 2 раза короче
 (v1/2).Println;
 
-// к целочисленным векторам вместо
+// К целочисленным векторам вместо
 // обычного деления надо применять div
 (v2 div 2).Println;
 </code></pre>
 <h3>Операции с 2 векторами</h3>
 <pre><code>var v1, v2: Vec3d;
 ...
-// скалярное произведение векторов
+// Скалярное произведение векторов
 (v1*v2).Println;
 
-// сумма векторов, складывает
+// Сумма векторов, складывает
 // отдельно каждый элемент вектора
 (v1+v2).Println;
 
-// разность векторов, тоже работает
+// Разность векторов, тоже работает
 // отдельно на каждый элемент вектора
 (v1-v2).Println;
 </code></pre>
@@ -1236,8 +1255,8 @@ var v2: Vec2i;
 Каким образом находить корень полученного значения - дело программиста.</p>
 <pre><code>var v1: Vec3d;
 ...
-v1.SqrLength.Println; // квадрат длины
-v1.SqrLength.Sqrt.Println; // сама длина
+v1.SqrLength.Println; // Квадрат длины
+v1.SqrLength.Sqrt.Println; // Сама длина
 </code></pre>
 <h3>Normalized</h3>
 <p>Метод <code>.Normalized</code> возвращает нормализированную (с длиной =1) версию вектора.<br />
@@ -1248,7 +1267,7 @@ v1.Println;
 v1.SqrLength.Sqrt.Println;
 var v2 := v1.Normalized;
 v2.Println;
-v2.SqrLength.Sqrt.Println; // обязательно будет 1
+v2.SqrLength.Sqrt.Println; // Обязательно будет 1
 </code></pre>
 <h3>Cross</h3>
 <p>Статичный метод <code>.Cross</code> возвращает произведение векторов (Cross product, не путать со скалярным произведением).
@@ -1273,7 +1292,7 @@ v2.SqrLength.Sqrt.Println; // обязательно будет 1
 <h3>Превращение в строку</h3>
 <pre><code>var v1: Vec4d;
 ...
-v1.Println; // вывод вектора
+v1.Println; // Вывод вектора
 // s присвоит ту же строку, что выводит .Println
 var s := v1.ToString;
 </code></pre>
@@ -1311,7 +1330,7 @@ m.val31 := 1;
 <p>Но у матриц так же есть свойства для столбцов и строк:</p>
 <pre><code>var m: Mtr3d;
 ...
-m.Row0.Println; // вывод нулевой строчки в виде вектора
+m.Row0.Println; // Вывод нулевой строчки в виде вектора
 m.Row1 := new Vec3d(1,2,3);
 m.Col2.Println;
 </code></pre>
@@ -1319,7 +1338,7 @@ m.Col2.Println;
 получать по динамическому индексу (но, опять же, это медленнее):</p>
 <pre><code>var m: Mtr3d;
 ...
-m.Row[0].Println; // вывод нулевой строчки в виде вектора
+m.Row[0].Println;
 m.Row[1] := new Vec3d(1,2,3);
 m.Col[2].Println;
 </code></pre>
@@ -1340,7 +1359,7 @@ var ptr2 := m.ColPtr[3];
 <p><code>Identity</code> создаёт новую единичную матрицу. То есть матрицу, у
 которой главная диагональ заполнена 1, а всё останое заполнено 0.</p>
 <pre><code>Mtr3d.Identity.Println;
-// работает и для не_квадратных матриц
+// Работает и для не_квадратных матриц
 Mtr2x3d.Identity.Println;
 </code></pre>
 <h3>UseColPtr*</h3>
@@ -1378,8 +1397,8 @@ var v := new Vec3d(1,2,3);
 умножении на которую к вектору добавляется заданное значение.</p>
 <pre><code>var m := Mtr4d.Translate(1,2,3);
 
-// последний элемент должен быть 1,
-// чтоб матрица из .Translate правильно работала
+// Последний элемент должен быть 1,
+// чтобы матрица из .Translate правильно работала
 var v := new Vec4d(0,0,0,1);
 
 (m*v).Println; // (1;2;3)
@@ -1407,7 +1426,7 @@ var v := new Vec4d(0,0,0,1);
   1,2,3,
   4,5,6
 );
-m.Transpose.Println; // выводит:
+m.Transpose.Println; // Выводит:
 // 1 4
 // 2 5
 // 3 6
@@ -1423,7 +1442,7 @@ m.Transpose.Println; // выводит:
 <p>Как и у векторов - матрицы можно выводить и превращать в строку</p>
 <pre><code>var m: Mtr4d;
 ...
-m.Println; // вывод матрицы
+m.Println; // Вывод матрицы
 // s присвоит ту же строку, что выводит .Println
 var s := m.ToString;
 </code></pre>
@@ -1828,7 +1847,7 @@ begin
   cl.SetEventCallback(ev, CommandExecutionStatus.COMPLETE, cb,IntPtr.Zero).RaiseIfError;
 end.
 </code></pre>
-<p>Этот код будет может время от времени вылетать, потому что:</p>
+<p>Этот код может время от времени вылетать, потому что:</p>
 <ol>
 <li><p><code>cl.SetEventCallback</code> вызывает свой коллбек тогда, когда посчитает нужным (но обычно после того как вызов <code>cl.SetEventCallback</code> завершился);</p>
 </li>

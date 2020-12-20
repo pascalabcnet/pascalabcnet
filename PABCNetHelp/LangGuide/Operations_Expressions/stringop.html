@@ -1,6 +1,7 @@
 <html><head>
 <object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
 <param name="Keyword" value="Конкатенация строк">
+<param name="Keyword" value="in">
 </object>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 <title></title>
@@ -42,5 +43,10 @@
 повторенной n раз:</p>
 <blockquote><code>s := '*'*10; // s = '**********'<br>s := 5*'ab' // s = 'ababababab'<br>s := 'd'; s *= 3; // s = 
 'ddd'&nbsp;</code></blockquote>
+
+<p>Над строками определена операция <code><strong>in</strong></code> для 
+проверки вложения подстроки в строку: </p>
+<blockquote><code>'bc' <strong>in</strong> 'abcde' // True&nbsp;<br>'c' <strong>
+	in</strong> 'abd' // False</code></blockquote>
 
 </body></html>

@@ -82,7 +82,10 @@ namespace PascalABCCompiler.PCU
         
         internal void AddVarToOrderList(var_definition_node vdn, int ind)
         {
-        	interf_var_list.Add(ind,vdn);
+            if (!interf_var_list.ContainsKey(ind))
+                interf_var_list.Add(ind, vdn);
+            else
+                interf_var_list[ind] = vdn;
         }
 
         internal void AddTypeToOrderList(common_type_node ctn, int ind)
@@ -577,14 +580,14 @@ namespace PascalABCCompiler.PCU
 				pcu_file.ref_assemblies[i] = br.ReadString();
 				
 			}
-			ReadAllAssemblies();
+			
             int num_directives = br.ReadInt32();
             pcu_file.compiler_directives = new List<compiler_directive>();
             for (int i = 0; i < num_directives; i++)
             {
                 pcu_file.compiler_directives.Add(new compiler_directive(br.ReadString(),br.ReadString(),ReadDebugInfo()));    
             }
-
+            ReadAllAssemblies();
 			int num_imp_entity = br.ReadInt32();
 			ext_pos = (int)br.BaseStream.Position;
 			pcu_file.imp_entitles = new ImportedEntity[num_imp_entity];
@@ -639,6 +642,16 @@ namespace PascalABCCompiler.PCU
                 //{
                 string name_with_path = Compiler.GetReferenceFileName(tmp + ".dll");
                 //Assembly a = Assembly.LoadFrom(name_with_path);
+                /*if (pcu_file.compiler_directives != null)
+                foreach (compiler_directive cd in pcu_file.compiler_directives)
+                {
+                    if (cd.name == "reference" && cd.directive != null && cd.directive.IndexOf("\\") != -1 && cd.directive.IndexOf(tmp + ".dll") != -1)
+                    {
+                        name_with_path = Compiler.GetReferenceFileName(cd.directive);
+                        if (name_with_path == null)
+                            throw new AssemblyNotFound(unit_name, cd.directive, null);
+                    }
+                }*/
                 Assembly a = NetHelper.NetHelper.LoadAssembly(name_with_path);
                 NetHelper.NetHelper.init_namespaces(a);
                 //}
@@ -786,6 +799,8 @@ namespace PascalABCCompiler.PCU
                 }
             }
             if (t1.IsGenericParameter && t2.IsGenericParameter)
+                return true;
+            if (t1.FullName == t2.FullName && t1.AssemblyQualifiedName == t2.AssemblyQualifiedName)
                 return true;
             return false;
         }
@@ -1384,6 +1399,8 @@ namespace PascalABCCompiler.PCU
                     return GetGenericParameterOfFunction();
                 case 11:
                     return GetGenericParameterOfMethod();
+                case 12:
+                    return new lambda_any_type_node();
             }
 			return null;
 		}
@@ -2092,8 +2109,8 @@ namespace PascalABCCompiler.PCU
             //}
         }
 
-		private definition_node CreateInterfaceCommonType(string name, int offset)
-		{
+        private definition_node CreateInterfaceCommonType(string name, int offset)
+        {
             definition_node dn = null;
             if (members.TryGetValue(offset, out dn))
                 return dn as common_type_node;
@@ -2101,7 +2118,7 @@ namespace PascalABCCompiler.PCU
 
             bool is_interface = br.ReadBoolean();
             int ind = br.ReadInt32();
-            
+
             if (is_interface)//пропускаем флаг - интерфейсности
             {
                 name = GetString(br.ReadInt32());
@@ -2110,9 +2127,11 @@ namespace PascalABCCompiler.PCU
             {
                 name = br.ReadString();
             }
-			//br.ReadInt32();
+            //br.ReadInt32();
             //Читаем, является ли тип интерфейсом
             bool type_is_interface = (br.ReadByte() == 1);
+
+            bool type_is_class = (br.ReadByte() == 1);
 
             //Читаем, является ли тип делегатом
             bool type_is_delegate = (br.ReadByte() == 1);
@@ -2149,35 +2168,28 @@ namespace PascalABCCompiler.PCU
                 ctn.generic_params = type_params;
             }
             AddMember(ctn, offset);
-            
-            int_members.Insert(0,ctn);
+
+            int_members.Insert(0, ctn);
             common_type_node saved_ctn = ctn;
             type_node base_type = GetTypeReference();
             bool is_value_type = br.ReadBoolean();
 
-            //Читаем поддерживаемые интерфейсы
             List<SemanticTree.ITypeNode> interf_implemented = ReadImplementingInterfaces();
-            //int interf_count = br.ReadInt32();
-            //List<SemanticTree.ITypeNode> interf_implemented = new List<SemanticTree.ITypeNode>(interf_count);
-            //for (int i = 0; i < interf_count; i++)
-            //{
-            //    interf_implemented.Add(GetTypeReference());
-            //}
-			constant_node low_val=null;
-			constant_node upper_val=null;
+            constant_node low_val = null;
+            constant_node upper_val = null;
             SemanticTree.type_access_level tal = (SemanticTree.type_access_level)br.ReadByte();
             SemanticTree.type_special_kind tsk = (SemanticTree.type_special_kind)br.ReadByte();
             ctn.SetIsSealed(br.ReadBoolean());
             ctn.SetIsAbstract(br.ReadBoolean());
             ctn.SetIsStatic(br.ReadBoolean());
             ctn.IsPartial = br.ReadBoolean();
-            
+
             if (tsk == SemanticTree.type_special_kind.diap_type)
             {
-            	low_val = CreateExpression() as constant_node;
-            	upper_val = CreateExpression() as constant_node;
+                low_val = CreateExpression() as constant_node;
+                upper_val = CreateExpression() as constant_node;
             }
-			
+
             if (type_is_interface)
             {
                 //Добавляем ссылки на области видимости предков интерфейса
@@ -2188,12 +2200,10 @@ namespace PascalABCCompiler.PCU
                 }
                 iscope.TopInterfaceScopeArray = interf_scopes.ToArray();
             }
-            //ctn = new wrapped_common_type_node(this, base_type, name, tal, cun.namespaces[0], scope, null, offset);
-            //AddMember(ctn, offset);
-            //int_members.Insert(0,ctn);
             ctn.SetBaseType(base_type);
             ctn.IsInterface = type_is_interface;
             ctn.IsDelegate = type_is_delegate;
+            ctn.is_class = type_is_class;
             ctn.ImplementingInterfaces.AddRange(interf_implemented);
             ctn.internal_is_value = is_value_type;
             ctn.type_special_kind = tsk;
@@ -2211,13 +2221,13 @@ namespace PascalABCCompiler.PCU
             if (CanReadObject())
                 elemnet_type = GetTypeReference();
             ctn.element_type = elemnet_type;
-			if (ctn.type_special_kind != SemanticTree.type_special_kind.set_type)
+            if (ctn.type_special_kind != SemanticTree.type_special_kind.set_type)
             {
-            	SystemLibrary.SystemLibrary.init_reference_type(ctn);
+                SystemLibrary.SystemLibrary.init_reference_type(ctn);
             }
             if (ctn.type_special_kind == SemanticTree.type_special_kind.set_type)
             {
-            	ctn = compilation_context.AddTypeToSetTypeList(ctn);
+                ctn = compilation_context.AddTypeToSetTypeList(ctn);
                 if (saved_ctn != ctn)
                 {
                     RemoveMember(offset, saved_ctn);
@@ -2227,7 +2237,7 @@ namespace PascalABCCompiler.PCU
             }
             if (ctn.type_special_kind == SemanticTree.type_special_kind.typed_file)
             {
-            	ctn = compilation_context.AddTypeToTypedFileList(ctn);
+                ctn = compilation_context.AddTypeToTypedFileList(ctn);
                 if (saved_ctn != ctn)
                 {
                     RemoveMember(offset, saved_ctn);
@@ -2237,50 +2247,45 @@ namespace PascalABCCompiler.PCU
             }
             br.ReadInt32();//comprehensive unit;
             ctn.attributes.AddRange(GetAttributes());
-            //common_namespace_node ns = cun.namespaces[0];
             byte flag = br.ReadByte();
-            int def_prop_off=0;
+            int def_prop_off = 0;
             if (flag == 1)
             {
                 def_prop_off = br.ReadInt32();
             }
-            location loc= ReadDebugInfo();
+            location loc = ReadDebugInfo();
             ctn.loc = loc;
             if (type_is_delegate)
             {
                 SystemLibrary.SystemLibrary.type_constructor.AddOperatorsToDelegate(ctn, loc);
             }
-			
-            //создаем scope для класса
-            //ctn = new wrapped_common_type_node(this, base_type, name, tal, ns, scope, loc, offset);
-            //members[offset] = ctn;
-            //AddMember(ctn, offset);
+
             class_names[ctn] = AddClassMemberNames(scope);
-            if (flag == 1) ctn.default_property = GetPropertyNode(def_prop_off); 
+            if (flag == 1) ctn.default_property = GetPropertyNode(def_prop_off);
             //ivan
-            if (ctn.IsEnum) 
+            if (ctn.IsEnum)
             {
-            	AddEnumOperators(ctn);
-            	MakeTypeAsOrdinal(ctn,0,class_names.Count);
-            	ctn.add_additional_enum_operations();
+                AddEnumOperators(ctn);
+                MakeTypeAsOrdinal(ctn, 0, class_names.Count);
+                ctn.add_additional_enum_operations();
             }
             if (ctn.type_special_kind == SemanticTree.type_special_kind.diap_type)
             {
-            	type_constructor.add_convertions_to_diap(ctn,low_val,upper_val);
+                type_constructor.add_convertions_to_diap(ctn, low_val, upper_val);
             }
             if (ctn.type_special_kind == SemanticTree.type_special_kind.array_kind)
             {
-            	if (!(ctn.element_type is compiled_type_node))
-            	{
-            		type_constructor.make_array_interface(ctn);
-            	}
+                if (!(ctn.element_type is compiled_type_node))
+                {
+                    type_constructor.make_array_interface(ctn);
+                }
             }
             if (ctn.is_value_type)
             {
 
             }
             //RestoreAllFields(ctn);
-            if(!waited_types_to_restore_fields.Contains(ctn))
+            if (!waited_types_to_restore_fields.Contains(ctn))
                 waited_types_to_restore_fields.Add(ctn);
 
             if (type_is_delegate)
@@ -2293,19 +2298,14 @@ namespace PascalABCCompiler.PCU
                 dii.parameters.AddRange(invoke_method.parameters);
                 ctn.add_internal_interface(dii);
             }
-            
-            /*if (ctn.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.array_wrapper)
-            {
-            	bounded_array_interface bai = new bounded_array_interface(oti_indexer, ctn.element_type, cpn, oti_indexer.lower_value.type, int_arr);
-				ctn.add_internal_interface(bai);
-            }*/
+
             if (type_is_interface)
             {
                 RestoreAllFields(ctn);
             }
             if (ctn.is_value)
             {
-            	RestoreAllFields(ctn);
+                RestoreAllFields(ctn);
             }
             if (ctn.is_generic_type_definition)
             {
@@ -2318,13 +2318,9 @@ namespace PascalABCCompiler.PCU
                     }
                 }
             }
-            /*if (ctn.type_special_kind == SemanticTree.type_special_kind.array_wrapper)
-            {
-            	RestoreAllFields(ctn);
-            }*/
-            
-                return ctn;
-		}
+
+            return ctn;
+        }
 
         private void MakeTypeAsOrdinal(common_type_node ctn, int low_val, int upper_val)
         {

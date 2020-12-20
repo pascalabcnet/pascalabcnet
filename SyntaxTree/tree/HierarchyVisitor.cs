@@ -2037,6 +2037,30 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(semantic_ith_element_of _semantic_ith_element_of)
+		{
+		}
+
+		public virtual void post_do_visit(semantic_ith_element_of _semantic_ith_element_of)
+		{
+		}
+
+		public virtual void pre_do_visit(bigint_const _bigint_const)
+		{
+		}
+
+		public virtual void post_do_visit(bigint_const _bigint_const)
+		{
+		}
+
+		public virtual void pre_do_visit(foreach_stmt_formatting _foreach_stmt_formatting)
+		{
+		}
+
+		public virtual void post_do_visit(foreach_stmt_formatting _foreach_stmt_formatting)
+		{
+		}
+
 		public override void visit(expression _expression)
 		{
 			DefaultVisit(_expression);
@@ -4205,6 +4229,32 @@ namespace PascalABCCompiler.SyntaxTree
 			pre_do_visit(_array_const_new);
 			visit(array_const_new.elements);
 			post_do_visit(_array_const_new);
+		}
+
+		public override void visit(semantic_ith_element_of _semantic_ith_element_of)
+		{
+			DefaultVisit(_semantic_ith_element_of);
+			pre_do_visit(_semantic_ith_element_of);
+			visit(semantic_ith_element_of.id);
+			visit(semantic_ith_element_of.index);
+			post_do_visit(_semantic_ith_element_of);
+		}
+
+		public override void visit(bigint_const _bigint_const)
+		{
+			DefaultVisit(_bigint_const);
+			pre_do_visit(_bigint_const);
+			post_do_visit(_bigint_const);
+		}
+
+		public override void visit(foreach_stmt_formatting _foreach_stmt_formatting)
+		{
+			DefaultVisit(_foreach_stmt_formatting);
+			pre_do_visit(_foreach_stmt_formatting);
+			visit(foreach_stmt_formatting.il);
+			visit(foreach_stmt_formatting.in_what);
+			visit(foreach_stmt_formatting.stmt);
+			post_do_visit(_foreach_stmt_formatting);
 		}
 	}
 

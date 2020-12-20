@@ -24,6 +24,135 @@ begin
     Result := arr[0]
 end;
 
+const
+  BAD_TYPE_IN_TYPED_FILE = 'Для типизированных файлов нельзя указывать тип элементов, являющийся ссылочным или содержащий ссылочные поля!!Typed file cannot contain elements that are references or contains fields-references';
+  PARAMETER_STEP_MUST_BE_NOT_EQUAL_0 = 'Параметр step не может быть равен 0!!The step parameter must be not equal to 0';
+  PARAMETER_FROM_OUT_OF_RANGE = 'Параметр from за пределами диапазона!!The from parameter out of bounds';
+  PARAMETER_TO_OUT_OF_RANGE = 'Параметр to за пределами диапазона!!The to parameter out of bounds';
+  SLICE_SIZE_AND_RIGHT_VALUE_SIZE_MUST_BE_EQUAL = 'Размеры среза и присваиваемого выражения должны быть равны!!Slice size and assigned expression size must be equal';
+
+//{{{doc: Начало секции расширений строк для срезов }}} 
+
+///--
+procedure CorrectFromTo(situation: integer; Len: integer; var from, &to: integer; step: integer);
+begin
+  if step > 0 then
+  begin
+    case situation of
+      1: from := 0;
+      2: &to := Len;
+      3: (from, &to) := (0, Len)
+    end;  
+  end
+  else
+  begin
+    case situation of
+      1: from := Len - 1;
+      2: &to := -1;
+      3: (from, &to) := (Len - 1, -1);
+    end;
+  end;
+end;
+
+///--
+function CheckAndCorrectFromToAndCalcCountForSystemSlice(situation: integer; Len: integer; var from, &to: integer; step: integer): integer;
+begin
+  // situation = 0 - все параметры присутствуют
+  // situation = 1 - from отсутствует
+  // situation = 2 - to отсутствует
+  // situation = 3 - from и to отсутствуют
+  if step = 0 then
+    raise new System.ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
+  
+  if (situation = 0) or (situation = 2) then
+    if (from < 0) or (from > Len - 1) then
+      raise new System.ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
+  
+  if (situation = 0) or (situation = 1) then
+    if (&to < -1) or (&to > Len) then
+      raise new System.ArgumentException(GetTranslation(PARAMETER_TO_OUT_OF_RANGE));
+  
+  CorrectFromTo(situation, Len, from, &to, step);
+  
+  var count: integer;
+  
+  if step > 0 then
+  begin
+    var cnt := &to - from;
+    if cnt <= 0 then 
+      count := 0
+    else count := (cnt - 1) div step + 1;
+  end
+  else
+  begin
+    var cnt := from - &to;
+    if cnt <= 0 then 
+      count := 0
+    else count := (cnt - 1) div (-step) + 1;
+  end;
+  
+  Result := count;
+end;
+
+///--
+procedure SystemSliceAssignment(var Self: string; rightValue: string; situation: integer; from, &to: SystemIndex); extensionmethod;
+begin
+  if from.IsInverted then
+    from.IndexValue := Self.Length - from.IndexValue + 1;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Length - &to.IndexValue + 1;
+    
+  from.IndexValue := from.IndexValue - 1;
+  &to.IndexValue := &to.IndexValue - 1;
+  
+  var step := 1;
+  var fromValue := from.IndexValue;
+  var toValue := &to.IndexValue;
+  var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, Self.Count, fromValue, toValue, step);
+  if count <> rightValue.Length then
+    raise new System.ArgumentException(GetTranslation(SLICE_SIZE_AND_RIGHT_VALUE_SIZE_MUST_BE_EQUAL));
+    
+  var f := fromValue + 1;
+  
+  var strInd := 1;
+  loop count do
+  begin
+    Self[f] := rightValue[strInd];
+    f += step;
+    strInd += 1;
+  end;
+end;
+
+///--
+procedure SystemSliceAssignment(var Self: string; rightValue: string; situation: integer; from, &to: SystemIndex; step: integer); extensionmethod;
+begin
+  if from.IsInverted then
+    from.IndexValue := Self.Length - from.IndexValue + 1;
+  if &to.IsInverted then
+    &to.IndexValue := Self.Length - &to.IndexValue + 1;
+    
+  from.IndexValue := from.IndexValue - 1;
+  &to.IndexValue := &to.IndexValue - 1;
+  
+  var fromValue := from.IndexValue;
+  var toValue := &to.IndexValue;
+  var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation, Self.Count, fromValue, toValue, step);
+  if count <> rightValue.Length then
+    raise new System.ArgumentException(GetTranslation(SLICE_SIZE_AND_RIGHT_VALUE_SIZE_MUST_BE_EQUAL));
+    
+  var f := fromValue + 1;
+  
+  var strInd := 1;
+  loop count do
+  begin
+    Self[f] := rightValue[strInd];
+    f += step;
+    strInd += 1;
+  end;
+end;
+
+//{{{--doc: Конец секции расширений строк для срезов }}} 
+
 //{{{doc: Начало секции подпрограмм для типизированных файлов для документации }}} 
 
 // -----------------------------------------------------
@@ -65,9 +194,6 @@ begin
   end
   else Result := True;
 end;
-
-const
-  BAD_TYPE_IN_TYPED_FILE = 'Для типизированных файлов нельзя указывать тип элементов, являющийся ссылочным или содержащий ссылочные поля!!Typed file cannot contain elements that are references or contains fields-references';
 
 /// Открывает типизированный файл и возвращает значение для инициализации файловой переменной
 function OpenFile<T>(fname: string): file of T;
@@ -265,9 +391,9 @@ end;
 
 var __initialized: boolean;
 
-procedure __InitModule;
+{procedure __InitModule;
 begin
-end;
+end;}
 
 procedure __InitModule__;
 begin
@@ -275,10 +401,10 @@ begin
   begin
     __initialized := true;
     __InitPABCSystem;
-    __InitModule;
+    //__InitModule;
   end;
 end;
 
 begin
-  __InitModule;
+  //__InitModule;
 end.

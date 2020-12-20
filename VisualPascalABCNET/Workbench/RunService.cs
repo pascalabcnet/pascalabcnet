@@ -18,7 +18,7 @@ namespace VisualPascalABC
         string RedirectIOModeName = "[REDIRECTIOMODE]";
         string RunModeName = "[RUNMODE]";
         private bool TerminateAllPrograms = false;
-        internal RunManager RunnerManager;
+        public RunManager RunnerManager;
         private IWorkbench Workbench;
         private IWorkbenchDesignerService DesignerService;
         private IWorkbenchBuildService BuildService;
@@ -63,6 +63,14 @@ namespace VisualPascalABC
         public bool Run(bool forDebugging, bool startWithGoto, bool need_first_brpt)
         {
             return Run(DocumentService.CurrentCodeFileDocument, forDebugging, startWithGoto, need_first_brpt);
+        }
+
+        public void Run(string fileName, bool redirectIO, string ModeName, bool RunWithPause, string WorkingDirectory, string CommandLineArguments, bool attachDebugger, bool fictive_attach)
+        {
+            RunnerManager.Run(fileName,
+                Workbench.UserOptions.RedirectConsoleIO, RedirectIOModeName, RunWithPause,
+                Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.SourceFileDirectory,
+               CommandLineArguments, attachDebugger, fictive_attach);
         }
 
         public bool Run(ICodeFileDocument tabPage, bool forDebugging, bool startWithGoto, bool needFirstBreakpoint)

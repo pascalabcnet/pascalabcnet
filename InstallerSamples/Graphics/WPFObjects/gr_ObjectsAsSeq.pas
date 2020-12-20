@@ -19,7 +19,7 @@ begin
   foreach var o in Objects.Seq do
     match o with
       CircleWPF(c): c.Radius += 10;
-      EllipseWPF(e): e.AnimMoveOn(Random(-50,50),Random(-50,50),1);
+      EllipseWPF(e): e.AnimMoveBy(Random(-50,50),Random(-50,50),1);
       RegularPolygonWPF(r) when r.Count<6: r.SetBorder;  
     end
 end.

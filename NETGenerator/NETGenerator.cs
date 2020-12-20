@@ -1698,7 +1698,16 @@ namespace PascalABCCompiler.NETGenerator
             object[] objs = new object[cnsts.Length];
             for (int i = 0; i < objs.Length; i++)
             {
-                objs[i] = cnsts[i].value;
+                if (cnsts[i] is IArrayConstantNode)
+                {
+                    List<object> lst = new List<object>();
+                    var arr_cnst = cnsts[i] as IArrayConstantNode;
+                    foreach (IConstantNode cn in arr_cnst.ElementValues)
+                        lst.Add(cn.value);
+                    objs[i] = lst.ToArray();
+                }
+                else
+                    objs[i] = cnsts[i].value;
             }
             return objs;
         }
@@ -5926,7 +5935,7 @@ namespace PascalABCCompiler.NETGenerator
         {
             Label lab = helper.GetLabel(value.label, il);
             il.MarkLabel(lab);
-            value.statement.visit(this);
+            ConvertStatement(value.statement);
         }
 
         public override void visit(IGotoStatementNode value)
@@ -9264,9 +9273,12 @@ namespace PascalABCCompiler.NETGenerator
                         //(ssyy) Вставил 15.05.08
                         Type from_val_type = null;
                         IExpressionNode par0 = fn.real_parameters[0];
-                        if (!(par0 is SemanticTree.INullConstantNode) && (par0.type.is_value_type || par0.type.is_generic_parameter))
+                        ITypeNode tn = par0.type; 
+                        if (par0.conversion_type != null)
+                            tn = par0.conversion_type;
+                        if (!(par0 is SemanticTree.INullConstantNode) && (tn.is_value_type || tn.is_generic_parameter))
                         {
-                            from_val_type = helper.GetTypeReference(par0.type).tp;
+                            from_val_type = helper.GetTypeReference(tn).tp;
                         }
                         Type t = helper.GetTypeReference(fn.type).tp;
                         if (!fn.type.IsDelegate)

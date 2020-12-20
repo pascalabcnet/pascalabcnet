@@ -50,17 +50,19 @@ namespace SyntaxVisitors
         }
     }
 
-    public class ExprHasNameVisitor : WalkingVisitorNew  // есть ли в выражении переменная с данным именем (не включая вложенные лямбды) (используется для поиска Result)
+    // есть ли в выражении переменная с данным именем (не включая вложенные лямбды) 
+    // (используется для поиска Result)
+    public class HasNameVisitor : WalkingVisitorNew  
     {
         private string varname;
         public ident id = null;
-        public static ident HasName(expression ex, string varname)
+        public static ident HasName(syntax_tree_node sn, string varname)
         {
-            var v = new ExprHasNameVisitor(varname);
-            v.ProcessNode(ex);
+            var v = new HasNameVisitor(varname);
+            v.ProcessNode(sn);
             return v.id;
         }
-        public ExprHasNameVisitor(string varname)
+        public HasNameVisitor(string varname)
         {
             this.varname = varname.ToLower();
         }

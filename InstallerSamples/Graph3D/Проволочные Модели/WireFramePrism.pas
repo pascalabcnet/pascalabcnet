@@ -13,6 +13,6 @@ begin
     Inc(m);
   end;
   var p1 := p.Clone;
-  p1.MoveOnX(-5);
+  p1.MoveByX(-5);
   p1.AnimRotate(OrtZ,360,10).Forever.Begin;
 end.

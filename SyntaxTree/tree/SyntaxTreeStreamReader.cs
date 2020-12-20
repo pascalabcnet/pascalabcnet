@@ -528,6 +528,12 @@ namespace PascalABCCompiler.SyntaxTree
 					return new index();
 				case 253:
 					return new array_const_new();
+				case 254:
+					return new semantic_ith_element_of();
+				case 255:
+					return new bigint_const();
+				case 256:
+					return new foreach_stmt_formatting();
 			}
 			return null;
 		}
@@ -4426,8 +4432,47 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_array_const_new(array_const_new _array_const_new)
 		{
-			read_expression(_array_const_new);
+			read_addressed_value(_array_const_new);
 			_array_const_new.elements = _read_node() as expression_list;
+		}
+
+
+		public void visit(semantic_ith_element_of _semantic_ith_element_of)
+		{
+			read_semantic_ith_element_of(_semantic_ith_element_of);
+		}
+
+		public void read_semantic_ith_element_of(semantic_ith_element_of _semantic_ith_element_of)
+		{
+			read_expression(_semantic_ith_element_of);
+			_semantic_ith_element_of.id = _read_node() as ident;
+			_semantic_ith_element_of.index = _read_node() as expression;
+		}
+
+
+		public void visit(bigint_const _bigint_const)
+		{
+			read_bigint_const(_bigint_const);
+		}
+
+		public void read_bigint_const(bigint_const _bigint_const)
+		{
+			read_const_node(_bigint_const);
+			_bigint_const.val = br.ReadUInt64();
+		}
+
+
+		public void visit(foreach_stmt_formatting _foreach_stmt_formatting)
+		{
+			read_foreach_stmt_formatting(_foreach_stmt_formatting);
+		}
+
+		public void read_foreach_stmt_formatting(foreach_stmt_formatting _foreach_stmt_formatting)
+		{
+			read_statement(_foreach_stmt_formatting);
+			_foreach_stmt_formatting.il = _read_node() as ident_list;
+			_foreach_stmt_formatting.in_what = _read_node() as expression;
+			_foreach_stmt_formatting.stmt = _read_node() as statement;
 		}
 
 	}

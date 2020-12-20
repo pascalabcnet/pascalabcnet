@@ -140,6 +140,19 @@ type
     begin
       Result := l.GetEnumerator;
     end;
+    /// Очистить список игровых объектов 
+    procedure Clear;
+    begin
+      for var i:=Count-1 downto 0 do
+        Destroy(Items[i]);
+    end;
+    /// Удалить все игровые объекты, удовлетворяющие условию
+    procedure DestroyAll(condition: ObjectWPF -> boolean);
+    begin
+      for var i := Count - 1 downto 0 do
+        if condition(Items[i]) then
+          Destroy(Items[i]);
+    end;
   end;
 
 
@@ -276,14 +289,18 @@ type
     procedure MoveForward(r: real);
     begin
       var a := Pi/180*(90-RotateAngle);
-      MoveOn(r*Cos(a),-r*Sin(a));
+      MoveBy(r*Cos(a),-r*Sin(a));
     end;
     /// Перемещает графический объект на вектор (a,b)
-    procedure MoveOn(a,b: real) := MoveTo(Left+a,Top+b);
+    procedure MoveBy(a,b: real) := MoveTo(Left+a,Top+b);
     /// Перемещает графический объект на вектор (a,b)
+    procedure MoveBy(v: (real,real)) := MoveTo(Left+v[0],Top+v[1]);
+    ///--
+    procedure MoveOn(a,b: real) := MoveTo(Left+a,Top+b);
+    ///--
     procedure MoveOn(v: (real,real)) := MoveTo(Left+v[0],Top+v[1]);
     /// Перемещает графический объект на вектор (dx,dy)
-    procedure Move; virtual := MoveOn(dx,dy);
+    procedure Move; virtual := MoveBy(dx,dy);
     /// Перемещает графический объект вдоль вектора Direction со скоростью Velocity за время dt
     procedure MoveTime(dt: real); virtual;
     begin
@@ -292,7 +309,7 @@ type
         exit;
       var dvx := dx/len*Velocity;
       var dvy := dy/len*Velocity;
-      MoveOn(dvx*dt,dvy*dt);
+      MoveBy(dvx*dt,dvy*dt);
     end;
     /// Поворачивает графический объект по часовой стрелке на угол a
     procedure Rotate(a: real) := RotateAngle += a;
@@ -317,7 +334,7 @@ type
     procedure Scale(r: real) := ScaleFactor *= r;
   
   private
-    procedure AnimMoveOnP(a,b,sec: real);
+    procedure AnimMoveByP(a,b,sec: real);
     begin
       var ax := new DoubleAnimation(a + transl.X, System.TimeSpan.FromSeconds(sec));
       var ay := new DoubleAnimation(b + transl.Y, System.TimeSpan.FromSeconds(sec));
@@ -352,12 +369,14 @@ type
     end;
   public
     /// Анимирует перемещение графического объекта на вектор (a,b) в течение sec секунд
-    procedure AnimMoveOn(a,b: real; sec: real := 1) := Invoke(AnimMoveOnP,a,b,sec);
+    procedure AnimMoveBy(a,b: real; sec: real := 1) := Invoke(AnimMoveByP,a,b,sec);
+    ///--
+    procedure AnimMoveOn(a,b: real; sec: real := 1) := Invoke(AnimMoveByP,a,b,sec);
     /// Анимирует перемещение графического объекта в направлении RotateAngle (вверх при RotateAngle=0)
     procedure AnimMoveForward(r: real);
     begin
       var a := Pi/180*(90-RotateAngle);
-      AnimMoveOn(r*Cos(a),-r*Sin(a));
+      AnimMoveBy(r*Cos(a),-r*Sin(a));
     end;
     /// Анимирует перемещение графического объекта к точке (x,y) в течение sec секунд
     procedure AnimMoveTo(x,y: real; sec: real := 1) := Invoke(AnimMoveToP,x,y,sec);
@@ -404,6 +423,8 @@ type
     begin
       Result := (Left < 0) or (Top < 0) or (Right > GraphWindow.Width) or (Bottom > GraphWindow.Height);
     end;
+    /// Tag хранит любые присоединённые характеристики объекта
+    auto property Tag: object;
   end;
   
 // -----------------------------------------------------
@@ -1254,7 +1275,7 @@ procedure Redraw(p: ()->()) := GraphWPFBase.Invoke(p);
 procedure SetLeft(Self: UIElement; l: integer) := Self.SetLeft(l);
 procedure SetTop(Self: UIElement; t: integer) := Self.SetTop(t);
 
-function MoveOn(Self: Point; vx,vy: real): Point; extensionmethod;
+function MoveBy(Self: Point; vx,vy: real): Point; extensionmethod;
 begin
   Result.X := Self.X + vx;
   Result.Y := Self.Y + vy;
@@ -1595,12 +1616,14 @@ begin
     GraphWindow := GraphWPF.GraphWindow;
 
     host := new Canvas();
+    host.ClipToBounds := True;
     {host.SizeChanged += (s,e) ->
     begin
       var sz := e.NewSize;
       host.DataContext := sz;
     end;}
     var g := MainWindow.Content as DockPanel;
+    (g.children[0] as Canvas).ClipToBounds := False; // SSM 04/08/20 - возвращаем в False иначе графику GraphWPF становится не видно
     g.children.Add(host); // Слой графики WPF - последний
   end;
   app.Dispatcher.Invoke(AdditionalInit);

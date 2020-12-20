@@ -738,6 +738,8 @@ namespace PascalABCCompiler
     public class Compiler : MarshalByRefObject, ICompiler
 	{
         //public ISyntaxTreeChanger SyntaxTreeChanger = null; // SSM 17/08/15 - для операций над синтаксическим деревом после его построения
+        int pABCCodeHealth = 0;
+        public int PABCCodeHealth { get { return pABCCodeHealth; } }
 
         public static string Version
         {
@@ -911,12 +913,12 @@ namespace PascalABCCompiler
         public CodeGenerators.Controller CodeGeneratorsController = null;
         //public LLVMConverter.Controller LLVMCodeGeneratorsController = null;
         //public PascalToCppConverter.Controller PABCToCppCodeGeneratorsController = null;
-        private SyntaxTree.unit_or_namespace CurrentSyntaxUnit;
+        public SyntaxTree.unit_or_namespace CurrentSyntaxUnit;
 		private List<CompilationUnit> UnitsToCompile = new List<CompilationUnit>();
         public Hashtable RecompileList = new Hashtable(StringComparer.OrdinalIgnoreCase);
         private PascalABCCompiler.TreeRealization.unit_node_list Units;
         private Hashtable CycleUnits = new Hashtable();
-        private CompilationUnit CurrentCompilationUnit = null;
+        public CompilationUnit CurrentCompilationUnit = null;
         private CompilationUnit FirstCompilationUnit = null;
         private bool PCUReadersAndWritersClosed;
         public int beginOffset;
@@ -1052,6 +1054,8 @@ namespace PascalABCCompiler
         public void Reload()
         {
             OnChangeCompilerState(this, CompilerState.Reloading, null);
+
+            pABCCodeHealth = 0;
 
             //А это что?
             TreeRealization.type_node tn = SystemLibrary.SystemLibrary.void_type;
@@ -1191,6 +1195,7 @@ namespace PascalABCCompiler
             CurrentCompilationUnit = null;
             FirstCompilationUnit = null;
             linesCompiled = 0;
+            pABCCodeHealth = 0;
             PCUReadersAndWritersClosed = false;
             ParsersController.Reset();
             SyntaxTreeToSemanticTreeConverter.Reset();
@@ -2301,8 +2306,8 @@ namespace PascalABCCompiler
             if (ClearAfterCompilation)
             ClearAll();
             
-            
-            OnChangeCompilerState(this, CompilerState.Ready, null);
+            if (!need_recompiled)
+                OnChangeCompilerState(this, CompilerState.Ready, null);
             if (ErrorsList.Count > 0)
             {
                 return null;
@@ -2926,6 +2931,7 @@ namespace PascalABCCompiler
         {
             string SourceText = GetSourceFileText(FileName);
             List<string> DefinesList = new List<string>();
+            DefinesList.Add("PASCALABC"); // SSM 11/07/20
             if (!compilerOptions.Debug && !compilerOptions.ForDebugging)
                 DefinesList.Add("RELEASE");
             else
@@ -3102,7 +3108,17 @@ namespace PascalABCCompiler
             OnChangeCompilerState(this, CompilerState.EndParsingFile, FileName);
             //Вычисляем сколько строк скомпилировали
             if (ErrorList.Count == 0 && cu != null && cu.source_context!=null)
+            {
                 linesCompiled += (uint)(cu.source_context.end_position.line_num - cu.source_context.begin_position.line_num + 1);
+                // 500 - это наибольшая программа для начинающих. БОльшая программа - здоровье кода только по кнопке (чтобы не замедлять)
+                if (linesCompiled <= 500)
+                {
+                    // Это только для локального компилятора?
+                    var stat = new SyntaxVisitors.ABCStatisticsVisitor();
+                    stat.ProcessNode(cu);
+                    pABCCodeHealth = stat.CalcHealth(out int neg, out int pos);
+                }
+            }
             return cu;            
         }
 
@@ -3241,6 +3257,7 @@ namespace PascalABCCompiler
                     else
                         throw new UnitNotFound(CurrentCompilationUnit.SyntaxTree.file_name, UnitName, SyntaxUsesUnit.source_context);
                 List<string> DefinesList = new List<string>();
+                DefinesList.Add("PASCALABC");
                 if (!compilerOptions.Debug && !compilerOptions.ForDebugging)
                     DefinesList.Add("RELEASE");
                 else

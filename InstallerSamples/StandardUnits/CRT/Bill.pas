@@ -119,7 +119,7 @@ begin
 end;
 
 /// Перемещает шарик на вектор (dx,dy)
-procedure MoveOn(dx,dy: integer);
+procedure MoveBy(dx,dy: integer);
 begin
   MoveTo(ax+dx,ay+dy);
 end;
@@ -140,6 +140,6 @@ BEGIN
     Delay(20);
     if FilledInFront then 
       ChangeDirection;
-    MoveOn(vx,vy);
+    MoveBy(vx,vy);
   until KeyPressed;
 END.

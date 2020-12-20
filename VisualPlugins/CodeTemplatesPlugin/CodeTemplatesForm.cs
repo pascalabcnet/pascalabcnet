@@ -116,6 +116,8 @@ namespace CodeTemplatesPlugin
 
         private void listBox1_MouseDoubleClick_1(object sender, MouseEventArgs e)
         {
+            if (listBox1.SelectedItems == null)
+                return;
             var s = listBox1.SelectedItems[0].Text;
             ICSharpCode.TextEditor.TextArea ta = MainForm.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.TextArea;
             ta.Focus();

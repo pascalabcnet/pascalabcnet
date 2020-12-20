@@ -54037,7 +54037,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public partial class array_const_new : expression
+	public partial class array_const_new : addressed_value
 	{
 
 		///<summary>
@@ -54173,6 +54173,556 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						elements = (expression_list)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class semantic_ith_element_of : expression
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public semantic_ith_element_of()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public semantic_ith_element_of(ident _id,expression _index)
+		{
+			this._id=_id;
+			this._index=_index;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public semantic_ith_element_of(ident _id,expression _index,SourceContext sc)
+		{
+			this._id=_id;
+			this._index=_index;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected ident _id;
+		protected expression _index;
+
+		///<summary>
+		///
+		///</summary>
+		public ident id
+		{
+			get
+			{
+				return _id;
+			}
+			set
+			{
+				_id=value;
+				if (_id != null)
+					_id.Parent = this;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public expression index
+		{
+			get
+			{
+				return _index;
+			}
+			set
+			{
+				_index=value;
+				if (_index != null)
+					_index.Parent = this;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			semantic_ith_element_of copy = new semantic_ith_element_of();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (id != null)
+			{
+				copy.id = (ident)id.Clone();
+				copy.id.Parent = copy;
+			}
+			if (index != null)
+			{
+				copy.index = (expression)index.Clone();
+				copy.index.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new semantic_ith_element_of TypedClone()
+		{
+			return Clone() as semantic_ith_element_of;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (id != null)
+				id.Parent = this;
+			if (index != null)
+				index.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			id?.FillParentsInAllChilds();
+			index?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return id;
+					case 1:
+						return index;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						id = (ident)value;
+						break;
+					case 1:
+						index = (expression)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class bigint_const : const_node
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public bigint_const()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public bigint_const(UInt64 _val)
+		{
+			this._val=_val;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public bigint_const(UInt64 _val,SourceContext sc)
+		{
+			this._val=_val;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected UInt64 _val;
+
+		///<summary>
+		///
+		///</summary>
+		public UInt64 val
+		{
+			get
+			{
+				return _val;
+			}
+			set
+			{
+				_val=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			bigint_const copy = new bigint_const();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			copy.val = val;
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new bigint_const TypedClone()
+		{
+			return Clone() as bigint_const;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///// для форматирования только
+	///</summary>
+	[Serializable]
+	public partial class foreach_stmt_formatting : statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public foreach_stmt_formatting()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public foreach_stmt_formatting(ident_list _il,expression _in_what,statement _stmt)
+		{
+			this._il=_il;
+			this._in_what=_in_what;
+			this._stmt=_stmt;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public foreach_stmt_formatting(ident_list _il,expression _in_what,statement _stmt,SourceContext sc)
+		{
+			this._il=_il;
+			this._in_what=_in_what;
+			this._stmt=_stmt;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected ident_list _il;
+		protected expression _in_what;
+		protected statement _stmt;
+
+		///<summary>
+		///
+		///</summary>
+		public ident_list il
+		{
+			get
+			{
+				return _il;
+			}
+			set
+			{
+				_il=value;
+				if (_il != null)
+					_il.Parent = this;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public expression in_what
+		{
+			get
+			{
+				return _in_what;
+			}
+			set
+			{
+				_in_what=value;
+				if (_in_what != null)
+					_in_what.Parent = this;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public statement stmt
+		{
+			get
+			{
+				return _stmt;
+			}
+			set
+			{
+				_stmt=value;
+				if (_stmt != null)
+					_stmt.Parent = this;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			foreach_stmt_formatting copy = new foreach_stmt_formatting();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (il != null)
+			{
+				copy.il = (ident_list)il.Clone();
+				copy.il.Parent = copy;
+			}
+			if (in_what != null)
+			{
+				copy.in_what = (expression)in_what.Clone();
+				copy.in_what.Parent = copy;
+			}
+			if (stmt != null)
+			{
+				copy.stmt = (statement)stmt.Clone();
+				copy.stmt.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new foreach_stmt_formatting TypedClone()
+		{
+			return Clone() as foreach_stmt_formatting;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (il != null)
+				il.Parent = this;
+			if (in_what != null)
+				in_what.Parent = this;
+			if (stmt != null)
+				stmt.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			il?.FillParentsInAllChilds();
+			in_what?.FillParentsInAllChilds();
+			stmt?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return il;
+					case 1:
+						return in_what;
+					case 2:
+						return stmt;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						il = (ident_list)value;
+						break;
+					case 1:
+						in_what = (expression)value;
+						break;
+					case 2:
+						stmt = (statement)value;
 						break;
 				}
 			}
