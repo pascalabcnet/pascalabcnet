@@ -2612,7 +2612,10 @@ namespace PascalABCCompiler
             {
                 if (FileName.IndexOf(Path.DirectorySeparatorChar) != -1)
                 {
+
                     File.Copy(Path.Combine(Environment.CurrentDirectory, FileName), Path.Combine(Environment.CurrentDirectory, Path.GetFileName(FileName)), true);
+                    if (CompilerOptions.useOutputDirectory)
+                        File.Copy(Path.Combine(Environment.CurrentDirectory, FileName), Path.Combine(CompilerOptions.OutputDirectory, Path.GetFileName(FileName)), true);
                     return Path.Combine(Environment.CurrentDirectory, Path.GetFileName(FileName));
                 }
                 return Path.Combine(Environment.CurrentDirectory, FileName);//.ToLower();//? а надо ли tolover?
