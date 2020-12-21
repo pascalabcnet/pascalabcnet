@@ -13521,7 +13521,11 @@ end;
 
 procedure __InitModule;
 begin
-  DefaultEncoding := Encoding.GetEncoding(1251);
+  try
+    DefaultEncoding := Encoding.GetEncoding(1251);
+  except
+    DefaultEncoding := Encoding.UTF8;
+  end;
   rnd := new System.Random;
   
   CurrentIOSystem := new IOStandardSystem;

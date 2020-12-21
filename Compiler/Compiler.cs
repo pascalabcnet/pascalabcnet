@@ -2626,6 +2626,7 @@ namespace PascalABCCompiler
             var FullFileName = Path.Combine(curr_path, FileName);
             if (System.IO.File.Exists(FullFileName))
             {
+                if (!CompilerOptions.useOutputDirectory) return FullFileName;
                 var NewFileName = Path.Combine(compilerOptions.OutputDirectory, Path.GetFileName(FullFileName));
                 if (FullFileName != NewFileName) File.Copy(FullFileName, NewFileName, true);
                 return NewFileName;
