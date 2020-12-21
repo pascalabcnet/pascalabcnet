@@ -5275,10 +5275,12 @@ namespace PascalABCCompiler.NETGenerator
                 il.Emit(OpCodes.Ldarga, pos);
         }
 
+        bool must_push_addr;
+
         //перевод ссылки на параметр
         public override void visit(SemanticTree.ICommonParameterReferenceNode value)
         {
-            bool must_push_addr = false;//должен ли упаковываться, но это если после идет точка
+            must_push_addr = false;//должен ли упаковываться, но это если после идет точка
             if (is_dot_expr)//если после идет точка
             {
                 if (value.type.is_value_type || value.type.is_generic_parameter)
@@ -5355,7 +5357,7 @@ namespace PascalABCCompiler.NETGenerator
                 else
                 {
                     il.Emit(OpCodes.Ldfld, fb);
-                    if (is_addr == false && must_push_addr == false)
+                    if (!is_addr && !must_push_addr)
                     {
                         TypeInfo ti = helper.GetTypeReference(value.parameter.type);
                         NETGeneratorTools.PushParameterDereference(il, ti.tp);
@@ -7200,7 +7202,8 @@ namespace PascalABCCompiler.NETGenerator
             value.obj.visit(this);
             if ((value.obj.type.is_value_type) && !value.method.comperehensive_type.is_value_type)
             {
-                il.Emit(OpCodes.Box, helper.GetTypeReference(value.obj.type).tp);
+                if (!(value.obj is ICommonParameterReferenceNode && must_push_addr))
+                    il.Emit(OpCodes.Box, helper.GetTypeReference(value.obj.type).tp);
             }
             else if (value.obj.type.is_generic_parameter && !(value.obj is IAddressedExpressionNode))
             {
@@ -8280,7 +8283,10 @@ namespace PascalABCCompiler.NETGenerator
             }
             if (from is INullConstantNode && to.type.is_nullable_type)
             {
+                if (value.indices != null && addr_meth != null)
+                    il.Emit(OpCodes.Call, addr_meth);
                 il.Emit(OpCodes.Initobj, elem_type);
+                
                 return;
             }
             from.visit(this);
