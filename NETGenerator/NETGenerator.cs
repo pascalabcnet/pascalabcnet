@@ -14,6 +14,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Remoting;
 using System.Security;
 using System.Runtime.Versioning;
+using System.Text;
 
 namespace PascalABCCompiler.NETGenerator
 {
@@ -36,7 +37,7 @@ namespace PascalABCCompiler.NETGenerator
     //compiler options class
     public class CompilerOptions
     {
-        public enum PlatformTarget { x64, x86, AnyCPU };
+        public enum PlatformTarget { x64, x86, AnyCPU, dotnet5win, dotnet5linux, dotnet5macos };
 
         public TargetType target = TargetType.Exe;
         public DebugAttributes dbg_attrs = DebugAttributes.Release;
@@ -447,6 +448,72 @@ namespace PascalABCCompiler.NETGenerator
                  name.EndsWith(PascalABCCompiler.TreeConverter.compiler_string_consts.ImplementationSectionNamespaceName));
         }
 
+        bool IsDotnet5()
+        {
+            return comp_opt.platformtarget == CompilerOptions.PlatformTarget.dotnet5win || comp_opt.platformtarget == CompilerOptions.PlatformTarget.dotnet5linux || comp_opt.platformtarget == CompilerOptions.PlatformTarget.dotnet5linux;
+        }
+
+        private void BuildDotnet5(string orig_dir, string dir, string publish_dir)
+        {
+            if (Directory.Exists(publish_dir))
+                Directory.Delete(publish_dir, true);
+            Directory.CreateDirectory(publish_dir);
+            StringBuilder sb = new StringBuilder();
+            string framework = "net5.0";
+            if (comp_opt.target == TargetType.WinExe)
+            {
+                framework = "net5.0-windows";
+                sb.AppendLine("<Project Sdk=\"Microsoft.NET.Sdk.WindowsDesktop\">");
+                sb.AppendLine("<PropertyGroup><OutputType>WinExe</OutputType><TargetFramework>"+framework+ "</TargetFramework><UseWindowsForms>true</UseWindowsForms></PropertyGroup>");
+                sb.AppendLine("<ItemGroup><Reference Include = \"" + an.Name + "\"><HintPath>" + Path.Combine(dir, an.Name) + ".dll" + "</HintPath></Reference></ItemGroup>");
+                sb.AppendLine("</Project>");
+            }
+            else
+            {
+                sb.AppendLine("<Project Sdk=\"Microsoft.NET.Sdk\">");
+                sb.AppendLine("<PropertyGroup><OutputType>Exe</OutputType><TargetFramework>"+framework+ "</TargetFramework></PropertyGroup>");
+                sb.AppendLine("<ItemGroup><Reference Include = \"" + an.Name + "\"><HintPath>" + Path.Combine(dir, an.Name) + ".dll" + "</HintPath></Reference></ItemGroup>");
+                sb.AppendLine("</Project>");
+            }
+           
+            string csproj = Path.Combine(dir, Path.GetFileNameWithoutExtension(an.Name) + ".csproj");
+            File.WriteAllText(csproj, sb.ToString());
+            sb = new StringBuilder();
+            sb.AppendLine("using System;");
+            sb.AppendLine("namespace StartApp");
+            sb.AppendLine("{");
+            sb.AppendLine("class StartProgram");
+            sb.AppendLine("{");
+            sb.AppendLine("static void Main(string[] args)");
+            sb.AppendLine("{");
+            sb.AppendLine(entry_meth.DeclaringType.FullName+"."+entry_meth.Name+"();");
+            sb.AppendLine("}");
+            sb.AppendLine("}");
+            sb.AppendLine("}");
+            File.WriteAllText(Path.Combine(dir, "Program.cs"), sb.ToString());
+            System.Diagnostics.Process p = new System.Diagnostics.Process();
+            p.StartInfo = new System.Diagnostics.ProcessStartInfo();
+            p.StartInfo.FileName = "dotnet";
+            string runtime = "win-x64";
+            if (comp_opt.platformtarget == CompilerOptions.PlatformTarget.dotnet5linux)
+                runtime = "linux-x64";
+            else if (comp_opt.platformtarget == CompilerOptions.PlatformTarget.dotnet5macos)
+                runtime = "osx.10.11-x64";
+            string conf = "Debug";
+            if (comp_opt.dbg_attrs == DebugAttributes.Release)
+                conf = "Release";
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.Arguments = "publish -f "+framework+" --runtime "+runtime+" -c "+conf+ " --self-contained false " + csproj;
+            p.Start();
+            p.WaitForExit();
+            var files = Directory.GetFiles(Path.Combine(dir, "bin" + Path.DirectorySeparatorChar + conf + Path.DirectorySeparatorChar + framework + Path.DirectorySeparatorChar + runtime + Path.DirectorySeparatorChar + "publish"));
+            foreach (var file in files)
+                File.Copy(file, Path.Combine(publish_dir, Path.GetFileName(file)));
+            foreach (var file in files)
+                File.Copy(file, Path.Combine(orig_dir, Path.GetFileName(file)), true);
+        }
+
         //Метод, переводящий семантическое дерево в сборку .NET
         public void ConvertFromTree(SemanticTree.IProgramNode p, string TargetFileName, string SourceFileName, CompilerOptions options, string[] ResourceFiles)
         {
@@ -459,6 +526,8 @@ namespace PascalABCCompiler.NETGenerator
             an = new AssemblyName(); //создаем имя сборки
             an.Version = new Version("1.0.0.0");
             string dir = Directory.GetCurrentDirectory();
+            string orig_dir = null;
+            string dotnet_publish_dir = null;
             string source_name = fname;//p.Location.document.file_name;
             int pos = source_name.LastIndexOf(Path.DirectorySeparatorChar);
             if (pos != -1) //если имя файла указано с путем, то выделяем
@@ -485,6 +554,18 @@ namespace PascalABCCompiler.NETGenerator
                 an.SetPublicKey(publicKey);
                 publicKeyStream.Close();
             }
+            if (IsDotnet5())
+            {
+                orig_dir = dir;
+                dir = Path.Combine(dir, an.Name + "_dotnet5");
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+                dotnet_publish_dir = Path.Combine(dir, "publish");
+                dir = Path.Combine(dir, "tmp");
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+            }
+                
             if (RunOnly)
                 ab = ad.DefineDynamicAssembly(an, AssemblyBuilderAccess.Run, dir);//определяем сборку
             else
@@ -528,7 +609,7 @@ namespace PascalABCCompiler.NETGenerator
                 mb = ab.DefineDynamicModule(name, save_debug_info);
             else
             {
-                if (comp_opt.target == TargetType.Exe || comp_opt.target == TargetType.WinExe)
+                if (!IsDotnet5() && (comp_opt.target == TargetType.Exe || comp_opt.target == TargetType.WinExe))
                     mb = ab.DefineDynamicModule(name + ".exe", an.Name + ".exe", save_debug_info); //определяем модуль (save_debug_info - флаг включать отладочную информацию)
                 else
                     mb = ab.DefineDynamicModule(name + ".dll", an.Name + ".dll", save_debug_info);
@@ -981,12 +1062,16 @@ namespace PascalABCCompiler.NETGenerator
                     {
                         if (comp_opt.target == TargetType.Exe || comp_opt.target == TargetType.WinExe)
                         {
-                            if (comp_opt.platformtarget == NETGenerator.CompilerOptions.PlatformTarget.x86)
+                            if (IsDotnet5())
+                                ab.Save(an.Name + ".dll");
+                            else if (comp_opt.platformtarget == NETGenerator.CompilerOptions.PlatformTarget.x86)
                                 ab.Save(an.Name + ".exe", PortableExecutableKinds.Required32Bit, ImageFileMachine.I386);
                             //else if (comp_opt.platformtarget == NETGenerator.CompilerOptions.PlatformTarget.x64)
                             //    ab.Save(an.Name + ".exe", PortableExecutableKinds.PE32Plus, ImageFileMachine.IA64);
                             else ab.Save(an.Name + ".exe");
                             //сохраняем сборку
+                            if (IsDotnet5())
+                                BuildDotnet5(orig_dir, dir, dotnet_publish_dir);
                         }
                         else
                         {
