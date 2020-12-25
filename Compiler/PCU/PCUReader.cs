@@ -744,6 +744,8 @@ namespace PascalABCCompiler.PCU
             for (int i = 0; i < template_types.Length; i++)
             {
                 Type tt = FindTypeByHandle(pcu_file.dotnet_names[off].addit[i].offset);
+                if (tt != null && pcu_file.dotnet_names[pcu_file.dotnet_names[off].addit[i].offset].name.IndexOf(".") == -1)
+                    tt = null;//generic parameter
                 if (tt == null)
                 {
                     tt = t.GetGenericArguments()[i];
