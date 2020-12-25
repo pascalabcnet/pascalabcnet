@@ -140,6 +140,7 @@ namespace PascalABCCompiler.NETGenerator
         protected string cur_unit;//имя текущего модуля
         protected ConstructorBuilder cur_cnstr;//текущий конструктор - тоже нужен (ssyy)
         protected bool is_dot_expr = false;//флаг, стоит ли после выражения точка (нужно для упаковки размерных типов)
+        protected bool is_field_reference = false;
         protected TypeInfo cur_ti;//текущий клас
         protected CompilerOptions comp_opt = new CompilerOptions();//опции компилятора
         protected Dictionary<string, ISymbolDocumentWriter> sym_docs = new Dictionary<string, ISymbolDocumentWriter>();//таблица отладочных документов
@@ -5544,7 +5545,9 @@ namespace PascalABCCompiler.NETGenerator
             bool temp_is_addr = is_addr;
             is_addr = false;
             //is_dot_expr = false;
+            is_field_reference = true;
             value.obj.visit(this);
+            is_field_reference = false;
             is_addr = temp_is_addr;
             FldInfo fi_info = helper.GetField(value.field);
 #if DEBUG
@@ -5624,7 +5627,10 @@ namespace PascalABCCompiler.NETGenerator
                         {
                             //il.Emit(OpCodes.Ldloc, lb);
                             //il.Emit(OpCodes.Box, lb.LocalType);
-                            il.Emit(OpCodes.Ldloca, lb); // #1986
+                            if (is_field_reference && value.type.is_generic_parameter && value.type.base_type != null && value.type.base_type.is_class && value.type.base_type.base_type != null)
+                                il.Emit(OpCodes.Ldloc, lb);//#2247 (where ssylochnyj tip): kakogo-to cherta dlja obrashenija k polu nado klast znachenie, a ne adres. dlja vyzova metoda vsegda adres
+                            else
+                                il.Emit(OpCodes.Ldloca, lb);
                         }
                         else
                             if (lb.LocalType.IsValueType)
@@ -10954,7 +10960,10 @@ namespace PascalABCCompiler.NETGenerator
                 {
                     if (lb.LocalType.IsValueType == true || value.type.is_generic_parameter)
                     {
-                        il.Emit(OpCodes.Ldloca, lb);//если перем. размерного типа кладем ее адрес
+                        if (is_field_reference && value.type.is_generic_parameter && value.type.base_type != null && value.type.base_type.is_class && value.type.base_type.base_type != null)
+                            il.Emit(OpCodes.Ldloc, lb);
+                        else
+                            il.Emit(OpCodes.Ldloca, lb);//если перем. размерного типа кладем ее адрес
                     }
                     else
                     {

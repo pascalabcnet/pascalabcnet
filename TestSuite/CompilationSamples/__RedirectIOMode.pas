@@ -116,6 +116,10 @@ end;
 
 var __initialized := false;
 
+procedure AddThreadExceptionHandler;
+begin
+  System.Windows.Forms.Application.ThreadException += Application_ThreadException;
+end;
 procedure __InitModule;
 begin
   try
@@ -127,7 +131,10 @@ begin
         if IOStandardSystem(CurrentIOSystem).GetType = typeof(IOStandardSystem) then // SSM 30.04.06 - не менять! Влияет на PT4!
           CurrentIOSystem := new __ReadSignalOISystem;        
         AppDomain.CurrentDomain.UnhandledException += DbgExceptionHandler;
-        System.Windows.Forms.Application.ThreadException += Application_ThreadException;
+        try
+          AddThreadExceptionHandler;
+        except
+        end;
         if not IsConsoleApplication then
         begin
           WriteToProcessErrorStream(string.Format(CodePageCommandTemplate, 65001)); // IB 5.08.08
