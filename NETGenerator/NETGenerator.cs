@@ -8797,9 +8797,50 @@ namespace PascalABCCompiler.NETGenerator
             bool tmp_dot = is_dot_expr;
             IExpressionNode[] real_parameters = value.real_parameters;
             is_dot_expr = false;
+
             {
                 //(ssyy) 29.01.2008 Внёс band, bor под switch
                 basic_function_type ft = value.basic_function.basic_function_type;
+                if (ft == basic_function_type.objeq && real_parameters[0].type.is_value_type && 
+                    real_parameters[0].type is ICompiledTypeNode && !NetHelper.NetHelper.IsStandType((real_parameters[0].type as ICompiledTypeNode).compiled_type) && !real_parameters[0].type.is_nullable_type
+                     && real_parameters[1].type.is_value_type &&
+                    real_parameters[1].type is ICompiledTypeNode && !NetHelper.NetHelper.IsStandType((real_parameters[1].type as ICompiledTypeNode).compiled_type) && !real_parameters[1].type.is_nullable_type)
+                {
+                    Type t1 = (real_parameters[0].type as ICompiledTypeNode).compiled_type;
+                    Type t2 = (real_parameters[1].type as ICompiledTypeNode).compiled_type;
+                    MethodInfo mi = (real_parameters[0].type as ICompiledTypeNode).compiled_type.GetMethod("Equals");
+                    if (mi != null)
+                    {
+                        real_parameters[0].visit(this);
+                        il.Emit(OpCodes.Box, t1);
+                        real_parameters[1].visit(this);
+                        il.Emit(OpCodes.Box, t2);
+                        il.Emit(OpCodes.Callvirt, mi);
+                        return;
+                    }
+                    
+                }
+                if (ft == basic_function_type.objnoteq && real_parameters[0].type.is_value_type &&
+                    real_parameters[0].type is ICompiledTypeNode && !NetHelper.NetHelper.IsStandType((real_parameters[0].type as ICompiledTypeNode).compiled_type) && !real_parameters[0].type.is_nullable_type
+                     && real_parameters[1].type.is_value_type &&
+                    real_parameters[1].type is ICompiledTypeNode && !NetHelper.NetHelper.IsStandType((real_parameters[1].type as ICompiledTypeNode).compiled_type) && !real_parameters[1].type.is_nullable_type)
+                {
+                    Type t1 = (real_parameters[0].type as ICompiledTypeNode).compiled_type;
+                    Type t2 = (real_parameters[1].type as ICompiledTypeNode).compiled_type;
+                    MethodInfo mi = (real_parameters[0].type as ICompiledTypeNode).compiled_type.GetMethod("Equals");
+                    if (mi != null)
+                    {
+                        real_parameters[0].visit(this);
+                        il.Emit(OpCodes.Box, t1);
+                        real_parameters[1].visit(this);
+                        il.Emit(OpCodes.Box, t2);
+                        il.Emit(OpCodes.Callvirt, mi);
+                        il.Emit(OpCodes.Ldc_I4_0); 
+                        il.Emit(OpCodes.Ceq);
+                        return;
+                    }
+
+                }
                 switch (ft)
                 {
                     case basic_function_type.booland:
