@@ -67,6 +67,9 @@ const
   /// Константа перехода на новую строку
   /// !! The newline string defined for this environment.
   NewLine = System.Environment.NewLine;
+  /// Константа - символы-разделители слов
+  /// !! symbols - word delimiters
+  AllDelimiters = ' <>=^`|~$№§!"#%&''()*,+-./:;?@[\]_{}«­·»'#9#10#13;
 //{{{--doc: Конец секции стандартных констант для документации }}} 
 
 
@@ -4064,20 +4067,25 @@ function CharRange.Reverse: sequence of char := Range(l,h).Reverse;
 //------------------------------------------------------------------------------
 //          Операции для string и char
 //------------------------------------------------------------------------------
+///--
 procedure string.operator+=(var left: string; right: string);
 begin
   left := left + right;
 end;
 
+///--
 function string.operator<(left, right: string) := string.CompareOrdinal(left, right) < 0;
 
+///--
 function string.operator<=(left, right: string) := string.CompareOrdinal(left, right) <= 0;
 
+///--
 function string.operator>(left, right: string) := string.CompareOrdinal(left, right) > 0;
 
+///--
 function string.operator>=(left, right: string) := string.CompareOrdinal(left, right) >= 0;
 
-/// Повторяет строку str n раз
+///--
 function string.operator*(str: string; n: integer): string;
 begin
   var sb := new StringBuilder;
@@ -4086,7 +4094,7 @@ begin
   Result := sb.ToString;
 end;
 
-/// Повторяет строку str n раз
+///--
 function string.operator*(n: integer; str: string): string;
 begin
   var sb := new StringBuilder;
@@ -4095,7 +4103,7 @@ begin
   Result := sb.ToString;
 end;
 
-/// Повторяет символ c n раз
+///--
 function char.operator*(c: char; n: integer): string;
 begin
   if n <= 0 then
@@ -4109,7 +4117,7 @@ begin
   Result := sb.ToString;
 end;
 
-/// Повторяет символ c n раз
+///--
 function char.operator*(n: integer; c: char): string;
 begin
   if n <= 0 then
@@ -4123,18 +4131,23 @@ begin
   Result := sb.ToString;
 end;
 
-/// Добавляет к строке str строковое представление числа n
+// Добавляет к строке str строковое представление числа n
+///--
 function string.operator+(str: string; n: integer) := str + n.ToString;
 
-/// Добавляет к строке str строковое представление числа n
+// Добавляет к строке str строковое представление числа n
+///--
 function string.operator+(n: integer; str: string) := n.ToString + str;
 
-/// Добавляет к строке str строковое представление числа r
+// Добавляет к строке str строковое представление числа r
+///--
 function string.operator+(str: string; r: real) := str + r.ToString(nfi);
 
-/// Добавляет к строке str строковое представление числа r
+// Добавляет к строке str строковое представление числа r
+///--
 function string.operator+(r: real; str: string) := r.ToString(nfi) + str;
 
+///--
 procedure string.operator+=(var left: string; right: integer);
 begin
   left := left + right.ToString;
@@ -12349,10 +12362,10 @@ begin
   Result := Self.Split(delim, System.StringSplitOptions.RemoveEmptyEntries);
 end;
 
-const AllWordDelimiters = ' <>=^`|~$№§!"#%&''()*,+-./:;?@[\]_{}«­·»'#9#10#13;
+const SpaceDelimiters = ' '+#9#10#13;
 
 /// Преобразует строку в массив слов, используя в качестве разделителей символы из строки delim
-function ToWords(Self: string; delim: string := AllWordDelimiters): array of string; extensionmethod;
+function ToWords(Self: string; delim: string := SpaceDelimiters): array of string; extensionmethod;
 begin
   Result := Self.Split(delim.ToCharArray, System.StringSplitOptions.RemoveEmptyEntries);
 end;
@@ -12859,59 +12872,59 @@ function operator>=<T1,T2,T3,T4,T5,T6,T7>(Self: (T1, T2, T3, T4,T5,T6,T7); v: (T
 // -------------------------------------------
 // Дополнения февраль 2016
 
-// Добавляет поле к кортежу
+/// Добавляет поле к кортежу
 function Add<T1, T2, T3>(Self: (T1, T2); v: T3): (T1, T2, T3); extensionmethod;
 begin
   Result := (Self[0], Self[1], v);
 end;
 
-// Добавляет поле к кортежу
+/// Добавляет поле к кортежу
 function Add<T1, T2, T3, T4>(Self: (T1, T2, T3); v: T4): (T1, T2, T3, T4); extensionmethod;
 begin
   Result := (Self[0], Self[1], Self[2], v);
 end;
 
-// Добавляет поле к кортежу
+/// Добавляет поле к кортежу
 function Add<T1, T2, T3, T4, T5>(Self: (T1, T2, T3, T4); v: T5): (T1, T2, T3, T4, T5); extensionmethod;
 begin
   Result := (Self[0], Self[1], Self[2], Self[3], v);
 end;
 
-// Добавляет поле к кортежу
+/// Добавляет поле к кортежу
 function Add<T1, T2, T3, T4, T5, T6>(Self: (T1, T2, T3, T4, T5); v: T6): (T1, T2, T3, T4, T5, T6); extensionmethod;
 begin
   Result := (Self[0], Self[1], Self[2], Self[3], Self[4], v);
 end;
 
-// Добавляет поле к кортежу
+/// Добавляет поле к кортежу
 function Add<T1, T2, T3, T4, T5, T6, T7>(Self: (T1, T2, T3, T4, T5, T6); v: T7): (T1, T2, T3, T4, T5, T6, T7); extensionmethod;
 begin
   Result := (Self[0], Self[1], Self[2], Self[3], Self[4], Self[5], v);
 end;
 
-// Выводит кортеж
+/// Выводит кортеж
 procedure Print<T1, T2>(Self: (T1, T2)); extensionmethod := Print(Self);
-// Выводит кортеж
+/// Выводит кортеж
 procedure Print<T1, T2, T3>(Self: (T1, T2, T3)); extensionmethod := Print(Self);
-// Выводит кортеж
+/// Выводит кортеж
 procedure Print<T1, T2, T3, T4>(Self: (T1, T2, T3, T4)); extensionmethod := Print(Self);
-// Выводит кортеж
+/// Выводит кортеж
 procedure Print<T1, T2, T3, T4, T5>(Self: (T1, T2, T3, T4, T5)); extensionmethod := Print(Self);
-// Выводит кортеж
+/// Выводит кортеж
 procedure Print<T1, T2, T3, T4, T5, T6>(Self: (T1, T2, T3, T4, T5, T6)); extensionmethod := Print(Self);
-// Выводит кортеж
+/// Выводит кортеж
 procedure Print<T1, T2, T3, T4, T5, T6, T7>(Self: (T1, T2, T3, T4, T5, T6, T7)); extensionmethod := Print(Self);
-// Выводит кортеж и переходит на новую строку
+/// Выводит кортеж и переходит на новую строку
 procedure Println<T1, T2>(Self: (T1, T2)); extensionmethod := Println(Self);
-// Выводит кортеж и переходит на новую строку
+/// Выводит кортеж и переходит на новую строку
 procedure Println<T1, T2, T3>(Self: (T1, T2, T3)); extensionmethod := Println(Self);
-// Выводит кортеж и переходит на новую строку
+/// Выводит кортеж и переходит на новую строку
 procedure Println<T1, T2, T3, T4>(Self: (T1, T2, T3, T4)); extensionmethod := Println(Self);
-// Выводит кортеж и переходит на новую строку
+/// Выводит кортеж и переходит на новую строку
 procedure Println<T1, T2, T3, T4, T5>(Self: (T1, T2, T3, T4, T5)); extensionmethod := Println(Self);
-// Выводит кортеж и переходит на новую строку
+/// Выводит кортеж и переходит на новую строку
 procedure Println<T1, T2, T3, T4, T5, T6>(Self: (T1, T2, T3, T4, T5, T6)); extensionmethod := Println(Self);
-// Выводит кортеж и переходит на новую строку
+/// Выводит кортеж и переходит на новую строку
 procedure Println<T1, T2, T3, T4, T5, T6, T7>(Self: (T1, T2, T3, T4, T5, T6, T7)); extensionmethod := Println(Self);
 
 
