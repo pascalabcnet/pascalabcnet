@@ -165,6 +165,7 @@ ENUM_MUST_HAVE_SEQUENCED_VALUES=Enum must have sequenced values
 EXTERNAL_METHOD_CANNOT_BE_NESTED=Nested functions cannot be external
 CANNOT_USE_RESERVED_ACCESSOR_NAMES=Can not declare class members with name reserved for property accessors
 PARTIAL_CLASS_ATTRIBUTES_MISMATCH=Mismatch of partial class attributes
+PARTIAL_CLASS_PARENTS_MISMATCH=Partial declarations must not specify different base classes
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Unit expected, library found
 ASSEMBLY_{0}_READING_ERROR=Error by reading assembly '{0}'

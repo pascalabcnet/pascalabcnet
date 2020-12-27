@@ -3767,7 +3767,8 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     else
                     {
-                        context.converted_type.SetBaseType(SemanticRules.ClassBaseType);
+                        if (!(context.converted_type.IsPartial && context.converted_type.base_type != null && context.converted_type.base_type != SemanticRules.ClassBaseType))
+                            context.converted_type.SetBaseType(SemanticRules.ClassBaseType);
                     }
                     
                     context.converted_type.is_class = true;
@@ -11982,7 +11983,20 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (predefined_generic && cl_def.where_section != null && cl_def.where_section.defs.Count > 0)
                 AddError(get_location(cl_def.where_section), "WHERE_SECTION_NOT_ALLOWED");
-            
+            if ((cl_def.attribute & SyntaxTree.class_attribute.Partial) == SyntaxTree.class_attribute.Partial && cl_def.class_parents != null)
+            {
+                type_node tn = ret.visit(cl_def.class_parents.types[0]);
+                if (!tn.IsInterface && ctn.base_type != SemanticRules.ClassBaseType && ctn.base_type != null && !ctn.base_type.IsInterface && tn != ctn.base_type)
+                    AddError(get_location(cl_def.class_parents), "PARTIAL_CLASS_PARENTS_MISMATCH");
+                /*if (ctn.ImplementingInterfaces.Count != cl_def.class_parents.types.Count - 1)
+                    AddError(get_location(cl_def.class_parents), "PARTIAL_CLASS_PARENTS_MISMATCH");
+                for (int i=1; i < cl_def.class_parents.types.Count; i++)
+                {
+                    tn = ret.visit(cl_def.class_parents.types[i]);
+                    if (ctn.ImplementingInterfaces[i-1] != tn)
+                        AddError(get_location(cl_def.class_parents.types[i]), "PARTIAL_CLASS_PARENTS_MISMATCH");
+                }*/
+            }
             visit_where_list(cl_def.where_section);
            
             CheckWaitedRefTypes(ctn);
