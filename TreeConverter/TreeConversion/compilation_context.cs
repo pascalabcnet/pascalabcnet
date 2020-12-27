@@ -1307,13 +1307,28 @@ namespace PascalABCCompiler.TreeConverter
 			return cfn;
 		}
 
-		public common_type_node advanced_create_type(string name,location def_loc, bool type_is_interface, bool is_partial=false)
+		public common_type_node advanced_create_type(string name,location def_loc, bool type_is_interface, bool is_partial=false, SyntaxTree.class_attribute attr = SyntaxTree.class_attribute.None)
         {
 			//check_name_free(name,def_loc);
             common_type_node partial_class = null;
             common_type_node rez = check_type_name_free_and_predop(name, def_loc, ref partial_class, is_partial);
             if (rez != null)
             {
+                if (is_partial)
+                {
+                    if ((attr & SyntaxTree.class_attribute.Static) == SyntaxTree.class_attribute.Static && !rez.IsStatic)
+                        AddError(def_loc, "PARTIAL_CLASS_ATTRIBUTES_MISMATCH");
+                    if ((attr & SyntaxTree.class_attribute.Static) != SyntaxTree.class_attribute.Static && rez.IsStatic)
+                        AddError(def_loc, "PARTIAL_CLASS_ATTRIBUTES_MISMATCH");
+                    if ((attr & SyntaxTree.class_attribute.Abstract) == SyntaxTree.class_attribute.Abstract && !rez.IsAbstract)
+                        AddError(def_loc, "PARTIAL_CLASS_ATTRIBUTES_MISMATCH");
+                    if ((attr & SyntaxTree.class_attribute.Abstract) != SyntaxTree.class_attribute.Abstract && rez.IsAbstract && !rez.IsStatic)
+                        AddError(def_loc, "PARTIAL_CLASS_ATTRIBUTES_MISMATCH");
+                    if ((attr & SyntaxTree.class_attribute.Sealed) == SyntaxTree.class_attribute.Sealed && !rez.IsSealed)
+                        AddError(def_loc, "PARTIAL_CLASS_ATTRIBUTES_MISMATCH");
+                    if ((attr & SyntaxTree.class_attribute.Sealed) != SyntaxTree.class_attribute.Sealed && rez.IsSealed && !rez.IsStatic)
+                        AddError(def_loc, "PARTIAL_CLASS_ATTRIBUTES_MISMATCH");
+                }
                 _ctn = rez;
                 if (def_loc != null)
                     _ctn.loc = def_loc;

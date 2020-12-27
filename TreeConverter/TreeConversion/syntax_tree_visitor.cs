@@ -3767,7 +3767,8 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     else
                     {
-                        context.converted_type.SetBaseType(SemanticRules.ClassBaseType);
+                        if (!(context.converted_type.IsPartial && context.converted_type.base_type != null && context.converted_type.base_type != SemanticRules.ClassBaseType))
+                            context.converted_type.SetBaseType(SemanticRules.ClassBaseType);
                     }
                     
                     context.converted_type.is_class = true;
@@ -11160,9 +11161,9 @@ namespace PascalABCCompiler.TreeConverter
                                     AddError(get_location(cl_def), "TYPE_PREDEFINITION_NOT_ALLOWED");
                                 common_type_node ctn = null;
                                 if (td.type_name is template_type_name)
-                                    ctn = context.advanced_create_type(td.type_name.name + "`" + (td.type_name as template_type_name).template_args.Count, get_location(td.type_name), (td.type_def as class_definition).keyword == class_keyword.Interface, (cl_def.attribute & SyntaxTree.class_attribute.Partial) == SyntaxTree.class_attribute.Partial);
+                                    ctn = context.advanced_create_type(td.type_name.name + "`" + (td.type_name as template_type_name).template_args.Count, get_location(td.type_name), (td.type_def as class_definition).keyword == class_keyword.Interface, (cl_def.attribute & SyntaxTree.class_attribute.Partial) == SyntaxTree.class_attribute.Partial, cl_def.attribute);
                                 else
-                                    ctn = context.advanced_create_type(td.type_name.name, get_location(td.type_name), (td.type_def as class_definition).keyword == class_keyword.Interface, (cl_def.attribute & SyntaxTree.class_attribute.Partial) == SyntaxTree.class_attribute.Partial);
+                                    ctn = context.advanced_create_type(td.type_name.name, get_location(td.type_name), (td.type_def as class_definition).keyword == class_keyword.Interface, (cl_def.attribute & SyntaxTree.class_attribute.Partial) == SyntaxTree.class_attribute.Partial, cl_def.attribute);
                                 ctn.ForwardDeclarationOnly = true;
                                 if ((td.type_def as class_definition).keyword == class_keyword.Interface)
                                     ctn.IsInterface = true;
@@ -11953,7 +11954,7 @@ namespace PascalABCCompiler.TreeConverter
             //(ssyy) Флаг показывает, создаём ли мы интерфейс
             bool interface_creating = (cl_def.keyword == PascalABCCompiler.SyntaxTree.class_keyword.Interface);
 
-            common_type_node ctn = context.advanced_create_type(_type_declaration.type_name.name, get_location(_type_declaration.type_name), interface_creating, (cl_def.attribute & SyntaxTree.class_attribute.Partial) == SyntaxTree.class_attribute.Partial);
+            common_type_node ctn = context.advanced_create_type(_type_declaration.type_name.name, get_location(_type_declaration.type_name), interface_creating, (cl_def.attribute & SyntaxTree.class_attribute.Partial) == SyntaxTree.class_attribute.Partial, cl_def.attribute);
             assign_doc_info(ctn,_type_declaration);
             if (_type_declaration.attributes != null)
             {
@@ -11982,7 +11983,20 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (predefined_generic && cl_def.where_section != null && cl_def.where_section.defs.Count > 0)
                 AddError(get_location(cl_def.where_section), "WHERE_SECTION_NOT_ALLOWED");
-            
+            if ((cl_def.attribute & SyntaxTree.class_attribute.Partial) == SyntaxTree.class_attribute.Partial && cl_def.class_parents != null)
+            {
+                type_node tn = ret.visit(cl_def.class_parents.types[0]);
+                if (!tn.IsInterface && ctn.base_type != SemanticRules.ClassBaseType && ctn.base_type != null && !ctn.base_type.IsInterface && tn != ctn.base_type)
+                    AddError(get_location(cl_def.class_parents), "PARTIAL_CLASS_PARENTS_MISMATCH");
+                /*if (ctn.ImplementingInterfaces.Count != cl_def.class_parents.types.Count - 1)
+                    AddError(get_location(cl_def.class_parents), "PARTIAL_CLASS_PARENTS_MISMATCH");
+                for (int i=1; i < cl_def.class_parents.types.Count; i++)
+                {
+                    tn = ret.visit(cl_def.class_parents.types[i]);
+                    if (ctn.ImplementingInterfaces[i-1] != tn)
+                        AddError(get_location(cl_def.class_parents.types[i]), "PARTIAL_CLASS_PARENTS_MISMATCH");
+                }*/
+            }
             visit_where_list(cl_def.where_section);
            
             CheckWaitedRefTypes(ctn);
@@ -18057,6 +18071,115 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.template_param_list _template_param_list)
         {
             throw new NotSupportedError(get_location(_template_param_list));
+        }
+
+        public override void visit(double_question_node node)
+        {
+            expression_node condition = convert_strong(node.left);
+
+            convertion_data_and_alghoritms.convert_type(new null_const_node(null_type_node.get_type_node(), condition.location), condition.type);
+            expression_node left = condition;
+            expression_node right = convert_strong(node.right);
+            if (condition is null_const_node)
+                convertion_data_and_alghoritms.convert_type(new null_const_node(null_type_node.get_type_node(), right.location), right.type);
+
+            try_convert_typed_expression_to_function_call(ref left);
+            try_convert_typed_expression_to_function_call(ref right);
+
+            if (left is null_const_node && right.type.is_value_type)
+            {
+                if (right.type is compiled_type_node)
+                {
+                    var rt = right.type as compiled_type_node;
+                    if (!rt.compiled_type.IsGenericType || rt.compiled_type.GetGenericTypeDefinition() != typeof(System.Nullable<>))
+                    {
+                        right = convert_strong(ToNullable(node.right));
+                    }
+                }
+            }
+            else
+            if (right is null_const_node && left.type.is_value_type)
+            {
+                if (left.type is compiled_type_node)
+                {
+                    var lt = left.type as compiled_type_node;
+                    if (!lt.compiled_type.IsGenericType || lt.compiled_type.GetGenericTypeDefinition() != typeof(System.Nullable<>))
+                    {
+                        left = convert_strong(ToNullable(node.left));
+                    }
+                }
+            }
+
+            /*var typeComparisonResult = type_table.compare_types(left.type, right.type);
+            if (typeComparisonResult == type_compare.greater_type)
+                right = convertion_data_and_alghoritms.convert_type(right, left.type);
+            else left = convertion_data_and_alghoritms.convert_type(left, right.type);*/
+            if (left is null_const_node)
+            {
+                left = convertion_data_and_alghoritms.convert_type(left, right.type);
+            }
+            else
+            {
+                delegated_methods del_left = left.type as delegated_methods;
+                delegated_methods del_right = right.type as delegated_methods;
+                if (del_left != null && del_right != null && del_left.empty_param_method == null && del_right.empty_param_method == null)
+                {
+                    base_function_call bfc = del_left.proper_methods[0];
+                    common_type_node del =
+                        convertion_data_and_alghoritms.type_constructor.create_delegate(context.get_delegate_type_name(), bfc.simple_function_node.return_value_type, bfc.simple_function_node.parameters, context.converted_namespace, null);
+                    context.converted_namespace.types.AddElement(del);
+                    right = convertion_data_and_alghoritms.explicit_convert_type(right, del);
+                    left = convertion_data_and_alghoritms.explicit_convert_type(left, del);
+                }
+                else
+                {
+                    var rtl = type_table.get_convertions(right.type, left.type);
+                    var ltr = type_table.get_convertions(left.type, right.type);
+
+                    if (ltr.first != null && rtl.first == null)
+                    {
+                        left = convertion_data_and_alghoritms.convert_type(left, right.type);
+                    }
+                    else if (ltr.first == null && rtl.first != null)
+                    {
+                        right = convertion_data_and_alghoritms.convert_type(right, left.type);
+                    }
+                    else
+                    {
+                        // если оба типа - целые
+                        if (convertion_data_and_alghoritms.is_value_int_type(left.type) && convertion_data_and_alghoritms.is_value_int_type(right.type))
+                        {
+                            var lub = convertion_data_and_alghoritms.least_upper_bound_value_int_type(left.type, right.type);
+                            if (lub == left.type)
+                                right = convertion_data_and_alghoritms.convert_type(right, left.type);
+                            else if (lub == right.type)
+                                left = convertion_data_and_alghoritms.convert_type(left, right.type);
+                            else
+                            {
+                                right = convertion_data_and_alghoritms.convert_type(right, lub);
+                                left = convertion_data_and_alghoritms.convert_type(right, lub);
+                            }
+                        }
+                        else if (left.type == SystemLibrary.SystemLibrary.float_type && right.type == SystemLibrary.SystemLibrary.double_type)
+                            left = convertion_data_and_alghoritms.convert_type(left, right.type);
+                        else if (right.type == SystemLibrary.SystemLibrary.float_type && left.type == SystemLibrary.SystemLibrary.double_type)
+                            right = convertion_data_and_alghoritms.convert_type(right, left.type);
+                        else if (left.type == right.type)
+                        { }
+                        else // Это было - для совместимости. Что-то может не учтено
+                        {
+                            right = convertion_data_and_alghoritms.convert_type(right, left.type);
+                        }
+
+                    }
+
+                }
+
+            }
+
+
+            //right = convertion_data_and_alghoritms.convert_type(right, left.type);
+            return_value(new double_question_colon_expression(condition, right, get_location(node)));
         }
 
         public override void visit(SyntaxTree.question_colon_expression node)

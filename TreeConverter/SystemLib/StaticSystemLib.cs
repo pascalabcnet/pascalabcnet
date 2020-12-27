@@ -2221,19 +2221,19 @@ namespace PascalABCCompiler.SystemLibrary
             return make_object_operator(ctn, SemanticTree.basic_function_type.objnoteq, compiler_string_consts.noteq_name, _bool_type);
         }
 
-        public static void init_reference_type(type_node ctn)
+        public static void init_reference_type(type_node tn)
         {
         	if (_bool_type == null) 
         	{
-        		wait_add_ref_list.Add(ctn);
+        		wait_add_ref_list.Add(tn);
         		return;
         	}
-            if (!ctn.is_ref_inited)
+            if (!tn.is_ref_inited)
             {
-                make_assign_operator(ctn);
-                make_equivalence_operator(ctn);
-                make_not_equivalence_operator(ctn);
-                ctn.is_ref_inited = true;
+                make_assign_operator(tn);
+                make_equivalence_operator(tn);
+                make_not_equivalence_operator(tn);
+                tn.is_ref_inited = true;
             }
         }
 

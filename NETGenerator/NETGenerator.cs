@@ -8797,9 +8797,50 @@ namespace PascalABCCompiler.NETGenerator
             bool tmp_dot = is_dot_expr;
             IExpressionNode[] real_parameters = value.real_parameters;
             is_dot_expr = false;
+
             {
                 //(ssyy) 29.01.2008 Внёс band, bor под switch
                 basic_function_type ft = value.basic_function.basic_function_type;
+                if (ft == basic_function_type.objeq && real_parameters[0].type.is_value_type && 
+                    real_parameters[0].type is ICompiledTypeNode && !NetHelper.NetHelper.IsStandType((real_parameters[0].type as ICompiledTypeNode).compiled_type) && !real_parameters[0].type.is_nullable_type
+                     && real_parameters[1].type.is_value_type &&
+                    real_parameters[1].type is ICompiledTypeNode && !NetHelper.NetHelper.IsStandType((real_parameters[1].type as ICompiledTypeNode).compiled_type) && !real_parameters[1].type.is_nullable_type)
+                {
+                    Type t1 = (real_parameters[0].type as ICompiledTypeNode).compiled_type;
+                    Type t2 = (real_parameters[1].type as ICompiledTypeNode).compiled_type;
+                    MethodInfo mi = (real_parameters[0].type as ICompiledTypeNode).compiled_type.GetMethod("Equals");
+                    if (mi != null)
+                    {
+                        real_parameters[0].visit(this);
+                        il.Emit(OpCodes.Box, t1);
+                        real_parameters[1].visit(this);
+                        il.Emit(OpCodes.Box, t2);
+                        il.Emit(OpCodes.Callvirt, mi);
+                        return;
+                    }
+                    
+                }
+                if (ft == basic_function_type.objnoteq && real_parameters[0].type.is_value_type &&
+                    real_parameters[0].type is ICompiledTypeNode && !NetHelper.NetHelper.IsStandType((real_parameters[0].type as ICompiledTypeNode).compiled_type) && !real_parameters[0].type.is_nullable_type
+                     && real_parameters[1].type.is_value_type &&
+                    real_parameters[1].type is ICompiledTypeNode && !NetHelper.NetHelper.IsStandType((real_parameters[1].type as ICompiledTypeNode).compiled_type) && !real_parameters[1].type.is_nullable_type)
+                {
+                    Type t1 = (real_parameters[0].type as ICompiledTypeNode).compiled_type;
+                    Type t2 = (real_parameters[1].type as ICompiledTypeNode).compiled_type;
+                    MethodInfo mi = (real_parameters[0].type as ICompiledTypeNode).compiled_type.GetMethod("Equals");
+                    if (mi != null)
+                    {
+                        real_parameters[0].visit(this);
+                        il.Emit(OpCodes.Box, t1);
+                        real_parameters[1].visit(this);
+                        il.Emit(OpCodes.Box, t2);
+                        il.Emit(OpCodes.Callvirt, mi);
+                        il.Emit(OpCodes.Ldc_I4_0); 
+                        il.Emit(OpCodes.Ceq);
+                        return;
+                    }
+
+                }
                 switch (ft)
                 {
                     case basic_function_type.booland:
@@ -10368,6 +10409,57 @@ namespace PascalABCCompiler.NETGenerator
                 EmitBox(value.ret_if_false, ti.tp);
             il.MarkLabel(EndLabel);
             
+        }
+
+        public override void visit(IDoubleQuestionColonExpressionNode value)
+        {
+            Label EndLabel = il.DefineLabel();
+            Label NullLabel = il.DefineLabel();
+            bool tmp_is_dot_expr = is_dot_expr;
+            bool tmp_is_addr = is_addr;
+            is_dot_expr = false;//don't box the condition expression
+            is_addr = false;
+            LocalBuilder tmp_lb = null;
+            if (value.condition is IBasicFunctionCallNode &&
+                (value.condition as IBasicFunctionCallNode).real_parameters[0].type.IsDelegate &&
+                (value.condition as IBasicFunctionCallNode).real_parameters[1] is INullConstantNode &&
+                (value.condition as IBasicFunctionCallNode).basic_function.basic_function_type == basic_function_type.objeq)
+            {
+                IBasicFunctionCallNode eq = (value.condition as IBasicFunctionCallNode);
+                tmp_lb = il.DeclareLocal(helper.GetTypeReference((value.condition as IBasicFunctionCallNode).real_parameters[0].type).tp);
+                eq.real_parameters[0].visit(this);
+                il.Emit(OpCodes.Stloc, tmp_lb);
+                il.Emit(OpCodes.Ldloc, tmp_lb);
+                il.Emit(OpCodes.Ldnull);
+                il.Emit(OpCodes.Ceq);
+                
+            }
+            else
+            {
+                value.condition.visit(this);
+                tmp_lb = il.DeclareLocal(helper.GetTypeReference(value.type).tp);
+                il.Emit(OpCodes.Stloc, tmp_lb);
+                il.Emit(OpCodes.Ldloc, tmp_lb);
+                il.Emit(OpCodes.Ldnull);
+                il.Emit(OpCodes.Ceq);
+            }
+                
+
+            is_dot_expr = tmp_is_dot_expr;
+            is_addr = tmp_is_addr;
+            il.Emit(OpCodes.Brtrue, NullLabel);
+            il.Emit(OpCodes.Ldloc, tmp_lb);
+            TypeInfo ti = helper.GetTypeReference(value.condition.type);
+            if (ti != null)
+                EmitBox(value.condition, ti.tp);
+            il.Emit(OpCodes.Br, EndLabel);
+            il.MarkLabel(NullLabel);
+            value.ret_if_null.visit(this);
+            ti = helper.GetTypeReference(value.ret_if_null.type);
+            if (ti != null)
+                EmitBox(value.ret_if_null, ti.tp);
+            il.MarkLabel(EndLabel);
+
         }
 
         private Hashtable range_stmts_labels = new Hashtable();
