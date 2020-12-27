@@ -18059,6 +18059,115 @@ namespace PascalABCCompiler.TreeConverter
             throw new NotSupportedError(get_location(_template_param_list));
         }
 
+        public override void visit(double_question_node node)
+        {
+            expression_node condition = convert_strong(node.left);
+
+            convertion_data_and_alghoritms.convert_type(new null_const_node(null_type_node.get_type_node(), condition.location), condition.type);
+            expression_node left = condition;
+            expression_node right = convert_strong(node.right);
+            if (condition is null_const_node)
+                convertion_data_and_alghoritms.convert_type(new null_const_node(null_type_node.get_type_node(), right.location), right.type);
+
+            try_convert_typed_expression_to_function_call(ref left);
+            try_convert_typed_expression_to_function_call(ref right);
+
+            if (left is null_const_node && right.type.is_value_type)
+            {
+                if (right.type is compiled_type_node)
+                {
+                    var rt = right.type as compiled_type_node;
+                    if (!rt.compiled_type.IsGenericType || rt.compiled_type.GetGenericTypeDefinition() != typeof(System.Nullable<>))
+                    {
+                        right = convert_strong(ToNullable(node.right));
+                    }
+                }
+            }
+            else
+            if (right is null_const_node && left.type.is_value_type)
+            {
+                if (left.type is compiled_type_node)
+                {
+                    var lt = left.type as compiled_type_node;
+                    if (!lt.compiled_type.IsGenericType || lt.compiled_type.GetGenericTypeDefinition() != typeof(System.Nullable<>))
+                    {
+                        left = convert_strong(ToNullable(node.left));
+                    }
+                }
+            }
+
+            /*var typeComparisonResult = type_table.compare_types(left.type, right.type);
+            if (typeComparisonResult == type_compare.greater_type)
+                right = convertion_data_and_alghoritms.convert_type(right, left.type);
+            else left = convertion_data_and_alghoritms.convert_type(left, right.type);*/
+            if (left is null_const_node)
+            {
+                left = convertion_data_and_alghoritms.convert_type(left, right.type);
+            }
+            else
+            {
+                delegated_methods del_left = left.type as delegated_methods;
+                delegated_methods del_right = right.type as delegated_methods;
+                if (del_left != null && del_right != null && del_left.empty_param_method == null && del_right.empty_param_method == null)
+                {
+                    base_function_call bfc = del_left.proper_methods[0];
+                    common_type_node del =
+                        convertion_data_and_alghoritms.type_constructor.create_delegate(context.get_delegate_type_name(), bfc.simple_function_node.return_value_type, bfc.simple_function_node.parameters, context.converted_namespace, null);
+                    context.converted_namespace.types.AddElement(del);
+                    right = convertion_data_and_alghoritms.explicit_convert_type(right, del);
+                    left = convertion_data_and_alghoritms.explicit_convert_type(left, del);
+                }
+                else
+                {
+                    var rtl = type_table.get_convertions(right.type, left.type);
+                    var ltr = type_table.get_convertions(left.type, right.type);
+
+                    if (ltr.first != null && rtl.first == null)
+                    {
+                        left = convertion_data_and_alghoritms.convert_type(left, right.type);
+                    }
+                    else if (ltr.first == null && rtl.first != null)
+                    {
+                        right = convertion_data_and_alghoritms.convert_type(right, left.type);
+                    }
+                    else
+                    {
+                        // если оба типа - целые
+                        if (convertion_data_and_alghoritms.is_value_int_type(left.type) && convertion_data_and_alghoritms.is_value_int_type(right.type))
+                        {
+                            var lub = convertion_data_and_alghoritms.least_upper_bound_value_int_type(left.type, right.type);
+                            if (lub == left.type)
+                                right = convertion_data_and_alghoritms.convert_type(right, left.type);
+                            else if (lub == right.type)
+                                left = convertion_data_and_alghoritms.convert_type(left, right.type);
+                            else
+                            {
+                                right = convertion_data_and_alghoritms.convert_type(right, lub);
+                                left = convertion_data_and_alghoritms.convert_type(right, lub);
+                            }
+                        }
+                        else if (left.type == SystemLibrary.SystemLibrary.float_type && right.type == SystemLibrary.SystemLibrary.double_type)
+                            left = convertion_data_and_alghoritms.convert_type(left, right.type);
+                        else if (right.type == SystemLibrary.SystemLibrary.float_type && left.type == SystemLibrary.SystemLibrary.double_type)
+                            right = convertion_data_and_alghoritms.convert_type(right, left.type);
+                        else if (left.type == right.type)
+                        { }
+                        else // Это было - для совместимости. Что-то может не учтено
+                        {
+                            right = convertion_data_and_alghoritms.convert_type(right, left.type);
+                        }
+
+                    }
+
+                }
+
+            }
+
+
+            //right = convertion_data_and_alghoritms.convert_type(right, left.type);
+            return_value(new double_question_colon_expression(condition, right, get_location(node)));
+        }
+
         public override void visit(SyntaxTree.question_colon_expression node)
         {
             expression_node condition = convert_strong(node.condition);

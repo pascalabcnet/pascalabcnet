@@ -10411,6 +10411,57 @@ namespace PascalABCCompiler.NETGenerator
             
         }
 
+        public override void visit(IDoubleQuestionColonExpressionNode value)
+        {
+            Label EndLabel = il.DefineLabel();
+            Label NullLabel = il.DefineLabel();
+            bool tmp_is_dot_expr = is_dot_expr;
+            bool tmp_is_addr = is_addr;
+            is_dot_expr = false;//don't box the condition expression
+            is_addr = false;
+            LocalBuilder tmp_lb = null;
+            if (value.condition is IBasicFunctionCallNode &&
+                (value.condition as IBasicFunctionCallNode).real_parameters[0].type.IsDelegate &&
+                (value.condition as IBasicFunctionCallNode).real_parameters[1] is INullConstantNode &&
+                (value.condition as IBasicFunctionCallNode).basic_function.basic_function_type == basic_function_type.objeq)
+            {
+                IBasicFunctionCallNode eq = (value.condition as IBasicFunctionCallNode);
+                tmp_lb = il.DeclareLocal(helper.GetTypeReference((value.condition as IBasicFunctionCallNode).real_parameters[0].type).tp);
+                eq.real_parameters[0].visit(this);
+                il.Emit(OpCodes.Stloc, tmp_lb);
+                il.Emit(OpCodes.Ldloc, tmp_lb);
+                il.Emit(OpCodes.Ldnull);
+                il.Emit(OpCodes.Ceq);
+                
+            }
+            else
+            {
+                value.condition.visit(this);
+                tmp_lb = il.DeclareLocal(helper.GetTypeReference(value.type).tp);
+                il.Emit(OpCodes.Stloc, tmp_lb);
+                il.Emit(OpCodes.Ldloc, tmp_lb);
+                il.Emit(OpCodes.Ldnull);
+                il.Emit(OpCodes.Ceq);
+            }
+                
+
+            is_dot_expr = tmp_is_dot_expr;
+            is_addr = tmp_is_addr;
+            il.Emit(OpCodes.Brtrue, NullLabel);
+            il.Emit(OpCodes.Ldloc, tmp_lb);
+            TypeInfo ti = helper.GetTypeReference(value.condition.type);
+            if (ti != null)
+                EmitBox(value.condition, ti.tp);
+            il.Emit(OpCodes.Br, EndLabel);
+            il.MarkLabel(NullLabel);
+            value.ret_if_null.visit(this);
+            ti = helper.GetTypeReference(value.ret_if_null.type);
+            if (ti != null)
+                EmitBox(value.ret_if_null, ti.tp);
+            il.MarkLabel(EndLabel);
+
+        }
+
         private Hashtable range_stmts_labels = new Hashtable();
 
         //перевод селекторов-диапазонов case
