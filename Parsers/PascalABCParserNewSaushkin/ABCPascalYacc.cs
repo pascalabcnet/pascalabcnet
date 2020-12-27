@@ -2,9 +2,9 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-G8V08V4
-// DateTime: 14.12.2020 21:18:09
+// DateTime: 25.12.2020 21:59:54
 // UserName: ?????????
-// Input file <D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
+// Input file <ABCPascal.y>
 
 // options: no-lines gplex
 
@@ -59,7 +59,7 @@ public abstract class ScanBase : AbstractScanner<PascalABCSavParser.Union,LexLoc
 
 public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, LexLocation>
 {
-  // Verbatim content from D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y
+  // Verbatim content from ABCPascal.y
 // ��� ���������� ����������� � ����� GPPGParser, �������������� ����� ������, ������������ �������� gppg
     public syntax_tree_node root; // �������� ���� ��������������� ������ 
 
@@ -71,7 +71,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 	
     public GPPGParser(AbstractScanner<PascalABCSavParser.Union, LexLocation> scanner) : base(scanner) { }
-  // End verbatim content from D:\PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y
+  // End verbatim content from ABCPascal.y
 
 #pragma warning disable 649
   private static Dictionary<int, string> aliasses;
@@ -2824,9 +2824,9 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 			var stl = ValueStack[ValueStack.Depth-1].stn as statement_list;
 			stl.left_logical_bracket = ValueStack[ValueStack.Depth-2].ti;
 			var un = new unit_or_namespace(new ident_list("SF"),null);
-			var un1 = new unit_or_namespace(new ident_list("School"),null);
+			//var un1 = new unit_or_namespace(new ident_list("School"),null);
 			var ul = new uses_list(un,null);		
-			ul.Add(un1);
+			//ul.Add(un1);
 			root = CurrentSemanticValue.stn = NewProgramModule(null, null, ul, new block(null, stl, CurrentLocationSpan), new token_info(""), CurrentLocationSpan); 
 		}
         break;
