@@ -11160,9 +11160,9 @@ namespace PascalABCCompiler.TreeConverter
                                     AddError(get_location(cl_def), "TYPE_PREDEFINITION_NOT_ALLOWED");
                                 common_type_node ctn = null;
                                 if (td.type_name is template_type_name)
-                                    ctn = context.advanced_create_type(td.type_name.name + "`" + (td.type_name as template_type_name).template_args.Count, get_location(td.type_name), (td.type_def as class_definition).keyword == class_keyword.Interface, (cl_def.attribute & SyntaxTree.class_attribute.Partial) == SyntaxTree.class_attribute.Partial);
+                                    ctn = context.advanced_create_type(td.type_name.name + "`" + (td.type_name as template_type_name).template_args.Count, get_location(td.type_name), (td.type_def as class_definition).keyword == class_keyword.Interface, (cl_def.attribute & SyntaxTree.class_attribute.Partial) == SyntaxTree.class_attribute.Partial, cl_def.attribute);
                                 else
-                                    ctn = context.advanced_create_type(td.type_name.name, get_location(td.type_name), (td.type_def as class_definition).keyword == class_keyword.Interface, (cl_def.attribute & SyntaxTree.class_attribute.Partial) == SyntaxTree.class_attribute.Partial);
+                                    ctn = context.advanced_create_type(td.type_name.name, get_location(td.type_name), (td.type_def as class_definition).keyword == class_keyword.Interface, (cl_def.attribute & SyntaxTree.class_attribute.Partial) == SyntaxTree.class_attribute.Partial, cl_def.attribute);
                                 ctn.ForwardDeclarationOnly = true;
                                 if ((td.type_def as class_definition).keyword == class_keyword.Interface)
                                     ctn.IsInterface = true;
@@ -11953,7 +11953,7 @@ namespace PascalABCCompiler.TreeConverter
             //(ssyy) Флаг показывает, создаём ли мы интерфейс
             bool interface_creating = (cl_def.keyword == PascalABCCompiler.SyntaxTree.class_keyword.Interface);
 
-            common_type_node ctn = context.advanced_create_type(_type_declaration.type_name.name, get_location(_type_declaration.type_name), interface_creating, (cl_def.attribute & SyntaxTree.class_attribute.Partial) == SyntaxTree.class_attribute.Partial);
+            common_type_node ctn = context.advanced_create_type(_type_declaration.type_name.name, get_location(_type_declaration.type_name), interface_creating, (cl_def.attribute & SyntaxTree.class_attribute.Partial) == SyntaxTree.class_attribute.Partial, cl_def.attribute);
             assign_doc_info(ctn,_type_declaration);
             if (_type_declaration.attributes != null)
             {
