@@ -12362,12 +12362,10 @@ begin
   Result := Self.Split(delim, System.StringSplitOptions.RemoveEmptyEntries);
 end;
 
-const SpaceDelimiters = ' '+#9#10#13;
-
-/// Преобразует строку в массив слов, используя в качестве разделителей символы из строки delim
-function ToWords(Self: string; delim: string := SpaceDelimiters): array of string; extensionmethod;
+/// Преобразует строку в массив слов, используя в качестве разделителей символы из строки delims
+function ToWords(Self: string; delims: string := ' '): array of string; extensionmethod;
 begin
-  Result := Self.Split(delim.ToCharArray, System.StringSplitOptions.RemoveEmptyEntries);
+  Result := Self.Split(delims.ToCharArray, System.StringSplitOptions.RemoveEmptyEntries);
 end;
 
 procedure PassSpaces(var s: string; var from: integer); 
