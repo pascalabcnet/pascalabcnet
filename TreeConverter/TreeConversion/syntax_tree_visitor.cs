@@ -3705,7 +3705,9 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (context.converted_type.IsStatic)
                             AddError(get_location(_class_definition), "STATIC_CLASS_CANNOT_HAVE_PARENT");
+                        context.skip_check_where_sections = true;
                         type_node tn = ret.visit(_class_definition.class_parents.types[0]);
+                        context.skip_check_where_sections = false;
                         //if (tn == context.converted_type)
                         if (type_table.original_types_equals(tn, context.converted_type))
                             AddError(new UndefinedNameReference(tn.name, get_location(_class_definition.class_parents.types[0])));
@@ -3737,6 +3739,8 @@ namespace PascalABCCompiler.TreeConverter
                             //Добавляем интерфейс
                             used_interfs.Add(tn, tn);
                             type_table.AddInterface(context.converted_type, tn, get_location(_class_definition.class_parents.types[0]));
+                            if (tn.is_generic_type_instance)
+                                ret.visit(_class_definition.class_parents.types[0]);
                         }
                         else
                         {
@@ -3749,6 +3753,8 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(get_location(_class_definition.class_parents.types[0]), "CAN_NOT_INHERIT_FROM_GENERIC_PARAMETER");
                             }
                             context.converted_type.SetBaseType(tn);
+                            if (tn.is_generic_type_instance)
+                                ret.visit(_class_definition.class_parents.types[0]);
                             var type_instances = generic_convertions.get_type_instances(context.converted_type);
                             if (type_instances != null)
                                 foreach (generic_type_instance_info gti in type_instances)
