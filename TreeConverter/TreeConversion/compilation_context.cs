@@ -2047,6 +2047,18 @@ namespace PascalABCCompiler.TreeConverter
         
         internal expression_node GetInitalValueForVariable(var_definition_node vdn, expression_node userInitalValue)
         {
+            if (userInitalValue == null && CurrentStatementList != null && vdn.type.is_value_type && vdn.type is common_type_node)
+            {
+                common_type_node ctn = vdn.type as common_type_node;
+                foreach (var meth in ctn.methods)
+                {
+                    if (meth.is_constructor && meth.parameters.Count == 0)
+                    {
+                        userInitalValue = new common_constructor_call(meth, vdn.location);
+                        break;
+                    }
+                }
+            }
             if (userInitalValue != null)
             {
             	if (CurrentStatementList != null)
@@ -2075,13 +2087,15 @@ namespace PascalABCCompiler.TreeConverter
                             }
                         }
                     }
-                    else if (vdn.type.is_value_type && userInitalValue is common_constructor_call)
-                        return userInitalValue;
                     CurrentStatementList.statements.AddElement(syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, lbvr, userInitalValue, lid));
                     if (vdn.type.type_special_kind == SemanticTree.type_special_kind.set_type)
                 	{
                  		lbvr.type = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node;
                 	}
+                    if (vdn.type.is_value_type && userInitalValue is common_constructor_call)
+                    {
+                        return new default_operator_node(vdn.type, lid);
+                    }
                     return null;
                 }
                 if (userInitalValue is constant_node)
